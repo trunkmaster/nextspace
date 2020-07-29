@@ -6,9 +6,9 @@
 
 cd ./nextspace-back-${gnustep_back_version} || exit 1
 
-make clean
+$MAKE_CMD clean
 ./configure \
   --enable-graphics=art \
   --with-name=art
 
-make fonts=no install
+$MAKE_CMD fonts=no install

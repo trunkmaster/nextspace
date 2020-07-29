@@ -2,8 +2,6 @@
 
 . ./versions.inc.sh
 
-export LDFLAGS=-Wl,-rpath,/usr/NextSpace/lib
-
 cd ./libdispatch-${libdispatch_version} || exit 1
 rm -R _build 2>/dev/null
 mkdir -p _build
@@ -19,6 +17,6 @@ cmake .. \
 	-DENABLE_TESTING=OFF \
 	-DUSE_GOLD_LINKER=YES
 
-make clean
-make $MAKE_ARGS install
+$MAKE_CMD clean
+$MAKE_CMD install
 ldconfig

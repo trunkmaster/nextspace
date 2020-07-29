@@ -4,13 +4,15 @@ if [ "$EUID" -eq 0 ];then
 	mkdir -p /Library/Preferences
 	cp ../../System/Library/Preferences/* /Library/Preferences/
 
-	cp ../../System/etc/ld.so.conf.d/nextspace.conf /etc/ld.so.conf.d/
-	ldconfig
+	if [ -d /etc/ld.so.conf.d ];then
+		cp ../../System/etc/ld.so.conf.d/nextspace.conf /etc/ld.so.conf.d/
+		ldconfig
+	fi
 
-	cp ../../System/etc/X11/Xresources.nextspace /etc/X11
+	mkdir -p /etc/profile.d
+	cp ../../System/etc/profile.d/nextspace.sh /etc/profile.d/
 
-	cp ../../System/etc/profile.d/nextspace.sh /etc/profile.d
-
+	mkdir -p /etc/skel
 	cp -R ../../System/etc/skel/Library /etc/skel
 
 	cp ../../System/usr/NextSpace/bin/* /usr/NextSpace/bin/

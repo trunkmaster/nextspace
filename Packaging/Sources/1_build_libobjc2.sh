@@ -1,6 +1,8 @@
 #!/bin/bash
 
-cd ./libobjc2-2.0 || exit 1
+. ./versions.inc.sh
+
+cd ./libobjc2-${libobjc2_version} || exit 1
 rm -R _build 2>/dev/null
 mkdir -p _build
 cd ./_build
@@ -19,6 +21,6 @@ cmake .. \
 	-DCMAKE_BUILD_TYPE=Release \
 	|| exit 1
 
-make clean
-make install || exit 1
+$MAKE_CMD clean
+$MAKE_CMD install || exit 1
 ldconfig

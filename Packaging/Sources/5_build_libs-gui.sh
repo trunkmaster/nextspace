@@ -6,7 +6,7 @@
 
 cd ./nextspace-gui-${gnustep_gui_version} || exit 1
 
-make clean
-sh ./configure
+$MAKE_CMD clean
+./configure
 
-make install
+$MAKE_CMD install

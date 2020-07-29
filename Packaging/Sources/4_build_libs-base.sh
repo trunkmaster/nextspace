@@ -6,7 +6,7 @@
 
 cd ./nextspace-base-${gnustep_base_version} || exit 1
 
-make clean
+$MAKE_CMD clean
 ./configure || exit 1
 
-make $MAKE_ARGS install
+$MAKE_CMD install
