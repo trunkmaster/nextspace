@@ -3,7 +3,10 @@
     AppController = {
 	Actions = (
 	    "showPrefPanel:",
+	    "showInspector:",
 	    "openImage:",
+	    "imageWindowWillClose:",
+	    "setDefaultSize:",
 	    "showInfoPanel:"
 	);
 	Outlets = (
@@ -13,9 +16,11 @@
     };
     FirstResponder = {
 	Actions = (
+	    "imageWindowWillClose:",
 	    "openImage:",
-	    "orderFrontFontPanel:",
+	    "setDefaultSize:",
 	    "showInfoPanel:",
+	    "showInspector:",
 	    "showPrefPanel:"
 	);
 	Super = NSObject;
