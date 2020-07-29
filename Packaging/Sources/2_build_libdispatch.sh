@@ -1,8 +1,10 @@
 #!/bin/bash
 
+. ./versions.inc.sh
+
 export LDFLAGS=-Wl,-rpath,/usr/NextSpace/lib
 
-cd ./libdispatch-5.1.5 || exit 1
+cd ./libdispatch-${libdispatch_version} || exit 1
 rm -R _build 2>/dev/null
 mkdir -p _build
 cd _build

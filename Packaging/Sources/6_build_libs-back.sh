@@ -1,8 +1,10 @@
 #!/bin/bash
 
+. ./versions.inc.sh
+
 . /Developer/Makefiles/GNUstep.sh
 
-cd ./nextspace-back-0.28.0+nextspace || exit 1
+cd ./nextspace-back-${gnustep_back_version} || exit 1
 
 make clean
 ./configure \

@@ -16,7 +16,9 @@ git_remote_archive() {
   else
 	  git clone --recurse-submodules "$url" "$dest"
     cd "$dest"
-    git checkout $branch
+    if [ "$branch" != "master" ];then
+      git checkout $branch
+    fi
   fi
 }
 

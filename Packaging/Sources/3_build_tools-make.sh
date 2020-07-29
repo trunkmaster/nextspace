@@ -1,8 +1,10 @@
 #!/bin/bash
 
-cp ../Debian/nextspace-make-2.7.0/debian/nextspace.fsl ./nextspace-make-2.7.0/FilesystemLayouts/nextspace || exit 1
+. ./versions.inc.sh
 
-cd ./nextspace-make-2.7.0
+cp ../Debian/nextspace-make-${gnustep_make_version}/debian/nextspace.fsl ./nextspace-make-${gnustep_make_version}/FilesystemLayouts/nextspace || exit 1
+
+cd ./nextspace-make-${gnustep_make_version}
 
 export RUNTIME_VERSION="-fobjc-runtime=gnustep-1.8"
 export LD=/usr/bin/ld.gold
