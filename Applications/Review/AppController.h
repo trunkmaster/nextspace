@@ -13,6 +13,8 @@
 
   Inspector      *inspector;
   PrefController *preferences;
+  //Info -> Info Panel
+  id infoPanel;
 }
 
 + (void)initialize;
@@ -40,5 +42,6 @@
 			      error:(NSString **)msg;
 
 - (void)setDefaultSize:(id)sender;
-
+//Info Panel
+- (void)showInfoPanel:(id)sender;
 @end

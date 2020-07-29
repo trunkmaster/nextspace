@@ -35,8 +35,8 @@ Resources/XPMImage.tiff
 #
 Review_LANGUAGES = English
 Review_LOCALIZED_RESOURCE_FILES = \
-Review.gorm 
-
+Review.gorm \
+InfoPanel.gorm
 
 #
 # Header files

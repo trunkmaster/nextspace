@@ -18,7 +18,6 @@
 	Actions = (
 	    "imageWindowWillClose:",
 	    "openImage:",
-	    "orderFrontFontPanel:",
 	    "setDefaultSize:",
 	    "showInfoPanel:",
 	    "showInspector:",
