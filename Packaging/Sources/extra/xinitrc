@@ -1,0 +1,12 @@
+#!/bin/bash
+
+. /etc/profile.d/nextspace.sh
+
+$NS_SYSTEM/bin/gnustep-services start >> $LOGFILE  2>&1
+
+export NEXTSPACE_USER_ROOT=$HOME/Library 
+$NS_SYSTEM/Apps/Workspace.app/Workspace >> $LOGFILE  2>&1
+
+$NS_SYSTEM/bin/gnustep-services stop >> $LOGFILE  2>&1
+
+exit 0
