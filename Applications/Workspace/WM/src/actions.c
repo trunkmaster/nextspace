@@ -136,13 +136,18 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
   /* Shaded focused GNUstep window should set focus to main menu */
   if (wwin && wwin->flags.shaded && wwin->flags.is_gnustep) {
+    WApplication *gapp = wApplicationOf(wwin->main_window);
+
     WSMessage("Request to focus shaded window received (%lu).", wwin->client_win);
-    wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
-    XFlush(dpy);
-    XSync(dpy, False);
-    WSMessage("Transfer focus to main menu (%lu).",
-              wApplicationOf(wwin->main_window)->menu_win->client_win);
-    wSetFocusTo(scr, wApplicationOf(wwin->main_window)->menu_win);
+    if (!wwin->flags.focused) { // not focused - set it
+      wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
+      XFlush(dpy);
+      XSync(dpy, False);
+    }
+    if (gapp && !gapp->menu_win->flags.focused) {
+      WSMessage("Transfer focus to main menu (%lu).", gapp->menu_win->client_win);
+      wSetFocusTo(scr, gapp->menu_win);
+    }
     return;
   }
   
@@ -201,11 +206,6 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
   napp = wApplicationOf(wwin->main_window);
 
-  // Do not focus shaded GNUstep window
-  if (napp && wwin->flags.is_gnustep && wwin->flags.shaded
-      && (wwin->flags.focused || (napp && napp->menu_win->flags.focused)))
-    return;
-  
   if (old_scr != scr && old_focused)
     wWindowUnfocus(old_focused);
 
