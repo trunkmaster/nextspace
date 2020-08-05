@@ -128,25 +128,36 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   WWindow *focused = scr->focused_window;
   Time timestamp = w_global.timestamp.last_event;
   WApplication *oapp = NULL, *napp = NULL;
-  int wasfocused;
   BOOL focus_succeeded = False;
 
   if (scr->flags.ignore_focus_events ||
       compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
     return;
 
+  /* Shaded focused GNUstep window should set focus to main menu */
+  if (wwin && wwin->flags.shaded && wwin->flags.is_gnustep) {
+    WSMessage("Request to focus shaded window received (%lu).", wwin->client_win);
+    wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
+    XFlush(dpy);
+    XSync(dpy, False);
+    WSMessage("Transfer focus to main menu (%lu).",
+              wApplicationOf(wwin->main_window)->menu_win->client_win);
+    wSetFocusTo(scr, wApplicationOf(wwin->main_window)->menu_win);
+    return;
+  }
+  
   wPrintWindowFocusState(wwin, "[START] wSetFocusTo:");
 
   /* Do not focus GNUstep main menu if focused window exists, mapped and belongs to 
      the same application. This also covers shaded focused window case: exists, belongs
      to the same application but not mapped - focus goes to the main app menu. */
-  if (wwin && focused && (wwin != focused)
-      && (focused->flags.mapped && !focused->flags.shaded)
+  if (wwin && focused && (wwin == focused)
+      && (wwin->flags.mapped && !wwin->flags.shaded)
       && wwin->flags.is_gnustep // it's GNUstep application
       && wwin->wm_gnustep_attr->window_level == WMMainMenuWindowLevel // it's a menu
       && !strcmp(wwin->wm_class, focused->wm_class)          // windows belong
       && !strcmp(wwin->wm_instance, focused->wm_instance)) { // to the same application
-    WSMessage("        wSetFocusTo: rejected %lu is a `%s` app menu"
+    WSMessage("        wSetFocusTo: rejected: %lu is a `%s` app menu"
               " (focused: %lu is mapped: %s.).",
               wwin->client_win, focused->wm_instance,
               focused->client_win, focused->flags.mapped ? "true" : "false");
@@ -157,11 +168,10 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     old_scr = scr;
 
   old_focused = old_scr->focused_window;
-
-  w_global.timestamp.focus_change = timestamp;
-
   if (old_focused)
     oapp = wApplicationOf(old_focused->main_window);
+
+  w_global.timestamp.focus_change = timestamp;
 
   // Focus Workspace main application menu if there's no window to focus.
   if (wwin == NULL) {
@@ -180,20 +190,24 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     if (old_focused)
       wWindowUnfocus(old_focused);
 
-    if (oapp) {
-      if (wPreferences.highlight_active_app)
-        wApplicationDeactivate(oapp);
-    }
+    /* if (oapp) { */
+    /*   if (wPreferences.highlight_active_app) */
+    /*     wApplicationDeactivate(oapp); */
+    /* } */
     
     WMPostNotificationName(WMNChangedFocus, NULL, (void *)True);
     return;
   }
 
+  napp = wApplicationOf(wwin->main_window);
+
+  // Do not focus shaded GNUstep window
+  if (napp && wwin->flags.is_gnustep && wwin->flags.shaded
+      && (wwin->flags.focused || (napp && napp->menu_win->flags.focused)))
+    return;
+  
   if (old_scr != scr && old_focused)
     wWindowUnfocus(old_focused);
-
-  wasfocused = wwin->flags.focused;
-  napp = wApplicationOf(wwin->main_window);
 
   /* If it's GNUstep application focus may be set to yet unmapped main menu */
   if (wwin->flags.is_gnustep || wwin->flags.mapped) {
@@ -224,6 +238,9 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
     XFlush(dpy);
     XSync(dpy, False);
+  }
+  else { // not GNUstep and not mapped (shaded, iconified)
+    XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
   }
 
   /* if this is not the focused window - change the focus window list order */
@@ -285,6 +302,10 @@ void wShadeWindow(WWindow *wwin)
 
   wClientSetState(wwin, IconicState, None);
 
+  if (wwin->flags.focused) {
+    wSetFocusTo(wwin->screen_ptr, wwin);
+  }
+  
   WMPostNotificationName(WMNChangedState, wwin, "shade");
 
 #ifdef USE_ANIMATIONS
@@ -317,8 +338,12 @@ void wUnshadeWindow(WWindow *wwin)
   
   /* if the window is focused, set the focus again as it was disabled during
    * shading */
-  if (wwin->flags.focused)
+  if (wwin->flags.focused) {
     wSetFocusTo(wwin->screen_ptr, wwin);
+  }
+  /* else if (wwin->flags.is_gnustep) { */
+  /*   wSetFocusTo(wwin->screen_ptr, wApplicationOf(wwin->main_window)->menu_win); */
+  /* } */
 
   WMPostNotificationName(WMNChangedState, wwin, "shade");
 }
