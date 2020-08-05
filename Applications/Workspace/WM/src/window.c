@@ -1813,20 +1813,24 @@ void wWindowUnfocus(WWindow *wwin)
   if (wwin->flags.is_gnustep == 0) {
     wFrameWindowChangeState(wwin->frame, wwin->flags.semi_focused ? WS_PFOCUSED : WS_UNFOCUSED);
   }
-  else if (wwin->flags.shaded) {
-    // GNUstep shaded (unmapped) window doesn't receive FocusOut event so
-    // application menu stays visible.
-    // GNUstep TODO: if focus was changed with click on a titlebar, GNUstep app
-    // set focus to main application menu and the code below doesn't work.
-    wPrintWindowFocusState(wwin, "[window.c] sending FocusOut to:");
-    XEvent ev;
-    ev.xfocus.type = FocusOut;
-    ev.xfocus.send_event = True;
-    ev.xfocus.display = dpy;
-    ev.xfocus.window = wwin->client_win;
-    ev.xfocus.mode = NotifyNormal;
-    XSendEvent(dpy, wwin->client_win, True, FocusChangeMask, &ev);
-  }
+  /* else if (wwin->flags.shaded) { */
+  /*   // GNUstep shaded (unmapped) window doesn't receive FocusOut event so */
+  /*   // application menu stays visible. */
+  /*   // GNUstep TODO: if focus was changed with click on a titlebar, GNUstep app */
+  /*   // set focus to main application menu and the code below doesn't work. */
+  /*   wPrintWindowFocusState(wwin, "[window.c] sending FocusOut to:"); */
+  /*   Window  fwin; */
+  /*   int     rev; */
+  /*   XGetInputFocus(dpy, &fwin, &rev); */
+    
+  /*   XEvent ev; */
+  /*   ev.xfocus.type = FocusOut; */
+  /*   ev.xfocus.send_event = True; */
+  /*   ev.xfocus.display = dpy; */
+  /*   ev.xfocus.window = wwin->client_win; */
+  /*   ev.xfocus.mode = NotifyNormal; */
+  /*   XSendEvent(dpy, wwin->client_win, True, FocusChangeMask, &ev); */
+  /* } */
 
   if (wwin->transient_for != None && wwin->transient_for != wwin->screen_ptr->root_win) {
     WWindow *owner = wWindowFor(wwin->transient_for);
@@ -3227,19 +3231,22 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
 
 void wPrintWindowFocusState(WWindow *wwin, char *prefix)
 {
-  WWindow *focused_win = wwin->screen_ptr->focused_window;
+  WWindow *focused_win = NULL;
   Window  fwin;
   int     rev;
-  WWindow *x_focused_win;
+  WWindow *x_focused_win = NULL;
   
   XGetInputFocus(dpy, &fwin, &rev);
   x_focused_win = wWindowFor(fwin);
 
+  if (wwin)
+    focused_win = wwin->screen_ptr->focused_window;
+
   WSMessage("%s %lu (%s:%s) [WM focused: %lu (%s:%s)] [X focused: %lu (%s:%s)]",
             prefix,
-            wwin->client_win ? wwin->client_win : 0,
-            wwin->wm_instance ? wwin->wm_instance : "",
-            (WINDOW_LEVEL(wwin) == WMMainMenuLevel) ? "menu" : "window",
+            (wwin && wwin->client_win) ? wwin->client_win : 0,
+            (wwin && wwin->wm_instance) ? wwin->wm_instance : "",
+            (wwin && (WINDOW_LEVEL(wwin) == WMMainMenuLevel)) ? "menu" : "window",
             
             (focused_win && focused_win->client_win) ? focused_win->client_win : 0,
             (focused_win && focused_win->wm_instance) ? focused_win->wm_instance : 0,
