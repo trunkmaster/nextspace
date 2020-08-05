@@ -183,4 +183,16 @@
     }
 }
 
+- (void)showInfoPanel:(id)sender
+{
+  if (!infoPanel) {
+    if (![NSBundle loadNibNamed:@"InfoPanel" owner:self]) {
+      NSLog (@"Failed to load InfoPanel.nib");
+      return;
+    }
+   [infoPanel center];
+  }
+ [infoPanel makeKeyAndOrderFront:nil];
+}
+
 @end
