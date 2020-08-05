@@ -1743,8 +1743,7 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
   WWindow *nowner;
   WWindow *oowner;
 
-  WSMessage("[window.c] wWindowFocus: %lu\n",
-            (wwin && wwin->client_win) ? wwin->client_win : 0);
+  wPrintWindowFocusState(wwin, "[START] wWindowFocus:");
   
 #ifdef KEEP_XKB_LOCK_STATUS
   if (wPreferences.modelock)
@@ -1802,27 +1801,25 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
   nowner->flags.semi_focused = 1;
   wWindowUnfocus(nowner);
   wWindowUnfocus(owin);
+  wPrintWindowFocusState(wwin, "[ END ] wWindowFocus:");
 }
 
 void wWindowUnfocus(WWindow *wwin)
 {
   CloseWindowMenu(wwin->screen_ptr);
 
-  WSMessage("[window.c] wWindowUnfocus: %lu",
-            (wwin && wwin->client_win) ? wwin->client_win : 0);
+  wPrintWindowFocusState(wwin, "[START] wWindowUnfocus:");
   
   if (wwin->flags.is_gnustep == 0) {
     wFrameWindowChangeState(wwin->frame, wwin->flags.semi_focused ? WS_PFOCUSED : WS_UNFOCUSED);
   }
-  else if (wwin->flags.shaded && !wwin->flags.mapped) {
+  else if (wwin->flags.shaded) {
     // GNUstep shaded (unmapped) window doesn't receive FocusOut event so
     // application menu stays visible.
     // GNUstep TODO: if focus was changed with click on a titlebar, GNUstep app
     // set focus to main application menu and the code below doesn't work.
+    wPrintWindowFocusState(wwin, "[window.c] sending FocusOut to:");
     XEvent ev;
-    /* Window focused_win; */
-    /* int    rev; */
-    /* XGetInputFocus(dpy, &focused_win, &rev); */
     ev.xfocus.type = FocusOut;
     ev.xfocus.send_event = True;
     ev.xfocus.display = dpy;
@@ -1845,6 +1842,7 @@ void wWindowUnfocus(WWindow *wwin)
   wwin->flags.focused = 0;
   wWindowResetMouseGrabs(wwin);
   WMPostNotificationName(WMNChangedFocus, wwin, (void *)False);
+  wPrintWindowFocusState(wwin, "[ END ] wWindowUnfocus:");
 }
 
 void wWindowUpdateName(WWindow *wwin, const char *newTitle)
@@ -3221,3 +3219,36 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
     }
   }
 }
+
+/* static char *windowLevelDescription(WWindow *wwin) */
+/* { */
+  
+/* } */
+
+void wPrintWindowFocusState(WWindow *wwin, char *prefix)
+{
+  WWindow *focused_win = wwin->screen_ptr->focused_window;
+  Window  fwin;
+  int     rev;
+  WWindow *x_focused_win;
+  
+  XGetInputFocus(dpy, &fwin, &rev);
+  x_focused_win = wWindowFor(fwin);
+
+  WSMessage("%s %lu (%s:%s) [WM focused: %lu (%s:%s)] [X focused: %lu (%s:%s)]",
+            prefix,
+            wwin->client_win ? wwin->client_win : 0,
+            wwin->wm_instance ? wwin->wm_instance : "",
+            (WINDOW_LEVEL(wwin) == WMMainMenuLevel) ? "menu" : "window",
+            
+            (focused_win && focused_win->client_win) ? focused_win->client_win : 0,
+            (focused_win && focused_win->wm_instance) ? focused_win->wm_instance : 0,
+            (focused_win && (WINDOW_LEVEL(focused_win) == WMMainMenuLevel)) ? "menu" : "window",
+            
+            (x_focused_win && x_focused_win->client_win) ? x_focused_win->client_win : 0,
+            (x_focused_win && x_focused_win->wm_instance) ? x_focused_win->wm_instance : "",
+            (x_focused_win && (WINDOW_LEVEL(x_focused_win) == WMMainMenuLevel)) ? "menu" : "window");
+  
+  return;
+}
+

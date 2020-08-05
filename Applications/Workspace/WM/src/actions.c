@@ -131,24 +131,24 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   int wasfocused;
   BOOL focus_succeeded = False;
 
-  WSMessage("[actions.c] wSetFocusTo: %lu focused: %lu\n",
-            (wwin && wwin->client_win) ? wwin->client_win : 0,
-            (focused && focused->client_win) ? focused->client_win : 0);
-
   if (scr->flags.ignore_focus_events ||
       compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
     return;
 
+  wPrintWindowFocusState(wwin, "[START] wSetFocusTo:");
+
   /* Do not focus GNUstep main menu if focused window exists, mapped and belongs to 
      the same application. This also covers shaded focused window case: exists, belongs
      to the same application but not mapped - focus goes to the main app menu. */
-  if (wwin && focused && (wwin != focused) && focused->flags.mapped // sanity check
+  if (wwin && focused && (wwin != focused)
+      && (focused->flags.mapped && !focused->flags.shaded)
       && wwin->flags.is_gnustep // it's GNUstep application
       && wwin->wm_gnustep_attr->window_level == WMMainMenuWindowLevel // it's a menu
       && !strcmp(wwin->wm_class, focused->wm_class)          // windows belong
       && !strcmp(wwin->wm_instance, focused->wm_instance)) { // to the same application
-    WSMessage("[actions.c] wSetFocusTo: do not set focus to active `%s` app menu."
-              " Focused window %lu is mapped = %s.", focused->wm_instance,
+    WSMessage("        wSetFocusTo: rejected %lu is a `%s` app menu"
+              " (focused: %lu is mapped: %s.).",
+              wwin->client_win, focused->wm_instance,
               focused->client_win, focused->flags.mapped ? "true" : "false");
     return;
   }
@@ -168,7 +168,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     // TDDO: hold Workspace main menu in WScreen
     WApplication *wsapp = wApplicationWithName(scr, "Workspace");
     if (wsapp && wsapp->menu_win) {
-      /* WSMessage("[actions.c] Workspace menu window: %lu", wsapp->menu_win->client_win); */
+      WSMessage("[actions.c] Workspace menu window: %lu", wsapp->menu_win->client_win);
       if (wsapp->menu_win->client_win) {
         wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
       }
@@ -204,19 +204,19 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     /* set input focus */
     switch (wwin->focus_mode) {
     case WFM_NO_INPUT: // !wm_hints->input, !WM_TAKE_FOCUS
-      /* wmessage("[actions.c] %lu focus mode == NO_INPUT. Do nothing\n", wwin->client_win); */
+      WSMessage("        wSetFocusTo: %lu focus mode == NO_INPUT. Do nothing", wwin->client_win);
       return;
     case WFM_PASSIVE: // wm_hints->input, !WM_TAKE_FOCUS
-      /* wmessage("[actions.c] %lu focus mode == PASSIVE.\n", wwin->client_win); */
+      WSMessage("        wSetFocusTo: %lu focus mode == PASSIVE.", wwin->client_win);
       XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
       break;
     case WFM_LOCALLY_ACTIVE: // wm_hints->input, WM_TAKE_FOCUS
-      /* wmessage("[actions.c] %lu focus mode == LOCALLY_ACTIVE.\n", wwin->client_win); */
+      WSMessage("        wSetFocusTo: %lu focus mode == LOCALLY_ACTIVE.", wwin->client_win);
       XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
       focus_succeeded = True;
       break;
     case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
-      /* wmessage("[actions.c] %lu focus mode == GLOBALLY_ACTIVE.\n", wwin->client_win); */
+      WSMessage("        wSetFocusTo: %lu focus mode == GLOBALLY_ACTIVE.", wwin->client_win);
       wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
       focus_succeeded = True;
       break;
@@ -239,6 +239,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     wwin->next = NULL;
     scr->focused_window = wwin;
 
+    // TODO: what's this for?
     if (oapp && oapp != napp) {
       if (wPreferences.highlight_active_app)
         wApplicationDeactivate(oapp);
@@ -256,6 +257,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
   XFlush(dpy);
   old_scr = scr;
+  wPrintWindowFocusState(wwin, "[ END ] wSetFocusTo:");
 }
 
 void wShadeWindow(WWindow *wwin)
