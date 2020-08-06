@@ -608,28 +608,34 @@ static void handleMapRequest(XEvent * ev)
     if (!wwin->flags.is_gnustep && wwin->flags.shaded) {
       wUnshadeWindow(wwin);
     }
-    /* deiconify window */
+    /* deiconify and unhide*/
     if (wwin->flags.miniaturized) {
       wDeiconifyWindow(wwin);
-    } else if (wwin->flags.hidden) {
+    }
+    else if (wwin->flags.hidden) {
       WApplication *wapp = wApplicationOf(wwin->main_window);
       /* go to the last workspace that the user worked on the app */
       if (wapp) {
         wWorkspaceChange(wwin->screen_ptr, wapp->last_workspace);
       }
       wUnhideApplication(wapp, False, False);
-    } else if (WINDOW_LEVEL(wwin) == WMMainMenuLevel &&
-               wwin->flags.is_gnustep && wwin->flags.mapped == 0) {
-      /* GNUstep app main menu window is managed but unmapped */
-      WApplication *wapp = wApplicationOf(wwin->main_window);
-      int last_focused_mapped = 0;
+    }
 
-      if (wapp->last_focused)
-        last_focused_mapped = wapp->last_focused->flags.mapped;
-      
-      wWindowMap(wwin);
-      if (last_focused_mapped == 0 || wwin == wapp->menu_win)
+    /* extra focus steps for GNUstep applications */
+    if (wwin->flags.is_gnustep) {
+      if (WINDOW_LEVEL(wwin) == WMMainMenuLevel && wwin->flags.mapped == 0) {
+        /* GNUstep app main menu window is managed but unmapped */
+        WApplication *wapp = wApplicationOf(wwin->main_window);
+        
+        wWindowMap(wwin);
+        if ((wapp->last_focused && wapp->last_focused->flags.mapped == 0)
+            || wwin == wapp->menu_win) {
+          wSetFocusTo(scr, wwin);
+        }
+      }
+      else {
         wSetFocusTo(scr, wwin);
+      }
     }
     
     return;
