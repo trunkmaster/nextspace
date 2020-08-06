@@ -369,7 +369,6 @@ extern struct WPreferences {
   int snap_corner_detect;            /* how far from corner to begin snap */
   char drag_maximized_window;        /* behavior when a maximized window is dragged */
 
-  char highlight_active_app;         /* show the focused app by highlighting its icon */
   char auto_arrange_icons;           /* automagically arrange icons */
   char icon_box_position;            /* position to place icons */
   signed char iconification_style;   /* position to place icons */

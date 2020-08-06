@@ -487,8 +487,6 @@ WDefaultEntry optionList[] = {
                                &wPreferences.snap_corner_detect, getInt, NULL, NULL, NULL},
                               {"DragMaximizedWindow", "Move", seDragMaximizedWindow,
                                &wPreferences.drag_maximized_window, getEnum, NULL, NULL, NULL},
-                              {"HighlightActiveApp", "YES", NULL,
-                               &wPreferences.highlight_active_app, getBool, NULL, NULL, NULL},
                               {"AutoArrangeIcons", "NO", NULL,
                                &wPreferences.auto_arrange_icons, getBool, NULL, NULL, NULL},
                               {"NoWindowOverDock", "NO", NULL,

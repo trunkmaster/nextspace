@@ -43,7 +43,6 @@
   DragMaximizedWindow = "Move";
   EdgeResistance = 30;
   HelpBalloons = NO;
-  HighlightActiveApp = NO;
   IconPath = (
     "~/Library/Images",
     "/usr/NextSpace/Images",

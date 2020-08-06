@@ -1654,12 +1654,6 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
 
   /* Close menu and unhighlight */
   WApplication *oapp = wApplicationOf(wwin->main_window);
-  WApplication *napp = scr->focused_window ? wApplicationOf(scr->focused_window->main_window) : NULL;
-  if (oapp && oapp != napp) {
-    if (wPreferences.highlight_active_app)
-      wApplicationDeactivate(oapp);
-  }
-  
   if (oapp) {
     wApplicationRemoveWindow(oapp, wwin);
   }

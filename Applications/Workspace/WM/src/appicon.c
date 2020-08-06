@@ -278,8 +278,6 @@ void removeAppIconFor(WApplication *wapp)
   if (!wapp->app_icon)
     return;
 
-  if (wPreferences.highlight_active_app)
-    wIconSetHighlited(wapp->app_icon->icon, False);
   if (wapp->app_icon->docked && !wapp->app_icon->attracted) {
     wapp->app_icon->running = 0;
     /* since we keep it, we don't care if it was attracted or not */
