@@ -1752,6 +1752,7 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
 
   wwin->flags.semi_focused = 0;
 
+  /* GNUstep app manages focus itself after WM_TAKE_FOCUS was sent (wSetFocusTo) */
   if (wwin->flags.is_gnustep == 0) {
     wFrameWindowChangeState(wwin->frame, WS_FOCUSED);
   }
@@ -1813,24 +1814,6 @@ void wWindowUnfocus(WWindow *wwin)
   if (wwin->flags.is_gnustep == 0) {
     wFrameWindowChangeState(wwin->frame, wwin->flags.semi_focused ? WS_PFOCUSED : WS_UNFOCUSED);
   }
-  /* else if (wwin->flags.shaded) { */
-  /*   // GNUstep shaded (unmapped) window doesn't receive FocusOut event so */
-  /*   // application menu stays visible. */
-  /*   // GNUstep TODO: if focus was changed with click on a titlebar, GNUstep app */
-  /*   // set focus to main application menu and the code below doesn't work. */
-  /*   wPrintWindowFocusState(wwin, "[window.c] sending FocusOut to:"); */
-  /*   Window  fwin; */
-  /*   int     rev; */
-  /*   XGetInputFocus(dpy, &fwin, &rev); */
-    
-  /*   XEvent ev; */
-  /*   ev.xfocus.type = FocusOut; */
-  /*   ev.xfocus.send_event = True; */
-  /*   ev.xfocus.display = dpy; */
-  /*   ev.xfocus.window = wwin->client_win; */
-  /*   ev.xfocus.mode = NotifyNormal; */
-  /*   XSendEvent(dpy, wwin->client_win, True, FocusChangeMask, &ev); */
-  /* } */
 
   if (wwin->transient_for != None && wwin->transient_for != wwin->screen_ptr->root_win) {
     WWindow *owner = wWindowFor(wwin->transient_for);
@@ -3258,4 +3241,3 @@ void wPrintWindowFocusState(WWindow *wwin, char *prefix)
   
   return;
 }
-
