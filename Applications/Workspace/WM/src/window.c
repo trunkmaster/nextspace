@@ -1563,7 +1563,8 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     /* was the only window */
     scr->focused_window = NULL;
     newFocusedWindow = NULL;
-  } else {
+  }
+  else {
     WWindow *tmp;
 
     if (wwin->prev)
@@ -1631,13 +1632,23 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     }
   }
 
-  if (!wwin->flags.internal_window)
+  if (!wwin->flags.internal_window) {
     WMPostNotificationName(WMNUnmanaged, wwin, NULL);
+  }
+  
   if (wasFocused) {
     if (newFocusedWindow != owner && owner) {
       if (wwin->flags.is_gnustep == 0)
         wFrameWindowChangeState(owner->frame, WS_UNFOCUSED);
     }
+    /* GNUstep app manages focus changes */
+    if (wwin->flags.is_gnustep == 0) {
+      wSetFocusTo(scr, newFocusedWindow);
+    }
+  }
+  else if (wwin->flags.is_gnustep && WINDOW_LEVEL(wwin) == WMMainMenuLevel) {
+    /* main menu window becomes unmanaged only on application quit - it's 
+       time to switch focus to other app */
     wSetFocusTo(scr, newFocusedWindow);
   }
 
@@ -1648,6 +1659,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     if (wPreferences.highlight_active_app)
       wApplicationDeactivate(oapp);
   }
+  
   if (oapp) {
     wApplicationRemoveWindow(oapp, wwin);
   }
