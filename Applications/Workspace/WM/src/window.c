@@ -3039,7 +3039,8 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   /*         event->xbutton.state, wXModifierFromKey("MOD1"), */
   /*         wXModifierFromKey("MOD4")); */
 
-  if (wPreferences.focus_mode == WKF_CLICK
+  if (event->xbutton.button == Button1
+      && wPreferences.focus_mode == WKF_CLICK
       && !(event->xbutton.state & MOD_MASK) // not Mod4, Alternate
       && !(event->xbutton.state & ALT_MOD_MASK) // not Mod1, Command
       && !WFLAGP(wwin, no_focusable)) { // focusable
