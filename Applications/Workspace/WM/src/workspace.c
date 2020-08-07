@@ -648,43 +648,19 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
                foc->old_geometry.width, foc->old_geometry.height);
     }
     
-    if (wPreferences.focus_mode == WKF_CLICK) {
-      if (foc) {
-        /* Mapped window found earlier. */
-        wmessage("[workspace.c] focusing managed window %lu...\n", foc->client_win);
-        wRaiseFrame(foc->frame->core);
-      }
-      wSetFocusTo(scr, foc);
-      /* else if (scr->workspaces[workspace]->focused_window) { */
-      /*   /\* No mapped window to focus. If window was saved for this workspace - use it. *\/ */
-      /*   foc = scr->workspaces[workspace]->focused_window; */
-      /*   wmessage("[workspace.c] focusing SAVED window %lu...\n", foc->client_win); */
-      /* } */
+    if (foc) {
+      /* Mapped window found earlier. */
+      wmessage("[workspace.c] focusing managed window %lu...\n", foc->client_win);
+      wRaiseFrame(foc->frame->core);
+    }
+    wSetFocusTo(scr, foc);
+    /* else if (scr->workspaces[workspace]->focused_window) { */
+    /*   /\* No mapped window to focus. If window was saved for this workspace - use it. *\/ */
+    /*   foc = scr->workspaces[workspace]->focused_window; */
+    /*   wmessage("[workspace.c] focusing SAVED window %lu...\n", foc->client_win); */
+    /* } */
       
-      dispatch_sync(workspace_q, ^{ WSWorkspaceDidChange(scr, workspace, foc); });
-    }
-    else {
-      unsigned int mask;
-      int foo;
-      Window bar, win;
-      WWindow *tmp;
-
-      tmp = NULL;
-      if (XQueryPointer(dpy, scr->root_win, &bar, &win, &foo, &foo, &foo, &foo, &mask)) {
-        tmp = wWindowFor(win);
-      }
-
-      /* If there's a window under the pointer, focus it.
-       * (we ate all other focus events above, so it's
-       * certainly not focused). Otherwise focus last
-       * focused, or the root (depending on sloppiness)
-       */
-      if (!tmp && wPreferences.focus_mode == WKF_SLOPPY) {
-        wSetFocusTo(scr, foc);
-      } else {
-        wSetFocusTo(scr, tmp);
-      }
-    }
+    dispatch_sync(workspace_q, ^{ WSWorkspaceDidChange(scr, workspace, foc); });
     wfree(toUnmap);
     wfree(toMap);
   }

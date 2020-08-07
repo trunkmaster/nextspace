@@ -330,7 +330,6 @@ extern struct WPreferences {
   signed char move_display;          /* display type for move geometry */
   signed char window_placement;      /* window placement mode */
   signed char colormap_mode;         /* colormap focus mode */
-  signed char focus_mode;            /* window focusing mode */
 
   char opaque_move;                  /* update window position during move */
   char opaque_resize;                /* update window position during resize */

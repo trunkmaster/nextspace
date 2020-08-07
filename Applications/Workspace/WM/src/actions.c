@@ -1267,8 +1267,7 @@ void wIconifyWindow(WWindow *wwin)
      * when deiconifying a transient window.
      setupIconGrabs(wwin->icon);
     */
-    if ((wwin->flags.focused || (owner && wwin->client_win == owner->client_win))
-        && wPreferences.focus_mode == WKF_CLICK) {
+    if ((wwin->flags.focused || (owner && wwin->client_win == owner->client_win))) {
       WWindow *tmp;
 
       tmp = wwin->prev;
@@ -1280,8 +1279,6 @@ void wIconifyWindow(WWindow *wwin)
         tmp = tmp->prev;
       }
       wSetFocusTo(wwin->screen_ptr, tmp);
-    } else if (wPreferences.focus_mode != WKF_CLICK) {
-      wSetFocusTo(wwin->screen_ptr, NULL);
     }
 #ifdef USE_ANIMATIONS
     if (!wwin->screen_ptr->flags.startup) {
@@ -1607,18 +1604,14 @@ void wHideApplication(WApplication *wapp)
   wapp->flags.skip_next_animation = 0;
 
   if (hadfocus) {
-    if (wPreferences.focus_mode == WKF_CLICK) {
-      wlist = scr->focused_window;
-      while (wlist) {
-        if (!WFLAGP(wlist, no_focusable) && !wlist->flags.hidden
-            && (wlist->flags.mapped || wlist->flags.shaded))
-          break;
-        wlist = wlist->prev;
-      }
-      wSetFocusTo(scr, wlist);
-    } else {
-      wSetFocusTo(scr, NULL);
+    wlist = scr->focused_window;
+    while (wlist) {
+      if (!WFLAGP(wlist, no_focusable) && !wlist->flags.hidden
+          && (wlist->flags.mapped || wlist->flags.shaded))
+        break;
+      wlist = wlist->prev;
     }
+    wSetFocusTo(scr, wlist);
   }
 
   wapp->flags.hidden = 1;

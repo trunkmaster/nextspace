@@ -3492,8 +3492,8 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
 
     assert(wapp != NULL);
 
-    wmessage("[dock.c] Dock icon Double-click for workspace %i leader: %lu\n",
-             wapp->last_workspace, wapp->main_window);
+    WSMessage("[dock.c] Dock icon Double-click for workspace %i leader: %lu\n",
+              wapp->last_workspace, wapp->main_window);
     
     unhideHere = (event->xbutton.state & ShiftMask);
 

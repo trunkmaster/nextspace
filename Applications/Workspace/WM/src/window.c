@@ -1248,24 +1248,8 @@ WWindow *wManageWindow(WScreen *scr, Window window)
       wClientSetState(wwin, NormalState, None);
 
     if (wPreferences.superfluous && !wPreferences.no_animations && !scr->flags.startup &&
-        (wwin->transient_for == None || wwin->transient_for == scr->root_win) &&
-        /*
-         * The brain damaged idiotic non-click to focus modes will
-         * have trouble with this because:
-         *
-         * 1. window is created and mapped by the client
-         * 2. window is mapped by wmaker in small size
-         * 3. window is animated to grow to normal size
-         * 4. this function returns to normal event loop
-         * 5. eventually, the EnterNotify event that would trigger
-         * the window focusing (if the mouse is over that window)
-         * will be processed by wmaker.
-         * But since this event will be rather delayed
-         * (step 3 has a large delay) the time when the event ocurred
-         * and when it is processed, the client that owns that window
-         * will reject the XSetInputFocus() for it.
-         */
-        (wPreferences.focus_mode == WKF_CLICK || wPreferences.auto_focus))
+        (wwin->transient_for == None || wwin->transient_for == scr->root_win)
+        && wPreferences.auto_focus)
       DoWindowBirth(wwin);
 
     wWindowMap(wwin);
@@ -1577,59 +1561,32 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
       scr->focused_window->next = NULL;
     }
 
-    if (wPreferences.focus_mode == WKF_CLICK) {
-
-      /* if in click to focus mode and the window
-       * was a transient, focus the owner window
-       */
+    /* if window was a transient, focus the owner window */
+    tmp = wWindowFor(wwin->transient_for);
+    if (tmp && (!tmp->flags.mapped || WFLAGP(tmp, no_focusable))) {
       tmp = NULL;
-      if (wPreferences.focus_mode == WKF_CLICK) {
-        tmp = wWindowFor(wwin->transient_for);
-        if (tmp && (!tmp->flags.mapped || WFLAGP(tmp, no_focusable))) {
-          tmp = NULL;
-        }
+    }
+    if (!tmp) {
+      tmp = scr->focused_window;
+      while (tmp) {	/* look for one in the window list first */
+        if (!WFLAGP(tmp, no_focusable)
+            && (!WFLAGP(tmp, skip_window_list) || tmp->flags.is_gnustep)
+            && (tmp->flags.mapped || tmp->flags.shaded))
+          break;
+        tmp = tmp->prev;
       }
-      /* otherwise, focus the next one in the focus list */
-      if (!tmp) {
+      if (!tmp) {	/* if unsuccessful, choose any focusable window */
         tmp = scr->focused_window;
-        while (tmp) {	/* look for one in the window list first */
+        while (tmp) {
           if (!WFLAGP(tmp, no_focusable)
-              && (!WFLAGP(tmp, skip_window_list) || tmp->flags.is_gnustep)
               && (tmp->flags.mapped || tmp->flags.shaded))
             break;
           tmp = tmp->prev;
         }
-        if (!tmp) {	/* if unsuccessful, choose any focusable window */
-          tmp = scr->focused_window;
-          while (tmp) {
-            if (!WFLAGP(tmp, no_focusable)
-                && (tmp->flags.mapped || tmp->flags.shaded))
-              break;
-            tmp = tmp->prev;
-          }
-        }
       }
-
-      newFocusedWindow = tmp;
-
-    } else if (wPreferences.focus_mode == WKF_SLOPPY) {
-      unsigned int mask;
-      int foo;
-      Window bar, win;
-
-      /*  This is to let the root window get the keyboard input
-       * if Sloppy focus mode and no other window get focus.
-       * This way keybindings will not freeze.
-       */
-      tmp = NULL;
-      if (XQueryPointer(dpy, scr->root_win, &bar, &win, &foo, &foo, &foo, &foo, &mask))
-        tmp = wWindowFor(win);
-      if (tmp == wwin)
-        tmp = NULL;
-      newFocusedWindow = tmp;
-    } else {
-      newFocusedWindow = NULL;
     }
+
+    newFocusedWindow = tmp;
   }
 
   if (!wwin->flags.internal_window) {
@@ -2858,8 +2815,7 @@ static void resizebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 
   CloseWindowMenu(wwin->screen_ptr);
 
-  if (wPreferences.focus_mode == WKF_CLICK && !(event->xbutton.state & ControlMask)
-      && !WFLAGP(wwin, no_focusable)) {
+  if (!(event->xbutton.state & ControlMask) && !WFLAGP(wwin, no_focusable)) {
     wSetFocusTo(wwin->screen_ptr, wwin);
   }
 
@@ -3040,7 +2996,6 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   /*         wXModifierFromKey("MOD4")); */
 
   if (event->xbutton.button == Button1
-      && wPreferences.focus_mode == WKF_CLICK
       && !(event->xbutton.state & MOD_MASK) // not Mod4, Alternate
       && !(event->xbutton.state & ALT_MOD_MASK) // not Mod1, Command
       && !WFLAGP(wwin, no_focusable)) { // focusable

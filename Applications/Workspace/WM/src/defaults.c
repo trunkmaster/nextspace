@@ -195,12 +195,6 @@ static WDECallbackUpdate setCursor;
 
 #define REFRESH_FRAME_BORDER REFRESH_MENU_FONT|REFRESH_WINDOW_FONT
 
-static WOptionEnumeration seFocusModes[] = {
-                                            {"Manual", WKF_CLICK, 0}, {"ClickToFocus", WKF_CLICK, 1},
-                                            {"Sloppy", WKF_SLOPPY, 0}, {"SemiAuto", WKF_SLOPPY, 1}, {"Auto", WKF_SLOPPY, 1},
-                                            {NULL, 0, 0}
-};
-
 static WOptionEnumeration seTitlebarModes[] = {
                                                {"new", TS_NEW, 0}, {"old", TS_OLD, 0},
                                                {"next", TS_NEXT, 0}, {NULL, 0, 0}
@@ -356,8 +350,6 @@ WDefaultEntry staticOptionList[] = {
                                      &wPreferences.modifier_mask, getModMask, NULL, NULL, NULL},
                                     {"AlternateModifierKey", "Mod1", NULL,
                                      &wPreferences.alt_modifier_mask, getAltModMask, NULL, NULL, NULL},
-                                    {"FocusMode", "manual", seFocusModes,				/* have a problem when switching from */
-                                     &wPreferences.focus_mode, getEnum, NULL, NULL, NULL},	/* manual to sloppy without restart */
                                     {"NewStyle", "new", seTitlebarModes,
                                      &wPreferences.new_style, getEnum, NULL, NULL, NULL},
                                     {"DisableDock", "NO", (void *)WM_DOCK,

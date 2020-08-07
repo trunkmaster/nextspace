@@ -9,7 +9,6 @@
   DisableDrawers = NO;
   DisableMiniwindows = NO;
   EnableWorkspacePager = YES;
-  FocusMode = manual;
   IconSize = 64;
   ModifierKey = Mod4;
   NewStyle = "old";
