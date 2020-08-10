@@ -980,11 +980,9 @@ static void handleUnmapNotify(XEvent * event)
   XEvent ev;
   Bool withdraw = False;
 
-  /* only process windows with StructureNotify selected
-   * (ignore SubstructureNotify) */
-  
   /* wmessage("[event.c] handleUnmapNotify for window %lu.\n", event->xunmap.window); */
   
+  /* only process windows with StructureNotify selected (ignore SubstructureNotify) */
   wwin = wWindowFor(event->xunmap.window);
   if (!wwin)
     return;
