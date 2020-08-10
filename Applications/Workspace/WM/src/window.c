@@ -1594,12 +1594,11 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   }
   
   if (wasFocused) {
-    if (newFocusedWindow != owner && owner) {
+    if (owner && newFocusedWindow != owner) {
       if (wwin->flags.is_gnustep == 0)
         wFrameWindowChangeState(owner->frame, WS_UNFOCUSED);
     }
-    /* GNUstep app manages focus changes */
-    if (wwin->flags.is_gnustep == 0) {
+    else {
       wSetFocusTo(scr, newFocusedWindow);
     }
   }
@@ -1776,6 +1775,21 @@ void wWindowUnfocus(WWindow *wwin)
   
   if (wwin->flags.is_gnustep == 0) {
     wFrameWindowChangeState(wwin->frame, wwin->flags.semi_focused ? WS_PFOCUSED : WS_UNFOCUSED);
+  }
+  else {
+    // Send FocusOut event with NotifyNormal mode since GNUstep(NEXTSPACE) ignores
+    // grabbed mode FocusOut events.
+    Window  fwin;
+    int     rev;
+    XGetInputFocus(dpy, &fwin, &rev);
+
+    XEvent ev;
+    ev.xfocus.type = FocusOut;
+    ev.xfocus.send_event = True;
+    ev.xfocus.display = dpy;
+    ev.xfocus.window = wwin->client_win;
+    ev.xfocus.mode = NotifyNormal;
+    XSendEvent(dpy, wwin->client_win, True, FocusChangeMask, &ev);
   }
 
   if (wwin->transient_for != None && wwin->transient_for != wwin->screen_ptr->root_win) {
