@@ -182,18 +182,13 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     // TDDO: hold Workspace main menu in WScreen
     WApplication *wsapp = wApplicationWithName(scr, "Workspace");
     if (wsapp && wsapp->menu_win) {
-      WSMessage("[actions.c] Workspace menu window: %lu", wsapp->menu_win->client_win);
-      if (wsapp->menu_win->client_win) {
-        wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
-      }
-      else {
-        XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
-      }
+      WSMessage("        wSetFocusTo: Workspace menu window: %lu", wsapp->menu_win->client_win);
+      wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
     }
     
     if (old_focused)
       wWindowUnfocus(old_focused);
-
+    
     WMPostNotificationName(WMNChangedFocus, NULL, (void *)True);
     return;
   }
