@@ -137,15 +137,15 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   if (wwin && wwin->flags.shaded && wwin->flags.is_gnustep) {
     WApplication *gapp = wApplicationOf(wwin->main_window);
 
-    WSMessage("wSetFocusTo: Request to focus shaded GNUstep window (%lu).", wwin->client_win);
+    wmessage("wSetFocusTo: Request to focus shaded GNUstep window (%lu).", wwin->client_win);
     if (!wwin->flags.focused) { // not focused - set it
-      WSMessage("           : Send WM_TAKE_FOCUS to shaded GNUstep window %lu.", wwin->client_win);
+      wmessage("           : Send WM_TAKE_FOCUS to shaded GNUstep window %lu.", wwin->client_win);
       wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
       XFlush(dpy);
       XSync(dpy, False);
     }
     if (gapp && !gapp->menu_win->flags.focused) {
-      WSMessage("           : Transfer focus to main menu (%lu).", gapp->menu_win->client_win);
+      wmessage("           : Transfer focus to main menu (%lu).", gapp->menu_win->client_win);
       wSetFocusTo(scr, gapp->menu_win);
     }
     return;
@@ -160,7 +160,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       && wwin->wm_gnustep_attr->window_level == WMMainMenuWindowLevel // it's a menu
       && !strcmp(wwin->wm_class, focused->wm_class)          // windows belong
       && !strcmp(wwin->wm_instance, focused->wm_instance)) { // to the same application
-    WSMessage("wSetFocusTo: rejected: %lu is a `%s` app menu (focused: %lu is mapped: %s.).",
+    wmessage("wSetFocusTo: rejected: %lu is a `%s` app menu (focused: %lu is mapped: %s.).",
               wwin->client_win, focused->wm_instance,
               focused->client_win, focused->flags.mapped ? "true" : "false");
     return;
@@ -182,7 +182,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     // TDDO: hold Workspace main menu in WScreen
     WApplication *wsapp = wApplicationWithName(scr, "Workspace");
     if (wsapp && wsapp->menu_win) {
-      WSMessage("        wSetFocusTo: Workspace menu window: %lu", wsapp->menu_win->client_win);
+      wmessage("        wSetFocusTo: Workspace menu window: %lu", wsapp->menu_win->client_win);
       wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
     }
     
@@ -207,19 +207,19 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     /* set input focus */
     switch (wwin->focus_mode) {
     case WFM_NO_INPUT: // !wm_hints->input, !WM_TAKE_FOCUS
-      WSMessage("        wSetFocusTo: %lu focus mode == NO_INPUT. Do nothing", wwin->client_win);
+      wmessage("        wSetFocusTo: %lu focus mode == NO_INPUT. Do nothing", wwin->client_win);
       return;
     case WFM_PASSIVE: // wm_hints->input, !WM_TAKE_FOCUS
-      WSMessage("        wSetFocusTo: %lu focus mode == PASSIVE.", wwin->client_win);
+      wmessage("        wSetFocusTo: %lu focus mode == PASSIVE.", wwin->client_win);
       XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
       break;
     case WFM_LOCALLY_ACTIVE: // wm_hints->input, WM_TAKE_FOCUS
-      WSMessage("        wSetFocusTo: %lu focus mode == LOCALLY_ACTIVE.", wwin->client_win);
+      wmessage("        wSetFocusTo: %lu focus mode == LOCALLY_ACTIVE.", wwin->client_win);
       XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
       focus_succeeded = True;
       break;
     case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
-      WSMessage("        wSetFocusTo: %lu focus mode == GLOBALLY_ACTIVE.", wwin->client_win);
+      wmessage("        wSetFocusTo: %lu focus mode == GLOBALLY_ACTIVE.", wwin->client_win);
       wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
       focus_succeeded = True;
       break;

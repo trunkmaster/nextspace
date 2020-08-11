@@ -3201,7 +3201,7 @@ void wPrintWindowFocusState(WWindow *wwin, char *prefix)
   if (wwin)
     focused_win = wwin->screen_ptr->focused_window;
 
-  WSMessage("%s %lu (%s:%s) [WM focused: %lu (%s:%s)] [X focused: %lu (%s:%s)]",
+  wmessage("%s %lu (%s:%s) [WM focused: %lu (%s:%s)] [X focused: %lu (%s:%s)]",
             prefix,
             (wwin && wwin->client_win) ? wwin->client_win : 0,
             (wwin && wwin->wm_instance) ? wwin->wm_instance : "",

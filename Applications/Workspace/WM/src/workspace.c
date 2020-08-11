@@ -617,8 +617,8 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     /* At this point `foc` can hold random selected window or `NULL` */
     if (!foc && scr->workspaces[workspace]->focused_window) {
       foc = scr->workspaces[workspace]->focused_window;
-      wmessage("[workspace.c] SAVED focused window: %lu, %s.%s\n",
-               foc->client_win, foc->wm_instance, foc->wm_class);
+      wmessage("[workspace.c] SAVED focused window for WS-%lu: %lu, %s.%s\n",
+               workspace, foc->client_win, foc->wm_instance, foc->wm_class);
     }
     
     /*
@@ -654,11 +654,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
       wRaiseFrame(foc->frame->core);
     }
     wSetFocusTo(scr, foc);
-    /* else if (scr->workspaces[workspace]->focused_window) { */
-    /*   /\* No mapped window to focus. If window was saved for this workspace - use it. *\/ */
-    /*   foc = scr->workspaces[workspace]->focused_window; */
-    /*   wmessage("[workspace.c] focusing SAVED window %lu...\n", foc->client_win); */
-    /* } */
       
     dispatch_sync(workspace_q, ^{ WSWorkspaceDidChange(scr, workspace, foc); });
     wfree(toUnmap);
