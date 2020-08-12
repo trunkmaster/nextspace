@@ -1161,6 +1161,34 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   }
 }
 
+// Special "Hide"
+- (void)hide:(id)sender
+{
+  NSLog(@"Controller - %@", [sender title]);
+  if ([[sender title] isEqualToString:@"Hide"]) {
+    NSWindow     *win;
+    NSArray      *windowList;
+    NSEnumerator *e;
+    
+    windowList = GSOrderedWindows();
+    e = [windowList reverseObjectEnumerator];
+    while ((win = [e nextObject])) {
+      if (win != [[NSApp mainMenu] window])
+        [win orderOut:self];
+    }
+    [sender setTitle:@"Unhide"];
+  }
+  else {
+    [sender setTitle:@"Hide"];
+
+    for (NSWindow *win in GSAllWindows()) {
+      if (win != [[NSApp mainMenu] window])
+        [win orderFront:self];
+    }
+    // [NSApp activateIgnoringOtherApps:YES];
+  }
+}
+
 //--- Validation
 - (BOOL)validateMenuItem:(id <NSMenuItem>)menuItem
 {

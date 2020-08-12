@@ -23,7 +23,8 @@
 	    "setDockVisibility:",
 	    "setDockCollapse:",
 	    "setIconYardVisibility:",
-	    "showHelpPanel:"
+	    "showHelpPanel:",
+	    "hide:"
 	);
 	Outlets = (
 	    deviceManager,
@@ -42,7 +43,7 @@
 	    "emptyRecycler:",
 	    "initializeDisk:",
 	    "logOut:",
-	    "showHelpPanel:",
+	    "newAction:",
 	    "newFolder:",
 	    "newViewer:",
 	    "openAsFolder:",
@@ -53,6 +54,7 @@
 	    "showConsole:",
 	    "showContentsInspector:",
 	    "showFinder:",
+	    "showHelpPanel:",
 	    "showInfoPanel:",
 	    "showLauncher:",
 	    "showLegalPanel:",
