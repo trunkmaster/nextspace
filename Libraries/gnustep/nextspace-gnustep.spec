@@ -108,6 +108,9 @@ Requires:	libXmu >= 1.1.2
 Requires:	libXt >= 1.1.4
 Requires:	libXrandr >= 1.5
 
+# projectcenter
+Requires:	gdb
+
 %description
 GNUstep libraries - implementation of OpenStep (AppKit, Foundation).
 
