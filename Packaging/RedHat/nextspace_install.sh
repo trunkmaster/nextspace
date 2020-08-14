@@ -116,18 +116,6 @@ echo -e -n "\e[32m"
 echo "done"
 echo -e -n "\e[0m"
 
-echo "2. /usr/NextSpace" >> /tmp/l
-ls -ladZ /usr/NextSpace | tee -a /tmp/l
-ls -ladZ /usr/NextSpace/* | tee -a /tmp/l
-
-echo "2. /Library" >> /tmp/l
-ls -ladZ /Library | tee -a /tmp/l
-ls -ladZ /Library/* | tee -a /tmp/l
-
-echo "2. /tmp"
-ls -ladZ /GNU* | tee -a /tmp/l
-ls -ladZ /GNU/* | tee -a /tmp/l
-
 # Install Developer packages
 echo -e -n "\e[1m"
 echo -n "Do you want to install packages for NEXTSPACE development? [yn]: "
@@ -154,14 +142,10 @@ if [ $YN = "y" ]; then
     echo "Setting up password..."
     passwd $USERNAME
     echo "Updating SELinux file contexts..."
-    semodule -e ns-core
-    restorecon -R /Users
+    ## Needed to update the filesystem contexts that depend on HOME_DIR, and wrongly assume /home
+    semodule -e ns-core  2>&1 > /dev/null
+    restorecon -R /Users 2>&1 > /dev/null
 fi
-
-echo "3. User"
-ls -laZ /Users/fsmunoz | tee -a /tmp/l
-ls -laZ /Users/fsmunoz/Library | tee -a /tmp/l
-
 
 # Setting up Login Panel
 echo -e -n "\e[1m"
