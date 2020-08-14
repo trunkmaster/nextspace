@@ -1,4 +1,4 @@
-# -*- mode: makefile-gmake -*-
+﻿# -*- mode: makefile-gmake -*-
 
 GNUSTEP_INSTALLATION_DOMAIN = LOCAL
 include $(GNUSTEP_MAKEFILES)/common.make
@@ -48,10 +48,11 @@ $(APP_NAME)_LANGUAGES = English
 $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 	Preferences.gorm \
 	PrefsWindow.gorm \
+	InfoPanel.gorm \
 	Preferences.tiff \
 	Preferences.png \
 	ClockViewTile.tiff \
-	WorldMap.tiff 
+	WorldMap.tiff
 
 #
 # Header files

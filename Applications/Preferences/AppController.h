@@ -18,7 +18,7 @@
 // License along with this library; if not, write to the Free
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
- 
+
 #import <AppKit/AppKit.h>
 #import "PrefsController.h"
 
@@ -28,6 +28,9 @@
 {
   NXTClockView		*clockView;
   PrefsController	*prefsController;
+
+  // Info -> Info Panel
+  id infoPanel;
 }
 
 - (void)showPreferencesWindow;
@@ -39,7 +42,8 @@
 // Display and Screen
 - (void)applySavedDisplayPreferences;
 - (void)saveDisplayPreferences;
-
+// Info Panel
+- (void)showInfoPanel:(id)sender;
 @end
 
 
