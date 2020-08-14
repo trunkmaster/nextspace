@@ -1,0 +1,69 @@
+policy_module(ns-gdomap, 0.2)
+
+### REQUIRES ####################################
+require {
+	type gnustep_tmp_t;
+	type gnustep_conf_t;
+	type gdomap_t;
+     	type gdomap_exec_t;
+	type gdomap_initrc_exec_t;
+	type gdomap_conf_t;
+	type gdomap_var_run_t;
+}
+
+### DECLARATIONS #################################
+
+#type gdomap_t;
+#type gdomap_exec_t;
+init_daemon_domain(gdomap_t, gdomap_exec_t)
+
+#type gdomap_initrc_exec_t;
+init_script_file(gdomap_initrc_exec_t)
+
+#type gdomap_conf_t;
+files_config_file(gdomap_conf_t)
+
+#type gdomap_var_run_t;
+files_pid_file(gdomap_var_run_t)
+
+
+### POLICY #######################################
+
+allow gdomap_t self:capability { setuid sys_chroot net_bind_service setgid };
+allow gdomap_t self:tcp_socket { listen accept };
+
+allow gdomap_t gdomap_var_run_t:file manage_file_perms;
+files_pid_filetrans(gdomap_t, gdomap_var_run_t, file, "gdomap.pid")
+
+corenet_sendrecv_gdomap_server_packets(gdomap_t)
+corenet_tcp_bind_generic_node(gdomap_t)
+corenet_tcp_bind_gdomap_port(gdomap_t)
+corenet_tcp_connect_gdomap_port(gdomap_t)
+corenet_tcp_sendrecv_gdomap_port(gdomap_t)
+corenet_udp_bind_generic_node(gdomap_t)
+corenet_udp_bind_gdomap_port(gdomap_t)
+corenet_udp_sendrecv_gdomap_port(gdomap_t)
+
+domain_use_interactive_fds(gdomap_t)
+
+files_search_tmp(gdomap_t)
+files_tmp_file(gnustep_tmp_t)
+files_tmp_filetrans(gdomap_t, gnustep_tmp_t, file)
+manage_dirs_pattern(gdomap_t, gnustep_tmp_t, gnustep_tmp_t)
+manage_files_pattern(gdomap_t, gnustep_tmp_t, gnustep_tmp_t)
+files_tmp_filetrans(gdomap_exec_t, gnustep_tmp_t, { file dir })
+
+allow gdomap_t gnustep_tmp_t:file manage_file_perms;
+allow gdomap_t tmp_t:dir { create rmdir add_name read remove_name write setattr};
+
+
+auth_use_nsswitch(gdomap_t)
+
+logging_send_syslog_msg(gdomap_t)
+
+allow gdomap_t gnustep_conf_t:dir { search getattr write read add_name remove_name open lock create rmdir setattr};
+allow gdomap_t gnustep_conf_t:file { getattr open read create unlink write append setattr rename};
+
+allow gdomap_t gdomap_conf_t:dir { search getattr write read add_name remove_name open lock create rmdir setattr};
+allow gdomap_t gdomap_conf_t:file { getattr open read create unlink write append setattr rename};
+

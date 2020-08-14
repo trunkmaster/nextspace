@@ -1,0 +1,24 @@
+policy_module(ns-core, 0.2)
+
+### REQUIRES ####################################)
+
+### DECLARATIONS #################################
+
+type gnustep_lock_t;
+type gnustep_conf_t;
+type gnustep_tmp_t;
+type gnustep_apps_t;
+
+## TBD: mapping of GNUstep domains
+## http://www.gnustep.org/resources/documentation/User/GNUstep/filesystem.html
+#type gnustep_system_t;
+#type gnustep_local_t;
+#type gnustep_network_t;
+#type gnustep_users_t;
+
+### POLICY #######################################
+
+files_lock_file(gnustep_lock_t)
+files_config_file(gnustep_conf_t)
+files_tmp_file(gnustep_tmp_t)
+

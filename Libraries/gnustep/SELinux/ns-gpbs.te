@@ -1,0 +1,96 @@
+policy_module(ns-gpbs, 0.2)
+
+### REQUIRES ####################################
+
+require {
+	type devlog_t;
+	type gnustep_conf_t;
+	type gnustep_tmp_t;	
+	type sssd_t;
+	type systemd_hostnamed_t;
+	type kdump_crash_t;
+	type gnustep_lock_t;
+	type sssd_public_t;
+	type unconfined_service_t;
+	type passwd_file_t;
+	type gpbs_t;
+	type kernel_t;
+	type xdm_t;
+	type sysfs_t;
+	type sssd_var_lib_t;
+	type syslogd_var_run_t;
+	type gdnc_t;
+	type tmp_t;
+	type unlabeled_t;
+	type unconfined_t;
+	type admin_home_t;
+	class fd use;
+	class sock_file { create getattr unlink write };
+	class dir { add_name create getattr open read remove_name rmdir search write };
+	class file { create getattr map open read unlink write };
+	class unix_dgram_socket { connect create sendto };
+	class unix_stream_socket connectto;
+	class lnk_file read;
+	class process signull;
+}
+
+
+### DECLARATIONS #################################
+
+type gpbs_t;
+type gpbs_exec_t;
+init_daemon_domain(gpbs_t, gpbs_exec_t)
+
+
+### POLICY #######################################
+
+
+
+allow gpbs_t self:capability { setuid sys_chroot net_bind_service setgid };
+allow gpbs_t self:tcp_socket { listen accept };
+allow gpbs_t self:unix_stream_socket connectto;
+allow gpbs_t self:unix_dgram_socket { read write };
+
+allow gpbs_t admin_home_t:file { getattr open read };
+allow gpbs_t devlog_t:lnk_file read;
+allow gpbs_t devlog_t:sock_file write;
+allow gpbs_t gdnc_t:process signull;
+allow gpbs_t xdm_t:process signull;
+
+allow gpbs_t gnustep_conf_t:dir search;
+allow gpbs_t gnustep_conf_t:file { getattr open read };
+allow gpbs_t gnustep_lock_t:dir { add_name create getattr open read remove_name rmdir search write };
+allow gpbs_t kdump_crash_t:dir remove_name;
+allow gpbs_t kdump_crash_t:dir { add_name search write };
+allow gpbs_t kdump_crash_t:file { create open read write unlink };
+allow gpbs_t kernel_t:unix_dgram_socket sendto;
+allow gpbs_t passwd_file_t:file { getattr open read };
+allow gpbs_t self:unix_dgram_socket { connect create };
+allow gpbs_t sssd_public_t:dir search;
+allow gpbs_t sssd_public_t:file { getattr map open read };
+allow gpbs_t sssd_t:unix_stream_socket connectto;
+allow gpbs_t sssd_var_lib_t:dir search;
+allow gpbs_t sssd_var_lib_t:sock_file write;
+allow gpbs_t sysfs_t:dir read;
+allow gpbs_t syslogd_var_run_t:dir search;
+allow gpbs_t systemd_hostnamed_t:process signull;
+
+allow gpbs_t unconfined_service_t:process signull;
+#
+allow unconfined_t unlabeled_t:fd use;
+
+## Create tmp files and transition to gnustep_tmp_t
+files_search_tmp(gpbs_t)
+files_tmp_file(gnustep_tmp_t)
+manage_dirs_pattern(gpbs_t, gnustep_tmp_t, gnustep_tmp_t)
+manage_files_pattern(gpbs_t, gnustep_tmp_t, gnustep_tmp_t)
+files_tmp_filetrans(gpbs_t, gnustep_tmp_t, { file dir })
+allow gpbs_t gnustep_tmp_t:unix_stream_socket connectto;
+allow gpbs_t gnustep_tmp_t:sock_file { write read unlink create getattr };
+
+allow gpbs_t gnustep_conf_t:unix_stream_socket connectto;
+allow gpbs_t gnustep_conf_t:dir { search getattr write read add_name remove_name open lock create rmdir};
+allow gpbs_t gnustep_conf_t:file { getattr open read create unlink write };
+allow gpbs_t gnustep_conf_t:sock_file { write read unlink create getattr };
+
+allow gpbs_t xdm_t:unix_stream_socket { connectto };
