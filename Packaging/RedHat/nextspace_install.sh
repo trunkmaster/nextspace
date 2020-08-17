@@ -29,7 +29,7 @@ if [ $YN != "y" ]; then
     exit
 fi
 
-# Add EPEL package repository
+# Add EPEL package repository if needed
 if [ $EPEL_REPO != "" ]; then
     echo -n "Checking for EPEL repository installed..."
     yum repolist | grep "epel" 2>&1 > /dev/null
@@ -44,6 +44,13 @@ if [ $EPEL_REPO != "" ]; then
         echo -e -n "\e[0m"
     fi
 fi
+
+# More X drivers. Workaround until NextSpace RPMs include them as dependencies
+echo -n "Installing X11 drivers and utilities..."
+yum -y -q install xorg-x11-drivers xorg-x11-xinit xorg-x11-utils 2>&1 > /dev/null
+echo -e -n "\e[32m"
+echo "done"
+echo -e -n "\e[0m"
 
 # Hostname in /etc/hosts
 echo -n "Checking /etc/hosts..."
