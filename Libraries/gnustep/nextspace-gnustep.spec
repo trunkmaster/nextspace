@@ -4,6 +4,9 @@
 %define BACK_VERSION	nextspace
 %define GORM_VERSION	1_2_26
 %define PC_VERSION	0_6_2
+%global selinux_variants mls targeted
+%global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
+%global selinux_modules ns-core ns-gdomap ns-gpbs ns-gdnc ns-Login
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
@@ -25,6 +28,7 @@ Source8:	gpbs.service
 Source9:	%{GS_REPO}/apps-gorm/archive/gorm-%{GORM_VERSION}.tar.gz
 Source10:	%{GS_REPO}/apps-projectcenter/archive/projectcenter-%{PC_VERSION}.tar.gz
 Source11:	projectcenter-images.tar.gz
+Source12:       nextspace-selinux.tar.gz
 
 # Build GNUstep libraries in one RPM package
 Provides:	gnustep-base-%{BASE_VERSION}
@@ -107,9 +111,16 @@ Requires:	libXfixes >= 5.0.1
 Requires:	libXmu >= 1.1.2
 Requires:	libXt >= 1.1.4
 Requires:	libXrandr >= 1.5
-
 # projectcenter
 Requires:	gdb
+
+# SELinux modules
+BuildRequires:  checkpolicy, selinux-policy-devel, hardlink
+%if "%{selinux_policyver}" != ""
+Requires:       selinux-policy >= %{selinux_policyver}
+%endif
+Requires(post):   /usr/sbin/semodule, /sbin/fixfiles, nextspace-gnustep
+Requires(postun): /usr/sbin/semodule
 
 %description
 GNUstep libraries - implementation of OpenStep (AppKit, Foundation).
@@ -128,7 +139,7 @@ OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
 GNUstep Make installed with nextspace-core-devel package.
 
 %prep
-%setup -c -n nextspace-gnustep -a 5 -a 7 -a 9 -a 10
+%setup -c -n nextspace-gnustep -a 5 -a 7 -a 9 -a 10 -a 12
 rm -rf %{buildroot}
 
 #
@@ -184,6 +195,20 @@ cd ..
 # Build ProjectCenter
 cd apps-projectcenter-projectcenter-%{PC_VERSION}
 make
+cd ..
+
+# Build SELinux modules
+cd SELinux
+for selinuxvariant in %{selinux_variants}
+do
+    make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile
+    for module in %{selinux_modules}
+    do
+        mv ${module}.pp ${module}.pp.${selinuxvariant}
+    done
+    make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile clean
+done
+cd -
 
 #
 # Build install phase
@@ -225,7 +250,22 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 cp %{_sourcedir}/gdomap.interfaces %{buildroot}/usr/NextSpace/etc/
 mkdir -p %{buildroot}/usr/NextSpace/lib/systemd
 cp %{_sourcedir}/*.service %{buildroot}/usr/NextSpace/lib/systemd
+cd ..
+# SELinux modules
 
+cd %{_builddir}/%{name}/SELinux
+for selinuxvariant in %{selinux_variants}
+do
+    install -d %{buildroot}%{_datadir}/selinux/${selinuxvariant}/%{name}
+    for module in %{selinux_modules}
+    do
+        install -p -m 644 ${module}.pp.${selinuxvariant} \
+		%{buildroot}%{_datadir}/selinux/${selinuxvariant}/%{name}/${module}.pp
+    done
+done
+cd -
+
+/usr/sbin/hardlink -cv %{buildroot}%{_datadir}/selinux
 
 #
 # Files
@@ -233,6 +273,8 @@ cp %{_sourcedir}/*.service %{buildroot}/usr/NextSpace/lib/systemd
 %files
 /Library/
 /usr/NextSpace/
+%{_datadir}/selinux/targeted/%{name}
+%{_datadir}/selinux/mls/%{name}
 
 %files devel
 /Developer/
@@ -258,6 +300,18 @@ elif [ $1 -eq 2 ]; then
     # systemctl restart gdomap gdnc gpbs;
 fi
 
+# SELinux installation of modules in the supported policies
+for selinuxvariant in %{selinux_variants}
+do
+    install -d %{_datadir}/selinux/${selinuxvariant}/%{name}
+    for module in %{selinux_modules}
+    do	
+	/usr/sbin/semodule -s ${selinuxvariant} -i \
+			   %{_datadir}/selinux/${selinuxvariant}/%{name}/${module}.pp &> /dev/null || :
+    done
+done
+/sbin/fixfiles -R nextspace-gnustep restore || :
+
 # for %preun and %postun $1 = 0 - uninstallation, 1 - upgrade. 
 %preun
 if [ $1 -eq 0 ]; then
@@ -272,7 +326,18 @@ elif  [ $1 -eq 1 ]; then
     echo "This is an upgrade. Do nothing with GNUstep services.";
 fi
 
-#%postun
+%postun
+
+# Remove SELinux modules
+if [ $1 -eq 0 ] ; then
+    for selinuxvariant in %{selinux_variants}
+    do
+	for module in %{selinux_modules}
+	do
+	    /usr/sbin/semodule -s ${selinuxvariant} -r ${module} &> /dev/null || :
+	done
+    done
+fi
 
 %changelog
 * Thu Apr 30 2020 Sergii Stoian <stoyan255@gmail.com> - 1_27_0_nextspace-1

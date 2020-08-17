@@ -1,0 +1,130 @@
+policy_module(ns-gdnc, 0.2)
+
+### REQUIRES ####################################)
+
+require {
+	type boot_t;
+	type hugetlbfs_t;
+	type net_conf_t;
+	type tmp_t;
+	type gdnc_t;
+	type xdm_t;
+	type root_t;
+	type sssd_t;
+	type security_t;
+	type sysfs_t;
+	type syslogd_var_run_t;
+	type tmpfs_t;
+	type autofs_t;
+	type unconfined_service_t;
+	type sysctl_fs_t;
+	type debugfs_t;
+	type devlog_t;
+	type var_run_t;
+	type kernel_t;
+	type gnustep_conf_t;
+	type gnustep_tmp_t;
+	type device_t;
+	type gpbs_t;
+	type gdomap_t;
+	type gdomap_exec_t;
+	type passwd_file_t;
+	type kdump_crash_t;
+	type admin_home_t;
+	type gdomap_port_t;
+	type configfs_t;
+	type gnustep_lock_t;
+	type sssd_var_lib_t;
+	type sssd_public_t;
+	type node_t;
+	type crond_t;
+	class dir { add_name create getattr open read remove_name rmdir search write };
+	class sock_file { create getattr unlink write };
+	class file { create execute getattr map open read unlink write };
+	class unix_stream_socket connectto;
+	class process signull;
+	class tcp_socket { accept bind connect create getattr getopt listen name_connect node_bind setopt shutdown };
+	class unix_dgram_socket { connect create sendto };
+	class capability { dac_override kill };	
+	class lnk_file read;
+	class udp_socket  { accept bind connect create getattr getopt listen name_connect node_bind setopt shutdown };
+}
+
+### DECLARATIONS #################################
+
+type gdnc_t;
+type gdnc_exec_t;
+init_daemon_domain(gdnc_t, gdnc_exec_t)
+
+### POLICY #######################################
+
+allow gdnc_t self:capability { setuid sys_chroot net_bind_service setgid dac_override kill};
+allow gdnc_t self:tcp_socket { accept bind connect create getattr getopt listen setopt shutdown write read };
+allow gdnc_t self:unix_stream_socket connectto;
+allow gdnc_t self:unix_dgram_socket { read write };
+allow gdnc_t self:udp_socket { create write read setopt bind getopt listen shutdown name_bind name_connect ioctl};
+
+allow gdnc_t gdomap_port_t:udp_socket { create write read setopt bind getopt listen shutdown name_bind name_connect node_bind};
+allow gdnc_t node_t:udp_socket { create write read setopt bind getopt listen shutdown name_bind name_connect node_bind};
+allow gdnc_t gdomap_port_t:tcp_socket { accept bind connect create getattr getopt listen setopt shutdown write read name_bind name_connect};
+
+allow gdnc_t autofs_t:dir write;
+allow gdnc_t boot_t:dir write;
+allow gdnc_t configfs_t:dir { search write add_name};
+allow gdnc_t configfs_t:file { open create write map };
+allow gdnc_t debugfs_t:dir {search open getattr read write };
+allow gdnc_t device_t:dir write;
+allow gdnc_t device_t:file { open read write map execute };
+allow gdnc_t devlog_t:lnk_file read;
+allow gdnc_t devlog_t:sock_file write;
+allow gdnc_t gdomap_port_t:tcp_socket name_connect;
+allow gdnc_t gnustep_lock_t:dir { add_name create getattr open read remove_name rmdir search write };
+allow gdnc_t gpbs_t:process signull;
+allow gdnc_t xdm_t:process signull;
+
+allow gdnc_t hugetlbfs_t:dir { search write };
+allow gdnc_t kdump_crash_t:dir { add_name search write remove_name};
+allow gdnc_t kdump_crash_t:file { create open read write unlink };
+
+
+allow gdnc_t kernel_t:unix_dgram_socket sendto;
+allow gdnc_t net_conf_t:file { getattr open read };
+allow gdnc_t node_t:tcp_socket node_bind;
+allow gdnc_t passwd_file_t:file { getattr open read };
+allow gdnc_t root_t:dir write;
+allow gdnc_t security_t:dir { add_name write };
+allow gdnc_t self:unix_dgram_socket { connect create };
+allow gdnc_t sssd_public_t:dir search;
+allow gdnc_t sssd_public_t:file { getattr map open read };
+allow gdnc_t sssd_t:unix_stream_socket connectto;
+allow gdnc_t sssd_var_lib_t:dir search;
+allow gdnc_t sssd_var_lib_t:sock_file write;
+allow gdnc_t sysctl_fs_t:dir search;
+allow gdnc_t sysfs_t:dir read;
+allow gdnc_t syslogd_var_run_t:dir search;
+allow gdnc_t tmp_t:sock_file { write read unlink create getattr };
+allow gdnc_t tmpfs_t:dir { add_name write map};
+allow gdnc_t tmpfs_t:file { open read write map };
+allow gdnc_t unconfined_service_t:process signull;
+allow gdnc_t var_run_t:dir write;
+allow gdnc_t var_run_t:file { open read write };
+allow gdnc_t crond_t:process signull;
+
+## Create tmp files and transition to gnustep_lock_t
+
+files_search_tmp(gdnc_t)
+files_tmp_file(gnustep_tmp_t)
+manage_dirs_pattern(gdnc_t, gnustep_tmp_t, gnustep_tmp_t)
+manage_files_pattern(gdnc_t, gnustep_tmp_t, gnustep_tmp_t)
+files_tmp_filetrans(gdnc_t, gnustep_tmp_t, { file dir })
+allow gdnc_t gnustep_tmp_t:unix_stream_socket connectto;
+allow gdnc_t gnustep_tmp_t:sock_file { write read unlink create getattr };
+allow gdnc_t gnustep_tmp_t:file { map execute };
+
+## GNUstep types access
+
+allow gdnc_t gnustep_conf_t:dir { search getattr write read add_name remove_name open lock create rmdir setattr};
+allow gdnc_t gnustep_conf_t:file { getattr open read create unlink write append setattr rename};
+allow gdnc_t gdomap_exec_t:file { execute map read open execute_no_trans};
+
+

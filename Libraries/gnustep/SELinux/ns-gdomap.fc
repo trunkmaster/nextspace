@@ -1,0 +1,2 @@
+/Library/bin/gdomap				--	gen_context(system_u:object_r:gdomap_exec_t,s0)
+/usr/NextSpace/etc/gdomap.interfaces		--	gen_context(system_u:object_r:gdomap_conf_t,s0)

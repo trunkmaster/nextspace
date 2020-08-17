@@ -1,0 +1,103 @@
+policy_module(ns-Login, 0.2)
+
+### REQUIRES ####################################)
+
+require{  
+  type xdm_t;
+  type xdm_exec_t;
+  type gnustep_tmp_t;
+  type lib_t;
+  type admin_home_t;
+  type xdm_lock_t;
+  type unconfined_service_t;
+  type unconfined_t;
+  type chkpwd_exec_t;
+  type systemd_systemctl_exec_t;
+  type gdomap_port_t;
+  type gnustep_lock_t;
+  type gnustep_conf_t;
+  type gdnc_t;
+  type gpbs_t;
+  type gpbs_exec_t;
+  type gdnc_exec_t;
+  type gdomap_t;
+  type gdomap_exec_t;
+  type gnustep_conf_t;
+  type plymouthd_exec_t;
+  type kdump_crash_t;
+  type usr_t;
+  type default_t;
+  type init_t;
+  class process signull;
+  class dir { add_name create getattr remove_name rmdir search };	
+}
+
+### DECLARATIONS #################################
+
+
+### POLICY #######################################
+
+allow xdm_t gnustep_lock_t:file { ioctl read write create getattr setattr lock append unlink link rename execute open } ;
+allow xdm_t gnustep_lock_t:dir { ioctl read write create getattr rmdir remove_name add_name search open setattr} ;
+
+allow xdm_t admin_home_t:file { ioctl open read getattr } ;
+
+
+files_search_tmp(xdm_t)
+
+allow xdm_t tmp_t:dir  { search getattr write read add_name remove_name open lock create rmdir setattr};
+allow xdm_t tmp_t:file { create unlink execute map write };
+allow xdm_t tmp_t:sock_file { write read unlink create getattr };
+allow xdm_t tmpfs_t:dir { add_name write };
+allow xdm_t tmpfs_t:file { open read write };
+
+allow xdm_t gnustep_tmp_t:dir  { search getattr write read add_name remove_name open lock create rmdir setattr };
+allow xdm_t gnustep_tmp_t:file { create unlink execute map write rename setattr getattr lock ioctl open read append };
+
+allow unconfined_service_t unconfined_t:process transition;
+
+allow unconfined_t chkpwd_exec_t:file entrypoint;
+allow unconfined_t systemd_systemctl_exec_t:file entrypoint;
+
+#!!!! This avc is allowed in the current policy
+allow unconfined_t gdomap_port_t:tcp_socket name_connect;
+allow xdm_t gdomap_port_t:tcp_socket name_connect;
+
+allow xdm_t gdnc_t:process signull;
+allow xdm_t gpbs_t:process signull;
+
+allow xdm_t gnustep_conf_t:unix_stream_socket connectto;
+allow xdm_t gdnc_t:unix_stream_socket connectto;
+allow xdm_t gpbs_t:unix_stream_socket connectto;
+
+allow xdm_t gnustep_conf_t:dir { search getattr setattr write read add_name remove_name open lock create rmdir};
+allow xdm_t gnustep_conf_t:file { ioctl getattr open read create unlink write append setattr rename};
+allow xdm_t gnustep_tmp_t:sock_file { write read unlink create getattr};
+
+allow xdm_t gpbs_exec_t:file { execute map read open execute_no_trans};
+allow xdm_t gdnc_exec_t:file { execute map read open execute_no_trans};
+allow xdm_t gdomap_exec_t:file { execute map read open execute_no_trans};
+
+allow xdm_t plymouthd_exec_t:file { execute execute_no_trans getattr open read map };
+
+allow xdm_t kdump_crash_t:dir remove_name;
+allow xdm_t kdump_crash_t:dir { add_name search write };
+allow xdm_t kdump_crash_t:file { create open read write unlink };
+
+
+## Creating "Preferences" etc in /usr/NextSpace
+filetrans_pattern(xdm_t, usr_t, gnustep_conf_t, dir )
+
+## Creating "Services" etc in /root/Library
+filetrans_pattern(xdm_t, lib_t, gnustep_conf_t, dir )
+
+## /tmp/GNUstep*
+filetrans_pattern(xdm_t, gnustep_tmp_t, gnustep_tmp_t, dir )
+filetrans_pattern(xdm_t, gnustep_tmp_t, gnustep_tmp_t, file )
+
+## Accessing /Applications 
+allow xdm_t default_t:file { open read };
+
+allow init_t xdm_t:unix_stream_socket { connectto };
+
+
