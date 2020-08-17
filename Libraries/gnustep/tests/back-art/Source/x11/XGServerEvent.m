@@ -1171,7 +1171,7 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
 
       // keyboard focus entered a window
     case FocusIn:
-      NSDebugLLog(@"NSEvent", @"%lu FocusIn\n",
+      NSDebugLLog(@"Focus", @"%lu FocusIn\n",
                   xEvent.xfocus.window);
       {
         if (cWin == 0 || xEvent.xfocus.window != cWin->ident)
@@ -1199,8 +1199,10 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
         
       // keyboard focus left a window
     case FocusOut:
-      NSDebugLLog(@"NSEvent", @"%lu FocusOut\n",
-                  xEvent.xfocus.window);
+      NSDebugLLog(@"Focus", @"%lu FocusOut (mode: %s - %i)\n",
+                  xEvent.xfocus.window,
+                  (xEvent.xfocus.mode == NotifyNormal) ? "normal" : "specific",
+                  xEvent.xfocus.mode);
       {
         Window fw;
         int rev;
@@ -1229,12 +1231,19 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
                 nswin = GSWindowWithNumber(cWin->number);
               }
           }
+        else if (xEvent.xfocus.mode != NotifyNormal)
+          {
+            // Focus went to `None` or PointerRoot.
+            // Do not change window focus - window manager is in action
+            break;
+          }
         else
           {
             nswin = nil;
           }
-        NSDebugLLog(@"Focus", @"Focus went to %lu (xwin %lu)\n", 
-                    (nswin != nil) ? cWin->number : 0, fw);
+        NSDebugLLog(@"Focus", @"Focus went to %lu from %lu (xwin %lu)\n", 
+                    (nswin != nil) ? cWin->number : 0,
+                    generic.currentFocusWindow, fw);
 
         // Focus went to a window not in this application.
         if (nswin == nil)
@@ -1949,10 +1958,11 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
      events */
   if ([NSApp isHidden])
     {
-      /* This often occurs when hidding an app, since a bunch of
-         windows get hidden at once, and the WM is searching for a
-         window to take focus after each one gets hidden. */
-      NSDebugLLog(@"Focus", @"WM take focus while hiding");
+      /* If window receives WM_TAKE_FOCUS and application is in hidden 
+         state - it's time to unhide. There's no other method to 
+         tell us to unhide. */
+      NSDebugLLog(@"Focus", @"WM take focus while in hidden state - unhiding.");
+      [NSApp unhide:nil];
     }
   else if (cWin->ignore_take_focus == YES)
     {

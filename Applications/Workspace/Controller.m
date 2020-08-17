@@ -405,15 +405,13 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // Close XWindow applications - wipeDesktop?
   
-  if (useInternalWindowManager) {
-    // Hide Dock
-    WMDockHideIcons(wDefaultScreen()->dock);
-    if (recycler) {
-      [[recycler appIcon] close];
-      [recycler release];
-    }
-    [workspaceBadge release];
+  // Hide Dock
+  WMDockHideIcons(wDefaultScreen()->dock);
+  if (recycler) {
+    [[recycler appIcon] close];
+    [recycler release];
   }
+  [workspaceBadge release];
   
   // Media and media manager
   // NSLog(@"OSEMediaManager RC:%lu", [mediaManager retainCount]);
@@ -422,10 +420,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [mediaOperations release];
 
   // NXTSystem objects declared in Workspace+WindowMaker.h
-  if (useInternalWindowManager) {
-    [systemPower stopEventsMonitor];
-    [systemPower release];
-  }
+  [systemPower stopEventsMonitor];
+  [systemPower release];
 
   // System Beep
   if (bellSound) {
@@ -524,39 +520,37 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // ProcessManager created - Workspace is ready to register applications.
   // Show Dock and start applications in it
-  if (useInternalWindowManager) {
-    WAppIcon *btn;
-    WDock    *dock = wDefaultScreen()->dock;
+  WAppIcon *btn;
+  WDock    *dock = wDefaultScreen()->dock;
 
-    [self updateWorkspaceBadge];
-    WSKeyboardGroupDidChange(0);
+  [self updateWorkspaceBadge];
+  WSKeyboardGroupDidChange(0);
       
-    // Detect lid close/open events
-    systemPower = [OSEPower new];
-    [systemPower startEventsMonitor];
-    [[NSNotificationCenter defaultCenter]
+  // Detect lid close/open events
+  systemPower = [OSEPower new];
+  [systemPower startEventsMonitor];
+  [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(lidDidChange:)
                name:OSEPowerLidDidChangeNotification
              object:systemPower];
       
-    [[NSNotificationCenter defaultCenter]
+  [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(applicationDidChangeScreenParameters:)
                name:NSApplicationDidChangeScreenParametersNotification
              object:NSApp];
 
-    // Recycler
-    recycler = [[Recycler alloc] initWithDock:dock];
-    btn = [recycler dockIcon];
-    if (btn) {
-      btn->icon->owner = dock->icon_array[0]->icon->owner;
-      btn->main_window = dock->icon_array[0]->main_window;
-      [[recycler appIcon] orderFrontRegardless];
-    }
-      
-    WMDockAutoLaunch(dock);
+  // Recycler
+  recycler = [[Recycler alloc] initWithDock:dock];
+  btn = [recycler dockIcon];
+  if (btn) {
+    btn->icon->owner = dock->icon_array[0]->icon->owner;
+    btn->main_window = dock->icon_array[0]->main_window;
+    [[recycler appIcon] orderFrontRegardless];
   }
+      
+  WMDockAutoLaunch(dock);
 
   return;
 }
@@ -1158,6 +1152,34 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     // wScreenUpdateUsableArea(scr);
     // if (scr->dock->mapped)
     [sender setTitle:@"Hide"];
+  }
+}
+
+// Special "Hide"
+- (void)hide:(id)sender
+{
+  NSLog(@"Controller - %@", [sender title]);
+  if ([[sender title] isEqualToString:@"Hide"]) {
+    NSWindow     *win;
+    NSArray      *windowList;
+    NSEnumerator *e;
+    
+    windowList = GSOrderedWindows();
+    e = [windowList reverseObjectEnumerator];
+    while ((win = [e nextObject])) {
+      if (win != [[NSApp mainMenu] window])
+        [win orderOut:self];
+    }
+    [sender setTitle:@"Unhide"];
+  }
+  else {
+    [sender setTitle:@"Hide"];
+
+    for (NSWindow *win in GSAllWindows()) {
+      if (win != [[NSApp mainMenu] window])
+        [win orderFront:self];
+    }
+    // [NSApp activateIgnoringOtherApps:YES];
   }
 }
 

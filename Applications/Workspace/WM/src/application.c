@@ -330,11 +330,6 @@ void wApplicationActivate(WApplication *wapp)
            scr->current_workspace, scr->last_workspace,
            wapp->last_workspace);
   
-  if (wapp->app_icon && wPreferences.highlight_active_app) {
-    wIconSetHighlited(wapp->app_icon->icon, True);
-    wAppIconPaint(wapp->app_icon);
-  }
-  
   if (wapp->last_workspace != scr->current_workspace &&
       scr->last_workspace == scr->current_workspace) {
     if (wapp->last_focused) {

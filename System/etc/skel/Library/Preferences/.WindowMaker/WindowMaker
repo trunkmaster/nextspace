@@ -9,7 +9,6 @@
   DisableDrawers = NO;
   DisableMiniwindows = NO;
   EnableWorkspacePager = YES;
-  FocusMode = manual;
   IconSize = 64;
   ModifierKey = Mod4;
   NewStyle = "old";
@@ -43,7 +42,6 @@
   DragMaximizedWindow = "Move";
   EdgeResistance = 30;
   HelpBalloons = NO;
-  HighlightActiveApp = NO;
   IconPath = (
     "~/Library/Images",
     "/usr/NextSpace/Images",

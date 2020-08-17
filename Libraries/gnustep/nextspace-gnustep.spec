@@ -111,6 +111,8 @@ Requires:	libXfixes >= 5.0.1
 Requires:	libXmu >= 1.1.2
 Requires:	libXt >= 1.1.4
 Requires:	libXrandr >= 1.5
+# projectcenter
+Requires:	gdb
 
 # SELinux modules
 BuildRequires:  checkpolicy, selinux-policy-devel, hardlink
@@ -119,7 +121,6 @@ Requires:       selinux-policy >= %{selinux_policyver}
 %endif
 Requires(post):   /usr/sbin/semodule, /sbin/fixfiles, nextspace-gnustep
 Requires(postun): /usr/sbin/semodule
-
 
 %description
 GNUstep libraries - implementation of OpenStep (AppKit, Foundation).

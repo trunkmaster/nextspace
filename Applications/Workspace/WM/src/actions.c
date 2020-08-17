@@ -119,7 +119,6 @@ static inline void shade_animate(WWindow *wwin, Bool what)
  *
  *----------------------------------------------------------------------
  */
-#include <string.h>
 void wSetFocusTo(WScreen *scr, WWindow *wwin)
 {
   static WScreen *old_scr = NULL;
@@ -128,72 +127,76 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   WWindow *focused = scr->focused_window;
   Time timestamp = w_global.timestamp.last_event;
   WApplication *oapp = NULL, *napp = NULL;
-  int wasfocused;
   BOOL focus_succeeded = False;
-
-  WSMessage("[actions.c] wSetFocusTo: %lu focused: %lu\n",
-            (wwin && wwin->client_win) ? wwin->client_win : 0,
-            (focused && focused->client_win) ? focused->client_win : 0);
 
   if (scr->flags.ignore_focus_events ||
       compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
     return;
 
+  /* Shaded focused GNUstep window should set focus to main menu */
+  if (wwin && wwin->flags.shaded && wwin->flags.is_gnustep) {
+    WApplication *gapp = wApplicationOf(wwin->main_window);
+
+    wmessage("wSetFocusTo: Request to focus shaded GNUstep window (%lu).", wwin->client_win);
+    if (!wwin->flags.focused) { // not focused - set it
+      wmessage("           : Send WM_TAKE_FOCUS to shaded GNUstep window %lu.", wwin->client_win);
+      wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
+      XFlush(dpy);
+      XSync(dpy, False);
+    }
+    if (gapp && !gapp->menu_win->flags.focused) {
+      wmessage("           : Transfer focus to main menu (%lu).", gapp->menu_win->client_win);
+      wSetFocusTo(scr, gapp->menu_win);
+    }
+    return;
+  }
+  
   /* Do not focus GNUstep main menu if focused window exists, mapped and belongs to 
      the same application. This also covers shaded focused window case: exists, belongs
      to the same application but not mapped - focus goes to the main app menu. */
-  if (wwin && focused && (wwin != focused) && focused->flags.mapped // sanity check
+  if (wwin && focused && (wwin != focused)
+      && (focused->flags.mapped && !focused->flags.shaded)
       && wwin->flags.is_gnustep // it's GNUstep application
       && wwin->wm_gnustep_attr->window_level == WMMainMenuWindowLevel // it's a menu
       && !strcmp(wwin->wm_class, focused->wm_class)          // windows belong
       && !strcmp(wwin->wm_instance, focused->wm_instance)) { // to the same application
-    WSMessage("[actions.c] wSetFocusTo: do not set focus to active `%s` app menu."
-              " Focused window %lu is mapped = %s.", focused->wm_instance,
+    wmessage("wSetFocusTo: rejected: %lu is a `%s` app menu (focused: %lu is mapped: %s.).",
+              wwin->client_win, focused->wm_instance,
               focused->client_win, focused->flags.mapped ? "true" : "false");
     return;
   }
+
+  wPrintWindowFocusState(wwin, "[START] wSetFocusTo:");
 
   if (!old_scr)
     old_scr = scr;
 
   old_focused = old_scr->focused_window;
-
-  w_global.timestamp.focus_change = timestamp;
-
   if (old_focused)
     oapp = wApplicationOf(old_focused->main_window);
+
+  w_global.timestamp.focus_change = timestamp;
 
   // Focus Workspace main application menu if there's no window to focus.
   if (wwin == NULL) {
     // TDDO: hold Workspace main menu in WScreen
     WApplication *wsapp = wApplicationWithName(scr, "Workspace");
     if (wsapp && wsapp->menu_win) {
-      /* WSMessage("[actions.c] Workspace menu window: %lu", wsapp->menu_win->client_win); */
-      if (wsapp->menu_win->client_win) {
-        wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
-      }
-      else {
-        XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
-      }
+      wmessage("        wSetFocusTo: Workspace menu window: %lu", wsapp->menu_win->client_win);
+      wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
     }
     
     if (old_focused)
       wWindowUnfocus(old_focused);
-
-    if (oapp) {
-      if (wPreferences.highlight_active_app)
-        wApplicationDeactivate(oapp);
-    }
     
     WMPostNotificationName(WMNChangedFocus, NULL, (void *)True);
     return;
   }
 
+  napp = wApplicationOf(wwin->main_window);
+
   if (old_scr != scr && old_focused)
     wWindowUnfocus(old_focused);
-
-  wasfocused = wwin->flags.focused;
-  napp = wApplicationOf(wwin->main_window);
 
   /* If it's GNUstep application focus may be set to yet unmapped main menu */
   if (wwin->flags.is_gnustep || wwin->flags.mapped) {
@@ -204,27 +207,29 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     /* set input focus */
     switch (wwin->focus_mode) {
     case WFM_NO_INPUT: // !wm_hints->input, !WM_TAKE_FOCUS
-      /* wmessage("[actions.c] %lu focus mode == NO_INPUT. Do nothing\n", wwin->client_win); */
+      wmessage("        wSetFocusTo: %lu focus mode == NO_INPUT. Do nothing", wwin->client_win);
       return;
     case WFM_PASSIVE: // wm_hints->input, !WM_TAKE_FOCUS
-      /* wmessage("[actions.c] %lu focus mode == PASSIVE.\n", wwin->client_win); */
+      wmessage("        wSetFocusTo: %lu focus mode == PASSIVE.", wwin->client_win);
       XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
       break;
     case WFM_LOCALLY_ACTIVE: // wm_hints->input, WM_TAKE_FOCUS
-      /* wmessage("[actions.c] %lu focus mode == LOCALLY_ACTIVE.\n", wwin->client_win); */
+      wmessage("        wSetFocusTo: %lu focus mode == LOCALLY_ACTIVE.", wwin->client_win);
       XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
       focus_succeeded = True;
       break;
     case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
-      /* wmessage("[actions.c] %lu focus mode == GLOBALLY_ACTIVE.\n", wwin->client_win); */
+      wmessage("        wSetFocusTo: %lu focus mode == GLOBALLY_ACTIVE.", wwin->client_win);
       wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
       focus_succeeded = True;
       break;
     }
-
-    XFlush(dpy);
-    XSync(dpy, False);
   }
+  else { // not GNUstep and not mapped (shaded, iconified)
+    XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
+  }
+  XFlush(dpy);
+  XSync(dpy, False);
 
   /* if this is not the focused window - change the focus window list order */
   if (focused != wwin) {
@@ -239,23 +244,22 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     wwin->next = NULL;
     scr->focused_window = wwin;
 
-    if (oapp && oapp != napp) {
-      if (wPreferences.highlight_active_app)
-        wApplicationDeactivate(oapp);
-    }
-    
     if (napp && focus_succeeded == True && wwin != NULL) {
       wApplicationMakeFirst(napp);
       /* remember last workspace and focused window of application */
-      napp->last_focused = wwin;
-      napp->last_workspace = scr->current_workspace;
+      if (wwin != napp->menu_win) {
+        napp->last_focused = wwin;
+        napp->last_workspace = scr->current_workspace;
+      }
     }
   }
 
   wWindowFocus(wwin, focused);
 
-  XFlush(dpy);
   old_scr = scr;
+  XFlush(dpy);
+  XSync(dpy, False);
+  wPrintWindowFocusState(wwin, "[ END ] wSetFocusTo:");
 }
 
 void wShadeWindow(WWindow *wwin)
@@ -283,6 +287,10 @@ void wShadeWindow(WWindow *wwin)
 
   wClientSetState(wwin, IconicState, None);
 
+  if (wwin->flags.focused) {
+    wSetFocusTo(wwin->screen_ptr, wwin);
+  }
+  
   WMPostNotificationName(WMNChangedState, wwin, "shade");
 
 #ifdef USE_ANIMATIONS
@@ -315,8 +323,10 @@ void wUnshadeWindow(WWindow *wwin)
   
   /* if the window is focused, set the focus again as it was disabled during
    * shading */
-  if (wwin->flags.focused)
+  /* if (wwin->flags.focused || wwin == wApplicationOf(wwin->main_window)->last_focused) { */
+  if (wwin->flags.focused) {
     wSetFocusTo(wwin->screen_ptr, wwin);
+  }
 
   WMPostNotificationName(WMNChangedState, wwin, "shade");
 }
@@ -1252,8 +1262,7 @@ void wIconifyWindow(WWindow *wwin)
      * when deiconifying a transient window.
      setupIconGrabs(wwin->icon);
     */
-    if ((wwin->flags.focused || (owner && wwin->client_win == owner->client_win))
-        && wPreferences.focus_mode == WKF_CLICK) {
+    if ((wwin->flags.focused || (owner && wwin->client_win == owner->client_win))) {
       WWindow *tmp;
 
       tmp = wwin->prev;
@@ -1265,8 +1274,6 @@ void wIconifyWindow(WWindow *wwin)
         tmp = tmp->prev;
       }
       wSetFocusTo(wwin->screen_ptr, tmp);
-    } else if (wPreferences.focus_mode != WKF_CLICK) {
-      wSetFocusTo(wwin->screen_ptr, NULL);
     }
 #ifdef USE_ANIMATIONS
     if (!wwin->screen_ptr->flags.startup) {
@@ -1592,18 +1599,14 @@ void wHideApplication(WApplication *wapp)
   wapp->flags.skip_next_animation = 0;
 
   if (hadfocus) {
-    if (wPreferences.focus_mode == WKF_CLICK) {
-      wlist = scr->focused_window;
-      while (wlist) {
-        if (!WFLAGP(wlist, no_focusable) && !wlist->flags.hidden
-            && (wlist->flags.mapped || wlist->flags.shaded))
-          break;
-        wlist = wlist->prev;
-      }
-      wSetFocusTo(scr, wlist);
-    } else {
-      wSetFocusTo(scr, NULL);
+    wlist = scr->focused_window;
+    while (wlist) {
+      if (!WFLAGP(wlist, no_focusable) && !wlist->flags.hidden
+          && (wlist->flags.mapped || wlist->flags.shaded))
+        break;
+      wlist = wlist->prev;
     }
+    wSetFocusTo(scr, wlist);
   }
 
   wapp->flags.hidden = 1;

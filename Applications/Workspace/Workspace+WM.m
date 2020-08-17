@@ -1,5 +1,8 @@
 /* -*- mode: objc -*- */
 //
+// Interface to Window Manager part of Workspace application. 
+// Consists of functions to avoid converting WindowMaker sources to ObjC.
+//
 // Project: Workspace
 //
 // Copyright (C) 2014-2019 Sergii Stoian
@@ -18,13 +21,6 @@
 // License along with this library; if not, write to the Free
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
-
-//============================================================================
-// Interface to WindowMaker part. 
-// Consists of functions to avoid converting WindowMaker sources to ObjC.
-//============================================================================
-
-#ifdef NEXTSPACE
 
 #include <X11/Xlib.h>
 #include <X11/Xlocale.h>
@@ -56,61 +52,6 @@ extern int WMInitialize(int argc, char **argv);
 // WM/src/xrandr.c
 extern void wUpdateXrandrInfo(WScreen *scr);
 
-//-----------------------------------------------------------------------------
-// Workspace X Window related utility functions
-//-----------------------------------------------------------------------------
-BOOL xIsWindowServerReady(void)
-{
-  Display *xdpy = XOpenDisplay(NULL);
-  BOOL    ready = (xdpy == NULL ? NO : YES);
-
-  if (ready) {
-    XCloseDisplay(xdpy);
-  }
-
-  return ready;
-}
-
-static int CantManageScreen = 0;
-
-static int xAlreadyRunningErrorHandler(Display *dpy, XErrorEvent *error)
-{
-  CantManageScreen = 1;
-  return -1;
-}
-
-BOOL xIsWindowManagerAlreadyRunning(void)
-{
-  Display       *xDisplay = NULL;
-  int           xScreen = -1;
-  long          event_mask;
-  XErrorHandler oldHandler;
-
-  oldHandler = XSetErrorHandler((XErrorHandler)xAlreadyRunningErrorHandler);
-  event_mask = SubstructureRedirectMask;
-
-  xDisplay = XOpenDisplay(NULL);
-  xScreen = DefaultScreen(xDisplay);
-  XSelectInput(xDisplay, RootWindow(xDisplay, xScreen), event_mask);
-
-  XSync(xDisplay, False);
-  XSetErrorHandler(oldHandler);
-
-  if (CantManageScreen) {
-    XCloseDisplay(xDisplay);
-    return YES;
-  }
-  else {
-    event_mask &= ~(SubstructureRedirectMask);
-    XSelectInput(xDisplay, RootWindow(xDisplay, xScreen), event_mask);
-    XSync(xDisplay, False);
-    XCloseDisplay(xDisplay);
-    return NO;
-  }
-}
-
-//--- Below this line X Window related functions is TODO
-
 // TODO: Move to DesktopKit/NXTFileManager
 NSString *fullPathForCommand(NSString *command)
 {
@@ -140,9 +81,8 @@ NSString *fullPathForCommand(NSString *command)
 }
 
 //-----------------------------------------------------------------------------
-// WindowMaker releated functions: call WindowMaker functions, change
-// WindowMaker behaviour, change WindowMaker runtime variables.
-// 'WM' prefix is a vector of calls 'Workspace->WindowMaker'
+// Window Manager(WM) releated functions: call WM's functions, change
+// WM's behaviour, change WM's runtime variables.
 //------------------------------------------------------------------------------
 
 void WMInitializeWindowMaker(int argc, char **argv)
@@ -261,7 +201,7 @@ void WMSetDockAppiconState(int index_in_dock, int launching)
   }
 }
 
-// Disable some signal handling inside WindowMaker code.
+// Disable some signal handling inside WM's code.
 // Should be called after WMInitializeWindowMaker().
 void WMSetupSignalHandling(void)
 {
@@ -610,7 +550,7 @@ void WSSetDockLevel(int level)
 
 // Returns path to user WMState if exist.
 // Returns 'nil' if user WMState doesn't exist and cannot
-// be recovered from Workspace.app/WindowMaker directory.
+// be recovered from Workspace.app/Resources/WM directory.
 NSString *WMDockStatePath(void)
 {
   NSString      *userDefPath, *appDefPath;
@@ -1021,7 +961,7 @@ void WMSetDockAppDndCommand(int position, const char *command)
 // It is array of pointers to WAppIcon.
 // These pointers also placed into WScreen->app_icon_list.
 // Launching icons number is much smaller, but I use DOCK_MAX_ICONS
-// (defined in WindowMaker/src/wconfig.h) as references number.
+// (defined in WM/src/wconfig.h) as references number.
 // static WAppIcon **launchingIcons = NULL;
 void _addLaunchingIcon(WAppIcon *appicon)
 {
@@ -1296,9 +1236,8 @@ pid_t WMExecuteCommand(NSString *command)
 //--- End of functions which require existing @autorelease pool ---
 
 //-----------------------------------------------------------------------------
-// Workspace functions which are called from WindowMaker code.
+// Workspace functions which are called from WM's code.
 // Most calls are coming from X11 EventLoop().
-// 'WS' prefix is a vector of calls 'WindowMaker(X)->Workspace(W)'
 // All the functions below are executed insise 'wwmaker_q' GCD queue.
 //-----------------------------------------------------------------------------
 
@@ -1732,5 +1671,3 @@ void WSMessage(char *fmt, ...)
     va_end(args);
   }
 }
-
-#endif //NEXTSPACE

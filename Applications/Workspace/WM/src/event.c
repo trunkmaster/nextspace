@@ -608,28 +608,34 @@ static void handleMapRequest(XEvent * ev)
     if (!wwin->flags.is_gnustep && wwin->flags.shaded) {
       wUnshadeWindow(wwin);
     }
-    /* deiconify window */
+    /* deiconify and unhide*/
     if (wwin->flags.miniaturized) {
       wDeiconifyWindow(wwin);
-    } else if (wwin->flags.hidden) {
+    }
+    else if (wwin->flags.hidden) {
       WApplication *wapp = wApplicationOf(wwin->main_window);
       /* go to the last workspace that the user worked on the app */
       if (wapp) {
         wWorkspaceChange(wwin->screen_ptr, wapp->last_workspace);
       }
       wUnhideApplication(wapp, False, False);
-    } else if (WINDOW_LEVEL(wwin) == WMMainMenuLevel &&
-               wwin->flags.is_gnustep && wwin->flags.mapped == 0) {
-      /* GNUstep app main menu window is managed but unmapped */
-      WApplication *wapp = wApplicationOf(wwin->main_window);
-      int last_focused_mapped = 0;
+    }
 
-      if (wapp->last_focused)
-        last_focused_mapped = wapp->last_focused->flags.mapped;
-      
-      wWindowMap(wwin);
-      if (last_focused_mapped == 0 || wwin == wapp->menu_win)
+    /* extra focus steps for GNUstep applications */
+    if (wwin->flags.is_gnustep) {
+      if (WINDOW_LEVEL(wwin) == WMMainMenuLevel && wwin->flags.mapped == 0) {
+        /* GNUstep app main menu window is managed but unmapped */
+        WApplication *wapp = wApplicationOf(wwin->main_window);
+        
+        wWindowMap(wwin);
+        if ((wapp->last_focused && wapp->last_focused->flags.mapped == 0)
+            || wwin == wapp->menu_win) {
+          wSetFocusTo(scr, wwin);
+        }
+      }
+      else {
         wSetFocusTo(scr, wwin);
+      }
     }
     
     return;
@@ -974,11 +980,9 @@ static void handleUnmapNotify(XEvent * event)
   XEvent ev;
   Bool withdraw = False;
 
-  /* only process windows with StructureNotify selected
-   * (ignore SubstructureNotify) */
-  
   /* wmessage("[event.c] handleUnmapNotify for window %lu.\n", event->xunmap.window); */
   
+  /* only process windows with StructureNotify selected (ignore SubstructureNotify) */
   wwin = wWindowFor(event->xunmap.window);
   if (!wwin)
     return;
@@ -1270,29 +1274,6 @@ static void handleEnterNotify(XEvent * event)
       scr->autoRaiseTimer = NULL;
     }
   } else {
-    /* set auto raise timer even if in focus-follows-mouse mode
-     * and the event is for the frame window, even if the window
-     * has focus already.  useful if you move the pointer from a focused
-     * window to the root window and back pretty fast
-     *
-     * set focus if in focus-follows-mouse mode and the event
-     * is for the frame window and window doesn't have focus yet */
-    if (wPreferences.focus_mode == WKF_SLOPPY
-        && wwin->frame->core->window == event->xcrossing.window && !scr->flags.doing_alt_tab) {
-
-      if (!wwin->flags.focused && !WFLAGP(wwin, no_focusable))
-        wSetFocusTo(scr, wwin);
-
-      if (scr->autoRaiseTimer)
-        WMDeleteTimerHandler(scr->autoRaiseTimer);
-      scr->autoRaiseTimer = NULL;
-
-      if (wPreferences.raise_delay && !WFLAGP(wwin, no_focusable)) {
-        scr->autoRaiseWindow = wwin->frame->core->window;
-        scr->autoRaiseTimer
-          = WMAddTimerHandler(wPreferences.raise_delay, (WMCallback *) raiseWindow, scr);
-      }
-    }
     /* Install colormap for window, if the colormap installation mode
      * is colormap_follows_mouse */
     if (wPreferences.colormap_mode == WCM_POINTER) {
@@ -1303,12 +1284,6 @@ static void handleEnterNotify(XEvent * event)
     }
   }
 
-  if (event->xcrossing.window == event->xcrossing.root
-      && event->xcrossing.detail == NotifyNormal
-      && event->xcrossing.detail != NotifyInferior && wPreferences.focus_mode != WKF_CLICK) {
-
-    wSetFocusTo(scr, scr->focused_window);
-  }
 #ifdef BALLOON_TEXT
   wBalloonEnteredObject(scr, desc);
 #endif
