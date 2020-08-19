@@ -157,8 +157,14 @@ void wClientConfigure(WWindow * wwin, XConfigureRequestEvent * xcre)
   if (wwin == NULL) {
 
     // 0 value results "BadMatch (invalid parameter attributes)" error
-    if (!xcre->width || !xcre->height)
+    if (!xcre->width || !xcre->height) {
+      fprintf(stderr,"[WM] !WARNING! X ConfigureRequest received with incorrect geometry.\n"
+              "\tWindow: %lu\n"
+              "\tWidth: %i\n"
+              "\tHeight: %i\n",
+              xcre->window, xcre->width, xcre->height);
       return;
+    }
     
     xwc.x = xcre->x;
     xwc.y = xcre->y;
