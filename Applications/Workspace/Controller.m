@@ -706,6 +706,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
+  if (_hiddenWindows == nil) {
+    [_hiddenWindows release];
+  }
 }
   
 - (void)activate
@@ -1159,6 +1162,11 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)hide:(id)sender
 {
   NSLog(@"Controller - %@", [sender title]);
+  
+  if (_hiddenWindows == nil) {
+    _hiddenWindows = [NSMutableArray new];
+  }
+  
   if ([[sender title] isEqualToString:@"Hide"]) {
     NSWindow     *win;
     NSArray      *windowList;
@@ -1167,19 +1175,20 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     windowList = GSOrderedWindows();
     e = [windowList reverseObjectEnumerator];
     while ((win = [e nextObject])) {
-      if (win != [[NSApp mainMenu] window])
+      if (win != [[NSApp mainMenu] window]) {
         [win orderOut:self];
+        [_hiddenWindows addObject:win];
+      }
     }
     [sender setTitle:@"Unhide"];
   }
   else {
     [sender setTitle:@"Hide"];
-
-    for (NSWindow *win in GSAllWindows()) {
+    for (NSWindow *win in _hiddenWindows) {
       if (win != [[NSApp mainMenu] window])
-        [win orderFront:self];
+        [win orderFrontRegardless];
     }
-    // [NSApp activateIgnoringOtherApps:YES];
+    [_hiddenWindows removeAllObjects];
   }
 }
 
