@@ -3,6 +3,8 @@
 # This script should be placed along with NSUser and NSDeveloper
 # directories.
 
+RELEASE=0.90
+
 if [ -f /etc/os-release ]; then 
     source /etc/os-release
     export OS_NAME=$ID
@@ -84,12 +86,12 @@ echo
 echo -e -n "\e[0m"
 echo "Please choose the default SELinux mode"
 echo
-echo " 1) Permissive: SELinux will be active but will only log policy violations instead of enforcing them (default for NextSPACE)."
+echo " 1) Permissive: SELinux will be active but will only log policy violations instead of enforcing them (default for NEXTSPACE)."
 echo " 2) Enforcing: SELinux will enforce the loaded policies and actively block access attempts which are not allowed (distro default)."
 echo " 3) Disabled: the SELinux subsystem will be disabled (choose this one if you have a strong reason for it)."
 echo
 echo "The recommended (and default) option is \"Permissive\", which will prevent SELinux from blocking accesses while logging them."
-echo "Choose \"Enforcing\" if you want or need to keep SELinux active, this will use the NextSTEP policies; keep in mind that they are a work in progress."
+echo "Choose \"Enforcing\" if you want or need to keep SELinux active, this will use the NEXTSPACE policies; keep in mind that they are a work in progress."
 echo "You can also choose to completely disable the SELinux subsystem; this should functionally be similar to \"Permissive\" but will not log anything."
 echo
 echo -e -n "\e[1m"
@@ -112,7 +114,7 @@ fi
 echo "... done."
 echo "Filesystem with undergo automatic relabelling upon reboot for \"Permissive\" and \"Enforcing\" policies".
 echo
-echo -n "Installing NEXTSPACE SELinux policies..."
+# TODO: echo -n "Installing NEXTSPACE SELinux policies..."
 
 
 # Install User packages
@@ -130,7 +132,12 @@ echo -e -n "\e[0m"
 read YN
 if [ $YN = "y" ]; then
     echo -n "Installing NEXTSPACE Developer packages..."
-    yum -y -q install --enablerepo=epel NSDeveloper/*.rpm 2>&1 > /dev/null
+    ENABLE_REPO="--enable-repo=epel"
+    if [ $OS_NAME == "centos" ] && [ $OS_VERSION == "7" ]; then
+        yum -y -q install centos-release-scl 2>&1 > /dev/null
+        ENABLE_REPO+=" --enable-repo=centos-sclo-sclo --enable-repo=centos-sclo-rh"
+    fi
+    yum -y -q install ${ENABLE_REPO} NSDeveloper/*.rpm 2>&1 > /dev/null
     echo -e -n "\e[32m"
     echo "done"
     echo -e -n "\e[0m"
