@@ -544,7 +544,7 @@ WDefaultEntry optionList[] = {
                               /* WorkspaceBack must come after WorkspaceSpecificBack or
                                * WorkspaceBack wont know WorkspaceSpecificBack was also
                                * specified and 2 copies of wmsetbg will be launched */
-                              {"WorkspaceBack", "(solid, black)", NULL,
+                              {"WorkspaceBack", "()", NULL,
                                NULL, getWSBackground, setWorkspaceBack, NULL, NULL},
                               {"SmoothWorkspaceBack", "NO", NULL,
                                NULL, getBool, NULL, NULL, NULL},
@@ -3173,7 +3173,8 @@ static int setWorkspaceBack(WScreen * scr, WDefaultEntry * entry, void *tdata, v
         SendHelperMessage(scr, 'U', 0, NULL);
       }
     }
-  } else if (WMGetPropListItemCount(value) > 0) {
+  }
+  else if (WMGetPropListItemCount(value) > 0) {
     char *text;
     char *dither;
     int len;
