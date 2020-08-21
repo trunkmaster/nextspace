@@ -133,37 +133,67 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
     return;
 
-  /* Shaded focused GNUstep window should set focus to main menu */
-  if (wwin && wwin->flags.shaded && wwin->flags.is_gnustep) {
-    WApplication *gapp = wApplicationOf(wwin->main_window);
+  if (wwin && wwin->flags.is_gnustep) {
+    WApplication *wwin_app = wApplicationOf(wwin->main_window);
+    WApplication *focused_app;
 
-    wmessage("wSetFocusTo: Request to focus shaded GNUstep window (%lu).", wwin->client_win);
-    if (!wwin->flags.focused) { // not focused - set it
-      wmessage("           : Send WM_TAKE_FOCUS to shaded GNUstep window %lu.", wwin->client_win);
-      wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
-      XFlush(dpy);
-      XSync(dpy, False);
+    /* Shaded focused GNUstep window should set focus to main menu */
+    if (wwin->flags.shaded) {
+      wmessage("wSetFocusTo: Request to focus shaded GNUstep window (%lu).",
+               wwin->client_win);
+      if (!wwin->flags.focused) { // not focused - set it
+        wmessage("           : Send WM_TAKE_FOCUS to shaded GNUstep window %lu.",
+                 wwin->client_win);
+        wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
+        XFlush(dpy);
+        XSync(dpy, False);
+      }
+      if (wwin_app && !wwin_app->menu_win->flags.focused) {
+        wmessage("           : Transfer focus to main menu (%lu).",
+                 wwin_app->menu_win->client_win);
+        wSetFocusTo(scr, wwin_app->menu_win);
+      }
+      return;
     }
-    if (gapp && !gapp->menu_win->flags.focused) {
-      wmessage("           : Transfer focus to main menu (%lu).", gapp->menu_win->client_win);
-      wSetFocusTo(scr, gapp->menu_win);
-    }
-    return;
-  }
   
-  /* Do not focus GNUstep main menu if focused window exists, mapped and belongs to 
-     the same application. This also covers shaded focused window case: exists, belongs
-     to the same application but not mapped - focus goes to the main app menu. */
-  if (wwin && focused && (wwin != focused)
-      && (focused->flags.mapped && !focused->flags.shaded)
-      && wwin->flags.is_gnustep // it's GNUstep application
-      && wwin->wm_gnustep_attr->window_level == WMMainMenuWindowLevel // it's a menu
-      && !strcmp(wwin->wm_class, focused->wm_class)          // windows belong
-      && !strcmp(wwin->wm_instance, focused->wm_instance)) { // to the same application
-    wmessage("wSetFocusTo: rejected: %lu is a `%s` app menu (focused: %lu is mapped: %s.).",
-              wwin->client_win, focused->wm_instance,
-              focused->client_win, focused->flags.mapped ? "true" : "false");
-    return;
+    /* Focused window exists, mapped (or shaded) and belongs to the same application. 
+       Do not focus GNUstep main menu but rebuild window stacking (focus) order as if 
+       main menu recevies focus first and serired window next. So basically we need
+       to insert main menu before window in stacking(focus order) list.
+       We can enter here when focus switches between applications and application 
+       window already focused.
+       From my observations it happens if user clicks on inactive application
+       window titlebar. Application receives TakeFocus message, activates, maps main menu
+       that lead to FocusIn event.
+       If user clicks *inside* inactive application window GNUstep correctly manages 
+       focus order: main menu mapped and focused first then desired window focused next. */
+    focused_app = wApplicationOf(focused->main_window);
+    if (wwin_app && wwin_app->menu_win == wwin
+        && focused && (wwin != focused) && focused->flags.mapped && !focused->flags.shaded
+        && wwin_app == focused_app) {
+      wmessage("wSetFocusTo: rejected: %lu is a `%s` app menu (focused: %lu is mapped: %s.).",
+               wwin->client_win, focused->wm_instance,
+               focused->client_win, focused->flags.mapped ? "true" : "false");
+      // close the gap of old menu position
+      if (wwin->prev) {
+        wwin->prev->next = wwin->next;
+      }
+      if (wwin->next) {
+        wwin->next->prev = wwin->prev;
+      }
+      // update menu pointers
+      wwin->next = focused;
+      if (focused->prev) {
+        wwin->prev = focused->prev;
+      }
+      // point previous and focused window to menu
+      if (focused->prev) {
+        focused->prev->next = wwin;
+      }
+      focused->prev = wwin;
+
+      return;
+    }
   }
 
   wPrintWindowFocusState(wwin, "[START] wSetFocusTo:");
