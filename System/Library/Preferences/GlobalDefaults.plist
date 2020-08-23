@@ -4,6 +4,8 @@
 <dict>
     <key>GSBackend</key>
     <string>art</string>
+    <key>GSWorkspaceApplication</key>
+    <string>Workspace</string>
     <key>GSCommandKeyString</key>
     <string></string>
     <key>GSFirstAlternateKey</key>

@@ -730,23 +730,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                         error:(NSString **)error
 {
   NSString *path = [[pboard stringForType:NSStringPboardType] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\n\r"]];
-  BOOL isDir = FALSE;
   path = [path stringByStandardizingPath];
 
-  NSFileManager *fm = [NSFileManager defaultManager];
-  if ([fm fileExistsAtPath:path isDirectory:&isDir]) {
-    if (isDir && [[NSWorkspace sharedWorkspace] isFilePackageAtPath:path] == NO) {
-      [self openNewViewerIfNotExistRootedAt:path];
-    }
-    else {
-      path = [path stringByDeletingLastPathComponent];
-      [self openNewViewerIfNotExistRootedAt:path];
-    }
+  if ([self openFile:path]) {
+    *error = NULL;
   }
   else {
     *error = [NSString stringWithFormat:@"path \"%@\" does not exist", path];
   }
-  
 }
 
 //============================================================================
