@@ -20,12 +20,12 @@
 // custom view.
 - (id)initWithFrame:(NSRect)frameRect
 {
-  self = [super initWithFrame:frameRect mode:0 cellClass:[NSTextFieldCell class] numberOfRows:1 numberOfColumns:4];
+  self = [super initWithFrame:frameRect mode:0 cellClass:[NSTextFieldCell class] numberOfRows:1 numberOfColumns:5];
   if (self) 
     {
       NSSize size = { 1, frameRect.size.height};
       [self setIntercellSpacing:size];
-      size.width = ((int)frameRect.size.width-3)/4;
+      size.width = ((int)frameRect.size.width-3)/5;
       [self setCellSize:size];
       [self setAutosizesCells:YES];
       [[self window] setAcceptsMouseMovedEvents:YES];
@@ -40,7 +40,7 @@
 }
 
 static const id titles[] = {
-    @"Idle", @"Nice", @"User", @"System",
+    @"Idle", @"Nice", @"User", @"System", @"Border"
 };
 
 // Read the colors for each field and stuff them into it.
@@ -48,7 +48,7 @@ static const id titles[] = {
 {
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
-  for(int i = 0; i < 4; i++) {
+  for(int i = 0; i < 5; i++) {
     NSTextFieldCell *tCell = [self cellAtRow:0 column:i];
     
     [tCell setBezeled:YES];

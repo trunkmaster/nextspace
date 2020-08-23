@@ -14,6 +14,7 @@
 #import "TimeMonWraps.h"
 #import "loadave.h"
 #import "TimeMonColors.h"
+#import "NSColorExtensions.h"
 #import <syslog.h>
 #import <math.h>
 
@@ -39,6 +40,10 @@
 
 - (void)drawImageRep
 {
+  NSColor *borderColor = [NSColor colorFromStringRepresentation: 
+                                         [defaults stringForKey:@"BorderColor"]];
+  if (!borderColor) borderColor = [NSColor blackColor];
+
   int i;
   static float radii[3]={ 23.0, 17.0, 11.0};
   NSPoint point = NSMakePoint(24,24);
@@ -58,7 +63,7 @@
              90 - (pcents[i][0] + pcents[i][1] + pcents[i][2] + pcents[i][3]) * 360);
   }
   
-  [[NSColor blackColor] set];
+  [borderColor set];
   [bp moveToPoint: outer];
   [bp appendBezierPathWithArcWithCenter:point
                                  radius:23.5
