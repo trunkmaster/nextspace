@@ -42,7 +42,7 @@
 - (void)awakeFromNib
 {
   NSDictionary *cvDisplayRects;
-  
+
   if (clockView)
     return;
 
@@ -50,7 +50,7 @@
                      @"Day":NSStringFromRect(NSMakeRect(14, 15, 33, 17)),
                      @"Month":NSStringFromRect(NSMakeRect(14,  9, 31, 6)),
                      @"Time":NSStringFromRect(NSMakeRect( 5, 46, 53, 11))};
-  
+
   clockView = [[NXTClockView alloc]
                 initWithFrame:NSMakeRect(0, 0, 64, 64)
                          tile:[NSImage imageNamed:@"ClockViewTile"]
@@ -72,22 +72,22 @@
   // keyboard, mouse, sound, power management.
   // Display preferences are applied in Workspace Manager because displays must
   // be configured before start of window management task.
-  
+
   // Apply preferences only if we're autolaunched.
   // NSApplication removed arguments (-NXAutoLaunch YES) to omit flickering.
   // We've just finished launching and not active == we've autolaunched
   if ([NSApp isActive] == NO) {
     NXTDefaults *defs = [NXTDefaults globalUserDefaults];
-      
+
     NSLog(@"Configuring Keyboard...");
     [OSEKeyboard configureWithDefaults:defs];
-      
+
     NSLog(@"Configuring Mouse...");
     OSEMouse *mouse = [OSEMouse new];
     [mouse setAcceleration:[defs integerForKey:OSEMouseAcceleration]
                  threshold:[defs integerForKey:OSEMouseThreshold]];
     [mouse release];
-      
+
     NSLog(@"Configuring Desktop background...");
     OSEScreen *screen = [OSEScreen sharedScreen];
     CGFloat red, green, blue;
@@ -104,7 +104,7 @@
 
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
-  [[NXTDefaults globalUserDefaults] synchronize];  
+  [[NXTDefaults globalUserDefaults] synchronize];
   [prefsController release];
   [clockView removeFromSuperviewWithoutNeedingDisplay];
 }
@@ -129,6 +129,18 @@
 
   [NSApp activateIgnoringOtherApps:YES];
   [[prefsController window] makeKeyAndOrderFront:self];
+}
+
+- (void)showInfoPanel:(id)sender
+{
+  if (!infoPanel) {
+    if (![NSBundle loadNibNamed:@"InfoPanel" owner:self]) {
+      NSLog (@"Failed to load InfoPanel.nib");
+      return;
+    }
+   [infoPanel center];
+  }
+ [infoPanel makeKeyAndOrderFront:nil];
 }
 
 @end
