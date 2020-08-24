@@ -1,4 +1,4 @@
-﻿# -*- mode: makefile-gmake -*-
+# -*- mode: makefile-gmake -*-
 
 GNUSTEP_INSTALLATION_DOMAIN = LOCAL
 include $(GNUSTEP_MAKEFILES)/common.make
