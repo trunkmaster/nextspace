@@ -442,15 +442,7 @@ static NSString		*_rootPath = @"/";
   id app;
 
   if (appName == nil) {
-    /*
-    if ([self _extension:[fullPath pathExtension] role:nil app:&appName] == NO) {
-      appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
-      if (!appName || [appName isEqualToString:@""]) {
-        appName = @"TextEdit";
-        }
-    }
-    */
-    [self openFile:fullPath fromImage:nil at:NSZeroPoint inView:nil];
+    return [self openFile:fullPath fromImage:nil at:NSZeroPoint inView:nil];
   }
 
   app = [self _connectApplication:appName];
