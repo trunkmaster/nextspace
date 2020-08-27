@@ -83,18 +83,6 @@ static NSImage	*unknownTool = nil;
 // Preferences
 - (void)_workspacePreferencesChanged:(NSNotification *)aNotification;
 
-// open files
-- (BOOL)_connectToApplication:(NSString*)appName
-                       openFile:(NSString*)fullPath
-                  andDeactivate:(BOOL)flag;
-
-- (BOOL)_doOpenFile:(NSString*)fullPath
-          fromImage:(NSImage*)anImage
-                 at:(NSPoint)point
-             inView:(NSView*)aView
-            withApp:(NSString*)prefAppName
-         deactivate:(BOOL)deactivate;
-
 // application communication
 - (BOOL)_launchApplication:(NSString*)appName
                  arguments:(NSArray*)args;
@@ -301,12 +289,151 @@ static NSString		*_rootPath = @"/";
 }
 
 // NEXTSPACE
-- (BOOL)openFile:(NSString*)fullPath
+- (BOOL)openFile: (NSString*)fullPath
        fromImage:(NSImage*)anImage
               at:(NSPoint)point
           inView:(NSView*)aView
 {
-  return [self _doOpenFile:fullPath fromImage:anImage at:point inView:aView withApp:nil deactivate:YES];
+  return [self openFile:fullPath fromImage:anImage at:point inView:aView withApplication:nil andDeactivate:YES];
+}
+
+- (BOOL)openFile: (NSString*)fullPath
+       fromImage:(NSImage*)anImage
+              at:(NSPoint)point
+          inView:(NSView*)aView
+ withApplication:(NSString*) appName
+   andDeactivate:(BOOL)flag
+{
+  NSString      *fileType = nil;
+  NSPoint       destPoint = {0,0};
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSDictionary  *fattrs = nil;
+
+  if (![fm fileExistsAtPath:fullPath]) {
+    NXTRunAlertPanel(_(@"Workspace"),
+                     _(@"File '%@' does not exist!"), 
+                     nil, nil, nil, [fullPath lastPathComponent]);
+    return NO;
+  }
+
+  // Sliding coordinates
+  if (aView) {
+    point = [[aView window] convertBaseToScreen:[aView convertPoint:point
+                                                           toView:nil]];
+  }
+
+  // Get file type and application name
+  [self getInfoForFile:fullPath application:&appName type:&fileType];
+
+  NSDebugLLog(@"Workspace", @"[Workspace] openFile: type '%@' with app: %@",
+              fileType, appName);
+  
+  if ([fileType isEqualToString:NSApplicationFileType]) {
+    // .app should be launched
+      NSString     *wmName;
+      NSBundle     *appBundle;
+      NSDictionary *appInfo;
+      NSString     *iconPath;
+      NSString     *launchPath;
+      
+      // Don't launch ourself and Login panel
+      if ([appName isEqualToString:@"Workspace"] ||
+          [appName isEqualToString:@"Login"]) {
+        return YES;
+      }
+
+      appBundle = [[NSBundle alloc] initWithPath:fullPath];
+      appInfo = [appBundle infoDictionary];
+      if (!appInfo) {
+        NXTRunAlertPanel(_(@"Workspace"),
+                         _(@"Failed to start application \"%@\".\n"
+                           "Application info dictionary was not found or broken."), 
+                         nil, nil, nil, appName);
+        return NO;
+      }
+      wmName = [appInfo objectForKey:@"NSExecutable"];
+      if (!wmName) {
+        NSLog(@"No application NSExecutable found.");
+        NXTRunAlertPanel(_(@"Workspace"),
+                         _(@"Failed to start application \"%@\".\n"
+                           "Executable name is unknown (info doctionary is broken)."),
+                         nil, nil, nil, appName);
+        return NO;
+      }
+      if ([[wmName componentsSeparatedByString:@"."] count] == 1) {
+        wmName = [NSString stringWithFormat:@"%@.GNUstep",
+                           [wmName stringByDeletingPathExtension]];
+      }
+      launchPath = [self locateApplicationBinary:fullPath];
+      if (launchPath == nil) {
+        NXTRunAlertPanel(_(@"Workspace"),
+                         _(@"Failed to start application \"%@\".\n"
+                           "Executable \"%@\" was not found.\n"),
+                         nil, nil, nil, appName, fullPath);
+        return NO;
+      }
+
+      if (aView) {
+        iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
+                                       ofType:nil];
+        
+        WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
+      }
+        
+      if ([self launchApplication:fullPath] == NO) {
+        NXTRunAlertPanel(_(@"Workspace"),
+                         _(@"Failed to start application \"%@\""), 
+                         nil, nil, nil, appName);
+        return NO;
+      }
+      return YES;
+  }
+  else if ([fileType isEqualToString:NSDirectoryFileType] ||
+           [fileType isEqualToString:NSFilesystemFileType] ||
+           [wrappers containsObject:[fullPath pathExtension]]) {
+      // Open new FileViewer window
+      [self openNewViewerIfNotExistRootedAt:fullPath];
+      return YES;
+    }
+  else if (appName) {
+    // .app found for opening file type
+    NSBundle     *appBundle;
+    NSDictionary *appInfo;
+    NSString     *wmName;
+    NSString     *iconPath;
+    NSString     *launchPath;
+      
+    appBundle = [self bundleForApp:appName];
+    if (appBundle) {
+      appInfo = [appBundle infoDictionary];
+      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
+                                     ofType:nil];
+      
+      wmName = [appInfo objectForKey:@"NSExecutable"];
+      if ([[wmName componentsSeparatedByString:@"."] count] == 1) {
+        wmName = [NSString stringWithFormat:@"%@.GNUstep",
+                           [appName stringByDeletingPathExtension]];
+      }
+      launchPath = [self locateApplicationBinary:appName];
+      if (launchPath == nil) {
+        return NO;
+      }
+
+      if (aView) {
+        WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
+      }
+    }
+      
+    if (![self connectionApplication:appName openFile:fullPath andDeactivate:YES]) {
+      NXTRunAlertPanel(_(@"Workspace"),
+                       _(@"Failed to start application \"%@\" for file \"%@\""), 
+                       nil, nil, nil, appName, [fullPath lastPathComponent]);
+      return NO;
+    }
+    return YES;
+  }
+
+  return NO;
 }
 
 - (BOOL) openFile:(NSString*)fullPath
@@ -316,11 +443,47 @@ static NSString		*_rootPath = @"/";
 }
 
 // NEXTSPACE
-- (BOOL)openFile:(NSString*)fullPath
+- (BOOL) openFile:(NSString*)fullPath
  withApplication:(NSString*)appName
    andDeactivate:(BOOL)flag
 {
-  return [self _doOpenFile:fullPath fromImage:nil at:NSZeroPoint inView:nil withApp:appName deactivate:flag];
+  return [self openFile:fullPath fromImage:nil at:NSZeroPoint inView:nil withApplication:appName andDeactivate:flag];
+}
+
+- (BOOL) connectionApplication:(NSString*)appName
+  openFile:(NSString*)fullPath
+   andDeactivate:(BOOL)flag
+{
+  id app;
+
+  app = [self _connectApplication:appName];
+  if (app == nil) {
+    NSArray *args;
+
+    args = [NSArray arrayWithObjects:@"-GSFilePath",fullPath,nil];
+    return [self _launchApplication:appName arguments:args];
+  }
+  else {
+    @try {
+      if (flag == NO) {
+        [app application:NSApp openFileWithoutUI:fullPath];
+      }
+      else {
+        [app application:NSApp openFile:fullPath];
+      }
+    }
+    @catch (NSException *e) {
+      NSWarnLog(@"Failed to contact '%@' to open file", appName);
+      NXTRunAlertPanel(_(@"Workspace"),
+                       _(@"Failed to contact app '%@' to open file"), 
+                       nil, nil, nil, appName);
+      return NO;
+    }
+  }
+  if (flag) {
+    [NSApp deactivate];
+  }
+  return YES;
 }
 
 - (BOOL)openTempFile:(NSString*)fullPath
@@ -902,191 +1065,6 @@ static NSString		*_rootPath = @"/";
 @end
 
 @implementation Controller (NSWorkspacePrivate)
-  
-//-----------------------------------------------------------------------------
-//--- open files
-//-----------------------------------------------------------------------------
-
-// you should never call this directly, use _doOpenFile:fromImage...
-- (BOOL)_connectToApplication:(NSString*)appName
-                       openFile:(NSString*)fullPath
-                  andDeactivate:(BOOL)flag
-{
-  id app = [self _connectApplication:appName];
-  if (app == nil) {
-    NSArray *args;
-
-    args = [NSArray arrayWithObjects:@"-GSFilePath",fullPath,nil];
-    return [self _launchApplication:appName arguments:args];
-  }
-  else {
-    @try {
-      if (flag == NO) {
-        [app application:NSApp openFileWithoutUI:fullPath];
-      }
-      else {
-        [app application:NSApp openFile:fullPath];
-      }
-    }
-    @catch (NSException *e) {
-      NSWarnLog(@"Failed to contact '%@' to open file", appName);
-      NXTRunAlertPanel(_(@"Workspace"),
-                       _(@"Failed to contact app '%@' to open file"), 
-                       nil, nil, nil, appName);
-      return NO;
-    }
-  }
-  if (flag) {
-    [NSApp deactivate];
-  }
-  return YES;
-}
-
-- (BOOL)_doOpenFile:(NSString*)fullPath
-          fromImage:(NSImage*)anImage
-                 at:(NSPoint)point
-             inView:(NSView*)aView
-            withApp:(NSString*)appName
-         deactivate:(BOOL)deactivate
-{
-  NSString      *fileType = nil;
-  NSPoint       destPoint = {0,0};
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSDictionary  *fattrs = nil;
-
-  if (![fm fileExistsAtPath:fullPath]) {
-    NXTRunAlertPanel(_(@"Workspace"),
-                     _(@"File '%@' does not exist!"), 
-                     nil, nil, nil, [fullPath lastPathComponent]);
-    return NO;
-  }
-
-  // Sliding coordinates
-  if (anImage && aView) {
-    point = [[aView window] convertBaseToScreen:[aView convertPoint:point
-                                                             toView:nil]];
-  }
-
-  // Get file type and application name
-  [self getInfoForFile:fullPath application:&appName type:&fileType];
-
-  // Application is not associated - set `appName` to default editor.
-  if (appName == nil) {
-    if ([self _extension:[fullPath pathExtension] role:nil app:&appName] == NO) {
-      appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
-      if (!appName || [appName isEqualToString:@""]) {
-        appName = @"TextEdit";
-      }
-    }
-  }
-
-  NSDebugLLog(@"Workspace", @"[Workspace] openFile: type '%@' with app: %@",
-              fileType, appName);
-  
-  if ([fileType isEqualToString:NSApplicationFileType]) {
-    // .app should be launched
-      NSString     *wmName;
-      NSBundle     *appBundle;
-      NSDictionary *appInfo;
-      NSString     *iconPath;
-      NSString     *launchPath;
-      
-      // Don't launch ourself and Login panel
-      if ([appName isEqualToString:@"Workspace"] ||
-          [appName isEqualToString:@"Login"]) {
-        return YES;
-      }
-
-      appBundle = [[NSBundle alloc] initWithPath:fullPath];
-      appInfo = [appBundle infoDictionary];
-      if (!appInfo) {
-        NXTRunAlertPanel(_(@"Workspace"),
-                         _(@"Failed to start application \"%@\".\n"
-                           "Application info dictionary was not found or broken."), 
-                         nil, nil, nil, appName);
-        return NO;
-      }
-      wmName = [appInfo objectForKey:@"NSExecutable"];
-      if (!wmName) {
-        NSLog(@"No application NSExecutable found.");
-        NXTRunAlertPanel(_(@"Workspace"),
-                         _(@"Failed to start application \"%@\".\n"
-                           "Executable name is unknown (info doctionary is broken)."),
-                         nil, nil, nil, appName);
-        return NO;
-      }
-      if ([[wmName componentsSeparatedByString:@"."] count] == 1) {
-        wmName = [NSString stringWithFormat:@"%@.GNUstep",
-                           [wmName stringByDeletingPathExtension]];
-      }
-      launchPath = [self locateApplicationBinary:fullPath];
-      if (launchPath == nil) {
-        NXTRunAlertPanel(_(@"Workspace"),
-                         _(@"Failed to start application \"%@\".\n"
-                           "Executable \"%@\" was not found.\n"),
-                         nil, nil, nil, appName, fullPath);
-        return NO;
-      }
-
-      if (anImage && aView) {
-        iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
-                                     ofType:nil];
-      
-        WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
-      }
-      
-      if ([self launchApplication:fullPath] == NO) {
-        NXTRunAlertPanel(_(@"Workspace"),
-                         _(@"Failed to start application \"%@\""), 
-                         nil, nil, nil, appName);
-        return NO;
-      }
-      return YES;
-  }
-  else if ([fileType isEqualToString:NSDirectoryFileType] ||
-           [fileType isEqualToString:NSFilesystemFileType] ||
-           [wrappers containsObject:[fullPath pathExtension]]) {
-      // Open new FileViewer window
-      [self openNewViewerIfNotExistRootedAt:fullPath];
-      return YES;
-    }
-  else if (appName) {
-    // .app found for opening file type
-    NSBundle     *appBundle;
-    NSDictionary *appInfo;
-    NSString     *wmName;
-    NSString     *iconPath;
-    NSString     *launchPath;
-      
-    appBundle = [self bundleForApp:appName];
-    if (appBundle) {
-      appInfo = [appBundle infoDictionary];
-      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
-                                     ofType:nil];
-      
-      wmName = [appInfo objectForKey:@"NSExecutable"];
-      if ([[wmName componentsSeparatedByString:@"."] count] == 1) {
-        wmName = [NSString stringWithFormat:@"%@.GNUstep",
-                           [appName stringByDeletingPathExtension]];
-      }
-      launchPath = [self locateApplicationBinary:appName];
-      if (launchPath == nil) {
-        return NO;
-      }
-      WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
-    }
-      
-    if (![self _connectToApplication:appName openFile:fullPath andDeactivate:deactivate]) {
-      NXTRunAlertPanel(_(@"Workspace"),
-                       _(@"Failed to start application \"%@\" for file \"%@\""), 
-                       nil, nil, nil, appName, [fullPath lastPathComponent]);
-      return NO;
-    }
-    return YES;
-  }
-
-  return NO;
-}
 
 //-----------------------------------------------------------------------------
 //--- Images and icons
