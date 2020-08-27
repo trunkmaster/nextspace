@@ -294,17 +294,7 @@ static NSString		*_rootPath = @"/";
               at:(NSPoint)point
           inView:(NSView*)aView
 {
-  return [self openFile:fullPath fromImage:anImage at:point inView:aView withApplication:nil andDeactivate:YES];
-}
-
-- (BOOL)openFile: (NSString*)fullPath
-       fromImage:(NSImage*)anImage
-              at:(NSPoint)point
-          inView:(NSView*)aView
- withApplication:(NSString*) appName
-   andDeactivate:(BOOL)flag
-{
-  NSString      *fileType = nil;
+  NSString      *fileType = nil, *appName = nil;
   NSPoint       destPoint = {0,0};
   NSFileManager *fm = [NSFileManager defaultManager];
   NSDictionary  *fattrs = nil;
@@ -317,13 +307,21 @@ static NSString		*_rootPath = @"/";
   }
 
   // Sliding coordinates
-  if (aView) {
-    point = [[aView window] convertBaseToScreen:[aView convertPoint:point
+  point = [[aView window] convertBaseToScreen:[aView convertPoint:point
                                                            toView:nil]];
-  }
 
   // Get file type and application name
   [self getInfoForFile:fullPath application:&appName type:&fileType];
+
+  // Application is not associated - set `appName` to default editor.
+  if (appName == nil) {
+    if ([self _extension:[fullPath pathExtension] role:nil app:&appName] == NO) {
+      appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
+      if (!appName || [appName isEqualToString:@""]) {
+        appName = @"TextEdit";
+      }
+    }
+  }
 
   NSDebugLLog(@"Workspace", @"[Workspace] openFile: type '%@' with app: %@",
               fileType, appName);
@@ -372,14 +370,11 @@ static NSString		*_rootPath = @"/";
                          nil, nil, nil, appName, fullPath);
         return NO;
       }
-
-      if (aView) {
-        iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
-                                       ofType:nil];
-        
-        WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
-      }
-        
+      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
+                                     ofType:nil];
+      
+      WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
+      
       if ([self launchApplication:fullPath] == NO) {
         NXTRunAlertPanel(_(@"Workspace"),
                          _(@"Failed to start application \"%@\""), 
@@ -418,13 +413,10 @@ static NSString		*_rootPath = @"/";
       if (launchPath == nil) {
         return NO;
       }
-
-      if (aView) {
-        WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
-      }
+      WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
     }
       
-    if (![self connectionApplication:appName openFile:fullPath andDeactivate:YES]) {
+    if (![self openFile:fullPath withApplication:appName andDeactivate:YES]) {
       NXTRunAlertPanel(_(@"Workspace"),
                        _(@"Failed to start application \"%@\" for file \"%@\""), 
                        nil, nil, nil, appName, [fullPath lastPathComponent]);
@@ -443,18 +435,23 @@ static NSString		*_rootPath = @"/";
 }
 
 // NEXTSPACE
-- (BOOL) openFile:(NSString*)fullPath
+- (BOOL)openFile:(NSString*)fullPath
  withApplication:(NSString*)appName
    andDeactivate:(BOOL)flag
 {
-  return [self openFile:fullPath fromImage:nil at:NSZeroPoint inView:nil withApplication:appName andDeactivate:flag];
-}
-
-- (BOOL) connectionApplication:(NSString*)appName
-  openFile:(NSString*)fullPath
-   andDeactivate:(BOOL)flag
-{
   id app;
+
+  if (appName == nil) {
+    /*
+    if ([self _extension:[fullPath pathExtension] role:nil app:&appName] == NO) {
+      appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
+      if (!appName || [appName isEqualToString:@""]) {
+        appName = @"TextEdit";
+        }
+    }
+    */
+    [self openFile:fullPath fromImage:nil at:NSZeroPoint inView:nil];
+  }
 
   app = [self _connectApplication:appName];
   if (app == nil) {
