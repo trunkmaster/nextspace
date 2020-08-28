@@ -85,10 +85,10 @@ extern void WMSetErrorHandler(void);
 
 int WSApplicationMain(int argc, const char **argv)
 {
-  NSDictionary		*infoDict;
-  NSString              *mainModelFile;
-  NSString		*className;
-  Class			appClass;
+  NSDictionary	*infoDict;
+  NSString	*mainModelFile;
+  NSString	*className;
+  Class		appClass;
   
   CREATE_AUTORELEASE_POOL(pool);
 
@@ -133,27 +133,31 @@ int main(int argc, const char **argv)
             "[Workspace] Error: other window manager already running. Quitting...\n");
     exit(1);    
   }
-  
+
   fprintf(stderr,"=== Starting Workspace [%s]... ===\n", REVISION);
-  workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
-  wmaker_q = dispatch_queue_create("ns.workspace.wm", NULL);
+  workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 
-  //--- WindowMaker queue -----------------------------------------------
-  fprintf(stderr, "=== Initializing Window Manager... ===\n");
-  dispatch_sync(wmaker_q, ^{
-      WMInitializeWindowMaker(argc, (char **)argv);
-    });
-  fprintf(stderr, "=== Window Manager initialized! ===\n");
+  //--- Window Manager thread queue -------------------------------------
+  {
+    dispatch_queue_t wm_q;
+    
+    wm_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_SERIAL);
+    fprintf(stderr, "=== Initializing Window Manager... ===\n");
+    dispatch_sync(wm_q, ^{
+        WMInitializeWindowMaker(argc, (char **)argv);
+      });
+    fprintf(stderr, "=== Window Manager initialized! ===\n");
 
-  // Start X11 EventLoop in parallel
-  dispatch_async(wmaker_q, ^{ EventLoop(); });
+    // Start X11 EventLoop in parallel
+    dispatch_async(wm_q, ^{
+        EventLoop();
+      });
+  }
       
   //--- Workspace (GNUstep) queue ---------------------------------------
   fprintf(stderr, "=== Starting the Workspace... ===\n");
   dispatch_sync(workspace_q, ^{
-      @autoreleasepool {
-        WSApplicationMain(argc, argv);
-      }
+      WSApplicationMain(argc, argv);
     });
   fprintf(stderr, "=== Workspace successfully finished! ===\n");
   //---------------------------------------------------------------------

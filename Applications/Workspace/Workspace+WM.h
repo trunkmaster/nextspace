@@ -30,7 +30,6 @@
 //-----------------------------------------------------------------------------
 #include <dispatch/dispatch.h>
 dispatch_queue_t workspace_q;
-dispatch_queue_t wmaker_q;
 
 enum {
       WSLogoutOnQuit = 0,
