@@ -514,18 +514,25 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notif
 {
-  // [[NSWorkspace sharedWorkspace] findApplications];
-
-  procManager = [ProcessManager shared];
-
-  // ProcessManager created - Workspace is ready to register applications.
-  // Show Dock and start applications in it
-  WAppIcon *btn;
-  WDock    *dock = wDefaultScreen()->dock;
-
+  // Update Workspace application icon (main Dock icon)
   [self updateWorkspaceBadge];
   WSKeyboardGroupDidChange(0);
       
+  // Recycler
+  {
+    WDock    *dock = wDefaultScreen()->dock;
+    WAppIcon *main_dock_icon = dock->icon_array[0];
+    WAppIcon *recycler_icon;
+
+    recycler = [[Recycler alloc] initWithDock:dock];
+    recycler_icon = [recycler dockIcon];
+    if (recycler_icon) {
+      recycler_icon->icon->owner = main_dock_icon->icon->owner;
+      recycler_icon->main_window = main_dock_icon->main_window;
+      [[recycler appIcon] orderFrontRegardless];
+    }
+  }    
+
   // Detect lid close/open events
   systemPower = [OSEPower new];
   [systemPower startEventsMonitor];
@@ -540,33 +547,26 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
            selector:@selector(applicationDidChangeScreenParameters:)
                name:NSApplicationDidChangeScreenParametersNotification
              object:NSApp];
-
-  // Recycler
-  recycler = [[Recycler alloc] initWithDock:dock];
-  btn = [recycler dockIcon];
-  if (btn) {
-    btn->icon->owner = dock->icon_array[0]->icon->owner;
-    btn->main_window = dock->icon_array[0]->main_window;
-    [[recycler appIcon] orderFrontRegardless];
-  }
-      
-  WMDockAutoLaunch(dock);
-
-  return;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   NSUserDefaults       *df = [NSUserDefaults standardUserDefaults];
-
-  // init services
-  [NSApp setServicesProvider:self];
+  
+  // Services
   //NSUpdateDynamicServices();
+  [NSApp setServicesProvider:self];
 
   // Initialize private NSWorkspace implementation
   [self initNSWorkspace];
 
+  // ProcessManager must be ready to register automatically started applications.
+  procManager = [ProcessManager shared];
+
+  // Start docked applications with `AutoLaunch = Yes`
+  WMDockAutoLaunch(wDefaultScreen()->dock);
+    
   // Init Workspace's tools
   mediaOperations = [[NSMutableDictionary alloc] init];
   // [self mediaManager];
@@ -582,7 +582,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   fileViewers = [[NSMutableArray alloc] init];
   
   // Now we are ready to show windows and menu
-  [df setObject:@"NO" forKey:@"NXAutoLaunch"];
   if (WMIsDockAppAutolaunch(0) != NO) {
     [self _restoreWindows];
     [[NSApp mainMenu] display];
