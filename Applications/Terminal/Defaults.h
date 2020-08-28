@@ -134,6 +134,15 @@ extern NSString *DoubleEscapeKey;
 - (BOOL)useMultiCellGlyphs;
 - (void)setUseMultiCellGlyphs:(BOOL)yn;
 @end
+//----------------------------------------------------------------------------
+// Selection
+//---
+extern NSString *WordCharactersKey;
+
+@interface Defaults (Selection)
+- (NSString *)wordCharacters;
+- (void)setWordCharacters:(NSString *)characters;
+@end
 
 //----------------------------------------------------------------------------
 // Colors
