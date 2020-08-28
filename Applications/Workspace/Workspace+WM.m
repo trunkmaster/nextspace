@@ -1145,6 +1145,10 @@ NSArray *WMNotDockedAppList(void)
 
   appIcon = wDefaultScreen()->app_icon_list;
   while (appIcon->next) {
+    if (!strcmp(appIcon->wm_class, "GNUstep") && !strcmp(appIcon->wm_instance, "Login")) {
+      appIcon = appIcon->next;
+      continue;
+    }
     if (!appIcon->docked) {
       if (appIcon->command && appIcon->command != NULL) {
         command = wstrdup(appIcon->command);
