@@ -1,0 +1,51 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setAlternateKey:",
+	    "setCharset:",
+	    "setDefault:",
+	    "setEscapeKey:",
+	    "setMultiCellGlyphs:",
+	    "setWindow:",
+	    "setWordCharacters:",
+	    "showDefault:"
+	);
+	Super = NSObject;
+    };
+    LinuxPrefs = {
+	Actions = (
+	    "setDefault:",
+	    "setCharset:",
+	    "setAlternateKey:",
+	    "setEscapeKey:",
+	    "setWindow:",
+	    "showDefault:",
+	    "setMultiCellGlyphs:"
+	);
+	Outlets = (
+	    charsetBtn,
+	    commandKeyBtn,
+	    escapeKeyBtn,
+	    window,
+	    view,
+	    handleMulticellBtn,
+	    alternateKeyMtrx
+	);
+	Super = NSObject;
+    };
+    SelectionPrefs = {
+	Actions = (
+	    "setWordCharacters:",
+	    "setDefault:",
+	    "showDefault:",
+	    "setWindow:"
+	);
+	Outlets = (
+	    wordCharactersField,
+	    window,
+	    view
+	);
+	Super = NSObject;
+    };
+}

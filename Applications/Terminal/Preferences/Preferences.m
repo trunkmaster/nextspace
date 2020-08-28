@@ -23,6 +23,7 @@
 #import "ColorsPrefs.h"
 #import "DisplayPrefs.h"
 #import "LinuxPrefs.h"
+#import "SelectionPrefs.h"
 #import "ShellPrefs.h"
 #import "StartupPrefs.h"
 #import "TitleBarPrefs.h"
@@ -75,6 +76,7 @@ static Preferences *shared = nil;
                               [ShellPrefs new], [ShellPrefs name],
                               [StartupPrefs new], [StartupPrefs name],
                               [TitleBarPrefs new], [TitleBarPrefs name],
+                              [SelectionPrefs new], [SelectionPrefs name],
                               [WindowPrefs new], [WindowPrefs name],
                               nil];
   [prefModules retain];

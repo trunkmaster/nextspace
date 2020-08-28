@@ -1902,6 +1902,12 @@ static void set_foreground(NSGraphicsContext *gc,
 
       /* try to find a character set for this character */
       cs = [NSCharacterSet alphanumericCharacterSet];
+      if ([additionalWordCharacters length] > 0)
+        {
+          NSMutableCharacterSet* mcs = [NSMutableCharacterSet characterSetWithCharactersInString:additionalWordCharacters];
+          [mcs formUnionWithCharacterSet:cs];
+          cs = mcs;
+        }
       if (![cs characterIsMember:ch])
         cs = [NSCharacterSet punctuationCharacterSet];
       if (![cs characterIsMember:ch])
@@ -2730,6 +2736,8 @@ static int handled_mask = (NSDragOperationCopy |
       [self setBoldFont:[defaults terminalFont]];
     }
 
+  [self setAdditionalWordCharacters:[defaults wordCharacters]];
+
   use_multi_cell_glyphs = [defaults useMultiCellGlyphs];
 
   screen = malloc(sizeof(screen_char_t)*sx*sy);
@@ -2790,6 +2798,7 @@ static int handled_mask = (NSDragOperationCopy |
   screen=NULL;
   sbuf=NULL;
 
+  DESTROY(additionalWordCharacters);
   DESTROY(font);
   DESTROY(boldFont);
 
@@ -2896,6 +2905,12 @@ static int handled_mask = (NSDragOperationCopy |
 // ---
 // Per-window preferences
 // ---
+
+- (void)setAdditionalWordCharacters:(NSString*)str
+{
+  ASSIGN(additionalWordCharacters, str);
+}
+
 - (void)setFont:(NSFont *)aFont
 {
   NSRect r;

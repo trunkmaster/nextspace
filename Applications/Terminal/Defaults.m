@@ -852,6 +852,25 @@ NSString *LoginShellKey = @"LoginShell";
 @end
 
 //----------------------------------------------------------------------------
+// Selection
+//---
+NSString *WordCharactersKey = @"WordCharacters";
+//---
+@implementation Defaults (Selection)
+- (NSString *)wordCharacters
+{
+  return [self stringForKey:WordCharactersKey];
+}
+- (void)setWordCharacters:(NSString *)characters
+{
+  if (characters == nil)
+    characters = @"";
+
+  [self setObject:characters forKey:WordCharactersKey];
+}
+@end
+
+//----------------------------------------------------------------------------
 // Startup
 //---
 NSString *StartupActionKey = @"StartupAction";

@@ -517,6 +517,14 @@ NSString *TerminalWindowSizeDidChangeNotification =
       [livePreferences setShell:[prefs objectForKey:ShellKey]];
       [livePreferences setLoginShell:[prefs boolForKey:LoginShellKey]];
     }
+
+  // Selection:
+  if ([prefs objectForKey:WordCharactersKey])
+    {
+      [tView setAdditionalWordCharacters:[prefs objectForKey:WordCharactersKey]];
+      [livePreferences setWordCharacters:[prefs objectForKey:WordCharactersKey]];
+    }
+
   // Linux:
   if ([prefs objectForKey:CharacterSetKey])
     {

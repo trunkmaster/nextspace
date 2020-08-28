@@ -94,6 +94,9 @@ struct selection_range
 
   Defaults      *defaults;
 
+  // Selection
+  NSString* additionalWordCharacters;
+
   // Colors
   NSColor	*cursorColor;
   NSUInteger	cursorStyle;
@@ -143,6 +146,8 @@ struct selection_range
 
 - (void)setIgnoreResize:(BOOL)ignore;
 - (void)setBorder:(float)x :(float)y;
+
+- (void)setAdditionalWordCharacters:(NSString*)str;
 
 - (void)setFont:(NSFont *)aFont;
 - (void)setBoldFont:(NSFont *)bFont;
