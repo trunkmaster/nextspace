@@ -1,0 +1,94 @@
+{
+    "BUILDER_TARGETS" = (
+	all,
+	install,
+	uninstall,
+	clean,
+	distclean,
+	dist
+    );
+    "CLASS_FILES" = (
+	"TerminalParser_Linux.m",
+	"TerminalView.m",
+	"Defaults.m"
+    );
+    COMPILEROPTIONS = "";
+    CPPOPTIONS = "";
+    "CREATION_DATE" = "";
+    "DOCU_FILES" = (
+    );
+    FRAMEWORKS = (
+    );
+    "HEADERS_INSTALL_DIR" = "";
+    "HEADER_FILES" = (
+	"TerminalKit.h",
+	"TerminalParser_Linux.h",
+	"TerminalView.h",
+	"Terminal.h",
+	"Defaults.h",
+	"charmaps.h"
+    );
+    IMAGES = (
+    );
+    INSTALLDIR = "$(HOME)/GNUstep/Library/Frameworks";
+    INTERFACES = (
+    );
+    LANGUAGE = English;
+    LIBRARIES = (
+	"gnustep-base",
+	"gnustep-gui"
+    );
+    LINKEROPTIONS = "";
+    MAKEFILEDIR = "$(GNUSTEP_MAKEFILES)";
+    "OBJC_COMPILEROPTIONS" = "";
+    "OTHER_RESOURCES" = (
+    );
+    "OTHER_SOURCES" = (
+    );
+    "PROJECT_AUTHORS" = (
+    );
+    "PROJECT_COPYRIGHT" = "Copyright (C) 200x";
+    "PROJECT_COPYRIGHT_DESC" = "Released under ...";
+    "PROJECT_CREATOR" = "";
+    "PROJECT_DESCRIPTION" = "No description avaliable!";
+    "PROJECT_GROUP" = "No group avaliable!";
+    "PROJECT_MAINTAINER" = "";
+    "PROJECT_NAME" = TerminalKit;
+    "PROJECT_RELEASE" = "0.1";
+    "PROJECT_SUMMARY" = "No summary avaliable!";
+    "PROJECT_TYPE" = Framework;
+    "PROJECT_URL" = "";
+    "PUBLIC_HEADERS" = (
+	"TerminalKit.h",
+	"TerminalParser_Linux.h",
+	"TerminalView.h",
+	"Terminal.h",
+	"Defaults.h",
+	"charmaps.h"
+    );
+    "SEARCH_HEADER_DIRS" = (
+    );
+    "SEARCH_LIB_DIRS" = (
+    );
+    SUBPROJECTS = (
+    );
+    "SUPPORTING_FILES" = (
+	"GNUmakefile.preamble",
+	GNUmakefile,
+	"GNUmakefile.postamble"
+    );
+    "USER_LANGUAGES" = (
+	English,
+	Ukrainian,
+	German,
+	Dutch,
+	Spanish,
+	French,
+	Italian,
+	Slovak,
+	Hungarian,
+	Russian,
+	TraditionalChinese,
+	Korean
+    );
+}
