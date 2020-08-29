@@ -469,6 +469,14 @@ static NSDictionary *servicesDictionary = nil;
           [twc showWindow:self];
         }
       }
+    case EXEC_IN_FOREMOST_WINDOW:
+      {
+        TerminalWindowController *twc = nil;
+            twc = [[NSApp delegate] newWindowWithShell];
+            [[[twc terminalView] terminalParser]
+                  sendString:[NSString stringWithFormat:@"%@\n", cmdline]];
+
+      }
       break;
     }
   NSDebugLLog(@"service",@"return");
