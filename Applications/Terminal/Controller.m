@@ -19,11 +19,11 @@
 #import <sys/wait.h>
 
 #import <DesktopKit/DesktopKit.h>
+#import <TerminalKit/TerminalKit.h>
 
 #import "Defaults.h"
 
 #import "TerminalServices.h"
-#import "TerminalView.h"
 #import "TerminalWindow.h"
 #import "TerminalFinder.h"
 

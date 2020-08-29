@@ -12,8 +12,9 @@
 */
 
 #import <AppKit/AppKit.h>
+#import <TerminalKit/TerminalKit.h>
+
 #import "Controller.h"
-#import "TerminalView.h"
 #import "TerminalWindow.h"
 #import "TerminalFinder.h"
 

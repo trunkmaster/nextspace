@@ -10,11 +10,11 @@
 
 #import <AppKit/AppKit.h>
 #import <DesktopKit/NXTAlert.h>
+#import <TerminalKit/TerminalKit.h>
 
 #import "TerminalServices.h"
 
 #import "TerminalWindow.h"
-#import "TerminalView.h"
 #import "Controller.h"
 
 static NSDictionary *servicesDictionary = nil;

@@ -25,8 +25,9 @@
 
 #import "Defaults.h"
 #import "TerminalServices.h"
-#import "TerminalView.h"
 #import "TerminalWindow.h"
+
+#import <TerminalKit/TerminalKit.h>
 
 @interface Terminal : NSObject
 

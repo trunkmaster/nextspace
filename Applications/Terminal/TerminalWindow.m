@@ -18,10 +18,11 @@
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSWindow.h>
 
+#import <TerminalKit/TerminalKit.h>
+
 #import "Controller.h"
 #import "Defaults.h"
 #import "TerminalWindow.h"
-#import "TerminalView.h"
 
 NSString *TerminalWindowNoMoreActiveWindowsNotification =
   @"TerminalWindowNoMoreActiveWindowsNotification";

@@ -48,41 +48,6 @@ static Defaults *shared = nil;
   return shared;
 }
 
-+ (NSString *)sessionsDirectory
-{
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSString      *path;
-  BOOL          isDir;
-  
-  // Assume that ~/Library already exists
-  path = [NSString stringWithFormat:@"%@/Library/Terminal", NSHomeDirectory()];
-
-  if ([fm fileExistsAtPath:path isDirectory:&isDir])
-    {
-      if (!isDir)
-        {
-          NXTRunAlertPanel(@"Session Directory",
-                          @"%@ exists and not a directory.\n"
-                          "Check your home directory layout",
-                          @"Ok", nil, nil, path);
-          return nil;
-        }
-    }
-  else
-    {
-      if ([fm createDirectoryAtPath:path attributes:nil] == NO)
-        {
-          NXTRunAlertPanel(@"Session Directory",
-                          @"Error occured while creating directory %@.\n"
-                          "Check your home directory layout",
-                          @"Ok", nil, nil, path);
-          return nil;
-        }
-    }
-
-  return path;
-}
-
 // Store NSUserDefaults in 'defaults' ivar
 - (id)init
 {
@@ -867,42 +832,5 @@ NSString *WordCharactersKey = @"WordCharacters";
     characters = @"";
 
   [self setObject:characters forKey:WordCharactersKey];
-}
-@end
-
-//----------------------------------------------------------------------------
-// Startup
-//---
-NSString *StartupActionKey = @"StartupAction";
-NSString *StartupFileKey = @"StartupFile";
-NSString *HideOnAutolaunchKey = @"HideOnAutolaunch";
-//---
-@implementation Defaults (Startup)
-- (StartupAction)startupAction
-{
-  if ([self integerForKey:StartupActionKey] == -1)
-    [self setStartupAction:OnStartCreateShell];
-  
-  return [self integerForKey:StartupActionKey];
-}
-- (void)setStartupAction:(StartupAction)action
-{
-  [self setInteger:action forKey:StartupActionKey];
-}
-- (NSString *)startupFile
-{
-  return [self objectForKey:StartupFileKey];
-}
-- (void)setStartupFile:(NSString *)path
-{
-  [self setObject:path forKey:StartupFileKey];
-}
-- (BOOL)hideOnAutolaunch
-{
-  return [self boolForKey:HideOnAutolaunchKey];
-}
-- (void)setHideOnAutolaunch:(BOOL)yn
-{
-  [self setBool:yn forKey:HideOnAutolaunchKey];
 }
 @end

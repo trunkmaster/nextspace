@@ -27,7 +27,6 @@ NSUserDefaults *ud;
 }
 
 + shared;
-+ (NSString *)sessionsDirectory;
 
 - (id)initEmpty;
 - (id)initWithFile:(NSString *)filePath;
@@ -226,26 +225,4 @@ extern NSString	*LoginShellKey;
 - (void)setShell:(NSString *)sh;
 - (BOOL)loginShell;
 - (void)setLoginShell:(BOOL)yn;
-@end
-
-//----------------------------------------------------------------------------
-// Startup
-//---
-extern NSString *StartupActionKey;
-extern NSString	*StartupFileKey;
-extern NSString	*HideOnAutolaunchKey;
-
-typedef enum {
-  OnStartDoNothing = 1,
-  OnStartOpenFile = 2,
-  OnStartCreateShell = 3
-} StartupAction;
-
-@interface Defaults (Startup)
-- (StartupAction)startupAction;
-- (void)setStartupAction:(StartupAction)action;
-- (NSString *)startupFile;
-- (void)setStartupFile:(NSString *)filePath;
-- (BOOL)hideOnAutolaunch;
-- (void)setHideOnAutolaunch:(BOOL)yn;
 @end
