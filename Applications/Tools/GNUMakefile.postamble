@@ -35,26 +35,26 @@ before-install::
 
 # Things to do after installing
 after-install::
-	if [ ! -f $(GNUSTEP_DOC_MAN) ]; then \
-	  $(MKDIRS) $(GNUSTEP_DOC_MAN); \
+	if [ ! -f $(GNUSTEP_SYSTEM_DOC_MAN) ]; then \
+	  $(MKDIRS) $(GNUSTEP_SYSTEM_DOC_MAN); \
 	fi; \
-	if [ ! -f $(GNUSTEP_DOC_MAN)/man1 ]; then \
-	  $(MKDIRS) $(GNUSTEP_DOC_MAN)/man1; \
+	if [ ! -f $(GNUSTEP_SYSTEM_DOC_MAN)/man1 ]; then \
+	  $(MKDIRS) $(GNUSTEP_SYSTEM_DOC_MAN)/man1; \
 	fi; \
 	for file in $(MAN1_PAGES) __done; do \
 	  if [ $$file != __done ]; then \
-	    $(INSTALL_DATA) $$file $(GNUSTEP_DOC_MAN)/man1/$$file; \
-	    which gzip && rm -f $(GNUSTEP_DOC_MAN)/man1/$$file.gz \
-		&& gzip -9 $(GNUSTEP_DOC_MAN)/man1/$$file; \
+	    $(INSTALL_DATA) $$file $(GNUSTEP_SYSTEM_DOC_MAN)/man1/$$file; \
+	    which gzip && rm -f $(GNUSTEP_SYSTEM_DOC_MAN)/man1/$$file.gz \
+		&& gzip -9 $(GNUSTEP_SYSTEM_DOC_MAN)/man1/$$file; \
 	  fi; \
 	done; \
 
 # Things to do before uninstalling
 before-uninstall::
 	for file in $(MAN1_PAGES); do \
-	  rm -f $(GNUSTEP_DOC_MAN)/man1/$$file.gz; \
+	  rm -f $(GNUSTEP_SYSTEM_DOC_MAN)/man1/$$file.gz; \
 	done;
-	-rmdir $(GNUSTEP_DOC_MAN)/man1;
+	-rmdir $(GNUSTEP_SYSTEM_DOC_MAN)/man1;
 
 # Things to do after uninstalling
 # after-uninstall::
