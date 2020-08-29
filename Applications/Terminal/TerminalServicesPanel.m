@@ -331,11 +331,19 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
 {
   if ([executeTypeBtn indexOfSelectedItem] == EXEC_IN_BACKGROUND)
     {
+      [outputMatrix setEnabled:YES];
       [[outputMatrix cellWithTag:0] setTitle:@"Discard Output"];
       [[outputMatrix cellWithTag:1] setTitle:@"Return Output"];
     }
+  else if ([executeTypeBtn indexOfSelectedItem] == EXEC_IN_FOREMOST_WINDOW)
+    {
+      [outputMatrix setEnabled:NO];
+      [[outputMatrix cellWithTag:0] setTitle:@"Idle Window"];
+      [[outputMatrix cellWithTag:1] setTitle:@"New Window"];
+    }
   else
     {
+      [outputMatrix setEnabled:YES];
       [[outputMatrix cellWithTag:0] setTitle:@"Idle Window"];
       [[outputMatrix cellWithTag:1] setTitle:@"New Window"];
     }  
@@ -351,6 +359,13 @@ shouldEditTableColumn:(NSTableColumn *)tableColumn
     {
       enabled = NO;
     }
+
+  // Run Service in foremost Window
+  if ([executeTypeBtn indexOfSelectedItem] == EXEC_IN_FOREMOST_WINDOW)
+    {
+      enabled = NO;
+    }
+
 
   if (enabled)
     {

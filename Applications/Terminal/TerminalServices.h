@@ -37,6 +37,7 @@
 #define ExecType @"ExecType"
 #define EXEC_IN_BACKGROUND 0
 #define EXEC_IN_WINDOW     1
+#define EXEC_IN_FOREMOST_WINDOW 2
 
 // 1 = "New Window", 0 = "Idle Window"
 #define WindowType @"WindowType"
