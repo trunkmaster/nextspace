@@ -1,8 +1,8 @@
 /* Include for nxworkspace tools
-   Copyright (C) 1998 Free Software Foundation, Inc.
+   Copyright (C) 2020 Free Software Foundation, Inc.
 
-   Written by:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
-   Created: October 1998
+   Written by:  onflapp
+   Created: September 2020
 
    This file is part of the GNUstep Project
 
