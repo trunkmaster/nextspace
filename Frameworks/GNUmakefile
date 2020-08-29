@@ -8,7 +8,8 @@ VERSION = 0.90
 SUBPROJECTS = \
     SystemKit \
     DesktopKit \
-    SoundKit
+    SoundKit \
+		TerminalKit
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/aggregate.make
