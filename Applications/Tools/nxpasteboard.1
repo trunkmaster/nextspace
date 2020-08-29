@@ -1,0 +1,36 @@
+.\"nxpasteboard(1) man page
+.\"put together by onflapp
+.\"Copyright (C) 2020 Free Software Foundation, Inc.
+.\"Copying and distribution of this file, with or without modification,
+.\"are permitted in any medium without royalty provided the copyright
+.\"notice and this notice are preserved.
+.\"
+.\"Process this file with
+.\"groff -man -Tascii nxpasteboard.1
+.\"
+.TH NXPASTEBOARD 1 "August 2020" GNUstep "NEXTSPACE System Manual"
+.SH NAME
+nxpasteboard \- gives you ability to do copy & paste and invoke system services directly from command line
+.SH SYNOPSIS
+.B  nxpasteboard [--copy] [--paste] [--service <name>]
+.P
+.SH DESCRIPTION
+.P
+copy reads text from the stantard input and writes it to the pasteboard
+.P
+paste reads text from the pasteboard and writes it to the standard output
+.P
+service reads text from the standard input and then calls system service to process it. System service is indentified by its name. This usually corresponds to it's menu title in the Services menu.
+
+  echo "$PWD" | nxpasteboard --service "Terminal/Open shell here"
+
+If service returns any text, it will be written back to the standard output.
+
+.SH OPTIONS
+.P
+--copy            copy text from standard input to the pasteboard
+
+--paste           paste text from the pasteboard to standard output
+
+--service <name>  call service with text from standard input
+.P
