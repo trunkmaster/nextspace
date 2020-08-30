@@ -1,3 +1,9 @@
+nextspace-applications (0.90+20200829.git27f653c2-1) unstable; urgency=medium
+
+  * Update to latest master
+
+ -- Patrick Georgi <patrick@georgi.software>  Sun, 30 Aug 2020 16:24:57 +0200
+
 nextspace-applications (0.90+20200626.git2b996873-1) unstable; urgency=medium
 
   * Update to latest master
