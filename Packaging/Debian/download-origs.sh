@@ -14,7 +14,7 @@ git_remote_archive() {
 	fi
 	rm -rf tmp
 	git clone --recurse-submodules "$url" tmp
-	git archive --prefix="$prefix" --remote=file://$PWD/tmp/ -o "$tarfile" "$branch"
+	tar --exclude-vcs -C tmp --transform "flags=r;s,^\./*,${prefix}," --owner=nobody --group=nogroup -zcf "$tarfile" .
 	rm -rf tmp
 }
 
