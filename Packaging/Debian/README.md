@@ -89,6 +89,21 @@ There's a convenience script to build them all in the right order:
 
     $ ./build-from-dsc.sh
 
+# Updating a package source
+
+To update a package, several steps need to be done:
+
+1. Update the version number in versions.inc.sh
+2. Download the new tarball: `./download-origs.sh` and check that they're correct
+3. Move the source directory: `git mv package-old-version package-new-version`
+4. Clean out the package's source tree: `cd package-new-version && git clean -fdx $PWD && cd ..`
+5. Unpack the new sources: `tar xf package-new-version.tar.*`
+6. Update the package's changelog: `cd package-new-version && dch -d && dch -r && cd ..`
+7. Create the dsc files: `./create-dscs.sh`
+8. Build the packages: `./build-from-dsc.sh`
+
+After double-checking everything, `git commit -a` and push for review!
+
 # Credits
 
 This integration used several sources that informed how the packages are built:

@@ -1,0 +1,11 @@
+libobjc2 (2.1-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Patrick Georgi <patrick@georgi.software>  Sun, 30 Aug 2020 16:11:39 +0200
+
+libobjc2 (2.0-1) unstable; urgency=medium
+
+  * Initial release
+
+ -- Patrick Georgi <patrick@georgi.software>  Sun, 03 May 2020 07:56:14 +0200

@@ -1,0 +1,11 @@
+nextspace (0.90+20200829.git27f653c2-1) unstable; urgency=medium
+
+  * Update to latest master
+
+ -- Patrick Georgi <patrick@georgi.software>  Sun, 30 Aug 2020 16:24:40 +0200
+
+nextspace (0.90+20200626.git2b996873-1) unstable; urgency=medium
+
+  * Initial release
+
+ -- Patrick Georgi <patrick@georgi.software>  Thu, 02 Jul 2020 23:35:41 +0200
