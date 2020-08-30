@@ -8,7 +8,7 @@ map_version_from_commit() {
 }
 
 libdispatch_version=5.1.5
-libobjc2_version=2.0
+libobjc2_version=2.1
 gnustep_make_version=2.7.0
 gnustep_base_version=1.27.0
 gnustep_gui_version=0.28.0+nextspace
