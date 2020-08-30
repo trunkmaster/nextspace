@@ -135,7 +135,7 @@ int main(int argc, const char **argv)
   }
 
   fprintf(stderr,"=== Starting Workspace [%s]... ===\n", REVISION);
-  workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
 
   //--- Window Manager thread queue -------------------------------------
   {
