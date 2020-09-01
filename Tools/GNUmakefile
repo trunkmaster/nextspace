@@ -52,8 +52,8 @@ TOOL_NAME = nxworkspace nxpasteboard
 nxworkspace_OBJC_FILES = nxworkspace.m
 nxpasteboard_OBJC_FILES = nxpasteboard.m
 
-include GNUMakefile.preamble
+include GNUmakefile.preamble
 
 include $(GNUSTEP_MAKEFILES)/tool.make
 
-include GNUMakefile.postamble
+include GNUmakefile.postamble
