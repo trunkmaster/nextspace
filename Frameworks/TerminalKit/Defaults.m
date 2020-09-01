@@ -97,7 +97,8 @@ static Defaults *shared = nil;
   
   if ([def isKindOfClass:[NSUserDefaults class]])
     {
-      NSDictionary *udd = [def persistentDomainForName:@"Terminal"];
+      NSString* processName = [[NSProcessInfo processInfo] processName];
+      NSDictionary *udd = [def persistentDomainForName:processName];
       defaults = [[NSMutableDictionary alloc] initWithDictionary:udd
                                                        copyItems:NO];
     }
@@ -127,7 +128,8 @@ static Defaults *shared = nil;
 {
   if ([defaults isKindOfClass:[NSUserDefaults class]])
     {
-      return [defaults persistentDomainForName:@"Terminal"];
+      NSString* processName = [[NSProcessInfo processInfo] processName];
+      return [defaults persistentDomainForName:processName];
     }
   
   return defaults;
@@ -142,7 +144,8 @@ static Defaults *shared = nil;
 {
   if ([defaults isKindOfClass:[NSUserDefaults class]])
     {
-      return [[defaults persistentDomainForName:@"Terminal"]
+      NSString* processName = [[NSProcessInfo processInfo] processName];
+      return [[defaults persistentDomainForName:processName]
                writeToFile:path atomically:YES];
     }
   
