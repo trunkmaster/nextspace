@@ -624,12 +624,14 @@ static void handleMapRequest(XEvent * ev)
     /* extra focus steps for GNUstep applications */
     if (wwin->flags.is_gnustep) {
       if (WINDOW_LEVEL(wwin) == WMMainMenuLevel && wwin->flags.mapped == 0) {
-        /* GNUstep app main menu window is managed but unmapped */
+        /* GNUstep application activates and maps main menu. 
+           Main menu window is managed but unmapped.*/
         WApplication *wapp = wApplicationOf(wwin->main_window);
         
         wWindowMap(wwin);
-        if ((wapp->last_focused && wapp->last_focused->flags.mapped == 0)
-            || wwin == wapp->menu_win) {
+        /* It's minimal app (menu only) or menu should be focused on workspace
+           different from last focused window's. */
+        if (!wapp->last_focused || wapp->last_focused->flags.mapped == 0) {
           wSetFocusTo(scr, wwin);
         }
       }
