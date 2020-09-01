@@ -1776,9 +1776,10 @@ void wWindowUnfocus(WWindow *wwin)
   if (wwin->flags.is_gnustep == 0) {
     wFrameWindowChangeState(wwin->frame, wwin->flags.semi_focused ? WS_PFOCUSED : WS_UNFOCUSED);
   }
-  else {
-    // Send FocusOut event with NotifyNormal mode since GNUstep(NEXTSPACE) ignores
-    // grabbed mode FocusOut events.
+  else if (WINDOW_LEVEL(wwin) != WMMainMenuLevel) {
+    /* Send FocusOut event with NotifyNormal mode since
+       GNUstep(NEXTSPACE, XGServerEvent.m, processEvent:, FocusOut) ignores
+       grabbed mode FocusOut events.*/
     Window  fwin;
     int     rev;
     XGetInputFocus(dpy, &fwin, &rev);
