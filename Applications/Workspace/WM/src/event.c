@@ -635,9 +635,6 @@ static void handleMapRequest(XEvent * ev)
           wSetFocusTo(scr, wwin);
         }
       }
-      else {
-        wSetFocusTo(scr, wwin);
-      }
     }
     
     return;
