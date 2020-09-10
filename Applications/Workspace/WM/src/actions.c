@@ -133,6 +133,10 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
     return;
 
+  /* Do not focus popups. FIXME: should popups not be managed at all? */
+  if (wwin && WINDOW_LEVEL(wwin) == WMPopUpLevel)
+    return;
+
   if (wwin && wwin->flags.is_gnustep) {
     WApplication *wwin_app = wApplicationOf(wwin->main_window);
     WApplication *focused_app;
