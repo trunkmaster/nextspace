@@ -458,9 +458,9 @@ int WSDockMaxIcons(WScreen *scr)
   return head_rect.size.height / wPreferences.icon_size;
 }
 enum {
-  KeepOnTop = WMDockLevel,
-  Normal = WMNormalLevel,
-  AutoRaiseLower = WMDesktopLevel
+  KeepOnTop = NSDockWindowLevel,
+  Normal = NSNormalWindowLevel,
+  AutoRaiseLower = NSDesktopWindowLevel
 };
 int WSDockLevel()
 {
@@ -489,10 +489,10 @@ static void toggleLowered(WDock *dock)
   int newlevel, i;
 
   if (!dock->lowered) {
-    newlevel = WMNormalLevel;
+    newlevel = NSNormalWindowLevel;
     dock->lowered = 1;
   } else {
-    newlevel = WMDockLevel;
+    newlevel = NSDockWindowLevel;
     dock->lowered = 0;
   }
 

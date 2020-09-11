@@ -141,17 +141,17 @@ static void execWindowOptionCommand(WMenu * menu, WMenuEntry * entry)
 
   switch (entry->order) {
   case WO_KEEP_ON_TOP:
-    if (wwin->frame->core->stacking->window_level != WMFloatingLevel)
-      ChangeStackingLevel(wwin->frame->core, WMFloatingLevel);
+    if (wwin->frame->core->stacking->window_level != NSFloatingWindowLevel)
+      ChangeStackingLevel(wwin->frame->core, NSFloatingWindowLevel);
     else
-      ChangeStackingLevel(wwin->frame->core, WMNormalLevel);
+      ChangeStackingLevel(wwin->frame->core, NSNormalWindowLevel);
     break;
 
   case WO_KEEP_AT_BOTTOM:
-    if (wwin->frame->core->stacking->window_level != WMSunkenLevel)
-      ChangeStackingLevel(wwin->frame->core, WMSunkenLevel);
+    if (wwin->frame->core->stacking->window_level != NSSunkenWindowLevel)
+      ChangeStackingLevel(wwin->frame->core, NSSunkenWindowLevel);
     else
-      ChangeStackingLevel(wwin->frame->core, WMNormalLevel);
+      ChangeStackingLevel(wwin->frame->core, NSNormalWindowLevel);
     break;
 
   case WO_OMNIPRESENT:
@@ -471,13 +471,13 @@ static void updateOptionsMenu(WMenu * menu, WWindow * wwin)
   /* keep on top check */
   smenu->entries[WO_KEEP_ON_TOP]->clientdata = wwin;
   smenu->entries[WO_KEEP_ON_TOP]->flags.indicator_on =
-    (wwin->frame->core->stacking->window_level == WMFloatingLevel) ? 1 : 0;
+    (wwin->frame->core->stacking->window_level == NSFloatingWindowLevel) ? 1 : 0;
   wMenuSetEnabled(smenu, WO_KEEP_ON_TOP, !wwin->flags.miniaturized);
 
   /* keep at bottom check */
   smenu->entries[WO_KEEP_AT_BOTTOM]->clientdata = wwin;
   smenu->entries[WO_KEEP_AT_BOTTOM]->flags.indicator_on =
-    (wwin->frame->core->stacking->window_level == WMSunkenLevel) ? 1 : 0;
+    (wwin->frame->core->stacking->window_level == NSSunkenWindowLevel) ? 1 : 0;
   wMenuSetEnabled(smenu, WO_KEEP_AT_BOTTOM, !wwin->flags.miniaturized);
 
   /* omnipresent check */

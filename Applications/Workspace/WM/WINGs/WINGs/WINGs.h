@@ -93,10 +93,10 @@ enum {
     WMDesktopWindowLevel = -1000, /* GNUstep addition     */
     WMNormalWindowLevel = 0,
     WMFloatingWindowLevel = 3,
-    WMSubmenuWindowLevel = 3,
-    WMTornOffMenuWindowLevel = 3,
+    WMDockWindowLevel = 5,
+    WMSubmenuWindowLevel = 10,
+    WMTornOffMenuWindowLevel = 10,
     WMMainMenuWindowLevel = 20,
-    WMDockWindowLevel = 21,       /* Deprecated - use NSStatusWindowLevel */
     WMStatusWindowLevel = 21,
     WMModalPanelWindowLevel = 100,
     WMPopUpMenuWindowLevel = 101,

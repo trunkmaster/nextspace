@@ -180,7 +180,7 @@
 #define WIN_RESISTANCE(x)	(((x)*20)/30)
 
 /* Window level where icons reside */
-#define NORMAL_ICON_LEVEL WMNormalLevel
+#define NORMAL_ICON_LEVEL NSNormalWindowLevel
 
 /* do not divide main menu and submenu in different tiers,
  * opposed to OpenStep */

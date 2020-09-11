@@ -27,6 +27,7 @@
 #include <string.h>
 #include <limits.h>
 
+#include "GNUstep.h"
 #include "WindowMaker.h"
 #include "wcore.h"
 #include "framewin.h"
@@ -263,7 +264,7 @@ static int calcSumOfCoveredAreas(WWindow *wwin, int x, int y, int w, int h)
     test_window = test_window->prev;
 
   for (; test_window != NULL; test_window = test_window->next) {
-    if (test_window->frame->core->stacking->window_level < WMNormalLevel) {
+    if (test_window->frame->core->stacking->window_level < NSNormalWindowLevel) {
       continue;
     }
 
@@ -304,7 +305,7 @@ window_overlaps(WWindow *win, int x, int y, int w, int h, Bool ignore_sunken)
   int tw, th, tx, ty;
 
   if (ignore_sunken &&
-      win->frame->core->stacking->window_level < WMNormalLevel) {
+      win->frame->core->stacking->window_level < NSNormalWindowLevel) {
     return False;
   }
 

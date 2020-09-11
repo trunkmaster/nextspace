@@ -37,6 +37,7 @@
 #define PATH_MAX DEFAULT_PATH_MAX
 #endif
 
+#include "GNUstep.h"
 #include "WindowMaker.h"
 #include "wcore.h"
 #include "window.h"
@@ -1838,9 +1839,9 @@ WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
       aicon->y_pos = dock->y_pos + (aicon->yindex * ICON_SIZE);
 
       if (dock->lowered)
-        ChangeStackingLevel(aicon->icon->core, WMNormalLevel);
+        ChangeStackingLevel(aicon->icon->core, NSNormalWindowLevel);
       else
-        ChangeStackingLevel(aicon->icon->core, WMDockLevel);
+        ChangeStackingLevel(aicon->icon->core, NSDockWindowLevel);
 
       wCoreConfigure(aicon->icon->core, aicon->x_pos, aicon->y_pos, 0, 0);
 #ifndef NEXTSPACE
@@ -1861,9 +1862,9 @@ WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
     old_top->x_pos = dock->x_pos;
     old_top->y_pos = dock->y_pos;
     if (dock->lowered)
-      ChangeStackingLevel(old_top->icon->core, WMNormalLevel);
+      ChangeStackingLevel(old_top->icon->core, NSNormalWindowLevel);
     else
-      ChangeStackingLevel(old_top->icon->core, WMDockLevel);
+      ChangeStackingLevel(old_top->icon->core, NSDockWindowLevel);
 
     dock->icon_array[0] = old_top;
     XMoveWindow(dpy, old_top->icon->core->window, dock->x_pos, dock->y_pos);
@@ -3249,10 +3250,10 @@ static void toggleLowered(WDock *dock)
   int newlevel, i;
 
   if (!dock->lowered) {
-    newlevel = WMNormalLevel;
+    newlevel = NSNormalWindowLevel;
     dock->lowered = 1;
   } else {
-    newlevel = WMDockLevel;
+    newlevel = NSDockWindowLevel;
     dock->lowered = 0;
   }
 
@@ -4278,9 +4279,9 @@ static int addADrawer(WScreen *scr)
   drawer = wDockCreate(scr, WM_DRAWER, NULL);
   drawer->lowered = scr->dock->lowered;
   if (!drawer->lowered)
-    ChangeStackingLevel(drawer->icon_array[0]->icon->core, WMDockLevel);
+    ChangeStackingLevel(drawer->icon_array[0]->icon->core, NSDockWindowLevel);
   else
-    ChangeStackingLevel(drawer->icon_array[0]->icon->core, WMNormalLevel);
+    ChangeStackingLevel(drawer->icon_array[0]->icon->core, NSNormalWindowLevel);
   drawer->auto_raise_lower = scr->dock->auto_raise_lower;
   drawer->x_pos = dock->x_pos;
   drawer->y_pos = dock->y_pos + ICON_SIZE * y;
@@ -4704,9 +4705,9 @@ static WDock * drawerRestoreState(WScreen *scr, WMPropList *drawer_state)
   /* restore lowered/raised state: same as scr->dock, no matter what */
   drawer->lowered = scr->dock->lowered;
   if (!drawer->lowered)
-    ChangeStackingLevel(drawer->icon_array[0]->icon->core, WMDockLevel);
+    ChangeStackingLevel(drawer->icon_array[0]->icon->core, NSDockWindowLevel);
   else
-    ChangeStackingLevel(drawer->icon_array[0]->icon->core, WMNormalLevel);
+    ChangeStackingLevel(drawer->icon_array[0]->icon->core, NSNormalWindowLevel);
   wRaiseFrame(drawer->icon_array[0]->icon->core);
 
   /* restore collapsed state */
@@ -4764,9 +4765,9 @@ static WDock * drawerRestoreState(WScreen *scr, WMPropList *drawer_state)
       aicon->y_pos = drawer->y_pos + (aicon->yindex * ICON_SIZE);
 
       if (!drawer->lowered)
-        ChangeStackingLevel(aicon->icon->core, WMDockLevel);
+        ChangeStackingLevel(aicon->icon->core, NSDockWindowLevel);
       else
-        ChangeStackingLevel(aicon->icon->core, WMNormalLevel);
+        ChangeStackingLevel(aicon->icon->core, NSNormalWindowLevel);
 
       wCoreConfigure(aicon->icon->core, aicon->x_pos, aicon->y_pos, 0, 0);
 

@@ -33,6 +33,7 @@
 #include <wraster.h>
 #include <sys/stat.h>
 
+#include "GNUstep.h"
 #include "WindowMaker.h"
 #include "wcore.h"
 #include "texture.h"

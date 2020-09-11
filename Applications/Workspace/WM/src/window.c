@@ -37,8 +37,8 @@
 /* For getting mouse wheel mappings from WINGs */
 #include <WINGs/WINGs.h>
 
-#include "WindowMaker.h"
 #include "GNUstep.h"
+#include "WindowMaker.h"
 #include "wcore.h"
 #include "framewin.h"
 #include "texture.h"
@@ -367,7 +367,7 @@ void wWindowSetupInitialAttributes(WWindow *wwin, int *level, int *workspace)
         *level = INT_MIN + 1;
     } else {
       /* setup defaults */
-      *level = WMNormalLevel;
+      *level = NSNormalWindowLevel;
     }
   } else {
     int tmp_workspace = -1;
@@ -387,11 +387,11 @@ void wWindowSetupInitialAttributes(WWindow *wwin, int *level, int *workspace)
      */
     if (tmp_level == INT_MIN) {
       if (WFLAGP(wwin, floating))
-        *level = WMFloatingLevel;
-      else if (WFLAGP(wwin, sunken))
-        *level = WMSunkenLevel;
+        *level = NSFloatingWindowLevel;
+      /* else if (WFLAGP(wwin, sunken)) */
+      /*   *level = WMSunkenLevel; */
       else
-        *level = WMNormalLevel;
+        *level = NSNormalWindowLevel;
     } else {
       *level = tmp_level;
     }
@@ -1334,7 +1334,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 
   /* If the window must be withdrawed, then do it now.
    * Must do some optimization, 'though */
-  if (withdraw && wwin->frame->core->stacking->window_level != WMMainMenuLevel) {
+  if (withdraw && wwin->frame->core->stacking->window_level != NSMainMenuWindowLevel) {
     wwin->flags.mapped = 0;
     wClientSetState(wwin, WithdrawnState, None);
     wUnmanageWindow(wwin, True, False);
@@ -1378,7 +1378,7 @@ WWindow *wManageInternalWindow(WScreen *scr, Window window, Window owner,
   foo |= WFF_LANGUAGE_BUTTON;
 #endif
 
-  wwin->frame = wFrameWindowCreate(scr, WMFloatingLevel,
+  wwin->frame = wFrameWindowCreate(scr, NSFloatingWindowLevel,
                                    wwin->frame_x, wwin->frame_y,
                                    width, height,
                                    &wPreferences.window_title_clearance,
@@ -1602,7 +1602,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
       wSetFocusTo(scr, newFocusedWindow);
     }
   }
-  else if (wwin->flags.is_gnustep && WINDOW_LEVEL(wwin) == WMMainMenuLevel) {
+  else if (wwin->flags.is_gnustep && WINDOW_LEVEL(wwin) == NSMainMenuWindowLevel) {
     /* main menu window becomes unmanaged only on application quit - it's 
        time to switch focus to other app */
     wSetFocusTo(scr, newFocusedWindow);
@@ -1776,7 +1776,7 @@ void wWindowUnfocus(WWindow *wwin)
   if (wwin->flags.is_gnustep == 0) {
     wFrameWindowChangeState(wwin->frame, wwin->flags.semi_focused ? WS_PFOCUSED : WS_UNFOCUSED);
   }
-  else if (WINDOW_LEVEL(wwin) != WMMainMenuLevel) {
+  else if (WINDOW_LEVEL(wwin) != NSMainMenuWindowLevel) {
     /* Send FocusOut event with NotifyNormal mode since
        GNUstep(NEXTSPACE, XGServerEvent.m, processEvent:, FocusOut) ignores
        grabbed mode FocusOut events.*/
@@ -3206,15 +3206,15 @@ void wPrintWindowFocusState(WWindow *wwin, char *prefix)
             prefix,
             (wwin && wwin->client_win) ? wwin->client_win : 0,
             (wwin && wwin->wm_instance) ? wwin->wm_instance : "",
-            (wwin && (WINDOW_LEVEL(wwin) == WMMainMenuLevel)) ? "menu" : "window",
+            (wwin && (WINDOW_LEVEL(wwin) == NSMainMenuWindowLevel)) ? "menu" : "window",
             
             (focused_win && focused_win->client_win) ? focused_win->client_win : 0,
             (focused_win && focused_win->wm_instance) ? focused_win->wm_instance : 0,
-            (focused_win && (WINDOW_LEVEL(focused_win) == WMMainMenuLevel)) ? "menu" : "window",
+            (focused_win && (WINDOW_LEVEL(focused_win) == NSMainMenuWindowLevel)) ? "menu" : "window",
             
             (x_focused_win && x_focused_win->client_win) ? x_focused_win->client_win : 0,
             (x_focused_win && x_focused_win->wm_instance) ? x_focused_win->wm_instance : "",
-            (x_focused_win && (WINDOW_LEVEL(x_focused_win) == WMMainMenuLevel)) ? "menu" : "window");
+            (x_focused_win && (WINDOW_LEVEL(x_focused_win) == NSMainMenuWindowLevel)) ? "menu" : "window");
   
   return;
 }

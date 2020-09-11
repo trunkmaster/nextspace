@@ -42,29 +42,6 @@ typedef enum {
               WCLASS_FRAME = 9
 } WClassType;
 
-
-/*
- * generic window levels (a superset of the N*XTSTEP ones)
- * Applications should use levels between WMDesktopLevel and
- * WMScreensaverLevel anything boyond that range is allowed,
- * but discouraged.
- */
-enum {
-      WMBackLevel = INT_MIN+1,    /* Very lowest level */
-      WMDesktopLevel = -1000,     /* Lowest level of normal use */
-      WMSunkenLevel = -1,
-      WMNormalLevel = 0,
-      WMFloatingLevel = 3,
-      WMDockLevel = 5,
-      WMSubmenuLevel = 10,
-      WMMainMenuLevel = 20,
-      WMStatusLevel = 21,
-      WMModalLevel = 100,
-      WMPopUpLevel = 101,
-      WMScreensaverLevel = 1000,
-      WMOuterSpaceLevel = INT_MAX
-};
-
 /*
  * WObjDescriptor will be used by the event dispatcher to
  * send events to a particular object through the methods in the

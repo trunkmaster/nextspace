@@ -31,6 +31,7 @@
 #include <math.h>
 #include <time.h>
 
+#include "GNUstep.h"
 #include "WindowMaker.h"
 #include "framewin.h"
 #include "window.h"
@@ -133,8 +134,8 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
     return;
 
-  /* Do not focus popups. FIXME: should popups not be managed at all? */
-  if (wwin && WINDOW_LEVEL(wwin) == WMPopUpLevel)
+  /* Do not focus popups. */
+  if (wwin && WINDOW_LEVEL(wwin) == NSPopUpMenuWindowLevel)
     return;
 
   if (wwin && wwin->flags.is_gnustep) {
@@ -792,7 +793,7 @@ void wFullscreenWindow(WWindow *wwin)
 
   wWindowConfigureBorders(wwin);
 
-  ChangeStackingLevel(wwin->frame->core, WMNormalLevel);
+  ChangeStackingLevel(wwin->frame->core, NSNormalWindowLevel);
   wRaiseFrame(wwin->frame->core);
 
   wwin->bfs_geometry.x = wwin->frame_x;
@@ -818,9 +819,9 @@ void wUnfullscreenWindow(WWindow *wwin)
   wwin->flags.fullscreen = False;
 
   if (WFLAGP(wwin, sunken))
-    ChangeStackingLevel(wwin->frame->core, WMSunkenLevel);
+    ChangeStackingLevel(wwin->frame->core, NSSunkenWindowLevel);
   else if (WFLAGP(wwin, floating))
-    ChangeStackingLevel(wwin->frame->core, WMFloatingLevel);
+    ChangeStackingLevel(wwin->frame->core, NSFloatingWindowLevel);
 
   wWindowConfigure(wwin, wwin->bfs_geometry.x, wwin->bfs_geometry.y,
                    wwin->bfs_geometry.width, wwin->bfs_geometry.height);

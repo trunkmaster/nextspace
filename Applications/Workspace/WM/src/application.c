@@ -24,6 +24,7 @@
 #include <X11/Xlib.h>
 #include <string.h>
 
+#include "GNUstep.h"
 #include "WindowMaker.h"
 #include "menu.h"
 #include "window.h"
@@ -109,11 +110,11 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
   if (_isWindowAlreadyRegistered(wapp, wwin))
     return;
 
-  if (window_level == WMMainMenuLevel)
+  if (window_level == NSMainMenuWindowLevel)
     wapp->menu_win = wwin;
   
   /* Do not add short-living objects to window list: tooltips, submenus, popups, etc. */
-  if (window_level != WMNormalLevel && window_level != WMFloatingLevel)
+  if (window_level != NSNormalWindowLevel && window_level != NSFloatingWindowLevel)
     return;
 
   WMAddToArray(wapp->windows, wwin);
@@ -351,7 +352,8 @@ void wApplicationDeactivate(WApplication *wapp)
 void wApplicationMakeFirst(WApplication *wapp)
 {
   WScreen *scr = wapp->main_window_desc->screen_ptr;
-  WApplication *first_wapp, *app;
+  WApplication *first_wapp;
+  /* WApplication *app; */
   
   if (!scr->wapp_list || !scr->wapp_list->next || wapp == scr->wapp_list)
     return;
@@ -371,12 +373,12 @@ void wApplicationMakeFirst(WApplication *wapp)
   wapp->next = first_wapp;
   
   scr->wapp_list = wapp;
-  wmessage("[application.c] wApplicationMakeFirst: %s. Application list: ",
-           wapp->main_window_desc->wm_instance);
 
-  app = scr->wapp_list;
-  while (app) {
-    wmessage("%s%s", app->main_window_desc->wm_instance, app->next ? ", " : "");
-    app = app->next;
-  }
+  /* wmessage("[application.c] wApplicationMakeFirst: %s. Application list: ", */
+  /*          wapp->main_window_desc->wm_instance); */
+  /* app = scr->wapp_list; */
+  /* while (app) { */
+  /*   wmessage("%s%s", app->main_window_desc->wm_instance, app->next ? ", " : ""); */
+  /*   app = app->next; */
+  /* } */
 }

@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <ctype.h>
 
+#include "GNUstep.h"
 #include "WindowMaker.h"
 #include "wcore.h"
 #include "framewin.h"
@@ -134,9 +135,9 @@ WMenu *wMenuCreate(WScreen *screen, const char *title, int main_menu)
   menu = wmalloc(sizeof(WMenu));
 
 #ifdef SINGLE_MENULEVEL
-  tmp = WMSubmenuLevel;
+  tmp = NSSubmenuWindowLevel;
 #else
-  tmp = (main_menu ? WMMainMenuLevel : WMSubmenuLevel);
+  tmp = (main_menu ? NSMainMenuWindowLevel : NSSubmenuWindowLevel);
 #endif
 
   flags = WFF_SINGLE_STATE | WFF_BORDER;
@@ -318,10 +319,10 @@ void wMenuEntrySetCascade(WMenu * menu, WMenuEntry * entry, WMenu * cascade)
   if (menu->flags.lowered) {
 
     cascade->flags.lowered = 1;
-    ChangeStackingLevel(cascade->frame->core, WMNormalLevel);
+    ChangeStackingLevel(cascade->frame->core, NSNormalWindowLevel);
 
     cascade->brother->flags.lowered = 1;
-    ChangeStackingLevel(cascade->brother->frame->core, WMNormalLevel);
+    ChangeStackingLevel(cascade->brother->frame->core, NSNormalWindowLevel);
   }
 
   if (!menu->flags.realized)
@@ -2049,11 +2050,11 @@ static void changeMenuLevels(WMenu * menu, int lower)
   int i;
 
   if (!lower) {
-    ChangeStackingLevel(menu->frame->core, (!menu->parent ? WMMainMenuLevel : WMSubmenuLevel));
+    ChangeStackingLevel(menu->frame->core, (!menu->parent ? NSMainMenuWindowLevel : NSSubmenuWindowLevel));
     wRaiseFrame(menu->frame->core);
     menu->flags.lowered = 0;
   } else {
-    ChangeStackingLevel(menu->frame->core, WMNormalLevel);
+    ChangeStackingLevel(menu->frame->core, NSNormalWindowLevel);
     wLowerFrame(menu->frame->core);
     menu->flags.lowered = 1;
   }

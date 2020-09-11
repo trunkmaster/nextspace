@@ -1045,42 +1045,42 @@ static Bool updateStrut(WScreen *scr, Window w, Bool adding)
 
 static int getWindowLayer(WWindow *wwin)
 {
-  int layer = WMNormalLevel;
+  int layer = NSNormalWindowLevel;
 
   if (wwin->type == net_wm_window_type_desktop) {
-    layer = WMDesktopLevel;
+    layer = NSDesktopWindowLevel;
   } else if (wwin->type == net_wm_window_type_dock) {
-    layer = WMDockLevel;
+    layer = NSDockWindowLevel;
   } else if (wwin->type == net_wm_window_type_toolbar) {
-    layer = WMMainMenuLevel;
+    layer = NSMainMenuWindowLevel;
   } else if (wwin->type == net_wm_window_type_menu) {
-    layer = WMSubmenuLevel;
+    layer = NSSubmenuWindowLevel;
   } else if (wwin->type == net_wm_window_type_utility) {
   } else if (wwin->type == net_wm_window_type_splash) {
   } else if (wwin->type == net_wm_window_type_dialog) {
     if (wwin->transient_for) {
       WWindow *parent = wWindowFor(wwin->transient_for);
       if (parent && parent->flags.fullscreen)
-        layer = WMNormalLevel;
+        layer = NSNormalWindowLevel;
     }
     /* //layer = WMPopUpLevel; // this seems a bad idea -Dan */
   } else if (wwin->type == net_wm_window_type_dropdown_menu) {
-    layer = WMSubmenuLevel;
+    layer = NSSubmenuWindowLevel;
   } else if (wwin->type == net_wm_window_type_popup_menu) {
-    layer = WMSubmenuLevel;
+    layer = NSSubmenuWindowLevel;
   } else if (wwin->type == net_wm_window_type_tooltip) {
   } else if (wwin->type == net_wm_window_type_notification) {
-    layer = WMPopUpLevel;
+    layer = NSPopUpMenuWindowLevel;
   } else if (wwin->type == net_wm_window_type_combo) {
-    layer = WMSubmenuLevel;
+    layer = NSSubmenuWindowLevel;
   } else if (wwin->type == net_wm_window_type_dnd) {
   } else if (wwin->type == net_wm_window_type_normal) {
   }
 
-  if (wwin->client_flags.sunken && WMSunkenLevel < layer)
-    layer = WMSunkenLevel;
-  if (wwin->client_flags.floating && WMFloatingLevel > layer)
-    layer = WMFloatingLevel;
+  if (wwin->client_flags.sunken && NSSunkenWindowLevel < layer)
+    layer = NSSunkenWindowLevel;
+  if (wwin->client_flags.floating && NSFloatingWindowLevel > layer)
+    layer = NSFloatingWindowLevel;
 
   return layer;
 }

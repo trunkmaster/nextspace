@@ -49,6 +49,7 @@
 #include <X11/XKBlib.h>
 #endif				/* KEEP_XKB_LOCK_STATUS */
 
+#include "GNUstep.h"
 #include "WindowMaker.h"
 #include "window.h"
 #include "actions.h"
@@ -623,7 +624,7 @@ static void handleMapRequest(XEvent * ev)
 
     /* extra focus steps for GNUstep applications */
     if (wwin->flags.is_gnustep) {
-      if (WINDOW_LEVEL(wwin) == WMMainMenuLevel && wwin->flags.mapped == 0) {
+      if (WINDOW_LEVEL(wwin) == NSMainMenuWindowLevel && wwin->flags.mapped == 0) {
         /* GNUstep application activates and maps main menu. 
            Main menu window is managed but unmapped.*/
         WApplication *wapp = wApplicationOf(wwin->main_window);
@@ -636,7 +637,6 @@ static void handleMapRequest(XEvent * ev)
         }
       }
     }
-    
     return;
   }
 
@@ -908,10 +908,10 @@ static void handleButtonPress(XEvent * event)
       WAppIcon *appicon0 = scr->dock->icon_array[0];
       if ((desc->parent_type == WCLASS_DOCK_ICON) &&
           (appicon->icon->icon_win == appicon0->icon->icon_win)) {
-        if (WSDockLevel() == WMDockLevel)
-          WSSetDockLevel(WMNormalLevel);
+        if (WSDockLevel() == NSDockWindowLevel)
+          WSSetDockLevel(NSNormalWindowLevel);
         else {
-          WSSetDockLevel(WMDockLevel);
+          WSSetDockLevel(NSDockWindowLevel);
         }
         XUngrabPointer(dpy, CurrentTime);
         return;
@@ -1016,7 +1016,7 @@ static void handleUnmapNotify(XEvent * event)
     if (!reparented)
       wClientSetState(wwin, WithdrawnState, None);
 
-    if (WINDOW_LEVEL(wwin) != WMMainMenuLevel) {
+    if (WINDOW_LEVEL(wwin) != NSMainMenuWindowLevel) {
       /* wmessage("[event.c] UnmapNotify will unmanage window:%lu is_gnustep=%i\n", */
       /*         event->xunmap.window, wwin->flags.is_gnustep); */
       /* if the window was reparented, do not reparent it back to the
