@@ -21,6 +21,7 @@
 #ifndef WMGNUSTEP_H_
 #define WMGNUSTEP_H_
 
+#include <X11/X.h>
 #include <X11/Xproto.h>
 
 /* #define GNUSTEP_WM_MINIATURIZE_WINDOW "_GNUSTEP_WM_MINIATURIZE_WINDOW" */
@@ -42,28 +43,39 @@ enum {
  */
 enum {
   //                                // OPENSTEP  // MacOS  // GNUstep
-  NSDesktopWindowLevel     = -1000, // --        // 2      // -1000
-  NSSunkenWindowLevel      = -1,    // --        // --     // -1
+  NSDesktopWindowLevel     = -1000, // ----      // 2      // -1000
+  NSSunkenWindowLevel      = -1,    // ----      // ----   // ----
   NSNormalWindowLevel      = 0,     // 0         // 3      // 0
   NSFloatingWindowLevel    = 3,     // 3         // 4      // 2
   NSDockWindowLevel        = 5,     // 5         // 6      // 21
   NSSubmenuWindowLevel     = 10,    // 10        // 5      // 3
-  NSTornOffMenuWindowLevel = 10,    // --        // 5      // 3
+  NSTornOffMenuWindowLevel = 10,    // ----      // 5      // 3
   NSMainMenuWindowLevel    = 20,    // 20        // 7      // 20
-  NSStatusWindowLevel      = 21,    // --        // 8      // 21
-  NSModalPanelWindowLevel  = 100,   // --        // 9      // 100
-  NSPopUpMenuWindowLevel   = 101,   // --        // 10     // 101
-  NSScreenSaverWindowLevel = 1000   // --        // 12     // 1000
+  NSStatusWindowLevel      = 21,    // ----      // 8      // 21
+  NSModalPanelWindowLevel  = 100,   // ----      // 9      // 100
+  NSPopUpMenuWindowLevel   = 101,   // ----      // 10     // 101
+  NSScreenSaverWindowLevel = 1000   // ----      // 12     // 1000
 };
+/* typedef NSUInteger NSWindowStyleMask; */
+enum {
+  NSBorderlessWindowMask = 0,		// 0
+  NSTitledWindowMask = 1,		// 1
+  NSClosableWindowMask = 2,		// 1 << 1
+  NSMiniaturizableWindowMask = 4,	// 1 << 2
+  NSResizableWindowMask = 8,		// 1 << 3
+  NSIconWindowMask = 64,		// 1 << 6
+  NSMiniWindowMask = 128		// 1 << 7
+};
+
 #endif
 
 /* window manager -> appkit notifications */
-#define GNUSTEP_WM_NOTIFICATION	"GNUSTEP_WM_NOTIFICATION"
+/* #define GNUSTEP_WM_NOTIFICATION	"GNUSTEP_WM_NOTIFICATION" */
 
 typedef struct {
   CARD32 flags;
-  CARD32 window_style;
-  CARD32 window_level;
+  CARD32 window_style;		/* NS*WindowMask */
+  CARD32 window_level;		/* NS*WindowLevel */
   CARD32 reserved;
   Pixmap miniaturize_pixmap;	/* pixmap for miniaturize button */
   Pixmap close_pixmap;		/* pixmap for close button */

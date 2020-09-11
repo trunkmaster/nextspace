@@ -24,6 +24,7 @@
  */
 
 #include "wconfig.h"
+#include "GNUstep.h"
 #include "WINGsP.h"
 #include "rgb.h"
 
@@ -388,7 +389,7 @@ static WMColorPanel *makeColorPanel(WMScreen * scrPtr, const char *name)
 	panel->font12 = WMSystemFontOfSize(scrPtr, 12);
 
 	panel->win = WMCreateWindowWithStyle(scrPtr, name,
-					     WMTitledWindowMask | WMClosableWindowMask | WMResizableWindowMask);
+					     NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask);
 	WMResizeWidget(panel->win, PWIDTH, PHEIGHT);
 	WMSetWindowTitle(panel->win, _("Colors"));
 	WMSetWindowCloseAction(panel->win, closeWindowCallback, panel);

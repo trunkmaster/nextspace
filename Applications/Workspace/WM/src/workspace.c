@@ -553,7 +553,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
           /* update current workspace of omnipresent windows */
           WApplication *wapp = wApplicationOf(tmp->main_window);
           tmp->frame->workspace = workspace;
-          if (wapp && WINDOW_LEVEL(tmp) != WMMainMenuWindowLevel) {
+          if (wapp && WINDOW_LEVEL(tmp) != NSMainMenuWindowLevel) {
             wapp->last_workspace = workspace;
           }
         }

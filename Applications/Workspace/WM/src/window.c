@@ -237,7 +237,7 @@ void wWindowDestroy(WWindow *wwin)
 static void setupGNUstepHints(WWindow *wwin, GNUstepWMAttributes *gs_hints)
 {
   if (gs_hints->flags & GSWindowStyleAttr) {
-    if (gs_hints->window_style == WMBorderlessWindowMask) {
+    if (gs_hints->window_style == NSBorderlessWindowMask) {
       wwin->client_flags.no_border = 1;
       wwin->client_flags.no_titlebar = 1;
       wwin->client_flags.no_closable = 1;
@@ -248,28 +248,28 @@ static void setupGNUstepHints(WWindow *wwin, GNUstepWMAttributes *gs_hints)
       wwin->client_flags.no_resizebar = 1;
     } else {
       wwin->client_flags.no_close_button =
-        ((gs_hints->window_style & WMClosableWindowMask) ? 0 : 1);
+        ((gs_hints->window_style & NSClosableWindowMask) ? 0 : 1);
 
-      wwin->client_flags.no_closable = ((gs_hints->window_style & WMClosableWindowMask) ? 0 : 1);
+      wwin->client_flags.no_closable = ((gs_hints->window_style & NSClosableWindowMask) ? 0 : 1);
 
       wwin->client_flags.no_miniaturize_button =
-        ((gs_hints->window_style & WMMiniaturizableWindowMask) ? 0 : 1);
+        ((gs_hints->window_style & NSMiniaturizableWindowMask) ? 0 : 1);
 
       wwin->client_flags.no_miniaturizable = wwin->client_flags.no_miniaturize_button;
 
       wwin->client_flags.no_resizebar =
-        ((gs_hints->window_style & WMResizableWindowMask) ? 0 : 1);
+        ((gs_hints->window_style & NSResizableWindowMask) ? 0 : 1);
 
       wwin->client_flags.no_resizable = wwin->client_flags.no_resizebar;
 
       /* these attributes supposedly imply in the existence
        * of a titlebar */
-      if (gs_hints->window_style & (WMResizableWindowMask |
-                                    WMClosableWindowMask | WMMiniaturizableWindowMask)) {
+      if (gs_hints->window_style & (NSResizableWindowMask |
+                                    NSClosableWindowMask | NSMiniaturizableWindowMask)) {
         wwin->client_flags.no_titlebar = 0;
       } else {
         wwin->client_flags.no_titlebar =
-          ((gs_hints->window_style & WMTitledWindowMask) ? 0 : 1);
+          ((gs_hints->window_style & NSTitledWindowMask) ? 0 : 1);
       }
 
     }

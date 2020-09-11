@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <stdint.h>
 
+#include "GNUstep.h"
 #include "WINGsP.h"
 #include "wconfig.h"
 
@@ -169,7 +170,7 @@ static WMFilePanel *makeFilePanel(WMScreen * scrPtr, const char *name, const cha
 
 	fPtr = wmalloc(sizeof(WMFilePanel));
 
-	fPtr->win = WMCreateWindowWithStyle(scrPtr, name, WMTitledWindowMask | WMResizableWindowMask);
+	fPtr->win = WMCreateWindowWithStyle(scrPtr, name, NSTitledWindowMask | NSResizableWindowMask);
 	WMResizeWidget(fPtr->win, PWIDTH, PHEIGHT);
 	WMSetWindowTitle(fPtr->win, "");
 

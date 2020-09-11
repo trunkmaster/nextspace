@@ -91,7 +91,7 @@ WMWindow *WMCreatePanelWithStyleForWindow(WMWindow * owner, const char *name, in
 WMWindow *WMCreatePanelForWindow(WMWindow * owner, const char *name)
 {
 	return WMCreatePanelWithStyleForWindow(owner, name,
-					       WMTitledWindowMask | WMClosableWindowMask | WMResizableWindowMask);
+					       NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask);
 }
 
 void WMChangePanelOwner(WMWindow * win, WMWindow * newOwner)
@@ -105,9 +105,9 @@ void WMChangePanelOwner(WMWindow * win, WMWindow * newOwner)
 
 WMWindow *WMCreateWindow(WMScreen * screen, const char *name)
 {
-	return WMCreateWindowWithStyle(screen, name, WMTitledWindowMask
-				       | WMClosableWindowMask
-				       | WMMiniaturizableWindowMask | WMResizableWindowMask);
+	return WMCreateWindowWithStyle(screen, name, NSTitledWindowMask
+				       | NSClosableWindowMask
+				       | NSMiniaturizableWindowMask | NSResizableWindowMask);
 }
 
 WMWindow *WMCreateWindowWithStyle(WMScreen * screen, const char *name, int style)
@@ -141,7 +141,7 @@ WMWindow *WMCreateWindowWithStyle(WMScreen * screen, const char *name, int style
 
 	win->flags.style = style;
 
-	win->level = WMNormalWindowLevel;
+	win->level = NSNormalWindowLevel;
 
 	/* kluge. Find a better solution */
 	W_SetFocusOfTopLevel(win->view, win->view);

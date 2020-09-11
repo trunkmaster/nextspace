@@ -1,4 +1,5 @@
 
+#include "GNUstep.h"
 #include "WINGsP.h"
 
 #include <X11/keysym.h>
@@ -96,9 +97,9 @@ WMAlertPanel *WMCreateAlertPanel(WMScreen * scrPtr, WMWindow * owner,
 	panel = wmalloc(sizeof(WMAlertPanel));
 
 	if (owner) {
-		panel->win = WMCreatePanelWithStyleForWindow(owner, "alertPanel", WMTitledWindowMask);
+		panel->win = WMCreatePanelWithStyleForWindow(owner, "alertPanel", NSTitledWindowMask);
 	} else {
-		panel->win = WMCreateWindowWithStyle(scrPtr, "alertPanel", WMTitledWindowMask);
+		panel->win = WMCreateWindowWithStyle(scrPtr, "alertPanel", NSTitledWindowMask);
 	}
 
 	WMSetWindowInitialPosition(panel->win,
@@ -343,9 +344,9 @@ WMInputPanel *WMCreateInputPanel(WMScreen * scrPtr, WMWindow * owner, const char
 	panel = wmalloc(sizeof(WMInputPanel));
 
 	if (owner)
-		panel->win = WMCreatePanelWithStyleForWindow(owner, "inputPanel", WMTitledWindowMask);
+		panel->win = WMCreatePanelWithStyleForWindow(owner, "inputPanel", NSTitledWindowMask);
 	else
-		panel->win = WMCreateWindowWithStyle(scrPtr, "inputPanel", WMTitledWindowMask);
+		panel->win = WMCreateWindowWithStyle(scrPtr, "inputPanel", NSTitledWindowMask);
 	WMSetWindowTitle(panel->win, "");
 
 	WMResizeWidget(panel->win, 320, 160);
@@ -464,9 +465,9 @@ WMGenericPanel *WMCreateGenericPanel(WMScreen * scrPtr, WMWindow * owner,
 	panel = wmalloc(sizeof(WMGenericPanel));
 
 	if (owner) {
-		panel->win = WMCreatePanelWithStyleForWindow(owner, "genericPanel", WMTitledWindowMask);
+		panel->win = WMCreatePanelWithStyleForWindow(owner, "genericPanel", NSTitledWindowMask);
 	} else {
-		panel->win = WMCreateWindowWithStyle(scrPtr, "genericPanel", WMTitledWindowMask);
+		panel->win = WMCreateWindowWithStyle(scrPtr, "genericPanel", NSTitledWindowMask);
 	}
 
 	WMSetWindowInitialPosition(panel->win,
