@@ -1216,7 +1216,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
       } else if (app->flags.hidden) {
         if (WFLAGP(app->main_window_desc, start_hidden)) {
           wwin->flags.hidden = 1;
-        } else {
+        } else if (!wwin->flags.is_gnustep) { // GNUstep application unhides itself
           wUnhideApplication(app, False, False);
           raise = True;
         }
