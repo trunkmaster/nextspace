@@ -26,8 +26,6 @@
     <string>Alt_R</string>
     <key>GSSecondControlKey</key>
     <string>Control_R</string>
-    <key>Local Time Zone</key>
-    <string>Europe/Kiev</string>
     <key>NSBoldFont</key>
     <string>Helvetica-Bold</string>
     <key>NSBoldFontSize</key>
