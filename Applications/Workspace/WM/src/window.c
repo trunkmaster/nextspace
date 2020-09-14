@@ -1567,6 +1567,16 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     if (tmp && (!tmp->flags.mapped || WFLAGP(tmp, no_focusable))) {
       tmp = NULL;
     }
+    /* search for the window of the same application */
+    if (!tmp) {
+      tmp = scr->focused_window;
+      while (tmp) {
+        if ((wwin->flags.is_gnustep && !strcmp(wwin->wm_instance, tmp->wm_instance))
+            || (!wwin->flags.is_gnustep && !strcmp(wwin->wm_class, tmp->wm_class)))
+          break;
+        tmp = tmp->prev;
+      }
+    }
     if (!tmp) {
       tmp = scr->focused_window;
       while (tmp) {	/* look for one in the window list first */
@@ -1612,6 +1622,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     }
     else {
       wSetFocusTo(scr, newFocusedWindow);
+      wRaiseFrame(newFocusedWindow->frame->core);
     }
   }
 
