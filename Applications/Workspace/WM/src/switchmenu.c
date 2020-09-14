@@ -42,7 +42,8 @@
 #define IS_GNUSTEP_MENU(w) ((w)->wm_gnustep_attr &&                     \
                             ((w)->wm_gnustep_attr->flags & GSWindowLevelAttr) && \
                             ((w)->wm_gnustep_attr->window_level == NSMainMenuWindowLevel || \
-                             (w)->wm_gnustep_attr->window_level == NSSubmenuWindowLevel))
+                             (w)->wm_gnustep_attr->window_level == NSSubmenuWindowLevel || \
+                             (w)->wm_gnustep_attr->window_level == NSPopUpMenuWindowLevel))
 
 static int initialized = 0;
 static void observer(void *self, WMNotification * notif);
