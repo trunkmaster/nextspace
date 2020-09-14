@@ -1485,6 +1485,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   WWindow *newFocusedWindow = NULL;
   int wasFocused;
   WScreen *scr = wwin->screen_ptr;
+  WApplication *oapp;
 
   wmessage("[window.c] will unmanage window:%lu\n", wwin->client_win);
   
@@ -1593,23 +1594,27 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     WMPostNotificationName(WMNUnmanaged, wwin, NULL);
   }
   
+  oapp = wApplicationOf(wwin->main_window);
+  
   if (wasFocused) {
-    if (owner && newFocusedWindow != owner) {
-      if (wwin->flags.is_gnustep == 0)
-        wFrameWindowChangeState(owner->frame, WS_UNFOCUSED);
+    if (wwin->flags.is_gnustep) {
+      if (WINDOW_LEVEL(wwin) == NSMainMenuWindowLevel) {
+        /* main menu becomes unmanaged - app's quitting - switch focus to other app */
+        wSetFocusTo(scr, newFocusedWindow);
+      }
+      else if (oapp) {
+        /* let GNUstep decide what app window should become focused next */
+        wSetFocusTo(scr, oapp->menu_win);
+      }
+    }
+    else if (owner && newFocusedWindow != owner) {
+      wFrameWindowChangeState(owner->frame, WS_UNFOCUSED);
     }
     else {
       wSetFocusTo(scr, newFocusedWindow);
     }
   }
-  else if (wwin->flags.is_gnustep && WINDOW_LEVEL(wwin) == NSMainMenuWindowLevel) {
-    /* main menu window becomes unmanaged only on application quit - it's 
-       time to switch focus to other app */
-    wSetFocusTo(scr, newFocusedWindow);
-  }
 
-  /* Close menu and unhighlight */
-  WApplication *oapp = wApplicationOf(wwin->main_window);
   if (oapp) {
     wApplicationRemoveWindow(oapp, wwin);
   }
