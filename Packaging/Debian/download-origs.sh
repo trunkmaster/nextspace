@@ -13,7 +13,7 @@ git_remote_archive() {
 		return
 	fi
 	rm -rf tmp
-	git clone --recurse-submodules "$url" tmp
+	git clone --recurse-submodules -b "$branch" "$url" tmp
 	tar --exclude-vcs -C tmp --transform "flags=r;s,^\./*,${prefix}," --owner=nobody --group=nogroup -zcf "$tarfile" .
 	rm -rf tmp
 }
@@ -35,8 +35,8 @@ git_remote_archive https://github.com/apple/swift-corelibs-libdispatch libdispat
 git_remote_archive https://github.com/gnustep/libobjc2 libobjc2 ${libobjc2_version} v${libobjc2_version}
 git_remote_archive https://github.com/gnustep/tools-make nextspace-make ${gnustep_make_version} make-${gnustep_make_version//./_}
 git_remote_archive https://github.com/gnustep/libs-base nextspace-base ${gnustep_base_version} base-${gnustep_base_version//./_}
-git_remote_archive https://github.com/gnustep/libs-gui nextspace-gui ${gnustep_gui_version} origin/gnustep-gui-nextspace
-git_remote_archive https://github.com/gnustep/libs-back nextspace-back ${gnustep_back_version} origin/gnustep-back-nextspace
+git_remote_archive https://github.com/gnustep/libs-gui nextspace-gui ${gnustep_gui_version} gnustep-gui-nextspace
+git_remote_archive https://github.com/gnustep/libs-back nextspace-back ${gnustep_back_version} gnustep-back-nextspace
 
 git_remote_archive https://github.com/gnustep/apps-gorm nextspace-gorm.app ${gorm_version} gorm-${gorm_version//./_}
 git_remote_archive https://github.com/gnustep/apps-projectcenter nextspace-projectcenter.app ${projectcenter_version} projectcenter-${projectcenter_version//./_}
