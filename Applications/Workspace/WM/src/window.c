@@ -1550,8 +1550,6 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     newFocusedWindow = NULL;
   }
   else {
-    WWindow *tmp;
-
     if (wwin->prev)
       wwin->prev->next = wwin->next;
 
@@ -1562,42 +1560,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
       scr->focused_window->next = NULL;
     }
 
-    /* if window was a transient, focus the owner window */
-    tmp = wWindowFor(wwin->transient_for);
-    if (tmp && (!tmp->flags.mapped || WFLAGP(tmp, no_focusable))) {
-      tmp = NULL;
-    }
-    /* search for the window of the same application */
-    if (!tmp) {
-      tmp = scr->focused_window;
-      while (tmp) {
-        if ((wwin->flags.is_gnustep && !strcmp(wwin->wm_instance, tmp->wm_instance))
-            || (!wwin->flags.is_gnustep && !strcmp(wwin->wm_class, tmp->wm_class)))
-          break;
-        tmp = tmp->prev;
-      }
-    }
-    if (!tmp) {
-      tmp = scr->focused_window;
-      while (tmp) {	/* look for one in the window list first */
-        if (!WFLAGP(tmp, no_focusable)
-            && (!WFLAGP(tmp, skip_window_list) || tmp->flags.is_gnustep)
-            && (tmp->flags.mapped || tmp->flags.shaded))
-          break;
-        tmp = tmp->prev;
-      }
-      if (!tmp) {	/* if unsuccessful, choose any focusable window */
-        tmp = scr->focused_window;
-        while (tmp) {
-          if (!WFLAGP(tmp, no_focusable)
-              && (tmp->flags.mapped || tmp->flags.shaded))
-            break;
-          tmp = tmp->prev;
-        }
-      }
-    }
-
-    newFocusedWindow = tmp;
+    newFocusedWindow = wNextWindowToFocus(wwin);
   }
 
   if (!wwin->flags.internal_window) {
@@ -1622,7 +1585,6 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     }
     else {
       wSetFocusTo(scr, newFocusedWindow);
-      wRaiseFrame(newFocusedWindow->frame->core);
     }
   }
 
@@ -1733,6 +1695,7 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
   /* GNUstep app manages focus itself after WM_TAKE_FOCUS was sent (wSetFocusTo) */
   if (wwin->flags.is_gnustep == 0) {
     wFrameWindowChangeState(wwin->frame, WS_FOCUSED);
+    wRaiseFrame(wwin->frame->core);
   }
 
   wwin->flags.focused = 1;

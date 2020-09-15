@@ -107,6 +107,57 @@ static inline void shade_animate(WWindow *wwin, Bool what)
 }
 #endif
 
+WWindow *wNextWindowToFocus(WWindow *wwin)
+{
+  WWindow *tmp;
+  WScreen *scr = wwin->screen_ptr;
+  
+  /* if window was a transient, focus the owner window */
+  tmp = wWindowFor(wwin->transient_for);
+  if (tmp && (!tmp->flags.mapped || WFLAGP(tmp, no_focusable))) {
+    tmp = NULL;
+  }
+  
+  /* search for the window of the same application */
+  if (!tmp) {
+    tmp = scr->focused_window;
+    while (tmp) {
+      if (((wwin->flags.is_gnustep && !strcmp(wwin->wm_instance, tmp->wm_instance))
+          || (!wwin->flags.is_gnustep && !strcmp(wwin->wm_class, tmp->wm_class)))
+          && !WFLAGP(tmp, no_focusable)
+          && (!WFLAGP(tmp, skip_window_list) || tmp->flags.is_gnustep)
+          && (tmp->flags.mapped || tmp->flags.shaded)
+          && !(tmp->flags.hidden || tmp->flags.miniaturized))
+        break;
+      tmp = tmp->prev;
+    }
+  }
+  
+  if (!tmp) {
+    tmp = scr->focused_window;
+    while (tmp) {	/* look for one in the window list first */
+      if (!WFLAGP(tmp, no_focusable)
+          && (!WFLAGP(tmp, skip_window_list) || tmp->flags.is_gnustep)
+          && (tmp->flags.mapped || tmp->flags.shaded)
+          && !(tmp->flags.hidden || tmp->flags.miniaturized))
+        break;
+      tmp = tmp->prev;
+    }
+    if (!tmp) {	/* if unsuccessful, choose any focusable window */
+      tmp = scr->focused_window;
+      while (tmp) {
+        if (!WFLAGP(tmp, no_focusable)
+            && (tmp->flags.mapped || tmp->flags.shaded)
+            && !(tmp->flags.hidden || tmp->flags.miniaturized))
+          break;
+        tmp = tmp->prev;
+      }
+    }
+  }
+
+  return tmp;
+}
+
 /*
  *----------------------------------------------------------------------
  * wSetFocusTo--
@@ -1298,17 +1349,7 @@ void wIconifyWindow(WWindow *wwin)
      setupIconGrabs(wwin->icon);
     */
     if ((wwin->flags.focused || (owner && wwin->client_win == owner->client_win))) {
-      WWindow *tmp;
-
-      tmp = wwin->prev;
-      while (tmp) {
-        if (!WFLAGP(tmp, no_focusable)
-            && !(tmp->flags.hidden || tmp->flags.miniaturized)
-            && (wwin->frame->workspace == tmp->frame->workspace))
-          break;
-        tmp = tmp->prev;
-      }
-      wSetFocusTo(wwin->screen_ptr, tmp);
+      wSetFocusTo(wwin->screen_ptr, wNextWindowToFocus(wwin));
     }
 #ifdef USE_ANIMATIONS
     if (!wwin->screen_ptr->flags.startup) {
