@@ -2577,7 +2577,7 @@ _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
   window = [XGServer _windowWithTag: win];
   [self _sendRoot: window->root
              type: generic._WINDOWMAKER_WM_FUNCTION_ATOM
-           window: window->ident
+           window: ROOT
             data0: WMFHideApplication
             data1: CurrentTime
             data2: 0
