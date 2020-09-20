@@ -1100,7 +1100,9 @@ static void handleClientMessage(XEvent * event)
       return;
     if (!wwin->flags.miniaturized)
       wIconifyWindow(wwin);
-  } else if (event->xclient.message_type == w_global.atom.wm.colormap_notify && event->xclient.format == 32) {
+  }
+  else if (event->xclient.message_type == w_global.atom.wm.colormap_notify
+             && event->xclient.format == 32) {
     WScreen *scr = wDefaultScreen();
 
     if (!scr)
@@ -1111,8 +1113,8 @@ static void handleClientMessage(XEvent * event)
     } else {	/* stopping */
       wColormapAllowClientInstallation(scr, False);
     }
-  } else if (event->xclient.message_type == w_global.atom.wmaker.command) {
-
+  }
+  else if (event->xclient.message_type == w_global.atom.wmaker.command) {
     char *command;
     size_t len;
 
@@ -1129,10 +1131,14 @@ static void handleClientMessage(XEvent * event)
 
     wfree(command);
 
-  } else if (event->xclient.message_type == w_global.atom.wmaker.wm_function) {
+  }
+  else if (event->xclient.message_type == w_global.atom.wmaker.wm_function) {
     WApplication *wapp;
     int done = 0;
     wapp = wApplicationOf(event->xclient.window);
+    wmessage("Received client message: %i for: %s",
+             event->xclient.data.l[0],
+             wapp ? wapp->main_window_desc->wm_instance : "Unknown");
     if (wapp) {
       switch (event->xclient.data.l[0]) {
       case WMFHideOtherApplications:
@@ -1141,6 +1147,7 @@ static void handleClientMessage(XEvent * event)
         break;
 
       case WMFHideApplication:
+        wmessage("Received WMFHideApplication client message");
         wHideApplication(wapp);
         done = 1;
         break;
@@ -1160,7 +1167,8 @@ static void handleClientMessage(XEvent * event)
         }
       }
     }
-  } else if (event->xclient.message_type == w_global.atom.gnustep.wm_attr) {
+  }
+  else if (event->xclient.message_type == w_global.atom.gnustep.wm_attr) {
     wwin = wWindowFor(event->xclient.window);
     if (!wwin)
       return;
@@ -1175,7 +1183,8 @@ static void handleClientMessage(XEvent * event)
       }
       break;
     }
-  } else if (event->xclient.message_type == w_global.atom.gnustep.titlebar_state) {
+  }
+  else if (event->xclient.message_type == w_global.atom.gnustep.titlebar_state) {
     wwin = wWindowFor(event->xclient.window);
     if (!wwin)
       return;
@@ -1190,18 +1199,22 @@ static void handleClientMessage(XEvent * event)
       wFrameWindowChangeState(wwin->frame, WS_FOCUSED);
       break;
     }
-  } else if (event->xclient.message_type == w_global.atom.wm.ignore_focus_events) {
+  }
+  else if (event->xclient.message_type == w_global.atom.wm.ignore_focus_events) {
     WScreen *scr = wDefaultScreen();
     if (!scr)
       return;
     scr->flags.ignore_focus_events = event->xclient.data.l[0] ? 1 : 0;
-  } else if (wNETWMProcessClientMessage(&event->xclient)) {
+  }
+  else if (wNETWMProcessClientMessage(&event->xclient)) {
     /* do nothing */
 #ifdef USE_DOCK_XDND
-  } else if (wXDNDProcessClientMessage(&event->xclient)) {
+  }
+  else if (wXDNDProcessClientMessage(&event->xclient)) {
     /* do nothing */
 #endif	/* USE_DOCK_XDND */
-  } else {
+  }
+  else {
     /*
      * Non-standard thing, but needed by OffiX DND.
      * For when the icon frame gets a ClientMessage
