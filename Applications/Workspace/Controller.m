@@ -1151,31 +1151,35 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // Special "Hide"
 - (void)hide:(id)sender
 {
+  NSWindow *win, *menuWindow;
+
   NSLog(@"Controller - %@", [sender title]);
   
   if (_hiddenWindows == nil) {
     _hiddenWindows = [NSMutableArray new];
   }
-  
+
+  menuWindow = [[NSApp mainMenu] window];
   if ([[sender title] isEqualToString:@"Hide"]) {
-    NSWindow     *win;
     NSArray      *windowList;
     NSEnumerator *e;
     
+    [GSCurrentServer() hideApplication:[menuWindow windowNumber]];
+  
     windowList = GSOrderedWindows();
     e = [windowList reverseObjectEnumerator];
     while ((win = [e nextObject])) {
-      if (win != [[NSApp mainMenu] window]) {
+      if (win != menuWindow) {
         [win orderOut:self];
         [_hiddenWindows addObject:win];
       }
     }
-    [sender setTitle:@"Unhide"];
+    [sender setTitle:@"Show"];
   }
   else {
     [sender setTitle:@"Hide"];
-    for (NSWindow *win in _hiddenWindows) {
-      if (win != [[NSApp mainMenu] window])
+    for (win in _hiddenWindows) {
+      if (win != menuWindow)
         [win orderFrontRegardless];
     }
     [_hiddenWindows removeAllObjects];
