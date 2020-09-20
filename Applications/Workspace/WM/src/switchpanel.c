@@ -79,10 +79,7 @@ struct SwitchPanel {
 
 static int canReceiveFocus(WWindow *wwin)
 {
-  if (!strcmp(wwin->wm_class, "GNUstep"))
-    return 1;
-  
-  if (wwin->frame->workspace != wwin->screen_ptr->current_workspace)
+  if (wwin->frame && wwin->frame->workspace != wwin->screen_ptr->current_workspace)
     return 0;
 
   if (wPreferences.cycle_active_head_only &&
