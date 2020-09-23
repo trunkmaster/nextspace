@@ -21,6 +21,7 @@
 
 #import <AppKit/AppKit.h>
 
+#import "Application.h"
 #import "Workspace+WM.h"
 
 //-----------------------------------------------------------------------------
@@ -87,25 +88,17 @@ int WSApplicationMain(int argc, const char **argv)
 {
   NSDictionary	*infoDict;
   NSString	*mainModelFile;
-  NSString	*className;
-  Class		appClass;
   
   CREATE_AUTORELEASE_POOL(pool);
 
   infoDict = [[NSBundle mainBundle] infoDictionary];
-  className = [infoDict objectForKey:@"NSPrincipalClass"];
-  appClass = NSClassFromString(className);
-
-  if (appClass == 0) {
-    NSLog(@"Bad application class '%@' specified", className);
-    appClass = [NSApplication class];
-  }
-  [appClass sharedApplication];
+  
+  [WSApplication sharedApplication];
 
   mainModelFile = [infoDict objectForKey:@"NSMainNibFile"];
   if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO) {
-    if ([NSBundle loadNibNamed: mainModelFile owner: NSApp] == NO) {
-      NSLog (_(@"Cannot load the main model file '%@'"), mainModelFile);
+    if ([NSBundle loadNibNamed:mainModelFile owner:NSApp] == NO) {
+      NSLog(_(@"Cannot load the main model file '%@'"), mainModelFile);
     }
   }
 
