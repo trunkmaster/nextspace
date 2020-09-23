@@ -36,6 +36,7 @@
 
 #import "Workspace+WM.h"
 
+#import "Application.h"
 #import "Controller.h"
 #import "Controller+NSWorkspace.h"
 
@@ -1175,14 +1176,18 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       }
     }
     [sender setTitle:@"Show"];
+    [(WSApplication *)NSApp setHidden:YES];
   }
   else {
+    NSEnumerator *iter = [_hiddenWindows reverseObjectEnumerator];
+    
     [sender setTitle:@"Hide"];
-    for (win in _hiddenWindows) {
+    while (win = [iter nextObject]) {
       if (win != menuWindow)
         [win orderFrontRegardless];
     }
     [_hiddenWindows removeAllObjects];
+    [(WSApplication *)NSApp setHidden:NO];
   }
 }
 
