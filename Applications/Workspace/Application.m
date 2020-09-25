@@ -337,27 +337,35 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   NSWindow *win, *menuWindow;
   GSDisplayServer *displayServer = GSCurrentServer();
+  int screen = [[NSScreen mainScreen] screenNumber];
 
   NSLog(@"WSApplication - %@", [sender title]);
   
   if (_hiddenWindows == nil) {
-    _hiddenWindows = [NSMutableArray new];
+    _hiddenWindows = [[NSMutableArray alloc]
+                       initWithCapacity:[displayServer numberOfDesktops:screen]];
   }
 
   menuWindow = [[NSApp mainMenu] window];
   if ([[sender title] isEqualToString:@"Hide"]) {
-    NSArray      *windowList;
-    NSEnumerator *e;
-    
+    NSArray        *windowList;
+    int            workspace;
+    NSMutableArray *wsHiddenList;
+    NSEnumerator   *e;
+
     windowList = GSOrderedWindows();
     e = [windowList reverseObjectEnumerator];
     while ((win = [e nextObject])) {
       if (win != menuWindow) {
-        NSLog(@"Hiding WINDOW %li on DESKTOP %i",
-              [win windowNumber],
-              [displayServer desktopNumberForWindow:[win windowNumber]]);
+        workspace = [displayServer desktopNumberForWindow:[win windowNumber]];
+        NSLog(@"Hiding WINDOW %li on DESKTOP %i", [win windowNumber], workspace);
         [win orderOut:self];
-        [_hiddenWindows addObject:win];
+        wsHiddenList = [_hiddenWindows objectAtIndex:workspace];
+        if (wsHiddenList == nil) {
+          wsHiddenList = [NSMutableArray array];
+        }
+        [wsHiddenList addObject:win];
+        [_hiddenWindows replaceObjectAtIndex:workspace withObject:wsHiddenList];
       }
     }
     [sender setTitle:@"Show"];
@@ -369,8 +377,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     [sender setTitle:@"Hide"];
 
     NSLog(@"Restore windows on DESKTOP %i",
-          [displayServer
-            desktopNumberForScreen:[[NSScreen mainScreen] screenNumber]]);
+          [displayServer desktopNumberForScreen:screen]);
     while (win = [iter nextObject]) {
       if (win != menuWindow)
         [win orderFrontRegardless];
