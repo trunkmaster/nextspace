@@ -317,9 +317,68 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   [_listener application:self openFile:filePath];
 }
 
+- (void)terminate:(id)sender
+{
+  [super terminate:sender];
+  
+  if (_app_is_running == NO) {
+    if (_hiddenWindows == nil) {
+      [_hiddenWindows release];
+    }
+  }
+}
+
 - (void)setHidden:(BOOL)hidden
 {
   _app_is_hidden = hidden;
 }
+
+- (void)hide:(id)sender
+{
+  NSWindow *win, *menuWindow;
+  GSDisplayServer *displayServer = GSCurrentServer();
+
+  NSLog(@"WSApplication - %@", [sender title]);
+  
+  if (_hiddenWindows == nil) {
+    _hiddenWindows = [NSMutableArray new];
+  }
+
+  menuWindow = [[NSApp mainMenu] window];
+  if ([[sender title] isEqualToString:@"Hide"]) {
+    NSArray      *windowList;
+    NSEnumerator *e;
+    
+    windowList = GSOrderedWindows();
+    e = [windowList reverseObjectEnumerator];
+    while ((win = [e nextObject])) {
+      if (win != menuWindow) {
+        NSLog(@"Hiding WINDOW %li on DESKTOP %i",
+              [win windowNumber],
+              [displayServer desktopNumberForWindow:[win windowNumber]]);
+        [win orderOut:self];
+        [_hiddenWindows addObject:win];
+      }
+    }
+    [sender setTitle:@"Show"];
+    [(WSApplication *)NSApp setHidden:YES];
+  }
+  else {
+    NSEnumerator *iter = [_hiddenWindows reverseObjectEnumerator];
+    
+    [sender setTitle:@"Hide"];
+
+    NSLog(@"Restore windows on DESKTOP %i",
+          [displayServer
+            desktopNumberForScreen:[[NSScreen mainScreen] screenNumber]]);
+    while (win = [iter nextObject]) {
+      if (win != menuWindow)
+        [win orderFrontRegardless];
+    }
+    [_hiddenWindows removeAllObjects];
+    [(WSApplication *)NSApp setHidden:NO];
+  }
+}
+
 
 @end

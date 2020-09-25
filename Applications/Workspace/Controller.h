@@ -42,8 +42,6 @@
 
 @interface Controller : NSObject
 {
-  NSMutableArray *_hiddenWindows;
-  
   id viewMenuItem;
 
   // Info -> Legal...

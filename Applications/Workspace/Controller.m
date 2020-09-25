@@ -706,9 +706,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 - (void)applicationWillTerminate:(NSNotification *)aNotif
 {
-  if (_hiddenWindows == nil) {
-    [_hiddenWindows release];
-  }
 }
   
 - (void)activate
@@ -1146,48 +1143,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     // wScreenUpdateUsableArea(scr);
     // if (scr->dock->mapped)
     [sender setTitle:@"Hide"];
-  }
-}
-
-// Special "Hide"
-- (void)hide:(id)sender
-{
-  NSWindow *win, *menuWindow;
-
-  NSLog(@"Controller - %@", [sender title]);
-  
-  if (_hiddenWindows == nil) {
-    _hiddenWindows = [NSMutableArray new];
-  }
-
-  menuWindow = [[NSApp mainMenu] window];
-  if ([[sender title] isEqualToString:@"Hide"]) {
-    NSArray      *windowList;
-    NSEnumerator *e;
-    
-    [GSCurrentServer() hideApplication:[menuWindow windowNumber]];
-  
-    windowList = GSOrderedWindows();
-    e = [windowList reverseObjectEnumerator];
-    while ((win = [e nextObject])) {
-      if (win != menuWindow) {
-        [win orderOut:self];
-        [_hiddenWindows addObject:win];
-      }
-    }
-    [sender setTitle:@"Show"];
-    [(WSApplication *)NSApp setHidden:YES];
-  }
-  else {
-    NSEnumerator *iter = [_hiddenWindows reverseObjectEnumerator];
-    
-    [sender setTitle:@"Hide"];
-    while (win = [iter nextObject]) {
-      if (win != menuWindow)
-        [win orderFrontRegardless];
-    }
-    [_hiddenWindows removeAllObjects];
-    [(WSApplication *)NSApp setHidden:NO];
   }
 }
 
