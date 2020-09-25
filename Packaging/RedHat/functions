@@ -1,10 +1,11 @@
 # -*-Shell-script-*-
 #
 
+export ARCH=`uname -m`
 export CWD=`pwd`
 export SOURCES_DIR=~/rpmbuild/SOURCES
 export SPECS_DIR=~/rpmbuild/SPECS
-export RPMS_DIR=~/rpmbuild/RPMS/x86_64
+export RPMS_DIR=~/rpmbuild/RPMS/$ARCH
 if [ -f /etc/os-release ]; then 
     source /etc/os-release;
     export RELEASE_USR="$CWD/$ID-$VERSION_ID/NSUser"
