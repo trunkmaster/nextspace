@@ -1956,7 +1956,7 @@ posixFileDescriptor: (NSPosixFileDescriptor*)fileDescriptor
      which X events could potentially come that we could easily get
      out of sync, particularly when there are a lot of window
      events */
-  if ([NSApp isHidden])
+  if ([NSApp isHidden] && cWin->number != [[[NSApp mainMenu] window] windowNumber])
     {
       /* If window receives WM_TAKE_FOCUS and application is in hidden 
          state - it's time to unhide. There's no other method to 
