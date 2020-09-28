@@ -23,7 +23,5 @@
 
 @interface WSApplication : NSApplication
 {
-  NSMutableArray *_hiddenWindows;
 }
-- (void)setHidden:(BOOL)hidden;
 @end

@@ -20,6 +20,7 @@
 //
 #import <GNUstepGUI/GSDisplayServer.h>
 #import "Application.h"
+#import "Workspace+WM.h"
 
 @interface WSApplication (Private)
 - (void)_openDocument:(NSString*)filePath;
@@ -147,46 +148,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void)mouseDown:(NSEvent*)theEvent
 {
   if ([theEvent clickCount] >= 2) {
-    /* if not hidden raise windows which are possibly obscured. */
-    NSLog(@"WSAppIconView: double-click");
-    // if ([NSApp isHidden] == NO) {
-    //   NSArray *windows = RETAIN(GSOrderedWindows());
-    //   NSWindow *aWin;
-    //   NSEnumerator *iter = [windows reverseObjectEnumerator];
-          
-    //   while ((aWin = [iter nextObject])) { 
-    //     if ([aWin isVisible] == YES && [aWin isMiniaturized] == NO
-    //         && aWin != [NSApp keyWindow] && aWin != [NSApp mainWindow]
-    //         && aWin != [self window] 
-    //         && ([aWin styleMask] & NSMiniWindowMask) == 0) {
-    //       [aWin orderFrontRegardless];
-    //     }
-    //   }
-	
-    //   if ([NSApp isActive] == YES) {
-    //     if ([NSApp keyWindow] != nil) {
-    //       [[NSApp keyWindow] orderFront:self];
-    //     }
-    //     else if ([NSApp mainWindow] != nil) {
-    //       [[NSApp mainWindow] makeKeyAndOrderFront:self];
-    //     }
-    //     else {
-    //       /* We need give input focus to some window otherwise we'll 
-    //          never get keyboard events. FIXME: doesn't work. */
-    //       NSWindow *menu_window = [[NSApp mainMenu] window];
-    //       NSDebugLLog(@"Focus", @"No key on activation - make menu key");
-    //       [GSServerForWindow(menu_window) setinputfocus:
-    //                           [menu_window windowNumber]];
-    //     }
-    //   }
-    //   RELEASE(windows);
-    // }
-    if ([NSApp isHidden] == NO) {
-      [[NSApp delegate] hide:[[NSApp mainMenu] itemWithTitle:@"Show"]];
-    }
-    if ([NSApp isActive] == NO) {
-      [NSApp activateIgnoringOtherApps:YES];
-    }
+    [NSApp hide:self];
   }
   else {
     NSPoint	lastLocation;
@@ -317,75 +279,24 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   [_listener application:self openFile:filePath];
 }
 
-- (void)terminate:(id)sender
-{
-  [super terminate:sender];
-  
-  if (_app_is_running == NO) {
-    if (_hiddenWindows == nil) {
-      [_hiddenWindows release];
-    }
-  }
-}
-
-- (void)setHidden:(BOOL)hidden
-{
-  _app_is_hidden = hidden;
-}
-
 - (void)hide:(id)sender
 {
-  NSWindow *win, *menuWindow;
-  GSDisplayServer *displayServer = GSCurrentServer();
-  int screen = [[NSScreen mainScreen] screenNumber];
-
-  NSLog(@"WSApplication - %@", [sender title]);
-  
-  if (_hiddenWindows == nil) {
-    _hiddenWindows = [[NSMutableArray alloc]
-                       initWithCapacity:[displayServer numberOfDesktops:screen]];
-  }
-
-  menuWindow = [[NSApp mainMenu] window];
-  if ([[sender title] isEqualToString:@"Hide"]) {
-    NSArray        *windowList;
-    int            workspace;
-    NSMutableArray *wsHiddenList;
-    NSEnumerator   *e;
-
-    windowList = GSOrderedWindows();
-    e = [windowList reverseObjectEnumerator];
-    while ((win = [e nextObject])) {
-      if (win != menuWindow) {
-        workspace = [displayServer desktopNumberForWindow:[win windowNumber]];
-        NSLog(@"Hiding WINDOW %li on DESKTOP %i", [win windowNumber], workspace);
-        [win orderOut:self];
-        wsHiddenList = [_hiddenWindows objectAtIndex:workspace];
-        if (wsHiddenList == nil) {
-          wsHiddenList = [NSMutableArray array];
-        }
-        [wsHiddenList addObject:win];
-        [_hiddenWindows replaceObjectAtIndex:workspace withObject:wsHiddenList];
-      }
+  if ([sender isKindOfClass:[NSMenuItem class]] == NO) {
+    sender = [[NSApp mainMenu] itemWithTitle:@"Hide"];
+    if (sender == nil) {
+      sender = [[NSApp mainMenu] itemWithTitle:@"Show"];
     }
+  }
+  
+  if ([[sender title] isEqualToString:@"Hide"]) {
+    [super hide:sender];
     [sender setTitle:@"Show"];
-    [(WSApplication *)NSApp setHidden:YES];
   }
   else {
-    NSEnumerator *iter = [_hiddenWindows reverseObjectEnumerator];
-    
+    wUnhideApplication(wApplicationWithName(NULL, "Workspace"), NO, NO);
+    [NSApp activateIgnoringOtherApps:YES];
     [sender setTitle:@"Hide"];
-
-    NSLog(@"Restore windows on DESKTOP %i",
-          [displayServer desktopNumberForScreen:screen]);
-    while (win = [iter nextObject]) {
-      if (win != menuWindow)
-        [win orderFrontRegardless];
-    }
-    [_hiddenWindows removeAllObjects];
-    [(WSApplication *)NSApp setHidden:NO];
   }
 }
-
 
 @end
