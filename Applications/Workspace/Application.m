@@ -148,7 +148,12 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void)mouseDown:(NSEvent*)theEvent
 {
   if ([theEvent clickCount] >= 2) {
-    [NSApp hide:self];
+    if ([NSApp isHidden] == YES) {
+      [NSApp hide:self];
+    }
+    else if ([NSApp isActive] == NO) {
+      [NSApp activateIgnoringOtherApps:YES];
+    }
   }
   else {
     NSPoint	lastLocation;
@@ -291,11 +296,13 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   if ([[sender title] isEqualToString:@"Hide"]) {
     [super hide:sender];
     [sender setTitle:@"Show"];
+    _app_is_hidden = YES;
   }
   else {
     wUnhideApplication(wApplicationWithName(NULL, "Workspace"), NO, NO);
     [NSApp activateIgnoringOtherApps:YES];
     [sender setTitle:@"Hide"];
+    _app_is_hidden = NO;
   }
 }
 
