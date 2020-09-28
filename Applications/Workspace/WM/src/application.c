@@ -244,7 +244,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
 WApplication *wApplicationWithName(WScreen *scr, char *app_name)
 {
-  WApplication *app = scr->wapp_list;
+  WApplication *app = scr ? scr->wapp_list : wDefaultScreen()->wapp_list;
   
   while (app) {
     if (!strcmp(app->main_window_desc->wm_instance, app_name))
