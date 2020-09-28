@@ -1636,6 +1636,7 @@ void wHideApplication(WApplication *wapp)
   WWindow *wlist;
   int hadfocus;
   int animate;
+  Bool is_workspace = False;
 
   if (!wapp) {
     wwarning("trying to hide a non grouped window");
@@ -1659,8 +1660,17 @@ void wHideApplication(WApplication *wapp)
   /* animate = !wapp->flags.skip_next_animation; */
   animate = 0;
 
+  /* Special treatment of Workspace: set focus to main menu prior to any window 
+     hiding to prevent searching for next focused window. Workspace's main menu
+     will not be unmapped on hiding. */
+  if (wapp->menu_win && !strcmp(wapp->menu_win->wm_instance, "Workspace")) {
+    XSetInputFocus(dpy, wapp->menu_win->client_win, RevertToParent, CurrentTime);
+    is_workspace = True;
+  }
+
   while (wlist) {
-    if (wlist->main_window == wapp->main_window) {
+    if (wlist->main_window == wapp->main_window
+        && (is_workspace == False || wlist != wapp->menu_win)) {
       if (wlist->flags.focused)
         hadfocus = 1;
       if (wapp->app_icon) {
@@ -1674,7 +1684,7 @@ void wHideApplication(WApplication *wapp)
 
   wapp->flags.skip_next_animation = 0;
 
-  if (hadfocus) {
+  if (hadfocus && is_workspace == False) {
     wlist = scr->focused_window;
     while (wlist) {
       if (!WFLAGP(wlist, no_focusable) && !wlist->flags.hidden
