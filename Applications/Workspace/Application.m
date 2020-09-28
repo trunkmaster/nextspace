@@ -299,10 +299,27 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     _app_is_hidden = YES;
   }
   else {
-    wUnhideApplication(wApplicationWithName(NULL, "Workspace"), NO, NO);
-    [NSApp activateIgnoringOtherApps:YES];
-    [sender setTitle:@"Hide"];
+    [self unhide:sender];
+  }
+}
+
+- (void)unhide:(id)sender
+{
+  if (_app_is_hidden) {
     _app_is_hidden = NO;
+    wUnhideApplication(wApplicationWithName(NULL, "Workspace"), NO, NO);
+    [[_app_icon_window contentView] setNeedsDisplay:YES];
+  
+    if ([sender isKindOfClass:[NSMenuItem class]] == NO) {
+      sender = [[NSApp mainMenu] itemWithTitle:@"Show"];
+    }
+    if (sender) {
+      [sender setTitle:@"Hide"];
+    }
+  }
+
+  if (_app_is_active == NO) {
+    [NSApp activateIgnoringOtherApps:YES];
   }
 }
 
