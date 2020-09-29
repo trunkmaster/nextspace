@@ -126,7 +126,8 @@ WWindow *wNextWindowToFocus(WWindow *wwin)
           || (!wwin->flags.is_gnustep && !strcmp(wwin->wm_class, tmp->wm_class)))
           && !WFLAGP(tmp, no_focusable)
           && (!WFLAGP(tmp, skip_window_list) || tmp->flags.is_gnustep)
-          && (tmp->flags.mapped || tmp->flags.shaded)
+          && (tmp->flags.mapped || tmp->flags.shaded
+              /*|| tmp->frame->workspace != scr->current_workspace*/)
           && !(tmp->flags.hidden || tmp->flags.miniaturized))
         break;
       tmp = tmp->prev;
@@ -306,6 +307,9 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       break;
     case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
       wmessage("        wSetFocusTo: %lu focus mode == GLOBALLY_ACTIVE.", wwin->client_win);
+      /* if (wwin->flags.is_gnustep && napp->menu_win) { */
+      /*   XSetInputFocus(dpy, napp->menu_win->client_win, RevertToParent, CurrentTime); */
+      /* } */
       wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
       focus_succeeded = True;
       break;
