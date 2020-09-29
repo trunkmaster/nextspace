@@ -1482,7 +1482,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
 {
   WCoreWindow *frame = wwin->frame->core;
   WWindow *owner = NULL;
-  WWindow *newFocusedWindow = NULL;
+  WWindow *new_focused_window = NULL;
   int wasFocused;
   WScreen *scr = wwin->screen_ptr;
   WApplication *oapp;
@@ -1547,7 +1547,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   if (!wwin->prev && !wwin->next) {
     /* was the only window */
     scr->focused_window = NULL;
-    newFocusedWindow = NULL;
+    new_focused_window = NULL;
   }
   else {
     if (wwin->prev)
@@ -1560,7 +1560,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
       scr->focused_window->next = NULL;
     }
 
-    newFocusedWindow = wNextWindowToFocus(wwin);
+    new_focused_window = wNextWindowToFocus(wwin);
   }
 
   if (!wwin->flags.internal_window) {
@@ -1571,21 +1571,36 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   
   if (wasFocused) {
     if (wwin->flags.is_gnustep) {
+      wmessage("[window.c] new_focused_window == %lu",
+               new_focused_window ? new_focused_window->client_win : 0);
+      /* When main menu becomes unmanaged - app's quitting - we should switch
+         focus to other app. Otherwise set focus to main menu to let GNUstep
+         decide what app window should become focused next. */
       if (WINDOW_LEVEL(wwin) == NSMainMenuWindowLevel) {
-        /* main menu becomes unmanaged - app's quitting - switch focus to other app */
-        wSetFocusTo(scr, newFocusedWindow);
+        /* main menu becomes unmanaged */
+        wSetFocusTo(scr, new_focused_window);
       }
-      else if (oapp) {
-        /* let GNUstep decide what app window should become focused next */
+      else if (oapp && oapp->menu_win) {
+        /* let GNUstep decide */
         wSetFocusTo(scr, oapp->menu_win);
       }
-    }
-    else if (owner && newFocusedWindow != owner) {
+    } else if (owner && new_focused_window != owner) {
       wFrameWindowChangeState(owner->frame, WS_UNFOCUSED);
     }
     else {
-      wSetFocusTo(scr, newFocusedWindow);
+      wSetFocusTo(scr, new_focused_window);
     }
+
+    /* if (new_focused_window */
+    /*     && new_focused_window->frame->workspace != scr->current_workspace) { */
+    /*   if (oapp->menu_win) */
+    /*     scr->focused_window = oapp->menu_win; */
+    /*   XUngrabServer(dpy); */
+    /*   wMakeWindowVisible(new_focused_window); */
+    /*   XGrabServer(dpy); */
+    /* } else { */
+    /*   wSetFocusTo(scr, new_focused_window); */
+    /* } */
   }
 
   if (oapp) {
