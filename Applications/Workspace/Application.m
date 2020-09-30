@@ -128,13 +128,6 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   		   inView: self];
   [dragCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
 		   inView: self];
-  
-  if ([NSApp isHidden])
-    {
-      NSRectEdge mySides[] = {NSMinXEdge, NSMinYEdge, NSMaxXEdge, NSMaxYEdge};
-      CGFloat myGrays[] = {NSBlack, NSWhite, NSWhite, NSBlack};
-      NSDrawTiledRects(NSMakeRect(4, 4, 3, 2), rect, mySides, myGrays, 4);
-    }
 }
 
 - (id)initWithFrame:(NSRect)frame
@@ -148,12 +141,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void)mouseDown:(NSEvent*)theEvent
 {
   if ([theEvent clickCount] >= 2) {
-    if ([NSApp isHidden] == YES) {
-      [NSApp hide:self];
-    }
-    else if ([NSApp isActive] == NO) {
-      [NSApp activateIgnoringOtherApps:YES];
-    }
+    [NSApp unhide:self];
   }
   else {
     NSPoint	lastLocation;
@@ -306,9 +294,8 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void)unhide:(id)sender
 {
   if (_app_is_hidden) {
-    _app_is_hidden = NO;
     wUnhideApplication(wApplicationWithName(NULL, "Workspace"), NO, NO);
-    [[_app_icon_window contentView] setNeedsDisplay:YES];
+    [super unhide:sender];
   
     if ([sender isKindOfClass:[NSMenuItem class]] == NO) {
       sender = [[NSApp mainMenu] itemWithTitle:@"Show"];
