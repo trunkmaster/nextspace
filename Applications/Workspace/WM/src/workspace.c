@@ -643,15 +643,18 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     }
 
     if (foc) {
+      /* Mapped window found earlier. */
       wmessage("[workspace.c] NEW focused window after CHECK: %lu, %s.%s (%i x %i)\n",
                foc->client_win, foc->wm_instance, foc->wm_class,
                foc->old_geometry.width, foc->old_geometry.height);
-    }
-    
-    if (foc) {
-      /* Mapped window found earlier. */
-      wmessage("[workspace.c] focusing managed window %lu...\n", foc->client_win);
-      wRaiseFrame(foc->frame->core);
+      if (foc->flags.hidden) {
+        wmessage("[workspace.c] skip focusing hidden window %lu (%s.%s)",
+                 foc->client_win, foc->wm_instance, foc->wm_class);
+        foc = NULL;
+      }
+      else {
+        wRaiseFrame(foc->frame->core);
+      }
     }
     wSetFocusTo(scr, foc);
       
