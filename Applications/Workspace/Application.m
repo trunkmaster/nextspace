@@ -293,6 +293,14 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
 - (void)unhide:(id)sender
 {
+  if ([sender isKindOfClass:[GSDisplayServer class]]) {
+    NSWindow *menuWindow= [[self mainMenu] window];
+    _app_is_active = YES;
+    [menuWindow orderFront:self];
+    [GSServerForWindow(menuWindow) setinputfocus:[menuWindow windowNumber]];
+    return;
+  }
+  
   if (_app_is_hidden) {
     wUnhideApplication(wApplicationWithName(NULL, "Workspace"), NO, NO);
     [super unhide:sender];
