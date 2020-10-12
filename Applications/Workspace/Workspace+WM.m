@@ -1573,6 +1573,9 @@ void WSActivateApplication(WScreen *scr, char *app_name)
 
 void WSActivateWorkspaceApp(WScreen *scr)
 {
+  if (scr == NULL)
+    scr = wDefaultScreen();
+  
   if ([NSApp isHidden] == NO) {
     [[NSApp delegate] performSelectorOnMainThread:@selector(activate)
                                        withObject:nil
