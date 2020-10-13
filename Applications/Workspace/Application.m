@@ -272,29 +272,10 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   [_listener application:self openFile:filePath];
 }
 
-- (void)hide:(id)sender
-{
-  if ([sender isKindOfClass:[NSMenuItem class]] == NO) {
-    sender = [[NSApp mainMenu] itemWithTitle:@"Hide"];
-    if (sender == nil) {
-      sender = [[NSApp mainMenu] itemWithTitle:@"Show"];
-    }
-  }
-  
-  if ([[sender title] isEqualToString:@"Hide"]) {
-    [super hide:sender];
-    [sender setTitle:@"Show"];
-    _app_is_hidden = YES;
-  }
-  else {
-    [self unhide:sender];
-  }
-}
-
 - (void)unhide:(id)sender
 {
   if ([sender isKindOfClass:[GSDisplayServer class]]) {
-    NSWindow *menuWindow= [[self mainMenu] window];
+    NSWindow *menuWindow = [_main_menu window];
     _app_is_active = YES;
     [menuWindow orderFront:self];
     [GSServerForWindow(menuWindow) setinputfocus:[menuWindow windowNumber]];
@@ -305,16 +286,16 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     wUnhideApplication(wApplicationWithName(NULL, "Workspace"), NO, NO);
     [super unhide:sender];
   
-    if ([sender isKindOfClass:[NSMenuItem class]] == NO) {
-      sender = [[NSApp mainMenu] itemWithTitle:@"Show"];
-    }
-    if (sender) {
-      [sender setTitle:@"Hide"];
-    }
+    // if ([sender isKindOfClass:[NSMenuItem class]] == NO) {
+    //   sender = [_main_menu itemWithTitle:@"Show"];
+    // }
+    // if (sender) {
+    //   [sender setTitle:@"Hide"];
+    // }
   }
 
   if (_app_is_active == NO) {
-    [NSApp activateIgnoringOtherApps:YES];
+    [self activateIgnoringOtherApps:YES];
   }
 }
 
