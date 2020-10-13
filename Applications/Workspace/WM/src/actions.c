@@ -107,6 +107,8 @@ static inline void shade_animate(WWindow *wwin, Bool what)
 }
 #endif
 
+#define ON_CURRENT_WS(wwin) (wwin->frame->workspace == wwin->screen_ptr->current_workspace)
+
 WWindow *wNextWindowToFocus(WWindow *wwin)
 {
   WWindow *tmp;
@@ -122,13 +124,12 @@ WWindow *wNextWindowToFocus(WWindow *wwin)
   if (!tmp) {
     tmp = scr->focused_window;
     while (tmp) {
-      if (((wwin->flags.is_gnustep && !strcmp(wwin->wm_instance, tmp->wm_instance))
-          || (!wwin->flags.is_gnustep && !strcmp(wwin->wm_class, tmp->wm_class)))
-          && !WFLAGP(tmp, no_focusable)
+      if (!WFLAGP(tmp, no_focusable)
+          && !(tmp->flags.hidden || tmp->flags.miniaturized)
           && (!WFLAGP(tmp, skip_window_list) || tmp->flags.is_gnustep)
-          && (tmp->flags.mapped || tmp->flags.shaded
-              /*|| tmp->frame->workspace != scr->current_workspace*/)
-          && !(tmp->flags.hidden || tmp->flags.miniaturized))
+          && (tmp->flags.mapped || tmp->flags.shaded || !ON_CURRENT_WS(tmp))
+          && ((wwin->flags.is_gnustep && !strcmp(wwin->wm_instance, tmp->wm_instance))
+              || (!wwin->flags.is_gnustep && !strcmp(wwin->wm_class, tmp->wm_class))))
         break;
       tmp = tmp->prev;
     }
@@ -271,6 +272,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     if (wsapp && wsapp->menu_win) {
       wmessage("        wSetFocusTo: Workspace menu window: %lu", wsapp->menu_win->client_win);
       wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
+      old_focused = NULL;
     }
     
     if (old_focused)
