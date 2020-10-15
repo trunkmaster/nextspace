@@ -1294,7 +1294,12 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   /* Final preparations before window is ready to go */
   wFrameWindowChangeState(wwin->frame, WS_UNFOCUSED);
 
-  if (!wwin->flags.miniaturized && workspace == scr->current_workspace && !wwin->flags.hidden) {
+  /* GNUstep application has custom focus management - let it focus its window.
+     Our wSetFocusTo call would be a result of FocusIn event appearance.
+     .is_dockapp is set for windows created with Withdrawn state */
+  if (!wwin->flags.is_gnustep && !wwin->flags.is_dockapp
+      && !wwin->flags.miniaturized && !wwin->flags.hidden
+      && workspace == scr->current_workspace) {
     if (((transientOwner && transientOwner->flags.focused)
          || wPreferences.auto_focus) && !WFLAGP(wwin, no_focusable)) {
 
