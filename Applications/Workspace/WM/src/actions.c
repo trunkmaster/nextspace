@@ -301,6 +301,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     case WFM_PASSIVE: // wm_hints->input, !WM_TAKE_FOCUS
       wmessage("        wSetFocusTo: %lu focus mode == PASSIVE.", wwin->client_win);
       XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
+      focus_succeeded = True;
       break;
     case WFM_LOCALLY_ACTIVE: // wm_hints->input, WM_TAKE_FOCUS
       wmessage("        wSetFocusTo: %lu focus mode == LOCALLY_ACTIVE.", wwin->client_win);
@@ -309,15 +310,21 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       break;
     case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
       wmessage("        wSetFocusTo: %lu focus mode == GLOBALLY_ACTIVE.", wwin->client_win);
-      /* if (wwin->flags.is_gnustep && napp->menu_win) { */
-      /*   XSetInputFocus(dpy, napp->menu_win->client_win, RevertToParent, CurrentTime); */
-      /* } */
+      if (napp->menu_win) { // GNUstep application
+        /* Aggresively set focus to main menu to prevent its flickering */
+        XSetInputFocus(dpy, napp->menu_win->client_win, RevertToParent, CurrentTime);
+      }
       wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
       focus_succeeded = True;
       break;
     }
   }
-  else { // not GNUstep and not mapped (shaded, iconified)
+  else if (wwin->frame->workspace != scr->current_workspace) {
+    // Non-GNUstep window placed on other workspace - switch to it
+    wWorkspaceChange(scr, wwin->frame->workspace);
+  }
+  else {
+    // Non-GNUstep, not mapped (shaded, iconified)
     XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
   }
   XFlush(dpy);
