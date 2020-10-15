@@ -1004,8 +1004,10 @@ static void handleUnmapNotify(XEvent * event)
   XSync(dpy, 0);
   /* check if the window was destroyed */
   if (XCheckTypedWindowEvent(dpy, wwin->client_win, DestroyNotify, &ev)) {
+    XUngrabServer(dpy);
     DispatchEvent(&ev);
-  } else {
+  }
+  else {
     Bool reparented = False;
 
     if (XCheckTypedWindowEvent(dpy, wwin->client_win, ReparentNotify, &ev))
@@ -1023,8 +1025,8 @@ static void handleUnmapNotify(XEvent * event)
        * root window */
       wUnmanageWindow(wwin, !reparented, False);
     }
+    XUngrabServer(dpy);
   }
-  XUngrabServer(dpy);
 }
 
 static void handleConfigureRequest(XEvent * event)
