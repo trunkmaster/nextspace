@@ -1595,17 +1595,6 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     else {
       wSetFocusTo(scr, new_focused_window);
     }
-
-    /* if (new_focused_window */
-    /*     && new_focused_window->frame->workspace != scr->current_workspace) { */
-    /*   if (oapp->menu_win) */
-    /*     scr->focused_window = oapp->menu_win; */
-    /*   XUngrabServer(dpy); */
-    /*   wMakeWindowVisible(new_focused_window); */
-    /*   XGrabServer(dpy); */
-    /* } else { */
-    /*   wSetFocusTo(scr, new_focused_window); */
-    /* } */
   }
 
   if (oapp) {
