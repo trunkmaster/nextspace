@@ -121,7 +121,8 @@ WWindow *wNextWindowToFocus(WWindow *wwin)
     tmp = NULL;
   }
   
-  /* search for the window of the same application */
+  /* search for the window of the same application, main menu of next application,
+     window in focus list or andy focusable window */
   if (!tmp) {
     wapp = wApplicationOf(wwin->main_window);
     tmp = scr->focused_window;
@@ -129,7 +130,7 @@ WWindow *wNextWindowToFocus(WWindow *wwin)
       if (WINDOW_LEVEL(tmp) == NSMainMenuWindowLevel) {
         // main menu could be unmapped and has skip_window_list == 1
         menu_app = wApplicationOf(tmp->main_window);
-        if (menu_app && (wapp && menu_app == wapp->next) && !menu_win)
+        if (menu_app && wapp && (menu_app == wapp || menu_app == wapp->next) && !menu_win)
           menu_win = tmp;
       }
       else if (!(tmp->flags.hidden || tmp->flags.miniaturized)
