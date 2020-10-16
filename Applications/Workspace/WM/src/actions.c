@@ -111,8 +111,9 @@ static inline void shade_animate(WWindow *wwin, Bool what)
 
 WWindow *wNextWindowToFocus(WWindow *wwin)
 {
-  WWindow *tmp;
   WScreen *scr = wwin->screen_ptr;
+  WWindow *tmp, *list_win = NULL, *focusable_win = NULL, *menu_win = NULL;
+  WApplication *wapp, *menu_app;
   
   /* if window was a transient, focus the owner window */
   tmp = wWindowFor(wwin->transient_for);
@@ -122,39 +123,42 @@ WWindow *wNextWindowToFocus(WWindow *wwin)
   
   /* search for the window of the same application */
   if (!tmp) {
+    wapp = wApplicationOf(wwin->main_window);
     tmp = scr->focused_window;
     while (tmp) {
-      if (!WFLAGP(tmp, no_focusable)
-          && !(tmp->flags.hidden || tmp->flags.miniaturized)
-          && (!WFLAGP(tmp, skip_window_list) || tmp->flags.is_gnustep)
-          && (tmp->flags.mapped || tmp->flags.shaded || !ON_CURRENT_WS(tmp))
-          && ((wwin->flags.is_gnustep && !strcmp(wwin->wm_instance, tmp->wm_instance))
-              || (!wwin->flags.is_gnustep && !strcmp(wwin->wm_class, tmp->wm_class))))
-        break;
+      if (WINDOW_LEVEL(tmp) == NSMainMenuWindowLevel) {
+        // main menu could be unmapped and has skip_window_list == 1
+        menu_app = wApplicationOf(tmp->main_window);
+        if (menu_app && (wapp && menu_app == wapp->next) && !menu_win)
+          menu_win = tmp;
+      }
+      else if (!(tmp->flags.hidden || tmp->flags.miniaturized)
+               && (tmp->flags.mapped || tmp->flags.shaded || !ON_CURRENT_WS(tmp))) {
+        // visible or on other workspace
+        if (!WFLAGP(tmp, no_focusable)) {
+          // focusable
+          if (!focusable_win) focusable_win = tmp;
+          if (!WFLAGP(tmp, skip_window_list)) {
+            // in window list
+            if (!list_win) list_win = tmp;
+            if ((wwin->flags.is_gnustep && !strcmp(wwin->wm_instance, tmp->wm_instance))
+                || (!wwin->flags.is_gnustep && !strcmp(wwin->wm_class, tmp->wm_class))) {
+              break;
+            }
+          }
+        }
+      }
       tmp = tmp->prev;
     }
   }
-  
+
   if (!tmp) {
-    tmp = scr->focused_window;
-    while (tmp) {	/* look for one in the window list first */
-      if (!WFLAGP(tmp, no_focusable)
-          && (!WFLAGP(tmp, skip_window_list) || tmp->flags.is_gnustep)
-          && (tmp->flags.mapped || tmp->flags.shaded)
-          && !(tmp->flags.hidden || tmp->flags.miniaturized))
-        break;
-      tmp = tmp->prev;
-    }
-    if (!tmp) {	/* if unsuccessful, choose any focusable window */
-      tmp = scr->focused_window;
-      while (tmp) {
-        if (!WFLAGP(tmp, no_focusable)
-            && (tmp->flags.mapped || tmp->flags.shaded)
-            && !(tmp->flags.hidden || tmp->flags.miniaturized))
-          break;
-        tmp = tmp->prev;
-      }
-    }
+    if (menu_win)
+      tmp = menu_win;
+    else if (list_win)
+      tmp = list_win;
+    else if (focusable_win)
+      tmp = focusable_win;
   }
 
   return tmp;
@@ -193,7 +197,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
   if (wwin && wwin->flags.is_gnustep) {
     WApplication *wwin_app = wApplicationOf(wwin->main_window);
-    WApplication *focused_app;
+    /* WApplication *focused_app; */
 
     /* Shaded focused GNUstep window should set focus to main menu */
     if (wwin->flags.shaded) {
@@ -225,33 +229,33 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
        that lead to FocusIn event.
        If user clicks *inside* inactive application window GNUstep correctly manages 
        focus order: main menu mapped and focused first then desired window focused next. */
-    focused_app = wApplicationOf(focused->main_window);
-    if (wwin_app && wwin_app->menu_win == wwin
-        && focused && (wwin != focused) && focused->flags.mapped && !focused->flags.shaded
-        && wwin_app == focused_app) {
-      wmessage("wSetFocusTo: rejected: %lu is a `%s` app menu (focused: %lu is mapped: %s.).",
-               wwin->client_win, focused->wm_instance,
-               focused->client_win, focused->flags.mapped ? "true" : "false");
-      // close the gap of old menu position
-      if (wwin->prev) {
-        wwin->prev->next = wwin->next;
-      }
-      if (wwin->next) {
-        wwin->next->prev = wwin->prev;
-      }
-      // update menu pointers
-      wwin->next = focused;
-      if (focused->prev) {
-        wwin->prev = focused->prev;
-      }
-      // point previous and focused window to menu
-      if (focused->prev) {
-        focused->prev->next = wwin;
-      }
-      focused->prev = wwin;
+    /* focused_app = wApplicationOf(focused->main_window); */
+    /* if (wwin_app && wwin_app->menu_win == wwin */
+    /*     && focused && (wwin != focused) && focused->flags.mapped && !focused->flags.shaded */
+    /*     && wwin->flags.mapped && wwin_app == focused_app) { */
+    /*   wmessage("wSetFocusTo: rejected: %lu is a `%s` app menu (focused: %lu is mapped: %s.).", */
+    /*            wwin->client_win, focused->wm_instance, */
+    /*            focused->client_win, focused->flags.mapped ? "true" : "false"); */
+    /*   // close the gap of old menu position */
+    /*   if (wwin->prev) { */
+    /*     wwin->prev->next = wwin->next; */
+    /*   } */
+    /*   if (wwin->next) { */
+    /*     wwin->next->prev = wwin->prev; */
+    /*   } */
+    /*   // update menu pointers */
+    /*   wwin->next = focused; */
+    /*   if (focused->prev) { */
+    /*     wwin->prev = focused->prev; */
+    /*   } */
+    /*   // point previous and focused window to menu */
+    /*   if (focused->prev) { */
+    /*     focused->prev->next = wwin; */
+    /*   } */
+    /*   focused->prev = wwin; */
 
-      return;
-    }
+    /*   return; */
+    /* } */
   }
 
   wPrintWindowFocusState(wwin, "[START] wSetFocusTo:");
@@ -309,13 +313,16 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       focus_succeeded = True;
       break;
     case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
-      wmessage("        wSetFocusTo: %lu focus mode == GLOBALLY_ACTIVE.", wwin->client_win);
-      if (napp->menu_win) { // GNUstep application
-        /* Aggresively set focus to main menu to prevent its flickering */
-        XSetInputFocus(dpy, napp->menu_win->client_win, RevertToParent, CurrentTime);
+      {
+        wmessage("        wSetFocusTo: %lu focus mode == GLOBALLY_ACTIVE.", wwin->client_win);
+        /* WApplication *wsapp = wApplicationWithName(scr, "Workspace"); */
+        /* if (napp->menu_win && napp->menu_win->flags.mapped && napp == wsapp) { */
+        /*   /\* Aggresively set focus to main menu to prevent its flickering *\/ */
+        /*   XSetInputFocus(dpy, napp->menu_win->client_win, RevertToParent, CurrentTime); */
+        /* } */
+        wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
+        focus_succeeded = True;
       }
-      wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
-      focus_succeeded = True;
       break;
     }
   }
