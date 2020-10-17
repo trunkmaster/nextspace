@@ -13,7 +13,7 @@ build() {
 	local package="$1"
 	local version="$2"
 
-	use_$method ${package}_${version}-*.dsc
+	use_$method $(ls ${package}_${version}-*.dsc | tail -1)
 }
 
 method=${1-pbuilder}
