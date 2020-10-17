@@ -104,6 +104,18 @@ To update a package, several steps need to be done:
 
 After double-checking everything, `git commit -a` and push for review!
 
+# Installing the packages
+
+To install the entire desktop environment, just install the `nextspace-desktop` package. This might require some preparation though.
+
+## Setting things up to install pbuilder created packages locally
+
+To tell `apt` to look for the packages created by pbuilder, just create a file `/etc/apt/sources.list.d/nextspace` containing
+
+    deb [trusted=yes] file:///var/cache/pbuilder/result/ ./
+
+After running `apt-get update` the package manager will use the packages generated with pbuilder.
+
 # Credits
 
 This integration used several sources that informed how the packages are built:
@@ -111,4 +123,4 @@ This integration used several sources that informed how the packages are built:
 * [Debian's pbuilder Tricks page](https://wiki.debian.org/PbuilderTricks) provided the base for the pbuilder hooks.
 * [gnustep-build](https://github.com/plaurent/gnustep-build) helped figuring out some of configuration details required to integrate libobjc2.
 * Debian packages were reused as much as possible: gnustep-{make,base,gui,back}, but renamed to nextspace-\* so they can be installed side-by-side.
-* trunkmaster's helpful advice in here
+* trunkmaster provided lots of advice.
