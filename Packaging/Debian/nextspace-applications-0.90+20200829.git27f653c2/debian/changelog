@@ -1,3 +1,9 @@
+nextspace-applications (0.90+20200829.git27f653c2-1.2) unstable; urgency=medium
+
+  * Add dependency on x11-xserver-utils, needed for xrdb
+
+ -- Patrick Georgi <patrick@georgi.software>  Sat, 17 Oct 2020 20:27:48 +0200
+
 nextspace-applications (0.90+20200829.git27f653c2-1.1) unstable; urgency=medium
 
   * Add systemd integration
