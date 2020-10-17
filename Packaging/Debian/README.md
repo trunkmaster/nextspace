@@ -53,7 +53,7 @@ Edit `/etc/pbuilderrc` to contain the lines
     HOOKDIR=/etc/pbuilder/hook.d
     BINDMOUNTS=/var/cache/pbuilder/result
 
-And add a file `/etc/pbuilder/hook.d/D05self-archive` containing
+Add a file `/etc/pbuilder/hook.d/D05self-archive` containing
 
     apt-get install --assume-yes apt-utils
     
@@ -76,8 +76,17 @@ And add a file `/etc/pbuilder/hook.d/D05self-archive` containing
     
     apt-get -qy update
 
-Finally make the file executable with
-`chmod +x /etc/pbuilder/hook.d/D05self-archive`.
+Add another file `/etc/pbuilder/hook.d/I99self-archive` containing
+
+    cd /var/cache/pbuilder/result/
+    rm -f InRelease Packages Packages.gz Release Release.gpg Sources Sources.gz
+    
+    apt-ftparchive packages . > /var/cache/pbuilder/result/Packages
+    apt-ftparchive release . > Release
+    apt-ftparchive sources . > Sources 2>/dev/null
+
+Finally make the files executable with
+`chmod +x /etc/pbuilder/hook.d/{D05self-archive,I99self-archive}`.
 
 ### Building a package
 
