@@ -1,2 +1,3 @@
 usr/NextSpace/bin/*
 usr/NextSpace/Documentation/*
+debian/gpbs.service lib/systemd/system
