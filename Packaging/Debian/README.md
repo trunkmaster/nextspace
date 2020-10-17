@@ -116,6 +116,10 @@ To tell `apt` to look for the packages created by pbuilder, just create a file `
 
 After running `apt-get update` the package manager will use the packages generated with pbuilder.
 
+## Post configuration steps
+
+You'll need to manually enable the plymouth theme if you want to use it: `sudo plymouth-set-default-theme nextspace`
+
 # Credits
 
 This integration used several sources that informed how the packages are built:

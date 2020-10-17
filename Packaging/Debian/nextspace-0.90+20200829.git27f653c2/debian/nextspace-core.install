@@ -3,3 +3,4 @@ etc/profile.d
 etc/X11/Xresources.nextspace
 usr/share/icons
 usr/NextSpace/bin/gnustep-services
+usr/share/plymouth/themes/nextspace
