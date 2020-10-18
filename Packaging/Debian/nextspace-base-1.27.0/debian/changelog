@@ -1,3 +1,9 @@
+nextspace-base (1.27.0-0.2) unstable; urgency=medium
+
+  * Add systemd integration
+
+ -- Patrick Georgi <patrick@georgi.software>  Sat, 17 Oct 2020 19:17:40 +0200
+
 nextspace-base (1.27.0-0.1) unstable; urgency=medium
 
   * Adapt for NEXTSPACE

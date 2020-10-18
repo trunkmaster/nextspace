@@ -1,3 +1,9 @@
+nextspace (0.90+20200829.git27f653c2-1.1) unstable; urgency=medium
+
+  * Install plymouth theme
+
+ -- Patrick Georgi <patrick@georgi.software>  Sat, 17 Oct 2020 20:44:54 +0200
+
 nextspace (0.90+20200829.git27f653c2-1) unstable; urgency=medium
 
   * Update to latest master

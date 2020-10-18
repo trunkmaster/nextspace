@@ -53,7 +53,7 @@ Edit `/etc/pbuilderrc` to contain the lines
     HOOKDIR=/etc/pbuilder/hook.d
     BINDMOUNTS=/var/cache/pbuilder/result
 
-And add a file `/etc/pbuilder/hook.d/D05self-archive` containing
+Add a file `/etc/pbuilder/hook.d/D05self-archive` containing
 
     apt-get install --assume-yes apt-utils
     
@@ -76,8 +76,17 @@ And add a file `/etc/pbuilder/hook.d/D05self-archive` containing
     
     apt-get -qy update
 
-Finally make the file executable with
-`chmod +x /etc/pbuilder/hook.d/D05self-archive`.
+Add another file `/etc/pbuilder/hook.d/I99self-archive` containing
+
+    cd /var/cache/pbuilder/result/
+    rm -f InRelease Packages Packages.gz Release Release.gpg Sources Sources.gz
+    
+    apt-ftparchive packages . > /var/cache/pbuilder/result/Packages
+    apt-ftparchive release . > Release
+    apt-ftparchive sources . > Sources 2>/dev/null
+
+Finally make the files executable with
+`chmod +x /etc/pbuilder/hook.d/{D05self-archive,I99self-archive}`.
 
 ### Building a package
 
@@ -104,6 +113,22 @@ To update a package, several steps need to be done:
 
 After double-checking everything, `git commit -a` and push for review!
 
+# Installing the packages
+
+To install the entire desktop environment, just install the `nextspace-desktop` package. This might require some preparation though.
+
+## Setting things up to install pbuilder created packages locally
+
+To tell `apt` to look for the packages created by pbuilder, just create a file `/etc/apt/sources.list.d/nextspace` containing
+
+    deb [trusted=yes] file:///var/cache/pbuilder/result/ ./
+
+After running `apt-get update` the package manager will use the packages generated with pbuilder.
+
+## Post configuration steps
+
+You'll need to manually enable the plymouth theme if you want to use it: `sudo plymouth-set-default-theme nextspace`
+
 # Credits
 
 This integration used several sources that informed how the packages are built:
@@ -111,4 +136,4 @@ This integration used several sources that informed how the packages are built:
 * [Debian's pbuilder Tricks page](https://wiki.debian.org/PbuilderTricks) provided the base for the pbuilder hooks.
 * [gnustep-build](https://github.com/plaurent/gnustep-build) helped figuring out some of configuration details required to integrate libobjc2.
 * Debian packages were reused as much as possible: gnustep-{make,base,gui,back}, but renamed to nextspace-\* so they can be installed side-by-side.
-* trunkmaster's helpful advice in here
+* trunkmaster provided lots of advice.

@@ -1,0 +1,14 @@
+[Unit]
+Description=GNUstep Pasteboard Service
+After=gdomap.service
+
+[Service]
+Environment=LD_LIBRARY_PATH=/Library/Libraries:/usr/NextSpace/lib
+ExecStart=/usr/NextSpace/bin/gpbs --daemon
+ExecStop=/bin/kill -INT $MAINPID
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target

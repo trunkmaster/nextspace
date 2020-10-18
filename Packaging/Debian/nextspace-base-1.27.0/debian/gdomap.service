@@ -1,0 +1,15 @@
+[Unit]
+Description=GNUstep Distributed Objects
+After=syslog.target network.target
+
+[Service]
+Type=forking
+Environment=LD_LIBRARY_PATH=/Library/Libraries
+ExecStart=/usr/NextSpace/bin/gdomap -p -a /usr/NextSpace/etc/gdomap.interfaces
+ExecStop=/bin/kill -INT $MAINPID
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target

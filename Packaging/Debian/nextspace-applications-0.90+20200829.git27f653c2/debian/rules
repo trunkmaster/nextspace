@@ -12,3 +12,7 @@ export DEB_LDFLAGS_MAINT_APPEND = -Wl,--no-undefined -Wl,--as-needed
 
 override_dh_dwz:
 	dh_dwz || true
+
+override_dh_installsystemd:
+	dh_installsystemd -pnextspace-login.app loginwindow.service
+	dh_installsystemd --remaining-packages

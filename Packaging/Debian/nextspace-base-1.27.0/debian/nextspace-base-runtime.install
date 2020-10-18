@@ -1,2 +1,6 @@
 usr/NextSpace/bin
 usr/NextSpace/lib/lib*.so.*
+debian/gdnc-local.service lib/systemd/system
+debian/gdnc.service lib/systemd/system
+debian/gdomap.service lib/systemd/system
+debian/gdomap.interfaces usr/NextSpace/etc
