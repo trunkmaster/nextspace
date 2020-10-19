@@ -76,3 +76,7 @@ override_dh_shlibdeps:
 
 override_dh_dwz:
 	dh_dwz || true
+
+override_dh_installsystemd:
+	dh_installsystemd -pnextspace-back-common gpbs.service
+	dh_installsystemd --remaining-packages

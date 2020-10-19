@@ -13,6 +13,7 @@ Package: nextspace-core
 Section: gnustep
 Architecture: all
 Depends: ${misc:Depends},
+Recommends: plymouth
 Description: System-wide configuration for the NEXTSPACE system
  Default configuration for the shell, gnustep, init system and whatever is
  needed to bring up NEXTSPACE correctly.

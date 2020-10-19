@@ -1,3 +1,9 @@
+nextspace-back (0.28.0+nextspace-2) unstable; urgency=medium
+
+  * Add systemd integration
+
+ -- Patrick Georgi <patrick@georgi.software>  Sat, 17 Oct 2020 21:00:07 +0200
+
 nextspace-back (0.28.0+nextspace-1) unstable; urgency=medium
 
   * Adapt for NEXTSPACE
