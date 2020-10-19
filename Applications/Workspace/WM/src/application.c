@@ -336,7 +336,7 @@ void wApplicationActivate(WApplication *wapp)
     if (wapp->last_focused) {
       wWorkspaceSaveFocusedWindow(scr, wapp->last_workspace, wapp->last_focused);
     }
-    wWorkspaceChange(scr, wapp->last_workspace);
+    wWorkspaceChange(scr, wapp->last_workspace, NULL);
   }
   wApplicationMakeFirst(wapp);
 }

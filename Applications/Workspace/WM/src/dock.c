@@ -693,7 +693,7 @@ static void hideCallback(WMenu *menu, WMenuEntry *entry)
   wapp = wApplicationOf(btn->icon->owner->main_window);
 
   if (wapp->flags.hidden) {
-    wWorkspaceChange(btn->icon->core->screen_ptr, wapp->last_workspace);
+    wWorkspaceChange(btn->icon->core->screen_ptr, wapp->last_workspace, NULL);
     wUnhideApplication(wapp, False, False);
   } else {
     wHideApplication(wapp);
@@ -3820,16 +3820,16 @@ static void handleClipChangeWorkspace(WScreen *scr, XEvent *event)
 
   if (direction == CLIP_FORWARD) {
     if (scr->current_workspace < scr->workspace_count - 1)
-      wWorkspaceChange(scr, scr->current_workspace + 1);
+      wWorkspaceChange(scr, scr->current_workspace + 1, NULL);
     else if (new_ws && scr->current_workspace < MAX_WORKSPACES - 1)
-      wWorkspaceChange(scr, scr->current_workspace + 1);
+      wWorkspaceChange(scr, scr->current_workspace + 1, NULL);
     else if (wPreferences.ws_cycle)
-      wWorkspaceChange(scr, 0);
+      wWorkspaceChange(scr, 0, NULL);
   } else if (direction == CLIP_REWIND) {
     if (scr->current_workspace > 0)
-      wWorkspaceChange(scr, scr->current_workspace - 1);
+      wWorkspaceChange(scr, scr->current_workspace - 1, NULL);
     else if (scr->current_workspace == 0 && wPreferences.ws_cycle)
-      wWorkspaceChange(scr, scr->workspace_count - 1);
+      wWorkspaceChange(scr, scr->workspace_count - 1, NULL);
   }
 
   wClipIconPaint(scr->clip_icon);

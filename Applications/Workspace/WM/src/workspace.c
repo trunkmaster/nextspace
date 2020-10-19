@@ -201,7 +201,7 @@ Bool wWorkspaceDelete(WScreen * scr, int workspace)
   WMPostNotificationName(WMNWorkspaceDestroyed, scr, (void *)(uintptr_t) (scr->workspace_count - 1));
 
   if (scr->current_workspace >= scr->workspace_count)
-    wWorkspaceChange(scr, scr->workspace_count - 1);
+    wWorkspaceChange(scr, scr->workspace_count - 1, NULL);
   if (scr->last_workspace >= scr->workspace_count)
     scr->last_workspace = 0;
 
@@ -433,13 +433,13 @@ static void showWorkspaceName(WScreen * scr, int workspace)
                                                 10 * WORKSPACE_NAME_FADE_DELAY, hideWorkspaceName, scr);
 }
 
-void wWorkspaceChange(WScreen *scr, int workspace)
+void wWorkspaceChange(WScreen *scr, int workspace, WWindow *focus_win)
 {
   if (scr->flags.startup || scr->flags.startup2 || scr->flags.ignore_focus_events)
     return;
 
   if (workspace != scr->current_workspace)
-    wWorkspaceForceChange(scr, workspace);
+    wWorkspaceForceChange(scr, workspace, focus_win);
 }
 
 void wWorkspaceRelativeChange(WScreen * scr, int amount)
@@ -457,17 +457,17 @@ void wWorkspaceRelativeChange(WScreen * scr, int amount)
 
   if (amount < 0) {
     if (w >= 0) {
-      wWorkspaceChange(scr, w);
+      wWorkspaceChange(scr, w, NULL);
     } else if (wPreferences.ws_cycle) {
-      wWorkspaceChange(scr, scr->workspace_count + w);
+      wWorkspaceChange(scr, scr->workspace_count + w, NULL);
     }
   } else if (amount > 0) {
     if (w < scr->workspace_count) {
-      wWorkspaceChange(scr, w);
+      wWorkspaceChange(scr, w, NULL);
     } else if (wPreferences.ws_advance) {
-      wWorkspaceChange(scr, WMIN(w, MAX_WORKSPACES - 1));
+      wWorkspaceChange(scr, WMIN(w, MAX_WORKSPACES - 1), NULL);
     } else if (wPreferences.ws_cycle) {
-      wWorkspaceChange(scr, w % scr->workspace_count);
+      wWorkspaceChange(scr, w % scr->workspace_count, NULL);
     }
   }
 }
@@ -493,7 +493,7 @@ void wWorkspaceSaveFocusedWindow(WScreen *scr, int workspace, WWindow *wwin)
   scr->workspaces[workspace]->focused_window = saved_wwin;
 }
 
-void wWorkspaceForceChange(WScreen * scr, int workspace)
+void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
 {
   WWindow *tmp, *foc = NULL;
 
@@ -615,10 +615,13 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
     scr->flags.ignore_focus_events = 0;
 
     /* At this point `foc` can hold random selected window or `NULL` */
-    if (!foc && scr->workspaces[workspace]->focused_window) {
+    if (!foc && scr->workspaces[workspace]->focused_window && !focus_win) {
       foc = scr->workspaces[workspace]->focused_window;
       wmessage("[workspace.c] SAVED focused window for WS-%lu: %lu, %s.%s\n",
                workspace, foc->client_win, foc->wm_instance, foc->wm_class);
+    }
+    else {
+      foc = focus_win;
     }
     
     /*
@@ -698,7 +701,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace)
 
 static void switchWSCommand(WMenu * menu, WMenuEntry * entry)
 {
-  wWorkspaceChange(menu->frame->screen_ptr, (long)entry->clientdata);
+  wWorkspaceChange(menu->frame->screen_ptr, (long)entry->clientdata, NULL);
 }
 
 static void lastWSCommand(WMenu *menu, WMenuEntry *entry)
@@ -706,7 +709,7 @@ static void lastWSCommand(WMenu *menu, WMenuEntry *entry)
   /* Parameter not used, but tell the compiler that it is ok */
   (void) entry;
 
-  wWorkspaceChange(menu->frame->screen_ptr, menu->frame->screen_ptr->last_workspace);
+  wWorkspaceChange(menu->frame->screen_ptr, menu->frame->screen_ptr->last_workspace, NULL);
 }
 
 static void deleteWSCommand(WMenu *menu, WMenuEntry *entry)
@@ -728,7 +731,7 @@ static void newWSCommand(WMenu *menu, WMenuEntry *foo)
 
   /* autochange workspace */
   if (ws >= 0)
-    wWorkspaceChange(menu->frame->screen_ptr, ws);
+    wWorkspaceChange(menu->frame->screen_ptr, ws, NULL);
 }
 
 void wWorkspaceRename(WScreen *scr, int workspace, const char *name)

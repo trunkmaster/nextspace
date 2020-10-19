@@ -519,7 +519,7 @@ static void hideCallback(WMenu * menu, WMenuEntry * entry)
   WApplication *wapp = (WApplication *) entry->clientdata;
 
   if (wapp->flags.hidden) {
-    wWorkspaceChange(menu->menu->screen_ptr, wapp->last_workspace);
+    wWorkspaceChange(menu->menu->screen_ptr, wapp->last_workspace, NULL);
     wUnhideApplication(wapp, False, False);
   } else {
     wHideApplication(wapp);

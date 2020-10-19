@@ -585,7 +585,7 @@ static void wNETWMShowingDesktop(WScreen *scr, Bool show)
       (*tmp)->flags.net_show_desktop = 0;
     }
     if (ws != scr->current_workspace)
-      wWorkspaceChange(scr, ws);
+      wWorkspaceChange(scr, ws, NULL);
     wfree(scr->netdata->show_desktop);
     scr->netdata->show_desktop = NULL;
     updateShowDesktop(scr, False);
@@ -1544,7 +1544,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
   if (scr) {
     /* generic client messages */
     if (event->message_type == net_current_desktop) {
-      wWorkspaceChange(scr, event->data.l[0]);
+      wWorkspaceChange(scr, event->data.l[0], NULL);
       return True;
 
     }

@@ -602,7 +602,7 @@ static void crossWorkspace(WScreen * scr, WWindow * wwin, int opaque_move, int n
     wWindowChangeWorkspace(wwin, new_workspace);
   }
   /* go to new workspace */
-  wWorkspaceChange(scr, new_workspace);
+  wWorkspaceChange(scr, new_workspace, NULL);
 
   wwin->flags.changing_workspace = 0;
 
@@ -1581,16 +1581,16 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
         if (wPreferences.ws_cycle) {
           if (src_x + off_x + ww < 20) {
             if (!scr->current_workspace)
-              wWorkspaceChange(scr, scr->workspace_count - 1);
+              wWorkspaceChange(scr, scr->workspace_count - 1, NULL);
             else
-              wWorkspaceChange(scr, scr->current_workspace - 1);
+              wWorkspaceChange(scr, scr->current_workspace - 1, NULL);
 
             off_x += scr_width;
           } else if (src_x + off_x + 20 > scr_width) {
             if (scr->current_workspace == scr->workspace_count - 1)
-              wWorkspaceChange(scr, 0);
+              wWorkspaceChange(scr, 0, NULL);
             else
-              wWorkspaceChange(scr, scr->current_workspace + 1);
+              wWorkspaceChange(scr, scr->current_workspace + 1, NULL);
 
             off_x -= scr_width;
           }

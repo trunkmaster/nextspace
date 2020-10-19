@@ -2644,7 +2644,7 @@ static int setStickyIcons(WScreen * scr, WDefaultEntry * entry, void *bar, void 
   (void) foo;
 
   if (scr->workspaces) {
-    wWorkspaceForceChange(scr, scr->current_workspace);
+    wWorkspaceForceChange(scr, scr->current_workspace, NULL);
     wArrangeIcons(scr, False);
   }
   return 0;

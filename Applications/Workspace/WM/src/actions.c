@@ -218,6 +218,17 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       }
       return;
     }
+    /* else if (wwin_app && wwin_app->last_focused */
+    /*          && wwin_app->last_focused->frame->workspace != scr->current_workspace */
+    /*          && scr->last_workspace == scr->current_workspace) { */
+    /*   wmessage("%s (%lu) last focused window level == %i", */
+    /*            wwin_app->last_focused->wm_instance, */
+    /*            wwin_app->last_focused->client_win, */
+    /*            WINDOW_LEVEL(wwin_app->last_focused)); */
+    /*   wWorkspaceForceChange(scr, wwin_app->last_focused->frame->workspace, */
+    /*                         wwin_app->last_focused); */
+    /*   return; */
+    /* } */
   
     /* Focused window exists, mapped (or shaded) and belongs to the same application. 
        Do not focus GNUstep main menu but rebuild window stacking (focus) order as if 
@@ -257,6 +268,10 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
     /*   return; */
     /* } */
+  }
+  else if (wwin && wwin->frame->workspace != scr->current_workspace) {
+    wWorkspaceForceChange(scr, wwin->frame->workspace, wwin);
+    return;
   }
 
   wPrintWindowFocusState(wwin, "[START] wSetFocusTo:");
@@ -327,10 +342,10 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       break;
     }
   }
-  else if (wwin->frame->workspace != scr->current_workspace) {
-    // Non-GNUstep window placed on other workspace - switch to it
-    wWorkspaceChange(scr, wwin->frame->workspace);
-  }
+  /* else if (wwin->frame->workspace != scr->current_workspace) { */
+  /*   // Non-GNUstep window placed on other workspace - switch to it */
+  /*   wWorkspaceChange(scr, wwin->frame->workspace, wwin); */
+  /* } */
   else {
     // Non-GNUstep, not mapped (shaded, iconified)
     XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
@@ -2089,8 +2104,12 @@ void wSelectWindow(WWindow *wwin, Bool flag)
 
 void wMakeWindowVisible(WWindow *wwin)
 {
-  if (wwin->frame->workspace != wwin->screen_ptr->current_workspace)
-    wWorkspaceChange(wwin->screen_ptr, wwin->frame->workspace);
+  Bool other_workspace = false;
+  
+  if (wwin->frame->workspace != wwin->screen_ptr->current_workspace) {
+    wWorkspaceChange(wwin->screen_ptr, wwin->frame->workspace, wwin);
+    other_workspace = true;
+  }
 
   if (wwin->flags.shaded)
     wUnshadeWindow(wwin);
@@ -2105,9 +2124,11 @@ void wMakeWindowVisible(WWindow *wwin)
       wUnhideApplication(app, False, False);
     }
   }
+  
   if (wwin->flags.miniaturized) {
     wDeiconifyWindow(wwin);
-  } else {
+  }
+  else if (!other_workspace) {
     if (!WFLAGP(wwin, no_focusable))
       wSetFocusTo(wwin->screen_ptr, wwin);
     wRaiseFrame(wwin->frame->core);

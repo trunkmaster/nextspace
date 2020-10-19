@@ -617,7 +617,7 @@ static void handleMapRequest(XEvent * ev)
       WApplication *wapp = wApplicationOf(wwin->main_window);
       /* go to the last workspace that the user worked on the app */
       if (wapp) {
-        wWorkspaceChange(wwin->screen_ptr, wapp->last_workspace);
+        wWorkspaceChange(wwin->screen_ptr, wapp->last_workspace, NULL);
       }
       wUnhideApplication(wapp, False, False);
     }
@@ -1431,10 +1431,12 @@ static void handleFocusIn(XEvent * event)
     if (wwin->flags.mapped) {
       wSetFocusTo(wwin->screen_ptr, wwin);
       wRaiseFrame(wwin->frame->core);
-    } else {
+    }
+    else {
       wSetFocusTo(wwin->screen_ptr, NULL);
     }
-  } else if (!wwin) {
+  }
+  else if (!wwin) {
     WScreen *scr = wDefaultScreen();
     if (scr)
       wSetFocusTo(scr, NULL);
@@ -1784,7 +1786,7 @@ static void handleKeyPress(XEvent * event)
     widx = command - WKBD_WORKSPACE1;
     i = (scr->current_workspace / 10) * 10 + widx;
     if (wPreferences.ws_advance || i < scr->workspace_count)
-      wWorkspaceChange(scr, i);
+      wWorkspaceChange(scr, i, NULL);
     break;
 
   case WKBD_NEXTWORKSPACE:
@@ -1794,7 +1796,7 @@ static void handleKeyPress(XEvent * event)
     wWorkspaceRelativeChange(scr, -1);
     break;
   case WKBD_LASTWORKSPACE:
-    wWorkspaceChange(scr, scr->last_workspace);
+    wWorkspaceChange(scr, scr->last_workspace, NULL);
     break;
 
   case WKBD_MOVE_WORKSPACE1 ... WKBD_MOVE_WORKSPACE10:
@@ -1945,10 +1947,10 @@ static void handleKeyPress(XEvent * event)
 
       if (command == WKBD_NEXTWSLAYER) {
         if ((row + 1) * 10 < scr->workspace_count)
-          wWorkspaceChange(scr, column + (row + 1) * 10);
+          wWorkspaceChange(scr, column + (row + 1) * 10, NULL);
       } else {
         if (row > 0)
-          wWorkspaceChange(scr, column + (row - 1) * 10);
+          wWorkspaceChange(scr, column + (row - 1) * 10, NULL);
       }
     }
     break;
