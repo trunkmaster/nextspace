@@ -723,7 +723,6 @@ static void handleDestroyNotify(XEvent * event)
   app = wApplicationOf(window);
   if (app) {
     if (window == app->main_window) {
-      app->refcount = 0;
       wwin = app->main_window_desc->screen_ptr->focused_window;
       while (wwin) {
         if (wwin->main_window == window) {
