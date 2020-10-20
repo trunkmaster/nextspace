@@ -42,9 +42,7 @@ export NS_SYSTEM="/usr/NextSpace"
 # Log file
 #
 export USER=`whoami`
-if [ ! -n "$UID" ];then
-    export UID=`id -u`
-fi
+export UID=`id -u`
 GS_SECURE="/tmp/GNUstepSecure"$UID
 export LOGFILE="$GS_SECURE/console.log"
 if [ ! -d $GS_SECURE ];then
