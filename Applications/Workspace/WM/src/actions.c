@@ -198,11 +198,10 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       return;
   
     if (wwin->flags.is_gnustep) {
-      WApplication *wwin_app = wApplicationOf(wwin->main_window);
-      /* WApplication *focused_app; */
-
       /* Shaded focused GNUstep window should set focus to main menu */
       if (wwin->flags.shaded) {
+        WApplication *wapp = wApplicationOf(wwin->main_window);
+
         wmessage("wSetFocusTo: Request to focus shaded GNUstep window (%lu).",
                  wwin->client_win);
         if (!wwin->flags.focused) { // not focused - set it
@@ -212,10 +211,10 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
           XFlush(dpy);
           XSync(dpy, False);
         }
-        if (wwin_app && !wwin_app->menu_win->flags.focused) {
+        if (wapp && !wapp->menu_win->flags.focused) {
           wmessage("           : Transfer focus to main menu (%lu).",
-                   wwin_app->menu_win->client_win);
-          wSetFocusTo(scr, wwin_app->menu_win);
+                   wapp->menu_win->client_win);
+          wSetFocusTo(scr, wapp->menu_win);
         }
         return;
       }
@@ -231,7 +230,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
          that lead to FocusIn event.
          If user clicks *inside* inactive application window GNUstep correctly manages 
          focus order: main menu mapped and focused first then desired window focused next. */
-      /* focused_app = wApplicationOf(focused->main_window); */
+      /* WApplication *focused_app = wApplicationOf(focused->main_window); */
       /* if (wwin_app && wwin_app->menu_win == wwin */
       /*     && focused && (wwin != focused) && focused->flags.mapped && !focused->flags.shaded */
       /*     && wwin->flags.mapped && wwin_app == focused_app) { */
@@ -258,10 +257,6 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
       /*   return; */
       /*   } */
-    }
-    else if (wwin->frame->workspace != scr->current_workspace) {
-      wWorkspaceForceChange(scr, wwin->frame->workspace, wwin);
-      return;
     }
   }
 
