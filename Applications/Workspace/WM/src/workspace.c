@@ -476,21 +476,26 @@ void wWorkspaceSaveFocusedWindow(WScreen *scr, int workspace, WWindow *wwin)
 {
   WWindow *saved_wwin;
     
-  wmessage("[workspace.c] save focused window: %lu, %s.%s (%i x %i) to workspace %i\n",
-           wwin->client_win, wwin->wm_instance, wwin->wm_class,
-           wwin->old_geometry.width, wwin->old_geometry.height,
-           workspace);
-  
   if (scr->workspaces[workspace]->focused_window) {
     wrelease(scr->workspaces[workspace]->focused_window);
   }
+
+  if (wwin) {
+    wmessage("[workspace.c] save focused window: %lu, %s.%s (%i x %i) to workspace %i\n",
+             wwin->client_win, wwin->wm_instance, wwin->wm_class,
+             wwin->old_geometry.width, wwin->old_geometry.height,
+             workspace);
+  
+    saved_wwin = wWindowCreate();
+    saved_wwin->wm_class = wstrdup(wwin->wm_class);
+    saved_wwin->wm_instance = wstrdup(wwin->wm_instance);
+    saved_wwin->client_win = wwin->client_win;
     
-  saved_wwin = wWindowCreate();
-  saved_wwin->wm_class = wstrdup(wwin->wm_class);
-  saved_wwin->wm_instance = wstrdup(wwin->wm_instance);
-  saved_wwin->client_win = wwin->client_win;
-    
-  scr->workspaces[workspace]->focused_window = saved_wwin;
+    scr->workspaces[workspace]->focused_window = saved_wwin;
+  }
+  else {
+    scr->workspaces[workspace]->focused_window = NULL;
+  }
 }
 
 void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
@@ -508,8 +513,12 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
   wClipUpdateForWorkspaceChange(scr, workspace);
 
   /* save focused window to the workspace before switch */
-  if (scr->focused_window) {
+  if (scr->focused_window
+      && scr->focused_window->frame->workspace == scr->current_workspace) {
     wWorkspaceSaveFocusedWindow(scr, scr->current_workspace, scr->focused_window);
+  }
+  else {
+    wWorkspaceSaveFocusedWindow(scr, scr->current_workspace, NULL);
   }
 
   scr->last_workspace = scr->current_workspace;
@@ -614,14 +623,17 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
     ProcessPendingEvents();
     scr->flags.ignore_focus_events = 0;
 
-    /* At this point `foc` can hold random selected window or `NULL` */
-    if (!foc && scr->workspaces[workspace]->focused_window && !focus_win) {
-      foc = scr->workspaces[workspace]->focused_window;
-      wmessage("[workspace.c] SAVED focused window for WS-%lu: %lu, %s.%s\n",
-               workspace, foc->client_win, foc->wm_instance, foc->wm_class);
-    }
-    else {
+    if (focus_win) {
       foc = focus_win;
+    }
+
+    /* At this point `foc` can hold random selected window or `NULL` */
+    if (!foc) {
+      foc = scr->workspaces[workspace]->focused_window;
+      wmessage("[workspace.c] SAVED focused window for WS-%lu: %lu, %s.%s\n", workspace,
+               foc ? foc->client_win : 0,
+               foc ? foc->wm_instance : "-",
+               foc ? foc->wm_class : "-");
     }
     
     /*
@@ -651,12 +663,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
                foc->client_win, foc->wm_instance, foc->wm_class,
                foc->old_geometry.width, foc->old_geometry.height);
       if (foc->flags.hidden) {
-        wmessage("[workspace.c] skip focusing hidden window %lu (%s.%s)",
-                 foc->client_win, foc->wm_instance, foc->wm_class);
         foc = NULL;
-      }
-      else {
-        wRaiseFrame(foc->frame->core);
       }
     }
     wSetFocusTo(scr, foc);
