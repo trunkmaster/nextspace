@@ -130,9 +130,10 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
   int window_count;
   WWindow *awin;
 
-  if (!wapp)
+  /* Application could be already destryed */
+  if (wapp == NULL || wapp->windows == NULL || wwin == NULL)
     return;
-  
+
   window_count = WMGetArrayItemCount(wapp->windows);
 
   wmessage("[application.c] REMOVE window: %lu name: %s refcount=%i\n",
@@ -265,12 +266,13 @@ void wApplicationDestroy(WApplication *wapp)
 
   wmessage("[application.c] DESTROY main window:%lu name:%s windows #:%i refcount:%i\n",
            wapp->main_window, wapp->app_icon->wm_instance,
-          WMGetArrayItemCount(wapp->windows), wapp->refcount);
+           WMGetArrayItemCount(wapp->windows), wapp->refcount);
 
   WMEmptyArray(wapp->windows);
   WMFreeArray(wapp->windows);
-  
+
   wapp->refcount--;
+  
   if (wapp->refcount > 0)
     return;
 
@@ -305,7 +307,7 @@ void wApplicationDestroy(WApplication *wapp)
   }
 
   XDeleteContext(dpy, wapp->main_window, w_global.context.app_win);
-
+  
   /* Remove application icon */
   removeAppIconFor(wapp);
 
@@ -318,6 +320,7 @@ void wApplicationDestroy(WApplication *wapp)
     XSaveContext(dpy, wwin->client_win, w_global.context.client_win,
                  (XPointer) & wwin->client_descriptor);
   }
+
   wfree(wapp);
   wmessage("[application.c] DESTROY END.\n");
 }
@@ -333,9 +336,6 @@ void wApplicationActivate(WApplication *wapp)
   
   if (wapp->last_workspace != scr->current_workspace &&
       scr->last_workspace == scr->current_workspace) {
-    if (wapp->last_focused) {
-      wWorkspaceSaveFocusedWindow(scr, wapp->last_workspace, wapp->last_focused);
-    }
     wWorkspaceChange(scr, wapp->last_workspace, NULL);
   }
   wApplicationMakeFirst(wapp);
