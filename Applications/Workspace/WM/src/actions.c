@@ -192,86 +192,77 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       compareTimes(w_global.timestamp.focus_change, timestamp) > 0)
     return;
 
-  /* Do not focus popups. */
-  if (wwin && WINDOW_LEVEL(wwin) == NSPopUpMenuWindowLevel)
-    return;
+  if (wwin) {
+    /* Do not focus popups. */
+    if (WINDOW_LEVEL(wwin) == NSPopUpMenuWindowLevel)
+      return;
+  
+    if (wwin->flags.is_gnustep) {
+      WApplication *wwin_app = wApplicationOf(wwin->main_window);
+      /* WApplication *focused_app; */
 
-  if (wwin && wwin->flags.is_gnustep) {
-    WApplication *wwin_app = wApplicationOf(wwin->main_window);
-    /* WApplication *focused_app; */
-
-    /* Shaded focused GNUstep window should set focus to main menu */
-    if (wwin->flags.shaded) {
-      wmessage("wSetFocusTo: Request to focus shaded GNUstep window (%lu).",
-               wwin->client_win);
-      if (!wwin->flags.focused) { // not focused - set it
-        wmessage("           : Send WM_TAKE_FOCUS to shaded GNUstep window %lu.",
+      /* Shaded focused GNUstep window should set focus to main menu */
+      if (wwin->flags.shaded) {
+        wmessage("wSetFocusTo: Request to focus shaded GNUstep window (%lu).",
                  wwin->client_win);
-        wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
-        XFlush(dpy);
-        XSync(dpy, False);
+        if (!wwin->flags.focused) { // not focused - set it
+          wmessage("           : Send WM_TAKE_FOCUS to shaded GNUstep window %lu.",
+                   wwin->client_win);
+          wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
+          XFlush(dpy);
+          XSync(dpy, False);
+        }
+        if (wwin_app && !wwin_app->menu_win->flags.focused) {
+          wmessage("           : Transfer focus to main menu (%lu).",
+                   wwin_app->menu_win->client_win);
+          wSetFocusTo(scr, wwin_app->menu_win);
+        }
+        return;
       }
-      if (wwin_app && !wwin_app->menu_win->flags.focused) {
-        wmessage("           : Transfer focus to main menu (%lu).",
-                 wwin_app->menu_win->client_win);
-        wSetFocusTo(scr, wwin_app->menu_win);
-      }
+  
+      /* Focused window exists, mapped (or shaded) and belongs to the same application. 
+         Do not focus GNUstep main menu but rebuild window stacking (focus) order as if 
+         main menu recevies focus first and serired window next. So basically we need
+         to insert main menu before window in stacking(focus order) list.
+         We can enter here when focus switches between applications and application 
+         window already focused.
+         From my observations it happens if user clicks on inactive application
+         window titlebar. Application receives TakeFocus message, activates, maps main menu
+         that lead to FocusIn event.
+         If user clicks *inside* inactive application window GNUstep correctly manages 
+         focus order: main menu mapped and focused first then desired window focused next. */
+      /* focused_app = wApplicationOf(focused->main_window); */
+      /* if (wwin_app && wwin_app->menu_win == wwin */
+      /*     && focused && (wwin != focused) && focused->flags.mapped && !focused->flags.shaded */
+      /*     && wwin->flags.mapped && wwin_app == focused_app) { */
+      /*   wmessage("wSetFocusTo: rejected: %lu is a `%s` app menu (focused: %lu is mapped: %s.).", */
+      /*            wwin->client_win, focused->wm_instance, */
+      /*            focused->client_win, focused->flags.mapped ? "true" : "false"); */
+      /*   // close the gap of old menu position */
+      /*   if (wwin->prev) { */
+      /*     wwin->prev->next = wwin->next; */
+      /*   } */
+      /*   if (wwin->next) { */
+      /*     wwin->next->prev = wwin->prev; */
+      /*   } */
+      /*   // update menu pointers */
+      /*   wwin->next = focused; */
+      /*   if (focused->prev) { */
+      /*     wwin->prev = focused->prev; */
+      /*   } */
+      /*   // point previous and focused window to menu */
+      /*   if (focused->prev) { */
+      /*     focused->prev->next = wwin; */
+      /*   } */
+      /*   focused->prev = wwin; */
+
+      /*   return; */
+      /*   } */
+    }
+    else if (wwin->frame->workspace != scr->current_workspace) {
+      wWorkspaceForceChange(scr, wwin->frame->workspace, wwin);
       return;
     }
-    /* else if (wwin_app && wwin_app->last_focused */
-    /*          && wwin_app->last_focused->frame->workspace != scr->current_workspace */
-    /*          && scr->last_workspace == scr->current_workspace) { */
-    /*   wmessage("%s (%lu) last focused window level == %i", */
-    /*            wwin_app->last_focused->wm_instance, */
-    /*            wwin_app->last_focused->client_win, */
-    /*            WINDOW_LEVEL(wwin_app->last_focused)); */
-    /*   wWorkspaceForceChange(scr, wwin_app->last_focused->frame->workspace, */
-    /*                         wwin_app->last_focused); */
-    /*   return; */
-    /* } */
-  
-    /* Focused window exists, mapped (or shaded) and belongs to the same application. 
-       Do not focus GNUstep main menu but rebuild window stacking (focus) order as if 
-       main menu recevies focus first and serired window next. So basically we need
-       to insert main menu before window in stacking(focus order) list.
-       We can enter here when focus switches between applications and application 
-       window already focused.
-       From my observations it happens if user clicks on inactive application
-       window titlebar. Application receives TakeFocus message, activates, maps main menu
-       that lead to FocusIn event.
-       If user clicks *inside* inactive application window GNUstep correctly manages 
-       focus order: main menu mapped and focused first then desired window focused next. */
-    /* focused_app = wApplicationOf(focused->main_window); */
-    /* if (wwin_app && wwin_app->menu_win == wwin */
-    /*     && focused && (wwin != focused) && focused->flags.mapped && !focused->flags.shaded */
-    /*     && wwin->flags.mapped && wwin_app == focused_app) { */
-    /*   wmessage("wSetFocusTo: rejected: %lu is a `%s` app menu (focused: %lu is mapped: %s.).", */
-    /*            wwin->client_win, focused->wm_instance, */
-    /*            focused->client_win, focused->flags.mapped ? "true" : "false"); */
-    /*   // close the gap of old menu position */
-    /*   if (wwin->prev) { */
-    /*     wwin->prev->next = wwin->next; */
-    /*   } */
-    /*   if (wwin->next) { */
-    /*     wwin->next->prev = wwin->prev; */
-    /*   } */
-    /*   // update menu pointers */
-    /*   wwin->next = focused; */
-    /*   if (focused->prev) { */
-    /*     wwin->prev = focused->prev; */
-    /*   } */
-    /*   // point previous and focused window to menu */
-    /*   if (focused->prev) { */
-    /*     focused->prev->next = wwin; */
-    /*   } */
-    /*   focused->prev = wwin; */
-
-    /*   return; */
-    /* } */
-  }
-  else if (wwin && wwin->frame->workspace != scr->current_workspace) {
-    wWorkspaceForceChange(scr, wwin->frame->workspace, wwin);
-    return;
   }
 
   wPrintWindowFocusState(wwin, "[START] wSetFocusTo:");
@@ -319,33 +310,28 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       wmessage("        wSetFocusTo: %lu focus mode == NO_INPUT. Do nothing", wwin->client_win);
       return;
     case WFM_PASSIVE: // wm_hints->input, !WM_TAKE_FOCUS
-      wmessage("        wSetFocusTo: %lu focus mode == PASSIVE.", wwin->client_win);
-      XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
-      focus_succeeded = True;
+      {
+        wmessage("        wSetFocusTo: %lu focus mode == PASSIVE.", wwin->client_win);
+        XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
+        focus_succeeded = True;
+      }
       break;
     case WFM_LOCALLY_ACTIVE: // wm_hints->input, WM_TAKE_FOCUS
-      wmessage("        wSetFocusTo: %lu focus mode == LOCALLY_ACTIVE.", wwin->client_win);
-      XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
-      focus_succeeded = True;
+      {
+        wmessage("        wSetFocusTo: %lu focus mode == LOCALLY_ACTIVE.", wwin->client_win);
+        XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
+        focus_succeeded = True;
+      }
       break;
     case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
       {
         wmessage("        wSetFocusTo: %lu focus mode == GLOBALLY_ACTIVE.", wwin->client_win);
-        /* WApplication *wsapp = wApplicationWithName(scr, "Workspace"); */
-        /* if (napp->menu_win && napp->menu_win->flags.mapped && napp == wsapp) { */
-        /*   /\* Aggresively set focus to main menu to prevent its flickering *\/ */
-        /*   XSetInputFocus(dpy, napp->menu_win->client_win, RevertToParent, CurrentTime); */
-        /* } */
         wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
         focus_succeeded = True;
       }
       break;
     }
   }
-  /* else if (wwin->frame->workspace != scr->current_workspace) { */
-  /*   // Non-GNUstep window placed on other workspace - switch to it */
-  /*   wWorkspaceChange(scr, wwin->frame->workspace, wwin); */
-  /* } */
   else {
     // Non-GNUstep, not mapped (shaded, iconified)
     XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
