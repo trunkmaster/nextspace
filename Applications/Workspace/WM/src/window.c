@@ -1575,6 +1575,17 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   oapp = wApplicationOf(wwin->main_window);
   
   if (wasFocused) {
+    WApplication *napp = wApplicationOf(new_focused_window->main_window);
+    
+    if (owner && new_focused_window != owner) {
+      wFrameWindowChangeState(owner->frame, WS_UNFOCUSED);
+    }
+    
+    if (!strcmp(new_focused_window->wm_instance, "Workspace")
+        || napp->last_workspace == scr->current_workspace) {
+      napp = NULL;
+    }
+    
     if (wwin->flags.is_gnustep) {
       wmessage("[window.c] new_focused_window == %lu",
                new_focused_window ? new_focused_window->client_win : 0);
@@ -1586,23 +1597,32 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
       if (WINDOW_LEVEL(wwin) == NSMainMenuWindowLevel) {
         wmessage("[window.c] set focus to new_focused_window == %lu",
                  new_focused_window ? new_focused_window->client_win : 0);
-        wSetFocusTo(scr, new_focused_window);
+        /* Application activation executes workspace switch */
+        if (napp)
+          wApplicationActivate(napp);
+        else
+          wSetFocusTo(scr, new_focused_window);
       }
       else if (oapp && oapp->menu_win) {
-        /* manually set focus to main menu. wSetFocusTo will be called in 
-           handleFocusIn() */
+        /* wSetFocusTo will be called in handleFocusIn() */
         wmessage("[window.c] set focus to main menu == %lu", oapp->menu_win->client_win);
         XSetInputFocus(dpy, oapp->menu_win->client_win, RevertToParent, CurrentTime);
         oapp->menu_win->flags.focused = 1;
       }
-    } else if (owner && new_focused_window != owner) {
-      wFrameWindowChangeState(owner->frame, WS_UNFOCUSED);
+    }
+    else if (new_focused_window->frame->workspace != scr->current_workspace) {
+      wWorkspaceForceChange(scr, new_focused_window->frame->workspace, new_focused_window);
+    }
+    else if (napp) {
+      wApplicationActivate(napp);
     }
     else {
       wSetFocusTo(scr, new_focused_window);
     }
   }
 
+  /* Call it second time because application context might not exist at this point */
+  oapp = wApplicationOf(wwin->main_window);
   if (oapp) {
     wApplicationRemoveWindow(oapp, wwin);
   }
