@@ -630,43 +630,47 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [[NSApp mainMenu] display];
 }
 
+// Log Out -
+// close all running applications, close all windows and panels, unmount all
+// removable media.
+// Power Off - all of the above + tell Login to start power off process after
+// Workspace quit.
+// Log Out and Power Off terminate quitting when some application won't stop,
+// some removable media won't unmount/eject (optional: think).
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
   NSApplicationTerminateReply terminateReply;
-  // Log Out -
-  // close all running applications, close all windows and panels, unmount all
-  // removable media.
-  // Power Off - all of the above + tell Login to start power off process after
-  // Workspace quit.
-  // Log Out and Power Off terminate quitting when some application won't stop,
-  // some removable media won't unmount/eject (optional: think).
+  
+  wDefaultScreen()->flags.ignore_focus_events = 1;
+
   switch (NXTRunAlertPanel(_(@"Log Out"),
-        		  _(@"Do you really want to log out?"),
-        		  _(@"Log out"), _(@"Power off"), _(@"Cancel")))
+                           _(@"Do you really want to log out?"),
+                           _(@"Log out"), _(@"Power off"), _(@"Cancel")))
     {
     case NSAlertDefaultReturn: // Log Out
       {
         isQuitting = YES;
         if ([procManager terminateAllBGOperations] == NO) {
           isQuitting = NO;
-          return NO;
+          terminateReply = NSTerminateCancel;
+          break;
         }
 
         // Save running applications
         [self _saveRunningApplications];
   
         if ([procManager terminateAllApps] == NO) {
-          [NSApp activateIgnoringOtherApps:YES];
           NXTRunAlertPanel(_(@"Log Out"),
                            _(@"Some application terminate power off process."),
                            _(@"Dismiss"), nil, nil);
           isQuitting = NO;
-          return NO;
+          terminateReply = NSTerminateCancel;
+          break;
         }
 
         // Close Workspace windows, hide Dock, quit WindowMaker
         [self _finishTerminateProcess];
-        terminateReply = NSTerminateLater;
+        terminateReply = NSTerminateNow;
         ws_quit_code = WSLogoutOnQuit;
       }
       break;
@@ -675,23 +679,24 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
         isQuitting = YES;
         if ([procManager terminateAllBGOperations] == NO) {
           isQuitting = NO;
-          return NO;
+          terminateReply = NSTerminateCancel;
+          break;
         }
         
         // Save running applications
         [self _saveRunningApplications];
         
         if ([procManager terminateAllApps] == NO) {
-          [NSApp activateIgnoringOtherApps:YES];
           NXTRunAlertPanel(_(@"Power Off"),
                            _(@"Some application terminate power off process."),
                            _(@"Dismiss"), nil, nil);
           isQuitting = NO;
-          return NO;
+          terminateReply = NSTerminateCancel;
+          break;
         }
       
         [self _finishTerminateProcess];
-        terminateReply = NSTerminateLater;
+        terminateReply = NSTerminateNow;
         ws_quit_code = WSPowerOffOnQuit;
       }
       break;
@@ -702,12 +707,11 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       break;
     }
 
+  wDefaultScreen()->flags.ignore_focus_events = 0;
+  
   return terminateReply;
 }
-- (void)applicationWillTerminate:(NSNotification *)aNotif
-{
-}
-  
+
 - (void)activate
 {
   if (isQuitting != NO)
