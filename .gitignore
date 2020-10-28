@@ -1,6 +1,8 @@
 Libraries/gnustep/gnustep-base-1.26.0*
 Libraries/gnustep/gnustep-gui-0.25.0*
+Applications/Workspace/WM/compile
 *.emacs.desktop*
+*.clangd
 *.app
 *.d
 *obj
