@@ -33,7 +33,6 @@
 #import <SystemKit/OSEDisplay.h>
 #import <SystemKit/OSEPower.h>
 
-#import "Application.h"
 #import "Controller.h"
 
 static NSTask      *xorgTask = nil;
@@ -291,6 +290,21 @@ NSString *commandForExitCode(int exitCode)
   
   return exitCommand;
 }
+
+//-----------------------------------------------------------------------------
+// --- NSApplication
+//-----------------------------------------------------------------------------
+
+@interface LoginApplication : NSApplication
+@end
+
+@implementation	LoginApplication
+- (void)_appIconInit
+{
+  // Do nothing
+}
+@end
+
 
 //-----------------------------------------------------------------------------
 // --- main()

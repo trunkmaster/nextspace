@@ -41,7 +41,6 @@ Preferences/Login.preferences
 # Header files
 #
 Login_HEADER_FILES = \
-Application.h \
 Controller.h \
 LoginWindow.h
 
@@ -49,7 +48,6 @@ LoginWindow.h
 # Class files
 #
 Login_OBJC_FILES = \
-Application.m \
 Controller.m \
 LoginWindow.m \
 UserSession.m
