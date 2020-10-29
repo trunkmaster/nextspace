@@ -27,7 +27,7 @@ config-paths.h: Makefile
 ACLOCAL_AMFLAGS = -I m4
 
 # Improve coverage in 'make distcheck' by checking that translations work
-AM_DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules LINGUAS='*'
+AM_DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules
 
 
 SUBDIRS = WINGs src
