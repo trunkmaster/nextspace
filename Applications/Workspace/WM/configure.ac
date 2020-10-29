@@ -836,8 +836,7 @@ AC_CONFIG_FILES(
     Makefile
 
     dnl WINGs toolkit
-    WINGs/Makefile 
-    WINGs/WINGs/Makefile
+    WINGs/Makefile
     WINGs/Resources/Makefile
 
     dnl Window Maker's core

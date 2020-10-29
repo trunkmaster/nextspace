@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS =
 
-SUBDIRS = WINGs . Resources
+SUBDIRS = . Resources
 DIST_SUBDIRS = $(SUBDIRS)
 
 libWINGs_la_LDFLAGS = -version-info @WINGS_VERSION@
@@ -92,7 +92,7 @@ libWUtil_la_SOURCES = 	\
 AM_CFLAGS =
 
 AM_CPPFLAGS = -DRESOURCE_PATH=\"$(datadir)\" \
-	 -I$(top_srcdir)/WINGs/WINGs -I$(top_srcdir)/wrlib -I$(top_srcdir)/src \
+	 -I$(top_srcdir)/WINGs -I$(top_srcdir)/src \
 	@XFTFLAGS@ @HEADER_SEARCH_PATH@
 
 pkgconfigdir = $(libdir)/pkgconfig

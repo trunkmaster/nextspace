@@ -133,14 +133,12 @@ wmaker_SOURCES += misc.c \
 AM_CFLAGS =
 
 AM_CPPFLAGS = $(DFLAGS) \
-	-I$(top_srcdir)/wrlib \
-	-I$(top_srcdir)/WINGs @HEADER_SEARCH_PATH@ 
+	-I$(top_srcdir) @HEADER_SEARCH_PATH@ 
 
 
 wmaker_LDADD = \
 	$(top_builddir)/WINGs/libWINGs.la\
 	$(top_builddir)/WINGs/libWUtil.la\
-	$(top_builddir)/wrlib/libwraster.la\
 	@XLFLAGS@ \
 	@LIBXINERAMA@ \
 	@XLIBS@ \
