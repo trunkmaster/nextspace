@@ -30,7 +30,7 @@ ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules LINGUAS='*'
 
 
-SUBDIRS = WINGs src po
+SUBDIRS = WINGs src
 DIST_SUBDIRS = $(SUBDIRS)
 
 
@@ -47,31 +47,6 @@ coverage:
 	lcov --compat-libtool --capture --directory . --output-file coverage/coverage.info
 	genhtml --output-directory @lcov_output_directory@ coverage/coverage.info
 endif
-
-# make update-lang PO=<lang>
-# ==========================
-# Update the PO files against the POT file in all the translation sub-directories
-#
-# We do not use an automatic recursive target from Automake (AM_EXTRA_RECURSIVE_TARGETS)
-# because we want to check only once that the variable PO was defined; the added bonus
-# being that we do not process all directories but only the related ones, which is
-# faster and a lot less verbose
-
-update-lang:
-if HAVE_XGETTEXT
-	@if echo "$(PO)" | grep -v '^[a-z][a-z]\(_[A-Z][A-Z]\)\?$$' > /dev/null ; then \
-	  echo "Error: invalid value \"$(PO)\" for update-lang, use PO=<lang>" >&2 ; exit 1 ; \
-	fi ; \
-	for subdir in $(SUBDIRS_PO); do \
-	  ($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) update-lang || exit $$?); \
-	done
-
-SUBDIRS_PO = WINGs/po po
-else
-	@echo "Error: the program 'xgettext' was not found by configure, it is mandatory for this operation" >&2 ; exit 1
-endif
-
-.PHONY: update-lang
 
 # Create a 'silent-rule' for our make check the same way automake does
 AM_V_CHKOPTS = $(am__v_CHKOPTS_$(V))

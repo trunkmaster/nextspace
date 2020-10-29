@@ -450,21 +450,6 @@ dnl ==========
 AC_CHECK_PROG([PKGCONFIG], [pkg-config], [pkg-config])
 
 
-
-dnl Internationalization
-dnl ====================
-dnl Detect the language for translations to be installed and check
-dnl that the gettext environment works
-WM_I18N_LANGUAGES
-WM_I18N_XGETTEXT
-WM_I18N_MENUTEXTDOMAIN
-
-dnl 2014/12/29: The option is deprecated, we should keep this message for at
-dnl least 2 years to ensure users see it and update their build scripts
-AC_ARG_WITH([nlsdir], [],
-    [AC_MSG_ERROR([option '--with-nlsdir' is deprecated, please use autoconf's standard '--localedir' instead])])
-
-
 dnl ===========================================
 dnl 		Stuff that uses X
 dnl ===========================================
@@ -490,7 +475,7 @@ AC_SUBST(X_LIBRARY_PATH)
 dnl Decide which locale function to use, setlocale() or _Xsetlocale()
 dnl by MANOME Tomonori 
 dnl ===========================================
-WM_I18N_XLOCALE
+#WM_I18N_XLOCALE
 
 
 
@@ -851,12 +836,12 @@ AC_CONFIG_FILES(
     Makefile
 
     dnl WINGs toolkit
-    WINGs/Makefile WINGs/WINGs/Makefile WINGs/po/Makefile
-    WINGs/Documentation/Makefile WINGs/Resources/Makefile WINGs/Extras/Makefile
-    WINGs/Examples/Makefile WINGs/Tests/Makefile
+    WINGs/Makefile 
+    WINGs/WINGs/Makefile
+    WINGs/Resources/Makefile
 
     dnl Window Maker's core
-    src/Makefile src/wconfig.h po/Makefile
+    src/Makefile src/wconfig.h
 )
 
 AC_OUTPUT
@@ -876,16 +861,12 @@ echo "Supported graphic format libraries  :$supported_gfx"
 echo "Unsupported features                :$unsupported"
 echo "Antialiased text support in WINGs   : $xft"
 echo "Pango text layout support in WINGs  : $pango"
-echo "Translated languages to support     :$supported_locales"
 AS_IF([test "x$debug" = "xyes"],
     [AS_ECHO(["Debug enabled: CFLAGS = $CFLAGS"]) ])
 echo
 
 AS_IF([test "x$wm_cv_prog_cc_nestedfunc" != "xyes"],
     [AC_MSG_WARN([[Your compiler does not support Nested Function, work-around enabled]])])
-
-AS_IF([test "x$supported_locales" = "x"],
-    [AC_MSG_WARN([[No language from \$LINGUAS are supported]])])
 
 AS_IF([test "x$enable_jpeg" = xno], [dnl
     AS_ECHO(["WARNING   WARNING   WARNING   WARNING   WARNING   WARNING   WARNING"])
