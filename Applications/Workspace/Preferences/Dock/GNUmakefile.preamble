@@ -15,8 +15,7 @@ ADDITIONAL_CFLAGS +=
 ADDITIONAL_LDFLAGS +=
 
 # Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS += -I../.. -I../../WM/src
-ADDITIONAL_INCLUDE_DIRS += -I../../WM/wrlib -I../../WM/WINGs
+ADDITIONAL_INCLUDE_DIRS += -I../.. -I../../WM/src -I../../WM
 
 # Additional library directories the linker should search
 ADDITIONAL_LIB_DIRS += 

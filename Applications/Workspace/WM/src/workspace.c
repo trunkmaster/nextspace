@@ -524,11 +524,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
   scr->last_workspace = scr->current_workspace;
   scr->current_workspace = workspace;
 
-  /* This 2 lines below produce FocusOut event. In GNUstep applications it looks 
-     like focus switch from focused window to self. */
-  /* wWorkspaceMenuUpdate(scr, scr->workspace_menu); */
-  /* wWorkspaceMenuUpdate(scr, scr->clip_ws_menu); */
-
   tmp = scr->focused_window;
   if (tmp != NULL) {
     WWindow **toUnmap;

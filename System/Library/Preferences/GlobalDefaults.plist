@@ -60,6 +60,10 @@
     <string>Helvetica</string>
     <key>NSSmallFontSize</key>
     <string>10</string>
+    <key>NSMiniFont</key>
+    <string>Helvetica</string>
+    <key>NSMiniFontSize</key>
+    <string>9</string>
     <key>NSTitleBarFont</key>
     <string>Helvetica-Bold</string>
     <key>NSTitleBarFontSize</key>

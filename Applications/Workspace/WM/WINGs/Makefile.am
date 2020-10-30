@@ -2,8 +2,8 @@
 
 AUTOMAKE_OPTIONS =
 
-SUBDIRS = WINGs . po Documentation Resources
-DIST_SUBDIRS = $(SUBDIRS) Tests Examples Extras
+SUBDIRS = . Resources
+DIST_SUBDIRS = $(SUBDIRS)
 
 libWINGs_la_LDFLAGS = -version-info @WINGS_VERSION@
 libWUtil_la_LDFLAGS = -version-info @WUTIL_VERSION@
@@ -17,7 +17,7 @@ LDADD= libWUtil.la libWINGs.la @INTLIBS@
 libWINGs_la_LIBADD = libWUtil.la @XLIBS@ @XFTLIBS@ @FCLIBS@ @LIBM@ @PANGOLIBS@
 libWUtil_la_LIBADD = @LIBBSD@
 
-EXTRA_DIST = BUGS make-rgb Examples Extras Tests
+EXTRA_DIST = BUGS make-rgb
 
 
 # wbutton.c 
@@ -92,7 +92,7 @@ libWUtil_la_SOURCES = 	\
 AM_CFLAGS =
 
 AM_CPPFLAGS = -DRESOURCE_PATH=\"$(datadir)\" \
-	 -I$(top_srcdir)/WINGs/WINGs -I$(top_srcdir)/wrlib -I$(top_srcdir)/src \
+	 -I$(top_srcdir)/WINGs -I$(top_srcdir)/src \
 	@XFTFLAGS@ @HEADER_SEARCH_PATH@
 
 pkgconfigdir = $(libdir)/pkgconfig
