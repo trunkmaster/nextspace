@@ -25,7 +25,6 @@
 //
 
 #import <unistd.h>
-#import <X11/Xlib.h>
 
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEDisplay.h>
