@@ -43,6 +43,9 @@
 #import "Operations/ProcessManager.h"
 
 NSString *WMShowAlertPanel = @"WMShowAlertPanelNotification";
+dispatch_queue_t workspace_q;
+WorkspaceExitCode ws_quit_code;
+static WAppIcon **launchingIcons;
 
 // WM functions and vars
 extern Display *dpy;

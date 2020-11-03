@@ -29,13 +29,13 @@
 // Common part
 //-----------------------------------------------------------------------------
 #include <dispatch/dispatch.h>
-dispatch_queue_t workspace_q;
+extern dispatch_queue_t workspace_q;
 
-enum {
+typedef enum WorkspaceExitCode {
       WSLogoutOnQuit = 0,
       WSPowerOffOnQuit = 11 // ShutdownExitCode in Login application
-};
-int ws_quit_code;
+} WorkspaceExitCode;
+extern WorkspaceExitCode ws_quit_code;
 
 //-----------------------------------------------------------------------------
 // Visible in Workspace only
@@ -104,7 +104,6 @@ NSArray      *WMDockStateApps(void);
 void         WMDockAutoLaunch(WDock *dock);
 
 // Appicons getters/setters of on-screen Dock
-WAppIcon  **launchingIcons;
 NSInteger WMDockAppsCount(void);
 NSString  *WMDockAppName(int position);
 NSImage   *WMDockAppImage(int position);
