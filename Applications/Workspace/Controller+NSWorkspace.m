@@ -1244,14 +1244,14 @@ static NSString		*_rootPath = @"/";
        */
       if (icon == nil)
 	{
-	  if ([ext isEqualToString: @"app"] == YES
-	    || [ext isEqualToString: @"debug"] == YES
-	    || [ext isEqualToString: @"profile"] == YES)
+          if ([ext isEqualToString: @"app"] == YES
+              || [ext isEqualToString: @"debug"] == YES
+              || [ext isEqualToString: @"profile"] == YES)
 	    {
 	      if (unknownApplication == nil)
 		{
 		  unknownApplication = RETAIN([NSImage _standardImageWithName:
-		    @"NXUnknownApplication"]);
+                                                         @"NXUnknownApplication"]);
 		}
 	      icon = unknownApplication;
 	    }
