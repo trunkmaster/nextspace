@@ -22,6 +22,7 @@ BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libtiff-devel
+BuildRequires:  libexif-devel
 BuildRequires:	libXpm-devel
 BuildRequires:	libXmu-devel
 BuildRequires:	libXext-devel

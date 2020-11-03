@@ -1,5 +1,9 @@
 Name:		libdispatch
+%if 0%{?el7}
 Version:	5.1.5
+else
+Version:	5.3
+%endif
 Release:	0%{?dist}
 Summary:	Grand Central Dispatch (GCD or libdispatch).
 License:	Apache 2.0
