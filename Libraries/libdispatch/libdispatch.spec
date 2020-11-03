@@ -1,7 +1,7 @@
 Name:		libdispatch
 %if 0%{?el7}
 Version:	5.1.5
-else
+%else
 Version:	5.3
 %endif
 Release:	0%{?dist}

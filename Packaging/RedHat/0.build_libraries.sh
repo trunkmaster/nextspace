@@ -60,11 +60,11 @@ if [ $? -eq 1 ]; then
 fi
 
 # GNUstep
-`dirname $0`/build_nextspace-gnustep.sh $1
-if [ $? -eq 1 ]; then
-    echo "Aborting..."
-    exit 1
-fi
+#`dirname $0`/1.build_nextspace-gnustep.sh $1
+#if [ $? -eq 1 ]; then
+#    echo "Aborting..."
+#    exit 1
+#fi
 
 print_OK " Build and install of NEXTSPACE Libraries SUCCEEDED!"
 
