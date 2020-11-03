@@ -40,6 +40,8 @@ static NSString *PAMCredentialsException = @"PAMCredentialsException";
 static NSString *PAMPermissionDeniedException = @"PAMPermissionDeniedException";
 static NSString *PAMSessionOpeningException = @"PAMSessionOpeningException";
 
+LoginExitCode panelExitCode;
+
 //=============================================================================
 // Manage user sessions
 //=============================================================================

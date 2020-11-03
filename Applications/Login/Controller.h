@@ -38,15 +38,14 @@
 // 10 - exit(0)
 // 11 - shutdown
 // 12 - reboot
-enum LoginExitCode {
+typedef enum {
   QuitExitCode = 10,
   ShutdownExitCode = 11,
   RebootExitCode = 12,
   UpdateExitCode = 13
-};
-int panelExitCode;
+} LoginExitCode;
 
-Display *rrDisplay;
+extern LoginExitCode panelExitCode;
 
 @class UserSession;
 
