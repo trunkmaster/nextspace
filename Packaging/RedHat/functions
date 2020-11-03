@@ -46,7 +46,7 @@ prepare_environment()
                 if [ $? -eq 1 ]; then BUILD_TOOLS+=" centos-release-scl-rh"; fi
             fi
             if [ $OS_VERSION == "8" ];then
-                yum config-manager --set-enabled PowerTools
+                yum config-manager --set-enabled powertools
                 rpm -q epel-release 2>&1 > /dev/null
                 if [ $? -eq 1 ]; then BUILD_TOOLS+=" epel-release"; fi
                 rpm -q dnf-plugins-core 2>&1 > /dev/null
