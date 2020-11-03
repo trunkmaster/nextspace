@@ -18,7 +18,7 @@
 
 #import <Foundation/Foundation.h>
 
-NSUserDefaults *ud;
+//NSUserDefaults *ud;
 
 @interface Defaults : NSObject <NSCopying>
 {

@@ -19,8 +19,8 @@
 
 #import "Defaults.h"
 
-NSString *TerminalWindowNoMoreActiveWindowsNotification;
-NSString *TerminalWindowSizeDidChangeNotification;
+extern NSString *TerminalWindowNoMoreActiveWindowsNotification;
+extern NSString *TerminalWindowSizeDidChangeNotification;
 
 @interface TerminalWindowController : NSWindowController
 {
