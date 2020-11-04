@@ -17,7 +17,7 @@ export INFOPATH="$HOME/Library/Documentation/info:/Library/Documentation/info:/u
 # Initialize time zone to system time zone, but only if not yet set.
 defaults read NSGlobalDomain "Local Time Zone" 2>&1 > /dev/null
 if [ $? -ne 0 ]; then
-    echo "Updating `Local Time Zone` preference..."
+    echo "Updating 'Local Time Zone' preference..."
     TZ=`/usr/bin/env -i stat --printf "%N\n" /etc/localtime |sed "s,.*-> '.*/zoneinfo/\([^']*\)',\1,"`
     defaults write NSGlobalDomain "Local Time Zone" $TZ
 fi
