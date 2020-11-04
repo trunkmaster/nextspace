@@ -9,7 +9,9 @@ Summary:	Grand Central Dispatch (GCD or libdispatch).
 License:	Apache 2.0
 URL:		http://swift.org
 Source0:	https://github.com/apple/swift-corelibs-libdispatch/archive/swift-%{version}-RELEASE.tar.gz
+%if 0%{?el7}
 Patch0:		libdispatch-dispatch.h.patch
+%endif
 
 %if 0%{?el7}
 BuildRequires:	cmake3
@@ -52,7 +54,9 @@ Development header files for libdispatch (includes kqueue and pthread_workqueue)
 
 %prep
 %setup -n swift-corelibs-libdispatch-swift-%{version}-RELEASE
+%if 0%{?el7}
 %patch0 -p1
+%endif
 
 %build
 mkdir -p _build
@@ -68,7 +72,9 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
     -DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
     -DINSTALL_PRIVATE_HEADERS=YES \
+%if 0%{?el7}
     -DENABLE_TESTING=OFF \
+%endif
     -DCMAKE_BUILD_TYPE=Debug
 
 make %{?_smp_mflags}
