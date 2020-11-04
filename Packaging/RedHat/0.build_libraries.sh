@@ -18,7 +18,7 @@ if [ $? -eq 1 ];then
 fi
 
 # Build missed libraries for CentOS 8: libudisks2-devel and libart_lgpl
-if [ $OS_NAME == "CentOS Linux" ] && [ $OS_VERSION == "8" ];then
+if [ "$OS_NAME" == "CentOS Linux" ] && [ $OS_VERSION == "8" ];then
     rpm -q libart_lgpl 2>&1 > /dev/null
     if [ $? -eq 1 ]; then
         `dirname $0`/custom/build_libart.sh
