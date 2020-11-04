@@ -32,7 +32,7 @@ if [ $? -eq 0 ]; then
     install_rpm libobjc2-devel ${RPMS_DIR}/libobjc2-devel-${OBJC2_VERSION}.rpm
     mv ${RPMS_DIR}/libobjc2-devel-${OBJC2_VERSION}.rpm ${RELEASE_DEV}
     mv ${RPMS_DIR}/libobjc2-debuginfo-${OBJC2_VERSION}.rpm ${RELEASE_DEV}
-    if [ $OS_NAME == "centos" ] && [ $OS_VERSION != "7" ];then
+    if [ -f ${RPMS_DIR}/libobjc2-debugsource-${OBJC2_VERSION}.rpm ];then
         mv ${RPMS_DIR}/libobjc2-debugsource-${OBJC2_VERSION}.rpm ${RELEASE_DEV}
     fi
 else

@@ -37,7 +37,7 @@ if [ $? -eq 0 ]; then
     install_rpm libwraster-devel ${RPMS_DIR}/libwraster-devel-${WRASTER_VERSION}.rpm
     mv ${RPMS_DIR}/libwraster-devel-${WRASTER_VERSION}.rpm ${RELEASE_DEV}
     mv ${RPMS_DIR}/libwraster-debuginfo-${WRASTER_VERSION}.rpm ${RELEASE_DEV}
-    if [ $OS_NAME == "centos" ] && [ $OS_VERSION != "7" ];then
+    if [ -f ${RPMS_DIR}/libwraster-debugsource-${WRASTER_VERSION}.rpm ];then
         mv ${RPMS_DIR}/libwraster-debugsource-${WRASTER_VERSION}.rpm ${RELEASE_DEV}
     fi
 else

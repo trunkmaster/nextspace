@@ -35,7 +35,7 @@ if [ $? -eq 0 ]; then
     install_rpm libdispatch-devel ${RPMS_DIR}/libdispatch-devel-${DISPATCH_VERSION}.rpm
     mv ${RPMS_DIR}/libdispatch-devel-${DISPATCH_VERSION}.rpm ${RELEASE_DEV}
     mv ${RPMS_DIR}/libdispatch-debuginfo-${DISPATCH_VERSION}.rpm ${RELEASE_DEV}
-    if [ $OS_NAME == "centos" ] && [ $OS_VERSION != "7" ];then
+    if [ -f ${RPMS_DIR}/libdispatch-debugsource-${DISPATCH_VERSION}.rpm ];then
         mv ${RPMS_DIR}/libdispatch-debugsource-${DISPATCH_VERSION}.rpm ${RELEASE_DEV}
     fi
 else

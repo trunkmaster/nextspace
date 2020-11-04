@@ -18,16 +18,16 @@ if [ $? -eq 1 ];then
 fi
 
 # Build missed libraries for CentOS 8: libudisks2-devel and libart_lgpl
-#if [ $OS_NAME == "centos" ] && [ $OS_VERSION == "8" && [ $OS_BRANCH == "Core" ]];then
-#    rpm -q libart_lgpl 2>&1 > /dev/null
-#    if [ $? -eq 1 ]; then
-#        `dirname $0`/build_libart.sh
-#    fi
-#    rpm -q libudisks-devel 2>&1 > /dev/null
-#    if [ $? -eq 1 ]; then
-#        `dirname $0`/build_udisks2.sh
-#    fi
-#fi
+if [ $OS_NAME == "CentOS Linux" ] && [ $OS_VERSION == "8" ];then
+    rpm -q libart_lgpl 2>&1 > /dev/null
+    if [ $? -eq 1 ]; then
+        `dirname $0`/custom/build_libart.sh
+    fi
+    rpm -q libudisks-devel 2>&1 > /dev/null
+    if [ $? -eq 1 ]; then
+        `dirname $0`/custom/build_udisks2.sh
+    fi
+fi
 
 REPO_DIR=$1
 
@@ -60,11 +60,11 @@ if [ $? -eq 1 ]; then
 fi
 
 # GNUstep
-#`dirname $0`/1.build_nextspace-gnustep.sh $1
-#if [ $? -eq 1 ]; then
-#    echo "Aborting..."
-#    exit 1
-#fi
+`dirname $0`/build_nextspace-gnustep.sh $1
+if [ $? -eq 1 ]; then
+    echo "Aborting..."
+    exit 1
+fi
 
 print_OK " Build and install of NEXTSPACE Libraries SUCCEEDED!"
 

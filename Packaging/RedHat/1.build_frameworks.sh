@@ -45,7 +45,7 @@ if [ $? -eq 0 ]; then
     install_rpm nextspace-frameworks-devel ${RPMS_DIR}/nextspace-frameworks-devel-${FRAMEWORKS_VERSION}.rpm
     mv ${RPMS_DIR}/nextspace-frameworks-devel-${FRAMEWORKS_VERSION}.rpm ${RELEASE_DEV}
     mv ${RPMS_DIR}/nextspace-frameworks-debuginfo-${FRAMEWORKS_VERSION}.rpm ${RELEASE_DEV}
-    if [ $OS_NAME == "centos" ] && [ $OS_VERSION != "7" ];then
+    if [ -f ${RPMS_DIR}/nextspace-frameworks-debugsource-${FRAMEWORKS_VERSION}.rpm ];then
         mv ${RPMS_DIR}/nextspace-frameworks-debugsource-${FRAMEWORKS_VERSION}.rpm ${RELEASE_DEV}
     fi
 else

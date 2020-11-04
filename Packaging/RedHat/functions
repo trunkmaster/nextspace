@@ -10,8 +10,9 @@ if [ -f /etc/os-release ]; then
     source /etc/os-release;
     export RELEASE_USR="$CWD/$ID-$VERSION_ID/NSUser"
     export RELEASE_DEV="$CWD/$ID-$VERSION_ID/NSDeveloper"
-    export OS_NAME=$ID
+    export OS_ID=$ID
     export OS_VERSION=$VERSION_ID
+    export OS_NAME=$NAME
     mkdir -p ${RELEASE_USR}
     mkdir -p ${RELEASE_DEV}
 fi
@@ -34,7 +35,7 @@ prepare_environment()
     if [ $? -eq 1 ]; then BUILD_TOOLS+=" patch"; fi
 
     if [ -f /etc/os-release ]; then 
-        if [ $OS_NAME == "centos" ];then
+        if [ $OS_ID == "centos" ];then
             if [ $OS_VERSION == "7" ];then
                 yum repolist | grep "epel/" 2>&1 > /dev/null
                 if [ $? -eq 1 ]; then
@@ -46,7 +47,12 @@ prepare_environment()
                 if [ $? -eq 1 ]; then BUILD_TOOLS+=" centos-release-scl-rh"; fi
             fi
             if [ $OS_VERSION == "8" ];then
-                yum config-manager --set-enabled powertools
+                # Could be "CentOS Linux" or "CentOS Stream"
+                if [ "$OS_NAME" == "CentOS Stream" ]; then
+                    yum config-manager --set-enabled powertools
+                else
+                    yum config-manager --set-enabled PowerTools
+                fi
                 rpm -q epel-release 2>&1 > /dev/null
                 if [ $? -eq 1 ]; then BUILD_TOOLS+=" epel-release"; fi
                 rpm -q dnf-plugins-core 2>&1 > /dev/null

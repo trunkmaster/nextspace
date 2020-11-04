@@ -24,7 +24,7 @@ DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > ${LOG_FILE}
 print_H2 "===== Downloading nextspace-frameworks sources..."
 source /Developer/Makefiles/GNUstep.sh
-if [ $OS_NAME == "centos" ] && [ $OS_VERSION == "7" ];then
+if [ $OS_ID == "centos" ] && [ $OS_VERSION == "7" ];then
     source /opt/rh/llvm-toolset-7.0/enable
 fi
 
@@ -52,7 +52,7 @@ if [ $? -eq 0 ]; then
     install_rpm nextspace-applications-devel ${RPMS_DIR}/nextspace-applications-devel-${APPLICATIONS_VERSION}.rpm
     mv ${RPMS_DIR}/nextspace-applications-devel-${APPLICATIONS_VERSION}.rpm ${RELEASE_DEV}
     mv ${RPMS_DIR}/nextspace-applications-debuginfo-${APPLICATIONS_VERSION}.rpm ${RELEASE_DEV}
-    if [ $OS_NAME == "centos" ] && [ $OS_VERSION != "7" ];then
+    if [ ${RPMS_DIR}/nextspace-applications-debugsource-${APPLICATIONS_VERSION}.rpm ];then
         mv ${RPMS_DIR}/nextspace-applications-debugsource-${APPLICATIONS_VERSION}.rpm ${RELEASE_DEV}
     fi
 else
