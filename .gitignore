@@ -6,6 +6,7 @@ Applications/Workspace/WM/compile
 *lt*.m4
 *.emacs.desktop*
 *.clangd
+*.cache
 *.app
 *.d
 *obj
