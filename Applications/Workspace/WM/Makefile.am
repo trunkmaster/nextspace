@@ -30,8 +30,8 @@ ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS = --enable-silent-rules
 
 
-SUBDIRS = WINGs src
-DIST_SUBDIRS = $(SUBDIRS)
+#SUBDIRS = WINGs src
+#DIST_SUBDIRS = $(SUBDIRS)
 
 
 .PHONY:	coverage-reset coverage

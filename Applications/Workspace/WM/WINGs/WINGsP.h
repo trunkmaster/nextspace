@@ -193,30 +193,6 @@ typedef struct W_Screen {
 
     W_Pixmap *checkMark;
 
-    W_Pixmap *homeIcon;
-    W_Pixmap *altHomeIcon;
-
-    W_Pixmap *trashcanIcon;
-    W_Pixmap *altTrashcanIcon;
-
-    W_Pixmap *createDirIcon;
-    W_Pixmap *altCreateDirIcon;
-
-    W_Pixmap *disketteIcon;
-    W_Pixmap *altDisketteIcon;
-    W_Pixmap *unmountIcon;
-    W_Pixmap *altUnmountIcon;
-
-    W_Pixmap *magnifyIcon;
-    /*W_Pixmap *altMagnifyIcon;*/
-    W_Pixmap *wheelIcon;
-    W_Pixmap *grayIcon;
-    W_Pixmap *rgbIcon;
-    W_Pixmap *cmykIcon;
-    W_Pixmap *hsbIcon;
-    W_Pixmap *customPaletteIcon;
-    W_Pixmap *colorListIcon;
-
     W_Pixmap *defaultObjectIcon;
 
     Cursor defaultCursor;

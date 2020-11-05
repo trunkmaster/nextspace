@@ -422,118 +422,6 @@ static WMPixmap *makePixmap(W_Screen * sPtr, char **data, int width, int height,
 	return WMCreatePixmapFromXPixmaps(sPtr, pixmap, mask, width, height, sPtr->depth);
 }
 
-#define T_WINGS_IMAGES_FILE  RESOURCE_PATH"/Images.tiff"
-#define X_WINGS_IMAGES_FILE  RESOURCE_PATH"/Images.xpm"
-
-static Bool loadPixmaps(WMScreen * scr)
-{
-	RImage *image, *tmp;
-	RColor gray;
-	RColor white;
-
-	gray.red = 0xae;
-	gray.green = 0xaa;
-	gray.blue = 0xae;
-
-	white.red = 0xff;
-	white.green = 0xff;
-	white.blue = 0xff;
-
-	image = RLoadImage(scr->rcontext, T_WINGS_IMAGES_FILE, 0);
-	if (!image)
-		image = RLoadImage(scr->rcontext, X_WINGS_IMAGES_FILE, 0);
-	if (!image) {
-		wwarning(_("WINGs: could not load widget images file: %s"), RMessageForError(RErrorCode));
-		return False;
-	}
-	/* home icon */
-	/* make it have a gray background */
-	tmp = RGetSubImage(image, 0, 0, 24, 24);
-	RCombineImageWithColor(tmp, &gray);
-	scr->homeIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	/* make it have a white background */
-	tmp = RGetSubImage(image, 0, 0, 24, 24);
-	RCombineImageWithColor(tmp, &white);
-	scr->altHomeIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-
-	/* trash can */
-	tmp = RGetSubImage(image, 104, 0, 24, 24);
-	RCombineImageWithColor(tmp, &white);
-	scr->trashcanIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	tmp = RGetSubImage(image, 104, 0, 24, 24);
-	RCombineImageWithColor(tmp, &white);
-	scr->altTrashcanIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	/* create dir */
-	tmp = RGetSubImage(image, 104, 24, 24, 24);
-	RCombineImageWithColor(tmp, &white);
-	scr->createDirIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	tmp = RGetSubImage(image, 104, 24, 24, 24);
-	RCombineImageWithColor(tmp, &white);
-	scr->altCreateDirIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	/* diskettes */
-	tmp = RGetSubImage(image, 24, 80, 24, 24);
-	RCombineImageWithColor(tmp, &white);
-	scr->disketteIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	tmp = RGetSubImage(image, 24, 80, 24, 24);
-	RCombineImageWithColor(tmp, &white);
-	scr->altDisketteIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	/* unmount */
-	tmp = RGetSubImage(image, 0, 80, 24, 24);
-	RCombineImageWithColor(tmp, &white);
-	scr->unmountIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	tmp = RGetSubImage(image, 0, 80, 24, 24);
-	RCombineImageWithColor(tmp, &white);
-	scr->altUnmountIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-
-	/* Magnifying Glass Icon for ColorPanel */
-	tmp = RGetSubImage(image, 24, 0, 40, 32);
-	RCombineImageWithColor(tmp, &gray);
-	scr->magnifyIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	/* ColorWheel Icon for ColorPanel */
-	tmp = RGetSubImage(image, 0, 25, 24, 24);
-	scr->wheelIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	/* GrayScale Icon for ColorPanel */
-	tmp = RGetSubImage(image, 65, 0, 40, 24);
-	scr->grayIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	/* RGB Icon for ColorPanel */
-	tmp = RGetSubImage(image, 25, 33, 40, 24);
-	scr->rgbIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	/* CMYK Icon for ColorPanel */
-	tmp = RGetSubImage(image, 65, 25, 40, 24);
-	scr->cmykIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	/* HSB Icon for ColorPanel */
-	tmp = RGetSubImage(image, 0, 57, 40, 24);
-	scr->hsbIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	/* CustomColorPalette Icon for ColorPanel */
-	tmp = RGetSubImage(image, 81, 57, 40, 24);
-	scr->customPaletteIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-	/* ColorList Icon for ColorPanel */
-	tmp = RGetSubImage(image, 41, 57, 40, 24);
-	scr->colorListIcon = WMCreatePixmapFromRImage(scr, tmp, 128);
-	RReleaseImage(tmp);
-
-	RReleaseImage(image);
-
-	return True;
-}
-
 WMScreen *WMOpenScreen(const char *display)
 {
 	Display *dpy = XOpenDisplay(display);
@@ -837,8 +725,6 @@ WMScreen *WMCreateScreenWithRContext(Display * display, int screen, RContext * c
 					       PULLDOWN_INDICATOR_WIDTH, PULLDOWN_INDICATOR_HEIGHT, True);
 
 	scrPtr->checkMark = makePixmap(scrPtr, CHECK_MARK, CHECK_MARK_WIDTH, CHECK_MARK_HEIGHT, True);
-
-	loadPixmaps(scrPtr);
 
 	scrPtr->defaultCursor = XCreateFontCursor(display, XC_left_ptr);
 

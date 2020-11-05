@@ -29,10 +29,6 @@ SHARED = obj
 before-all::
 	@ echo "Preparing WM..."
 	@ ./WM.configure
-	@ echo "Making WM external components ... "
-	@ cd $(WM_DIR); make config-paths.h
-	@ echo " Building WINGs library in $(WM_DIR)/WINGs ... "
-	@ cd $(WM_DIR)/WINGs; make
 
 after-all::
 	@ echo " Copying Viewers bundles into the app wrapper ..."
@@ -44,9 +40,6 @@ after-all::
 	@ cp "Tools/Sizer/$(SHARED)/Sizer.tool" $(APP_WRAPPER)/Resources
 
 after-clean::
-	@ echo "Making clean in WM ... "
-	@ echo " Cleaning in $(WM_DIR)/WINGs ..."
-	-@ cd $(WM_DIR)/WINGs; make clean > /dev/null 2>&1
 
 before-install::
 	@ mkdir -p $(APP_WRAPPER_INSTALLED)
@@ -57,12 +50,9 @@ after-install::
 	@ cp Workspace.h $(DESTDIR)/$(GNUSTEP_SYSTEM_HEADERS)/apps
 	@ echo " Copying WM resources into $(WM_RESOURCES)..."
 	@ mkdir -p $(WM_RESOURCES)
-	@ cp $(WM_DIR)/WINGs/Resources/Images.tiff $(WM_RESOURCES)
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMGLOBAL $(WM_RESOURCES)
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMState $(WM_RESOURCES)
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMWindowAttributes $(WM_RESOURCES)
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WindowMaker $(WM_RESOURCES)
 
 after-uninstall::
-#	@ echo "Uninstalling $(WM_DIR)/WINGs ..."
-#	@ cd $(WM_DIR)/WINGs; make uninstall > /dev/null 2>&1

@@ -32,28 +32,11 @@ ADDITIONAL_CFLAGS += -DNEXTSPACE
 #-std=gnu89
 ADDITIONAL_OBJCFLAGS += -DNEXTSPACE
 ADDITIONAL_LDFLAGS += -ldispatch -ldl
-ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR)/src -I./$(WM_DIR)
-ADDITIONAL_LIB_DIRS += -L./$(WM_DIR)/WINGs/.libs
-ADDITIONAL_GUI_LIBS += $(WM_DIR)/WINGs/.libs/libWINGs.a $(WM_DIR)/WINGs/.libs/libWUtil.a
-# ADDITIONAL_GUI_LIBS += $(WM_DIR)/WINGs/.libs/libWUtil.a \
-# 	$(WM_DIR)/WINGs/configuration.o \
-# 	$(WM_DIR)/WINGs/selection.o \
-# 	$(WM_DIR)/WINGs/dragcommon.o \
-# 	$(WM_DIR)/WINGs/dragsource.o \
-# 	$(WM_DIR)/WINGs/dragdestination.o \
-# 	\
-# 	$(WM_DIR)/WINGs/wappresource.o \
-# 	$(WM_DIR)/WINGs/wfont.o \
-# 	$(WM_DIR)/WINGs/wevent.o \
-# 	$(WM_DIR)/WINGs/wcolor.o \
-# 	$(WM_DIR)/WINGs/wmisc.o \
-# 	$(WM_DIR)/WINGs/wview.o \
-# 	$(WM_DIR)/WINGs/widgets.o \
-# 	$(WM_DIR)/WINGs/wwindow.o \
-# 	$(WM_DIR)/WINGs/wframe.o \
-# 	$(WM_DIR)/WINGs/wlabel.o \
-# 	$(WM_DIR)/WINGs/wpixmap.o \
-# 	$(WM_DIR)/WINGs/wballoon.o \
-# 	$(WM_DIR)/WINGs/winputmethod.o
+ADDITIONAL_INCLUDE_DIRS += -DHAVE_CONFIG_H -I./$(WM_DIR)/src -I./$(WM_DIR)
+ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR)/WINGs `freetype-config --cflags` -I/usr/include/uuid
+ADDITIONAL_INCLUDE_DIRS += -DNDEBUG -D_XOPEN_SOURCE=600 -D_GNU_SOURCE
+
+#ADDITIONAL_LIB_DIRS += -L./$(WM_DIR)/WINGs/.libs
+#ADDITIONAL_GUI_LIBS += $(WM_DIR)/WINGs/.libs/libWINGs.a $(WM_DIR)/WINGs/.libs/libWUtil.a
 
 ADDITIONAL_GUI_LIBS += -lbsd -lfontconfig -lXft -lwraster -lXext -lXrandr -lXfixes -lXcursor
