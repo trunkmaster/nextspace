@@ -1,5 +1,5 @@
 
-#include <WINGs/WINGsP.h>
+#include <WINGs/WINGs.h>
 
 #include "geomview.h"
 

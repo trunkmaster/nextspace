@@ -1,7 +1,9 @@
 
-#include "WINGsP.h"
-
 #include <X11/Xresource.h>
+#include <X11/Xutil.h>
+
+#include "notification.h"
+#include "WINGs.h"
 
 /* the notifications about views */
 

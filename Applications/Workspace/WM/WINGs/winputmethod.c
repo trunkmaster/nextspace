@@ -1,9 +1,8 @@
 
 #include <X11/Xlib.h>
-
 #include "wconfig.h"
-
-#include "WINGsP.h"
+#include "WINGs.h"
+#include "winputmethod.h"
 
 typedef struct W_IMContext {
 	XIM xim;

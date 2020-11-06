@@ -3,7 +3,8 @@
 
 #include <X11/Xatom.h>
 
-#include "WINGsP.h"
+#include "WINGs.h"
+#include "notification.h"
 
 #define MAX_PROPERTY_SIZE 8*1024
 

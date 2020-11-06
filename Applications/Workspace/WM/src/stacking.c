@@ -27,6 +27,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#include <WINGs/notification.h>
+
 #include "WindowMaker.h"
 #include "screen.h"
 #include "window.h"

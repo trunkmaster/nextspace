@@ -31,6 +31,8 @@
 #include <math.h>
 #include <time.h>
 
+#include <WINGs/notification.h>
+
 #include "GNUstep.h"
 #include "WindowMaker.h"
 #include "framewin.h"

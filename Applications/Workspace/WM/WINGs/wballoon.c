@@ -1,6 +1,6 @@
 
 #include "wconfig.h"
-#include "WINGsP.h"
+#include "WINGs.h"
 
 #ifdef USE_XSHAPE
 #include <X11/extensions/shape.h>

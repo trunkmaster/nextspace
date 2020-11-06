@@ -1,7 +1,7 @@
 
 #include <unistd.h>
 
-#include "WINGsP.h"
+#include "WINGs.h"
 
 #include <X11/Xutil.h>
 

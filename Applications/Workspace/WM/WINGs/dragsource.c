@@ -1,6 +1,6 @@
 
 #include "wconfig.h"
-#include "WINGsP.h"
+#include "WINGs.h"
 
 #include <X11/Xatom.h>
 #include <X11/cursorfont.h>

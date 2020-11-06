@@ -36,6 +36,7 @@
 
 /* For getting mouse wheel mappings from WINGs */
 #include <WINGs/WINGs.h>
+#include <WINGs/notification.h>
 
 #include "GNUstep.h"
 #include "WindowMaker.h"

@@ -46,6 +46,7 @@
 #include <X11/keysym.h>
 
 #include <wraster.h>
+#include <WINGs/notification.h>
 
 #include "WindowMaker.h"
 #include "framewin.h"

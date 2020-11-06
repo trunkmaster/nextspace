@@ -186,12 +186,12 @@ typedef void WMNotificationObserverAction(void *observerData,
 
 /* ---[ Macros ]---------------------------------------------------------- */
 
-#define wlengthof(array)  \
-	({   \
-		_wutil_static_assert(sizeof(array) > sizeof(array[0]),   \
-		                     "the macro 'wlengthof' cannot be used on pointers, only on known size arrays");   \
-		sizeof(array) / sizeof(array[0]);   \
-	})
+#define wlengthof(array)                                                \
+  ({                                                                    \
+    _wutil_static_assert(sizeof(array) > sizeof(array[0]),              \
+                         "the macro 'wlengthof' cannot be used on pointers, only on known size arrays"); \
+    sizeof(array) / sizeof(array[0]);                                   \
+  })
 
 
 /* ---[ WINGs/memory.c ]-------------------------------------------------- */
@@ -699,52 +699,6 @@ WMTreeNode *WMFindInTreeWithDepthLimit(WMTreeNode * aTree, WMMatchDataProc * mat
 
 /* Walk every node of aNode with `walk' */
 void WMTreeWalk(WMTreeNode *aNode, WMTreeWalkProc * walk, void *data, Bool DepthFirst);
-
-/* ---[ WINGs/data.c ]---------------------------------------------------- */
-
-
-WMNotification* WMCreateNotification(const char *name, void *object, void *clientData);
-
-void WMReleaseNotification(WMNotification *notification);
-
-WMNotification* WMRetainNotification(WMNotification *notification);
-
-void* WMGetNotificationClientData(WMNotification *notification);
-
-void* WMGetNotificationObject(WMNotification *notification);
-
-const char* WMGetNotificationName(WMNotification *notification);
-
-
-void WMAddNotificationObserver(WMNotificationObserverAction *observerAction,
-                               void *observer, const char *name, void *object);
-
-void WMPostNotification(WMNotification *notification);
-
-void WMRemoveNotificationObserver(void *observer);
-
-void WMRemoveNotificationObserverWithName(void *observer, const char *name,
-                                          void *object);
-
-void WMPostNotificationName(const char *name, void *object, void *clientData);
-
-WMNotificationQueue* WMGetDefaultNotificationQueue(void);
-
-WMNotificationQueue* WMCreateNotificationQueue(void);
-
-void WMDequeueNotificationMatching(WMNotificationQueue *queue,
-                                   WMNotification *notification,
-                                   unsigned mask);
-
-void WMEnqueueNotification(WMNotificationQueue *queue,
-                           WMNotification *notification,
-                           WMPostingStyle postingStyle);
-
-void WMEnqueueCoalesceNotification(WMNotificationQueue *queue,
-                                   WMNotification *notification,
-                                   WMPostingStyle postingStyle,
-                                   unsigned coalesceMask);
-
 
 /* ---[ WINGs/proplist.c ]------------------------------------------------ */
 

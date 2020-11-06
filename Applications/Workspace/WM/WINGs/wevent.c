@@ -3,7 +3,9 @@
  * This event handling stuff was inspired on Tk.
  */
 
-#include "WINGsP.h"
+#include "WINGs.h"
+#include "handlers.h"
+#include "winputmethod.h"
 
 /* table to map event types to event masks */
 static const unsigned long eventMasks[] = {

@@ -1,13 +1,13 @@
 
 #include <X11/Xmd.h>
+#include <X11/Xatom.h>
 
 #include "wconfig.h"
 
-#include "WINGsP.h"
+#include "notification.h"
+#include "WINGs.h"
 
 #include "GNUstep.h"
-
-#include <X11/Xatom.h>
 
 typedef struct W_Window {
 	W_Class widgetClass;
@@ -49,7 +49,6 @@ typedef struct W_Window {
 		unsigned setAspect:1;
 	} flags;
 } _Window;
-
 
 static void willResizeWindow(W_ViewDelegate *, WMView *, unsigned *, unsigned *);
 

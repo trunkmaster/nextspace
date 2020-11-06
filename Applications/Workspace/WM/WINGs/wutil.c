@@ -3,7 +3,8 @@
  * Handle events for non-GUI based applications
  */
 
-#include "WINGsP.h"
+#include "handlers.h"
+#include "notification.h"
 
 void WHandleEvents()
 {

@@ -1,5 +1,6 @@
 
-#include "WINGsP.h"
+#include "WINGs.h"
+#include "winputmethod.h"
 #include "wconfig.h"
 
 #include <X11/Xft/Xft.h>

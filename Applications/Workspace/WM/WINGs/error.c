@@ -28,7 +28,7 @@
 #include <unistd.h>
 
 #include <WUtil.h>
-#include <WINGsP.h>
+#include <WINGs.h>
 
 #ifdef HAVE_SYSLOG_H
 #include <syslog.h>

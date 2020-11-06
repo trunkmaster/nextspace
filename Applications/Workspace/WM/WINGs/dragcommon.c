@@ -1,6 +1,6 @@
 #include "wconfig.h"
 
-#include "WINGsP.h"
+#include "WINGs.h"
 
 #define XDND_SOURCE_VERSION(dragInfo) dragInfo->protocolVersion
 #define XDND_DEST_INFO(dragInfo) dragInfo->destInfo

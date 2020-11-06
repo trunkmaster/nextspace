@@ -1,5 +1,5 @@
 
-#include "WINGsP.h"
+#include "WINGs.h"
 
 typedef struct W_Label {
 	W_Class widgetClass;

@@ -33,6 +33,8 @@
 #include <wraster.h>
 #include <sys/stat.h>
 
+#include <WINGs/notification.h>
+
 #include "GNUstep.h"
 #include "WindowMaker.h"
 #include "wcore.h"

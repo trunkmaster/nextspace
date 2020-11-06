@@ -4,7 +4,8 @@
  */
 
 #include "wconfig.h"
-#include "WINGsP.h"
+#include "WINGs.h"
+#include "notification.h"
 
 #include <sys/types.h>
 #include <unistd.h>

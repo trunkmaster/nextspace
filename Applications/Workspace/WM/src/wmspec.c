@@ -34,7 +34,8 @@
 #include <X11/Xatom.h>
 #include <string.h>
 
-#include <WINGs/WUtil.h>
+#include <WINGs/notification.h>
+
 #include "WindowMaker.h"
 #include "window.h"
 #include "screen.h"

@@ -1,5 +1,6 @@
 
-#include "WINGsP.h"
+#include "WINGs.h"
+#include "notification.h"
 #include <X11/Xatom.h>
 
 #define XDND_SOURCE_RESPONSE_MAX_DELAY 3000

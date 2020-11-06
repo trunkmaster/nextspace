@@ -42,7 +42,7 @@
 #include "screen.h"
 #include "xrandr.h"
 
-#include <WINGs/WINGsP.h>
+#include <WINGs/WINGs.h>
 
 /* How many different types of geometry/position
    display thingies are there? */

@@ -1,5 +1,5 @@
 
-#include "WINGsP.h"
+#include "WINGs.h"
 
 #include <wraster.h>
 #include <ctype.h>

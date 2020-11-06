@@ -10,7 +10,7 @@
 #include "wconfig.h"
 
 #include "WINGs.h"
-#include "WINGsP.h"
+#include "notification.h"
 #include "userdefaults.h"
 
 

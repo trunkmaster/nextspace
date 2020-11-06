@@ -5,7 +5,8 @@
 #include <string.h>
 
 #include "WUtil.h"
-#include "WINGsP.h"
+/* #include "WINGsP.h" */
+#include "notification.h"
 
 
 typedef struct W_Notification {
@@ -109,9 +110,8 @@ void W_ReleaseNotificationCenter(void)
 	}
 }
 
-void
-WMAddNotificationObserver(WMNotificationObserverAction * observerAction,
-			  void *observer, const char *name, void *object)
+void WMAddNotificationObserver(WMNotificationObserverAction * observerAction,
+                               void *observer, const char *name, void *object)
 {
 	NotificationObserver *oRec, *rec;
 
@@ -413,7 +413,8 @@ static int matchName(const void *item, const void *cdata)
 #undef NOTIF
 #undef ITEM
 
-void WMDequeueNotificationMatching(WMNotificationQueue * queue, WMNotification * notification, unsigned mask)
+void WMDequeueNotificationMatching(WMNotificationQueue * queue,
+                                   WMNotification * notification, unsigned mask)
 {
 	WMMatchDataProc *matchFunc;
 

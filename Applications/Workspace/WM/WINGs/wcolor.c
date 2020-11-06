@@ -1,5 +1,5 @@
 
-#include "WINGsP.h"
+#include "WINGs.h"
 
 #include "wconfig.h"
 

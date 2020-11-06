@@ -1,5 +1,5 @@
 
-#include "WINGsP.h"
+#include "WINGs.h"
 #include "wconfig.h"
 
 #include <X11/Xlocale.h>
@@ -130,3 +130,4 @@ void W_setconf_doubleClickDelay(int value)
 {
 	WINGsConfiguration.doubleClickDelay = value;
 }
+
