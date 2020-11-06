@@ -1,4 +1,10 @@
-nextspace-frameworks (0.90+20200829.git27f653c2-1) UNRELEASED; urgency=medium
+nextspace-frameworks (0.90+20201106.git68055da9-1) unstable; urgency=medium
+
+  * Update to latest master
+
+ -- Patrick Georgi <patrick@georgi.software>  Fri, 06 Nov 2020 15:10:51 +0100
+
+nextspace-frameworks (0.90+20200829.git27f653c2-1) unstable; urgency=medium
 
   * Update to latest master
 
