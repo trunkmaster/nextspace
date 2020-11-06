@@ -17,5 +17,4 @@ gnustep_back_version=0.28.0+nextspace
 gorm_version=1.2.26
 projectcenter_version=0.6.2
 
-nextspace_version=27f653c2abc9ef352e35ae1f654c85cbaef2b745
-
+nextspace_version=68055da986c9d4259dbf244e2f77933c9598dd5b
