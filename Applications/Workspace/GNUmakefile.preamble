@@ -11,10 +11,10 @@ ADDITIONAL_CPPFLAGS += -DAPP_ICON=\"$($(APP_NAME)_APPLICATION_ICON)\"
 ADDITIONAL_OBJCFLAGS += -Wall -Wno-unused-variable -Wno-typedef-redefinition
 
 # Additional flags to pass to C compiler
-ADDITIONAL_CFLAGS += -DHAVE_CONFIG_H -DWITH_GNUSTEP -fno-strict-aliasing -fblocks
+#ADDITIONAL_CFLAGS +=
 
 # Additional flags to pass to the linker
-ADDITIONAL_LDFLAGS += `pkg-config --libs dbus-1 upower-glib`
+ADDITIONAL_LDFLAGS += `pkg-config --libs dbus-1 upower-glib` -ldispatch -ldl -lbsd 
 
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS += -I./ `pkg-config --cflags dbus-1 upower-glib`
@@ -28,15 +28,8 @@ ADDITIONAL_GUI_LIBS += -lSystemKit -lDesktopKit -lSoundKit -lX11
 #
 # Window manager addons
 #
-ADDITIONAL_CFLAGS += -DNEXTSPACE 
-#-std=gnu89
-ADDITIONAL_OBJCFLAGS += -DNEXTSPACE
-ADDITIONAL_LDFLAGS += -ldispatch -ldl
-ADDITIONAL_INCLUDE_DIRS += -DHAVE_CONFIG_H -I./$(WM_DIR)/src -I./$(WM_DIR)
-ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR)/WINGs `freetype-config --cflags` -I/usr/include/uuid
-ADDITIONAL_INCLUDE_DIRS += -DNDEBUG -D_XOPEN_SOURCE=600 -D_GNU_SOURCE
-
-#ADDITIONAL_LIB_DIRS += -L./$(WM_DIR)/WINGs/.libs
-#ADDITIONAL_GUI_LIBS += $(WM_DIR)/WINGs/.libs/libWINGs.a $(WM_DIR)/WINGs/.libs/libWUtil.a
-
-ADDITIONAL_GUI_LIBS += -lbsd -lfontconfig -lXft -lwraster -lXext -lXrandr -lXfixes -lXcursor
+ADDITIONAL_CFLAGS += -DHAVE_CONFIG_H -DWITH_GNUSTEP -DNEXTSPACE -fno-strict-aliasing -fblocks
+ADDITIONAL_CFLAGS += -DNDEBUG -D_XOPEN_SOURCE=600 -D_GNU_SOURCE
+ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR)/src -I./$(WM_DIR) -I./$(WM_DIR)/WINGs
+ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags fontconfig`
+ADDITIONAL_GUI_LIBS += -lfontconfig -lXft -lwraster -lXext -lXrandr -lXfixes -lXcursor
