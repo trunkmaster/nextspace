@@ -25,7 +25,7 @@
 #import <Operations/ProcessManager.h>
 #import <Viewers/ShelfView.h>
 
-#import "Workspace+WM.h"
+//#import "Workspace+WM.h"
 #import "Recycler.h"
 #import "RecyclerIcon.h"
 
