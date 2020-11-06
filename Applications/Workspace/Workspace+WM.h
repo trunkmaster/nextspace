@@ -40,7 +40,7 @@ extern WorkspaceExitCode ws_quit_code;
 //-----------------------------------------------------------------------------
 // Visible in Workspace only
 //-----------------------------------------------------------------------------
-#ifdef __Foundation_h_GNUSTEP_BASE_INCLUDE
+#ifdef __OBJC__
 
 #undef _
 
@@ -134,7 +134,7 @@ NSArray *WMNotDockedAppList(void);
 BOOL WMIsAppRunning(NSString *appName);
 pid_t WMExecuteCommand(NSString *command);
 
-#endif //__Foundation_h_GNUSTEP_BASE_INCLUDE
+#endif //__OBJC__
 
 //-----------------------------------------------------------------------------
 // Visible in Window Manager and Workspace
