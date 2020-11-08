@@ -16,7 +16,7 @@ Architecture: any
 Depends: libnextspace-gorm1 (= ${binary:Version}),
 	 ${shlibs:Depends},
 	 ${misc:Depends}
-Recommends: projectcenter.app
+Recommends: nextspace-projectcenter.app
 Description: Visual Interface Builder for GNUstep
  Gorm, the GNUstep Object Relationship Modeler, is a tool to build GUI
  interfaces for the GNUstep system.  It is a clone of the NeXTStep
