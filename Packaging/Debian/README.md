@@ -112,7 +112,7 @@ update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-8 50
 ```
 
 Finally make the files executable with
-`chmod +x /etc/pbuilder/hook.d/{D05self-archive,I99self-archive,E01apt-backports}`.
+`chmod +x /etc/pbuilder/hook.d/{D05self-archive,I99self-archive,E01clang-backports}`.
 
 
 ### Building a package
