@@ -3,7 +3,7 @@ Maintainer: Patrick Georgi <patrick@georgi.software>
 Section: gnustep
 Priority: optional
 Build-Depends: debhelper (>= 12),
-               clang (>= 8) || clang-8,
+               clang (>= 8) | clang-8,
                libobjc2-dev,
                pkg-config
 Build-Conflicts: clang < 8
@@ -29,7 +29,7 @@ Package: nextspace-make
 Architecture: all
 Depends: nextspace-common (>= ${source:Version}),
          nextspace-common (<< ${source:Version}.1~),
-         clang (>= 8) || clang-8,
+         clang (>= 8) | clang-8,
          libobjc2-dev,
          libdispatch-dev,
          autotools-dev,
