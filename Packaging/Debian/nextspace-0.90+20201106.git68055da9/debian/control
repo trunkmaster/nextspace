@@ -12,8 +12,7 @@ Vcs-Git: https://github.com/trunkmaster/nextspace
 Package: nextspace-core
 Section: gnustep
 Architecture: all
-Depends: ${misc:Depends},
-	 xorg
+Depends: ${misc:Depends}
 Recommends: plymouth
 Description: System-wide configuration for the NEXTSPACE system
  Default configuration for the shell, gnustep, init system and whatever is
@@ -25,6 +24,7 @@ Architecture: all
 Recommends: nextspace-projectcenter.app,
 	    nextspace-gorm.app
 Depends: ${misc:Depends},
+	 xorg
 	 nextspace-login.app,
 	 nextspace-workspace.app,
 	 nextspace-timemon.app,
