@@ -89,7 +89,7 @@ Add another file `/etc/pbuilder/hook.d/I99self-archive` containing
     apt-ftparchive release . > Release
     apt-ftparchive sources . > Sources 2>/dev/null
     
-For building for stable/Buster with clang from backports you will need to add a further file. `/etc/pbuilder/hook.d/E01apt-backports`:
+For building for stable/Buster with clang from backports you will need to add a further file. `/etc/pbuilder/hook.d/E01clang-backports`:
 
 ```
 #!/bin/sh
@@ -105,9 +105,10 @@ Pin-Priority: 999
 EOF
 
 apt-get -t buster-backports install --assume-yes clang-8 llvm-8
-
-ln -s /usr/bin/clang-8 /usr/bin/clang
-ln -s /usr/bin/clang++-8 /usr/bin/clang++
+update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 50
+update-alternatives --install /usr/bin/cc cc /usr/bin/clang-8 50
+update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-8 50
+update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-8 50
 ```
 
 Finally make the files executable with
