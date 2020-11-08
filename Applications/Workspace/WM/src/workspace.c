@@ -35,7 +35,10 @@
 #include <time.h>
 #include <sys/time.h>
 
+#include <WINGs/WINGs.h>
 #include <WINGs/notification.h>
+#include <WINGs/wcolor.h>
+#include <WINGs/wmisc.h>
 
 #include "WindowMaker.h"
 #include "framewin.h"

@@ -1,7 +1,7 @@
 #ifndef _WPXIMAP_H_
 #define _WPXIMAP_H_
 
-struct W_Pixmap {
+typedef struct W_Pixmap {
   struct W_Screen *screen;
   Pixmap pixmap;
   Pixmap mask;
@@ -9,7 +9,7 @@ struct W_Pixmap {
   unsigned short height;
   short depth;
   short refCount;
-};
+} W_Pixmap;
 
 /* ---[ WINGs/wpixmap.c ]------------------------------------------------- */
 

@@ -1,5 +1,6 @@
 
 #include "WINGs.h"
+#include "wcolor.h"
 
 #include "wconfig.h"
 

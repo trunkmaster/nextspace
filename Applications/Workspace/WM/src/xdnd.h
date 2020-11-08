@@ -26,7 +26,9 @@ Bool wXDNDProcessSelection(XEvent *event);
 Bool wXDNDProcessClientMessage(XClientMessageEvent *event);
 void wXDNDMakeAwareness(Window window);
 
+#ifndef XDND_VERSION
 #define XDND_VERSION 3L
+#endif
 
 #define XDND_ENTER_SOURCE_WIN(e)	((e)->data.l[0])
 #define XDND_ENTER_THREE_TYPES(e)	(((e)->data.l[1] & 0x1UL) == 0)

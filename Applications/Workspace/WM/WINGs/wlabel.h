@@ -1,6 +1,31 @@
 #ifndef _WLABEL_H_
 #define _WLABEL_H_
 
+#include <WINGs/wfont.h>
+
+typedef struct W_Label {
+	W_Class widgetClass;
+	W_View *view;
+
+	char *caption;
+
+	WMColor *textColor;
+	WMFont *font;		/* if NULL, use default */
+
+	W_Pixmap *image;
+
+	struct {
+		WMReliefType relief:3;
+		WMImagePosition imagePosition:4;
+		WMAlignment alignment:2;
+
+		unsigned int noWrap:1;
+
+		unsigned int redrawPending:1;
+	} flags;
+} W_Label;
+typedef struct W_Label WMLabel;
+
 /* ---[ WINGs/wlabel.c ]-------------------------------------------------- */
 
 WMLabel* WMCreateLabel(WMWidget *parent);

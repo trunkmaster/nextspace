@@ -1,7 +1,17 @@
 
+#include "wconfig.h"
+
 #include "WINGs.h"
 #include "winputmethod.h"
-#include "wconfig.h"
+#include "wapplication.h"
+#include "wevent.h"
+#include "wpixmap.h"
+#include "wcolor.h"
+#include "wballoon.h"
+#include "configuration.h"
+#include "wmisc.h"
+
+#include "widgets.h"
 
 #include <X11/Xft/Xft.h>
 

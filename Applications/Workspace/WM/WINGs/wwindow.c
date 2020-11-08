@@ -4,51 +4,16 @@
 
 #include "wconfig.h"
 
-#include "notification.h"
 #include "WINGs.h"
+#include "notification.h"
+#include "wapplication.h"
+#include "widgets.h"
+#include "wevent.h"
+#include "wpixmap.h"
+
+#include "wwindow.h"
 
 #include "GNUstep.h"
-
-typedef struct W_Window {
-	W_Class widgetClass;
-	W_View *view;
-
-	struct W_Window *nextPtr;	/* next in the window list */
-
-	struct W_Window *owner;
-
-	char *title;
-
-	WMPixmap *miniImage;	/* miniwindow */
-	char *miniTitle;
-
-	char *wname;
-
-	WMSize resizeIncrement;
-	WMSize baseSize;
-	WMSize minSize;
-	WMSize maxSize;
-	WMPoint minAspect;
-	WMPoint maxAspect;
-
-	WMPoint upos;
-	WMPoint ppos;
-
-	WMAction *closeAction;
-	void *closeData;
-
-	int level;
-
-	struct {
-		unsigned style:4;
-		unsigned configured:1;
-		unsigned documentEdited:1;
-
-		unsigned setUPos:1;
-		unsigned setPPos:1;
-		unsigned setAspect:1;
-	} flags;
-} _Window;
 
 static void willResizeWindow(W_ViewDelegate *, WMView *, unsigned *, unsigned *);
 
@@ -63,7 +28,7 @@ struct W_ViewDelegate _WindowViewDelegate = {
 #define DEFAULT_WIDTH	400
 #define DEFAULT_HEIGHT	180
 
-static void destroyWindow(_Window * win);
+static void destroyWindow(W_Window * win);
 
 static void handleEvents(XEvent * event, void *clientData);
 
@@ -111,9 +76,9 @@ WMWindow *WMCreateWindow(WMScreen * screen, const char *name)
 
 WMWindow *WMCreateWindowWithStyle(WMScreen * screen, const char *name, int style)
 {
-	_Window *win;
+	W_Window *win;
 
-	win = wmalloc(sizeof(_Window));
+	win = wmalloc(sizeof(W_Window));
 	win->widgetClass = WC_Window;
 
 	win->view = W_CreateTopView(screen);
@@ -612,7 +577,7 @@ void WMCloseWindow(WMWindow * win)
 
 static void handleEvents(XEvent * event, void *clientData)
 {
-	_Window *win = (_Window *) clientData;
+	W_Window *win = (W_Window *) clientData;
 	W_View *view = win->view;
 
 	switch (event->type) {
@@ -672,7 +637,7 @@ static void handleEvents(XEvent * event, void *clientData)
 	}
 }
 
-static void destroyWindow(_Window * win)
+static void destroyWindow(W_Window * win)
 {
 	WMScreen *scr = win->view->screen;
 

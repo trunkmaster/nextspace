@@ -1,27 +1,11 @@
 
 #include "WINGs.h"
-
-typedef struct W_Label {
-	W_Class widgetClass;
-	W_View *view;
-
-	char *caption;
-
-	WMColor *textColor;
-	WMFont *font;		/* if NULL, use default */
-
-	W_Pixmap *image;
-
-	struct {
-		WMReliefType relief:3;
-		WMImagePosition imagePosition:4;
-		WMAlignment alignment:2;
-
-		unsigned int noWrap:1;
-
-		unsigned int redrawPending:1;
-	} flags;
-} Label;
+#include "widgets.h"
+#include "wevent.h"
+#include "wpixmap.h"
+#include "wcolor.h"
+#include "wmisc.h"
+#include "wlabel.h"
 
 #define DEFAULT_WIDTH		60
 #define DEFAULT_HEIGHT		14
@@ -29,16 +13,16 @@ typedef struct W_Label {
 #define DEFAULT_RELIEF		WRFlat
 #define DEFAULT_IMAGE_POSITION	WIPNoImage
 
-static void destroyLabel(Label * lPtr);
-static void paintLabel(Label * lPtr);
+static void destroyLabel(W_Label *lPtr);
+static void paintLabel(W_Label *lPtr);
 
 static void handleEvents(XEvent * event, void *data);
 
 WMLabel *WMCreateLabel(WMWidget * parent)
 {
-	Label *lPtr;
+	W_Label *lPtr;
 
-	lPtr = wmalloc(sizeof(Label));
+	lPtr = wmalloc(sizeof(W_Label));
 
 	lPtr->widgetClass = WC_Label;
 
@@ -166,7 +150,7 @@ void WMSetLabelWraps(WMLabel * lPtr, Bool flag)
 	}
 }
 
-static void paintLabel(Label * lPtr)
+static void paintLabel(W_Label * lPtr)
 {
 	W_Screen *scrPtr = lPtr->view->screen;
 
@@ -179,7 +163,7 @@ static void paintLabel(Label * lPtr)
 
 static void handleEvents(XEvent * event, void *data)
 {
-	Label *lPtr = (Label *) data;
+	W_Label *lPtr = (W_Label *) data;
 
 	CHECK_CLASS(data, WC_Label);
 
@@ -196,7 +180,7 @@ static void handleEvents(XEvent * event, void *data)
 	}
 }
 
-static void destroyLabel(Label * lPtr)
+static void destroyLabel(W_Label * lPtr)
 {
 	if (lPtr->textColor)
 		WMReleaseColor(lPtr->textColor);

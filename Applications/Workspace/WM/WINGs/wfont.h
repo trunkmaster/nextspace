@@ -1,6 +1,8 @@
 #ifndef _WFONT_H_
 #define _WFONT_H_
 
+#include <WINGs/wcolor.h>
+
 typedef struct W_Font {
     struct W_Screen *screen;
 

@@ -29,6 +29,8 @@
 #include <X11/keysym.h>
 #include <string.h>
 
+#include <WINGs/wevent.h>
+
 #include "WindowMaker.h"
 #include "GNUstep.h"
 #include "screen.h"

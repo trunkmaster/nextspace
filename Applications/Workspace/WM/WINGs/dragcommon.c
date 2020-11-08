@@ -1,6 +1,10 @@
 #include "wconfig.h"
 
 #include "WINGs.h"
+#include "dragcommon.h"
+#include "dragdestination.h"
+#include "wpixmap.h"
+#include "wmisc.h"
 
 #define XDND_SOURCE_VERSION(dragInfo) dragInfo->protocolVersion
 #define XDND_DEST_INFO(dragInfo) dragInfo->destInfo
@@ -177,7 +181,7 @@ static void handleLeaveMessage(WMDraggingInfo * info)
 void W_HandleDNDClientMessage(WMView * toplevel, XClientMessageEvent * event)
 {
 	WMScreen *scr = W_VIEW_SCREEN(toplevel);
-	WMDraggingInfo *info = &scr->dragInfo;
+	WMDraggingInfo *info = scr->dragInfo;
 	Atom messageType = event->message_type;
 
 #ifdef XDND_DEBUG

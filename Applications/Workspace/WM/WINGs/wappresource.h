@@ -1,6 +1,8 @@
 #ifndef _WAPPRESOURCE_H_
 #define _WAPPRESOURCE_H_
 
+#include <WINGs/wpixmap.h>
+
 /* ---[ WINGs/wappresource.c ]-------------------------------------------- */
 
 void WMSetApplicationIconImage(WMScreen *app, RImage *image);

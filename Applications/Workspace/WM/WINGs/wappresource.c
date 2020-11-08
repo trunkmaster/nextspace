@@ -2,6 +2,9 @@
 #include <unistd.h>
 
 #include "WINGs.h"
+#include "wapplication.h"
+#include "wappresource.h"
+#include "wpixmap.h"
 
 #include <X11/Xutil.h>
 

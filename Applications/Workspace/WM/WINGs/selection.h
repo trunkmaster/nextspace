@@ -1,6 +1,9 @@
 #ifndef _WSELECTION_H_
 #define _WSELECTION_H_
 
+typedef void WMSelectionCallback(WMView *view, Atom selection, Atom target,
+                                 Time timestamp, void *cdata, WMData *data);
+
 /* ---[ WINGs/selection.c ]----------------------------------------------- */
 
 Bool WMCreateSelectionHandler(WMView *view, Atom selection, Time timestamp,

@@ -4,8 +4,13 @@
  */
 
 #include "WINGs.h"
+#include "dragcommon.h"
 #include "handlers.h"
 #include "winputmethod.h"
+#include "wevent.h"
+#include "selection.h"
+#include "wballoon.h"
+
 
 /* table to map event types to event masks */
 static const unsigned long eventMasks[] = {

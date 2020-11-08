@@ -1,6 +1,54 @@
 #ifndef _WWINDOW_H_
 #define _WWINDOW_H_
 
+/* self is set to the widget from where the callback is being called and
+ * clientData to the data set to with WMSetClientData() */
+typedef void WMAction(WMWidget *self, void *clientData);
+/* same as WMAction, but for stuff that arent widgets */
+typedef void WMAction2(void *self, void *clientData);
+
+typedef struct W_Window {
+	W_Class widgetClass;
+	W_View *view;
+
+	struct W_Window *nextPtr;	/* next in the window list */
+
+	struct W_Window *owner;
+
+	char *title;
+
+	WMPixmap *miniImage;	/* miniwindow */
+	char *miniTitle;
+
+	char *wname;
+
+	WMSize resizeIncrement;
+	WMSize baseSize;
+	WMSize minSize;
+	WMSize maxSize;
+	WMPoint minAspect;
+	WMPoint maxAspect;
+
+	WMPoint upos;
+	WMPoint ppos;
+
+	WMAction *closeAction;
+	void *closeData;
+
+	int level;
+
+	struct {
+		unsigned style:4;
+		unsigned configured:1;
+		unsigned documentEdited:1;
+
+		unsigned setUPos:1;
+		unsigned setPPos:1;
+		unsigned setAspect:1;
+	} flags;
+} W_Window;
+typedef struct W_Window WMWindow;
+
 /* ---[ WINGs/wwindow.c ]------------------------------------------------- */
 
 WMWindow* WMCreateWindow(WMScreen *screen, const char *name);

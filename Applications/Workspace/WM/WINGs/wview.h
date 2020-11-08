@@ -1,6 +1,9 @@
 #ifndef _WVIEW_H_
 #define _WVIEW_H_
 
+#include <WINGs/WINGs.h>
+/* #include <WINGs/widgets.h> */
+
 typedef struct W_ViewDelegate {
     void *data;
     void (*didMove)(struct W_ViewDelegate*, WMView*);
@@ -10,7 +13,13 @@ typedef struct W_ViewDelegate {
                        unsigned int*, unsigned int*);
 } W_ViewDelegate;
 
-struct W_View {
+typedef struct W_FocusInfo {
+  W_View *toplevel;
+  W_View *focused;    /* view that has the focus in this toplevel */
+  struct W_FocusInfo *next;
+} W_FocusInfo;
+
+typedef struct W_View {
     struct W_Screen *screen;
 
     WMWidget *self;     /* must point to the widget the view belongs to */
@@ -85,8 +94,7 @@ struct W_View {
     } flags;
 
     int refCount;
-};
-typedef struct W_View W_View;
+} W_View;
 
 #define W_VIEW_REALIZED(view)	(view)->flags.realized
 #define W_VIEW_MAPPED(view)	(view)->flags.mapped

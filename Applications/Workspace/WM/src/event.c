@@ -47,7 +47,10 @@
 
 #ifdef KEEP_XKB_LOCK_STATUS
 #include <X11/XKBlib.h>
-#endif				/* KEEP_XKB_LOCK_STATUS */
+#endif /* KEEP_XKB_LOCK_STATUS */
+
+#include <WINGs/wevent.h>
+#include <WINGs/wmisc.h>
 
 #include "GNUstep.h"
 #include "WindowMaker.h"
@@ -1216,22 +1219,22 @@ static void handleClientMessage(XEvent * event)
   }
 }
 
-static void raiseWindow(WScreen * scr)
-{
-  WWindow *wwin;
+/* static void raiseWindow(WScreen * scr) */
+/* { */
+/*   WWindow *wwin; */
 
-  scr->autoRaiseTimer = NULL;
+/*   scr->autoRaiseTimer = NULL; */
 
-  wwin = wWindowFor(scr->autoRaiseWindow);
-  if (!wwin)
-    return;
+/*   wwin = wWindowFor(scr->autoRaiseWindow); */
+/*   if (!wwin) */
+/*     return; */
 
-  if (!wwin->flags.destroyed && wwin->flags.focused) {
-    wRaiseFrame(wwin->frame->core);
-    /* this is needed or a race condition will occur */
-    XSync(dpy, False);
-  }
-}
+/*   if (!wwin->flags.destroyed && wwin->flags.focused) { */
+/*     wRaiseFrame(wwin->frame->core); */
+/*     /\* this is needed or a race condition will occur *\/ */
+/*     XSync(dpy, False); */
+/*   } */
+/* } */
 
 static void handleEnterNotify(XEvent * event)
 {

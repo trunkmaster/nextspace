@@ -45,6 +45,8 @@
 #include <X11/XKBlib.h>
 #endif
 
+#include <WINGs/wevent.h>
+
 #include "WindowMaker.h"
 #include "GNUstep.h"
 #include "texture.h"

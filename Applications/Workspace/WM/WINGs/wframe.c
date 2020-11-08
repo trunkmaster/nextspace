@@ -1,29 +1,21 @@
 
 #include "WINGs.h"
-
-typedef struct W_Frame {
-	W_Class widgetClass;
-	W_View *view;
-
-	char *caption;
-	WMColor *textColor;
-
-	struct {
-		WMReliefType relief:4;
-		WMTitlePosition titlePosition:4;
-	} flags;
-} Frame;
+#include "widgets.h"
+#include "wevent.h"
+#include "wcolor.h"
+#include "wmisc.h"
+#include "wframe.h"
 
 #define DEFAULT_RELIEF 	WRGroove
 #define DEFAULT_TITLE_POSITION	WTPAtTop
 #define DEFAULT_WIDTH		40
 #define DEFAULT_HEIGHT		40
 
-static void destroyFrame(Frame * fPtr);
-static void paintFrame(Frame * fPtr);
-static void repaintFrame(Frame * fPtr);
+static void destroyFrame(W_Frame *fPtr);
+static void paintFrame(W_Frame *fPtr);
+static void repaintFrame(W_Frame *fPtr);
 
-void WMSetFrameTitlePosition(WMFrame * fPtr, WMTitlePosition position)
+void WMSetFrameTitlePosition(WMFrame *fPtr, WMTitlePosition position)
 {
 	fPtr->flags.titlePosition = position;
 
@@ -32,7 +24,7 @@ void WMSetFrameTitlePosition(WMFrame * fPtr, WMTitlePosition position)
 	}
 }
 
-void WMSetFrameRelief(WMFrame * fPtr, WMReliefType relief)
+void WMSetFrameRelief(WMFrame *fPtr, WMReliefType relief)
 {
 	fPtr->flags.relief = relief;
 
@@ -41,7 +33,7 @@ void WMSetFrameRelief(WMFrame * fPtr, WMReliefType relief)
 	}
 }
 
-void WMSetFrameTitle(WMFrame * fPtr, const char *title)
+void WMSetFrameTitle(WMFrame *fPtr, const char *title)
 {
 	if (fPtr->caption)
 		wfree(fPtr->caption);
@@ -56,7 +48,7 @@ void WMSetFrameTitle(WMFrame * fPtr, const char *title)
 	}
 }
 
-static void repaintFrame(Frame * fPtr)
+static void repaintFrame(W_Frame *fPtr)
 {
 	W_View *view = fPtr->view;
 	W_Screen *scrPtr = view->screen;
@@ -65,7 +57,7 @@ static void repaintFrame(Frame * fPtr)
 	paintFrame(fPtr);
 }
 
-static void paintFrame(Frame * fPtr)
+static void paintFrame(W_Frame *fPtr)
 {
 	W_View *view = fPtr->view;
 	W_Screen *scrPtr = view->screen;
@@ -196,9 +188,9 @@ static void paintFrame(Frame * fPtr)
 	}
 }
 
-static void handleEvents(XEvent * event, void *data)
+static void handleEvents(XEvent *event, void *data)
 {
-	Frame *fPtr = (Frame *) data;
+	W_Frame *fPtr = (W_Frame *) data;
 
 	CHECK_CLASS(data, WC_Frame);
 
@@ -225,11 +217,11 @@ void WMSetFrameTitleColor(WMFrame *fPtr, WMColor *color)
 	}
 }
 
-WMFrame *WMCreateFrame(WMWidget * parent)
+WMFrame *WMCreateFrame(WMWidget *parent)
 {
-	Frame *fPtr;
+	W_Frame *fPtr;
 
-	fPtr = wmalloc(sizeof(Frame));
+	fPtr = wmalloc(sizeof(W_Frame));
 
 	fPtr->widgetClass = WC_Frame;
 
@@ -251,7 +243,7 @@ WMFrame *WMCreateFrame(WMWidget * parent)
 	return fPtr;
 }
 
-static void destroyFrame(Frame * fPtr)
+static void destroyFrame(W_Frame *fPtr)
 {
 	if (fPtr->caption)
 		wfree(fPtr->caption);

@@ -3,6 +3,7 @@
 #include "wconfig.h"
 #include "WINGs.h"
 #include "winputmethod.h"
+#include "wmisc.h"
 
 typedef struct W_IMContext {
 	XIM xim;

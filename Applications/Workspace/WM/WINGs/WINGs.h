@@ -22,11 +22,20 @@
 #ifndef _WINGS_H_
 #define _WINGS_H_
 
-#include <wraster.h>
-#include <WINGs/WUtil.h>
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
+#include <stdio.h>
+#include <X11/Xutil.h>
 #include <X11/Xlib.h>
 
-#define WINGS_H_VERSION  20150508
+#include <wraster.h>
+#include <WINGs/WUtil.h>
+
+#ifdef USE_PANGO
+#include <pango/pango.h>
+#endif
 
 
 #ifdef __cplusplus
@@ -36,22 +45,23 @@ extern "C" {
 }
 #endif
 
+/* global settigns  */
+#define DOUBLE_BUFFER   1
 
-#ifdef __STDC_VERSION__
-# if __STDC_VERSION__ >= 201112L
-/*
- * Ideally, we would like to include the proper header to have 'noreturn' properly
- * defined (that's what is done for the rest of the code)
- * However, as we're a public API file we can't do that in a portable fashion, so
- * we just stick to plain STD C11 keyword
- */
-#  define _wings_noreturn _Noreturn
-# else
-#  define _wings_noreturn /**/
-# endif
-#else
-#define _wings_noreturn /**/
-#endif
+typedef struct _WINGsConfiguration {
+    char *systemFont;
+    char *boldSystemFont;
+    int  defaultFontSize;
+    Bool antialiasedText;
+    char *floppyPath;
+    unsigned doubleClickDelay;
+    unsigned mouseWheelUp;
+    unsigned mouseWheelDown;
+} _WINGsConfiguration;
+
+extern char *_WINGS_progname;
+extern _WINGsConfiguration WINGsConfiguration;
+
 
 typedef unsigned long WMPixel;
 
@@ -113,27 +123,6 @@ typedef enum {
     WIPOverlaps
 } WMImagePosition;
 
-/* drag operations */
-typedef enum {
-    WDOperationNone = 0,
-    WDOperationCopy,
-    WDOperationMove,
-    WDOperationLink,
-    WDOperationAsk,
-    WDOperationPrivate
-} WMDragOperationType;
-
-
-typedef enum {
-    WMGrayModeColorPanel = 1,
-    WMRGBModeColorPanel = 2,
-    WMCMYKModeColorPanel = 3,
-    WMHSBModeColorPanel = 4,
-    WMCustomPaletteModeColorPanel = 5,
-    WMColorListModeColorPanel = 6,
-    WMWheelModeColorPanel = 7
-} WMColorPanelMode;
-
 /* system images */
 #define WSIReturnArrow			1
 #define WSIHighlightedReturnArrow	2
@@ -158,124 +147,37 @@ enum {
 
 /* types of input observers */
 enum {
-    WIReadMask = (1 << 0),
-    WIWriteMask = (1 << 1),
-    WIExceptMask = (1 << 2)
+      WIReadMask = (1 << 0),
+      WIWriteMask = (1 << 1),
+      WIExceptMask = (1 << 2)
 };
 
-typedef int W_Class;
-
-enum {
-    WC_Window = 0,
-    WC_Frame = 1,
-    WC_Label = 2,
-    WC_Button = 3,
-    WC_TextField = 4,
-    WC_Scroller	= 5,
-    WC_ScrollView = 6,
-    WC_List = 7,
-    WC_Browser = 8,
-    WC_PopUpButton = 9,
-    WC_ColorWell = 10,
-    WC_Slider = 11,
-    WC_Matrix = 12,		       /* not ready */
-    WC_SplitView = 13,
-    WC_TabView = 14,
-    WC_ProgressIndicator = 15,
-    WC_MenuView = 16,
-    WC_Ruler = 17,
-    WC_Text = 18,
-    WC_Box = 19
-};
-
-/* All widgets must start with the following structure
- * in that order. Used for typecasting to get some generic data */
-typedef struct W_WidgetType {
-    W_Class widgetClass;
-    struct W_View *view;
-
-} W_WidgetType;
-
-#define WMWidgetClass(widget)  	(((W_WidgetType*)(widget))->widgetClass)
-#define WMWidgetView(widget)   	(((W_WidgetType*)(widget))->view)
-
-
-/* widgets */
 typedef void WMWidget;
-
-typedef struct W_Pixmap WMPixmap;
-typedef struct W_Font	WMFont;
+typedef struct W_View	WMView;
 typedef struct W_Color	WMColor;
-typedef struct W_Screen WMScreen;
-typedef struct W_View   WMView;
-typedef struct W_Window WMWindow;
-typedef struct W_Frame  WMFrame;
-typedef struct W_Label  WMLabel;
+typedef struct W_Font	WMFont;
+typedef struct W_Pixmap	WMPixmap;
 
-/* ---[from WINGsP.h ]---------------------------------------------------- */
-#include <X11/Xutil.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <stdio.h>
-
-#ifdef USE_PANGO
-#include <pango/pango.h>
-#endif
-/* global settigns  */
-
-#define DOUBLE_BUFFER   1
-#define SCROLLER_WIDTH	20
-
-typedef struct _WINGsConfiguration {
-    char *systemFont;
-    char *boldSystemFont;
-    int  defaultFontSize;
-    Bool antialiasedText;
-    char *floppyPath;
-    unsigned doubleClickDelay;
-    unsigned mouseWheelUp;
-    unsigned mouseWheelDown;
-} _WINGsConfiguration;
-
-extern char *_WINGS_progname;
-extern _WINGsConfiguration WINGsConfiguration;
-extern struct W_Application WMApplication;
 /* Pre-definition of internal structs */
-typedef struct W_Color  W_Color;
-typedef struct W_Pixmap W_Pixmap;
-typedef struct W_View   W_View;
-typedef struct W_Screen W_Screen;
+typedef struct W_Color		W_Color;
+typedef struct W_Pixmap		W_Pixmap;
+typedef struct W_View		W_View;
+typedef struct W_DraggingInfo	W_DraggingInfo;
+typedef struct W_FocusInfo	W_FocusInfo;
 
-typedef struct W_FocusInfo {
-  W_View *toplevel;
-  W_View *focused;    /* view that has the focus in this toplevel */
-  struct W_FocusInfo *next;
-} W_FocusInfo;
-
-#include <WINGs/dragcommon.h>
-/* #include <WINGs/wview.h> */
-  
 typedef struct W_Screen {
     Display *display;
     int screen;
     int depth;
 
     Colormap colormap;
-
     Visual *visual;
-
     Time lastEventTime;
-
     Window rootWin;
-
     W_View *rootView;
-
     RContext *rcontext;
 
     struct W_IMContext *imctx;
-
     struct _XftDraw *xftdraw;          /* shared XftDraw */
 
     /* application related */
@@ -301,7 +203,7 @@ typedef struct W_Screen {
     Pixmap stipple;
 
     W_View *dragSourceView;
-    W_DraggingInfo dragInfo;
+    W_DraggingInfo *dragInfo;
 
     /* colors */
     W_Color *white;
@@ -310,26 +212,17 @@ typedef struct W_Screen {
     W_Color *darkGray;
 
     GC stippleGC;
-
     GC copyGC;
     GC clipGC;
-
     GC monoGC;                         /* GC for 1bpp visuals */
-
     GC xorGC;
-
     GC ixorGC;                         /* IncludeInferiors XOR */
-
     GC drawStringGC;                   /* for WMDrawString() */
-
     GC drawImStringGC;                 /* for WMDrawImageString() */
 
     struct W_Font *normalFont;
-
     struct W_Font *boldFont;
-
     WMHashTable *fontCache;
-
     Bool antialiasedText;
 
     unsigned int ignoredModifierMask; /* modifiers to ignore when typing txt */
@@ -425,68 +318,13 @@ typedef struct W_Screen {
     W_Pixmap *tristateButtonImageTri;
 
 } W_Screen;
+typedef struct W_Screen WMScreen;
 
 #define W_DRAWABLE(scr)		(scr)->rcontext->drawable
-/* ---[ WINGsP.h ]-------------------------------------------------------- */
-
-typedef void WMEventProc(XEvent *event, void *clientData);
-typedef void WMEventHook(XEvent *event);
-
-
-/* self is set to the widget from where the callback is being called and
- * clientData to the data set to with WMSetClientData() */
-typedef void WMAction(WMWidget *self, void *clientData);
-/* same as WMAction, but for stuff that arent widgets */
-typedef void WMAction2(void *self, void *clientData);
-
-typedef void WMSelectionCallback(WMView *view, Atom selection, Atom target,
-                                 Time timestamp, void *cdata, WMData *data);
-
-
-/* ---[ WINGs/wapplication.c ]-------------------------------------------- */
-#include <WINGs/wapplication.h>
-/* ---[ WINGs/widgets.c ]------------------------------------------------- */
-#include <WINGs/widgets.h>
-/* ---[ WINGs/wappresource.c ]-------------------------------------------- */
-#include <WINGs/wappresource.h>
-/* ---[ WINGs/wevent.c ]-------------------------------------------------- */
-#include <WINGs/wevent.h>
-/* ---[ WINGs/selection.c ]----------------------------------------------- */
-#include <WINGs/selection.h>
-/* ---[ WINGs/dragcommon.c ]---------------------------------------------- */
-/* #include <WINGs/dragcommon.h> */
-/* ---[ WINGs/dragsource.c ]---------------------------------------------- */
-#include <WINGs/dragsource.h>
-/* ---[ WINGs/dragdestination.c ]----------------------------------------- */
-#include <WINGs/dragdestination.h>
-/* ---[ WINGs/wfont.c ]--------------------------------------------------- */
-#include <WINGs/wfont.h>
-/* ---[ WINGs/wpixmap.c ]------------------------------------------------- */
-#include <WINGs/wpixmap.h>
-/* ---[ WINGs/wcolor.c ]-------------------------------------------------- */
-#include <WINGs/wcolor.h>
-/* ---[ WINGs/wview.c ]--------------------------------------------------- */
-#include <WINGs/wview.h>
-/* ---[ WINGs/wballoon.c ]------------------------------------------------ */
-#include <WINGs/wballoon.h>
-/* ---[ WINGs/wwindow.c ]------------------------------------------------- */
-#include <WINGs/wwindow.h>
-/* ---[ WINGs/wlabel.c ]-------------------------------------------------- */
-#include <WINGs/wlabel.h>
-/* ---[ WINGs/wframe.c ]-------------------------------------------------- */
-#include <WINGs/wframe.h>
-/* ---[ WINGs/configuration.c ]------------------------------------------- */
-#include <WINGs/configuration.h>
-/* ---[ WINGs/wmisc.c ]--------------------------------------------------- */
-#include <WINGs/wmisc.h>
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
 
-/* These definitions are not meant to be seen outside this file */
-#undef _wings_noreturn
-
-
-#endif
+#endif /* _WINGS_H_ */

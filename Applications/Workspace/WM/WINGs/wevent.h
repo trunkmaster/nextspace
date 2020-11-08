@@ -1,7 +1,11 @@
 #ifndef _WEVENT_H_
 #define _WEVENT_H_
 
+#include <WINGs/WINGs.h>
 #include <WINGs/wview.h>
+
+typedef void WMEventProc(XEvent *event, void *clientData);
+typedef void WMEventHook(XEvent *event);
 
 typedef struct W_EventHandler {
   unsigned long eventMask;

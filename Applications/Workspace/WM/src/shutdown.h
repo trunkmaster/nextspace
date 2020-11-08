@@ -22,6 +22,8 @@
 #ifndef SHUTDOWN_H
 #define SHUTDOWN_H
 
+#include "screen.h"
+
 /* shutdown modes */
 typedef enum {
               WSExitMode,

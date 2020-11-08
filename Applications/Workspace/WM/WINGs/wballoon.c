@@ -1,6 +1,11 @@
 
 #include "wconfig.h"
+
 #include "WINGs.h"
+#include "widgets.h"
+#include "wevent.h"
+#include "wcolor.h"
+#include "wmisc.h"
 
 #ifdef USE_XSHAPE
 #include <X11/extensions/shape.h>

@@ -38,6 +38,7 @@
 #include <X11/XKBlib.h>
 
 #include <WINGs/WUtil.h>
+#include <WINGs/wmisc.h>
 #include <wraster.h>
 
 #include "window.h"

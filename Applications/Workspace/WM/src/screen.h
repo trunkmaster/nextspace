@@ -26,6 +26,7 @@
 #include <sys/types.h>
 
 #include <WINGs/WUtil.h>
+#include <WINGs/wfont.h>
 
 #define WTB_LEFT	0
 #define WTB_RIGHT	1

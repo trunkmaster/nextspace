@@ -1,5 +1,8 @@
 
-#include <WINGs/WINGs.h>
+#include <WINGs/widgets.h>
+#include <WINGs/wevent.h>
+#include <WINGs/wcolor.h>
+#include <WINGs/wmisc.h>
 
 #include "geomview.h"
 

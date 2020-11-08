@@ -33,6 +33,9 @@
 #include <ctype.h>
 
 #include <WINGs/notification.h>
+#include <WINGs/wevent.h>
+#include <WINGs/wcolor.h>
+#include <WINGs/wmisc.h>
 
 #include "GNUstep.h"
 #include "WindowMaker.h"

@@ -31,6 +31,8 @@
 #include <sys/stat.h>
 #include <errno.h>
 
+#include <WINGs/wevent.h>
+
 #include "WindowMaker.h"
 #include "window.h"
 #include "icon.h"

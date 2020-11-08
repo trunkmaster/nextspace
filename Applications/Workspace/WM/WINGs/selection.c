@@ -4,7 +4,11 @@
 #include <X11/Xatom.h>
 
 #include "WINGs.h"
+#include "dragcommon.h"
 #include "notification.h"
+#include "wmisc.h"
+
+#include "selection.h"
 
 #define MAX_PROPERTY_SIZE 8*1024
 

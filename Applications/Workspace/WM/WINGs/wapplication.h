@@ -3,6 +3,19 @@
 
 #include "WINGs.h"
 
+typedef struct W_Application {
+    char *applicationName;
+    int argc;
+    char **argv;
+    char *resourcePath;
+} W_Application;
+
+extern struct W_Application WMApplication;
+
+void W_InitApplication(WMScreen *scr);
+
+Bool W_ApplicationInitialized(void);
+
 /* ---[ WINGs/wapplication.c ]-------------------------------------------- */
 
 void WMInitializeApplication(const char *applicationName, int *argc, char **argv);
@@ -18,18 +31,5 @@ char* WMGetApplicationName(void);
 /* Try to locate resource file. ext may be NULL */
 char* WMPathForResourceOfType(const char *resource, const char *ext);
 
-
-typedef struct W_Application {
-    char *applicationName;
-    int argc;
-    char **argv;
-    char *resourcePath;
-} W_Application;
-
-extern struct W_Application WMApplication;
-
-void W_InitApplication(WMScreen *scr);
-
-Bool W_ApplicationInitialized(void);
 
 #endif

@@ -1,5 +1,6 @@
 
 #include "WINGs.h"
+#include "wpixmap.h"
 
 #include <wraster.h>
 

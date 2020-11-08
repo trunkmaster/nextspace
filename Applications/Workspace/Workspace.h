@@ -37,7 +37,6 @@
    user has made.
 */
 
-
 // Notifications
 extern NSString *WMFolderSortMethodDidChangeNotification;
 extern NSString *WMFilePermissionsDidChangeNotification;

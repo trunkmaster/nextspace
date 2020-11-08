@@ -33,6 +33,10 @@
 #include <math.h>
 #include <limits.h>
 
+#include <WINGs/wevent.h>
+#include <WINGs/wcolor.h>
+#include <WINGs/wmisc.h>
+
 #ifndef PATH_MAX
 #define PATH_MAX DEFAULT_PATH_MAX
 #endif

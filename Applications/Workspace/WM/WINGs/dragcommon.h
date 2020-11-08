@@ -1,6 +1,16 @@
 #ifndef _WDRAGCOMMON_H_
 #define _WDRAGCOMMON_H_
 
+/* drag operations */
+typedef enum {
+    WDOperationNone = 0,
+    WDOperationCopy,
+    WDOperationMove,
+    WDOperationLink,
+    WDOperationAsk,
+    WDOperationPrivate
+} WMDragOperationType;
+
 typedef struct WMSelectionProcs {
   WMData* (*convertSelection)(WMView *view, Atom selection, Atom target,
                               void *cdata, Atom *type);
@@ -12,7 +22,9 @@ typedef struct WMSelectionProcs {
 /* We need to define these structure first because they are used in W_Screen
  * below. The rest of drag-related stuff if after because it needs W_Screen
  */
-#define XDND_VERSION    3
+#ifndef XDND_VERSION
+#define XDND_VERSION 3L
+#endif
 
 typedef struct W_DraggingInfo {
   unsigned char protocolVersion; /* version supported on the other side */

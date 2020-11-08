@@ -1,7 +1,11 @@
 
-#include "WINGs.h"
-#include "notification.h"
 #include <X11/Xatom.h>
+
+#include "WINGs.h"
+#include "dragcommon.h"
+#include "notification.h"
+#include "selection.h"
+#include "wmisc.h"
 
 #define XDND_SOURCE_RESPONSE_MAX_DELAY 3000
 
@@ -403,7 +407,7 @@ static void
 storeDropData(WMView * destView, Atom selection, Atom target, Time timestamp, void *cdata, WMData * data)
 {
 	WMScreen *scr = W_VIEW_SCREEN(destView);
-	WMDraggingInfo *info = &(scr->dragInfo);
+	WMDraggingInfo *info = scr->dragInfo;
 	WMData *dataToStore = NULL;
 
 	/* Parameter not used, but tell the compiler that it is ok */
@@ -590,7 +594,7 @@ static void dragSourceResponseTimeOut(void *destView)
 	WMDraggingInfo *info;
 
 	wwarning("delay for drag source response expired");
-	info = &(W_VIEW_SCREEN(view)->dragInfo);
+	info = W_VIEW_SCREEN(view)->dragInfo;
 	if (XDND_DEST_VIEW_IS_REGISTERED(info))
 		cancelDrop(view, info);
 	else {

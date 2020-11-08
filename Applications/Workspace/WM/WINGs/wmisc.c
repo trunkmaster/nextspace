@@ -1,5 +1,8 @@
 
 #include "WINGs.h"
+#include "wpixmap.h"
+#include "wcolor.h"
+#include "wmisc.h"
 
 #include <wraster.h>
 #include <ctype.h>

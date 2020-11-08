@@ -31,6 +31,8 @@
 
 #include <wraster.h>
 
+#include <WINGs/wevent.h>
+
 #include "WindowMaker.h"
 #include "screen.h"
 #include "superfluous.h"

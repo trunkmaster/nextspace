@@ -1,6 +1,12 @@
 
 #include "wconfig.h"
+
 #include "WINGs.h"
+#include "dragcommon.h"
+#include "wevent.h"
+#include "selection.h"
+#include "wpixmap.h"
+#include "wmisc.h"
 
 #include <X11/Xatom.h>
 #include <X11/cursorfont.h>
@@ -852,7 +858,7 @@ static Bool processButtonRelease(WMDraggingInfo * info)
 
 Bool WMIsDraggingFromView(WMView * view)
 {
-	WMDraggingInfo *info = &W_VIEW_SCREEN(view)->dragInfo;
+	WMDraggingInfo *info = W_VIEW_SCREEN(view)->dragInfo;
 
 	return (XDND_SOURCE_INFO(info) != NULL && XDND_SOURCE_STATE(info) != finishDropState);
 	/* return W_VIEW_SCREEN(view)->dragInfo.sourceInfo != NULL; */
@@ -860,7 +866,7 @@ Bool WMIsDraggingFromView(WMView * view)
 
 void WMDragImageFromView(WMView * view, XEvent * event)
 {
-	WMDraggingInfo *info = &W_VIEW_SCREEN(view)->dragInfo;
+	WMDraggingInfo *info = W_VIEW_SCREEN(view)->dragInfo;
 	WMPoint mouseLocation;
 
 	switch (event->type) {
@@ -1065,7 +1071,7 @@ static void *finishDropState(WMView * view, XClientMessageEvent * event, WMDragg
 static void dragSourceResponseTimeOut(void *source)
 {
 	WMView *view = (WMView *) source;
-	WMDraggingInfo *info = &(W_VIEW_SCREEN(view)->dragInfo);
+	WMDraggingInfo *info = W_VIEW_SCREEN(view)->dragInfo;
 
 	wwarning(_("delay for drag destination response expired"));
 	sendLeaveMessage(info);

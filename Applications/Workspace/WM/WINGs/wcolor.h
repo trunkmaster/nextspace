@@ -1,7 +1,7 @@
 #ifndef _WCOLOR_H_
 #define _WCOLOR_H_
 
-struct W_Color {
+typedef struct W_Color {
     struct W_Screen *screen;
 
     XColor color;
@@ -11,7 +11,7 @@ struct W_Color {
     struct {
         unsigned int exact:1;
     } flags;
-};
+} W_Color;
 
 #define W_PIXEL(c)		(c)->color.pixel
 

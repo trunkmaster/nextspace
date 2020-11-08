@@ -4,6 +4,8 @@
 #include "wconfig.h"
 
 #include "WINGs.h"
+#include "wcolor.h"
+#include "wmisc.h"
 
 #include <wraster.h>
 #include <assert.h>

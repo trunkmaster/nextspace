@@ -27,6 +27,8 @@
 #include <string.h>
 #include <limits.h>
 
+#include <WINGs/wmisc.h>
+
 #include "GNUstep.h"
 #include "WindowMaker.h"
 #include "wcore.h"

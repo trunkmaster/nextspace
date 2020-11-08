@@ -28,6 +28,10 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <WINGs/widgets.h>
+#include <WINGs/wevent.h>
+#include <WINGs/wmisc.h>
+
 #include "WindowMaker.h"
 #include "framewin.h"
 #include "window.h"
@@ -41,8 +45,6 @@
 #include "geomview.h"
 #include "screen.h"
 #include "xrandr.h"
-
-#include <WINGs/WINGs.h>
 
 /* How many different types of geometry/position
    display thingies are there? */

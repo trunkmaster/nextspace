@@ -2,7 +2,6 @@
 #include <unistd.h>
 #include <X11/Xlocale.h>
 
-//#include "WINGsP.h"
 #include "wconfig.h"
 #include "userdefaults.h"
 #include "notification.h"

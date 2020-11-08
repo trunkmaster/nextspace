@@ -11,6 +11,7 @@
 
 #include "WINGs.h"
 #include "notification.h"
+#include "wapplication.h"
 #include "userdefaults.h"
 
 

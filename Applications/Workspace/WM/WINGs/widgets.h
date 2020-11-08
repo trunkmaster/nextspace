@@ -1,7 +1,47 @@
 #ifndef _WWIDGETS_H_
 #define _WWIDGETS_H_
 
-#include "WINGs.h"
+#include <stdnoreturn.h>
+#include <WINGs/WINGs.h>
+#include <WINGs/wpixmap.h>
+#include <WINGs/wview.h>
+#include <WINGs/wcolor.h>
+
+typedef int W_Class;
+
+enum {
+    WC_Window = 0,
+    WC_Frame = 1,
+    WC_Label = 2,
+    WC_Button = 3,
+    WC_TextField = 4,
+    WC_Scroller	= 5,
+    WC_ScrollView = 6,
+    WC_List = 7,
+    WC_Browser = 8,
+    WC_PopUpButton = 9,
+    WC_ColorWell = 10,
+    WC_Slider = 11,
+    WC_Matrix = 12,		       /* not ready */
+    WC_SplitView = 13,
+    WC_TabView = 14,
+    WC_ProgressIndicator = 15,
+    WC_MenuView = 16,
+    WC_Ruler = 17,
+    WC_Text = 18,
+    WC_Box = 19
+};
+
+/* All widgets must start with the following structure
+ * in that order. Used for typecasting to get some generic data */
+typedef struct W_WidgetType {
+    W_Class widgetClass;
+    struct W_View *view;
+
+} W_WidgetType;
+
+#define WMWidgetClass(widget)  	(((W_WidgetType*)(widget))->widgetClass)
+#define WMWidgetView(widget)   	(((W_WidgetType*)(widget))->view)
 
 #define WC_UserWidget	128
 
@@ -25,8 +65,7 @@ WMScreen* WMCreateScreen(Display *display, int screen);
 
 WMScreen* WMCreateSimpleApplicationScreen(Display *display);
 
-void WMScreenMainLoop(WMScreen *scr);
-//_wings_noreturn void WMScreenMainLoop(WMScreen *scr);
+noreturn void WMScreenMainLoop(WMScreen *scr);
 
 void WMBreakModalLoop(WMScreen *scr);
 
