@@ -3,7 +3,7 @@ Maintainer: Patrick Georgi <patrick@georgi.software>
 Section: gnustep
 Priority: optional
 Build-Depends: debhelper (>= 12),
-               clang,
+               clang-8,
                libobjc2-dev,
                pkg-config
 Build-Depends-Indep: texinfo,

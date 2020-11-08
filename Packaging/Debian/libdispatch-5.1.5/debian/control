@@ -1,7 +1,7 @@
 Source: libdispatch
 Priority: extra
 Maintainer: Patrick Georgi <patrick@georgi.software>
-Build-Depends: debhelper-compat (= 12), clang, cmake
+Build-Depends: debhelper-compat (= 12), clang-8, cmake
 Standards-Version: 4.5.0
 Section: libs
 Homepage: http://libdispatch.macosforge.org/
