@@ -24,7 +24,7 @@ Architecture: all
 Recommends: nextspace-projectcenter.app,
 	    nextspace-gorm.app
 Depends: ${misc:Depends},
-	 xorg
+	 xorg,
 	 nextspace-login.app,
 	 nextspace-workspace.app,
 	 nextspace-timemon.app,
