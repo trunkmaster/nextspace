@@ -12,7 +12,7 @@ Architecture: any
 Depends: libdispatch0 (= ${binary:Version}), ${misc:Depends}
 Provides: libblocksruntime-dev
 Conflicts: libblocksruntime-dev (<= 0.5)
-Recommends: clang
+Recommends: clang-8
 Description: development files for the Grand Central Dispatch API
  The libdispatch project consists of the user space implementation of 
  the Grand Central Dispatch API as seen in Mac OS X version 10.6 
