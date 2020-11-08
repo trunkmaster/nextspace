@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 12),
                clang (>= 8) | clang-8,
                libobjc2-dev,
                pkg-config
-Build-Conflicts: clang < 8
+Build-Conflicts: clang (< 8)
 Build-Depends-Indep: texinfo,
                      texlive-base,
                      texlive-latex-base
