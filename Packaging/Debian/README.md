@@ -146,7 +146,7 @@ To install the entire desktop environment, just install the `nextspace-desktop` 
 
 ## Setting things up to install pbuilder created packages locally
 
-To tell `apt` to look for the packages created by pbuilder, just create a file `/etc/apt/sources.list.d/nextspace` containing
+To tell `apt` to look for the packages created by pbuilder, just create a file `/etc/apt/sources.list.d/nextspace.list` containing
 
     deb [trusted=yes] file:///var/cache/pbuilder/result/ ./
 
