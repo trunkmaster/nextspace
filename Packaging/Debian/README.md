@@ -41,6 +41,10 @@ create first, using
 If you want to build for a different distribution, adapt as appropriate
 (but sid is the best tested distribution).
 
+To build using Debian stable (Buster) you will need to use clang-8 from backports. So create the pbuilder system this way:
+
+    $ sudo pbuilder create --distribution buster --othermirror "deb http://deb.debian.org/debian buster-backports main"
+
 ### Setting up local packages in pbuilder
 
 Since the packages depend on another but are generated independently,
@@ -84,9 +88,31 @@ Add another file `/etc/pbuilder/hook.d/I99self-archive` containing
     apt-ftparchive packages . > /var/cache/pbuilder/result/Packages
     apt-ftparchive release . > Release
     apt-ftparchive sources . > Sources 2>/dev/null
+    
+For building for stable/Buster with clang from backports you will need to add a further file. `/etc/pbuilder/hook.d/E01apt-backports`:
+
+```
+#!/bin/sh
+set -e
+cat > "/etc/apt/preferences" << EOF
+Package: clang*
+Pin: release a=buster-backports
+Pin-Priority: 999
+
+Package: llvm*   
+Pin: release a=buster-backports
+Pin-Priority: 999
+EOF
+
+apt-get -t buster-backports install --assume-yes clang-8 llvm-8
+
+ln -s /usr/bin/clang-8 /usr/bin/clang
+ln -s /usr/bin/clang++-8 /usr/bin/clang++
+```
 
 Finally make the files executable with
-`chmod +x /etc/pbuilder/hook.d/{D05self-archive,I99self-archive}`.
+`chmod +x /etc/pbuilder/hook.d/{D05self-archive,I99self-archive,E01apt-backports}`.
+
 
 ### Building a package
 
