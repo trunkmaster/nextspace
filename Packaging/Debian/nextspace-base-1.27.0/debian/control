@@ -78,6 +78,7 @@ Depends: libnextspace-base1.27 (= ${binary:Version}),
          nextspace-base-runtime (= ${binary:Version}),
          nextspace-make (>= 2.7.0),
          ${misc:Depends}
+Conflicts: clang (< 8)
 Description: GNUstep Base header files and development libraries
  This package contains the header files and static libraries required
  to build applications against the GNUstep Base library.

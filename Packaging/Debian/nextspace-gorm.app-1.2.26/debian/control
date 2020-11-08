@@ -31,6 +31,7 @@ Architecture: any
 Depends: libnextspace-gorm1 (= ${binary:Version}),
 	 libnextspace-gui-dev,
 	 ${misc:Depends}
+Conflicts: clang (< 8)
 Description: Clone of the InterfaceBuilder framework - development files
  Gorm, the GNUstep Object Relationship Modeler, is a tool to build GUI
  interfaces for the GNUstep system.  It is a clone of the NeXTStep
