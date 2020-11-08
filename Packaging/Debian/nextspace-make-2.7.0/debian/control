@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 12),
                clang (>= 8) | clang-8,
                libobjc2-dev,
                pkg-config
-Build-Conflicts: clang (< 8)
+Build-Conflicts: clang (<< 8)
 Build-Depends-Indep: texinfo,
                      texlive-base,
                      texlive-latex-base
@@ -19,7 +19,7 @@ Homepage: http://nextspace.org
 Package: nextspace-common
 Architecture: any
 Depends: ${misc:Depends}, libobjc2-4
-Conflicts: clang (< 8)
+Conflicts: clang (<< 8)
 Provides: nextspace-fslayout-fhs
 Description: Common files for the core GNUstep environment
  This package contains the main GNUstep configuration file, common
@@ -36,7 +36,7 @@ Depends: nextspace-common (>= ${source:Version}),
          autotools-dev,
          ${misc:Depends},
          ${perl:Depends}
-Conflicts: clang (< 8)
+Conflicts: clang (<< 8)
 Description: GNUstep build system
  This package contains the makefiles needed to compile any GNUstep
  software, and the GNUstep Test Framework used by GNUstep packages to

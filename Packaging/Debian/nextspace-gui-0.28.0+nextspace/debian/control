@@ -74,7 +74,7 @@ Depends: libnextspace-gui0.28 (= ${binary:Version}),
          nextspace-gui-runtime (= ${binary:Version}),
          libnextspace-base-dev (>= 1.27),
          ${misc:Depends}
-Conflicts: clang (< 8)
+Conflicts: clang (<< 8)
 Description: GNUstep GUI header files and static libraries
  The GNUstep GUI Library is a powerful library of graphical user interface
  classes written completely in the Objective-C language; the classes are

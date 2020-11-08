@@ -2,7 +2,7 @@ Source: libobjc2
 Priority: optional
 Maintainer: Patrick Georgi <patrick@georgi.software>
 Build-Depends: debhelper-compat (= 12), cmake, clang (>= 8) | clang-8, libdispatch-dev (>= 5)
-Build-Conflicts: clang (< 8)
+Build-Conflicts: clang (<< 8)
 Standards-Version: 4.5.0
 Section: libs
 Homepage: https://github.com/gnustep/libobjc2

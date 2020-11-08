@@ -47,7 +47,7 @@ Depends: nextspace-desktopkit0 (= ${binary:Version}),
 	 libnextspace-base-dev,
 	 libnextspace-gui-dev,
 	 ${misc:Depends}
-Conflicts: clang (< 8)
+Conflicts: clang (<< 8)
 Multi-Arch: same
 Description: dummy
  dummy
@@ -78,7 +78,7 @@ Depends: nextspace-soundkit0 (= ${binary:Version}),
 	 libnextspace-base-dev,
 	 libnextspace-gui-dev,
 	 ${misc:Depends}
-Conflicts: clang (< 8)
+Conflicts: clang (<< 8)
 Multi-Arch: same
 Description: dummy
  dummy
@@ -109,7 +109,7 @@ Depends: nextspace-systemkit0 (= ${binary:Version}),
 	 libnextspace-base-dev,
 	 libnextspace-gui-dev,
 	 ${misc:Depends}
-Conflicts: clang (< 8)
+Conflicts: clang (<< 8)
 Multi-Arch: same
 Description: dummy
  dummy
