@@ -1,6 +1,12 @@
-nextspace-gorm.app (1.2.26-2) UNRELEASED; urgency=medium
+nextspace-gorm.app (1.2.26-3) UNRELEASED; urgency=medium
 
-  * Adapt for NEXTSPACE
+  * Recommend NEXTSPACE's projectcenter, not GNUstep's.
+
+ -- Patrick Georgi <patrick@georgi.software>  Sun, 08 Nov 2020 22:33:26 +0100
+
+nextspace-gorm.app (1.2.26-2) unstable; urgency=medium
+
+  * Adapt for NEXTSPACE.
 
  -- Patrick Georgi <patrick@georgi.software>  Tue, 19 May 2020 00:15:33 +0200
 
