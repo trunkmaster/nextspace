@@ -1,0 +1,252 @@
+diff --git a/CoreFoundation/Base.subproj/CFInternal.h b/CoreFoundation/Base.subproj/CFInternal.h
+index ff416cd8..f59d90ab 100644
+--- a/CoreFoundation/Base.subproj/CFInternal.h
++++ b/CoreFoundation/Base.subproj/CFInternal.h
+@@ -18,6 +18,13 @@
+ #if !defined(__COREFOUNDATION_CFINTERNAL__)
+ #define __COREFOUNDATION_CFINTERNAL__ 1
+ 
++#if DEPLOYMENT_RUNTIME_C
++static CFOptionFlags _CFAllocatorHintZeroWhenAllocating = 1;
++typedef pthread_key_t _CFThreadSpecificKey;
++CF_PRIVATE Boolean __CFAllocatorRespectsHintZeroWhenAllocating(CFAllocatorRef allocator);
++typedef pthread_t _CFThreadRef;
++#endif
++
+ #if __has_include(<CoreFoundation/TargetConditionals.h>)
+ #include <CoreFoundation/TargetConditionals.h>
+ #else
+diff --git a/CoreFoundation/Base.subproj/CoreFoundation.h b/CoreFoundation/Base.subproj/CoreFoundation.h
+index c1cee458..3d0107de 100644
+--- a/CoreFoundation/Base.subproj/CoreFoundation.h
++++ b/CoreFoundation/Base.subproj/CoreFoundation.h
+@@ -87,7 +87,7 @@
+ 
+ #include <CoreFoundation/CFUserNotification.h>
+ 
+-#if !DEPLOYMENT_RUNTIME_SWIFT
++#if !DEPLOYMENT_RUNTIME_SWIFT && !TARGET_OS_LINUX
+ #include <CoreFoundation/CFXMLNode.h>
+ #include <CoreFoundation/CFXMLParser.h>
+ #endif
+diff --git a/CoreFoundation/CMakeLists.txt b/CoreFoundation/CMakeLists.txt
+index 62569e27..4f52c641 100644
+--- a/CoreFoundation/CMakeLists.txt
++++ b/CoreFoundation/CMakeLists.txt
+@@ -193,8 +193,8 @@ add_framework(CoreFoundation
+                 Base.subproj/CFLogUtilities.h
+                 Base.subproj/CFPriv.h
+                 Base.subproj/CFRuntime.h
+-                Base.subproj/ForFoundationOnly.h
+-                Base.subproj/ForSwiftFoundationOnly.h
++                #Base.subproj/ForFoundationOnly.h
++                #Base.subproj/ForSwiftFoundationOnly.h
+                 Locale.subproj/CFCalendar_Internal.h
+                 Locale.subproj/CFDateComponents.h
+                 Locale.subproj/CFDateInterval.h
+@@ -219,8 +219,9 @@ add_framework(CoreFoundation
+                 Base.subproj/CFByteOrder.h
+                 Base.subproj/CFUUID.h
+                 Base.subproj/CFUtilities.h
+-                Base.subproj/SwiftRuntime/CoreFoundation.h
+-                Base.subproj/SwiftRuntime/TargetConditionals.h
++                #Base.subproj/SwiftRuntime/CoreFoundation.h
++                #Base.subproj/SwiftRuntime/TargetConditionals.h
++                Base.subproj/CoreFoundation.h
+                 # Collections
+                 Collections.subproj/CFArray.h
+                 Collections.subproj/CFBag.h
+@@ -402,45 +403,47 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
+   endif()
+ endif()
+ 
+-add_framework(CFURLSessionInterface
+-                ${FRAMEWORK_LIBRARY_TYPE}
+-              FRAMEWORK_DIRECTORY
+-                CFURLSessionInterface_FRAMEWORK_DIRECTORY
+-              MODULE_MAP
+-                URL.subproj/module.modulemap
+-              PRIVATE_HEADERS
+-                URL.subproj/CFURLSessionInterface.h
+-              PUBLIC_HEADERS
+-                URL.subproj/CFURLSessionInterface.h
+-              SOURCES
+-                URL.subproj/CFURLSessionInterface.c)
+-add_dependencies(CFURLSessionInterface CoreFoundation)
+-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+-  target_compile_definitions(CFURLSessionInterface
+-                             PRIVATE
+-                               CURL_STATICLIB)
+-endif()
+-if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
+-  target_link_libraries(CFURLSessionInterface PRIVATE
+-    CURL::libcurl)
+-endif()
++if(CF_DEPLOYMENT_SWIFT)
++  add_framework(CFURLSessionInterface
++    ${FRAMEWORK_LIBRARY_TYPE}
++    FRAMEWORK_DIRECTORY
++    CFURLSessionInterface_FRAMEWORK_DIRECTORY
++    MODULE_MAP
++    URL.subproj/module.modulemap
++    PRIVATE_HEADERS
++    URL.subproj/CFURLSessionInterface.h
++    PUBLIC_HEADERS
++    URL.subproj/CFURLSessionInterface.h
++    SOURCES
++    URL.subproj/CFURLSessionInterface.c)
++  add_dependencies(CFURLSessionInterface CoreFoundation)
++  if(CMAKE_SYSTEM_NAME STREQUAL Windows)
++    target_compile_definitions(CFURLSessionInterface
++      PRIVATE
++      CURL_STATICLIB)
++  endif()
++  if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
++    target_link_libraries(CFURLSessionInterface PRIVATE
++      CURL::libcurl)
++  endif()
+ 
+-add_framework(CFXMLInterface
+-                ${FRAMEWORK_LIBRARY_TYPE}
+-              FRAMEWORK_DIRECTORY
+-                CFXMLInterface_FRAMEWORK_DIRECTORY
+-              MODULE_MAP
+-                Parsing.subproj/module.modulemap
+-              PRIVATE_HEADERS
+-                Parsing.subproj/CFXMLInterface.h
+-              PUBLIC_HEADERS
+-                Parsing.subproj/CFXMLInterface.h
+-              SOURCES
+-                Parsing.subproj/CFXMLInterface.c)
+-add_dependencies(CFXMLInterface CoreFoundation)
+-if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
+-  target_link_libraries(CFXMLInterface PRIVATE
+-    LibXml2::LibXml2)
++  add_framework(CFXMLInterface
++    ${FRAMEWORK_LIBRARY_TYPE}
++    FRAMEWORK_DIRECTORY
++    CFXMLInterface_FRAMEWORK_DIRECTORY
++    MODULE_MAP
++    Parsing.subproj/module.modulemap
++    PRIVATE_HEADERS
++    Parsing.subproj/CFXMLInterface.h
++    PUBLIC_HEADERS
++    Parsing.subproj/CFXMLInterface.h
++    SOURCES
++    Parsing.subproj/CFXMLInterface.c)
++  add_dependencies(CFXMLInterface CoreFoundation)
++  if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
++    target_link_libraries(CFXMLInterface PRIVATE
++      LibXml2::LibXml2)
++  endif()
+ endif()
+ 
+ if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+@@ -485,6 +488,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Windows AND NOT CMAKE_SYSTEM_NAME STREQUAL Dar
+   target_link_libraries(CoreFoundation
+                         PRIVATE
+                           m)
++if(CF_DEPLOYMENT_SWIFT)
+   target_link_libraries(CFURLSessionInterface
+                         PRIVATE
+                           m)
+@@ -492,36 +496,48 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Windows AND NOT CMAKE_SYSTEM_NAME STREQUAL Dar
+                         PRIVATE
+                           m)
+ endif()
++endif()
+ target_link_libraries(CoreFoundation
+                       PRIVATE
+                         dispatch)
++if(CF_DEPLOYMENT_SWIFT)
+ target_link_libraries(CFURLSessionInterface
+                       PRIVATE
+                         dispatch)
+ target_link_libraries(CFXMLInterface
+                       PRIVATE
+                         dispatch)
++endif()
+ if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+   target_link_libraries(CoreFoundation
+                         PRIVATE
+                           icucore)
++if(CF_DEPLOYMENT_SWIFT)
+   target_link_libraries(CFURLSessionInterface
+                         PRIVATE
+                           icucore)
+   target_link_libraries(CFXMLInterface
+                         PRIVATE
+                           icucore)
++endif()
+   set_target_properties(CoreFoundation
+                         PROPERTIES LINK_FLAGS
+                           -Xlinker;-alias_list;-Xlinker;Base.subproj/DarwinSymbolAliases;-twolevel_namespace;-sectcreate;__UNICODE;__csbitmaps;CharacterSets/CFCharacterSetBitmaps.bitmap;-sectcreate;__UNICODE;__properties;CharacterSets/CFUniCharPropertyDatabase.data;-sectcreate;__UNICODE;__data;CharacterSets/CFUnicodeData-L.mapping;-segprot;__UNICODE;r;r)
+ endif()
+ 
++if(CF_DEPLOYMENT_SWIFT)
+ install(TARGETS
+           CoreFoundation
+           CFURLSessionInterface
+           CFXMLInterface
+         DESTINATION
+           "${CMAKE_INSTALL_FULL_LIBDIR}")
++else()
++install(TARGETS
++          CoreFoundation
++        DESTINATION
++          "${CMAKE_INSTALL_FULL_LIBDIR}")
++endif()
+ 
+ # Needed to avoid double slash "//" when CMAKE_INSTALL_PREFIX set to "/" and DESTDIR used to relocate whole installation.
+ # Double slash raise CMake error "file called with network path DESTINATION //System/Library/Frameworks".
+@@ -530,6 +546,6 @@ string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+ install(DIRECTORY
+           ${CoreFoundation_FRAMEWORK_DIRECTORY}
+         DESTINATION
+-          ${CMAKE_INSTALL_PREFIX}/System/Library/Frameworks
++          ${CMAKE_INSTALL_PREFIX}/Frameworks
+         USE_SOURCE_PERMISSIONS
+         PATTERN PrivateHeaders EXCLUDE)
+diff --git a/CoreFoundation/Collections.subproj/CFDictionary.c b/CoreFoundation/Collections.subproj/CFDictionary.c
+index 11b49768..9ded924b 100644
+--- a/CoreFoundation/Collections.subproj/CFDictionary.c
++++ b/CoreFoundation/Collections.subproj/CFDictionary.c
+@@ -72,7 +72,7 @@ static CFBasicHashRef __CFDictionaryCreateGeneric(CFAllocatorRef allocator, cons
+ }
+ 
+ CF_PRIVATE CFDictionaryRef __CFDictionaryCreateTransfer(CFAllocatorRef allocator, void const **klist, void const **vlist, CFIndex numValues) {
+-#if !DEPLOYMENT_RUNTIME_SWIFT
++#if !DEPLOYMENT_RUNTIME_SWIFT && !TARGET_OS_LINUX
+     CF_PRIVATE CFDictionaryRef __NSCFDictionaryCreateTransfer(CFAllocatorRef allocator, const id *klist, const id *vlist, CFIndex numValues);
+     CFDictionaryRef nsResult = __NSCFDictionaryCreateTransfer(allocator, (const id *)klist, (const id *)vlist, numValues);
+     if (nsResult) {
+@@ -109,7 +109,7 @@ CF_PRIVATE CFDictionaryRef __CFDictionaryCreateTransfer(CFAllocatorRef allocator
+ }
+ 
+ CFDictionaryRef CFDictionaryCreate(CFAllocatorRef allocator, void const **klist, void const **vlist, CFIndex numValues, const CFDictionaryKeyCallBacks *keyCallBacks, const CFDictionaryValueCallBacks *valueCallBacks) {
+-#if !DEPLOYMENT_RUNTIME_SWIFT
++#if !DEPLOYMENT_RUNTIME_SWIFT && !TARGET_OS_LINUX
+     CF_PRIVATE CFDictionaryRef __NSCFDictionaryCreate(CFAllocatorRef allocator, void const **klist, void const **vlist, CFIndex numValues, const CFDictionaryKeyCallBacks *keyCallBacks, const CFDictionaryValueCallBacks *valueCallBacks);
+     CFDictionaryRef nsResult = __NSCFDictionaryCreate(allocator, klist, vlist, numValues, keyCallBacks, valueCallBacks);
+     if (nsResult) {
+@@ -131,7 +131,7 @@ CFDictionaryRef CFDictionaryCreate(CFAllocatorRef allocator, void const **klist,
+ }
+ 
+ CFMutableDictionaryRef CFDictionaryCreateMutable(CFAllocatorRef allocator, CFIndex capacity, const CFDictionaryKeyCallBacks *keyCallBacks, const CFDictionaryValueCallBacks *valueCallBacks) {
+-#if !DEPLOYMENT_RUNTIME_SWIFT
++#if !DEPLOYMENT_RUNTIME_SWIFT && !TARGET_OS_LINUX
+     CF_PRIVATE CFMutableDictionaryRef __NSCFDictionaryCreateMutable(CFAllocatorRef allocator, CFIndex capacity, const CFDictionaryKeyCallBacks *keyCallBacks, const CFDictionaryValueCallBacks *valueCallBacks);
+     CFMutableDictionaryRef nsResult = __NSCFDictionaryCreateMutable(allocator, capacity, keyCallBacks, valueCallBacks);
+     if (nsResult) {
+diff --git a/CoreFoundation/String.subproj/CFString.c b/CoreFoundation/String.subproj/CFString.c
+index 26339d41..447011f8 100644
+--- a/CoreFoundation/String.subproj/CFString.c
++++ b/CoreFoundation/String.subproj/CFString.c
+@@ -27,6 +27,7 @@
+ #include "CFString_Internal.h"
+ #include "CFRuntime_Internal.h"
+ #include <assert.h>
++int UCHAR_EXTENDED_PICTOGRAPHIC=64;
+ #include <unicode/uchar.h>
+ #if TARGET_OS_MAC || TARGET_OS_WIN32 || TARGET_OS_LINUX
+ #include "CFLocaleInternal.h"
