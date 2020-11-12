@@ -29,8 +29,6 @@
 
 #include <unistd.h>
 
-#include <WMcore/WMcore.h>
-
 #include "wconfig.h"
 #include "osdep.h"
 
@@ -163,7 +161,7 @@ Bool GetCommandForPid(int pid, char ***argv, int *argc)
       (*argc)++;
 #endif
 
-  *argv = (char **)wmalloc(sizeof(char *) * (*argc + 1 /* term. null ptr */));
+  *argv = (char **)malloc(sizeof(char *) * (*argc + 1 /* term. null ptr */));
   (*argv)[0] = args;
 
   /* go through args, set argv[$next] to the beginning of each string */

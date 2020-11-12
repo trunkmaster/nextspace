@@ -55,8 +55,6 @@
 #include "shutdown.h"
 #include "main.h"
 
-#include <WMcore/WMcore.h>
-
 #include "dock.h"
 #include <Workspace+WM.h>
 

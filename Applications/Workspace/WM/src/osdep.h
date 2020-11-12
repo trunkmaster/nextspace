@@ -21,6 +21,10 @@
 #ifndef WMOSDEP_H_
 #define WMOSDEP_H_
 
+#define True 1
+#define False 0
+#define Bool int
+
 Bool GetCommandForPid(int pid, char ***argv, int *argc);
 
 #endif

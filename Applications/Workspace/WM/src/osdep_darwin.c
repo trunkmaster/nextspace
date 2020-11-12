@@ -6,8 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <WMcore/WMcore.h>
-
 #include "wconfig.h"
 #include "osdep.h"
 
@@ -49,7 +47,7 @@ Bool GetCommandForPid(int pid, char ***argv, int *argc)
 
   /* space for args; no need to free before returning even on errors */
   if (args == NULL)
-    args = (char *)wmalloc(argmax);
+    args = (char *)malloc(argmax);
 
   /* get process args */
   mib[0] = CTL_KERN;

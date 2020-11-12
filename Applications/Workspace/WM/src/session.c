@@ -83,8 +83,6 @@
 #include "dock.h"
 #include "misc.h"
 
-#include <WMcore/WMcore.h>
-
 
 static WMPropList *sApplications = NULL;
 static WMPropList *sCommand;

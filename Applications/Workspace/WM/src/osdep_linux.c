@@ -9,11 +9,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <WMcore/WMcore.h>
-
 #include "wconfig.h"
 #include "osdep.h"
-
 
 /*
  * copy argc and argv for an existing process identified by `pid'
@@ -65,7 +62,7 @@ Bool GetCommandForPid(int pid, char ***argv, int *argc)
   if (*argc == 0)
     return False;
 
-  *argv = (char **)wmalloc(sizeof(char *) * (*argc + 1 /* term. null ptr */));
+  *argv = (char **)malloc(sizeof(char *) * (*argc + 1 /* term. null ptr */));
   (*argv)[0] = buf;
 
   /* go through buf, set argv[$next] to the beginning of each string */
