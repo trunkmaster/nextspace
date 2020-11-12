@@ -13,11 +13,13 @@ BuildRequires:	libdispatch-devel
 BuildRequires:	libxml2-devel
 BuildRequires:	libicu-devel
 BuildRequires:	libcurl-devel
+BuildRequires:	libuuid-devel
 
 Requires:	libdispatch
 Requires:	libxml2
 Requires:	libicu
 Requires:	libcurl
+Requires:	libuuid
 
 %description
 Apple Core Foundation framework.
@@ -38,11 +40,12 @@ cp SwiftRuntime/TargetConditionals.h ./
 %build
 mkdir -p CoreFoundation/.build
 cd CoreFoundation/.build
-CF_CFLAGS="-I/usr/NextSpace/include -I. -I`pwd`/../Base.subproj -DU_SHOW_DRAFT_API -DCF_BUILDING_CF -DDEPLOYMENT_RUNTIME_C -fconstant-cfstrings -fexceptions -Wno-shorten-64-to-32 -Wno-deprecated-declarations -Wno-unreachable-code -Wno-conditional-uninitialized -Wno-unused-variable -Wno-int-conversion -Wno-unused-function -Wno-switch -D_GNU_SOURCE -DCF_CHARACTERSET_DATA_DIR=\"CharacterSets\""
+#CF_CFLAGS="-I/usr/NextSpace/include -I. -I`pwd`/../Base.subproj -DU_SHOW_DRAFT_API -DCF_BUILDING_CF -DDEPLOYMENT_RUNTIME_C -fconstant-cfstrings -fexceptions -Wno-switch -D_GNU_SOURCE -DCF_CHARACTERSET_DATA_DIR=\"CharacterSets\""
+CF_CFLAGS="-I/usr/NextSpace/include -Wno-implicit-const-int-float-conversion -Wno-switch"
 cmake .. \
       -DCMAKE_C_COMPILER=clang \
       -DCMAKE_C_FLAGS="$CF_CFLAGS" \
-      -DCMAKE_SHARED_LINKER_FLAGS="-L/usr/NextSpace/lib" \
+      -DCMAKE_SHARED_LINKER_FLAGS="-L/usr/NextSpace/lib -luuid" \
       -DCF_DEPLOYMENT_SWIFT=NO \
       -DBUILD_SHARED_LIBS=YES \
       -DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
