@@ -1,7 +1,7 @@
 #ifndef _WNOTIFICATION_H_
 #define _WNOTIFICATION_H_
 
-#include "WUtil.h"
+#include "WMcore.h"
 
 /* ---[ notification.c ]-------------------------------------------------- */
 

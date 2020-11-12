@@ -3,9 +3,10 @@
 
 #include <X11/Xatom.h>
 
+#include <WMcore/notification.h>
+
 #include "WINGs.h"
 #include "dragcommon.h"
-#include "notification.h"
 #include "wmisc.h"
 
 #include "selection.h"

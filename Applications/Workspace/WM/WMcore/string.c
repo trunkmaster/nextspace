@@ -16,7 +16,7 @@
 #include <bsd/string.h>
 #endif
 
-#include "WUtil.h"
+#include "WMcore.h"
 
 #define PRC_ALPHA	0
 #define PRC_BLANK	1

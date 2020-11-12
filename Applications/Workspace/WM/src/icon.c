@@ -33,7 +33,7 @@
 #include <wraster.h>
 #include <sys/stat.h>
 
-#include <WINGs/notification.h>
+#include <WMcore/notification.h>
 #include <WINGs/wevent.h>
 #include <WINGs/wmisc.h>
 

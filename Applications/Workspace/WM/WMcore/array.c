@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "WUtil.h"
+#include "WMcore.h"
 
 #define INITIAL_SIZE 8
 #define RESIZE_INCREMENT 8

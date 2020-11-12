@@ -1,8 +1,9 @@
 
 #include <unistd.h>
 
+#include <WMcore/wapplication.h>
+
 #include "WINGs.h"
-#include "wapplication.h"
 #include "wappresource.h"
 #include "wpixmap.h"
 

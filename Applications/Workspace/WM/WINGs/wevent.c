@@ -3,9 +3,10 @@
  * This event handling stuff was inspired on Tk.
  */
 
+#include <WMcore/handlers.h>
+
 #include "WINGs.h"
 #include "dragcommon.h"
-#include "handlers.h"
 #include "winputmethod.h"
 #include "wevent.h"
 #include "selection.h"

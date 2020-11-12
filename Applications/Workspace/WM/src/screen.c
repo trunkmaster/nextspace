@@ -52,8 +52,8 @@
 
 #include "xrandr.h"
 
-#include <WINGs/WUtil.h>
-#include <WINGs/wapplication.h>
+#include <WMcore/WMcore.h>
+#include <WMcore/wapplication.h>
 #include <WINGs/wappresource.h>
 #include <WINGs/widgets.h>
 #include <WINGs/wcolor.h>

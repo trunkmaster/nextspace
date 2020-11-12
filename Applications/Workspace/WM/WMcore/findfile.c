@@ -21,7 +21,7 @@
 
 #include "wconfig.h"
 
-#include "WUtil.h"
+#include "WMcore.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

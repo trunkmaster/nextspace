@@ -31,7 +31,7 @@
 #include <math.h>
 #include <time.h>
 
-#include <WINGs/notification.h>
+#include <WMcore/notification.h>
 #include <WINGs/wview.h>
 #include <WINGs/wevent.h>
 #include <WINGs/wmisc.h>

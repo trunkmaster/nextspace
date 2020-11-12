@@ -47,7 +47,7 @@
 
 #include <wraster.h>
 #include <WINGs/WINGs.h>
-#include <WINGs/notification.h>
+#include <WMcore/notification.h>
 #include <WINGs/wcolor.h>
 #include <WINGs/configuration.h>
 #include <WINGs/wmisc.h>

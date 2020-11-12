@@ -1,9 +1,10 @@
 
 #include "wconfig.h"
 
+#include <WMcore/wapplication.h>
+
 #include "WINGs.h"
 #include "winputmethod.h"
-#include "wapplication.h"
 #include "wevent.h"
 #include "wpixmap.h"
 #include "wcolor.h"

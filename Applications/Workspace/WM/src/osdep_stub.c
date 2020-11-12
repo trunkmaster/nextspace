@@ -1,7 +1,7 @@
 
 #include <sys/utsname.h>
 
-#include <WINGs/WUtil.h>
+#include <WMcore/WMcore.h>
 
 #include "wconfig.h"
 #include "osdep.h"

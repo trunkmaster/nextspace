@@ -4,9 +4,10 @@
 
 #include "wconfig.h"
 
+#include <WMcore/wapplication.h>
+#include <WMcore/notification.h>
+
 #include "WINGs.h"
-#include "notification.h"
-#include "wapplication.h"
 #include "widgets.h"
 #include "wevent.h"
 #include "wpixmap.h"

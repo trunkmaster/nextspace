@@ -12,7 +12,7 @@
 #include <strings.h>
 #include <unistd.h>
 
-#include "WUtil.h"
+#include "WMcore.h"
 #include "wconfig.h"
 
 typedef enum {

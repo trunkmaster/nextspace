@@ -30,7 +30,7 @@
 
 #include "xutil.h"
 
-#include <WINGs/WUtil.h>
+#include <WMcore/WMcore.h>
 #if 0
 static Atom Clipboard = 0;
 #endif

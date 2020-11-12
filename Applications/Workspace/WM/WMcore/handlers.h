@@ -1,7 +1,7 @@
 #ifndef _WHANDLERS_H_
 #define _WHANDLERS_H_
 
-#include "WINGs.h"
+#include <WINGs/WINGs.h>
 
 Bool W_CheckIdleHandlers(void);
 

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "WUtil.h"
+#include "WMcore.h"
 
 #define INITIAL_CAPACITY	23
 

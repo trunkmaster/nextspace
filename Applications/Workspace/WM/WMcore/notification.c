@@ -4,8 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "WUtil.h"
-/* #include "WINGsP.h" */
+#include "WMcore.h"
 #include "notification.h"
 
 

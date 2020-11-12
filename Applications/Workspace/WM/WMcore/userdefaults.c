@@ -9,11 +9,10 @@
 
 #include "wconfig.h"
 
-#include "WINGs.h"
-#include "notification.h"
-#include "wapplication.h"
-#include "userdefaults.h"
-
+#include <WMcore/wapplication.h>
+#include <WMcore/userdefaults.h>
+#include <WMcore/notification.h>
+#include <WINGs/WINGs.h>
 
 typedef struct W_UserDefaults {
 	WMPropList *defaults;
@@ -41,11 +40,14 @@ char *WMUserDefaultsDidChangeNotification = "WMUserDefaultsDidChangeNotification
 
 static void synchronizeUserDefaults(void *foo);
 
+#ifndef DEFAULTS_DIR
 #ifdef NEXTSPACE
 #define DEFAULTS_DIR "/Preferences/.WindowMaker"
 #else
 #define DEFAULTS_DIR "/Defaults"
 #endif
+#endif
+
 #ifndef HAVE_INOTIFY
 /* Check defaults database for changes every this many milliseconds */
 /* XXX: this is shared with src/ stuff, put it in some common header */

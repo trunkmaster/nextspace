@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <WINGs/WUtil.h>
+#include <WMcore/WMcore.h>
 
 #include "wconfig.h"
 #include "osdep.h"

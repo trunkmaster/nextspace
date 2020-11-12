@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "WUtil.h"
+#include "WMcore.h"
 
 typedef struct W_Node {
 	struct W_Node *parent;

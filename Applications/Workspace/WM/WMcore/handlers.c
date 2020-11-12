@@ -4,7 +4,7 @@
  */
 
 #include "wconfig.h"
-#include "WINGs.h"
+#include <WINGs/WINGs.h>
 #include "notification.h"
 
 #include <sys/types.h>

@@ -1,7 +1,7 @@
 
 #include <string.h>
 
-#include "WUtil.h"
+#include "WMcore.h"
 
 typedef struct W_TreeNode {
 	void *data;

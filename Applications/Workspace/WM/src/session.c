@@ -83,7 +83,7 @@
 #include "dock.h"
 #include "misc.h"
 
-#include <WINGs/WUtil.h>
+#include <WMcore/WMcore.h>
 
 
 static WMPropList *sApplications = NULL;

@@ -31,7 +31,7 @@
 #include <X11/Xlib.h>
 
 #include <wraster.h>
-#include <WINGs/WUtil.h>
+#include <WMcore/WMcore.h>
 
 #ifdef USE_PANGO
 #include <pango/pango.h>

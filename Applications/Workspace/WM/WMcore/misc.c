@@ -20,7 +20,7 @@
 
 /* Miscelaneous helper functions */
 
-#include <WUtil.h>
+#include "WMcore.h"
 
 #include "error.h"
 

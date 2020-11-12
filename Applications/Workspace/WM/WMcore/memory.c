@@ -20,7 +20,7 @@
  */
 
 #include "wconfig.h"
-#include "WUtil.h"
+#include "WMcore.h"
 
 #include <stdlib.h>
 #include <sys/types.h>

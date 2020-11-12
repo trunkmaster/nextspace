@@ -30,6 +30,7 @@ ADDITIONAL_GUI_LIBS += -lSystemKit -lDesktopKit -lSoundKit -lX11
 #
 ADDITIONAL_CFLAGS += -DHAVE_CONFIG_H -DWITH_GNUSTEP -DNEXTSPACE -fno-strict-aliasing -fblocks
 ADDITIONAL_CFLAGS += -DNDEBUG -D_XOPEN_SOURCE=600 -D_GNU_SOURCE
-ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR)/src -I./$(WM_DIR) -I./$(WM_DIR)/WINGs
+ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR) -I./$(WM_DIR)/src
+ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR)/WINGs
 ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags fontconfig`
 ADDITIONAL_GUI_LIBS += -lfontconfig -lXft -lwraster -lXext -lXrandr -lXfixes -lXcursor

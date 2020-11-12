@@ -37,7 +37,7 @@
 
 #include <X11/XKBlib.h>
 
-#include <WINGs/WUtil.h>
+#include <WMcore/WMcore.h>
 #include <WINGs/wmisc.h>
 #include <wraster.h>
 

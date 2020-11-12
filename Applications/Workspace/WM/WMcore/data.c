@@ -20,7 +20,7 @@
  */
 
 #include <string.h>
-#include "WUtil.h"
+#include "WMcore.h"
 
 typedef struct W_Data {
 	unsigned length;	/* How many bytes we have */

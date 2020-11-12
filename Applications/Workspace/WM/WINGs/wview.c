@@ -2,9 +2,10 @@
 #include <X11/Xresource.h>
 #include <X11/Xutil.h>
 
+#include <WMcore/notification.h>
+
 #include "WINGs.h"
 #include "dragcommon.h"
-#include "notification.h"
 #include "wevent.h"
 #include "wpixmap.h"
 #include "wcolor.h"
