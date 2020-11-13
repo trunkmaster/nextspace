@@ -80,8 +80,7 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/WMcore/tree.c \
 	$(WM_DIR)/WMcore/userdefaults.c \
 	$(WM_DIR)/WMcore/usleep.c \
-	$(WM_DIR)/WMcore/wapplication.c \
-	$(WM_DIR)/WMcore/wutil.c
+	$(WM_DIR)/WMcore/wapplication.c
 
 ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
 $(APP_NAME)_C_FILES += $(WM_DIR)/src/osdep_bsd.c

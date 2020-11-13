@@ -322,13 +322,6 @@ WMHandlerID WMAddInputHandler(int fd, int condition, WMInputProc *proc,
 void WMDeleteInputHandler(WMHandlerID handlerID);
 
 
-/* This function is used _only_ if you create a non-GUI program.
- * For GUI based programs use WMNextEvent()/WMHandleEvent() instead.
- * This function will handle all input/timer/idle events, then return.
- */
-
-void WHandleEvents(void);
-
 /* ---[ WINGs/hashtable.c ]----------------------------------------------- */
 
 
