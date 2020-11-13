@@ -3,14 +3,18 @@
  * WINGs internal handlers: timer, idle and input handlers
  */
 
-#include "wconfig.h"
-#include <WINGs/WINGs.h>
-#include "notification.h"
-
 #include <sys/types.h>
 #include <unistd.h>
 
 #include <X11/Xos.h>
+
+#include <WINGs/WINGs.h>
+
+#include "wconfig.h"
+
+#include "notification.h"
+#include "array.h"
+#include "memory.h"
 
 #ifdef HAVE_SYS_SELECT_H
 # include <sys/select.h>

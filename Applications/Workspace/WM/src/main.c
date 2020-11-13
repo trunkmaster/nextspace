@@ -41,6 +41,12 @@
  */
 #include <X11/Xlocale.h>
 
+#include <WMcore/memory.h>
+#include <WMcore/userdefaults.h>
+#include <WMcore/string.h>
+#include <WMcore/findfile.h>
+#include <WMcore/misc.h>
+
 #define MAINFILE
 
 #include "WindowMaker.h"

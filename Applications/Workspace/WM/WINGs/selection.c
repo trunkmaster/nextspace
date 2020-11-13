@@ -3,6 +3,7 @@
 
 #include <X11/Xatom.h>
 
+#include <WMcore/memory.h>
 #include <WMcore/notification.h>
 
 #include "WINGs.h"

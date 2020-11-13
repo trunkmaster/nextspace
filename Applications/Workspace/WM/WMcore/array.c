@@ -12,6 +12,8 @@
 #include <string.h>
 
 #include "WMcore.h"
+#include "memory.h"
+#include "array.h"
 
 #define INITIAL_SIZE 8
 #define RESIZE_INCREMENT 8

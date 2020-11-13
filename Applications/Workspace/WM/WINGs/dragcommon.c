@@ -1,5 +1,7 @@
 #include "wconfig.h"
 
+#include <WMcore/memory.h>
+
 #include "WINGs.h"
 #include "dragcommon.h"
 #include "dragdestination.h"

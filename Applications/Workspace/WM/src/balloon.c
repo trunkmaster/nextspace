@@ -35,6 +35,10 @@
 
 #include <wraster.h>
 
+#include <WMcore/memory.h>
+#include <WMcore/string.h>
+#include <WMcore/handlers.h>
+
 #include <WINGs/wmisc.h>
 
 #include "WindowMaker.h"

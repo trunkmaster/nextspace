@@ -3,6 +3,7 @@
  * This event handling stuff was inspired on Tk.
  */
 
+#include <WMcore/memory.h>
 #include <WMcore/handlers.h>
 
 #include "WINGs.h"

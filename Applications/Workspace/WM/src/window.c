@@ -36,8 +36,12 @@
 
 /* For getting mouse wheel mappings from WINGs */
 #include <WINGs/WINGs.h>
+
 #include <WMcore/notification.h>
 #include <WINGs/configuration.h>
+#include <WMcore/memory.h>
+#include <WMcore/handlers.h>
+#include <WMcore/string.h>
 
 #include "GNUstep.h"
 #include "WindowMaker.h"

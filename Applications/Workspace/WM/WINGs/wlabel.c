@@ -1,4 +1,7 @@
 
+#include <WMcore/memory.h>
+#include <WMcore/string.h>
+
 #include "WINGs.h"
 #include "widgets.h"
 #include "wevent.h"

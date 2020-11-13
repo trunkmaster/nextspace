@@ -34,6 +34,8 @@
 
 #include <wraster.h>
 
+#include <WMcore/memory.h>
+
 #include "WindowMaker.h"
 #include "window.h"
 #include "appicon.h"

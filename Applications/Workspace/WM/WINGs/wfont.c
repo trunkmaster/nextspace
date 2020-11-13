@@ -1,18 +1,21 @@
 
 #include <stdlib.h>
+#include <assert.h>
+
+#include <X11/Xlocale.h>
+#include <X11/Xft/Xft.h>
+#include <fontconfig/fontconfig.h>
+
+#include <WMcore/memory.h>
+#include <WMcore/string.h>
+
+#include <wraster.h>
 
 #include "wconfig.h"
 
 #include "WINGs.h"
 #include "wcolor.h"
 #include "wmisc.h"
-
-#include <wraster.h>
-#include <assert.h>
-#include <X11/Xlocale.h>
-
-#include <X11/Xft/Xft.h>
-#include <fontconfig/fontconfig.h>
 
 #ifdef USE_PANGO
 #include <pango/pango.h>

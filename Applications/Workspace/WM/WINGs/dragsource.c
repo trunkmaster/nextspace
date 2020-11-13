@@ -1,6 +1,11 @@
 
 #include "wconfig.h"
 
+#include <WMcore/memory.h>
+#include <WMcore/usleep.h>
+#include <WMcore/string.h>
+#include <WMcore/handlers.h>
+
 #include "WINGs.h"
 #include "dragcommon.h"
 #include "wevent.h"

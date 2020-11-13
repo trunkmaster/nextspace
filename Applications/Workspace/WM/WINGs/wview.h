@@ -1,8 +1,8 @@
 #ifndef _WVIEW_H_
 #define _WVIEW_H_
 
+#include <WMcore/array.h>
 #include <WINGs/WINGs.h>
-/* #include <WINGs/widgets.h> */
 
 typedef struct W_ViewDelegate {
     void *data;

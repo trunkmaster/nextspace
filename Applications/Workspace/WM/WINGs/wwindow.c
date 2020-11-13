@@ -4,6 +4,8 @@
 
 #include "wconfig.h"
 
+#include <WMcore/memory.h>
+#include <WMcore/string.h>
 #include <WMcore/wapplication.h>
 #include <WMcore/notification.h>
 

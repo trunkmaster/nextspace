@@ -12,8 +12,15 @@
 #include <strings.h>
 #include <unistd.h>
 
-#include "WMcore.h"
 #include "wconfig.h"
+
+#include "WMcore.h"
+#include "memory.h"
+#include "proplist.h"
+#include "hashtable.h"
+#include "string.h"
+#include "userdefaults.h"
+#include "array.h"
 
 typedef enum {
 	WPLString = 0x57504c01,

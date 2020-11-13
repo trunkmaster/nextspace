@@ -1,6 +1,9 @@
 #ifndef _WDRAGCOMMON_H_
 #define _WDRAGCOMMON_H_
 
+#include <WMcore/array.h>
+#include <WMcore/data.h>
+
 /* drag operations */
 typedef enum {
     WDOperationNone = 0,

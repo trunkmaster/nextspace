@@ -35,8 +35,12 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include <WINGs/WINGs.h>
+#include <WMcore/memory.h>
 #include <WMcore/notification.h>
+#include <WMcore/handlers.h>
+#include <WMcore/string.h>
+
+#include <WINGs/WINGs.h>
 #include <WINGs/wcolor.h>
 #include <WINGs/wmisc.h>
 

@@ -6,6 +6,9 @@
 
 #include "WMcore.h"
 #include "notification.h"
+#include "memory.h"
+#include "hashtable.h"
+#include "array.h"
 
 
 typedef struct W_Notification {

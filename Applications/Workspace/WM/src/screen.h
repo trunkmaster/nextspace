@@ -25,6 +25,9 @@
 #include "WindowMaker.h"
 #include <sys/types.h>
 
+#include <WMcore/proplist.h>
+#include <WMcore/bagtree.h>
+
 #include <WINGs/wfont.h>
 
 #define WTB_LEFT	0

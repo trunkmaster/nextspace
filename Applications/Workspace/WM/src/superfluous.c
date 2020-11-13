@@ -31,6 +31,9 @@
 
 #include <wraster.h>
 
+#include <WMcore/handlers.h>
+#include <WMcore/usleep.h>
+
 #include <WINGs/wevent.h>
 
 #include "WindowMaker.h"

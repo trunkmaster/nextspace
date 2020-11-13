@@ -30,6 +30,7 @@
 #include <X11/Xutil.h>
 
 #include <WMcore/notification.h>
+#include <WMcore/memory.h>
 
 #include "WindowMaker.h"
 #include "window.h"

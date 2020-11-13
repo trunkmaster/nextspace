@@ -34,6 +34,11 @@
 #include <sys/stat.h>
 
 #include <WMcore/notification.h>
+#include <WMcore/memory.h>
+#include <WMcore/handlers.h>
+#include <WMcore/string.h>
+#include <WMcore/userdefaults.h>
+
 #include <WINGs/wevent.h>
 #include <WINGs/wmisc.h>
 

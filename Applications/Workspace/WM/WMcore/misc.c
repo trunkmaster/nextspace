@@ -23,6 +23,7 @@
 #include "WMcore.h"
 
 #include "error.h"
+#include "misc.h"
 
 WMRange wmkrange(int start, int count)
 {

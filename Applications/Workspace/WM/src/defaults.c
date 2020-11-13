@@ -46,8 +46,14 @@
 #include <X11/keysym.h>
 
 #include <wraster.h>
-#include <WINGs/WINGs.h>
+
 #include <WMcore/notification.h>
+#include <WMcore/proplist.h>
+#include <WMcore/memory.h>
+#include <WMcore/userdefaults.h>
+#include <WMcore/string.h>
+
+#include <WINGs/WINGs.h>
 #include <WINGs/wcolor.h>
 #include <WINGs/configuration.h>
 #include <WINGs/wmisc.h>

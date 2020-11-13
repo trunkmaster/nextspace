@@ -1,7 +1,25 @@
 #ifndef _WNOTIFICATION_H_
 #define _WNOTIFICATION_H_
 
-#include "WMcore.h"
+//#include "WMcore.h"
+
+typedef struct W_Notification WMNotification;
+typedef struct W_NotificationQueue WMNotificationQueue;
+
+typedef enum {
+    WMPostWhenIdle = 1,
+    WMPostASAP = 2,
+    WMPostNow = 3
+} WMPostingStyle;
+
+typedef enum {
+    WNCNone = 0,
+    WNCOnName = 1,
+    WNCOnSender = 2
+} WMNotificationCoalescing;
+  
+typedef void WMNotificationObserverAction(void *observerData,
+                                          WMNotification *notification);
 
 /* ---[ notification.c ]-------------------------------------------------- */
 

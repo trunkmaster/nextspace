@@ -30,8 +30,14 @@
 #include <X11/Xatom.h>
 #ifdef KEEP_XKB_LOCK_STATUS
 #include <X11/XKBlib.h>
-#endif				/* KEEP_XKB_LOCK_STATUS */
+#endif /* KEEP_XKB_LOCK_STATUS */
+
 #include <wraster.h>
+
+#include <WMcore/memory.h>
+#include <WMcore/userdefaults.h>
+#include <WMcore/string.h>
+
 #include "WindowMaker.h"
 #include "def_pixmaps.h"
 #include "screen.h"

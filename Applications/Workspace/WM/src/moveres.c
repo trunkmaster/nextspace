@@ -28,6 +28,10 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <WMcore/memory.h>
+#include <WMcore/string.h>
+#include <WMcore/usleep.h>
+
 #include <WINGs/widgets.h>
 #include <WINGs/wevent.h>
 #include <WINGs/wmisc.h>

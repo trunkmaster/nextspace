@@ -21,8 +21,6 @@
 
 #include "wconfig.h"
 
-#include "WMcore.h"
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -33,6 +31,11 @@
 #include <string.h>
 #include <pwd.h>
 #include <limits.h>
+
+#include "WMcore.h"
+#include "memory.h"
+#include "string.h"
+#include "proplist.h"
 
 #ifndef PATH_MAX
 #define PATH_MAX  1024

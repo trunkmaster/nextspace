@@ -29,6 +29,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
+#include <WMcore/memory.h>
+#include <WMcore/string.h>
+
 #include "WindowMaker.h"
 #include "dock.h"
 #include "xdnd.h"

@@ -24,6 +24,10 @@
 #include <X11/Xlib.h>
 #include <string.h>
 
+#include <WMcore/memory.h>
+#include <WMcore/array.h>
+#include <WMcore/handlers.h>
+
 #include "GNUstep.h"
 #include "WindowMaker.h"
 #include "menu.h"

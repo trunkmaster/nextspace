@@ -45,6 +45,8 @@
 #include <X11/XKBlib.h>
 #endif
 
+#include <WMcore/memory.h>
+
 #include <WINGs/wevent.h>
 
 #include "WindowMaker.h"

@@ -7,12 +7,16 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include <WINGs/WINGs.h>
+
 #include "wconfig.h"
 
-#include <WMcore/wapplication.h>
-#include <WMcore/userdefaults.h>
-#include <WMcore/notification.h>
-#include <WINGs/WINGs.h>
+#include "memory.h"
+#include "wapplication.h"
+#include "userdefaults.h"
+#include "notification.h"
+#include "findfile.h"
+#include "string.h"
 
 typedef struct W_UserDefaults {
 	WMPropList *defaults;

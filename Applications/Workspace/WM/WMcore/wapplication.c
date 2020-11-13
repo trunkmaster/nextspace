@@ -2,10 +2,13 @@
 #include <unistd.h>
 #include <X11/Xlocale.h>
 
+#include <WINGs/widgets.h>
+
 #include "wconfig.h"
+#include "memory.h"
 #include "userdefaults.h"
 #include "notification.h"
-#include "widgets.h"
+#include "string.h"
 #include "wapplication.h"
 
 struct W_Application WMApplication;

@@ -20,6 +20,8 @@
 #ifndef WUTIL_USERDEFAULTS_H
 #define WUTIL_USERDEFAULTS_H
 
+#include <WMcore/proplist.h>
+
 /*
  * This file is not part of WUtil public API
  *
@@ -30,5 +32,65 @@
 /* Save user configuration, to be used when application exits only */
 void w_save_defaults_changes(void);
 
+
+/* ---[ WINGs/userdefaults.c ]-------------------------------------------- */
+
+/* don't free the returned string */
+const char* wusergnusteppath(void);
+
+/* Free the returned string when you no longer need it */
+char* wdefaultspathfordomain(const char *domain);
+
+/* Free the returned string when you no longer need it */
+char* wglobaldefaultspathfordomain(const char *domain);
+
+WMUserDefaults* WMGetStandardUserDefaults(void);
+
+WMUserDefaults* WMGetDefaultsFromPath(const char *path);
+
+void WMSynchronizeUserDefaults(WMUserDefaults *database);
+
+void WMSaveUserDefaults(WMUserDefaults *database);
+
+void WMEnableUDPeriodicSynchronization(WMUserDefaults *database, Bool enable);
+
+/* Returns a WMPropList array with all the keys in the user defaults database.
+ * Free the array with WMReleasePropList() when no longer needed.
+ * Keys in array are just retained references to the original keys */
+WMPropList* WMGetUDKeys(WMUserDefaults *database);
+
+WMPropList* WMGetUDObjectForKey(WMUserDefaults *database, const char *defaultName);
+
+void WMSetUDObjectForKey(WMUserDefaults *database, WMPropList *object,
+                         const char *defaultName);
+
+void WMRemoveUDObjectForKey(WMUserDefaults *database, const char *defaultName);
+
+/* Returns a reference. Do not free it! */
+char* WMGetUDStringForKey(WMUserDefaults *database, const char *defaultName);
+
+int WMGetUDIntegerForKey(WMUserDefaults *database, const char *defaultName);
+
+float WMGetUDFloatForKey(WMUserDefaults *database, const char *defaultName);
+
+Bool WMGetUDBoolForKey(WMUserDefaults *database, const char *defaultName);
+
+void WMSetUDStringForKey(WMUserDefaults *database, const char *value,
+                         const char *defaultName);
+
+void WMSetUDIntegerForKey(WMUserDefaults *database, int value,
+                          const char *defaultName);
+
+void WMSetUDFloatForKey(WMUserDefaults *database, float value,
+                        const char *defaultName);
+
+void WMSetUDBoolForKey(WMUserDefaults *database, Bool value,
+                       const char *defaultName);
+
+WMPropList* WMGetUDSearchList(WMUserDefaults *database);
+
+void WMSetUDSearchList(WMUserDefaults *database, WMPropList *list);
+
+extern char *WMUserDefaultsDidChangeNotification;
 
 #endif /* WUTIL_USERDEFAULTS_H */

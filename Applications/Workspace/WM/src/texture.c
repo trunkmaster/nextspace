@@ -29,6 +29,8 @@
 
 #include <wraster.h>
 
+#include <WMcore/memory.h>
+
 #include "WindowMaker.h"
 #include "texture.h"
 #include "window.h"

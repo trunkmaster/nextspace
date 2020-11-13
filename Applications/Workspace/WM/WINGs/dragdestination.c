@@ -1,7 +1,10 @@
 
 #include <X11/Xatom.h>
 
+#include <WMcore/memory.h>
 #include <WMcore/notification.h>
+#include <WMcore/string.h>
+#include <WMcore/handlers.h>
 
 #include "WINGs.h"
 #include "dragcommon.h"

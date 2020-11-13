@@ -27,8 +27,10 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <WMcore/WMcore.h>
 #include <WINGs/WINGs.h>
+
+#include "WMcore.h"
+#include "memory.h"
 
 #ifdef HAVE_SYSLOG_H
 #include <syslog.h>

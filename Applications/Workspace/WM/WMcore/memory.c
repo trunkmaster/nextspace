@@ -19,9 +19,6 @@
  *  MA 02110-1301, USA.
  */
 
-#include "wconfig.h"
-#include "WMcore.h"
-
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -30,16 +27,14 @@
 #include <assert.h>
 #include <signal.h>
 
+#include "wconfig.h"
+#include "WMcore.h"
+#include "memory.h"
+#include "hashtable.h"
+
 #ifdef HAVE_STDNORETURN
 #include <stdnoreturn.h>
 #endif
-
-#ifdef USE_BOEHM_GC
-#ifndef GC_DEBUG
-#define GC_DEBUG
-#endif /* !GC_DEBUG */
-#include <gc/gc.h>
-#endif /* USE_BOEHM_GC */
 
 #ifndef False
 # define False 0
@@ -50,27 +45,27 @@
 
 static void defaultHandler(int bla)
 {
-	if (bla)
-		kill(getpid(), SIGABRT);
-	else
-		exit(1);
+  if (bla)
+    kill(getpid(), SIGABRT);
+  else
+    exit(1);
 }
 
 static waborthandler *aborthandler = defaultHandler;
 
 static inline noreturn void wAbort(int bla)
 {
-	(*aborthandler)(bla);
-	exit(-1);
+  (*aborthandler)(bla);
+  exit(-1);
 }
 
-waborthandler *wsetabort(waborthandler * handler)
+waborthandler *wsetabort(waborthandler *handler)
 {
-	waborthandler *old = aborthandler;
+  waborthandler *old = aborthandler;
 
-	aborthandler = handler;
+  aborthandler = handler;
 
-	return old;
+  return old;
 }
 
 static int Aborting = 0;	/* if we're in the middle of an emergency exit */
@@ -79,144 +74,115 @@ static WMHashTable *table = NULL;
 
 void *wmalloc(size_t size)
 {
-	void *tmp;
+  void *tmp;
 
-	assert(size > 0);
+  assert(size > 0);
 
-#ifdef USE_BOEHM_GC
-	tmp = GC_MALLOC(size);
-#else
-	tmp = malloc(size);
-#endif
-	if (tmp == NULL) {
-		wwarning("malloc() failed. Retrying after 2s.");
-		sleep(2);
-#ifdef USE_BOEHM_GC
-		tmp = GC_MALLOC(size);
-#else
-		tmp = malloc(size);
-#endif
-		if (tmp == NULL) {
-			if (Aborting) {
-				fputs("Really Bad Error: recursive malloc() failure.", stderr);
-				exit(-1);
-			} else {
-				wfatal("virtual memory exhausted");
-				Aborting = 1;
-				wAbort(False);
-			}
-		}
-	}
-	memset(tmp, 0, size);
-	return tmp;
+  tmp = malloc(size);
+
+  if (tmp == NULL) {
+    wwarning("malloc() failed. Retrying after 2s.");
+    sleep(2);
+    tmp = malloc(size);
+    if (tmp == NULL) {
+      if (Aborting) {
+        fputs("Really Bad Error: recursive malloc() failure.", stderr);
+        exit(-1);
+      } else {
+        wfatal("virtual memory exhausted");
+        Aborting = 1;
+        wAbort(False);
+      }
+    }
+  }
+  memset(tmp, 0, size);
+  return tmp;
 }
 
 void *wrealloc(void *ptr, size_t newsize)
 {
-	void *nptr;
+  void *nptr;
 
-	if (!ptr) {
-		nptr = wmalloc(newsize);
-	} else if (newsize == 0) {
-		wfree(ptr);
-		nptr = NULL;
-	} else {
-#ifdef USE_BOEHM_GC
-		nptr = GC_REALLOC(ptr, newsize);
-#else
-		nptr = realloc(ptr, newsize);
-#endif
-		if (nptr == NULL) {
-			wwarning("realloc() failed. Retrying after 2s.");
-			sleep(2);
-#ifdef USE_BOEHM_GC
-			nptr = GC_REALLOC(ptr, newsize);
-#else
-			nptr = realloc(ptr, newsize);
-#endif
-			if (nptr == NULL) {
-				if (Aborting) {
-					fputs("Really Bad Error: recursive realloc() failure.", stderr);
-					exit(-1);
-				} else {
-					wfatal("virtual memory exhausted");
-					Aborting = 1;
-					wAbort(False);
-				}
-			}
-		}
-	}
-	return nptr;
+  if (!ptr) {
+    nptr = wmalloc(newsize);
+  } else if (newsize == 0) {
+    wfree(ptr);
+    nptr = NULL;
+  } else {
+    nptr = realloc(ptr, newsize);
+    if (nptr == NULL) {
+      wwarning("realloc() failed. Retrying after 2s.");
+      sleep(2);
+      nptr = realloc(ptr, newsize);
+      if (nptr == NULL) {
+        if (Aborting) {
+          fputs("Really Bad Error: recursive realloc() failure.", stderr);
+          exit(-1);
+        } else {
+          wfatal("virtual memory exhausted");
+          Aborting = 1;
+          wAbort(False);
+        }
+      }
+    }
+  }
+  return nptr;
 }
 
 void *wretain(void *ptr)
 {
-	int *refcount;
+  int *refcount;
 
-	if (!table) {
-		table = WMCreateHashTable(WMIntHashCallbacks);
-	}
+  if (!table) {
+    table = WMCreateHashTable(WMIntHashCallbacks);
+  }
 
-	refcount = WMHashGet(table, ptr);
-	if (!refcount) {
-		refcount = wmalloc(sizeof(int));
-		*refcount = 1;
-		WMHashInsert(table, ptr, refcount);
+  refcount = WMHashGet(table, ptr);
+  if (!refcount) {
+    refcount = wmalloc(sizeof(int));
+    *refcount = 1;
+    WMHashInsert(table, ptr, refcount);
 #ifdef VERBOSE
-		printf("== %i (%p)\n", *refcount, ptr);
+    printf("== %i (%p)\n", *refcount, ptr);
 #endif
-	} else {
-		(*refcount)++;
+  } else {
+    (*refcount)++;
 #ifdef VERBOSE
-		printf("+ %i (%p)\n", *refcount, ptr);
+    printf("+ %i (%p)\n", *refcount, ptr);
 #endif
-	}
+  }
 
-	return ptr;
+  return ptr;
 }
 
 void wfree(void *ptr)
 {
-	if (ptr)
-#ifdef USE_BOEHM_GC
-		/* This should eventually be removed, once the criss-cross
-		 * of wmalloc()d memory being free()d, malloc()d memory being
-		 * wfree()d, various misuses of calling wfree() on objects
-		 * allocated by libc malloc() and calling libc free() on
-		 * objects allocated by Boehm GC (think external libraries)
-		 * is cleaned up.
-		 */
-		if (GC_base(ptr) != 0)
-			GC_FREE(ptr);
-		else
-			free(ptr);
-#else
-		free(ptr);
-#endif
-	ptr = NULL;
+  if (ptr)
+    free(ptr);
+  ptr = NULL;
 }
 
 void wrelease(void *ptr)
 {
-	int *refcount;
+  int *refcount;
 
-	refcount = WMHashGet(table, ptr);
-	if (!refcount) {
-		wwarning("trying to release unexisting data %p", ptr);
-	} else {
-		(*refcount)--;
-		if (*refcount < 1) {
+  refcount = WMHashGet(table, ptr);
+  if (!refcount) {
+    wwarning("trying to release unexisting data %p", ptr);
+  } else {
+    (*refcount)--;
+    if (*refcount < 1) {
 #ifdef VERBOSE
-			printf("RELEASING %p\n", ptr);
+      printf("RELEASING %p\n", ptr);
 #endif
-			WMHashRemove(table, ptr);
-			wfree(refcount);
-			wfree(ptr);
-		}
+      WMHashRemove(table, ptr);
+      wfree(refcount);
+      wfree(ptr);
+    }
 #ifdef VERBOSE
-		else {
-			printf("- %i (%p)\n", *refcount, ptr);
-		}
+    else {
+      printf("- %i (%p)\n", *refcount, ptr);
+    }
 #endif
-	}
+  }
 }

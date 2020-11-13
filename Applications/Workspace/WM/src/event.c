@@ -49,6 +49,10 @@
 #include <X11/XKBlib.h>
 #endif /* KEEP_XKB_LOCK_STATUS */
 
+#include <WMcore/memory.h>
+#include <WMcore/usleep.h>
+#include <WMcore/handlers.h>
+
 #include <WINGs/wevent.h>
 #include <WINGs/wmisc.h>
 

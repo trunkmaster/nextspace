@@ -69,6 +69,9 @@
 #include <unistd.h>
 #include <time.h>
 
+#include <WMcore/memory.h>
+#include <WMcore/string.h>
+
 #include "WindowMaker.h"
 #include "screen.h"
 #include "window.h"

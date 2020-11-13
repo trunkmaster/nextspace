@@ -23,6 +23,8 @@
 #include <string.h>
 #include <sys/time.h>
 
+#include <WMcore/memory.h>
+
 #include <WINGs/widgets.h>
 #include <WINGs/wcolor.h>
 #include <WINGs/wwindow.h>

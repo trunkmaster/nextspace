@@ -3,6 +3,8 @@
 #include <string.h>
 
 #include "WMcore.h"
+#include "bagtree.h"
+#include "memory.h"
 
 typedef struct W_Node {
 	struct W_Node *parent;

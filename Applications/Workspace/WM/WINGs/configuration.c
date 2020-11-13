@@ -4,6 +4,10 @@
 
 #include <X11/Xlocale.h>
 
+#include <WMcore/memory.h>
+#include <WMcore/userdefaults.h>
+#include <WMcore/proplist.h>
+
 _WINGsConfiguration WINGsConfiguration;
 
 #define SYSTEM_FONT "sans serif"

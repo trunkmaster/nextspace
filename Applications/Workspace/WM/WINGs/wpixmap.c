@@ -2,6 +2,8 @@
 #include "WINGs.h"
 #include "wpixmap.h"
 
+#include <WMcore/memory.h>
+
 #include <wraster.h>
 
 WMPixmap *WMRetainPixmap(WMPixmap * pixmap)

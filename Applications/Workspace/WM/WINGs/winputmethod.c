@@ -1,5 +1,9 @@
 
 #include <X11/Xlib.h>
+
+#include <WMcore/memory.h>
+#include <WMcore/string.h>
+
 #include "wconfig.h"
 #include "WINGs.h"
 #include "winputmethod.h"

@@ -1,4 +1,6 @@
 
+#include <WMcore/memory.h>
+
 #include <WINGs/widgets.h>
 #include <WINGs/wevent.h>
 #include <WINGs/wcolor.h>

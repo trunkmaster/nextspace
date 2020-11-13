@@ -2,6 +2,9 @@
 #include <string.h>
 
 #include "WMcore.h"
+#include "memory.h"
+#include "array.h"
+#include "tree.h"
 
 typedef struct W_TreeNode {
 	void *data;

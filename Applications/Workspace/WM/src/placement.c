@@ -27,6 +27,9 @@
 #include <string.h>
 #include <limits.h>
 
+#include <WMcore/memory.h>
+#include <WMcore/bagtree.h>
+
 #include <WINGs/wmisc.h>
 
 #include "GNUstep.h"

@@ -34,6 +34,8 @@
 #include <X11/Xatom.h>
 #include <string.h>
 
+#include <WMcore/memory.h>
+#include <WMcore/string.h>
 #include <WMcore/notification.h>
 
 #include "WindowMaker.h"

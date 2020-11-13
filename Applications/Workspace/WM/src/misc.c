@@ -40,6 +40,12 @@
 #include <WINGs/wmisc.h>
 #include <wraster.h>
 
+#include <WMcore/memory.h>
+#include <WMcore/string.h>
+#include <WMcore/usleep.h>
+#include <WMcore/findfile.h>
+#include <WMcore/handlers.h>
+
 #include "window.h"
 #include "misc.h"
 #include "WindowMaker.h"

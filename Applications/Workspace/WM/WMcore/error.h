@@ -17,8 +17,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WUTIL_ERROR_H
-#define WUTIL_ERROR_H
+#ifndef _WERROR_H_
+#define _WERROR_H_
 
 /*
  * This file is not part of WUtil public API
@@ -33,4 +33,4 @@ void w_syslog_close(void);
 #endif
 
 
-#endif /* WUTIL_ERROR_H */
+#endif /* _WERROR_H */

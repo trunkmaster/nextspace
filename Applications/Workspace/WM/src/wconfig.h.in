@@ -122,7 +122,7 @@
 /* name of the script to execute at startup */
 #define DEF_INIT_SCRIPT "autostart"
 #define DEF_EXIT_SCRIPT "exitscript"
-#define DEFAULTS_DIR    "Preferences/.WindowMaker"
+#define DEFAULTS_DIR    "/Preferences/.WindowMaker"
 
 #ifdef USE_TIFF
 #define DEF_BUTTON_IMAGES PKGDATADIR"/buttons.tiff"
@@ -184,7 +184,7 @@
 
 /* do not divide main menu and submenu in different tiers,
  * opposed to OpenStep */
-#define SINGLE_MENULEVEL
+#undef SINGLE_MENULEVEL
 
 /* max. time to spend doing animations in seconds. If the animation
  * time exceeds this value, it is immediately finished. Usefull for

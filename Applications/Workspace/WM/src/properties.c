@@ -26,6 +26,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <WMcore/memory.h>
+
 #include "WindowMaker.h"
 #include "window.h"
 #include "GNUstep.h"

@@ -31,6 +31,10 @@
 
 #include <wraster.h>
 
+#include <WMcore/memory.h>
+#include <WMcore/usleep.h>
+#include <WMcore/string.h>
+
 #include <WINGs/wevent.h>
 #include <WINGs/wcolor.h>
 #include <WINGs/wmisc.h>
