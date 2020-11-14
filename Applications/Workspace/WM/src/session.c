@@ -210,7 +210,7 @@ static WMPropList *makeWindowState(WWindow * wwin, WApplication * wapp)
 
     for (mask = 0, i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
       if (scr->shortcutWindows[i] != NULL &&
-          WMGetFirstInArray(scr->shortcutWindows[i], wwin) != WANotFound)
+          CFArrayGetFirstIndexOfValue(scr->shortcutWindows[i], wwin) != WANotFound)
         mask |= 1 << i;
     }
 

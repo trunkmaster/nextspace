@@ -25,6 +25,8 @@
 #include "WindowMaker.h"
 #include <sys/types.h>
 
+#include <CoreFoundation/CFArray.h>
+
 #include <WMcore/proplist.h>
 #include <WMcore/bagtree.h>
 
@@ -106,7 +108,7 @@ typedef struct _WScreen {
                                        * another window entered fullscreen
                                        */
 
-  WMArray *selected_windows;
+  CFMutableArrayRef selected_windows;
 
   WMArray *fakeGroupLeaders;         /* list of fake window group ids */
 
@@ -288,7 +290,8 @@ typedef struct _WScreen {
                                         * raised */
 
   /* for window shortcuts */
-  WMArray *shortcutWindows[MAX_WINDOW_SHORTCUTS];
+  /* WMArray *shortcutWindows[MAX_WINDOW_SHORTCUTS]; */
+  CFMutableArrayRef shortcutWindows[MAX_WINDOW_SHORTCUTS];
 
 #ifdef USE_DOCK_XDND
   char *xdestring;

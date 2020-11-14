@@ -22,6 +22,8 @@
 #ifndef WMAPPLICATION_H_
 #define WMAPPLICATION_H_
 
+#include <CoreFoundation/CFArray.h>
+
 /* for tracking single application instances */
 typedef struct WApplication {
   struct WApplication *next;
@@ -46,7 +48,7 @@ typedef struct WApplication {
   
   /* GNUstep application */
   struct WWindow *menu_win;
-  WMArray *windows;
+  CFMutableArrayRef windows;
 
   /* WINGs application */
   WMenu *menu;				/* application menu */

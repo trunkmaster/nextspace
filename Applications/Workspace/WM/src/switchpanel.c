@@ -23,6 +23,8 @@
 #include <string.h>
 #include <sys/time.h>
 
+#include <CoreFoundation/CFArray.h>
+
 #include <WMcore/memory.h>
 
 #include <WINGs/widgets.h>
@@ -31,8 +33,6 @@
 #include <WINGs/wlabel.h>
 #include <WINGs/wframe.h>
 #include <WINGs/wmisc.h>
-
-#include "wconfig.h"
 
 #include "WindowMaker.h"
 #include "screen.h"
@@ -412,19 +412,18 @@ static WMArray *makeWindowListArray(WScreen *scr, int include_unmapped, Bool cla
                    w->wm_instance, w->client_win);
         }
       }
-      else if (WMGetArrayItemCount(wapp->windows) > 0) {
+      else if (CFArrayGetCount(wapp->windows) > 0) {
         if (wapp->last_focused)
           w = wapp->last_focused;
         else
-          w = WMGetFromArray(wapp->windows, 0);
+          w = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
         wmessage("[switchpanel.c]\t%s (window: %lu)", w->wm_instance, w->client_win);
       }
 
       if (w)
         WMAddToArray(windows, w);
       
-      wmessage("[switchpanel.c]\tWindow count:%i\n",
-               WMGetArrayItemCount(wapp->windows));
+      wmessage("[switchpanel.c]\tWindow count:%i\n", CFArrayGetCount(wapp->windows));
       wapp = wapp->next;
     }
     wmessage("[switchpanel.c] window list array creation END\n");

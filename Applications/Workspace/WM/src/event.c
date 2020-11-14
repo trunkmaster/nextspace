@@ -1856,64 +1856,62 @@ static void handleKeyPress(XEvent * event)
   case WKBD_WINDOW9:
   case WKBD_WINDOW10:
 
-    widx = command - WKBD_WINDOW1;
+    /* widx = command - WKBD_WINDOW1; */
 
-    if (scr->shortcutWindows[widx]) {
-      WMArray *list = scr->shortcutWindows[widx];
-      int cw;
-      int count = WMGetArrayItemCount(list);
-      WWindow *twin;
-      WMArrayIterator iter;
-      WWindow *wwin;
+    /* if (scr->shortcutWindows[widx]) { */
+    /*   WMArray *list = scr->shortcutWindows[widx]; */
+    /*   int cw; */
+    /*   int count = WMGetArrayItemCount(list); */
+    /*   WWindow *twin; */
+    /*   WMArrayIterator iter; */
+    /*   WWindow *wwin; */
 
-      wUnselectWindows(scr);
-      cw = scr->current_workspace;
+    /*   wUnselectWindows(scr); */
+    /*   cw = scr->current_workspace; */
 
-      WM_ETARETI_ARRAY(list, wwin, iter) {
-        if (count > 1)
-          wWindowChangeWorkspace(wwin, cw);
+    /*   WM_ETARETI_ARRAY(list, wwin, iter) { */
+    /*     if (count > 1) */
+    /*       wWindowChangeWorkspace(wwin, cw); */
 
-        wMakeWindowVisible(wwin);
+    /*     wMakeWindowVisible(wwin); */
 
-        if (count > 1)
-          wSelectWindow(wwin, True);
-      }
+    /*     if (count > 1) */
+    /*       wSelectWindow(wwin, True); */
+    /*   } */
 
-      /* rotate the order of windows, to create a cycling effect */
-      twin = WMGetFromArray(list, 0);
-      WMDeleteFromArray(list, 0);
-      WMAddToArray(list, twin);
+    /*   /\* rotate the order of windows, to create a cycling effect *\/ */
+    /*   twin = WMGetFromArray(list, 0); */
+    /*   WMDeleteFromArray(list, 0); */
+    /*   WMAddToArray(list, twin); */
 
-    } else if (wwin && ISMAPPED(wwin) && ISFOCUSED(wwin)) {
-      if (scr->shortcutWindows[widx]) {
-        WMFreeArray(scr->shortcutWindows[widx]);
-        scr->shortcutWindows[widx] = NULL;
-      }
+    /* } else if (wwin && ISMAPPED(wwin) && ISFOCUSED(wwin)) { */
+    /*   if (scr->shortcutWindows[widx]) { */
+    /*     WMFreeArray(scr->shortcutWindows[widx]); */
+    /*     scr->shortcutWindows[widx] = NULL; */
+    /*   } */
 
-      if (wwin->flags.selected && scr->selected_windows) {
-        scr->shortcutWindows[widx] = WMDuplicateArray(scr->selected_windows);
-        /*WMRemoveFromArray(scr->shortcutWindows[index], wwin);
-          WMInsertInArray(scr->shortcutWindows[index], 0, wwin); */
-      } else {
-        scr->shortcutWindows[widx] = WMCreateArray(4);
-        WMAddToArray(scr->shortcutWindows[widx], wwin);
-      }
+    /*   if (wwin->flags.selected && scr->selected_windows) { */
+    /*     scr->shortcutWindows[widx] = WMDuplicateArray(scr->selected_windows); */
+    /*   } else { */
+    /*     scr->shortcutWindows[widx] = WMCreateArray(4); */
+    /*     WMAddToArray(scr->shortcutWindows[widx], wwin); */
+    /*   } */
 
-      wSelectWindow(wwin, !wwin->flags.selected);
-      XFlush(dpy);
-      wusleep(3000);
-      wSelectWindow(wwin, !wwin->flags.selected);
-      XFlush(dpy);
+    /*   wSelectWindow(wwin, !wwin->flags.selected); */
+    /*   XFlush(dpy); */
+    /*   wusleep(3000); */
+    /*   wSelectWindow(wwin, !wwin->flags.selected); */
+    /*   XFlush(dpy); */
 
-    } else if (scr->selected_windows && WMGetArrayItemCount(scr->selected_windows)) {
+    /* } else if (scr->selected_windows && WMGetArrayItemCount(scr->selected_windows)) { */
 
-      if (wwin->flags.selected && scr->selected_windows) {
-        if (scr->shortcutWindows[widx]) {
-          WMFreeArray(scr->shortcutWindows[widx]);
-        }
-        scr->shortcutWindows[widx] = WMDuplicateArray(scr->selected_windows);
-      }
-    }
+    /*   if (wwin->flags.selected && scr->selected_windows) { */
+    /*     if (scr->shortcutWindows[widx]) { */
+    /*       WMFreeArray(scr->shortcutWindows[widx]); */
+    /*     } */
+    /*     scr->shortcutWindows[widx] = WMDuplicateArray(scr->selected_windows); */
+    /*   } */
+    /* } */
 
     break;
 

@@ -24,8 +24,11 @@
 #include <X11/Xlib.h>
 #include <string.h>
 
+#include <CoreFoundation/CFString.h>
+#include <CoreFoundation/CFLogUtilities.h>
+
 #include <WMcore/memory.h>
-#include <WMcore/array.h>
+/* #include <WMcore/array.h> */
 #include <WMcore/handlers.h>
 
 #include "GNUstep.h"
@@ -70,7 +73,7 @@ static WWindow *makeMainWindow(WScreen * scr, Window window)
   XSelectInput(dpy, window, attr.your_event_mask | PropertyChangeMask | StructureNotifyMask);
   return wwin;
 }
-
+ 
 WApplication *wApplicationOf(Window window)
 {
   WApplication *wapp;
@@ -84,11 +87,12 @@ WApplication *wApplicationOf(Window window)
 
 BOOL _isWindowAlreadyRegistered(WApplication *wapp, WWindow *wwin)
 {
-  WMArray *windows = wapp->windows;
+  CFMutableArrayRef windows = wapp->windows;
   WWindow *w;
 
-  for (unsigned i = 0; i < WMGetArrayItemCount(windows); i++) {
-    w = WMGetFromArray(windows, i);
+  /* for (unsigned i = 0; i < WMGetArrayItemCount(windows); i++) { */
+  for (unsigned i = 0; i < CFArrayGetCount(windows); i++) {
+    w = (WWindow *)CFArrayGetValueAtIndex(windows, i);
     if (w == wwin)
       return True;
   }
@@ -121,7 +125,7 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
   if (window_level != NSNormalWindowLevel && window_level != NSFloatingWindowLevel)
     return;
 
-  WMAddToArray(wapp->windows, wwin);
+  CFArrayAppendValue(wapp->windows, wwin);
   wapp->refcount++;
   
 #ifdef NEXTSPACE
@@ -138,17 +142,17 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
   if (wapp == NULL || wapp->windows == NULL || wwin == NULL)
     return;
 
-  window_count = WMGetArrayItemCount(wapp->windows);
+  window_count = CFArrayGetCount(wapp->windows);
 
   wmessage("[application.c] REMOVE window: %lu name: %s refcount=%i\n",
            wwin->client_win, wwin->wm_instance, wapp->refcount);
   
   for (int i = 0; i < window_count; i++) {
-    awin = WMGetFromArray(wapp->windows, i);
+    awin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, i);
     if (awin == wwin) {
       if (wwin == wapp->last_focused)
         wapp->last_focused = NULL;
-      WMDeleteFromArray(wapp->windows, i);
+      CFArrayRemoveValueAtIndex(wapp->windows, i);
       wapp->refcount--;
       break;
     }
@@ -185,7 +189,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
   wapp = wmalloc(sizeof(WApplication));
 
-  wapp->windows = WMCreateArray(1);
+  wapp->windows = CFArrayCreateMutable(NULL, 1, NULL);
 
   wapp->refcount = 1;
   wapp->last_focused = wwin;
@@ -270,10 +274,13 @@ void wApplicationDestroy(WApplication *wapp)
 
   wmessage("[application.c] DESTROY main window:%lu name:%s windows #:%i refcount:%i\n",
            wapp->main_window, wapp->app_icon->wm_instance,
-           WMGetArrayItemCount(wapp->windows), wapp->refcount);
+           CFArrayGetCount(wapp->windows), wapp->refcount);
 
-  WMEmptyArray(wapp->windows);
-  WMFreeArray(wapp->windows);
+  CFShow(wapp->windows);
+  CFArrayRemoveAllValues(wapp->windows);
+  CFRelease(wapp->windows);
+  CFLog(kCFLogLevelError,
+        CFSTR("wapp->windows retain count: %i"), CFGetRetainCount(wapp->windows));
 
   wapp->refcount--;
   
