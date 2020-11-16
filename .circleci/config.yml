@@ -1,23 +1,108 @@
-# For a detailed guide to building and testing on iOS, read the docs:
-# https://circleci.com/docs/2.0/testing-ios/
-
 version: 2.1
-
+workflows:
+  build:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: master
 jobs:
   build:
-
-    macos:
-      xcode: 11.0.0 # Specify the Xcode version to use
-
-    steps:
-      - checkout
-      - run: pod install # Install CocoaPods dependencies
-      - run: fastlane scan # Run tests using Fastlane
-
-      # Collect XML test results data to show in the UI, and save the same XML
-      # files under test-results folder in the Artifacts tab
-      - store_test_results:
-          path: test_output
-      - store_artifacts:
-          path: test_output
-          destination: scan-output
+    machine:
+      image: amd64/centos:7.7.1908
+    environment:
+      CC: /opt/rh/llvm-toolset-7.0/root/usr/bin/clang
+      BASH_ENV: /etc/profile.d/nextspace.sh                                                                                                                                                                                      
+    steps:                                                                                                                                                                                                                       
+    - run:
+        name: Setup Yum
+        command: |
+          yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+          yum -y install centos-release-scl-rh centos-release-scl
+          yum -y update
+    - run:
+        name: Install libdispatch
+        command: |
+          yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/libdispatch-1.3.1121-3.el7.x86_64.rpm
+          yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/libdispatch-devel-1.3.1121-3.el7.x86_64.rpm
+    - run:
+        name: Install libobjc2
+        command: |
+          yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/libobjc2-2.0-3.el7.x86_64.rpm
+          yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/libobjc2-devel-2.0-3.el7.x86_64.rpm
+    - run:
+        name: Install NextSpace Core files
+        command: |
+          yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/nextspace-core-0.95-8.el7.x86_64.rpm
+          yum -y install https://github.com/trunkmaster/nextspace/releases/download/0.85/nextspace-core-devel-0.95-8.el7.x86_64.rpm
+    - run:
+        name: Install LLVM, Clang and Git
+        command: |
+          yum -y install llvm-toolset-7.0-clang git which
+    - run:                                                                                                                                                                                                                     
+        name: GNUstep Base - install build dependencies                                                                                                                                                                        
+        command: yum -y install libffi-devel gnutls-devel openssl-devel libicu-devel libxml2-devel libxslt-devel                                                                                                               
+    - run:                                                                                                                                                                                                                     
+        name: GNUstep Base - build and install                                                                                                                                                                                 
+        command: |                                                                                                                                                                                                             
+          git clone https://github.com/gnustep/libs-base                                                                                                                                                                       
+          source /opt/rh/llvm-toolset-7.0/enable                                                                                                                                                                               
+          cd libs-base                                                                                                                                                                                                         
+          ./configure                                                                                                                                                                                                          
+          make                                                                                                                                                                                                                 
+          make install                                                                                                                                                                                                         
+          ldconfig                                                                                                                                                                                                             
+    - run:                                                                                                                                                                                                                     
+        name: GNUstep GUI - install build dependencies                                                                                                                                                                         
+        command: yum -y install giflib-devel libjpeg-turbo-devel libpng-devel libtiff-devel libao-devel libsndfile-devel
+    - run:                                                                                                                                                                                                                     
+        name: GNUstep GUI - build and install                                                                                                                                                                                  
+        command: |                                                                                                                                                                                                             
+          git clone https://github.com/gnustep/libs-gui                                                                                                                                                                        
+          cd libs-gui                                                                                                                                                                                                          
+          git checkout gnustep-gui-nextspace                                                                                                                                                                                   
+          source /opt/rh/llvm-toolset-7.0/enable                                                                                                                                                                               
+          ./configure                                                                                                                                                                                                          
+          make                                                                                                                                                                                                                 
+          make install                                                                                                                                                                                                         
+          ldconfig                                                                                                                                                                                                             
+    - run:                                                                                                                                                                                                                     
+        name: GNUstep Back - install build dependencies                                                                                                                                                                        
+        command: yum -y install libart_lgpl-devel freetype-devel mesa-libGL-devel libX11-devel libXcursor-devel \                                                                                                              
+                libXext-devel libXfixes-devel libXmu-devel libXt-devel libXrandr-devel                                                                                                                                        
+    - run:                                                                                                                                                                                                                     
+        name:  GNUstep Back - build and install                                                                                                                                                                                
+        command: |                                                                                                                                                                                                             
+                git clone https://github.com/gnustep/libs-back                                                                                                                                                                       
+                cd libs-back                                                                                                                                                                                                         
+                git checkout gnustep-back-nextspace                                                                                                                                                                                  
+                source /opt/rh/llvm-toolset-7.0/enable                                                                                                                                                                               
+                ./configure --enable-graphics=art --with-name=art                                                                                                                                                                    
+                make                                                                                                                                                                                                                 
+                make fonts=no install                                                                                                                                                                                                
+                ldconfig                                                                                                                                                                                                             
+    - checkout:                                                                                                                                                                                                                
+        path: /root/nextspace                                                                                                                                                                                                    
+    - run:                                                                                                                                                                                                                     
+        name: Build and install Frameworks                                                                                                                                                                                     
+        command: |                                                                                                                                                                                                             
+                cd /root/nextspace                                                                                                                                                                                                   
+                cd Frameworks                                                                                                                                                                                                        
+                yum -y install `grep "BuildRequires" nextspace-frameworks.spec | awk -c '{print $2}'`                                                                                                                                
+                source /opt/rh/llvm-toolset-7.0/enable                                                                                                                                                                               
+                make                                                                                                                                                                                                                 
+                make install                                                                                                                                                                                                         
+                ldconfig                                                                                                                                                                                                             
+    - run:                                                                                                                                                                                                                     
+        name: Build and install Applications                                                                                                                                                                                   
+        command: |                                                                                                                                                                                                             
+              cd /root/nextspace                                                                                                                                                                                                   
+              cd Applications                                                                                                                                                                                                      
+              yum -y install `grep "BuildRequires" nextspace-applications.spec | awk -c '{print $2}'`                                                                                                                              
+              cd ../Libraries/libwraster                                                                                                                                                                                           
+              source /opt/rh/llvm-toolset-7.0/enable                                                                                                                                                                               
+              make                                                                                                                                                                                                                 
+              make install                                                                                                                                                                                                         
+              cd ../../Applications                                                                                                                                                                                                
+              make                                                                                                                                                                                                                 
+              make install
