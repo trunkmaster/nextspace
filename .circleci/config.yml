@@ -7,10 +7,6 @@ workflow:
           branches:
             only: master
 jobs:
-    build:
-#      filters:
-#        branches:
-#          only: master
       docker:
         - image: amd64/centos:7.7.1908
       environment:
