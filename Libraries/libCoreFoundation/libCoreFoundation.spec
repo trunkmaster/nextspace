@@ -5,6 +5,7 @@ Summary:	Apple CoreFoundation framework.
 License:	Apache 2.0
 URL:		http://swift.org
 Source0:	https://github.com/apple/swift-corelibs-foundation/archive/swift-DEVELOPMENT-SNAPSHOT-2020-11-09-a.tar.gz
+Source1:	CFNotificationCenter.c
 Patch0:		BuildSharedOnLinux.patch
 
 BuildRequires:	cmake
@@ -34,6 +35,7 @@ Development header files for CoreFoundation framework.
 %prep
 %setup -n swift-corelibs-foundation-swift-DEVELOPMENT-SNAPSHOT-2020-11-09-a
 %patch0 -p1
+cp %{_sourcedir}/CFNotificationCenter.c CoreFoundation/AppServices.subproj/
 cd CoreFoundation/Base.subproj/
 cp SwiftRuntime/TargetConditionals.h ./
 

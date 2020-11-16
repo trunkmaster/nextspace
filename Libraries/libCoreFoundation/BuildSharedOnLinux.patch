@@ -1,5 +1,5 @@
 diff --git a/CoreFoundation/Base.subproj/CFBase.h b/CoreFoundation/Base.subproj/CFBase.h
-index 8a0cbde8..655aa555 100644
+index 8a0cbde8..426b5f2a 100644
 --- a/CoreFoundation/Base.subproj/CFBase.h
 +++ b/CoreFoundation/Base.subproj/CFBase.h
 @@ -10,7 +10,11 @@
@@ -14,6 +14,24 @@ index 8a0cbde8..655aa555 100644
  #include <CoreFoundation/CFAvailability.h>
  
  #if (defined(__CYGWIN32__) || defined(_WIN32)) && !defined(__WIN32__)
+@@ -64,13 +68,13 @@
+ #include <stdbool.h>
+ #endif
+ 
+-#if __BLOCKS__ && (TARGET_OS_OSX || TARGET_OS_IPHONE)
++#if __BLOCKS__ && (TARGET_OS_OSX || TARGET_OS_IPHONE || __HAS_DISPATCH__)
+ #include <Block.h>
+ #endif
+ 
+-  #if (TARGET_OS_OSX || TARGET_OS_IPHONE) && !DEPLOYMENT_RUNTIME_SWIFT
+-    #include <libkern/OSTypes.h>
+-  #endif
++#if (TARGET_OS_OSX || TARGET_OS_IPHONE) && !DEPLOYMENT_RUNTIME_SWIFT
++#include <libkern/OSTypes.h>
++#endif
+ 
+ #if !defined(__MACTYPES__)
+ #if !defined(_OS_OSTYPES_H)
 diff --git a/CoreFoundation/Base.subproj/CFLocking.h b/CoreFoundation/Base.subproj/CFLocking.h
 index 10da46f2..5dbac85f 100644
 --- a/CoreFoundation/Base.subproj/CFLocking.h
@@ -108,59 +126,59 @@ index 77b0cb12..d61b67aa 100644
  
  #pragma mark - CFRuntime
 diff --git a/CoreFoundation/CMakeLists.txt b/CoreFoundation/CMakeLists.txt
-index 62569e27..21068e68 100644
+index 62569e27..89a58ec7 100644
 --- a/CoreFoundation/CMakeLists.txt
 +++ b/CoreFoundation/CMakeLists.txt
-@@ -124,6 +124,7 @@ add_framework(CoreFoundation
-                 Base.subproj/CFAsmMacros.h
-                 Base.subproj/CFInternal.h
-                 Base.subproj/CFKnownLocations.h
-+                Base.subproj/CFLocking.h
+@@ -193,8 +193,8 @@ add_framework(CoreFoundation
                  Base.subproj/CFLogUtilities.h
                  Base.subproj/CFPriv.h
-                 Base.subproj/CFOverflow.h
-@@ -187,29 +188,7 @@ add_framework(CoreFoundation
-                 URL.subproj/CFURLPriv.h
-                 URL.subproj/CFURLSessionInterface.h
-               PUBLIC_HEADERS
--                # FIXME: PrivateHeaders referenced by public headers
--                Base.subproj/CFKnownLocations.h
--                Base.subproj/CFLocking.h
-                 Base.subproj/CFLogUtilities.h
--                Base.subproj/CFPriv.h
--                Base.subproj/CFRuntime.h
+                 Base.subproj/CFRuntime.h
 -                Base.subproj/ForFoundationOnly.h
 -                Base.subproj/ForSwiftFoundationOnly.h
--                Locale.subproj/CFCalendar_Internal.h
--                Locale.subproj/CFDateComponents.h
--                Locale.subproj/CFDateInterval.h
--                Locale.subproj/CFLocaleInternal.h
--                PlugIn.subproj/CFBundlePriv.h
--                Stream.subproj/CFStreamPriv.h
--                String.subproj/CFCharacterSetPriv.h
--                String.subproj/CFRegularExpression.h
--                String.subproj/CFRunArray.h
--                StringEncodings.subproj/CFStringEncodingConverter.h
--                StringEncodings.subproj/CFStringEncodingConverterExt.h
--                URL.subproj/CFURLPriv.h
--                URL.subproj/CFURLSessionInterface.h
--                Locale.subproj/CFDateIntervalFormatter.h
--
++                #Base.subproj/ForFoundationOnly.h
++                #Base.subproj/ForSwiftFoundationOnly.h
+                 Locale.subproj/CFCalendar_Internal.h
+                 Locale.subproj/CFDateComponents.h
+                 Locale.subproj/CFDateInterval.h
+@@ -212,15 +212,16 @@ add_framework(CoreFoundation
+ 
                  # AppServices
                  AppServices.subproj/CFNotificationCenter.h
-                 AppServices.subproj/CFUserNotification.h
-@@ -219,8 +198,9 @@ add_framework(CoreFoundation
+-                AppServices.subproj/CFUserNotification.h
++                #AppServices.subproj/CFUserNotification.h
+                 # Base
+                 Base.subproj/CFAvailability.h
+                 Base.subproj/CFBase.h
                  Base.subproj/CFByteOrder.h
                  Base.subproj/CFUUID.h
                  Base.subproj/CFUtilities.h
 -                Base.subproj/SwiftRuntime/CoreFoundation.h
+-                Base.subproj/SwiftRuntime/TargetConditionals.h
 +                #Base.subproj/SwiftRuntime/CoreFoundation.h
-                 Base.subproj/SwiftRuntime/TargetConditionals.h
++                #Base.subproj/SwiftRuntime/TargetConditionals.h
 +                Base.subproj/CoreFoundation.h
                  # Collections
                  Collections.subproj/CFArray.h
                  Collections.subproj/CFBag.h
-@@ -402,45 +382,47 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
+@@ -250,7 +251,7 @@ add_framework(CoreFoundation
+                 # Preferences
+                 Preferences.subproj/CFPreferences.h
+                 # RunLoop
+-                RunLoop.subproj/CFMachPort.h
++                #RunLoop.subproj/CFMachPort.h
+                 RunLoop.subproj/CFMessagePort.h
+                 RunLoop.subproj/CFRunLoop.h
+                 RunLoop.subproj/CFSocket.h
+@@ -266,6 +267,8 @@ add_framework(CoreFoundation
+                 URL.subproj/CFURLAccess.h
+                 URL.subproj/CFURLComponents.h
+               SOURCES
++                # AppServices
++                AppServices.subproj/CFNotificationCenter.c
+                 # Base
+                 Base.subproj/CFBase.c
+                 Base.subproj/CFFileUtilities.c
+@@ -402,45 +405,47 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
    endif()
  endif()
  
@@ -246,7 +264,7 @@ index 62569e27..21068e68 100644
  endif()
  
  if(CMAKE_SYSTEM_NAME STREQUAL Windows)
-@@ -485,6 +467,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Windows AND NOT CMAKE_SYSTEM_NAME STREQUAL Dar
+@@ -485,6 +490,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Windows AND NOT CMAKE_SYSTEM_NAME STREQUAL Dar
    target_link_libraries(CoreFoundation
                          PRIVATE
                            m)
@@ -254,7 +272,7 @@ index 62569e27..21068e68 100644
    target_link_libraries(CFURLSessionInterface
                          PRIVATE
                            m)
-@@ -492,36 +475,48 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Windows AND NOT CMAKE_SYSTEM_NAME STREQUAL Dar
+@@ -492,36 +498,48 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Windows AND NOT CMAKE_SYSTEM_NAME STREQUAL Dar
                          PRIVATE
                            m)
  endif()
@@ -303,7 +321,7 @@ index 62569e27..21068e68 100644
  
  # Needed to avoid double slash "//" when CMAKE_INSTALL_PREFIX set to "/" and DESTDIR used to relocate whole installation.
  # Double slash raise CMake error "file called with network path DESTINATION //System/Library/Frameworks".
-@@ -530,6 +525,6 @@ string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+@@ -530,6 +548,6 @@ string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
  install(DIRECTORY
            ${CoreFoundation_FRAMEWORK_DIRECTORY}
          DESTINATION
