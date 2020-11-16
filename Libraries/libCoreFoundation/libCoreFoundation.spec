@@ -63,10 +63,10 @@ make %{?_smp_mflags}
 %install
 cd CoreFoundation/.build
 # Make GNUstep framework
+# Frameworks
 mkdir -p %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}
 cp -R CoreFoundation.framework/Headers %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}
 cp -R CoreFoundation.framework/libCoreFoundation.so %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}/libCoreFoundation.so.%{version}
-# framework internal links
 cd %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions
 ln -s %{version} Current
 cd ..
@@ -75,24 +75,23 @@ ln -s Versions/Current/libCoreFoundation.so.%{version} libCoreFoundation.so
 # lib
 mkdir -p %{buildroot}/usr/NextSpace/lib
 cd %{buildroot}/usr/NextSpace/lib
-# include
 ln -s ../Frameworks/CoreFoundation.framework/libCoreFoundation.so libCoreFoundation.so
+# include
 mkdir -p %{buildroot}/usr/NextSpace/include
 cd %{buildroot}/usr/NextSpace/include
 ln -s ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
 
-#mkdir -p %{buildroot}/usr/NextSpace/lib
-#cp -R CoreFoundation.framework/libCoreFoundation.so %{buildroot}/usr/NextSpace/lib
-#mkdir -p %{buildroot}/usr/NextSpace/include/CoreFoundation
-#cp CoreFoundation.framework/Headers/*.h %{buildroot}/usr/NextSpace/include/CoreFoundation
-
 %check
 
 %files
+/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}/libCoreFoundation.so.%{version}
+/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/Current
+/usr/NextSpace/Frameworks/CoreFoundation.framework/libCoreFoundation.so
 /usr/NextSpace/lib/libCoreFoundation.so
 
 %files devel
 /usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}/Headers
+/usr/NextSpace/Frameworks/CoreFoundation.framework/Headers
 /usr/NextSpace/include/CoreFoundation
 
 #
@@ -122,5 +121,9 @@ ln -s ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
 #%postun
 
 %changelog
-* Wed Nov 11 2020 Sergii Stoian <stoyan255@gmail.com> SNAPSHOT
+* Wed Tue 17 2020 Sergii Stoian <stoyan255@gmail.com>
+- Include implementation of CFNotificationCenter.
+- Make installation of library as GNUstep framework.
+
+* Wed Nov 11 2020 Sergii Stoian <stoyan255@gmail.com>
 - Initial spec.
