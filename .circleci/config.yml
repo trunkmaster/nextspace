@@ -14,6 +14,8 @@ jobs:
       CC: /opt/rh/llvm-toolset-7.0/root/usr/bin/clang
       BASH_ENV: /etc/profile.d/nextspace.sh                                                                                                                                                                                      
     steps:                                                                                                                                                                                                                       
+    - checkout:
+        path: /root/nextspace
     - run:
         name: Setup Yum
         command: |
@@ -73,36 +75,34 @@ jobs:
     - run:                                                                                                                                                                                                                     
         name:  GNUstep Back - build and install                                                                                                                                                                                
         command: |                                                                                                                                                                                                             
-                git clone https://github.com/gnustep/libs-back                                                                                                                                                                       
-                cd libs-back                                                                                                                                                                                                         
-                git checkout gnustep-back-nextspace                                                                                                                                                                                  
-                source /opt/rh/llvm-toolset-7.0/enable                                                                                                                                                                               
-                ./configure --enable-graphics=art --with-name=art                                                                                                                                                                    
-                make                                                                                                                                                                                                                 
-                make fonts=no install                                                                                                                                                                                                
-                ldconfig                                                                                                                                                                                                             
-    - checkout:                                                                                                                                                                                                                
-        path: /root/nextspace                                                                                                                                                                                                    
-    - run:                                                                                                                                                                                                                     
-        name: Build and install Frameworks                                                                                                                                                                                     
-        command: |                                                                                                                                                                                                             
-                cd /root/nextspace                                                                                                                                                                                                   
-                cd Frameworks                                                                                                                                                                                                        
-                yum -y install `grep "BuildRequires" nextspace-frameworks.spec | awk -c '{print $2}'`                                                                                                                                
-                source /opt/rh/llvm-toolset-7.0/enable                                                                                                                                                                               
-                make                                                                                                                                                                                                                 
-                make install                                                                                                                                                                                                         
-                ldconfig                                                                                                                                                                                                             
-    - run:                                                                                                                                                                                                                     
-        name: Build and install Applications                                                                                                                                                                                   
-        command: |                                                                                                                                                                                                             
-              cd /root/nextspace                                                                                                                                                                                                   
-              cd Applications                                                                                                                                                                                                      
-              yum -y install `grep "BuildRequires" nextspace-applications.spec | awk -c '{print $2}'`                                                                                                                              
-              cd ../Libraries/libwraster                                                                                                                                                                                           
-              source /opt/rh/llvm-toolset-7.0/enable                                                                                                                                                                               
-              make                                                                                                                                                                                                                 
-              make install                                                                                                                                                                                                         
-              cd ../../Applications                                                                                                                                                                                                
-              make                                                                                                                                                                                                                 
+                git clone https://github.com/gnustep/libs-back
+                cd libs-back
+                git checkout gnustep-back-nextspace
+                source /opt/rh/llvm-toolset-7.0/enable
+                ./configure --enable-graphics=art --with-name=art
+                make
+                make fonts=no install
+                ldconfig
+    - run:
+        name: Build and install Frameworks
+        command: |
+                cd /root/nextspace
+                cd Frameworks
+                yum -y install `grep "BuildRequires" nextspace-frameworks.spec | awk -c '{print $2}'`
+                source /opt/rh/llvm-toolset-7.0/enable
+                make
+                make install
+                ldconfig
+    - run:
+        name: Build and install Applications
+        command: |
+              cd /root/nextspace
+              cd Applications
+              yum -y install `grep "BuildRequires" nextspace-applications.spec | awk -c '{print $2}'`
+              cd ../Libraries/libwraster
+              source /opt/rh/llvm-toolset-7.0/enable
+              make
+              make install
+              cd ../../Applications
+              make
               make install
