@@ -29,6 +29,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
+#include <CoreFoundation/CFArray.h>
 #include <WMcore/memory.h>
 #include <WMcore/string.h>
 
@@ -121,14 +122,13 @@ Bool wXDNDProcessSelection(XEvent *event)
 
   /*process dropping */
   if (delme) {
-    WMArray *items;
-    WMArrayIterator iter;
+    CFMutableArrayRef items;
     int length, str_size;
     int total_size = 0;
     char *tmp;
 
     scr->xdestring = delme;
-    items = WMCreateArray(4);
+    items = CFArrayCreateMutable(NULL, 4, NULL);
     retain = wstrdup(scr->xdestring);
     XFree(scr->xdestring);	/* since xdestring was created by Xlib */
 
@@ -142,7 +142,7 @@ Bool wXDNDProcessSelection(XEvent *event)
       if (retain[length] == '\n') {
         str_size = strlen(&retain[length + 1]);
         if (str_size) {
-          WMAddToArray(items, wstrdup(&retain[length + 1]));
+          CFArrayAppendValue(items, wstrdup(&retain[length + 1]));
           total_size += str_size + 3;	/* reserve for " \"\"" */
 					/* this is nonsense -- if (length)
 					   WMAppendArray(items, WMCreateArray(1)); */
@@ -151,14 +151,15 @@ Bool wXDNDProcessSelection(XEvent *event)
       }
     }
     /* final one */
-    WMAddToArray(items, wstrdup(retain));
+    CFArrayAppendValue(items, wstrdup(retain));
     total_size += strlen(retain) + 3;
     wfree(retain);
 
     /* now pack new string */
     scr->xdestring = wmalloc(total_size);
     scr->xdestring[0] = 0;	/* empty string */
-    WM_ETARETI_ARRAY(items, tmp, iter) {
+    for (CFIndex i = CFArrayGetCount(items)-1; i >= 0 ; i--) {
+      tmp = (char *)CFArrayGetValueAtIndex(items, i);
       /* only supporting file: URI objects */
       if (!strncmp(tmp, "file://", 7)) {
         /* drag-and-drop file name format as per the spec is encoded as an URI */
@@ -169,7 +170,7 @@ Bool wXDNDProcessSelection(XEvent *event)
       }
       wfree(tmp);
     }
-    WMFreeArray(items);
+    CFRelease(items);
     if (scr->xdestring[0])
       wDockReceiveDNDDrop(scr, event);
     wfree(scr->xdestring);	/* this xdestring is not from Xlib (no XFree) */

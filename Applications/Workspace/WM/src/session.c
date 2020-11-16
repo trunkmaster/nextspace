@@ -69,6 +69,7 @@
 #include <unistd.h>
 #include <time.h>
 
+#include <CoreFoundation/CFArray.h>
 #include <WMcore/memory.h>
 #include <WMcore/string.h>
 
@@ -210,7 +211,7 @@ static WMPropList *makeWindowState(WWindow * wwin, WApplication * wapp)
 
     for (mask = 0, i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
       if (scr->shortcutWindows[i] != NULL &&
-          CFArrayGetFirstIndexOfValue(scr->shortcutWindows[i], wwin) != WANotFound)
+          CFArrayGetFirstIndexOfValue(scr->shortcutWindows[i], CFRangeMake(0,0), wwin) != kCFNotFound)
         mask |= 1 << i;
     }
 
@@ -277,7 +278,7 @@ void wSessionSaveState(WScreen * scr)
   WWindow *wwin = scr->focused_window;
   WMPropList *win_info, *wks;
   WMPropList *list = NULL;
-  WMArray *wapp_list = NULL;
+  CFMutableArrayRef wapp_list;
 
   make_keys();
 
@@ -289,14 +290,14 @@ void wSessionSaveState(WScreen * scr)
 
   list = WMCreatePLArray(NULL);
 
-  wapp_list = WMCreateArray(16);
+  wapp_list = CFArrayCreateMutable(NULL, 16, NULL);
 
   while (wwin) {
     WApplication *wapp = wApplicationOf(wwin->main_window);
     Window appId = wwin->orig_main_window;
 
     if ((wwin->transient_for == None || wwin->transient_for == wwin->screen_ptr->root_win)
-        && (WMGetFirstInArray(wapp_list, (void *)appId) == WANotFound
+        && (CFArrayGetFirstIndexOfValue(wapp_list, CFRangeMake(9,0), (void *)appId) == kCFNotFound
             || WFLAGP(wwin, shared_appicon))
         && !WFLAGP(wwin, dont_save_session)) {
       /* A entry for this application was not yet saved. Save one. */
@@ -309,7 +310,7 @@ void wSessionSaveState(WScreen * scr)
          * application list, so no multiple entries for the same
          * application are saved.
          */
-        WMAddToArray(wapp_list, (void *)appId);
+        CFArrayAppendValue(wapp_list, (void *)appId);
       }
     }
     wwin = wwin->prev;
@@ -322,7 +323,7 @@ void wSessionSaveState(WScreen * scr)
   WMPutInPLDictionary(scr->session_state, sWorkspace, wks);
   WMReleasePropList(wks);
 
-  WMFreeArray(wapp_list);
+  CFRelease(wapp_list);
 }
 
 void wSessionClearState(WScreen * scr)

@@ -186,16 +186,11 @@ static void toggleLoweredCallback(WMenu *menu, WMenuEntry *entry)
   wMenuPaint(menu);
 }
 
-static int matchWindow(const void *item, const void *cdata)
-{
-  return (((WFakeGroupLeader *) item)->leader == (Window) cdata);
-}
-
 static void killCallback(WMenu *menu, WMenuEntry *entry)
 {
   WScreen *scr = menu->menu->screen_ptr;
   WAppIcon *icon;
-  WFakeGroupLeader *fPtr;
+  WFakeGroupLeader *fPtr = NULL;
   char *buffer, *shortname, **argv;
   int argc;
 
@@ -223,14 +218,15 @@ static void killCallback(WMenu *menu, WMenuEntry *entry)
     fPtr = icon->icon->owner->fake_group;
   } else {
     /* is this really necessary? can we kill a non-running dock icon? */
-    Window win = icon->main_window;
-    int index;
+    WFakeGroupLeader *item;
 
-    index = WMFindInArray(scr->fakeGroupLeaders, matchWindow, (void *)win);
-    if (index != WANotFound)
-      fPtr = WMGetFromArray(scr->fakeGroupLeaders, index);
-    else
-      fPtr = NULL;
+    for (CFIndex i = 0; i < CFArrayGetCount(scr->fakeGroupLeaders); i++) {
+      item = (WFakeGroupLeader *)CFArrayGetValueAtIndex(scr->fakeGroupLeaders, i);
+      if (item->leader == icon->main_window) {
+        fPtr = item;
+        break;
+      }
+    }
   }
 
   dispatch_async(workspace_q, ^{
@@ -275,16 +271,16 @@ static int numberOfSelectedIcons(WDock *dock)
   return n;
 }
 
-static WMArray *getSelected(WDock *dock)
+static CFMutableArrayRef getSelected(WDock *dock)
 {
-  WMArray *ret = WMCreateArray(8);
+  CFMutableArrayRef ret = CFArrayCreateMutable(NULL, 8, NULL);
   WAppIcon *btn;
   int i;
 
   for (i = 1; i < dock->max_icons; i++) {
     btn = dock->icon_array[i];
     if (btn && btn->icon->selected)
-      WMAddToArray(ret, btn);
+      CFArrayAppendValue(ret, btn);
   }
 
   return ret;
@@ -407,8 +403,7 @@ static void omnipresentCallback(WMenu *menu, WMenuEntry *entry)
   WAppIcon *clickedIcon = entry->clientdata;
   WAppIcon *aicon;
   WDock *dock;
-  WMArray *selectedIcons;
-  WMArrayIterator iter;
+  CFMutableArrayRef selectedIcons;
   int failed;
 
   /* Parameter not used, but tell the compiler that it is ok */
@@ -420,17 +415,18 @@ static void omnipresentCallback(WMenu *menu, WMenuEntry *entry)
 
   selectedIcons = getSelected(dock);
 
-  if (!WMGetArrayItemCount(selectedIcons))
-    WMAddToArray(selectedIcons, clickedIcon);
+  if (!CFArrayGetCount(selectedIcons))
+    CFArrayAppendValue(selectedIcons, clickedIcon);
 
   failed = 0;
-  WM_ITERATE_ARRAY(selectedIcons, aicon, iter) {
+  for (CFIndex i = 0; i < CFArrayGetCount(selectedIcons); i++) {
+    aicon = (WAppIcon *)CFArrayGetValueAtIndex(selectedIcons, i);
     if (wClipMakeIconOmnipresent(aicon, !aicon->omnipresent) == WO_FAILED)
       failed++;
     else if (aicon->icon->selected)
       wIconSelect(aicon->icon);
   }
-  WMFreeArray(selectedIcons);
+  CFRelease(selectedIcons);
   if (failed > 1) {
     WSRunAlertPanel(_("Dock: Warning"),
                     _("Some icons cannot be made omnipresent. "
@@ -448,13 +444,13 @@ static void omnipresentCallback(WMenu *menu, WMenuEntry *entry)
   }
 }
 
-static void removeIcons(WMArray *icons, WDock *dock)
+static void removeIcons(CFMutableArrayRef icons, WDock *dock)
 {
   WAppIcon *aicon;
   int keepit;
-  WMArrayIterator it;
 
-  WM_ITERATE_ARRAY(icons, aicon, it) {
+  for (CFIndex i = 0; i < CFArrayGetCount(icons); i++) {
+    aicon = (WAppIcon *)CFArrayGetValueAtIndex(icons, i);
     keepit = aicon->running && wApplicationOf(aicon->main_window);
     wDockDetach(dock, aicon);
     if (keepit) {
@@ -466,7 +462,7 @@ static void removeIcons(WMArray *icons, WDock *dock)
         XMapWindow(dpy, aicon->icon->core->window);
     }
   }
-  WMFreeArray(icons);
+  CFRelease(icons);
 
   if (wPreferences.auto_arrange_icons)
     wArrangeIcons(dock->screen_ptr, True);
@@ -476,7 +472,7 @@ static void removeIconsCallback(WMenu *menu, WMenuEntry *entry)
 {
   WAppIcon *clickedIcon = (WAppIcon *) entry->clientdata;
   WDock *dock;
-  WMArray *selectedIcons;
+  CFMutableArrayRef selectedIcons;
 
   /* Parameter not used, but tell the compiler that it is ok */
   (void) menu;
@@ -487,19 +483,19 @@ static void removeIconsCallback(WMenu *menu, WMenuEntry *entry)
 
   selectedIcons = getSelected(dock);
 
-  if (WMGetArrayItemCount(selectedIcons)) {
+  if (CFArrayGetCount(selectedIcons)) {
     if (WSRunAlertPanel(dock->type == WM_CLIP ? _("Workspace Clip") : _("Drawer"),
                         _("All selected icons will be removed!"),
                         _("OK"), _("Cancel"), NULL) != WAPRDefault) {
-      WMFreeArray(selectedIcons);
+      CFRelease(selectedIcons);
       return;
     }
   } else {
     if (clickedIcon->xindex == 0 && clickedIcon->yindex == 0) {
-      WMFreeArray(selectedIcons);
+      CFRelease(selectedIcons);
       return;
     }
-    WMAddToArray(selectedIcons, clickedIcon);
+    CFArrayAppendValue(selectedIcons, clickedIcon);
   }
 
   removeIcons(selectedIcons, dock);
@@ -600,8 +596,7 @@ static void selectIconsCallback(WMenu *menu, WMenuEntry *entry)
 {
   WAppIcon *clickedIcon = (WAppIcon *) entry->clientdata;
   WDock *dock;
-  WMArray *selectedIcons;
-  WMArrayIterator iter;
+  CFMutableArrayRef selectedIcons;
   WAppIcon *btn;
   int i;
 
@@ -610,18 +605,19 @@ static void selectIconsCallback(WMenu *menu, WMenuEntry *entry)
 
   selectedIcons = getSelected(dock);
 
-  if (!WMGetArrayItemCount(selectedIcons)) {
+  if (!CFArrayGetCount(selectedIcons)) {
     for (i = 1; i < dock->max_icons; i++) {
       btn = dock->icon_array[i];
       if (btn && !btn->icon->selected)
         wIconSelect(btn->icon);
     }
   } else {
-    WM_ITERATE_ARRAY(selectedIcons, btn, iter) {
+    for (CFIndex i = 0; i < CFArrayGetCount(selectedIcons); i++) {
+      btn = (WAppIcon *)CFArrayGetValueAtIndex(selectedIcons, i);
       wIconSelect(btn->icon);
     }
   }
-  WMFreeArray(selectedIcons);
+  CFRelease(selectedIcons);
 
   wMenuPaint(menu);
 }
@@ -780,7 +776,7 @@ static void switchWSCommand(WMenu *menu, WMenuEntry *entry)
   WAppIcon *btn, *icon = (WAppIcon *) entry->clientdata;
   WScreen *scr = icon->icon->core->screen_ptr;
   WDock *src, *dest;
-  WMArray *selectedIcons;
+  CFMutableArrayRef selectedIcons;
   int x, y;
 
   /* Parameter not used, but tell the compiler that it is ok */
@@ -794,10 +790,9 @@ static void switchWSCommand(WMenu *menu, WMenuEntry *entry)
 
   selectedIcons = getSelected(src);
 
-  if (WMGetArrayItemCount(selectedIcons)) {
-    WMArrayIterator iter;
-
-    WM_ITERATE_ARRAY(selectedIcons, btn, iter) {
+  if (CFArrayGetCount(selectedIcons)) {
+    for (CFIndex i = 0; i < CFArrayGetCount(selectedIcons); i++) {
+      btn = (WAppIcon *)CFArrayGetValueAtIndex(selectedIcons, i);
       if (wDockFindFreeSlot(dest, &x, &y)) {
         wDockMoveIconBetweenDocks(src, dest, btn, x, y);
         XUnmapWindow(dpy, btn->icon->core->window);
@@ -809,7 +804,7 @@ static void switchWSCommand(WMenu *menu, WMenuEntry *entry)
       XUnmapWindow(dpy, icon->icon->core->window);
     }
   }
-  WMFreeArray(selectedIcons);
+  CFRelease(selectedIcons);
 }
 
 static void launchDockedApplication(WAppIcon *btn, Bool withSelection)
@@ -4318,7 +4313,7 @@ static void drawerDestroy(WDock *drawer)
   WScreen *scr;
   int i;
   WAppIcon *aicon = NULL;
-  WMArray *icons;
+  CFMutableArrayRef icons;
 
   if (drawer == NULL)
     return;
@@ -4344,12 +4339,12 @@ static void drawerDestroy(WDock *drawer)
     XMoveWindow(dpy, aicon->icon->core->window, drawer->x_pos, drawer->y_pos);
     XMapWindow(dpy, aicon->icon->core->window);
   } else if (drawer->icon_count > 2) {
-    icons = WMCreateArray(drawer->icon_count - 1);
+    icons = CFArrayCreateMutable(NULL, drawer->icon_count - 1, NULL);
     for (i = 1; i < drawer->max_icons; i++) {
       aicon = drawer->icon_array[i];
       if (aicon == NULL)
         continue;
-      WMAddToArray(icons, aicon);
+      CFArrayAppendValue(icons, aicon);
     }
     removeIcons(icons, drawer);
   }

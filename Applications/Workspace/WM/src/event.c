@@ -149,7 +149,7 @@ typedef struct DeathHandler {
   void *client_data;
 } DeathHandler;
 
-static WMArray *deathHandlers = NULL;
+static CFMutableArrayRef deathHandlers = NULL;
 
 WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler * callback, void *cdata)
 {
@@ -164,9 +164,9 @@ WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler * callback, void *cdata)
   handler->client_data = cdata;
 
   if (!deathHandlers)
-    deathHandlers = WMCreateArrayWithDestructor(8, free);
+    deathHandlers = CFArrayCreateMutable(NULL, 8, NULL);
 
-  WMAddToArray(deathHandlers, handler);
+  CFArrayAppendValue(deathHandlers, handler);
 
   return handler;
 }
@@ -178,8 +178,9 @@ static void wdelete_death_handler(WMagicNumber id)
   if (!handler || !deathHandlers)
     return;
 
-  /* array destructor will call free(handler) */
-  WMRemoveFromArray(deathHandlers, handler);
+  CFArrayRemoveValueAtIndex(deathHandlers,
+                            CFArrayGetFirstIndexOfValue(deathHandlers, CFRangeMake(0,0), handler));
+  free(handler);
 }
 
 void DispatchEvent(XEvent * event)
@@ -522,8 +523,8 @@ static void handleDeadProcess(void)
   while (deadProcessPtr > 0) {
     deadProcessPtr--;
 
-    for (i = WMGetArrayItemCount(deathHandlers) - 1; i >= 0; i--) {
-      tmp = WMGetFromArray(deathHandlers, i);
+    for (i = CFArrayGetCount(deathHandlers) - 1; i >= 0; i--) {
+      tmp = (DeathHandler *)CFArrayGetValueAtIndex(deathHandlers, i);
       if (!tmp)
         continue;
 
@@ -575,11 +576,6 @@ static void saveTimestamp(XEvent * event)
 #endif
     break;
   }
-}
-
-static int matchWindow(const void *item, const void *cdata)
-{
-  return (((WFakeGroupLeader *) item)->origLeader == (Window) cdata);
 }
 
 static void handleExtensions(XEvent * event)
@@ -699,7 +695,7 @@ static void handleDestroyNotify(XEvent * event)
   WApplication *app;
   Window window = event->xdestroywindow.window;
   WScreen *scr = wDefaultScreen();
-  int widx;
+  CFIndex widx;
 
   wwin = wWindowFor(window);
   if (wwin) {
@@ -711,20 +707,43 @@ static void handleDestroyNotify(XEvent * event)
   }
 
   if (scr != NULL) {
-    while ((widx = WMFindInArray(scr->fakeGroupLeaders, matchWindow, (void *)window)) != WANotFound) {
-      WFakeGroupLeader *fPtr;
-
-      fPtr = WMGetFromArray(scr->fakeGroupLeaders, widx);
-      if (fPtr->retainCount > 0) {
-        fPtr->retainCount--;
-        if (fPtr->retainCount == 0 && fPtr->leader != None) {
-          XDestroyWindow(dpy, fPtr->leader);
-          fPtr->leader = None;
-          XFlush(dpy);
+    WFakeGroupLeader *fPtr;
+    do {
+      widx = kCFNotFound;
+      for (int i = 0; i < CFArrayGetCount(scr->fakeGroupLeaders); i++) {
+        fPtr = (WFakeGroupLeader *)CFArrayGetValueAtIndex(scr->fakeGroupLeaders, i);
+        if (fPtr->origLeader == window) {
+          widx = i;
+          break;
         }
       }
-      fPtr->origLeader = None;
-    }
+      if (widx != kCFNotFound) {
+        if (fPtr->retainCount > 0) {
+          fPtr->retainCount--;
+          if (fPtr->retainCount == 0 && fPtr->leader != None) {
+            XDestroyWindow(dpy, fPtr->leader);
+            fPtr->leader = None;
+            XFlush(dpy);
+          }
+        }
+        fPtr->origLeader = None;
+      }      
+    } while (widx != kCFNotFound);
+
+    /* while ((widx = WMFindInArray(scr->fakeGroupLeaders, matchWindow, (void *)window)) != WANotFound) { */
+    /*   WFakeGroupLeader *fPtr; */
+
+    /*   fPtr = (WFakeGroupLeader *)CFArrayGetValueAtIndex(scr->fakeGroupLeaders, widx); */
+    /*   if (fPtr->retainCount > 0) { */
+    /*     fPtr->retainCount--; */
+    /*     if (fPtr->retainCount == 0 && fPtr->leader != None) { */
+    /*       XDestroyWindow(dpy, fPtr->leader); */
+    /*       fPtr->leader = None; */
+    /*       XFlush(dpy); */
+    /*     } */
+    /*   } */
+    /*   fPtr->origLeader = None; */
+    /* } */
   }
 
   app = wApplicationOf(window);

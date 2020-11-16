@@ -439,18 +439,17 @@ static void mapGeometryDisplay(WWindow * wwin, int x, int y, int w, int h)
   showGeometry(wwin, x, y, x + w, y + h, 0);
 }
 
-static void doWindowMove(WWindow * wwin, WMArray * array, int dx, int dy)
+static void doWindowMove(WWindow * wwin, CFMutableArrayRef array, int dx, int dy)
 {
   WWindow *tmpw;
   WScreen *scr = wwin->screen_ptr;
   int x, y;
 
-  if (!array || !WMGetArrayItemCount(array)) {
+  if (!array || !CFArrayGetCount(array)) {
     wWindowMove(wwin, wwin->frame_x + dx, wwin->frame_y + dy);
   } else {
-    WMArrayIterator iter;
-
-    WM_ITERATE_ARRAY(array, tmpw, iter) {
+    for (int idx = 0; idx < CFArrayGetCount(array); idx++) {
+      tmpw = (WWindow *)CFArrayGetValueAtIndex(array, idx);
       x = tmpw->frame_x + dx;
       y = tmpw->frame_y + dy;
 
@@ -549,7 +548,7 @@ static void drawTransparentFrame(WWindow * wwin, int x, int y, int width, int he
   }
 }
 
-static void drawFrames(WWindow * wwin, WMArray * array, int dx, int dy)
+static void drawFrames(WWindow * wwin, CFMutableArrayRef array, int dx, int dy)
 {
   WWindow *tmpw;
   int scr_width = wwin->screen_ptr->scr_width;
@@ -557,16 +556,13 @@ static void drawFrames(WWindow * wwin, WMArray * array, int dx, int dy)
   int x, y;
 
   if (!array) {
-
     x = wwin->frame_x + dx;
     y = wwin->frame_y + dy;
-
     drawTransparentFrame(wwin, x, y, wwin->frame->core->width, wwin->frame->core->height, True);
 
   } else {
-    WMArrayIterator iter;
-
-    WM_ITERATE_ARRAY(array, tmpw, iter) {
+    for (int idx = 0; idx < CFArrayGetCount(array); idx++) {
+      tmpw = (WWindow *)CFArrayGetValueAtIndex(array, idx);
       x = tmpw->frame_x + dx;
       y = tmpw->frame_y + dy;
 
@@ -1696,12 +1692,12 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
             wWindowMove(wwin, src_x + off_x, src_y + off_y);
             wWindowSynthConfigureNotify(wwin);
           } else {
-            WMArrayIterator iter;
             WWindow *foo;
 
             doWindowMove(wwin, scr->selected_windows, off_x, off_y);
 
-            WM_ITERATE_ARRAY(scr->selected_windows, foo, iter) {
+            for (int idx = 0; idx < CFArrayGetCount(scr->selected_windows); idx++) {
+              foo = (WWindow *)CFArrayGetValueAtIndex(scr->selected_windows, idx);
               wWindowSynthConfigureNotify(foo);
             }
           }
@@ -2579,14 +2575,15 @@ void wUnselectWindows(WScreen * scr)
   if (!scr->selected_windows)
     return;
 
-  while (WMGetArrayItemCount(scr->selected_windows)) {
-    wwin = WMGetFromArray(scr->selected_windows, 0);
+  while (CFArrayGetCount(scr->selected_windows)) {
+    wwin = (WWindow *)CFArrayGetValueAtIndex(scr->selected_windows, 0);
+    CFArrayRemoveValueAtIndex(scr->selected_windows, 0);
     if (wwin->flags.miniaturized && wwin->icon && wwin->icon->selected)
       wIconSelect(wwin->icon);
 
     wSelectWindow(wwin, False);
   }
-  WMFreeArray(scr->selected_windows);
+  CFRelease(scr->selected_windows);
   scr->selected_windows = NULL;
 }
 

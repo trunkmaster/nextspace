@@ -34,6 +34,8 @@
 
 #include <wraster.h>
 
+#include <CoreFoundation/CFArray.h>
+
 #include <WMcore/memory.h>
 #include <WMcore/userdefaults.h>
 #include <WMcore/string.h>
@@ -642,7 +644,7 @@ WScreen *wScreenInit(int screen_number)
     scr->usableArea[i].y2 = scr->totalUsableArea[i].y2 = rect.pos.y + rect.size.height;
   }
 
-  scr->fakeGroupLeaders = WMCreateArray(16);
+  scr->fakeGroupLeaders = CFArrayCreateMutable(NULL, 16, NULL);
 
   CantManageScreen = 0;
   oldHandler = XSetErrorHandler(alreadyRunningError);
@@ -730,7 +732,7 @@ WScreen *wScreenInit(int screen_number)
     wfatal(_("could not initialize WINGs widget set"));
     RDestroyContext(scr->rcontext);
   abort_no_context:
-    WMFreeArray(scr->fakeGroupLeaders);
+    CFRelease(scr->fakeGroupLeaders);
     wfree(scr->totalUsableArea);
     wfree(scr->usableArea);
     WMFreeBag(scr->stacking_list);

@@ -110,7 +110,7 @@ typedef struct _WScreen {
 
   CFMutableArrayRef selected_windows;
 
-  WMArray *fakeGroupLeaders;         /* list of fake window group ids */
+  CFMutableArrayRef fakeGroupLeaders;  /* list of fake window group ids */
 
   struct WAppIcon *app_icon_list;    /* list of all app-icons on screen */
 
@@ -290,7 +290,6 @@ typedef struct _WScreen {
                                         * raised */
 
   /* for window shortcuts */
-  /* WMArray *shortcutWindows[MAX_WINDOW_SHORTCUTS]; */
   CFMutableArrayRef shortcutWindows[MAX_WINDOW_SHORTCUTS];
 
 #ifdef USE_DOCK_XDND

@@ -187,10 +187,15 @@ void wWindowDestroy(WWindow *wwin)
     if (!wwin->screen_ptr->shortcutWindows[i])
       continue;
 
-    WMRemoveFromArray(wwin->screen_ptr->shortcutWindows[i], wwin);
+    /* WMRemoveFromArray(wwin->screen_ptr->shortcutWindows[i], wwin); */
+    CFIndex idx = CFArrayGetFirstIndexOfValue(wwin->screen_ptr->shortcutWindows[i],
+                                              CFRangeMake(0,0),wwin);
+    CFArrayRemoveValueAtIndex(wwin->screen_ptr->shortcutWindows[i], idx);
 
-    if (!WMGetArrayItemCount(wwin->screen_ptr->shortcutWindows[i])) {
-      WMFreeArray(wwin->screen_ptr->shortcutWindows[i]);
+    if (!CFArrayGetCount(wwin->screen_ptr->shortcutWindows[i])) {
+      /* WMFreeArray(wwin->screen_ptr->shortcutWindows[i]); */
+      CFArrayRemoveAllValues(wwin->screen_ptr->shortcutWindows[i]);
+      CFRelease(wwin->screen_ptr->shortcutWindows[i]);
       wwin->screen_ptr->shortcutWindows[i] = NULL;
     }
   }
@@ -574,11 +579,6 @@ static Window createFakeWindowGroupLeader(WScreen *scr, Window win, char *instan
   return leader;
 }
 
-static int matchIdentifier(const void *item, const void *cdata)
-{
-  return (strcmp(((WFakeGroupLeader *) item)->identifier, (char *)cdata) == 0);
-}
-
 /*
  *----------------------------------------------------------------
  * wManageWindow--
@@ -788,8 +788,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 
   if (!withdraw && wwin->main_window && WFLAGP(wwin, shared_appicon)) {
     char *buffer, *instance, *class;
-    WFakeGroupLeader *fPtr;
-    int index;
+    WFakeGroupLeader *fPtr = NULL, *item;
 
 #define ADEQUATE(x) ((x)!=None && (x)!=wwin->client_win && (x)!=fPtr->leader)
 
@@ -797,9 +796,14 @@ WWindow *wManageWindow(WScreen *scr, Window window)
     PropGetWMClass(wwin->main_window, &class, &instance);
     buffer = StrConcatDot(instance, class);
 
-    index = WMFindInArray(scr->fakeGroupLeaders, matchIdentifier, (void *)buffer);
-    if (index != WANotFound) {
-      fPtr = WMGetFromArray(scr->fakeGroupLeaders, index);
+    for (CFIndex i = 0; i < CFArrayGetCount(scr->fakeGroupLeaders); i++) {
+      item = (WFakeGroupLeader *)CFArrayGetValueAtIndex(scr->fakeGroupLeaders, i);
+      if (strcmp(item->identifier, buffer) == 0) {
+        fPtr = item;
+        break;
+      }
+    }
+    if (fPtr) {
       if (fPtr->retainCount == 0)
         fPtr->leader = createFakeWindowGroupLeader(scr, wwin->main_window,
                                                    instance, class);
@@ -822,7 +826,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
       fPtr->origLeader = None;
       fPtr->retainCount = 1;
 
-      WMAddToArray(scr->fakeGroupLeaders, fPtr);
+      CFArrayAppendValue(scr->fakeGroupLeaders, fPtr);
 
       if (ADEQUATE(wwin->main_window)) {
         fPtr->retainCount++;
@@ -934,9 +938,9 @@ WWindow *wManageWindow(WScreen *scr, Window window)
         for (i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
           if (mask & (1 << i)) {
             if (!scr->shortcutWindows[i])
-              scr->shortcutWindows[i] = WMCreateArray(4);
+              scr->shortcutWindows[i] = CFArrayCreateMutable(NULL, 4, NULL);
 
-            WMAddToArray(scr->shortcutWindows[i], wwin);
+            CFArrayAppendValue(scr->shortcutWindows[i], wwin);
           }
         }
       }
@@ -2436,7 +2440,7 @@ void wWindowSaveState(WWindow *wwin)
 
   for (i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
     if (wwin->screen_ptr->shortcutWindows[i] &&
-        WMCountInArray(wwin->screen_ptr->shortcutWindows[i], wwin))
+        CFArrayGetCountOfValue(wwin->screen_ptr->shortcutWindows[i], CFRangeMake(0,0), wwin))
       data[9] |= 1 << i;
   }
 

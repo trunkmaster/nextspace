@@ -302,7 +302,6 @@ typedef struct WCoord {
 extern struct WPreferences {
   char *pixmap_path;                 /* : separated list of paths to find pixmaps */
   char *icon_path;                   /* : separated list of paths to find icons */
-  WMArray *fallbackWMs;              /* fallback window manager list */
   char *logger_shell;                /* shell to log child stdi/o */
   RImage *button_images;             /* titlebar button images */
   char smooth_workspace_back;
