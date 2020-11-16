@@ -1,0 +1,35 @@
+[
+    {
+        "arguments": [
+            "clang",
+            "-c",
+            "-DGNUSTEP",
+            "-DGNUSTEP_BASE_LIBRARY=1",
+            "-DGNU_GUI_LIBRARY=1",
+            "-DGNUSTEP_RUNTIME=1",
+            "-D_NONFRAGILE_ABI=1",
+            "-DGNUSTEP_BASE_LIBRARY=1",
+            "-pthread",
+            "-pthread",
+            "-fPIC",
+            "-DDEBUG",
+            "-fno-omit-frame-pointer",
+            "-Wall",
+            "-DGSWARN",
+            "-DGSDIAGNOSE",
+            "-Wno-import",
+            "-g",
+            "-Wall",
+            "-fblocks",
+            "-I.",
+            "-I/Users/me/Library/Headers",
+            "-I/Developer/Headers",
+            "-I/usr/NextSpace/include",
+            "-o",
+            "obj/proplist_test.obj/proplist_test.c.o",
+            "proplist_test.c"
+        ],
+        "directory": "/Users/me/Developer/Ideas/CoreFoundation/Tests",
+        "file": "proplist_test.c"
+    }
+]
