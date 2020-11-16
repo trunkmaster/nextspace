@@ -1,11 +1,4 @@
 version: 2.1
-workflows:
-    version: 1.0
-    jobs:
-      nextspace-build:
-        filters:
-          branches:
-            only: master
 jobs:
     nextspace-build:
       docker:
@@ -106,3 +99,9 @@ jobs:
               cd ../../Applications
               make 
               make install
+workflows:
+    jobs:
+      nextspace-build:
+        filters:
+          branches:
+            only: master
