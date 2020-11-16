@@ -1,10 +1,13 @@
+#%define GIT_TAG swift-DEVELOPMENT-SNAPSHOT-2020-11-09-a
+%define GIT_TAG main 
+
 Name:		libCoreFoundation
 Version:	5.3+
 Release:	0%{?dist}
 Summary:	Apple CoreFoundation framework.
 License:	Apache 2.0
 URL:		http://swift.org
-Source0:	https://github.com/apple/swift-corelibs-foundation/archive/swift-DEVELOPMENT-SNAPSHOT-2020-11-09-a.tar.gz
+Source0:	https://github.com/apple/swift-corelibs-foundation/archive/%{GIT_TAG}.tar.gz
 Source1:	CFNotificationCenter.c
 Patch0:		BuildSharedOnLinux.patch
 
@@ -33,7 +36,7 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 Development header files for CoreFoundation framework.
 
 %prep
-%setup -n swift-corelibs-foundation-swift-DEVELOPMENT-SNAPSHOT-2020-11-09-a
+%setup -n swift-corelibs-foundation-%{GIT_TAG}
 %patch0 -p1
 cp %{_sourcedir}/CFNotificationCenter.c CoreFoundation/AppServices.subproj/
 cd CoreFoundation/Base.subproj/
@@ -59,12 +62,29 @@ make %{?_smp_mflags}
 
 %install
 cd CoreFoundation/.build
-#make install DESTDIR=%{buildroot}
-#rm -r %{buildroot}/usr/NextSpace/lib
+# Make GNUstep framework
+mkdir -p %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}
+cp -R CoreFoundation.framework/Headers %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}
+cp -R CoreFoundation.framework/libCoreFoundation.so %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}/libCoreFoundation.so.%{version}
+# framework internal links
+cd %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions
+ln -s %{version} Current
+cd ..
+ln -s Versions/Current/Headers Headers
+ln -s Versions/Current/libCoreFoundation.so.%{version} libCoreFoundation.so
+# lib
 mkdir -p %{buildroot}/usr/NextSpace/lib
-cp -R CoreFoundation.framework/libCoreFoundation.so %{buildroot}/usr/NextSpace/lib
-mkdir -p %{buildroot}/usr/NextSpace/include/CoreFoundation
-cp CoreFoundation.framework/Headers/*.h %{buildroot}/usr/NextSpace/include/CoreFoundation
+cd %{buildroot}/usr/NextSpace/lib
+# include
+ln -s ../Frameworks/CoreFoundation.framework/libCoreFoundation.so libCoreFoundation.so
+mkdir -p %{buildroot}/usr/NextSpace/include
+cd %{buildroot}/usr/NextSpace/include
+ln -s ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
+
+#mkdir -p %{buildroot}/usr/NextSpace/lib
+#cp -R CoreFoundation.framework/libCoreFoundation.so %{buildroot}/usr/NextSpace/lib
+#mkdir -p %{buildroot}/usr/NextSpace/include/CoreFoundation
+#cp CoreFoundation.framework/Headers/*.h %{buildroot}/usr/NextSpace/include/CoreFoundation
 
 %check
 
@@ -72,6 +92,7 @@ cp CoreFoundation.framework/Headers/*.h %{buildroot}/usr/NextSpace/include/CoreF
 /usr/NextSpace/lib/libCoreFoundation.so
 
 %files devel
+/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}/Headers
 /usr/NextSpace/include/CoreFoundation
 
 #
