@@ -1,6 +1,9 @@
 version: 2.1
 jobs:
     nextspace-build:
+      filters:
+        branches:
+          only: master
       docker:
         - image: amd64/centos:7.7.1908
       environment:
@@ -99,9 +102,3 @@ jobs:
               cd ../../Applications
               make 
               make install
-workflows:
-    jobs:
-      nextspace-build:
-        filters:
-          branches:
-            only: master
