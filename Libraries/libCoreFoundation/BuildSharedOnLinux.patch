@@ -126,41 +126,60 @@ index 77b0cb12..d61b67aa 100644
  
  #pragma mark - CFRuntime
 diff --git a/CoreFoundation/CMakeLists.txt b/CoreFoundation/CMakeLists.txt
-index 62569e27..89a58ec7 100644
+index 62569e27..355c84d0 100644
 --- a/CoreFoundation/CMakeLists.txt
 +++ b/CoreFoundation/CMakeLists.txt
-@@ -193,8 +193,8 @@ add_framework(CoreFoundation
+@@ -124,6 +124,7 @@ add_framework(CoreFoundation
+                 Base.subproj/CFAsmMacros.h
+                 Base.subproj/CFInternal.h
+                 Base.subproj/CFKnownLocations.h
++                Base.subproj/CFLocking.h
                  Base.subproj/CFLogUtilities.h
                  Base.subproj/CFPriv.h
-                 Base.subproj/CFRuntime.h
+                 Base.subproj/CFOverflow.h
+@@ -187,29 +188,8 @@ add_framework(CoreFoundation
+                 URL.subproj/CFURLPriv.h
+                 URL.subproj/CFURLSessionInterface.h
+               PUBLIC_HEADERS
+-                # FIXME: PrivateHeaders referenced by public headers
+-                Base.subproj/CFKnownLocations.h
+-                Base.subproj/CFLocking.h
++                # FIXME: remove this in release build
+                 Base.subproj/CFLogUtilities.h
+-                Base.subproj/CFPriv.h
+-                Base.subproj/CFRuntime.h
 -                Base.subproj/ForFoundationOnly.h
 -                Base.subproj/ForSwiftFoundationOnly.h
-+                #Base.subproj/ForFoundationOnly.h
-+                #Base.subproj/ForSwiftFoundationOnly.h
-                 Locale.subproj/CFCalendar_Internal.h
-                 Locale.subproj/CFDateComponents.h
-                 Locale.subproj/CFDateInterval.h
-@@ -212,15 +212,16 @@ add_framework(CoreFoundation
- 
+-                Locale.subproj/CFCalendar_Internal.h
+-                Locale.subproj/CFDateComponents.h
+-                Locale.subproj/CFDateInterval.h
+-                Locale.subproj/CFLocaleInternal.h
+-                PlugIn.subproj/CFBundlePriv.h
+-                Stream.subproj/CFStreamPriv.h
+-                String.subproj/CFCharacterSetPriv.h
+-                String.subproj/CFRegularExpression.h
+-                String.subproj/CFRunArray.h
+-                StringEncodings.subproj/CFStringEncodingConverter.h
+-                StringEncodings.subproj/CFStringEncodingConverterExt.h
+-                URL.subproj/CFURLPriv.h
+-                URL.subproj/CFURLSessionInterface.h
+-                Locale.subproj/CFDateIntervalFormatter.h
+-
                  # AppServices
                  AppServices.subproj/CFNotificationCenter.h
--                AppServices.subproj/CFUserNotification.h
-+                #AppServices.subproj/CFUserNotification.h
-                 # Base
-                 Base.subproj/CFAvailability.h
-                 Base.subproj/CFBase.h
+                 AppServices.subproj/CFUserNotification.h
+@@ -219,8 +199,9 @@ add_framework(CoreFoundation
                  Base.subproj/CFByteOrder.h
                  Base.subproj/CFUUID.h
                  Base.subproj/CFUtilities.h
 -                Base.subproj/SwiftRuntime/CoreFoundation.h
--                Base.subproj/SwiftRuntime/TargetConditionals.h
 +                #Base.subproj/SwiftRuntime/CoreFoundation.h
-+                #Base.subproj/SwiftRuntime/TargetConditionals.h
+                 Base.subproj/SwiftRuntime/TargetConditionals.h
 +                Base.subproj/CoreFoundation.h
                  # Collections
                  Collections.subproj/CFArray.h
                  Collections.subproj/CFBag.h
-@@ -250,7 +251,7 @@ add_framework(CoreFoundation
+@@ -250,7 +231,7 @@ add_framework(CoreFoundation
                  # Preferences
                  Preferences.subproj/CFPreferences.h
                  # RunLoop
@@ -169,7 +188,7 @@ index 62569e27..89a58ec7 100644
                  RunLoop.subproj/CFMessagePort.h
                  RunLoop.subproj/CFRunLoop.h
                  RunLoop.subproj/CFSocket.h
-@@ -266,6 +267,8 @@ add_framework(CoreFoundation
+@@ -266,6 +247,8 @@ add_framework(CoreFoundation
                  URL.subproj/CFURLAccess.h
                  URL.subproj/CFURLComponents.h
                SOURCES
@@ -178,7 +197,7 @@ index 62569e27..89a58ec7 100644
                  # Base
                  Base.subproj/CFBase.c
                  Base.subproj/CFFileUtilities.c
-@@ -402,45 +405,47 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
+@@ -402,45 +385,47 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
    endif()
  endif()
  
@@ -264,7 +283,7 @@ index 62569e27..89a58ec7 100644
  endif()
  
  if(CMAKE_SYSTEM_NAME STREQUAL Windows)
-@@ -485,6 +490,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Windows AND NOT CMAKE_SYSTEM_NAME STREQUAL Dar
+@@ -485,6 +470,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Windows AND NOT CMAKE_SYSTEM_NAME STREQUAL Dar
    target_link_libraries(CoreFoundation
                          PRIVATE
                            m)
@@ -272,7 +291,7 @@ index 62569e27..89a58ec7 100644
    target_link_libraries(CFURLSessionInterface
                          PRIVATE
                            m)
-@@ -492,36 +498,48 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Windows AND NOT CMAKE_SYSTEM_NAME STREQUAL Dar
+@@ -492,36 +478,48 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Windows AND NOT CMAKE_SYSTEM_NAME STREQUAL Dar
                          PRIVATE
                            m)
  endif()
@@ -321,7 +340,7 @@ index 62569e27..89a58ec7 100644
  
  # Needed to avoid double slash "//" when CMAKE_INSTALL_PREFIX set to "/" and DESTDIR used to relocate whole installation.
  # Double slash raise CMake error "file called with network path DESTINATION //System/Library/Frameworks".
-@@ -530,6 +548,6 @@ string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+@@ -530,6 +528,6 @@ string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
  install(DIRECTORY
            ${CoreFoundation_FRAMEWORK_DIRECTORY}
          DESTINATION
