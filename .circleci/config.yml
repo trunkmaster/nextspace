@@ -1,6 +1,13 @@
 version: 2.1
+workflow:
+  nextspace-build:
+    jobs:
+      build:
+        filters:
+          branches:
+            only: master
 jobs:
-    nextspace-build:
+    build:
 #      filters:
 #        branches:
 #          only: master
