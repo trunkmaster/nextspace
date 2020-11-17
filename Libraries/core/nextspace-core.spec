@@ -15,8 +15,9 @@ BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
 %else
 BuildRequires:	clang >= 7.0.1
 %endif
-BuildRequires:  libdispatch-devel
-BuildRequires:  libobjc2-devel
+BuildRequires:	libdispatch-devel
+BuildRequires:	libobjc2-devel
+BuildRequires:	which
 
 Requires:	libdispatch >= 1.3
 Requires:	libobjc2 >= 1.8
@@ -24,6 +25,7 @@ Requires:	zsh
 Requires:	plymouth-plugin-script
 Requires:	plymouth-plugin-label
 Requires:	tuned
+Requires:	which
 
 %description
 Includes several components:

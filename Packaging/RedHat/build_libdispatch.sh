@@ -13,19 +13,20 @@ SPEC_FILE=${REPO_DIR}/Libraries/libdispatch/libdispatch.spec
 DISPATCH_VERSION=`rpm_version ${SPEC_FILE}`
 
 # libdispatch
-print_H1 " Building Grand Central Dispatch (libdispatch) package...\n Build log: libdispatch_build.log"
+print_H1 " Building Grand Central Dispatch (libdispatch) package..."
 cp ${REPO_DIR}/Libraries/libdispatch/libdispatch-dispatch.h.patch ${SOURCES_DIR}
 
 print_H2 "===== Install libdispatch build dependencies..."
 DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
-sudo yum -y install ${DEPS} 2>&1 > libdispatch_build.log
+sudo yum -y install ${DEPS}
 
 print_H2 "===== Downloading libdispatch sources..."
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building libdispatch package..."
-rpmbuild -bb ${SPEC_FILE} 2>&1 >> libdispatch_build.log
-if [ $? -eq 0 ]; then 
+rpmbuild -bb ${SPEC_FILE}
+STATUS=$?
+if [ $STATUS -eq 0 ]; then 
     print_OK " Building of Grand Central Dispatch library RPM SUCCEEDED!"
     print_H2 "===== Installing libdispatch RPMs..."
 
@@ -40,5 +41,5 @@ if [ $? -eq 0 ]; then
     fi
 else
     print_ERR " Building of Grand Central Dispatch library RPM FAILED!"
-    exit $?
+    exit $STATUS
 fi

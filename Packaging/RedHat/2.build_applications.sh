@@ -30,18 +30,18 @@ fi
 
 print_H2 "--- Prepare Workspace sources"
 cd ${REPO_DIR}/Applications/Workspace
-rm WM/src/wconfig.h && rm WM/configure && ./WM.configure 2>&1 >> ${LOG_FILE}
+rm WM/src/wconfig.h && rm WM/configure && ./WM.configure
 
 print_H2 "--- Creating applications source tarball"
-cd ${REPO_DIR}/Applications && make dist 2>&1 >> ${LOG_FILE}
+cd ${REPO_DIR}/Applications && make dist
 cd $CWD
 mv ${REPO_DIR}/nextspace-applications-${APPLICATIONS_VERSION}.tar.gz ${SOURCES_DIR}
-spectool -g -R ${SPEC_FILE} 2>&1 >> ${LOG_FILE}
+spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building nextspace-applications package..."
-rpmbuild -bb ${SPEC_FILE} 2>&1 >> ${LOG_FILE}
-
-if [ $? -eq 0 ]; then 
+rpmbuild -bb ${SPEC_FILE}
+STATUS=$?
+if [ $STATUS -eq 0 ]; then 
     print_OK " Building of NEXTSPACE Applications RPM SUCCEEDED!"
     print_H2 "===== Installing nextspace-applications RPMs..."
     APPLICATIONS_VERSION=`rpm_version ${SPEC_FILE}`
@@ -52,10 +52,10 @@ if [ $? -eq 0 ]; then
     install_rpm nextspace-applications-devel ${RPMS_DIR}/nextspace-applications-devel-${APPLICATIONS_VERSION}.rpm
     mv ${RPMS_DIR}/nextspace-applications-devel-${APPLICATIONS_VERSION}.rpm ${RELEASE_DEV}
     mv ${RPMS_DIR}/nextspace-applications-debuginfo-${APPLICATIONS_VERSION}.rpm ${RELEASE_DEV}
-    if [ ${RPMS_DIR}/nextspace-applications-debugsource-${APPLICATIONS_VERSION}.rpm ];then
+    if [ -f ${RPMS_DIR}/nextspace-applications-debugsource-${APPLICATIONS_VERSION}.rpm ];then
         mv ${RPMS_DIR}/nextspace-applications-debugsource-${APPLICATIONS_VERSION}.rpm ${RELEASE_DEV}
     fi
 else
     print_ERR " Building of NEXTSPACE Applications RPM FAILED!"
-    exit $?
+    exit $STATUS
 fi
