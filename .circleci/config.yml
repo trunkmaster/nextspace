@@ -9,7 +9,7 @@ workflows:
 jobs:
   build:
     docker:
-      - image: amd64/centos:7
+      - image: amd64/centos:7.9.2009
     environment:
       BASH_ENV: /etc/profile.d/nextspace.sh
     steps:
