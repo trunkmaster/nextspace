@@ -34,7 +34,6 @@
 #include <WMcore/notification.h>
 #include <WMcore/memory.h>
 #include <WMcore/usleep.h>
-#include <WMcore/array.h>
 
 #include <WINGs/wview.h>
 #include <WINGs/wevent.h>

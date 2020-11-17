@@ -28,7 +28,6 @@
 #include <CoreFoundation/CFLogUtilities.h>
 
 #include <WMcore/memory.h>
-/* #include <WMcore/array.h> */
 #include <WMcore/handlers.h>
 
 #include "GNUstep.h"
