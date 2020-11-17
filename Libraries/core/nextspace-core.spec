@@ -17,6 +17,7 @@ BuildRequires:	clang >= 7.0.1
 %endif
 BuildRequires:  libdispatch-devel
 BuildRequires:  libobjc2-devel
+BuildRequires:  which
 
 Requires:	libdispatch >= 1.3
 Requires:	libobjc2 >= 1.8
