@@ -644,7 +644,7 @@ WScreen *wScreenInit(int screen_number)
     scr->usableArea[i].y2 = scr->totalUsableArea[i].y2 = rect.pos.y + rect.size.height;
   }
 
-  scr->fakeGroupLeaders = CFArrayCreateMutable(NULL, 16, NULL);
+  scr->fakeGroupLeaders = CFArrayCreateMutable(kCFAllocatorDefault, 16, NULL);
 
   CantManageScreen = 0;
   oldHandler = XSetErrorHandler(alreadyRunningError);

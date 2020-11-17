@@ -175,6 +175,7 @@ WWindow *wWindowCreate(void)
 void wWindowDestroy(WWindow *wwin)
 {
   int i;
+  CFIndex idx;
 
   if (wwin->screen_ptr->cmap_window == wwin)
     wwin->screen_ptr->cmap_window = NULL;
@@ -187,14 +188,13 @@ void wWindowDestroy(WWindow *wwin)
     if (!wwin->screen_ptr->shortcutWindows[i])
       continue;
 
-    /* WMRemoveFromArray(wwin->screen_ptr->shortcutWindows[i], wwin); */
-    CFIndex idx = CFArrayGetFirstIndexOfValue(wwin->screen_ptr->shortcutWindows[i],
-                                              CFRangeMake(0,0),wwin);
-    CFArrayRemoveValueAtIndex(wwin->screen_ptr->shortcutWindows[i], idx);
+    idx = CFArrayGetFirstIndexOfValue(wwin->screen_ptr->shortcutWindows[i],
+                                      CFRangeMake(0,0), wwin);
+    if (idx != kCFNotFound) {
+      CFArrayRemoveValueAtIndex(wwin->screen_ptr->shortcutWindows[i], idx);
+    }
 
-    if (!CFArrayGetCount(wwin->screen_ptr->shortcutWindows[i])) {
-      /* WMFreeArray(wwin->screen_ptr->shortcutWindows[i]); */
-      CFArrayRemoveAllValues(wwin->screen_ptr->shortcutWindows[i]);
+    if (CFArrayGetCount(wwin->screen_ptr->shortcutWindows[i]) == 0) {
       CFRelease(wwin->screen_ptr->shortcutWindows[i]);
       wwin->screen_ptr->shortcutWindows[i] = NULL;
     }
@@ -938,7 +938,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
         for (i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
           if (mask & (1 << i)) {
             if (!scr->shortcutWindows[i])
-              scr->shortcutWindows[i] = CFArrayCreateMutable(NULL, 4, NULL);
+              scr->shortcutWindows[i] = CFArrayCreateMutable(kCFAllocatorDefault, 4, NULL);
 
             CFArrayAppendValue(scr->shortcutWindows[i], wwin);
           }

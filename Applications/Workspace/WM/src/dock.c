@@ -273,7 +273,7 @@ static int numberOfSelectedIcons(WDock *dock)
 
 static CFMutableArrayRef getSelected(WDock *dock)
 {
-  CFMutableArrayRef ret = CFArrayCreateMutable(NULL, 8, NULL);
+  CFMutableArrayRef ret = CFArrayCreateMutable(kCFAllocatorDefault, 8, NULL);
   WAppIcon *btn;
   int i;
 
@@ -4339,7 +4339,7 @@ static void drawerDestroy(WDock *drawer)
     XMoveWindow(dpy, aicon->icon->core->window, drawer->x_pos, drawer->y_pos);
     XMapWindow(dpy, aicon->icon->core->window);
   } else if (drawer->icon_count > 2) {
-    icons = CFArrayCreateMutable(NULL, drawer->icon_count - 1, NULL);
+    icons = CFArrayCreateMutable(kCFAllocatorDefault, drawer->icon_count - 1, NULL);
     for (i = 1; i < drawer->max_icons; i++) {
       aicon = drawer->icon_array[i];
       if (aicon == NULL)

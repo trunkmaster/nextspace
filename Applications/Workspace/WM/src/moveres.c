@@ -2577,11 +2577,13 @@ void wUnselectWindows(WScreen * scr)
 
   while (CFArrayGetCount(scr->selected_windows)) {
     wwin = (WWindow *)CFArrayGetValueAtIndex(scr->selected_windows, 0);
-    CFArrayRemoveValueAtIndex(scr->selected_windows, 0);
-    if (wwin->flags.miniaturized && wwin->icon && wwin->icon->selected)
-      wIconSelect(wwin->icon);
-
-    wSelectWindow(wwin, False);
+    if (wwin) {
+      CFArrayRemoveValueAtIndex(scr->selected_windows, 0);
+      if (wwin->flags.miniaturized && wwin->icon && wwin->icon->selected) {
+        wIconSelect(wwin->icon);
+      }
+      wSelectWindow(wwin, False);
+    }
   }
   CFRelease(scr->selected_windows);
   scr->selected_windows = NULL;

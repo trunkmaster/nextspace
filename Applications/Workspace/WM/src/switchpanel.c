@@ -146,8 +146,9 @@ static void changeImage(WSwitchPanel *panel, int idecks, int selected, Bool dim,
   if (flags == desired && !force)
     return;
 
-  CFArrayRemoveValueAtIndex(panel->flags, idecks);
-  CFArrayInsertValueAtIndex(panel->flags, idecks, (void *) (uintptr_t) desired);
+  /* CFArrayRemoveValueAtIndex(panel->flags, idecks); */
+  /* CFArrayInsertValueAtIndex(panel->flags, idecks, (void *) (uintptr_t) desired); */
+  CFArraySetValueAtIndex(panel->flags, idecks, (void *)(uintptr_t)desired);
 
   if (!panel->bg && !panel->tile && !selected)
     WMSetFrameRelief(icon, WRFlat);
@@ -379,7 +380,7 @@ static void drawTitle(WSwitchPanel *panel, int idecks, const char *title)
 
 static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped, Bool class_only)
 {
-  CFMutableArrayRef windows = CFArrayCreateMutable(NULL, 1, NULL);
+  CFMutableArrayRef windows = CFArrayCreateMutable(kCFAllocatorDefault, 1, NULL);
   WWindow *wwin = scr->focused_window;
 
   /* WApplications */
@@ -437,7 +438,7 @@ static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped,
 
 static CFMutableArrayRef makeWindowFlagsArray(int count)
 {
-  CFMutableArrayRef flags = CFArrayCreateMutable(NULL, count, NULL);
+  CFMutableArrayRef flags = CFArrayCreateMutable(kCFAllocatorDefault, count, NULL);
   int i;
 
   for (i = 0; i < count; i++)
@@ -500,8 +501,8 @@ WSwitchPanel *wInitSwitchPanel(WScreen *scr, WWindow *curwin, Bool class_only)
 
   panel->white = WMWhiteColor(scr->wmscreen);
   panel->font = WMBoldSystemFontOfSize(scr->wmscreen, 12);
-  panel->icons = CFArrayCreateMutable(NULL, count, NULL);
-  panel->images = CFArrayCreateMutable(NULL, count, NULL);
+  panel->icons = CFArrayCreateMutable(kCFAllocatorDefault, count, NULL);
+  panel->images = CFArrayCreateMutable(kCFAllocatorDefault, count, NULL);
 
   panel->win = WMCreateWindow(scr->wmscreen, "");
 

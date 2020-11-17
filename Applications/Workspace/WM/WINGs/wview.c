@@ -20,10 +20,10 @@ char *WMViewFocusDidChangeNotification = "WMViewFocusDidChangeNotification";
 char *WMViewRealizedNotification = "WMViewRealizedNotification";
 
 #define EVENT_MASK  \
-    KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask| \
-    EnterWindowMask|LeaveWindowMask|PointerMotionMask|ExposureMask| \
-    VisibilityChangeMask|FocusChangeMask|PropertyChangeMask|\
-    SubstructureNotifyMask|SubstructureRedirectMask
+  KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|    \
+  EnterWindowMask|LeaveWindowMask|PointerMotionMask|ExposureMask|   \
+  VisibilityChangeMask|FocusChangeMask|PropertyChangeMask|          \
+  SubstructureNotifyMask|SubstructureRedirectMask
 
 static const XSetWindowAttributes defAtts = {
 	None,			/* background_pixmap */

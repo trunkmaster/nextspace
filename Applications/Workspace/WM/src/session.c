@@ -290,7 +290,7 @@ void wSessionSaveState(WScreen * scr)
 
   list = WMCreatePLArray(NULL);
 
-  wapp_list = CFArrayCreateMutable(NULL, 16, NULL);
+  wapp_list = CFArrayCreateMutable(kCFAllocatorDefault, 16, NULL);
 
   while (wwin) {
     WApplication *wapp = wApplicationOf(wwin->main_window);

@@ -49,6 +49,7 @@
 #include <X11/XKBlib.h>
 #endif /* KEEP_XKB_LOCK_STATUS */
 
+#include <CoreFoundation/CFArray.h>
 #include <WMcore/memory.h>
 #include <WMcore/usleep.h>
 #include <WMcore/handlers.h>
@@ -164,7 +165,7 @@ WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler * callback, void *cdata)
   handler->client_data = cdata;
 
   if (!deathHandlers)
-    deathHandlers = CFArrayCreateMutable(NULL, 8, NULL);
+    deathHandlers = CFArrayCreateMutable(kCFAllocatorDefault, 8, NULL);
 
   CFArrayAppendValue(deathHandlers, handler);
 
@@ -174,13 +175,16 @@ WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler * callback, void *cdata)
 static void wdelete_death_handler(WMagicNumber id)
 {
   DeathHandler *handler = (DeathHandler *) id;
+  CFIndex idx;
 
   if (!handler || !deathHandlers)
     return;
 
-  CFArrayRemoveValueAtIndex(deathHandlers,
-                            CFArrayGetFirstIndexOfValue(deathHandlers, CFRangeMake(0,0), handler));
-  free(handler);
+  idx = CFArrayGetFirstIndexOfValue(deathHandlers, CFRangeMake(0,0), handler);
+  if (idx != kCFNotFound) {
+    CFArrayRemoveValueAtIndex(deathHandlers, idx);
+    free(handler);
+  }
 }
 
 void DispatchEvent(XEvent * event)

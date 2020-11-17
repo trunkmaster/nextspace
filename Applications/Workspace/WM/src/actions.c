@@ -2027,8 +2027,9 @@ void wSelectWindow(WWindow *wwin, Bool flag)
     if (!HAS_BORDER(wwin))
       XSetWindowBorderWidth(dpy, wwin->frame->core->window, wwin->screen_ptr->frame_border_width);
 
-    if (!scr->selected_windows)
-      scr->selected_windows = CFArrayCreateMutable(NULL, 4, NULL);
+    if (!scr->selected_windows) {
+      scr->selected_windows = CFArrayCreateMutable(kCFAllocatorDefault, 4, NULL);
+    }
     CFArrayAppendValue(scr->selected_windows, wwin);
   } else {
     wwin->flags.selected = 0;
@@ -2049,9 +2050,10 @@ void wSelectWindow(WWindow *wwin, Bool flag)
 
     if (scr->selected_windows) {
       CFIndex idx;
-      idx = CFArrayGetFirstIndexOfValue(scr->selected_windows,
-                                        CFRangeMake(0,0), wwin);
-      CFArrayRemoveValueAtIndex(scr->selected_windows, idx);
+      idx = CFArrayGetFirstIndexOfValue(scr->selected_windows, CFRangeMake(0,0), wwin);
+      if (idx != kCFNotFound) {
+        CFArrayRemoveValueAtIndex(scr->selected_windows, idx);
+      }
     }
   }
 }
