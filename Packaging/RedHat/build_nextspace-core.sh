@@ -11,7 +11,7 @@ fi
 REPO_DIR=$1
 SPEC_FILE=${REPO_DIR}/Libraries/core/nextspace-core.spec
 
-print_H1 " Building of NEXTSPACE core components (nextspace-core) RPM...\n Build log: nextspace-core_build.log"
+print_H1 " Building of NEXTSPACE core components (nextspace-core) RPM..."
 
 print_H2 "===== Install nextspace-core build dependencies..."
 DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
@@ -32,8 +32,7 @@ cp ${REPO_DIR}/Libraries/core/nextspace.fsl ${SOURCES_DIR}
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building NEXTSPACE core components (nextspace-core) RPM..."
-rpmbuild -bb ${SPEC_FILE} 
-#2>&1 >> nextspace-core_build.log
+rpmbuild -bb ${SPEC_FILE}
 STATUS=$?
 if [ $STATUS -eq 0 ]; then 
     print_OK " Building of NEXTSPACE Core RPM SUCCEEDED!"
@@ -46,4 +45,3 @@ else
     print_ERR " Building of NEXTSPACE Core RPM FAILED!"
     exit $STATUS
 fi
-#rm ${SOURCES_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz

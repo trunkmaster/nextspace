@@ -11,11 +11,11 @@ fi
 REPO_DIR=$1
 SPEC_FILE=${REPO_DIR}/Libraries/libwraster/libwraster.spec
 
-print_H1 " Building Raster graphics library (libwraster) RPM...\n Build log: libwraster_build.log"
+print_H1 " Building Raster graphics library (libwraster) RPM..."
 
 print_H2 "===== Install libwraster build dependencies..."
 DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
-sudo yum -y install ${DEPS} 2>&1 > libwraster_build.log
+sudo yum -y install ${DEPS}
 
 print_H2 "===== Downloading libwraster sources..."
 source /Developer/Makefiles/GNUstep.sh
@@ -26,8 +26,9 @@ mv ${REPO_DIR}/Libraries/libwraster-${WRASTER_VERSION}.tar.gz ${SOURCES_DIR}
 
 spectool -g -R ${SPEC_FILE}
 print_H2 "===== Building libwraster RPM..."
-rpmbuild -bb ${SPEC_FILE} 2>&1 >> libwraster_build.log
-if [ $? -eq 0 ]; then 
+rpmbuild -bb ${SPEC_FILE}
+STATUS=$?
+if [ $STATUS -eq 0 ]; then 
     WRASTER_VERSION=`rpm_version ${SPEC_FILE}`
     print_OK " Building libwraster RPM SUCCEEDED!"
 
@@ -42,5 +43,5 @@ if [ $? -eq 0 ]; then
     fi
 else
     print_ERR " Building libwraster RPM FAILED!"
-    exit $?
+    exit $STATUS
 fi

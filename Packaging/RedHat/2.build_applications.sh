@@ -30,18 +30,18 @@ fi
 
 print_H2 "--- Prepare Workspace sources"
 cd ${REPO_DIR}/Applications/Workspace
-rm WM/src/wconfig.h && rm WM/configure && ./WM.configure 2>&1 >> ${LOG_FILE}
+rm WM/src/wconfig.h && rm WM/configure && ./WM.configure
 
 print_H2 "--- Creating applications source tarball"
-cd ${REPO_DIR}/Applications && make dist 2>&1 >> ${LOG_FILE}
+cd ${REPO_DIR}/Applications && make dist
 cd $CWD
 mv ${REPO_DIR}/nextspace-applications-${APPLICATIONS_VERSION}.tar.gz ${SOURCES_DIR}
-spectool -g -R ${SPEC_FILE} 2>&1 >> ${LOG_FILE}
+spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building nextspace-applications package..."
-rpmbuild -bb ${SPEC_FILE} 2>&1 >> ${LOG_FILE}
-
-if [ $? -eq 0 ]; then 
+rpmbuild -bb ${SPEC_FILE}
+STATUS=$?
+if [ $STATUS -eq 0 ]; then 
     print_OK " Building of NEXTSPACE Applications RPM SUCCEEDED!"
     print_H2 "===== Installing nextspace-applications RPMs..."
     APPLICATIONS_VERSION=`rpm_version ${SPEC_FILE}`
@@ -57,5 +57,5 @@ if [ $? -eq 0 ]; then
     fi
 else
     print_ERR " Building of NEXTSPACE Applications RPM FAILED!"
-    exit $?
+    exit $STATUS
 fi
