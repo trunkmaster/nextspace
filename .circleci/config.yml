@@ -16,20 +16,8 @@ jobs:
     - checkout:
         path: /root/nextspace
     - run:
-        name: Install libdispatch
-        command: /root/nextspace/Packaging/RedHat/build_libdispatch.sh /root/nextspace
-    - run:
-        name: Install libobjc2
-        command: /root/nextspace/Packaging/RedHat/build_libobjc2.sh /root/nextspace
-    - run:
-        name: Install NextSpace Core files
-        command: /root/nextspace/Packaging/RedHat/build_nextspace-core.sh /root/nextspace
-    - run:
-        name: Install WRaster
-        command: /root/nextspace/Packaging/RedHat/build_libwraster.sh /root/nextspace
-    - run:                                                                                                                                                                                                                     
-        name: Install GNUstep libraries
-        command: /root/nextspace/Packaging/RedHat/build_nextspace-gnustep.sh /root/nextspace
+        name: Install Libraries
+        command: /root/nextspace/Packaging/RedHat/0.build_libraries.sh /root/nextspace
     - run:
         name: Build and install Frameworks
         command: /root/nextspace/Packaging/RedHat/1.build_frameworks.sh /root/nextspace
