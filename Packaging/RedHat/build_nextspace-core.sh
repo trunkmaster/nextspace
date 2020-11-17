@@ -32,8 +32,8 @@ cp ${REPO_DIR}/Libraries/core/nextspace.fsl ${SOURCES_DIR}
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building NEXTSPACE core components (nextspace-core) RPM..."
-rpmbuild -bb ${SPEC_FILE} 2>&1 
-#>> nextspace-core_build.log
+rpmbuild -bb ${SPEC_FILE} 
+#2>&1 >> nextspace-core_build.log
 if [ $? -eq 0 ]; then 
     print_OK " Building of NEXTSPACE Core RPM SUCCEEDED!"
     install_rpm nextspace-core ${RPMS_DIR}/nextspace-core-${CORE_VERSION}.rpm
