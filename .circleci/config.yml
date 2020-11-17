@@ -15,25 +15,25 @@ jobs:
     steps:
       - checkout:
           path: /root/nextspace
-    - run:
-        name: Install SUDO
-        command: yum -y install sudo
-    - run:
-        name: Install Libraries
-        command: |
-          /root/nextspace/Packaging/RedHat/0.build_libraries.sh /root/nextspace
-          rm -r /root/rpmbuild/BUILD/*
-          rm -r /root/rpmbuild/RPMS/*
-    - run:
-        name: Build and install Frameworks
-        command: |
-          /root/nextspace/Packaging/RedHat/1.build_frameworks.sh /root/nextspace
-          rm -r /root/rpmbuild/BUILD/*
-          rm -r /root/rpmbuild/RPMS/*
-    - run:
-        name: Build and install Applications
-        command: |
-          /root/nextspace/Packaging/RedHat/2.build_applications.sh /root/nextspace
-          rm -r /root/rpmbuild/BUILD/*
-          rm -r /root/rpmbuild/RPMS/*
+      - run:
+          name: Install SUDO
+          command: yum -y install sudo
+      - run:
+          name: Install Libraries
+          command: |
+            /root/nextspace/Packaging/RedHat/0.build_libraries.sh /root/nextspace
+            rm -r /root/rpmbuild/BUILD/*
+            rm -r /root/rpmbuild/RPMS/*
+      - run:
+          name: Build and install Frameworks
+          command: |
+            /root/nextspace/Packaging/RedHat/1.build_frameworks.sh /root/nextspace
+            rm -r /root/rpmbuild/BUILD/*
+            rm -r /root/rpmbuild/RPMS/*
+      - run:
+          name: Build and install Applications
+          command: |
+            /root/nextspace/Packaging/RedHat/2.build_applications.sh /root/nextspace
+            rm -r /root/rpmbuild/BUILD/*
+            rm -r /root/rpmbuild/RPMS/*
           
