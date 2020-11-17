@@ -579,12 +579,12 @@ static WMDragOperationType defWantedDropOperation(WMView * self)
 }
 
 /*
- Must be defined if wantedDropOperation return WDOperationAsk
- (useless otherwise).
- Return a WMDragOperationItem array (destroyed after call).
- A WMDragOperationItem links a label to an operation.
- static WMArray*
- defAskedOperations(WMView *self); */
+  Must be defined if wantedDropOperation return WDOperationAsk
+  (useless otherwise).
+  Return a WMDragOperationItem array (destroyed after call).
+  A WMDragOperationItem links a label to an operation.
+  static CFMutableArrayRef defAskedOperations(WMView *self);
+*/
 
 static Bool defAcceptDropOperation(WMView * self, WMDragOperationType allowedOperation)
 {

@@ -95,39 +95,45 @@ static void adoptChildView(W_View * view, W_View * child)
 	child->parent = view;
 }
 
+static void freeHandler(CFAllocatorRef allocator, const void *item)
+{
+  wfree((void *)item);
+}
+
 static W_View *createView(W_Screen * screen, W_View * parent)
 {
-	W_View *view;
+  W_View *view;
 
-	if (ViewContext == 0)
-		ViewContext = XUniqueContext();
+  if (ViewContext == 0)
+    ViewContext = XUniqueContext();
 
-	view = wmalloc(sizeof(W_View));
-	view->screen = screen;
+  view = wmalloc(sizeof(W_View));
+  view->screen = screen;
 
-	if (parent != NULL) {
-		/* attributes are not valid for root window */
-		view->attribFlags = CWEventMask | CWBitGravity;
-		view->attribs = defAtts;
+  if (parent != NULL) {
+    /* attributes are not valid for root window */
+    view->attribFlags = CWEventMask | CWBitGravity;
+    view->attribs = defAtts;
 
-                view->attribFlags |= CWBackPixel | CWColormap | CWBorderPixel | CWBackPixmap;
-                view->attribs.background_pixmap = None;
-		view->attribs.background_pixel = W_PIXEL(screen->gray);
-		view->attribs.border_pixel = W_PIXEL(screen->black);
-		view->attribs.colormap = screen->colormap;
+    view->attribFlags |= CWBackPixel | CWColormap | CWBorderPixel | CWBackPixmap;
+    view->attribs.background_pixmap = None;
+    view->attribs.background_pixel = W_PIXEL(screen->gray);
+    view->attribs.border_pixel = W_PIXEL(screen->black);
+    view->attribs.colormap = screen->colormap;
 
-		view->backColor = WMRetainColor(screen->gray);
+    view->backColor = WMRetainColor(screen->gray);
 
-		adoptChildView(parent, view);
-	}
+    adoptChildView(parent, view);
+  }
 
-	view->xic = 0;
+  view->xic = 0;
 
-	view->refCount = 1;
+  view->refCount = 1;
 
-	view->eventHandlers = WMCreateArrayWithDestructor(4, wfree);
+  CFArrayCallBacks cbs = {0, NULL, freeHandler, NULL, NULL};
+  view->eventHandlers = CFArrayCreateMutable(kCFAllocatorDefault, 4, &cbs);
 
-	return view;
+  return view;
 }
 
 W_View *W_CreateView(W_View * parent)
@@ -401,7 +407,7 @@ static void destroyView(W_View * view)
 	unparentView(view);
 
 	/* the array has a wfree() destructor that will be called automatically */
-	WMFreeArray(view->eventHandlers);
+	CFRelease(view->eventHandlers);
 	view->eventHandlers = NULL;
 
 	WMRemoveNotificationObserver(view);

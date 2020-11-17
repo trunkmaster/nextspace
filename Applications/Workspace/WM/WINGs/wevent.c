@@ -3,15 +3,17 @@
  * This event handling stuff was inspired on Tk.
  */
 
+#include <CoreFoundation/CFArray.h>
 #include <WMcore/memory.h>
 #include <WMcore/handlers.h>
 
 #include "WINGs.h"
 #include "dragcommon.h"
 #include "winputmethod.h"
-#include "wevent.h"
 #include "selection.h"
 #include "wballoon.h"
+
+#include "wevent.h"
 
 
 /* table to map event types to event masks */
@@ -67,34 +69,24 @@ static WMEventHook *extraEventHandler = NULL;
  */
 void WMCreateEventHandler(WMView * view, unsigned long mask, WMEventProc * eventProc, void *clientData)
 {
-	W_EventHandler *hPtr;
-	WMArrayIterator iter;
+  W_EventHandler *hPtr;
 
-	WM_ITERATE_ARRAY(view->eventHandlers, hPtr, iter) {
-		if (hPtr->clientData == clientData && hPtr->proc == eventProc) {
-			hPtr->eventMask |= mask;
-			return;
-		}
-	}
+  for (int i = 0; i < CFArrayGetCount(view->eventHandlers); i++) {
+    hPtr = (W_EventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
+    if (hPtr->clientData == clientData && hPtr->proc == eventProc) {
+      hPtr->eventMask |= mask;
+      return;
+    }
+  }
 
-	hPtr = wmalloc(sizeof(W_EventHandler));
+  hPtr = wmalloc(sizeof(W_EventHandler));
 
-	/* select events for window */
-	hPtr->eventMask = mask;
-	hPtr->proc = eventProc;
-	hPtr->clientData = clientData;
+  /* select events for window */
+  hPtr->eventMask = mask;
+  hPtr->proc = eventProc;
+  hPtr->clientData = clientData;
 
-	WMAddToArray(view->eventHandlers, hPtr);
-}
-
-static int matchHandler(const void *item, const void *cdata)
-{
-	const W_EventHandler *h1 = item;
-	const W_EventHandler *h2 = cdata;
-
-	return ((h1->eventMask == h2->eventMask) &&
-			  (h1->proc == h2->proc) &&
-			  (h1->clientData == h2->clientData));
+  CFArrayAppendValue(view->eventHandlers, hPtr);
 }
 
 /*
@@ -105,12 +97,24 @@ static int matchHandler(const void *item, const void *cdata)
  */
 void WMDeleteEventHandler(WMView * view, unsigned long mask, WMEventProc * eventProc, void *clientData)
 {
-	W_EventHandler tmp;
+  W_EventHandler tmp;
+  W_EventHandler *tmp1;
+  W_EventHandler *tmp2;
 
-	tmp.eventMask = mask;
-	tmp.proc = eventProc;
-	tmp.clientData = clientData;
-	WMRemoveFromArrayMatching(view->eventHandlers, matchHandler, (void *)&tmp);
+  tmp.eventMask = mask;
+  tmp.proc = eventProc;
+  tmp.clientData = clientData;
+  tmp1 = &tmp;
+  
+  for (int i = 0; i < CFArrayGetCount(view->eventHandlers); i++) {
+    tmp2 = (W_EventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
+    if (((tmp1->eventMask == tmp2->eventMask) &&
+         (tmp1->proc == tmp2->proc) &&
+         (tmp1->clientData == tmp2->clientData))) {
+      CFArrayRemoveValueAtIndex(view->eventHandlers, i);
+      break;
+    }
+  }
 }
 
 static Time getEventTime(WMScreen * screen, XEvent * event)
@@ -142,19 +146,19 @@ static Time getEventTime(WMScreen * screen, XEvent * event)
 
 void W_CallDestroyHandlers(W_View * view)
 {
-	XEvent event;
-	WMArrayIterator iter;
-	W_EventHandler *hPtr;
+  XEvent event;
+  W_EventHandler *hPtr;
 
-	event.type = DestroyNotify;
-	event.xdestroywindow.window = view->window;
-	event.xdestroywindow.event = view->window;
+  event.type = DestroyNotify;
+  event.xdestroywindow.window = view->window;
+  event.xdestroywindow.event = view->window;
 
-	WM_ITERATE_ARRAY(view->eventHandlers, hPtr, iter) {
-		if (hPtr->eventMask & StructureNotifyMask) {
-			(*hPtr->proc) (&event, hPtr->clientData);
-		}
-	}
+  for (int i = 0; i < CFArrayGetCount(view->eventHandlers); i++) {
+    hPtr = (W_EventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
+    if (hPtr->eventMask & StructureNotifyMask) {
+      (*hPtr->proc) (&event, hPtr->clientData);
+    }
+  }
 }
 
 void WMSetViewNextResponder(WMView * view, WMView * responder)
@@ -167,154 +171,155 @@ void WMSetViewNextResponder(WMView * view, WMView * responder)
 
 void WMRelayToNextResponder(WMView * view, XEvent * event)
 {
-	unsigned long mask = eventMasks[event->xany.type];
+  unsigned long mask = eventMasks[event->xany.type];
 
-	if (view->nextResponder) {
-		WMView *next = view->nextResponder;
-		W_EventHandler *hPtr;
-		WMArrayIterator iter;
-
-		WM_ITERATE_ARRAY(next->eventHandlers, hPtr, iter) {
-			if ((hPtr->eventMask & mask)) {
-				(*hPtr->proc) (event, hPtr->clientData);
-			}
-		}
-	}
+  if (view->nextResponder) {
+    WMView *next = view->nextResponder;
+    W_EventHandler *hPtr;
+                
+    for (int i = 0; i < CFArrayGetCount(next->eventHandlers); i++) {
+      hPtr = (W_EventHandler *)CFArrayGetValueAtIndex(next->eventHandlers, i);
+      if ((hPtr->eventMask & mask)) {
+        (*hPtr->proc) (event, hPtr->clientData);
+      }
+    }
+  }
 }
 
 int WMHandleEvent(XEvent * event)
 {
-	W_EventHandler *hPtr;
-	W_View *view, *toplevel;
-	unsigned long mask;
-	Window window;
-	WMArrayIterator iter;
+  W_EventHandler *hPtr;
+  W_View *view, *toplevel;
+  unsigned long mask;
+  Window window;
 
-	if (event->type == MappingNotify) {
-		XRefreshKeyboardMapping(&event->xmapping);
-		return True;
-	}
+  if (event->type == MappingNotify) {
+    XRefreshKeyboardMapping(&event->xmapping);
+    return True;
+  }
 
-	if (XFilterEvent(event, None) == True) {
-		return False;
-	}
+  if (XFilterEvent(event, None) == True) {
+    return False;
+  }
 
-	mask = eventMasks[event->xany.type];
+  mask = eventMasks[event->xany.type];
 
-	window = event->xany.window;
+  window = event->xany.window;
 
-	/* diferentiate SubstructureNotify with StructureNotify */
-	if (mask == StructureNotifyMask) {
-		if (event->xmap.event != event->xmap.window) {
-			mask = SubstructureNotifyMask;
-			window = event->xmap.event;
-		}
-	}
-	view = W_GetViewForXWindow(event->xany.display, window);
+  /* diferentiate SubstructureNotify with StructureNotify */
+  if (mask == StructureNotifyMask) {
+    if (event->xmap.event != event->xmap.window) {
+      mask = SubstructureNotifyMask;
+      window = event->xmap.event;
+    }
+  }
+  view = W_GetViewForXWindow(event->xany.display, window);
 
-	if (!view) {
-		if (extraEventHandler)
-			(extraEventHandler) (event);
+  if (!view) {
+    if (extraEventHandler)
+      (extraEventHandler) (event);
 
-		return False;
-	}
+    return False;
+  }
 
-	view->screen->lastEventTime = getEventTime(view->screen, event);
+  view->screen->lastEventTime = getEventTime(view->screen, event);
 
-	toplevel = W_TopLevelOfView(view);
+  toplevel = W_TopLevelOfView(view);
 
-	if (event->type == SelectionNotify || event->type == SelectionClear || event->type == SelectionRequest) {
-		/* handle selection related events */
-		W_HandleSelectionEvent(event);
+  if (event->type == SelectionNotify || event->type == SelectionClear || event->type == SelectionRequest) {
+    /* handle selection related events */
+    W_HandleSelectionEvent(event);
 
-	}
+  }
 
-	/* if it's a key event, redispatch it to the focused control */
-	if (mask & (KeyPressMask | KeyReleaseMask)) {
-		W_View *focused = W_FocusedViewOfToplevel(toplevel);
+  /* if it's a key event, redispatch it to the focused control */
+  if (mask & (KeyPressMask | KeyReleaseMask)) {
+    W_View *focused = W_FocusedViewOfToplevel(toplevel);
 
-		if (focused) {
-			view = focused;
-		}
-	}
+    if (focused) {
+      view = focused;
+    }
+  }
 
-	/* compress Motion events */
-	if (event->type == MotionNotify && !view->flags.dontCompressMotion) {
-		while (XPending(event->xmotion.display)) {
-			XEvent ev;
-			XPeekEvent(event->xmotion.display, &ev);
-			if (ev.type == MotionNotify
-			    && event->xmotion.window == ev.xmotion.window
-			    && event->xmotion.subwindow == ev.xmotion.subwindow) {
-				/* replace events */
-				XNextEvent(event->xmotion.display, event);
-			} else
-				break;
-		}
-	}
+  /* compress Motion events */
+  if (event->type == MotionNotify && !view->flags.dontCompressMotion) {
+    while (XPending(event->xmotion.display)) {
+      XEvent ev;
+      XPeekEvent(event->xmotion.display, &ev);
+      if (ev.type == MotionNotify
+          && event->xmotion.window == ev.xmotion.window
+          && event->xmotion.subwindow == ev.xmotion.subwindow) {
+        /* replace events */
+        XNextEvent(event->xmotion.display, event);
+      } else
+        break;
+    }
+  }
 
-	/* compress expose events */
-	if (event->type == Expose && !view->flags.dontCompressExpose) {
-		while (XCheckTypedWindowEvent(event->xexpose.display, view->window, Expose, event)) ;
-	}
+  /* compress expose events */
+  if (event->type == Expose && !view->flags.dontCompressExpose) {
+    while (XCheckTypedWindowEvent(event->xexpose.display, view->window, Expose, event)) ;
+  }
 
-	if (view->screen->modalLoop && toplevel != view->screen->modalView && !toplevel->flags.worksWhenModal) {
-		if (event->type == KeyPress || event->type == KeyRelease
-		    || event->type == MotionNotify || event->type == ButtonPress
-		    || event->type == ButtonRelease || event->type == FocusIn || event->type == FocusOut) {
-			return True;
-		}
-	}
+  if (view->screen->modalLoop && toplevel != view->screen->modalView && !toplevel->flags.worksWhenModal) {
+    if (event->type == KeyPress || event->type == KeyRelease
+        || event->type == MotionNotify || event->type == ButtonPress
+        || event->type == ButtonRelease || event->type == FocusIn || event->type == FocusOut) {
+      return True;
+    }
+  }
 
-	/* do balloon stuffs */
-	if (event->type == EnterNotify)
-		W_BalloonHandleEnterView(view);
-	else if (event->type == LeaveNotify)
-		W_BalloonHandleLeaveView(view);
+  /* do balloon stuffs */
+  if (event->type == EnterNotify)
+    W_BalloonHandleEnterView(view);
+  else if (event->type == LeaveNotify)
+    W_BalloonHandleLeaveView(view);
 
-	/* This is a hack. It will make the panel be secure while
-	 * the event handlers are handled, as some event handler
-	 * might destroy the widget. */
-	W_RetainView(toplevel);
+  /* This is a hack. It will make the panel be secure while
+   * the event handlers are handled, as some event handler
+   * might destroy the widget. */
+  W_RetainView(toplevel);
 
-	WM_ITERATE_ARRAY(view->eventHandlers, hPtr, iter) {
-		if ((hPtr->eventMask & mask)) {
-			(*hPtr->proc) (event, hPtr->clientData);
-		}
-	}
+  for (int i = 0; i < CFArrayGetCount(view->eventHandlers); i++) {
+    hPtr = (W_EventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
+    if ((hPtr->eventMask & mask)) {
+      (*hPtr->proc) (event, hPtr->clientData);
+    }
+  }
 #if 0
-	/* pass the event to the top level window of the widget */
-	/* TODO: change this to a responder chain */
-	if (view->parent != NULL) {
-		vPtr = view;
-		while (vPtr->parent != NULL)
-			vPtr = vPtr->parent;
+  /* pass the event to the top level window of the widget */
+  /* TODO: change this to a responder chain */
+  if (view->parent != NULL) {
+    vPtr = view;
+    while (vPtr->parent != NULL)
+      vPtr = vPtr->parent;
 
-		WM_ITERATE_ARRAY(vPtr->eventHandlers, hPtr, iter) {
-			if (hPtr->eventMask & mask) {
-				(*hPtr->proc) (event, hPtr->clientData);
-			}
-		}
-	}
+    for (int i = 0; i < CFArrayGetCount(view->eventHandlers); i++) {
+      hPtr = (W_EventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
+      if (hPtr->eventMask & mask) {
+        (*hPtr->proc) (event, hPtr->clientData);
+      }
+    }
+  }
 #endif
-	/* save button click info to track double-clicks */
-	if (view->screen->ignoreNextDoubleClick) {
-		view->screen->ignoreNextDoubleClick = 0;
-	} else {
-		if (event->type == ButtonPress) {
-			view->screen->lastClickWindow = event->xbutton.window;
-			view->screen->lastClickTime = event->xbutton.time;
-		}
-	}
+  /* save button click info to track double-clicks */
+  if (view->screen->ignoreNextDoubleClick) {
+    view->screen->ignoreNextDoubleClick = 0;
+  } else {
+    if (event->type == ButtonPress) {
+      view->screen->lastClickWindow = event->xbutton.window;
+      view->screen->lastClickTime = event->xbutton.time;
+    }
+  }
 
-	if (event->type == ClientMessage) {
-		/* must be handled at the end, for such message can destroy the view */
-		W_HandleDNDClientMessage(toplevel, &event->xclient);
-	}
+  if (event->type == ClientMessage) {
+    /* must be handled at the end, for such message can destroy the view */
+    W_HandleDNDClientMessage(toplevel, &event->xclient);
+  }
 
-	W_ReleaseView(toplevel);
+  W_ReleaseView(toplevel);
 
-	return True;
+  return True;
 }
 
 int WMIsDoubleClick(XEvent * event)
