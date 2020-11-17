@@ -52,7 +52,7 @@ if [ $STATUS -eq 0 ]; then
     install_rpm nextspace-applications-devel ${RPMS_DIR}/nextspace-applications-devel-${APPLICATIONS_VERSION}.rpm
     mv ${RPMS_DIR}/nextspace-applications-devel-${APPLICATIONS_VERSION}.rpm ${RELEASE_DEV}
     mv ${RPMS_DIR}/nextspace-applications-debuginfo-${APPLICATIONS_VERSION}.rpm ${RELEASE_DEV}
-    if [ ${RPMS_DIR}/nextspace-applications-debugsource-${APPLICATIONS_VERSION}.rpm ];then
+    if [ -f ${RPMS_DIR}/nextspace-applications-debugsource-${APPLICATIONS_VERSION}.rpm ];then
         mv ${RPMS_DIR}/nextspace-applications-debugsource-${APPLICATIONS_VERSION}.rpm ${RELEASE_DEV}
     fi
 else
