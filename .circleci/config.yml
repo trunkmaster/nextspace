@@ -16,6 +16,9 @@ jobs:
     - checkout:
         path: /root/nextspace
     - run:
+        name: Install SUDO
+        command: yum -y install sudo
+    - run:
         name: Install Libraries
         command: /root/nextspace/Packaging/RedHat/0.build_libraries.sh /root/nextspace
     - run:
