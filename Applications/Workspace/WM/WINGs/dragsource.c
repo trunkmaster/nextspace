@@ -422,32 +422,32 @@ static Bool sendDropMessage(WMDraggingInfo * info)
 
 static Atom *getTypeAtomList(WMScreen * scr, WMView * view, int *count)
 {
-	WMArray *types;
-	Atom *typeAtoms;
-	int i;
+  CFMutableArrayRef types;
+  Atom *typeAtoms;
+  int i;
 
-	types = view->dragSourceProcs->dropDataTypes(view);
+  types = view->dragSourceProcs->dropDataTypes(view);
 
-	if (types != NULL) {
-		*count = WMGetArrayItemCount(types);
-		if (*count > 0) {
-			typeAtoms = wmalloc((*count) * sizeof(Atom));
-			for (i = 0; i < *count; i++) {
-				typeAtoms[i] = XInternAtom(scr->display, WMGetFromArray(types, i), False);
-			}
+  if (types != NULL) {
+    *count = CFArrayGetCount(types);
+    if (*count > 0) {
+      typeAtoms = wmalloc((*count) * sizeof(Atom));
+      for (i = 0; i < *count; i++) {
+        typeAtoms[i] = XInternAtom(scr->display, CFArrayGetValueAtIndex(types, i), False);
+      }
 
-			/* WMFreeArray(types); */
-			return typeAtoms;
-		}
+      /* WMFreeArray(types); */
+      return typeAtoms;
+    }
 
-		/* WMFreeArray(types); */
-	}
+    /* WMFreeArray(types); */
+  }
 
-	*count = 1;
-	typeAtoms = wmalloc(sizeof(Atom));
-	*typeAtoms = None;
+  *count = 1;
+  typeAtoms = wmalloc(sizeof(Atom));
+  *typeAtoms = None;
 
-	return typeAtoms;
+  return typeAtoms;
 }
 
 static void registerDropTypes(WMScreen * scr, WMView * view, WMDraggingInfo * info)
@@ -471,69 +471,69 @@ static void registerDropTypes(WMScreen * scr, WMView * view, WMDraggingInfo * in
 			XA_ATOM, XDND_PROPERTY_FORMAT, PropModeReplace, (unsigned char *)typeList, count);
 }
 
-static void registerOperationList(WMScreen * scr, WMView * view, WMArray * operationArray)
+static void registerOperationList(WMScreen * scr, WMView * view, CFMutableArrayRef operationArray)
 {
-	Atom *actionList;
-	WMDragOperationType operation;
-	int count = WMGetArrayItemCount(operationArray);
-	int i;
+  Atom *actionList;
+  WMDragOperationType operation;
+  int count = CFArrayGetCount(operationArray);
+  int i;
 
-	actionList = wmalloc(sizeof(Atom) * count);
+  actionList = wmalloc(sizeof(Atom) * count);
 
-	for (i = 0; i < count; i++) {
-		operation = WMGetDragOperationItemType(WMGetFromArray(operationArray, i));
-		actionList[i] = W_OperationToAction(scr, operation);
-	}
+  for (i = 0; i < count; i++) {
+    operation = WMGetDragOperationItemType((WMDragOperationItem *)CFArrayGetValueAtIndex(operationArray, i));
+    actionList[i] = W_OperationToAction(scr, operation);
+  }
 
-	XChangeProperty(scr->display,
-			WMViewXID(view),
-			scr->xdndActionListAtom,
-			XA_ATOM, XDND_PROPERTY_FORMAT, PropModeReplace, (unsigned char *)actionList, count);
+  XChangeProperty(scr->display,
+                  WMViewXID(view),
+                  scr->xdndActionListAtom,
+                  XA_ATOM, XDND_PROPERTY_FORMAT, PropModeReplace, (unsigned char *)actionList, count);
 }
 
-static void registerDescriptionList(WMScreen * scr, WMView * view, WMArray * operationArray)
+static void registerDescriptionList(WMScreen * scr, WMView * view, CFArrayRef operationArray)
 {
-	char *text, *textListItem, *textList;
-	int count = WMGetArrayItemCount(operationArray);
-	int i;
-	int size = 0;
+  char *text, *textListItem, *textList;
+  int count = CFArrayGetCount(operationArray);
+  int i;
+  int size = 0;
 
-	/* size of XA_STRING info */
-	for (i = 0; i < count; i++) {
-		size += strlen(WMGetDragOperationItemText(WMGetFromArray(operationArray, i))) + 1 /* NULL */;
-	}
+  /* size of XA_STRING info */
+  for (i = 0; i < count; i++) {
+    size += strlen(WMGetDragOperationItemText((WMDragOperationItem *)CFArrayGetValueAtIndex(operationArray, i))) + 1 /* NULL */;
+  }
 
-	/* create text list */
-	textList = wmalloc(size);
-	textListItem = textList;
+  /* create text list */
+  textList = wmalloc(size);
+  textListItem = textList;
 
-	for (i = 0; i < count; i++) {
-		text = WMGetDragOperationItemText(WMGetFromArray(operationArray, i));
-		wstrlcpy(textListItem, text, size);
+  for (i = 0; i < count; i++) {
+    text = WMGetDragOperationItemText((WMDragOperationItem *)CFArrayGetValueAtIndex(operationArray, i));
+    wstrlcpy(textListItem, text, size);
 
-		/* to next text offset */
-		textListItem = &(textListItem[strlen(textListItem) + 1]);
-	}
+    /* to next text offset */
+    textListItem = &(textListItem[strlen(textListItem) + 1]);
+  }
 
-	XChangeProperty(scr->display,
-			WMViewXID(view),
-			scr->xdndActionDescriptionAtom,
-			XA_STRING,
-			XDND_ACTION_DESCRIPTION_FORMAT, PropModeReplace, (unsigned char *)textList, size);
+  XChangeProperty(scr->display,
+                  WMViewXID(view),
+                  scr->xdndActionDescriptionAtom,
+                  XA_STRING,
+                  XDND_ACTION_DESCRIPTION_FORMAT, PropModeReplace, (unsigned char *)textList, size);
 }
 
 /* called if wanted operation is WDOperationAsk */
 static void registerSupportedOperations(WMView * view)
 {
-	WMScreen *scr = W_VIEW_SCREEN(view);
-	WMArray *operationArray;
+  WMScreen *scr = W_VIEW_SCREEN(view);
+  CFMutableArrayRef operationArray;
 
-	operationArray = view->dragSourceProcs->askedOperations(view);
+  operationArray = view->dragSourceProcs->askedOperations(view);
 
-	registerOperationList(scr, view, operationArray);
-	registerDescriptionList(scr, view, operationArray);
+  registerOperationList(scr, view, operationArray);
+  registerDescriptionList(scr, view, operationArray);
 
-	/* WMFreeArray(operationArray); */
+  /* WMFreeArray(operationArray); */
 }
 
 static void initSourceDragInfo(WMView * sourceView, WMDraggingInfo * info)
@@ -562,7 +562,7 @@ static void initSourceDragInfo(WMView * sourceView, WMDraggingInfo * info)
 /*
  Returned array is destroyed after dropDataTypes call
  */
-static WMArray *defDropDataTypes(WMView * self)
+static CFMutableArrayRef defDropDataTypes(WMView * self)
 {
 	/* Parameter not used, but tell the compiler that it is ok */
 	(void) self;

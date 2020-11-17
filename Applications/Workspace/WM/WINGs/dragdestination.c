@@ -43,184 +43,185 @@ static void *dropNotAllowedState(WMView * destView, XClientMessageEvent * event,
 static void *waitForDropDataState(WMView * destView, XClientMessageEvent * event, WMDraggingInfo * info);
 
 /* ----- Types & datas list ----- */
-static void freeSourceTypeArrayItem(void *type)
+static void freeSourceTypeArrayItem(CFAllocatorRef allocator, const void *type)
 {
-	XFree(type);
+  XFree((void *)type);
 }
 
-static WMArray *createSourceTypeArray(int initialSize)
+static CFMutableArrayRef createSourceTypeArray(int initialSize)
 {
-	return WMCreateArrayWithDestructor(initialSize, freeSourceTypeArrayItem);
+  CFArrayCallBacks cbs = {0, NULL, freeSourceTypeArrayItem, NULL, NULL};
+  return CFArrayCreateMutable(kCFAllocatorDefault, initialSize, &cbs);
 }
 
-static void freeDropDataArrayItem(void *data)
+static void freeDropDataArrayItem(CFAllocatorRef allocator, const void *data)
 {
-	if (data != NULL)
-		WMReleaseData((WMData *) data);
+  if (data != NULL)
+    WMReleaseData((WMData *) data);
 }
 
-static WMArray *createDropDataArray(WMArray * requiredTypes)
+static CFMutableArrayRef createDropDataArray(CFMutableArrayRef requiredTypes)
 {
-	if (requiredTypes != NULL)
-		return WMCreateArrayWithDestructor(WMGetArrayItemCount(requiredTypes), freeDropDataArrayItem);
-
-	else
-		return WMCreateArray(0);
+  if (requiredTypes != NULL) {
+    CFArrayCallBacks cbs = {0, NULL, freeDropDataArrayItem, NULL, NULL};
+    return CFArrayCreateMutable(kCFAllocatorDefault, CFArrayGetCount(requiredTypes), &cbs);
+  }
+  else {
+    return CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
+  }
 }
 
-static WMArray *getTypesFromTypeList(WMScreen * scr, Window sourceWin)
+static CFMutableArrayRef getTypesFromTypeList(WMScreen * scr, Window sourceWin)
 {
-	Atom dataType;
-	Atom *typeAtomList;
-	WMArray *typeList;
-	int i, format;
-	unsigned long count, remaining;
-	unsigned char *data = NULL;
+  Atom dataType;
+  Atom *typeAtomList;
+  CFMutableArrayRef typeList;
+  int i, format;
+  unsigned long count, remaining;
+  unsigned char *data = NULL;
 
-	XGetWindowProperty(scr->display, sourceWin, scr->xdndTypeListAtom,
-			   0, 0x8000000L, False, XA_ATOM, &dataType, &format, &count, &remaining, &data);
+  XGetWindowProperty(scr->display, sourceWin, scr->xdndTypeListAtom,
+                     0, 0x8000000L, False, XA_ATOM, &dataType, &format, &count, &remaining, &data);
 
-	if (dataType != XA_ATOM || format != XDND_PROPERTY_FORMAT || count == 0 || !data) {
-		if (data) {
-			XFree(data);
-		}
-		return createSourceTypeArray(0);
-	}
+  if (dataType != XA_ATOM || format != XDND_PROPERTY_FORMAT || count == 0 || !data) {
+    if (data) {
+      XFree(data);
+    }
+    return createSourceTypeArray(0);
+  }
 
-	typeList = createSourceTypeArray(count);
-	typeAtomList = (Atom *) data;
-	for (i = 0; i < count; i++) {
-		WMAddToArray(typeList, XGetAtomName(scr->display, typeAtomList[i]));
-	}
+  typeList = createSourceTypeArray(count);
+  typeAtomList = (Atom *) data;
+  for (i = 0; i < count; i++) {
+    CFArrayAppendValue(typeList, XGetAtomName(scr->display, typeAtomList[i]));
+  }
 
-	XFree(data);
+  XFree(data);
 
-	return typeList;
+  return typeList;
 }
 
-static WMArray *getTypesFromThreeTypes(WMScreen * scr, XClientMessageEvent * event)
+static CFMutableArrayRef getTypesFromThreeTypes(WMScreen * scr, XClientMessageEvent * event)
 {
-	WMArray *typeList;
-	Atom atom;
-	int i;
+  CFMutableArrayRef typeList;
+  Atom atom;
+  int i;
 
-	typeList = createSourceTypeArray(3);
-	for (i = 2; i < 5; i++) {
-		if (event->data.l[i] != None) {
-			atom = (Atom) event->data.l[i];
-			WMAddToArray(typeList, XGetAtomName(scr->display, atom));
-		}
-	}
+  typeList = createSourceTypeArray(3);
+  for (i = 2; i < 5; i++) {
+    if (event->data.l[i] != None) {
+      atom = (Atom) event->data.l[i];
+      CFArrayAppendValue(typeList, XGetAtomName(scr->display, atom));
+    }
+  }
 
-	return typeList;
+  return typeList;
 }
 
 static void storeRequiredTypeList(WMDraggingInfo * info)
 {
-	WMView *destView = XDND_DEST_VIEW(info);
-	WMScreen *scr = W_VIEW_SCREEN(destView);
-	WMArray *requiredTypes;
+  WMView *destView = XDND_DEST_VIEW(info);
+  WMScreen *scr = W_VIEW_SCREEN(destView);
+  CFMutableArrayRef requiredTypes;
 
-	/* First, see if the stored source types are enough for dest requirements */
-	requiredTypes = destView->dragDestinationProcs->requiredDataTypes(destView,
-									  W_ActionToOperation(scr,
-											      XDND_SOURCE_ACTION
-											      (info)),
-									  XDND_SOURCE_TYPES(info));
+  /* First, see if the stored source types are enough for dest requirements */
+  requiredTypes =
+    destView->dragDestinationProcs->requiredDataTypes(destView,
+                                                      W_ActionToOperation(scr, XDND_SOURCE_ACTION(info)),
+                                                      XDND_SOURCE_TYPES(info));
 
-	if (requiredTypes == NULL && XDND_TYPE_LIST_AVAILABLE(info)) {
-		/* None of the stored source types fits, but the whole type list
-		   hasn't been retrieved yet. */
-		WMFreeArray(XDND_SOURCE_TYPES(info));
-		XDND_SOURCE_TYPES(info) = getTypesFromTypeList(scr, XDND_SOURCE_WIN(info));
-		/* Don't retrieve the type list again */
-		XDND_TYPE_LIST_AVAILABLE(info) = False;
+  if (requiredTypes == NULL && XDND_TYPE_LIST_AVAILABLE(info)) {
+    /* None of the stored source types fits, but the whole type list
+       hasn't been retrieved yet. */
+    CFRelease(XDND_SOURCE_TYPES(info));
+    XDND_SOURCE_TYPES(info) = getTypesFromTypeList(scr, XDND_SOURCE_WIN(info));
+    /* Don't retrieve the type list again */
+    XDND_TYPE_LIST_AVAILABLE(info) = False;
 
-		requiredTypes =
-		    destView->dragDestinationProcs->requiredDataTypes(destView,
-								      W_ActionToOperation(scr,
-											  XDND_SOURCE_ACTION
-											  (info)),
-								      XDND_SOURCE_TYPES(info));
-	}
+    requiredTypes =
+      destView->dragDestinationProcs->requiredDataTypes(destView,
+                                                        W_ActionToOperation(scr, XDND_SOURCE_ACTION(info)),
+                                                        XDND_SOURCE_TYPES(info));
+  }
 
-	XDND_REQUIRED_TYPES(info) = requiredTypes;
+  XDND_REQUIRED_TYPES(info) = requiredTypes;
 }
 
 static char *getNextRequestedDataType(WMDraggingInfo * info)
 {
-	/* get the type of the first data not yet retrieved from selection */
-	int nextTypeIndex;
+  /* get the type of the first data not yet retrieved from selection */
+  int nextTypeIndex;
 
-	if (XDND_REQUIRED_TYPES(info) != NULL) {
-		nextTypeIndex = WMGetArrayItemCount(XDND_DROP_DATAS(info));
-		return WMGetFromArray(XDND_REQUIRED_TYPES(info), nextTypeIndex);
-		/* NULL if no more type */
-	} else
-		return NULL;
+  if (XDND_REQUIRED_TYPES(info) != NULL) {
+    nextTypeIndex = CFArrayGetCount(XDND_DROP_DATAS(info));
+    return (char *)CFArrayGetValueAtIndex(XDND_REQUIRED_TYPES(info), nextTypeIndex);
+    /* NULL if no more type */
+  } else {
+    return NULL;
+  }
 }
 
 /* ----- Action list ----- */
 
-static WMArray *sourceOperationList(WMScreen * scr, Window sourceWin)
+static CFMutableArrayRef sourceOperationList(WMScreen * scr, Window sourceWin)
 {
-	Atom dataType, *actionList;
-	int i, size;
-	unsigned long count, remaining;
-	unsigned char *actionDatas = NULL;
-	unsigned char *descriptionList = NULL;
-	WMArray *operationArray;
-	WMDragOperationItem *operationItem;
-	char *description;
+  Atom dataType, *actionList;
+  int i, size;
+  unsigned long count, remaining;
+  unsigned char *actionDatas = NULL;
+  unsigned char *descriptionList = NULL;
+  CFMutableArrayRef operationArray;
+  WMDragOperationItem *operationItem;
+  char *description;
 
-	remaining = 0;
-	XGetWindowProperty(scr->display, sourceWin, scr->xdndActionListAtom,
-			   0, 0x8000000L, False, XA_ATOM, &dataType, &size, &count, &remaining, &actionDatas);
+  remaining = 0;
+  XGetWindowProperty(scr->display, sourceWin, scr->xdndActionListAtom,
+                     0, 0x8000000L, False, XA_ATOM, &dataType, &size, &count, &remaining, &actionDatas);
 
-	if (dataType != XA_ATOM || size != XDND_PROPERTY_FORMAT || count == 0 || !actionDatas) {
-		wwarning("Cannot read action list");
-		if (actionDatas) {
-			XFree(actionDatas);
-		}
-		return NULL;
-	}
+  if (dataType != XA_ATOM || size != XDND_PROPERTY_FORMAT || count == 0 || !actionDatas) {
+    wwarning("Cannot read action list");
+    if (actionDatas) {
+      XFree(actionDatas);
+    }
+    return NULL;
+  }
 
-	actionList = (Atom *) actionDatas;
+  actionList = (Atom *) actionDatas;
 
-	XGetWindowProperty(scr->display, sourceWin, scr->xdndActionDescriptionAtom,
-			   0, 0x8000000L, False, XA_STRING, &dataType, &size,
-			   &count, &remaining, &descriptionList);
+  XGetWindowProperty(scr->display, sourceWin, scr->xdndActionDescriptionAtom,
+                     0, 0x8000000L, False, XA_STRING, &dataType, &size,
+                     &count, &remaining, &descriptionList);
 
-	if (dataType != XA_STRING || size != XDND_ACTION_DESCRIPTION_FORMAT || count == 0 || !descriptionList) {
-		wwarning("Cannot read action description list");
-		if (actionList) {
-			XFree(actionList);
-		}
-		if (descriptionList) {
-			XFree(descriptionList);
-		}
-		return NULL;
-	}
+  if (dataType != XA_STRING || size != XDND_ACTION_DESCRIPTION_FORMAT || count == 0 || !descriptionList) {
+    wwarning("Cannot read action description list");
+    if (actionList) {
+      XFree(actionList);
+    }
+    if (descriptionList) {
+      XFree(descriptionList);
+    }
+    return NULL;
+  }
 
-	operationArray = WMCreateDragOperationArray(count);
-	description = (char *)descriptionList;
+  operationArray = WMCreateDragOperationArray(count);
+  description = (char *)descriptionList;
 
-	for (i = 0; count > 0; i++) {
-		size = strlen(description);
-		operationItem = WMCreateDragOperationItem(W_ActionToOperation(scr, actionList[i]),
-							  wstrdup(description));
+  for (i = 0; count > 0; i++) {
+    size = strlen(description);
+    operationItem = WMCreateDragOperationItem(W_ActionToOperation(scr, actionList[i]),
+                                              wstrdup(description));
 
-		WMAddToArray(operationArray, operationItem);
-		count -= (size + 1);	/* -1 : -NULL char */
+    CFArrayAppendValue(operationArray, operationItem);
+    count -= (size + 1);	/* -1 : -NULL char */
 
-		/* next description */
-		description = &(description[size + 1]);
-	}
+    /* next description */
+    description = &(description[size + 1]);
+  }
 
-	XFree(actionList);
-	XFree(descriptionList);
+  XFree(actionList);
+  XFree(descriptionList);
 
-	return operationArray;
+  return operationArray;
 }
 
 /* ----- Dragging Info ----- */
@@ -253,7 +254,7 @@ static WMView *findChildInView(WMView * parent, int x, int y)
 	}
 }
 
-static WMView *findDestinationViewInToplevel(WMView * toplevel, int x, int y)
+static WMView *findDestinationViewInToplevel(WMView *toplevel, int x, int y)
 {
 	WMScreen *scr = W_VIEW_SCREEN(toplevel);
 	Window toplevelWin = WMViewXID(toplevel);
@@ -265,19 +266,19 @@ static WMView *findDestinationViewInToplevel(WMView * toplevel, int x, int y)
 }
 
 /* Clear datas only used by current destination view */
-static void freeDestinationViewInfos(WMDraggingInfo * info)
+static void freeDestinationViewInfos(WMDraggingInfo *info)
 {
-	if (XDND_SOURCE_TYPES(info) != NULL) {
-		WMFreeArray(XDND_SOURCE_TYPES(info));
-		XDND_SOURCE_TYPES(info) = NULL;
-	}
+  if (XDND_SOURCE_TYPES(info) != NULL) {
+    CFRelease(XDND_SOURCE_TYPES(info));
+    XDND_SOURCE_TYPES(info) = NULL;
+  }
 
-	if (XDND_DROP_DATAS(info) != NULL) {
-		WMFreeArray(XDND_DROP_DATAS(info));
-		XDND_DROP_DATAS(info) = NULL;
-	}
+  if (XDND_DROP_DATAS(info) != NULL) {
+    CFRelease(XDND_DROP_DATAS(info));
+    XDND_DROP_DATAS(info) = NULL;
+  }
 
-	XDND_REQUIRED_TYPES(info) = NULL;
+  XDND_REQUIRED_TYPES(info) = NULL;
 }
 
 void W_DragDestinationInfoClear(WMDraggingInfo * info)
@@ -410,24 +411,24 @@ static void sendStatusMessage(WMView * destView, WMDraggingInfo * info, Atom act
 static void
 storeDropData(WMView * destView, Atom selection, Atom target, Time timestamp, void *cdata, WMData * data)
 {
-	WMScreen *scr = W_VIEW_SCREEN(destView);
-	WMDraggingInfo *info = scr->dragInfo;
-	WMData *dataToStore = NULL;
+  WMScreen *scr = W_VIEW_SCREEN(destView);
+  WMDraggingInfo *info = scr->dragInfo;
+  WMData *dataToStore = NULL;
 
-	/* Parameter not used, but tell the compiler that it is ok */
-	(void) selection;
-	(void) target;
-	(void) timestamp;
-	(void) cdata;
+  /* Parameter not used, but tell the compiler that it is ok */
+  (void) selection;
+  (void) target;
+  (void) timestamp;
+  (void) cdata;
 
-	if (data != NULL)
-		dataToStore = WMRetainData(data);
+  if (data != NULL)
+    dataToStore = WMRetainData(data);
 
-	if (XDND_DEST_INFO(info) != NULL && XDND_DROP_DATAS(info) != NULL) {
-		WMAddToArray(XDND_DROP_DATAS(info), dataToStore);
-		W_SendDnDClientMessage(scr->display, WMViewXID(destView),
-				       scr->xdndSelectionAtom, WMViewXID(destView), 0, 0, 0, 0);
-	}
+  if (XDND_DEST_INFO(info) != NULL && XDND_DROP_DATAS(info) != NULL) {
+    CFArrayAppendValue(XDND_DROP_DATAS(info), dataToStore);
+    W_SendDnDClientMessage(scr->display, WMViewXID(destView),
+                           scr->xdndSelectionAtom, WMViewXID(destView), 0, 0, 0, 0);
+  }
 }
 
 static Bool requestDropDataInSelection(WMView * destView, const char *type)
@@ -451,18 +452,18 @@ static Bool requestDropDataInSelection(WMView * destView, const char *type)
 
 static Bool requestDropData(WMDraggingInfo * info)
 {
-	WMView *destView = XDND_DEST_VIEW(info);
-	char *nextType = getNextRequestedDataType(info);
+  WMView *destView = XDND_DEST_VIEW(info);
+  char *nextType = getNextRequestedDataType(info);
 
-	while ((nextType != NULL)
-	       && (!requestDropDataInSelection(destView, nextType))) {
-		/* store NULL if request failed, and try with next type */
-		WMAddToArray(XDND_DROP_DATAS(info), NULL);
-		nextType = getNextRequestedDataType(info);
-	}
+  while ((nextType != NULL)
+         && (!requestDropDataInSelection(destView, nextType))) {
+    /* store NULL if request failed, and try with next type */
+    CFArrayAppendValue(XDND_DROP_DATAS(info), NULL);
+    nextType = getNextRequestedDataType(info);
+  }
 
-	/* remains types to retrieve ? */
-	return (nextType != NULL);
+  /* remains types to retrieve ? */
+  return (nextType != NULL);
 }
 
 static void concludeDrop(WMView * destView)
@@ -482,15 +483,15 @@ static void cancelDrop(WMView * destView, WMDraggingInfo * info)
    or a register view that doesn't accept the drop */
 static void suspendDropAuthorization(WMView * destView, WMDraggingInfo * info)
 {
-	sendStatusMessage(destView, info, None);
+  sendStatusMessage(destView, info, None);
 
-	/* Free datas that depend on destination behaviour */
-	if (XDND_DROP_DATAS(info) != NULL) {
-		WMFreeArray(XDND_DROP_DATAS(info));
-		XDND_DROP_DATAS(info) = NULL;
-	}
+  /* Free datas that depend on destination behaviour */
+  if (XDND_DROP_DATAS(info) != NULL) {
+    CFRelease(XDND_DROP_DATAS(info));
+    XDND_DROP_DATAS(info) = NULL;
+  }
 
-	XDND_REQUIRED_TYPES(info) = NULL;
+  XDND_REQUIRED_TYPES(info) = NULL;
 }
 
 /* cancel drop on Enter message, if protocol version is nok */
@@ -575,20 +576,19 @@ static WMPoint *getDropLocationInView(WMView * view)
 
 static void callPerformDragOperation(WMView * destView, WMDraggingInfo * info)
 {
-	WMArray *operationList = NULL;
-	WMScreen *scr = W_VIEW_SCREEN(destView);
-	WMPoint *dropLocation;
+  CFMutableArrayRef operationList = NULL;
+  WMScreen *scr = W_VIEW_SCREEN(destView);
+  WMPoint *dropLocation;
 
-	if (XDND_SOURCE_ACTION(info) == scr->xdndActionAsk)
-		operationList = sourceOperationList(scr, XDND_SOURCE_WIN(info));
+  if (XDND_SOURCE_ACTION(info) == scr->xdndActionAsk)
+    operationList = sourceOperationList(scr, XDND_SOURCE_WIN(info));
 
-	dropLocation = getDropLocationInView(destView);
-	destView->dragDestinationProcs->performDragOperation(destView,
-							     XDND_DROP_DATAS(info), operationList, dropLocation);
-
-	wfree(dropLocation);
-	if (operationList != NULL)
-		WMFreeArray(operationList);
+  dropLocation = getDropLocationInView(destView);
+  destView->dragDestinationProcs->performDragOperation(destView, XDND_DROP_DATAS(info),
+                                                       operationList, dropLocation);
+  wfree(dropLocation);
+  if (operationList != NULL)
+    CFRelease(operationList);
 }
 
 /* ----- Destination timer ----- */
@@ -865,24 +865,24 @@ static void W_SetXdndAwareProperty(WMScreen *scr, WMView *view)
 	}
 }
 
-void WMRegisterViewForDraggedTypes(WMView * view, WMArray * acceptedTypes)
+void WMRegisterViewForDraggedTypes(WMView *view, CFMutableArrayRef acceptedTypes)
 {
-	Atom *types;
-	int typeCount;
-	int i;
+  Atom *types;
+  int typeCount;
+  int i;
 
-	typeCount = WMGetArrayItemCount(acceptedTypes);
-	types = wmalloc(sizeof(Atom) * (typeCount + 1));
+  typeCount = CFArrayGetCount(acceptedTypes);
+  types = wmalloc(sizeof(Atom) * (typeCount + 1));
 
-	for (i = 0; i < typeCount; i++) {
-		types[i] = XInternAtom(W_VIEW_SCREEN(view)->display, WMGetFromArray(acceptedTypes, i), False);
-	}
-	types[i] = 0;
+  for (i = 0; i < typeCount; i++) {
+    types[i] = XInternAtom(W_VIEW_SCREEN(view)->display, CFArrayGetValueAtIndex(acceptedTypes, i), False);
+  }
+  types[i] = 0;
 
-	view->droppableTypes = types;
-	/* WMFreeArray(acceptedTypes); */
+  view->droppableTypes = types;
+  /* WMFreeArray(acceptedTypes); */
 
-	W_SetXdndAwareProperty(W_VIEW_SCREEN(view), view);
+  W_SetXdndAwareProperty(W_VIEW_SCREEN(view), view);
 }
 
 void WMUnregisterViewDraggedTypes(WMView * view)
@@ -899,15 +899,15 @@ void WMUnregisterViewDraggedTypes(WMView * view)
  return operation allowed by destination (self)
  */
 static WMDragOperationType
-defAllowedOperation(WMView * self, WMDragOperationType requestedOperation, WMArray * sourceDataTypes)
+defAllowedOperation(WMView *self, WMDragOperationType requestedOperation, CFMutableArrayRef sourceDataTypes)
 {
-	/* Parameter not used, but tell the compiler that it is ok */
-	(void) self;
-	(void) requestedOperation;
-	(void) sourceDataTypes;
+  /* Parameter not used, but tell the compiler that it is ok */
+  (void) self;
+  (void) requestedOperation;
+  (void) sourceDataTypes;
 
-	/* no operation allowed */
-	return WDOperationNone;
+  /* no operation allowed */
+  return WDOperationNone;
 }
 
 /*
@@ -918,16 +918,17 @@ defAllowedOperation(WMView * self, WMDragOperationType requestedOperation, WMArr
  or NULL if no suitable data type is available (force
  to 2nd pass with full source type list).
  */
-static WMArray *defRequiredDataTypes(WMView * self,
-				     WMDragOperationType requestedOperation, WMArray * sourceDataTypes)
+static CFMutableArrayRef defRequiredDataTypes(WMView *self,
+                                              WMDragOperationType requestedOperation,
+                                              CFMutableArrayRef sourceDataTypes)
 {
-	/* Parameter not used, but tell the compiler that it is ok */
-	(void) self;
-	(void) requestedOperation;
-	(void) sourceDataTypes;
+  /* Parameter not used, but tell the compiler that it is ok */
+  (void) self;
+  (void) requestedOperation;
+  (void) sourceDataTypes;
 
-	/* no data type allowed (NULL even at 2nd pass) */
-	return NULL;
+  /* no data type allowed (NULL even at 2nd pass) */
+  return NULL;
 }
 
 /*
@@ -960,14 +961,16 @@ static void defPrepareForDragOperation(WMView * self)
  to source. (destroyed after performDragOperation call)
  Otherwise this parameter is NULL.
  */
-static void
-defPerformDragOperation(WMView * self, WMArray * dropDatas, WMArray * operationList, WMPoint * dropLocation)
+static void defPerformDragOperation(WMView *self,
+                                    CFMutableArrayRef dropDatas,
+                                    CFMutableArrayRef operationList,
+                                    WMPoint * dropLocation)
 {
-	/* Parameter not used, but tell the compiler that it is ok */
-	(void) self;
-	(void) dropDatas;
-	(void) operationList;
-	(void) dropLocation;
+  /* Parameter not used, but tell the compiler that it is ok */
+  (void) self;
+  (void) dropDatas;
+  (void) operationList;
+  (void) dropLocation;
 }
 
 /* Executed after drop */

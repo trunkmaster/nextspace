@@ -1,7 +1,8 @@
 #ifndef _WVIEW_H_
 #define _WVIEW_H_
 
-#include <WMcore/array.h>
+/* #include <WMcore/array.h> */
+#include <CoreFoundation/CFArray.h>
 #include <WINGs/WINGs.h>
 
 typedef struct W_ViewDelegate {
@@ -48,7 +49,7 @@ typedef struct W_View {
 
     struct W_View *nextSister;         /* next on parent's children list */
 
-    WMArray *eventHandlers;            /* event handlers for this window */
+    CFMutableArrayRef eventHandlers;   /* event handlers for this window */
 
     unsigned long attribFlags;
     XSetWindowAttributes attribs;

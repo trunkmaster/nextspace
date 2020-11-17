@@ -70,14 +70,15 @@ WMDragOperationType W_ActionToOperation(WMScreen * scr, Atom action)
 	}
 }
 
-static void freeDragOperationItem(void *item)
+static void freeDragOperationItem(CFAllocatorRef allocator, const void *item)
 {
-	wfree(item);
+  wfree((void *)item);
 }
 
-WMArray *WMCreateDragOperationArray(int initialSize)
+CFMutableArrayRef WMCreateDragOperationArray(int initialSize)
 {
-	return WMCreateArrayWithDestructor(initialSize, freeDragOperationItem);
+  CFArrayCallBacks cbs = {0, NULL, freeDragOperationItem, NULL, NULL};
+  return CFArrayCreateMutable(kCFAllocatorDefault, initialSize, &cbs);
 }
 
 WMDragOperationItem *WMCreateDragOperationItem(WMDragOperationType type, char *text)

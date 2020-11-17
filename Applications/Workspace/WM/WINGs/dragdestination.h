@@ -5,7 +5,7 @@
 
 /* ---[ WINGs/dragdestination.c ]----------------------------------------- */
 
-void WMRegisterViewForDraggedTypes(WMView *view, WMArray *acceptedTypes);
+void WMRegisterViewForDraggedTypes(WMView *view, CFMutableArrayRef acceptedTypes);
 
 void WMUnregisterViewDraggedTypes(WMView *view);
 
