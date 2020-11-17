@@ -11,8 +11,10 @@ jobs:
     docker:
     - image: amd64/centos:7
     environment:
-      BASH_ENV: /etc/profile.d/nextspace.sh                                                                                                                                 steps:                                                                                                                                                                  - checkout:
-        path: /root/nextspace
+      BASH_ENV: /etc/profile.d/nextspace.sh
+    steps:
+      - checkout:
+          path: /root/nextspace
     - run:
         name: Install SUDO
         command: yum -y install sudo
