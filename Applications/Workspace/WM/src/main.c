@@ -97,6 +97,22 @@ const char WMNWorkspaceNameChanged[] = "WMNWorkspaceNameChanged";
 
 const char WMNResetStacking[] = "WMNResetStacking";
 
+/* CoreFoundation notifications */
+CFStringRef WMDidManageWindowNotification = CFSTR("WMDidManageWindowNotification");
+CFStringRef WMDidUnmanageWindowNotification = CFSTR("WMDidUnmanageWindowNotification");
+CFStringRef WMDidChangeWindowWorkspaceNotification = CFSTR("WMDidChangeWindowWorkspaceNotification");
+CFStringRef WMDidChangeWindowStateNotification = CFSTR("WMDidChangeWindowStateNotification");
+CFStringRef WMDidChangeWindowFocusNotification = CFSTR("WMDidChangeWindowFocusNotification");
+CFStringRef WMDidChangeWindowStackingNotification = CFSTR("WMDidChangeWindowStackingNotification");
+CFStringRef WMDidChangeWindowNameNotification = CFSTR("WMDidChangeWindowNameNotification");
+
+CFStringRef WMDidResetWindowStackingNotification = CFSTR("WMDidResetWindowStackingNotification");
+
+CFStringRef WMDidCreateWorkspaceNotification = CFSTR("WMDidCreateWorkspaceNotification");
+CFStringRef WMDidDestroyWorkspaceNotification = CFSTR("WMDidDestroyWorkspaceNotification");
+CFStringRef WMDidChangeWorkspaceNotification = CFSTR("WMDidChangeWorkspaceNotification");
+CFStringRef WMDidChangeWorkspaceNameNotification = CFSTR("WMDidChangeWorkspaceNameNotification");
+
 /******** End Global Variables *****/
 
 static char *DisplayName = NULL;

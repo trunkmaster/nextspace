@@ -625,4 +625,44 @@ extern const char WMNWorkspaceNameChanged[];
 
 extern const char WMNResetStacking[];
 
+/* CoreFoundation notifications */
+#include <CoreFoundation/CFString.h>
+#include <CoreFoundation/CFNotificationCenter.h>
+/*
+CFNotificationCenterAddObserver(CFNotificationCenterRef center,
+                                const void *observer,
+                                CFNotificationCallback callBack,
+                                CFStringRef name,
+                                const void *object,
+                                CFNotificationSuspensionBehavior suspensionBehavior);
+
+(*CFNotificationCallback)(CFNotificationCenterRef center,
+                          void *observer,
+                          CFNotificationName name,
+                          const void *object,
+                          CFDictionaryRef userInfo);
+
+CFNotificationCenterPostNotification(CFNotificationCenterRef center,
+                                     CFNotificationName name,
+                                     const void *object,
+                                     CFDictionaryRef userInfo,
+                                     Boolean deliverImmediately);
+*/
+extern CFStringRef WMDidManageWindowNotification;
+extern CFStringRef WMDidUnmanageWindowNotification;
+extern CFStringRef WMDidChangeWindowWorkspaceNotification;
+extern CFStringRef WMDidChangeWindowStateNotification;
+extern CFStringRef WMDidChangeWindowFocusNotification;
+extern CFStringRef WMDidChangeWindowStackingNotification;
+extern CFStringRef WMDidChangeWindowNameNotification;
+
+extern CFStringRef WMDidResetWindowStackingNotification;
+
+extern CFStringRef WMDidCreateWorkspaceNotification;
+extern CFStringRef WMDidDestroyWorkspaceNotification;
+extern CFStringRef WMDidChangeWorkspaceNotification;
+extern CFStringRef WMDidChangeWorkspaceNameNotification;
+
+
+
 #endif
