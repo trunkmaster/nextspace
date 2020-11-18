@@ -49,9 +49,7 @@
                              (w)->wm_gnustep_attr->window_level == NSPopUpMenuWindowLevel))
 
 static int initialized = 0;
-/* static void observer(void *self, WMNotification * notif); */
 static void notificationObserver(CFNotificationCenterRef center, void *observer, CFNotificationName name,const void *object, CFDictionaryRef userInfo);
-static void wsobserver(void *self, WMNotification *notif);
 
 /*
  * FocusWindow
@@ -64,12 +62,9 @@ static void wsobserver(void *self, WMNotification *notif);
  *    Unshade if shaded
  *    If iconified then deiconify else focus/raise.
  */
-static void focusWindow(WMenu * menu, WMenuEntry * entry)
+static void focusWindow(WMenu *menu, WMenuEntry *entry)
 {
   WWindow *wwin;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) menu;
 
   wwin = (WWindow *) entry->clientdata;
   wWindowSingleFocus(wwin);
@@ -111,18 +106,6 @@ void InitializeSwitchMenu(void)
     CFNotificationCenterAddObserver(notificationCenter, NULL, notificationObserver,
                                     WMDidChangeWorkspaceNameNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-
-    
-    /* WMAddNotificationObserver(observer, NULL, WMNManaged, NULL); */
-    /* WMAddNotificationObserver(observer, NULL, WMNUnmanaged, NULL); */
-    /* WMAddNotificationObserver(observer, NULL, WMNChangedWorkspace, NULL); */
-    /* WMAddNotificationObserver(observer, NULL, WMNChangedState, NULL); */
-    /* WMAddNotificationObserver(observer, NULL, WMNChangedFocus, NULL); */
-    /* WMAddNotificationObserver(observer, NULL, WMNChangedStacking, NULL); */
-    /* WMAddNotificationObserver(observer, NULL, WMNChangedName, NULL); */
-
-    /* WMAddNotificationObserver(wsobserver, NULL, WMNWorkspaceChanged, NULL); */
-    /* WMAddNotificationObserver(wsobserver, NULL, WMNWorkspaceNameChanged, NULL); */
   }
 }
 
@@ -185,7 +168,7 @@ void OpenSwitchMenu(WScreen * scr, int x, int y, int keyboard)
   }
 }
 
-static int menuIndexForWindow(WMenu * menu, WWindow * wwin, int old_pos)
+static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
 {
   int idx;
 
@@ -216,7 +199,7 @@ static int menuIndexForWindow(WMenu * menu, WWindow * wwin, int old_pos)
 /*
  * Update switch menu
  */
-void UpdateSwitchMenu(WScreen * scr, WWindow * wwin, int action)
+void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
 {
   WMenu *switchmenu = scr->switch_menu;
   WMenuEntry *entry;
@@ -409,7 +392,28 @@ static void UpdateSwitchMenuWorkspace(WScreen *scr, int workspace)
     wMenuRealize(menu);
 }
 
-/* static void observer(void *self, WMNotification * notif) */
+static void *__WMUserInfoGetValue(CFDictionaryRef theDict, CFStringRef key)
+{
+  const void *keys;
+  const void *values;
+  void *desired_value = "";
+
+  if (!theDict)
+    return desired_value;
+  
+  CFDictionaryGetKeysAndValues(theDict, &keys, &values);
+  for (int i = 0; i < CFDictionaryGetCount(theDict); i++) {
+    if (CFStringCompare(&keys[i], key, 0) == 0) {
+      desired_value = (void *)&values[i];
+      break;
+    }
+  }
+
+  return desired_value;
+}
+
+#include <CoreFoundation/CFLogUtilities.h>
+#include <CoreFoundation/CFNumber.h>
 static void notificationObserver(CFNotificationCenterRef center,
                                  void *observer,
                                  CFNotificationName name,
@@ -418,12 +422,21 @@ static void notificationObserver(CFNotificationCenterRef center,
 {
   WWindow *wwin = (WWindow *)object;
   
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) observer;
-
+  if (CFStringCompare(name, WMDidChangeWorkspaceNameNotification, 0) == 0) {
+    CFShow(CFSTR("[switchmenu.c] workspace name was changed"));
+    int workspace;
+    CFNumberGetValue((CFNumberRef)__WMUserInfoGetValue(userInfo, CFSTR("workspace")),
+                     kCFNumberShortType, &workspace);
+    UpdateSwitchMenuWorkspace(wwin->screen_ptr, workspace);
+    return;
+  }
+  else if (CFStringCompare(name, WMDidChangeWorkspaceNotification, 0) == 0) {
+    return;    
+  }
+  
   if (!wwin)
     return;
-
+  
   if (CFStringCompare(name, WMDidManageWindowNotification, 0) == 0)
     UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_ADD);
   else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0)
@@ -435,27 +448,11 @@ static void notificationObserver(CFNotificationCenterRef center,
   else if (CFStringCompare(name, WMDidChangeWindowNameNotification, 0) == 0)
     UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE);
   else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
-    CFStringRef windowState = CFDictionaryGetValue(userInfo, CFSTR("state"));
-    if (CFStringCompare(windowState, CFSTR("omnipresent"), 0) == 0) {
+    CFStringRef wstate = (CFStringRef)__WMUserInfoGetValue(userInfo, CFSTR("state"));
+    if (CFStringCompare(wstate, CFSTR("omnipresent"), 0) == 0) {
       UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_WORKSPACE);
     } else {
       UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_STATE);
     }
-  }
-}
-
-static void wsobserver(void *self, WMNotification * notif)
-{
-  WScreen *scr = (WScreen *) WMGetNotificationObject(notif);
-  const char *name = WMGetNotificationName(notif);
-  void *data = WMGetNotificationClientData(notif);
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) self;
-
-  if (strcmp(name, WMNWorkspaceNameChanged) == 0) {
-    UpdateSwitchMenuWorkspace(scr, (uintptr_t)data);
-  } else if (strcmp(name, WMNWorkspaceChanged) == 0) {
-
   }
 }

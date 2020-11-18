@@ -39,6 +39,7 @@
 
 #include <WMcore/notification.h>
 #include <WINGs/configuration.h>
+
 #include <WMcore/memory.h>
 #include <WMcore/handlers.h>
 #include <WMcore/string.h>
@@ -1337,7 +1338,9 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   if (!WFLAGP(wwin, no_bind_keys))
     wWindowSetKeyGrabs(wwin);
 
-  WMPostNotificationName(WMNManaged, wwin, NULL);
+  /* WMPostNotificationName(WMNManaged, wwin, NULL); */
+  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                       WMDidManageWindowNotification, wwin, NULL, TRUE);
   wColormapInstallForWindow(scr, scr->cmap_window);
 
   /* Setup Notification Observers */
@@ -1579,7 +1582,9 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   }
 
   if (!wwin->flags.internal_window) {
-    WMPostNotificationName(WMNUnmanaged, wwin, NULL);
+    /* WMPostNotificationName(WMNUnmanaged, wwin, NULL); */
+    CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                         WMDidUnmanageWindowNotification, wwin, NULL, TRUE);
   }
   
   oapp = wApplicationOf(wwin->main_window);
@@ -1747,7 +1752,10 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
 
   wWindowResetMouseGrabs(wwin);
 
-  WMPostNotificationName(WMNChangedFocus, wwin, (void *)True);
+  /* WMPostNotificationName(WMNChangedFocus, wwin, (void *)True); */
+  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                       WMDidChangeWindowFocusNotification, wwin,
+                                       (void *)True, TRUE);
 
   if (owin == wwin || !owin)
     return;
@@ -1830,7 +1838,10 @@ void wWindowUnfocus(WWindow *wwin)
   
   wwin->flags.focused = 0;
   wWindowResetMouseGrabs(wwin);
-  WMPostNotificationName(WMNChangedFocus, wwin, (void *)False);
+  /* WMPostNotificationName(WMNChangedFocus, wwin, (void *)False); */
+  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                       WMDidChangeWindowFocusNotification, wwin,
+                                       (void *)False, TRUE);
   wPrintWindowFocusState(wwin, "[ END ] wWindowUnfocus:");
 }
 
@@ -1846,8 +1857,12 @@ void wWindowUpdateName(WWindow *wwin, const char *newTitle)
   else
     title = newTitle;
 
-  if (wFrameWindowChangeTitle(wwin->frame, title))
-    WMPostNotificationName(WMNChangedName, wwin, NULL);
+  if (wFrameWindowChangeTitle(wwin->frame, title)) {
+    /* WMPostNotificationName(WMNChangedName, wwin, NULL); */
+    CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                         WMDidChangeWindowNameNotification, wwin,
+                                         NULL, TRUE);
+  }
 }
 
 /*
@@ -2021,9 +2036,12 @@ void wWindowChangeWorkspace(WWindow *wwin, int workspace)
     }
   }
   if (!IS_OMNIPRESENT(wwin)) {
-    int oldWorkspace = wwin->frame->workspace;
+    /* int ws = wwin->frame->workspace; */
+    /* WMPostNotificationName(WMNChangedWorkspace, wwin, (void *)(uintptr_t)ws); */
     wwin->frame->workspace = workspace;
-    WMPostNotificationName(WMNChangedWorkspace, wwin, (void *)(uintptr_t) oldWorkspace);
+    CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                         WMDidChangeWindowWorkspaceNotification, wwin,
+                                         NULL, TRUE);
   }
 
   if (unmap)
@@ -2832,7 +2850,12 @@ void wWindowSetOmnipresent(WWindow *wwin, Bool flag)
     return;
 
   wwin->flags.omnipresent = flag;
-  WMPostNotificationName(WMNChangedState, wwin, "omnipresent");
+  /* WMPostNotificationName(WMNChangedState, wwin, "omnipresent"); */
+  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+  CFDictionaryAddValue(info, CFSTR("state"), CFSTR("omnipresent"));
+  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                       WMDidChangeWindowStateNotification, wwin, info, TRUE);
+  CFRelease(info);
 }
 
 static void resizebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)

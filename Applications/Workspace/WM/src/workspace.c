@@ -35,8 +35,10 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include <WMcore/memory.h>
+#include <CoreFoundation/CFNotificationCenter.h>
+#include <CoreFoundation/CFNumber.h>
 #include <WMcore/notification.h>
+#include <WMcore/memory.h>
 #include <WMcore/handlers.h>
 #include <WMcore/string.h>
 
@@ -134,7 +136,18 @@ int wWorkspaceNew(WScreen *scr)
     wWorkspaceMenuUpdate(scr, scr->workspace_menu);
     wWorkspaceMenuUpdate(scr, scr->clip_ws_menu);
     wNETWMUpdateDesktop(scr);
-    WMPostNotificationName(WMNWorkspaceCreated, scr, (void *)(uintptr_t) (scr->workspace_count - 1));
+    /* WMPostNotificationName(WMNWorkspaceCreated, scr, */
+    /*                        (void *)(uintptr_t) (scr->workspace_count - 1)); */
+    {
+      int ws = (scr->workspace_count - 1);
+      CFNumberRef workspace = CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType, &ws);
+      CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+      CFDictionaryAddValue(info, CFSTR("workspace"), workspace);
+      CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                           WMDidCreateWorkspaceNotification, scr, info, TRUE);
+      CFRelease(workspace);
+      CFRelease(info);
+    }
     XFlush(dpy);
 
     return scr->workspace_count - 1;

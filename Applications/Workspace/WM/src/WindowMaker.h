@@ -663,6 +663,4 @@ extern CFStringRef WMDidDestroyWorkspaceNotification;
 extern CFStringRef WMDidChangeWorkspaceNotification;
 extern CFStringRef WMDidChangeWorkspaceNameNotification;
 
-
-
 #endif
