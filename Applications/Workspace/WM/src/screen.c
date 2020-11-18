@@ -40,6 +40,11 @@
 #include <WMcore/userdefaults.h>
 #include <WMcore/string.h>
 
+#include <WINGs/widgets.h>
+#include <WINGs/wcolor.h>
+#include <WINGs/wmisc.h>
+#include <WINGs/wappresource.h>
+
 #include "WindowMaker.h"
 #include "def_pixmaps.h"
 #include "screen.h"
@@ -59,13 +64,6 @@
 #include "wmspec.h"
 
 #include "xrandr.h"
-
-#include <WMcore/wapplication.h>
-
-#include <WINGs/wappresource.h>
-#include <WINGs/widgets.h>
-#include <WINGs/wcolor.h>
-#include <WINGs/wmisc.h>
 
 #include "defaults.h"
 
