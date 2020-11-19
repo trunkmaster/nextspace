@@ -266,19 +266,6 @@ typedef enum {
 #define WFLAGS_CRASHED    (1<<0)
 
 
-/* notifications */
-
-#ifdef MAINFILE
-#define NOTIFICATION(n) const char WN##n [] = #n
-#else
-#define NOTIFICATION(n) extern const char WN##n []
-#endif
-
-NOTIFICATION(WindowAppearanceSettingsChanged);
-NOTIFICATION(MenuAppearanceSettingsChanged);
-NOTIFICATION(MenuTitleAppearanceSettingsChanged);
-
-
 /* appearance settings clientdata flags */
 enum {
       WFontSettings = 1 << 0,
@@ -606,22 +593,6 @@ extern struct wmaker_global_variables {
   } shortcut;
 } w_global;
 
-/****** Notifications ******/
-extern const char WMNManaged[];
-extern const char WMNUnmanaged[];
-extern const char WMNChangedWorkspace[];
-extern const char WMNChangedState[];
-extern const char WMNChangedFocus[];
-extern const char WMNChangedStacking[];
-extern const char WMNChangedName[];
-
-extern const char WMNWorkspaceCreated[];
-extern const char WMNWorkspaceDestroyed[];
-extern const char WMNWorkspaceChanged[];
-extern const char WMNWorkspaceNameChanged[];
-
-extern const char WMNResetStacking[];
-
 /* CoreFoundation notifications */
 /*
 CFNotificationCenterAddObserver(CFNotificationCenterRef center,
@@ -663,5 +634,7 @@ extern CFStringRef WMDidChangeIconAppearanceSettings;
 extern CFStringRef WMDidChangeIconTileSettings;
 extern CFStringRef WMDidChangeMenuAppearanceSettings;
 extern CFStringRef WMDidChangeMenuTitleAppearanceSettings;
+
+void *userInfoValueForKey(CFDictionaryRef theDict, CFStringRef key);
 
 #endif

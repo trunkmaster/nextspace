@@ -32,7 +32,6 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#include <WMcore/notification.h>
 #include <WMcore/memory.h>
 #include <WMcore/handlers.h>
 #include <WMcore/usleep.h>
@@ -87,15 +86,20 @@ static void closeCascade(WMenu * menu);
 
 /****** Notification Observers ******/
 
-static void appearanceObserver(void *self, WMNotification * notif)
+static void appearanceObserver(CFNotificationCenterRef center,
+                               void *observedMenu, // observer
+                               CFNotificationName name,
+                               const void *settingsFlags, // object
+                               CFDictionaryRef userInfo)
 {
-  WMenu *menu = (WMenu *) self;
-  uintptr_t flags = (uintptr_t)WMGetNotificationClientData(notif);
+  WMenu *menu = (WMenu *)observedMenu;
+  /* uintptr_t flags = (uintptr_t)WMGetNotificationClientData(notif); */
+  uintptr_t flags = (uintptr_t)settingsFlags;
 
   if (!menu->flags.realized)
     return;
 
-  if (WMGetNotificationName(notif) == WNMenuAppearanceSettingsChanged) {
+  if (CFStringCompare(name, WMDidChangeMenuAppearanceSettings, 0) == 0) {
     if (flags & WFontSettings) {
       menu->flags.realized = 0;
       wMenuRealize(menu);
@@ -219,10 +223,13 @@ WMenu *wMenuCreate(WScreen *screen, const char *title, int main_menu)
     menu->brother->flags.brother = 1;
     menu->brother->brother = menu;
   }
-  WMAddNotificationObserver(appearanceObserver, menu, WNMenuAppearanceSettingsChanged, menu);
-
-  WMAddNotificationObserver(appearanceObserver, menu, WNMenuTitleAppearanceSettingsChanged, menu);
-
+  CFNotificationCenterAddObserver(screen->notificationCenter, menu, appearanceObserver,
+                                  WMDidChangeMenuAppearanceSettings, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(screen->notificationCenter, menu, appearanceObserver,
+                                  WMDidChangeMenuTitleAppearanceSettings, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  
   return menu;
 }
 
@@ -545,11 +552,14 @@ void wMenuRealize(WMenu * menu)
     wMenuPaint(menu->brother);
 }
 
-void wMenuDestroy(WMenu * menu, int recurse)
+void wMenuDestroy(WMenu *menu, int recurse)
 {
   int i;
 
-  WMRemoveNotificationObserver(menu);
+  CFNotificationCenterRemoveObserver(CFNotificationCenterGetLocalCenter(),
+                                     menu, WMDidChangeMenuAppearanceSettings, NULL);
+  CFNotificationCenterRemoveObserver(CFNotificationCenterGetLocalCenter(),
+                                     menu, WMDidChangeMenuTitleAppearanceSettings, NULL);
 
   /* remove any pending timers */
   if (menu->timer)

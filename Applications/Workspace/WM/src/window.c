@@ -36,7 +36,6 @@
 
 #include <CoreFoundation/CFNumber.h>
 
-#include <WMcore/notification.h>
 #include <WMcore/memory.h>
 #include <WMcore/handlers.h>
 #include <WMcore/string.h>
@@ -109,10 +108,14 @@ static void release_wwindowstate(WWindowState *wstate);
 
 /****** Notification Observers ******/
 
-static void appearanceObserver(void *self, WMNotification * notif)
+static void appearanceObserver(CFNotificationCenterRef center,
+                               void *observedWindow, // observer
+                               CFNotificationName name,
+                               const void *settingsFlags, // object
+                               CFDictionaryRef userInfo)
 {
-  WWindow *wwin = (WWindow *) self;
-  uintptr_t flags = (uintptr_t)WMGetNotificationClientData(notif);
+  WWindow *wwin = (WWindow *)observedWindow;
+  uintptr_t flags = (uintptr_t)settingsFlags;
 
   if (!wwin->frame || (!wwin->frame->titlebar && !wwin->frame->resizebar))
     return;
@@ -182,7 +185,8 @@ void wWindowDestroy(WWindow *wwin)
   if (wwin->screen_ptr->cmap_window == wwin)
     wwin->screen_ptr->cmap_window = NULL;
 
-  WMRemoveNotificationObserver(wwin);
+  CFNotificationCenterRemoveObserver(wwin->screen_ptr->notificationCenter,
+                                     wwin, WMDidChangeWindowAppearanceSettings, NULL);
 
   wwin->flags.destroyed = 1;
 
@@ -1344,7 +1348,9 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   wColormapInstallForWindow(scr, scr->cmap_window);
 
   /* Setup Notification Observers */
-  WMAddNotificationObserver(appearanceObserver, wwin, WNWindowAppearanceSettingsChanged, wwin);
+  CFNotificationCenterAddObserver(scr->notificationCenter, wwin, appearanceObserver,
+                                  WMDidChangeWindowAppearanceSettings, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
 
   /*  Cleanup temporary stuff */
   if (win_state)
@@ -1370,7 +1376,9 @@ WWindow *wManageInternalWindow(WScreen *scr, Window window, Window owner,
 
   wwin = wWindowCreate();
 
-  WMAddNotificationObserver(appearanceObserver, wwin, WNWindowAppearanceSettingsChanged, wwin);
+  CFNotificationCenterAddObserver(scr->notificationCenter, wwin, appearanceObserver,
+                                  WMDidChangeWindowAppearanceSettings, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
 
   wwin->flags.internal_window = 1;
 

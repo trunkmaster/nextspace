@@ -71,8 +71,6 @@
 /****** Global Variables ******/
 struct wmaker_global_variables w_global;
 
-/* general info */
-
 Display *dpy;
 
 char *ProgName;
@@ -80,22 +78,6 @@ char *ProgName;
 struct WPreferences wPreferences;
 
 WShortKey wKeyBindings[WKBD_LAST];
-
-/* notifications */
-const char WMNManaged[] = "WMNManaged";
-const char WMNUnmanaged[] = "WMNUnmanaged";
-const char WMNChangedWorkspace[] = "WMNChangedWorkspace";
-const char WMNChangedState[] = "WMNChangedState";
-const char WMNChangedFocus[] = "WMNChangedFocus";
-const char WMNChangedStacking[] = "WMNChangedStacking";
-const char WMNChangedName[] = "WMNChangedName";
-
-const char WMNWorkspaceCreated[] = "WMNWorkspaceCreated";
-const char WMNWorkspaceDestroyed[] = "WMNWorkspaceDestroyed";
-const char WMNWorkspaceChanged[] = "WMNWorkspaceChanged";
-const char WMNWorkspaceNameChanged[] = "WMNWorkspaceNameChanged";
-
-const char WMNResetStacking[] = "WMNResetStacking";
 
 /* CoreFoundation notifications */
 CFStringRef WMDidManageWindowNotification = CFSTR("WMDidManageWindowNotification");
@@ -119,15 +101,32 @@ CFStringRef WMDidChangeIconTileSettings = CFSTR("WMDidChangeIconTileSettings");
 CFStringRef WMDidChangeMenuAppearanceSettings = CFSTR("WMDidChangeMenuAppearanceSettings");
 CFStringRef WMDidChangeMenuTitleAppearanceSettings = CFSTR("WMDidChangeMenuTitleAppearanceSettings");
 
+void *userInfoValueForKey(CFDictionaryRef theDict, CFStringRef key)
+{
+  const void *keys;
+  const void *values;
+  void *desired_value = "";
+
+  if (!theDict)
+    return desired_value;
+  
+  CFDictionaryGetKeysAndValues(theDict, &keys, &values);
+  for (int i = 0; i < CFDictionaryGetCount(theDict); i++) {
+    if (CFStringCompare(&keys[i], key, 0) == 0) {
+      desired_value = (void *)&values[i];
+      break;
+    }
+  }
+
+  return desired_value;
+}
+
 /******** End Global Variables *****/
 
 static char *DisplayName = NULL;
 static char **Arguments;
 static int  *wVisualID = NULL;
 static int  wVisualID_len = 0;
-
-// int real_main(int argc, char **argv);
-int WMInitialize(int argc, char **argv);
 
 int getWVisualID(int screen)
 {

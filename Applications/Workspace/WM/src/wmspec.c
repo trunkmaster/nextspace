@@ -36,7 +36,6 @@
 
 #include <WMcore/memory.h>
 #include <WMcore/string.h>
-#include <WMcore/notification.h>
 
 #include "WindowMaker.h"
 #include "window.h"
@@ -249,8 +248,14 @@ static atomitem_t atomNames[] = {
 #define _NET_WM_MOVERESIZE_MOVE_KEYBOARD    10	/* move via keyboard */
 #endif
 
-static void observer(void *self, WMNotification *notif);
-static void wsobserver(void *self, WMNotification *notif);
+/* static void observer(void *self, WMNotification *notif); */
+/* static void wsobserver(void *self, WMNotification *notif); */
+static void windowObserver(CFNotificationCenterRef center,  void *observer,
+                           CFNotificationName name, const void *window,
+                           CFDictionaryRef userInfo);
+static void workspaceObserver(CFNotificationCenterRef center, void *observer,
+                              CFNotificationName name, const void *screen,
+                              CFDictionaryRef userInfo);
 
 static void updateClientList(WScreen *scr);
 static void updateClientListStacking(WScreen *scr, WWindow *);
@@ -631,18 +636,40 @@ void wNETWMInitStuff(WScreen *scr)
 
   setSupportedHints(scr);
 
-  WMAddNotificationObserver(observer, data, WMNManaged, NULL);
-  WMAddNotificationObserver(observer, data, WMNUnmanaged, NULL);
-  WMAddNotificationObserver(observer, data, WMNChangedWorkspace, NULL);
-  WMAddNotificationObserver(observer, data, WMNChangedState, NULL);
-  WMAddNotificationObserver(observer, data, WMNChangedFocus, NULL);
-  WMAddNotificationObserver(observer, data, WMNChangedStacking, NULL);
-  WMAddNotificationObserver(observer, data, WMNChangedName, NULL);
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, windowObserver,
+                                  WMDidManageWindowNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, windowObserver,
+                                  WMDidUnmanageWindowNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, windowObserver,
+                                  WMDidChangeWindowWorkspaceNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, windowObserver,
+                                  WMDidChangeWindowStateNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, windowObserver,
+                                  WMDidChangeWindowFocusNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, windowObserver,
+                                  WMDidChangeWindowStackingNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, windowObserver,
+                                  WMDidChangeWindowNameNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
 
-  WMAddNotificationObserver(wsobserver, data, WMNWorkspaceCreated, NULL);
-  WMAddNotificationObserver(wsobserver, data, WMNWorkspaceDestroyed, NULL);
-  WMAddNotificationObserver(wsobserver, data, WMNWorkspaceChanged, NULL);
-  WMAddNotificationObserver(wsobserver, data, WMNWorkspaceNameChanged, NULL);
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, workspaceObserver,
+                                  WMDidCreateWorkspaceNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, workspaceObserver,
+                                  WMDidDestroyWorkspaceNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, workspaceObserver,
+                                  WMDidChangeWorkspaceNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, workspaceObserver,
+                                  WMDidChangeWorkspaceNameNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
 
   updateClientList(scr);
   updateClientListStacking(scr, NULL);
@@ -1762,69 +1789,6 @@ char *wNETWMGetIconName(Window window)
   return ret;
 }
 
-static void observer(void *self, WMNotification *notif)
-{
-  WWindow *wwin = (WWindow *) WMGetNotificationObject(notif);
-  const char *name = WMGetNotificationName(notif);
-  void *data = WMGetNotificationClientData(notif);
-  NetData *ndata = (NetData *) self;
-
-  if (strcmp(name, WMNManaged) == 0 && wwin) {
-    updateClientList(wwin->screen_ptr);
-    updateClientListStacking(wwin->screen_ptr, NULL);
-    updateStateHint(wwin, True, False);
-
-    updateStrut(wwin->screen_ptr, wwin->client_win, False);
-    updateStrut(wwin->screen_ptr, wwin->client_win, True);
-    wScreenUpdateUsableArea(wwin->screen_ptr);
-  } else if (strcmp(name, WMNUnmanaged) == 0 && wwin) {
-    updateClientList(wwin->screen_ptr);
-    updateClientListStacking(wwin->screen_ptr, wwin);
-    updateWorkspaceHint(wwin, False, True);
-    updateStateHint(wwin, False, True);
-    wNETWMUpdateActions(wwin, True);
-
-    updateStrut(wwin->screen_ptr, wwin->client_win, False);
-    wScreenUpdateUsableArea(wwin->screen_ptr);
-  } else if (strcmp(name, WMNResetStacking) == 0 && wwin) {
-    updateClientListStacking(wwin->screen_ptr, NULL);
-    updateStateHint(wwin, False, False);
-  } else if (strcmp(name, WMNChangedStacking) == 0 && wwin) {
-    updateClientListStacking(wwin->screen_ptr, NULL);
-    updateStateHint(wwin, False, False);
-  } else if (strcmp(name, WMNChangedFocus) == 0) {
-    updateFocusHint(ndata->scr);
-  } else if (strcmp(name, WMNChangedWorkspace) == 0 && wwin) {
-    updateWorkspaceHint(wwin, False, False);
-    updateStateHint(wwin, True, False);
-  } else if (strcmp(name, WMNChangedState) == 0 && wwin) {
-    updateStateHint(wwin, !strcmp(data, "omnipresent"), False);
-  }
-}
-
-static void wsobserver(void *self, WMNotification *notif)
-{
-  WScreen *scr = (WScreen *) WMGetNotificationObject(notif);
-  const char *name = WMGetNotificationName(notif);
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) self;
-
-  if (strcmp(name, WMNWorkspaceCreated) == 0) {
-    updateWorkspaceCount(scr);
-    updateWorkspaceNames(scr);
-    wNETWMUpdateWorkarea(scr);
-  } else if (strcmp(name, WMNWorkspaceDestroyed) == 0) {
-    updateWorkspaceCount(scr);
-    updateWorkspaceNames(scr);
-    wNETWMUpdateWorkarea(scr);
-  } else if (strcmp(name, WMNWorkspaceChanged) == 0) {
-    updateCurrentWorkspace(scr);
-  } else if (strcmp(name, WMNWorkspaceNameChanged) == 0) {
-    updateWorkspaceNames(scr);
-  }
-}
-
 void wNETFrameExtents(WWindow *wwin)
 {
   long extents[4] = { 0, 0, 0, 0 };
@@ -1856,3 +1820,81 @@ void wNETCleanupFrameExtents(WWindow *wwin)
 {
   XDeleteProperty(dpy, wwin->client_win, net_frame_extents);
 }
+
+/*
+  Notifications
+*/
+static void windowObserver(CFNotificationCenterRef center, void *netData,
+                           CFNotificationName name, const void *window,
+                           CFDictionaryRef userInfo)
+{
+  WWindow *wwin = (WWindow *)window;
+  NetData *ndata = (NetData *)netData;
+
+  if (!wwin)
+    return;
+
+  if (CFStringCompare(name, WMDidManageWindowNotification, 0) == 0) {
+    updateClientList(wwin->screen_ptr);
+    updateClientListStacking(wwin->screen_ptr, NULL);
+    updateStateHint(wwin, True, False);
+    
+    updateStrut(wwin->screen_ptr, wwin->client_win, False);
+    updateStrut(wwin->screen_ptr, wwin->client_win, True);
+    wScreenUpdateUsableArea(wwin->screen_ptr);
+  }
+  else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0) {
+    updateClientList(wwin->screen_ptr);
+    updateClientListStacking(wwin->screen_ptr, wwin);
+    updateWorkspaceHint(wwin, False, True);
+    updateStateHint(wwin, False, True);
+    wNETWMUpdateActions(wwin, True);
+
+    updateStrut(wwin->screen_ptr, wwin->client_win, False);
+    wScreenUpdateUsableArea(wwin->screen_ptr);
+  }
+  else if (CFStringCompare(name, WMDidResetWindowStackingNotification, 0) == 0) {
+    updateClientListStacking(wwin->screen_ptr, NULL);
+    updateStateHint(wwin, False, False);
+  }
+  else if (CFStringCompare(name, WMDidChangeWindowStackingNotification, 0) == 0) {
+    updateClientListStacking(wwin->screen_ptr, NULL);
+    updateStateHint(wwin, False, False);
+  }
+  else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0) {
+    updateFocusHint(ndata->scr);
+  }
+  else if (CFStringCompare(name, WMDidChangeWindowWorkspaceNotification, 0) == 0) {
+    updateWorkspaceHint(wwin, False, False);
+    updateStateHint(wwin, True, False);
+  }
+  else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
+    CFStringRef wstate = (CFStringRef)userInfoValueForKey(userInfo, CFSTR("state"));
+    updateStateHint(wwin, !CFStringCompare(wstate, CFSTR("omnipresent"), 0), False);
+  }
+}
+
+static void workspaceObserver(CFNotificationCenterRef center, void *netData,
+                              CFNotificationName name, const void *screen,
+                              CFDictionaryRef userInfo)
+{
+  WScreen *scr = (WScreen *)screen;
+
+  if (CFStringCompare(name, WMDidCreateWorkspaceNotification, 0) == 0) {
+    updateWorkspaceCount(scr);
+    updateWorkspaceNames(scr);
+    wNETWMUpdateWorkarea(scr);
+  }
+  else if (CFStringCompare(name, WMDidDestroyWorkspaceNotification, 0) == 0) {
+    updateWorkspaceCount(scr);
+    updateWorkspaceNames(scr);
+    wNETWMUpdateWorkarea(scr);
+  }
+  else if (CFStringCompare(name, WMDidChangeWorkspaceNotification, 0) == 0) {
+    updateCurrentWorkspace(scr);
+  }
+  else if (CFStringCompare(name, WMDidChangeWorkspaceNameNotification, 0) == 0) {
+    updateWorkspaceNames(scr);
+  }
+}
+
