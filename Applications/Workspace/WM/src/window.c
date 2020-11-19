@@ -34,15 +34,16 @@
 #include <stdint.h>
 #include <math.h>
 
-/* For getting mouse wheel mappings from WINGs */
-#include <WINGs/WINGs.h>
+#include <CoreFoundation/CFNumber.h>
 
 #include <WMcore/notification.h>
-#include <WINGs/configuration.h>
-
 #include <WMcore/memory.h>
 #include <WMcore/handlers.h>
 #include <WMcore/string.h>
+
+/* For getting mouse wheel mappings from WINGs */
+#include <WINGs/WINGs.h>
+#include <WINGs/configuration.h>
 
 #include "GNUstep.h"
 #include "WindowMaker.h"
@@ -1338,7 +1339,6 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   if (!WFLAGP(wwin, no_bind_keys))
     wWindowSetKeyGrabs(wwin);
 
-  /* WMPostNotificationName(WMNManaged, wwin, NULL); */
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidManageWindowNotification, wwin, NULL, TRUE);
   wColormapInstallForWindow(scr, scr->cmap_window);
@@ -1582,7 +1582,6 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   }
 
   if (!wwin->flags.internal_window) {
-    /* WMPostNotificationName(WMNUnmanaged, wwin, NULL); */
     CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                          WMDidUnmanageWindowNotification, wwin, NULL, TRUE);
   }
@@ -1752,7 +1751,6 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
 
   wWindowResetMouseGrabs(wwin);
 
-  /* WMPostNotificationName(WMNChangedFocus, wwin, (void *)True); */
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowFocusNotification, wwin,
                                        (void *)True, TRUE);
@@ -1838,7 +1836,6 @@ void wWindowUnfocus(WWindow *wwin)
   
   wwin->flags.focused = 0;
   wWindowResetMouseGrabs(wwin);
-  /* WMPostNotificationName(WMNChangedFocus, wwin, (void *)False); */
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowFocusNotification, wwin,
                                        (void *)False, TRUE);
@@ -1858,7 +1855,6 @@ void wWindowUpdateName(WWindow *wwin, const char *newTitle)
     title = newTitle;
 
   if (wFrameWindowChangeTitle(wwin->frame, title)) {
-    /* WMPostNotificationName(WMNChangedName, wwin, NULL); */
     CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                          WMDidChangeWindowNameNotification, wwin,
                                          NULL, TRUE);
@@ -2036,12 +2032,16 @@ void wWindowChangeWorkspace(WWindow *wwin, int workspace)
     }
   }
   if (!IS_OMNIPRESENT(wwin)) {
-    /* int ws = wwin->frame->workspace; */
-    /* WMPostNotificationName(WMNChangedWorkspace, wwin, (void *)(uintptr_t)ws); */
-    wwin->frame->workspace = workspace;
+    CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+    int ws = wwin->frame->workspace;
+    CFNumberRef workspaceNumber = CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType, &ws);
+    CFDictionaryAddValue(info, CFSTR("workspace"), workspaceNumber);
     CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                         WMDidChangeWindowWorkspaceNotification, wwin,
-                                         NULL, TRUE);
+                                         WMDidChangeWorkspaceNotification, wwin, info, TRUE);
+    CFRelease(workspaceNumber);
+    CFRelease(info);
+    
+    wwin->frame->workspace = workspace;
   }
 
   if (unmap)
@@ -2850,7 +2850,7 @@ void wWindowSetOmnipresent(WWindow *wwin, Bool flag)
     return;
 
   wwin->flags.omnipresent = flag;
-  /* WMPostNotificationName(WMNChangedState, wwin, "omnipresent"); */
+  
   CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("omnipresent"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),

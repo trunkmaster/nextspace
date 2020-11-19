@@ -292,6 +292,9 @@ typedef struct _WScreen {
   /* for window shortcuts */
   CFMutableArrayRef shortcutWindows[MAX_WINDOW_SHORTCUTS];
 
+  /* for notifications posting */
+  CFNotificationCenterRef notificationCenter;
+
 #ifdef USE_DOCK_XDND
   char *xdestring;
 #endif

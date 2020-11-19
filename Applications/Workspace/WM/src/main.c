@@ -113,6 +113,12 @@ CFStringRef WMDidDestroyWorkspaceNotification = CFSTR("WMDidDestroyWorkspaceNoti
 CFStringRef WMDidChangeWorkspaceNotification = CFSTR("WMDidChangeWorkspaceNotification");
 CFStringRef WMDidChangeWorkspaceNameNotification = CFSTR("WMDidChangeWorkspaceNameNotification");
 
+CFStringRef WMDidChangeWindowAppearanceSettings = CFSTR("WMDidChangeWindowAppearanceSettings");
+CFStringRef WMDidChangeIconAppearanceSettings = CFSTR("WMDidChangeIconAppearanceSettings");
+CFStringRef WMDidChangeIconTileSettings = CFSTR("WMDidChangeIconTileSettings");
+CFStringRef WMDidChangeMenuAppearanceSettings = CFSTR("WMDidChangeMenuAppearanceSettings");
+CFStringRef WMDidChangeMenuTitleAppearanceSettings = CFSTR("WMDidChangeMenuTitleAppearanceSettings");
+
 /******** End Global Variables *****/
 
 static char *DisplayName = NULL;

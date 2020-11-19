@@ -47,7 +47,6 @@
 
 #include <wraster.h>
 
-#include <WMcore/notification.h>
 #include <WMcore/proplist.h>
 #include <WMcore/memory.h>
 #include <WMcore/userdefaults.h>
@@ -1245,10 +1244,11 @@ void wReadDefaults(WScreen * scr, WMPropList * new_dict)
       foo |= WFontSettings;
     if (needs_refresh & REFRESH_MENU_TITLE_COLOR)
       foo |= WColorSettings;
-    if (foo)
-      WMPostNotificationName(WNMenuTitleAppearanceSettingsChanged, NULL,
-                             (void *)(uintptr_t) foo);
-
+    if (foo) {
+      CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                           WMDidChangeMenuTitleAppearanceSettings, 
+                                           (void *)(uintptr_t) foo, NULL, TRUE);
+    }
     foo = 0;
     if (needs_refresh & REFRESH_MENU_TEXTURE)
       foo |= WTextureSettings;
@@ -1256,9 +1256,11 @@ void wReadDefaults(WScreen * scr, WMPropList * new_dict)
       foo |= WFontSettings;
     if (needs_refresh & REFRESH_MENU_COLOR)
       foo |= WColorSettings;
-    if (foo)
-      WMPostNotificationName(WNMenuAppearanceSettingsChanged, NULL, (void *)(uintptr_t) foo);
-
+    if (foo) {
+      CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                           WMDidChangeMenuAppearanceSettings, 
+                                           (void *)(uintptr_t) foo, NULL, TRUE);
+    }
     foo = 0;
     if (needs_refresh & REFRESH_WINDOW_FONT)
       foo |= WFontSettings;
@@ -1266,9 +1268,11 @@ void wReadDefaults(WScreen * scr, WMPropList * new_dict)
       foo |= WTextureSettings;
     if (needs_refresh & REFRESH_WINDOW_TITLE_COLOR)
       foo |= WColorSettings;
-    if (foo)
-      WMPostNotificationName(WNWindowAppearanceSettingsChanged, NULL, (void *)(uintptr_t) foo);
-
+    if (foo) {
+      CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                           WMDidChangeWindowAppearanceSettings, 
+                                           (void *)(uintptr_t) foo, NULL, TRUE);
+    }
     if (!(needs_refresh & REFRESH_ICON_TILE)) {
       foo = 0;
       if (needs_refresh & REFRESH_ICON_FONT)
@@ -1277,13 +1281,17 @@ void wReadDefaults(WScreen * scr, WMPropList * new_dict)
         foo |= WTextureSettings;
       if (needs_refresh & REFRESH_ICON_TITLE_BACK)
         foo |= WTextureSettings;
-      if (foo)
-        WMPostNotificationName(WNIconAppearanceSettingsChanged, NULL,
-                               (void *)(uintptr_t) foo);
+      if (foo) {
+        CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                             WMDidChangeIconAppearanceSettings, 
+                                             (void *)(uintptr_t)foo, NULL, TRUE);
+      }
     }
-    if (needs_refresh & REFRESH_ICON_TILE)
-      WMPostNotificationName(WNIconTileSettingsChanged, NULL, NULL);
-
+    if (needs_refresh & REFRESH_ICON_TILE) {
+      CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                           WMDidChangeIconTileSettings, 
+                                           NULL, NULL, TRUE);
+    }
     if (needs_refresh & REFRESH_WORKSPACE_MENU) {
       if (scr->workspace_menu)
         wWorkspaceMenuUpdate(scr, scr->workspace_menu);

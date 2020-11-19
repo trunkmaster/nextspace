@@ -27,7 +27,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#include <WMcore/notification.h>
 #include <WMcore/memory.h>
 
 #include "WindowMaker.h"
@@ -39,11 +38,21 @@
 #include "workspace.h"
 
 
-static void notifyStackChange(WCoreWindow * frame, char *detail)
+static void __notifyStackChange(WCoreWindow *frame, char *detail)
 {
   WWindow *wwin = wWindowFor(frame->window);
-
-  WMPostNotificationName(WMNChangedStacking, wwin, detail);
+  CFMutableDictionaryRef info;
+  CFStringRef dString;
+  
+  info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+  dString = CFStringCreateWithCString(kCFAllocatorDefault, detail, CFStringGetSystemEncoding());
+  CFDictionaryAddValue(info, CFSTR("detail"), detail);
+  
+  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                       WMDidChangeWindowStackingNotification,
+                                       wwin, info, TRUE);
+  CFRelease(dString);
+  CFRelease(info);
 }
 
 /*
@@ -130,7 +139,9 @@ void CommitStacking(WScreen * scr)
   }
   XRestackWindows(dpy, windows, i);
   wfree(windows);
-  WMPostNotificationName(WMNResetStacking, scr, NULL);
+  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                       WMDidResetWindowStackingNotification,
+                                       scr, NULL, TRUE);
 }
 
 /*
@@ -271,7 +282,7 @@ void wRaiseFrame(WCoreWindow * frame)
     moveFrameToUnder(frame->stacking->above, frame);
   }
 
-  notifyStackChange(frame, "raise");
+  __notifyStackChange(frame, "raise");
 }
 
 void wRaiseLowerFrame(WCoreWindow * frame)
@@ -381,7 +392,7 @@ void wLowerFrame(WCoreWindow * frame)
     moveFrameToUnder(frame->stacking->above, frame);
   }
 
-  notifyStackChange(frame, "lower");
+  __notifyStackChange(frame, "lower");
 }
 
 /*
@@ -510,7 +521,9 @@ void MoveInStackListAbove(WCoreWindow * next, WCoreWindow * frame)
     moveFrameToUnder(frame->stacking->above, frame);
   }
 
-  WMPostNotificationName(WMNResetStacking, scr, NULL);
+  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                       WMDidResetWindowStackingNotification,
+                                       scr, NULL, TRUE);
 }
 
 /*
@@ -554,7 +567,9 @@ void MoveInStackListUnder(WCoreWindow * prev, WCoreWindow * frame)
   prev->stacking->under = frame;
   moveFrameToUnder(prev, frame);
 
-  WMPostNotificationName(WMNResetStacking, scr, NULL);
+  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                       WMDidResetWindowStackingNotification,
+                                       scr, NULL, TRUE);
 }
 
 void RemoveFromStackList(WCoreWindow * frame)
@@ -575,7 +590,9 @@ void RemoveFromStackList(WCoreWindow * frame)
 
   frame->screen_ptr->window_count--;
 
-  WMPostNotificationName(WMNResetStacking, frame->screen_ptr, NULL);
+  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                       WMDidResetWindowStackingNotification,
+                                       frame->screen_ptr, NULL, TRUE);
 }
 
 void ChangeStackingLevel(WCoreWindow * frame, int new_level)

@@ -33,7 +33,9 @@
 #include <wraster.h>
 #include <sys/stat.h>
 
-#include <WMcore/notification.h>
+#include <CoreFoundation/CFNumber.h>
+
+/* #include <WMcore/notification.h> */
 #include <WMcore/memory.h>
 #include <WMcore/handlers.h>
 #include <WMcore/string.h>
@@ -82,38 +84,38 @@ static void get_rimage_icon_from_x11(WIcon *icon);
 static void icon_update_pixmap(WIcon *icon, RImage *image);
 static void unset_icon_image(WIcon *icon);
 
-/****** Notification Observers ******/
-
-static void appearanceObserver(void *self, WMNotification *notif)
+/****** Notification Observer ******/
+static void _iconSettingsObserver(CFNotificationCenterRef center,
+                                  void *observedIcon, // observer
+                                  CFNotificationName name,
+                                  const void *settingsFlags, // object
+                                  CFDictionaryRef userInfo)
 {
-  WIcon *icon = (WIcon *) self;
-  uintptr_t flags = (uintptr_t)WMGetNotificationClientData(notif);
+  WIcon *icon = (WIcon *)observedIcon;
 
-  if ((flags & WTextureSettings) || (flags & WFontSettings)) {
-    /* If the rimage exists, update the icon, else create it */
-    if (icon->file_image)
-      update_icon_pixmap(icon);
-    else
-      wIconPaint(icon);
+  if (CFStringCompare(name, WMDidChangeIconAppearanceSettings, 0) == 0) {
+    uintptr_t flags = (uintptr_t)settingsFlags;
+
+    fprintf(stderr, "[icon.c] were changed settings with flags: %lu\n",
+            (uintptr_t)settingsFlags);
+
+    if ((flags & WTextureSettings) || (flags & WFontSettings)) {
+      /* If the rimage exists, update the icon, else create it */
+      if (icon->file_image)
+        update_icon_pixmap(icon);
+      else
+        wIconPaint(icon);
+    }
+
+    /* so that the appicon expose handlers will paint the appicon specific
+     * stuff */
+    XClearArea(dpy, icon->core->window, 0, 0, icon->core->width, icon->core->height, True);
   }
-
-  /* so that the appicon expose handlers will paint the appicon specific
-   * stuff */
-  XClearArea(dpy, icon->core->window, 0, 0, icon->core->width, icon->core->height, True);
+  else { // WMDidChangeIconTileSettings
+    update_icon_pixmap(icon);
+    XClearArea(dpy, icon->core->window, 0, 0, 1, 1, True);
+  }
 }
-
-static void tileObserver(void *self, WMNotification *notif)
-{
-  WIcon *icon = (WIcon *) self;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) notif;
-
-  update_icon_pixmap(icon);
-
-  XClearArea(dpy, icon->core->window, 0, 0, 1, 1, True);
-}
-
 /************************************/
 
 static int getSize(Drawable d, unsigned int *w, unsigned int *h, unsigned int *dep)
@@ -157,9 +159,13 @@ WIcon *icon_create_for_wwindow(WWindow *wwin)
   /* Update the icon, because icon could be NULL */
   wIconUpdate(icon);
 
-  WMAddNotificationObserver(appearanceObserver, icon, WNIconAppearanceSettingsChanged, icon);
-  WMAddNotificationObserver(tileObserver, icon, WNIconTileSettingsChanged, icon);
-
+  CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), icon, _iconSettingsObserver,
+                                  WMDidChangeIconAppearanceSettings, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), icon, _iconSettingsObserver,
+                                  WMDidChangeIconTileSettings, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+ 
   return icon;
 }
 
@@ -174,8 +180,12 @@ WIcon *icon_create_for_dock(WScreen *scr, const char *command, const char *wm_in
   /* Update the icon, because icon could be NULL */
   wIconUpdate(icon);
 
-  WMAddNotificationObserver(appearanceObserver, icon, WNIconAppearanceSettingsChanged, icon);
-  WMAddNotificationObserver(tileObserver, icon, WNIconTileSettingsChanged, icon);
+  CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), icon, _iconSettingsObserver,
+                                  WMDidChangeIconAppearanceSettings, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), icon, _iconSettingsObserver,
+                                  WMDidChangeIconTileSettings, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
 
   return icon;
 }
@@ -225,7 +235,10 @@ void wIconDestroy(WIcon *icon)
   WCoreWindow *core = icon->core;
   WScreen *scr = core->screen_ptr;
 
-  WMRemoveNotificationObserver(icon);
+  CFNotificationCenterRemoveObserver(CFNotificationCenterGetLocalCenter(),
+                                     icon, WMDidChangeIconAppearanceSettings, NULL);
+  CFNotificationCenterRemoveObserver(CFNotificationCenterGetLocalCenter(),
+                                     icon, WMDidChangeIconTileSettings, NULL);
 
   if (icon->handlerID)
     WMDeleteTimerHandler(icon->handlerID);

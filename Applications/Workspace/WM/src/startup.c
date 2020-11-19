@@ -597,7 +597,10 @@ void StartUp(Bool defaultScreenOnly)
     Exit(1);
   }
 
-  InitializeSwitchMenu();
+  // Notification center for notifications inside WM.
+  wScreen[0]->notificationCenter = CFNotificationCenterGetLocalCenter();
+
+  InitializeSwitchMenu(wScreen[0]);
 
   /* initialize/restore state for the screens */
   int lastDesktop;

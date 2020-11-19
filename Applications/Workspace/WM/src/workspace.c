@@ -37,7 +37,7 @@
 
 #include <CoreFoundation/CFNotificationCenter.h>
 #include <CoreFoundation/CFNumber.h>
-#include <WMcore/notification.h>
+
 #include <WMcore/memory.h>
 #include <WMcore/handlers.h>
 #include <WMcore/string.h>
@@ -84,6 +84,21 @@ static void make_keys(void)
   dWorkspaces = WMCreatePLString("Workspaces");
   dName = WMCreatePLString("Name");
   dClip = WMCreatePLString("Clip");
+}
+
+static void __wWorkspacePostNotification(CFStringRef name, int workspace_number, void *object)
+{
+  CFMutableDictionaryRef info;
+  CFNumberRef workspace;
+  
+  info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+  workspace = CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType, &workspace_number);
+  CFDictionaryAddValue(info, CFSTR("workspace"), workspace);
+  
+  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(), name, object, info, TRUE);
+  
+  CFRelease(workspace);
+  CFRelease(info);
 }
 
 void wWorkspaceMake(WScreen * scr, int count)
@@ -136,18 +151,7 @@ int wWorkspaceNew(WScreen *scr)
     wWorkspaceMenuUpdate(scr, scr->workspace_menu);
     wWorkspaceMenuUpdate(scr, scr->clip_ws_menu);
     wNETWMUpdateDesktop(scr);
-    /* WMPostNotificationName(WMNWorkspaceCreated, scr, */
-    /*                        (void *)(uintptr_t) (scr->workspace_count - 1)); */
-    {
-      int ws = (scr->workspace_count - 1);
-      CFNumberRef workspace = CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType, &ws);
-      CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
-      CFDictionaryAddValue(info, CFSTR("workspace"), workspace);
-      CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                           WMDidCreateWorkspaceNotification, scr, info, TRUE);
-      CFRelease(workspace);
-      CFRelease(info);
-    }
+    __wWorkspacePostNotification(WMDidCreateWorkspaceNotification, (scr->workspace_count - 1), scr);
     XFlush(dpy);
 
     return scr->workspace_count - 1;
@@ -220,8 +224,9 @@ Bool wWorkspaceDelete(WScreen * scr, int workspace)
     wMenuRealize(menu);
   }
   wNETWMUpdateDesktop(scr);
-  WMPostNotificationName(WMNWorkspaceDestroyed, scr, (void *)(uintptr_t) (scr->workspace_count - 1));
-
+  
+  __wWorkspacePostNotification(WMDidDestroyWorkspaceNotification, (scr->workspace_count - 1), scr);
+  
   if (scr->current_workspace >= scr->workspace_count)
     wWorkspaceChange(scr, scr->workspace_count - 1, NULL);
   if (scr->last_workspace >= scr->workspace_count)
@@ -718,7 +723,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
   /* Workspace switch completed */
   scr->last_workspace = workspace;
 
-  WMPostNotificationName(WMNWorkspaceChanged, scr, (void *)(uintptr_t) workspace);
+  __wWorkspacePostNotification(WMDidChangeWorkspaceNotification, workspace, scr);
 
   XSync(dpy, False);
 }
@@ -799,7 +804,7 @@ void wWorkspaceRename(WScreen *scr, int workspace, const char *name)
   if (scr->clip_icon)
     wClipIconPaint(scr->clip_icon);
 
-  WMPostNotificationName(WMNWorkspaceNameChanged, scr, (void *)(uintptr_t) workspace);
+  __wWorkspacePostNotification(WMDidChangeWorkspaceNameNotification, workspace, scr);
 }
 
 /* callback for when menu entry is edited */
@@ -1008,7 +1013,7 @@ void wWorkspaceRestoreState(WScreen *scr)
       scr->workspaces[0]->clip->icon_count += added_omnipresent_icons;
     }
 
-    WMPostNotificationName(WMNWorkspaceNameChanged, scr, (void *)(uintptr_t) i);
+    __wWorkspacePostNotification(WMDidChangeWorkspaceNameNotification, i, scr);
   }
 }
 

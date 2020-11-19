@@ -24,6 +24,6 @@
 
 void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action);
 void OpenSwitchMenu(WScreen *scr, int x, int y, int keyboard);
-void InitializeSwitchMenu(void);
+void InitializeSwitchMenu(WScreen *scr);
 
 #endif /* WMSWITCHMENU_H */

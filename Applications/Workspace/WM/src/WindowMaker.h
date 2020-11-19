@@ -26,6 +26,9 @@
 #include <assert.h>
 #include <limits.h>
 
+#include <CoreFoundation/CFString.h>
+#include <CoreFoundation/CFNotificationCenter.h>
+
 #include <WINGs/WINGs.h>
 
 #include <WMcore/misc.h>
@@ -272,13 +275,7 @@ typedef enum {
 #endif
 
 NOTIFICATION(WindowAppearanceSettingsChanged);
-
-NOTIFICATION(IconAppearanceSettingsChanged);
-
-NOTIFICATION(IconTileSettingsChanged);
-
 NOTIFICATION(MenuAppearanceSettingsChanged);
-
 NOTIFICATION(MenuTitleAppearanceSettingsChanged);
 
 
@@ -626,8 +623,6 @@ extern const char WMNWorkspaceNameChanged[];
 extern const char WMNResetStacking[];
 
 /* CoreFoundation notifications */
-#include <CoreFoundation/CFString.h>
-#include <CoreFoundation/CFNotificationCenter.h>
 /*
 CFNotificationCenterAddObserver(CFNotificationCenterRef center,
                                 const void *observer,
@@ -662,5 +657,11 @@ extern CFStringRef WMDidCreateWorkspaceNotification;
 extern CFStringRef WMDidDestroyWorkspaceNotification;
 extern CFStringRef WMDidChangeWorkspaceNotification;
 extern CFStringRef WMDidChangeWorkspaceNameNotification;
+
+extern CFStringRef WMDidChangeWindowAppearanceSettings;
+extern CFStringRef WMDidChangeIconAppearanceSettings;
+extern CFStringRef WMDidChangeIconTileSettings;
+extern CFStringRef WMDidChangeMenuAppearanceSettings;
+extern CFStringRef WMDidChangeMenuTitleAppearanceSettings;
 
 #endif

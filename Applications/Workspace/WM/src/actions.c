@@ -31,7 +31,6 @@
 #include <math.h>
 #include <time.h>
 
-#include <WMcore/notification.h>
 #include <WMcore/memory.h>
 #include <WMcore/usleep.h>
 
@@ -253,7 +252,6 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     if (old_focused)
       wWindowUnfocus(old_focused);
     
-    /* WMPostNotificationName(WMNChangedFocus, NULL, (void *)True); */
     CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                          WMDidChangeWindowFocusNotification, wwin, NULL, TRUE);
     return;
@@ -365,7 +363,6 @@ void wShadeWindow(WWindow *wwin)
     wSetFocusTo(wwin->screen_ptr, wwin);
   }
   
-  /* WMPostNotificationName(WMNChangedState, wwin, "shade"); */
   CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("shade"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -407,7 +404,6 @@ void wUnshadeWindow(WWindow *wwin)
     wSetFocusTo(wwin->screen_ptr, wwin);
   }
 
-  /* WMPostNotificationName(WMNChangedState, wwin, "shade"); */
   CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("shade"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -603,7 +599,6 @@ void wMaximizeWindow(WWindow *wwin, int directions)
   wWindowConfigure(wwin, new_x, new_y, new_width, new_height);
   wWindowSynthConfigureNotify(wwin);
 
-  /* WMPostNotificationName(WMNChangedState, wwin, "maximize"); */
   CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("maximize"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -832,7 +827,6 @@ void wUnmaximizeWindow(WWindow *wwin)
   wWindowConfigure(wwin, x, y, w, h);
   wWindowSynthConfigureNotify(wwin);
 
-  /* WMPostNotificationName(WMNChangedState, wwin, "maximize"); */
   CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("maximize"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -867,7 +861,6 @@ void wFullscreenWindow(WWindow *wwin)
   wwin->screen_ptr->bfs_focused_window = wwin->screen_ptr->focused_window;
   wSetFocusTo(wwin->screen_ptr, wwin);
 
-  /* WMPostNotificationName(WMNChangedState, wwin, "fullscreen"); */
   CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("fullscreen"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -896,7 +889,6 @@ void wUnfullscreenWindow(WWindow *wwin)
   wFrameWindowPaint(wwin->frame);
   */
 
-  /* WMPostNotificationName(WMNChangedState, wwin, "fullscreen"); */
   CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("fullscreen"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -1149,7 +1141,6 @@ static void unmapTransientsFor(WWindow *wwin)
       */
       wClientSetState(tmp, IconicState, None);
 
-      /* WMPostNotificationName(WMNChangedState, tmp, "iconify-transient"); */
       CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
       CFDictionaryAddValue(info, CFSTR("state"), CFSTR("iconify-transient"));
       CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -1181,7 +1172,6 @@ static void mapTransientsFor(WWindow *wwin)
       */
       wClientSetState(tmp, NormalState, None);
 
-      /* WMPostNotificationName(WMNChangedState, tmp, "iconify-transient"); */
       CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
       CFDictionaryAddValue(info, CFSTR("state"), CFSTR("iconify-transient"));
       CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -1400,7 +1390,6 @@ void wIconifyWindow(WWindow *wwin)
       && !wwin->flags.net_handle_icon)
     wIconSelect(wwin->icon);
 
-  /* WMPostNotificationName(WMNChangedState, wwin, "iconify"); */
   CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("iconify"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -1512,7 +1501,6 @@ void wDeiconifyWindow(WWindow *wwin)
   if (wPreferences.auto_arrange_icons)
     wArrangeIcons(wwin->screen_ptr, True);
 
-  /* WMPostNotificationName(WMNChangedState, wwin, "iconify"); */
   CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("iconify"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -1535,7 +1523,6 @@ static void hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int a
     }
     wwin->flags.hidden = 1;
 
-    /* WMPostNotificationName(WMNChangedState, wwin, "hide"); */
     CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
     CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
     CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -1565,7 +1552,6 @@ static void hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int a
 #endif
   wwin->flags.skip_next_animation = 0;
 
-  /* WMPostNotificationName(WMNChangedState, wwin, "hide"); */
   CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -1784,7 +1770,6 @@ static void unhideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int
     wRaiseFrame(wwin->frame->core);
   }
 
-  /* WMPostNotificationName(WMNChangedState, wwin, "hide"); */
   CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -1844,7 +1829,7 @@ void wUnhideApplication(WApplication *wapp, Bool miniwindows, Bool bringToCurren
         wlist->flags.hidden = 0;
         if (miniwindows && wlist->frame->workspace == scr->current_workspace)
           wDeiconifyWindow(wlist);
-        /* WMPostNotificationName(WMNChangedState, wlist, "hide"); */
+        
         CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
         CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
         CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
@@ -1860,7 +1845,7 @@ void wUnhideApplication(WApplication *wapp, Bool miniwindows, Bool bringToCurren
           if (miniwindows)
             wUnshadeWindow(wlist);
         }
-        /* WMPostNotificationName(WMNChangedState, wlist, "hide"); */
+        
         CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
         CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
         CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),

@@ -29,6 +29,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#include <CoreFoundation/CFNumber.h>
+
 #include <WMcore/notification.h>
 #include <WMcore/memory.h>
 
@@ -70,42 +72,53 @@ static void focusWindow(WMenu *menu, WMenuEntry *entry)
   wWindowSingleFocus(wwin);
 }
 
-void InitializeSwitchMenu(void)
+void InitializeSwitchMenu(WScreen *scr)
 {
-  CFNotificationCenterRef notificationCenter = CFNotificationCenterGetLocalCenter(); // singleton
-  
   if (!initialized) {
-    initialized = 1;
+    WMenu *switchmenu = NULL;
+    WWindow *wwin;
 
-    CFNotificationCenterAddObserver(notificationCenter, NULL, notificationObserver,
+    switchmenu = wMenuCreate(scr, _("Windows"), True);
+    scr->switch_menu = switchmenu;
+    wretain(scr->switch_menu);
+
+    wwin = scr->focused_window;
+    while (wwin) {
+      UpdateSwitchMenu(scr, wwin, ACTION_ADD);
+      wwin = wwin->prev;
+    }
+    
+    /* windows */
+    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, notificationObserver,
                                     WMDidManageWindowNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    CFNotificationCenterAddObserver(notificationCenter, NULL, notificationObserver,
-                                    WMDidUnmanageWindowNotification,
-                                    NULL,
+    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, notificationObserver,
+                                    WMDidUnmanageWindowNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    CFNotificationCenterAddObserver(notificationCenter, NULL, notificationObserver,
+    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, notificationObserver,
                                     WMDidChangeWindowWorkspaceNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    CFNotificationCenterAddObserver(notificationCenter, NULL, notificationObserver,
+    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, notificationObserver,
                                     WMDidChangeWindowStateNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    CFNotificationCenterAddObserver(notificationCenter, NULL, notificationObserver,
+    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, notificationObserver,
                                     WMDidChangeWindowFocusNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    CFNotificationCenterAddObserver(notificationCenter, NULL, notificationObserver,
+    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, notificationObserver,
                                     WMDidChangeWindowStackingNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    CFNotificationCenterAddObserver(notificationCenter, NULL, notificationObserver,
+    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, notificationObserver,
                                     WMDidChangeWindowNameNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-
-    CFNotificationCenterAddObserver(notificationCenter, NULL, notificationObserver,
+    /* workspaces */
+    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, notificationObserver,
                                     WMDidChangeWorkspaceNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    CFNotificationCenterAddObserver(notificationCenter, NULL, notificationObserver,
+    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, notificationObserver,
                                     WMDidChangeWorkspaceNameNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
+    
+    initialized = 1;
   }
 }
 
@@ -114,18 +127,21 @@ void InitializeSwitchMenu(void)
  * Open switch menu
  *
  */
-void OpenSwitchMenu(WScreen * scr, int x, int y, int keyboard)
+void OpenSwitchMenu(WScreen *scr, int x, int y, int keyboard)
 {
   WMenu *switchmenu = scr->switch_menu;
-  WWindow *wwin;
+  /* WWindow *wwin; */
 
   if (switchmenu) {
+    
+    if (!switchmenu->flags.realized)
+      wMenuRealize(switchmenu);
+    
     if (switchmenu->flags.mapped) {
       if (!switchmenu->flags.buttoned) {
         wMenuUnmap(switchmenu);
       } else {
         wRaiseFrame(switchmenu->frame->core);
-
         if (keyboard)
           wMenuMapAt(switchmenu, 0, 0, True);
         else
@@ -139,33 +155,24 @@ void OpenSwitchMenu(WScreen * scr, int x, int y, int keyboard)
     }
     return;
   }
-  switchmenu = wMenuCreate(scr, _("Windows"), True);
-  scr->switch_menu = switchmenu;
-
-  wwin = scr->focused_window;
-  while (wwin) {
-    UpdateSwitchMenu(scr, wwin, ACTION_ADD);
-
-    wwin = wwin->prev;
-  }
-
-  if (switchmenu) {
-    int newx, newy;
-
-    if (!switchmenu->flags.realized)
-      wMenuRealize(switchmenu);
-
-    if (keyboard && x == 0 && y == 0) {
-      newx = newy = 0;
-    } else if (keyboard && x == scr->scr_width / 2 && y == scr->scr_height / 2) {
-      newx = x - switchmenu->frame->core->width / 2;
-      newy = y - switchmenu->frame->core->height / 2;
-    } else {
-      newx = x - switchmenu->frame->core->width / 2;
-      newy = y;
-    }
-    wMenuMapAt(switchmenu, newx, newy, keyboard);
-  }
+  
+  /* if (switchmenu) { */
+  /*   int newx, newy; */
+    
+  /*   if (!switchmenu->flags.realized) */
+  /*     wMenuRealize(switchmenu); */
+    
+  /*   if (keyboard && x == 0 && y == 0) { */
+  /*     newx = newy = 0; */
+  /*   } else if (keyboard && x == scr->scr_width / 2 && y == scr->scr_height / 2) { */
+  /*     newx = x - switchmenu->frame->core->width / 2; */
+  /*     newy = y - switchmenu->frame->core->height / 2; */
+  /*   } else { */
+  /*     newx = x - switchmenu->frame->core->width / 2; */
+  /*     newy = y; */
+  /*   } */
+  /*   wMenuMapAt(switchmenu, newx, newy, keyboard); */
+  /* } */
 }
 
 static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
@@ -370,13 +377,12 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
 static void UpdateSwitchMenuWorkspace(WScreen *scr, int workspace)
 {
   WMenu *menu = scr->switch_menu;
-  int i;
   WWindow *wwin;
 
   if (!menu)
     return;
 
-  for (i = 0; i < menu->entry_no; i++) {
+  for (int i = 0; i < menu->entry_no; i++) {
     wwin = (WWindow *) menu->entries[i]->clientdata;
 
     if (wwin->frame->workspace == workspace && !IS_OMNIPRESENT(wwin)) {
@@ -412,47 +418,46 @@ static void *__WMUserInfoGetValue(CFDictionaryRef theDict, CFStringRef key)
   return desired_value;
 }
 
-#include <CoreFoundation/CFLogUtilities.h>
-#include <CoreFoundation/CFNumber.h>
 static void notificationObserver(CFNotificationCenterRef center,
                                  void *observer,
                                  CFNotificationName name,
                                  const void *object,
                                  CFDictionaryRef userInfo)
 {
-  WWindow *wwin = (WWindow *)object;
-  
   if (CFStringCompare(name, WMDidChangeWorkspaceNameNotification, 0) == 0) {
-    CFShow(CFSTR("[switchmenu.c] workspace name was changed"));
+    WScreen *scr = (WScreen *)object;
     int workspace;
     CFNumberGetValue((CFNumberRef)__WMUserInfoGetValue(userInfo, CFSTR("workspace")),
                      kCFNumberShortType, &workspace);
-    UpdateSwitchMenuWorkspace(wwin->screen_ptr, workspace);
+    UpdateSwitchMenuWorkspace(scr, workspace);
     return;
   }
   else if (CFStringCompare(name, WMDidChangeWorkspaceNotification, 0) == 0) {
     return;    
   }
+  else {
+    WWindow *wwin = (WWindow *)object;
+    
+    if (!wwin)
+      return;
   
-  if (!wwin)
-    return;
-  
-  if (CFStringCompare(name, WMDidManageWindowNotification, 0) == 0)
-    UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_ADD);
-  else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0)
-    UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_REMOVE);
-  else if (CFStringCompare(name, WMDidChangeWindowWorkspaceNotification, 0) == 0)
-    UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_WORKSPACE);
-  else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0)
-    UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_STATE);
-  else if (CFStringCompare(name, WMDidChangeWindowNameNotification, 0) == 0)
-    UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE);
-  else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
-    CFStringRef wstate = (CFStringRef)__WMUserInfoGetValue(userInfo, CFSTR("state"));
-    if (CFStringCompare(wstate, CFSTR("omnipresent"), 0) == 0) {
+    if (CFStringCompare(name, WMDidManageWindowNotification, 0) == 0)
+      UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_ADD);
+    else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0)
+      UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_REMOVE);
+    else if (CFStringCompare(name, WMDidChangeWindowWorkspaceNotification, 0) == 0)
       UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_WORKSPACE);
-    } else {
+    else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0)
       UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_STATE);
+    else if (CFStringCompare(name, WMDidChangeWindowNameNotification, 0) == 0)
+      UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE);
+    else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
+      CFStringRef wstate = (CFStringRef)__WMUserInfoGetValue(userInfo, CFSTR("state"));
+      if (CFStringCompare(wstate, CFSTR("omnipresent"), 0) == 0) {
+        UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_WORKSPACE);
+      } else {
+        UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_STATE);
+      }
     }
   }
 }
