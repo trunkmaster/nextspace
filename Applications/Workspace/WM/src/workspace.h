@@ -22,8 +22,6 @@
 #ifndef WMWORKSPACE_H_
 #define WMWORKSPACE_H_
 
-
-
 typedef struct WWorkspace {
   char *name;
   struct WDock *clip;
