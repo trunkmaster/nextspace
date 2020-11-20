@@ -1456,6 +1456,7 @@ void WSApplicationDidCloseWindow(WWindow *wwin)
 }
 
 // Screen resizing
+//------------------------------------------------------------------------------
 static void moveDock(WDock *dock, int new_x, int new_y)
 {
   WAppIcon *btn;
@@ -1541,6 +1542,8 @@ void WSUpdateScreenParameters(void)
   WSUpdateScreenInfo(wDefaultScreen());
 }
 
+// Application events
+//------------------------------------------------------------------------------
 void WSActivateApplication(WScreen *scr, char *app_name)
 {
   id           app;
@@ -1595,9 +1598,9 @@ void WSActivateWorkspaceApp(WScreen *scr)
 
 void WSWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
 {
-  [[NSApp delegate] performSelectorOnMainThread:@selector(updateWorkspaceBadge)
-                                     withObject:nil
-                                  waitUntilDone:YES];
+  // [[NSApp delegate] performSelectorOnMainThread:@selector(updateWorkspaceBadge)
+  //                                    withObject:nil
+  //                                 waitUntilDone:YES];
   WSMessage("Switch to workspace %i completed.", workspace);
 }
 
@@ -1631,6 +1634,8 @@ void WSDockContentDidChange(WDock *dock)
   [[NSNotificationCenter defaultCenter] postNotification:notif];
 }
 
+// Utility functions
+//------------------------------------------------------------------------------
 // Return values:
 // WMAPRDefault,  NSAlertDefaultReturn = 1;
 // WAPRAlternate, NSAlertAlternateReturn = 0;

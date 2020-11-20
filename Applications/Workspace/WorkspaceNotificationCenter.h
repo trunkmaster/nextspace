@@ -29,5 +29,11 @@
 @interface WorkspaceNotificationCenter : NSNotificationCenter
 {
   CFNotificationCenterRef coreFoundationCenter;
+  //  CFDictionaryRef         cfObservers;
 }
 @end
+
+@interface CFObject : NSObject
+@property (readwrite) const void *object;
+@end
+

@@ -48,6 +48,8 @@
 
 #import "ModuleLoader.h"
 
+#import "WorkspaceNotificationCenter.h"
+
 #import <Operations/ProcessManager.h>
 #import <Operations/Mounter.h>
 #import <Processes/Processes.h>
@@ -617,7 +619,34 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [mediaAdaptor checkForRemovableMedia];
   
   [self _startSavedApplications];
+  {
+    WorkspaceNotificationCenter *wsnc = [WorkspaceNotificationCenter new];
+    
+    [wsnc addObserver:self
+             selector:@selector(updateWorkspaceBadge:)
+                 name:@"WMDidChangeWorkspaceNotification"
+               object:nil];
+    [wsnc addObserver:self
+             selector:@selector(wmWindowNotification:)
+                 name:@"WMDidChangeWindowStateNotification"
+               object:nil];
+  }
   fprintf(stderr, "=== Workspace is ready. Welcome to the NeXT world! ===\n");
+}
+
+- (void)wmDidChangeWorkspace:(NSNotification *)aNotification
+{
+  NSLog(@"[wmDidChangeWorkspace] %@", [aNotification userInfo]);
+  [self updateWorkspaceBadge];
+}
+- (void)wmWindowNotification:(NSNotification *)aNotification
+{
+  CFObject *cfObject = (CFObject *)[aNotification object];
+  WWindow *wwin = (WWindow *)cfObject.object;
+  
+  NSLog(@"[wmWindowNotification] %@",[aNotification name]);
+  NSLog(@"[wmWindowNotification] %@ - %s userInfo:%@",
+        [aNotification name], wwin->wm_instance, [aNotification userInfo]);
 }
 
 - (void)activateApplication:(NSNotification *)aNotification
@@ -856,16 +885,20 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [self updateWorkspaceBadge];
 }
 
-- (void)updateWorkspaceBadge
+- (void)updateWorkspaceBadge:(NSNotification *)aNotification
 {
+  NSDictionary *info = [aNotification userInfo];
   NSString *wsCurrent;
 
   if ([[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"]) {
     if (!workspaceBadge) {
       [self createWorkspaceBadge];
+      wsCurrent = [NSString stringWithFormat:@"%i",
+                            wDefaultScreen()->current_workspace+1];
     }
-    wsCurrent = [NSString stringWithFormat:@"%i",
-                          wDefaultScreen()->current_workspace+1];
+    else {
+      wsCurrent = [[info objectForKey:@"workspace"] stringValue];
+    }
     [workspaceBadge setStringValue:wsCurrent];
   }
   else if (workspaceBadge) {
