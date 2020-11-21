@@ -111,7 +111,7 @@
 // Appicon badges
 //============================================================================
 - (void)createWorkspaceBadge;
-- (void)updateWorkspaceBadge;
+- (void)destroyWorkspaceBadge;
 - (void)createKeyboardBadge;
 - (void)updateKeyboardBadge:(NSString *)layout;
 

@@ -518,7 +518,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)applicationWillFinishLaunching:(NSNotification *)notif
 {
   // Update Workspace application icon (main Dock icon)
-  [self updateWorkspaceBadge];
+  [self createWorkspaceBadge];
   WSKeyboardGroupDidChange(0);
       
   // Recycler
@@ -550,6 +550,18 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
            selector:@selector(applicationDidChangeScreenParameters:)
                name:NSApplicationDidChangeScreenParametersNotification
              object:NSApp];
+  
+  // Window Manager events
+  [[WorkspaceNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(updateWorkspaceBadge:)
+             name:@"WMDidChangeWorkspaceNotification"
+           object:nil];
+  [[WorkspaceNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(wmWindowNotification:)
+             name:@"WMDidChangeWindowStateNotification"
+           object:nil];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
@@ -619,26 +631,10 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [mediaAdaptor checkForRemovableMedia];
   
   [self _startSavedApplications];
-  {
-    WorkspaceNotificationCenter *wsnc = [WorkspaceNotificationCenter new];
-    
-    [wsnc addObserver:self
-             selector:@selector(updateWorkspaceBadge:)
-                 name:@"WMDidChangeWorkspaceNotification"
-               object:nil];
-    [wsnc addObserver:self
-             selector:@selector(wmWindowNotification:)
-                 name:@"WMDidChangeWindowStateNotification"
-               object:nil];
-  }
+  
   fprintf(stderr, "=== Workspace is ready. Welcome to the NeXT world! ===\n");
 }
 
-- (void)wmDidChangeWorkspace:(NSNotification *)aNotification
-{
-  NSLog(@"[wmDidChangeWorkspace] %@", [aNotification userInfo]);
-  [self updateWorkspaceBadge];
-}
 - (void)wmWindowNotification:(NSNotification *)aNotification
 {
   CFObject *cfObject = (CFObject *)[aNotification object];
@@ -874,6 +870,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 //============================================================================
 - (void)createWorkspaceBadge
 {
+  NSString *currentWorkspace;
+  
+  if ([[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"] == NO) {
+    return;
+  }
+    
   workspaceBadge = [[NXTIconBadge alloc]
                              initWithPoint:NSMakePoint(5,48)
                                       text:@"0"
@@ -882,28 +884,34 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                                shadowColor:[NSColor whiteColor]];
   [[[NSApp iconWindow] contentView] addSubview:workspaceBadge];
   [workspaceBadge release];
-  [self updateWorkspaceBadge];
+  
+  currentWorkspace = [NSString stringWithFormat:@"%i",
+                               wDefaultScreen()->current_workspace + 1];
+  [workspaceBadge setStringValue:currentWorkspace];
+}
+
+- (void)destroyWorkspaceBadge
+{
+  if (workspaceBadge) {
+    [workspaceBadge removeFromSuperview];
+    workspaceBadge = nil;
+  }
 }
 
 - (void)updateWorkspaceBadge:(NSNotification *)aNotification
 {
   NSDictionary *info = [aNotification userInfo];
-  NSString *wsCurrent;
+  NSString     *currentWorkspace;
 
-  if ([[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"]) {
+  if ([[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"] != NO) {
     if (!workspaceBadge) {
       [self createWorkspaceBadge];
-      wsCurrent = [NSString stringWithFormat:@"%i",
-                            wDefaultScreen()->current_workspace+1];
     }
     else {
-      wsCurrent = [[info objectForKey:@"workspace"] stringValue];
+      currentWorkspace = [NSString stringWithFormat:@"%i",
+                                [[info objectForKey:@"workspace"] intValue] + 1];
+      [workspaceBadge setStringValue:currentWorkspace];
     }
-    [workspaceBadge setStringValue:wsCurrent];
-  }
-  else if (workspaceBadge) {
-    [workspaceBadge removeFromSuperview];
-    workspaceBadge = nil;
   }
 }
 

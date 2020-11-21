@@ -301,7 +301,12 @@
 {
   [[NXTDefaults userDefaults] setBool:[sender state] ? YES : NO
                               forKey:@"ShowWorkspaceInDock"];
-  [[NSApp delegate] updateWorkspaceBadge];
+  if ([sender state]) {
+    [[NSApp delegate] createWorkspaceBadge];
+  }
+  else {
+    [[NSApp delegate] destroyWorkspaceBadge];    
+  }
 }
 
 @end
