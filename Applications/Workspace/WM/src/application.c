@@ -126,10 +126,6 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
 
   CFArrayAppendValue(wapp->windows, wwin);
   wapp->refcount++;
-  
-#ifdef NEXTSPACE
-  dispatch_sync(workspace_q, ^{ WSApplicationDidAddWindow(wapp, wwin); });
-#endif                
 }
 
 void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)

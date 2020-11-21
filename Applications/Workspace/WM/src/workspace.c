@@ -740,7 +740,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
     }
     wSetFocusTo(scr, foc);
       
-    dispatch_sync(workspace_q, ^{ WSWorkspaceDidChange(scr, workspace, foc); });
     wfree(toUnmap);
     wfree(toMap);
   }

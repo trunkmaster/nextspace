@@ -490,37 +490,9 @@ int WMInitialize(int argc, char **argv)
       strcmp(w_global.locale, "POSIX") == 0) {
     w_global.locale = NULL;
   }
-#ifdef I18N
-  if (getenv("NLSPATH")) {
-    bindtextdomain("WindowMaker", getenv("NLSPATH"));
-#if defined(MENU_TEXTDOMAIN)
-    bindtextdomain(MENU_TEXTDOMAIN, getenv("NLSPATH"));
-#endif
-  }
   else {
-    bindtextdomain("WindowMaker", LOCALEDIR);
-#if defined(MENU_TEXTDOMAIN)
-    bindtextdomain(MENU_TEXTDOMAIN, LOCALEDIR);
-#endif
-  }
-  bind_textdomain_codeset("WindowMaker", "UTF-8");
-#if defined(MENU_TEXTDOMAIN)
-  bind_textdomain_codeset(MENU_TEXTDOMAIN, "UTF-8");
-#endif
-  textdomain("WindowMaker");
-
-  if (!XSupportsLocale()) {
-    wwarning(_("X server does not support locale"));
-  }
-
-  if (XSetLocaleModifiers("") == NULL) {
-    wwarning(_("cannot set locale modifiers"));
-  }
-#endif
-
-  if (w_global.locale) {
     char *ptr;
-
+    
     w_global.locale = wstrdup(w_global.locale);
     ptr = strchr(w_global.locale, '.');
     if (ptr)

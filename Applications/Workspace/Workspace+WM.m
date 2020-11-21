@@ -1346,8 +1346,6 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
   return (NSDictionary *)appInfo;
 }
 
-// Called by WindowMaker in GCD global high-priority queue
-// (com.apple.root.high-priority)
 void WSApplicationDidCreate(WApplication *wapp, WWindow *wwin)
 {
   NSNotification *notif = nil;
@@ -1367,17 +1365,6 @@ void WSApplicationDidCreate(WApplication *wapp, WWindow *wwin)
   if (!strcmp(wm_class,"GNUstep"))
     return;
 
-  // fprintf(stderr, "*** New X11 application %s.%s"
-  //         " appmain:0x%lx main:0x%lx client:0x%lx group:0x%lx\n", 
-  //         wapp->main_window_desc->wm_instance,
-  //         wapp->main_window_desc->wm_class,
-  //         wapp->main_window_desc->main_window,
-  //         wwin->main_window, wwin->client_win, wwin->group_id);
-
-  // NSApplicationName=NSString*
-  // NSApplicationProcessIdentifier=NSString*
-  // NSApplicationIcon=NSImage*
-  // NSApplicationPath=NSString*
   appInfo = _applicationInfoForWApp(wapp, wwin);
   NSDebugLLog(@"WM", @"W+WM: WSApplicationDidCreate: %@", appInfo);
   
@@ -1387,18 +1374,6 @@ void WSApplicationDidCreate(WApplication *wapp, WWindow *wwin)
                          userInfo:appInfo];
   // [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
   [[ProcessManager shared] applicationDidLaunch:notif];
-}
-
-void WSApplicationDidAddWindow(WApplication *wapp, WWindow *wwin)
-{
-  // WSApplicationDidCreate(wapp, wwin);
-  
-  // fprintf(stderr, "*** New window for %s.%s"
-  //         " appmain:0x%lx main:0x%lx client:0x%lx group:0x%lx\n",
-  //         wapp->main_window_desc->wm_instance,
-  //         wapp->main_window_desc->wm_class,
-  //         wapp->main_window_desc->main_window,
-  //         wwin->main_window, wwin->client_win, wwin->group_id);  
 }
 
 void WSApplicationDidDestroy(WApplication *wapp)
@@ -1433,16 +1408,6 @@ void WSApplicationDidCloseWindow(WWindow *wwin)
   if (!strcmp(wwin->wm_class,"GNUstep"))
     return;
 
-  // fprintf(stderr, "*** X11 application %s.%s window did closed(destroyed)\n", 
-  //         wwin->wm_instance, wwin->wm_class);
-
-  // NSLog(@"W+WM: WSApplicationDidCloseWindow: %s:%i %i %i %i",
-  //       wwin->wm_class,
-  //       wNETWMGetPidForWindow(wwin->client_win),
-  //       wNETWMGetPidForWindow(wwin->main_window),
-  //       wNETWMGetPidForWindow(wwin->client_leader),
-  //       wNETWMGetPidForWindow(wwin->group_id));
-  
   appInfo = [NSDictionary
               dictionaryWithObject:[NSString stringWithCString:wwin->wm_class]
                             forKey:@"NSApplicationName"];
@@ -1594,14 +1559,6 @@ void WSActivateWorkspaceApp(WScreen *scr)
   else {
     XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
   }
-}
-
-void WSWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window)
-{
-  // [[NSApp delegate] performSelectorOnMainThread:@selector(updateWorkspaceBadge)
-  //                                    withObject:nil
-  //                                 waitUntilDone:YES];
-  WSMessage("Switch to workspace %i completed.", workspace);
 }
 
 void WSKeyboardGroupDidChange(int group)

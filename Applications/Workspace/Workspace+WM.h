@@ -155,7 +155,6 @@ char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
   
 // --- Applications creation and destroying
 void WSApplicationDidCreate(WApplication *wapp, WWindow *wwin);
-void WSApplicationDidAddWindow(WApplication *wapp, WWindow *wwin);
 void WSApplicationDidDestroy(WApplication *wapp);
 void WSApplicationDidCloseWindow(WWindow *wwin);
 
@@ -166,7 +165,6 @@ void WSUpdateScreenParameters(void);
 // --- Workspaces
 void WSActivateApplication(WScreen *scr, char *app_name);
 void WSActivateWorkspaceApp(WScreen *scr);
-void WSWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window);
 
 // --- Layout badge in Workspace appicon
 void WSKeyboardGroupDidChange(int group);
