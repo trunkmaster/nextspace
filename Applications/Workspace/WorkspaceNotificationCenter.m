@@ -182,6 +182,14 @@ static void _handleCFNotifications(CFNotificationCenterRef center,
 
 @implementation	WorkspaceNotificationCenter
 
++ (instancetype)defaultCenter
+{
+  if (!wsnc) {
+    [[WorkspaceNotificationCenter alloc] init];
+  }
+  return wsnc;
+}
+
 - (void)dealloc
 {
   CFNotificationCenterRemoveEveryObserver(coreFoundationCenter, self);
