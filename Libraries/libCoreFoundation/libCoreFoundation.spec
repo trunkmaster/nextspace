@@ -97,7 +97,7 @@ cd ..
 ln -s Versions/Current/Headers Headers
 ln -s Versions/Current/libCoreFoundation.so.%{version} libCoreFoundation.so
 # lib
- mkdir -p %{buildroot}/usr/NextSpace/lib
+mkdir -p %{buildroot}/usr/NextSpace/lib
 cd %{buildroot}/usr/NextSpace/lib
 ln -s ../Frameworks/CoreFoundation.framework/libCoreFoundation.so libCoreFoundation.so
 # include
