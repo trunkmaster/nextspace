@@ -1,0 +1,112 @@
+diff -Nru CoreFoundation/Locale.subproj/CFICULogging.h CoreFoundation.CentOS-7/Locale.subproj/CFICULogging.h
+--- CoreFoundation/Locale.subproj/CFICULogging.h	2020-11-21 02:53:36.346023780 +0200
++++ CoreFoundation.CentOS-7/Locale.subproj/CFICULogging.h	2020-11-21 03:06:14.759996071 +0200
+@@ -19,7 +19,9 @@
+ #include <unicode/udatpg.h>
+ #include <unicode/udat.h>
+ #include <unicode/unum.h>
++#if __has_include(<unicode/ulistformatter.h>)
+ #include <unicode/ulistformatter.h>
++#endif
+ #include <unicode/ucurr.h>
+ #include <unicode/ustring.h>
+ #if __has_include(<unicode/ureldatefmt.h>)
+diff -Nru CoreFoundation/Locale.subproj/CFLocale.c CoreFoundation.CentOS-7/Locale.subproj/CFLocale.c
+--- CoreFoundation/Locale.subproj/CFLocale.c	2020-11-21 02:55:48.894127088 +0200
++++ CoreFoundation.CentOS-7/Locale.subproj/CFLocale.c	2020-11-21 03:02:49.550002553 +0200
+@@ -32,7 +32,9 @@
+ #include <unicode/putil.h>          // ICU low-level utilities
+ #include <unicode/umsg.h>           // ICU message formatting
+ #include <unicode/ucol.h>
++#if __has_include(<unicode/unumsys.h>)
+ #include <unicode/unumsys.h>        // ICU numbering systems
++#endif
+ #include <unicode/uvernum.h>
+ #if U_ICU_VERSION_MAJOR_NUM > 53 && __has_include(<unicode/uameasureformat.h>)
+ #include <unicode/uameasureformat.h>
+@@ -192,7 +194,7 @@
+ }
+ 
+ CF_INLINE Boolean __CFLocaleCacheGetValueIfPresent(CFLocaleRef locale, CFLocaleKey key, CFTypeRef *value) {
+-    CFDictionaryRef cache = atomic_load_explicit(&locale->_cache, memory_order_acquire);
++    CFDictionaryRef cache = atomic_load_explicit((_Atomic(CFMutableDictionaryRef) *)&locale->_cache, memory_order_acquire);
+     if (!cache) {
+         *value = NULL;
+         return false;
+@@ -202,7 +204,7 @@
+ }
+ 
+ CF_INLINE void __CFLocaleCacheSet_alreadyLocked(CFLocaleRef locale, CFLocaleKey key, CFTypeRef value) {
+-    CFMutableDictionaryRef cache = atomic_load_explicit(&locale->_cache, memory_order_acquire);
++    CFMutableDictionaryRef cache = atomic_load_explicit((_Atomic(CFMutableDictionaryRef) *)&locale->_cache, memory_order_acquire);
+     if (!cache) {
+         cache = CFDictionaryCreateMutable(CFGetAllocator(locale), 0, NULL, &kCFTypeDictionaryValueCallBacks);
+         atomic_store_explicit(&((struct __CFLocale *)locale)->_cache, cache, memory_order_release);
+diff -Nru CoreFoundation/String.subproj/CFRegularExpression.c CoreFoundation.CentOS-7/String.subproj/CFRegularExpression.c
+--- CoreFoundation/String.subproj/CFRegularExpression.c	2020-11-21 02:53:36.358023337 +0200
++++ CoreFoundation.CentOS-7/String.subproj/CFRegularExpression.c	2020-11-21 02:53:13.928849924 +0200
+@@ -171,41 +171,6 @@
+     return (CFIndex)uregex_groupCount(regex->regex, &errorCode);
+ }
+ 
+-CFIndex _CFRegularExpressionGetCaptureGroupNumberWithName(_CFRegularExpressionRef regex, CFStringRef groupName) {
+-    UniChar stackBuffer[STACK_BUFFER_SIZE], *nameBuffer = NULL;
+-    Boolean freeNameBuffer = false;
+-
+-    CFIndex nameLength = CFStringGetLength(groupName);
+-    UErrorCode errorCode = U_ZERO_ERROR;
+-
+-    nameBuffer = (UniChar *)CFStringGetCharactersPtr(groupName);
+-    if (!nameBuffer) {
+-        if (nameLength <= STACK_BUFFER_SIZE) {
+-            nameBuffer = stackBuffer;
+-            CFStringGetCharacters(groupName, CFRangeMake(0, nameLength), nameBuffer);
+-        } else {
+-            nameBuffer = (UniChar *)malloc(sizeof(UniChar) * nameLength);
+-            if (nameBuffer) {
+-                CFStringGetCharacters(groupName, CFRangeMake(0, nameLength), nameBuffer);
+-                freeNameBuffer = true;
+-            } else {
+-                HALT;
+-            }
+-        }
+-    }
+-
+-    CFIndex idx = uregex_groupNumberFromName(regex->regex, nameBuffer, nameLength, &errorCode);
+-    if (U_FAILURE(errorCode) || idx < 0) {
+-        idx = kCFNotFound;
+-    }
+-
+-    if (freeNameBuffer) {
+-        free(nameBuffer);
+-    }
+-
+-    return idx;
+-}
+-
+ struct regexCallBackContext {
+     void *context;
+     void (*match)(void *context, CFRange *ranges, CFIndex count, _CFRegularExpressionMatchingFlags flags, Boolean *stop);
+diff -Nru CoreFoundation/String.subproj/CFRegularExpression.h CoreFoundation.CentOS-7/String.subproj/CFRegularExpression.h
+--- CoreFoundation/String.subproj/CFRegularExpression.h	2020-11-21 02:53:36.358023337 +0200
++++ CoreFoundation.CentOS-7/String.subproj/CFRegularExpression.h	2020-11-21 02:53:13.928849924 +0200
+@@ -57,7 +57,6 @@
+ void _CFRegularExpressionDestroy(_CFRegularExpressionRef regex);
+ 
+ CFIndex _CFRegularExpressionGetNumberOfCaptureGroups(_CFRegularExpressionRef regex);
+-CFIndex _CFRegularExpressionGetCaptureGroupNumberWithName(_CFRegularExpressionRef regex, CFStringRef groupName);
+ void _CFRegularExpressionEnumerateMatchesInString(_CFRegularExpressionRef regexObj, CFStringRef string, _CFRegularExpressionMatchingOptions options, CFRange range, void *_Nullable context, _CFRegularExpressionMatch match);
+ 
+ CFStringRef _CFRegularExpressionGetPattern(_CFRegularExpressionRef regex);
+diff -Nru CoreFoundation/String.subproj/CFString.c CoreFoundation.CentOS-7/String.subproj/CFString.c
+--- CoreFoundation/String.subproj/CFString.c	2020-11-21 02:55:48.896127014 +0200
++++ CoreFoundation.CentOS-7/String.subproj/CFString.c	2020-11-21 02:53:13.929849888 +0200
+@@ -3550,7 +3550,7 @@
+     //   Grapheme_Extend = Yes, or
+     //   Emoji_Modifier=Yes in emoji-data.txt
+     //
+-    return u_hasBinaryProperty(character, UCHAR_GRAPHEME_EXTEND) || u_hasBinaryProperty(character, UCHAR_EMOJI_MODIFIER);
++    return u_hasBinaryProperty(character, UCHAR_GRAPHEME_EXTEND);
+ }
+ 
+ static inline bool __CFStringIsValidExtendedPictographicCharacterForPictographicSequence(UTF32Char character) {
