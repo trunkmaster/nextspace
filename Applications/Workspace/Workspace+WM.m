@@ -28,7 +28,7 @@
 
 #include <wraster.h>
 #include <startup.h>
-#include <WMcore/wapplication.h>
+#include <WINGs/wappresource.h>
 #include <WMcore/memory.h>
 #include <WMcore/string.h>
 #include <WMcore/misc.h>

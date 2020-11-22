@@ -1,6 +1,8 @@
 #ifndef _WPXIMAP_H_
 #define _WPXIMAP_H_
 
+#include "WINGs.h"
+
 typedef struct W_Pixmap {
   struct W_Screen *screen;
   Pixmap pixmap;

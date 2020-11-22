@@ -8,9 +8,9 @@
 
 #include <WMcore/memory.h>
 #include <WMcore/string.h>
-#include <WMcore/wapplication.h>
 
 #include "WINGs.h"
+#include "wappresource.h"
 #include "widgets.h"
 #include "wevent.h"
 #include "wpixmap.h"
