@@ -13,9 +13,7 @@
 #include "wconfig.h"
 
 #include "memory.h"
-#include "wapplication.h"
 #include "userdefaults.h"
-#include "notification.h"
 #include "findfile.h"
 #include "string.h"
 
@@ -245,7 +243,7 @@ void WMSynchronizeUserDefaults(WMUserDefaults * database)
 			database->timestamp = stbuf.st_mtime;
 
 		if (notify) {
-			WMPostNotificationName(WMUserDefaultsDidChangeNotification, database, NULL);
+			/* WMPostNotificationName(WMUserDefaultsDidChangeNotification, database, NULL); */
 		}
 	}
 

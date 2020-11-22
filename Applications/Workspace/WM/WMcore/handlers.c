@@ -12,7 +12,6 @@
 
 #include "wconfig.h"
 
-#include "notification.h"
 #include "array.h"
 #include "memory.h"
 
@@ -279,7 +278,6 @@ Bool W_CheckIdleHandlers(void)
 	WMArrayIterator iter;
 
 	if (!idleHandler || WMGetArrayItemCount(idleHandler) == 0) {
-		W_FlushIdleNotificationQueue();
 		/* make sure an observer in queue didn't added an idle handler */
 		return (idleHandler != NULL && WMGetArrayItemCount(idleHandler) > 0);
 	}
@@ -297,8 +295,6 @@ Bool W_CheckIdleHandlers(void)
 
 	WMFreeArray(handlerCopy);
 
-	W_FlushIdleNotificationQueue();
-
 	/* this is not necesarrily False, because one handler can re-add itself */
 	return (WMGetArrayItemCount(idleHandler) > 0);
 }
@@ -309,7 +305,6 @@ void W_CheckTimerHandlers(void)
 	struct timeval now;
 
 	if (!timerHandler) {
-		W_FlushASAPNotificationQueue();
 		return;
 	}
 
@@ -337,7 +332,6 @@ void W_CheckTimerHandlers(void)
 		}
 	}
 
-	W_FlushASAPNotificationQueue();
 }
 
 /*
@@ -484,7 +478,6 @@ Bool W_HandleInputEvents(Bool waitForInput, int inputfd)
 		nfds = 0;
 
 	if (inputfd < 0 && nfds == 0) {
-		W_FlushASAPNotificationQueue();
 		return False;
 	}
 
@@ -560,8 +553,6 @@ Bool W_HandleInputEvents(Bool waitForInput, int inputfd)
 
 		WMFreeArray(handlerCopy);
 	}
-
-	W_FlushASAPNotificationQueue();
 
 	return (count > 0);
 #else				/* not HAVE_SELECT, not HAVE_POLL */
