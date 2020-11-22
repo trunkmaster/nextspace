@@ -15,8 +15,6 @@ Bool WMRequestSelection(WMView *view, Atom selection, Atom target,
                         Time timestamp, WMSelectionCallback *callback,
                         void *cdata);
 
-extern char *WMSelectionOwnerDidChangeNotification;
-
 void W_HandleSelectionEvent(XEvent *event);
 
 #endif

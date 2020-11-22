@@ -4,10 +4,11 @@
 
 #include "wconfig.h"
 
+#include <CoreFoundation/CFNotificationCenter.h>
+
 #include <WMcore/memory.h>
 #include <WMcore/string.h>
 #include <WMcore/wapplication.h>
-#include <WMcore/notification.h>
 
 #include "WINGs.h"
 #include "widgets.h"
@@ -37,12 +38,13 @@ static void handleEvents(XEvent * event, void *clientData);
 
 static void realizeWindow(WMWindow * win);
 
-static void realizeObserver(void *self, WMNotification * not)
+static void realizeObserver(CFNotificationCenterRef center,
+                            void *window,
+                            CFNotificationName name,
+                            const void *view,
+                            CFDictionaryRef userInfo)
 {
-	/* Parameter not used, but tell the compiler that it is ok */
-	(void) not;
-
-	realizeWindow(self);
+  realizeWindow(window);
 }
 
 WMWindow *WMCreatePanelWithStyleForWindow(WMWindow * owner, const char *name, int style)
@@ -104,8 +106,11 @@ WMWindow *WMCreateWindowWithStyle(WMScreen * screen, const char *name, int style
 
 	W_ResizeView(win->view, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
-	WMAddNotificationObserver(realizeObserver, win, WMViewRealizedNotification, win->view);
-
+        CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), win,
+                                        realizeObserver,
+                                        WMViewDidRealizeNotification, win->view,
+                                        CFNotificationSuspensionBehaviorDeliverImmediately);
+        
 	win->flags.style = style;
 
 	win->level = NSNormalWindowLevel;
@@ -619,7 +624,9 @@ static void handleEvents(XEvent * event, void *clientData)
 			view->size.height = event->xconfigure.height;
 
 			if (view->flags.notifySizeChanged) {
-				WMPostNotificationName(WMViewSizeDidChangeNotification, view, NULL);
+                                CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                                                     WMViewSizeDidChangeNotification,
+                                                                     view, NULL, TRUE);
 			}
 		}
 		if (event->xconfigure.x != view->pos.x || event->xconfigure.y != view->pos.y) {
@@ -644,7 +651,7 @@ static void destroyWindow(W_Window * win)
 {
 	WMScreen *scr = win->view->screen;
 
-	WMRemoveNotificationObserver(win);
+        CFNotificationCenterRemoveEveryObserver(CFNotificationCenterGetLocalCenter(), win);
 
 	if (scr->windowList == win) {
 		scr->windowList = scr->windowList->nextPtr;

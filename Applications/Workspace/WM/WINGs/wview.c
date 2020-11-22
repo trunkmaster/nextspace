@@ -2,8 +2,9 @@
 #include <X11/Xresource.h>
 #include <X11/Xutil.h>
 
+#include <CoreFoundation/CFNotificationCenter.h>
+
 #include <WMcore/memory.h>
-#include <WMcore/notification.h>
 
 #include "WINGs.h"
 #include "dragcommon.h"
@@ -15,9 +16,8 @@
 
 /* the notifications about views */
 
-char *WMViewSizeDidChangeNotification = "WMViewSizeDidChangeNotification";
-char *WMViewFocusDidChangeNotification = "WMViewFocusDidChangeNotification";
-char *WMViewRealizedNotification = "WMViewRealizedNotification";
+CFStringRef WMViewSizeDidChangeNotification = CFSTR("WMViewSizeDidChangeNotification");
+CFStringRef WMViewDidRealizeNotification = CFSTR("WMViewDidRealizeNotification");
 
 #define EVENT_MASK  \
   KeyPressMask|KeyReleaseMask|ButtonPressMask|ButtonReleaseMask|    \
@@ -226,7 +226,8 @@ void W_RealizeView(W_View * view)
 			view->flags.mapWhenRealized = 0;
 		}
 
-		WMPostNotificationName(WMViewRealizedNotification, view, NULL);
+                CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                                     WMViewDidRealizeNotification, view, NULL, TRUE);
 	}
 
 	/* realize children */
@@ -410,7 +411,7 @@ static void destroyView(W_View * view)
 	CFRelease(view->eventHandlers);
 	view->eventHandlers = NULL;
 
-	WMRemoveNotificationObserver(view);
+	CFNotificationCenterRemoveEveryObserver(CFNotificationCenterGetLocalCenter(), view);
 
 	W_FreeViewXdndPart(view);
 
@@ -479,7 +480,8 @@ void W_ResizeView(W_View * view, unsigned int width, unsigned int height)
 
 	/* // TODO. replace in WINGs code, with the didResize delegate */
 	if (view->flags.notifySizeChanged)
-		WMPostNotificationName(WMViewSizeDidChangeNotification, view, NULL);
+                CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                                     WMViewSizeDidChangeNotification, view, NULL, TRUE);
 }
 
 void W_RedisplayView(W_View * view)
@@ -674,10 +676,15 @@ WMPoint WMGetViewScreenPosition(WMView * view)
 	return wmkpoint(x - topX, y - topY);
 }
 
-static void resizedParent(void *self, WMNotification * notif)
+/* static void resizedParent(void *self, WMNotification * notif) */
+static void resizedParent(CFNotificationCenterRef center,
+                          void *observedView,
+                          CFNotificationName name,
+                          const void *parentView,
+                          CFDictionaryRef userInfo)
 {
-	WMSize size = WMGetViewSize((WMView *) WMGetNotificationObject(notif));
-	WMView *view = (WMView *) self;
+	WMSize size = WMGetViewSize((WMView *)parentView);
+	WMView *view = (WMView *)observedView;
 
 	W_MoveView(view, view->leftOffs, view->topOffs);
 	W_ResizeView(view, size.width - (view->leftOffs + view->rightOffs),
@@ -693,7 +700,9 @@ void WMSetViewExpandsToParent(WMView * view, int leftOffs, int topOffs, int righ
 	view->leftOffs = leftOffs;
 	view->rightOffs = rightOffs;
 
-	WMAddNotificationObserver(resizedParent, view, WMViewSizeDidChangeNotification, view->parent);
+        CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), view, resizedParent,
+                                        WMViewSizeDidChangeNotification, view->parent,
+                                        CFNotificationSuspensionBehaviorDeliverImmediately);
 	WMSetViewNotifySizeChanges(view->parent, True);
 
 	W_MoveView(view, leftOffs, topOffs);

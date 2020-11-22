@@ -35,7 +35,6 @@
 
 #include <CoreFoundation/CFNumber.h>
 
-/* #include <WMcore/notification.h> */
 #include <WMcore/memory.h>
 #include <WMcore/handlers.h>
 #include <WMcore/string.h>

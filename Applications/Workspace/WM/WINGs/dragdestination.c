@@ -1,8 +1,9 @@
 
 #include <X11/Xatom.h>
 
+#include <CoreFoundation/CFNotificationCenter.h>
+
 #include <WMcore/memory.h>
-#include <WMcore/notification.h>
 #include <WMcore/string.h>
 #include <WMcore/handlers.h>
 
@@ -834,35 +835,41 @@ void W_DragDestinationStateHandler(WMDraggingInfo * info, XClientMessageEvent * 
 	}
 }
 
-static void realizedObserver(void *self, WMNotification * notif)
+static void realizedObserver(CFNotificationCenterRef center,
+                             void *self,
+                             CFNotificationName name,
+                             const void *viewObject,
+                             CFDictionaryRef userInfo)
 {
-	WMView *view = (WMView *) WMGetNotificationObject(notif);
-	WMScreen *scr = W_VIEW_SCREEN(view);
+  WMView *view = (WMView *)viewObject;
+  WMScreen *scr = W_VIEW_SCREEN(view);
 
-	XChangeProperty(scr->display, W_VIEW_DRAWABLE(view),
-			scr->xdndAwareAtom, XA_ATOM, XDND_PROPERTY_FORMAT, PropModeReplace, &XDNDversion, 1);
+  XChangeProperty(scr->display, W_VIEW_DRAWABLE(view),
+                  scr->xdndAwareAtom, XA_ATOM, XDND_PROPERTY_FORMAT, PropModeReplace, &XDNDversion, 1);
 
-	WMRemoveNotificationObserver(self);
+  CFNotificationCenterRemoveEveryObserver(CFNotificationCenterGetLocalCenter(), self);
 }
 
 static void W_SetXdndAwareProperty(WMScreen *scr, WMView *view)
 {
-	WMView *toplevel = W_TopLevelOfView(view);
+  WMView *toplevel = W_TopLevelOfView(view);
 
-	if (!toplevel->flags.xdndHintSet) {
-		toplevel->flags.xdndHintSet = 1;
+  if (!toplevel->flags.xdndHintSet) {
+    toplevel->flags.xdndHintSet = 1;
 
-		if (toplevel->flags.realized) {
-			XChangeProperty(scr->display, W_VIEW_DRAWABLE(toplevel),
-					scr->xdndAwareAtom, XA_ATOM, XDND_PROPERTY_FORMAT,
-					PropModeReplace, &XDNDversion, 1);
-		} else {
-			WMAddNotificationObserver(realizedObserver,
-						  /* just use as an id */
-						  &view->dragDestinationProcs,
-						  WMViewRealizedNotification, toplevel);
-		}
-	}
+    if (toplevel->flags.realized) {
+      XChangeProperty(scr->display, W_VIEW_DRAWABLE(toplevel),
+                      scr->xdndAwareAtom, XA_ATOM, XDND_PROPERTY_FORMAT,
+                      PropModeReplace, &XDNDversion, 1);
+    } else {
+      CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(),
+                                      /* just use as an id */
+                                      &view->dragDestinationProcs,
+                                      realizedObserver,
+                                      WMViewDidRealizeNotification, toplevel,
+                                      CFNotificationSuspensionBehaviorDeliverImmediately);
+    }
+  }
 }
 
 void WMRegisterViewForDraggedTypes(WMView *view, CFMutableArrayRef acceptedTypes)

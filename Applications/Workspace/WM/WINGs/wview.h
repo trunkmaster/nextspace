@@ -1,6 +1,7 @@
 #ifndef _WVIEW_H_
 #define _WVIEW_H_
 
+#include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFArray.h>
 #include <WINGs/WINGs.h>
 
@@ -180,8 +181,7 @@ WMPoint WMGetViewScreenPosition(WMView *view);
 WMWidget* WMWidgetOfView(WMView *view);
 
 /* notifications */
-extern char *WMViewSizeDidChangeNotification;
-extern char *WMViewFocusDidChangeNotification;
-extern char *WMViewRealizedNotification;
+extern CFStringRef WMViewSizeDidChangeNotification;
+extern CFStringRef WMViewDidRealizeNotification;
 
 #endif

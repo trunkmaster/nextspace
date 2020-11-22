@@ -5,7 +5,6 @@
 
 #include <CoreFoundation/CFArray.h>
 #include <WMcore/memory.h>
-#include <WMcore/notification.h>
 
 #include "WINGs.h"
 #include "dragcommon.h"
@@ -14,8 +13,6 @@
 #include "selection.h"
 
 #define MAX_PROPERTY_SIZE 8*1024
-
-char *WMSelectionOwnerDidChangeNotification = "WMSelectionOwnerDidChange";
 
 typedef struct SelectionHandler {
 	WMView *view;
@@ -353,8 +350,6 @@ Bool WMCreateSelectionHandler(WMView * view, Atom selection, Time timestamp, WMS
   if (XGetSelectionOwner(dpy, selection) != W_VIEW_DRAWABLE(view)) {
     return False;
   }
-
-  WMPostNotificationName(WMSelectionOwnerDidChangeNotification, (void *)selection, (void *)view);
 
   /*//printf("created selection handler for %d\n", W_VIEW_DRAWABLE(view)); */
 
