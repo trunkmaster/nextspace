@@ -1,15 +1,19 @@
 
 #include <unistd.h>
-
-#include <WMcore/wapplication.h>
-
-#include "WINGs.h"
-#include "wappresource.h"
-#include "wpixmap.h"
-
 #include <X11/Xutil.h>
 
+#include <WMcore/memory.h>
+#include <WMcore/userdefaults.h>
+#include <WMcore/string.h>
+
+#include "WINGs.h"
+#include "wpixmap.h"
+#include "widgets.h"
+#include "wappresource.h"
+
 #include "GNUstep.h"
+
+#include "wconfig.h"
 
 
 void WMSetApplicationIconWindow(WMScreen * scr, Window window)
@@ -150,3 +154,66 @@ void W_InitApplication(WMScreen * scr)
 	}
 	scr->groupLeader = leader;
 }
+
+//-------------------------------------
+
+struct W_Application WMApplication;
+
+char *_WINGS_progname = NULL;
+
+Bool W_ApplicationInitialized(void)
+{
+  return _WINGS_progname != NULL;
+}
+
+void WMInitializeApplication(const char *applicationName, int *argc, char **argv)
+{
+  int i;
+
+  assert(argc != NULL);
+  assert(argv != NULL);
+  assert(applicationName != NULL);
+
+  _WINGS_progname = argv[0];
+
+  WMApplication.applicationName = wstrdup(applicationName);
+  WMApplication.argc = *argc;
+
+  WMApplication.argv = wmalloc((*argc + 1) * sizeof(char *));
+  for (i = 0; i < *argc; i++) {
+    WMApplication.argv[i] = wstrdup(argv[i]);
+  }
+  WMApplication.argv[i] = NULL;
+}
+
+void WMReleaseApplication(void)
+{
+  int i;
+
+  /*
+   * We save the configuration on exit, this used to be handled
+   * through an 'atexit' registered function but if application
+   * properly calls WMReleaseApplication then the info to that
+   * will have been freed by us.
+   */
+  w_save_defaults_changes();
+
+  if (WMApplication.applicationName) {
+    wfree(WMApplication.applicationName);
+    WMApplication.applicationName = NULL;
+  }
+
+  if (WMApplication.argv) {
+    for (i = 0; i < WMApplication.argc; i++)
+      wfree(WMApplication.argv[i]);
+
+    wfree(WMApplication.argv);
+    WMApplication.argv = NULL;
+  }
+}
+
+char *WMGetApplicationName()
+{
+  return WMApplication.applicationName;
+}
+

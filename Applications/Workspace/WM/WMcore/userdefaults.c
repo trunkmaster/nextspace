@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 
 #include <WINGs/WINGs.h>
+#include <WINGs/wappresource.h>
 
 #include "wconfig.h"
 
