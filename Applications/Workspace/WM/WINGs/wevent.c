@@ -4,6 +4,7 @@
  */
 
 #include <CoreFoundation/CFArray.h>
+#include <CoreFoundation/CFRunLoop.h>
 #include <WMcore/memory.h>
 #include <WMcore/handlers.h>
 
@@ -382,6 +383,7 @@ void WMNextEvent(Display * dpy, XEvent * event)
 {
 	/* Check any expired timers */
 	W_CheckTimerHandlers();
+        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, True);
 
 	while (XPending(dpy) == 0) {
 		/* Do idle and timer stuff while there are no input or X events */
@@ -400,6 +402,7 @@ void WMNextEvent(Display * dpy, XEvent * event)
 
 		/* Check any expired timers */
 		W_CheckTimerHandlers();
+                CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, True);
 	}
 
 	XNextEvent(dpy, event);

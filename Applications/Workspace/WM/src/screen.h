@@ -26,6 +26,7 @@
 #include <sys/types.h>
 
 #include <CoreFoundation/CFArray.h>
+#include <CoreFoundation/CFRunLoop.h>
 
 #include <WMcore/proplist.h>
 #include <WMcore/bagtree.h>
@@ -281,7 +282,8 @@ typedef struct _WScreen {
 
   /* workspace name data */
   Window workspace_name;
-  WMHandlerID *workspace_name_timer;
+  /* WMHandlerID *workspace_name_timer; */
+  CFRunLoopTimerRef workspace_name_timer;
   struct WorkspaceNameData *workspace_name_data;
 
   /* for raise-delay */

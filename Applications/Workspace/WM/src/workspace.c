@@ -35,6 +35,7 @@
 #include <time.h>
 #include <sys/time.h>
 
+#include <CoreFoundation/CFRunLoop.h>
 #include <CoreFoundation/CFNotificationCenter.h>
 #include <CoreFoundation/CFNumber.h>
 
@@ -111,7 +112,7 @@ typedef struct WorkspaceNameData {
   time_t timeout;
 } WorkspaceNameData;
 
-static void _hideWorkspaceName(void *data)
+static void _hideWorkspaceName(CFRunLoopTimerRef timer, void *data) // (void *data)
 {
   WScreen *scr = (WScreen *) data;
 
@@ -131,8 +132,10 @@ static void _hideWorkspaceName(void *data)
     RImage *img = RCloneImage(scr->workspace_name_data->back);
     Pixmap pix;
 
-    scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_FADE_DELAY, _hideWorkspaceName, scr);
-
+    /* scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_FADE_DELAY, _hideWorkspaceName, scr); */
+    CFRunLoopTimerSetNextFireDate(scr->workspace_name_timer,
+                                  CFAbsoluteTimeGetCurrent() + WORKSPACE_NAME_FADE_DELAY/1000);
+    
     RCombineImagesWithOpaqueness(img, scr->workspace_name_data->text,
                                  scr->workspace_name_data->count * 255 / 10);
 
@@ -173,7 +176,20 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
     XUnmapWindow(dpy, scr->workspace_name);
     XFlush(dpy);
   }
-  scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_DELAY, _hideWorkspaceName, scr);
+  /* scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_DELAY, _hideWorkspaceName, scr); */
+  /* CFRunLoopTimerCreate(kCFAllocatorDefault, */
+  /*                      CFAbsoluteTimeGetCurrent(),     // CFAbsoluteTime fireDate */
+  /*                      0,                              // CFTimeInterval interval -- seconds */
+  /*                      0,                              // CFOptionFlags flags -- ignored */
+  /*                      0,                              // CFIndex order -- ignored */
+  /*                      _hideWorkspaceName,             // CFRunLoopTimerCallBack callout */
+  /*                      ctx);                           // CFRunLoopTimerContext *context */
+  CFRunLoopTimerContext ctx = {0, scr, NULL, NULL, 0};
+  scr->workspace_name_timer =
+    CFRunLoopTimerCreate(kCFAllocatorDefault,
+                         CFAbsoluteTimeGetCurrent() + WORKSPACE_NAME_FADE_DELAY/1000,
+                         0, 0, 0, _hideWorkspaceName, &ctx);
+  CFRunLoopAddTimer(CFRunLoopGetCurrent(), scr->workspace_name_timer, kCFRunLoopDefaultMode);
 
   if (scr->workspace_name_data) {
     RReleaseImage(scr->workspace_name_data->back);
@@ -314,8 +330,10 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
   return;
 
  erro:
-  if (scr->workspace_name_timer)
-    WMDeleteTimerHandler(scr->workspace_name_timer);
+  if (scr->workspace_name_timer) {
+    /* WMDeleteTimerHandler(scr->workspace_name_timer); */
+    CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), scr->workspace_name_timer, kCFRunLoopDefaultMode);
+  }
 
   if (data->text)
     RReleaseImage(data->text);
@@ -325,8 +343,11 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
 
   scr->workspace_name_data = NULL;
 
-  scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_DELAY +
-                                                10 * WORKSPACE_NAME_FADE_DELAY, _hideWorkspaceName, scr);
+  /* scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_DELAY + 10 * WORKSPACE_NAME_FADE_DELAY, */
+  /*                                               _hideWorkspaceName, scr); */
+  CFRunLoopTimerSetNextFireDate(scr->workspace_name_timer,
+                                CFAbsoluteTimeGetCurrent() +
+                                (WORKSPACE_NAME_FADE_DELAY + 10 * WORKSPACE_NAME_FADE_DELAY)/1000);
 }
 
 static void _switchWSCommand(WMenu *menu, WMenuEntry *entry)
