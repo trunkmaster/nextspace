@@ -50,9 +50,7 @@ Development header files for CoreFoundation framework.
 %setup -n swift-corelibs-foundation-%{GIT_TAG}
 %patch0 -p1
 %if 0%{?el7}
-cd CoreFoundation
 %patch1 -p1
-cd ..
 %endif
 cp %{_sourcedir}/CFNotificationCenter.c CoreFoundation/AppServices.subproj/
 cd CoreFoundation/Base.subproj/
@@ -62,7 +60,10 @@ cp SwiftRuntime/TargetConditionals.h ./
 mkdir -p CoreFoundation/.build
 cd CoreFoundation/.build
 #CF_CFLAGS="-I/usr/NextSpace/include -I. -I`pwd`/../Base.subproj -DU_SHOW_DRAFT_API -DCF_BUILDING_CF -DDEPLOYMENT_RUNTIME_C -fconstant-cfstrings -fexceptions -Wno-switch -D_GNU_SOURCE -DCF_CHARACTERSET_DATA_DIR=\"CharacterSets\""
-CF_CFLAGS="-I/usr/NextSpace/include -Wno-implicit-const-int-float-conversion -Wno-switch"
+CF_CFLAGS="-I/usr/NextSpace/include -Wno-switch"
+%if !0%{?el7}
+  CF_CFLAGS+=" -Wno-implicit-const-int-float-conversion"
+%endif
 %if 0%{?el7}
 cmake3 .. \
 %else
