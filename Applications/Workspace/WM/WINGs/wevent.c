@@ -364,48 +364,57 @@ int WMIsDoubleClick(XEvent * event)
  */
 static Bool waitForEvent(Display * dpy, unsigned long xeventmask, Bool waitForInput)
 {
-	XSync(dpy, False);
-	if (xeventmask == 0) {
-		if (XPending(dpy))
-			return True;
-	} else {
-		XEvent ev;
-		if (XCheckMaskEvent(dpy, xeventmask, &ev)) {
-			XPutBackEvent(dpy, &ev);
-			return True;
-		}
-	}
+  XSync(dpy, False);
+  if (xeventmask == 0) {
+    if (XPending(dpy))
+      return True;
+  } else {
+    XEvent ev;
+    if (XCheckMaskEvent(dpy, xeventmask, &ev)) {
+      XPutBackEvent(dpy, &ev);
+      return True;
+    }
+  }
 
-	return W_HandleInputEvents(waitForInput, ConnectionNumber(dpy));
+  return W_HandleInputEvents(waitForInput, ConnectionNumber(dpy));
 }
 
+#include <CoreFoundation/CFLogUtilities.h>
+#include <CoreFoundation/CFString.h>
 void WMNextEvent(Display * dpy, XEvent * event)
 {
-	/* Check any expired timers */
-	W_CheckTimerHandlers();
-        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, True);
+  /* Check any expired timers */
+  /* W_CheckTimerHandlers(); */
+  if (CFRunLoopGetNextTimerFireDate(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode) > 0.0) {
+    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0, false);
+  }
 
-	while (XPending(dpy) == 0) {
-		/* Do idle and timer stuff while there are no input or X events */
-		while (!waitForEvent(dpy, 0, False) && W_CheckIdleHandlers()) {
-			/* dispatch timer events */
-			W_CheckTimerHandlers();
-		}
+  while (XPending(dpy) == 0) {
+    /* Do idle and timer stuff while there are no input or X events */
+    /* while (!waitForEvent(dpy, 0, False) && W_CheckIdleHandlers()) { */
+      /* dispatch timer events */
+      /* W_CheckTimerHandlers(); */
+      /* CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0, false); */
+    /* } */
 
-		/*
-		 * Make sure that new events did not arrive while we were doing
-		 * timer/idle stuff. Or we might block forever waiting for
-		 * an event that already arrived.
-		 */
-		/* wait for something to happen or a timer to expire */
-		waitForEvent(dpy, 0, True);
+    /*
+     * Make sure that new events did not arrive while we were doing
+     * timer/idle stuff. Or we might block forever waiting for
+     * an event that already arrived.
+     */
+    /* wait for something to happen or a timer to expire */
+    /* CFLog(kCFLogLevelError, CFSTR("waitForEvent...")); */
+    waitForEvent(dpy, 0, True);
 
-		/* Check any expired timers */
-		W_CheckTimerHandlers();
-                CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, True);
-	}
+    /* Check any expired timers */
+    /* W_CheckTimerHandlers(); */
+    /* CFLog(kCFLogLevelError, CFSTR("CFRunLoop...")); */
+    if (CFRunLoopGetNextTimerFireDate(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode) > 0.0) {
+      CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0, false);
+    }
+  }
 
-	XNextEvent(dpy, event);
+  XNextEvent(dpy, event);
 }
 
 void WMMaskEvent(Display * dpy, long mask, XEvent * event)
