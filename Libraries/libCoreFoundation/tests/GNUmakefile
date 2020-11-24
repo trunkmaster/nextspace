@@ -5,10 +5,11 @@
 GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
 include $(GNUSTEP_MAKEFILES)/common.make
 
-CTOOL_NAME = proplist_test notification_test
+CTOOL_NAME = proplist_test notification_test runloop_test
 
 proplist_test_C_FILES = proplist_test.c
 notification_test_C_FILES = notification_test.c
+runloop_test_C_FILES = runloop_test.c
 
 #
 # GNUmakefile.preamble
