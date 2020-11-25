@@ -5,21 +5,13 @@
  *  http://www.puredarwin.org/ 2009, 2018
  */
 
-#include <CoreFoundation/CFRunLoop.h>
-#include <CoreFoundation/CFLocking.h>
 #include "CFPriv.h"
 #include "CFInternal.h"
 #include "CFRuntime_Internal.h"
 #include "CFFileDescriptor.h"
 #include "CFLogUtilities.h"
 
-/* #include <stdlib.h> */
-/* #include <stdio.h> */
-/* #include <unistd.h> */
-
 #if __HAS_DISPATCH__
-
-#include <dispatch/dispatch.h>
 
 typedef OSSpinLock CFSpinLock_t;
 
@@ -50,13 +42,29 @@ void __CFFDSourceInvoked(CFFileDescriptorRef f, CFOptionFlags callBackType);
 // create and return a dispatch source of the given type
 dispatch_source_t __CFFDCreateSource(CFFileDescriptorRef f, CFOptionFlags callBackType) {
   dispatch_source_t source;
+
+  if (callBackType == kCFFileDescriptorReadCallBack && !f->_read_source) {
+    source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, f->_fd, 0, dispatch_get_current_queue());
+  }
+  else if (callBackType == kCFFileDescriptorWriteCallBack && !f->_write_source) {
+    source = dispatch_source_create(DISPATCH_SOURCE_TYPE_WRITE, f->_fd, 0, dispatch_get_current_queue());
+  }
   
-  source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, f->_fd, 0, dispatch_get_main_queue());
   if (source) {
     dispatch_source_set_event_handler(source, ^{
-        __CFFDSourceInvoked(f, callBackType);
+        size_t estimated = dispatch_source_get_data(source);
+        CFLog(kCFLogLevelError, CFSTR("%i amount of data is ready on descriptor %i"),
+              estimated, f->_fd);
+        lseek(f->_fd, 0, SEEK_END);
+        CFLog(kCFLogLevelError, CFSTR("%i amount of data is ready after lseeek()"),
+              dispatch_source_get_data(source), f->_fd);
+        // Tell runloop about event (it will call 'permorm' callback)
+        CFRunLoopSourceSignal(f->_source0);
+        // Each call back is one-shot, and must be re-enabled if you want to get another one.
+        __CFFDRemoveSource(f, callBackType);
       });
   }
+  
   return source;
 }
 
@@ -85,12 +93,6 @@ void __CFFDEnableSources(CFFileDescriptorRef f, CFOptionFlags callBackTypes) {
   }
 }
 
-// TODO
-// Called by disptch on file descriptor event. callBackType will be one of Read and Write
-void __CFFDSourceInvoked(CFFileDescriptorRef f, CFOptionFlags callBackType) {
-  // CFRunLoopSourceSignal(f);
-  fprintf(stderr, "CFFileDescriptor source callback invoked.\n");
-}
 
 #pragma mark - RunLoop internal
 
@@ -112,7 +114,8 @@ static void __CFFDCancel(void *info, CFRunLoopRef rl, CFStringRef mode) {
 // A perform callback for the run loop source. This callback is called when the source has fired.
 static void __CFFDPerformV0(void *info) {
   __CFFileDescriptor *_info = info;
-  fprintf(stderr, "CFFileDescriptor PERFORM callback invoked.\n");
+  CFLog(kCFLogLevelError, CFSTR("CFFileDescriptor PERFORM callback invoked."));
+  
 }
 
 #pragma mark - Runtime
@@ -164,6 +167,7 @@ CFFileDescriptorRef CFFileDescriptorCreate(CFAllocatorRef allocator,
     return NULL;
   }
 
+  __CFFileDescriptorInitialize();
   size = sizeof(struct __CFFileDescriptor) - sizeof(CFRuntimeBase);
   memory = (CFFileDescriptorRef)_CFRuntimeCreateInstance(allocator, __kCFFileDescriptorTypeID,
                                                          size, NULL);
@@ -175,10 +179,12 @@ CFFileDescriptorRef CFFileDescriptorCreate(CFAllocatorRef allocator,
   memory->_fd = fd;
   memory->_callout = callout;
   memory->_context.version = 0;
-  memory->_context.info = context->info;
-  memory->_context.retain = context->retain;
-  memory->_context.release = context->release;
-  memory->_context.copyDescription = context->copyDescription;
+  if (context) {
+    memory->_context.info = context->info;
+    memory->_context.retain = context->retain;
+    memory->_context.release = context->release;
+    memory->_context.copyDescription = context->copyDescription;
+  }
 
   memory->_runLoop = NULL;
   memory->_source0 = NULL;
@@ -214,7 +220,7 @@ void CFFileDescriptorGetContext(CFFileDescriptorRef f, CFFileDescriptorContext *
 
 // enable callbacks, setting kqueue filter, regardless of whether watcher thread is running
 void CFFileDescriptorEnableCallBacks(CFFileDescriptorRef f, CFOptionFlags callBackTypes) {
-  if (!f || !callBackTypes || (CFGetTypeID(f) != CFFileDescriptorGetTypeID()) || !__CFFDIsValid(f)) {
+  if (!CFFileDescriptorIsValid(f) || !__CFFDIsValid(f) || !callBackTypes) {
     return;
   }
 
@@ -235,8 +241,9 @@ void CFFileDescriptorEnableCallBacks(CFFileDescriptorRef f, CFOptionFlags callBa
 
 // disable callbacks, setting kqueue filter, regardless of whether watcher thread is running
 void CFFileDescriptorDisableCallBacks(CFFileDescriptorRef f, CFOptionFlags callBackTypes) {
-  if (!f || !callBackTypes || (CFGetTypeID(f) != CFFileDescriptorGetTypeID()) || !__CFFDIsValid(f))
+  if (!CFFileDescriptorIsValid(f) || !__CFFDIsValid(f) || !callBackTypes) {
     return;
+  }
 	
   __CFLock(&f->_lock);
     
@@ -253,8 +260,9 @@ void CFFileDescriptorDisableCallBacks(CFFileDescriptorRef f, CFOptionFlags callB
 
 // invalidate the file descriptor, possibly closing the fd
 void CFFileDescriptorInvalidate(CFFileDescriptorRef f) {
-  if (!f || (CFGetTypeID(f) != CFFileDescriptorGetTypeID()) || !__CFFDIsValid(f))
+  if (!CFFileDescriptorIsValid(f) || !__CFFDIsValid(f)) {
     return;
+  }
 	
   __CFLock(&f->_lock);
 
@@ -282,12 +290,6 @@ Boolean	CFFileDescriptorIsValid(CFFileDescriptorRef f) {
   return __CFFDIsValid(f);
 }
 
-// CFFileDescriptorRef fdref = CFFileDescriptorCreate(kCFAllocatorDefault, fd, true, callBack, NULL);
-// CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
-//
-// CFRunLoopSourceRef source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, fdref, 0);
-// CFRunLoopAddSource(CFRunLoopGetMain(), source, kCFRunLoopDefaultMode);
-// CFRelease(source);
 CFRunLoopSourceRef CFFileDescriptorCreateRunLoopSource(CFAllocatorRef allocator,
                                                        CFFileDescriptorRef f,
                                                        CFIndex order) {

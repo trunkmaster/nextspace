@@ -1,18 +1,11 @@
-/*
- *	CFFileDescriptor.h
- *
- *  http://www.puredarwin.org/ 2009, 2018
- */
+/*      CFFileDescriptor.h
+        Copyright (c) 2006-2019, Apple Inc. All rights reserved.
+*/
 
 #if !defined(__COREFOUNDATION_CFFILEDESCRIPTOR__)
 #define __COREFOUNDATION_CFFILEDESCRIPTOR__ 1
 
-#include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFRunLoop.h>
-
-#if __HAS_DISPATCH__
-#include <dispatch/dispatch.h>
-#endif
 
 #if TARGET_OS_OSX || TARGET_OS_LINUX
 
@@ -23,7 +16,7 @@ typedef int CFFileDescriptorNativeDescriptor;
 typedef struct __CFFileDescriptor *CFFileDescriptorRef;
 
 /* Callback Reason Types */
-enum CFOptionFlags {
+CF_ENUM(CFOptionFlags) {
   kCFFileDescriptorReadCallBack = 1 << 0,
   kCFFileDescriptorWriteCallBack = 1 << 1
 };
