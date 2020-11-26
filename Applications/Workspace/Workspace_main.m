@@ -78,8 +78,6 @@ static BOOL _isWindowManagerRunning(void)
   }
 }
 
-#include <CoreFoundation/CoreFoundation.h>
-#include <CoreFoundation/CFRunLoop.h>
 //-----------------------------------------------------------------------------
 // Workspace application GNUstep main function
 //-----------------------------------------------------------------------------
