@@ -53,13 +53,16 @@ dispatch_source_t __CFFDCreateSource(CFFileDescriptorRef f, CFOptionFlags callBa
   if (source) {
     dispatch_source_set_event_handler(source, ^{
         size_t estimated = dispatch_source_get_data(source);
-        CFLog(kCFLogLevelError, CFSTR("%i amount of data is ready on descriptor %i"),
-              estimated, f->_fd);
-        lseek(f->_fd, 0, SEEK_END);
-        CFLog(kCFLogLevelError, CFSTR("%i amount of data is ready after lseeek()"),
-              dispatch_source_get_data(source), f->_fd);
+        CFLog(kCFLogLevelError, CFSTR("%i amount of data is ready on descriptor %i (runloop: %li)"),
+              estimated, f->_fd, (long)f->_runLoop);
+        /* lseek(f->_fd, 0, SEEK_END); */
+        /* CFLog(kCFLogLevelError, CFSTR("%i amount of data is ready after lseeek()"), */
+        /*       dispatch_source_get_data(source), f->_fd); */
+
         // Tell runloop about event (it will call 'permorm' callback)
         CFRunLoopSourceSignal(f->_source0);
+        CFRunLoopWakeUp(f->_runLoop);
+
         // Each call back is one-shot, and must be re-enabled if you want to get another one.
         __CFFDRemoveSource(f, callBackType);
       });
@@ -69,7 +72,7 @@ dispatch_source_t __CFFDCreateSource(CFFileDescriptorRef f, CFOptionFlags callBa
 }
 
 // callBackType will be one of Read and Write
-void __CFFDRemoveSource(CFFileDescriptorRef f, CFOptionFlags callBackType) {
+zvoid __CFFDRemoveSource(CFFileDescriptorRef f, CFOptionFlags callBackType) {
   if (callBackType == kCFFileDescriptorReadCallBack && f->_read_source) {
     dispatch_source_cancel(f->_read_source);
     dispatch_release(f->_read_source);
@@ -100,7 +103,9 @@ void __CFFDEnableSources(CFFileDescriptorRef f, CFOptionFlags callBackTypes) {
 // A scheduling callback for the run loop source. This callback is called when the source is
 // added to a run loop mode. Can be NULL. 
 static void __CFFDSchedule(void *info, CFRunLoopRef rl, CFStringRef mode) {
-  fprintf(stderr, "CFFileDescriptor internal SCHEDULE callback invoked.\n");
+  __CFFileDescriptor *_info = info;
+  fprintf(stderr, "CFFileDescriptor internal SCHEDULE callback invoked (runloop: %li).\n", (long)rl);
+  _info->_runLoop = rl;
 }
 
 // TODO
@@ -114,8 +119,9 @@ static void __CFFDCancel(void *info, CFRunLoopRef rl, CFStringRef mode) {
 // A perform callback for the run loop source. This callback is called when the source has fired.
 static void __CFFDPerformV0(void *info) {
   __CFFileDescriptor *_info = info;
-  CFLog(kCFLogLevelError, CFSTR("CFFileDescriptor PERFORM callback invoked."));
-  
+  CFLog(kCFLogLevelError, CFSTR("CFFileDescriptor PERFORM callback invoked (runloop: %li)."),
+        (long)_info->_runLoop);
+  /* _info->_callout(_info->_source0->context.info, 0, NULL); */
 }
 
 #pragma mark - Runtime
@@ -190,7 +196,7 @@ CFFileDescriptorRef CFFileDescriptorCreate(CFAllocatorRef allocator,
   memory->_source0 = NULL;
   memory->_read_source = NULL;
   memory->_write_source = NULL;
-	
+
   __CFRuntimeSetValue(memory, 0, 0, 1);
   __CFRuntimeSetValue(memory, 1, 1, closeOnInvalidate);
     
