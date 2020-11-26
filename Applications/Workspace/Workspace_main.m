@@ -20,6 +20,7 @@
 //
 
 #import <AppKit/AppKit.h>
+#include <WINGs/wevent.h>
 
 #import "Application.h"
 #import "Workspace+WM.h"
@@ -77,6 +78,8 @@ static BOOL _isWindowManagerRunning(void)
   }
 }
 
+#include <CoreFoundation/CoreFoundation.h>
+#include <CoreFoundation/CFRunLoop.h>
 //-----------------------------------------------------------------------------
 // Workspace application GNUstep main function
 //-----------------------------------------------------------------------------
@@ -133,17 +136,19 @@ int main(int argc, const char **argv)
   //--- Window Manager thread queue -------------------------------------
   {
     dispatch_queue_t wm_q;
-    
-    wm_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_SERIAL);
+
+    // DISPATCH_QUEUE_CONCURRENT is mandatory for CFRunLoop run.
+    wm_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_CONCURRENT);
     fprintf(stderr, "=== Initializing Window Manager... ===\n");
     dispatch_sync(wm_q, ^{
         WMInitializeWindowMaker(argc, (char **)argv);
       });
     fprintf(stderr, "=== Window Manager initialized! ===\n");
-
+    
     // Start X11 EventLoop in parallel
     dispatch_async(wm_q, ^{
-        EventLoop();
+        // EventLoop();
+        WMRunLoop();
       });
   }
       

@@ -394,6 +394,59 @@ static void handle_inotify_events(void)
 }
 #endif /* HAVE_INOTIFY */
 
+#include <CoreFoundation/CoreFoundation.h>
+#include <CoreFoundation/CFFileDescriptor.h>
+#include <CoreFoundation/CFLogUtilities.h>
+static void _processRunLoopEvent(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
+{
+  XEvent event;
+
+  /* fprintf(stderr, "_processXEvent() - %i\n", XPending(dpy)); */
+
+  while (XPending(dpy) > 0) {
+    /* fprintf(stderr, "XNextEvent - %i\n", XPending(dpy)); */
+    XNextEvent(dpy, &event);
+    /* fprintf(stderr, "WMHandleEvent\n"); */
+    WMHandleEvent(&event);
+  }
+
+  /* fprintf(stderr, "EnableCallbacks\n"); */
+  /* if (CFGetTypeID(fdref) == CFFileDescriptorGetTypeID()) { */
+    CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
+  /* } */
+  /* else { */
+  /*   fprintf(stderr, "[_processXEvent] 'fdref' is not CFFileDescriptor! It is %lu\n", */
+  /*           CFGetTypeID(fdref)); */
+  /* } */
+  
+  /* fprintf(stderr, "Quit callback\n"); */
+}
+
+noreturn void WMRunLoop()
+{
+  CFFileDescriptorRef xfd;
+  CFRunLoopSourceRef  xfd_source;
+
+  CFLog(kCFLogLevelError, CFSTR("Entering WM runloop with X connection: %i"), ConnectionNumber(dpy));
+  
+  // X connection file descriptor
+  xfd = CFFileDescriptorCreate(kCFAllocatorDefault, ConnectionNumber(dpy), true,
+                               _processRunLoopEvent, NULL);
+  CFFileDescriptorEnableCallBacks(xfd, kCFFileDescriptorReadCallBack);
+
+  xfd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, xfd, 0);
+  CFRunLoopAddSource(CFRunLoopGetCurrent(), xfd_source, kCFRunLoopDefaultMode);
+  CFRelease(xfd_source);
+  
+  // CFRunLoopRunResult result = 0;
+  // fprintf(stderr, "Going into CFRunLoop...\n");
+  // result = CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, false);
+  // fprintf(stderr, "Went out of CFRunLoop with result %i!\n", result);
+  CFRunLoopRun();
+
+  CFLog(kCFLogLevelError, CFSTR("WM runLoop finished.\n"));
+}
+
 /*
  *----------------------------------------------------------------------
  * EventLoop-
