@@ -30,8 +30,8 @@
 
 typedef void (WDeathHandler)(pid_t pid, unsigned int status, void *cdata);
 
-noreturn void WMRunLoop(void);
-noreturn void EventLoop(void);
+void WMRunLoop(void);
+/* noreturn void EventLoop(void); */
 void DispatchEvent(XEvent *event);
 void ProcessPendingEvents(void);
 WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler *callback, void *cdata);

@@ -399,30 +399,12 @@ static void handle_inotify_events(void)
 #include <CoreFoundation/CFLogUtilities.h>
 static void _processRunLoopEvent(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
 {
-  XEvent event;
-
   /* fprintf(stderr, "_processXEvent() - %i\n", XPending(dpy)); */
-
-  while (XPending(dpy) > 0) {
-    /* fprintf(stderr, "XNextEvent - %i\n", XPending(dpy)); */
-    XNextEvent(dpy, &event);
-    /* fprintf(stderr, "WMHandleEvent\n"); */
-    WMHandleEvent(&event);
-  }
-
-  /* fprintf(stderr, "EnableCallbacks\n"); */
-  /* if (CFGetTypeID(fdref) == CFFileDescriptorGetTypeID()) { */
-    CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
-  /* } */
-  /* else { */
-  /*   fprintf(stderr, "[_processXEvent] 'fdref' is not CFFileDescriptor! It is %lu\n", */
-  /*           CFGetTypeID(fdref)); */
-  /* } */
-  
-  /* fprintf(stderr, "Quit callback\n"); */
+  CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
+  ProcessPendingEvents();
 }
 
-noreturn void WMRunLoop()
+void WMRunLoop()
 {
   CFFileDescriptorRef xfd;
   CFRunLoopSourceRef  xfd_source;
@@ -438,13 +420,9 @@ noreturn void WMRunLoop()
   CFRunLoopAddSource(CFRunLoopGetCurrent(), xfd_source, kCFRunLoopDefaultMode);
   CFRelease(xfd_source);
   
-  // CFRunLoopRunResult result = 0;
-  // fprintf(stderr, "Going into CFRunLoop...\n");
-  // result = CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, false);
-  // fprintf(stderr, "Went out of CFRunLoop with result %i!\n", result);
+  CFLog(kCFLogLevelError, CFSTR("[WM] Going into CFRunLoop..."));
   CFRunLoopRun();
-
-  CFLog(kCFLogLevelError, CFSTR("WM runLoop finished.\n"));
+  CFLog(kCFLogLevelError, CFSTR("[WM] CFRunLoop finished."));
 }
 
 /*
@@ -460,46 +438,46 @@ noreturn void WMRunLoop()
  *      Calls inotifyGetEvents if defaults database changes.
  *----------------------------------------------------------------------
  */
-noreturn void EventLoop(void)
-{
-  XEvent event;
-#ifdef HAVE_INOTIFY
-  struct timeval time;
-  fd_set rfds;
-  int retVal = 0;
+/* noreturn void EventLoop(void) */
+/* { */
+/*   XEvent event; */
+/* #ifdef HAVE_INOTIFY */
+/*   struct timeval time; */
+/*   fd_set rfds; */
+/*   int retVal = 0; */
 
-  if (w_global.inotify.fd_event_queue < 0 || w_global.inotify.wd_defaults < 0)
-    retVal = -1;
-#endif
+/*   if (w_global.inotify.fd_event_queue < 0 || w_global.inotify.wd_defaults < 0) */
+/*     retVal = -1; */
+/* #endif */
 
-  for (;;) {
+/*   for (;;) { */
 
-    WMNextEvent(dpy, &event);	/* Blocks here */
-    WMHandleEvent(&event);
-#ifdef HAVE_INOTIFY
-    if (retVal != -1) {
-      time.tv_sec = 0;
-      time.tv_usec = 0;
-      FD_ZERO(&rfds);
-      FD_SET(w_global.inotify.fd_event_queue, &rfds);
+/*     WMNextEvent(dpy, &event);	/\* Blocks here *\/ */
+/*     WMHandleEvent(&event); */
+/* #ifdef HAVE_INOTIFY */
+/*     if (retVal != -1) { */
+/*       time.tv_sec = 0; */
+/*       time.tv_usec = 0; */
+/*       FD_ZERO(&rfds); */
+/*       FD_SET(w_global.inotify.fd_event_queue, &rfds); */
 
-      /* check for available read data from inotify - don't block! */
-      retVal = select(w_global.inotify.fd_event_queue + 1, &rfds, NULL, NULL, &time);
+/*       /\* check for available read data from inotify - don't block! *\/ */
+/*       retVal = select(w_global.inotify.fd_event_queue + 1, &rfds, NULL, NULL, &time); */
 
-      if (retVal < 0) {	/* an error has occured */
-        wwarning(_("select failed. The inotify instance will be closed."
-                   " Changes to the defaults database will require"
-                   " a restart to take effect."));
-        close(w_global.inotify.fd_event_queue);
-        w_global.inotify.fd_event_queue = -1;
-        continue;
-      }
-      if (FD_ISSET(w_global.inotify.fd_event_queue, &rfds))
-        handle_inotify_events();
-    }
-#endif
-  }
-}
+/*       if (retVal < 0) {	/\* an error has occured *\/ */
+/*         wwarning(_("select failed. The inotify instance will be closed." */
+/*                    " Changes to the defaults database will require" */
+/*                    " a restart to take effect.")); */
+/*         close(w_global.inotify.fd_event_queue); */
+/*         w_global.inotify.fd_event_queue = -1; */
+/*         continue; */
+/*       } */
+/*       if (FD_ISSET(w_global.inotify.fd_event_queue, &rfds)) */
+/*         handle_inotify_events(); */
+/*     } */
+/* #endif */
+/*   } */
+/* } */
 
 /*
  *----------------------------------------------------------------------
@@ -527,7 +505,8 @@ void ProcessPendingEvents(void)
   count = XPending(dpy);
 
   while (count > 0 && XPending(dpy)) {
-    WMNextEvent(dpy, &event);
+    /* WMNextEvent(dpy, &event); */
+    XNextEvent(dpy, &event);
     WMHandleEvent(&event);
     count--;
   }
