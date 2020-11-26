@@ -22,7 +22,7 @@ ADDITIONAL_OBJCFLAGS += -fblocks
 # Additional flags to pass to C compiler
 ADDITIONAL_CFLAGS += -Wall -fblocks
 # Additional flags to pass to the linker
-ADDITIONAL_LDFLAGS = -lCoreFoundation -lX11
+ADDITIONAL_LDFLAGS = -lCoreFoundation -lX11 -ldispatch -lobjc
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS +=
 # Additional library directories the linker should search
