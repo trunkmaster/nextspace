@@ -65,8 +65,6 @@ WMScreen* WMCreateScreen(Display *display, int screen);
 
 WMScreen* WMCreateSimpleApplicationScreen(Display *display);
 
-noreturn void WMScreenMainLoop(WMScreen *scr);
-
 void WMBreakModalLoop(WMScreen *scr);
 
 void WMRunModalLoop(WMScreen *scr, WMView *view);

@@ -980,16 +980,6 @@ WMScreen *WMWidgetScreen(WMWidget * w)
 	return W_VIEW(w)->screen;
 }
 
-void WMScreenMainLoop(WMScreen * scr)
-{
-	XEvent event;
-
-	while (1) {
-		WMNextEvent(scr->display, &event);
-		WMHandleEvent(&event);
-	}
-}
-
 void WMBreakModalLoop(WMScreen * scr)
 {
 	scr->modalLoop = 0;
@@ -1008,7 +998,8 @@ void WMRunModalLoop(WMScreen * scr, WMView * view)
 	while (scr->modalLoop) {
 		XEvent event;
 
-		WMNextEvent(scr->display, &event);
+		/* WMNextEvent(scr->display, &event); */
+		XNextEvent(scr->display, &event);
 		WMHandleEvent(&event);
 	}
 
