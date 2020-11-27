@@ -1,22 +1,22 @@
 /*
- *  Window Maker miscelaneous function library
+ * Window Maker miscelaneous function library
  *
- *  Copyright (c) 1997-2003 Alfredo K. Kojima
+ * Copyright (c) 1997-2003 Alfredo K. Kojima
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
- *  MA 02110-1301, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
  */
 
 #include "wconfig.h"
@@ -40,31 +40,31 @@ static Bool syslog_initialized = False;
 
 static void syslog_open(const char *prog_name)
 {
-	int options;
+  int options;
 
-	if (!prog_name)
-		prog_name = "WINGs";
+  if (!prog_name)
+    prog_name = "WINGs";
 
-	options = LOG_PID;
-	openlog(prog_name, options, LOG_DAEMON);
-	syslog_initialized = True;
+  options = LOG_PID;
+  openlog(prog_name, options, LOG_DAEMON);
+  syslog_initialized = True;
 }
 
 static void syslog_message(int prio, const char *prog_name, const char *msg)
 {
-	if (!syslog_initialized)
-		syslog_open(prog_name);
+  if (!syslog_initialized)
+    syslog_open(prog_name);
 
-	//jump over the program name cause syslog is already displaying it
-	syslog(prio, "%s", msg + strlen(prog_name));
+  //jump over the program name cause syslog is already displaying it
+  syslog(prio, "%s", msg + strlen(prog_name));
 }
 
 void w_syslog_close(void)
 {
-	if (syslog_initialized) {
-		closelog();
-		syslog_initialized = False;
-	}
+  if (syslog_initialized) {
+    closelog();
+    syslog_initialized = False;
+  }
 }
 #endif
 

@@ -27,12 +27,12 @@
 
 WMRange wmkrange(int start, int count)
 {
-	WMRange range;
+  WMRange range;
 
-	range.position = start;
-	range.count = count;
+  range.position = start;
+  range.count = count;
 
-	return range;
+  return range;
 }
 
 /*
@@ -41,6 +41,6 @@ WMRange wmkrange(int start, int count)
 void wutil_shutdown(void)
 {
 #ifdef HAVE_SYSLOG
-	w_syslog_close();
+  w_syslog_close();
 #endif
 }
