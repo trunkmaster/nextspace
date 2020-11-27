@@ -15,30 +15,30 @@
 #define MAX_PROPERTY_SIZE 8*1024
 
 typedef struct SelectionHandler {
-	WMView *view;
-	Atom selection;
-	Time timestamp;
-	WMSelectionProcs procs;
-	void *data;
+  WMView *view;
+  Atom selection;
+  Time timestamp;
+  WMSelectionProcs procs;
+  void *data;
 
-	struct {
-		unsigned delete_pending:1;
-		unsigned done_pending:1;
-	} flags;
+  struct {
+    unsigned delete_pending:1;
+    unsigned done_pending:1;
+  } flags;
 } SelectionHandler;
 
 typedef struct SelectionCallback {
-	WMView *view;
-	Atom selection;
-	Atom target;
-	Time timestamp;
-	WMSelectionCallback *callback;
-	void *data;
+  WMView *view;
+  Atom selection;
+  Atom target;
+  Time timestamp;
+  WMSelectionCallback *callback;
+  void *data;
 
-	struct {
-		unsigned delete_pending:1;
-		unsigned done_pending:1;
-	} flags;
+  struct {
+    unsigned delete_pending:1;
+    unsigned done_pending:1;
+  } flags;
 } SelectionCallback;
 
 static CFMutableArrayRef  selCallbacks = NULL;
@@ -47,7 +47,7 @@ static CFMutableArrayRef selHandlers = NULL;
 
 static Bool gotXError = False;
 
-void WMDeleteSelectionHandler(WMView * view, Atom selection, Time timestamp)
+void WMDeleteSelectionHandler(WMView *view, Atom selection, Time timestamp)
 {
   SelectionHandler *handler;
   Display *dpy = W_VIEW_SCREEN(view)->display;
@@ -83,7 +83,7 @@ void WMDeleteSelectionHandler(WMView * view, Atom selection, Time timestamp)
   XUngrabServer(dpy);
 }
 
-static void WMDeleteSelectionCallback(WMView * view, Atom selection, Time timestamp)
+static void WMDeleteSelectionCallback(WMView *view, Atom selection, Time timestamp)
 {
   SelectionCallback *handler;
 
@@ -104,65 +104,65 @@ static void WMDeleteSelectionCallback(WMView * view, Atom selection, Time timest
   }
 }
 
-static int handleXError(Display * dpy, XErrorEvent * ev)
+static int handleXError(Display *dpy, XErrorEvent *ev)
 {
-	/* Parameter not used, but tell the compiler that it is ok */
-	(void) dpy;
-	(void) ev;
+  /* Parameter not used, but tell the compiler that it is ok */
+  (void) dpy;
+  (void) ev;
 
-	gotXError = True;
+  gotXError = True;
 
-	return 1;
+  return 1;
 }
 
-static Bool writeSelection(Display * dpy, Window requestor, Atom property, Atom type, WMData * data)
+static Bool writeSelection(Display *dpy, Window requestor, Atom property, Atom type, WMData *data)
 {
-	static void *oldHandler;
-	int format, bpi;
+  static void *oldHandler;
+  int format, bpi;
 
-	format = WMGetDataFormat(data);
-	if (format == 0)
-		format = 8;
+  format = WMGetDataFormat(data);
+  if (format == 0)
+    format = 8;
 
-	bpi = format / 8;
+  bpi = format / 8;
 
-	/* printf("write to %x: %s\n", requestor, XGetAtomName(dpy, property)); */
+  /* printf("write to %x: %s\n", requestor, XGetAtomName(dpy, property)); */
 
-	oldHandler = XSetErrorHandler(handleXError);
+  oldHandler = XSetErrorHandler(handleXError);
 
-	gotXError = False;
+  gotXError = False;
 
-	XChangeProperty(dpy, requestor, property, type, format, PropModeReplace,
-			WMDataBytes(data), WMGetDataLength(data) / bpi);
+  XChangeProperty(dpy, requestor, property, type, format, PropModeReplace,
+                  WMDataBytes(data), WMGetDataLength(data) / bpi);
 
-	XFlush(dpy);
+  XFlush(dpy);
 
-	XSetErrorHandler(oldHandler);
+  XSetErrorHandler(oldHandler);
 
-	return !gotXError;
+  return !gotXError;
 }
 
-static void notifySelection(XEvent * event, Atom prop)
+static void notifySelection(XEvent *event, Atom prop)
 {
-	XEvent ev;
+  XEvent ev;
 
-	/* printf("event to %x\n", event->xselectionrequest.requestor); */
+  /* printf("event to %x\n", event->xselectionrequest.requestor); */
 
-	ev.xselection.type = SelectionNotify;
-	ev.xselection.serial = 0;
-	ev.xselection.send_event = True;
-	ev.xselection.display = event->xselectionrequest.display;
-	ev.xselection.requestor = event->xselectionrequest.requestor;
-	ev.xselection.target = event->xselectionrequest.target;
-	ev.xselection.selection = event->xselectionrequest.selection;
-	ev.xselection.property = prop;
-	ev.xselection.time = event->xselectionrequest.time;
+  ev.xselection.type = SelectionNotify;
+  ev.xselection.serial = 0;
+  ev.xselection.send_event = True;
+  ev.xselection.display = event->xselectionrequest.display;
+  ev.xselection.requestor = event->xselectionrequest.requestor;
+  ev.xselection.target = event->xselectionrequest.target;
+  ev.xselection.selection = event->xselectionrequest.selection;
+  ev.xselection.property = prop;
+  ev.xselection.time = event->xselectionrequest.time;
 
-	XSendEvent(event->xany.display, event->xselectionrequest.requestor, False, 0, &ev);
-	XFlush(event->xany.display);
+  XSendEvent(event->xany.display, event->xselectionrequest.requestor, False, 0, &ev);
+  XFlush(event->xany.display);
 }
 
-static void handleRequestEvent(XEvent * event)
+static void handleRequestEvent(XEvent *event)
 {
   SelectionHandler *handler;
   CFArrayRef copy;
@@ -197,7 +197,7 @@ static void handleRequestEvent(XEvent * event)
         Atom prop;
 
         /* they're requesting for something old.. maybe another handler
-         * can handle it */
+         *can handle it */
         if (event->xselectionrequest.time < handler->timestamp
             && event->xselectionrequest.time != CurrentTime) {
           break;
@@ -251,28 +251,28 @@ static void handleRequestEvent(XEvent * event)
   CFRelease(copy);
 }
 
-static WMData *getSelectionData(Display * dpy, Window win, Atom where)
+static WMData *getSelectionData(Display *dpy, Window win, Atom where)
 {
-	WMData *wdata;
-	unsigned char *data;
-	Atom rtype;
-	int bits, bpi;
-	unsigned long len, bytes;
+  WMData *wdata;
+  unsigned char *data;
+  Atom rtype;
+  int bits, bpi;
+  unsigned long len, bytes;
 
-	if (XGetWindowProperty(dpy, win, where, 0, MAX_PROPERTY_SIZE,
-			       False, AnyPropertyType, &rtype, &bits, &len, &bytes, &data) != Success) {
-		return NULL;
-	}
+  if (XGetWindowProperty(dpy, win, where, 0, MAX_PROPERTY_SIZE,
+                         False, AnyPropertyType, &rtype, &bits, &len, &bytes, &data) != Success) {
+    return NULL;
+  }
 
-	bpi = bits / 8;
+  bpi = bits / 8;
 
-	wdata = WMCreateDataWithBytesNoCopy(data, len * bpi, (WMFreeDataProc *) XFree);
-	WMSetDataFormat(wdata, bits);
+  wdata = WMCreateDataWithBytesNoCopy(data, len *bpi, (WMFreeDataProc *) XFree);
+  WMSetDataFormat(wdata, bits);
 
-	return wdata;
+  return wdata;
 }
 
-static void handleNotifyEvent(XEvent * event)
+static void handleNotifyEvent(XEvent *event)
 {
   SelectionCallback *handler;
   CFArrayRef copy;
@@ -315,25 +315,25 @@ static void handleNotifyEvent(XEvent * event)
   CFRelease(copy);
 }
 
-void W_HandleSelectionEvent(XEvent * event)
+void W_HandleSelectionEvent(XEvent *event)
 {
-	/*//printf("%d received selection ", event->xany.window); */
-	/*//switch(event->type) {
-	   case SelectionNotify:
-	   puts("notify"); break;
-	   case SelectionRequest:
-	   puts("request"); break;
-	   case SelectionClear:
-	   puts("clear"); break;
-	   default:
-	   puts("unknown"); break;
-	   } */
+  /*//printf("%d received selection ", event->xany.window); */
+  /*//switch(event->type) {
+    case SelectionNotify:
+    puts("notify"); break;
+    case SelectionRequest:
+    puts("request"); break;
+    case SelectionClear:
+    puts("clear"); break;
+    default:
+    puts("unknown"); break;
+    } */
 
-	if (event->type == SelectionNotify) {
-		handleNotifyEvent(event);
-	} else {
-		handleRequestEvent(event);
-	}
+  if (event->type == SelectionNotify) {
+    handleNotifyEvent(event);
+  } else {
+    handleRequestEvent(event);
+  }
 }
 
 static void freeArrayItemCallback(CFAllocatorRef allocator, const void *item)
@@ -341,7 +341,7 @@ static void freeArrayItemCallback(CFAllocatorRef allocator, const void *item)
   wfree((void *)item);
 }
 
-Bool WMCreateSelectionHandler(WMView * view, Atom selection, Time timestamp, WMSelectionProcs * procs, void *cdata)
+Bool WMCreateSelectionHandler(WMView *view, Atom selection, Time timestamp, WMSelectionProcs *procs, void *cdata)
 {
   SelectionHandler *handler;
   Display *dpy = W_VIEW_SCREEN(view)->display;
@@ -372,8 +372,8 @@ Bool WMCreateSelectionHandler(WMView * view, Atom selection, Time timestamp, WMS
 }
 
 Bool
-WMRequestSelection(WMView * view, Atom selection, Atom target, Time timestamp,
-		   WMSelectionCallback * callback, void *cdata)
+WMRequestSelection(WMView *view, Atom selection, Atom target, Time timestamp,
+		   WMSelectionCallback *callback, void *cdata)
 {
   SelectionCallback *handler;
 

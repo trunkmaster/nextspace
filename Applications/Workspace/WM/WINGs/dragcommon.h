@@ -6,12 +6,12 @@
 
 /* drag operations */
 typedef enum {
-    WDOperationNone = 0,
-    WDOperationCopy,
-    WDOperationMove,
-    WDOperationLink,
-    WDOperationAsk,
-    WDOperationPrivate
+              WDOperationNone = 0,
+              WDOperationCopy,
+              WDOperationMove,
+              WDOperationLink,
+              WDOperationAsk,
+              WDOperationPrivate
 } WMDragOperationType;
 
 typedef struct WMSelectionProcs {
@@ -46,27 +46,27 @@ typedef struct W_DraggingInfo WMDraggingInfo;
 typedef struct W_DragOperationtItem WMDragOperationItem;
 
 typedef struct W_DragSourceProcs {
-    CFMutableArrayRef (*dropDataTypes)(WMView *self);
-    WMDragOperationType (*wantedDropOperation)(WMView *self);
-    CFMutableArrayRef (*askedOperations)(WMView *self);
-    Bool (*acceptDropOperation)(WMView *self, WMDragOperationType operation);
-    void (*beganDrag)(WMView *self, WMPoint *point);
-    void (*endedDrag)(WMView *self, WMPoint *point, Bool deposited);
-    WMData* (*fetchDragData)(WMView *self, char *type);
-    /*Bool (*ignoreModifierKeysWhileDragging)(WMView *view);*/
+  CFMutableArrayRef (*dropDataTypes)(WMView *self);
+  WMDragOperationType (*wantedDropOperation)(WMView *self);
+  CFMutableArrayRef (*askedOperations)(WMView *self);
+  Bool (*acceptDropOperation)(WMView *self, WMDragOperationType operation);
+  void (*beganDrag)(WMView *self, WMPoint *point);
+  void (*endedDrag)(WMView *self, WMPoint *point, Bool deposited);
+  WMData* (*fetchDragData)(WMView *self, char *type);
+  /*Bool (*ignoreModifierKeysWhileDragging)(WMView *view);*/
 } WMDragSourceProcs;
   
 typedef struct W_DragDestinationProcs {
-    void (*prepareForDragOperation)(WMView *self);
-    CFMutableArrayRef (*requiredDataTypes)(WMView *self, WMDragOperationType request,
-                                           CFMutableArrayRef sourceDataTypes);
-    WMDragOperationType (*allowedOperation)(WMView *self,
-                                            WMDragOperationType request,
-                                            CFMutableArrayRef sourceDataTypes);
-    Bool (*inspectDropData)(WMView *self, CFMutableArrayRef dropData);
-    void (*performDragOperation)(WMView *self, CFMutableArrayRef dropData,
-                                 CFMutableArrayRef operations, WMPoint *dropLocation);
-    void (*concludeDragOperation)(WMView *self);
+  void (*prepareForDragOperation)(WMView *self);
+  CFMutableArrayRef (*requiredDataTypes)(WMView *self, WMDragOperationType request,
+                                         CFMutableArrayRef sourceDataTypes);
+  WMDragOperationType (*allowedOperation)(WMView *self,
+                                          WMDragOperationType request,
+                                          CFMutableArrayRef sourceDataTypes);
+  Bool (*inspectDropData)(WMView *self, CFMutableArrayRef dropData);
+  void (*performDragOperation)(WMView *self, CFMutableArrayRef dropData,
+                               CFMutableArrayRef operations, WMPoint *dropLocation);
+  void (*concludeDragOperation)(WMView *self);
 } WMDragDestinationProcs;
 
 typedef struct W_DragOperationItem {
