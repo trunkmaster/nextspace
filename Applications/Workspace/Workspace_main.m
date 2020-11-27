@@ -19,11 +19,13 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
+#import <CoreFoundation/CFRunLoop.h>
 #import <AppKit/AppKit.h>
-#include <WINGs/wevent.h>
 
 #import "Application.h"
 #import "Workspace+WM.h"
+
+CFRunLoopRef wm_runloop = 0;
 
 //-----------------------------------------------------------------------------
 // Workspace X Window related utility functions
@@ -93,6 +95,9 @@ int WSApplicationMain(int argc, const char **argv)
   CREATE_AUTORELEASE_POOL(pool);
 
   infoDict = [[NSBundle mainBundle] infoDictionary];
+
+  // Wait for WMRunLoop
+  while (wm_runloop == 0) ;
   
   [WSApplication sharedApplication];
 
@@ -145,11 +150,10 @@ int main(int argc, const char **argv)
     
     // Start X11 EventLoop in parallel
     dispatch_async(wm_q, ^{
-        // EventLoop();
         WMRunLoop();
       });
   }
-      
+  
   //--- Workspace (GNUstep) queue ---------------------------------------
   fprintf(stderr, "=== Starting the Workspace... ===\n");
   dispatch_sync(workspace_q, ^{
@@ -159,6 +163,7 @@ int main(int argc, const char **argv)
   //---------------------------------------------------------------------
   
   fprintf(stderr, "=== Quitting Window manager... ===\n");
+  CFRunLoopStop(wm_runloop);
   // Quit WindowManager, close all X11 applications.
   WMShutdown(WSKillMode);
   

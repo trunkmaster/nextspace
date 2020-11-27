@@ -30,6 +30,7 @@
 //-----------------------------------------------------------------------------
 #include <dispatch/dispatch.h>
 extern dispatch_queue_t workspace_q;
+extern CFRunLoopRef wm_runloop;
 
 typedef enum WorkspaceExitCode {
       WSLogoutOnQuit = 0,

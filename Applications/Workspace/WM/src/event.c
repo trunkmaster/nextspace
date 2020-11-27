@@ -406,6 +406,7 @@ static void _processRunLoopEvent(CFFileDescriptorRef fdref, CFOptionFlags callBa
 
 void WMRunLoop()
 {
+  CFRunLoopRef        run_loop = CFRunLoopGetCurrent();
   CFFileDescriptorRef xfd;
   CFRunLoopSourceRef  xfd_source;
 
@@ -417,8 +418,10 @@ void WMRunLoop()
   CFFileDescriptorEnableCallBacks(xfd, kCFFileDescriptorReadCallBack);
 
   xfd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, xfd, 0);
-  CFRunLoopAddSource(CFRunLoopGetCurrent(), xfd_source, kCFRunLoopDefaultMode);
+  CFRunLoopAddSource(run_loop, xfd_source, kCFRunLoopDefaultMode);
   CFRelease(xfd_source);
+
+  wm_runloop = run_loop;
   
   CFLog(kCFLogLevelError, CFSTR("[WM] Going into CFRunLoop..."));
   CFRunLoopRun();
