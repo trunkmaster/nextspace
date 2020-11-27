@@ -317,13 +317,6 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
 
   scr->workspace_name_data = data;
 
-    /* CFRunLoopTimerCreate(kCFAllocatorDefault, */
-  /*                      CFAbsoluteTimeGetCurrent(),     // CFAbsoluteTime fireDate */
-  /*                      0,                              // CFTimeInterval interval -- seconds */
-  /*                      0,                              // CFOptionFlags flags -- ignored */
-  /*                      0,                              // CFIndex order -- ignored */
-  /*                      _hideWorkspaceName,             // CFRunLoopTimerCallBack callout */
-  /*                      ctx);                           // CFRunLoopTimerContext *context */
   CFRunLoopTimerContext ctx = {0, scr, NULL, NULL, 0};
   scr->workspace_name_timer =
     CFRunLoopTimerCreate(kCFAllocatorDefault,

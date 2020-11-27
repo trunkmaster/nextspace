@@ -153,23 +153,46 @@ void W_CheckTimerHandlers(void)
 
 }
 
-WMHandlerID WMAddTimerHandler(int milliseconds, WMCallback* callback, void *cdata)
+/* WMHandlerID WMAddTimerHandler(int milliseconds, WMCallback* callback, void *cdata) */
+/* { */
+/*   TimerHandler *handler; */
+
+/*   handler = malloc(sizeof(TimerHandler)); */
+/*   if (!handler) */
+/*     return NULL; */
+
+/*   rightNow(&handler->when); */
+/*   addmillisecs(&handler->when, milliseconds); */
+/*   handler->callback = callback; */
+/*   handler->clientData = cdata; */
+/*   handler->nextDelay = 0; */
+
+/*   enqueueTimerHandler(handler); */
+
+/*   return handler; */
+/* } */
+CFRunLoopTimerRef WMAddTimerHandler(CFTimeInterval fireTimeout,
+                                    CFTimeInterval interval,
+                                    CFRunLoopTimerCallBack callback,
+                                    void *cdata)
 {
-  TimerHandler *handler;
-
-  handler = malloc(sizeof(TimerHandler));
-  if (!handler)
-    return NULL;
-
-  rightNow(&handler->when);
-  addmillisecs(&handler->when, milliseconds);
-  handler->callback = callback;
-  handler->clientData = cdata;
-  handler->nextDelay = 0;
-
-  enqueueTimerHandler(handler);
-
-  return handler;
+  CFRunLoopTimerRef timer;
+  CFRunLoopTimerContext ctx = {0, cdata, NULL, NULL, 0};
+  
+  /* CFRunLoopTimerCreate(kCFAllocatorDefault, */
+  /*                      CFAbsoluteTime fireDate, */
+  /*                      CFTimeInterval interval, -- seconds */
+  /*                      CFOptionFlags flags, -- ignored */
+  /*                      CFIndex order, -- ignored */
+  /*                      CFRunLoopTimerCallBack callout, */
+  /*                      CFRunLoopTimerContext *context); */
+  timer = CFRunLoopTimerCreate(kCFAllocatorDefault,
+                               CFAbsoluteTimeGetCurrent() + milliseconds/1000,
+                               interval, 0, 0, callback, &ctx);
+  CFRunLoopAddTimer(CFRunLoopGetCurrent(), timer, kCFRunLoopDefaultMode);
+  CFRelease(timer);
+  
+  return timer;
 }
 
 WMHandlerID WMAddPersistentTimerHandler(int milliseconds, WMCallback* callback, void *cdata)
