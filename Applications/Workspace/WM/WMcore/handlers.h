@@ -3,15 +3,9 @@
 
 #include <WINGs/WINGs.h>
 
-Bool W_CheckIdleHandlers(void);
+/* Timers */
 
 void W_CheckTimerHandlers(void);
-
-Bool W_HandleInputEvents(Bool waitForInput, int inputfd);
-
-/* ---[ WINGs/handlers.c ]------------------------------------------------ */
-
-/* Event handlers: timer, idle, input */
 
 WMHandlerID WMAddTimerHandler(int milliseconds, WMCallback *callback,
                               void *cdata);
@@ -23,9 +17,9 @@ void WMDeleteTimerWithClientData(void *cdata);
 
 void WMDeleteTimerHandler(WMHandlerID handlerID);
 
-WMHandlerID WMAddIdleHandler(WMCallback *callback, void *cdata);
+/* Input event handlers */
 
-void WMDeleteIdleHandler(WMHandlerID handlerID);
+Bool W_HandleInputEvents(Bool waitForInput, int inputfd);
 
 WMHandlerID WMAddInputHandler(int fd, int condition, WMInputProc *proc,
                               void *clientData);

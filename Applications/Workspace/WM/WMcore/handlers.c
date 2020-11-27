@@ -32,11 +32,6 @@ typedef struct TimerHandler {
   int nextDelay;		/* 0 if it's one-shot */
 } TimerHandler;
 
-typedef struct IdleHandler {
-  WMCallback *callback;
-  void *clientData;
-} IdleHandler;
-
 typedef struct InputHandler {
   WMInputProc *callback;
   void *clientData;
@@ -46,8 +41,6 @@ typedef struct InputHandler {
 
 /* queue of timer event handlers */
 static TimerHandler *timerHandler = NULL;
-
-static WMArray *idleHandler = NULL;
 
 static WMArray *inputHandler = NULL;
 
@@ -123,6 +116,41 @@ static void delayUntilNextTimerEvent(struct timeval *delay)
       delay->tv_sec--;
     }
   }
+}
+
+void W_CheckTimerHandlers(void)
+{
+  TimerHandler *handler;
+  struct timeval now;
+
+  if (!timerHandler) {
+    return;
+  }
+
+  rightNow(&now);
+
+  handler = timerHandler;
+  while (handler && IS_AFTER(now, handler->when)) {
+    if (!IS_ZERO(handler->when)) {
+      SET_ZERO(handler->when);
+      (*handler->callback) (handler->clientData);
+    }
+    handler = handler->next;
+  }
+
+  while (timerHandler && IS_ZERO(timerHandler->when)) {
+    handler = timerHandler;
+    timerHandler = timerHandler->next;
+
+    if (handler->nextDelay > 0) {
+      handler->when = now;
+      addmillisecs(&handler->when, handler->nextDelay);
+      enqueueTimerHandler(handler);
+    } else {
+      wfree(handler);
+    }
+  }
+
 }
 
 WMHandlerID WMAddTimerHandler(int milliseconds, WMCallback* callback, void *cdata)
@@ -211,126 +239,6 @@ void WMDeleteTimerHandler(WMHandlerID handlerID)
       tmp = tmp->next;
     }
   }
-}
-
-WMHandlerID WMAddIdleHandler(WMCallback* callback, void *cdata)
-{
-  IdleHandler *handler;
-
-  handler = malloc(sizeof(IdleHandler));
-  if (!handler)
-    return NULL;
-
-  handler->callback = callback;
-  handler->clientData = cdata;
-  /* add handler at end of queue */
-  if (!idleHandler) {
-    idleHandler = WMCreateArrayWithDestructor(16, wfree);
-  }
-  WMAddToArray(idleHandler, handler);
-
-  return handler;
-}
-
-void WMDeleteIdleHandler(WMHandlerID handlerID)
-{
-  IdleHandler *handler = (IdleHandler *) handlerID;
-
-  if (!handler || !idleHandler)
-    return;
-
-  WMRemoveFromArray(idleHandler, handler);
-}
-
-WMHandlerID WMAddInputHandler(int fd, int condition, WMInputProc* proc, void *clientData)
-{
-  InputHandler *handler;
-
-  handler = wmalloc(sizeof(InputHandler));
-
-  handler->fd = fd;
-  handler->mask = condition;
-  handler->callback = proc;
-  handler->clientData = clientData;
-
-  if (!inputHandler)
-    inputHandler = WMCreateArrayWithDestructor(16, wfree);
-  WMAddToArray(inputHandler, handler);
-
-  return handler;
-}
-
-void WMDeleteInputHandler(WMHandlerID handlerID)
-{
-  InputHandler *handler = (InputHandler *) handlerID;
-
-  if (!handler || !inputHandler)
-    return;
-
-  WMRemoveFromArray(inputHandler, handler);
-}
-
-Bool W_CheckIdleHandlers(void)
-{
-  IdleHandler *handler;
-  WMArray *handlerCopy;
-  WMArrayIterator iter;
-
-  if (!idleHandler || WMGetArrayItemCount(idleHandler) == 0) {
-    /* make sure an observer in queue didn't added an idle handler */
-    return (idleHandler != NULL && WMGetArrayItemCount(idleHandler) > 0);
-  }
-
-  handlerCopy = WMDuplicateArray(idleHandler);
-
-  WM_ITERATE_ARRAY(handlerCopy, handler, iter) {
-    /* check if the handler still exist or was removed by a callback */
-    if (WMGetFirstInArray(idleHandler, handler) == WANotFound)
-      continue;
-
-    (*handler->callback) (handler->clientData);
-    WMDeleteIdleHandler(handler);
-  }
-
-  WMFreeArray(handlerCopy);
-
-  /* this is not necesarrily False, because one handler can re-add itself */
-  return (WMGetArrayItemCount(idleHandler) > 0);
-}
-
-void W_CheckTimerHandlers(void)
-{
-  TimerHandler *handler;
-  struct timeval now;
-
-  if (!timerHandler) {
-    return;
-  }
-
-  rightNow(&now);
-
-  handler = timerHandler;
-  while (handler && IS_AFTER(now, handler->when)) {
-    if (!IS_ZERO(handler->when)) {
-      SET_ZERO(handler->when);
-      (*handler->callback) (handler->clientData);
-    }
-    handler = handler->next;
-  }
-
-  while (timerHandler && IS_ZERO(timerHandler->when)) {
-    handler = timerHandler;
-    timerHandler = timerHandler->next;
-
-    if (handler->nextDelay > 0) {
-      handler->when = now;
-      addmillisecs(&handler->when, handler->nextDelay);
-      enqueueTimerHandler(handler);
-    } else {
-      wfree(handler);
-    }
-  }
-
 }
 
 /*
@@ -558,4 +466,32 @@ Bool W_HandleInputEvents(Bool waitForInput, int inputfd)
 # error   Neither select nor poll. You lose.
 #endif				/* HAVE_SELECT */
 #endif				/* HAVE_POLL */
+}
+
+WMHandlerID WMAddInputHandler(int fd, int condition, WMInputProc* proc, void *clientData)
+{
+  InputHandler *handler;
+
+  handler = wmalloc(sizeof(InputHandler));
+
+  handler->fd = fd;
+  handler->mask = condition;
+  handler->callback = proc;
+  handler->clientData = clientData;
+
+  if (!inputHandler)
+    inputHandler = WMCreateArrayWithDestructor(16, wfree);
+  WMAddToArray(inputHandler, handler);
+
+  return handler;
+}
+
+void WMDeleteInputHandler(WMHandlerID handlerID)
+{
+  InputHandler *handler = (InputHandler *) handlerID;
+
+  if (!handler || !inputHandler)
+    return;
+
+  WMRemoveFromArray(inputHandler, handler);
 }

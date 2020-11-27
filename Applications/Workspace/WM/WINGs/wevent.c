@@ -336,7 +336,7 @@ void WMNextEvent(Display *dpy, XEvent *event)
 
   while (XPending(dpy) == 0) {
     /* Do idle and timer stuff while there are no input or X events */
-    while (!waitForEvent(dpy, 0, False) && W_CheckIdleHandlers()) {
+    while (!waitForEvent(dpy, 0, False)) {
       /* dispatch timer events */
       W_CheckTimerHandlers();
     }
@@ -364,7 +364,7 @@ void WMMaskEvent(Display *dpy, long mask, XEvent *event)
 
   while (!XCheckMaskEvent(dpy, mask, event)) {
     /* Do idle and timer stuff while there are no input or X events */
-    while (!waitForEvent(dpy, mask, False) && W_CheckIdleHandlers()) {
+    while (!waitForEvent(dpy, mask, False)) {
       /* W_CheckTimerHandlers(); */
       CFRunLoopWakeUp(CFRunLoopGetCurrent());
     }
