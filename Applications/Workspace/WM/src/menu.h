@@ -21,6 +21,8 @@
 #ifndef WMMENU_H_
 #define WMMENU_H_
 
+#include <CoreFoundation/CFRunLoop.h>
+
 #include "wcore.h"
 
 #define MI_DIAMOND	0
@@ -72,7 +74,8 @@ typedef struct WMenu {
 
   short entry_height;		       /* height of each entry */
 
-  WMHandlerID timer;		       /* timer for the autoscroll */
+  /*WMHandlerID timer;*/
+  CFRunLoopTimerRef timer;		/* timer for the autoscroll */
 
   void *jump_back;                   /* jump back data */
 

@@ -562,8 +562,10 @@ void wMenuDestroy(WMenu *menu, int recurse)
                                      menu, WMDidChangeMenuTitleAppearanceSettings, NULL);
 
   /* remove any pending timers */
-  if (menu->timer)
-    WMDeleteTimerHandler(menu->timer);
+  if (menu->timer) {
+    /* WMDeleteTimerHandler(menu->timer); */
+    CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), menu->timer, kCFRunLoopDefaultMode);
+  }
   menu->timer = NULL;
 
   /* call destroy handler */
@@ -889,8 +891,9 @@ static int keyboardMenu(WMenu * menu)
 
   while (!done && menu->flags.mapped) {
     XAllowEvents(dpy, AsyncKeyboard, CurrentTime);
-    WMMaskEvent(dpy, ExposureMask | ButtonMotionMask | ButtonPressMask
-                | ButtonReleaseMask | KeyPressMask | KeyReleaseMask | SubstructureNotifyMask, &event);
+    /* WMMaskEvent */
+    XCheckMaskEvent(dpy, ExposureMask | ButtonMotionMask | ButtonPressMask
+                    | ButtonReleaseMask | KeyPressMask | KeyReleaseMask | SubstructureNotifyMask, &event);
 
     switch (event.type) {
     case KeyPress:
@@ -1464,7 +1467,7 @@ static void getScrollAmount(WMenu * menu, int *hamount, int *vamount)
   }
 }
 
-static void dragScrollMenuCallback(void *data)
+static void dragScrollMenuCallback(CFRunLoopTimerRef timer, void *data) // (void *data)
 {
   WMenu *menu = (WMenu *) data;
   WScreen *scr = menu->menu->screen_ptr;
@@ -1491,12 +1494,22 @@ static void dragScrollMenuCallback(void *data)
     /* paranoid check */
     if (newSelectedEntry >= 0) {
       /* keep scrolling */
-      menu->timer = WMAddTimerHandler(MENU_SCROLL_DELAY, dragScrollMenuCallback, menu);
+      /* menu->timer = WMAddTimerHandler(MENU_SCROLL_DELAY, dragScrollMenuCallback, menu); */
+      CFRunLoopTimerContext ctx = {0, menu, NULL, NULL, 0};
+      menu->timer = CFRunLoopTimerCreate(kCFAllocatorDefault,
+                                         CFAbsoluteTimeGetCurrent() + (float)MENU_SCROLL_DELAY/1000,
+                                         0, 0, 0, dragScrollMenuCallback, &ctx);
+      CFRunLoopAddTimer(CFRunLoopGetCurrent(), menu->timer, kCFRunLoopDefaultMode);
+      CFRelease(menu->timer);
     } else {
+      if (menu->timer)
+        CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), menu->timer, kCFRunLoopDefaultMode);
       menu->timer = NULL;
     }
   } else {
     /* don't need to scroll anymore */
+    if (menu->timer)
+      CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), menu->timer, kCFRunLoopDefaultMode);
     menu->timer = NULL;
     if (findMenu(scr, &x, &y)) {
       newSelectedEntry = getEntryAt(menu, x, y);
@@ -1505,7 +1518,7 @@ static void dragScrollMenuCallback(void *data)
   }
 }
 
-static void scrollMenuCallback(void *data)
+static void scrollMenuCallback(CFRunLoopTimerRef timer, void *data) // (void *data)
 {
   WMenu *menu = (WMenu *) data;
   WMenu *parent = parentMenu(menu);
@@ -1518,9 +1531,17 @@ static void scrollMenuCallback(void *data)
     wMenuMove(parent, parent->frame_x + hamount, parent->frame_y + vamount, True);
 
     /* keep scrolling */
-    menu->timer = WMAddTimerHandler(MENU_SCROLL_DELAY, scrollMenuCallback, menu);
+    /* menu->timer = WMAddTimerHandler(MENU_SCROLL_DELAY, scrollMenuCallback, menu); */
+    CFRunLoopTimerContext ctx = {0, menu, NULL, NULL, 0};
+    menu->timer = CFRunLoopTimerCreate(kCFAllocatorDefault,
+                                       CFAbsoluteTimeGetCurrent() + (float)MENU_SCROLL_DELAY/1000,
+                                       0, 0, 0, scrollMenuCallback, &ctx);
+    CFRunLoopAddTimer(CFRunLoopGetCurrent(), menu->timer, kCFRunLoopDefaultMode);
+    CFRelease(menu->timer);
   } else {
     /* don't need to scroll anymore */
+    if (menu->timer)
+      CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), menu->timer, kCFRunLoopDefaultMode);
     menu->timer = NULL;
   }
 }
@@ -1554,7 +1575,7 @@ typedef struct _delay {
   int ox, oy;
 } _delay;
 
-static void callback_leaving(void *user_param)
+static void callback_leaving(CFRunLoopTimerRef timer, void *user_param)
 {
   _delay *dl = (_delay *) user_param;
 
@@ -1562,6 +1583,8 @@ static void callback_leaving(void *user_param)
   dl->menu->jump_back = NULL;
   dl->menu->menu->screen_ptr->flags.jump_back_pending = 0;
   wfree(dl);
+  
+  CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), timer, kCFRunLoopDefaultMode);
 }
 
 void wMenuScroll(WMenu *menu)
@@ -1576,7 +1599,8 @@ void wMenuScroll(WMenu *menu)
   XEvent ev;
 
   if (omenu->jump_back)
-    WMDeleteTimerWithClientData(omenu->jump_back);
+    /* WMDeleteTimerWithClientData(omenu->jump_back); */
+    CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), omenu->jump_back, kCFRunLoopDefaultMode);
 
   if (( /*omenu->flags.buttoned && */ !wPreferences.wrap_menus)
       || omenu->flags.app_menu) {
@@ -1589,13 +1613,14 @@ void wMenuScroll(WMenu *menu)
     raiseMenus(menu, False);
 
   if (!menu->timer)
-    scrollMenuCallback(menu);
+    scrollMenuCallback(NULL, menu);
 
   while (!done) {
     int x, y, on_border, on_x_edge, on_y_edge, on_title;
     WMRect rect;
 
-    WMNextEvent(dpy, &ev);
+    /* WMNextEvent(dpy, &ev); */
+    XNextEvent(dpy, &ev);
     switch (ev.type) {
     case EnterNotify:
       WMHandleEvent(&ev);
@@ -1625,7 +1650,8 @@ void wMenuScroll(WMenu *menu)
       }
 
       if (menu->timer && (smenu != menu || (!on_y_edge && !on_x_edge))) {
-        WMDeleteTimerHandler(menu->timer);
+        /* WMDeleteTimerHandler(menu->timer); */
+        CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), menu->timer, kCFRunLoopDefaultMode);
         menu->timer = NULL;
       }
 
@@ -1633,7 +1659,7 @@ void wMenuScroll(WMenu *menu)
         menu = smenu;
 
       if (!menu->timer)
-        scrollMenuCallback(menu);
+        scrollMenuCallback(NULL, menu);
       break;
     case ButtonPress:
       /* True if we push on title, or drag the omenu to other position */
@@ -1659,7 +1685,8 @@ void wMenuScroll(WMenu *menu)
   }
 
   if (menu->timer) {
-    WMDeleteTimerHandler(menu->timer);
+    /* WMDeleteTimerHandler(menu->timer); */
+    CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), menu->timer, kCFRunLoopDefaultMode);
     menu->timer = NULL;
   }
 
@@ -1675,7 +1702,14 @@ void wMenuScroll(WMenu *menu)
       scr->flags.jump_back_pending = 1;
     } else
       delayer = omenu->jump_back;
-    WMAddTimerHandler(MENU_JUMP_BACK_DELAY, callback_leaving, delayer);
+    /* WMAddTimerHandler(MENU_JUMP_BACK_DELAY, callback_leaving, delayer); */
+    CFRunLoopTimerContext ctx = {0, delayer, NULL, NULL, 0};
+    CFRunLoopTimerRef timer;
+    timer = CFRunLoopTimerCreate(kCFAllocatorDefault,
+                                 CFAbsoluteTimeGetCurrent() + (float)MENU_JUMP_BACK_DELAY/1000,
+                                 0, 0, 0, callback_leaving, &ctx);
+    CFRunLoopAddTimer(CFRunLoopGetCurrent(), timer, kCFRunLoopDefaultMode);
+    CFRelease(timer);
   }
 }
 
@@ -1693,7 +1727,7 @@ typedef struct {
   WMHandlerID magic;
 } delay_data;
 
-static void delaySelection(void *data)
+static void delaySelection(CFRunLoopTimerRef timer, void *data) // (void *data)
 {
   delay_data *d = (delay_data *) data;
   int x, y, entry_no;
@@ -1750,7 +1784,13 @@ static void menuMouseDown(WObjDescriptor * desc, XEvent * event)
       delayed_select = 1;
       d_data.delayed_select = &delayed_select;
       d_data.menu = menu;
-      d_data.magic = WMAddTimerHandler(wPreferences.dblclick_time, delaySelection, &d_data);
+      /* d_data.magic = WMAddTimerHandler(wPreferences.dblclick_time, delaySelection, &d_data); */
+      CFRunLoopTimerContext ctx = {0, &d_data, NULL, NULL, 0};
+      d_data.magic = CFRunLoopTimerCreate(kCFAllocatorDefault,
+                                         CFAbsoluteTimeGetCurrent() + (float)wPreferences.dblclick_time/1000,
+                                         0, 0, 0, delaySelection, &ctx);
+      CFRunLoopAddTimer(CFRunLoopGetCurrent(), d_data.magic, kCFRunLoopDefaultMode);
+      CFRelease(d_data.magic);
     }
   }
 
@@ -1810,7 +1850,7 @@ static void menuMouseDown(WObjDescriptor * desc, XEvent * event)
 
     if (!wPreferences.wrap_menus && !wPreferences.scrollable_menus) {
       if (!menu->timer)
-        dragScrollMenuCallback(menu);
+        dragScrollMenuCallback(NULL, menu);
     }
   }
 
@@ -1821,7 +1861,8 @@ static void menuMouseDown(WObjDescriptor * desc, XEvent * event)
 
     XAllowEvents(dpy, AsyncPointer | SyncPointer, CurrentTime);
 
-    WMMaskEvent(dpy, ExposureMask | ButtonMotionMask | ButtonReleaseMask | ButtonPressMask, &ev);
+    /* WMMaskEvent */
+    XCheckMaskEvent(dpy, ExposureMask | ButtonMotionMask | ButtonReleaseMask | ButtonPressMask, &ev);
     switch (ev.type) {
     case MotionNotify:
       smenu = findMenu(scr, &x, &y);
@@ -1830,7 +1871,8 @@ static void menuMouseDown(WObjDescriptor * desc, XEvent * event)
         /* moved mouse out of menu */
 
         if (!delayed_select && d_data.magic) {
-          WMDeleteTimerHandler(d_data.magic);
+          /* WMDeleteTimerHandler(d_data.magic); */
+          CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), d_data.magic, kCFRunLoopDefaultMode);
           d_data.magic = NULL;
         }
         if (menu == NULL
@@ -1852,7 +1894,8 @@ static void menuMouseDown(WObjDescriptor * desc, XEvent * event)
         selectEntry(menu, -1);
 
         if (!delayed_select && d_data.magic) {
-          WMDeleteTimerHandler(d_data.magic);
+          /* WMDeleteTimerHandler(d_data.magic); */
+          CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), d_data.magic, kCFRunLoopDefaultMode);
           d_data.magic = NULL;
         }
       } else {
@@ -1889,24 +1932,33 @@ static void menuMouseDown(WObjDescriptor * desc, XEvent * event)
 
           if (menu != smenu) {
             if (d_data.magic) {
-              WMDeleteTimerHandler(d_data.magic);
+              /* WMDeleteTimerHandler(d_data.magic); */
+              CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), d_data.magic, kCFRunLoopDefaultMode);
               d_data.magic = NULL;
             }
           } else if (moved_to_submenu) {
             /* while we are moving, postpone the selection */
             if (d_data.magic) {
-              WMDeleteTimerHandler(d_data.magic);
+              /* WMDeleteTimerHandler(d_data.magic); */
+              CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), d_data.magic, kCFRunLoopDefaultMode);
             }
             d_data.delayed_select = NULL;
             d_data.menu = menu;
-            d_data.magic = WMAddTimerHandler(MENU_SELECT_DELAY,
-                                             delaySelection, &d_data);
+            /* d_data.magic = WMAddTimerHandler(MENU_SELECT_DELAY, */
+            /*                                  delaySelection, &d_data); */
+            CFRunLoopTimerContext ctx = {0, &d_data, NULL, NULL, 0};
+            d_data.magic = CFRunLoopTimerCreate(kCFAllocatorDefault,
+                                                 CFAbsoluteTimeGetCurrent() + (float)MENU_SELECT_DELAY/1000,
+                                                 0, 0, 0, delaySelection, &ctx);
+            CFRunLoopAddTimer(CFRunLoopGetCurrent(), d_data.magic, kCFRunLoopDefaultMode);
+            CFRelease(d_data.magic);
             prevx = ev.xmotion.x_root;
             prevy = ev.xmotion.y_root;
             break;
           } else {
             if (d_data.magic) {
-              WMDeleteTimerHandler(d_data.magic);
+              /* WMDeleteTimerHandler(d_data.magic); */
+              CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), d_data.magic, kCFRunLoopDefaultMode);
               d_data.magic = NULL;
             }
           }
@@ -1917,15 +1969,16 @@ static void menuMouseDown(WObjDescriptor * desc, XEvent * event)
       if (menu != smenu) {
         /* pointer crossed menus */
         if (menu && menu->timer) {
-          WMDeleteTimerHandler(menu->timer);
+          /* WMDeleteTimerHandler(menu->timer); */
+          CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), menu->timer, kCFRunLoopDefaultMode);
           menu->timer = NULL;
         }
         if (smenu)
-          dragScrollMenuCallback(smenu);
+          dragScrollMenuCallback(NULL, smenu);
       }
       menu = smenu;
       if (!menu->timer)
-        dragScrollMenuCallback(menu);
+        dragScrollMenuCallback(NULL, menu);
 
       if (!delayed_select) {
         entry_no = getEntryAt(menu, x, y);
@@ -1958,11 +2011,13 @@ static void menuMouseDown(WObjDescriptor * desc, XEvent * event)
   }
 
   if (menu && menu->timer) {
-    WMDeleteTimerHandler(menu->timer);
+    /* WMDeleteTimerHandler(menu->timer); */
+    CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), menu->timer, kCFRunLoopDefaultMode);
     menu->timer = NULL;
   }
   if (d_data.magic != NULL) {
-    WMDeleteTimerHandler(d_data.magic);
+    /* WMDeleteTimerHandler(d_data.magic); */
+    CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), d_data.magic, kCFRunLoopDefaultMode);
     d_data.magic = NULL;
   }
 
@@ -2017,11 +2072,13 @@ static void menuMouseDown(WObjDescriptor * desc, XEvent * event)
  byebye:
   /* Just to be sure in case we skip the 2 above because of a goto byebye */
   if (menu && menu->timer) {
-    WMDeleteTimerHandler(menu->timer);
+    /* WMDeleteTimerHandler(menu->timer); */
+    CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), menu->timer, kCFRunLoopDefaultMode);
     menu->timer = NULL;
   }
   if (d_data.magic != NULL) {
-    WMDeleteTimerHandler(d_data.magic);
+    /* WMDeleteTimerHandler(d_data.magic); */
+    CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), d_data.magic, kCFRunLoopDefaultMode);
     d_data.magic = NULL;
   }
 
@@ -2169,7 +2226,8 @@ static void menuTitleMouseDown(WCoreWindow * sender, void *data, XEvent * event)
 
   started = False;
   while (1) {
-    WMMaskEvent(dpy, ButtonMotionMask | ButtonReleaseMask | ButtonPressMask | ExposureMask, &ev);
+    /* WMMaskEvent */
+    XCheckMaskEvent(dpy, ButtonMotionMask | ButtonReleaseMask | ButtonPressMask | ExposureMask, &ev);
     switch (ev.type) {
     case MotionNotify:
       if (started) {
