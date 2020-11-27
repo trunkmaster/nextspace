@@ -891,9 +891,8 @@ static int keyboardMenu(WMenu * menu)
 
   while (!done && menu->flags.mapped) {
     XAllowEvents(dpy, AsyncKeyboard, CurrentTime);
-    /* WMMaskEvent */
-    XCheckMaskEvent(dpy, ExposureMask | ButtonMotionMask | ButtonPressMask
-                    | ButtonReleaseMask | KeyPressMask | KeyReleaseMask | SubstructureNotifyMask, &event);
+    WMMaskEvent(dpy, ExposureMask | ButtonMotionMask | ButtonPressMask
+                | ButtonReleaseMask | KeyPressMask | KeyReleaseMask | SubstructureNotifyMask, &event);
 
     switch (event.type) {
     case KeyPress:
@@ -1861,8 +1860,7 @@ static void menuMouseDown(WObjDescriptor * desc, XEvent * event)
 
     XAllowEvents(dpy, AsyncPointer | SyncPointer, CurrentTime);
 
-    /* WMMaskEvent */
-    XCheckMaskEvent(dpy, ExposureMask | ButtonMotionMask | ButtonReleaseMask | ButtonPressMask, &ev);
+    WMMaskEvent(dpy, ExposureMask | ButtonMotionMask | ButtonReleaseMask | ButtonPressMask, &ev);
     switch (ev.type) {
     case MotionNotify:
       smenu = findMenu(scr, &x, &y);
@@ -2226,8 +2224,7 @@ static void menuTitleMouseDown(WCoreWindow * sender, void *data, XEvent * event)
 
   started = False;
   while (1) {
-    /* WMMaskEvent */
-    XCheckMaskEvent(dpy, ButtonMotionMask | ButtonReleaseMask | ButtonPressMask | ExposureMask, &ev);
+    WMMaskEvent(dpy, ButtonMotionMask | ButtonReleaseMask | ButtonPressMask | ExposureMask, &ev);
     switch (ev.type) {
     case MotionNotify:
       if (started) {
