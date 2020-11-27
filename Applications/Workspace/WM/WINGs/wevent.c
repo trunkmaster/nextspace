@@ -162,31 +162,6 @@ void W_CallDestroyHandlers(W_View * view)
   }
 }
 
-void WMSetViewNextResponder(WMView * view, WMView * responder)
-{
-	/* set the widget to receive keyboard events that aren't handled
-	 * by this widget */
-
-	view->nextResponder = responder;
-}
-
-void WMRelayToNextResponder(WMView * view, XEvent * event)
-{
-  unsigned long mask = eventMasks[event->xany.type];
-
-  if (view->nextResponder) {
-    WMView *next = view->nextResponder;
-    W_EventHandler *hPtr;
-                
-    for (int i = 0; i < CFArrayGetCount(next->eventHandlers); i++) {
-      hPtr = (W_EventHandler *)CFArrayGetValueAtIndex(next->eventHandlers, i);
-      if ((hPtr->eventMask & mask)) {
-        (*hPtr->proc) (event, hPtr->clientData);
-      }
-    }
-  }
-}
-
 int WMHandleEvent(XEvent * event)
 {
   W_EventHandler *hPtr;
@@ -323,30 +298,6 @@ int WMHandleEvent(XEvent * event)
   return True;
 }
 
-int WMIsDoubleClick(XEvent * event)
-{
-	W_View *view;
-
-	if (event->type != ButtonPress)
-		return False;
-
-	view = W_GetViewForXWindow(event->xany.display, event->xbutton.window);
-
-	if (!view)
-		return False;
-
-	if (view->screen->lastClickWindow != event->xbutton.window)
-		return False;
-
-	if (event->xbutton.time - view->screen->lastClickTime < WINGsConfiguration.doubleClickDelay) {
-		view->screen->lastClickTime = 0;
-		view->screen->lastClickWindow = None;
-		view->screen->ignoreNextDoubleClick = 1;
-		return True;
-	} else
-		return False;
-}
-
 /*
  * Check for X and input events. If X events are present input events will
  * not be checked.
@@ -379,23 +330,17 @@ static Bool waitForEvent(Display * dpy, unsigned long xeventmask, Bool waitForIn
   return W_HandleInputEvents(waitForInput, ConnectionNumber(dpy));
 }
 
-#include <CoreFoundation/CFLogUtilities.h>
-#include <CoreFoundation/CFString.h>
 void WMNextEvent(Display * dpy, XEvent * event)
 {
   /* Check any expired timers */
-  /* W_CheckTimerHandlers(); */
-  if (CFRunLoopGetNextTimerFireDate(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode) > 0.0) {
-    CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0, false);
-  }
+  W_CheckTimerHandlers();
 
   while (XPending(dpy) == 0) {
     /* Do idle and timer stuff while there are no input or X events */
-    /* while (!waitForEvent(dpy, 0, False) && W_CheckIdleHandlers()) { */
+    while (!waitForEvent(dpy, 0, False) && W_CheckIdleHandlers()) {
       /* dispatch timer events */
-      /* W_CheckTimerHandlers(); */
-      /* CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0, false); */
-    /* } */
+      W_CheckTimerHandlers();
+    }
 
     /*
      * Make sure that new events did not arrive while we were doing
@@ -403,15 +348,10 @@ void WMNextEvent(Display * dpy, XEvent * event)
      * an event that already arrived.
      */
     /* wait for something to happen or a timer to expire */
-    /* CFLog(kCFLogLevelError, CFSTR("waitForEvent...")); */
     waitForEvent(dpy, 0, True);
 
     /* Check any expired timers */
-    /* W_CheckTimerHandlers(); */
-    /* CFLog(kCFLogLevelError, CFSTR("CFRunLoop...")); */
-    if (CFRunLoopGetNextTimerFireDate(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode) > 0.0) {
-      CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0, false);
-    }
+    W_CheckTimerHandlers();
   }
 
   XNextEvent(dpy, event);
@@ -420,12 +360,14 @@ void WMNextEvent(Display * dpy, XEvent * event)
 void WMMaskEvent(Display * dpy, long mask, XEvent * event)
 {
 	/* Check any expired timers */
-	W_CheckTimerHandlers();
+	/* W_CheckTimerHandlers(); */
+        CFRunLoopWakeUp(CFRunLoopGetCurrent());
 
 	while (!XCheckMaskEvent(dpy, mask, event)) {
 		/* Do idle and timer stuff while there are no input or X events */
 		while (!waitForEvent(dpy, mask, False) && W_CheckIdleHandlers()) {
-			W_CheckTimerHandlers();
+			/* W_CheckTimerHandlers(); */
+                        CFRunLoopWakeUp(CFRunLoopGetCurrent());
 		}
 
 		if (XCheckMaskEvent(dpy, mask, event))
@@ -435,16 +377,9 @@ void WMMaskEvent(Display * dpy, long mask, XEvent * event)
 		waitForEvent(dpy, mask, True);
 
 		/* Check any expired timers */
-		W_CheckTimerHandlers();
+		/* W_CheckTimerHandlers(); */
+                CFRunLoopWakeUp(CFRunLoopGetCurrent());
 	}
-}
-
-Bool WMScreenPending(WMScreen * scr)
-{
-	if (XPending(scr->display))
-		return True;
-	else
-		return False;
 }
 
 WMEventHook *WMHookEventHandler(WMEventHook * handler)
