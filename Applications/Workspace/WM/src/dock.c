@@ -99,7 +99,7 @@ static WMPropList *dAutoCollapse, *dAutoRaiseLower, *dOmnipresent;
 
 static WMPropList *dDrawers = NULL;
 
-static void dockIconPaint(WAppIcon *btn);
+static void dockIconPaint(CFRunLoopTimerRef timer, void *data);
 
 static void iconMouseDown(WObjDescriptor *desc, XEvent *event);
 
@@ -121,12 +121,12 @@ static void handleClipChangeWorkspace(WScreen *scr, XEvent *event);
 
 static void clipEnterNotify(WObjDescriptor *desc, XEvent *event);
 static void clipLeaveNotify(WObjDescriptor *desc, XEvent *event);
-static void clipAutoCollapse(void *cdata);
-static void clipAutoExpand(void *cdata);
+static void clipAutoCollapse(CFRunLoopTimerRef timer, void *cdata);
+static void clipAutoExpand(CFRunLoopTimerRef timer, void *cdata);
 static void launchDockedApplication(WAppIcon *btn, Bool withSelection);
 
-static void clipAutoLower(void *cdata);
-static void clipAutoRaise(void *cdata);
+static void clipAutoLower(CFRunLoopTimerRef timer, void *cdata);
+static void clipAutoRaise(CFRunLoopTimerRef timer, void *cdata);
 static WAppIcon *mainIconCreate(WScreen *scr, int type, const char *name);
 
 static void drawerIconExpose(WObjDescriptor *desc, XEvent *event);
@@ -835,11 +835,11 @@ static void launchDockedApplication(WAppIcon *btn, Bool withSelection)
       if (btn->buggy_app) {
         /* give feedback that the app was launched */
         btn->launching = 1;
-        dockIconPaint(btn);
+        dockIconPaint(NULL, btn);
         btn->launching = 0;
-        WMAddTimerHandler(200, (WMCallback *) dockIconPaint, btn);
+        WMAddTimerHandler(200, 0, dockIconPaint, btn);
       } else {
-        dockIconPaint(btn);
+        dockIconPaint(NULL, btn);
       }
     } else {
       wwarning(_("could not launch application %s"), btn->command);
@@ -1326,8 +1326,9 @@ static void clipIconExpose(WObjDescriptor *desc, XEvent *event)
   wClipIconPaint(desc->parent);
 }
 
-static void dockIconPaint(WAppIcon *btn)
+static void dockIconPaint(CFRunLoopTimerRef timer, void *data)
 {
+  WAppIcon *btn = (WAppIcon *)data;
   if (btn == btn->icon->core->screen_ptr->clip_icon) {
     wClipIconPaint(btn);
   } else if (wIsADrawer(btn)) {
@@ -1899,7 +1900,7 @@ void wDockLaunchWithState(WAppIcon *btn, WSavedState *state)
     if (btn->pid > 0) {
       if (!btn->forced_dock && !btn->buggy_app) {
         btn->launching = 1;
-        dockIconPaint(btn);
+        dockIconPaint(NULL, btn);
       }
     }
   } else {
@@ -2001,7 +2002,7 @@ int wDockReceiveDNDDrop(WScreen *scr, XEvent *event)
     scr->last_dock = dock;
     btn->pid = execCommand(btn, btn->dnd_command, NULL);
     if (btn->pid > 0) {
-      dockIconPaint(btn);
+      dockIconPaint(NULL, btn);
     } else {
       btn->launching = 0;
       if (!btn->relaunching)
@@ -2973,7 +2974,7 @@ void wDockHideIcons(WDock *dock)
   }
   dock->mapped = 0;
 
-  dockIconPaint(dock->icon_array[0]);
+  dockIconPaint(NULL, dock->icon_array[0]);
 }
 
 void wDockShowIcons(WDock *dock)
@@ -2998,7 +2999,7 @@ void wDockShowIcons(WDock *dock)
   }
   dock->mapped = 1;
 
-  dockIconPaint(btn);
+  dockIconPaint(NULL, btn);
 }
 
 void wDockLower(WDock *dock)
@@ -3045,7 +3046,7 @@ void wDockFinishLaunch(WAppIcon *icon)
 {
   icon->launching = 0;
   icon->relaunching = 0;
-  dockIconPaint(icon);
+  dockIconPaint(NULL, icon);
 }
 
 WAppIcon *wDockFindIconForWindow(WDock *dock, Window window)
@@ -3122,7 +3123,7 @@ void wDockTrackWindowLaunch(WDock *dock, Window window)
         int x0, y0;
 
         icon->launching = 1;
-        dockIconPaint(icon);
+        dockIconPaint(NULL, icon);
 
         aicon = wAppIconCreateForDock(dock->screen_ptr, NULL,
                                       wm_instance, wm_class, TILE_NORMAL);
@@ -3966,7 +3967,8 @@ static void clipEnterNotify(WObjDescriptor *desc, XEvent *event)
     tmp->auto_lower_magic = NULL;
   }
   if (tmp->auto_raise_lower && !tmp->auto_raise_magic)
-    tmp->auto_raise_magic = WMAddTimerHandler(wPreferences.clip_auto_raise_delay, clipAutoRaise, (void *) tmp);
+    tmp->auto_raise_magic = WMAddTimerHandler(wPreferences.clip_auto_raise_delay, 0,
+                                              clipAutoRaise, (void *)tmp);
 
   if (dock->type != WM_CLIP && dock->type != WM_DRAWER)
     return;
@@ -3977,7 +3979,8 @@ static void clipEnterNotify(WObjDescriptor *desc, XEvent *event)
     dock->auto_collapse_magic = NULL;
   }
   if (dock->auto_collapse && !dock->auto_expand_magic)
-    dock->auto_expand_magic = WMAddTimerHandler(wPreferences.clip_auto_expand_delay, clipAutoExpand, (void *)dock);
+    dock->auto_expand_magic = WMAddTimerHandler(wPreferences.clip_auto_expand_delay, 0,
+                                                clipAutoExpand, (void *)dock);
 }
 
 static void clipLeave(WDock *dock)
@@ -4011,7 +4014,8 @@ static void clipLeave(WDock *dock)
     tmp->auto_raise_magic = NULL;
   }
   if (tmp->auto_raise_lower && !tmp->auto_lower_magic)
-    tmp->auto_lower_magic = WMAddTimerHandler(wPreferences.clip_auto_lower_delay, clipAutoLower, (void *)tmp);
+    tmp->auto_lower_magic = WMAddTimerHandler(wPreferences.clip_auto_lower_delay, 0,
+                                              clipAutoLower, (void *)tmp);
 
   if (dock->type != WM_CLIP && dock->type != WM_DRAWER)
     return;
@@ -4021,7 +4025,8 @@ static void clipLeave(WDock *dock)
     dock->auto_expand_magic = NULL;
   }
   if (dock->auto_collapse && !dock->auto_collapse_magic)
-    dock->auto_collapse_magic = WMAddTimerHandler(wPreferences.clip_auto_collapse_delay, clipAutoCollapse, (void *)dock);
+    dock->auto_collapse_magic = WMAddTimerHandler(wPreferences.clip_auto_collapse_delay, 0,
+                                                  clipAutoCollapse, (void *)dock);
 }
 
 static void clipLeaveNotify(WObjDescriptor *desc, XEvent *event)
@@ -4039,7 +4044,7 @@ static void clipLeaveNotify(WObjDescriptor *desc, XEvent *event)
   clipLeave(btn->dock);
 }
 
-static void clipAutoCollapse(void *cdata)
+static void clipAutoCollapse(CFRunLoopTimerRef timer, void *cdata)
 {
   WDock *dock = (WDock *) cdata;
 
@@ -4053,7 +4058,7 @@ static void clipAutoCollapse(void *cdata)
   dock->auto_collapse_magic = NULL;
 }
 
-static void clipAutoExpand(void *cdata)
+static void clipAutoExpand(CFRunLoopTimerRef timer, void *cdata)
 {
   WDock *dock = (WDock *) cdata;
 
@@ -4067,7 +4072,7 @@ static void clipAutoExpand(void *cdata)
   dock->auto_expand_magic = NULL;
 }
 
-static void clipAutoLower(void *cdata)
+static void clipAutoLower(CFRunLoopTimerRef timer, void *cdata)
 {
   WDock *dock = (WDock *) cdata;
 
@@ -4077,7 +4082,7 @@ static void clipAutoLower(void *cdata)
   dock->auto_lower_magic = NULL;
 }
 
-static void clipAutoRaise(void *cdata)
+static void clipAutoRaise(CFRunLoopTimerRef timer, void *cdata)
 {
   WDock *dock = (WDock *) cdata;
 

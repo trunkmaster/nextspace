@@ -287,7 +287,8 @@ typedef struct _WScreen {
   struct WorkspaceNameData *workspace_name_data;
 
   /* for raise-delay */
-  WMHandlerID *autoRaiseTimer;
+  /* WMHandlerID *autoRaiseTimer; */
+  CFRunLoopTimerRef autoRaiseTimer;
   Window autoRaiseWindow;	       /* window that is scheduled to be
                                         * raised */
 

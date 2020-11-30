@@ -1548,8 +1548,8 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
 
   /* remove all pending events on window */
   /* I think this only matters for autoraise */
-  if (wPreferences.raise_delay)
-    WMDeleteTimerWithClientData(wwin->frame->core);
+  /* if (wPreferences.raise_delay) */
+  /*   WMDeleteTimer(wwin->frame->core); */
 
   XFlush(dpy);
 

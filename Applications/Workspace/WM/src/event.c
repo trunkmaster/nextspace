@@ -397,11 +397,19 @@ static void handle_inotify_events(void)
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFFileDescriptor.h>
 #include <CoreFoundation/CFLogUtilities.h>
+
 static void _processRunLoopEvent(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
 {
-  /* fprintf(stderr, "_processXEvent() - %i\n", XPending(dpy)); */
+  XEvent event;
+  CFLog(kCFLogLevelError, CFSTR("1. _processXEvent() - %i"), XPending(dpy));
+  /* ProcessPendingEvents(); */
+  while (XPending(dpy) > 0) {
+    WMNextEvent(dpy, &event);
+    WMHandleEvent(&event);
+  }
+  /* CFLog(kCFLogLevelError, CFSTR("2. _processXEvent() - %i"), XPending(dpy)); */
   CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
-  ProcessPendingEvents();
+  CFRunLoopWakeUp(wm_runloop);
 }
 
 void WMRunLoop()
@@ -420,11 +428,13 @@ void WMRunLoop()
   xfd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, xfd, 0);
   CFRunLoopAddSource(run_loop, xfd_source, kCFRunLoopDefaultMode);
   CFRelease(xfd_source);
+  CFRelease(xfd);
 
   wm_runloop = run_loop;
   
   CFLog(kCFLogLevelError, CFSTR("[WM] Going into CFRunLoop..."));
   CFRunLoopRun();
+  CFFileDescriptorDisableCallBacks(xfd, kCFFileDescriptorReadCallBack);
   CFLog(kCFLogLevelError, CFSTR("[WM] CFRunLoop finished."));
 }
 
@@ -441,9 +451,9 @@ void WMRunLoop()
  *      Calls inotifyGetEvents if defaults database changes.
  *----------------------------------------------------------------------
  */
-/* noreturn void EventLoop(void) */
-/* { */
-/*   XEvent event; */
+noreturn void EventLoop(void)
+{
+  XEvent event;
 /* #ifdef HAVE_INOTIFY */
 /*   struct timeval time; */
 /*   fd_set rfds; */
@@ -453,10 +463,11 @@ void WMRunLoop()
 /*     retVal = -1; */
 /* #endif */
 
-/*   for (;;) { */
+  for (;;) {
 
-/*     WMNextEvent(dpy, &event);	/\* Blocks here *\/ */
-/*     WMHandleEvent(&event); */
+    CFLog(kCFLogLevelError, CFSTR("EventLoop()"));
+    WMNextEvent(dpy, &event);	/* Blocks here */
+    WMHandleEvent(&event);
 /* #ifdef HAVE_INOTIFY */
 /*     if (retVal != -1) { */
 /*       time.tv_sec = 0; */
@@ -479,8 +490,8 @@ void WMRunLoop()
 /*         handle_inotify_events(); */
 /*     } */
 /* #endif */
-/*   } */
-/* } */
+  }
+}
 
 /*
  *----------------------------------------------------------------------
@@ -508,8 +519,8 @@ void ProcessPendingEvents(void)
   count = XPending(dpy);
 
   while (count > 0 && XPending(dpy)) {
-    /* WMNextEvent(dpy, &event); */
-    XNextEvent(dpy, &event);
+    WMNextEvent(dpy, &event);
+    /* XNextEvent(dpy, &event); */
     WMHandleEvent(&event);
     count--;
   }

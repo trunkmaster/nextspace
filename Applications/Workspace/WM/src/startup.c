@@ -776,8 +776,8 @@ static void manageAllWindows(WScreen * scr, int crashRecovery)
 
   while (XPending(dpy)) {
     XEvent ev;
-    /* WMNextEvent(dpy, &ev); */
-    XNextEvent(dpy, &ev);
+    WMNextEvent(dpy, &ev);
+    /* XNextEvent(dpy, &ev); */
     WMHandleEvent(&ev);
   }
   scr->last_workspace = 0;

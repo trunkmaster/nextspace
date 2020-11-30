@@ -337,7 +337,7 @@ char *FindImage(const char *paths, const char *file)
   return path;
 }
 
-static void timeoutHandler(void *data)
+static void timeoutHandler(CFRunLoopTimerRef timer, void *data)
 {
   *(int *)data = 1;
 }
@@ -396,7 +396,7 @@ static char *getTextSelection(WScreen * screen, Atom selection)
 
     XConvertSelection(dpy, selection, XA_STRING, clipboard, screen->info_window, CurrentTime);
 
-    timer = WMAddTimerHandler(1000, timeoutHandler, &timeout);
+    timer = WMAddTimerHandler(1000, 0, timeoutHandler, &timeout);
 
     while (!XCheckTypedWindowEvent(dpy, screen->info_window, SelectionNotify, &ev) && !timeout) ;
 

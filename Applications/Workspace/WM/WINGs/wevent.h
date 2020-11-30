@@ -31,7 +31,7 @@ void WMCreateEventHandler(WMView *view, unsigned long mask,
 void WMDeleteEventHandler(WMView *view, unsigned long mask,
                           WMEventProc *eventProc, void *clientData);
 
-/* void WMNextEvent(Display *dpy, XEvent *event); */
+void WMNextEvent(Display *dpy, XEvent *event);
 
 void WMMaskEvent(Display *dpy, long mask, XEvent *event);
 

@@ -564,7 +564,7 @@ char *wIconStore(WIcon *icon)
   return path;
 }
 
-static void cycleColor(void *data)
+static void cycleColor(CFRunLoopTimerRef timer, void *data)
 {
   WIcon *icon = (WIcon *) data;
   WScreen *scr = icon->core->screen_ptr;
@@ -576,7 +576,7 @@ static void cycleColor(void *data)
 
   XDrawRectangle(dpy, icon->core->window, scr->icon_select_gc, 0, 0,
                  icon->core->width - 1, icon->core->height - 1);
-  icon->handlerID = WMAddTimerHandler(COLOR_CYCLE_DELAY, cycleColor, icon);
+  icon->handlerID = WMAddTimerHandler(COLOR_CYCLE_DELAY, 0, cycleColor, icon);
 }
 
 void wIconSetHighlited(WIcon *icon, Bool flag)
@@ -596,7 +596,7 @@ void wIconSelect(WIcon *icon)
   if (icon->selected) {
     icon->step = 0;
     if (!wPreferences.dont_blink)
-      icon->handlerID = WMAddTimerHandler(10, cycleColor, icon);
+      icon->handlerID = WMAddTimerHandler(10, 0, cycleColor, icon);
     else
       XDrawRectangle(dpy, icon->core->window, scr->icon_select_gc, 0, 0,
                      icon->core->width - 1, icon->core->height - 1);

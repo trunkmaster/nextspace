@@ -53,8 +53,8 @@ typedef struct WIcon {
   Pixmap        pixmap;
   Pixmap        mini_preview;
 
-  WMHandlerID   handlerID;    /* timer handler ID for cycling select
-                               * color */
+  CFRunLoopTimerRef handlerID;    /* timer handler ID for cycling select
+                                   * color */
 } WIcon;
 
 WIcon *icon_create_for_dock(WScreen *scr, const char *command,

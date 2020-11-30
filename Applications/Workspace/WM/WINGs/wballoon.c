@@ -143,7 +143,7 @@ void WMSetBalloonEnabled(WMScreen *scr, Bool flag)
   W_UnmapView(scr->balloon->view);
 }
 
-static void clearNoDelay(void *data)
+static void clearNoDelay(CFRunLoopTimerRef timer, void *data)
 {
   Balloon *bPtr = (Balloon *) data;
 
@@ -158,7 +158,7 @@ void W_BalloonHandleLeaveView(WMView *view)
   if (bPtr->forWindow == view->window) {
     if (bPtr->view->flags.mapped) {
       W_UnmapView(bPtr->view);
-      bPtr->noDelayTimer = WMAddTimerHandler(NO_DELAY_DELAY, clearNoDelay, bPtr);
+      bPtr->noDelayTimer = WMAddTimerHandler(NO_DELAY_DELAY, 0, clearNoDelay, bPtr);
     }
     if (bPtr->timer)
       WMDeleteTimerHandler(bPtr->timer);
@@ -175,7 +175,7 @@ void W_BalloonHandleLeaveView(WMView *view)
  *
  */
 
-static void showBalloon(void *data)
+static void showBalloon(CFRunLoopTimerRef timer, void *data)
 {
   char *text;
   WMView *view = (WMView *) data;
@@ -228,9 +228,9 @@ void W_BalloonHandleEnterView(WMView *view)
   if (bPtr->flags.noDelay) {
     bPtr->timer = NULL;
 
-    showBalloon(view);
+    showBalloon(NULL, view);
   } else {
-    bPtr->timer = WMAddTimerHandler(bPtr->delay, showBalloon, view);
+    bPtr->timer = WMAddTimerHandler(bPtr->delay, 0, showBalloon, view);
   }
 }
 

@@ -298,19 +298,19 @@ int WMHandleEvent(XEvent *event)
 }
 
 /*
- *Check for X and input events. If X events are present input events will
- *not be checked.
+ * Check for X and input events. If X events are present input events will
+ * not be checked.
  *
- *Return value: True if a X event is available or any input event was
- *              processed, false otherwise (including return because of
- *              some timer handler expired).
+ * Return value: True if a X event is available or any input event was
+ *               processed, false otherwise (including return because of
+ *               some timer handler expired).
  *
  * If waitForInput is False, it will just peek for available input and return
- *without processing. Return vaue will be True if input is available.
+ * without processing. Return vaue will be True if input is available.
  *
  * If waitForInput is True, it will wait until an input event arrives on the
- *registered input handlers and ConnectionNumber(dpy), or will return when
- *a timer handler expires if no input event arrived until then.
+ * registered input handlers and ConnectionNumber(dpy), or will return when
+ * a timer handler expires if no input event arrived until then.
  */
 static Bool waitForEvent(Display *dpy, unsigned long xeventmask, Bool waitForInput)
 {
@@ -331,26 +331,9 @@ static Bool waitForEvent(Display *dpy, unsigned long xeventmask, Bool waitForInp
 
 void WMNextEvent(Display *dpy, XEvent *event)
 {
-  /* Check any expired timers */
-  W_CheckTimerHandlers();
-
   while (XPending(dpy) == 0) {
-    /* Do idle and timer stuff while there are no input or X events */
-    while (!waitForEvent(dpy, 0, False)) {
-      /* dispatch timer events */
-      W_CheckTimerHandlers();
-    }
-
-    /*
-     *Make sure that new events did not arrive while we were doing
-     *timer/idle stuff. Or we might block forever waiting for
-     *an event that already arrived.
-     */
     /* wait for something to happen or a timer to expire */
     waitForEvent(dpy, 0, True);
-
-    /* Check any expired timers */
-    W_CheckTimerHandlers();
   }
 
   XNextEvent(dpy, event);
@@ -358,26 +341,12 @@ void WMNextEvent(Display *dpy, XEvent *event)
 
 void WMMaskEvent(Display *dpy, long mask, XEvent *event)
 {
-  /* Check any expired timers */
-  /* W_CheckTimerHandlers(); */
-  CFRunLoopWakeUp(CFRunLoopGetCurrent());
-
   while (!XCheckMaskEvent(dpy, mask, event)) {
-    /* Do idle and timer stuff while there are no input or X events */
-    while (!waitForEvent(dpy, mask, False)) {
-      /* W_CheckTimerHandlers(); */
-      CFRunLoopWakeUp(CFRunLoopGetCurrent());
-    }
-
-    if (XCheckMaskEvent(dpy, mask, event))
-      return;
-
     /* Wait for input on the X connection socket or another input handler */
     waitForEvent(dpy, mask, True);
-
-    /* Check any expired timers */
-    /* W_CheckTimerHandlers(); */
-    CFRunLoopWakeUp(CFRunLoopGetCurrent());
+    
+    if (XCheckMaskEvent(dpy, mask, event))
+      return;
   }
 }
 

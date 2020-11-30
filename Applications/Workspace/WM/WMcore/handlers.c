@@ -19,6 +19,7 @@
 #endif
 
 #include <time.h>
+#include "handlers.h"
 
 #ifndef X_GETTIMEOFDAY
 #define X_GETTIMEOFDAY(t) gettimeofday(t, (struct timezone*)0)
@@ -187,82 +188,86 @@ CFRunLoopTimerRef WMAddTimerHandler(CFTimeInterval fireTimeout,
   /*                      CFRunLoopTimerCallBack callout, */
   /*                      CFRunLoopTimerContext *context); */
   timer = CFRunLoopTimerCreate(kCFAllocatorDefault,
-                               CFAbsoluteTimeGetCurrent() + milliseconds/1000,
+                               CFAbsoluteTimeGetCurrent() + fireTimeout/1000,
                                interval, 0, 0, callback, &ctx);
   CFRunLoopAddTimer(CFRunLoopGetCurrent(), timer, kCFRunLoopDefaultMode);
   CFRelease(timer);
   
   return timer;
 }
-
-WMHandlerID WMAddPersistentTimerHandler(int milliseconds, WMCallback* callback, void *cdata)
+void WMDeleteTimerHandler(CFRunLoopTimerRef timer)
 {
-  TimerHandler *handler = WMAddTimerHandler(milliseconds, callback, cdata);
-
-  if (handler != NULL)
-    handler->nextDelay = milliseconds;
-
-  return handler;
+  CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), timer, kCFRunLoopDefaultMode);
 }
 
-void WMDeleteTimerWithClientData(void *cdata)
-{
-  TimerHandler *handler, *tmp;
+/* WMHandlerID WMAddPersistentTimerHandler(int milliseconds, WMCallback *callback, void *cdata) */
+/* { */
+/*   TimerHandler *handler = WMAddTimerHandler(milliseconds, callback, cdata); */
 
-  if (!cdata || !timerHandler)
-    return;
+/*   if (handler != NULL) */
+/*     handler->nextDelay = milliseconds; */
 
-  tmp = timerHandler;
-  if (tmp->clientData == cdata) {
-    tmp->nextDelay = 0;
-    if (!IS_ZERO(tmp->when)) {
-      timerHandler = tmp->next;
-      wfree(tmp);
-    }
-  } else {
-    while (tmp->next) {
-      if (tmp->next->clientData == cdata) {
-        handler = tmp->next;
-        handler->nextDelay = 0;
-        if (IS_ZERO(handler->when))
-          break;
-        tmp->next = handler->next;
-        wfree(handler);
-        break;
-      }
-      tmp = tmp->next;
-    }
-  }
-}
+/*   return handler; */
+/* } */
 
-void WMDeleteTimerHandler(WMHandlerID handlerID)
-{
-  TimerHandler *tmp, *handler = (TimerHandler *) handlerID;
+/* void WMDeleteTimerWithClientData(void *cdata) */
+/* { */
+/*   TimerHandler *handler, *tmp; */
 
-  if (!handler || !timerHandler)
-    return;
+/*   if (!cdata || !timerHandler) */
+/*     return; */
 
-  tmp = timerHandler;
+/*   tmp = timerHandler; */
+/*   if (tmp->clientData == cdata) { */
+/*     tmp->nextDelay = 0; */
+/*     if (!IS_ZERO(tmp->when)) { */
+/*       timerHandler = tmp->next; */
+/*       wfree(tmp); */
+/*     } */
+/*   } else { */
+/*     while (tmp->next) { */
+/*       if (tmp->next->clientData == cdata) { */
+/*         handler = tmp->next; */
+/*         handler->nextDelay = 0; */
+/*         if (IS_ZERO(handler->when)) */
+/*           break; */
+/*         tmp->next = handler->next; */
+/*         wfree(handler); */
+/*         break; */
+/*       } */
+/*       tmp = tmp->next; */
+/*     } */
+/*   } */
+/* } */
 
-  handler->nextDelay = 0;
+/* void WMDeleteTimerHandler(WMHandlerID handlerID) */
+/* { */
+/*   TimerHandler *tmp, *handler = (TimerHandler *) handlerID; */
 
-  if (IS_ZERO(handler->when))
-    return;
+/*   if (!handler || !timerHandler) */
+/*     return; */
 
-  if (tmp == handler) {
-    timerHandler = handler->next;
-    wfree(handler);
-  } else {
-    while (tmp->next) {
-      if (tmp->next == handler) {
-        tmp->next = handler->next;
-        wfree(handler);
-        break;
-      }
-      tmp = tmp->next;
-    }
-  }
-}
+/*   tmp = timerHandler; */
+
+/*   handler->nextDelay = 0; */
+
+/*   if (IS_ZERO(handler->when)) */
+/*     return; */
+
+/*   if (tmp == handler) { */
+/*     timerHandler = handler->next; */
+/*     wfree(handler); */
+/*   } else { */
+/*     while (tmp->next) { */
+/*       if (tmp->next == handler) { */
+/*         tmp->next = handler->next; */
+/*         wfree(handler); */
+/*         break; */
+/*       } */
+/*       tmp = tmp->next; */
+/*     } */
+/*   } */
+/* } */
 
 /*
  *This functions will handle input events on all registered file descriptors.

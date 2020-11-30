@@ -593,7 +593,7 @@ static void callPerformDragOperation(WMView * destView, WMDraggingInfo * info)
 }
 
 /* ----- Destination timer ----- */
-static void dragSourceResponseTimeOut(void *destView)
+static void dragSourceResponseTimeOut(CFRunLoopTimerRef timer, void *destView)
 {
   WMView *view = (WMView *) destView;
   WMDraggingInfo *info;
@@ -622,8 +622,9 @@ void W_DragDestinationStartTimer(WMDraggingInfo * info)
   W_DragDestinationStopTimer();
 
   if (XDND_DEST_STATE(info) != idleState)
-    dndDestinationTimer = WMAddTimerHandler(XDND_SOURCE_RESPONSE_MAX_DELAY,
-                                            dragSourceResponseTimeOut, XDND_DEST_VIEW(info));
+    dndDestinationTimer = WMAddTimerHandler(XDND_SOURCE_RESPONSE_MAX_DELAY, 0,
+                                            dragSourceResponseTimeOut,
+                                            XDND_DEST_VIEW(info));
 }
 
 /* ----- End of Destination timer ----- */

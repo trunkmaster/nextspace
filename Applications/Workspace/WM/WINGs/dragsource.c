@@ -1073,7 +1073,7 @@ static void *finishDropState(WMView *view, XClientMessageEvent *event, WMDraggin
 /* ----- end of source states ----- */
 
 /* ----- source timer ----- */
-static void dragSourceResponseTimeOut(void *source)
+static void dragSourceResponseTimeOut(CFRunLoopTimerRef timer, void *source)
 {
   WMView *view = (WMView *) source;
   WMDraggingInfo *info = W_VIEW_SCREEN(view)->dragInfo;
@@ -1103,7 +1103,7 @@ void W_DragSourceStartTimer(WMDraggingInfo *info)
 {
   W_DragSourceStopTimer();
 
-  dndSourceTimer = WMAddTimerHandler(XDND_DESTINATION_RESPONSE_MAX_DELAY,
+  dndSourceTimer = WMAddTimerHandler(XDND_DESTINATION_RESPONSE_MAX_DELAY, 0,
                                      dragSourceResponseTimeOut, XDND_SOURCE_VIEW(info));
 }
 

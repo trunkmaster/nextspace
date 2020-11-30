@@ -130,13 +130,14 @@ static void _hideWorkspaceName(CFRunLoopTimerRef timer, void *data) // (void *da
 
       scr->workspace_name_data = NULL;
     }
-    CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), scr->workspace_name_timer, kCFRunLoopDefaultMode);
+    WMDeleteTimerHandler(scr->workspace_name_timer);
     scr->workspace_name_timer = NULL;
   } else {
     RImage *img = RCloneImage(scr->workspace_name_data->back);
     Pixmap pix;
 
-    /* scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_FADE_DELAY, _hideWorkspaceName, scr); */
+    /* scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_FADE_DELAY, 0, */
+    /*                                               _hideWorkspaceName, scr); */
     
     RCombineImagesWithOpaqueness(img, scr->workspace_name_data->text,
                                  scr->workspace_name_data->count * 255 / 10);
@@ -174,12 +175,12 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
     return;
 
   if (scr->workspace_name_timer) {
-    /* WMDeleteTimerHandler(scr->workspace_name_timer); */
-    CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), scr->workspace_name_timer, kCFRunLoopDefaultMode);
+    WMDeleteTimerHandler(scr->workspace_name_timer);
     XUnmapWindow(dpy, scr->workspace_name);
     XFlush(dpy);
   }
-  /* scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_DELAY, _hideWorkspaceName, scr); */
+  /* scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_DELAY, 0, */
+  /*                                               _hideWorkspaceName, scr); */
 
   if (scr->workspace_name_data) {
     RReleaseImage(scr->workspace_name_data->back);
@@ -317,22 +318,22 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
 
   scr->workspace_name_data = data;
 
-  CFRunLoopTimerContext ctx = {0, scr, NULL, NULL, 0};
-  scr->workspace_name_timer =
-    CFRunLoopTimerCreate(kCFAllocatorDefault,
-                         CFAbsoluteTimeGetCurrent() + WORKSPACE_NAME_FADE_DELAY/1000,
-                         0.03, 0, 0, _hideWorkspaceName, &ctx);
-  CFRunLoopAddTimer(CFRunLoopGetCurrent(), scr->workspace_name_timer, kCFRunLoopDefaultMode);
-  CFRelease(scr->workspace_name_timer);
+  scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_FADE_DELAY, 0.03,
+                                                _hideWorkspaceName, scr);
+  /* CFRunLoopTimerContext ctx = {0, scr, NULL, NULL, 0}; */
+  /* scr->workspace_name_timer = */
+  /*   CFRunLoopTimerCreate(kCFAllocatorDefault, */
+  /*                        CFAbsoluteTimeGetCurrent() + WORKSPACE_NAME_FADE_DELAY/1000, */
+  /*                        0.03, 0, 0, _hideWorkspaceName, &ctx); */
+  /* CFRunLoopAddTimer(CFRunLoopGetCurrent(), scr->workspace_name_timer, kCFRunLoopDefaultMode); */
+  /* CFRelease(scr->workspace_name_timer); */
   wmessage("Timer created in %s", dispatch_queue_get_label(dispatch_get_current_queue()));
-  /* CFRunLoopRunInMode(kCFRunLoopDefaultMode, 10.0, false); */
   
   return;
 
  erro:
   if (scr->workspace_name_timer) {
-    /* WMDeleteTimerHandler(scr->workspace_name_timer); */
-    CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), scr->workspace_name_timer, kCFRunLoopDefaultMode);
+    WMDeleteTimerHandler(scr->workspace_name_timer);
   }
 
   if (data->text)

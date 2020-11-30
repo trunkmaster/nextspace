@@ -192,10 +192,10 @@ typedef struct AppBouncerData {
   int count;
   int pow;
   int dir;
-  WMHandlerID *timer;
+  CFRunLoopTimerRef timer;
 } AppBouncerData;
 
-static void doAppBounce(void *arg)
+static void doAppBounce(CFRunLoopTimerRef timer, void *arg)
 {
   AppBouncerData *data = (AppBouncerData*)arg;
   WAppIcon *aicon = data->wapp->app_icon;
@@ -333,7 +333,7 @@ void wAppBounce(WApplication *wapp)
     data->wapp = wapp;
     data->count = data->pow = 0;
     data->dir = bounceDirection(wapp->app_icon);
-    data->timer = WMAddPersistentTimerHandler(BOUNCE_DELAY, doAppBounce, data);
+    data->timer = WMAddTimerHandler(BOUNCE_DELAY, BOUNCE_DELAY, doAppBounce, data);
   }
 }
 
@@ -362,7 +362,7 @@ static int appIsUrgent(WApplication *wapp)
   return 0;
 }
 
-static void doAppUrgentBounce(void *arg)
+static void doAppUrgentBounce(CFRunLoopTimerRef timer, void *arg)
 {
   WApplication *wapp = (WApplication *)arg;
 
@@ -379,8 +379,10 @@ void wAppBounceWhileUrgent(WApplication *wapp)
   if (!wapp) return;
   if (appIsUrgent(wapp)) {
     if (!wapp->urgent_bounce_timer) {
-      wapp->urgent_bounce_timer = WMAddPersistentTimerHandler(URGENT_BOUNCE_DELAY, doAppUrgentBounce, wapp);
-      doAppUrgentBounce(wapp);
+      wapp->urgent_bounce_timer = WMAddTimerHandler(URGENT_BOUNCE_DELAY,
+                                                    URGENT_BOUNCE_DELAY,
+                                                    doAppUrgentBounce, wapp);
+      doAppUrgentBounce(NULL, wapp);
     }
   } else {
     if (wapp->urgent_bounce_timer) {

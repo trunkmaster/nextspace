@@ -1,21 +1,29 @@
 #ifndef _WHANDLERS_H_
 #define _WHANDLERS_H_
 
+#include <CoreFoundation/CFRunLoop.h>
+
 #include <WINGs/WINGs.h>
 
 /* Timers */
 
 void W_CheckTimerHandlers(void);
 
-WMHandlerID WMAddTimerHandler(int milliseconds, WMCallback *callback,
-                              void *cdata);
+CFRunLoopTimerRef WMAddTimerHandler(CFTimeInterval fireTimeout,
+                                    CFTimeInterval interval,
+                                    CFRunLoopTimerCallBack callback,
+                                    void *cdata);
+void WMDeleteTimerHandler(CFRunLoopTimerRef timer);
 
-WMHandlerID WMAddPersistentTimerHandler(int milliseconds, WMCallback *callback,
-                                        void *cdata);
+/* WMHandlerID WMAddTimerHandler(int milliseconds, WMCallback *callback, */
+/*                               void *cdata); */
 
-void WMDeleteTimerWithClientData(void *cdata);
+/* WMHandlerID WMAddPersistentTimerHandler(int milliseconds, WMCallback *callback, */
+/*                                         void *cdata); */
 
-void WMDeleteTimerHandler(WMHandlerID handlerID);
+/* void WMDeleteTimerWithClientData(void *cdata); */
+
+/* void WMDeleteTimerHandler(WMHandlerID handlerID); */
 
 /* Input event handlers */
 

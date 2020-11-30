@@ -64,7 +64,7 @@ typedef struct _WBalloon {
   char *text;
   int h;
 
-  WMHandlerID timer;
+  CFRunLoopTimerRef timer;
 
   Pixmap contents;
   Pixmap mini_preview;
@@ -457,7 +457,7 @@ static void showBalloon(CFRunLoopTimerRef timer, void *data) // (WScreen *scr)
   WScreen *scr = (WScreen *)data;
 
   if (scr->balloon->timer) {
-    CFRunLoopRemoveTimer(CFRunLoopGetCurrent(), scr->balloon->timer, kCFRunLoopDefaultMode);
+    WMDeleteTimerHandler(scr->balloon->timer);
     scr->balloon->timer = NULL;
     scr->balloon->ignoreTimer = 1;
   }
@@ -487,13 +487,13 @@ static void frameBalloon(WObjDescriptor *object)
     scr->balloon->h = (fwin->titlebar ? fwin->titlebar->height : 0);
     scr->balloon->text = wstrdup(fwin->title);
     scr->balloon->objectWindow = fwin->core->window;
-    /* scr->balloon->timer = WMAddTimerHandler(BALLOON_DELAY, (WMCallback *) showBalloon, scr); */
-    CFRunLoopTimerContext ctx = {0, scr, NULL, NULL, 0};
-    scr->balloon->timer =  CFRunLoopTimerCreate(kCFAllocatorDefault,
-                                                CFAbsoluteTimeGetCurrent() + BALLOON_DELAY/1000,
-                                                0, 0, 0, showBalloon, &ctx);
-    CFRunLoopAddTimer(CFRunLoopGetCurrent(), scr->balloon->timer, kCFRunLoopDefaultMode);
-    CFRelease(scr->balloon->timer);
+    scr->balloon->timer = WMAddTimerHandler(BALLOON_DELAY, 0, showBalloon, scr);
+    /* CFRunLoopTimerContext ctx = {0, scr, NULL, NULL, 0}; */
+    /* scr->balloon->timer =  CFRunLoopTimerCreate(kCFAllocatorDefault, */
+    /*                                             CFAbsoluteTimeGetCurrent() + BALLOON_DELAY/1000, */
+    /*                                             0, 0, 0, showBalloon, &ctx); */
+    /* CFRunLoopAddTimer(CFRunLoopGetCurrent(), scr->balloon->timer, kCFRunLoopDefaultMode); */
+    /* CFRelease(scr->balloon->timer); */
   }
 }
 
@@ -516,13 +516,13 @@ static void miniwindowBalloon(WObjDescriptor *object)
     XUnmapWindow(dpy, scr->balloon->window);
     showBalloon(NULL, scr);
   } else {
-    /* scr->balloon->timer = WMAddTimerHandler(BALLOON_DELAY, (WMCallback *) showBalloon, scr); */
-    CFRunLoopTimerContext ctx = {0, scr, NULL, NULL, 0};
-    scr->balloon->timer =  CFRunLoopTimerCreate(kCFAllocatorDefault,
-                                                CFAbsoluteTimeGetCurrent() + BALLOON_DELAY/1000,
-                                                0, 0, 0, showBalloon, &ctx);
-    CFRunLoopAddTimer(CFRunLoopGetCurrent(), scr->balloon->timer, kCFRunLoopDefaultMode);
-    CFRelease(scr->balloon->timer);
+    scr->balloon->timer = WMAddTimerHandler(BALLOON_DELAY, 0, showBalloon, scr);
+    /* CFRunLoopTimerContext ctx = {0, scr, NULL, NULL, 0}; */
+    /* scr->balloon->timer =  CFRunLoopTimerCreate(kCFAllocatorDefault, */
+    /*                                             CFAbsoluteTimeGetCurrent() + BALLOON_DELAY/1000, */
+    /*                                             0, 0, 0, showBalloon, &ctx); */
+    /* CFRunLoopAddTimer(CFRunLoopGetCurrent(), scr->balloon->timer, kCFRunLoopDefaultMode); */
+    /* CFRelease(scr->balloon->timer); */
   }
 }
 
@@ -596,13 +596,7 @@ static void appiconBalloon(WObjDescriptor *object)
     XUnmapWindow(dpy, scr->balloon->window);
     showBalloon(NULL, scr);
   } else {
-    scr->balloon->timer = WMAddTimerHandler(BALLOON_DELAY, (WMCallback *) showBalloon, scr);
-    CFRunLoopTimerContext ctx = {0, scr, NULL, NULL, 0};
-    scr->balloon->timer =  CFRunLoopTimerCreate(kCFAllocatorDefault,
-                                                CFAbsoluteTimeGetCurrent() + BALLOON_DELAY/1000,
-                                                0, 0, 0, showBalloon, &ctx);
-    CFRunLoopAddTimer(CFRunLoopGetCurrent(), scr->balloon->timer, kCFRunLoopDefaultMode);
-    CFRelease(scr->balloon->timer);
+    scr->balloon->timer = WMAddTimerHandler(BALLOON_DELAY, 0, showBalloon, scr);
   }
 }
 

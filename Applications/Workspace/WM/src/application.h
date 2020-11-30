@@ -37,7 +37,7 @@ typedef struct WApplication {
   struct WWindow *last_focused;		/* focused window before hide */
   int last_workspace;		 	/* last workspace used to work on the app */
   
-  WMHandlerID *urgent_bounce_timer;
+  CFRunLoopTimerRef urgent_bounce_timer;
   struct {
     unsigned int is_gnustep:1;
     unsigned int skip_next_animation:1;

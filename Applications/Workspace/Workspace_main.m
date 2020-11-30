@@ -97,7 +97,7 @@ int WSApplicationMain(int argc, const char **argv)
   infoDict = [[NSBundle mainBundle] infoDictionary];
 
   // Wait for WMRunLoop
-  while (wm_runloop == 0) ;
+  // while (wm_runloop == 0) usleep(1000);
   
   [WSApplication sharedApplication];
 
@@ -150,7 +150,8 @@ int main(int argc, const char **argv)
     
     // Start X11 EventLoop in parallel
     dispatch_async(wm_q, ^{
-        WMRunLoop();
+        EventLoop();
+        // WMRunLoop();
       });
   }
   
@@ -163,7 +164,7 @@ int main(int argc, const char **argv)
   //---------------------------------------------------------------------
   
   fprintf(stderr, "=== Quitting Window manager... ===\n");
-  CFRunLoopStop(wm_runloop);
+  // CFRunLoopStop(wm_runloop);
   // Quit WindowManager, close all X11 applications.
   WMShutdown(WSKillMode);
   
