@@ -150,8 +150,8 @@ int main(int argc, const char **argv)
     
     // Start X11 EventLoop in parallel
     dispatch_async(wm_q, ^{
-        EventLoop();
-        // WMRunLoop();
+        // EventLoop();
+        WMRunLoop();
       });
   }
   

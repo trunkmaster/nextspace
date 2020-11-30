@@ -401,7 +401,7 @@ static void handle_inotify_events(void)
 static void _processRunLoopEvent(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
 {
   XEvent event;
-  CFLog(kCFLogLevelError, CFSTR("1. _processXEvent() - %i"), XPending(dpy));
+  /* CFLog(kCFLogLevelError, CFSTR("1. _processXEvent() - %i"), XPending(dpy)); */
   /* ProcessPendingEvents(); */
   while (XPending(dpy) > 0) {
     WMNextEvent(dpy, &event);

@@ -257,8 +257,8 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
   text = XCreatePixmap(dpy, scr->w_win, w + 4, h + 4, scr->w_depth);
   mask = XCreatePixmap(dpy, scr->w_win, w + 4, h + 4, 1);
 
-  /*XSetForeground(dpy, scr->mono_gc, 0);
-    XFillRectangle(dpy, mask, scr->mono_gc, 0, 0, w+4, h+4); */
+  /* XSetForeground(dpy, scr->mono_gc, 0); */
+  /* XFillRectangle(dpy, mask, scr->mono_gc, 0, 0, w+4, h+4); */
 
   XFillRectangle(dpy, text, WMColorGC(scr->black), 0, 0, w + 4, h + 4);
 
@@ -271,7 +271,7 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
 
   XCopyPlane(dpy, text, mask, scr->mono_gc, 0, 0, w + 4, h + 4, 0, 0, 1 << (scr->w_depth - 1));
 
-  /*XSetForeground(dpy, scr->mono_gc, 1); */
+  /* XSetForeground(dpy, scr->mono_gc, 1); */
   XSetBackground(dpy, scr->mono_gc, 1);
 
   XFillRectangle(dpy, text, WMColorGC(scr->black), 0, 0, w + 4, h + 4);
@@ -318,15 +318,9 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
 
   scr->workspace_name_data = data;
 
-  scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_FADE_DELAY, 0.03,
+  scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_DELAY,
+                                                WORKSPACE_NAME_DELAY,
                                                 _hideWorkspaceName, scr);
-  /* CFRunLoopTimerContext ctx = {0, scr, NULL, NULL, 0}; */
-  /* scr->workspace_name_timer = */
-  /*   CFRunLoopTimerCreate(kCFAllocatorDefault, */
-  /*                        CFAbsoluteTimeGetCurrent() + WORKSPACE_NAME_FADE_DELAY/1000, */
-  /*                        0.03, 0, 0, _hideWorkspaceName, &ctx); */
-  /* CFRunLoopAddTimer(CFRunLoopGetCurrent(), scr->workspace_name_timer, kCFRunLoopDefaultMode); */
-  /* CFRelease(scr->workspace_name_timer); */
   wmessage("Timer created in %s", dispatch_queue_get_label(dispatch_get_current_queue()));
   
   return;
