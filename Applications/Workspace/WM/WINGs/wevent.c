@@ -5,7 +5,17 @@
 #include <CoreFoundation/CFArray.h>
 #include <CoreFoundation/CFRunLoop.h>
 #include <WMcore/memory.h>
-#include <WMcore/handlers.h>
+/* #include <WMcore/handlers.h> */
+
+#include "wconfig.h"
+
+#if defined(HAVE_POLL) && defined(HAVE_POLL_H) && !HAVE_SELECT
+# include <sys/poll.h>
+#endif
+
+#ifdef HAVE_SYS_SELECT_H
+# include <sys/select.h>
+#endif
 
 #include "WINGs.h"
 #include "dragcommon.h"
@@ -297,6 +307,92 @@ int WMHandleEvent(XEvent *event)
   return True;
 }
 
+
+/*
+ * This functions will handle input events on all registered file descriptors.
+ * Input:
+ *    - waitForInput - True if we want the function to wait until an event
+ *                     appears on a file descriptor we watch, False if we
+ *                     want the function to immediately return if there is
+ *                     no data available on the file descriptors we watch.
+ *    - inputfd      - Extra input file descriptor to watch for input.
+ *                     This is only used when called from wevent.c to watch
+ *                     on ConnectionNumber(dpy) to avoid blocking of X events
+ *                     if we wait for input from other file handlers.
+ * Output:
+ *    if waitForInput is False, the function will return False if there are no
+ *                     input handlers registered, or if there is no data
+ *                     available on the registered ones, and will return True
+ *                     if there is at least one input handler that has data
+ *                     available.
+ *    if waitForInput is True, the function will return False if there are no
+ *                     input handlers registered, else it will block until an
+ *                     event appears on one of the file descriptors it watches
+ *                     and then it will return True.
+ *
+ * If the retured value is True, the input handlers for the corresponding file
+ * descriptors are also called.
+ *
+ * Parametersshould be passed like this:
+ * - from wevent.c:
+ *   waitForInput - apropriate value passed by the function who called us
+ *   inputfd = ConnectionNumber(dpy)
+ * - from wutil.c:
+ *   waitForInput - apropriate value passed by the function who called us
+ *   inputfd = -1
+ */
+static Bool _waitForXEvents(Bool waitForInput, int inputfd)
+{
+#if defined(HAVE_POLL) && defined(HAVE_POLL_H) && !HAVE_SELECT
+  struct pollfd fds;
+  int count, timeout;
+
+  if (inputfd < 0) {
+    return False;
+  }
+
+  fds.fd = inputfd;
+  fds.events = POLLIN;
+
+  timeout = (!waitForInput) ? 0 : -1;
+  count = poll(&fds, 1, timeout);
+
+  return (count > 0);
+  
+#elif HAVE_SELECT
+  struct timeval *timeoutPtr;
+  fd_set rset, wset, eset;
+  int count;
+
+  if (inputfd < 0) {
+    return False;
+  }
+
+  FD_ZERO(&rset);
+  FD_ZERO(&wset);
+  FD_ZERO(&eset);
+  
+  FD_SET(inputfd, &rset);
+
+  /* Setup the timeout to the estimated time until the
+     next timer expires. */
+  if (!waitForInput) {
+    struct timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 0;
+    timeoutPtr = &timeout;
+  } else {
+    timeoutPtr = (struct timeval *)0;
+  }
+
+  count = select(1 + inputfd, &rset, &wset, &eset, timeoutPtr);
+
+  return (count > 0);
+#else
+#error    Neither select() nor poll(). You lose.
+#endif				/* HAVE_SELECT */
+}
+
 /*
  * Check for X and input events. If X events are present input events will
  * not be checked.
@@ -325,14 +421,13 @@ static Bool waitForEvent(Display *dpy, unsigned long xeventmask, Bool waitForInp
       return True;
     }
   }
-
-  return W_HandleInputEvents(waitForInput, ConnectionNumber(dpy));
+  return _waitForXEvents(waitForInput, ConnectionNumber(dpy));
 }
 
 void WMNextEvent(Display *dpy, XEvent *event)
 {
   while (XPending(dpy) == 0) {
-    /* wait for something to happen or a timer to expire */
+    /* Wait for input on the X connection socket */
     waitForEvent(dpy, 0, True);
   }
 
@@ -342,7 +437,7 @@ void WMNextEvent(Display *dpy, XEvent *event)
 void WMMaskEvent(Display *dpy, long mask, XEvent *event)
 {
   while (!XCheckMaskEvent(dpy, mask, event)) {
-    /* Wait for input on the X connection socket or another input handler */
+    /* Wait for input on the X connection socket */
     waitForEvent(dpy, mask, True);
     
     if (XCheckMaskEvent(dpy, mask, event))

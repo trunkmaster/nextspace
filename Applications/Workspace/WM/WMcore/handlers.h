@@ -6,9 +6,6 @@
 #include <WINGs/WINGs.h>
 
 /* Timers */
-
-void W_CheckTimerHandlers(void);
-
 CFRunLoopTimerRef WMAddTimerHandler(CFTimeInterval fireTimeout,
                                     CFTimeInterval interval,
                                     CFRunLoopTimerCallBack callback,
@@ -27,11 +24,11 @@ void WMDeleteTimerHandler(CFRunLoopTimerRef timer);
 
 /* Input event handlers */
 
-Bool W_HandleInputEvents(Bool waitForInput, int inputfd);
+/* Bool W_HandleInputEvents(Bool waitForInput, int inputfd); */
 
-WMHandlerID WMAddInputHandler(int fd, int condition, WMInputProc *proc,
-                              void *clientData);
+/* WMHandlerID WMAddInputHandler(int fd, int condition, WMInputProc *proc, */
+/*                               void *clientData); */
 
-void WMDeleteInputHandler(WMHandlerID handlerID);
+/* void WMDeleteInputHandler(WMHandlerID handlerID); */
 
 #endif
