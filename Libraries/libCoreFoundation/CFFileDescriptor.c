@@ -35,9 +35,9 @@ CFTypeID CFFileDescriptorGetTypeID(void) { return __kCFFileDescriptorTypeID; }
 #pragma mark - Managing dispatch sources
 
 dispatch_source_t __CFFDCreateSource(CFFileDescriptorRef f, CFOptionFlags callBackType);
+void __CFFDSuspendSource(CFFileDescriptorRef f, CFOptionFlags callBackType);
 void __CFFDRemoveSource(CFFileDescriptorRef f, CFOptionFlags callBackType);
 void __CFFDEnableSources(CFFileDescriptorRef f, CFOptionFlags callBackTypes);
-void __CFFDSourceInvoked(CFFileDescriptorRef f, CFOptionFlags callBackType);
 
 // create and return a dispatch source of the given type
 dispatch_source_t __CFFDCreateSource(CFFileDescriptorRef f, CFOptionFlags callBackType) {
@@ -57,18 +57,24 @@ dispatch_source_t __CFFDCreateSource(CFFileDescriptorRef f, CFOptionFlags callBa
         /*       estimated, f->_fd, (long)f->_runLoop); */
 
         // Each call back is one-shot, and must be re-enabled if you want to get another one.
-        __CFFDRemoveSource(f, callBackType);
+        __CFFDSuspendSource(f, callBackType);
         
-        // Tell runloop about event (it will call 'permorm' callback)
-        /* CFRunLoopWakeUp(CFRunLoopGetCurrent()); */
+        // Tell runloop about event (it will call 'perform' callback)
         CFRunLoopSourceSignal(f->_source0);
         CFRunLoopWakeUp(f->_runLoop);
-
-        /* CFLog(kCFLogLevelError, CFSTR("Source removed (one-shot)")); */
       });
   }
   
   return source;
+}
+
+void __CFFDSuspendSource(CFFileDescriptorRef f, CFOptionFlags callBackType) {
+  if (callBackType == kCFFileDescriptorReadCallBack && f->_read_source) {
+    dispatch_suspend(f->_read_source);
+  }
+  if (callBackType == kCFFileDescriptorWriteCallBack && f->_write_source) {
+    dispatch_suspend(f->_write_source);
+  }
 }
 
 // callBackType will be one of Read and Write
@@ -118,10 +124,10 @@ static void __CFFDCancel(void *info, CFRunLoopRef rl, CFStringRef mode) {
 // TODO
 // A perform callback for the run loop source. This callback is called when the source has fired.
 static void __CFFDPerformV0(void *info) {
-  __CFFileDescriptor *_info = info;
+  CFFileDescriptorRef f = info;
   /* CFLog(kCFLogLevelError, CFSTR("CFFileDescriptor PERFORM callback invoked (runloop: %li)."), */
   /*       (long)_info->_runLoop); */
-  _info->_callout(info, kCFFileDescriptorWriteCallBack, info);
+  f->_callout(f, kCFFileDescriptorWriteCallBack, f);
 }
 
 #pragma mark - Runtime
@@ -233,15 +239,19 @@ void CFFileDescriptorEnableCallBacks(CFFileDescriptorRef f, CFOptionFlags callBa
 
   __CFLock(&f->_lock);
 
-  if (callBackTypes & kCFFileDescriptorReadCallBack && !f->_read_source) {
+  if (callBackTypes & kCFFileDescriptorReadCallBack) {
     /* CFLog(kCFLogLevelError, CFSTR("CFFileDescriptor enabled READ callback.")); */
-    f->_read_source = __CFFDCreateSource(f, kCFFileDescriptorReadCallBack);
+    if ( !f->_read_source) {
+      f->_read_source = __CFFDCreateSource(f, kCFFileDescriptorReadCallBack);
+    }
     __CFFDEnableSources(f, kCFFileDescriptorReadCallBack);
   }
 	
-  if (callBackTypes & kCFFileDescriptorWriteCallBack && !f->_write_source) {
+  if (callBackTypes & kCFFileDescriptorWriteCallBack) {
     /* CFLog(kCFLogLevelError, CFSTR("CFFileDescriptor enabled WRITE callback.")); */
-    f->_write_source = __CFFDCreateSource(f, kCFFileDescriptorWriteCallBack);
+    if (!f->_write_source) {
+      f->_write_source = __CFFDCreateSource(f, kCFFileDescriptorWriteCallBack);
+    }
     __CFFDEnableSources(f, kCFFileDescriptorWriteCallBack);
   }
 	
