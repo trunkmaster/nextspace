@@ -392,6 +392,35 @@ static void handle_inotify_events(void)
     i += sizeof(struct inotify_event) + pevent->len;
   }
 }
+static void check_inotify_events(void)
+{
+  struct timeval time;
+  fd_set rfds;
+  int retVal = 0;
+
+  if (w_global.inotify.fd_event_queue >= 0 && w_global.inotify.wd_defaults >= 0) {
+    time.tv_sec = 0;
+    time.tv_usec = 0;
+    FD_ZERO(&rfds);
+    FD_SET(w_global.inotify.fd_event_queue, &rfds);
+
+    /* check for available read data from inotify - don't block! */
+    retVal = select(w_global.inotify.fd_event_queue + 1, &rfds, NULL, NULL, &time);
+
+    if (retVal < 0) {	/* an error has occured */
+      wwarning(_("select failed. The inotify instance will be closed."
+                 " Changes to the defaults database will require"
+                 " a restart to take effect."));
+      close(w_global.inotify.fd_event_queue);
+      w_global.inotify.fd_event_queue = -1;
+      return;
+    }
+    
+    if (FD_ISSET(w_global.inotify.fd_event_queue, &rfds)) {
+      handle_inotify_events();
+    }
+  }
+}
 #endif /* HAVE_INOTIFY */
 
 #include <CoreFoundation/CoreFoundation.h>
@@ -401,18 +430,28 @@ static void handle_inotify_events(void)
 static void _processRunLoopEvent(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
 {
   XEvent event;
+
   /* CFLog(kCFLogLevelError, CFSTR("1. _processXEvent() - %i"), XPending(dpy)); */
-  /* ProcessPendingEvents(); */
   while (XPending(dpy) > 0) {
-    WMNextEvent(dpy, &event);
+    XNextEvent(dpy, &event);
     WMHandleEvent(&event);
   }
   /* CFLog(kCFLogLevelError, CFSTR("2. _processXEvent() - %i"), XPending(dpy)); */
   CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
-  CFRunLoopWakeUp(wm_runloop);
 }
 
-void WMRunLoop()
+void WMRunLoop_V0()
+{
+  XEvent event;
+  CFLog(kCFLogLevelError, CFSTR("WMRunLoop0: handling events while run loop is warming up."));
+  while (wm_runloop == NULL) {
+    WMNextEvent(dpy, &event);
+    WMHandleEvent(&event);
+  }
+  CFLog(kCFLogLevelError, CFSTR("WMRunLoop0: run loop is ready - bail out."));
+}
+
+void WMRunLoop_V1()
 {
   CFRunLoopRef        run_loop = CFRunLoopGetCurrent();
   CFFileDescriptorRef xfd;
@@ -430,11 +469,13 @@ void WMRunLoop()
   CFRelease(xfd_source);
   CFRelease(xfd);
 
-  wm_runloop = run_loop;
-  
   CFLog(kCFLogLevelError, CFSTR("[WM] Going into CFRunLoop..."));
+  
+  wm_runloop = run_loop;
   CFRunLoopRun();
   CFFileDescriptorDisableCallBacks(xfd, kCFFileDescriptorReadCallBack);
+  
+  
   CFLog(kCFLogLevelError, CFSTR("[WM] CFRunLoop finished."));
 }
 
@@ -454,42 +495,12 @@ void WMRunLoop()
 noreturn void EventLoop(void)
 {
   XEvent event;
-/* #ifdef HAVE_INOTIFY */
-/*   struct timeval time; */
-/*   fd_set rfds; */
-/*   int retVal = 0; */
-
-/*   if (w_global.inotify.fd_event_queue < 0 || w_global.inotify.wd_defaults < 0) */
-/*     retVal = -1; */
-/* #endif */
-
+  
   for (;;) {
 
     CFLog(kCFLogLevelError, CFSTR("EventLoop()"));
     WMNextEvent(dpy, &event);	/* Blocks here */
     WMHandleEvent(&event);
-/* #ifdef HAVE_INOTIFY */
-/*     if (retVal != -1) { */
-/*       time.tv_sec = 0; */
-/*       time.tv_usec = 0; */
-/*       FD_ZERO(&rfds); */
-/*       FD_SET(w_global.inotify.fd_event_queue, &rfds); */
-
-/*       /\* check for available read data from inotify - don't block! *\/ */
-/*       retVal = select(w_global.inotify.fd_event_queue + 1, &rfds, NULL, NULL, &time); */
-
-/*       if (retVal < 0) {	/\* an error has occured *\/ */
-/*         wwarning(_("select failed. The inotify instance will be closed." */
-/*                    " Changes to the defaults database will require" */
-/*                    " a restart to take effect.")); */
-/*         close(w_global.inotify.fd_event_queue); */
-/*         w_global.inotify.fd_event_queue = -1; */
-/*         continue; */
-/*       } */
-/*       if (FD_ISSET(w_global.inotify.fd_event_queue, &rfds)) */
-/*         handle_inotify_events(); */
-/*     } */
-/* #endif */
   }
 }
 

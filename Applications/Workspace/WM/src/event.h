@@ -30,7 +30,8 @@
 
 typedef void (WDeathHandler)(pid_t pid, unsigned int status, void *cdata);
 
-void WMRunLoop(void);
+void WMRunLoop_V0(void);
+void WMRunLoop_V1(void);
 noreturn void EventLoop(void);
 void DispatchEvent(XEvent *event);
 void ProcessPendingEvents(void);

@@ -25,7 +25,8 @@
 #import "Application.h"
 #import "Workspace+WM.h"
 
-CFRunLoopRef wm_runloop = 0;
+// Global - set in event.c WMRunLoop()
+CFRunLoopRef wm_runloop = NULL;
 
 //-----------------------------------------------------------------------------
 // Workspace X Window related utility functions
@@ -96,9 +97,6 @@ int WSApplicationMain(int argc, const char **argv)
 
   infoDict = [[NSBundle mainBundle] infoDictionary];
 
-  // Wait for WMRunLoop
-  // while (wm_runloop == 0) usleep(1000);
-  
   [WSApplication sharedApplication];
 
   mainModelFile = [infoDict objectForKey:@"NSMainNibFile"];
@@ -148,11 +146,9 @@ int main(int argc, const char **argv)
       });
     fprintf(stderr, "=== Window Manager initialized! ===\n");
     
-    // Start X11 EventLoop in parallel
-    dispatch_async(wm_q, ^{
-        // EventLoop();
-        WMRunLoop();
-      });
+    // Start WM run loop V0 to catch events while V1 is warming up.
+    dispatch_async(wm_q, ^{ WMRunLoop_V0(); });
+    dispatch_async(wm_q, ^{ WMRunLoop_V1(); });
   }
   
   //--- Workspace (GNUstep) queue ---------------------------------------
@@ -164,7 +160,7 @@ int main(int argc, const char **argv)
   //---------------------------------------------------------------------
   
   fprintf(stderr, "=== Quitting Window manager... ===\n");
-  // CFRunLoopStop(wm_runloop);
+  CFRunLoopStop(wm_runloop);
   // Quit WindowManager, close all X11 applications.
   WMShutdown(WSKillMode);
   
