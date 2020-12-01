@@ -188,15 +188,6 @@ index 62569e27..355c84d0 100644
                  RunLoop.subproj/CFMessagePort.h
                  RunLoop.subproj/CFRunLoop.h
                  RunLoop.subproj/CFSocket.h
-@@ -266,6 +247,8 @@ add_framework(CoreFoundation
-                 URL.subproj/CFURLAccess.h
-                 URL.subproj/CFURLComponents.h
-               SOURCES
-+                # AppServices
-+                AppServices.subproj/CFNotificationCenter.c
-                 # Base
-                 Base.subproj/CFBase.c
-                 Base.subproj/CFFileUtilities.c
 @@ -402,45 +385,47 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL Darwin)
    endif()
  endif()
