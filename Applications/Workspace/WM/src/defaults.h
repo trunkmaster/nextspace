@@ -21,6 +21,10 @@
 #ifndef WMDEFAULTS_H_
 #define WMDEFAULTS_H_
 
+#include <WMcore/proplist.h>
+#include "screen.h"
+#include "window.h"
+
 typedef struct WDDomain {
   const char *domain_name;
   WMPropList *dictionary;

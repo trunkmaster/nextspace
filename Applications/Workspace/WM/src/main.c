@@ -395,40 +395,6 @@ static void check_defaults(void)
   wfree(path);
 }
 
-#ifdef HAVE_INOTIFY
-/*
- * Add watch here, used to notify if configuration
- * files have changed, using linux kernel inotify mechanism
- */
-static void inotifyWatchConfig(void)
-{
-  char *watchPath = NULL;
-
-  w_global.inotify.fd_event_queue = inotify_init();	/* Initialise an inotify instance */
-  if (w_global.inotify.fd_event_queue < 0) {
-    wwarning(_("could not initialise an inotify instance."
-               " Changes to the defaults database will require"
-               " a restart to take effect. Check your kernel!"));
-  } else {
-    watchPath = wdefaultspathfordomain("");
-    /* Add the watch; really we are only looking for modify events
-     * but we might want more in the future so check all events for now.
-     * The individual events are checked for in event.c.
-     */
-    w_global.inotify.wd_defaults = inotify_add_watch(w_global.inotify.fd_event_queue,
-                                                     watchPath, IN_ALL_EVENTS);
-    if (w_global.inotify.wd_defaults < 0) {
-      wwarning(_("could not add an inotify watch on path %s."
-                 " Changes to the defaults database will require"
-                 " a restart to take effect."), watchPath);
-      close(w_global.inotify.fd_event_queue);
-      w_global.inotify.fd_event_queue = -1;
-    }
-  }
-  wfree(watchPath);
-}
-#endif /* HAVE_INOTIFY */
-
 void ExecInitScript(void)
 {
   char *file, *paths;
@@ -530,9 +496,6 @@ int WMInitialize(int argc, char **argv)
   StartUp(True);
 
   ExecInitScript();
-#ifdef HAVE_INOTIFY
-  inotifyWatchConfig();
-#endif
   
   return 0;
 }

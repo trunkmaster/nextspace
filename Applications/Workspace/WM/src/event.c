@@ -49,10 +49,15 @@
 #include <X11/XKBlib.h>
 #endif /* KEEP_XKB_LOCK_STATUS */
 
+#include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFArray.h>
+#include <CoreFoundation/CFFileDescriptor.h>
+#include <CoreFoundation/CFLogUtilities.h>
+
 #include <WMcore/memory.h>
 #include <WMcore/usleep.h>
 #include <WMcore/handlers.h>
+#include <WMcore/userdefaults.h>
 
 #include <WINGs/wevent.h>
 #include <WINGs/wmisc.h>
@@ -117,7 +122,6 @@ static void handleKeyPress(XEvent *event);
 static void handleFocusIn(XEvent *event);
 static void handleMotionNotify(XEvent *event);
 static void handleVisibilityNotify(XEvent *event);
-static void handle_inotify_events(void);
 static void handle_selection_request(XSelectionRequestEvent *event);
 static void handle_selection_clear(XSelectionClearEvent *event);
 static void wdelete_death_handler(WMagicNumber id);
@@ -317,20 +321,7 @@ void DispatchEvent(XEvent * event)
 }
 
 #ifdef HAVE_INOTIFY
-/*
- *----------------------------------------------------------------------
- * handle_inotify_events-
- * 	Check for inotify events
- *
- * Returns:
- * 	After reading events for the given file descriptor (fd) and
- *     watch descriptor (wd)
- *
- * Side effects:
- * 	Calls wDefaultsCheckDomains if config database is updated
- *----------------------------------------------------------------------
- */
-static void handle_inotify_events(void)
+static void _processDefaultsWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
 {
   ssize_t eventQLength;
   size_t i = 0;
@@ -339,6 +330,8 @@ static void handle_inotify_events(void)
   /* Check config only once per read of the event queue */
   int oneShotFlag = 0;
 
+  CFLog(kCFLogLevelError, CFSTR("_inotifyHandleEvents"));
+
   /*
    * Read off the queued events
    * queue overflow is not checked (IN_Q_OVERFLOW). In practise this should
@@ -346,8 +339,7 @@ static void handle_inotify_events(void)
    * occur as a result of an Xevent - so the event queue should never have more than
    * a few entries before a read().
    */
-  eventQLength = read(w_global.inotify.fd_event_queue,
-                      buff, sizeof(buff) );
+  eventQLength = read(w_global.inotify.fd_event_queue, buff, sizeof(buff));
 
   if (eventQLength < 0) {
     wwarning(_("read problem when trying to get INotify event: %s"), strerror(errno));
@@ -391,43 +383,60 @@ static void handle_inotify_events(void)
     /* move to next event in the buffer */
     i += sizeof(struct inotify_event) + pevent->len;
   }
+  
+  CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
 }
-static void check_inotify_events(void)
+/*
+ * Add watch here, used to notify if configuration
+ * files have changed, using linux kernel inotify mechanism
+ */
+static void _addDefaultsWatch(void)
 {
-  struct timeval time;
-  fd_set rfds;
-  int retVal = 0;
+  char *watchPath = NULL;
 
-  if (w_global.inotify.fd_event_queue >= 0 && w_global.inotify.wd_defaults >= 0) {
-    time.tv_sec = 0;
-    time.tv_usec = 0;
-    FD_ZERO(&rfds);
-    FD_SET(w_global.inotify.fd_event_queue, &rfds);
-
-    /* check for available read data from inotify - don't block! */
-    retVal = select(w_global.inotify.fd_event_queue + 1, &rfds, NULL, NULL, &time);
-
-    if (retVal < 0) {	/* an error has occured */
-      wwarning(_("select failed. The inotify instance will be closed."
+  w_global.inotify.fd_event_queue = inotify_init();	/* Initialise an inotify instance */
+  if (w_global.inotify.fd_event_queue < 0) {
+    wwarning(_("could not initialise an inotify instance."
+               " Changes to the defaults database will require"
+               " a restart to take effect. Check your kernel!"));
+  } else {
+    watchPath = wdefaultspathfordomain("");
+    CFLog(kCFLogLevelError, CFSTR("inotify: watch for %s"), watchPath);
+    /* Add the watch; really we are only looking for modify events
+     * but we might want more in the future so check all events for now.
+     * The individual events are checked for in event.c.
+     */
+    w_global.inotify.wd_defaults = inotify_add_watch(w_global.inotify.fd_event_queue,
+                                                     watchPath, IN_ALL_EVENTS);
+    if (w_global.inotify.wd_defaults < 0) {
+      wwarning(_("could not add an inotify watch on path %s."
                  " Changes to the defaults database will require"
-                 " a restart to take effect."));
+                 " a restart to take effect."), watchPath);
       close(w_global.inotify.fd_event_queue);
       w_global.inotify.fd_event_queue = -1;
-      return;
-    }
-    
-    if (FD_ISSET(w_global.inotify.fd_event_queue, &rfds)) {
-      handle_inotify_events();
     }
   }
+  wfree(watchPath);
+
+  // Add to runloop
+  if (w_global.inotify.fd_event_queue > 0) {
+    CFFileDescriptorRef ifd = NULL;
+    CFRunLoopSourceRef  ifd_source = NULL;
+  
+    ifd = CFFileDescriptorCreate(kCFAllocatorDefault, w_global.inotify.fd_event_queue, true,
+                                 _processDefaultsWatchEvents, NULL);
+    CFFileDescriptorEnableCallBacks(ifd, kCFFileDescriptorReadCallBack);
+
+    ifd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, ifd, 0);
+    CFRunLoopAddSource(wm_runloop, ifd_source, kCFRunLoopDefaultMode);
+    CFRelease(ifd_source);
+    CFRelease(ifd);
+  }
 }
+
 #endif /* HAVE_INOTIFY */
 
-#include <CoreFoundation/CoreFoundation.h>
-#include <CoreFoundation/CFFileDescriptor.h>
-#include <CoreFoundation/CFLogUtilities.h>
-
-static void _processRunLoopEvent(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
+static void _runLoopHandleEvent(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
 {
   XEvent event;
 
@@ -449,6 +458,11 @@ void WMRunLoop_V0()
     WMHandleEvent(&event);
   }
   CFLog(kCFLogLevelError, CFSTR("WMRunLoop0: run loop is ready - bail out."));
+  
+#ifdef HAVE_INOTIFY
+  // Defaults inotify descriptor
+  _addDefaultsWatch();
+#endif
 }
 
 void WMRunLoop_V1()
@@ -461,7 +475,7 @@ void WMRunLoop_V1()
   
   // X connection file descriptor
   xfd = CFFileDescriptorCreate(kCFAllocatorDefault, ConnectionNumber(dpy), true,
-                               _processRunLoopEvent, NULL);
+                               _runLoopHandleEvent, NULL);
   CFFileDescriptorEnableCallBacks(xfd, kCFFileDescriptorReadCallBack);
 
   xfd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, xfd, 0);
@@ -474,7 +488,6 @@ void WMRunLoop_V1()
   wm_runloop = run_loop;
   CFRunLoopRun();
   CFFileDescriptorDisableCallBacks(xfd, kCFFileDescriptorReadCallBack);
-  
   
   CFLog(kCFLogLevelError, CFSTR("[WM] CFRunLoop finished."));
 }
@@ -497,8 +510,6 @@ noreturn void EventLoop(void)
   XEvent event;
   
   for (;;) {
-
-    CFLog(kCFLogLevelError, CFSTR("EventLoop()"));
     WMNextEvent(dpy, &event);	/* Blocks here */
     WMHandleEvent(&event);
   }
@@ -530,8 +541,8 @@ void ProcessPendingEvents(void)
   count = XPending(dpy);
 
   while (count > 0 && XPending(dpy)) {
-    WMNextEvent(dpy, &event);
-    /* XNextEvent(dpy, &event); */
+    XNextEvent(dpy, &event);
+    /* WMNextEvent(dpy, &event); */
     WMHandleEvent(&event);
     count--;
   }
