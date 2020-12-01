@@ -27,9 +27,11 @@ typedef struct __CFFileDescriptor {
   dispatch_source_t _write_source;
 } __CFFileDescriptor;
 
-static CFTypeID __kCFFileDescriptorTypeID = _kCFRuntimeIDCFFileDescriptor;
+static CFTypeID __kCFFileDescriptorTypeID = _kCFRuntimeIDNotAType;
 
-CFTypeID CFFileDescriptorGetTypeID(void) { return __kCFFileDescriptorTypeID; }
+CFTypeID CFFileDescriptorGetTypeID(void) {
+  return _kCFRuntimeIDCFFileDescriptor;
+}
 
 
 #pragma mark - Managing dispatch sources
@@ -140,7 +142,7 @@ static void __CFFileDescriptorDeallocate(CFTypeRef cf) {
   __CFUnlock(&f->_lock);
 }
 
-static const CFRuntimeClass __CFFileDescriptorClass = {
+const CFRuntimeClass __CFFileDescriptorClass = {
    0,
    "CFFileDescriptor",
    NULL,    // init
@@ -155,6 +157,7 @@ static const CFRuntimeClass __CFFileDescriptorClass = {
 // register the type with the CF runtime
 __private_extern__ void __CFFileDescriptorInitialize(void) {
   __kCFFileDescriptorTypeID = _CFRuntimeRegisterClass(&__CFFileDescriptorClass);
+  CFLog(kCFLogLevelError, CFSTR("*** CFileDescriptiorInitialize: ID == %i."), __kCFFileDescriptorTypeID);
 }
 
 // use the base reserved bits for storage (like CFMachPort does)
@@ -174,16 +177,14 @@ CFFileDescriptorRef CFFileDescriptorCreate(CFAllocatorRef allocator,
   CFFileDescriptorRef memory;
 
   if (!callout) {
-    CFLog(kCFLogLevelError,
-          CFSTR("CFileDescriptiorCreate was called without callback specified."));
+    CFLog(kCFLogLevelError, CFSTR("*** CFileDescriptiorCreate: no callback was specified."));
     return NULL;
   }
 
-  __CFFileDescriptorInitialize();
   size = sizeof(struct __CFFileDescriptor) - sizeof(CFRuntimeBase);
-  memory = (CFFileDescriptorRef)_CFRuntimeCreateInstance(allocator, __kCFFileDescriptorTypeID,
-                                                         size, NULL);
+  memory = (CFFileDescriptorRef)_CFRuntimeCreateInstance(allocator, CFFileDescriptorGetTypeID(), size, NULL);
   if (!memory) {
+    CFLog(kCFLogLevelError, CFSTR("*** CFileDescriptiorCreate: unable to allocate memory!"));
     return NULL;
   }
 
