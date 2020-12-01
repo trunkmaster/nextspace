@@ -12,10 +12,13 @@ License:	Apache 2.0
 URL:		http://swift.org
 Source0:	https://github.com/apple/swift-corelibs-foundation/archive/%{GIT_TAG}.tar.gz
 Source1:	CFNotificationCenter.c
-Patch0:		BuildSharedOnLinux.patch
+Source2:	CFFileDescriptor.h
+Source3:	CFFileDescriptor.c
+Patch0:		CF_shared_on_linux.patch
 %if 0%{?el7}
 Patch1:		BuildOnCentOS7.patch
 %endif
+Patch2:		CFFileDescriptor.patch
 
 %if 0%{?el7}
 BuildRequires:	cmake3
@@ -54,9 +57,10 @@ cd CoreFoundation
 %patch1 -p1
 cd ..
 %endif
+patch2 -p1
 cp %{_sourcedir}/CFNotificationCenter.c CoreFoundation/AppServices.subproj/
-cd CoreFoundation/Base.subproj/
-cp SwiftRuntime/TargetConditionals.h ./
+cp %{_sourcedir}/CFFileDescriptor.[hc] CoreFoundation/RunLoop.subproj/
+cd CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h CoreFoundation/Base.subproj/
 
 %build
 mkdir -p CoreFoundation/.build
@@ -145,6 +149,9 @@ ln -s ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
 #%postun
 
 %changelog
+* Tue Dec 1 2020 Sergii Stoian <stoyan255@gmail.com>
+- CFFileDescriptor was added to the build.
+
 * Sat Nov 21 2020 Sergii Stoian <stoyan255@gmail.com>
 - Fixed building on CentOS 7.
 
