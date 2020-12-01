@@ -25,9 +25,9 @@ typedef struct W_Balloon {
   WMColor *textColor;
   WMFont *font;
 
-  WMHandlerID timer;	/* timer for showing balloon */
+  CFRunLoopTimerRef timer;	/* timer for showing balloon */
 
-  WMHandlerID noDelayTimer;
+  CFRunLoopTimerRef noDelayTimer;
 
   int delay;
 

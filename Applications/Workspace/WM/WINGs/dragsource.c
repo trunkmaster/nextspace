@@ -45,7 +45,7 @@
 #define XDND_SOURCE_VIEW_STORED(dragInfo) dragInfo->sourceInfo != NULL  \
     && dragInfo->sourceInfo->sourceView != NULL
 
-static WMHandlerID dndSourceTimer = NULL;
+static CFRunLoopTimerRef dndSourceTimer = NULL;
 
 static void *idleState(WMView *srcView, XClientMessageEvent *event, WMDraggingInfo *info);
 static void *dropAllowedState(WMView *srcView, XClientMessageEvent *event, WMDraggingInfo *info);

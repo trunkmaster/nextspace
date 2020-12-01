@@ -148,11 +148,11 @@ enum {
 };
 
 /* types of input observers */
-enum {
-      WIReadMask = (1 << 0),
-      WIWriteMask = (1 << 1),
-      WIExceptMask = (1 << 2)
-};
+/* enum { */
+/*       WIReadMask = (1 << 0), */
+/*       WIWriteMask = (1 << 1), */
+/*       WIExceptMask = (1 << 2) */
+/* }; */
 
 typedef void WMWidget;
 typedef struct W_View	WMView;

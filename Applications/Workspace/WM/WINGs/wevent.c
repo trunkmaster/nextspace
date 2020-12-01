@@ -5,7 +5,6 @@
 #include <CoreFoundation/CFArray.h>
 #include <CoreFoundation/CFRunLoop.h>
 #include <WMcore/memory.h>
-/* #include <WMcore/handlers.h> */
 
 #include "wconfig.h"
 
@@ -71,11 +70,10 @@ static const unsigned long eventMasks[] = {
 static WMEventHook *extraEventHandler = NULL;
 
 /*
- *WMCreateEventHandler--
- *	Create an event handler and put it in the event handler list for the
- *view. If the same callback and clientdata are already used in another
- *handler, the masks are OR'ed.
- *
+ * WMCreateEventHandler
+ * 	Create an event handler and put it in the event handler list for the
+ * view. If the same callback and clientdata are already used in another
+ * handler, the masks are OR'ed.
  */
 void WMCreateEventHandler(WMView *view, unsigned long mask, WMEventProc *eventProc, void *clientData)
 {
@@ -100,10 +98,9 @@ void WMCreateEventHandler(WMView *view, unsigned long mask, WMEventProc *eventPr
 }
 
 /*
- *WMDeleteEventHandler--
+ * WMDeleteEventHandler
  *	Delete event handler matching arguments from windows
- *event handler list.
- *
+ * event handler list.
  */
 void WMDeleteEventHandler(WMView *view, unsigned long mask, WMEventProc *eventProc, void *clientData)
 {
@@ -127,7 +124,7 @@ void WMDeleteEventHandler(WMView *view, unsigned long mask, WMEventProc *eventPr
   }
 }
 
-static Time getEventTime(WMScreen *screen, XEvent *event)
+static Time _getEventTime(WMScreen *screen, XEvent *event)
 {
   switch (event->type) {
   case ButtonPress:
@@ -207,7 +204,7 @@ int WMHandleEvent(XEvent *event)
     return False;
   }
 
-  view->screen->lastEventTime = getEventTime(view->screen, event);
+  view->screen->lastEventTime = _getEventTime(view->screen, event);
 
   toplevel = W_TopLevelOfView(view);
 

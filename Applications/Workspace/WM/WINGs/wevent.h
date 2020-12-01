@@ -19,17 +19,15 @@ typedef struct W_EventHandler {
 
 void W_CallDestroyHandlers(W_View *view);
 
-/* ---[ WINGs/wevent.c ]-------------------------------------------------- */
-
 WMEventHook* WMHookEventHandler(WMEventHook *handler);
-
-int WMHandleEvent(XEvent *event);
 
 void WMCreateEventHandler(WMView *view, unsigned long mask,
                           WMEventProc *eventProc, void *clientData);
 
 void WMDeleteEventHandler(WMView *view, unsigned long mask,
                           WMEventProc *eventProc, void *clientData);
+
+int WMHandleEvent(XEvent *event);
 
 void WMNextEvent(Display *dpy, XEvent *event);
 

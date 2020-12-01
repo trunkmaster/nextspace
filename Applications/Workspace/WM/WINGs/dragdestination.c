@@ -34,7 +34,7 @@
   && ((dragInfo->destInfo->destView->dragDestinationProcs) != NULL)
 
 static const unsigned char XDNDversion = XDND_VERSION;
-static WMHandlerID dndDestinationTimer = NULL;
+static CFRunLoopTimerRef dndDestinationTimer = NULL;
 
 static void *idleState(WMView * destView, XClientMessageEvent * event, WMDraggingInfo * info);
 static void *waitEnterState(WMView * destView, XClientMessageEvent * event, WMDraggingInfo * info);

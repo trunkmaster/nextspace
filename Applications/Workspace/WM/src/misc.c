@@ -384,7 +384,7 @@ static char *getTextSelection(WScreen * screen, Atom selection)
     int bits;
     Atom rtype;
     unsigned long len, bytes;
-    WMHandlerID timer;
+    CFRunLoopTimerRef timer;
     int timeout = 0;
     XEvent ev;
     static Atom clipboard = 0;

@@ -83,9 +83,9 @@
 #endif
 
 
-/* #ifdef __cplusplus */
-/* extern "C" { */
-/* #endif /\* __cplusplus *\/ */
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 /* Notificaions */
   
@@ -95,16 +95,8 @@ enum {
     WANotFound = -1       /* element was not found in WMArray */
 };
 
-/* extern struct W_Array WMArray; */
-/* typedef struct W_Bag WMBag; */
-
 
 typedef struct W_UserDefaults WMUserDefaults;
-
-/* Some typedefs for the handler stuff */
-typedef void *WMHandlerID;
-typedef void WMCallback(void *data);
-typedef void WMInputProc(int fd, int mask, void *clientData);
 
 typedef void WMFreeDataProc(void *data);
 typedef int WMCompareDataProc(const void *item1, const void *item2);
@@ -145,9 +137,8 @@ extern int WCErrorCode;
 
 /*-------------------------------------------------------------------------*/
 
-/* #ifdef __cplusplus */
-/* } */
-/* #endif /\* __cplusplus *\/ */
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
-
-#endif
+#endif /* _WUTIL_H_ */
