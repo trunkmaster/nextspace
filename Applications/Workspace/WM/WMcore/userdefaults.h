@@ -22,6 +22,8 @@
 
 #include <WMcore/proplist.h>
 
+typedef struct W_UserDefaults WMUserDefaults;
+
 /*
  * This file is not part of WUtil public API
  *
@@ -31,9 +33,6 @@
 
 /* Save user configuration, to be used when application exits only */
 void w_save_defaults_changes(void);
-
-
-/* ---[ WINGs/userdefaults.c ]-------------------------------------------- */
 
 /* don't free the returned string */
 const char* wusergnusteppath(void);

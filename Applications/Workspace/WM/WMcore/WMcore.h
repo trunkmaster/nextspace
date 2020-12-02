@@ -96,8 +96,6 @@ enum {
 };
 
 
-typedef struct W_UserDefaults WMUserDefaults;
-
 typedef void WMFreeDataProc(void *data);
 typedef int WMCompareDataProc(const void *item1, const void *item2);
 /* Used by WMBag or WMArray for matching data */
