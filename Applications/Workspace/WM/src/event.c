@@ -1947,62 +1947,65 @@ static void handleKeyPress(XEvent * event)
   case WKBD_WINDOW9:
   case WKBD_WINDOW10:
 
-    /* widx = command - WKBD_WINDOW1; */
+    widx = command - WKBD_WINDOW1;
 
-    /* if (scr->shortcutWindows[widx]) { */
-    /*   WMArray *list = scr->shortcutWindows[widx]; */
-    /*   int cw; */
-    /*   int count = WMGetArrayItemCount(list); */
-    /*   WWindow *twin; */
-    /*   WMArrayIterator iter; */
-    /*   WWindow *wwin; */
+    if (scr->shortcutWindows[widx]) {
+      CFMutableArrayRef list = scr->shortcutWindows[widx];
+      int cw;
+      int count = CFArrayGetCount(list);
+      WWindow *twin, *wwin;
 
-    /*   wUnselectWindows(scr); */
-    /*   cw = scr->current_workspace; */
+      wUnselectWindows(scr);
+      cw = scr->current_workspace;
 
-    /*   WM_ETARETI_ARRAY(list, wwin, iter) { */
-    /*     if (count > 1) */
-    /*       wWindowChangeWorkspace(wwin, cw); */
+      for (int i = count - 1; i >= 0; i--) {
+        wwin = (WWindow *)CFArrayGetValueAtIndex(list, i);
+        if (count > 1) {
+          wWindowChangeWorkspace(wwin, cw);
+        }
+        wMakeWindowVisible(wwin);
+        if (count > 1) {
+          wSelectWindow(wwin, True);
+        }
+      }
 
-    /*     wMakeWindowVisible(wwin); */
+      /* rotate the order of windows, to create a cycling effect */
+      twin = (WWindow *)CFArrayGetValueAtIndex(list, 0);
+      CFArrayRemoveValueAtIndex(list, 0);
+      CFArrayAppendValue(list, twin);
 
-    /*     if (count > 1) */
-    /*       wSelectWindow(wwin, True); */
-    /*   } */
+    } else if (wwin && ISMAPPED(wwin) && ISFOCUSED(wwin)) {
+      if (scr->shortcutWindows[widx]) {
+        CFRelease(scr->shortcutWindows[widx]);
+        scr->shortcutWindows[widx] = NULL;
+      }
 
-    /*   /\* rotate the order of windows, to create a cycling effect *\/ */
-    /*   twin = WMGetFromArray(list, 0); */
-    /*   WMDeleteFromArray(list, 0); */
-    /*   WMAddToArray(list, twin); */
+      if (wwin->flags.selected && scr->selected_windows) {
+        scr->shortcutWindows[widx] = CFArrayCreateMutableCopy(kCFAllocatorDefault,
+                                                              CFArrayGetCount(scr->selected_windows),
+                                                              scr->selected_windows);
+      } else {
+        scr->shortcutWindows[widx] = CFArrayCreateMutable(kCFAllocatorDefault, 4, NULL);
+        CFArrayAppendValue(scr->shortcutWindows[widx], wwin);
+      }
 
-    /* } else if (wwin && ISMAPPED(wwin) && ISFOCUSED(wwin)) { */
-    /*   if (scr->shortcutWindows[widx]) { */
-    /*     WMFreeArray(scr->shortcutWindows[widx]); */
-    /*     scr->shortcutWindows[widx] = NULL; */
-    /*   } */
+      wSelectWindow(wwin, !wwin->flags.selected);
+      XFlush(dpy);
+      wusleep(3000);
+      wSelectWindow(wwin, !wwin->flags.selected);
+      XFlush(dpy);
 
-    /*   if (wwin->flags.selected && scr->selected_windows) { */
-    /*     scr->shortcutWindows[widx] = WMDuplicateArray(scr->selected_windows); */
-    /*   } else { */
-    /*     scr->shortcutWindows[widx] = WMCreateArray(4); */
-    /*     WMAddToArray(scr->shortcutWindows[widx], wwin); */
-    /*   } */
+    } else if (scr->selected_windows && CFArrayGetCount(scr->selected_windows)) {
 
-    /*   wSelectWindow(wwin, !wwin->flags.selected); */
-    /*   XFlush(dpy); */
-    /*   wusleep(3000); */
-    /*   wSelectWindow(wwin, !wwin->flags.selected); */
-    /*   XFlush(dpy); */
-
-    /* } else if (scr->selected_windows && WMGetArrayItemCount(scr->selected_windows)) { */
-
-    /*   if (wwin->flags.selected && scr->selected_windows) { */
-    /*     if (scr->shortcutWindows[widx]) { */
-    /*       WMFreeArray(scr->shortcutWindows[widx]); */
-    /*     } */
-    /*     scr->shortcutWindows[widx] = WMDuplicateArray(scr->selected_windows); */
-    /*   } */
-    /* } */
+      if (wwin->flags.selected && scr->selected_windows) {
+        if (scr->shortcutWindows[widx]) {
+          CFRelease(scr->shortcutWindows[widx]);
+        }
+        scr->shortcutWindows[widx] = CFArrayCreateMutableCopy(kCFAllocatorDefault,
+                                                              CFArrayGetCount(scr->selected_windows),
+                                                              scr->selected_windows);
+      }
+    }
 
     break;
 
