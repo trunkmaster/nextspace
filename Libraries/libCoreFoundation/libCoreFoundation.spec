@@ -5,20 +5,21 @@
 %endif
 
 Name:		libCoreFoundation
-Version:	5.3.1
+Version:	1338
 Release:	0%{?dist}
 Summary:	Apple CoreFoundation framework.
 License:	Apache 2.0
 URL:		http://swift.org
 Source0:	https://github.com/apple/swift-corelibs-foundation/archive/%{GIT_TAG}.tar.gz
-Source1:	CFNotificationCenter.c
-Source2:	CFFileDescriptor.h
-Source3:	CFFileDescriptor.c
+Source1:	CFFileDescriptor.h
+Source2:	CFFileDescriptor.c
+Source3:	CFNotificationCenter.c
 Patch0:		CF_shared_on_linux.patch
 %if 0%{?el7}
-Patch1:		BuildOnCentOS7.patch
+Patch1:		CF_centos7.patch
 %endif
 Patch2:		CFFileDescriptor.patch
+Patch3:		CFNotificationCenter.patch
 
 %if 0%{?el7}
 BuildRequires:	cmake3
@@ -57,10 +58,12 @@ cd CoreFoundation
 %patch1 -p1
 cd ..
 %endif
-patch2 -p1
+%patch2 -p1
+%patch3 -p1
 cp %{_sourcedir}/CFNotificationCenter.c CoreFoundation/AppServices.subproj/
-cp %{_sourcedir}/CFFileDescriptor.[hc] CoreFoundation/RunLoop.subproj/
-cd CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h CoreFoundation/Base.subproj/
+cp %{_sourcedir}/CFFileDescriptor.h CoreFoundation/RunLoop.subproj/
+cp %{_sourcedir}/CFFileDescriptor.c CoreFoundation/RunLoop.subproj/
+cp CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h CoreFoundation/Base.subproj/
 
 %build
 mkdir -p CoreFoundation/.build
