@@ -40,9 +40,6 @@ const char* wusergnusteppath(void);
 /* Free the returned string when you no longer need it */
 char* wdefaultspathfordomain(const char *domain);
 
-/* Free the returned string when you no longer need it */
-char* wglobaldefaultspathfordomain(const char *domain);
-
 WMUserDefaults* WMGetStandardUserDefaults(void);
 
 WMUserDefaults* WMGetDefaultsFromPath(const char *path);

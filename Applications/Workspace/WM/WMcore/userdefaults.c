@@ -44,11 +44,7 @@ char *WMUserDefaultsDidChangeNotification = "WMUserDefaultsDidChangeNotification
 static void synchronizeUserDefaults(void *foo);
 
 #ifndef DEFAULTS_DIR
-#ifdef NEXTSPACE
 #define DEFAULTS_DIR "/Preferences/.WindowMaker"
-#else
-#define DEFAULTS_DIR "/Defaults"
-#endif
 #endif
 
 #ifndef HAVE_INOTIFY
@@ -61,34 +57,16 @@ const char *wusergnusteppath()
 {
   static const char subdir[] = "/Library";
   static char *path = NULL;
-  char *gspath, *h;
+  char *home;
   int pathlen;
 
-  if (path)
-    /* Value have been already computed, re-use it */
-    return path;
-
-#ifdef HAVE_SECURE_GETENV
-  gspath = secure_getenv("GNUSTEP_USER_ROOT");
-#else
-  gspath = getenv("GNUSTEP_USER_ROOT");
-#endif
-  if (gspath) {
-    gspath = wexpandpath(gspath);
-    if (gspath) {
-      path = gspath;
-      return path;
-    }
-    wwarning(_("variable GNUSTEP_USER_ROOT defined with invalid path, not used"));
-  }
-
-  h = wgethomedir();
-  if (!h)
+  home = wgethomedir();
+  if (!home)
     return NULL;
 
-  pathlen = strlen(h);
+  pathlen = strlen(home);
   path = wmalloc(pathlen + sizeof(subdir));
-  strcpy(path, h);
+  strcpy(path, home);
   strcpy(path + pathlen, subdir);
 
   return path;
@@ -110,22 +88,6 @@ char *wdefaultspathfordomain(const char *domain)
   strcat(path, domain);
 
   return path;
-}
-
-/* XXX: doesn't quite belong to *user*defaults.c */
-#ifndef GLOBAL_DEFAULTS_SUBDIR
-#define GLOBAL_DEFAULTS_SUBDIR "WindowMaker"
-#endif
-char *wglobaldefaultspathfordomain(const char *domain)
-{
-  char *t = NULL;
-  size_t len;
-
-  len = strlen( SYSCONFDIR ) + strlen( GLOBAL_DEFAULTS_SUBDIR ) + strlen(domain) + 3;
-  t = wmalloc(len);
-  snprintf(t, len, "%s/%s/%s", SYSCONFDIR, GLOBAL_DEFAULTS_SUBDIR, domain);
-
-  return t;
 }
 
 void w_save_defaults_changes(void)
