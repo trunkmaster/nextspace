@@ -52,6 +52,7 @@
 #include "pixmap.h"
 #include "menu.h"
 #include "window.h"
+#include "window_attributes.h"
 #include "main.h"
 #include "actions.h"
 #include "properties.h"

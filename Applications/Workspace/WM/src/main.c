@@ -375,26 +375,6 @@ noreturn void wAbort(Bool dumpCore)
     exit(1);
 }
 
-static void check_defaults(void)
-{
-  char *path;
-
-  path = wdefaultspathfordomain("WindowMaker");
-
-  if (access(path, R_OK) != 0) {
-    wwarning(_("could not find user GNUstep directory (%s)."), path);
-
-    if (system("wmaker.inst --batch") != 0) {
-      wwarning(_("There was an error while creating GNUstep directory, please "
-                 "make sure you have installed Window Maker correctly and run wmaker.inst"));
-    } else {
-      wwarning(_("%s directory created with default configuration."), path);
-    }
-  }
-
-  wfree(path);
-}
-
 void ExecInitScript(void)
 {
   char *file, *paths;
@@ -438,7 +418,7 @@ int WMInitialize(int argc, char **argv)
 
   if (!wPreferences.flags.noupdates) {
     /* check existence of Defaults DB directory */
-    check_defaults();
+    wDefaultsCheckDomain("WindowMaker");
   }
 
   if (w_global.locale) {

@@ -50,6 +50,7 @@
 #include "framewin.h"
 #include "texture.h"
 #include "window.h"
+#include "window_attributes.h"
 #include "icon.h"
 #include "properties.h"
 #include "actions.h"

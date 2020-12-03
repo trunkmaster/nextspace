@@ -1,5 +1,46 @@
+# WUtil
+$(APP_NAME)_C_FILES += \
+	$(WM_DIR)/WMcore/array.c \
+	$(WM_DIR)/WMcore/bagtree.c \
+	$(WM_DIR)/WMcore/data.c \
+	$(WM_DIR)/WMcore/error.c \
+	$(WM_DIR)/WMcore/findfile.c \
+	$(WM_DIR)/WMcore/handlers.c \
+	$(WM_DIR)/WMcore/hashtable.c \
+	$(WM_DIR)/WMcore/memory.c \
+	$(WM_DIR)/WMcore/misc.c \
+	$(WM_DIR)/WMcore/proplist.c \
+	$(WM_DIR)/WMcore/string.c \
+	$(WM_DIR)/WMcore/tree.c \
+	$(WM_DIR)/WMcore/userdefaults.c \
+	$(WM_DIR)/WMcore/usleep.c
+
+	#$(WM_DIR)/WMcore/notification.c
+	#$(WM_DIR)/WMcore/wapplication.c
+
+# WINGs
+$(APP_NAME)_C_FILES += \
+	$(WM_DIR)/WINGs/configuration.c \
+	$(WM_DIR)/WINGs/dragcommon.c \
+	$(WM_DIR)/WINGs/dragdestination.c \
+	$(WM_DIR)/WINGs/dragsource.c \
+	$(WM_DIR)/WINGs/selection.c \
+	$(WM_DIR)/WINGs/wappresource.c \
+	$(WM_DIR)/WINGs/wballoon.c \
+	$(WM_DIR)/WINGs/wcolor.c \
+	$(WM_DIR)/WINGs/wevent.c \
+	$(WM_DIR)/WINGs/wframe.c \
+	$(WM_DIR)/WINGs/wfont.c \
+	$(WM_DIR)/WINGs/widgets.c \
+	$(WM_DIR)/WINGs/winputmethod.c \
+	$(WM_DIR)/WINGs/wlabel.c \
+	$(WM_DIR)/WINGs/wmisc.c \
+	$(WM_DIR)/WINGs/wpixmap.c \
+	$(WM_DIR)/WINGs/wview.c \
+	$(WM_DIR)/WINGs/wwindow.c
+
 # WindowMaker
-$(APP_NAME)_C_FILES = \
+$(APP_NAME)_C_FILES += \
 	$(WM_DIR)/src/actions.c \
 	$(WM_DIR)/src/appicon.c \
 	$(WM_DIR)/src/application.c \
@@ -31,8 +72,8 @@ $(APP_NAME)_C_FILES = \
 	$(WM_DIR)/src/switchmenu.c \
 	$(WM_DIR)/src/texture.c \
 	$(WM_DIR)/src/wcore.c \
-	$(WM_DIR)/src/wdefaults.c \
 	$(WM_DIR)/src/window.c \
+	$(WM_DIR)/src/window_attributes.c \
 	$(WM_DIR)/src/winmenu.c \
 	$(WM_DIR)/src/wmspec.c \
 	$(WM_DIR)/src/workspace.c \
@@ -41,47 +82,6 @@ $(APP_NAME)_C_FILES = \
 	$(WM_DIR)/src/xutil.c \
 	$(WM_DIR)/src/xmodifier.c \
 	$(WM_DIR)/src/xdnd.c
-
-# WINGs
-$(APP_NAME)_C_FILES += \
-	$(WM_DIR)/WINGs/configuration.c \
-	$(WM_DIR)/WINGs/dragcommon.c \
-	$(WM_DIR)/WINGs/dragdestination.c \
-	$(WM_DIR)/WINGs/dragsource.c \
-	$(WM_DIR)/WINGs/selection.c \
-	$(WM_DIR)/WINGs/wappresource.c \
-	$(WM_DIR)/WINGs/wballoon.c \
-	$(WM_DIR)/WINGs/wcolor.c \
-	$(WM_DIR)/WINGs/wevent.c \
-	$(WM_DIR)/WINGs/wframe.c \
-	$(WM_DIR)/WINGs/wfont.c \
-	$(WM_DIR)/WINGs/widgets.c \
-	$(WM_DIR)/WINGs/winputmethod.c \
-	$(WM_DIR)/WINGs/wlabel.c \
-	$(WM_DIR)/WINGs/wmisc.c \
-	$(WM_DIR)/WINGs/wpixmap.c \
-	$(WM_DIR)/WINGs/wview.c \
-	$(WM_DIR)/WINGs/wwindow.c
-
-# WUtil
-$(APP_NAME)_C_FILES += \
-	$(WM_DIR)/WMcore/array.c \
-	$(WM_DIR)/WMcore/bagtree.c \
-	$(WM_DIR)/WMcore/data.c \
-	$(WM_DIR)/WMcore/error.c \
-	$(WM_DIR)/WMcore/findfile.c \
-	$(WM_DIR)/WMcore/handlers.c \
-	$(WM_DIR)/WMcore/hashtable.c \
-	$(WM_DIR)/WMcore/memory.c \
-	$(WM_DIR)/WMcore/misc.c \
-	$(WM_DIR)/WMcore/proplist.c \
-	$(WM_DIR)/WMcore/string.c \
-	$(WM_DIR)/WMcore/tree.c \
-	$(WM_DIR)/WMcore/userdefaults.c \
-	$(WM_DIR)/WMcore/usleep.c
-
-	#$(WM_DIR)/WMcore/notification.c
-	# $(WM_DIR)/WMcore/wapplication.c
 
 ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
 $(APP_NAME)_C_FILES += $(WM_DIR)/src/osdep_bsd.c

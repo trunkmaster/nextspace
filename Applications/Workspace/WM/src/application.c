@@ -34,6 +34,7 @@
 #include "WindowMaker.h"
 #include "menu.h"
 #include "window.h"
+#include "window_attributes.h"
 #include "appicon.h"
 #include "application.h"
 #include "properties.h"

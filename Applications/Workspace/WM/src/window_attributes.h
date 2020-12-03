@@ -40,4 +40,20 @@
 #define WA_NOT_APPLICATION	(1<<14)
 #define WA_DONT_MOVE_OFF	(1<<15)
 
+void wDefaultFillAttributes(const char *instance, const char *class,
+                            WWindowAttributes *attr, WWindowAttributes *mask,
+                            Bool useGlobalDefault);
+
+char *get_icon_filename(const char *winstance, const char *wclass, const char *command,
+			Bool default_icon);
+RImage *get_rimage_from_file(WScreen *scr, const char *file_name, int max_size);
+char *get_default_image_path(void);
+RImage *get_default_image(WScreen *scr);
+RImage *get_icon_image(WScreen *scr, const char *winstance, const char *wclass, int max_size);
+
+int wDefaultGetStartWorkspace(WScreen *scr, const char *instance, const char *class);
+char *wDefaultGetIconFile(const char *instance, const char *class, Bool default_icon);
+void wDefaultChangeIcon(const char *instance, const char* class, const char *file);
+void wDefaultPurgeInfo(const char *instance, const char *class);
+
 #endif

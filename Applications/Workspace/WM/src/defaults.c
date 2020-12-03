@@ -77,12 +77,8 @@
 
 #define MAX_SHORTCUT_LENGTH 32
 
-#ifndef GLOBAL_DEFAULTS_SUBDIR
-#define GLOBAL_DEFAULTS_SUBDIR "WindowMaker"
-#endif
-
-
 typedef struct _WDefaultEntry WDefaultEntry;
+
 typedef int (WDECallbackConvert) (WScreen *scr, WDefaultEntry *entry, WMPropList *plvalue, void *addr, void **tdata);
 typedef int (WDECallbackUpdate) (WScreen *scr, WDefaultEntry *entry, void *tdata, void *extra_data);
 
@@ -96,13 +92,6 @@ struct _WDefaultEntry {
   WMPropList *plkey;
   WMPropList *plvalue;	/* default value */
 };
-
-/* used to map strings to integers */
-typedef struct {
-  const char *string;
-  short value;
-  char is_alias;
-} WOptionEnumeration;
 
 /* type converters */
 static WDECallbackConvert getBool;
@@ -129,9 +118,7 @@ static WDECallbackUpdate setWrapAppiconsInDock;
 static WDECallbackUpdate setStickyIcons;
 static WDECallbackUpdate setWidgetColor;
 static WDECallbackUpdate setIconTile;
-#ifdef NEXTSPACE
-static WDECallbackUpdate setMiniwindowTile;
-#endif
+static WDECallbackUpdate setMiniwindowTile; /* NEXTSPACE */
 static WDECallbackUpdate setWinTitleFont;
 static WDECallbackUpdate setMenuTitleFont;
 static WDECallbackUpdate setMenuTextFont;
@@ -195,136 +182,131 @@ static WDECallbackUpdate setCursor;
 #define REFRESH_ICON_TILE	(1<<9)
 #define REFRESH_ICON_FONT	(1<<10)
 #define REFRESH_WORKSPACE_BACK	(1<<11)
-
 #define REFRESH_BUTTON_IMAGES   (1<<12)
-
 #define REFRESH_ICON_TITLE_COLOR (1<<13)
 #define REFRESH_ICON_TITLE_BACK (1<<14)
-
 #define REFRESH_WORKSPACE_MENU	(1<<15)
 
 #define REFRESH_FRAME_BORDER REFRESH_MENU_FONT|REFRESH_WINDOW_FONT
 
+/* used to map strings to integers */
+typedef struct {
+  const char *string;
+  short value;
+  char is_alias;
+} WOptionEnumeration;
+
 static WOptionEnumeration seTitlebarModes[] = {
-                                               {"new", TS_NEW, 0}, {"old", TS_OLD, 0},
-                                               {"next", TS_NEXT, 0}, {NULL, 0, 0}
+  {"new", TS_NEW, 0},
+  {"old", TS_OLD, 0},
+  {"next", TS_NEXT, 0},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration seColormapModes[] = {
-                                               {"Manual", WCM_CLICK, 0}, {"ClickToFocus", WCM_CLICK, 1},
-                                               {"Auto", WCM_POINTER, 0}, {"FocusFollowMouse", WCM_POINTER, 1},
-                                               {NULL, 0, 0}
+  {"Manual", WCM_CLICK, 0},
+  {"ClickToFocus", WCM_CLICK, 1},
+  {"Auto", WCM_POINTER, 0},
+  {"FocusFollowMouse", WCM_POINTER, 1},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration sePlacements[] = {
-                                            {"Auto", WPM_AUTO, 0},
-                                            {"Smart", WPM_SMART, 0},
-                                            {"Cascade", WPM_CASCADE, 0},
-                                            {"Random", WPM_RANDOM, 0},
-                                            {"Manual", WPM_MANUAL, 0},
-                                            {"Center", WPM_CENTER, 0},
-                                            {NULL, 0, 0}
+  {"Auto", WPM_AUTO, 0},
+  {"Smart", WPM_SMART, 0},
+  {"Cascade", WPM_CASCADE, 0},
+  {"Random", WPM_RANDOM, 0},
+  {"Manual", WPM_MANUAL, 0},
+  {"Center", WPM_CENTER, 0},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration seGeomDisplays[] = {
-                                              {"None", WDIS_NONE, 0},
-                                              {"Center", WDIS_CENTER, 0},
-                                              {"Corner", WDIS_TOPLEFT, 0},
-                                              {"Floating", WDIS_FRAME_CENTER, 0},
-                                              {"Line", WDIS_NEW, 0},
-                                              {"Titlebar", WDIS_TITLEBAR, 0},
-                                              {NULL, 0, 0}
+  {"None", WDIS_NONE, 0},
+  {"Center", WDIS_CENTER, 0},
+  {"Corner", WDIS_TOPLEFT, 0},
+  {"Floating", WDIS_FRAME_CENTER, 0},
+  {"Line", WDIS_NEW, 0},
+  {"Titlebar", WDIS_TITLEBAR, 0},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration seSpeeds[] = {
-                                        {"UltraFast", SPEED_ULTRAFAST, 0},
-                                        {"Fast", SPEED_FAST, 0},
-                                        {"Medium", SPEED_MEDIUM, 0},
-                                        {"Slow", SPEED_SLOW, 0},
-                                        {"UltraSlow", SPEED_ULTRASLOW, 0},
-                                        {NULL, 0, 0}
+  {"UltraFast", SPEED_ULTRAFAST, 0},
+  {"Fast", SPEED_FAST, 0},
+  {"Medium", SPEED_MEDIUM, 0},
+  {"Slow", SPEED_SLOW, 0},
+  {"UltraSlow", SPEED_ULTRASLOW, 0},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration seMouseButtonActions[] = {
-                                                    {"None", WA_NONE, 0},
-                                                    {"SelectWindows", WA_SELECT_WINDOWS, 0},
-                                                    {"OpenApplicationsMenu", WA_OPEN_APPMENU, 0},
-                                                    {"OpenWindowListMenu", WA_OPEN_WINLISTMENU, 0},
-                                                    {"MoveToPrevWorkspace", WA_MOVE_PREVWORKSPACE, 0},
-                                                    {"MoveToNextWorkspace", WA_MOVE_NEXTWORKSPACE, 0},
-                                                    {"MoveToPrevWindow", WA_MOVE_PREVWINDOW, 0},
-                                                    {"MoveToNextWindow", WA_MOVE_NEXTWINDOW, 0},
-                                                    {NULL, 0, 0}
+  {"None", WA_NONE, 0},
+  {"SelectWindows", WA_SELECT_WINDOWS, 0},
+  {"OpenApplicationsMenu", WA_OPEN_APPMENU, 0},
+  {"OpenWindowListMenu", WA_OPEN_WINLISTMENU, 0},
+  {"MoveToPrevWorkspace", WA_MOVE_PREVWORKSPACE, 0},
+  {"MoveToNextWorkspace", WA_MOVE_NEXTWORKSPACE, 0},
+  {"MoveToPrevWindow", WA_MOVE_PREVWINDOW, 0},
+  {"MoveToNextWindow", WA_MOVE_NEXTWINDOW, 0},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration seMouseWheelActions[] = {
-                                                   {"None", WA_NONE, 0},
-                                                   {"SwitchWorkspaces", WA_SWITCH_WORKSPACES, 0},
-                                                   {"SwitchWindows", WA_SWITCH_WINDOWS, 0},
-                                                   {NULL, 0, 0}
+  {"None", WA_NONE, 0},
+  {"SwitchWorkspaces", WA_SWITCH_WORKSPACES, 0},
+  {"SwitchWindows", WA_SWITCH_WINDOWS, 0},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration seIconificationStyles[] = {
-                                                     {"Zoom", WIS_ZOOM, 0},
-                                                     {"Twist", WIS_TWIST, 0},
-                                                     {"Flip", WIS_FLIP, 0},
-                                                     {"None", WIS_NONE, 0},
-                                                     {"random", WIS_RANDOM, 0},
-                                                     {NULL, 0, 0}
+  {"Zoom", WIS_ZOOM, 0},
+  {"Twist", WIS_TWIST, 0},
+  {"Flip", WIS_FLIP, 0},
+  {"None", WIS_NONE, 0},
+  {"random", WIS_RANDOM, 0},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration seJustifications[] = {
-                                                {"Left", WTJ_LEFT, 0},
-                                                {"Center", WTJ_CENTER, 0},
-                                                {"Right", WTJ_RIGHT, 0},
-                                                {NULL, 0, 0}
+  {"Left", WTJ_LEFT, 0},
+  {"Center", WTJ_CENTER, 0},
+  {"Right", WTJ_RIGHT, 0},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration seIconPositions[] = {
-                                               {"blv", IY_BOTTOM | IY_LEFT | IY_VERT, 0},
-                                               {"blh", IY_BOTTOM | IY_LEFT | IY_HORIZ, 0},
-                                               {"brv", IY_BOTTOM | IY_RIGHT | IY_VERT, 0},
-                                               {"brh", IY_BOTTOM | IY_RIGHT | IY_HORIZ, 0},
-                                               {"tlv", IY_TOP | IY_LEFT | IY_VERT, 0},
-                                               {"tlh", IY_TOP | IY_LEFT | IY_HORIZ, 0},
-                                               {"trv", IY_TOP | IY_RIGHT | IY_VERT, 0},
-                                               {"trh", IY_TOP | IY_RIGHT | IY_HORIZ, 0},
-                                               {NULL, 0, 0}
+  {"blv", IY_BOTTOM | IY_LEFT | IY_VERT, 0},
+  {"blh", IY_BOTTOM | IY_LEFT | IY_HORIZ, 0},
+  {"brv", IY_BOTTOM | IY_RIGHT | IY_VERT, 0},
+  {"brh", IY_BOTTOM | IY_RIGHT | IY_HORIZ, 0},
+  {"tlv", IY_TOP | IY_LEFT | IY_VERT, 0},
+  {"tlh", IY_TOP | IY_LEFT | IY_HORIZ, 0},
+  {"trv", IY_TOP | IY_RIGHT | IY_VERT, 0},
+  {"trh", IY_TOP | IY_RIGHT | IY_HORIZ, 0},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration seMenuStyles[] = {
-                                            {"normal", MS_NORMAL, 0},
-                                            {"singletexture", MS_SINGLE_TEXTURE, 0},
-                                            {"flat", MS_FLAT, 0},
-                                            {NULL, 0, 0}
+  {"normal", MS_NORMAL, 0},
+  {"singletexture", MS_SINGLE_TEXTURE, 0},
+  {"flat", MS_FLAT, 0},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration seDisplayPositions[] = {
-                                                  {"none", WD_NONE, 0},
-                                                  {"center", WD_CENTER, 0},
-                                                  {"top", WD_TOP, 0},
-                                                  {"bottom", WD_BOTTOM, 0},
-                                                  {"topleft", WD_TOPLEFT, 0},
-                                                  {"topright", WD_TOPRIGHT, 0},
-                                                  {"bottomleft", WD_BOTTOMLEFT, 0},
-                                                  {"bottomright", WD_BOTTOMRIGHT, 0},
-                                                  {NULL, 0, 0}
+  {"none", WD_NONE, 0},
+  {"center", WD_CENTER, 0},
+  {"top", WD_TOP, 0},
+  {"bottom", WD_BOTTOM, 0},
+  {"topleft", WD_TOPLEFT, 0},
+  {"topright", WD_TOPRIGHT, 0},
+  {"bottomleft", WD_BOTTOMLEFT, 0},
+  {"bottomright", WD_BOTTOMRIGHT, 0},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration seWorkspaceBorder[] = {
-                                                 {"None", WB_NONE, 0},
-                                                 {"LeftRight", WB_LEFTRIGHT, 0},
-                                                 {"TopBottom", WB_TOPBOTTOM, 0},
-                                                 {"AllDirections", WB_ALLDIRS, 0},
-                                                 {NULL, 0, 0}
+  {"None", WB_NONE, 0},
+  {"LeftRight", WB_LEFTRIGHT, 0},
+  {"TopBottom", WB_TOPBOTTOM, 0},
+  {"AllDirections", WB_ALLDIRS, 0},
+  {NULL, 0, 0}
 };
-
 static WOptionEnumeration seDragMaximizedWindow[] = {
-                                                     {"Move", DRAGMAX_MOVE, 0},
-                                                     {"RestoreGeometry", DRAGMAX_RESTORE, 0},
-                                                     {"Unmaximize", DRAGMAX_UNMAXIMIZE, 0},
-                                                     {"NoMove", DRAGMAX_NOMOVE, 0},
-                                                     {NULL, 0, 0}
+  {"Move", DRAGMAX_MOVE, 0},
+  {"RestoreGeometry", DRAGMAX_RESTORE, 0},
+  {"Unmaximize", DRAGMAX_UNMAXIMIZE, 0},
+  {"NoMove", DRAGMAX_NOMOVE, 0},
+  {NULL, 0, 0}
 };
 
 /*
@@ -367,16 +349,15 @@ WDefaultEntry staticOptionList[] = {
 
 /* dynamic options */
 /* 
-   const char 		*key,
-   const char		*default_value, 
-   void			*extra_data, 
-   void			*addr, 
-   WDECallbackConvert	*convert; 
+   const char 		*key;
+   const char		*default_value;
+   void			*extra_data;
+   void			*addr;
+   WDECallbackConvert	*convert;
    WDECallbackUpdate	*update;
    WMPropList		*plkey; 
    WMPropList		*plvalue; 
 */
-
 WDefaultEntry optionList[] = {
   {"IconPosition", "blh", seIconPositions, &wPreferences.icon_yard, getEnum, setIconPosition, NULL, NULL},
   {"IconificationStyle", "Zoom", seIconificationStyles, &wPreferences.iconification_style, getEnum, NULL, NULL, NULL},
@@ -622,7 +603,8 @@ WDefaultEntry optionList[] = {
   {"CycleIgnoreMinimized", "NO", NULL, &wPreferences.cycle_ignore_minimized, getBool, NULL, NULL, NULL}
 };
 
-static void initDefaults(void)
+/* set `plkey` and `plvalue` fields of entries in `optionList` and `staticOptionList` */
+static void _initDefaults(void)
 {
   unsigned int i;
   WDefaultEntry *entry;
@@ -650,13 +632,15 @@ static void initDefaults(void)
   }
 }
 
-static WMPropList *readGlobalDomain(const char *domainName, Bool requireDictionary)
+// are placed in /usr/NextSpace/Apps/Workspace.app/Resources/WM
+static WMPropList *_readGlobalDomain(const char *domainName, Bool requireDictionary)
 {
   WMPropList *globalDict = NULL;
   char path[PATH_MAX];
   struct stat stbuf;
 
-  snprintf(path, sizeof(path), "%s/%s/%s", SYSCONFDIR, GLOBAL_DEFAULTS_SUBDIR, domainName);
+  /* SYSCONFDIR specified in WM/config-paths.h */
+  snprintf(path, sizeof(path), "%s/%s", SYSCONFDIR, domainName);
   if (stat(path, &stbuf) >= 0) {
     globalDict = WMReadPropListFromFile(path);
     if (globalDict && requireDictionary && !WMIsPLDictionary(globalDict)) {
@@ -671,6 +655,71 @@ static WMPropList *readGlobalDomain(const char *domainName, Bool requireDictiona
   return globalDict;
 }
 
+// ~/Library
+/* const char *wDefaultsPath() */
+/* { */
+/*   static const char subdir[] = "/Library"; */
+/*   static char *path = NULL; */
+/*   char *home; */
+/*   int pathlen; */
+
+/*   home = wgethomedir(); */
+/*   if (!home) */
+/*     return NULL; */
+
+/*   pathlen = strlen(home); */
+/*   path = wmalloc(pathlen + sizeof(subdir)); */
+/*   strcpy(path, home); */
+/*   strcpy(path + pathlen, subdir); */
+
+/*   return path; */
+/* } */
+
+//
+/* char *wDefaultsPathForDomain(const char *domain) */
+/* { */
+/*   char *path; */
+/*   const char *gspath; */
+/*   size_t slen; */
+
+/*   gspath = wusergnusteppath(); */
+/*   slen = strlen(gspath) + strlen(DEFAULTS_DIR) + strlen(domain) + 4; */
+/*   path = wmalloc(slen); */
+
+/*   strcpy(path, gspath); */
+/*   strcat(path, DEFAULTS_DIR); */
+/*   strcat(path, "/"); */
+/*   strcat(path, domain); */
+
+/*   return path; */
+/* } */
+
+void wDefaultsCheckDomain(const char *domain)
+{
+  char *path;
+
+  path = wdefaultspathfordomain(domain);
+
+  if (access(path, R_OK) != 0) {
+    wwarning(_("could not find user GNUstep directory (%s)."), path);
+
+    if (system("wmaker.inst --batch") != 0) {
+      wwarning(_("There was an error while creating GNUstep directory, please "
+                 "make sure you have installed Window Maker correctly and run wmaker.inst"));
+    } else {
+      wwarning(_("%s directory created with default configuration."), path);
+    }
+  }
+
+  wfree(path);
+}
+
+/* 
+   NOW: reads and merges user and global defaults.
+   TODO: I consider adressing some issues:
+   1. Don't read global defs - use `optionsList` and apply saved user defaults to it.
+   2. User saved defaults should hold only key=value pairs which differ from 'optionList' values. 
+*/
 WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary)
 {
   WDDomain *db;
@@ -680,7 +729,7 @@ WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary)
 
   if (!inited) {
     inited = 1;
-    initDefaults();
+    _initDefaults();
   }
 
   db = wmalloc(sizeof(WDDomain));
@@ -702,7 +751,7 @@ WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary)
   }
 
   /* global system dictionary */
-  shared_dict = readGlobalDomain(domain, requireDictionary);
+  shared_dict = _readGlobalDomain(domain, requireDictionary);
 
   if (shared_dict && db->dictionary && WMIsPLDictionary(shared_dict) &&
       WMIsPLDictionary(db->dictionary)) {
@@ -762,7 +811,7 @@ void wDefaultsCheckDomains(void* arg)
     w_global.domain.wmaker->timestamp = stbuf.st_mtime;
 
     /* Global dictionary */
-    shared_dict = readGlobalDomain("WindowMaker", True);
+    shared_dict = _readGlobalDomain("WindowMaker", True);
 
     /* User dictionary */
     dict = WMReadPropListFromFile(w_global.domain.wmaker->path);
@@ -801,7 +850,7 @@ void wDefaultsCheckDomains(void* arg)
 
   if (stat(w_global.domain.window_attr->path, &stbuf) >= 0 && w_global.domain.window_attr->timestamp < stbuf.st_mtime) {
     /* global dictionary */
-    shared_dict = readGlobalDomain("WMWindowAttributes", True);
+    shared_dict = _readGlobalDomain("WMWindowAttributes", True);
     /* user dictionary */
     dict = WMReadPropListFromFile(w_global.domain.window_attr->path);
     if (dict) {

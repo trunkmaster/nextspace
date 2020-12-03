@@ -39,6 +39,7 @@
 #include "framewin.h"
 #include "icon.h"
 #include "window.h"
+#include "window_attributes.h"
 #include "defaults.h"
 #include "switchpanel.h"
 #include "misc.h"

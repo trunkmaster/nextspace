@@ -33,6 +33,7 @@
 #import <WMcore/string.h>
 #import <superfluous.h>
 #import <defaults.h>
+#import <window_attributes.h>
 
 #import "Controller+NSWorkspace.h"
 #import "FileViewer.h"

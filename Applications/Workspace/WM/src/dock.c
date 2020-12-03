@@ -50,6 +50,7 @@
 #include "WindowMaker.h"
 #include "wcore.h"
 #include "window.h"
+#include "window_attributes.h"
 #include "icon.h"
 #include "appicon.h"
 #include "actions.h"
