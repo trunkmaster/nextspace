@@ -77,6 +77,7 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/src/winmenu.c \
 	$(WM_DIR)/src/wmspec.c \
 	$(WM_DIR)/src/workspace.c \
+	$(WM_DIR)/src/wutil.c \
 	$(WM_DIR)/src/misc.c \
 	$(WM_DIR)/src/xrandr.c \
 	$(WM_DIR)/src/xutil.c \
