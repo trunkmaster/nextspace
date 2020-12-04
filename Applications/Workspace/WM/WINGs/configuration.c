@@ -4,7 +4,7 @@
 
 #include <X11/Xlocale.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/userdefaults.h>
 #include <WMcore/proplist.h>
 

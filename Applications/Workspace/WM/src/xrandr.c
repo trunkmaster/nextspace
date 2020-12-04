@@ -19,7 +19,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 
 #include "wconfig.h"
 

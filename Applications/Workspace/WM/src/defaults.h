@@ -42,5 +42,4 @@ void wReadStaticDefaults(WMPropList *dict);
 void wDefaultsCheckDomains(void *arg);
 void wSaveDefaults(WScreen *scr);
 
-
 #endif /* WMDEFAULTS_H_ */

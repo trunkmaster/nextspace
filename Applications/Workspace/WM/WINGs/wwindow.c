@@ -6,7 +6,7 @@
 
 #include <CoreFoundation/CFNotificationCenter.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/string.h>
 
 #include "WINGs.h"

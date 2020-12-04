@@ -48,7 +48,7 @@
 #include <wraster.h>
 
 #include <WMcore/proplist.h>
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/userdefaults.h>
 #include <WMcore/string.h>
 
@@ -654,45 +654,6 @@ static WMPropList *_readGlobalDomain(const char *domainName, Bool requireDiction
 
   return globalDict;
 }
-
-// ~/Library
-/* const char *wDefaultsPath() */
-/* { */
-/*   static const char subdir[] = "/Library"; */
-/*   static char *path = NULL; */
-/*   char *home; */
-/*   int pathlen; */
-
-/*   home = wgethomedir(); */
-/*   if (!home) */
-/*     return NULL; */
-
-/*   pathlen = strlen(home); */
-/*   path = wmalloc(pathlen + sizeof(subdir)); */
-/*   strcpy(path, home); */
-/*   strcpy(path + pathlen, subdir); */
-
-/*   return path; */
-/* } */
-
-//
-/* char *wDefaultsPathForDomain(const char *domain) */
-/* { */
-/*   char *path; */
-/*   const char *gspath; */
-/*   size_t slen; */
-
-/*   gspath = wusergnusteppath(); */
-/*   slen = strlen(gspath) + strlen(DEFAULTS_DIR) + strlen(domain) + 4; */
-/*   path = wmalloc(slen); */
-
-/*   strcpy(path, gspath); */
-/*   strcat(path, DEFAULTS_DIR); */
-/*   strcat(path, "/"); */
-/*   strcat(path, domain); */
-
-/*   return path; */
-/* } */
 
 void wDefaultsCheckDomain(const char *domain)
 {

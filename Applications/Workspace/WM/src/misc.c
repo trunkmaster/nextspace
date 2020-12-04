@@ -40,9 +40,9 @@
 #include <WINGs/wmisc.h>
 #include <wraster.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/string.h>
-#include <WMcore/usleep.h>
+#include <WMcore/util.h>
 #include <WMcore/findfile.h>
 #include <WMcore/handlers.h>
 

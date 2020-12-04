@@ -4,7 +4,7 @@
 
 #include <CoreFoundation/CFNotificationCenter.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 
 #include "WINGs.h"
 #include "dragcommon.h"

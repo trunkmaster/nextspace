@@ -4,7 +4,7 @@
 
 #include "WMcore.h"
 #include "bagtree.h"
-#include "memory.h"
+#include "util.h"
 
 typedef struct W_Node {
   struct W_Node *parent;

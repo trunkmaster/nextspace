@@ -1,7 +1,7 @@
 
 #include "wconfig.h"
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/hashtable.h>
 #include <WMcore/handlers.h>
 #include <WMcore/string.h>

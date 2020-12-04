@@ -41,11 +41,11 @@
  */
 #include <X11/Xlocale.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/userdefaults.h>
 #include <WMcore/string.h>
 #include <WMcore/findfile.h>
-#include <WMcore/misc.h>
+#include <WMcore/util.h>
 
 #define MAINFILE
 
@@ -63,10 +63,6 @@
 
 #include "dock.h"
 #include <Workspace+WM.h>
-
-#ifndef GLOBAL_DEFAULTS_SUBDIR
-#define GLOBAL_DEFAULTS_SUBDIR "WindowMaker"
-#endif
 
 /****** Global Variables ******/
 struct wmaker_global_variables w_global;
@@ -354,27 +350,6 @@ Bool RelaunchWindow(WWindow *wwin)
   return True;
 }
 
-/*
- *---------------------------------------------------------------------
- * wAbort--
- * 	Do a major cleanup and exit the program
- *
- *----------------------------------------------------------------------
- */
-noreturn void wAbort(Bool dumpCore)
-{
-  WScreen *scr;
-
-  scr = wDefaultScreen();
-  if (scr)
-    RestoreDesktop(scr);
-  printf(_("%s aborted.\n"), ProgName);
-  if (dumpCore)
-    abort();
-  else
-    exit(1);
-}
-
 void ExecInitScript(void)
 {
   char *file, *paths;
@@ -414,7 +389,6 @@ void ExecExitScript(void)
 int WMInitialize(int argc, char **argv)
 {
   setlocale(LC_ALL, "");
-  wsetabort(wAbort);
 
   if (!wPreferences.flags.noupdates) {
     /* check existence of Defaults DB directory */

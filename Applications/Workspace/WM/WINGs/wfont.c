@@ -6,7 +6,7 @@
 #include <X11/Xft/Xft.h>
 #include <fontconfig/fontconfig.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/string.h>
 
 #include <wraster.h>

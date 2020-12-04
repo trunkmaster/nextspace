@@ -12,7 +12,7 @@
 
 #include "wconfig.h"
 
-#include "memory.h"
+#include "util.h"
 #include "userdefaults.h"
 #include "findfile.h"
 #include "string.h"
@@ -42,10 +42,6 @@ static UserDefaults *sharedUserDefaults = NULL;
 char *WMUserDefaultsDidChangeNotification = "WMUserDefaultsDidChangeNotification";
 
 static void synchronizeUserDefaults(void *foo);
-
-#ifndef DEFAULTS_DIR
-#define DEFAULTS_DIR "/Preferences/.WindowMaker"
-#endif
 
 #ifndef HAVE_INOTIFY
 /* Check defaults database for changes every this many milliseconds */

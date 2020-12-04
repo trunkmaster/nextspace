@@ -17,7 +17,7 @@
 #endif
 
 #include "WMcore.h"
-#include "memory.h"
+#include "util.h"
 #include "string.h"
 
 #define PRC_ALPHA	0

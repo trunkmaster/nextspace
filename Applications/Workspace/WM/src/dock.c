@@ -35,7 +35,7 @@
 
 #include <WMcore/proplist.h>
 #include <WMcore/string.h>
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/handlers.h>
 
 #include <WINGs/wevent.h>

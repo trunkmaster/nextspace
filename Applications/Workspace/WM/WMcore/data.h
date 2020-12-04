@@ -1,7 +1,7 @@
 #ifndef _WDATA_H_
 #define _WDATA_H_
 
-#include <WMcore/misc.h>
+#include <WMcore/util.h>
 
 typedef struct W_Data WMData;
 

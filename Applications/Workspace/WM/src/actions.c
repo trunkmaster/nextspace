@@ -31,8 +31,7 @@
 #include <math.h>
 #include <time.h>
 
-#include <WMcore/memory.h>
-#include <WMcore/usleep.h>
+#include <WMcore/util.h>
 
 #include <WINGs/wview.h>
 #include <WINGs/wevent.h>

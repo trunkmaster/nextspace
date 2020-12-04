@@ -4,7 +4,7 @@
 
 #include <CoreFoundation/CFArray.h>
 #include <CoreFoundation/CFRunLoop.h>
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 
 #include "wconfig.h"
 

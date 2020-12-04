@@ -29,7 +29,6 @@
 #import "Workspace+WM.h"
 
 #import <WMcore/WMcore.h>
-#import <WMcore/memory.h>
 #import <WMcore/string.h>
 #import <superfluous.h>
 #import <defaults.h>

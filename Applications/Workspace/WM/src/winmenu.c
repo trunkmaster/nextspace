@@ -30,9 +30,8 @@
 #include <X11/Xutil.h>
 #include <X11/XKBlib.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/string.h>
-#include <WMcore/usleep.h>
 
 #include "WindowMaker.h"
 #include "actions.h"

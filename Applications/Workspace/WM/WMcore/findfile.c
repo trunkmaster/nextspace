@@ -33,7 +33,7 @@
 #include <limits.h>
 
 #include "WMcore.h"
-#include "memory.h"
+#include "util.h"
 #include "string.h"
 #include "proplist.h"
 

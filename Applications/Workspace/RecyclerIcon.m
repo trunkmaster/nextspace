@@ -29,7 +29,7 @@
 #import "Recycler.h"
 #import "RecyclerIcon.h"
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/string.h>
 #include <xrandr.h>
 

@@ -2,7 +2,7 @@
 #include "WINGs.h"
 #include "wpixmap.h"
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 
 #include <wraster.h>
 

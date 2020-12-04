@@ -1,5 +1,5 @@
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 
 #include <WINGs/widgets.h>
 #include <WINGs/wevent.h>

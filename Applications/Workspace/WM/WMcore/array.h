@@ -16,7 +16,7 @@
 #define _WARRAY_H_
 
 #include <WMcore/WMcore.h>
-#include <WMcore/misc.h>
+#include <WMcore/util.h>
 
 typedef struct W_Array WMArray;
 

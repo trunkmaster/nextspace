@@ -3,7 +3,6 @@
 
 #include <WMcore/WMcore.h>
 #include <WMcore/data.h>
-#include <WMcore/data.h>
 
 typedef struct W_PropList WMPropList;
 

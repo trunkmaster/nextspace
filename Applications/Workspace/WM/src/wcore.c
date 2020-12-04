@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 
 #include "WindowMaker.h"
 #include "wcore.h"

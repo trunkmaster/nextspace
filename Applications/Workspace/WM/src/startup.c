@@ -45,7 +45,7 @@
 #include <X11/XKBlib.h>
 #endif
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 
 #include <WINGs/wevent.h>
 
@@ -195,7 +195,7 @@ static RETSIGTYPE handleSig(int sig)
     return;
   }
 
-  wAbort(0);
+  /* wAbort(0); */
 }
 
 static RETSIGTYPE buryChild(int foo)

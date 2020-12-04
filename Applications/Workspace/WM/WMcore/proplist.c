@@ -15,7 +15,7 @@
 #include "wconfig.h"
 
 #include "WMcore.h"
-#include "memory.h"
+#include "util.h"
 #include "proplist.h"
 #include "hashtable.h"
 #include "string.h"

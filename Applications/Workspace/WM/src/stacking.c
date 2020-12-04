@@ -27,7 +27,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 
 #include "WindowMaker.h"
 #include "screen.h"

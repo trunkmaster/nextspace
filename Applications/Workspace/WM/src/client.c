@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 
 #include "WindowMaker.h"
 #include "framewin.h"

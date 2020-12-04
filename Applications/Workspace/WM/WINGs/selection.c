@@ -4,7 +4,7 @@
 #include <X11/Xatom.h>
 
 #include <CoreFoundation/CFArray.h>
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 
 #include "WINGs.h"
 #include "dragcommon.h"

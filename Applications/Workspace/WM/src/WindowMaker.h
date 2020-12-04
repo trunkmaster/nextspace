@@ -31,7 +31,7 @@
 
 #include <WINGs/WINGs.h>
 
-#include <WMcore/misc.h>
+#include <WMcore/util.h>
 
 /* class codes */
 typedef enum {

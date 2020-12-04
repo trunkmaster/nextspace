@@ -25,7 +25,7 @@
 
 #include <CoreFoundation/CFArray.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 
 #include <WINGs/widgets.h>
 #include <WINGs/wcolor.h>

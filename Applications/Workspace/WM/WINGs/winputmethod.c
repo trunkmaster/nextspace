@@ -1,7 +1,7 @@
 
 #include <X11/Xlib.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/string.h>
 
 #include "wconfig.h"

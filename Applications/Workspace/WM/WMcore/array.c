@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include "WMcore.h"
-#include "memory.h"
+#include "util.h"
 #include "array.h"
 
 #define INITIAL_SIZE 8

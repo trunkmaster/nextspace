@@ -70,7 +70,7 @@
 #include <time.h>
 
 #include <CoreFoundation/CFArray.h>
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/string.h>
 
 #include "WindowMaker.h"

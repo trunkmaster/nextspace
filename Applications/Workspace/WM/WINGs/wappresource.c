@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <X11/Xutil.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/userdefaults.h>
 #include <WMcore/string.h>
 

@@ -31,7 +31,7 @@
 
 #include <CoreFoundation/CFNumber.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 
 #include "WindowMaker.h"
 #include "window.h"

@@ -27,7 +27,7 @@
 #include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFLogUtilities.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/handlers.h>
 
 #include "GNUstep.h"

@@ -36,7 +36,7 @@
 
 #include <CoreFoundation/CFArray.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/userdefaults.h>
 #include <WMcore/string.h>
 

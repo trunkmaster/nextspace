@@ -22,7 +22,7 @@
 #include <string.h>
 
 #include "WMcore.h"
-#include "memory.h"
+#include "util.h"
 #include "data.h"
 
 typedef struct W_Data {

@@ -7,7 +7,7 @@
 
 #include "WMcore.h"
 #include "hashtable.h"
-#include "memory.h"
+#include "util.h"
 #include "string.h"
 
 #define INITIAL_CAPACITY	23

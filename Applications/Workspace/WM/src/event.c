@@ -54,8 +54,7 @@
 #include <CoreFoundation/CFFileDescriptor.h>
 #include <CoreFoundation/CFLogUtilities.h>
 
-#include <WMcore/memory.h>
-#include <WMcore/usleep.h>
+#include <WMcore/util.h>
 #include <WMcore/handlers.h>
 #include <WMcore/userdefaults.h>
 

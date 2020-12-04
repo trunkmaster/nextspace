@@ -31,7 +31,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/string.h>
 #include <WMcore/proplist.h>
 

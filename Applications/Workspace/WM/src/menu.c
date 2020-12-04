@@ -32,9 +32,8 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#include <WMcore/memory.h>
+#include <WMcore/util.h>
 #include <WMcore/handlers.h>
-#include <WMcore/usleep.h>
 #include <WMcore/string.h>
 
 #include <WINGs/wevent.h>

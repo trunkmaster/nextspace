@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "WMcore.h"
-#include "memory.h"
+#include "util.h"
 #include "array.h"
 #include "tree.h"
 
