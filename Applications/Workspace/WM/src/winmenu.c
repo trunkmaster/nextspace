@@ -33,10 +33,10 @@
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "actions.h"
 #include "menu.h"
-#include "main.h"
+#include "WM_main.h"
 #include "window.h"
 #include "client.h"
 #include "application.h"

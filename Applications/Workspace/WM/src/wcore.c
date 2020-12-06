@@ -28,7 +28,7 @@
 
 #include <WMcore/util.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "wcore.h"
 
 

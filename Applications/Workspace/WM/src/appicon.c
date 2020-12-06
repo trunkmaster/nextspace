@@ -37,7 +37,7 @@
 
 #include <WINGs/wevent.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "window.h"
 #include "icon.h"
 #include "application.h"
@@ -45,7 +45,7 @@
 #include "actions.h"
 #include "stacking.h"
 #include "dock.h"
-#include "main.h"
+#include "WM_main.h"
 #include "defaults.h"
 #include "workspace.h"
 #include "superfluous.h"

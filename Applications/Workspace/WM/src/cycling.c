@@ -31,7 +31,7 @@
 
 #include <WINGs/wevent.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "GNUstep.h"
 #include "screen.h"
 #include "window.h"

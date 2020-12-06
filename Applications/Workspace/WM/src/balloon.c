@@ -41,7 +41,7 @@
 
 #include <WINGs/wmisc.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "screen.h"
 #include "texture.h"
 #include "framewin.h"

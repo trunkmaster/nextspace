@@ -48,7 +48,7 @@
 
 #include "window.h"
 #include "misc.h"
-#include "WindowMaker.h"
+#include "WM.h"
 #include "GNUstep.h"
 #include "screen.h"
 #include "wcore.h"
@@ -56,7 +56,7 @@
 #include "framewin.h"
 #include "xutil.h"
 #include "xmodifier.h"
-#include "main.h"
+#include "WM_main.h"
 #include "event.h"
 
 

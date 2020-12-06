@@ -25,7 +25,7 @@
 
 #include "wconfig.h"
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include <X11/Xatom.h>
 
 #include "window.h"

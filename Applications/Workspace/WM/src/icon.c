@@ -44,7 +44,7 @@
 #include <WINGs/wmisc.h>
 
 #include "GNUstep.h"
-#include "WindowMaker.h"
+#include "WM.h"
 #include "wcore.h"
 #include "texture.h"
 #include "window.h"

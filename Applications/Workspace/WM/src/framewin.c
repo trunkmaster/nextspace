@@ -38,7 +38,7 @@
 #include <WINGs/wcolor.h>
 #include <WINGs/wmisc.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "GNUstep.h"
 #include "texture.h"
 #include "resources.h"

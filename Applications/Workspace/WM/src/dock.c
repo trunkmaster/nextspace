@@ -47,7 +47,7 @@
 #endif
 
 #include "GNUstep.h"
-#include "WindowMaker.h"
+#include "WM.h"
 #include "wcore.h"
 #include "window.h"
 #include "window_attributes.h"
@@ -56,7 +56,7 @@
 #include "actions.h"
 #include "stacking.h"
 #include "dock.h"
-#include "main.h"
+#include "WM_main.h"
 #include "properties.h"
 #include "menu.h"
 #include "client.h"

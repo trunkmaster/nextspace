@@ -33,7 +33,7 @@
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "dock.h"
 #include "xdnd.h"
 #include "workspace.h"

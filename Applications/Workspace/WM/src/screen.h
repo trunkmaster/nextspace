@@ -22,7 +22,7 @@
 #define WMSCREEN_H_
 
 #include "wconfig.h"
-#include "WindowMaker.h"
+#include "WM.h"
 #include <sys/types.h>
 
 #include <CoreFoundation/CFArray.h>

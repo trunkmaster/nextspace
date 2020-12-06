@@ -31,7 +31,7 @@
 #include <WMcore/handlers.h>
 
 #include "GNUstep.h"
-#include "WindowMaker.h"
+#include "WM.h"
 #include "menu.h"
 #include "window.h"
 #include "window_attributes.h"

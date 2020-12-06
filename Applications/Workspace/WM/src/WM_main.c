@@ -49,7 +49,7 @@
 
 #define MAINFILE
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "window.h"
 #include "defaults.h"
 #include "event.h"
@@ -59,7 +59,7 @@
 #include "xmodifier.h"
 #include "session.h"
 #include "shutdown.h"
-#include "main.h"
+#include "WM_main.h"
 
 #include "dock.h"
 #include <Workspace+WM.h>
@@ -205,6 +205,7 @@ void Restart(char *manager, Bool abortOnFailure)
   if (abortOnFailure)
     exit(7);
 }
+
 
 void SetupEnvironment(WScreen * scr)
 {

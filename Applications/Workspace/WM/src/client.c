@@ -32,7 +32,7 @@
 
 #include <WMcore/util.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "framewin.h"
 #include "window.h"
 #include "properties.h"

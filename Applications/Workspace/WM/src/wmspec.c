@@ -37,7 +37,7 @@
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "window.h"
 #include "screen.h"
 #include "workspace.h"

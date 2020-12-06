@@ -29,7 +29,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "WindowMaker.h"
+#include "WM.h"
 #include "pixmap.h"
 
 /*

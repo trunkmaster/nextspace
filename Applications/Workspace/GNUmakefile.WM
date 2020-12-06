@@ -42,6 +42,7 @@ $(APP_NAME)_C_FILES += \
 
 # WindowMaker
 $(APP_NAME)_C_FILES += \
+	$(WM_DIR)/src/WM_main.c \
 	$(WM_DIR)/src/actions.c \
 	$(WM_DIR)/src/appicon.c \
 	$(WM_DIR)/src/application.c \
@@ -55,7 +56,6 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/src/framewin.c \
 	$(WM_DIR)/src/geomview.c \
 	$(WM_DIR)/src/icon.c \
-	$(WM_DIR)/src/main.c \
 	$(WM_DIR)/src/menu.c \
 	$(WM_DIR)/src/moveres.c \
 	$(WM_DIR)/src/motif.c \

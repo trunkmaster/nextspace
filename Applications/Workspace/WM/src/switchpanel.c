@@ -34,7 +34,7 @@
 #include <WINGs/wframe.h>
 #include <WINGs/wmisc.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "screen.h"
 #include "framewin.h"
 #include "icon.h"

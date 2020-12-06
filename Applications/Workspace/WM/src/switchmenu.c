@@ -33,7 +33,7 @@
 
 #include <WMcore/util.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "window.h"
 #include "actions.h"
 #include "client.h"

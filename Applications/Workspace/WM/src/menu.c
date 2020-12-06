@@ -41,7 +41,7 @@
 #include <WINGs/wmisc.h>
 
 #include "GNUstep.h"
-#include "WindowMaker.h"
+#include "WM.h"
 #include "wcore.h"
 #include "framewin.h"
 #include "menu.h"

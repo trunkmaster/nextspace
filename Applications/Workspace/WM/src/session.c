@@ -73,14 +73,14 @@
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "screen.h"
 #include "window.h"
 #include "client.h"
 #include "session.h"
 #include "framewin.h"
 #include "workspace.h"
-#include "main.h"
+#include "WM_main.h"
 #include "properties.h"
 #include "application.h"
 #include "appicon.h"

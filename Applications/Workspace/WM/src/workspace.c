@@ -47,7 +47,7 @@
 #include <WINGs/wcolor.h>
 #include <WINGs/wmisc.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "framewin.h"
 #include "window.h"
 #include "icon.h"

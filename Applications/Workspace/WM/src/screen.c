@@ -45,7 +45,7 @@
 #include <WINGs/wmisc.h>
 #include <WINGs/wappresource.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "def_pixmaps.h"
 #include "screen.h"
 #include "texture.h"
@@ -53,7 +53,7 @@
 #include "menu.h"
 #include "window.h"
 #include "window_attributes.h"
-#include "main.h"
+#include "WM_main.h"
 #include "actions.h"
 #include "properties.h"
 #include "dock.h"

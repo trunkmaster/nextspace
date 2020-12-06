@@ -45,7 +45,7 @@
 #include <WINGs/configuration.h>
 
 #include "GNUstep.h"
-#include "WindowMaker.h"
+#include "WM.h"
 #include "wcore.h"
 #include "framewin.h"
 #include "texture.h"

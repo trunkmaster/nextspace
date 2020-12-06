@@ -29,7 +29,7 @@
 
 #include <WMcore/util.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "screen.h"
 #include "window.h"
 #include "actions.h"

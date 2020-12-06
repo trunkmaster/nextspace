@@ -62,11 +62,11 @@
 #include <WINGs/wmisc.h>
 
 #include "GNUstep.h"
-#include "WindowMaker.h"
+#include "WM.h"
 #include "window.h"
 #include "actions.h"
 #include "client.h"
-#include "main.h"
+#include "WM_main.h"
 #include "cycling.h"
 #include "keybind.h"
 #include "application.h"

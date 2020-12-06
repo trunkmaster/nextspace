@@ -27,10 +27,10 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#include "WindowMaker.h"
+#include "WM.h"
 #include "window.h"
 #include "client.h"
-#include "main.h"
+#include "WM_main.h"
 #include "properties.h"
 #include "session.h"
 #include "wmspec.h"
