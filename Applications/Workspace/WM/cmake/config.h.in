@@ -1,0 +1,223 @@
+/* Define to 1 if you have the <bsd/string.h> header file. */
+#cmakedefine01 HAVE_BSD_STRING_H
+
+/* Define to 1 if you have the <ctype.h> header file. */
+#cmakedefine01 HAVE_CTYPE_H
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#cmakedefine01 HAVE_DLFCN_H
+
+/* Define to 1 if you have the <fcntl.h> header file. */
+#cmakedefine01 HAVE_FCNTL_H
+
+/* Defined if the 'float'-typed math function are available (sinf, cosf) */
+//#cmakedefine01 HAVE_FLOAT_MATHFUNC
+
+/* Define to 1 if you have the `gethostname' function. */
+#cmakedefine01 HAVE_GETHOSTNAME
+
+/* Define to 1 if you have the <sys/inotify.h> header file. */
+#cmakedefine01 HAVE_INOTIFY
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#cmakedefine01 HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <libintl.h> header file. */
+#cmakedefine01 HAVE_LIBINTL_H
+
+/* Define to 1 if you have the <limits.h> header file. */
+#cmakedefine01 HAVE_LIMITS_H
+
+/* Define to 1 if you have the `mallinfo' function. */
+#cmakedefine01 HAVE_MALLINFO
+
+/* Define to 1 if you have the <malloc.h> header file. */
+#cmakedefine01 HAVE_MALLOC_H
+
+/* Define to 1 if you have the <memory.h> header file. */
+#cmakedefine01 HAVE_MEMORY_H
+
+/* Define to 1 if you have the `mkstemp' function. */
+#cmakedefine01 HAVE_MKSTEMP
+
+/* Define to 1 if you have the `poll' function. */
+#cmakedefine01 HAVE_POLL
+
+/* Define to 1 if you have the <poll.h> header file. */
+#cmakedefine01 HAVE_POLL_H
+
+/* defined when GNU's secure_getenv function is available */
+#cmakedefine01 HAVE_SECURE_GETENV
+
+/* Define to 1 if you have the `select' function. */
+#cmakedefine01 HAVE_SELECT
+
+/* Define to 1 if you have the `setsid' function. */
+#cmakedefine01 HAVE_SETSID
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#cmakedefine01 HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#cmakedefine01 HAVE_STDLIB_H
+
+/* Defined if header "stdnoreturn.h" exists, it defines ISO C11 attribute
+   'noreturn' and it works */
+#cmakedefine01 HAVE_STDNORETURN
+
+/* Define to 1 if you have the `strcasecmp' function. */
+#cmakedefine01 HAVE_STRCASECMP
+
+/* Define to 1 if you have the <strings.h> header file. */
+#cmakedefine01 HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#cmakedefine01 HAVE_STRING_H
+
+/* Define if strlcpy is available */
+#cmakedefine01 HAVE_STRLCAT
+
+/* Define to 1 if you have the `strncasecmp' function. */
+#cmakedefine01 HAVE_STRNCASECMP
+
+/* Define to 1 if you have the `sysconf' function. */
+#cmakedefine01 HAVE_SYSCONF
+
+/* Check for syslog */
+#cmakedefine01 HAVE_SYSLOG
+
+/* Define to 1 if you have the <syslog.h> header file. */
+#cmakedefine01 HAVE_SYSLOG_H
+
+/* Define to 1 if you have the <sys/ioctl.h> header file. */
+#cmakedefine01 HAVE_SYS_IOCTL_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#cmakedefine01 HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#cmakedefine01 HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
+#cmakedefine01 HAVE_SYS_WAIT_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#cmakedefine01 HAVE_UNISTD_H
+
+/* Define to 1 if you have the `vprintf' function. */
+#cmakedefine01 HAVE_VPRINTF
+
+/* define if your X server has XConvertCase() (set by configure) */
+#cmakedefine01 HAVE_XCONVERTCASE
+
+/* define if your X server has XInternAtoms() (set by configure) */
+#cmakedefine01 HAVE_XINTERNATOMS
+
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
+#cmakedefine01 LT_OBJDIR
+
+/* defined by configure if the attribute is not defined on your platform */
+//#cmakedefine01 O_NOFOLLOW
+
+/* Define as the return type of signal handlers (`int' or `void') */
+//#cmakedefine01 RETSIGTYPE
+
+/* Define to 1 if you have the ANSI C header files. */
+#cmakedefine01 STDC_HEADERS
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#cmakedefine01 TIME_WITH_SYS_TIME
+
+/* Defined when user did not request to disable animations */
+//#cmakedefine01 USE_ANIMATIONS --> wconfig.h
+
+/* whether Drag-and-Drop on the dock should be enabled */
+//#cmakedefine01 USE_DOCK_XDND --> wconfig.h
+
+/* defined when valid GIF library with header was found */
+////#cmakedefine01 USE_GIF
+
+/* define to support ICCCM protocol for window manager replacement */
+#cmakedefine01 USE_ICCCM_WMREPLACE
+
+/* defined when valid JPEG library with header was found */
+////#cmakedefine01 USE_JPEG
+
+/* defined when MagickWand library with header was found */
+////#cmakedefine01 USE_MAGICK
+
+/* Defined when used did not request to disable Motif WM hints */
+//#cmakedefine01 USE_MWM_HINTS --> wconfig.h
+
+/* Define if Pango is to be used */
+#cmakedefine01 USE_PANGO
+
+/* defined when valid PNG library with header was found */
+///#cmakedefine01 USE_PNG
+
+/* defined when valid TIFF library with header was found */
+////#cmakedefine01 USE_TIFF
+
+/* defined when valid Webp library with header was found */
+////#cmakedefine01 USE_WEBP
+
+/* defined when valid XPM library with header was found */
+////#cmakedefine01 USE_XPM
+
+/* defined when valid XRandR library with header was found */
+#cmakedefine01 USE_XRANDR
+
+/* defined when valid XShape library with header was found */
+#cmakedefine01 USE_XSHAPE
+
+/* defined when valid XShm library with header was found */
+#cmakedefine01 USE_XSHM
+
+/* Version number of package */
+////#cmakedefine01 VERSION
+
+/* Defines how to access the value of Pi */
+#cmakedefine01 WM_PI
+
+/* whether XKB language MODELOCK should be enabled */
+#cmakedefine01 XKB_MODELOCK
+
+/* Define to 1 if the X Window System is missing or not being used. */
+////#cmakedefine01 X_DISPLAY_MISSING
+
+/* Define to empty if `const' does not conform to ANSI C. */
+//#cmakedefine01 const
+
+/* Define to `__inline__' or `__inline' if that's what the C compiler
+   calls it, or to nothing if 'inline' is not supported under any name.  */
+// #ifndef __cplusplus
+// #undef inline
+// #endif
+
+/* Defines the attribute to tell the compiler that a function never returns,
+   if the ISO C11 attribute does not work */
+// #undef noreturn
+
+/* Define to `int' if <sys/types.h> does not define. */
+// #undef pid_t
+
+/* Define to `unsigned int' if <sys/types.h> does not define. */
+//#cmakedefine01 size_t
+
+// --- #include "config-paths.h" ---
+
+/* define where the translations are stored */
+//#define LOCALEDIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM"
+#define LD ${LOCALEDIR}
+
+/* define an extra path for pixmaps */
+/* #define PIXMAPDIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM" */
+#define PIXMAPDIR ${datadir}
+
+/* where shared data is stored */
+//#define PKGDATADIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM/WindowMaker"
+#define PKGDATADIR ${datadir}
+
+/* where the configuration is stored */
+#define SCD ${sysconfdir}
+
