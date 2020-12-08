@@ -18,8 +18,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _SWITCHPANEL_H_
-#define _SWITCHPANEL_H_
+#ifndef __WORKSPACE_WM_SWITCHPANEL__
+#define __WORKSPACE_WM_SWITCHPANEL__
 
 typedef struct SwitchPanel WSwitchPanel;
 

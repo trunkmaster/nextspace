@@ -1,4 +1,4 @@
-#include "wconfig.h"
+#include "WMdefs.h"
 
 static char *PRED_XKBGROUP1_XPM[] = {
     "    10    10        2            1",

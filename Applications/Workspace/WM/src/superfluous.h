@@ -18,8 +18,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMSUPERFLUOUS_H
-#define WMSUPERFLUOUS_H
+#ifndef __WORKSPACE_WM_SUPERFLUOUS__
+#define __WORKSPACE_WM_SUPERFLUOUS__
 
 #include "dock.h"
 

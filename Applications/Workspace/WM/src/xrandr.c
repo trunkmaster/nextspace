@@ -21,7 +21,7 @@
 
 #include <WMcore/util.h>
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include "xrandr.h"
 

@@ -18,8 +18,8 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#ifndef WMMISC_H_
-#define WMMISC_H_
+#ifndef __WORKSPACE_WM_MISC__
+#define __WORKSPACE_WM_MISC__
 
 #include "defaults.h"
 #include "keybind.h"

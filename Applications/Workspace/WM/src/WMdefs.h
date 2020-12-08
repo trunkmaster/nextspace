@@ -21,8 +21,8 @@
  *  MA 02110-1301, USA.
  */
 
-#ifndef WMCONFIG_H_
-#define WMCONFIG_H_
+#ifndef __WORKSPACE_WM_DEFS__
+#define __WORKSPACE_WM_MAIN__
 
 #include "config.h"
 
@@ -386,5 +386,5 @@
 #define M_(text) (text)
 #endif
 
-#endif /* WMCONFIG_H_ */
+#endif
 

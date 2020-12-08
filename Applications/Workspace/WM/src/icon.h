@@ -19,8 +19,8 @@
  */
 
 
-#ifndef WMICON_H_
-#define WMICON_H_
+#ifndef __WORKSPACE_WM_ICON__
+#define __WORKSPACE_WM_ICON__
 
 #include "wcore.h"
 #include "window.h"

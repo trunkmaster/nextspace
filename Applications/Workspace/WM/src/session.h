@@ -19,8 +19,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMSESSION_H_
-#define WMSESSION_H_
+#ifndef __WORKSPACE_WM_SESSION__
+#define __WORKSPACE_WM_SESSION__
 
 void wSessionSaveState(WScreen *scr);
 void wSessionClearState(WScreen *scr);

@@ -20,8 +20,8 @@
  */
 
 
-#ifndef WMMWM_H_
-#define WMMWM_H_
+#ifndef __WORKSPACE_WM_MOTIF__
+#define __WORKSPACE_WM_MOTIF__
 
 void wMWMCheckClientHints(WWindow *wwin);
 

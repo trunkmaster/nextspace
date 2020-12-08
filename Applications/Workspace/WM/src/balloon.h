@@ -18,8 +18,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _BALLOON_H_
-#define _BALLOON_H_
+#ifndef __WORKSPACE_WM_BALLOON__
+#define __WORKSPACE_WM_BALLOON__
 
 void wBalloonInitialize(WScreen *scr);
 

@@ -18,8 +18,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMCOLORMAP_H
-#define WMCOLORMAP_H
+#ifndef __WORKSPACE_WM_COLORMAP__
+#define __WORKSPACE_WM_COLORMAP__
 
 void wColormapInstallForWindow(WScreen *scr, WWindow *wwin);
 void wColormapAllowClientInstallation(WScreen * scr, Bool starting);

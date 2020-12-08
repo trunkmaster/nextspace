@@ -19,8 +19,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMKEYBIND_H
-#define WMKEYBIND_H
+#ifndef __WORKSPACE_WM_KEYBIND__
+#define __WORKSPACE_WM_KEYBIND__
 
 /* <X11/X.h> doesn't define these, even though XFree supports them */
 #ifndef Button6

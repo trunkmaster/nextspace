@@ -19,8 +19,8 @@
  */
 
 
-#ifndef WMCORE_H_
-#define WMCORE_H_
+#ifndef __WORKSPACE_WM_CORE__
+#define __WORKSPACE_WM_CORE__
 
 #include "screen.h"
 

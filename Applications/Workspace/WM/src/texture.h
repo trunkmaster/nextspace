@@ -19,8 +19,8 @@
  */
 
 
-#ifndef WMTEXTURE_H_
-#define WMTEXTURE_H_
+#ifndef __WORKSPACE_WM_TEXTURE__
+#define __WORKSPACE_WM_TEXTURE__
 
 #include "screen.h"
 #include "wcore.h"

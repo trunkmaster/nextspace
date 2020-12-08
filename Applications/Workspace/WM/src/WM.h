@@ -19,10 +19,10 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WINDOWMAKER_H_
-#define WINDOWMAKER_H_
+#ifndef __WORKSPACE_WM__
+#define __WORKSPACE_WM__
 
-#include "wconfig.h"
+#include "WMdefs.h"
 #include <assert.h>
 #include <limits.h>
 

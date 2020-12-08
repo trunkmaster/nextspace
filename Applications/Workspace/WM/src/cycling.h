@@ -19,8 +19,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMCYCLING_H
-#define WMCYCLING_H
+#ifndef __WORKSPACE_WM_CYCLING__
+#define __WORKSPACE_WM_CYCLING__
 
 void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only);
 

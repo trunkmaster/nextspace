@@ -20,8 +20,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef PLACEMENT_H
-#define PLACEMENT_H
+#ifndef __WORKSPACE_WM_PLACEMENT__
+#define __WORKSPACE_WM_PLACEMENT__
 
 void PlaceIcon(WScreen *scr, int *x_ret, int *y_ret, int head);
 

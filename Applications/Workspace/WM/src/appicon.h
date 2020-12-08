@@ -20,8 +20,8 @@
  */
 
 
-#ifndef WMAPPICON_H_
-#define WMAPPICON_H_
+#ifndef __WORKSPACE_WM_APPICON__
+#define __WORKSPACE_WM_APPICON__
 
 #include <wraster.h>
 

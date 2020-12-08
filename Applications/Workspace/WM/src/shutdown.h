@@ -19,8 +19,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef SHUTDOWN_H
-#define SHUTDOWN_H
+#ifndef __WORKSPACE_WM_SHUTDOWN__
+#define __WORKSPACE_WM_SHUTDOWN__
 
 #include "screen.h"
 

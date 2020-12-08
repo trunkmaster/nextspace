@@ -19,8 +19,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMSWITCHMENU_H
-#define WMSWITCHMENU_H
+#ifndef __WORKSPACE_WM_SWITCHMENU__
+#define __WORKSPACE_WM_SWITCHMENU__
 
 void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action);
 void OpenSwitchMenu(WScreen *scr, int x, int y, int keyboard);

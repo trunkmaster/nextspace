@@ -18,8 +18,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMACTIONS_H_
-#define WMACTIONS_H_
+#ifndef __WORKSPACE_WM_ACTIONS__
+#define __WORKSPACE_WM_ACTIONS__
 
 #include "window.h"
 

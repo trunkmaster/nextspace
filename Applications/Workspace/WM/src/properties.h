@@ -19,8 +19,8 @@
  */
 
 
-#ifndef WMPROPERTIES_H_
-#define WMPROPERTIES_H_
+#ifndef __WORKSPACE_WM_PROPERTIES__
+#define __WORKSPACE_WM_PROPERTIES__
 
 #include "GNUstep.h"
 

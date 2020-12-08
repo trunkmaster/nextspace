@@ -3,7 +3,7 @@
 
 #include <WMcore/WMcore.h>
 
-#include "wconfig.h"
+#include "WMdefs.h"
 #include "osdep.h"
 
 Bool GetCommandForPid(int pid, char ***argv, int *argc)

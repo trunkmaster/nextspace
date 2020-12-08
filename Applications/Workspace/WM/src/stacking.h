@@ -18,8 +18,9 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMSTACKING_H_
-#define WMSTACKING_H_
+#ifndef __WORKSPACE_WM_STACKING__
+#define __WORKSPACE_WM_STACKING__
+
 void wRaiseFrame(WCoreWindow *frame);
 void wLowerFrame(WCoreWindow *frame);
 void wRaiseLowerFrame(WCoreWindow *frame);
@@ -32,4 +33,5 @@ void RemakeStackList(WScreen *scr);
 void CommitStacking(WScreen *scr);
 void CommitStackingForFrame(WCoreWindow *frame);
 void CommitStackingForWindow(WCoreWindow * frame);
+
 #endif

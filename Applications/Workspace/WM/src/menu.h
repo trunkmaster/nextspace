@@ -18,8 +18,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMMENU_H_
-#define WMMENU_H_
+#ifndef __WORKSPACE_WM_MENU__
+#define __WORKSPACE_WM_MENU__
 
 #include <CoreFoundation/CFRunLoop.h>
 

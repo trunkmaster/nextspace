@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include "xutil.h"
 

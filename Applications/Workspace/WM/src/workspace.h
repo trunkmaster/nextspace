@@ -19,8 +19,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMWORKSPACE_H_
-#define WMWORKSPACE_H_
+#ifndef __WORKSPACE_WM_WORKSPACE__
+#define __WORKSPACE_WM_WORKSPACE__
 
 typedef struct WWorkspace {
   char *name;

@@ -17,8 +17,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _WM_XUTIL_H_
-#define _WM_XUTIL_H_
+#ifndef __WORKSPACE_WM_XUTIL__
+#define __WORKSPACE_WM_XUTIL__
 
 void FormatXError(Display *dpy, XErrorEvent *error, char *buffer, int size);
 

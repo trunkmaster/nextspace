@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "wconfig.h"
+#include "WMdefs.h"
 #include "osdep.h"
 
 /*

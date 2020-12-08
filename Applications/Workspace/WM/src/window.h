@@ -18,12 +18,12 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMWINDOW_H_
-#define WMWINDOW_H_
+#ifndef __WORKSPACE_WM_WINDOW__
+#define __WORKSPACE_WM_WINDOW__
 
 #include <wraster.h>
 
-#include "wconfig.h"
+#include "WMdefs.h"
 #include "GNUstep.h"
 #include "texture.h"
 #include "menu.h"

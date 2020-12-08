@@ -18,8 +18,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMRESOURCES_H_
-#define WMRESOURCES_H_
+#ifndef __WORKSPACE_WM_RESOURCES__
+#define __WORKSPACE_WM_RESOURCES__
 
 int wGetColorForColormap(Colormap colormap, const char *color_name, XColor *color);
 int wGetColor(WScreen *scr, const char *color_name, XColor *color);

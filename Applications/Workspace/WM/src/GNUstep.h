@@ -18,8 +18,8 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#ifndef WMGNUSTEP_H_
-#define WMGNUSTEP_H_
+#ifndef __WORKSPACE_WM_GNUSTEP__
+#define __WORKSPACE_WM_GNUSTEP__
 
 #include <X11/X.h>
 #include <X11/Xproto.h>

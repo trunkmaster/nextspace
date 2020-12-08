@@ -19,8 +19,8 @@
  */
 
 
-#ifndef WMAPPLICATION_H_
-#define WMAPPLICATION_H_
+#ifndef __WORKSPACE_WM_APPLICATION__
+#define __WORKSPACE_WM_APPLICATION__
 
 #include <CoreFoundation/CFArray.h>
 

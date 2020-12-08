@@ -17,8 +17,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef GEOMVIEW_H
-#define GEOMVIEW_H
+#ifndef __WORKSPACE_WM_GEOMVIEW__
+#define __WORKSPACE_WM_GEOMVIEW__
 
 typedef struct W_GeometryView WGeometryView;
 

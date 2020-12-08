@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "wconfig.h"
+#include "WMdefs.h"
 #include "osdep.h"
 
 /*

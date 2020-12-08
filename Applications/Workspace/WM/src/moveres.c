@@ -18,7 +18,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

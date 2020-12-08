@@ -18,8 +18,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMCLIENT_H_
-#define WMCLIENT_H_
+#ifndef __WORKSPACE_WM_CLIENT__
+#define __WORKSPACE_WM_CLIENT__
 
 void wClientSetState(WWindow *wwin, int state, Window icon_win);
 

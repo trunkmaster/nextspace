@@ -19,8 +19,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMWINMENU_H
-#define WMWINMENU_H
+#ifndef __WORKSPACE_WM_WINMENU__
+#define __WORKSPACE_WM_WINMENU__
 
 void OpenWindowMenu(WWindow *wwin, int x, int y, int keyboard);
 void OpenWindowMenu2(WWindow *wwin, int x, int y, int keyboard);

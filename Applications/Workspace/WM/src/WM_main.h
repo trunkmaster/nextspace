@@ -19,8 +19,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMMAIN_H_
-#define WMMAIN_H_
+#ifndef __WORKSPACE_WM_MAIN__
+#define __WORKSPACE_WM_MAIN__
 
 #include "config.h"
 

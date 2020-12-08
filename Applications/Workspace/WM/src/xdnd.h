@@ -18,8 +18,8 @@
  *  with this program; if not, write to the Free Software Foundation
  */
 
-#ifndef _XDND_H_
-#define _XDND_H_
+#ifndef __WORKSPACE_WM_XDND__
+#define __WORKSPACE_WM_XDND__
 
 void wXDNDInitializeAtoms(void);
 Bool wXDNDProcessSelection(XEvent *event);

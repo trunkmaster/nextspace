@@ -19,8 +19,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMSTARTUP_H
-#define WMSTARTUP_H
+#ifndef __WORKSPACE_WM_STARTUP__
+#define __WORKSPACE_WM_STARTUP__
 
 void StartUp(Bool defaultScreenOnly);
 void WMSetErrorHandler(void);

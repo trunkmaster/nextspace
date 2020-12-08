@@ -21,8 +21,8 @@
 
 
 
-#ifndef _WMSPEC_H_
-#define _WMSPEC_H_
+#ifndef __WORKSPACE_WM_WMSPEC__
+#define __WORKSPACE_WM_WMSPEC__
 
 #include "screen.h"
 #include "window.h"

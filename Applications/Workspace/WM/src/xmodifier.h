@@ -17,8 +17,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _XMODIFIER_H_INCLUDED
-#define _XMODIFIER_H_INCLUDED
+#ifndef __WORKSPACE_WM_XMODIFIER__
+#define __WORKSPACE_WM_XMODIFIER__
 
 void wXModifierInitialize(void);
 int  wXModifierFromKey(const char *key);

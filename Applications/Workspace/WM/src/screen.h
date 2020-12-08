@@ -18,10 +18,10 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WMSCREEN_H_
-#define WMSCREEN_H_
+#ifndef __WORKSPACE_WM_SCREEN__
+#define __WORKSPACE_WM_SCREEN__
 
-#include "wconfig.h"
+#include "WMdefs.h"
 #include "WM.h"
 #include <sys/types.h>
 

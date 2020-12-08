@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include <stdlib.h>
 #include <X11/Xlib.h>

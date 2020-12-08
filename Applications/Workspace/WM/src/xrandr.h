@@ -18,8 +18,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _WMXINERAMA_H_
-#define _WMXINERAMA_H_
+#ifndef __WORKSPACE_WM_XRANDR__
+#define __WORKSPACE_WM_XRANDR__
 
 #include "appicon.h"
 #include "screen.h"
