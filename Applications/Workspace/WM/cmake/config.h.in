@@ -11,7 +11,10 @@
 #cmakedefine01 HAVE_FCNTL_H
 
 /* Defined if the 'float'-typed math function are available (sinf, cosf) */
-//#cmakedefine01 HAVE_FLOAT_MATHFUNC
+#cmakedefine01 HAVE_FLOAT_MATHFUNC
+
+/* Defines how to access the value of Pi */
+#cmakedefine WM_PI @M_PI_VALUE@
 
 /* Define to 1 if you have the `gethostname' function. */
 #cmakedefine01 HAVE_GETHOSTNAME
@@ -75,7 +78,7 @@
 #cmakedefine01 HAVE_STRING_H
 
 /* Define if strlcpy is available */
-#cmakedefine01 HAVE_STRLCAT
+#cmakedefine HAVE_STRLCAT
 
 /* Define to 1 if you have the `strncasecmp' function. */
 #cmakedefine01 HAVE_STRNCASECMP
@@ -84,7 +87,7 @@
 #cmakedefine01 HAVE_SYSCONF
 
 /* Check for syslog */
-#cmakedefine01 HAVE_SYSLOG
+#cmakedefine HAVE_SYSLOG
 
 /* Define to 1 if you have the <syslog.h> header file. */
 #cmakedefine01 HAVE_SYSLOG_H
@@ -108,82 +111,64 @@
 #cmakedefine01 HAVE_VPRINTF
 
 /* define if your X server has XConvertCase() (set by configure) */
-#cmakedefine01 HAVE_XCONVERTCASE
+#cmakedefine HAVE_XCONVERTCASE
 
 /* define if your X server has XInternAtoms() (set by configure) */
-#cmakedefine01 HAVE_XINTERNATOMS
-
-/* Define to the sub-directory where libtool stores uninstalled libraries. */
-#cmakedefine01 LT_OBJDIR
-
-/* defined by configure if the attribute is not defined on your platform */
-//#cmakedefine01 O_NOFOLLOW
-
-/* Define as the return type of signal handlers (`int' or `void') */
-//#cmakedefine01 RETSIGTYPE
-
-/* Define to 1 if you have the ANSI C header files. */
-#cmakedefine01 STDC_HEADERS
-
-/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
-#cmakedefine01 TIME_WITH_SYS_TIME
-
-/* Defined when user did not request to disable animations */
-//#cmakedefine01 USE_ANIMATIONS --> wconfig.h
-
-/* whether Drag-and-Drop on the dock should be enabled */
-//#cmakedefine01 USE_DOCK_XDND --> wconfig.h
-
-/* defined when valid GIF library with header was found */
-////#cmakedefine01 USE_GIF
-
-/* define to support ICCCM protocol for window manager replacement */
-#cmakedefine01 USE_ICCCM_WMREPLACE
-
-/* defined when valid JPEG library with header was found */
-////#cmakedefine01 USE_JPEG
-
-/* defined when MagickWand library with header was found */
-////#cmakedefine01 USE_MAGICK
-
-/* Defined when used did not request to disable Motif WM hints */
-//#cmakedefine01 USE_MWM_HINTS --> wconfig.h
-
-/* Define if Pango is to be used */
-#cmakedefine01 USE_PANGO
-
-/* defined when valid PNG library with header was found */
-///#cmakedefine01 USE_PNG
-
-/* defined when valid TIFF library with header was found */
-////#cmakedefine01 USE_TIFF
-
-/* defined when valid Webp library with header was found */
-////#cmakedefine01 USE_WEBP
-
-/* defined when valid XPM library with header was found */
-////#cmakedefine01 USE_XPM
+#cmakedefine HAVE_XINTERNATOMS
 
 /* defined when valid XRandR library with header was found */
-#cmakedefine01 USE_XRANDR
+#cmakedefine USE_XRANDR
 
 /* defined when valid XShape library with header was found */
-#cmakedefine01 USE_XSHAPE
-
-/* defined when valid XShm library with header was found */
-#cmakedefine01 USE_XSHM
-
-/* Version number of package */
-////#cmakedefine01 VERSION
-
-/* Defines how to access the value of Pi */
-#cmakedefine01 WM_PI
+#cmakedefine USE_XSHAPE
 
 /* whether XKB language MODELOCK should be enabled */
-#cmakedefine01 XKB_MODELOCK
+#cmakedefine XKB_MODELOCK
 
-/* Define to 1 if the X Window System is missing or not being used. */
-////#cmakedefine01 X_DISPLAY_MISSING
+/* Define if Pango is to be used */
+#cmakedefine USE_PANGO
+
+
+/* Define as the return type of signal handlers (`int' or `void') */
+#define RETSIGTYPE void
+
+/* Defined when user did not request to disable animations */
+#define USE_ANIMATIONS //--> wconfig.h
+
+/* whether Drag-and-Drop on the dock should be enabled */
+#define USE_DOCK_XDND //--> wconfig.h
+
+/* Defined when used did not request to disable Motif WM hints */
+#define USE_MWM_HINTS //--> wconfig.h
+
+/* define to support ICCCM protocol for window manager replacement */
+#undef USE_ICCCM_WMREPLACE
+
+
+
+/* defined when valid XShm library with header was found */
+//#cmakedefine01 USE_XSHM --> libwraster
+
+/* defined when valid GIF library with header was found */
+////#cmakedefine01 USE_GIF --> libwraster
+
+/* defined when valid JPEG library with header was found */
+////#cmakedefine01 USE_JPEG --> libwraster
+
+/* defined when MagickWand library with header was found */
+////#cmakedefine01 USE_MAGICK --> libwraster
+
+/* defined when valid PNG library with header was found */
+///#cmakedefine01 USE_PNG --> libwraster
+
+/* defined when valid TIFF library with header was found */
+////#cmakedefine01 USE_TIFF --> libwraster
+
+/* defined when valid Webp library with header was found */
+////#cmakedefine01 USE_WEBP --> libwraster
+
+/* defined when valid XPM library with header was found */
+////#cmakedefine01 USE_XPM --> libwraster
 
 /* Define to empty if `const' does not conform to ANSI C. */
 //#cmakedefine01 const
@@ -207,17 +192,16 @@
 // --- #include "config-paths.h" ---
 
 /* define where the translations are stored */
-//#define LOCALEDIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM"
-#define LD ${LOCALEDIR}
+#define LOCALEDIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM"
+//#define LD ${LOCALEDIR}
 
 /* define an extra path for pixmaps */
-/* #define PIXMAPDIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM" */
-#define PIXMAPDIR ${datadir}
+#define PIXMAPDIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM"
+//#define PIXMAPDIR ${datadir}
 
 /* where shared data is stored */
-//#define PKGDATADIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM/WindowMaker"
-#define PKGDATADIR ${datadir}
+#define PKGDATADIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM"
+//#define PKGDATADIR ${datadir}
 
 /* where the configuration is stored */
-#define SCD ${sysconfdir}
-
+#define SYSCONFDIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM"

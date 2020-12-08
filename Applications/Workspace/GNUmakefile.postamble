@@ -28,7 +28,7 @@ SHARED = obj
 
 before-all::
 	@ echo "Preparing WM..."
-	@ ./WM.configure
+	@ cd $(WM_DIR)/cmake; cmake .
 
 after-all::
 	@ echo " Copying Viewers bundles into the app wrapper ..."
@@ -40,6 +40,10 @@ after-all::
 	@ cp "Tools/Sizer/$(SHARED)/Sizer.tool" $(APP_WRAPPER)/Resources
 
 after-clean::
+	@ rm -rf $(WM_DIR)/cmake/CMakeFiles
+	@ rm $(WM_DIR)/cmake/CMakeCache.txt
+	@ rm $(WM_DIR)/cmake/Makefile
+	@ rm $(WM_DIR)/cmake/cmake_install.cmake
 
 before-install::
 	@ mkdir -p $(APP_WRAPPER_INSTALLED)
