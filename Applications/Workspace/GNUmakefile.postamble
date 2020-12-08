@@ -41,9 +41,10 @@ after-all::
 
 after-clean::
 	@ rm -rf $(WM_DIR)/cmake/CMakeFiles
-	@ rm $(WM_DIR)/cmake/CMakeCache.txt
-	@ rm $(WM_DIR)/cmake/Makefile
-	@ rm $(WM_DIR)/cmake/cmake_install.cmake
+	@ rm -f $(WM_DIR)/cmake/CMakeCache.txt
+	@ rm -f $(WM_DIR)/cmake/Makefile
+	@ rm -f $(WM_DIR)/cmake/cmake_install.cmake
+	@ rm -f $(WM_DIR)/config.h
 
 before-install::
 	@ mkdir -p $(APP_WRAPPER_INSTALLED)
