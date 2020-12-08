@@ -1,5 +1,5 @@
-#ifndef _WHANDLERS_H_
-#define _WHANDLERS_H_
+#ifndef __WORKSPACE_WM_WHANDLERS__
+#define __WORKSPACE_WM_WHANDLERS__
 
 #include <CoreFoundation/CFRunLoop.h>
 

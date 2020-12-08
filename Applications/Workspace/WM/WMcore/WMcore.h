@@ -19,8 +19,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _WUTIL_H_
-#define _WUTIL_H_
+#ifndef __WORKSPACE_WM_WMCORE__
+#define __WORKSPACE_WM_WMCORE__
 
 #include <X11/Xlib.h>
 #include <limits.h>

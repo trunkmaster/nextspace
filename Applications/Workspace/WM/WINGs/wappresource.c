@@ -13,7 +13,7 @@
 
 #include "GNUstep.h"
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 
 void WMSetApplicationIconWindow(WMScreen *scr, Window window)

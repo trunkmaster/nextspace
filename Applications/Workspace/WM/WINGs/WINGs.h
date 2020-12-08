@@ -19,8 +19,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _WINGS_H_
-#define _WINGS_H_
+#ifndef __WORKSPACE_WM_WINGS__
+#define __WORKSPACE_WM_WINGS__
 
 #include <assert.h>
 #include <stdlib.h>

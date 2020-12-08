@@ -1,5 +1,5 @@
-#ifndef _WDRAGSOURCE_H_
-#define _WDRAGSOURCE_H_
+#ifndef __WORKSPACE_WM_WDRAGSOURCE__
+#define __WORKSPACE_WM_WDRAGSOURCE__
 
 /* ---[ WINGs/dragsource.c ]---------------------------------------------- */
 

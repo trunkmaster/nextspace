@@ -1,5 +1,5 @@
-#ifndef _WCOLOR_H_
-#define _WCOLOR_H_
+#ifndef __WORKSPACE_WM_WCOLOR__
+#define __WORKSPACE_WM_WCOLOR__
 
 typedef struct W_Color {
     struct W_Screen *screen;

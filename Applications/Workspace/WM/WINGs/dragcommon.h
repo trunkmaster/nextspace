@@ -1,5 +1,5 @@
-#ifndef _WDRAGCOMMON_H_
-#define _WDRAGCOMMON_H_
+#ifndef __WORKSPACE_WM_WDRAGCOMMON__
+#define __WORKSPACE_WM_WDRAGCOMMON__
 
 #include <CoreFoundation/CFArray.h>
 #include <WMcore/data.h>

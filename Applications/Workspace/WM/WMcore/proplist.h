@@ -1,5 +1,5 @@
-#ifndef _WPROPLIST_H_
-#define _WPROPLIST_H_
+#ifndef __WORKSPACE_WM_WPROPLIST__
+#define __WORKSPACE_WM_WPROPLIST__
 
 #include <WMcore/WMcore.h>
 #include <WMcore/data.h>

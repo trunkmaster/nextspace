@@ -1,8 +1,7 @@
-#ifndef _WMISC_H_
-#define _WMISC_H_
+#ifndef __WORKSPACE_WM_WMISC__
+#define __WORKSPACE_WM_WMISC__
 
 #include <WINGs/WINGs.h>
-//#include <WINGs/WINGsP.h>
 #include <WINGs/wview.h>
 #include <WINGs/wfont.h>
 

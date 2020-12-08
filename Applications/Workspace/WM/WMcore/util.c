@@ -22,7 +22,7 @@
  *  MA 02110-1301, USA.
  */
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include <unistd.h>
 #include <signal.h>
@@ -37,7 +37,6 @@
 
 #include <WINGs/WINGs.h>
 
-#include "wconfig.h"
 #include "hashtable.h"
 #include "util.h"
 

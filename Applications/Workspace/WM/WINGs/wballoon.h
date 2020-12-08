@@ -1,5 +1,5 @@
-#ifndef _WBALLOON_H_
-#define _WBALLOON_H_
+#ifndef __WORKSPACE_WM_WBALLOON__
+#define __WORKSPACE_WM_WBALLOON__
 
 struct W_Balloon *W_CreateBalloon(WMScreen *scr);
 

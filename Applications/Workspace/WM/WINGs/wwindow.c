@@ -2,7 +2,7 @@
 #include <X11/Xmd.h>
 #include <X11/Xatom.h>
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include <CoreFoundation/CFNotificationCenter.h>
 

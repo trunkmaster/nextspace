@@ -4,7 +4,7 @@
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 
-#include "wconfig.h"
+#include "WMdefs.h"
 #include "WINGs.h"
 #include "winputmethod.h"
 #include "wmisc.h"

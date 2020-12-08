@@ -1,5 +1,5 @@
-#ifndef _WWIDGETS_H_
-#define _WWIDGETS_H_
+#ifndef __WORKSPACE_WM_WWIDGETS__
+#define __WORKSPACE_WM_WWIDGETS__
 
 #include <stdnoreturn.h>
 #include <WINGs/WINGs.h>

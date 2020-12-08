@@ -22,7 +22,7 @@
  */
 
 #ifndef __WORKSPACE_WM_DEFS__
-#define __WORKSPACE_WM_MAIN__
+#define __WORKSPACE_WM_DEFS__
 
 #include "config.h"
 

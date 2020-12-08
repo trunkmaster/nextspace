@@ -1,6 +1,5 @@
-/* ---[ WINGs/string.c ]-------------------------------------------------- */
-#ifndef _WSTRING_H_
-#define _WSTRING_H_
+#ifndef __WORKSPACE_WM_WSTRING__
+#define __WORKSPACE_WM_WSTRING__
 
 #include <sys/types.h>
 

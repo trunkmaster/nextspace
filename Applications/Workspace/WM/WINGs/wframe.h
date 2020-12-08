@@ -1,5 +1,5 @@
-#ifndef _WFRAME_H_
-#define _WFRAME_H_
+#ifndef __WORKSPACE_WM_WFRAME__
+#define __WORKSPACE_WM_WFRAME__
 
 typedef struct W_Frame {
 	W_Class widgetClass;

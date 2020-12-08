@@ -1,5 +1,5 @@
-#ifndef _WFONT_H_
-#define _WFONT_H_
+#ifndef __WORKSPACE_WM_WFONT__
+#define __WORKSPACE_WM_WFONT__
 
 #include <WINGs/wcolor.h>
 

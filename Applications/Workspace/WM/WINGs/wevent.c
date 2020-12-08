@@ -6,7 +6,7 @@
 #include <CoreFoundation/CFRunLoop.h>
 #include <WMcore/util.h>
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #if defined(HAVE_POLL) && defined(HAVE_POLL_H) && !HAVE_SELECT
 # include <sys/poll.h>

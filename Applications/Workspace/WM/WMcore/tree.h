@@ -1,7 +1,5 @@
-/* ---[ WINGs/tree.c ]---------------------------------------------------- */
-
-#ifndef _WTREE_H_
-#define _WTREE_H_
+#ifndef __WORKSPACE_WM_WTREE__
+#define __WORKSPACE_WM_WTREE__
 
 #include <WMcore/WMcore.h>
 

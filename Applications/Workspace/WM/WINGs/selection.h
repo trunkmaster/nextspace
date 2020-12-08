@@ -1,5 +1,5 @@
-#ifndef _WSELECTION_H_
-#define _WSELECTION_H_
+#ifndef __WORKSPACE_WM_WSELECTION__
+#define __WORKSPACE_WM_WSELECTION__
 
 typedef void WMSelectionCallback(WMView *view, Atom selection, Atom target,
                                  Time timestamp, void *cdata, WMData *data);

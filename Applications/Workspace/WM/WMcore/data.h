@@ -1,5 +1,5 @@
-#ifndef _WDATA_H_
-#define _WDATA_H_
+#ifndef __WORKSPACE_WM_WDATA__
+#define __WORKSPACE_WM_WDATA__
 
 #include <WMcore/util.h>
 

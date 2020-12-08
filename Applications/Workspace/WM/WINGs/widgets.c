@@ -1,5 +1,5 @@
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include "WINGs.h"
 #include "wappresource.h"

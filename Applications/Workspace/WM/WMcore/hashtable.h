@@ -1,7 +1,5 @@
-/* ---[ WINGs/hashtable.c ]----------------------------------------------- */
-
-#ifndef _WHASHTABLE_H_
-#define _WHASHTABLE_H_
+#ifndef __WORKSPACE_WM_WHASHTABLE__
+#define __WORKSPACE_WM_WHASHTABLE__
 
 #include <X11/Xlib.h>
 

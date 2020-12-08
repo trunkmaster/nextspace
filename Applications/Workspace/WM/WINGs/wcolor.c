@@ -4,7 +4,7 @@
 #include "WINGs.h"
 #include "wcolor.h"
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include <wraster.h>
 

@@ -1,7 +1,5 @@
-/* ---[ WINGs/findfile.c ]------------------------------------------------ */
-
-#ifndef _WFINDFILE_H_
-#define _WFINDFILE_H_
+#ifndef __WORKSPACE_WM_WFINDFILE__
+#define __WORKSPACE_WM_WFINDFILE__
 
 #include <WMcore/proplist.h>
 

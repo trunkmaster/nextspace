@@ -12,7 +12,7 @@
 #include <strings.h>
 #include <unistd.h>
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include "WMcore.h"
 #include "util.h"

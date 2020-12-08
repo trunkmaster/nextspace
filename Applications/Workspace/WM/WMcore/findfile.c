@@ -19,7 +19,7 @@
  * MA 02110-1301, USA.
  */
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

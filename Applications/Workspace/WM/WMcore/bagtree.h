@@ -11,8 +11,8 @@
  * Slow for storing small numbers of elements
  */
 
-#ifndef _WBAGTREE_H_
-#define _WBAGTREE_H_
+#ifndef __WORKSPACE_WM_WBAGTREE__
+#define __WORKSPACE_WM_WBAGTREE__
 
 #include <WMcore/WMcore.h>
 

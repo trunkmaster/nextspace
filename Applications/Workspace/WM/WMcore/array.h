@@ -12,8 +12,8 @@
  * 	aren't in the end
  */
 
-#ifndef _WARRAY_H_
-#define _WARRAY_H_
+#ifndef __WORKSPACE_WM_WARRAY__
+#define __WORKSPACE_WM_WARRAY__
 
 #include <WMcore/WMcore.h>
 #include <WMcore/util.h>

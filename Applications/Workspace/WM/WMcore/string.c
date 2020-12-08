@@ -6,7 +6,7 @@
 #   undef _XOPEN_SOURCE
 #endif
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include <string.h>
 #include <stdlib.h>

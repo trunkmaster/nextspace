@@ -1,5 +1,5 @@
-#ifndef _WEVENT_H_
-#define _WEVENT_H_
+#ifndef __WORKSPACE_WM_WEVENT__
+#define __WORKSPACE_WM_WEVENT__
 
 #include <WINGs/WINGs.h>
 #include <WINGs/wview.h>

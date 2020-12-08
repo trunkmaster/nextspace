@@ -1,5 +1,5 @@
-#ifndef _WAPPRESOURCE_H_
-#define _WAPPRESOURCE_H_
+#ifndef __WORKSPACE_WM_WAPPRESOURCE__
+#define __WORKSPACE_WM_WAPPRESOURCE__
 
 #include <WINGs/wpixmap.h>
 

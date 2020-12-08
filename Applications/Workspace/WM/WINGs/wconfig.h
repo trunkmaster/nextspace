@@ -17,10 +17,10 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef WINGS_CONFIG_H_
-#define WINGS_CONFIG_H_
+#ifndef __WORKSPACE_WM_WINGS_DEFS__
+#define __WORKSPACE_WM_WINGS_DEFS__
 
-#include "../config.h"
+#include "config.h"
 
 #if defined(HAVE_LIBINTL_H) && defined(I18N)
 # include <libintl.h>
@@ -30,5 +30,5 @@
 #endif
 
 
-#endif /* WINGS_CONFIG_H_ */
+#endif
 

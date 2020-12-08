@@ -1,5 +1,5 @@
-#ifndef _WWINDOW_H_
-#define _WWINDOW_H_
+#ifndef __WORKSPACE_WM_WWINDOW__
+#define __WORKSPACE_WM_WWINDOW__
 
 /* self is set to the widget from where the callback is being called and
  * clientData to the data set to with WMSetClientData() */

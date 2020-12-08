@@ -1,4 +1,4 @@
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include <WMcore/util.h>
 

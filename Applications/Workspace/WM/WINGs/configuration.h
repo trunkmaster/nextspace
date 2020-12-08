@@ -1,5 +1,5 @@
-#ifndef _WCONFIGURATION_H_
-#define _WCONFIGURATION_H_
+#ifndef __WORKSPACE_WM_WCONFIGURATION__
+#define __WORKSPACE_WM_WCONFIGURATION__
 
 /* ---[ WINGs/configuration.c ]------------------------------------------- */
 

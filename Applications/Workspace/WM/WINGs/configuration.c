@@ -1,6 +1,6 @@
 
 #include "WINGs.h"
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include <X11/Xlocale.h>
 

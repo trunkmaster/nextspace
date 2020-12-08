@@ -10,7 +10,7 @@
 #include <WINGs/WINGs.h>
 #include <WINGs/wappresource.h>
 
-#include "wconfig.h"
+#include "WMdefs.h"
 
 #include "util.h"
 #include "userdefaults.h"

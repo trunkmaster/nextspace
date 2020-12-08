@@ -1,5 +1,5 @@
-#ifndef _WLABEL_H_
-#define _WLABEL_H_
+#ifndef __WORKSPACE_WM_WLABEL__
+#define __WORKSPACE_WM_WLABEL__
 
 #include <WINGs/wfont.h>
 

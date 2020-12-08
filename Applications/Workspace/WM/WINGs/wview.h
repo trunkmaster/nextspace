@@ -1,5 +1,5 @@
-#ifndef _WVIEW_H_
-#define _WVIEW_H_
+#ifndef __WORKSPACE_WM_WVIEW__
+#define __WORKSPACE_WM_WVIEW__
 
 #include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFArray.h>

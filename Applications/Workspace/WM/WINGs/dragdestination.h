@@ -1,5 +1,5 @@
-#ifndef _WDRAGDESTINATION_H_
-#define _WDRAGDESTINATION_H_
+#ifndef __WORKSPACE_WM_WDRAGDESTINATION__
+#define __WORKSPACE_WM_WDRAGDESTINATION__
 
 /* ---[ WINGs/dragdestination.c ]----------------------------------------- */
 

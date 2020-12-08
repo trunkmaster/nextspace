@@ -1,5 +1,5 @@
-#ifndef _WPXIMAP_H_
-#define _WPXIMAP_H_
+#ifndef __WORKSPACE_WM_WPXIMAP__
+#define __WORKSPACE_WM_WPXIMAP__
 
 #include "WINGs.h"
 

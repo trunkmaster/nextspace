@@ -1,7 +1,5 @@
-#ifndef _WINPUT_METHOD_H_
-#define _WINPUT_METHOD_H_
-
-/* ---[ winputmethod.c ]-------------------------------------------------- */
+#ifndef __WORKSPACE_WM_WINPUTMETHOD__
+#define __WORKSPACE_WM_WINPUTMETHOD__
 
 void W_InitIM(WMScreen *scr);
 
