@@ -2,7 +2,7 @@
 #include <pwd.h>
 #include <sys/param.h>
 
-#include "wutil.h"
+#include "wuserdefaults.h"
 
 static char *_wgetenv(const char *n)
 {

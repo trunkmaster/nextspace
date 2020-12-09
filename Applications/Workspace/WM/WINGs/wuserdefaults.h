@@ -1,5 +1,5 @@
-#ifndef __WORKSPACE_WM_WUTIL__
-#define __WORKSPACE_WM_WUTIL__
+#ifndef __WORKSPACE_WM_WUSERDEFAULTS__
+#define __WORKSPACE_WM_WUSERDEFAULTS__
 
 #include <CoreFoundation/CoreFoundation.h>
 
