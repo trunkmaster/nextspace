@@ -4,6 +4,8 @@
 
 #include "wuserdefaults.h"
 
+// ---[ Defaults locations ] ----------------------------------------------------------------------
+
 static char *_wgetenv(const char *n)
 {
 #ifdef HAVE_SECURE_GETENV
@@ -68,7 +70,6 @@ CFStringRef WMHomePathForUser(CFStringRef username)
   return home;
 }
 
-
 // ~/Library
 CFStringRef WMUserLibraryPath()
 {
@@ -81,4 +82,24 @@ CFStringRef WMPathForDefaultsDomain(CFStringRef domain)
 {
   return CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/%s/%@"),
                                   WMUserLibraryPath(), DEFAULTS_SUBDIR, domain);
+}
+
+// ---[ Dictionary ] ------------------------------------------------------------------------------
+void *WMUDObjectFromDescription(const char *description)
+{
+  CFCharacterSetRef numbersCharset = CFCharacterSetGetPredefined(kCFCharacterSetDecimalDigit);
+  Boolean isNumber;
+  CFRange result = CFRangeMake(0,0);
+  CFStringRef stringVal;
+  CFDataRef dataVal;
+  void *value = NULL;
+
+
+  stringVal = CFStringCreateWithCString(kCFAllocatorDefault, description,
+                                        CFStringGetSystemEncoding);
+  if (CFStringFindCharacterFromSet(stringVal, numbersCharset, CFRangeMake(0, 1), 0, , &result)) {
+    
+  }
+  
+  return value;
 }

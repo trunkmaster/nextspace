@@ -52,6 +52,21 @@ int main(int argc, char *argv[])
 
   CFShow(CFSTR("Proper list after release:"));
   CFShow(propList);
+
+  /**/
+  const char *number = "500";
+  const char *string;
+  const char *array;
+  const char *dictionary;
+  CFPropertyListFormat plFormat = kCFPropertyListOpenStepFormat;
+  CFErrorRef plError;
+  CFPropertyListRef pl;
+  CFDataRef data;
+
+  // CFDataCreateWithBytesNoCopy(CFAllocatorRef allocator, const UInt8 *bytes, CFIndex length, CFAllocatorRef bytesDeallocator);
+  data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, number, strlen(number), kCFAllocatorNull);
+  // CFPropertyListCreateWithData(CFAllocatorRef allocator, CFDataRef data, CFOptionFlags options, CFPropertyListFormat *format, CFErrorRef *error)
+  pl = CFPropertyListCreateWithData(kCFAllocatorDefault, data, 0, &plFormat, plError);
   
   return (0);
 }

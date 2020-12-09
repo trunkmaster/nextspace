@@ -21,25 +21,33 @@
 #ifndef __WORKSPACE_WM_DEFAULTS__
 #define __WORKSPACE_WM_DEFAULTS__
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include <WMcore/proplist.h>
 #include "screen.h"
 #include "window.h"
 
+/* typedef struct WDDomain { */
+/*   const char *domain_name; */
+/*   WMPropList *dictionary; */
+/*   const char *path; */
+/*   time_t timestamp; */
+/* } WDDomain; */
 typedef struct WDDomain {
-  const char *domain_name;
-  WMPropList *dictionary;
-  const char *path;
-  time_t timestamp;
+  CFStringRef            domain_name;
+  CFMutableDictionaryRef dictionary;
+  CFStringRef            path;
+  time_t                 timestamp;
 } WDDomain;
 
 void wDefaultsCheckDomain(const char *domain);
+void wDefaultsCheckDomains(void *arg);
 
 WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary);
 
 void wReadDefaults(WScreen *scr, WMPropList *new_dict);
 void wDefaultUpdateIcons(WScreen *scr);
 void wReadStaticDefaults(WMPropList *dict);
-void wDefaultsCheckDomains(void *arg);
 void wSaveDefaults(WScreen *scr);
 
 #endif /* WMDEFAULTS_H_ */

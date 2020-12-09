@@ -49,13 +49,14 @@
 
 #include <WMcore/proplist.h>
 #include <WMcore/util.h>
-#include <WMcore/userdefaults.h>
 #include <WMcore/string.h>
+#include <WMcore/userdefaults.h>
 
 #include <WINGs/WINGs.h>
 #include <WINGs/wcolor.h>
 #include <WINGs/configuration.h>
 #include <WINGs/wmisc.h>
+#include <WINGs/wuserdefaults.h>
 
 #include "WM.h"
 #include "WM_main.h"
@@ -675,6 +676,107 @@ void wDefaultsCheckDomain(const char *domain)
   wfree(path);
 }
 
+void wDefaultsCheckDomains(void* arg)
+{
+  WScreen *scr;
+  struct stat stbuf;
+  WMPropList *shared_dict = NULL;
+  WMPropList *dict;
+
+  /* Parameter not used, but tell the compiler that it is ok */
+  (void) arg;
+
+  if (stat(w_global.domain.wmaker->path, &stbuf) >= 0
+      && w_global.domain.wmaker->timestamp < stbuf.st_mtime) {
+    w_global.domain.wmaker->timestamp = stbuf.st_mtime;
+
+    /* Global dictionary */
+    shared_dict = _readGlobalDomain("WindowMaker", True);
+
+    /* User dictionary */
+    dict = WMReadPropListFromFile(w_global.domain.wmaker->path);
+
+    if (dict) {
+      if (!WMIsPLDictionary(dict)) {
+        WMReleasePropList(dict);
+        dict = NULL;
+        wwarning(_("Domain %s (%s) of defaults database is corrupted!"),
+                 "WindowMaker", w_global.domain.wmaker->path);
+      } else {
+        if (shared_dict) {
+          WMMergePLDictionaries(shared_dict, dict, True);
+          WMReleasePropList(dict);
+          dict = shared_dict;
+          shared_dict = NULL;
+        }
+
+        scr = wDefaultScreen();
+        if (scr)
+          wReadDefaults(scr, dict);
+
+        if (w_global.domain.wmaker->dictionary)
+          WMReleasePropList(w_global.domain.wmaker->dictionary);
+
+        w_global.domain.wmaker->dictionary = dict;
+      }
+    } else {
+      wwarning(_("could not load domain %s from user defaults database"), "WindowMaker");
+    }
+
+    if (shared_dict)
+      WMReleasePropList(shared_dict);
+
+  }
+
+  if (stat(w_global.domain.window_attr->path, &stbuf) >= 0
+      && w_global.domain.window_attr->timestamp < stbuf.st_mtime) {
+    /* global dictionary */
+    shared_dict = _readGlobalDomain("WMWindowAttributes", True);
+    /* user dictionary */
+    dict = WMReadPropListFromFile(w_global.domain.window_attr->path);
+    if (dict) {
+      if (!WMIsPLDictionary(dict)) {
+        WMReleasePropList(dict);
+        dict = NULL;
+        wwarning(_("Domain %s (%s) of defaults database is corrupted!"),
+                 "WMWindowAttributes", w_global.domain.window_attr->path);
+      } else {
+        if (shared_dict) {
+          WMMergePLDictionaries(shared_dict, dict, True);
+          WMReleasePropList(dict);
+          dict = shared_dict;
+          shared_dict = NULL;
+        }
+
+        if (w_global.domain.window_attr->dictionary)
+          WMReleasePropList(w_global.domain.window_attr->dictionary);
+
+        w_global.domain.window_attr->dictionary = dict;
+        scr = wDefaultScreen();
+        if (scr) {
+          wDefaultUpdateIcons(scr);
+
+          /* Update the panel image if changed */
+          /* Don't worry. If the image is the same these
+           * functions will have no performance impact. */
+          create_logo_image(scr);
+        }
+      }
+    } else {
+      wwarning(_("could not load domain %s from user defaults database"), "WMWindowAttributes");
+    }
+
+    w_global.domain.window_attr->timestamp = stbuf.st_mtime;
+    if (shared_dict)
+      WMReleasePropList(shared_dict);
+  }
+
+#ifndef HAVE_INOTIFY
+  if (!arg)
+    WMAddTimerHandler(DEFAULTS_CHECK_INTERVAL, wDefaultsCheckDomains, arg);
+#endif
+}
+
 /* 
    NOW: reads and merges user and global defaults.
    TODO: I consider adressing some issues:
@@ -756,105 +858,6 @@ void wReadStaticDefaults(WMPropList * dict)
         (*entry->update) (NULL, entry, tdata, entry->extra_data);
     }
   }
-}
-
-void wDefaultsCheckDomains(void* arg)
-{
-  WScreen *scr;
-  struct stat stbuf;
-  WMPropList *shared_dict = NULL;
-  WMPropList *dict;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) arg;
-
-  if (stat(w_global.domain.wmaker->path, &stbuf) >= 0 && w_global.domain.wmaker->timestamp < stbuf.st_mtime) {
-    w_global.domain.wmaker->timestamp = stbuf.st_mtime;
-
-    /* Global dictionary */
-    shared_dict = _readGlobalDomain("WindowMaker", True);
-
-    /* User dictionary */
-    dict = WMReadPropListFromFile(w_global.domain.wmaker->path);
-
-    if (dict) {
-      if (!WMIsPLDictionary(dict)) {
-        WMReleasePropList(dict);
-        dict = NULL;
-        wwarning(_("Domain %s (%s) of defaults database is corrupted!"),
-                 "WindowMaker", w_global.domain.wmaker->path);
-      } else {
-        if (shared_dict) {
-          WMMergePLDictionaries(shared_dict, dict, True);
-          WMReleasePropList(dict);
-          dict = shared_dict;
-          shared_dict = NULL;
-        }
-
-        scr = wDefaultScreen();
-        if (scr)
-          wReadDefaults(scr, dict);
-
-        if (w_global.domain.wmaker->dictionary)
-          WMReleasePropList(w_global.domain.wmaker->dictionary);
-
-        w_global.domain.wmaker->dictionary = dict;
-      }
-    } else {
-      wwarning(_("could not load domain %s from user defaults database"), "WindowMaker");
-    }
-
-    if (shared_dict)
-      WMReleasePropList(shared_dict);
-
-  }
-
-  if (stat(w_global.domain.window_attr->path, &stbuf) >= 0 && w_global.domain.window_attr->timestamp < stbuf.st_mtime) {
-    /* global dictionary */
-    shared_dict = _readGlobalDomain("WMWindowAttributes", True);
-    /* user dictionary */
-    dict = WMReadPropListFromFile(w_global.domain.window_attr->path);
-    if (dict) {
-      if (!WMIsPLDictionary(dict)) {
-        WMReleasePropList(dict);
-        dict = NULL;
-        wwarning(_("Domain %s (%s) of defaults database is corrupted!"),
-                 "WMWindowAttributes", w_global.domain.window_attr->path);
-      } else {
-        if (shared_dict) {
-          WMMergePLDictionaries(shared_dict, dict, True);
-          WMReleasePropList(dict);
-          dict = shared_dict;
-          shared_dict = NULL;
-        }
-
-        if (w_global.domain.window_attr->dictionary)
-          WMReleasePropList(w_global.domain.window_attr->dictionary);
-
-        w_global.domain.window_attr->dictionary = dict;
-        scr = wDefaultScreen();
-        if (scr) {
-          wDefaultUpdateIcons(scr);
-
-          /* Update the panel image if changed */
-          /* Don't worry. If the image is the same these
-           * functions will have no performance impact. */
-          create_logo_image(scr);
-        }
-      }
-    } else {
-      wwarning(_("could not load domain %s from user defaults database"), "WMWindowAttributes");
-    }
-
-    w_global.domain.window_attr->timestamp = stbuf.st_mtime;
-    if (shared_dict)
-      WMReleasePropList(shared_dict);
-  }
-
-#ifndef HAVE_INOTIFY
-  if (!arg)
-    WMAddTimerHandler(DEFAULTS_CHECK_INTERVAL, wDefaultsCheckDomains, arg);
-#endif
 }
 
 void wReadDefaults(WScreen * scr, WMPropList * new_dict)
