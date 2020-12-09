@@ -58,6 +58,7 @@
 #include <WINGs/wmisc.h>
 
 #include "WM.h"
+#include "WM_main.h"
 #include "framewin.h"
 #include "window.h"
 #include "texture.h"
@@ -67,7 +68,6 @@
 #include "keybind.h"
 #include "xmodifier.h"
 #include "icon.h"
-/* #include "WM_main.h" */
 #include "actions.h"
 #include "dock.h"
 #include "workspace.h"

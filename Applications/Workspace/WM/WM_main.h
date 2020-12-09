@@ -23,6 +23,8 @@
 #define __WORKSPACE_WM_MAIN__
 
 #include "config.h"
+#include "screen.h"
+#include "window.h"
 
 #ifdef HAVE_STDNORETURN
 #include <stdnoreturn.h>
