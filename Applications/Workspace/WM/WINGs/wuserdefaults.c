@@ -85,21 +85,31 @@ CFStringRef WMPathForDefaultsDomain(CFStringRef domain)
 }
 
 // ---[ Dictionary ] ------------------------------------------------------------------------------
-void *WMUDObjectFromDescription(const char *description)
+CFPropertyListRef WMObjectFromDescription(const char *description)
 {
-  CFCharacterSetRef numbersCharset = CFCharacterSetGetPredefined(kCFCharacterSetDecimalDigit);
-  Boolean isNumber;
-  CFRange result = CFRangeMake(0,0);
-  CFStringRef stringVal;
-  CFDataRef dataVal;
-  void *value = NULL;
+  const UInt8          *desc = (const UInt8 *)description;
+  CFDataRef            data;
+  CFPropertyListFormat plFormat = kCFPropertyListOpenStepFormat;
+  CFErrorRef           plError = NULL;
 
+  data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, desc, strlen(description),
+                                     kCFAllocatorNull);
+  return CFPropertyListCreateWithData(kCFAllocatorDefault, data, 0, &plFormat, &plError);
+}
 
-  stringVal = CFStringCreateWithCString(kCFAllocatorDefault, description,
-                                        CFStringGetSystemEncoding);
-  if (CFStringFindCharacterFromSet(stringVal, numbersCharset, CFRangeMake(0, 1), 0, , &result)) {
-    
-  }
+CFPropertyListRef WMUserDefaultsReadFromFile(CFStringRef path)
+{
+  CFURLRef             URL;
+  CFReadStreamRef      readStream;
+  CFPropertyListFormat plFormat = kCFPropertyListOpenStepFormat;
+  CFErrorRef           plError;
+  CFPropertyListRef    pl;
   
-  return value;
+  URL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, path, kCFURLPOSIXPathStyle, false);
+  readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, URL);
+  CFReadStreamOpen(readStream);
+  pl = CFPropertyListCreateWithStream(kCFAllocatorDefault, readStream, 0, 0, &plFormat, &plError);
+  CFReadStreamClose(readStream);
+
+  return pl;
 }

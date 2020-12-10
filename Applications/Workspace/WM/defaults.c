@@ -84,14 +84,14 @@ typedef int (WDECallbackConvert) (WScreen *scr, WDefaultEntry *entry, WMPropList
 typedef int (WDECallbackUpdate) (WScreen *scr, WDefaultEntry *entry, void *tdata, void *extra_data);
 
 struct _WDefaultEntry {
-  const char *key;
-  const char *default_value;
-  void *extra_data;
-  void *addr;
+  const char         *key;
+  const char         *default_value;
+  void               *extra_data;
+  void               *addr;
   WDECallbackConvert *convert;
-  WDECallbackUpdate *update;
-  WMPropList *plkey;
-  WMPropList *plvalue;	/* default value */
+  WDECallbackUpdate  *update;
+  CFStringRef        plkey;
+  CFPropertyListRef  plvalue;	/* default value */
 };
 
 /* type converters */
@@ -610,14 +610,12 @@ static void _initDefaults(void)
   unsigned int i;
   WDefaultEntry *entry;
 
-  WMPLSetCaseSensitive(False);
-
   for (i = 0; i < wlengthof(optionList); i++) {
     entry = &optionList[i];
 
-    entry->plkey = WMCreatePLString(entry->key);
+    entry->plkey = CFStringCreateWithCString(NULL, entry->key, CFStringGetSystemEncoding());
     if (entry->default_value)
-      entry->plvalue = WMCreatePropListFromDescription(entry->default_value);
+      entry->plvalue = WMObjectFromDescription(entry->default_value);
     else
       entry->plvalue = NULL;
   }
@@ -625,33 +623,35 @@ static void _initDefaults(void)
   for (i = 0; i < wlengthof(staticOptionList); i++) {
     entry = &staticOptionList[i];
 
-    entry->plkey = WMCreatePLString(entry->key);
+    entry->plkey = CFStringCreateWithCString(NULL, entry->key, CFStringGetSystemEncoding());
     if (entry->default_value)
-      entry->plvalue = WMCreatePropListFromDescription(entry->default_value);
+      entry->plvalue = WMObjectFromDescription(entry->default_value);
     else
       entry->plvalue = NULL;
   }
 }
 
 // are placed in /usr/NextSpace/Apps/Workspace.app/Resources/WM
-static WMPropList *_readGlobalDomain(const char *domainName, Bool requireDictionary)
+static CFPropertyListRef _readGlobalDomain(const char *domainName, Bool requireDictionary)
 {
-  WMPropList *globalDict = NULL;
-  char path[PATH_MAX];
+  CFPropertyListRef globalDict = NULL;
+  CFStringRef path;
   struct stat stbuf;
 
   /* SYSCONFDIR specified in WM/config-paths.h */
-  snprintf(path, sizeof(path), "%s/%s", SYSCONFDIR, domainName);
-  if (stat(path, &stbuf) >= 0) {
-    globalDict = WMReadPropListFromFile(path);
-    if (globalDict && requireDictionary && !WMIsPLDictionary(globalDict)) {
-      wwarning(_("Domain %s (%s) of global defaults database is corrupted!"), domainName, path);
-      WMReleasePropList(globalDict);
+  path = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/%s"), SYSCONFDIR, domainName);
+  if (stat(CFStringGetCStringPtr(path, CFStringGetSystemEncoding()), &stbuf) >= 0) {
+    globalDict = WMUserDefaultsReadFromFile(path);
+    if (globalDict && requireDictionary && (CFGetTypeID(globalDict) != CFDictionaryGetTypeID())) {
+      wwarning(_("Domain %s (%s) of global defaults database is corrupted!"),
+               domainName, CFStringGetCStringPtr(path, CFStringGetSystemEncoding()));
+      CFRelease(globalDict);
       globalDict = NULL;
     } else if (!globalDict) {
       wwarning(_("could not load domain %s from global defaults database"), domainName);
     }
   }
+  CFRelease(path);
 
   return globalDict;
 }

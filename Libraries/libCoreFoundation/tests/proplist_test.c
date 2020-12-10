@@ -54,19 +54,23 @@ int main(int argc, char *argv[])
   CFShow(propList);
 
   /**/
-  const char *number = "500";
+  CFLog(kCFLogLevelError, CFSTR("\n\n>>> Create proplist from char* <<<\n\n"));
+  const UInt8 *number = "500";
   const char *string;
-  const char *array;
+  const UInt8 *array = "WidgetColor = (solid, gray);";
   const char *dictionary;
   CFPropertyListFormat plFormat = kCFPropertyListOpenStepFormat;
-  CFErrorRef plError;
+  CFErrorRef plError = NULL;
   CFPropertyListRef pl;
   CFDataRef data;
 
   // CFDataCreateWithBytesNoCopy(CFAllocatorRef allocator, const UInt8 *bytes, CFIndex length, CFAllocatorRef bytesDeallocator);
-  data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, number, strlen(number), kCFAllocatorNull);
+  data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, array, strlen(array), kCFAllocatorNull);
   // CFPropertyListCreateWithData(CFAllocatorRef allocator, CFDataRef data, CFOptionFlags options, CFPropertyListFormat *format, CFErrorRef *error)
-  pl = CFPropertyListCreateWithData(kCFAllocatorDefault, data, 0, &plFormat, plError);
+  pl = CFPropertyListCreateWithData(kCFAllocatorDefault, data, 0, &plFormat, &plError);
+  CFShow(pl);
+  CFRelease(pl);
+  CFRelease(data);
   
   return (0);
 }
