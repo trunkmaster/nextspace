@@ -34,10 +34,10 @@
 /*   time_t timestamp; */
 /* } WDDomain; */
 typedef struct WDDomain {
-  CFStringRef            domain_name;
+  CFStringRef            name;
   CFMutableDictionaryRef dictionary;
-  CFStringRef            path;
-  time_t                 timestamp;
+  CFURLRef               path;
+  CFAbsoluteTime         timestamp;
 } WDDomain;
 
 void wDefaultsCheckDomain(const char *domain);
@@ -45,9 +45,9 @@ void wDefaultsCheckDomains(void *arg);
 
 WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary);
 
-void wReadDefaults(WScreen *scr, WMPropList *new_dict);
+void wReadDefaults(WScreen *scr, CFMutableDictionaryRef new_dict);
 void wDefaultUpdateIcons(WScreen *scr);
-void wReadStaticDefaults(WMPropList *dict);
+void wReadStaticDefaults(CFDictionaryRef dict);
 void wSaveDefaults(WScreen *scr);
 
 #endif /* WMDEFAULTS_H_ */

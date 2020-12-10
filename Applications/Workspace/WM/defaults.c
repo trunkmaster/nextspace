@@ -57,6 +57,7 @@
 #include <WINGs/configuration.h>
 #include <WINGs/wmisc.h>
 #include <WINGs/wuserdefaults.h>
+#include <CoreFoundation/CFLogUtilities.h>
 
 #include "WM.h"
 #include "WM_main.h"
@@ -80,7 +81,7 @@
 
 typedef struct _WDefaultEntry WDefaultEntry;
 
-typedef int (WDECallbackConvert) (WScreen *scr, WDefaultEntry *entry, WMPropList *plvalue, void *addr, void **tdata);
+typedef int (WDECallbackConvert) (WScreen *scr, WDefaultEntry *entry, CFTypeRef plvalue, void *addr, void **tdata);
 typedef int (WDECallbackUpdate) (WScreen *scr, WDefaultEntry *entry, void *tdata, void *extra_data);
 
 struct _WDefaultEntry {
@@ -356,8 +357,8 @@ WDefaultEntry staticOptionList[] = {
    void			*addr;
    WDECallbackConvert	*convert;
    WDECallbackUpdate	*update;
-   WMPropList		*plkey; 
-   WMPropList		*plvalue; 
+   CFStringRef		plkey;
+   CFPropertyListRef	plvalue;
 */
 WDefaultEntry optionList[] = {
   {"IconPosition", "blh", seIconPositions, &wPreferences.icon_yard, getEnum, setIconPosition, NULL, NULL},
@@ -605,7 +606,7 @@ WDefaultEntry optionList[] = {
 };
 
 /* set `plkey` and `plvalue` fields of entries in `optionList` and `staticOptionList` */
-static void _initDefaults(void)
+static void _initializeOptionLists(void)
 {
   unsigned int i;
   WDefaultEntry *entry;
@@ -615,7 +616,7 @@ static void _initDefaults(void)
 
     entry->plkey = CFStringCreateWithCString(NULL, entry->key, CFStringGetSystemEncoding());
     if (entry->default_value)
-      entry->plvalue = WMObjectFromDescription(entry->default_value);
+      entry->plvalue = WMUserDefaultsFromDescription(entry->default_value);
     else
       entry->plvalue = NULL;
   }
@@ -625,216 +626,107 @@ static void _initDefaults(void)
 
     entry->plkey = CFStringCreateWithCString(NULL, entry->key, CFStringGetSystemEncoding());
     if (entry->default_value)
-      entry->plvalue = WMObjectFromDescription(entry->default_value);
+      entry->plvalue = WMUserDefaultsFromDescription(entry->default_value);
     else
       entry->plvalue = NULL;
   }
 }
 
 // are placed in /usr/NextSpace/Apps/Workspace.app/Resources/WM
-static CFPropertyListRef _readGlobalDomain(const char *domainName, Bool requireDictionary)
-{
-  CFPropertyListRef globalDict = NULL;
-  CFStringRef path;
-  struct stat stbuf;
+/* static CFPropertyListRef _readGlobalDomain(const char *domainName) */
+/* { */
+/*   CFPropertyListRef globalDict = NULL; */
+/*   CFStringRef path; */
+/*   struct stat stbuf; */
 
-  /* SYSCONFDIR specified in WM/config-paths.h */
-  path = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/%s"), SYSCONFDIR, domainName);
-  if (stat(CFStringGetCStringPtr(path, CFStringGetSystemEncoding()), &stbuf) >= 0) {
-    globalDict = WMUserDefaultsReadFromFile(path);
-    if (globalDict && requireDictionary && (CFGetTypeID(globalDict) != CFDictionaryGetTypeID())) {
-      wwarning(_("Domain %s (%s) of global defaults database is corrupted!"),
-               domainName, CFStringGetCStringPtr(path, CFStringGetSystemEncoding()));
-      CFRelease(globalDict);
-      globalDict = NULL;
-    } else if (!globalDict) {
-      wwarning(_("could not load domain %s from global defaults database"), domainName);
-    }
-  }
-  CFRelease(path);
+/*   /\* SYSCONFDIR specified in WM/config-paths.h *\/ */
+/*   path = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/%s"), SYSCONFDIR, domainName); */
+/*   if (stat(CFStringGetCStringPtr(path, CFStringGetSystemEncoding()), &stbuf) >= 0) { */
+/*     globalDict = WMUserDefaultsFromFile(path); */
+/*     if (globalDict && (CFGetTypeID(globalDict) != CFDictionaryGetTypeID())) { */
+/*       wwarning(_("Domain %s (%s) of global defaults database is corrupted!"), */
+/*                domainName, CFStringGetCStringPtr(path, CFStringGetSystemEncoding())); */
+/*       CFRelease(globalDict); */
+/*     } else if (!globalDict) { */
+/*       wwarning(_("could not load domain %s from global defaults database"), domainName); */
+/*     } */
+/*   } */
+/*   CFRelease(path); */
 
-  return globalDict;
-}
+/*   return globalDict; */
+/* } */
 
-void wDefaultsCheckDomain(const char *domain)
-{
-  char *path;
+/* void wDefaultsCheckDomain(const char *domain) */
+/* { */
+/*   CFStringRef _domain = CFStringCreateWithCString(NULL, domain, kCFStringEncodingUTF8); */
+/*   CFURLRef    domainURL = WMUserDefaultsCopyURLForDomain(_domain); */
+/*   CFErrorRef  error; */
+/*   /\* const char  *path; *\/ */
+/*   /\* path = CFStringGetCStringPtr(_path, kCFStringEncodingUTF8); *\/ */
+  
+/*   /\* if (access(path, R_OK) != 0) { *\/ */
+/*   if (CFURLResourceIsReachable(domainURL, &error) != true) { */
+/*     wwarning(_("could not find user GNUstep directory (%s)."), path); */
+/*   } */
 
-  path = wdefaultspathfordomain(domain);
+/*   CFRelease(_path); */
+/*   CFRelease(_domain); */
+/* } */
 
-  if (access(path, R_OK) != 0) {
-    wwarning(_("could not find user GNUstep directory (%s)."), path);
-
-    if (system("wmaker.inst --batch") != 0) {
-      wwarning(_("There was an error while creating GNUstep directory, please "
-                 "make sure you have installed Window Maker correctly and run wmaker.inst"));
-    } else {
-      wwarning(_("%s directory created with default configuration."), path);
-    }
-  }
-
-  wfree(path);
-}
-
-void wDefaultsCheckDomains(void* arg)
-{
-  WScreen *scr;
-  struct stat stbuf;
-  WMPropList *shared_dict = NULL;
-  WMPropList *dict;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) arg;
-
-  if (stat(w_global.domain.wmaker->path, &stbuf) >= 0
-      && w_global.domain.wmaker->timestamp < stbuf.st_mtime) {
-    w_global.domain.wmaker->timestamp = stbuf.st_mtime;
-
-    /* Global dictionary */
-    shared_dict = _readGlobalDomain("WindowMaker", True);
-
-    /* User dictionary */
-    dict = WMReadPropListFromFile(w_global.domain.wmaker->path);
-
-    if (dict) {
-      if (!WMIsPLDictionary(dict)) {
-        WMReleasePropList(dict);
-        dict = NULL;
-        wwarning(_("Domain %s (%s) of defaults database is corrupted!"),
-                 "WindowMaker", w_global.domain.wmaker->path);
-      } else {
-        if (shared_dict) {
-          WMMergePLDictionaries(shared_dict, dict, True);
-          WMReleasePropList(dict);
-          dict = shared_dict;
-          shared_dict = NULL;
-        }
-
-        scr = wDefaultScreen();
-        if (scr)
-          wReadDefaults(scr, dict);
-
-        if (w_global.domain.wmaker->dictionary)
-          WMReleasePropList(w_global.domain.wmaker->dictionary);
-
-        w_global.domain.wmaker->dictionary = dict;
-      }
-    } else {
-      wwarning(_("could not load domain %s from user defaults database"), "WindowMaker");
-    }
-
-    if (shared_dict)
-      WMReleasePropList(shared_dict);
-
-  }
-
-  if (stat(w_global.domain.window_attr->path, &stbuf) >= 0
-      && w_global.domain.window_attr->timestamp < stbuf.st_mtime) {
-    /* global dictionary */
-    shared_dict = _readGlobalDomain("WMWindowAttributes", True);
-    /* user dictionary */
-    dict = WMReadPropListFromFile(w_global.domain.window_attr->path);
-    if (dict) {
-      if (!WMIsPLDictionary(dict)) {
-        WMReleasePropList(dict);
-        dict = NULL;
-        wwarning(_("Domain %s (%s) of defaults database is corrupted!"),
-                 "WMWindowAttributes", w_global.domain.window_attr->path);
-      } else {
-        if (shared_dict) {
-          WMMergePLDictionaries(shared_dict, dict, True);
-          WMReleasePropList(dict);
-          dict = shared_dict;
-          shared_dict = NULL;
-        }
-
-        if (w_global.domain.window_attr->dictionary)
-          WMReleasePropList(w_global.domain.window_attr->dictionary);
-
-        w_global.domain.window_attr->dictionary = dict;
-        scr = wDefaultScreen();
-        if (scr) {
-          wDefaultUpdateIcons(scr);
-
-          /* Update the panel image if changed */
-          /* Don't worry. If the image is the same these
-           * functions will have no performance impact. */
-          create_logo_image(scr);
-        }
-      }
-    } else {
-      wwarning(_("could not load domain %s from user defaults database"), "WMWindowAttributes");
-    }
-
-    w_global.domain.window_attr->timestamp = stbuf.st_mtime;
-    if (shared_dict)
-      WMReleasePropList(shared_dict);
-  }
-
-#ifndef HAVE_INOTIFY
-  if (!arg)
-    WMAddTimerHandler(DEFAULTS_CHECK_INTERVAL, wDefaultsCheckDomains, arg);
-#endif
-}
-
-/* 
-   NOW: reads and merges user and global defaults.
-   TODO: I consider adressing some issues:
-   1. Don't read global defs - use `optionsList` and apply saved user defaults to it.
-   2. User saved defaults should hold only key=value pairs which differ from 'optionList' values. 
-*/
 WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary)
 {
   WDDomain *db;
-  struct stat stbuf;
   static int inited = 0;
-  WMPropList *shared_dict = NULL;
+  /* CFPropertyListRef shared_dict = NULL; */
+  CFAbsoluteTime modificationTime = 0.0;
 
   if (!inited) {
     inited = 1;
-    _initDefaults();
+    _initializeOptionLists();
   }
 
   db = wmalloc(sizeof(WDDomain));
-  db->domain_name = domain;
-  db->path = wdefaultspathfordomain(domain);
+  db->name = CFStringCreateWithCString(kCFAllocatorDefault, domain, kCFStringEncodingUTF8);
+  db->path = WMUserDefaultsCopyURLForDomain(db->name);
 
-  if (stat(db->path, &stbuf) >= 0) {
-    db->dictionary = WMReadPropListFromFile(db->path);
-    if (db->dictionary) {
-      if (requireDictionary && !WMIsPLDictionary(db->dictionary)) {
-        WMReleasePropList(db->dictionary);
-        db->dictionary = NULL;
-        wwarning(_("Domain %s (%s) of defaults database is corrupted!"), domain, db->path);
-      }
-      db->timestamp = stbuf.st_mtime;
-    } else {
-      wwarning(_("could not load domain %s from user defaults database"), domain);
+  modificationTime = WMUserDefaultsFileModificationTime(db->path);
+
+  if (modificationTime > 0) {
+    db->dictionary = (CFMutableDictionaryRef)WMUserDefaultsFromFile(db->path);
+    if (db->dictionary || (CFGetTypeID(db->dictionary) != CFDictionaryGetTypeID())) {
+      CFRelease(db->dictionary);
+      db->dictionary = NULL;
+      wwarning(_("Domain %s (%s) of defaults database is corrupted!"), domain,
+               CFStringGetCStringPtr(CFURLGetString(db->path), kCFStringEncodingUTF8));
+    }
+    else {
+      db->timestamp = modificationTime;
     }
   }
 
   /* global system dictionary */
-  shared_dict = _readGlobalDomain(domain, requireDictionary);
+  /* shared_dict = _readGlobalDomain(domain, requireDictionary); */
 
-  if (shared_dict && db->dictionary && WMIsPLDictionary(shared_dict) &&
-      WMIsPLDictionary(db->dictionary)) {
-    WMMergePLDictionaries(shared_dict, db->dictionary, True);
-    WMReleasePropList(db->dictionary);
-    db->dictionary = shared_dict;
-    if (stbuf.st_mtime > db->timestamp)
-      db->timestamp = stbuf.st_mtime;
-  } else if (!db->dictionary) {
-    db->dictionary = shared_dict;
-    if (stbuf.st_mtime > db->timestamp)
-      db->timestamp = stbuf.st_mtime;
-  }
+  /* if (shared_dict && db->dictionary && WMIsPLDictionary(shared_dict) && */
+  /*     WMIsPLDictionary(db->dictionary)) { */
+  /*   WMMergePLDictionaries(shared_dict, db->dictionary, True); */
+  /*   WMReleasePropList(db->dictionary); */
+  /*   db->dictionary = shared_dict; */
+  /*   if (stbuf.st_mtime > db->timestamp) */
+  /*     db->timestamp = stbuf.st_mtime; */
+  /* } else if (!db->dictionary) { */
+  /*   db->dictionary = shared_dict; */
+  /*   if (stbuf.st_mtime > db->timestamp) */
+  /*     db->timestamp = stbuf.st_mtime; */
+  /* } */
 
   return db;
 }
 
-void wReadStaticDefaults(WMPropList * dict)
+void wReadStaticDefaults(CFDictionaryRef dict)
 {
-  WMPropList *plvalue;
+  /* WMPropList *plvalue; */
+  CFTypeRef plvalue;
   WDefaultEntry *entry;
   unsigned int i;
   void *tdata;
@@ -843,7 +735,7 @@ void wReadStaticDefaults(WMPropList * dict)
     entry = &staticOptionList[i];
 
     if (dict)
-      plvalue = WMGetFromPLDictionary(dict, entry->plkey);
+      plvalue = CFDictionaryGetValue(dict, entry->plkey);
     else
       plvalue = NULL;
 
@@ -860,15 +752,18 @@ void wReadStaticDefaults(WMPropList * dict)
   }
 }
 
-void wReadDefaults(WScreen * scr, WMPropList * new_dict)
+void wReadDefaults(WScreen *scr, CFMutableDictionaryRef new_dict)
 {
-  WMPropList *plvalue, *old_value;
+  CFTypeRef plvalue, old_value;
   WDefaultEntry *entry;
   unsigned int i;
   int update_workspace_back = 0;	/* kluge :/ */
   unsigned int needs_refresh;
   void *tdata;
-  WMPropList *old_dict = (w_global.domain.wmaker->dictionary != new_dict ? w_global.domain.wmaker->dictionary : NULL);
+  CFDictionaryRef old_dict = NULL;
+
+  if (w_global.domain.wmaker->dictionary != new_dict)
+    old_dict = w_global.domain.wmaker->dictionary;
 
   needs_refresh = 0;
 
@@ -876,27 +771,27 @@ void wReadDefaults(WScreen * scr, WMPropList * new_dict)
     entry = &optionList[i];
 
     if (new_dict)
-      plvalue = WMGetFromPLDictionary(new_dict, entry->plkey);
+      plvalue = CFDictionaryGetValue(new_dict, entry->plkey);
     else
       plvalue = NULL;
 
     if (!old_dict)
       old_value = NULL;
     else
-      old_value = WMGetFromPLDictionary(old_dict, entry->plkey);
+      old_value = CFDictionaryGetValue(old_dict, entry->plkey);
 
     if (!plvalue && !old_value) {
       /* no default in  the DB. Use builtin default */
       plvalue = entry->plvalue;
       if (plvalue && new_dict)
-        WMPutInPLDictionary(new_dict, entry->plkey, plvalue);
+        CFDictionarySetValue(new_dict, entry->plkey, plvalue);
 
     } else if (!plvalue) {
       /* value was deleted from DB. Keep current value */
       continue;
     } else if (!old_value) {
       /* set value for the 1st time */
-    } else if (!WMIsPropListEqualTo(plvalue, old_value)) {
+    } else if (!CFEqual(plvalue, old_value)) {
       /* value has changed */
     } else {
       if (strcmp(entry->key, "WorkspaceBack") == 0
@@ -1024,6 +919,107 @@ void wReadDefaults(WScreen * scr, WMPropList * new_dict)
   }
 }
 
+// Update in-memory representaion of user defaults
+void wDefaultsCheckDomains(void* arg)
+{
+  WScreen *scr;
+  struct stat stbuf;
+  /* WMPropList *shared_dict = NULL; */
+  CFMutableDictionaryRef dict;
+  CFAbsoluteTime time = 0.0;
+
+  // ~/Library/Preferences/.WindowMaker/WindowMaker
+  time = WMUserDefaultsFileModificationTime(w_global.domain.wmaker->path);
+  if (w_global.domain.wmaker->timestamp < time) {
+    w_global.domain.wmaker->timestamp = stbuf.st_mtime;
+
+    /* Global dictionary */
+    /* shared_dict = _readGlobalDomain("WindowMaker", True); */
+
+    /* User dictionary */
+    dict = (CFMutableDictionaryRef)WMUserDefaultsFromFile(w_global.domain.wmaker->path);
+
+    if (dict) {
+      if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
+        CFRelease(dict);
+        dict = NULL;
+        CFLog(kCFLogLevelError, CFSTR("Domain %s (%@) of defaults database is corrupted!"),
+              "WindowMaker", w_global.domain.wmaker->path);
+      } else {
+        /* if (shared_dict) { */
+        /*   WMMergePLDictionaries(shared_dict, dict, True); */
+        /*   WMReleasePropList(dict); */
+        /*   dict = shared_dict; */
+        /*   shared_dict = NULL; */
+        /* } */
+
+        scr = wDefaultScreen();
+        if (scr)
+          wReadDefaults(scr, dict);
+
+        if (w_global.domain.wmaker->dictionary)
+          CFRelease(w_global.domain.wmaker->dictionary);
+
+        w_global.domain.wmaker->dictionary = dict;
+      }
+    } else {
+      wwarning(_("could not load domain %s from user defaults database"), "WindowMaker");
+    }
+
+    /* if (shared_dict) */
+    /*   WMReleasePropList(shared_dict); */
+  }
+
+  // ~/Library/Preferences/.WindowMaker/WMAttributes
+  time = WMUserDefaultsFileModificationTime(w_global.domain.window_attr->path);
+  if (w_global.domain.window_attr->timestamp < time) {
+    /* global dictionary */
+    /* shared_dict = _readGlobalDomain("WMWindowAttributes", True); */
+    /* user dictionary */
+    dict = (CFMutableDictionaryRef)WMUserDefaultsFromFile(w_global.domain.window_attr->path);
+    if (dict) {
+      if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
+        CFRelease(dict);
+        dict = NULL;
+        CFLog(kCFLogLevelError, CFSTR("Domain %s (%@) of defaults database is corrupted!"),
+              "WMWindowAttributes", w_global.domain.window_attr->path);
+      } else {
+        /* if (shared_dict) { */
+        /*   WMMergePLDictionaries(shared_dict, dict, True); */
+        /*   WMReleasePropList(dict); */
+        /*   dict = shared_dict; */
+        /*   shared_dict = NULL; */
+        /* } */
+
+        if (w_global.domain.window_attr->dictionary)
+          CFRelease(w_global.domain.window_attr->dictionary);
+
+        w_global.domain.window_attr->dictionary = dict;
+        scr = wDefaultScreen();
+        if (scr) {
+          wDefaultUpdateIcons(scr);
+
+          /* Update the panel image if changed */
+          /* Don't worry. If the image is the same these
+           * functions will have no performance impact. */
+          create_logo_image(scr);
+        }
+      }
+    } else {
+      wwarning(_("could not load domain %s from user defaults database"), "WMWindowAttributes");
+    }
+
+    w_global.domain.window_attr->timestamp = WMUserDefaultsFileModificationTime(w_global.domain.window_attr->path);
+    /* if (shared_dict) */
+    /*   CFRelease(shared_dict); */
+  }
+
+#ifndef HAVE_INOTIFY
+  if (!arg)
+    WMAddTimerHandler(DEFAULTS_CHECK_INTERVAL, wDefaultsCheckDomains, arg);
+#endif
+}
+
 void wDefaultUpdateIcons(WScreen *scr)
 {
   WAppIcon *aicon = scr->app_icon_list;
@@ -1100,14 +1096,11 @@ static int string2index(WMPropList *key, WMPropList *val, const char *def, WOpti
  * ret - is the address to store a pointer to a temporary buffer. ret
  * 	must not be freed and is used by the set functions
  */
-static int getBool(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getBool(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *addr, void **ret)
 {
   static char data;
   const char *val;
   int second_pass = 0;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) scr;
 
   GET_STRING_OR_DEFAULT("Boolean", val);
 
@@ -1146,7 +1139,7 @@ static int getBool(WScreen * scr, WDefaultEntry * entry, WMPropList * value, voi
   return True;
 }
 
-static int getInt(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getInt(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *addr, void **ret)
 {
   static int data;
   const char *val;
@@ -1173,7 +1166,7 @@ static int getInt(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void
   return True;
 }
 
-static int getCoord(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getCoord(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *addr, void **ret)
 {
   static WCoord data;
   char *val_x, *val_y;
@@ -1249,7 +1242,7 @@ static int getCoord(WScreen * scr, WDefaultEntry * entry, WMPropList * value, vo
   return True;
 }
 
-static int getPropList(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getPropList(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *addr, void **ret)
 {
   /* Parameter not used, but tell the compiler that it is ok */
   (void) scr;
@@ -1263,7 +1256,7 @@ static int getPropList(WScreen * scr, WDefaultEntry * entry, WMPropList * value,
   return True;
 }
 
-static int getPathList(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getPathList(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *addr, void **ret)
 {
   static char *data;
   int i, count, len;
@@ -1332,7 +1325,7 @@ static int getPathList(WScreen * scr, WDefaultEntry * entry, WMPropList * value,
   return True;
 }
 
-static int getEnum(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getEnum(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *addr, void **ret)
 {
   static signed char data;
 

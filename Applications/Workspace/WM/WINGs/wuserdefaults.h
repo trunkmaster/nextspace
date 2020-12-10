@@ -8,13 +8,12 @@
 /* #include <CoreFoundation/CFArray.h> */
 
 /* Paths */
-CFStringRef WMUserName();
-CFStringRef WMHomePathForUser(CFStringRef username);
-CFStringRef WMUserLibraryPath();
-CFStringRef WMPathForDefaultsDomain(CFStringRef domain);
+CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain);
+CFStringRef WMUserDefaultsCopyPathForDomain(CFStringRef domain);
 
 /* Property List */
-CFPropertyListRef WMObjectFromDescription(const char *description);
-CFPropertyListRef WMUserDefaultsReadFromFile(CFStringRef path);
+CFPropertyListRef WMUserDefaultsFromDescription(const char *description);
+CFPropertyListRef WMUserDefaultsFromFile(CFURLRef pathURL);
+CFAbsoluteTime WMUserDefaultsFileModificationTime(CFURLRef pathURL);
 
 #endif

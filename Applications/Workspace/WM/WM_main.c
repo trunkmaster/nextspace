@@ -391,10 +391,10 @@ int WMInitialize(int argc, char **argv)
 {
   setlocale(LC_ALL, "");
 
-  if (!wPreferences.flags.noupdates) {
-    /* check existence of Defaults DB directory */
-    wDefaultsCheckDomain("WindowMaker");
-  }
+  /* if (!wPreferences.flags.noupdates) { */
+  /*   /\* check existence of Defaults DB directory *\/ */
+  /*   wDefaultsCheckDomain("WindowMaker"); */
+  /* } */
 
   if (w_global.locale) {
     setenv("LANG", w_global.locale, 1);

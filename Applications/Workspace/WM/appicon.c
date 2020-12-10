@@ -1115,38 +1115,44 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
 /* This function save the application icon and store the path in the Dictionary */
 static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_instance, const char *wm_class)
 {
-  WMPropList *dict = w_global.domain.window_attr->dictionary;
-  WMPropList *adict, *key, *iconk;
-  WMPropList *val;
+  CFMutableDictionaryRef dict = w_global.domain.window_attr->dictionary;
+  CFMutableDictionaryRef adict = NULL;
+  CFStringRef key;
+  CFStringRef iconk;
+  CFTypeRef val;
   char *tmp;
 
   tmp = get_name_for_instance_class(wm_instance, wm_class);
-  key = WMCreatePLString(tmp);
+  key = CFStringCreateWithCString(kCFAllocatorDefault, tmp, kCFStringEncodingUTF8);
   wfree(tmp);
 
-  adict = WMGetFromPLDictionary(dict, key);
-  iconk = WMCreatePLString("Icon");
+  val = CFDictionaryGetValue(dict, key);
+  if (CFGetTypeID(val) == CFDictionaryGetTypeID()) {
+    adict = (CFMutableDictionaryRef)val;
+  }
+  val = NULL;
+  iconk = CFStringCreateWithCString(kCFAllocatorDefault, "Icon", kCFStringEncodingUTF8);
 
   if (adict) {
-    val = WMGetFromPLDictionary(adict, iconk);
+    val = CFDictionaryGetValue(adict, iconk);
   } else {
     /* no dictionary for app, so create one */
-    adict = WMCreatePLDictionary(NULL, NULL);
-    WMPutInPLDictionary(dict, key, adict);
-    WMReleasePropList(adict);
+    adict = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+    CFDictionarySetValue(dict, key, adict);
+    CFRelease(adict);
     val = NULL;
   }
 
   if (!val) {
-    val = WMCreatePLString(iconPath);
-    WMPutInPLDictionary(adict, iconk, val);
-    WMReleasePropList(val);
+    val = CFStringCreateWithCString(kCFAllocatorDefault, iconPath, kCFStringEncodingUTF8);
+    CFDictionarySetValue(adict, iconk, val);
+    CFRelease(val);
   } else {
     val = NULL;
   }
 
-  WMReleasePropList(key);
-  WMReleasePropList(iconk);
+  CFRelease(key);
+  CFRelease(iconk);
 
   if (val && !wPreferences.flags.noupdates)
     UpdateDomainFile(w_global.domain.window_attr);
