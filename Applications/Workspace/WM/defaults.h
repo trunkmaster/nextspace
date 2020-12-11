@@ -23,7 +23,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include <WMcore/proplist.h>
 #include "screen.h"
 #include "window.h"
 

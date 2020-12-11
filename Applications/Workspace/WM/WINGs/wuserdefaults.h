@@ -8,12 +8,18 @@
 /* #include <CoreFoundation/CFArray.h> */
 
 /* Paths */
+CFURLRef WMUserDefaultsCopyUserLibraryURL(void);
 CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain);
 CFStringRef WMUserDefaultsCopyPathForDomain(CFStringRef domain);
 
 /* Property List */
 CFPropertyListRef WMUserDefaultsFromDescription(const char *description);
-CFPropertyListRef WMUserDefaultsFromFile(CFURLRef pathURL);
+char *WMUserDefaultsGetCString(CFStringRef string, CFStringEncoding encoding);
+
 CFAbsoluteTime WMUserDefaultsFileModificationTime(CFURLRef pathURL);
+
+CFPropertyListRef WMUserDefaultsRead(CFURLRef pathURL);
+Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFURLRef fileURL);
+void WMUserDefaultsMerge(CFMutableDictionaryRef dest, CFDictionaryRef source);
 
 #endif

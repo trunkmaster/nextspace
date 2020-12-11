@@ -1,6 +1,15 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFLogUtilities.h>
 
+/* val = CFStringGetCStringPtr(entry->plvalue, kCFStringEncodingUTF8); */
+
+/* CFStringCreateWithCString(kCFAllocatorDefault, instance, kCFStringEncodingUTF8); */
+
+/* (CFGetTypeID(elem) != CFStringGetTypeID()) */
+
+/* CFDictionaryGetValue */
+
+
 void readPropertyList(void)
 {
   CFStringRef      defsPath;

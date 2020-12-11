@@ -56,10 +56,10 @@
 
 #include <WMcore/util.h>
 #include <WMcore/handlers.h>
-#include <WMcore/userdefaults.h>
 
 #include <WINGs/wevent.h>
 #include <WINGs/wmisc.h>
+#include <WINGs/wuserdefaults.h>
 
 #include "GNUstep.h"
 #include "WM.h"
@@ -391,7 +391,8 @@ static void _processDefaultsWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags
  */
 static void _addDefaultsWatch(void)
 {
-  char *watchPath = NULL;
+  CFStringRef pathString = NULL;
+  const char *watchPath = NULL;
 
   w_global.inotify.fd_event_queue = inotify_init();	/* Initialise an inotify instance */
   if (w_global.inotify.fd_event_queue < 0) {
@@ -399,7 +400,8 @@ static void _addDefaultsWatch(void)
                " Changes to the defaults database will require"
                " a restart to take effect. Check your kernel!"));
   } else {
-    watchPath = wdefaultspathfordomain("");
+    pathString = WMUserDefaultsCopyPathForDomain(CFSTR(""));
+    watchPath = CFStringGetCStringPtr(pathString, kCFStringEncodingUTF8);
     CFLog(kCFLogLevelError, CFSTR("inotify: watch for %s"), watchPath);
     /* Add the watch; really we are only looking for modify events
      * but we might want more in the future so check all events for now.
@@ -414,8 +416,8 @@ static void _addDefaultsWatch(void)
       close(w_global.inotify.fd_event_queue);
       w_global.inotify.fd_event_queue = -1;
     }
+    CFRelease(pathString);
   }
-  wfree(watchPath);
 
   // Add to runloop
   if (w_global.inotify.fd_event_queue > 0) {

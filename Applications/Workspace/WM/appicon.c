@@ -33,7 +33,6 @@
 
 #include <WMcore/util.h>
 #include <WMcore/string.h>
-#include <WMcore/proplist.h>
 
 #include <WINGs/wevent.h>
 

@@ -52,7 +52,7 @@ RImage *get_default_image(WScreen *scr);
 RImage *get_icon_image(WScreen *scr, const char *winstance, const char *wclass, int max_size);
 
 int wDefaultGetStartWorkspace(WScreen *scr, const char *instance, const char *class);
-char *wDefaultGetIconFile(const char *instance, const char *class, Bool default_icon);
+const char *wDefaultGetIconFile(const char *instance, const char *class, Bool default_icon);
 void wDefaultChangeIcon(const char *instance, const char* class, const char *file);
 void wDefaultPurgeInfo(const char *instance, const char *class);
 

@@ -38,6 +38,7 @@
 #include <X11/XKBlib.h>
 
 #include <WINGs/wmisc.h>
+#include <WINGs/wuserdefaults.h>
 #include <wraster.h>
 
 #include <WMcore/util.h>
@@ -1014,34 +1015,35 @@ void SendHelperMessage(WScreen *scr, char type, int workspace, const char *msg)
   wfree(buffer);
 }
 
-Bool UpdateDomainFile(WDDomain * domain)
+Bool UpdateDomainFile(WDDomain *domain)
 {
-  struct stat stbuf;
-  char path[PATH_MAX];
-  WMPropList *shared_dict, *dict;
+  /* struct stat stbuf; */
+  /* char path[PATH_MAX]; */
+  /* WMPropList *shared_dict; */
+  CFMutableDictionaryRef dict;
   Bool result, freeDict = False;
 
   dict = domain->dictionary;
-  if (WMIsPLDictionary(domain->dictionary)) {
-    /* retrieve global system dictionary */
-    snprintf(path, sizeof(path), "%s/WindowMaker/%s", SYSCONFDIR, domain->domain_name);
-    if (stat(path, &stbuf) >= 0) {
-      shared_dict = WMReadPropListFromFile(path);
-      if (shared_dict) {
-        if (WMIsPLDictionary(shared_dict)) {
-          freeDict = True;
-          dict = WMDeepCopyPropList(domain->dictionary);
-          WMSubtractPLDictionaries(dict, shared_dict, True);
-        }
-        WMReleasePropList(shared_dict);
-      }
-    }
-  }
+  /* if (CFGetTypeID(domain->dictionary) != CFDictionaryGetTypeID()) { */
+  /*   /\* retrieve global system dictionary *\/ */
+  /*   snprintf(path, sizeof(path), "%s/WindowMaker/%s", SYSCONFDIR, domain->domain_name); */
+  /*   if (stat(path, &stbuf) >= 0) { */
+  /*     shared_dict = WMReadPropListFromFile(path); */
+  /*     if (shared_dict) { */
+  /*       if (WMIsPLDictionary(shared_dict)) { */
+  /*         freeDict = True; */
+  /*         dict = WMDeepCopyPropList(domain->dictionary); */
+  /*         WMSubtractPLDictionaries(dict, shared_dict, True); */
+  /*       } */
+  /*       WMReleasePropList(shared_dict); */
+  /*     } */
+  /*   } */
+  /* } */
 
-  result = WMWritePropListToFile(dict, domain->path);
+  result = WMUserDefaultsWrite(dict, domain->path);
 
   if (freeDict) {
-    WMReleasePropList(dict);
+    CFRelease(dict);
   }
 
   return result;

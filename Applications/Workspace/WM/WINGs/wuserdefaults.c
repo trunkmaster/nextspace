@@ -70,35 +70,52 @@
 /*   return home; */
 /* } */
 
-/* // ~/Library */
-/* CFStringRef WMUserLibraryPath() */
-/* { */
-/*   return CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/%s"), WMHomePathForUser(NULL), "/Library"); */
-/* } */
+// ~/Library
+CFURLRef WMUserDefaultsCopyUserLibraryURL(void)
+{
+  CFURLRef homePath = CFCopyHomeDirectoryURL();
+  CFURLRef libPath;
+
+  libPath = CFURLCreateCopyAppendingPathComponent(NULL, homePath, CFSTR("Library"), true);
+  CFRelease(homePath);
+
+  CFShow(libPath);
+  
+  return libPath;
+}
 
 #define DEFAULTS_SUBDIR "Preferences/.WindowMaker"
 // ~/Library/Preferences/.WindowMaker/domain
 CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain)
 {
-  CFURLRef homePath = CFCopyHomeDirectoryURL();
-  CFURLRef libPath, wmPath;
-  CFURLRef domainPath;
+  CFURLRef libURL, prefsURL, wmURL;
+  CFURLRef domainURL;
 
-  libPath = CFURLCreateCopyAppendingPathComponent(NULL, homePath, CFSTR("Library"), true);
-  CFRelease(homePath);
-  wmPath = CFURLCreateCopyAppendingPathComponent(NULL, libPath, CFSTR(".WindowMaker"), true);
-  CFRelease(libPath);
-  domainPath = CFURLCreateCopyAppendingPathComponent(NULL, wmPath, domain, false);
-  CFRelease(wmPath);
+  libURL = WMUserDefaultsCopyUserLibraryURL();
+  prefsURL = CFURLCreateCopyAppendingPathComponent(NULL, libURL, CFSTR("Preferences"), true);
+  CFRelease(libURL);
+  wmURL = CFURLCreateCopyAppendingPathComponent(NULL, prefsURL, CFSTR(".WindowMaker"), true);
+  CFRelease(prefsURL);
 
-  return domainPath;
+  if (CFStringGetLength(domain) > 0) {
+    domainURL = CFURLCreateCopyAppendingPathComponent(NULL, wmURL, domain, false);
+  }
+  else {
+    CFRetain(wmURL);
+    domainURL = wmURL;
+  }
+  CFRelease(wmURL);
+
+  return domainURL;
 }
 
 CFStringRef WMUserDefaultsCopyPathForDomain(CFStringRef domain)
 {
-  CFURLRef    domainURL = WMUserDefaultsCopyURLForDomain(domain);
-  CFStringRef domainPath = CFURLCopyFileSystemPath(domainURL, kCFURLPOSIXPathStyle);
+  CFURLRef    domainURL;
+  CFStringRef domainPath;
 
+  domainURL = WMUserDefaultsCopyURLForDomain(domain);
+  domainPath = CFURLCopyFileSystemPath(domainURL, kCFURLPOSIXPathStyle);
   CFRelease(domainURL);
   
   return domainPath;
@@ -117,22 +134,15 @@ CFPropertyListRef WMUserDefaultsFromDescription(const char *description)
   return CFPropertyListCreateWithData(kCFAllocatorDefault, data, 0, &plFormat, &plError);
 }
 
-CFPropertyListRef WMUserDefaultsFromFile(CFURLRef pathURL)
+char *WMUserDefaultsGetCString(CFStringRef string, CFStringEncoding encoding)
 {
-  /* CFURLRef             URL; */
-  CFReadStreamRef      readStream;
-  CFPropertyListFormat plFormat = kCFPropertyListOpenStepFormat;
-  CFErrorRef           plError;
-  CFPropertyListRef    pl;
-  
-  /* URL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, path, kCFURLPOSIXPathStyle, false); */
-  readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, pathURL);
-  CFReadStreamOpen(readStream);
-  pl = CFPropertyListCreateWithStream(kCFAllocatorDefault, readStream, 0, 0, &plFormat, &plError);
-  CFReadStreamClose(readStream);
-  CFRelease(readStream);
+  CFIndex length = CFStringGetLength(string) + 1;
+  char    *buffer = NULL;
 
-  return pl;
+  buffer = (char *)malloc(sizeof(char) * length);
+  CFStringGetCString(string, buffer, length, encoding);
+
+  return buffer;
 }
 
 CFAbsoluteTime WMUserDefaultsFileModificationTime(CFURLRef pathURL)
@@ -156,3 +166,55 @@ CFAbsoluteTime WMUserDefaultsFileModificationTime(CFURLRef pathURL)
 
   return time;
 }
+
+CFPropertyListRef WMUserDefaultsRead(CFURLRef pathURL)
+{
+  CFPropertyListFormat plFormat = kCFPropertyListOpenStepFormat;
+  CFReadStreamRef      readStream;
+  CFErrorRef           plError = NULL;
+  CFPropertyListRef    pl;
+  
+  readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, pathURL);
+  CFReadStreamOpen(readStream);
+  pl = CFPropertyListCreateWithStream(kCFAllocatorDefault, readStream, 0,
+                                      kCFPropertyListMutableContainersAndLeaves,
+                                      &plFormat, &plError);
+  CFReadStreamClose(readStream);
+  CFRelease(readStream);
+  
+  if (plError > 0) {
+    CFLog(kCFLogLevelError, CFSTR("Failed to read user defaults from %@ (Error: %i)"),
+          pathURL, plError);
+  }
+
+  return pl;
+}
+
+Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFURLRef fileURL)
+{
+  CFWriteStreamRef  writeStream;
+  /* CFPropertyListRef propertyList; */
+  CFErrorRef        plError;
+
+  writeStream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, fileURL);
+  /* CFPropertyListCreateWithData(CFAllocatorRef allocator, */
+  /*                              CFDataRef data, */
+  /*                              CFOptionFlags options, */
+  /*                              &plFormat, &plError) */
+  CFPropertyListWrite(dictionary, writeStream, kCFPropertyListOpenStepFormat, 0, &plError);
+
+  return (plError > 0) ? false : true;
+}
+
+void WMUserDefaultsMerge(CFMutableDictionaryRef dest, CFDictionaryRef source)
+{
+  const void *keys;
+  const void *values;
+
+  CFDictionaryGetKeysAndValues(source, &keys, &values);
+  
+  for (int i = 0; i < CFDictionaryGetCount(source); i++) {
+    CFDictionarySetValue(dest, &keys[i], &values[i]);
+  }
+}
+

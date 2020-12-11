@@ -38,10 +38,10 @@
 #include <WMcore/util.h>
 #include <WMcore/handlers.h>
 #include <WMcore/string.h>
-#include <WMcore/userdefaults.h>
 
 #include <WINGs/wevent.h>
 #include <WINGs/wmisc.h>
+#include <WINGs/wuserdefaults.h>
 
 #include "GNUstep.h"
 #include "WM.h"
@@ -461,30 +461,34 @@ char *get_name_for_instance_class(const char *wm_instance, const char *wm_class)
   return suffix;
 }
 
-static char *get_icon_cache_path(void)
+static CFStringRef get_icon_cache_path(void)
 {
-  const char *prefix;
-  char *path;
-  int len, ret;
+  CFURLRef libURL;
+  CFStringRef libPath, cachePath;
+  const char *path;
+  int ret;
 
-  prefix = wusergnusteppath();
-  len = strlen(prefix) + strlen(CACHE_ICON_PATH) + 2;
-  path = wmalloc(len);
-  snprintf(path, len, "%s%s/", prefix, CACHE_ICON_PATH);
+  libURL = WMUserDefaultsCopyUserLibraryURL();
+  libPath = CFURLCopyFileSystemPath(libURL, kCFURLPOSIXPathStyle);
+  CFRelease(libURL);
+  cachePath = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%@%s"),
+                                       libPath, CACHE_ICON_PATH);
+  CFRelease(libPath);
+  path = CFStringGetCStringPtr(cachePath, kCFStringEncodingUTF8);
 
   /* If the folder exists, exit */
   if (access(path, F_OK) == 0)
-    return path;
+    return cachePath;
 
   /* Create the folder */
   ret = wmkdirhier((const char *) path);
 
   /* Exit 1 on success, 0 on failure */
   if (ret == 1)
-    return path;
+    return cachePath;
 
   /* Fail */
-  wfree(path);
+  CFRelease(cachePath);
   return NULL;
 }
 
@@ -513,7 +517,9 @@ static RImage *get_wwindow_image_from_wmhints(WWindow *wwin, WIcon *icon)
  */
 char *wIconStore(WIcon *icon)
 {
-  char *path, *dir_path, *file;
+  CFStringRef dirPath;
+  CFStringRef iconPath;
+  char *path, *file;
   int len = 0;
   RImage *image = NULL;
   WWindow *wwin = icon->owner;
@@ -521,21 +527,21 @@ char *wIconStore(WIcon *icon)
   if (!wwin)
     return NULL;
 
-  dir_path = get_icon_cache_path();
-  if (!dir_path)
+  dirPath = get_icon_cache_path();
+  if (!dirPath)
     return NULL;
 
   file = get_name_for_wwin(wwin);
   if (!file) {
-    wfree(dir_path);
+    CFRelease(dirPath);
     return NULL;
   }
 
-  len = strlen(dir_path) + strlen(file) + 5;
+  iconPath = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%@%s.tiff"),
+                                      dirPath, file);
+  len = (sizeof(char) * CFStringGetLength(iconPath)) + 1;
   path = wmalloc(len);
-  snprintf(path, len, "%s%s.xpm", dir_path, file);
-  wfree(dir_path);
-  wfree(file);
+  CFStringGetCString(iconPath, path, len, kCFStringEncodingUTF8);
 
   /* If icon exists, exit */
   if (access(path, F_OK) == 0)
@@ -551,14 +557,7 @@ char *wIconStore(WIcon *icon)
     return NULL;
   }
 
-#ifdef NEXTSPACE
-  path = WSSaveRasterImageAsTIFF(image, path);
-#else
-  if (!RSaveImage(image, path, "XPM")) {
-    wfree(path);
-    path = NULL;
-  }
-#endif /* NEXTSPACE */
+  path = WSSaveRasterImageAsTIFF(image, path); // NEXTSPACE
 
   RReleaseImage(image);
 

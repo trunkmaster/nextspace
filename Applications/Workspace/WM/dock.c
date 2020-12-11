@@ -33,7 +33,6 @@
 #include <math.h>
 #include <limits.h>
 
-#include <WMcore/proplist.h>
 #include <WMcore/string.h>
 #include <WMcore/util.h>
 #include <WMcore/handlers.h>

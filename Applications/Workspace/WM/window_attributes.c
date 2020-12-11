@@ -35,6 +35,7 @@
 #include <wraster.h>
 
 #include <WMcore/util.h>
+#include "WINGs/wuserdefaults.h"
 
 #include "WM.h"
 #include "window.h"
@@ -53,105 +54,105 @@
 /* Local stuff */
 
 /* type converters */
-static int getBool(WMPropList *, WMPropList *);
-static char *getString(WMPropList *, WMPropList *);
-static WMPropList *ANoTitlebar = NULL;
-static WMPropList *ANoResizebar;
-static WMPropList *ANoMiniaturizeButton;
-static WMPropList *ANoMiniaturizable;
-static WMPropList *ANoCloseButton;
-static WMPropList *ANoBorder;
-static WMPropList *ANoHideOthers;
-static WMPropList *ANoMouseBindings;
-static WMPropList *ANoKeyBindings;
-static WMPropList *ANoAppIcon;	/* app */
-static WMPropList *AKeepOnTop;
-static WMPropList *AKeepOnBottom;
-static WMPropList *AOmnipresent;
-static WMPropList *ASkipWindowList;
-static WMPropList *ASkipSwitchPanel;
-static WMPropList *AKeepInsideScreen;
-static WMPropList *AUnfocusable;
-static WMPropList *AAlwaysUserIcon;
-static WMPropList *AStartMiniaturized;
-static WMPropList *AStartMaximized;
-static WMPropList *AStartHidden;	/* app */
-static WMPropList *ADontSaveSession;	/* app */
-static WMPropList *AEmulateAppIcon;
-static WMPropList *AFocusAcrossWorkspace;
-static WMPropList *AFullMaximize;
-static WMPropList *ASharedAppIcon;	/* app */
+static int getBool(CFStringRef, CFTypeRef);
+static const char *getString(CFStringRef, CFTypeRef);
+static CFStringRef ANoTitlebar = NULL;
+static CFStringRef ANoResizebar;
+static CFStringRef ANoMiniaturizeButton;
+static CFStringRef ANoMiniaturizable;
+static CFStringRef ANoCloseButton;
+static CFStringRef ANoBorder;
+static CFStringRef ANoHideOthers;
+static CFStringRef ANoMouseBindings;
+static CFStringRef ANoKeyBindings;
+static CFStringRef ANoAppIcon;	/* app */
+static CFStringRef AKeepOnTop;
+static CFStringRef AKeepOnBottom;
+static CFStringRef AOmnipresent;
+static CFStringRef ASkipWindowList;
+static CFStringRef ASkipSwitchPanel;
+static CFStringRef AKeepInsideScreen;
+static CFStringRef AUnfocusable;
+static CFStringRef AAlwaysUserIcon;
+static CFStringRef AStartMiniaturized;
+static CFStringRef AStartMaximized;
+static CFStringRef AStartHidden;	/* app */
+static CFStringRef ADontSaveSession;	/* app */
+static CFStringRef AEmulateAppIcon;
+static CFStringRef AFocusAcrossWorkspace;
+static CFStringRef AFullMaximize;
+static CFStringRef ASharedAppIcon;	/* app */
 #ifdef XKB_BUTTON_HINT
-static WMPropList *ANoLanguageButton;
+static CFStringRef ANoLanguageButton;
 #endif
-static WMPropList *AStartWorkspace;
-static WMPropList *AIcon;
-static WMPropList *AnyWindow;
-static WMPropList *No;
+static CFStringRef AStartWorkspace;
+static CFStringRef AIcon;
+static CFStringRef AnyWindow;
+static CFStringRef No;
 
 /* --------------------------- Local ----------------------- */
 
 static void init_wdefaults(void)
 {
-  AIcon = WMCreatePLString("Icon");
+  AIcon = CFSTR("Icon");
 
-  ANoTitlebar = WMCreatePLString("NoTitlebar");
-  ANoResizebar = WMCreatePLString("NoResizebar");
-  ANoMiniaturizeButton = WMCreatePLString("NoMiniaturizeButton");
-  ANoMiniaturizable = WMCreatePLString("NoMiniaturizable");
-  ANoCloseButton = WMCreatePLString("NoCloseButton");
-  ANoBorder = WMCreatePLString("NoBorder");
-  ANoHideOthers = WMCreatePLString("NoHideOthers");
-  ANoMouseBindings = WMCreatePLString("NoMouseBindings");
-  ANoKeyBindings = WMCreatePLString("NoKeyBindings");
-  ANoAppIcon = WMCreatePLString("NoAppIcon");
-  AKeepOnTop = WMCreatePLString("KeepOnTop");
-  AKeepOnBottom = WMCreatePLString("KeepOnBottom");
-  AOmnipresent = WMCreatePLString("Omnipresent");
-  ASkipWindowList = WMCreatePLString("SkipWindowList");
-  ASkipSwitchPanel = WMCreatePLString("SkipSwitchPanel");
-  AKeepInsideScreen = WMCreatePLString("KeepInsideScreen");
-  AUnfocusable = WMCreatePLString("Unfocusable");
-  AAlwaysUserIcon = WMCreatePLString("AlwaysUserIcon");
-  AStartMiniaturized = WMCreatePLString("StartMiniaturized");
-  AStartHidden = WMCreatePLString("StartHidden");
-  AStartMaximized = WMCreatePLString("StartMaximized");
-  ADontSaveSession = WMCreatePLString("DontSaveSession");
-  AEmulateAppIcon = WMCreatePLString("EmulateAppIcon");
-  AFocusAcrossWorkspace = WMCreatePLString("FocusAcrossWorkspace");
-  AFullMaximize = WMCreatePLString("FullMaximize");
-  ASharedAppIcon = WMCreatePLString("SharedAppIcon");
+  ANoTitlebar = CFSTR("NoTitlebar");
+  ANoResizebar = CFSTR("NoResizebar");
+  ANoMiniaturizeButton = CFSTR("NoMiniaturizeButton");
+  ANoMiniaturizable = CFSTR("NoMiniaturizable");
+  ANoCloseButton = CFSTR("NoCloseButton");
+  ANoBorder = CFSTR("NoBorder");
+  ANoHideOthers = CFSTR("NoHideOthers");
+  ANoMouseBindings = CFSTR("NoMouseBindings");
+  ANoKeyBindings = CFSTR("NoKeyBindings");
+  ANoAppIcon = CFSTR("NoAppIcon");
+  AKeepOnTop = CFSTR("KeepOnTop");
+  AKeepOnBottom = CFSTR("KeepOnBottom");
+  AOmnipresent = CFSTR("Omnipresent");
+  ASkipWindowList = CFSTR("SkipWindowList");
+  ASkipSwitchPanel = CFSTR("SkipSwitchPanel");
+  AKeepInsideScreen = CFSTR("KeepInsideScreen");
+  AUnfocusable = CFSTR("Unfocusable");
+  AAlwaysUserIcon = CFSTR("AlwaysUserIcon");
+  AStartMiniaturized = CFSTR("StartMiniaturized");
+  AStartHidden = CFSTR("StartHidden");
+  AStartMaximized = CFSTR("StartMaximized");
+  ADontSaveSession = CFSTR("DontSaveSession");
+  AEmulateAppIcon = CFSTR("EmulateAppIcon");
+  AFocusAcrossWorkspace = CFSTR("FocusAcrossWorkspace");
+  AFullMaximize = CFSTR("FullMaximize");
+  ASharedAppIcon = CFSTR("SharedAppIcon");
 #ifdef XKB_BUTTON_HINT
-  ANoLanguageButton = WMCreatePLString("NoLanguageButton");
+  ANoLanguageButton = CFSTR("NoLanguageButton");
 #endif
 
-  AStartWorkspace = WMCreatePLString("StartWorkspace");
+  AStartWorkspace = CFSTR("StartWorkspace");
 
-  AnyWindow = WMCreatePLString("*");
-  No = WMCreatePLString("No");
+  AnyWindow = CFSTR("*");
+  No = CFSTR("No");
 }
 
 /* Returns the correct WMPropList, using instance+class or instance, or class, or default */
-static WMPropList *get_value(WMPropList * dict_win, WMPropList * dict_class, WMPropList * dict_name,
-			     WMPropList * dict_any, WMPropList * option, WMPropList * default_value,
-			     Bool useGlobalDefault)
+static CFTypeRef get_value(CFTypeRef dict_win, CFTypeRef dict_class, CFTypeRef dict_name,
+                           CFTypeRef dict_any, CFStringRef option, CFTypeRef default_value,
+                           Bool useGlobalDefault)
 {
-  WMPropList *value;
+  CFTypeRef value;
 
   if (dict_win) {
-    value = WMGetFromPLDictionary(dict_win, option);
+    value = CFDictionaryGetValue(dict_win, option);
     if (value)
       return value;
   }
 
   if (dict_name) {
-    value = WMGetFromPLDictionary(dict_name, option);
+    value = CFDictionaryGetValue(dict_name, option);
     if (value)
       return value;
   }
 
   if (dict_class) {
-    value = WMGetFromPLDictionary(dict_class, option);
+    value = CFDictionaryGetValue(dict_class, option);
     if (value)
       return value;
   }
@@ -160,7 +161,7 @@ static WMPropList *get_value(WMPropList * dict_win, WMPropList * dict_class, WMP
     return NULL;
 
   if (dict_any) {
-    value = WMGetFromPLDictionary(dict_any, option);
+    value = CFDictionaryGetValue(dict_any, option);
     if (value)
       return value;
   }
@@ -168,38 +169,35 @@ static WMPropList *get_value(WMPropList * dict_win, WMPropList * dict_class, WMP
   return default_value;
 }
 
-static WMPropList *get_value_from_instanceclass(const char *value)
+static CFTypeRef get_value_from_instanceclass(const char *value)
 {
-  WMPropList *key, *val = NULL;
+  CFStringRef key;
+  CFTypeRef   val = NULL;
 
   if (!value)
     return NULL;
 
-  key = WMCreatePLString(value);
-
-  WMPLSetCaseSensitive(True);
+  key = CFStringCreateWithCString(kCFAllocatorDefault, value, kCFStringEncodingUTF8);
 
   if (w_global.domain.window_attr->dictionary)
-    val = key ? WMGetFromPLDictionary(w_global.domain.window_attr->dictionary, key) : NULL;
+    val = key ? CFDictionaryGetValue(w_global.domain.window_attr->dictionary, key) : NULL;
 
   if (key)
-    WMReleasePropList(key);
-
-  WMPLSetCaseSensitive(False);
+    CFRelease(key);
 
   return val;
 }
 
-static int getBool(WMPropList * key, WMPropList * value)
+static int getBool(CFStringRef key, CFTypeRef value)
 {
-  char *val;
+  const char *val;
 
-  if (!WMIsPLString(value)) {
+  if (CFGetTypeID(value) != CFStringGetTypeID()) {
     wwarning(_("Wrong option format for key \"%s\". Should be %s."),
-             WMGetFromPLString(key), "Boolean");
+             CFStringGetCStringPtr(key, kCFStringEncodingUTF8), "Boolean");
     return 0;
   }
-  val = WMGetFromPLString(value);
+  val = CFStringGetCStringPtr(value, kCFStringEncodingUTF8);
 
   if ((val[1] == '\0' && (val[0] == 'y' || val[0] == 'Y' || val[0] == 'T' || val[0] == 't' || val[0] == '1'))
       || (strcasecmp(val, "YES") == 0 || strcasecmp(val, "TRUE") == 0)) {
@@ -221,14 +219,15 @@ static int getBool(WMPropList * key, WMPropList * value)
 }
 
 /* WARNING: Do not free the value returned by this function!! */
-static char *getString(WMPropList * key, WMPropList * value)
+static const char *getString(CFStringRef key, CFTypeRef value)
 {
-  if (!WMIsPLString(value)) {
-    wwarning(_("Wrong option format for key \"%s\". Should be %s."), WMGetFromPLString(key), "String");
+  if (CFGetTypeID(value) != CFStringGetTypeID()) {
+    wwarning(_("Wrong option format for key \"%s\". Should be %s."),
+             CFStringGetCStringPtr(key, kCFStringEncodingUTF8), "String");
     return NULL;
   }
 
-  return WMGetFromPLString(value);
+  return CFStringGetCStringPtr(value, kCFStringEncodingUTF8);
 }
 
 /*
@@ -246,7 +245,7 @@ void wDefaultFillAttributes(const char *instance, const char *class,
 			    WWindowAttributes *attr, WWindowAttributes *mask,
 			    Bool useGlobalDefault)
 {
-  WMPropList *value, *dw, *dc, *dn, *da;
+  CFTypeRef value, dw, dc, dn, da;
   char *buffer;
 
   dw = dc = dn = da = NULL;
@@ -263,10 +262,8 @@ void wDefaultFillAttributes(const char *instance, const char *class,
   dn = get_value_from_instanceclass(instance);
   dc = get_value_from_instanceclass(class);
 
-  WMPLSetCaseSensitive(True);
-
   if ((w_global.domain.window_attr->dictionary) && (useGlobalDefault))
-    da = WMGetFromPLDictionary(w_global.domain.window_attr->dictionary, AnyWindow);
+    da = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, AnyWindow);
 
   /* get the data */
   value = get_value(dw, dc, dn, da, ANoTitlebar, No, useGlobalDefault);
@@ -351,65 +348,56 @@ void wDefaultFillAttributes(const char *instance, const char *class,
   value = get_value(dw, dc, dn, da, ANoLanguageButton, No, useGlobalDefault);
   APPLY_VAL(value, no_language_button, ANoLanguageButton);
 #endif
-
-  /* clean up */
-  WMPLSetCaseSensitive(False);
 }
 
-static WMPropList *get_generic_value(const char *instance, const char *class,
-				     WMPropList *option, Bool default_icon)
+static CFTypeRef get_generic_value(const char *instance, const char *class,
+                                   CFStringRef option, Bool default_icon)
 {
-  WMPropList *value, *key, *dict;
+  CFTypeRef value, key, dict;
 
   value = NULL;
 
-  WMPLSetCaseSensitive(True);
-
   /* Search the icon name using class and instance */
   if (class && instance) {
-    char *buffer;
+    key = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%s.%s"), instance, class);
+    dict = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, key);
+    CFRelease(key);
 
-    buffer = wmalloc(strlen(class) + strlen(instance) + 2);
-    sprintf(buffer, "%s.%s", instance, class);
-    key = WMCreatePLString(buffer);
-    wfree(buffer);
-
-    dict = WMGetFromPLDictionary(w_global.domain.window_attr->dictionary, key);
-    WMReleasePropList(key);
-
-    if (dict)
-      value = WMGetFromPLDictionary(dict, option);
+    if (dict) {
+      value = CFDictionaryGetValue(dict, option);
+    }
   }
 
   /* Search the icon name using instance */
   if (!value && instance) {
-    key = WMCreatePLString(instance);
+    key = CFStringCreateWithCString(kCFAllocatorDefault, instance, kCFStringEncodingUTF8);
 
-    dict = WMGetFromPLDictionary(w_global.domain.window_attr->dictionary, key);
-    WMReleasePropList(key);
+    dict = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, key);
+    CFRelease(key);
 
-    if (dict)
-      value = WMGetFromPLDictionary(dict, option);
+    if (dict) {
+      value = CFDictionaryGetValue(dict, option);
+    }
   }
 
   /* Search the icon name using class */
   if (!value && class) {
-    key = WMCreatePLString(class);
+    key = CFStringCreateWithCString(kCFAllocatorDefault, class, kCFStringEncodingUTF8);
 
-    dict = WMGetFromPLDictionary(w_global.domain.window_attr->dictionary, key);
-    WMReleasePropList(key);
+    dict = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, key);
+    CFRelease(key);
 
     if (dict)
-      value = WMGetFromPLDictionary(dict, option);
+      value = CFDictionaryGetValue(dict, option);
   }
 
   /* Search the default icon name - See default_icon argument! */
   if (!value && default_icon) {
     /* AnyWindow is "*" - see wdefaults.c */
-    dict = WMGetFromPLDictionary(w_global.domain.window_attr->dictionary, AnyWindow);
+    dict = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, AnyWindow);
 
     if (dict)
-      value = WMGetFromPLDictionary(dict, option);
+      value = CFDictionaryGetValue(dict, option);
   }
 
   WMPLSetCaseSensitive(False);
@@ -421,7 +409,7 @@ static WMPropList *get_generic_value(const char *instance, const char *class,
 char *get_icon_filename(const char *winstance, const char *wclass, const char *command,
 			Bool default_icon)
 {
-  char *file_name;
+  const char *file_name;
   char *file_path;
 
   /* Get the file name of the image, using instance and class */
@@ -485,7 +473,8 @@ RImage *get_rimage_from_file(WScreen *scr, const char *file_name, int max_size)
  * If the path for an icon is not found, returns NULL */
 char *get_default_image_path(void)
 {
-  char *path = NULL, *file = NULL;
+  char *path = NULL;
+  const char *file = NULL;
 
   /* Get the default icon */
   file = wDefaultGetIconFile(NULL, NULL, True);
@@ -532,9 +521,9 @@ RImage *get_icon_image(WScreen *scr, const char *winstance, const char *wclass, 
 
 int wDefaultGetStartWorkspace(WScreen *scr, const char *instance, const char *class)
 {
-  WMPropList *value;
+  CFTypeRef value;
   int w;
-  char *tmp;
+  const char *tmp;
 
   if (!ANoTitlebar)
     init_wdefaults();
@@ -559,10 +548,10 @@ int wDefaultGetStartWorkspace(WScreen *scr, const char *instance, const char *cl
 }
 
 /* Get the name of the Icon File. If default_icon is True, then, default value included */
-char *wDefaultGetIconFile(const char *instance, const char *class, Bool default_icon)
+const char *wDefaultGetIconFile(const char *instance, const char *class, Bool default_icon)
 {
-  WMPropList *value;
-  char *tmp;
+  CFTypeRef value;
+  const char *tmp;
 
   if (!ANoTitlebar)
     init_wdefaults();
@@ -583,96 +572,97 @@ char *wDefaultGetIconFile(const char *instance, const char *class, Bool default_
 void wDefaultChangeIcon(const char *instance, const char *class, const char *file)
 {
   WDDomain *db = w_global.domain.window_attr;
-  WMPropList *icon_value = NULL, *value, *attr, *key, *def_win, *def_icon = NULL;
-  WMPropList *dict = db->dictionary;
+  CFMutableDictionaryRef dict = db->dictionary;
+  CFMutableDictionaryRef icon_value = NULL;
+  CFMutableDictionaryRef attr;
+  CFTypeRef value, key, def_win, def_icon = NULL;
   int same = 0;
 
   if (!dict) {
-    dict = WMCreatePLDictionary(NULL, NULL);
+    dict = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
     if (dict)
       db->dictionary = dict;
     else
       return;
   }
 
-  WMPLSetCaseSensitive(True);
-
   if (instance && class) {
     char *buffer;
 
     buffer = StrConcatDot(instance, class);
-    key = WMCreatePLString(buffer);
+    key = CFStringCreateWithCString(kCFAllocatorDefault, buffer, kCFStringEncodingUTF8);;
     wfree(buffer);
-  } else if (instance) {
-    key = WMCreatePLString(instance);
-  } else if (class) {
-    key = WMCreatePLString(class);
-  } else {
-    key = WMRetainPropList(AnyWindow);
+  }
+  else if (instance) {
+    key = CFStringCreateWithCString(kCFAllocatorDefault, instance, kCFStringEncodingUTF8);;
+  }
+  else if (class) {
+    key = CFStringCreateWithCString(kCFAllocatorDefault, class, kCFStringEncodingUTF8);;
+  }
+  else {
+    key = CFRetain(AnyWindow);
   }
 
   if (file) {
-    value = WMCreatePLString(file);
-    icon_value = WMCreatePLDictionary(AIcon, value, NULL);
-    WMReleasePropList(value);
+    value = CFStringCreateWithCString(kCFAllocatorDefault, file, kCFStringEncodingUTF8);;
+    icon_value = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+    CFDictionarySetValue(icon_value, AIcon, value);
+    CFRelease(value);
 
-    def_win = WMGetFromPLDictionary(dict, AnyWindow);
-    if (def_win != NULL)
-      def_icon = WMGetFromPLDictionary(def_win, AIcon);
-
-    if (def_icon && !strcmp(WMGetFromPLString(def_icon), file))
-      same = 1;
-  }
-
-  attr = WMGetFromPLDictionary(dict, key);
-  if (attr != NULL) {
-    if (WMIsPLDictionary(attr)) {
-      if (icon_value != NULL && !same)
-        WMMergePLDictionaries(attr, icon_value, False);
-      else
-        WMRemoveFromPLDictionary(attr, AIcon);
+    def_win = CFDictionaryGetValue(dict, AnyWindow);
+    if (def_win != NULL) {
+      def_icon = CFDictionaryGetValue(def_win, AIcon);
     }
-  } else if (icon_value != NULL && !same) {
-    WMPutInPLDictionary(dict, key, icon_value);
+    if (def_icon && !strcmp(CFStringGetCStringPtr(def_icon, kCFStringEncodingUTF8), file)) {
+      same = 1;
+    }
   }
 
-  if (!wPreferences.flags.noupdates)
+  attr = CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, CFDictionaryGetValue(dict, key));
+  if (attr != NULL) {
+    if (CFGetTypeID(attr) == CFDictionaryGetTypeID()) {
+      if (icon_value != NULL && !same) {
+        WMUserDefaultsMerge(attr, icon_value);
+        CFDictionarySetValue(dict, key, attr);
+      }
+      else {
+        CFDictionaryRemoveValue(attr, AIcon);
+      }
+    }
+  }
+  else if (icon_value != NULL && !same) {
+    CFDictionarySetValue(dict, key, icon_value);
+  }
+
+  if (!wPreferences.flags.noupdates) {
     UpdateDomainFile(db);
-
-  WMReleasePropList(key);
-  if (icon_value)
-    WMReleasePropList(icon_value);
-
-  WMPLSetCaseSensitive(False);
+  }
+  
+  if (attr) {
+    CFRelease(attr);
+  }
+  if (icon_value) {
+    CFRelease(icon_value);
+  }
+  CFRelease(key);
 }
 
 void wDefaultPurgeInfo(const char *instance, const char *class)
 {
-  WMPropList *value, *key, *dict;
-  char *buffer;
+  CFStringRef key;
+  CFDictionaryRef dict;
 
   if (!AIcon) { /* Unnecessary precaution */
     init_wdefaults();
   }
 
-  WMPLSetCaseSensitive(True);
-
-  buffer = wmalloc(strlen(class) + strlen(instance) + 2);
-  sprintf(buffer, "%s.%s", instance, class);
-  key = WMCreatePLString(buffer);
-
-  dict = WMGetFromPLDictionary(w_global.domain.window_attr->dictionary, key);
+  key = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%s.%s"), instance, class);
+  dict = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, key);
 
   if (dict) {
-    value = WMGetFromPLDictionary(dict, AIcon);
-    if (value) {
-      WMRemoveFromPLDictionary(dict, AIcon);
-    }
-    WMRemoveFromPLDictionary(w_global.domain.window_attr->dictionary, key);
+    CFDictionaryRemoveValue(w_global.domain.window_attr->dictionary, key);
     UpdateDomainFile(w_global.domain.window_attr);
   }
 
-  wfree(buffer);
-  WMReleasePropList(key);
-  WMPLSetCaseSensitive(False);
+  CFRelease(key);
 }
