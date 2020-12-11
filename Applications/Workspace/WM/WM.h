@@ -35,16 +35,16 @@
 
 /* class codes */
 typedef enum {
-              WCLASS_UNKNOWN = 0,
-              WCLASS_WINDOW = 1,          /* managed client windows */
-              WCLASS_MENU = 2,            /* root menus */
-              WCLASS_APPICON = 3,
-              WCLASS_DUMMYWINDOW = 4,     /* window that holds window group leader */
-              WCLASS_MINIWINDOW = 5,
-              WCLASS_DOCK_ICON = 6,
-              WCLASS_PAGER = 7,
-              WCLASS_TEXT_INPUT = 8,
-              WCLASS_FRAME = 9
+  WCLASS_UNKNOWN = 0,
+  WCLASS_WINDOW = 1,          /* managed client windows */
+  WCLASS_MENU = 2,            /* root menus */
+  WCLASS_APPICON = 3,
+  WCLASS_DUMMYWINDOW = 4,     /* window that holds window group leader */
+  WCLASS_MINIWINDOW = 5,
+  WCLASS_DOCK_ICON = 6,
+  WCLASS_PAGER = 7,
+  WCLASS_TEXT_INPUT = 8,
+  WCLASS_FRAME = 9
 } WClassType;
 
 /*
@@ -88,29 +88,29 @@ typedef struct WObjDescriptor {
 
 /* Mouse cursors */
 typedef enum {
-              WCUR_NORMAL,
-              WCUR_MOVE,
-              WCUR_RESIZE,
-              WCUR_TOPLEFTRESIZE,
-              WCUR_TOPRIGHTRESIZE,
-              WCUR_BOTTOMLEFTRESIZE,
-              WCUR_BOTTOMRIGHTRESIZE,
-              WCUR_VERTICALRESIZE,
-              WCUR_HORIZONRESIZE,
-              WCUR_UPRESIZE,
-              WCUR_DOWNRESIZE,
-              WCUR_LEFTRESIZE,
-              WCUR_RIGHTRESIZE,
-              WCUR_WAIT,
-              WCUR_ARROW,
-              WCUR_QUESTION,
-              WCUR_TEXT,
-              WCUR_SELECT,
-              WCUR_ROOT,
-              WCUR_EMPTY,
+  WCUR_NORMAL,
+  WCUR_MOVE,
+  WCUR_RESIZE,
+  WCUR_TOPLEFTRESIZE,
+  WCUR_TOPRIGHTRESIZE,
+  WCUR_BOTTOMLEFTRESIZE,
+  WCUR_BOTTOMRIGHTRESIZE,
+  WCUR_VERTICALRESIZE,
+  WCUR_HORIZONRESIZE,
+  WCUR_UPRESIZE,
+  WCUR_DOWNRESIZE,
+  WCUR_LEFTRESIZE,
+  WCUR_RIGHTRESIZE,
+  WCUR_WAIT,
+  WCUR_ARROW,
+  WCUR_QUESTION,
+  WCUR_TEXT,
+  WCUR_SELECT,
+  WCUR_ROOT,
+  WCUR_EMPTY,
 
-              /* Count of the number of cursors defined */
-              WCUR_LAST
+  /* Count of the number of cursors defined */
+  WCUR_LAST
 } w_cursor;
 
 /* geometry displays */
@@ -224,10 +224,10 @@ typedef enum {
 
 /* drag maximized window behaviors */
 enum {
-      DRAGMAX_MOVE,
-      DRAGMAX_RESTORE,
-      DRAGMAX_UNMAXIMIZE,
-      DRAGMAX_NOMOVE
+  DRAGMAX_MOVE,
+  DRAGMAX_RESTORE,
+  DRAGMAX_UNMAXIMIZE,
+  DRAGMAX_NOMOVE
 };
 
 /* program states */
@@ -268,9 +268,9 @@ typedef enum {
 
 /* appearance settings clientdata flags */
 enum {
-      WFontSettings = 1 << 0,
-      WTextureSettings = 1 << 1,
-      WColorSettings = 1 << 2
+  WFontSettings = 1 << 0,
+  WTextureSettings = 1 << 1,
+  WColorSettings = 1 << 2
 };
 
 typedef struct {

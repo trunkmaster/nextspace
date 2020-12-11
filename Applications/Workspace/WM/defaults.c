@@ -353,10 +353,10 @@ WDefaultEntry staticOptionList[] = {
 /* 
    const char 		*key;
    const char		*default_value;
-   void			*extra_data;
-   void			*addr;
-   WDECallbackConvert	*convert;
-   WDECallbackUpdate	*update;
+   void			*extra_data;     // WOptionEnumeration
+   void			*addr;           // wPreferences
+   WDECallbackConvert	*convert;        // get*
+   WDECallbackUpdate	*update;         // set*
    CFStringRef		plkey;
    CFPropertyListRef	plvalue;
 */
@@ -725,7 +725,7 @@ WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary)
 
 void wReadStaticDefaults(CFDictionaryRef dict)
 {
-  /* WMPropList *plvalue; */
+  /* CFTypeRef plvalue; */
   CFTypeRef plvalue;
   WDefaultEntry *entry;
   unsigned int i;
@@ -924,7 +924,7 @@ void wDefaultsCheckDomains(void* arg)
 {
   WScreen *scr;
   struct stat stbuf;
-  /* WMPropList *shared_dict = NULL; */
+  /* CFTypeRef shared_dict = NULL; */
   CFMutableDictionaryRef dict;
   CFAbsoluteTime time = 0.0;
 
@@ -1048,21 +1048,25 @@ void wDefaultUpdateIcons(WScreen *scr)
 
 /* --------------------------- Local ----------------------- */
 
-#define GET_STRING_OR_DEFAULT(x, var) if (!WMIsPLString(value)) {       \
+#define GET_STRING_OR_DEFAULT(x, var) if (CFGetTypeID(value) != CFStringGetTypeID()) { \
     wwarning(_("Wrong option format for key \"%s\". Should be %s."),    \
              entry->key, x);                                            \
     wwarning(_("using default \"%s\" instead"), entry->default_value);  \
     var = entry->default_value;                                         \
-  } else var = WMGetFromPLString(value)                                 \
+  } else var = CFStringGetCStringPtr(value, kCFStringEncodingUTF8);     \
 
 
-static int string2index(WMPropList *key, WMPropList *val, const char *def, WOptionEnumeration * values)
+static int string2index(CFTypeRef key, CFTypeRef val, const char *def, WOptionEnumeration *values)
 {
-  char *str;
+  const char *str = NULL;
   WOptionEnumeration *v;
   char buffer[TOTAL_VALUES_LENGTH];
 
-  if (WMIsPLString(val) && (str = WMGetFromPLString(val))) {
+  if (CFGetTypeID(val) == CFStringGetTypeID()) {
+    str = CFStringGetCStringPtr(val, kCFStringEncodingUTF8);
+  }
+  
+  if (str) {
     for (v = values; v->string != NULL; v++) {
       if (strcasecmp(v->string, str) == 0)
         return v->value;
@@ -1074,13 +1078,12 @@ static int string2index(WMPropList *key, WMPropList *val, const char *def, WOpti
     if (!v->is_alias) {
       if (buffer[0] != 0)
         strcat(buffer, ", ");
-      snprintf(buffer+strlen(buffer),
-               sizeof(buffer)-strlen(buffer)-1, "\"%s\"", v->string);
+      snprintf(buffer+strlen(buffer), sizeof(buffer)-strlen(buffer)-1, "\"%s\"", v->string);
     }
   }
   wwarning(_("wrong option value for key \"%s\"; got \"%s\", should be one of %s."),
-           WMGetFromPLString(key),
-           WMIsPLString(val) ? WMGetFromPLString(val) : "(unknown)",
+           CFStringGetCStringPtr(key, kCFStringEncodingUTF8),
+           str ? str : "(unknown)",
            buffer);
 
   if (def) {
@@ -1122,7 +1125,7 @@ static int getBool(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *ad
     } else {
       wwarning(_("can't convert \"%s\" to boolean for key \"%s\""), val, entry->key);
       if (second_pass == 0) {
-        val = WMGetFromPLString(entry->plvalue);
+        val = CFStringGetCStringPtr(entry->plvalue, kCFStringEncodingUTF8);
         second_pass = 1;
         wwarning(_("using default \"%s\" instead"), val);
         goto again;
@@ -1151,7 +1154,7 @@ static int getInt(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *add
 
   if (sscanf(val, "%i", &data) != 1) {
     wwarning(_("can't convert \"%s\" to integer for key \"%s\""), val, entry->key);
-    val = WMGetFromPLString(entry->plvalue);
+    val = CFStringGetCStringPtr(entry->plvalue, kCFStringEncodingUTF8);
     wwarning(_("using default \"%s\" instead"), val);
     if (sscanf(val, "%i", &data) != 1) {
       return False;
@@ -1169,12 +1172,12 @@ static int getInt(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *add
 static int getCoord(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *addr, void **ret)
 {
   static WCoord data;
-  char *val_x, *val_y;
+  const char *val_x, *val_y;
   int nelem, changed = 0;
-  WMPropList *elem_x, *elem_y;
+  CFStringRef elem_x, elem_y;
 
  again:
-  if (!WMIsPLArray(value)) {
+  if (CFGetTypeID(value) != CFArrayGetTypeID()) {
     wwarning(_("Wrong option format for key \"%s\". Should be %s."), entry->key, "Coordinate");
     if (changed == 0) {
       value = entry->plvalue;
@@ -1185,7 +1188,7 @@ static int getCoord(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *a
     return False;
   }
 
-  nelem = WMGetPropListItemCount(value);
+  nelem = CFArrayGetCount(value);
   if (nelem != 2) {
     wwarning(_("Incorrect number of elements in array for key \"%s\"."), entry->key);
     if (changed == 0) {
@@ -1197,10 +1200,10 @@ static int getCoord(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *a
     return False;
   }
 
-  elem_x = WMGetFromPLArray(value, 0);
-  elem_y = WMGetFromPLArray(value, 1);
+  elem_x = CFArrayGetValueAtIndex(value, 0);
+  elem_y = CFArrayGetValueAtIndex(value, 1);
 
-  if (!elem_x || !elem_y || !WMIsPLString(elem_x) || !WMIsPLString(elem_y)) {
+  if (!elem_x || !elem_y /*|| !WMIsPLString(elem_x) || !WMIsPLString(elem_y)*/) {
     wwarning(_("Wrong value for key \"%s\". Should be Coordinate."), entry->key);
     if (changed == 0) {
       value = entry->plvalue;
@@ -1211,8 +1214,8 @@ static int getCoord(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *a
     return False;
   }
 
-  val_x = WMGetFromPLString(elem_x);
-  val_y = WMGetFromPLString(elem_y);
+  val_x = CFStringGetCStringPtr(elem_x, kCFStringEncodingUTF8);
+  val_y = CFStringGetCStringPtr(elem_y, kCFStringEncodingUTF8);
 
   if (sscanf(val_x, "%i", &data.x) != 1 || sscanf(val_y, "%i", &data.y) != 1) {
     wwarning(_("can't convert array to integers for \"%s\"."), entry->key);
@@ -1249,9 +1252,9 @@ static int getPropList(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void
   (void) entry;
   (void) addr;
 
-  WMRetainPropList(value);
+  CFRetain(value);
 
-  *ret = value;
+  *ret = (void *)value;
 
   return True;
 }
@@ -1261,7 +1264,7 @@ static int getPathList(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void
   static char *data;
   int i, count, len;
   char *ptr;
-  WMPropList *d;
+  CFTypeRef d;
   int changed = 0;
 
   /* Parameter not used, but tell the compiler that it is ok */
@@ -1269,7 +1272,7 @@ static int getPathList(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void
   (void) ret;
 
  again:
-  if (!WMIsPLArray(value)) {
+  if (CFGetTypeID(value) != CFArrayGetTypeID()) {
     wwarning(_("Wrong option format for key \"%s\". Should be %s."), entry->key, "an array of paths");
     if (changed == 0) {
       value = entry->plvalue;
@@ -1281,7 +1284,7 @@ static int getPathList(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void
   }
 
   i = 0;
-  count = WMGetPropListItemCount(value);
+  count = CFArrayGetCount(value);
   if (count < 1) {
     if (changed == 0) {
       value = entry->plvalue;
@@ -1294,23 +1297,23 @@ static int getPathList(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void
 
   len = 0;
   for (i = 0; i < count; i++) {
-    d = WMGetFromPLArray(value, i);
-    if (!d || !WMIsPLString(d)) {
+    d = CFArrayGetValueAtIndex(value, i);
+    if (!d || (CFGetTypeID(d) == CFStringGetTypeID())) {
       count = i;
       break;
     }
-    len += strlen(WMGetFromPLString(d)) + 1;
+    len += strlen(CFStringGetCStringPtr(d, kCFStringEncodingUTF8)) + 1;
   }
 
   ptr = data = wmalloc(len + 1);
 
   for (i = 0; i < count; i++) {
-    d = WMGetFromPLArray(value, i);
-    if (!d || !WMIsPLString(d)) {
+    d = CFArrayGetValueAtIndex(value, i);
+    if (!d || (CFGetTypeID(d) != CFStringGetTypeID())) {
       break;
     }
-    strcpy(ptr, WMGetFromPLString(d));
-    ptr += strlen(WMGetFromPLString(d));
+    strcpy(ptr, CFStringGetCStringPtr(d, kCFStringEncodingUTF8));
+    ptr += strlen(CFStringGetCStringPtr(d, kCFStringEncodingUTF8));
     *ptr = ':';
     ptr++;
   }
@@ -1332,7 +1335,7 @@ static int getEnum(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *ad
   /* Parameter not used, but tell the compiler that it is ok */
   (void) scr;
 
-  data = string2index(entry->plkey, value, entry->default_value, (WOptionEnumeration *) entry->extra_data);
+  data = string2index(entry->plkey, value, entry->default_value, (WOptionEnumeration *)entry->extra_data);
   if (data < 0)
     return False;
 
@@ -1362,21 +1365,21 @@ static int getEnum(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *ad
  * (function <lib> <function> ...)
  */
 
-static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
+static WTexture *parse_texture(WScreen *scr, CFTypeRef pl)
 {
-  WMPropList *elem;
-  char *val;
+  CFTypeRef elem;
+  const char *val;
   int nelem;
   WTexture *texture = NULL;
 
-  nelem = WMGetPropListItemCount(pl);
+  nelem = CFArrayGetCount(pl);
   if (nelem < 1)
     return NULL;
 
-  elem = WMGetFromPLArray(pl, 0);
-  if (!elem || !WMIsPLString(elem))
+  elem = CFArrayGetValueAtIndex(pl, 0);
+  if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
     return NULL;
-  val = WMGetFromPLString(elem);
+  val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
   if (strcasecmp(val, "solid") == 0) {
     XColor color;
@@ -1386,10 +1389,10 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
 
     /* get color */
 
-    elem = WMGetFromPLArray(pl, 1);
-    if (!elem || !WMIsPLString(elem))
+    elem = CFArrayGetValueAtIndex(pl, 1);
+    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
       return NULL;
-    val = WMGetFromPLString(elem);
+    val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
     if (!XParseColor(dpy, scr->w_colormap, val, &color)) {
       wwarning(_("\"%s\" is not a valid color name"), val);
@@ -1416,10 +1419,10 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
       type = WTEX_VGRADIENT;
 
     /* get from color */
-    elem = WMGetFromPLArray(pl, 1);
-    if (!elem || !WMIsPLString(elem))
+    elem = CFArrayGetValueAtIndex(pl, 1);
+    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
       return NULL;
-    val = WMGetFromPLString(elem);
+    val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
     if (!XParseColor(dpy, scr->w_colormap, val, &xcolor)) {
       wwarning(_("\"%s\" is not a valid color name"), val);
@@ -1431,11 +1434,10 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
     color1.blue = xcolor.blue >> 8;
 
     /* get to color */
-    elem = WMGetFromPLArray(pl, 2);
-    if (!elem || !WMIsPLString(elem)) {
+    elem = CFArrayGetValueAtIndex(pl, 2);
+    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
       return NULL;
-    }
-    val = WMGetFromPLString(elem);
+    val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
     if (!XParseColor(dpy, scr->w_colormap, val, &xcolor)) {
       wwarning(_("\"%s\" is not a valid color name"), val);
@@ -1461,10 +1463,10 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
 
     /* get from color */
     for (i = 0; i < 2; i++) {
-      elem = WMGetFromPLArray(pl, 1 + i);
-      if (!elem || !WMIsPLString(elem))
+      elem = CFArrayGetValueAtIndex(pl, 1 + i);
+      if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
         return NULL;
-      val = WMGetFromPLString(elem);
+      val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
       if (!XParseColor(dpy, scr->w_colormap, val, &xcolor)) {
         wwarning(_("\"%s\" is not a valid color name"), val);
@@ -1475,18 +1477,18 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
       colors1[i].green = xcolor.green >> 8;
       colors1[i].blue = xcolor.blue >> 8;
     }
-    elem = WMGetFromPLArray(pl, 3);
-    if (!elem || !WMIsPLString(elem))
+    elem = CFArrayGetValueAtIndex(pl, 3);
+    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
       return NULL;
-    val = WMGetFromPLString(elem);
+    val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
     th1 = atoi(val);
 
     /* get from color */
     for (i = 0; i < 2; i++) {
-      elem = WMGetFromPLArray(pl, 4 + i);
-      if (!elem || !WMIsPLString(elem))
+      elem = CFArrayGetValueAtIndex(pl, 4 + i);
+      if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
         return NULL;
-      val = WMGetFromPLString(elem);
+      val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
       if (!XParseColor(dpy, scr->w_colormap, val, &xcolor)) {
         wwarning(_("\"%s\" is not a valid color name"), val);
@@ -1497,10 +1499,10 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
       colors2[i].green = xcolor.green >> 8;
       colors2[i].blue = xcolor.blue >> 8;
     }
-    elem = WMGetFromPLArray(pl, 6);
-    if (!elem || !WMIsPLString(elem))
+    elem = CFArrayGetValueAtIndex(pl, 6);
+    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
       return NULL;
-    val = WMGetFromPLString(elem);
+    val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
     th2 = atoi(val);
 
     texture = (WTexture *) wTextureMakeIGradient(scr, th1, colors1, th2, colors2);
@@ -1529,15 +1531,15 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
     colors = wmalloc(sizeof(RColor *) * (count + 1));
 
     for (i = 0; i < count; i++) {
-      elem = WMGetFromPLArray(pl, i + 1);
-      if (!elem || !WMIsPLString(elem)) {
+      elem = CFArrayGetValueAtIndex(pl, i + 1);
+      if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID())) {
         for (--i; i >= 0; --i) {
           wfree(colors[i]);
         }
         wfree(colors);
         return NULL;
       }
-      val = WMGetFromPLString(elem);
+      val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
       if (!XParseColor(dpy, scr->w_colormap, val, &color)) {
         wwarning(_("\"%s\" is not a valid color name"), val);
@@ -1572,11 +1574,10 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
       type = WTP_TILE;
 
     /* get color */
-    elem = WMGetFromPLArray(pl, 2);
-    if (!elem || !WMIsPLString(elem)) {
+    elem = CFArrayGetValueAtIndex(pl, 2);
+    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
       return NULL;
-    }
-    val = WMGetFromPLString(elem);
+    val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
     if (!XParseColor(dpy, scr->w_colormap, val, &color)) {
       wwarning(_("\"%s\" is not a valid color name"), val);
@@ -1584,10 +1585,10 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
     }
 
     /* file name */
-    elem = WMGetFromPLArray(pl, 1);
-    if (!elem || !WMIsPLString(elem))
+    elem = CFArrayGetValueAtIndex(pl, 1);
+    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
       return NULL;
-    val = WMGetFromPLString(elem);
+    val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
     texture = (WTexture *) wTextureMakePixmap(scr, type, val, &color);
   } else if (strcasecmp(val, "thgradient") == 0
@@ -1610,10 +1611,10 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
     }
 
     /* get from color */
-    elem = WMGetFromPLArray(pl, 3);
-    if (!elem || !WMIsPLString(elem))
+    elem = CFArrayGetValueAtIndex(pl, 3);
+    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
       return NULL;
-    val = WMGetFromPLString(elem);
+    val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
     if (!XParseColor(dpy, scr->w_colormap, val, &xcolor)) {
       wwarning(_("\"%s\" is not a valid color name"), val);
@@ -1625,11 +1626,10 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
     color1.blue = xcolor.blue >> 8;
 
     /* get to color */
-    elem = WMGetFromPLArray(pl, 4);
-    if (!elem || !WMIsPLString(elem)) {
+    elem = CFArrayGetValueAtIndex(pl, 4);
+    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
       return NULL;
-    }
-    val = WMGetFromPLString(elem);
+    val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
     if (!XParseColor(dpy, scr->w_colormap, val, &xcolor)) {
       wwarning(_("\"%s\" is not a valid color name"), val);
@@ -1641,11 +1641,11 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
     color2.blue = xcolor.blue >> 8;
 
     /* get opacity */
-    elem = WMGetFromPLArray(pl, 2);
-    if (!elem || !WMIsPLString(elem))
+    elem = CFArrayGetValueAtIndex(pl, 2);
+    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
       opacity = 128;
     else
-      val = WMGetFromPLString(elem);
+      val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
     if (!val || (opacity = atoi(val)) < 0 || opacity > 255) {
       wwarning(_("bad opacity value for tgradient texture \"%s\". Should be [0..255]"), val);
@@ -1653,12 +1653,12 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
     }
 
     /* get file name */
-    elem = WMGetFromPLArray(pl, 1);
-    if (!elem || !WMIsPLString(elem))
+    elem = CFArrayGetValueAtIndex(pl, 1);
+    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID()))
       return NULL;
-    val = WMGetFromPLString(elem);
+    val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
-    texture = (WTexture *) wTextureMakeTGradient(scr, style, &color1, &color2, val, opacity);
+    texture = (WTexture *)wTextureMakeTGradient(scr, style, &color1, &color2, val, opacity);
   } else if (strcasecmp(val, "function") == 0) {
     /* Leave this in to handle the unlikely case of
      * someone actually having function textures configured */
@@ -1671,13 +1671,14 @@ static WTexture *parse_texture(WScreen * scr, WMPropList * pl)
   return texture;
 }
 
-static int getTexture(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getTexture(WScreen * scr, WDefaultEntry * entry, CFTypeRef value, void *addr, void **ret)
 {
+  const char *val;
   static WTexture *texture;
   int changed = 0;
 
  again:
-  if (!WMIsPLArray(value)) {
+  if (CFGetTypeID(value) != CFArrayGetTypeID()) {
     wwarning(_("Wrong option format for key \"%s\". Should be %s."), entry->key, "Texture");
     if (changed == 0) {
       value = entry->plvalue;
@@ -1689,11 +1690,12 @@ static int getTexture(WScreen * scr, WDefaultEntry * entry, WMPropList * value, 
   }
 
   if (strcmp(entry->key, "WidgetColor") == 0 && !changed) {
-    WMPropList *pl;
-
-    pl = WMGetFromPLArray(value, 0);
-    if (!pl || !WMIsPLString(pl) || !WMGetFromPLString(pl)
-        || strcasecmp(WMGetFromPLString(pl), "solid") != 0) {
+    CFTypeRef pl = CFArrayGetValueAtIndex(value, 0);
+    
+    if (pl && (CFGetTypeID(pl) != CFStringGetTypeID()))
+      val = CFStringGetCStringPtr(pl, kCFStringEncodingUTF8);
+    
+    if (val || strcasecmp(val, "solid") != 0) {
       wwarning(_("Wrong option format for key \"%s\". Should be %s."),
                entry->key, "Solid Texture");
 
@@ -1726,11 +1728,11 @@ static int getTexture(WScreen * scr, WDefaultEntry * entry, WMPropList * value, 
   return True;
 }
 
-static int getWSBackground(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getWSBackground(WScreen * scr, WDefaultEntry * entry, CFTypeRef value, void *addr, void **ret)
 {
-  WMPropList *elem;
+  CFTypeRef elem;
   int changed = 0;
-  char *val;
+  const char *val;
   int nelem;
 
   /* Parameter not used, but tell the compiler that it is ok */
@@ -1738,7 +1740,7 @@ static int getWSBackground(WScreen * scr, WDefaultEntry * entry, WMPropList * va
   (void) addr;
 
  again:
-  if (!WMIsPLArray(value)) {
+  if (CFArrayGetTypeID() != CFGetTypeID(value)) {
     wwarning(_("Wrong option format for key \"%s\". Should be %s."),
              "WorkspaceBack", "Texture or None");
     if (changed == 0) {
@@ -1752,10 +1754,10 @@ static int getWSBackground(WScreen * scr, WDefaultEntry * entry, WMPropList * va
 
   /* only do basic error checking and verify for None texture */
 
-  nelem = WMGetPropListItemCount(value);
+  nelem = CFArrayGetCount(value);
   if (nelem > 0) {
-    elem = WMGetFromPLArray(value, 0);
-    if (!elem || !WMIsPLString(elem)) {
+    elem = CFArrayGetValueAtIndex(value, 0);
+    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID())) {
       wwarning(_("Wrong type for workspace background. Should be a texture type."));
       if (changed == 0) {
         value = entry->plvalue;
@@ -1765,29 +1767,25 @@ static int getWSBackground(WScreen * scr, WDefaultEntry * entry, WMPropList * va
       }
       return False;
     }
-    val = WMGetFromPLString(elem);
+    val = CFStringGetCStringPtr(elem, kCFStringEncodingUTF8);
 
     if (strcasecmp(val, "None") == 0)
       return True;
   }
-  *ret = WMRetainPropList(value);
+  *ret = (void *)CFRetain(value);
 
   return True;
 }
 
 static int
-getWSSpecificBackground(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+getWSSpecificBackground(WScreen * scr, WDefaultEntry * entry, CFTypeRef value, void *addr, void **ret)
 {
-  WMPropList *elem;
+  CFTypeRef elem;
   int nelem;
   int changed = 0;
 
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) scr;
-  (void) addr;
-
  again:
-  if (!WMIsPLArray(value)) {
+  if (CFGetTypeID(value) != CFArrayGetTypeID()) {
     wwarning(_("Wrong option format for key \"%s\". Should be %s."),
              "WorkspaceSpecificBack", "an array of textures");
     if (changed == 0) {
@@ -1801,18 +1799,18 @@ getWSSpecificBackground(WScreen * scr, WDefaultEntry * entry, WMPropList * value
 
   /* only do basic error checking and verify for None texture */
 
-  nelem = WMGetPropListItemCount(value);
+  nelem = CFArrayGetCount(value);
   if (nelem > 0) {
     while (nelem--) {
-      elem = WMGetFromPLArray(value, nelem);
-      if (!elem || !WMIsPLArray(elem)) {
+      elem = CFArrayGetValueAtIndex(value, nelem);
+      if (!elem || (CFGetTypeID(elem) != CFArrayGetTypeID())) {
         wwarning(_("Wrong type for background of workspace %i. Should be a texture."),
                  nelem);
       }
     }
   }
 
-  *ret = WMRetainPropList(value);
+  *ret = (void *)CFRetain(value);
 
 #ifdef notworking
   /*
@@ -1823,7 +1821,8 @@ getWSSpecificBackground(WScreen * scr, WDefaultEntry * entry, WMPropList * value
    * value from the defaults DB.
    */
   if (!scr->flags.backimage_helper_launched && !scr->flags.startup) {
-    WMPropList *key = WMCreatePLString("WorkspaceBack");
+    CFStringRef key = CFStringCreateWithCString(kCFAllocatorDefault, "WorkspaceBack",
+                                                kCFStringEncodingUTF8);
 
     WMRemoveFromPLDictionary(w_global.domain.wmaker->dictionary, key);
 
@@ -1833,7 +1832,7 @@ getWSSpecificBackground(WScreen * scr, WDefaultEntry * entry, WMPropList * value
   return True;
 }
 
-static int getFont(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getFont(WScreen * scr, WDefaultEntry * entry, CFTypeRef value, void *addr, void **ret)
 {
   static WMFont *font;
   const char *val;
@@ -1860,7 +1859,7 @@ static int getFont(WScreen * scr, WDefaultEntry * entry, WMPropList * value, voi
   return True;
 }
 
-static int getColor(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getColor(WScreen * scr, WDefaultEntry * entry, CFTypeRef value, void *addr, void **ret)
 {
   static XColor color;
   const char *val;
@@ -1894,7 +1893,7 @@ static int getColor(WScreen * scr, WDefaultEntry * entry, WMPropList * value, vo
   return True;
 }
 
-static int getKeybind(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getKeybind(WScreen * scr, WDefaultEntry * entry, CFTypeRef value, void *addr, void **ret)
 {
   static WShortKey shortcut;
   KeySym ksym;
@@ -1956,7 +1955,7 @@ static int getKeybind(WScreen * scr, WDefaultEntry * entry, WMPropList * value, 
   return True;
 }
 
-static int getModMask(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getModMask(WScreen * scr, WDefaultEntry * entry, CFTypeRef value, void *addr, void **ret)
 {
   static int mask;
   const char *str;
@@ -1985,7 +1984,7 @@ static int getModMask(WScreen * scr, WDefaultEntry * entry, WMPropList * value, 
   return True;
 }
 
-static int getAltModMask(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getAltModMask(WScreen * scr, WDefaultEntry * entry, CFTypeRef value, void *addr, void **ret)
 {
   static int mask;
   const char *str;
@@ -2129,18 +2128,18 @@ static void check_bitmap_status(int status, const char *filename, Pixmap bitmap)
  * (builtin, <cursor_name>)
  * (bitmap, <cursor_bitmap>, <cursor_mask>)
  */
-static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
+static int parse_cursor(WScreen * scr, CFTypeRef pl, Cursor * cursor)
 {
-  WMPropList *elem;
+  CFTypeRefelem;
   char *val;
   int nelem;
   int status = 0;
 
-  nelem = WMGetPropListItemCount(pl);
+  nelem = CFArrayGetCount(pl);
   if (nelem < 1) {
     return (status);
   }
-  elem = WMGetFromPLArray(pl, 0);
+  elem = CFArrayGetValueAtIndex(pl, 0);
   if (!elem || !WMIsPLString(elem)) {
     return (status);
   }
@@ -2157,7 +2156,7 @@ static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
       wwarning(_("bad number of arguments in cursor specification"));
       return (status);
     }
-    elem = WMGetFromPLArray(pl, 1);
+    elem = CFArrayGetValueAtIndex(pl, 1);
     if (!elem || !WMIsPLString(elem)) {
       return (status);
     }
@@ -2190,7 +2189,7 @@ static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
       wwarning(_("bad number of arguments in cursor specification"));
       return (status);
     }
-    elem = WMGetFromPLArray(pl, 1);
+    elem = CFArrayGetValueAtIndex(pl, 1);
     if (!elem || !WMIsPLString(elem)) {
       return (status);
     }
@@ -2200,7 +2199,7 @@ static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
       wwarning(_("could not find cursor bitmap file \"%s\""), val);
       return (status);
     }
-    elem = WMGetFromPLArray(pl, 2);
+    elem = CFArrayGetValueAtIndex(pl, 2);
     if (!elem || !WMIsPLString(elem)) {
       wfree(bitmap_name);
       return (status);
@@ -2233,7 +2232,7 @@ static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
       wwarning(_("bad number of arguments in cursor specification"));
       return (status);
     }
-    elem = WMGetFromPLArray(pl, 1);
+    elem = CFArrayGetValueAtIndex(pl, 1);
     if (!elem || !WMIsPLString(elem)) {
       return (status);
     }
@@ -2250,7 +2249,7 @@ static int parse_cursor(WScreen * scr, WMPropList * pl, Cursor * cursor)
   return (status);
 }
 
-static int getCursor(WScreen * scr, WDefaultEntry * entry, WMPropList * value, void *addr, void **ret)
+static int getCursor(WScreen * scr, WDefaultEntry * entry, CFTypeRef value, void *addr, void **ret)
 {
   static Cursor cursor;
   int status;
@@ -2833,8 +2832,8 @@ static int setFrameSelectedBorderColor(WScreen * scr, WDefaultEntry * entry, voi
 
 static int setWorkspaceSpecificBack(WScreen * scr, WDefaultEntry * entry, void *tdata, void *bar)
 {
-  WMPropList *value = tdata;
-  WMPropList *val;
+  CFTypeRefvalue = tdata;
+  CFTypeRefval;
   char *str;
   int i;
 
@@ -2843,7 +2842,7 @@ static int setWorkspaceSpecificBack(WScreen * scr, WDefaultEntry * entry, void *
   (void) bar;
 
   if (scr->flags.backimage_helper_launched) {
-    if (WMGetPropListItemCount(value) == 0) {
+    if (CFArrayGetCount(value) == 0) {
       SendHelperMessage(scr, 'C', 0, NULL);
       SendHelperMessage(scr, 'K', 0, NULL);
 
@@ -2851,7 +2850,7 @@ static int setWorkspaceSpecificBack(WScreen * scr, WDefaultEntry * entry, void *
       return 0;
     }
   } else {
-    if (WMGetPropListItemCount(value) == 0)
+    if (CFArrayGetCount(value) == 0)
       return 0;
 
     if (!start_bg_helper(scr)) {
@@ -2862,9 +2861,9 @@ static int setWorkspaceSpecificBack(WScreen * scr, WDefaultEntry * entry, void *
     SendHelperMessage(scr, 'P', -1, wPreferences.pixmap_path);
   }
 
-  for (i = 0; i < WMGetPropListItemCount(value); i++) {
-    val = WMGetFromPLArray(value, i);
-    if (val && WMIsPLArray(val) && WMGetPropListItemCount(val) > 0) {
+  for (i = 0; i < CFArrayGetCount(value); i++) {
+    val = CFArrayGetValueAtIndex(value, i);
+    if (val && WMIsPLArray(val) && CFArrayGetCount(val) > 0) {
       str = WMGetPropListDescription(val, False);
 
       SendHelperMessage(scr, 'S', i + 1, str);
@@ -2882,7 +2881,7 @@ static int setWorkspaceSpecificBack(WScreen * scr, WDefaultEntry * entry, void *
 
 static int setWorkspaceBack(WScreen * scr, WDefaultEntry * entry, void *tdata, void *bar)
 {
-  WMPropList *value = tdata;
+  CFTypeRefvalue = tdata;
 
   /* Parameter not used, but tell the compiler that it is ok */
   (void) entry;
@@ -2891,7 +2890,7 @@ static int setWorkspaceBack(WScreen * scr, WDefaultEntry * entry, void *tdata, v
   if (scr->flags.backimage_helper_launched) {
     char *str;
 
-    if (WMGetPropListItemCount(value) == 0) {
+    if (CFArrayGetCount(value) == 0) {
       SendHelperMessage(scr, 'U', 0, NULL);
     } else {
       /* set the default workspace background to this one */
@@ -2905,7 +2904,7 @@ static int setWorkspaceBack(WScreen * scr, WDefaultEntry * entry, void *tdata, v
       }
     }
   }
-  else if (WMGetPropListItemCount(value) > 0) {
+  else if (CFArrayGetCount(value) > 0) {
     char *text;
     char *dither;
     int len;
@@ -3141,13 +3140,13 @@ static RImage *chopOffImage(RImage * image, int x, int y, int w, int h)
 
 static int setSwPOptions(WScreen * scr, WDefaultEntry * entry, void *tdata, void *foo)
 {
-  WMPropList *array = tdata;
+  CFTypeRefarray = tdata;
   char *path;
   RImage *bgimage;
   int cwidth, cheight;
   struct WPreferences *prefs = foo;
 
-  if (!WMIsPLArray(array) || WMGetPropListItemCount(array) == 0) {
+  if (!WMIsPLArray(array) || CFArrayGetCount(array) == 0) {
     if (prefs->swtileImage)
       RReleaseImage(prefs->swtileImage);
     prefs->swtileImage = NULL;
@@ -3156,17 +3155,17 @@ static int setSwPOptions(WScreen * scr, WDefaultEntry * entry, void *tdata, void
     return 0;
   }
 
-  switch (WMGetPropListItemCount(array)) {
+  switch (CFArrayGetCount(array)) {
   case 4:
-    if (!WMIsPLString(WMGetFromPLArray(array, 1))) {
+    if (!WMIsPLString(CFArrayGetValueAtIndex(array, 1))) {
       wwarning(_("Invalid arguments for option \"%s\""), entry->key);
       break;
     } else
-      path = FindImage(wPreferences.pixmap_path, WMGetFromPLString(WMGetFromPLArray(array, 1)));
+      path = FindImage(wPreferences.pixmap_path, WMGetFromPLString(CFArrayGetValueAtIndex(array, 1)));
 
     if (!path) {
       wwarning(_("Could not find image \"%s\" for option \"%s\""),
-               WMGetFromPLString(WMGetFromPLArray(array, 1)), entry->key);
+               WMGetFromPLString(CFArrayGetValueAtIndex(array, 1)), entry->key);
     } else {
       bgimage = RLoadImage(scr->rcontext, path, 0);
       if (!bgimage) {
@@ -3175,8 +3174,8 @@ static int setSwPOptions(WScreen * scr, WDefaultEntry * entry, void *tdata, void
       } else {
         wfree(path);
 
-        cwidth = atoi(WMGetFromPLString(WMGetFromPLArray(array, 2)));
-        cheight = atoi(WMGetFromPLString(WMGetFromPLArray(array, 3)));
+        cwidth = atoi(WMGetFromPLString(CFArrayGetValueAtIndex(array, 2)));
+        cheight = atoi(WMGetFromPLString(CFArrayGetValueAtIndex(array, 3)));
 
         if (cwidth <= 0 || cheight <= 0 ||
             cwidth >= bgimage->width - 2 || cheight >= bgimage->height - 2)
@@ -3227,15 +3226,15 @@ static int setSwPOptions(WScreen * scr, WDefaultEntry * entry, void *tdata, void
     }
 
   case 1:
-    if (!WMIsPLString(WMGetFromPLArray(array, 0))) {
+    if (!WMIsPLString(CFArrayGetValueAtIndex(array, 0))) {
       wwarning(_("Invalid arguments for option \"%s\""), entry->key);
       break;
     } else
-      path = FindImage(wPreferences.pixmap_path, WMGetFromPLString(WMGetFromPLArray(array, 0)));
+      path = FindImage(wPreferences.pixmap_path, WMGetFromPLString(CFArrayGetValueAtIndex(array, 0)));
 
     if (!path) {
       wwarning(_("Could not find image \"%s\" for option \"%s\""),
-               WMGetFromPLString(WMGetFromPLArray(array, 0)), entry->key);
+               WMGetFromPLString(CFArrayGetValueAtIndex(array, 0)), entry->key);
     } else {
       if (prefs->swtileImage)
         RReleaseImage(prefs->swtileImage);
@@ -3260,11 +3259,11 @@ static int setSwPOptions(WScreen * scr, WDefaultEntry * entry, void *tdata, void
 
 static int setModifierKeyLabels(WScreen * scr, WDefaultEntry * entry, void *tdata, void *foo)
 {
-  WMPropList *array = tdata;
+  CFTypeRefarray = tdata;
   int i;
   struct WPreferences *prefs = foo;
 
-  if (!WMIsPLArray(array) || WMGetPropListItemCount(array) != 7) {
+  if (!WMIsPLArray(array) || CFArrayGetCount(array) != 7) {
     wwarning(_("Value for option \"%s\" must be an array of 7 strings"), entry->key);
     WMReleasePropList(array);
     return 0;
@@ -3276,8 +3275,8 @@ static int setModifierKeyLabels(WScreen * scr, WDefaultEntry * entry, void *tdat
     if (prefs->modifier_labels[i])
       wfree(prefs->modifier_labels[i]);
 
-    if (WMIsPLString(WMGetFromPLArray(array, i))) {
-      prefs->modifier_labels[i] = wstrdup(WMGetFromPLString(WMGetFromPLArray(array, i)));
+    if (WMIsPLString(CFArrayGetValueAtIndex(array, i))) {
+      prefs->modifier_labels[i] = wstrdup(WMGetFromPLString(CFArrayGetValueAtIndex(array, i)));
     } else {
       wwarning(_("Invalid argument for option \"%s\" item %d"), entry->key, i);
       prefs->modifier_labels[i] = NULL;
