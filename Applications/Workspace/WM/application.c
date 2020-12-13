@@ -185,7 +185,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
   wapp = wmalloc(sizeof(WApplication));
 
-  wapp->windows = CFArrayCreateMutable(kCFAllocatorDefault, 1, NULL);
+  wapp->windows = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
 
   wapp->refcount = 1;
   wapp->last_focused = wwin;
@@ -272,16 +272,16 @@ void wApplicationDestroy(WApplication *wapp)
            wapp->main_window, wapp->app_icon->wm_instance,
            CFArrayGetCount(wapp->windows), wapp->refcount);
 
-  CFShow(wapp->windows);
+  wapp->refcount--;
+  if (wapp->refcount > 0)
+    return;
+
+  /* CFShow(wapp->windows); */
   CFArrayRemoveAllValues(wapp->windows);
   CFRelease(wapp->windows);
   CFLog(kCFLogLevelError,
         CFSTR("wapp->windows retain count: %i"), CFGetRetainCount(wapp->windows));
-
-  wapp->refcount--;
-  
-  if (wapp->refcount > 0)
-    return;
+  /* wapp->windows = NULL; */
 
   if (wapp->urgent_bounce_timer) {
     WMDeleteTimerHandler(wapp->urgent_bounce_timer);
@@ -329,6 +329,7 @@ void wApplicationDestroy(WApplication *wapp)
   }
 
   wfree(wapp);
+  wapp = NULL;
   wmessage("[application.c] DESTROY END.\n");
 }
 
