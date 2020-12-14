@@ -537,13 +537,13 @@ void StartUp(Bool defaultScreenOnly)
   WMHookEventHandler(DispatchEvent);
 
   /* initialize defaults stuff */
-  w_global.domain.wmaker = wDefaultsInitDomain("WindowMaker", True);
+  w_global.domain.wmaker = wDefaultsInitDomain("WindowMaker");
   if (!w_global.domain.wmaker->dictionary)
     wwarning(_("could not read domain \"%s\" from defaults database"), "WindowMaker");
 
   /* read defaults that don't change until a restart and are
    * screen independent */
-  wReadStaticDefaults(w_global.domain.wmaker ? w_global.domain.wmaker->dictionary : NULL);
+  wDefaultsReadStatic(w_global.domain.wmaker ? w_global.domain.wmaker->dictionary : NULL);
 
   /* check sanity of some values */
   if (wPreferences.icon_size < 16) {
@@ -553,7 +553,7 @@ void StartUp(Bool defaultScreenOnly)
   }
 
   /* init other domains */
-  w_global.domain.window_attr = wDefaultsInitDomain("WMWindowAttributes", True);
+  w_global.domain.window_attr = wDefaultsInitDomain("WMWindowAttributes");
   if (!w_global.domain.window_attr->dictionary)
     wwarning(_("could not read domain \"%s\" from defaults database"), "WMWindowAttributes");
 

@@ -26,12 +26,6 @@
 #include "screen.h"
 #include "window.h"
 
-/* typedef struct WDDomain { */
-/*   const char *domain_name; */
-/*   WMPropList *dictionary; */
-/*   const char *path; */
-/*   time_t timestamp; */
-/* } WDDomain; */
 typedef struct WDDomain {
   CFStringRef            name;
   CFMutableDictionaryRef dictionary;
@@ -39,14 +33,11 @@ typedef struct WDDomain {
   CFAbsoluteTime         timestamp;
 } WDDomain;
 
-void wDefaultsCheckDomain(const char *domain);
+WDDomain *wDefaultsInitDomain(const char *domain);
+
+void wDefaultsReadStatic(CFDictionaryRef dict);
+void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict);
+
 void wDefaultsCheckDomains(void *arg);
 
-WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary);
-
-void wReadDefaults(WScreen *scr, CFMutableDictionaryRef new_dict);
-void wDefaultUpdateIcons(WScreen *scr);
-void wReadStaticDefaults(CFDictionaryRef dict);
-void wSaveDefaults(WScreen *scr);
-
-#endif /* WMDEFAULTS_H_ */
+#endif /* __WORKSPACE_WM_DEFAULTS__ */

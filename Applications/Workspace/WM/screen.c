@@ -739,7 +739,7 @@ WScreen *wScreenInit(int screen_number)
   allocGCs(scr);
 
   /* read defaults for this screen */
-  wReadDefaults(scr, w_global.domain.wmaker->dictionary);
+  wDefaultsRead(scr, w_global.domain.wmaker->dictionary);
 
   {
     XColor xcol;

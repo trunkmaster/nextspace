@@ -168,24 +168,24 @@ static WDECallbackUpdate setCursor;
 
 /* WARNING: sum of length of all value strings must not exceed
  * this value */
-#define TOTAL_VALUES_LENGTH	80
+#define TOTAL_VALUES_LENGTH		80
 
-#define REFRESH_WINDOW_TEXTURES	(1<<0)
-#define REFRESH_MENU_TEXTURE	(1<<1)
-#define REFRESH_MENU_FONT	(1<<2)
-#define REFRESH_MENU_COLOR	(1<<3)
+#define REFRESH_WINDOW_TEXTURES		(1<<0)
+#define REFRESH_MENU_TEXTURE		(1<<1)
+#define REFRESH_MENU_FONT		(1<<2)
+#define REFRESH_MENU_COLOR		(1<<3)
 #define REFRESH_MENU_TITLE_TEXTURE	(1<<4)
-#define REFRESH_MENU_TITLE_FONT	(1<<5)
+#define REFRESH_MENU_TITLE_FONT		(1<<5)
 #define REFRESH_MENU_TITLE_COLOR	(1<<6)
-#define REFRESH_WINDOW_TITLE_COLOR (1<<7)
-#define REFRESH_WINDOW_FONT	(1<<8)
-#define REFRESH_ICON_TILE	(1<<9)
-#define REFRESH_ICON_FONT	(1<<10)
-#define REFRESH_WORKSPACE_BACK	(1<<11)
-#define REFRESH_BUTTON_IMAGES   (1<<12)
-#define REFRESH_ICON_TITLE_COLOR (1<<13)
-#define REFRESH_ICON_TITLE_BACK (1<<14)
-#define REFRESH_WORKSPACE_MENU	(1<<15)
+#define REFRESH_WINDOW_TITLE_COLOR	(1<<7)
+#define REFRESH_WINDOW_FONT		(1<<8)
+#define REFRESH_ICON_TILE		(1<<9)
+#define REFRESH_ICON_FONT		(1<<10)
+#define REFRESH_WORKSPACE_BACK		(1<<11)
+#define REFRESH_BUTTON_IMAGES		(1<<12)
+#define REFRESH_ICON_TITLE_COLOR	(1<<13)
+#define REFRESH_ICON_TITLE_BACK		(1<<14)
+#define REFRESH_WORKSPACE_MENU		(1<<15)
 
 #define REFRESH_FRAME_BORDER REFRESH_MENU_FONT|REFRESH_WINDOW_FONT
 
@@ -310,17 +310,6 @@ static WOptionEnumeration seDragMaximizedWindow[] = {
 };
 
 /*
- * Backward Compatibility:
- * The Mini-Previews were introduced in 0.95.6 under the name "Apercu".
- * For compatibility, we still support the old names in configuration files,
- * which are loaded in this structure, so this should stay for at least
- * 2 years (that means until 2017) */
-static struct {
-  char enable;
-  int  size;
-} legacy_minipreview_config;
-
-/*
  * ALL entries in the tables bellow, NEED to have a default value
  * defined, and this value needs to be correct.
  *
@@ -433,15 +422,6 @@ WDefaultEntry optionList[] = {
   {"SwitchPanelOnlyOpen", "NO", NULL, &wPreferences.panel_only_open, getBool, NULL, NULL, NULL},
   {"MiniPreviewSize", "128", NULL, &wPreferences.minipreview_size, getInt, NULL, NULL, NULL},
   {"IgnoreGtkHints", "NO", NULL, &wPreferences.ignore_gtk_decoration_hints, getBool, NULL, NULL, NULL},
-
-  /*
-   * Backward Compatibility:
-   * The Mini-Previews were introduced in 0.95.6 under the name "Apercu".
-   * For compatibility, we still support the old names in configuration files,
-   * so this should stay for at least 2 years (that means until 2017)
-   */
-  {"MiniwindowApercuBalloons", "NO", NULL, &legacy_minipreview_config.enable, getBool, NULL, NULL, NULL},
-  {"ApercuSize", "0", NULL, &legacy_minipreview_config.size, getInt, NULL, NULL, NULL},
 
   /* style options */
 
@@ -630,6 +610,32 @@ static void _initializeOptionLists(void)
   }
 }
 
+void _updateApplicationIcons(WScreen *scr)
+{
+  WAppIcon *aicon = scr->app_icon_list;
+  WDrawerChain *dc;
+  WWindow *wwin = scr->focused_window;
+
+  while (aicon) {
+    /* Get the application icon, default included */
+    wIconChangeImageFile(aicon->icon, NULL);
+    wAppIconPaint(aicon);
+    aicon = aicon->next;
+  }
+
+  if (!wPreferences.flags.noclip || wPreferences.flags.clip_merged_in_dock)
+    wClipIconPaint(scr->clip_icon);
+
+  for (dc = scr->drawers; dc != NULL; dc = dc->next)
+    wDrawerIconPaint(dc->adrawer->icon_array[0]);
+
+  while (wwin) {
+    if (wwin->icon && wwin->flags.miniaturized)
+      wIconChangeImageFile(wwin->icon, NULL);
+    wwin = wwin->prev;
+  }
+}
+
 // are placed in /usr/NextSpace/Apps/Workspace.app/Resources/WM
 /* static CFPropertyListRef _readGlobalDomain(const char *domainName) */
 /* { */
@@ -654,24 +660,7 @@ static void _initializeOptionLists(void)
 /*   return globalDict; */
 /* } */
 
-/* void wDefaultsCheckDomain(const char *domain) */
-/* { */
-/*   CFStringRef _domain = CFStringCreateWithCString(NULL, domain, kCFStringEncodingUTF8); */
-/*   CFURLRef    domainURL = WMUserDefaultsCopyURLForDomain(_domain); */
-/*   CFErrorRef  error; */
-/*   /\* const char  *path; *\/ */
-/*   /\* path = WMUserDefaultsGetCString(_path, kCFStringEncodingUTF8); *\/ */
-  
-/*   /\* if (access(path, R_OK) != 0) { *\/ */
-/*   if (CFURLResourceIsReachable(domainURL, &error) != true) { */
-/*     wwarning(_("could not find user GNUstep directory (%s)."), path); */
-/*   } */
-
-/*   CFRelease(_path); */
-/*   CFRelease(_domain); */
-/* } */
-
-WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary)
+WDDomain *wDefaultsInitDomain(const char *domain)
 {
   WDDomain *db;
   static int inited = 0;
@@ -724,7 +713,7 @@ WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary)
   return db;
 }
 
-void wReadStaticDefaults(CFDictionaryRef dict)
+void wDefaultsReadStatic(CFDictionaryRef dict)
 {
   /* CFTypeRef plvalue; */
   CFTypeRef plvalue;
@@ -753,7 +742,7 @@ void wReadStaticDefaults(CFDictionaryRef dict)
   }
 }
 
-void wReadDefaults(WScreen *scr, CFMutableDictionaryRef new_dict)
+void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
 {
   CFTypeRef plvalue, old_value;
   WDefaultEntry *entry;
@@ -819,32 +808,6 @@ void wReadDefaults(WScreen *scr, CFMutableDictionaryRef new_dict)
         if (entry->update)
           needs_refresh |= (*entry->update) (scr, entry, tdata, entry->extra_data);
 
-      }
-    }
-  }
-
-  /*
-   * Backward Compatibility:
-   * Support the old setting names for Apercu, now called Mini-Preview
-   *
-   * This code should probably stay for at least 2 years, you should not consider removing
-   * it before year 2017
-   */
-  if (legacy_minipreview_config.enable) {
-    wwarning(_("your configuration is using old syntax for Mini-Preview settings; consider running WPrefs.app to update"));
-    wPreferences.miniwin_preview_balloon = legacy_minipreview_config.enable;
-
-    if (legacy_minipreview_config.size > 0) {
-      /*
-       * the option 'ApercuSize' used to be coded as a multiple of the icon size in v0.95.6
-       * it is now expressed directly in pixels, but to avoid breaking user's setting we check
-       * for old coding and convert it now.
-       */
-      if (legacy_minipreview_config.size < 24) {
-        /* 24 is the minimum icon size proposed in WPref's settings */
-        wPreferences.minipreview_size = legacy_minipreview_config.size * wPreferences.icon_size;
-      } else {
-        wPreferences.minipreview_size = legacy_minipreview_config.size;
       }
     }
   }
@@ -955,12 +918,12 @@ void wDefaultsCheckDomains(void* arg)
         /* } */
 
         scr = wDefaultScreen();
-        if (scr)
-          wReadDefaults(scr, dict);
-
-        if (w_global.domain.wmaker->dictionary)
+        if (scr) {
+          wDefaultsRead(scr, dict);
+        }
+        if (w_global.domain.wmaker->dictionary) {
           CFRelease(w_global.domain.wmaker->dictionary);
-
+        }
         w_global.domain.wmaker->dictionary = dict;
       }
     } else {
@@ -998,7 +961,7 @@ void wDefaultsCheckDomains(void* arg)
         w_global.domain.window_attr->dictionary = dict;
         scr = wDefaultScreen();
         if (scr) {
-          wDefaultUpdateIcons(scr);
+          _updateApplicationIcons(scr);
         }
       }
     } else {
@@ -1014,32 +977,6 @@ void wDefaultsCheckDomains(void* arg)
   if (!arg)
     WMAddTimerHandler(DEFAULTS_CHECK_INTERVAL, wDefaultsCheckDomains, arg);
 #endif
-}
-
-void wDefaultUpdateIcons(WScreen *scr)
-{
-  WAppIcon *aicon = scr->app_icon_list;
-  WDrawerChain *dc;
-  WWindow *wwin = scr->focused_window;
-
-  while (aicon) {
-    /* Get the application icon, default included */
-    wIconChangeImageFile(aicon->icon, NULL);
-    wAppIconPaint(aicon);
-    aicon = aicon->next;
-  }
-
-  if (!wPreferences.flags.noclip || wPreferences.flags.clip_merged_in_dock)
-    wClipIconPaint(scr->clip_icon);
-
-  for (dc = scr->drawers; dc != NULL; dc = dc->next)
-    wDrawerIconPaint(dc->adrawer->icon_array[0]);
-
-  while (wwin) {
-    if (wwin->icon && wwin->flags.miniaturized)
-      wIconChangeImageFile(wwin->icon, NULL);
-    wwin = wwin->prev;
-  }
 }
 
 /* --------------------------- Local ----------------------- */

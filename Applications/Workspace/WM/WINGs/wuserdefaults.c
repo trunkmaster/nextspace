@@ -1,4 +1,3 @@
-#include <CoreFoundation/CFPropertyList.h>
 #include <CoreFoundation/CFLogUtilities.h>
 
 #include "wuserdefaults.h"
