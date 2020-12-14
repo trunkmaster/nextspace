@@ -198,36 +198,33 @@ CFPropertyListRef WMUserDefaultsRead(CFURLRef pathURL)
 
 Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFURLRef fileURL)
 {
-  CFWriteStreamRef  writeStream;
-  /* CFPropertyListRef propertyList; */
-  CFErrorRef        plError = NULL;
+  CFWriteStreamRef writeStream;
+  CFErrorRef       plError = NULL;
 
-  CFLog(kCFLogLevelError, CFSTR("(%s - %s()) about to write property list to %@"),
-        __FILE__, __FUNCTION__, fileURL);
+  CFLog(kCFLogLevelError, CFSTR("* %s (%s:%s) about to write property list to %@"),
+        __FILE__, __FUNCTION__, __LINE__, fileURL);
   
   if (dictionary == NULL) {
-    CFLog(kCFLogLevelError, CFSTR("%s() cannot write a NULL property list to %@"),
-          __PRETTY_FUNCTION__, fileURL);
+    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%s) cannot write a NULL property list to %@"),
+          __FILE__, __FUNCTION__, __LINE__, fileURL);
     return false;
   }
   if (CFPropertyListIsValid(dictionary, kCFPropertyListXMLFormat_v1_0) == false) {
-    CFLog(kCFLogLevelError, CFSTR("%s() cannot write a invalid property list to %@\n %@"),
-          __PRETTY_FUNCTION__, fileURL, dictionary);
+    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%s) cannot write a invalid property list to %@\n %@"),
+          __FILE__, __FUNCTION__, __LINE__, fileURL, dictionary);
     return false;
   }
-  /* CFAssert1(dictionary != NULL, __kCFLogAssertion, */
-  /*           "%s(): cannot write a NULL property list", __PRETTY_FUNCTION__); */
   
   writeStream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, fileURL);
   if (writeStream) {
     CFWriteStreamOpen(writeStream);
-    /* CFPropertyListWrite(dictionary, writeStream, kCFPropertyListOpenStepFormat, 0, &plError); */
+    /*  kCFPropertyListOpenStepFormat is not supported for writing */
     CFPropertyListWrite(dictionary, writeStream, kCFPropertyListXMLFormat_v1_0, 0, &plError);
     CFWriteStreamClose(writeStream);
   }
   else {
-    CFLog(kCFLogLevelError, CFSTR("%s() cannot open WRITE stream to %@"),
-          __PRETTY_FUNCTION__, fileURL);
+    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%s) cannot open WRITE stream to %@"),
+          __FILE__, __FUNCTION__, __LINE__, fileURL);
   }
 
   if (plError > 0) {
@@ -237,7 +234,7 @@ Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFURLRef fileURL)
   return (plError > 0) ? false : true;
 }
 
-Boolean WMUserDefaultsUpdateDomain(WDDomain *domain)
+Boolean WMUserDefaultsSynchronize(WDDomain *domain)
 {
   /* struct stat stbuf; */
   /* char path[PATH_MAX]; */

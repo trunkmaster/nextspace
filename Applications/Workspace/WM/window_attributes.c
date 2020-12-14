@@ -199,7 +199,8 @@ static int getBool(CFStringRef key, CFTypeRef value)
   }
   val = CFStringGetCStringPtr(value, kCFStringEncodingUTF8);
 
-  if ((val[1] == '\0' && (val[0] == 'y' || val[0] == 'Y' || val[0] == 'T' || val[0] == 't' || val[0] == '1'))
+  if ((val[1] == '\0'
+       && (val[0] == 'y' || val[0] == 'Y' || val[0] == 'T' || val[0] == 't' || val[0] == '1'))
       || (strcasecmp(val, "YES") == 0 || strcasecmp(val, "TRUE") == 0)) {
 
     return 1;
@@ -635,7 +636,7 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
   }
 
   if (!wPreferences.flags.noupdates) {
-    WMUserDefaultsUpdateDomain(db);
+    WMUserDefaultsSynchronize(db);
   }
   
   if (attr) {
@@ -661,7 +662,7 @@ void wDefaultPurgeInfo(const char *instance, const char *class)
 
   if (dict) {
     CFDictionaryRemoveValue(w_global.domain.window_attr->dictionary, key);
-    WMUserDefaultsUpdateDomain(w_global.domain.window_attr);
+    WMUserDefaultsSynchronize(w_global.domain.window_attr);
   }
 
   CFRelease(key);

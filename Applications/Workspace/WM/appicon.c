@@ -1124,8 +1124,8 @@ static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_ins
   char *tmp;
 
   if (!dict) {
-    CFLog(kCFLogLevelError, CFSTR("%s():%i cannot save appicon to a NULL WMWindowAttributes"),
-          __FUNCTION__, __LINE__);
+    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) cannot save appicon to a NULL WMWindowAttributes"),
+          __FILE__, __FUNCTION__, __LINE__);
     return;
   }
 
@@ -1156,7 +1156,7 @@ static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_ins
   CFShow(dict);
   
   if (val && !wPreferences.flags.noupdates) {
-    WMUserDefaultsUpdateDomain(w_global.domain.window_attr);
+    WMUserDefaultsSynchronize(w_global.domain.window_attr);
   }
   
   if (adict) {
