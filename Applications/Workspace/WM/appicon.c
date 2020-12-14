@@ -1142,6 +1142,7 @@ static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_ins
 
   if (adict) {
     val = CFDictionaryGetValue(adict, iconkey);
+    CFRetain(val);
   } else {
     /* no dictionary for app, so create one */
     adict = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
@@ -1161,7 +1162,7 @@ static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_ins
   if (adict) {
     CFRelease(adict);
   }
-  /* CFRelease(val); */ // WTF?
+  CFRelease(val);
   CFRelease(iconkey);
   CFRelease(key);
 }
