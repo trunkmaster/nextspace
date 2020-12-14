@@ -687,11 +687,9 @@ WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary)
   db->name = CFStringCreateWithCString(kCFAllocatorDefault, domain, kCFStringEncodingUTF8);
   db->path = WMUserDefaultsCopyURLForDomain(db->name);
 
-  modificationTime = WMUserDefaultsFileModificationTime(db->path);
-  /* CFLog(kCFLogLevelError, CFSTR("Got modification time of %@ == %i"), */
-  /*       db->path, modificationTime); */
+  modificationTime = WMUserDefaultsFileModificationTime(db->name, 0);
   if (modificationTime > 0) {
-    db->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(db->path);
+    db->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(db->name);
     if (db->dictionary && (CFGetTypeID(db->dictionary) != CFDictionaryGetTypeID())) {
       CFRelease(db->dictionary);
       db->dictionary = NULL;
@@ -700,12 +698,11 @@ WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary)
     }
   }
   else {
+    CFLog(kCFLogLevelError, CFSTR("Creating empty domain: %@"), db->name);
     db->dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
-    /* CFDictionarySetValue(db->dictionary, CFSTR("-"), CFSTR("Empty attributes")); */
+    WMUserDefaultsSynchronize(db);
+    modificationTime = WMUserDefaultsFileModificationTime(db->name, 0);
     db->timestamp = modificationTime;
-    WMUserDefaultsWrite(db->dictionary, db->path);
-    CFRelease(db->dictionary);
-    db->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(db->path);
   }
 
   /* global system dictionary */
@@ -933,7 +930,7 @@ void wDefaultsCheckDomains(void* arg)
   CFAbsoluteTime time = 0.0;
 
   // ~/Library/Preferences/.WindowMaker/WindowMaker
-  time = WMUserDefaultsFileModificationTime(w_global.domain.wmaker->path);
+  time = WMUserDefaultsFileModificationTime(w_global.domain.wmaker->name, 0);
   if (w_global.domain.wmaker->timestamp < time) {
     w_global.domain.wmaker->timestamp = stbuf.st_mtime;
 
@@ -941,14 +938,14 @@ void wDefaultsCheckDomains(void* arg)
     /* shared_dict = _readGlobalDomain("WindowMaker", True); */
 
     /* User dictionary */
-    dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.wmaker->path);
+    dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.wmaker->name);
 
     if (dict) {
       if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
         CFRelease(dict);
         dict = NULL;
         CFLog(kCFLogLevelError, CFSTR("Domain %s (%@) of defaults database is corrupted!"),
-              "WindowMaker", w_global.domain.wmaker->path);
+              "WindowMaker", w_global.domain.wmaker->name);
       } else {
         /* if (shared_dict) { */
         /*   WMMergePLDictionaries(shared_dict, dict, True); */
@@ -975,12 +972,12 @@ void wDefaultsCheckDomains(void* arg)
   }
 
   // ~/Library/Preferences/.WindowMaker/WMAttributes
-  time = WMUserDefaultsFileModificationTime(w_global.domain.window_attr->path);
+  time = WMUserDefaultsFileModificationTime(w_global.domain.window_attr->name, 0);
   if (w_global.domain.window_attr->timestamp < time) {
     /* global dictionary */
     /* shared_dict = _readGlobalDomain("WMWindowAttributes", True); */
     /* user dictionary */
-    dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.window_attr->path);
+    dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.window_attr->name);
     if (dict) {
       if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
         CFRelease(dict);
@@ -1002,18 +999,13 @@ void wDefaultsCheckDomains(void* arg)
         scr = wDefaultScreen();
         if (scr) {
           wDefaultUpdateIcons(scr);
-
-          /* Update the panel image if changed */
-          /* Don't worry. If the image is the same these
-           * functions will have no performance impact. */
-          create_logo_image(scr);
         }
       }
     } else {
       wwarning(_("could not load domain %s from user defaults database"), "WMWindowAttributes");
     }
 
-    w_global.domain.window_attr->timestamp = WMUserDefaultsFileModificationTime(w_global.domain.window_attr->path);
+    w_global.domain.window_attr->timestamp = WMUserDefaultsFileModificationTime(w_global.domain.window_attr->name, 0);
     /* if (shared_dict) */
     /*   CFRelease(shared_dict); */
   }

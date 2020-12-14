@@ -1153,7 +1153,6 @@ static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_ins
   if (adict) {
     CFDictionarySetValue(dict, key, adict);
   }
-  CFShow(dict);
   
   if (val && !wPreferences.flags.noupdates) {
     WMUserDefaultsSynchronize(w_global.domain.window_attr);

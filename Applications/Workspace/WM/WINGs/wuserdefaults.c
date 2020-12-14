@@ -1,108 +1,43 @@
+#include <CoreFoundation/CFPropertyList.h>
 #include <CoreFoundation/CFLogUtilities.h>
-/* #include <pwd.h> */
-/* #include <sys/param.h> */
 
 #include "wuserdefaults.h"
 
-// ---[ Defaults locations ] ----------------------------------------------------------------------
+// ---[ Location ] --------------------------------------------------------------------------------
 
-/* static char *_wgetenv(const char *n) */
-/* { */
-/* #ifdef HAVE_SECURE_GETENV */
-/*   return secure_getenv(n); */
-/* #else */
-/*   return getenv(n); */
-/* #endif   */
-/* } */
-
-/* CFStringRef WMUserName() */
-/* { */
-/*   struct passwd *user = NULL; */
-/*   CFStringRef username = NULL; */
-
-/*   user = getpwuid(getuid()); */
-/*   if (user) { */
-/*     username = CFStringCreateWithCString(kCFAllocatorDefault, user->pw_name, kCFStringEncodingUTF8); */
-/*   } */
-
-/*   return username; */
-/* } */
-
-/* CFStringRef WMHomePathForUser(CFStringRef username) */
-/* { */
-/*   CFStringRef home = NULL; */
-/*   CFStringRef errorMessage = NULL; */
-/*   struct passwd *upwd = NULL; */
-    
-/*   if (username) { */
-/*     upwd = getpwnam(CFStringGetCStringPtr(username, kCFStringEncodingUTF8)); */
-/*   } */
-/*   else { */
-/*     upwd = getpwuid(geteuid() ?: getuid()); */
-/*   } */
-    
-/*   if (upwd) { */
-/*     if (upwd->pw_dir) { */
-/*       home = CFStringCreateWithCString(kCFAllocatorDefault, upwd->pw_dir, kCFStringEncodingUTF8); */
-/*     } */
-/*     else { */
-/*       errorMessage = CFSTR("error: upwd->pw_dir is NULL"); */
-/*     } */
-/*   } */
-/*   else { */
-/*     char *pwh = _wgetenv("HOME"); */
-/*     if (pwh) { */
-/*       home = CFStringCreateWithCString(kCFAllocatorDefault, pwh, kCFStringEncodingUTF8); */
-/*     } */
-/*     else { */
-/*       errorMessage = CFSTR("error: failed to get value of HOME environment variable"); */
-/*     } */
-/*   } */
-/*   /\* else if (!username) { *\/ */
-/*   /\*   errorMessage = CFSTR("error: faled to get /etc/password entry (getpwuid)"); *\/ */
-/*   /\* } *\/ */
-
-/*   if (errorMessage) { */
-/*     CFLog(kCFLogLevelError, errorMessage); */
-/*     CFRelease(errorMessage); */
-/*   } */
-
-/*   return home; */
-/* } */
-
-// ~/Library
+// /Users/$USER/Library
+#define USER_LIBRARY_DIR "Library"
 CFURLRef WMUserDefaultsCopyUserLibraryURL(void)
 {
   CFURLRef homePath = CFCopyHomeDirectoryURL();
   CFURLRef libPath;
 
-  libPath = CFURLCreateCopyAppendingPathComponent(NULL, homePath, CFSTR("Library"), true);
+  libPath = CFURLCreateCopyAppendingPathComponent(NULL, homePath, CFSTR(USER_LIBRARY_DIR), true);
   CFRelease(homePath);
 
   return libPath;
 }
 
+// $USER_LIBRARY_DIR/Preferences/.NextSpace
+/* #define DEFAULTS_SUBDIR "Preferences/.NextSpace" */
 #define DEFAULTS_SUBDIR "Preferences/.WindowMaker"
-// ~/Library/Preferences/.WindowMaker/domain
 CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain)
 {
-  CFURLRef libURL, prefsURL, wmURL;
+  CFURLRef libURL, prefsURL;
   CFURLRef domainURL;
 
   libURL = WMUserDefaultsCopyUserLibraryURL();
-  prefsURL = CFURLCreateCopyAppendingPathComponent(NULL, libURL, CFSTR("Preferences"), true);
+  prefsURL = CFURLCreateCopyAppendingPathComponent(NULL, libURL, CFSTR(DEFAULTS_SUBDIR), true);
   CFRelease(libURL);
-  wmURL = CFURLCreateCopyAppendingPathComponent(NULL, prefsURL, CFSTR(".WindowMaker"), true);
-  CFRelease(prefsURL);
-
+  
   if (CFStringGetLength(domain) > 0) {
-    domainURL = CFURLCreateCopyAppendingPathComponent(NULL, wmURL, domain, false);
+    domainURL = CFURLCreateCopyAppendingPathComponent(NULL, prefsURL, domain, false);
   }
   else {
-    CFRetain(wmURL);
-    domainURL = wmURL;
+    CFRetain(prefsURL);
+    domainURL = prefsURL;
   }
-  CFRelease(wmURL);
+  CFRelease(prefsURL);
 
   return domainURL;
 }
@@ -143,36 +78,118 @@ char *WMUserDefaultsGetCString(CFStringRef string, CFStringEncoding encoding)
   return buffer;
 }
 
-CFAbsoluteTime WMUserDefaultsFileModificationTime(CFURLRef pathURL)
+// ---[ Files ] -----------------------------------------------------------------------------------
+CFPropertyListFormat WMUserDefaultsFileExists(CFStringRef domainName,
+                                              CFPropertyListFormat format)
 {
-  CFBooleanRef   pathExists;
-  int            error;
-  CFDateRef      date = NULL;
+  CFURLRef osURL = NULL;
+  CFURLRef xmlURL = NULL;
+  int error;
+  CFBooleanRef pathExists = false;
+  CFPropertyListFormat result = 0;
+  
+  osURL = WMUserDefaultsCopyURLForDomain(domainName);
+  
+  if (format == 0 || format == kCFPropertyListXMLFormat_v1_0) {
+    xmlURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
+    pathExists = CFURLCreatePropertyFromResource(kCFAllocatorDefault, xmlURL,
+                                                 kCFURLFileExists, &error);
+    if (CFEqual(pathExists, kCFBooleanTrue)) {
+      /* CFLog(kCFLogLevelError, CFSTR("%@.plist does exist."), domainName); */
+      result = kCFPropertyListXMLFormat_v1_0;
+    }
+    else {
+      /* CFLog(kCFLogLevelError, CFSTR("No %@.plist exists."), domainName); */
+    }
+    CFRelease(xmlURL);
+  }
+  
+  if (!result && (format == 0 || format == kCFPropertyListOpenStepFormat)) {
+    pathExists = CFURLCreatePropertyFromResource(kCFAllocatorDefault, osURL,
+                                                 kCFURLFileExists, &error);
+    if (CFEqual(pathExists, kCFBooleanTrue)) {
+      /* CFLog(kCFLogLevelError, CFSTR("%@ does exist."), domainName); */
+      result = kCFPropertyListOpenStepFormat;
+    }
+    else {
+      /* CFLog(kCFLogLevelError, CFSTR("No %@ exists."), domainName); */
+    }
+  }
+  
+  CFRelease(osURL);
+
+  return result;
+}
+
+CFAbsoluteTime WMUserDefaultsFileModificationTime(CFStringRef domainName,
+                                                  CFPropertyListFormat format)
+{
+  CFURLRef osURL = NULL;
+  CFURLRef fileURL = NULL;
+  CFPropertyListFormat existingFormat = 0;
+  int error;
+  CFDateRef date = NULL;
   CFAbsoluteTime time = 0.0;
 
-  pathExists = CFURLCreatePropertyFromResource(kCFAllocatorDefault, pathURL,
-                                               kCFURLFileExists, &error);
-  if (CFEqual(pathExists, kCFBooleanTrue)) {
-    date = CFURLCreatePropertyFromResource(kCFAllocatorDefault, pathURL,
-                                           kCFURLFileLastModificationTime,
-                                           &error);
+  osURL = WMUserDefaultsCopyURLForDomain(domainName);
+  existingFormat = WMUserDefaultsFileExists(domainName, 0);
+  
+  if (existingFormat == kCFPropertyListXMLFormat_v1_0) {
+    /* CFLog(kCFLogLevelError, CFSTR("XML file exists for domain %@..."), domainName); */
+    fileURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
+    CFRelease(osURL);
+  }
+  else if (existingFormat == kCFPropertyListOpenStepFormat) {
+    /* CFLog(kCFLogLevelError, CFSTR("OpenStep file exists for domain %@..."), domainName); */
+    fileURL = osURL;
+  }
+  
+  if (fileURL) {
+    date = CFURLCreatePropertyFromResource(kCFAllocatorDefault, fileURL,
+                                           kCFURLFileLastModificationTime, &error);
     if (error == 0) {
       time = CFDateGetAbsoluteTime(date);
     }
     CFRelease(date);
+    CFRelease(fileURL);
   }
 
   return time;
 }
 
-CFPropertyListRef WMUserDefaultsRead(CFURLRef pathURL)
+CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName)
 {
-  /* CFPropertyListFormat plFormat = kCFPropertyListOpenStepFormat; */
-  CFReadStreamRef      readStream;
-  CFErrorRef           plError = NULL;
-  CFPropertyListRef    pl = NULL;
+  CFURLRef fileURL = NULL;
+  CFURLRef osURL = NULL;
+  CFURLRef xmlURL = NULL;
+  CFReadStreamRef readStream = NULL;
+  CFErrorRef plError = NULL;
+  CFPropertyListRef pl = NULL;
 
-  readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, pathURL);
+  osURL = WMUserDefaultsCopyURLForDomain(domainName);
+  
+  if (WMUserDefaultsFileExists(domainName, kCFPropertyListXMLFormat_v1_0) > 0.0) {
+    // Read XML format .plist file
+    /* CFLog(kCFLogLevelError, CFSTR("%s (%s) Trying to use XML file for domain %@..."), */
+    /*       __FILE__, __FUNCTION__, domainName); */
+    xmlURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
+    readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, xmlURL);
+    fileURL = xmlURL;
+  }
+  else if (WMUserDefaultsFileExists(domainName, kCFPropertyListOpenStepFormat) > 0.0) {
+    // Read OpenStep format (file without .plist extension)
+    /* CFLog(kCFLogLevelError, */
+    /*       CFSTR("%s (%s) XML file for domain %s is not found. Trying to use OpenStep..."), */
+    /*       __FILE__, __FUNCTION__, CFURLCopyLastPathComponent(osURL)); */
+    readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, osURL);
+    fileURL = osURL;
+  }
+  else {
+    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) no files exist to read for domain %@"),
+          __FILE__, __FUNCTION__, __LINE__, domainName);
+    CFRelease(osURL);
+  }
+
   if (readStream) {
     CFReadStreamOpen(readStream);
     pl = CFPropertyListCreateWithStream(kCFAllocatorDefault, readStream, 0,
@@ -182,40 +199,47 @@ CFPropertyListRef WMUserDefaultsRead(CFURLRef pathURL)
     CFRelease(readStream);
   }
   else {
-    CFLog(kCFLogLevelError, CFSTR("%s() cannot open READ stream to %@"),
-          __PRETTY_FUNCTION__, pathURL);
+    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) cannot open READ stream to %@"),
+          __FILE__, __FUNCTION__, __LINE__, fileURL);
   }
   
   if (plError > 0) {
-    CFLog(kCFLogLevelError, CFSTR("Failed to read user defaults from %@ (Error: %i)"),
-          pathURL, plError);
+    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) Failed to read user defaults from %@ (Error: %i)"),
+          __FILE__, __FUNCTION__, __LINE__, fileURL, plError);
   }
 
-  /* CFShow(pl); */
-
+  CFRelease(osURL);
+  if (xmlURL) CFRelease(xmlURL);
+  
   return pl;
 }
 
-Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFURLRef fileURL)
+Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFStringRef domainName)
 {
-  CFWriteStreamRef writeStream;
-  CFErrorRef       plError = NULL;
+  CFURLRef osURL = NULL;
+  CFURLRef xmlURL = NULL;
+  CFWriteStreamRef writeStream = NULL;
+  CFErrorRef plError = NULL;
 
-  CFLog(kCFLogLevelError, CFSTR("* %s (%s:%s) about to write property list to %@"),
-        __FILE__, __FUNCTION__, __LINE__, fileURL);
+  osURL = WMUserDefaultsCopyURLForDomain(domainName);
+  xmlURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
+  CFRelease(osURL);
+
+  /* CFLog(kCFLogLevelError, CFSTR("* %s (%s) about to write property list to %@"), */
+  /*       __FILE__, __FUNCTION__, xmlURL); */
   
   if (dictionary == NULL) {
     CFLog(kCFLogLevelError, CFSTR("** %s (%s:%s) cannot write a NULL property list to %@"),
-          __FILE__, __FUNCTION__, __LINE__, fileURL);
+          __FILE__, __FUNCTION__, __LINE__, xmlURL);
     return false;
   }
   if (CFPropertyListIsValid(dictionary, kCFPropertyListXMLFormat_v1_0) == false) {
     CFLog(kCFLogLevelError, CFSTR("** %s (%s:%s) cannot write a invalid property list to %@\n %@"),
-          __FILE__, __FUNCTION__, __LINE__, fileURL, dictionary);
+          __FILE__, __FUNCTION__, __LINE__, xmlURL, dictionary);
     return false;
   }
   
-  writeStream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, fileURL);
+  writeStream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, xmlURL);
   if (writeStream) {
     CFWriteStreamOpen(writeStream);
     /*  kCFPropertyListOpenStepFormat is not supported for writing */
@@ -224,12 +248,16 @@ Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFURLRef fileURL)
   }
   else {
     CFLog(kCFLogLevelError, CFSTR("** %s (%s:%s) cannot open WRITE stream to %@"),
-          __FILE__, __FUNCTION__, __LINE__, fileURL);
+          __FILE__, __FUNCTION__, __LINE__, xmlURL);
   }
 
   if (plError > 0) {
-    CFLog(kCFLogLevelError, CFSTR("Error writing user defaults at %@ = %u"), fileURL, plError);
+    CFLog(kCFLogLevelError,
+          CFSTR("** %s (%s:%s) cannot write user defaults to %@ (error: %i)"),
+          __FILE__, __FUNCTION__, __LINE__, xmlURL, plError);
   }
+
+  CFRelease(xmlURL);
 
   return (plError > 0) ? false : true;
 }
@@ -258,11 +286,11 @@ Boolean WMUserDefaultsSynchronize(WDDomain *domain)
   /*   } */
   /* } */
 
-  CFLog(kCFLogLevelError, CFSTR("Writing domain: %@ at path: %@"), domain->name, domain->path);
+  CFLog(kCFLogLevelError, CFSTR("Writing domain: %@"), domain->name);
 
-  result = WMUserDefaultsWrite(domain->dictionary, domain->path);
+  result = WMUserDefaultsWrite(domain->dictionary, domain->name);
   CFRelease(domain->dictionary);
-  domain->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->path);
+  domain->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->name);
 
   return (result && domain->dictionary != NULL);
 }

@@ -344,6 +344,4 @@ WScreen *wDefaultScreen(void);
 
 void wScreenFinish(WScreen *scr);
 void wScreenUpdateUsableArea(WScreen *scr);
-
-void create_logo_image(WScreen *scr);
 #endif
