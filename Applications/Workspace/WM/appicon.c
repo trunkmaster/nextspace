@@ -31,6 +31,8 @@
 #include <sys/stat.h>
 #include <errno.h>
 
+#include <CoreFoundation/CFLogUtilities.h>
+
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 
@@ -45,7 +47,7 @@
 #include "stacking.h"
 #include "dock.h"
 #include "WM_main.h"
-#include "defaults.h"
+#include "wuserdefaults.h"
 #include "workspace.h"
 #include "superfluous.h"
 #include "menu.h"
@@ -1116,45 +1118,52 @@ static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_ins
 {
   CFMutableDictionaryRef dict = w_global.domain.window_attr->dictionary;
   CFMutableDictionaryRef adict = NULL;
-  CFStringRef key;
-  CFStringRef iconk;
   CFTypeRef val;
+  CFStringRef key;
+  CFStringRef iconkey;
   char *tmp;
 
+  if (!dict) {
+    CFLog(kCFLogLevelError, CFSTR("%s():%i cannot save appicon to a NULL WMWindowAttributes"),
+          __FUNCTION__, __LINE__);
+    return;
+  }
+
+  iconkey = CFStringCreateWithCString(kCFAllocatorDefault, "Icon", kCFStringEncodingUTF8);
+  
   tmp = get_name_for_instance_class(wm_instance, wm_class);
   key = CFStringCreateWithCString(kCFAllocatorDefault, tmp, kCFStringEncodingUTF8);
   wfree(tmp);
 
   val = CFDictionaryGetValue(dict, key);
-  if (CFGetTypeID(val) == CFDictionaryGetTypeID()) {
-    adict = (CFMutableDictionaryRef)val;
+  if (val && (CFGetTypeID(val) == CFDictionaryGetTypeID())) {
+    adict = CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, (CFDictionaryRef)val);
   }
-  val = NULL;
-  iconk = CFStringCreateWithCString(kCFAllocatorDefault, "Icon", kCFStringEncodingUTF8);
 
   if (adict) {
-    val = CFDictionaryGetValue(adict, iconk);
+    val = CFDictionaryGetValue(adict, iconkey);
   } else {
     /* no dictionary for app, so create one */
     adict = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
-    CFDictionarySetValue(dict, key, adict);
-    CFRelease(adict);
-    val = NULL;
-  }
-
-  if (!val) {
     val = CFStringCreateWithCString(kCFAllocatorDefault, iconPath, kCFStringEncodingUTF8);
-    CFDictionarySetValue(adict, iconk, val);
-    CFRelease(val);
-  } else {
-    val = NULL;
+    CFDictionarySetValue(adict, iconkey, val);
   }
 
+  if (adict) {
+    CFDictionarySetValue(dict, key, adict);
+  }
+  CFShow(dict);
+  
+  if (val && !wPreferences.flags.noupdates) {
+    WMUserDefaultsUpdateDomain(w_global.domain.window_attr);
+  }
+  
+  if (adict) {
+    CFRelease(adict);
+  }
+  /* CFRelease(val); */ // WTF?
+  CFRelease(iconkey);
   CFRelease(key);
-  CFRelease(iconk);
-
-  if (val && !wPreferences.flags.noupdates)
-    UpdateDomainFile(w_global.domain.window_attr);
 }
 
 static WAppIcon *findDockIconFor(WDock *dock, Window main_window)

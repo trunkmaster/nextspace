@@ -635,7 +635,7 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
   }
 
   if (!wPreferences.flags.noupdates) {
-    UpdateDomainFile(db);
+    WMUserDefaultsUpdateDomain(db);
   }
   
   if (attr) {
@@ -661,7 +661,7 @@ void wDefaultPurgeInfo(const char *instance, const char *class)
 
   if (dict) {
     CFDictionaryRemoveValue(w_global.domain.window_attr->dictionary, key);
-    UpdateDomainFile(w_global.domain.window_attr);
+    WMUserDefaultsUpdateDomain(w_global.domain.window_attr);
   }
 
   CFRelease(key);

@@ -1015,40 +1015,6 @@ void SendHelperMessage(WScreen *scr, char type, int workspace, const char *msg)
   wfree(buffer);
 }
 
-Bool UpdateDomainFile(WDDomain *domain)
-{
-  /* struct stat stbuf; */
-  /* char path[PATH_MAX]; */
-  /* WMPropList *shared_dict; */
-  CFMutableDictionaryRef dict;
-  Bool result, freeDict = False;
-
-  dict = domain->dictionary;
-  /* if (CFGetTypeID(domain->dictionary) != CFDictionaryGetTypeID()) { */
-  /*   /\* retrieve global system dictionary *\/ */
-  /*   snprintf(path, sizeof(path), "%s/WindowMaker/%s", SYSCONFDIR, domain->domain_name); */
-  /*   if (stat(path, &stbuf) >= 0) { */
-  /*     shared_dict = WMReadPropListFromFile(path); */
-  /*     if (shared_dict) { */
-  /*       if (WMIsPLDictionary(shared_dict)) { */
-  /*         freeDict = True; */
-  /*         dict = WMDeepCopyPropList(domain->dictionary); */
-  /*         WMSubtractPLDictionaries(dict, shared_dict, True); */
-  /*       } */
-  /*       WMReleasePropList(shared_dict); */
-  /*     } */
-  /*   } */
-  /* } */
-
-  result = WMUserDefaultsWrite(dict, domain->path);
-
-  if (freeDict) {
-    CFRelease(dict);
-  }
-
-  return result;
-}
-
 char *StrConcatDot(const char *a, const char *b)
 {
   int len;

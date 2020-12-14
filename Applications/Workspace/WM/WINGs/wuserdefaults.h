@@ -6,6 +6,9 @@
 /* #include <CoreFoundation/CFString.h> */
 /* #include <CoreFoundation/CFDictionary.h> */
 /* #include <CoreFoundation/CFArray.h> */
+#include <CoreFoundation/CFLogUtilities.h>
+
+#include "defaults.h"
 
 /* Paths */
 CFURLRef WMUserDefaultsCopyUserLibraryURL(void);
@@ -20,6 +23,7 @@ CFAbsoluteTime WMUserDefaultsFileModificationTime(CFURLRef pathURL);
 
 CFPropertyListRef WMUserDefaultsRead(CFURLRef pathURL);
 Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFURLRef fileURL);
+Boolean WMUserDefaultsUpdateDomain(WDDomain *domain);
 void WMUserDefaultsMerge(CFMutableDictionaryRef dest, CFDictionaryRef source);
 
 #endif

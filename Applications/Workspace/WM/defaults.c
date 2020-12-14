@@ -698,9 +698,14 @@ WDDomain *wDefaultsInitDomain(const char *domain, Bool requireDictionary)
       wwarning(_("Domain %s (%s) of defaults database is corrupted!"), domain,
                WMUserDefaultsGetCString(CFURLGetString(db->path), kCFStringEncodingUTF8));
     }
-    else {
-      db->timestamp = modificationTime;
-    }
+  }
+  else {
+    db->dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+    /* CFDictionarySetValue(db->dictionary, CFSTR("-"), CFSTR("Empty attributes")); */
+    db->timestamp = modificationTime;
+    WMUserDefaultsWrite(db->dictionary, db->path);
+    CFRelease(db->dictionary);
+    db->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(db->path);
   }
 
   /* global system dictionary */
@@ -1272,7 +1277,8 @@ static int getPathList(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void
 
  again:
   if (CFGetTypeID(value) != CFArrayGetTypeID()) {
-    wwarning(_("Wrong option format for key \"%s\". Should be %s."), entry->key, "an array of paths");
+    wwarning(_("Wrong option format for key \"%s\". Should be %s."), entry->key,
+             "an array of paths");
     if (changed == 0) {
       value = entry->plvalue;
       changed = 1;
@@ -1297,7 +1303,7 @@ static int getPathList(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void
   len = 0;
   for (i = 0; i < count; i++) {
     d = CFArrayGetValueAtIndex(value, i);
-    if (!d || (CFGetTypeID(d) == CFStringGetTypeID())) {
+    if (!d || (CFGetTypeID(d) != CFStringGetTypeID())) {
       count = i;
       break;
     }
@@ -2857,7 +2863,7 @@ static int setWorkspaceSpecificBack(WScreen * scr, WDefaultEntry * entry, void *
 
   for (i = 0; i < CFArrayGetCount(value); i++) {
     val = CFArrayGetValueAtIndex(value, i);
-    if (val && (CFGetTypeID(val) != CFArrayGetTypeID()) && CFArrayGetCount(val) > 0) {
+    if (val && (CFGetTypeID(val) == CFArrayGetTypeID()) && CFArrayGetCount(val) > 0) {
       str = (char *)WMUserDefaultsGetCString(CFCopyDescription(val), kCFStringEncodingUTF8);
 
       SendHelperMessage(scr, 'S', i + 1, str);
@@ -3141,7 +3147,7 @@ static int setSwPOptions(WScreen *scr, WDefaultEntry *entry, void *tdata, void *
   int cwidth, cheight;
   struct WPreferences *prefs = foo;
 
-  if ((CFGetTypeID(array) != CFArrayGetTypeID()) || CFArrayGetCount(array) == 0) {
+  if (!array || (CFGetTypeID(array) != CFArrayGetTypeID()) || CFArrayGetCount(array) == 0) {
     if (prefs->swtileImage)
       RReleaseImage(prefs->swtileImage);
     prefs->swtileImage = NULL;
@@ -3280,7 +3286,7 @@ static int setModifierKeyLabels(WScreen *scr, WDefaultEntry *entry, void *tdata,
       wfree(prefs->modifier_labels[i]);
 
     value = CFArrayGetValueAtIndex(array, i);
-    if (CFGetTypeID(value) != CFStringGetTypeID()) {
+    if (CFGetTypeID(value) == CFStringGetTypeID()) {
       prefs->modifier_labels[i] = wstrdup(WMUserDefaultsGetCString(value, kCFStringEncodingUTF8));
     } else {
       wwarning(_("Invalid argument for option \"%s\" item %d"), entry->key, i);

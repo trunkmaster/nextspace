@@ -135,7 +135,7 @@
 #define GLOBAL_EPILOGUE_MENU_FILE "GlobalMenu.post"
 
 /* pixmap path */
-#define DEF_PIXMAP_PATHS  "(\"~/Library/Images\", \"/Library/Images/\")"
+#define DEF_PIXMAP_PATHS  "(\"~/Library/Images/\", \"/Library/Images/\", \"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
 
 /* icon path */
 #define DEF_ICON_PATHS \

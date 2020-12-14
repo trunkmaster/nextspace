@@ -471,10 +471,10 @@ static CFStringRef get_icon_cache_path(void)
   libURL = WMUserDefaultsCopyUserLibraryURL();
   libPath = CFURLCopyFileSystemPath(libURL, kCFURLPOSIXPathStyle);
   CFRelease(libURL);
-  cachePath = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%@%s"),
+  cachePath = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%@%s/"),
                                        libPath, CACHE_ICON_PATH);
   CFRelease(libPath);
-  path = CFStringGetCStringPtr(cachePath, kCFStringEncodingUTF8);
+  path = WMUserDefaultsGetCString(cachePath, kCFStringEncodingUTF8);
 
   /* If the folder exists, exit */
   if (access(path, F_OK) == 0)

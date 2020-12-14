@@ -79,8 +79,6 @@ CFURLRef WMUserDefaultsCopyUserLibraryURL(void)
   libPath = CFURLCreateCopyAppendingPathComponent(NULL, homePath, CFSTR("Library"), true);
   CFRelease(homePath);
 
-  CFShow(libPath);
-  
   return libPath;
 }
 
@@ -169,23 +167,31 @@ CFAbsoluteTime WMUserDefaultsFileModificationTime(CFURLRef pathURL)
 
 CFPropertyListRef WMUserDefaultsRead(CFURLRef pathURL)
 {
-  CFPropertyListFormat plFormat = kCFPropertyListOpenStepFormat;
+  /* CFPropertyListFormat plFormat = kCFPropertyListOpenStepFormat; */
   CFReadStreamRef      readStream;
   CFErrorRef           plError = NULL;
-  CFPropertyListRef    pl;
-  
+  CFPropertyListRef    pl = NULL;
+
   readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, pathURL);
-  CFReadStreamOpen(readStream);
-  pl = CFPropertyListCreateWithStream(kCFAllocatorDefault, readStream, 0,
-                                      kCFPropertyListMutableContainersAndLeaves,
-                                      &plFormat, &plError);
-  CFReadStreamClose(readStream);
-  CFRelease(readStream);
+  if (readStream) {
+    CFReadStreamOpen(readStream);
+    pl = CFPropertyListCreateWithStream(kCFAllocatorDefault, readStream, 0,
+                                        kCFPropertyListMutableContainersAndLeaves,
+                                        NULL, &plError);
+    CFReadStreamClose(readStream);
+    CFRelease(readStream);
+  }
+  else {
+    CFLog(kCFLogLevelError, CFSTR("%s() cannot open READ stream to %@"),
+          __PRETTY_FUNCTION__, pathURL);
+  }
   
   if (plError > 0) {
     CFLog(kCFLogLevelError, CFSTR("Failed to read user defaults from %@ (Error: %i)"),
           pathURL, plError);
   }
+
+  /* CFShow(pl); */
 
   return pl;
 }
@@ -194,16 +200,74 @@ Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFURLRef fileURL)
 {
   CFWriteStreamRef  writeStream;
   /* CFPropertyListRef propertyList; */
-  CFErrorRef        plError;
+  CFErrorRef        plError = NULL;
 
+  CFLog(kCFLogLevelError, CFSTR("(%s - %s()) about to write property list to %@"),
+        __FILE__, __FUNCTION__, fileURL);
+  
+  if (dictionary == NULL) {
+    CFLog(kCFLogLevelError, CFSTR("%s() cannot write a NULL property list to %@"),
+          __PRETTY_FUNCTION__, fileURL);
+    return false;
+  }
+  if (CFPropertyListIsValid(dictionary, kCFPropertyListXMLFormat_v1_0) == false) {
+    CFLog(kCFLogLevelError, CFSTR("%s() cannot write a invalid property list to %@\n %@"),
+          __PRETTY_FUNCTION__, fileURL, dictionary);
+    return false;
+  }
+  /* CFAssert1(dictionary != NULL, __kCFLogAssertion, */
+  /*           "%s(): cannot write a NULL property list", __PRETTY_FUNCTION__); */
+  
   writeStream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, fileURL);
-  /* CFPropertyListCreateWithData(CFAllocatorRef allocator, */
-  /*                              CFDataRef data, */
-  /*                              CFOptionFlags options, */
-  /*                              &plFormat, &plError) */
-  CFPropertyListWrite(dictionary, writeStream, kCFPropertyListOpenStepFormat, 0, &plError);
+  if (writeStream) {
+    CFWriteStreamOpen(writeStream);
+    /* CFPropertyListWrite(dictionary, writeStream, kCFPropertyListOpenStepFormat, 0, &plError); */
+    CFPropertyListWrite(dictionary, writeStream, kCFPropertyListXMLFormat_v1_0, 0, &plError);
+    CFWriteStreamClose(writeStream);
+  }
+  else {
+    CFLog(kCFLogLevelError, CFSTR("%s() cannot open WRITE stream to %@"),
+          __PRETTY_FUNCTION__, fileURL);
+  }
+
+  if (plError > 0) {
+    CFLog(kCFLogLevelError, CFSTR("Error writing user defaults at %@ = %u"), fileURL, plError);
+  }
 
   return (plError > 0) ? false : true;
+}
+
+Boolean WMUserDefaultsUpdateDomain(WDDomain *domain)
+{
+  /* struct stat stbuf; */
+  /* char path[PATH_MAX]; */
+  /* WMPropList *shared_dict; */
+  /* Boolean freeDict = False; */
+  Boolean result;
+
+  /* if (CFGetTypeID(domain->dictionary) != CFDictionaryGetTypeID()) { */
+  /*   /\* retrieve global system dictionary *\/ */
+  /*   snprintf(path, sizeof(path), "%s/WindowMaker/%s", SYSCONFDIR, domain->domain_name); */
+  /*   if (stat(path, &stbuf) >= 0) { */
+  /*     shared_dict = WMReadPropListFromFile(path); */
+  /*     if (shared_dict) { */
+  /*       if (WMIsPLDictionary(shared_dict)) { */
+  /*         freeDict = True; */
+  /*         dict = WMDeepCopyPropList(domain->dictionary); */
+  /*         WMSubtractPLDictionaries(dict, shared_dict, True); */
+  /*       } */
+  /*       WMReleasePropList(shared_dict); */
+  /*     } */
+  /*   } */
+  /* } */
+
+  CFLog(kCFLogLevelError, CFSTR("Writing domain: %@ at path: %@"), domain->name, domain->path);
+
+  result = WMUserDefaultsWrite(domain->dictionary, domain->path);
+  CFRelease(domain->dictionary);
+  domain->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->path);
+
+  return (result && domain->dictionary != NULL);
 }
 
 void WMUserDefaultsMerge(CFMutableDictionaryRef dest, CFDictionaryRef source)
