@@ -561,7 +561,7 @@ WDefaultEntry optionList[] = {
 #endif				/* KEEP_XKB_LOCK_STATUS */
 
   {"NormalCursor", "(builtin, left_ptr)", (void *)WCUR_ROOT, NULL, getCursor, setCursor, NULL, NULL},
-  {"ArrowCursor", "(builtin, top_left_arrow)", (void *)WCUR_ARROW, NULL, getCursor, setCursor, NULL, NULL},
+  {"ArrowCursor", "(builtin, left_ptr)", (void *)WCUR_ARROW, NULL, getCursor, setCursor, NULL, NULL},
   {"MoveCursor", "(builtin, fleur)", (void *)WCUR_MOVE, NULL, getCursor, setCursor, NULL, NULL},
   {"ResizeCursor", "(builtin, sizing)", (void *)WCUR_RESIZE, NULL, getCursor, setCursor, NULL, NULL},
   {"TopLeftResizeCursor", "(builtin, top_left_corner)", (void *)WCUR_TOPLEFTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
@@ -660,6 +660,7 @@ void _updateApplicationIcons(WScreen *scr)
 /*   return globalDict; */
 /* } */
 
+// Called from startup.c
 WDDomain *wDefaultsInitDomain(const char *domain)
 {
   WDDomain *db;
@@ -713,9 +714,10 @@ WDDomain *wDefaultsInitDomain(const char *domain)
   return db;
 }
 
+// Called from startup.c
+// Apply `plvalue` from `dict` to appropriate `entry->addr` specified in `staticOptionList`
 void wDefaultsReadStatic(CFDictionaryRef dict)
 {
-  /* CFTypeRef plvalue; */
   CFTypeRef plvalue;
   WDefaultEntry *entry;
   unsigned int i;
@@ -742,12 +744,13 @@ void wDefaultsReadStatic(CFDictionaryRef dict)
   }
 }
 
+// Apply `plvalue` from `new_dict` to appropriate `entry->addr` specified in `optionList`
 void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
 {
-  CFTypeRef plvalue, old_value;
+  CFTypeRef plvalue = NULL;
+  CFTypeRef old_value = NULL;
   WDefaultEntry *entry;
   unsigned int i;
-  int update_workspace_back = 0;	/* kluge :/ */
   unsigned int needs_refresh;
   void *tdata;
   CFDictionaryRef old_dict = NULL;
@@ -760,57 +763,59 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
   for (i = 0; i < wlengthof(optionList); i++) {
     entry = &optionList[i];
 
-    if (new_dict)
+    if (new_dict) {
       plvalue = CFDictionaryGetValue(new_dict, entry->plkey);
-    else
+    }
+    else {
       plvalue = NULL;
-
-    if (!old_dict)
+    }
+    
+    if (!old_dict) {
       old_value = NULL;
-    else
+    }
+    else {
       old_value = CFDictionaryGetValue(old_dict, entry->plkey);
+    }
 
-    if (!plvalue && !old_value) {
-      /* no default in  the DB. Use builtin default */
-      plvalue = entry->plvalue;
-      if (plvalue && new_dict)
-        CFDictionarySetValue(new_dict, entry->plkey, plvalue);
+    // No need to hold default value in dictionary
+    if (plvalue && CFEqual(plvalue, entry->plvalue)) {
+      plvalue = NULL;
+      /* CFLog(kCFLogLevelError, (CFSTR("Removing setting equal to default: %@"), entry->plkey)); */
+      CFDictionaryRemoveValue(new_dict, entry->plkey);
+      /* CFLog(kCFLogLevelError, CFSTR("Removed")); */
+    }
 
-    } else if (!plvalue) {
+    /* if (!plvalue && !old_value) { */
+    /*   /\* no default in the DB. Use builtin default *\/ */
+    /*   plvalue = entry->plvalue; */
+    /*   if (plvalue && new_dict) { */
+    /*     CFDictionarySetValue(new_dict, entry->plkey, plvalue); */
+    /*   } */
+    /* } */
+    /* else */
+    if (!plvalue) {
       /* value was deleted from DB. Keep current value */
-      continue;
-    } else if (!old_value) {
+      plvalue = entry->plvalue;
+      /* continue; */
+    }
+    else if (!old_value) {
       /* set value for the 1st time */
-    } else if (!CFEqual(plvalue, old_value)) {
-      /* value has changed */
-    } else {
-      if (strcmp(entry->key, "WorkspaceBack") == 0
-          && update_workspace_back && scr->flags.backimage_helper_launched) {
-      } else {
-        /* value was not changed since last time */
-        continue;
-      }
+    }
+    else if (CFEqual(plvalue, old_value)) {
+      /* value was not changed since last time */
+      continue;
     }
 
     if (plvalue) {
       /* convert data */
       if ((*entry->convert) (scr, entry, plvalue, entry->addr, &tdata)) {
-        /*
-         * If the WorkspaceSpecificBack data has been changed
-         * so that the helper will be launched now, we must be
-         * sure to send the default background texture config
-         * to the helper.
-         */
-        if (strcmp(entry->key, "WorkspaceSpecificBack") == 0 &&
-            !scr->flags.backimage_helper_launched)
-          update_workspace_back = 1;
-
-        if (entry->update)
+        if (entry->update) {
           needs_refresh |= (*entry->update) (scr, entry, tdata, entry->extra_data);
-
+        }
       }
     }
   }
+  CFLog(kCFLogLevelError, (CFSTR("Processing of options list done.")));
 
   if (needs_refresh != 0 && !scr->flags.startup) {
     int foo;
@@ -887,7 +892,6 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
 void wDefaultsCheckDomains(void* arg)
 {
   WScreen *scr;
-  struct stat stbuf;
   /* CFTypeRef shared_dict = NULL; */
   CFMutableDictionaryRef dict;
   CFAbsoluteTime time = 0.0;
@@ -895,14 +899,13 @@ void wDefaultsCheckDomains(void* arg)
   // ~/Library/Preferences/.WindowMaker/WindowMaker
   time = WMUserDefaultsFileModificationTime(w_global.domain.wmaker->name, 0);
   if (w_global.domain.wmaker->timestamp < time) {
-    w_global.domain.wmaker->timestamp = stbuf.st_mtime;
+    w_global.domain.wmaker->timestamp = time;
 
     /* Global dictionary */
     /* shared_dict = _readGlobalDomain("WindowMaker", True); */
 
     /* User dictionary */
     dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.wmaker->name);
-
     if (dict) {
       if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
         CFRelease(dict);
@@ -925,6 +928,7 @@ void wDefaultsCheckDomains(void* arg)
           CFRelease(w_global.domain.wmaker->dictionary);
         }
         w_global.domain.wmaker->dictionary = dict;
+        WMUserDefaultsSynchronize(w_global.domain.wmaker);
       }
     } else {
       wwarning(_("could not load domain %s from user defaults database"), "WindowMaker");
@@ -1746,23 +1750,6 @@ getWSSpecificBackground(WScreen * scr, WDefaultEntry * entry, CFTypeRef value, v
 
   *ret = (void *)CFRetain(value);
 
-#ifdef notworking
-  /*
-   * Kluge to force wmsetbg helper to set the default background.
-   * If the WorkspaceSpecificBack is changed once wmaker has started,
-   * the WorkspaceBack won't be sent to the helper, unless the user
-   * changes it's value too. So, we must force this by removing the
-   * value from the defaults DB.
-   */
-  if (!scr->flags.backimage_helper_launched && !scr->flags.startup) {
-    CFStringRef key = CFStringCreateWithCString(kCFAllocatorDefault, "WorkspaceBack",
-                                                kCFStringEncodingUTF8);
-
-    WMRemoveFromPLDictionary(w_global.domain.wmaker->dictionary, key);
-
-    WMReleasePropList(key);
-  }
-#endif
   return True;
 }
 
