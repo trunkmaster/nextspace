@@ -637,28 +637,30 @@ void _updateApplicationIcons(WScreen *scr)
 }
 
 // are placed in /usr/NextSpace/Apps/Workspace.app/Resources/WM
-/* static CFPropertyListRef _readGlobalDomain(const char *domainName) */
-/* { */
-/*   CFPropertyListRef globalDict = NULL; */
-/*   CFStringRef path; */
-/*   struct stat stbuf; */
+static CFPropertyListRef _readSystemDomain(const char *domainName)
+{
+  CFPropertyListRef systemDict = NULL;
+  CFStringRef path, domain;
 
-/*   /\* SYSCONFDIR specified in WM/config-paths.h *\/ */
-/*   path = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/%s"), SYSCONFDIR, domainName); */
-/*   if (stat(WMUserDefaultsGetCString(path, CFStringGetSystemEncoding()), &stbuf) >= 0) { */
-/*     globalDict = WMUserDefaultsFromFile(path); */
-/*     if (globalDict && (CFGetTypeID(globalDict) != CFDictionaryGetTypeID())) { */
-/*       wwarning(_("Domain %s (%s) of global defaults database is corrupted!"), */
-/*                domainName, WMUserDefaultsGetCString(path, CFStringGetSystemEncoding())); */
-/*       CFRelease(globalDict); */
-/*     } else if (!globalDict) { */
-/*       wwarning(_("could not load domain %s from global defaults database"), domainName); */
-/*     } */
-/*   } */
-/*   CFRelease(path); */
+  /* SYSCONFDIR specified in WM.h */
+  path = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/%s"), SYSCONFDIR, domainName);
+  domain = CFStringCreateWithCString(kCFAllocatorDefault, domainName, kCFStringEncodingUTF8);
+  if (WMUserDefaultsFileExists(domain, 0)) {
+    systemDict = WMUserDefaultsReadFromFile(path);
+    if (systemDict && (CFGetTypeID(systemDict) != CFDictionaryGetTypeID())) {
+      wwarning(_("Domain %s (%s) of global defaults database is corrupted!"),
+               domainName, WMUserDefaultsGetCString(path, kCFStringEncodingUTF8));
+      CFRelease(systemDict);
+    }
+    else if (!systemDict) {
+      wwarning(_("could not load domain %s from system defaults database"), domainName);
+    }
+  }
+  CFRelease(path);
+  CFRelease(domain);
 
-/*   return globalDict; */
-/* } */
+  return systemDict;
+}
 
 // Called from startup.c
 WDDomain *wDefaultsInitDomain(const char *domain)

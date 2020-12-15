@@ -156,39 +156,13 @@ CFAbsoluteTime WMUserDefaultsFileModificationTime(CFStringRef domainName,
   return time;
 }
 
-CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName)
+CFPropertyListRef WMUserDefaultsReadFromFile(CFURLRef fileURL)
 {
-  CFURLRef fileURL = NULL;
-  CFURLRef osURL = NULL;
-  CFURLRef xmlURL = NULL;
   CFReadStreamRef readStream = NULL;
   CFErrorRef plError = NULL;
   CFPropertyListRef pl = NULL;
-
-  osURL = WMUserDefaultsCopyURLForDomain(domainName);
   
-  if (WMUserDefaultsFileExists(domainName, kCFPropertyListXMLFormat_v1_0) > 0.0) {
-    // Read XML format .plist file
-    /* CFLog(kCFLogLevelError, CFSTR("%s (%s) Trying to use XML file for domain %@..."), */
-    /*       __FILE__, __FUNCTION__, domainName); */
-    xmlURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
-    readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, xmlURL);
-    fileURL = xmlURL;
-  }
-  else if (WMUserDefaultsFileExists(domainName, kCFPropertyListOpenStepFormat) > 0.0) {
-    // Read OpenStep format (file without .plist extension)
-    /* CFLog(kCFLogLevelError, */
-    /*       CFSTR("%s (%s) XML file for domain %s is not found. Trying to use OpenStep..."), */
-    /*       __FILE__, __FUNCTION__, CFURLCopyLastPathComponent(osURL)); */
-    readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, osURL);
-    fileURL = osURL;
-  }
-  else {
-    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) no files exist to read for domain %@"),
-          __FILE__, __FUNCTION__, __LINE__, domainName);
-    CFRelease(osURL);
-  }
-
+  readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, fileURL);
   if (readStream) {
     CFReadStreamOpen(readStream);
     pl = CFPropertyListCreateWithStream(kCFAllocatorDefault, readStream, 0,
@@ -207,8 +181,63 @@ CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName)
           __FILE__, __FUNCTION__, __LINE__, fileURL, plError);
   }
 
+  return pl;
+}
+  
+CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName)
+{
+  CFURLRef fileURL = NULL;
+  CFURLRef osURL = NULL;
+  /* CFURLRef xmlURL = NULL; */
+  /* CFReadStreamRef readStream = NULL; */
+  /* CFErrorRef plError = NULL; */
+  CFPropertyListRef pl = NULL;
+
+  osURL = WMUserDefaultsCopyURLForDomain(domainName);
+  
+  if (WMUserDefaultsFileExists(domainName, kCFPropertyListXMLFormat_v1_0) > 0.0) {
+    // Read XML format .plist file
+    fileURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
+    /* readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, xmlURL); */
+    /* fileURL = xmlURL; */
+  }
+  else if (WMUserDefaultsFileExists(domainName, kCFPropertyListOpenStepFormat) > 0.0) {
+    // Read OpenStep format (file without .plist extension)
+    /* readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, osURL); */
+    fileURL = osURL;
+    CFRetain(osURL);
+  }
+  else {
+    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) no files exist to read for domain %@"),
+          __FILE__, __FUNCTION__, __LINE__, domainName);
+  }
+
+  if (fileURL) {
+    pl = WMUserDefaultsReadFromFile(fileURL);
+    CFRelease(fileURL);
+  }
   CFRelease(osURL);
-  if (xmlURL) CFRelease(xmlURL);
+  
+  /* if (readStream) { */
+  /*   CFReadStreamOpen(readStream); */
+  /*   pl = CFPropertyListCreateWithStream(kCFAllocatorDefault, readStream, 0, */
+  /*                                       kCFPropertyListMutableContainersAndLeaves, */
+  /*                                       NULL, &plError); */
+  /*   CFReadStreamClose(readStream); */
+  /*   CFRelease(readStream); */
+  /* } */
+  /* else { */
+  /*   CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) cannot open READ stream to %@"), */
+  /*         __FILE__, __FUNCTION__, __LINE__, fileURL); */
+  /* } */
+  
+  /* if (plError > 0) { */
+  /*   CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) Failed to read user defaults from %@ (Error: %i)"), */
+  /*         __FILE__, __FUNCTION__, __LINE__, fileURL, plError); */
+  /* } */
+
+  /* CFRelease(osURL); */
+  /* if (xmlURL) CFRelease(xmlURL); */
   
   return pl;
 }
