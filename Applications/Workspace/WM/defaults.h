@@ -35,7 +35,7 @@ typedef struct WDDomain {
 
 WDDomain *wDefaultsInitDomain(const char *domain);
 
-void wDefaultsReadStatic(CFDictionaryRef dict);
+void wDefaultsReadStatic(CFMutableDictionaryRef dict);
 void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict);
 
 void wDefaultsCheckDomains(void *arg);

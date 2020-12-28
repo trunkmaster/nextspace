@@ -47,6 +47,7 @@
 
 #include <WMcore/util.h>
 
+#include <WINGs/wuserdefaults.h>
 #include <WINGs/wevent.h>
 
 #include "WM.h"
@@ -544,12 +545,15 @@ void StartUp(Bool defaultScreenOnly)
   /* read defaults that don't change until a restart and are
    * screen independent */
   wDefaultsReadStatic(w_global.domain.wmaker ? w_global.domain.wmaker->dictionary : NULL);
+  if (w_global.domain.wmaker) {
+    WMUserDefaultsSynchronize(w_global.domain.wmaker);
+  }
 
   /* check sanity of some values */
-  if (wPreferences.icon_size < 16) {
+  if (wPreferences.icon_size < 64) {
     wwarning(_("icon size is configured to %i, but it's too small. Using 16 instead"),
              wPreferences.icon_size);
-    wPreferences.icon_size = 16;
+    wPreferences.icon_size = 64;
   }
 
   /* init other domains */

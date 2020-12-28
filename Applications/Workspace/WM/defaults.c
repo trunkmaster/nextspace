@@ -350,49 +350,31 @@ WDefaultEntry staticOptionList[] = {
 WDefaultEntry optionList[] = {
   {"IconPosition", "blh", seIconPositions, &wPreferences.icon_yard, getEnum, setIconPosition, NULL, NULL},
   {"IconificationStyle", "Zoom", seIconificationStyles, &wPreferences.iconification_style, getEnum, NULL, NULL, NULL},
-  {"DisableWSMouseActions", "NO", NULL, &wPreferences.disable_root_mouse, getBool, NULL, NULL, NULL},
-  {"MouseLeftButtonAction", "SelectWindows", seMouseButtonActions, &wPreferences.mouse_button1, getEnum, NULL, NULL, NULL},
-  {"MouseMiddleButtonAction", "OpenWindowListMenu", seMouseButtonActions, &wPreferences.mouse_button2, getEnum, NULL, NULL, NULL},
-  {"MouseRightButtonAction", "OpenApplicationsMenu", seMouseButtonActions, &wPreferences.mouse_button3, getEnum, NULL, NULL, NULL},
-  {"MouseBackwardButtonAction", "None", seMouseButtonActions, &wPreferences.mouse_button8, getEnum, NULL, NULL, NULL},
-  {"MouseForwardButtonAction", "None", seMouseButtonActions, &wPreferences.mouse_button9, getEnum, NULL, NULL, NULL},
-  {"MouseWheelAction", "None", seMouseWheelActions, &wPreferences.mouse_wheel_scroll, getEnum, NULL, NULL, NULL},
-  {"MouseWheelTiltAction", "None", seMouseWheelActions, &wPreferences.mouse_wheel_tilt, getEnum, NULL, NULL, NULL},
   {"PixmapPath", DEF_PIXMAP_PATHS, NULL, &wPreferences.pixmap_path, getPathList, NULL, NULL, NULL},
   {"IconPath", DEF_ICON_PATHS, NULL, &wPreferences.icon_path, getPathList, NULL, NULL, NULL},
   {"ColormapMode", "auto", seColormapModes, &wPreferences.colormap_mode, getEnum, NULL, NULL, NULL},
-  {"AutoFocus", "NO", NULL, &wPreferences.auto_focus, getBool, NULL, NULL, NULL},
+  {"AutoFocus", "YES", NULL, &wPreferences.auto_focus, getBool, NULL, NULL, NULL},
   {"RaiseDelay", "0", NULL, &wPreferences.raise_delay, getInt, NULL, NULL, NULL},
-  {"CirculateRaise", "NO", NULL, &wPreferences.circ_raise, getBool, NULL, NULL, NULL},
-  {"Superfluous", "NO", NULL, &wPreferences.superfluous, getBool, NULL, NULL, NULL},
-  {"AdvanceToNewWorkspace", "NO", NULL, &wPreferences.ws_advance, getBool, NULL, NULL, NULL},
-  {"CycleWorkspaces", "NO", NULL, &wPreferences.ws_cycle, getBool, NULL, NULL, NULL},
-  {"WorkspaceNameDisplayPosition", "center", seDisplayPositions, &wPreferences.workspace_name_display_position, getEnum, NULL, NULL, NULL},
-  {"WorkspaceBorder", "None", seWorkspaceBorder, &wPreferences.workspace_border_position, getEnum, updateUsableArea, NULL, NULL},
-  {"WorkspaceBorderSize", "0", NULL, &wPreferences.workspace_border_size, getInt, updateUsableArea, NULL, NULL},
-  {"StickyIcons", "NO", NULL, &wPreferences.sticky_icons, getBool, setStickyIcons, NULL, NULL},
+  {"CirculateRaise", "YES", NULL, &wPreferences.circ_raise, getBool, NULL, NULL, NULL},
+  {"Superfluous", "YES", NULL, &wPreferences.superfluous, getBool, NULL, NULL, NULL},
+  {"StickyIcons", "YES", NULL, &wPreferences.sticky_icons, getBool, setStickyIcons, NULL, NULL},
   {"SaveSessionOnExit", "NO", NULL, &wPreferences.save_session_on_exit, getBool, NULL, NULL, NULL},
   {"WrapMenus", "NO", NULL, &wPreferences.wrap_menus, getBool, NULL, NULL, NULL},
   {"ScrollableMenus", "NO", NULL, &wPreferences.scrollable_menus, getBool, NULL, NULL, NULL},
   {"MenuScrollSpeed", "medium", seSpeeds, &wPreferences.menu_scroll_speed, getEnum, NULL, NULL, NULL},
   {"IconSlideSpeed", "medium", seSpeeds, &wPreferences.icon_slide_speed, getEnum, NULL, NULL, NULL},
-  {"ShadeSpeed", "medium", seSpeeds, &wPreferences.shade_speed, getEnum, NULL, NULL, NULL},
-  {"BounceAppIconsWhenUrgent", "YES", NULL, &wPreferences.bounce_appicons_when_urgent, getBool, NULL, NULL, NULL},
-  {"RaiseAppIconsWhenBouncing", "NO", NULL, &wPreferences.raise_appicons_when_bouncing, getBool, NULL, NULL, NULL},
-  {"DoNotMakeAppIconsBounce", "NO", NULL, &wPreferences.do_not_make_appicons_bounce, getBool, NULL, NULL, NULL},
-  {"DoubleClickTime", "250", (void *)&wPreferences.dblclick_time, &wPreferences.dblclick_time, getInt, setDoubleClick, NULL, NULL},
   {"ClipAutoraiseDelay", "600", NULL, &wPreferences.clip_auto_raise_delay, getInt, NULL, NULL, NULL},
   {"ClipAutolowerDelay", "1000", NULL, &wPreferences.clip_auto_lower_delay, getInt, NULL, NULL, NULL},
   {"ClipAutoexpandDelay", "600", NULL, &wPreferences.clip_auto_expand_delay, getInt, NULL, NULL, NULL},
   {"ClipAutocollapseDelay", "1000", NULL, &wPreferences.clip_auto_collapse_delay, getInt, NULL, NULL, NULL},
-  {"WrapAppiconsInDock", "YES", NULL, NULL, getBool, setWrapAppiconsInDock, NULL, NULL},
-  {"AlignSubmenus", "NO", NULL, &wPreferences.align_menus, getBool, NULL, NULL, NULL},
+  {"WrapAppiconsInDock", "NO", NULL, NULL, getBool, setWrapAppiconsInDock, NULL, NULL},
+  {"AlignSubmenus", "YES", NULL, &wPreferences.align_menus, getBool, NULL, NULL, NULL},
   {"ViKeyMenus", "NO", NULL, &wPreferences.vi_key_menus, getBool, NULL, NULL, NULL},
-  {"OpenTransientOnOwnerWorkspace", "NO", NULL, &wPreferences.open_transients_with_parent, getBool, NULL, NULL, NULL},
-  {"WindowPlacement", "auto", sePlacements, &wPreferences.window_placement, getEnum, NULL, NULL, NULL},
+  {"OpenTransientOnOwnerWorkspace", "YES", NULL, &wPreferences.open_transients_with_parent, getBool, NULL, NULL, NULL},
+  {"WindowPlacement", "cascade", sePlacements, &wPreferences.window_placement, getEnum, NULL, NULL, NULL},
   {"IgnoreFocusClick", "NO", NULL, &wPreferences.ignore_focus_click, getBool, NULL, NULL, NULL},
   {"UseSaveUnders", "NO", NULL, &wPreferences.use_saveunders, getBool, NULL, NULL, NULL},
-  {"OpaqueMove", "NO", NULL, &wPreferences.opaque_move, getBool, NULL, NULL, NULL},
+  {"OpaqueMove", "YES", NULL, &wPreferences.opaque_move, getBool, NULL, NULL, NULL},
   {"OpaqueResize", "NO", NULL, &wPreferences.opaque_resize, getBool, NULL, NULL, NULL},
   {"OpaqueMoveResizeKeyboard", "NO", NULL, &wPreferences.opaque_move_resize_keyboard, getBool, NULL, NULL, NULL},
   {"DisableAnimations", "NO", NULL, &wPreferences.no_animations, getBool, NULL, NULL, NULL},
@@ -402,14 +384,14 @@ WDefaultEntry optionList[] = {
   {"SnapCornerDetect", "10", NULL, &wPreferences.snap_corner_detect, getInt, NULL, NULL, NULL},
   {"DragMaximizedWindow", "Move", seDragMaximizedWindow, &wPreferences.drag_maximized_window, getEnum, NULL, NULL, NULL},
   {"AutoArrangeIcons", "NO", NULL, &wPreferences.auto_arrange_icons, getBool, NULL, NULL, NULL},
-  {"NoWindowOverDock", "NO", NULL, &wPreferences.no_window_over_dock, getBool, updateUsableArea, NULL, NULL},
-  {"NoWindowOverIcons", "NO", NULL, &wPreferences.no_window_over_icons, getBool, updateUsableArea, NULL, NULL},
-  {"WindowPlaceOrigin", "(0, 0)", NULL, &wPreferences.window_place_origin, getCoord, NULL, NULL, NULL},
+  {"NoWindowOverDock", "YES", NULL, &wPreferences.no_window_over_dock, getBool, updateUsableArea, NULL, NULL},
+  {"NoWindowOverIcons", "YES", NULL, &wPreferences.no_window_over_icons, getBool, updateUsableArea, NULL, NULL},
+  {"WindowPlaceOrigin", "(100, 100)", NULL, &wPreferences.window_place_origin, getCoord, NULL, NULL, NULL},
   {"ResizeDisplay", "titlebar", seGeomDisplays, &wPreferences.size_display, getEnum, NULL, NULL, NULL},
   {"MoveDisplay", "titlebar", seGeomDisplays, &wPreferences.move_display, getEnum, NULL, NULL, NULL},
   {"DontConfirmKill", "NO", NULL, &wPreferences.dont_confirm_kill, getBool, NULL, NULL, NULL},
   {"WindowTitleBalloons", "NO", NULL, &wPreferences.window_balloon, getBool, NULL, NULL, NULL},
-  {"MiniwindowTitleBalloons", "NO", NULL, &wPreferences.miniwin_title_balloon, getBool, NULL, NULL, NULL},
+  {"MiniwindowTitleBalloons", "YES", NULL, &wPreferences.miniwin_title_balloon, getBool, NULL, NULL, NULL},
   {"MiniwindowPreviewBalloons", "NO", NULL, &wPreferences.miniwin_preview_balloon, getBool, NULL, NULL, NULL},
   {"AppIconBalloons", "NO", NULL, &wPreferences.appicon_balloon, getBool, NULL, NULL, NULL},
   {"HelpBalloons", "NO", NULL, &wPreferences.help_balloon, getBool, NULL, NULL, NULL},
@@ -423,26 +405,56 @@ WDefaultEntry optionList[] = {
   {"MiniPreviewSize", "128", NULL, &wPreferences.minipreview_size, getInt, NULL, NULL, NULL},
   {"IgnoreGtkHints", "NO", NULL, &wPreferences.ignore_gtk_decoration_hints, getBool, NULL, NULL, NULL},
 
-  /* style options */
+  /* --- Mouse options --- */
+  
+  {"DoubleClickTime", "350", (void *)&wPreferences.dblclick_time, &wPreferences.dblclick_time, getInt, setDoubleClick, NULL, NULL},
+  {"DisableWSMouseActions", "NO", NULL, &wPreferences.disable_root_mouse, getBool, NULL, NULL, NULL},
+  {"MouseLeftButtonAction", "SelectWindows", seMouseButtonActions, &wPreferences.mouse_button1, getEnum, NULL, NULL, NULL},
+  {"MouseMiddleButtonAction", "OpenWindowListMenu", seMouseButtonActions, &wPreferences.mouse_button2, getEnum, NULL, NULL, NULL},
+  {"MouseRightButtonAction", "OpenApplicationsMenu", seMouseButtonActions, &wPreferences.mouse_button3, getEnum, NULL, NULL, NULL},
+  {"MouseBackwardButtonAction", "None", seMouseButtonActions, &wPreferences.mouse_button8, getEnum, NULL, NULL, NULL},
+  {"MouseForwardButtonAction", "None", seMouseButtonActions, &wPreferences.mouse_button9, getEnum, NULL, NULL, NULL},
+  {"MouseWheelAction", "None", seMouseWheelActions, &wPreferences.mouse_wheel_scroll, getEnum, NULL, NULL, NULL},
+  {"MouseWheelTiltAction", "None", seMouseWheelActions, &wPreferences.mouse_wheel_tilt, getEnum, NULL, NULL, NULL},
+
+  /* --- Workspaces --- */
+  
+  {"AdvanceToNewWorkspace", "NO", NULL, &wPreferences.ws_advance, getBool, NULL, NULL, NULL},
+  {"CycleWorkspaces", "NO", NULL, &wPreferences.ws_cycle, getBool, NULL, NULL, NULL},
+  {"WorkspaceNameDisplayPosition", "center", seDisplayPositions, &wPreferences.workspace_name_display_position, getEnum, NULL, NULL, NULL},
+  {"WorkspaceBorder", "AllDirections", seWorkspaceBorder, &wPreferences.workspace_border_position, getEnum, updateUsableArea, NULL, NULL},
+  {"WorkspaceBorderSize", "0", NULL, &wPreferences.workspace_border_size, getInt, updateUsableArea, NULL, NULL},
+
+
+  /* --- Animations --- */
+
+  {"ShadeSpeed", "medium", seSpeeds, &wPreferences.shade_speed, getEnum, NULL, NULL, NULL},
+  {"BounceAppIconsWhenUrgent", "YES", NULL, &wPreferences.bounce_appicons_when_urgent, getBool, NULL, NULL, NULL},
+  {"RaiseAppIconsWhenBouncing", "NO", NULL, &wPreferences.raise_appicons_when_bouncing, getBool, NULL, NULL, NULL},
+  {"DoNotMakeAppIconsBounce", "YES", NULL, &wPreferences.do_not_make_appicons_bounce, getBool, NULL, NULL, NULL},
+  
+  /* --- Options need to ged rid of or fix --- */
+
+  /* --- Style options --- */
 
   {"MenuStyle", "normal", seMenuStyles, &wPreferences.menu_style, getEnum, setMenuStyle, NULL, NULL},
-  {"WidgetColor", "(solid, gray)", NULL, NULL, getTexture, setWidgetColor, NULL, NULL},
+  {"WidgetColor", "(solid, \"#aaaaaa\")", NULL, NULL, getTexture, setWidgetColor, NULL, NULL},
   {"WorkspaceSpecificBack", "()", NULL, NULL, getWSSpecificBackground, setWorkspaceSpecificBack, NULL, NULL},
   /* WorkspaceBack must come after WorkspaceSpecificBack or
    * WorkspaceBack wont know WorkspaceSpecificBack was also
    * specified and 2 copies of wmsetbg will be launched */
-  {"WorkspaceBack", "()", NULL, NULL, getWSBackground, setWorkspaceBack, NULL, NULL},
+  {"WorkspaceBack", "(solid, \"#535374\")", NULL, NULL, getWSBackground, setWorkspaceBack, NULL, NULL},
   {"SmoothWorkspaceBack", "NO", NULL, NULL, getBool, NULL, NULL, NULL},
-  {"IconBack", "(solid, gray)", NULL, NULL, getTexture, setIconTile, NULL, NULL},
-  {"MiniwindowBack", "(solid, gray)", NULL, NULL, getTexture, setMiniwindowTile, NULL, NULL}, /* NEXTSPACE */
+  {"IconBack", "(\"tpixmap\", \"/Library/Images/common_Tile.tiff\", \"#000000\")", NULL, NULL, getTexture, setIconTile, NULL, NULL},
+  {"MiniwindowBack", "(\"tpixmap\", \"/Library/Images/common_MiniWindowTile.tiff\", \"#000000\")", NULL, NULL, getTexture, setMiniwindowTile, NULL, NULL}, /* NEXTSPACE */
   {"TitleJustify", "center", seJustifications, &wPreferences.title_justification, getEnum, setJustify, NULL, NULL},
   {"WindowTitleFont", DEF_TITLE_FONT, NULL, NULL, getFont, setWinTitleFont, NULL, NULL},
   {"WindowTitleExtendSpace", DEF_WINDOW_TITLE_EXTEND_SPACE, NULL, &wPreferences.window_title_clearance, getInt, setClearance, NULL, NULL},
-  {"WindowTitleMinHeight", "0", NULL, &wPreferences.window_title_min_height, getInt, setClearance, NULL, NULL},
-  {"WindowTitleMaxHeight", NUM2STRING(INT_MAX), NULL, &wPreferences.window_title_max_height, getInt, setClearance, NULL, NULL},
+  {"WindowTitleMinHeight", "22", NULL, &wPreferences.window_title_min_height, getInt, setClearance, NULL, NULL},
+  {"WindowTitleMaxHeight", "22", NULL, &wPreferences.window_title_max_height, getInt, setClearance, NULL, NULL},
   {"MenuTitleExtendSpace", DEF_MENU_TITLE_EXTEND_SPACE, NULL, &wPreferences.menu_title_clearance, getInt, setClearance, NULL, NULL},
-  {"MenuTitleMinHeight", "0", NULL, &wPreferences.menu_title_min_height, getInt, setClearance, NULL, NULL},
-  {"MenuTitleMaxHeight", NUM2STRING(INT_MAX), NULL, &wPreferences.menu_title_max_height, getInt, setClearance, NULL, NULL},
+  {"MenuTitleMinHeight", "22", NULL, &wPreferences.menu_title_min_height, getInt, setClearance, NULL, NULL},
+  {"MenuTitleMaxHeight", "22", NULL, &wPreferences.menu_title_max_height, getInt, setClearance, NULL, NULL},
   {"MenuTextExtendSpace", DEF_MENU_TEXT_EXTEND_SPACE, NULL, &wPreferences.menu_text_clearance, getInt, setClearance, NULL, NULL},
   {"MenuTitleFont", DEF_MENU_TITLE_FONT, NULL, NULL, getFont, setMenuTitleFont, NULL, NULL},
   {"MenuTextFont", DEF_MENU_ENTRY_FONT, NULL, NULL, getFont, setMenuTextFont, NULL, NULL},
@@ -458,14 +470,14 @@ WDefaultEntry optionList[] = {
   {"PTitleColor", "white", (void *)WS_PFOCUSED, NULL, getColor, setWTitleColor, NULL, NULL},
   {"UTitleColor", "black", (void *)WS_UNFOCUSED, NULL, getColor, setWTitleColor, NULL, NULL},
   {"FTitleBack", "(solid, black)", NULL, NULL, getTexture, setFTitleBack, NULL, NULL},
-  {"PTitleBack", "(solid, \"#616161\")", NULL, NULL, getTexture, setPTitleBack, NULL, NULL},
-  {"UTitleBack", "(solid, gray)", NULL, NULL, getTexture, setUTitleBack, NULL, NULL},
-  {"ResizebarBack", "(solid, gray)", NULL, NULL, getTexture, setResizebarBack, NULL, NULL},
+  {"PTitleBack", "(solid, \"#555555\")", NULL, NULL, getTexture, setPTitleBack, NULL, NULL},
+  {"UTitleBack", "(solid, \"#aaaaaa\")", NULL, NULL, getTexture, setUTitleBack, NULL, NULL},
+  {"ResizebarBack", "(solid, \"#aaaaaa\")", NULL, NULL, getTexture, setResizebarBack, NULL, NULL},
   {"MenuTitleColor", "white", NULL, NULL, getColor, setMenuTitleColor, NULL, NULL},
   {"MenuTextColor", "black", NULL, NULL, getColor, setMenuTextColor, NULL, NULL},
-  {"MenuDisabledColor", "\"#616161\"", NULL, NULL, getColor, setMenuDisabledColor, NULL, NULL},
+  {"MenuDisabledColor", "\"#555555\"", NULL, NULL, getColor, setMenuDisabledColor, NULL, NULL},
   {"MenuTitleBack", "(solid, black)", NULL, NULL, getTexture, setMenuTitleBack, NULL, NULL},
-  {"MenuTextBack", "(solid, gray)", NULL, NULL, getTexture, setMenuTextBack, NULL, NULL},
+  {"MenuTextBack", "(solid, \"#aaaaaa\")", NULL, NULL, getTexture, setMenuTextBack, NULL, NULL},
   {"IconTitleColor", "white", NULL, NULL, getColor, setIconTitleColor, NULL, NULL},
   {"IconTitleBack", "black", NULL, NULL, getColor, setIconTitleBack, NULL, NULL},
   {"SwitchPanelImages", "(swtile.png, swback.png, 30, 40)", &wPreferences, NULL, getPropList, setSwPOptions, NULL, NULL},
@@ -476,44 +488,50 @@ WDefaultEntry optionList[] = {
   {"FrameSelectedBorderColor", "white", NULL, NULL, getColor, setFrameSelectedBorderColor, NULL, NULL},
   {"WorkspaceMapBack", "(solid, black)", NULL, NULL, getTexture, setWorkspaceMapBackground, NULL, NULL},
 
-  /* keybindings */
-
+  /* --- Key bindings --- */
+  
   {"WindowListKey", "None", (void *)WKBD_WINDOWLIST, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"WindowMenuKey", "None", (void *)WKBD_WINDOWMENU, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"DockRaiseLowerKey", "None", (void*)WKBD_DOCKRAISELOWER, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"DockHideShowKey", "None", (void*)WKBD_DOCKHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL}, /* NEXTSPACE */
-  {"IconYardHideShowKey", "None", (void*)WKBD_YARDHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL},  /* NEXTSPACE */
-  {"ClipRaiseLowerKey", "None", (void *)WKBD_CLIPRAISELOWER, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"MiniaturizeKey", "None", (void *)WKBD_MINIATURIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"MinimizeAllKey", "None", (void *)WKBD_MINIMIZEALL, NULL, getKeybind, setKeyGrab, NULL, NULL },
-  {"HideKey", "None", (void *)WKBD_HIDE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"HideOthersKey", "None", (void *)WKBD_HIDE_OTHERS, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  /* Dock and Icon Yard */
+  {"DockHideShowKey", "\"Mod4+Shift+D\"", (void*)WKBD_DOCKHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL}, /* NEXTSPACE */
+  {"IconYardHideShowKey", "\"Mod4+Shift+Y\"", (void*)WKBD_YARDHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL},  /* NEXTSPACE */
+  /* Window Resizing */
   {"MoveResizeKey", "None", (void *)WKBD_MOVERESIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"MaximusKey", "\"Mod4+KP_5\"", (void*)WKBD_MAXIMUS, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"ShadeKey", "\"Mod4+KP_Subtract\"", (void *)WKBD_SHADE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"MaximizeKey", "\"Mod4+KP_Add\"", (void *)WKBD_MAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"VMaximizeKey", "\"Mod4+Up\"", (void *)WKBD_VMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"HMaximizeKey", "\"Mod4+Right\"", (void *)WKBD_HMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"LHMaximizeKey", "\"Mod4+KP_4\"", (void*)WKBD_LHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"RHMaximizeKey", "\"Mod4+KP_6\"", (void*)WKBD_RHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"THMaximizeKey", "\"Mod4+KP_8\"", (void*)WKBD_THMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"BHMaximizeKey", "\"Mod4+KP_2\"", (void*)WKBD_BHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"LTCMaximizeKey", "\"Mod4+KP_7\"", (void*)WKBD_LTCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"RTCMaximizeKey", "\"Mod4+KP_9\"", (void*)WKBD_RTCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"LBCMaximizeKey", "\"Mod4+KP_1\"", (void*)WKBD_LBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"RBCMaximizeKey", "\"Mod4+KP_3\"", (void*)WKBD_RBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  /* Window Ordering */
   {"CloseKey", "None", (void *)WKBD_CLOSE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"MaximizeKey", "None", (void *)WKBD_MAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"VMaximizeKey", "None", (void *)WKBD_VMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"HMaximizeKey", "None", (void *)WKBD_HMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"LHMaximizeKey", "None", (void*)WKBD_LHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"RHMaximizeKey", "None", (void*)WKBD_RHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"THMaximizeKey", "None", (void*)WKBD_THMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"BHMaximizeKey", "None", (void*)WKBD_BHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"LTCMaximizeKey", "None", (void*)WKBD_LTCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"RTCMaximizeKey", "None", (void*)WKBD_RTCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"LBCMaximizeKey", "None", (void*)WKBD_LBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"RBCMaximizeKey", "None", (void*)WKBD_RBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"MaximusKey", "None", (void*)WKBD_MAXIMUS, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"HideKey", "\"Mod1+h\"", (void *)WKBD_HIDE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"HideOthersKey", "\"Mod1+Shift+h\"", (void *)WKBD_HIDE_OTHERS, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"MiniaturizeKey", "\"Mod1+m\"", (void *)WKBD_MINIATURIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"MinimizeAllKey", "\"Mod1+Shift+m\"", (void *)WKBD_MINIMIZEALL, NULL, getKeybind, setKeyGrab, NULL, NULL },
+  /* Focus switch */
   {"OmnipresentKey", "None", (void *)WKBD_OMNIPRESENT, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"RaiseKey", "\"Meta+Up\"", (void *)WKBD_RAISE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"LowerKey", "\"Meta+Down\"", (void *)WKBD_LOWER, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"RaiseLowerKey", "None", (void *)WKBD_RAISELOWER, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"ShadeKey", "None", (void *)WKBD_SHADE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"ClipRaiseLowerKey", "None", (void *)WKBD_CLIPRAISELOWER, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"DockRaiseLowerKey", "None", (void*)WKBD_DOCKRAISELOWER, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"RaiseKey", "\"Mod1+Up\"", (void *)WKBD_RAISE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"LowerKey", "\"Mod1+Down\"", (void *)WKBD_LOWER, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"FocusNextKey", "\"Mod1+Tab\"", (void *)WKBD_FOCUSNEXT, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"FocusPrevKey", "\"Mod1+Shift+Tab\"", (void *)WKBD_FOCUSPREV, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"GroupNextKey", "\"Mod1+grave\"", (void *)WKBD_GROUPNEXT, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"GroupPrevKey", "\"Mod1+Shift+grave\"", (void *)WKBD_GROUPPREV, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  /* Workspaces */
+  {"NextWorkspaceKey", "\"Control+Right\"", (void *)WKBD_NEXTWORKSPACE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"PrevWorkspaceKey", "\"Control+Left\"", (void *)WKBD_PREVWORKSPACE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  
   {"SelectKey", "None", (void *)WKBD_SELECT, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"FocusNextKey", "None", (void *)WKBD_FOCUSNEXT, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"FocusPrevKey", "None", (void *)WKBD_FOCUSPREV, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"GroupNextKey", "None", (void *)WKBD_GROUPNEXT, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"GroupPrevKey", "None", (void *)WKBD_GROUPPREV, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"NextWorkspaceKey", "None", (void *)WKBD_NEXTWORKSPACE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"PrevWorkspaceKey", "None", (void *)WKBD_PREVWORKSPACE, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"LastWorkspaceKey", "None", (void *)WKBD_LASTWORKSPACE, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"NextWorkspaceLayerKey", "None", (void *)WKBD_NEXTWSLAYER, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"PrevWorkspaceLayerKey", "None", (void *)WKBD_PREVWSLAYER, NULL, getKeybind, setKeyGrab, NULL, NULL},
@@ -557,27 +575,29 @@ WDefaultEntry optionList[] = {
 
 #ifdef KEEP_XKB_LOCK_STATUS
   {"ToggleKbdModeKey", "None", (void *)WKBD_TOGGLE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"KbdModeLock", "NO", NULL, &wPreferences.modelock, getBool, NULL, NULL, NULL},
+  {"KbdModeLock", "YES", NULL, &wPreferences.modelock, getBool, NULL, NULL, NULL},
 #endif				/* KEEP_XKB_LOCK_STATUS */
 
+  /* --- Mouse cursors --- */
+  
   {"NormalCursor", "(builtin, left_ptr)", (void *)WCUR_ROOT, NULL, getCursor, setCursor, NULL, NULL},
   {"ArrowCursor", "(builtin, left_ptr)", (void *)WCUR_ARROW, NULL, getCursor, setCursor, NULL, NULL},
-  {"MoveCursor", "(builtin, fleur)", (void *)WCUR_MOVE, NULL, getCursor, setCursor, NULL, NULL},
   {"ResizeCursor", "(builtin, sizing)", (void *)WCUR_RESIZE, NULL, getCursor, setCursor, NULL, NULL},
-  {"TopLeftResizeCursor", "(builtin, top_left_corner)", (void *)WCUR_TOPLEFTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
-  {"TopRightResizeCursor", "(builtin, top_right_corner)", (void *)WCUR_TOPRIGHTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
-  {"BottomLeftResizeCursor", "(builtin, bottom_left_corner)", (void *)WCUR_BOTTOMLEFTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
-  {"BottomRightResizeCursor", "(builtin, bottom_right_corner)", (void *)WCUR_BOTTOMRIGHTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
-  {"VerticalResizeCursor", "(builtin, sb_v_double_arrow)", (void *)WCUR_VERTICALRESIZE, NULL, getCursor, setCursor, NULL, NULL},
-  {"HorizontalResizeCursor", "(builtin, sb_h_double_arrow)", (void *)WCUR_HORIZONRESIZE, NULL, getCursor, setCursor, NULL, NULL},
-  {"UpResizeCursor", "(builtin, sb_up_arrow)", (void *)WCUR_UPRESIZE, NULL, getCursor, setCursor, NULL, NULL},
-  {"DownResizeCursor", "(builtin, sb_down_arrow)", (void *)WCUR_DOWNRESIZE, NULL, getCursor, setCursor, NULL, NULL},
-  {"LeftResizeCursor", "(builtin, sb_left_arrow)", (void *)WCUR_LEFTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
-  {"RightResizeCursor", "(builtin, sb_right_arrow)", (void *)WCUR_RIGHTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
   {"WaitCursor", "(builtin, watch)", (void *)WCUR_WAIT, NULL, getCursor, setCursor, NULL, NULL},
   {"QuestionCursor", "(builtin, question_arrow)", (void *)WCUR_QUESTION, NULL, getCursor, setCursor, NULL, NULL},
   {"TextCursor", "(builtin, xterm)", (void *)WCUR_TEXT, NULL, getCursor, setCursor, NULL, NULL},
-  {"SelectCursor", "(builtin, cross)", (void *)WCUR_SELECT, NULL, getCursor, setCursor, NULL, NULL},
+  {"SelectCursor", "(builtin, cross)", (void *)WCUR_SELECT, NULL, getCursor, setCursor, NULL, NULL},  
+  {"MoveCursor", "(library, move)", (void *)WCUR_MOVE, NULL, getCursor, setCursor, NULL, NULL},
+  {"TopLeftResizeCursor", "(library, bd_double_arrow)", (void *)WCUR_TOPLEFTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
+  {"TopRightResizeCursor", "(library, fd_double_arrow)", (void *)WCUR_TOPRIGHTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
+  {"BottomLeftResizeCursor", "(library, fd_double_arrow)", (void *)WCUR_BOTTOMLEFTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
+  {"BottomRightResizeCursor", "(library, bd_double_arrow)", (void *)WCUR_BOTTOMRIGHTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
+  {"VerticalResizeCursor", "(library, wm_v_double_arrow)", (void *)WCUR_VERTICALRESIZE, NULL, getCursor, setCursor, NULL, NULL},
+  {"HorizontalResizeCursor", "(library, wm_h_double_arrow)", (void *)WCUR_HORIZONRESIZE, NULL, getCursor, setCursor, NULL, NULL},
+  {"UpResizeCursor", "(library, wm_up_arrow)", (void *)WCUR_UPRESIZE, NULL, getCursor, setCursor, NULL, NULL},
+  {"DownResizeCursor", "(library, wm_down_arrow)", (void *)WCUR_DOWNRESIZE, NULL, getCursor, setCursor, NULL, NULL},
+  {"LeftResizeCursor", "(library, wm_left_arrow)", (void *)WCUR_LEFTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
+  {"RightResizeCursor", "(library, wm_right_arrow)", (void *)WCUR_RIGHTRESIZE, NULL, getCursor, setCursor, NULL, NULL},
   {"DialogHistoryLines", "500", NULL, &wPreferences.history_lines, getInt, NULL, NULL, NULL},
   {"CycleActiveHeadOnly", "NO", NULL, &wPreferences.cycle_active_head_only, getBool, NULL, NULL, NULL},
   {"CycleIgnoreMinimized", "NO", NULL, &wPreferences.cycle_ignore_minimized, getBool, NULL, NULL, NULL}
@@ -637,30 +657,30 @@ void _updateApplicationIcons(WScreen *scr)
 }
 
 // are placed in /usr/NextSpace/Apps/Workspace.app/Resources/WM
-static CFPropertyListRef _readSystemDomain(const char *domainName)
-{
-  CFPropertyListRef systemDict = NULL;
-  CFStringRef path, domain;
+/* static CFPropertyListRef _readSystemDomain(const char *domainName) */
+/* { */
+/*   CFPropertyListRef systemDict = NULL; */
+/*   CFStringRef path, domain; */
 
-  /* SYSCONFDIR specified in WM.h */
-  path = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/%s"), SYSCONFDIR, domainName);
-  domain = CFStringCreateWithCString(kCFAllocatorDefault, domainName, kCFStringEncodingUTF8);
-  if (WMUserDefaultsFileExists(domain, 0)) {
-    systemDict = WMUserDefaultsReadFromFile(path);
-    if (systemDict && (CFGetTypeID(systemDict) != CFDictionaryGetTypeID())) {
-      wwarning(_("Domain %s (%s) of global defaults database is corrupted!"),
-               domainName, WMUserDefaultsGetCString(path, kCFStringEncodingUTF8));
-      CFRelease(systemDict);
-    }
-    else if (!systemDict) {
-      wwarning(_("could not load domain %s from system defaults database"), domainName);
-    }
-  }
-  CFRelease(path);
-  CFRelease(domain);
+/*   /\* SYSCONFDIR specified in WM.h *\/ */
+/*   path = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/%s"), SYSCONFDIR, domainName); */
+/*   domain = CFStringCreateWithCString(kCFAllocatorDefault, domainName, kCFStringEncodingUTF8); */
+/*   if (WMUserDefaultsFileExists(domain, 0)) { */
+/*     systemDict = WMUserDefaultsReadFromFile(path); */
+/*     if (systemDict && (CFGetTypeID(systemDict) != CFDictionaryGetTypeID())) { */
+/*       wwarning(_("Domain %s (%s) of global defaults database is corrupted!"), */
+/*                domainName, WMUserDefaultsGetCString(path, kCFStringEncodingUTF8)); */
+/*       CFRelease(systemDict); */
+/*     } */
+/*     else if (!systemDict) { */
+/*       wwarning(_("could not load domain %s from system defaults database"), domainName); */
+/*     } */
+/*   } */
+/*   CFRelease(path); */
+/*   CFRelease(domain); */
 
-  return systemDict;
-}
+/*   return systemDict; */
+/* } */
 
 // Called from startup.c
 WDDomain *wDefaultsInitDomain(const char *domain)
@@ -718,7 +738,7 @@ WDDomain *wDefaultsInitDomain(const char *domain)
 
 // Called from startup.c
 // Apply `plvalue` from `dict` to appropriate `entry->addr` specified in `staticOptionList`
-void wDefaultsReadStatic(CFDictionaryRef dict)
+void wDefaultsReadStatic(CFMutableDictionaryRef dict)
 {
   CFTypeRef plvalue;
   WDefaultEntry *entry;
@@ -733,6 +753,12 @@ void wDefaultsReadStatic(CFDictionaryRef dict)
     else
       plvalue = NULL;
 
+    // No need to hold default value in dictionary
+    if (plvalue && CFEqual(plvalue, entry->plvalue)) {
+      plvalue = NULL;
+      CFDictionaryRemoveValue(dict, entry->plkey);
+    }
+    
     /* no default in the DB. Use builtin default */
     if (!plvalue)
       plvalue = entry->plvalue;
@@ -780,6 +806,7 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
     }
 
     // No need to hold default value in dictionary
+    CFLog(kCFLogLevelError, (CFSTR("Check if default exist: %@"), entry->plkey));
     if (plvalue && CFEqual(plvalue, entry->plvalue)) {
       plvalue = NULL;
       /* CFLog(kCFLogLevelError, (CFSTR("Removing setting equal to default: %@"), entry->plkey)); */

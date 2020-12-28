@@ -20,6 +20,7 @@ CFPropertyListFormat WMUserDefaultsFileExists(CFStringRef domainName,
 CFAbsoluteTime WMUserDefaultsFileModificationTime(CFStringRef domainName,
                                                   CFPropertyListFormat format);
 
+CFPropertyListRef WMUserDefaultsReadFromFile(CFURLRef fileURL);
 CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName);
 Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFStringRef domainName);
 Boolean WMUserDefaultsSynchronize(WDDomain *domain);

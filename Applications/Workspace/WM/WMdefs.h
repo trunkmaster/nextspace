@@ -135,17 +135,18 @@
 #define GLOBAL_EPILOGUE_MENU_FILE "GlobalMenu.post"
 
 /* pixmap path */
-#define DEF_PIXMAP_PATHS  "(\"~/Library/Images/\", \"/Library/Images/\", \"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
+#define DEF_PIXMAP_PATHS \
+  "(\"~/Library/Images/\", \"/Library/Images/\", \"/usr/NextSpace/Images/\", \"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
 
 /* icon path */
 #define DEF_ICON_PATHS \
-    "(\"~/Library/Images\",\"/Library/Images/\",\"/usr/NextSpace/Images/\",\"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
+  "(\"~/Library/Images/\", \"/Library/Images/\", \"/usr/NextSpace/Images/\", \"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
 
 /* icon cache path */
 #define CACHE_ICON_PATH "/Workspace/CachedPixmaps"
 
 /* Icon for app without own icon. Bundled with NXAppKit. */
-#define DEF_APP_ICON "NXUnknownapplication.tiff"
+#define DEF_APP_ICON "NXUnknownApplication.tiff"
 
 /* window title to use for untitled windows */
 #define DEF_WINDOW_TITLE "UNTITLED"
@@ -158,7 +159,7 @@
 #define DEF_MENU_TITLE_FONT     "\"Helvetica:bold:pixelsize=12\""
 #define DEF_MENU_ENTRY_FONT     "\"Helvetica:pixelsize=12\""
 #define DEF_ICON_TITLE_FONT     "\"Helvetica:pixelsize=9\""
-#define DEF_CLIP_TITLE_FONT     "\"Helvetica:bold:pixelsize=9\""
+#define DEF_CLIP_TITLE_FONT     "\"Helvetica:pixelsize=10\""
 #define DEF_INFO_TEXT_FONT      "\"Helvetica:pixelsize=12\""
 #define DEF_WORKSPACE_NAME_FONT "\"Helvetica:pixelsize=24\""
 
