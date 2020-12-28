@@ -40,9 +40,7 @@
 #include <WMcore/handlers.h>
 #include <WMcore/string.h>
 
-/* For getting mouse wheel mappings from WINGs */
 #include <WINGs/WINGs.h>
-#include <WINGs/configuration.h>
 
 #include "GNUstep.h"
 #include "WM.h"
@@ -2966,10 +2964,10 @@ static void titlebarDblClick(WCoreWindow *sender, void *data, XEvent *event)
   else if (event->xbutton.button == Button2) {
     wSelectWindow(wwin, !wwin->flags.selected);
   }
-  else if (event->xbutton.button == W_getconf_mouseWheelUp()) {
+  else if (event->xbutton.button == Button4) {
     wShadeWindow(wwin);
   }
-  else if (event->xbutton.button == W_getconf_mouseWheelDown()) {
+  else if (event->xbutton.button == Button5) {
     wUnshadeWindow(wwin);
   }
 }

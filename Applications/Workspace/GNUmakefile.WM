@@ -14,7 +14,6 @@ $(APP_NAME)_C_FILES += \
 
 # WINGs
 $(APP_NAME)_C_FILES += \
-	$(WM_DIR)/WINGs/configuration.c \
 	$(WM_DIR)/WINGs/dragcommon.c \
 	$(WM_DIR)/WINGs/dragdestination.c \
 	$(WM_DIR)/WINGs/dragsource.c \
@@ -33,7 +32,7 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/WINGs/wview.c \
 	$(WM_DIR)/WINGs/wwindow.c \
         $(WM_DIR)/WINGs/wuserdefaults.c
-
+        
 # WindowMaker
 $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/WM_main.c \

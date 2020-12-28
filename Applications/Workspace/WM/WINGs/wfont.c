@@ -23,9 +23,11 @@
 #include <pango/pangoxft.h>
 #endif
 
-#define DEFAULT_FONT "sans serif:pixelsize=12"
-
-#define DEFAULT_SIZE WINGsConfiguration.defaultFontSize
+/* #define SYSTEM_FONT "Helvetica:slant=0:weight=80:width=100:pixelsize=12" */
+/* #define BOLD_SYSTEM_FONT "Helvetica:slant=0:weight=200:width=100:pixelsize=12" */
+#define SYSTEM_FONT "Helvetica"
+#define BOLD_SYSTEM_FONT "Helvetica:bold"
+#define DEFAULT_SIZE 12
 
 static FcPattern *xlfdToFcPattern(const char *xlfd)
 {
@@ -35,7 +37,7 @@ static FcPattern *xlfdToFcPattern(const char *xlfd)
   /* Just skip old font names that contain %d in them.
    *We don't support that anymore. */
   if (strchr(xlfd, '%') != NULL)
-    return FcNameParse((FcChar8 *) DEFAULT_FONT);
+    return FcNameParse((FcChar8 *) SYSTEM_FONT);
 
   fname = wstrdup(xlfd);
   if ((ptr = strchr(fname, ','))) {
@@ -45,8 +47,8 @@ static FcPattern *xlfdToFcPattern(const char *xlfd)
   wfree(fname);
 
   if (!pattern) {
-    wwarning(_("invalid font: %s. Trying '%s'"), xlfd, DEFAULT_FONT);
-    pattern = FcNameParse((FcChar8 *) DEFAULT_FONT);
+    wwarning(_("invalid font: %s. Trying '%s'"), xlfd, SYSTEM_FONT);
+    pattern = FcNameParse((FcChar8 *) SYSTEM_FONT);
   }
 
   return pattern;
@@ -146,7 +148,8 @@ WMFont *WMCreateFont(WMScreen *scrPtr, const char *fontName)
     fname = wstrdup(fontName);
   }
 
-  if (!WINGsConfiguration.antialiasedText && !strstr(fname, ":antialias=")) {
+  /* if (!WINGsConfiguration.antialiasedText && !strstr(fname, ":antialias=")) { */
+  if (!scrPtr->antialiasedText && !strstr(fname, ":antialias=")) {
     fname = wstrappend(fname, ":antialias=false");
   }
 
@@ -257,7 +260,7 @@ WMFont *WMSystemFontOfSize(WMScreen *scrPtr, int size)
   WMFont *font;
   char *fontSpec;
 
-  fontSpec = makeFontOfSize(WINGsConfiguration.systemFont, size, NULL);
+  fontSpec = makeFontOfSize(SYSTEM_FONT, size, NULL);
 
   font = WMCreateFont(scrPtr, fontSpec);
 
@@ -275,7 +278,7 @@ WMFont *WMBoldSystemFontOfSize(WMScreen *scrPtr, int size)
   WMFont *font;
   char *fontSpec;
 
-  fontSpec = makeFontOfSize(WINGsConfiguration.boldSystemFont, size, NULL);
+  fontSpec = makeFontOfSize(BOLD_SYSTEM_FONT, size, NULL);
 
   font = WMCreateFont(scrPtr, fontSpec);
 

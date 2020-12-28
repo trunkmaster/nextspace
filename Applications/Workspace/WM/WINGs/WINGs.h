@@ -50,20 +50,7 @@ extern "C" {
 /* global settigns  */
 #define DOUBLE_BUFFER   1
 
-typedef struct _WINGsConfiguration {
-    char *systemFont;
-    char *boldSystemFont;
-    int  defaultFontSize;
-    Bool antialiasedText;
-    char *floppyPath;
-    unsigned doubleClickDelay;
-    unsigned mouseWheelUp;
-    unsigned mouseWheelDown;
-} _WINGsConfiguration;
-
 extern char *_WINGS_progname;
-extern _WINGsConfiguration WINGsConfiguration;
-
 
 typedef unsigned long WMPixel;
 
@@ -146,13 +133,6 @@ enum {
     WAPROther = -1,
     WAPRError = -2
 };
-
-/* types of input observers */
-/* enum { */
-/*       WIReadMask = (1 << 0), */
-/*       WIWriteMask = (1 << 1), */
-/*       WIExceptMask = (1 << 2) */
-/* }; */
 
 typedef void WMWidget;
 typedef struct W_View	WMView;

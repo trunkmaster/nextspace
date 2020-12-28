@@ -8,7 +8,6 @@
 #include "wpixmap.h"
 #include "wcolor.h"
 #include "wballoon.h"
-#include "configuration.h"
 #include "wmisc.h"
 
 #include "widgets.h"
@@ -500,11 +499,7 @@ WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *con
   int i;
 
   if (!initialized) {
-
     initialized = 1;
-
-    W_ReadConfigurations();
-
     assert(W_ApplicationInitialized());
   }
 
@@ -657,7 +652,9 @@ WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *con
 
   scrPtr->stipple = stipple;
 
-  scrPtr->antialiasedText = WINGsConfiguration.antialiasedText;
+  /* scrPtr->antialiasedText = WINGsConfiguration.antialiasedText; */
+  scrPtr->antialiasedText = False; /* TODO */
+  wwarning("[TODO] Antialised text is set to false. No option exists to configure it.");
 
   scrPtr->normalFont = WMSystemFontOfSize(scrPtr, 0);
 
