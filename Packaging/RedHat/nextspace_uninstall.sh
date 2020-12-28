@@ -3,6 +3,8 @@
 # This script should be placed along with NSUser and NSDeveloper
 # directories.
 
+RELEASE=0.90
+
 if [ -f /etc/os-release ]; then 
     source /etc/os-release
     export OS_NAME=$ID
@@ -29,43 +31,29 @@ if [ $YN != "y" ]; then
     exit
 fi
 
-# Disable SELinux
-echo -n "Checking SELinux configuration for default..."
-grep "SELINUX=disabled" /etc/selinux/config 2>&1 > /dev/null
-if [ $? -eq 0 ];then
-    echo -e -n "\e[33m"
-    echo "configuring needed"
-    echo -e -n "\e[0m"
-    echo "Configuring SELinux (SELINUX=Enforcing)..."
-    sed -i 's/SELINUX=disabled/SELINUX=enforcing/g' /etc/selinux/config
-else
-    echo -e -n "\e[32m"
-    echo "good"
-    echo -e -n "\e[0m"
-fi
 
-# Install User packages
+# Uninstall User packages
 echo -n "Uninstall NEXTSPACE User packages..."
-yum remove -y -q install --enablerepo=epel NSUser/*.rpm 2>&1 > /dev/null
+npm -e NSUser/*.rpm 2>&1 > /dev/null
 ldconfig
 echo -e -n "\e[32m"
 echo "done"
 echo -e -n "\e[0m"
 
-# Install Developer packages
+# Uninstall Developer packages
 echo -e -n "\e[1m"
 echo -n "Do you want to Uninstall packages for NEXTSPACE development? [yn]: "
 echo -e -n "\e[0m"
 read YN
 if [ $YN = "y" ]; then
     echo -n "Uninstalling NEXTSPACE Developer packages..."
-    yum remove -y -q install --enablerepo=epel NSDeveloper/*.rpm 2>&1 > /dev/null
+    rpm -e NSDeveloper/*.rpm 2>&1 > /dev/null
     echo -e -n "\e[32m"
     echo "done"
     echo -e -n "\e[0m"
 fi
 
-# Adding user
+# Remove user
 echo -e -n "\e[1m"
 echo -n "Do you want remove user? [yn]: "
 echo -e -n "\e[0m"
@@ -77,6 +65,21 @@ if [ $YN = "y" ]; then
     userdel -r $USERNAME
     echo "User deleted."
 
+fi
+
+# Set up SELinux for Default
+echo -n "Setting up SELinux configuration for default..."
+grep "SELINUX=disabled" /etc/selinux/config 2>&1 > /dev/null
+if [ $? -eq 0 ];then
+    echo -e -n "\e[33m"
+    echo "configuring needed"
+    echo -e -n "\e[0m"
+    echo "Configuring SELinux (SELINUX=Enforcing)..."
+    sed -i 's/SELINUX=disabled/SELINUX=enforcing/g' /etc/selinux/config
+else
+    echo -e -n "\e[32m"
+    echo "good"
+    echo -e -n "\e[0m"
 fi
 
 # Setting up Login Panel
