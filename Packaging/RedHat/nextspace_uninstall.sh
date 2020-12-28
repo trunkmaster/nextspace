@@ -34,24 +34,11 @@ fi
 
 # Uninstall User packages
 echo -n "Uninstall NEXTSPACE User packages..."
-npm -e NSUser/*.rpm 2>&1 > /dev/null
+npm -e NSUser/* 2>&1 > /dev/null
 ldconfig
 echo -e -n "\e[32m"
 echo "done"
 echo -e -n "\e[0m"
-
-# Uninstall Developer packages
-echo -e -n "\e[1m"
-echo -n "Do you want to Uninstall packages for NEXTSPACE development? [yn]: "
-echo -e -n "\e[0m"
-read YN
-if [ $YN = "y" ]; then
-    echo -n "Uninstalling NEXTSPACE Developer packages..."
-    rpm -e NSDeveloper/*.rpm 2>&1 > /dev/null
-    echo -e -n "\e[32m"
-    echo "done"
-    echo -e -n "\e[0m"
-fi
 
 # Remove user
 echo -e -n "\e[1m"
