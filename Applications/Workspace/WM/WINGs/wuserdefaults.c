@@ -266,7 +266,16 @@ Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFStringRef domainName)
           __FILE__, __FUNCTION__, __LINE__, xmlURL, dictionary);
     return false;
   }
-  
+
+  /* If dictionary is empty: do not write to file and remove file if exists. */
+  if (CFDictionaryGetCount(dictionary) <= 0 &&
+      WMUserDefaultsFileExists(domainName, kCFPropertyListXMLFormat_v1_0) != 0) {
+    unsigned char file_path[MAXPATHLEN];
+    CFURLGetFileSystemRepresentation(xmlURL, false, file_path, MAXPATHLEN);
+    unlink((const char *)file_path);
+    return true;
+  }
+
   writeStream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, xmlURL);
   if (writeStream) {
     CFWriteStreamOpen(writeStream);

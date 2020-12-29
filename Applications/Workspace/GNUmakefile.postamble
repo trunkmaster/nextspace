@@ -55,7 +55,6 @@ after-install::
 	@ cp Workspace.h $(DESTDIR)/$(GNUSTEP_SYSTEM_HEADERS)/apps
 	@ echo " Copying WM resources into $(WM_RESOURCES)..."
 	@ mkdir -p $(WM_RESOURCES)
-	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMGLOBAL $(WM_RESOURCES)
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMState $(WM_RESOURCES)
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WMWindowAttributes $(WM_RESOURCES)
 	@ cp -f /etc/skel/Library/Preferences/.WindowMaker/WindowMaker $(WM_RESOURCES)

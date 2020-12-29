@@ -3251,6 +3251,7 @@ static int setDoubleClick(WScreen *scr, WDefaultEntry *entry, void *tdata, void 
   if (*value <= 0)
     *(int *)foo = 1;
 
+  /* this function was in removed configuration.c */
   /* W_setconf_doubleClickDelay(*value); */
 
   return 0;
