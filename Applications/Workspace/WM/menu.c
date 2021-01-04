@@ -2304,12 +2304,14 @@ static Bool getMenuInfo(CFTypeRef info, int *x, int *y, Bool *lowered)
   if (CFGetTypeID(info) == CFArrayGetTypeID()) {
     CFTypeRef flags;
     pos = CFArrayGetValueAtIndex(info, 0);
-    flags = CFArrayGetValueAtIndex(info, 1);
-    if (flags != NULL
-        && (CFGetTypeID(flags) == CFStringGetTypeID())
-        && (f = CFStringGetCStringPtr(flags, kCFStringEncodingUTF8)) != NULL
-        && strcmp(f, "lowered") == 0) {
-      *lowered = True;
+    if (CFArrayGetCount(info) > 1) {
+      flags = CFArrayGetValueAtIndex(info, 1);
+      if (flags != NULL
+          && (CFGetTypeID(flags) == CFStringGetTypeID())
+          && (f = CFStringGetCStringPtr(flags, kCFStringEncodingUTF8)) != NULL
+          && strcmp(f, "lowered") == 0) {
+        *lowered = True;
+      }
     }
   } else {
     pos = info;
