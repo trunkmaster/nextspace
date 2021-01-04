@@ -117,22 +117,12 @@
 
 /* list of paths to look for the config files, searched in order of appearance */
 #define DEF_CONFIG_PATHS "~/Library/Preferences/.WindowMaker:"
-#define DEF_MENU_FILE	 "menu"
 
 /* name of the script to execute at startup */
 #define DEF_INIT_SCRIPT "autostart"
 #define DEF_EXIT_SCRIPT "exitscript"
+/* WMcore/userdefaults.c */
 #define DEFAULTS_DIR    "/Preferences/.WindowMaker"
-
-#ifdef USE_TIFF
-#define DEF_BUTTON_IMAGES PKGDATADIR"/buttons.tiff"
-#else
-#define DEF_BUTTON_IMAGES PKGDATADIR"/buttons.xpm"
-#endif
-
-/* the file of the system wide submenu to be forced into the main menu */
-#define GLOBAL_PREAMBLE_MENU_FILE "GlobalMenu.pre"
-#define GLOBAL_EPILOGUE_MENU_FILE "GlobalMenu.post"
 
 /* pixmap path */
 #define DEF_PIXMAP_PATHS \
@@ -172,10 +162,6 @@
 #define TITLEBAR_EXTEND_SPACE            4
 
 #define DEF_XPM_CLOSENESS	         40000
-
-/* default position of application menus */
-#define DEF_APPMENU_X		         10
-#define DEF_APPMENU_Y		         10
 
 /* calculate window edge resistance from edge resistance */
 #define WIN_RESISTANCE(x)	(((x)*20)/30)

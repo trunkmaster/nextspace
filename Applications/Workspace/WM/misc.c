@@ -685,18 +685,18 @@ char *ExpandOptions(WScreen *scr, const char *cmdline)
   return NULL;
 }
 
-void ParseWindowName(WMPropList *value, char **winstance, char **wclass, const char *where)
+void ParseWindowName(CFStringRef value, char **winstance, char **wclass, const char *where)
 {
-  char *name;
+  const char *name;
 
   *winstance = *wclass = NULL;
 
-  if (!WMIsPLString(value)) {
+  if (CFGetTypeID(value) != CFStringGetTypeID()) {
     wwarning(_("bad window name value in %s state info"), where);
     return;
   }
 
-  name = WMGetFromPLString(value);
+  name = CFStringGetCStringPtr(value, kCFStringEncodingUTF8);
   if (!name || strlen(name) == 0) {
     wwarning(_("bad window name value in %s state info"), where);
     return;

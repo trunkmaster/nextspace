@@ -218,27 +218,6 @@ CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName)
   }
   CFRelease(osURL);
   
-  /* if (readStream) { */
-  /*   CFReadStreamOpen(readStream); */
-  /*   pl = CFPropertyListCreateWithStream(kCFAllocatorDefault, readStream, 0, */
-  /*                                       kCFPropertyListMutableContainersAndLeaves, */
-  /*                                       NULL, &plError); */
-  /*   CFReadStreamClose(readStream); */
-  /*   CFRelease(readStream); */
-  /* } */
-  /* else { */
-  /*   CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) cannot open READ stream to %@"), */
-  /*         __FILE__, __FUNCTION__, __LINE__, fileURL); */
-  /* } */
-  
-  /* if (plError > 0) { */
-  /*   CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) Failed to read user defaults from %@ (Error: %i)"), */
-  /*         __FILE__, __FUNCTION__, __LINE__, fileURL, plError); */
-  /* } */
-
-  /* CFRelease(osURL); */
-  /* if (xmlURL) CFRelease(xmlURL); */
-  
   return pl;
 }
 
@@ -248,39 +227,54 @@ Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFStringRef domainName)
   CFURLRef xmlURL = NULL;
   CFWriteStreamRef writeStream = NULL;
   CFErrorRef plError = NULL;
+  CFPropertyListRef pl;
 
   osURL = WMUserDefaultsCopyURLForDomain(domainName);
   xmlURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
   CFRelease(osURL);
 
-  /* CFLog(kCFLogLevelError, CFSTR("* %s (%s) about to write property list to %@"), */
-  /*       __FILE__, __FUNCTION__, xmlURL); */
+  CFLog(kCFLogLevelError, CFSTR("* %s (%s) about to write property list to %@"),
+        __FILE__, __FUNCTION__, xmlURL);
+  /* CFShow(dictionary); */
   
   if (dictionary == NULL) {
-    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%s) cannot write a NULL property list to %@"),
-          __FILE__, __FUNCTION__, __LINE__, xmlURL);
-    return false;
-  }
-  if (CFPropertyListIsValid(dictionary, kCFPropertyListXMLFormat_v1_0) == false) {
-    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%s) cannot write a invalid property list to %@\n %@"),
-          __FILE__, __FUNCTION__, __LINE__, xmlURL, dictionary);
+    CFLog(kCFLogLevelError, CFSTR("** cannot write a NULL property list to %@"), xmlURL);
     return false;
   }
 
   /* If dictionary is empty: do not write to file and remove file if exists. */
-  if (CFDictionaryGetCount(dictionary) <= 0 &&
-      WMUserDefaultsFileExists(domainName, kCFPropertyListXMLFormat_v1_0) != 0) {
-    unsigned char file_path[MAXPATHLEN];
-    CFURLGetFileSystemRepresentation(xmlURL, false, file_path, MAXPATHLEN);
-    unlink((const char *)file_path);
+  if ((CFGetTypeID(dictionary) != CFDictionaryGetTypeID())
+      || CFDictionaryGetCount(dictionary) <= 0 ) {
+    CFLog(kCFLogLevelError, CFSTR("** got empty property list for %@"), xmlURL);
+    if (WMUserDefaultsFileExists(domainName, kCFPropertyListXMLFormat_v1_0) != 0) {
+      unsigned char file_path[MAXPATHLEN];
+      CFURLGetFileSystemRepresentation(xmlURL, false, file_path, MAXPATHLEN);
+      unlink((const char *)file_path);
+    }
     return true;
+  }
+
+  if (CFPropertyListIsValid(dictionary, kCFPropertyListXMLFormat_v1_0) == false) {
+    CFDataRef xmlData;
+    CFPropertyListFormat plFormat = kCFPropertyListXMLFormat_v1_0;
+    CFLog(kCFLogLevelError, CFSTR("** cannot write a invalid property list to %@"), xmlURL);
+    xmlData = CFPropertyListCreateXMLData(kCFAllocatorDefault, dictionary);
+    pl = CFPropertyListCreateWithData(kCFAllocatorDefault, xmlData, kCFPropertyListImmutable,
+                                      &plFormat, &plError);
+    /* CFRelease(xmlData); */
+    if (!pl || plError) {
+      return false;
+    }
+  }
+  else {
+    pl = dictionary;
   }
 
   writeStream = CFWriteStreamCreateWithFile(kCFAllocatorDefault, xmlURL);
   if (writeStream) {
     CFWriteStreamOpen(writeStream);
     /*  kCFPropertyListOpenStepFormat is not supported for writing */
-    CFPropertyListWrite(dictionary, writeStream, kCFPropertyListXMLFormat_v1_0, 0, &plError);
+    CFPropertyListWrite(pl, writeStream, kCFPropertyListXMLFormat_v1_0, 0, &plError);
     CFWriteStreamClose(writeStream);
   }
   else {
@@ -290,8 +284,7 @@ Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFStringRef domainName)
 
   if (plError > 0) {
     CFLog(kCFLogLevelError,
-          CFSTR("** %s (%s:%s) cannot write user defaults to %@ (error: %i)"),
-          __FILE__, __FUNCTION__, __LINE__, xmlURL, plError);
+          CFSTR("*** cannot write user defaults to %@ (error: %i)"), xmlURL, plError);
   }
 
   CFRelease(xmlURL);
@@ -326,8 +319,10 @@ Boolean WMUserDefaultsSynchronize(WDDomain *domain)
   CFLog(kCFLogLevelError, CFSTR("Writing domain: %@"), domain->name);
 
   result = WMUserDefaultsWrite(domain->dictionary, domain->name);
-  CFRelease(domain->dictionary);
-  domain->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->name);
+  if (!result) {
+    CFRelease(domain->dictionary);
+    domain->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->name);
+  }
 
   return (result && domain->dictionary != NULL);
 }

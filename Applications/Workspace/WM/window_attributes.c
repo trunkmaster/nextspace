@@ -56,81 +56,43 @@
 /* type converters */
 static int getBool(CFStringRef, CFTypeRef);
 static const char *getString(CFStringRef, CFTypeRef);
-static CFStringRef ANoTitlebar = NULL;
-static CFStringRef ANoResizebar;
-static CFStringRef ANoMiniaturizeButton;
-static CFStringRef ANoMiniaturizable;
-static CFStringRef ANoCloseButton;
-static CFStringRef ANoBorder;
-static CFStringRef ANoHideOthers;
-static CFStringRef ANoMouseBindings;
-static CFStringRef ANoKeyBindings;
-static CFStringRef ANoAppIcon;	/* app */
-static CFStringRef AKeepOnTop;
-static CFStringRef AKeepOnBottom;
-static CFStringRef AOmnipresent;
-static CFStringRef ASkipWindowList;
-static CFStringRef ASkipSwitchPanel;
-static CFStringRef AKeepInsideScreen;
-static CFStringRef AUnfocusable;
-static CFStringRef AAlwaysUserIcon;
-static CFStringRef AStartMiniaturized;
-static CFStringRef AStartMaximized;
-static CFStringRef AStartHidden;	/* app */
-static CFStringRef ADontSaveSession;	/* app */
-static CFStringRef AEmulateAppIcon;
-static CFStringRef AFocusAcrossWorkspace;
-static CFStringRef AFullMaximize;
-static CFStringRef ASharedAppIcon;	/* app */
+
+/* keys */
+static CFStringRef AIcon = CFSTR("Icon");
+static CFStringRef ANoTitlebar = CFSTR("NoTitlebar");
+static CFStringRef ANoResizebar = CFSTR("NoResizebar");
+static CFStringRef ANoMiniaturizeButton = CFSTR("NoMiniaturizeButton");
+static CFStringRef ANoMiniaturizable = CFSTR("NoMiniaturizable");
+static CFStringRef ANoCloseButton = CFSTR("NoCloseButton");
+static CFStringRef ANoBorder = CFSTR("NoBorder");
+static CFStringRef ANoHideOthers = CFSTR("NoHideOthers");
+static CFStringRef ANoMouseBindings = CFSTR("NoMouseBindings");
+static CFStringRef ANoKeyBindings = CFSTR("NoKeyBindings");
+static CFStringRef ANoAppIcon = CFSTR("NoAppIcon");
+static CFStringRef AKeepOnTop = CFSTR("KeepOnTop");
+static CFStringRef AKeepOnBottom = CFSTR("KeepOnBottom");
+static CFStringRef AOmnipresent = CFSTR("Omnipresent");
+static CFStringRef ASkipWindowList = CFSTR("SkipWindowList");
+static CFStringRef ASkipSwitchPanel = CFSTR("SkipSwitchPanel");
+static CFStringRef AKeepInsideScreen = CFSTR("KeepInsideScreen");
+static CFStringRef AUnfocusable = CFSTR("Unfocusable");
+static CFStringRef AAlwaysUserIcon = CFSTR("AlwaysUserIcon");
+static CFStringRef AStartMiniaturized = CFSTR("StartMiniaturized");
+static CFStringRef AStartHidden = CFSTR("StartHidden");
+static CFStringRef AStartMaximized = CFSTR("StartMaximized");
+static CFStringRef ADontSaveSession = CFSTR("DontSaveSession");
+static CFStringRef AEmulateAppIcon = CFSTR("EmulateAppIcon");
+static CFStringRef AFocusAcrossWorkspace = CFSTR("FocusAcrossWorkspace");
+static CFStringRef AFullMaximize = CFSTR("FullMaximize");
+static CFStringRef ASharedAppIcon = CFSTR("SharedAppIcon");
 #ifdef XKB_BUTTON_HINT
-static CFStringRef ANoLanguageButton;
+static CFStringRef ANoLanguageButton = CFSTR("NoLanguageButton");
 #endif
-static CFStringRef AStartWorkspace;
-static CFStringRef AIcon;
-static CFStringRef AnyWindow;
-static CFStringRef No;
+static CFStringRef AStartWorkspace = CFSTR("StartWorkspace");
+static CFStringRef AnyWindow = CFSTR("*");
+static CFStringRef No = CFSTR("No");
 
 /* --------------------------- Local ----------------------- */
-
-static void init_wdefaults(void)
-{
-  AIcon = CFSTR("Icon");
-
-  ANoTitlebar = CFSTR("NoTitlebar");
-  ANoResizebar = CFSTR("NoResizebar");
-  ANoMiniaturizeButton = CFSTR("NoMiniaturizeButton");
-  ANoMiniaturizable = CFSTR("NoMiniaturizable");
-  ANoCloseButton = CFSTR("NoCloseButton");
-  ANoBorder = CFSTR("NoBorder");
-  ANoHideOthers = CFSTR("NoHideOthers");
-  ANoMouseBindings = CFSTR("NoMouseBindings");
-  ANoKeyBindings = CFSTR("NoKeyBindings");
-  ANoAppIcon = CFSTR("NoAppIcon");
-  AKeepOnTop = CFSTR("KeepOnTop");
-  AKeepOnBottom = CFSTR("KeepOnBottom");
-  AOmnipresent = CFSTR("Omnipresent");
-  ASkipWindowList = CFSTR("SkipWindowList");
-  ASkipSwitchPanel = CFSTR("SkipSwitchPanel");
-  AKeepInsideScreen = CFSTR("KeepInsideScreen");
-  AUnfocusable = CFSTR("Unfocusable");
-  AAlwaysUserIcon = CFSTR("AlwaysUserIcon");
-  AStartMiniaturized = CFSTR("StartMiniaturized");
-  AStartHidden = CFSTR("StartHidden");
-  AStartMaximized = CFSTR("StartMaximized");
-  ADontSaveSession = CFSTR("DontSaveSession");
-  AEmulateAppIcon = CFSTR("EmulateAppIcon");
-  AFocusAcrossWorkspace = CFSTR("FocusAcrossWorkspace");
-  AFullMaximize = CFSTR("FullMaximize");
-  ASharedAppIcon = CFSTR("SharedAppIcon");
-#ifdef XKB_BUTTON_HINT
-  ANoLanguageButton = CFSTR("NoLanguageButton");
-#endif
-
-  AStartWorkspace = CFSTR("StartWorkspace");
-
-  AnyWindow = CFSTR("*");
-  No = CFSTR("No");
-}
 
 /* Returns the correct WMPropList, using instance+class or instance, or class, or default */
 static CFTypeRef get_value(CFTypeRef dict_win, CFTypeRef dict_class, CFTypeRef dict_name,
@@ -250,9 +212,6 @@ void wDefaultFillAttributes(const char *instance, const char *class,
   char *buffer;
 
   dw = dc = dn = da = NULL;
-
-  if (!ANoTitlebar)
-    init_wdefaults();
 
   if (class && instance) {
     buffer = StrConcatDot(instance, class);
@@ -401,8 +360,6 @@ static CFTypeRef get_generic_value(const char *instance, const char *class,
       value = CFDictionaryGetValue(dict, option);
   }
 
-  WMPLSetCaseSensitive(False);
-
   return value;
 }
 
@@ -526,9 +483,6 @@ int wDefaultGetStartWorkspace(WScreen *scr, const char *instance, const char *cl
   int w;
   const char *tmp;
 
-  if (!ANoTitlebar)
-    init_wdefaults();
-
   if (!w_global.domain.window_attr->dictionary)
     return -1;
 
@@ -553,9 +507,6 @@ const char *wDefaultGetIconFile(const char *instance, const char *class, Bool de
 {
   CFTypeRef value;
   const char *tmp;
-
-  if (!ANoTitlebar)
-    init_wdefaults();
 
   if (!w_global.domain.window_attr || !w_global.domain.window_attr->dictionary)
     return NULL;
@@ -591,21 +542,21 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
     char *buffer;
 
     buffer = StrConcatDot(instance, class);
-    key = CFStringCreateWithCString(kCFAllocatorDefault, buffer, kCFStringEncodingUTF8);;
+    key = CFStringCreateWithCString(kCFAllocatorDefault, buffer, kCFStringEncodingUTF8);
     wfree(buffer);
   }
   else if (instance) {
-    key = CFStringCreateWithCString(kCFAllocatorDefault, instance, kCFStringEncodingUTF8);;
+    key = CFStringCreateWithCString(kCFAllocatorDefault, instance, kCFStringEncodingUTF8);
   }
   else if (class) {
-    key = CFStringCreateWithCString(kCFAllocatorDefault, class, kCFStringEncodingUTF8);;
+    key = CFStringCreateWithCString(kCFAllocatorDefault, class, kCFStringEncodingUTF8);
   }
   else {
     key = CFRetain(AnyWindow);
   }
 
   if (file) {
-    value = CFStringCreateWithCString(kCFAllocatorDefault, file, kCFStringEncodingUTF8);;
+    value = CFStringCreateWithCString(kCFAllocatorDefault, file, kCFStringEncodingUTF8);
     icon_value = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
     CFDictionarySetValue(icon_value, AIcon, value);
     CFRelease(value);
@@ -652,10 +603,6 @@ void wDefaultPurgeInfo(const char *instance, const char *class)
 {
   CFStringRef key;
   CFDictionaryRef dict;
-
-  if (!AIcon) { /* Unnecessary precaution */
-    init_wdefaults();
-  }
 
   key = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%s.%s"), instance, class);
   dict = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, key);

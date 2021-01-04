@@ -30,7 +30,7 @@ Bool wGetIconName(Display *dpy, Window win, char **iconname);
 
 void move_window(Window win, int from_x, int from_y, int to_x, int to_y);
 void slide_windows(Window wins[], int n, int from_x, int from_y, int to_x, int to_y);
-void ParseWindowName(WMPropList *value, char **winstance, char **wclass, const char *where);
+void ParseWindowName(CFStringRef value, char **winstance, char **wclass, const char *where);
 
 static inline void slide_window(Window win, int from_x, int from_y, int to_x, int to_y)
 {

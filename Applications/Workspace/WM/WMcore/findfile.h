@@ -7,10 +7,6 @@
 
 char* wfindfile(const char *paths, const char *file);
 
-char* wfindfileinlist(char *const *path_list, const char *file);
-
-char* wfindfileinarray(WMPropList* array, const char *file);
-
 char* wexpandpath(const char *path);
 
 int wcopy_file(const char *toPath, const char *srcFile, const char *destFile);

@@ -374,11 +374,10 @@ void WMIconYardHideIcons(WScreen *screen)
 #import "Recycler.h"
 void WMDockInit(void)
 {
-  WDock      *dock = wDefaultScreen()->dock;
-  WMPropList *state;
-  WAppIcon   *btn;
-  NSString   *iconName;
-  NSString   *iconPath;
+  WDock    *dock = wDefaultScreen()->dock;
+  WAppIcon *btn;
+  NSString *iconName;
+  NSString *iconPath;
 
   // Setup main button properties to let Dock correctrly register Workspace
   btn = dock->icon_array[0];

@@ -196,7 +196,7 @@ void WMReleaseApplication(void)
    *properly calls WMReleaseApplication then the info to that
    *will have been freed by us.
    */
-  w_save_defaults_changes();
+  /* w_save_defaults_changes(); */
 
   if (WMApplication.applicationName) {
     wfree(WMApplication.applicationName);

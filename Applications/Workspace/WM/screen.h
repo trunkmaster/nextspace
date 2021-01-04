@@ -28,7 +28,7 @@
 #include <CoreFoundation/CFArray.h>
 #include <CoreFoundation/CFRunLoop.h>
 
-#include <WMcore/proplist.h>
+/* #include <WMcore/proplist.h> */
 #include <WMcore/bagtree.h>
 
 #include <WINGs/wfont.h>
@@ -270,7 +270,7 @@ typedef struct _WScreen {
   /* state and other informations */
   short cascade_index;	       /* for cascade window placement */
 
-  WMPropList *session_state;
+  CFMutableDictionaryRef session_state;
 
   /* for double-click detection */
   Time last_click_time;

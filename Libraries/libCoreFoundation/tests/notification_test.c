@@ -50,6 +50,7 @@ int main(int argc, char *argv[])
     
     notif_dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &keyCallbacks, &valueCallbacks);
     CFDictionaryAddValue(notif_dictionary, CFSTR("TestKey"), CFSTR("TestValue"));
+    CFShow(notif_dictionary);
     CFNotificationCenterPostNotification(nc, CFSTR("TestNotification"), NULL, notif_dictionary, TRUE);
     CFRelease(notif_dictionary);
     

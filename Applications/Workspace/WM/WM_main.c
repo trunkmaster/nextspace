@@ -41,10 +41,12 @@
  */
 #include <X11/Xlocale.h>
 
+#include <WINGs/wuserdefaults.h>
+
 #include <WMcore/util.h>
-#include <WMcore/userdefaults.h>
+/* #include <WMcore/userdefaults.h> */
 #include <WMcore/string.h>
-#include <WMcore/findfile.h>
+/* #include <WMcore/findfile.h> */
 #include <WMcore/util.h>
 
 #define MAINFILE
@@ -353,38 +355,49 @@ Bool RelaunchWindow(WWindow *wwin)
 
 void ExecInitScript(void)
 {
-  char *file, *paths;
+  /* CFURLRef libURL, wsURL; */
+  /* CFStringRef wsPath, pathsList;; */
+  /* char *file, *paths; */
 
-  paths = wstrconcat(wusergnusteppath(), "/Workspace");
-  paths = wstrappend(paths, ":" DEF_CONFIG_PATHS);
+  /* libURL = WMUserDefaultsCopyUserLibraryURL(); */
+  /* wsURL = CFURLCreateCopyAppendingPathComponent(kCFAllocatorDefault, libURL, */
+  /*                                               CFSTR("Workspace"), true); */
+  /* CFRelease(libURL); */
+  /* wsPath = CFURLCopyFileSystemPath(wsPath, kCFURLPOSIXPathStyle); */
+  /* pathsList = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%@:%s"), */
+  /*                                      wsPath, DEF_CONFIG_PATHS); */
+  /* paths = CFStringGetCStringPtr(pathsList, kCFStringEncodingUTF8); */
 
-  file = wfindfile(paths, DEF_INIT_SCRIPT);
-  wfree(paths);
+  /* // paths = wstrconcat(wusergnusteppath(), "/Workspace"); */
+  /* // paths = wstrappend(paths, ":" DEF_CONFIG_PATHS); */
 
-  if (file) {
-    if (system(file) != 0) {
-      werror(_("%s:could not execute initialization script"), file);
-    }
-    wfree(file);
-  }
+  /* file = wfindfile(paths, DEF_INIT_SCRIPT); */
+  /* // wfree(paths); */
+
+  /* if (file) { */
+  /*   if (system(file) != 0) { */
+  /*     werror(_("%s:could not execute initialization script"), file); */
+  /*   } */
+  /*   wfree(file); */
+  /* } */
 }
 
 void ExecExitScript(void)
 {
-  char *file, *paths;
+  /* char *file, *paths; */
 
-  paths = wstrconcat(wusergnusteppath(), "/Workspace");
-  paths = wstrappend(paths, ":" DEF_CONFIG_PATHS);
+  /* paths = wstrconcat(wusergnusteppath(), "/Workspace"); */
+  /* paths = wstrappend(paths, ":" DEF_CONFIG_PATHS); */
 
-  file = wfindfile(paths, DEF_EXIT_SCRIPT);
-  wfree(paths);
+  /* file = wfindfile(paths, DEF_EXIT_SCRIPT); */
+  /* wfree(paths); */
 
-  if (file) {
-    if (system(file) != 0) {
-      werror(_("%s:could not execute exit script"), file);
-    }
-    wfree(file);
-  }
+  /* if (file) { */
+  /*   if (system(file) != 0) { */
+  /*     werror(_("%s:could not execute exit script"), file); */
+  /*   } */
+  /*   wfree(file); */
+  /* } */
 }
 
 int WMInitialize(int argc, char **argv)
@@ -450,7 +463,7 @@ int WMInitialize(int argc, char **argv)
   wXModifierInitialize();
   StartUp(True);
 
-  ExecInitScript();
+  /* ExecInitScript(); */
   
   return 0;
 }

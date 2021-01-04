@@ -40,6 +40,7 @@
 #include <WINGs/wevent.h>
 #include <WINGs/wcolor.h>
 #include <WINGs/wmisc.h>
+#include <WINGs/wuserdefaults.h>
 
 #ifndef PATH_MAX
 #define PATH_MAX DEFAULT_PATH_MAX
@@ -83,21 +84,46 @@
 
 /***** Local variables ****/
 
-static WMPropList *dCommand = NULL;
-static WMPropList *dPasteCommand = NULL;
+/* static CFStringRef dCommand; */
+/* static CFStringRef dPasteCommand; */
+/* #ifdef USE_DOCK_XDND */
+/* static CFStringRef dDropCommand; */
+/* #endif */
+/* static CFStringRef dAutoLaunch, dLock; */
+/* static CFStringRef dName, dForced, dBuggyApplication, dYes, dNo; */
+/* static CFStringRef dHost, dDock, dClip; */
+/* static CFStringRef dAutoAttractIcons; */
+/* static CFStringRef dPosition, dApplications, dLowered, dCollapsed; */
+/* static CFStringRef dAutoCollapse, dAutoRaiseLower, dOmnipresent; */
+/* static CFStringRef dDrawers; */
+
+static CFStringRef dCommand = CFSTR("Command");
+static CFStringRef dPasteCommand = CFSTR("PasteCommand");
 #ifdef USE_DOCK_XDND
-static WMPropList *dDropCommand = NULL;
+static CFStringRef dDropCommand = CFSTR("DropCommand");
 #endif
-static WMPropList *dAutoLaunch, *dLock;
-static WMPropList *dName, *dForced, *dBuggyApplication, *dYes, *dNo;
-static WMPropList *dHost, *dDock, *dClip;
-static WMPropList *dAutoAttractIcons;
+static CFStringRef dLock = CFSTR("Lock");
+static CFStringRef dAutoLaunch = CFSTR("AutoLaunch");
+static CFStringRef dName = CFSTR("Name");
+static CFStringRef dForced = CFSTR("Forced");
+static CFStringRef dBuggyApplication = CFSTR("BuggyApplication");
+static CFStringRef dYes = CFSTR("Yes");
+static CFStringRef dNo = CFSTR("No");
 
-static WMPropList *dPosition, *dApplications, *dLowered, *dCollapsed;
+static CFStringRef dPosition = CFSTR("Position");
+static CFStringRef dApplications = CFSTR("Applications");
+static CFStringRef dLowered = CFSTR("Lowered");
+static CFStringRef dCollapsed = CFSTR("Collapsed");
+static CFStringRef dAutoCollapse = CFSTR("AutoCollapse");
+static CFStringRef dAutoRaiseLower = CFSTR("AutoRaiseLower");
+static CFStringRef dAutoAttractIcons = CFSTR("AutoAttractIcons");
 
-static WMPropList *dAutoCollapse, *dAutoRaiseLower, *dOmnipresent;
+static CFStringRef dOmnipresent = CFSTR("Omnipresent");
 
-static WMPropList *dDrawers = NULL;
+static CFStringRef dDock = CFSTR("Dock");
+static CFStringRef dClip = CFSTR("Clip");
+static CFStringRef dDrawers = CFSTR("Drawers");
+
 
 static void dockIconPaint(CFRunLoopTimerRef timer, void *data);
 
@@ -141,39 +167,40 @@ static void drawerConsolidateIcons(WDock *drawer);
 
 static int onScreen(WScreen *scr, int x, int y);
 
-static void make_keys(void)
-{
-  if (dCommand != NULL)
-    return;
+/* static void make_keys(void) */
+/* { */
+/*   if (dCommand != NULL) */
+/*     return; */
 
-  dCommand = WMRetainPropList(WMCreatePLString("Command"));
-  dPasteCommand = WMRetainPropList(WMCreatePLString("PasteCommand"));
-#ifdef USE_DOCK_XDND
-  dDropCommand = WMRetainPropList(WMCreatePLString("DropCommand"));
-#endif
-  dLock = WMRetainPropList(WMCreatePLString("Lock"));
-  dAutoLaunch = WMRetainPropList(WMCreatePLString("AutoLaunch"));
-  dName = WMRetainPropList(WMCreatePLString("Name"));
-  dForced = WMRetainPropList(WMCreatePLString("Forced"));
-  dBuggyApplication = WMRetainPropList(WMCreatePLString("BuggyApplication"));
-  dYes = WMRetainPropList(WMCreatePLString("Yes"));
-  dNo = WMRetainPropList(WMCreatePLString("No"));
-  dHost = WMRetainPropList(WMCreatePLString("Host"));
+/*   /\* dCommand = CFStringCreateWithCString(kCFAllocatorDefault, "Command", kCFStringEncodingUTF8); *\/ */
+/*   dCommand = CFSTR("Command"); */
+/*   dPasteCommand = CFSTR("PasteCommand"); */
+/* #ifdef USE_DOCK_XDND */
+/*   dDropCommand = CFSTR("DropCommand"); */
+/* #endif */
+/*   dLock = CFSTR("Lock"); */
+/*   dAutoLaunch = CFSTR("AutoLaunch"); */
+/*   dName = CFSTR("Name"); */
+/*   dForced = CFSTR("Forced"); */
+/*   dBuggyApplication = CFSTR("BuggyApplication"); */
+/*   dYes = CFSTR("Yes"); */
+/*   dNo = CFSTR("No"); */
+/*   dHost = CFSTR("Host"); */
 
-  dPosition = WMCreatePLString("Position");
-  dApplications = WMCreatePLString("Applications");
-  dLowered = WMCreatePLString("Lowered");
-  dCollapsed = WMCreatePLString("Collapsed");
-  dAutoCollapse = WMCreatePLString("AutoCollapse");
-  dAutoRaiseLower = WMCreatePLString("AutoRaiseLower");
-  dAutoAttractIcons = WMCreatePLString("AutoAttractIcons");
+/*   dPosition = CFSTR("Position"); */
+/*   dApplications = CFSTR("Applications"); */
+/*   dLowered = CFSTR("Lowered"); */
+/*   dCollapsed = CFSTR("Collapsed"); */
+/*   dAutoCollapse = CFSTR("AutoCollapse"); */
+/*   dAutoRaiseLower = CFSTR("AutoRaiseLower"); */
+/*   dAutoAttractIcons = CFSTR("AutoAttractIcons"); */
 
-  dOmnipresent = WMCreatePLString("Omnipresent");
+/*   dOmnipresent = CFSTR("Omnipresent"); */
 
-  dDock = WMCreatePLString("Dock");
-  dClip = WMCreatePLString("Clip");
-  dDrawers = WMCreatePLString("Drawers");
-}
+/*   dDock = CFSTR("Dock"); */
+/*   dClip = CFSTR("Clip"); */
+/*   dDrawers = CFSTR("Drawers"); */
+/* } */
 
 static void toggleLoweredCallback(WMenu *menu, WMenuEntry *entry)
 {
@@ -1190,7 +1217,7 @@ WDock *wDockCreate(WScreen *scr, int type, const char *name)
   WDock *dock;
   WAppIcon *btn;
 
-  make_keys();
+  /* make_keys(); */
 
   dock = wmalloc(sizeof(WDock));
 
@@ -1339,80 +1366,92 @@ static void dockIconPaint(CFRunLoopTimerRef timer, void *data)
   }
 }
 
-static WMPropList *make_icon_state(WAppIcon *btn)
+static CFMutableDictionaryRef _dockCreateIconState(WAppIcon *btn)
 {
-  WMPropList *node = NULL;
-  WMPropList *command, *autolaunch, *lock, *name, *forced;
-  WMPropList *position, *buggy, *omnipresent;
+  CFMutableDictionaryRef node = NULL;
+  CFStringRef command, autolaunch, lock, name, forced;
+  CFStringRef position, buggy, omnipresent;
   char *tmp;
-  char buffer[64];
-
+  
   if (btn) {
-    if (!btn->command)
-      command = WMCreatePLString("-");
-    else
-      command = WMCreatePLString(btn->command);
+    if (!btn->command) {
+      command = CFStringCreateWithCString(kCFAllocatorDefault, "-",
+                                          kCFStringEncodingUTF8);
+    }
+    else {
+      command = CFStringCreateWithCString(kCFAllocatorDefault, btn->command,
+                                          kCFStringEncodingUTF8);
+    }
 
     autolaunch = btn->auto_launch ? dYes : dNo;
 
     lock = btn->lock ? dYes : dNo;
 
     tmp = EscapeWM_CLASS(btn->wm_instance, btn->wm_class);
-
-    name = WMCreatePLString(tmp);
-
+    name = CFStringCreateWithCString(kCFAllocatorDefault, tmp, kCFStringEncodingUTF8);
     wfree(tmp);
 
     forced = btn->forced_dock ? dYes : dNo;
 
     buggy = btn->buggy_app ? dYes : dNo;
 
-    if (!wPreferences.flags.clip_merged_in_dock && btn == btn->icon->core->screen_ptr->clip_icon)
-      snprintf(buffer, sizeof(buffer), "%i,%i", btn->x_pos, btn->y_pos);
-    else
-      snprintf(buffer, sizeof(buffer), "%hi,%hi", btn->xindex, btn->yindex);
-    position = WMCreatePLString(buffer);
+    if (!wPreferences.flags.clip_merged_in_dock && btn == btn->icon->core->screen_ptr->clip_icon) {
+      position = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%i,%i"),
+                                          btn->x_pos, btn->y_pos);
+    }
+    else {
+      position = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%hi,%hi"),
+                                          btn->xindex, btn->yindex);
+    }
 
-    node = WMCreatePLDictionary(dCommand, command,
-                                dName, name,
-                                dAutoLaunch, autolaunch,
-                                dLock, lock,
-                                dForced, forced, dBuggyApplication, buggy, dPosition, position, NULL);
-    WMReleasePropList(command);
-    WMReleasePropList(name);
-    WMReleasePropList(position);
+    node = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+    CFDictionaryAddValue(node, dCommand, command);
+    CFDictionaryAddValue(node, dName, name);
+    CFDictionaryAddValue(node, dAutoLaunch, autolaunch);
+    CFDictionaryAddValue(node, dLock, lock);
+    CFDictionaryAddValue(node, dForced, forced);
+    CFDictionaryAddValue(node, dBuggyApplication, buggy);
+    CFDictionaryAddValue(node, dPosition, position);
+
+    CFRelease(command);
+    CFRelease(name);
+    CFRelease(position);
 
     omnipresent = btn->omnipresent ? dYes : dNo;
-    if (btn->dock != btn->icon->core->screen_ptr->dock && (btn->xindex != 0 || btn->yindex != 0))
-      WMPutInPLDictionary(node, dOmnipresent, omnipresent);
+    if (btn->dock != btn->icon->core->screen_ptr->dock && (btn->xindex != 0 || btn->yindex != 0)) {
+      CFDictionaryAddValue(node, dOmnipresent, omnipresent);
+    }
 
 #ifdef USE_DOCK_XDND
     if (btn->dnd_command) {
-      command = WMCreatePLString(btn->dnd_command);
-      WMPutInPLDictionary(node, dDropCommand, command);
-      WMReleasePropList(command);
+      command = CFStringCreateWithCString(kCFAllocatorDefault, btn->dnd_command,
+                                          kCFStringEncodingUTF8);
+      CFDictionaryAddValue(node, dDropCommand, command);
+      CFRelease(command);
     }
 #endif	/* USE_DOCK_XDND */
 
     if (btn->paste_command) {
-      command = WMCreatePLString(btn->paste_command);
-      WMPutInPLDictionary(node, dPasteCommand, command);
-      WMReleasePropList(command);
+      command = CFStringCreateWithCString(kCFAllocatorDefault, btn->paste_command,
+                                          kCFStringEncodingUTF8);
+      CFDictionaryAddValue(node, dPasteCommand, command);
+      CFRelease(command);
     }
+    /* CFShow(node); */
   }
 
   return node;
 }
 
-static WMPropList *dockSaveState(WDock *dock)
+static CFMutableDictionaryRef _dockSaveState(WDock *dock)
 {
   int i;
-  WMPropList *icon_info;
-  WMPropList *list = NULL, *dock_state = NULL;
-  WMPropList *value, *key;
-  char buffer[256];
+  CFMutableArrayRef list;
+  CFMutableDictionaryRef icon_info;
+  CFMutableDictionaryRef dock_state;
+  CFStringRef value, key;
 
-  list = WMCreatePLArray(NULL);
+  list = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
 
   for (i = (dock->type == WM_DOCK ? 0 : 1); i < dock->max_icons; i++) {
     WAppIcon *btn = dock->icon_array[i];
@@ -1420,123 +1459,132 @@ static WMPropList *dockSaveState(WDock *dock)
     if (!btn || btn->attracted)
       continue;
 
-    icon_info = make_icon_state(dock->icon_array[i]);
+    icon_info = _dockCreateIconState(dock->icon_array[i]);
     if (icon_info != NULL) {
-      WMAddToPLArray(list, icon_info);
-      WMReleasePropList(icon_info);
+      CFArrayAppendValue(list, icon_info);
+      CFRelease(icon_info);
     }
   }
-
-  dock_state = WMCreatePLDictionary(dApplications, list, NULL);
+  
+  dock_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+  CFDictionaryAddValue(dock_state, dApplications, list);
 
   if (dock->type == WM_DOCK) {
-    snprintf(buffer, sizeof(buffer), "Applications%i", dock->screen_ptr->scr_height);
-    key = WMCreatePLString(buffer);
-    WMPutInPLDictionary(dock_state, key, list);
-    WMReleasePropList(key);
+    key = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("Applications%i"),
+                                   dock->screen_ptr->scr_height);
+    CFDictionaryAddValue(dock_state, key, list);
+    CFRelease(key);
 
-    snprintf(buffer, sizeof(buffer), "%i,%i", (dock->on_right_side ? -ICON_SIZE : 0), dock->y_pos);
-    value = WMCreatePLString(buffer);
-    WMPutInPLDictionary(dock_state, dPosition, value);
-    WMReleasePropList(value);
+    value = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%i,%i"),
+                                     (dock->on_right_side ? -ICON_SIZE : 0), dock->y_pos);
+    CFDictionaryAddValue(dock_state, dPosition, value);
+    CFRelease(value);
   }
-  WMReleasePropList(list);
+  CFRelease(list);
 
   if (dock->type == WM_CLIP || dock->type == WM_DRAWER) {
     value = (dock->collapsed ? dYes : dNo);
-    WMPutInPLDictionary(dock_state, dCollapsed, value);
+    CFDictionaryAddValue(dock_state, dCollapsed, value);
 
     value = (dock->auto_collapse ? dYes : dNo);
-    WMPutInPLDictionary(dock_state, dAutoCollapse, value);
+    CFDictionaryAddValue(dock_state, dAutoCollapse, value);
 
     value = (dock->attract_icons ? dYes : dNo);
-    WMPutInPLDictionary(dock_state, dAutoAttractIcons, value);
+    CFDictionaryAddValue(dock_state, dAutoAttractIcons, value);
   }
 
   if (dock->type == WM_DOCK || dock->type == WM_CLIP) {
     value = (dock->lowered ? dYes : dNo);
-    WMPutInPLDictionary(dock_state, dLowered, value);
+    CFDictionaryAddValue(dock_state, dLowered, value);
 
     value = (dock->auto_raise_lower ? dYes : dNo);
-    WMPutInPLDictionary(dock_state, dAutoRaiseLower, value);
+    CFDictionaryAddValue(dock_state, dAutoRaiseLower, value);
   }
+
+  CFShow(dock_state);
+  fprintf(stderr, "Dock state has %li elements.\n", CFDictionaryGetCount(dock_state));
 
   return dock_state;
 }
 
-void wDockSaveState(WScreen *scr, WMPropList *old_state)
+void wDockSaveState(WScreen *scr, CFDictionaryRef old_state)
 {
-  WMPropList *dock_state;
-  WMPropList *keys;
+  CFMutableDictionaryRef dock_state = _dockSaveState(scr->dock);
 
-  dock_state = dockSaveState(scr->dock);
-
+  /* CFShow(dock_state); */
+  
   /*
    * Copy saved states of docks with different sizes.
    */
   if (old_state) {
-    int i;
-    WMPropList *tmp;
+    CFDictionaryRef old_dock_state = CFDictionaryGetValue(old_state, dDock);
+    const void *keys;
+    const void *values;
 
-    keys = WMGetPLDictionaryKeys(old_state);
-    for (i = 0; i < WMGetPropListItemCount(keys); i++) {
-      tmp = WMGetFromPLArray(keys, i);
-
-      if (strncasecmp(WMGetFromPLString(tmp), "applications", 12) == 0
-          && !WMGetFromPLDictionary(dock_state, tmp)) {
-
-        WMPutInPLDictionary(dock_state, tmp, WMGetFromPLDictionary(old_state, tmp));
+    /* CFShow(old_dock_state); */
+    CFDictionaryGetKeysAndValues(old_dock_state, &keys, &values);
+    for (int i = 0; i < CFDictionaryGetCount(old_dock_state); i++) {
+      CFShow(&keys[i]);
+      /* if (strncasecmp(tmp, "applications", 12) == 0 */
+      if ((CFStringCompareWithOptions(&keys[i], CFSTR("applications"), CFRangeMake(0, 12),
+                                      kCFCompareCaseInsensitive) == 0)
+          && !CFDictionaryGetValue(dock_state, &keys[i])) {
+        if (CFDictionaryGetValue(old_dock_state, &keys[i]) != NULL) {
+          CFDictionaryAddValue(dock_state, &keys[i], &values[i]);
+        }
       }
     }
-    WMReleasePropList(keys);
   }
 
-  WMPutInPLDictionary(scr->session_state, dDock, dock_state);
-
-  WMReleasePropList(dock_state);
+  if (dock_state && scr->session_state) {
+    /* CFShow(dock_state); */
+    CFDictionarySetValue(scr->session_state, dDock, dock_state);
+    CFRelease(dock_state);
+  }
 }
 
 void wClipSaveState(WScreen *scr)
 {
-  WMPropList *clip_state;
+  CFMutableDictionaryRef clip_state;
 
-  clip_state = make_icon_state(scr->clip_icon);
+  clip_state = _dockCreateIconState(scr->clip_icon);
 
-  WMPutInPLDictionary(scr->session_state, dClip, clip_state);
+  CFDictionaryAddValue(scr->session_state, dClip, clip_state);
 
-  WMReleasePropList(clip_state);
+  CFRelease(clip_state);
 }
 
-WMPropList *wClipSaveWorkspaceState(WScreen *scr, int workspace)
+CFMutableDictionaryRef wClipSaveWorkspaceState(WScreen *scr, int workspace)
 {
-  return dockSaveState(scr->workspaces[workspace]->clip);
+  return _dockSaveState(scr->workspaces[workspace]->clip);
 }
 
-static Bool getBooleanDockValue(WMPropList *value, WMPropList *key)
+static Bool getBooleanDockValue(CFStringRef value, CFStringRef key)
 {
   if (value) {
-    if (WMIsPLString(value)) {
-      if (strcasecmp(WMGetFromPLString(value), "YES") == 0)
-        return True;
+    if (CFGetTypeID(value) == CFStringGetTypeID()) {
+      if (CFStringCompare(value, CFSTR("YES"), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+      return True;
     } else {
-      wwarning(_("bad value in docked icon state info %s"), WMGetFromPLString(key));
+      wwarning(_("bad value in docked icon state info %s"),
+               CFStringGetCStringPtr(key, kCFStringEncodingUTF8));
     }
   }
   return False;
 }
 
-static WAppIcon *restore_icon_state(WScreen *scr, WMPropList *info, int type, int index)
+static WAppIcon *_dockRestoreIconState(WScreen *scr, CFDictionaryRef info, int type, int index)
 {
   WAppIcon *aicon;
-  WMPropList *cmd, *value;
+  CFStringRef cmd, value;
   char *wclass, *winstance, *command;
 
-  cmd = WMGetFromPLDictionary(info, dCommand);
-  if (!cmd || !WMIsPLString(cmd))
+  cmd = CFDictionaryGetValue(info, dCommand);
+  if (!cmd || (CFGetTypeID(cmd) != CFStringGetTypeID()))
     return NULL;
 
   /* parse window name */
-  value = WMGetFromPLDictionary(info, dName);
+  value = CFDictionaryGetValue(info, dName);
   if (!value)
     return NULL;
 
@@ -1546,7 +1594,7 @@ static WAppIcon *restore_icon_state(WScreen *scr, WMPropList *info, int type, in
     return NULL;
 
   /* get commands */
-  command = wstrdup(WMGetFromPLString(cmd));
+  command = wstrdup(CFStringGetCStringPtr(cmd, kCFStringEncodingUTF8));
 
   if (strcmp(command, "-") == 0) {
     wfree(command);
@@ -1574,40 +1622,42 @@ static WAppIcon *restore_icon_state(WScreen *scr, WMPropList *info, int type, in
   aicon->icon->core->descriptor.parent = aicon;
 
 #ifdef USE_DOCK_XDND
-  cmd = WMGetFromPLDictionary(info, dDropCommand);
+  cmd = CFDictionaryGetValue(info, dDropCommand);
   if (cmd)
-    aicon->dnd_command = wstrdup(WMGetFromPLString(cmd));
+    aicon->dnd_command = wstrdup(CFStringGetCStringPtr(cmd, kCFStringEncodingUTF8));
 #endif
 
-  cmd = WMGetFromPLDictionary(info, dPasteCommand);
+  cmd = CFDictionaryGetValue(info, dPasteCommand);
   if (cmd)
-    aicon->paste_command = wstrdup(WMGetFromPLString(cmd));
+    aicon->paste_command = wstrdup(CFStringGetCStringPtr(cmd, kCFStringEncodingUTF8));
 
   /* check auto launch */
-  value = WMGetFromPLDictionary(info, dAutoLaunch);
+  value = CFDictionaryGetValue(info, dAutoLaunch);
 
   aicon->auto_launch = getBooleanDockValue(value, dAutoLaunch);
 
   /* check lock */
-  value = WMGetFromPLDictionary(info, dLock);
+  value = CFDictionaryGetValue(info, dLock);
 
   aicon->lock = getBooleanDockValue(value, dLock);
 
   /* check if it wasn't normally docked */
-  value = WMGetFromPLDictionary(info, dForced);
+  value = CFDictionaryGetValue(info, dForced);
 
   aicon->forced_dock = getBooleanDockValue(value, dForced);
 
   /* check if we can rely on the stuff in the app */
-  value = WMGetFromPLDictionary(info, dBuggyApplication);
+  value = CFDictionaryGetValue(info, dBuggyApplication);
 
   aicon->buggy_app = getBooleanDockValue(value, dBuggyApplication);
 
   /* get position in the dock */
-  value = WMGetFromPLDictionary(info, dPosition);
-  if (value && WMIsPLString(value)) {
-    if (sscanf(WMGetFromPLString(value), "%hi,%hi", &aicon->xindex, &aicon->yindex) != 2)
-      wwarning(_("bad value in docked icon state info %s"), WMGetFromPLString(dPosition));
+  value = CFDictionaryGetValue(info, dPosition);
+  if (value && CFGetTypeID(value) == CFStringGetTypeID()) {
+    if (sscanf(CFStringGetCStringPtr(value, kCFStringEncodingUTF8), "%hi,%hi",
+               &aicon->xindex, &aicon->yindex) != 2)
+      wwarning(_("bad value in docked icon state info %s"),
+               CFStringGetCStringPtr(dPosition, kCFStringEncodingUTF8));
 
     /* check position sanity */
     /* *Very* incomplete section! */
@@ -1620,7 +1670,7 @@ static WAppIcon *restore_icon_state(WScreen *scr, WMPropList *info, int type, in
   }
 
   /* check if icon is omnipresent */
-  value = WMGetFromPLDictionary(info, dOmnipresent);
+  value = CFDictionaryGetValue(info, dOmnipresent);
 
   aicon->omnipresent = getBooleanDockValue(value, dOmnipresent);
 
@@ -1632,27 +1682,28 @@ static WAppIcon *restore_icon_state(WScreen *scr, WMPropList *info, int type, in
 
 #define COMPLAIN(key) wwarning(_("bad value in dock state info:%s"), key)
 
-WAppIcon *wClipRestoreState(WScreen *scr, WMPropList *clip_state)
+WAppIcon *wClipRestoreState(WScreen *scr, CFDictionaryRef clip_state)
 {
   WAppIcon *icon;
-  WMPropList *value;
+  CFStringRef value;
 
   icon = mainIconCreate(scr, WM_CLIP, NULL);
 
   if (!clip_state)
     return icon;
 
-  WMRetainPropList(clip_state);
+  CFRetain(clip_state);
 
   /* restore position */
 
-  value = WMGetFromPLDictionary(clip_state, dPosition);
+  value = CFDictionaryGetValue(clip_state, dPosition);
 
   if (value) {
-    if (!WMIsPLString(value)) {
+    if (CFGetTypeID(value) != CFStringGetTypeID()) {
       COMPLAIN("Position");
     } else {
-      if (sscanf(WMGetFromPLString(value), "%i,%i", &icon->x_pos, &icon->y_pos) != 2)
+      if (sscanf(CFStringGetCStringPtr(value, kCFStringEncodingUTF8), "%i,%i",
+                 &icon->x_pos, &icon->y_pos) != 2)
         COMPLAIN("Position");
 
       /* check position sanity */
@@ -1661,25 +1712,25 @@ WAppIcon *wClipRestoreState(WScreen *scr, WMPropList *clip_state)
     }
   }
 #ifdef USE_DOCK_XDND
-  value = WMGetFromPLDictionary(clip_state, dDropCommand);
-  if (value && WMIsPLString(value))
-    icon->dnd_command = wstrdup(WMGetFromPLString(value));
+  value = CFDictionaryGetValue(clip_state, dDropCommand);
+  if (value && (CFGetTypeID(value) == CFStringGetTypeID()))
+    icon->dnd_command = wstrdup(CFStringGetCStringPtr(value, kCFStringEncodingUTF8));
 #endif
 
-  value = WMGetFromPLDictionary(clip_state, dPasteCommand);
-  if (value && WMIsPLString(value))
-    icon->paste_command = wstrdup(WMGetFromPLString(value));
+  value = CFDictionaryGetValue(clip_state, dPasteCommand);
+  if (value && (CFGetTypeID(value) == CFStringGetTypeID()))
+    icon->paste_command = wstrdup(CFStringGetCStringPtr(value, kCFStringEncodingUTF8));
 
-  WMReleasePropList(clip_state);
+  CFRelease(clip_state);
 
   return icon;
 }
 
-WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
+WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
 {
   WDock *dock;
-  WMPropList *apps;
-  WMPropList *value;
+  CFArrayRef apps;
+  CFStringRef value;
   WAppIcon *aicon, *old_top;
   int count, i;
 
@@ -1688,15 +1739,16 @@ WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
   if (!dock_state)
     return dock;
 
-  WMRetainPropList(dock_state);
+  CFRetain(dock_state);
 
   /* restore position */
-  value = WMGetFromPLDictionary(dock_state, dPosition);
+  value = CFDictionaryGetValue(dock_state, dPosition);
   if (value) {
-    if (!WMIsPLString(value)) {
+    if (CFGetTypeID(value) != CFStringGetTypeID()) {
       COMPLAIN("Position");
     } else {
-      if (sscanf(WMGetFromPLString(value), "%i,%i", &dock->x_pos, &dock->y_pos) != 2)
+      if (sscanf(CFStringGetCStringPtr(value, kCFStringEncodingUTF8), "%i,%i",
+                 &dock->x_pos, &dock->y_pos) != 2)
         COMPLAIN("Position");
 
       /* check position sanity */
@@ -1727,12 +1779,12 @@ WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
   /* restore lowered/raised state */
   dock->lowered = 0;
 
-  value = WMGetFromPLDictionary(dock_state, dLowered);
+  value = CFDictionaryGetValue(dock_state, dLowered);
   if (value) {
-    if (!WMIsPLString(value)) {
+    if (CFGetTypeID(value) != CFStringGetTypeID()) {
       COMPLAIN("Lowered");
     } else {
-      if (strcasecmp(WMGetFromPLString(value), "YES") == 0)
+      if (CFStringCompare(value, CFSTR("YES"), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
         dock->lowered = 1;
     }
   }
@@ -1740,23 +1792,23 @@ WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
   /* restore collapsed state */
   dock->collapsed = 0;
 
-  value = WMGetFromPLDictionary(dock_state, dCollapsed);
+  value = CFDictionaryGetValue(dock_state, dCollapsed);
   if (value) {
-    if (!WMIsPLString(value)) {
+    if (CFGetTypeID(value) != CFStringGetTypeID()) {
       COMPLAIN("Collapsed");
     } else {
-      if (strcasecmp(WMGetFromPLString(value), "YES") == 0)
+      if (CFStringCompare(value, CFSTR("YES"), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
         dock->collapsed = 1;
     }
   }
 
   /* restore auto-collapsed state */
-  value = WMGetFromPLDictionary(dock_state, dAutoCollapse);
+  value = CFDictionaryGetValue(dock_state, dAutoCollapse);
   if (value) {
-    if (!WMIsPLString(value)) {
+    if (CFGetTypeID(value) != CFStringGetTypeID()) {
       COMPLAIN("AutoCollapse");
     } else {
-      if (strcasecmp(WMGetFromPLString(value), "YES") == 0) {
+      if (CFStringCompare(value, CFSTR("YES"), kCFCompareCaseInsensitive) == kCFCompareEqualTo) {
         dock->auto_collapse = 1;
         dock->collapsed = 1;
       }
@@ -1764,12 +1816,12 @@ WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
   }
 
   /* restore auto-raise/lower state */
-  value = WMGetFromPLDictionary(dock_state, dAutoRaiseLower);
+  value = CFDictionaryGetValue(dock_state, dAutoRaiseLower);
   if (value) {
-    if (!WMIsPLString(value)) {
+    if (CFGetTypeID(value) != CFStringGetTypeID()) {
       COMPLAIN("AutoRaiseLower");
     } else {
-      if (strcasecmp(WMGetFromPLString(value), "YES") == 0)
+      if (CFStringCompare(value, CFSTR("YES"), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
         dock->auto_raise_lower = 1;
     }
   }
@@ -1777,12 +1829,12 @@ WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
   /* restore attract icons state */
   dock->attract_icons = 0;
 
-  value = WMGetFromPLDictionary(dock_state, dAutoAttractIcons);
+  value = CFDictionaryGetValue(dock_state, dAutoAttractIcons);
   if (value) {
-    if (!WMIsPLString(value)) {
+    if (CFGetTypeID(value) != CFStringGetTypeID()) {
       COMPLAIN("AutoAttractIcons");
     } else {
-      if (strcasecmp(WMGetFromPLString(value), "YES") == 0)
+      if (CFStringCompare(value, CFSTR("YES"), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
         dock->attract_icons = 1;
     }
   }
@@ -1790,8 +1842,7 @@ WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
   /* application list */
 
   {
-    WMPropList *tmp;
-    char buffer[64];
+    CFStringRef tmp;
 
     /*
      * When saving, it saves the dock state in
@@ -1801,20 +1852,20 @@ WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
      * If it does not exist, use Applications as default.
      */
 
-    snprintf(buffer, sizeof(buffer), "Applications%i", scr->scr_height);
+    tmp = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("Applications%i"),
+                                   scr->scr_height);
+    apps = CFDictionaryGetValue(dock_state, tmp);
+    CFRelease(tmp);
 
-    tmp = WMCreatePLString(buffer);
-    apps = WMGetFromPLDictionary(dock_state, tmp);
-    WMReleasePropList(tmp);
-
-    if (!apps)
-      apps = WMGetFromPLDictionary(dock_state, dApplications);
+    if (!apps) {
+      apps = CFDictionaryGetValue(dock_state, dApplications);
+    }
   }
 
   if (!apps)
     goto finish;
 
-  count = WMGetPropListItemCount(apps);
+  count = CFArrayGetCount(apps);
   if (count == 0)
     goto finish;
 
@@ -1833,8 +1884,8 @@ WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
       break;
     }
 
-    value = WMGetFromPLArray(apps, i);
-    aicon = restore_icon_state(scr, value, type, dock->icon_count);
+    value = CFArrayGetValueAtIndex(apps, i);
+    aicon = _dockRestoreIconState(scr, (CFDictionaryRef)value, type, dock->icon_count);
 
     dock->icon_array[dock->icon_count] = aicon;
 
@@ -1884,7 +1935,7 @@ WDock *wDockRestoreState(WScreen *scr, WMPropList *dock_state, int type)
   }
 
  finish:
-  WMReleasePropList(dock_state);
+  CFRelease(dock_state);
 
   return dock;
 }
@@ -4655,227 +4706,227 @@ static void drawerConsolidateIcons(WDock *drawer)
 }
 
 /* similar to wDockRestoreState, but a lot a specific stuff too... */
-static WDock * drawerRestoreState(WScreen *scr, WMPropList *drawer_state)
-{
-  WDock *drawer;
-  WMPropList *apps, *value, *dock_state;
-  WAppIcon *aicon;
-  int count, i;
+/* static WDock *drawerRestoreState(WScreen *scr, CFDictionaryRef drawer_state) */
+/* { */
+/*   WDock *drawer; */
+/*   WMPropList *apps, *value, *dock_state; */
+/*   WAppIcon *aicon; */
+/*   int count, i; */
 
-  if (!drawer_state)
-    return NULL;
+/*   if (!drawer_state) */
+/*     return NULL; */
 
-  make_keys();
+/*   make_keys(); */
 
-  WMRetainPropList(drawer_state);
+/*   WMRetainPropList(drawer_state); */
 
-  /* Get the instance name, and create a drawer */
-  value = WMGetFromPLDictionary(drawer_state, dName);
-  drawer = wDockCreate(scr, WM_DRAWER, WMGetFromPLString(value));
+/*   /\* Get the instance name, and create a drawer *\/ */
+/*   value = CFDictionaryGetValue(drawer_state, dName); */
+/*   drawer = wDockCreate(scr, WM_DRAWER, WMGetFromPLString(value)); */
 
-  /* restore DnD command and paste command */
-#ifdef USE_DOCK_XDND
-  value = WMGetFromPLDictionary(drawer_state, dDropCommand);
-  if (value && WMIsPLString(value))
-    drawer->icon_array[0]->dnd_command = wstrdup(WMGetFromPLString(value));
-#endif /* USE_DOCK_XDND */
+/*   /\* restore DnD command and paste command *\/ */
+/* #ifdef USE_DOCK_XDND */
+/*   value = CFDictionaryGetValue(drawer_state, dDropCommand); */
+/*   if (value && WMIsPLString(value)) */
+/*     drawer->icon_array[0]->dnd_command = wstrdup(WMGetFromPLString(value)); */
+/* #endif /\* USE_DOCK_XDND *\/ */
 
-  value = WMGetFromPLDictionary(drawer_state, dPasteCommand);
-  if (value && WMIsPLString(value))
-    drawer->icon_array[0]->paste_command = wstrdup(WMGetFromPLString(value));
+/*   value = CFDictionaryGetValue(drawer_state, dPasteCommand); */
+/*   if (value && WMIsPLString(value)) */
+/*     drawer->icon_array[0]->paste_command = wstrdup(WMGetFromPLString(value)); */
 
-  /* restore position */
-  value = WMGetFromPLDictionary(drawer_state, dPosition);
-  if (!value || !WMIsPLString(value))
-    COMPLAIN("Position");
-  else {
-    int x, y, y_index;
-    if (sscanf(WMGetFromPLString(value), "%i,%i", &x, &y) != 2)
-      COMPLAIN("Position");
+/*   /\* restore position *\/ */
+/*   value = CFDictionaryGetValue(drawer_state, dPosition); */
+/*   if (!value || !WMIsPLString(value)) */
+/*     COMPLAIN("Position"); */
+/*   else { */
+/*     int x, y, y_index; */
+/*     if (sscanf(WMGetFromPLString(value), "%i,%i", &x, &y) != 2) */
+/*       COMPLAIN("Position"); */
 
-    /* check position sanity */
-    if (x != scr->dock->x_pos) {
-      x = scr->dock->x_pos;
-    }
-    y_index = (y - scr->dock->y_pos) / ICON_SIZE;
-    if (y_index >= scr->dock->max_icons) {
-      /* Here we should do something more intelligent, since it
-       * can happen even if the user hasn't hand-edited his
-       * G/D/State file (but uses a lower resolution). */
-      y_index = scr->dock->max_icons - 1;
-    }
-    y = scr->dock->y_pos + y_index * ICON_SIZE;
-    moveDock(drawer, x, y);
-  }
+/*     /\* check position sanity *\/ */
+/*     if (x != scr->dock->x_pos) { */
+/*       x = scr->dock->x_pos; */
+/*     } */
+/*     y_index = (y - scr->dock->y_pos) / ICON_SIZE; */
+/*     if (y_index >= scr->dock->max_icons) { */
+/*       /\* Here we should do something more intelligent, since it */
+/*        * can happen even if the user hasn't hand-edited his */
+/*        * G/D/State file (but uses a lower resolution). *\/ */
+/*       y_index = scr->dock->max_icons - 1; */
+/*     } */
+/*     y = scr->dock->y_pos + y_index * ICON_SIZE; */
+/*     moveDock(drawer, x, y); */
+/*   } */
 
-  /* restore dock properties (applist and others) */
-  dock_state = WMGetFromPLDictionary(drawer_state, dDock);
+/*   /\* restore dock properties (applist and others) *\/ */
+/*   dock_state = CFDictionaryGetValue(drawer_state, dDock); */
 
-  /* restore lowered/raised state: same as scr->dock, no matter what */
-  drawer->lowered = scr->dock->lowered;
-  if (!drawer->lowered)
-    ChangeStackingLevel(drawer->icon_array[0]->icon->core, NSDockWindowLevel);
-  else
-    ChangeStackingLevel(drawer->icon_array[0]->icon->core, NSNormalWindowLevel);
-  wRaiseFrame(drawer->icon_array[0]->icon->core);
+/*   /\* restore lowered/raised state: same as scr->dock, no matter what *\/ */
+/*   drawer->lowered = scr->dock->lowered; */
+/*   if (!drawer->lowered) */
+/*     ChangeStackingLevel(drawer->icon_array[0]->icon->core, NSDockWindowLevel); */
+/*   else */
+/*     ChangeStackingLevel(drawer->icon_array[0]->icon->core, NSNormalWindowLevel); */
+/*   wRaiseFrame(drawer->icon_array[0]->icon->core); */
 
-  /* restore collapsed state */
-  drawer->collapsed = 0;
-  value = WMGetFromPLDictionary(dock_state, dCollapsed);
-  if (value && strcasecmp(WMGetFromPLString(value), "YES") == 0) {
-    drawer->collapsed = 1;
-  }
-  /* restore auto-collapsed state */
-  value = WMGetFromPLDictionary(dock_state, dAutoCollapse);
-  if (value && strcasecmp(WMGetFromPLString(value), "YES") == 0) {
-    drawer->auto_collapse = 1;
-    drawer->collapsed = 1;
-  } else {
-    drawer->auto_collapse = 0; // because wDockCreate sets it (drawers only)
-  }
+/*   /\* restore collapsed state *\/ */
+/*   drawer->collapsed = 0; */
+/*   value = CFDictionaryGetValue(dock_state, dCollapsed); */
+/*   if (value && strcasecmp(WMGetFromPLString(value), "YES") == 0) { */
+/*     drawer->collapsed = 1; */
+/*   } */
+/*   /\* restore auto-collapsed state *\/ */
+/*   value = CFDictionaryGetValue(dock_state, dAutoCollapse); */
+/*   if (value && strcasecmp(WMGetFromPLString(value), "YES") == 0) { */
+/*     drawer->auto_collapse = 1; */
+/*     drawer->collapsed = 1; */
+/*   } else { */
+/*     drawer->auto_collapse = 0; // because wDockCreate sets it (drawers only) */
+/*   } */
 
-  /* restore auto-raise/lower state: same as scr->dock, no matter what */
-  drawer->auto_raise_lower = scr->dock->auto_raise_lower;
+/*   /\* restore auto-raise/lower state: same as scr->dock, no matter what *\/ */
+/*   drawer->auto_raise_lower = scr->dock->auto_raise_lower; */
 
-  /* restore attract icons state */
-  drawer->attract_icons = 0;
-  value = WMGetFromPLDictionary(dock_state, dAutoAttractIcons);
-  if (value && strcasecmp(WMGetFromPLString(value), "YES") == 0) {
-    drawer->attract_icons = 1;
-    scr->attracting_drawer = drawer;
-  }
+/*   /\* restore attract icons state *\/ */
+/*   drawer->attract_icons = 0; */
+/*   value = CFDictionaryGetValue(dock_state, dAutoAttractIcons); */
+/*   if (value && strcasecmp(WMGetFromPLString(value), "YES") == 0) { */
+/*     drawer->attract_icons = 1; */
+/*     scr->attracting_drawer = drawer; */
+/*   } */
 
-  /* application list */
-  apps = WMGetFromPLDictionary(dock_state, dApplications);
+/*   /\* application list *\/ */
+/*   apps = CFDictionaryGetValue(dock_state, dApplications); */
 
-  if (!apps) {
-    goto finish;
-  }
+/*   if (!apps) { */
+/*     goto finish; */
+/*   } */
 
-  count = WMGetPropListItemCount(apps);
+/*   count = WMGetPropListItemCount(apps); */
 
-  if (count == 0)
-    goto finish;
+/*   if (count == 0) */
+/*     goto finish; */
 
-  for (i=0; i<count; i++) {
-    if (drawer->icon_count >= drawer->max_icons) {
-      wwarning(_("there are too many icons stored in drawer. Ignoring what doesn't fit"));
-      break;
-    }
+/*   for (i=0; i<count; i++) { */
+/*     if (drawer->icon_count >= drawer->max_icons) { */
+/*       wwarning(_("there are too many icons stored in drawer. Ignoring what doesn't fit")); */
+/*       break; */
+/*     } */
 
-    value = WMGetFromPLArray(apps, i);
-    aicon = restore_icon_state(scr, value, WM_DRAWER, drawer->icon_count);
+/*     value = WMGetFromPLArray(apps, i); */
+/*     aicon = restore_icon_state(scr, value, WM_DRAWER, drawer->icon_count); */
 
-    drawer->icon_array[drawer->icon_count] = aicon;
+/*     drawer->icon_array[drawer->icon_count] = aicon; */
 
-    if (aicon) {
-      aicon->dock = drawer;
-      aicon->x_pos = drawer->x_pos + (aicon->xindex * ICON_SIZE);
-      aicon->y_pos = drawer->y_pos + (aicon->yindex * ICON_SIZE);
+/*     if (aicon) { */
+/*       aicon->dock = drawer; */
+/*       aicon->x_pos = drawer->x_pos + (aicon->xindex * ICON_SIZE); */
+/*       aicon->y_pos = drawer->y_pos + (aicon->yindex * ICON_SIZE); */
 
-      if (!drawer->lowered)
-        ChangeStackingLevel(aicon->icon->core, NSDockWindowLevel);
-      else
-        ChangeStackingLevel(aicon->icon->core, NSNormalWindowLevel);
+/*       if (!drawer->lowered) */
+/*         ChangeStackingLevel(aicon->icon->core, NSDockWindowLevel); */
+/*       else */
+/*         ChangeStackingLevel(aicon->icon->core, NSNormalWindowLevel); */
 
-      wCoreConfigure(aicon->icon->core, aicon->x_pos, aicon->y_pos, 0, 0);
+/*       wCoreConfigure(aicon->icon->core, aicon->x_pos, aicon->y_pos, 0, 0); */
 
-      if (!drawer->collapsed)
-        XMapWindow(dpy, aicon->icon->core->window);
-      wRaiseFrame(aicon->icon->core);
+/*       if (!drawer->collapsed) */
+/*         XMapWindow(dpy, aicon->icon->core->window); */
+/*       wRaiseFrame(aicon->icon->core); */
 
-      drawer->icon_count++;
-    }
-  }
+/*       drawer->icon_count++; */
+/*     } */
+/*   } */
 
- finish:
-  WMReleasePropList(drawer_state);
+/*  finish: */
+/*   WMReleasePropList(drawer_state); */
 
-  return drawer;
-}
+/*   return drawer; */
+/* } */
 
 /* Same kind of comment than for previous function: this function is
  * very similar to make_icon_state, but has substential differences as
  * well. */
-static WMPropList *drawerSaveState(WDock *drawer)
-{
-  WMPropList *pstr, *drawer_state;
-  WAppIcon *ai;
-  char buffer[64];
+/* static WMPropList *drawerSaveState(WDock *drawer) */
+/* { */
+/*   WMPropList *pstr, *drawer_state; */
+/*   WAppIcon *ai; */
+/*   char buffer[64]; */
 
-  ai = drawer->icon_array[0];
-  /* Store its name */
-  pstr = WMCreatePLString(ai->wm_instance);
-  drawer_state = WMCreatePLDictionary(dName, pstr, NULL); /* we need this final NULL */
-  WMReleasePropList(pstr);
+/*   ai = drawer->icon_array[0]; */
+/*   /\* Store its name *\/ */
+/*   pstr = WMCreatePLString(ai->wm_instance); */
+/*   drawer_state = WMCreatePLDictionary(dName, pstr, NULL); /\* we need this final NULL *\/ */
+/*   WMReleasePropList(pstr); */
 
-  /* Store its position */
-  snprintf(buffer, sizeof(buffer), "%i,%i", ai->x_pos, ai->y_pos);
-  pstr = WMCreatePLString(buffer);
-  WMPutInPLDictionary(drawer_state, dPosition, pstr);
-  WMReleasePropList(pstr);
+/*   /\* Store its position *\/ */
+/*   snprintf(buffer, sizeof(buffer), "%i,%i", ai->x_pos, ai->y_pos); */
+/*   pstr = WMCreatePLString(buffer); */
+/*   WMPutInPLDictionary(drawer_state, dPosition, pstr); */
+/*   WMReleasePropList(pstr); */
 
-#ifdef USE_DOCK_XDND
-  /* Store its DnD command */
-  if (ai->dnd_command) {
-    pstr = WMCreatePLString(ai->dnd_command);
-    WMPutInPLDictionary(drawer_state, dDropCommand, pstr);
-    WMReleasePropList(pstr);
-  }
-#endif /* USE_DOCK_XDND */
+/* #ifdef USE_DOCK_XDND */
+/*   /\* Store its DnD command *\/ */
+/*   if (ai->dnd_command) { */
+/*     pstr = WMCreatePLString(ai->dnd_command); */
+/*     WMPutInPLDictionary(drawer_state, dDropCommand, pstr); */
+/*     WMReleasePropList(pstr); */
+/*   } */
+/* #endif /\* USE_DOCK_XDND *\/ */
 
-  /* Store its paste command */
-  if (ai->paste_command) {
-    pstr = WMCreatePLString(ai->paste_command);
-    WMPutInPLDictionary(drawer_state, dPasteCommand, pstr);
-    WMReleasePropList(pstr);
-  }
+/*   /\* Store its paste command *\/ */
+/*   if (ai->paste_command) { */
+/*     pstr = WMCreatePLString(ai->paste_command); */
+/*     WMPutInPLDictionary(drawer_state, dPasteCommand, pstr); */
+/*     WMReleasePropList(pstr); */
+/*   } */
 
-  /* Store applications list and other properties */
-  pstr = dockSaveState(drawer);
-  WMPutInPLDictionary(drawer_state, dDock, pstr);
-  WMReleasePropList(pstr);
+/*   /\* Store applications list and other properties *\/ */
+/*   pstr = dockSaveState(drawer); */
+/*   WMPutInPLDictionary(drawer_state, dDock, pstr); */
+/*   WMReleasePropList(pstr); */
 
-  return drawer_state;
-}
+/*   return drawer_state; */
+/* } */
 
 void wDrawersSaveState(WScreen *scr)
 {
-  WMPropList *all_drawers, *drawer_state;
-  int i;
-  WDrawerChain *dc;
+  /* WMPropList *all_drawers, *drawer_state; */
+  /* int i; */
+  /* WDrawerChain *dc; */
 
-  make_keys();
+  /* make_keys(); */
 
-  all_drawers = WMCreatePLArray(NULL);
-  for (i=0, dc = scr->drawers;
-       i < scr->drawer_count;
-       i++, dc = dc->next) {
-    drawer_state = drawerSaveState(dc->adrawer);
-    WMAddToPLArray(all_drawers, drawer_state);
-    WMReleasePropList(drawer_state);
-  }
-  WMPutInPLDictionary(scr->session_state, dDrawers, all_drawers);
-  WMReleasePropList(all_drawers);
+  /* all_drawers = WMCreatePLArray(NULL); */
+  /* for (i=0, dc = scr->drawers; */
+  /*      i < scr->drawer_count; */
+  /*      i++, dc = dc->next) { */
+  /*   drawer_state = drawerSaveState(dc->adrawer); */
+  /*   WMAddToPLArray(all_drawers, drawer_state); */
+  /*   WMReleasePropList(drawer_state); */
+  /* } */
+  /* WMPutInPLDictionary(scr->session_state, dDrawers, all_drawers); */
+  /* WMReleasePropList(all_drawers); */
 }
 
 void wDrawersRestoreState(WScreen *scr)
 {
-  WMPropList *all_drawers, *drawer_state;
-  int i;
+  /* WMPropList *all_drawers, *drawer_state; */
+  /* int i; */
 
-  make_keys();
+  /* make_keys(); */
 
-  if (scr->session_state == NULL)
-    return;
+  /* if (scr->session_state == NULL) */
+  /*   return; */
 
-  all_drawers = WMGetFromPLDictionary(scr->session_state, dDrawers);
-  if (!all_drawers)
-    return;
+  /* all_drawers = CFDictionaryGetValue(scr->session_state, dDrawers); */
+  /* if (!all_drawers) */
+  /*   return; */
 
-  for (i = 0; i < WMGetPropListItemCount(all_drawers); i++) {
-    drawer_state = WMGetFromPLArray(all_drawers, i);
-    drawerRestoreState(scr, drawer_state);
-    // Note: scr->drawers was updated when the the drawer was created
-  }
+  /* for (i = 0; i < WMGetPropListItemCount(all_drawers); i++) { */
+  /*   drawer_state = WMGetFromPLArray(all_drawers, i); */
+  /*   drawerRestoreState(scr, drawer_state); */
+  /*   // Note: scr->drawers was updated when the the drawer was created */
+  /* } */
 }

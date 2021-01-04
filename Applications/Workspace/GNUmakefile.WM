@@ -6,11 +6,13 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/WMcore/findfile.c \
 	$(WM_DIR)/WMcore/handlers.c \
 	$(WM_DIR)/WMcore/hashtable.c \
-	$(WM_DIR)/WMcore/proplist.c \
 	$(WM_DIR)/WMcore/string.c \
 	$(WM_DIR)/WMcore/tree.c \
-	$(WM_DIR)/WMcore/userdefaults.c \
 	$(WM_DIR)/WMcore/util.c
+
+#	$(WM_DIR)/WMcore/userdefaults.c
+#	$(WM_DIR)/WMcore/proplist.c
+
 
 # WINGs
 $(APP_NAME)_C_FILES += \

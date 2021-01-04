@@ -1719,7 +1719,7 @@ static void delaySelection(CFRunLoopTimerRef timer, void *data) // (void *data)
     *(d->delayed_select) = 0;
 }
 
-static void menuMouseDown(WObjDescriptor * desc, XEvent * event)
+static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
 {
   WWindow *wwin;
   XButtonEvent *bev = &event->xbutton;
@@ -2074,7 +2074,7 @@ void wMenuMove(WMenu * menu, int x, int y, int submenus)
   }
 }
 
-static void changeMenuLevels(WMenu * menu, int lower)
+static void changeMenuLevels(WMenu *menu, int lower)
 {
   int i;
 
@@ -2095,7 +2095,7 @@ static void changeMenuLevels(WMenu * menu, int lower)
   }
 }
 
-static void menuTitleDoubleClick(WCoreWindow * sender, void *data, XEvent * event)
+static void menuTitleDoubleClick(WCoreWindow *sender, void *data, XEvent *event)
 {
   WMenu *menu = data;
   int lower;
@@ -2113,7 +2113,7 @@ static void menuTitleDoubleClick(WCoreWindow * sender, void *data, XEvent * even
   }
 }
 
-static void menuTitleMouseDown(WCoreWindow * sender, void *data, XEvent * event)
+static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 {
   WMenu *menu = data;
   WMenu *tmp;
@@ -2227,7 +2227,7 @@ static void menuTitleMouseDown(WCoreWindow * sender, void *data, XEvent * event)
  * cascade list.
  *----------------------------------------------------------------------
  */
-static void menuCloseClick(WCoreWindow * sender, void *data, XEvent * event)
+static void menuCloseClick(WCoreWindow *sender, void *data, XEvent *event)
 {
   WMenu *menu = (WMenu *) data;
   WMenu *parent = menu->parent;
@@ -2251,24 +2251,24 @@ static void menuCloseClick(WCoreWindow * sender, void *data, XEvent * event)
   wMenuUnmap(menu);
 }
 
-static void saveMenuInfo(WMPropList * dict, WMenu * menu, WMPropList * key)
+static void saveMenuInfo(CFTypeRef dict, WMenu *menu, CFTypeRef key)
 {
-  WMPropList *value, *list;
-  char buffer[256];
+  /* CFTypeRef value, *list; */
+  /* char buffer[256]; */
 
-  snprintf(buffer, sizeof(buffer), "%i,%i", menu->frame_x, menu->frame_y);
-  value = WMCreatePLString(buffer);
-  list = WMCreatePLArray(value, NULL);
-  if (menu->flags.lowered)
-    WMAddToPLArray(list, WMCreatePLString("lowered"));
-  WMPutInPLDictionary(dict, key, list);
-  WMReleasePropList(value);
-  WMReleasePropList(list);
+  /* snprintf(buffer, sizeof(buffer), "%i,%i", menu->frame_x, menu->frame_y); */
+  /* value = WMCreatePLString(buffer); */
+  /* list = WMCreatePLArray(value, NULL); */
+  /* if (menu->flags.lowered) */
+  /*   WMAddToPLArray(list, WMCreatePLString("lowered")); */
+  /* WMPutInPLDictionary(dict, key, list); */
+  /* WMReleasePropList(value); */
+  /* WMReleasePropList(list); */
 }
 
 void wMenuSaveState(WScreen * scr)
 {
-  WMPropList *menus, *key;
+  /*  CFTypeRef menus, *key;
   int save_menus = 0;
 
   menus = WMCreatePLDictionary(NULL, NULL);
@@ -2288,35 +2288,39 @@ void wMenuSaveState(WScreen * scr)
   }
 
   if (save_menus) {
-    key = WMCreatePLString("Menus");
-    WMPutInPLDictionary(scr->session_state, key, menus);
+    key = CFSTR("Menus");
+    CFDictionaryAddValue(scr->session_state, key, menus);
     WMReleasePropList(key);
   }
   WMReleasePropList(menus);
+  */
 }
 
 #define COMPLAIN(key) wwarning(_("bad value in menus state info: %s"), key)
 
-static Bool getMenuInfo(WMPropList * info, int *x, int *y, Bool * lowered)
+static Bool getMenuInfo(CFTypeRef info, int *x, int *y, Bool *lowered)
 {
-  WMPropList *pos;
+  CFTypeRef pos;
+  const char *f;
 
   *lowered = False;
 
-  if (WMIsPLArray(info)) {
-    WMPropList *flags;
-    pos = WMGetFromPLArray(info, 0);
-    flags = WMGetFromPLArray(info, 1);
-    if (flags != NULL && WMIsPLString(flags) && WMGetFromPLString(flags) != NULL
-        && strcmp(WMGetFromPLString(flags), "lowered") == 0) {
+  if (CFGetTypeID(info) == CFArrayGetTypeID()) {
+    CFTypeRef flags;
+    pos = CFArrayGetValueAtIndex(info, 0);
+    flags = CFArrayGetValueAtIndex(info, 1);
+    if (flags != NULL
+        && (CFGetTypeID(flags) == CFStringGetTypeID())
+        && (f = CFStringGetCStringPtr(flags, kCFStringEncodingUTF8)) != NULL
+        && strcmp(f, "lowered") == 0) {
       *lowered = True;
     }
   } else {
     pos = info;
   }
 
-  if (pos != NULL && WMIsPLString(pos)) {
-    if (sscanf(WMGetFromPLString(pos), "%i,%i", x, y) != 2)
+  if (pos != NULL && (CFGetTypeID(pos) == CFStringGetTypeID())) {
+    if (sscanf(CFStringGetCStringPtr(pos, kCFStringEncodingUTF8), "%i,%i", x, y) != 2)
       COMPLAIN("Position");
   } else {
     COMPLAIN("(position, flags...)");
@@ -2326,7 +2330,7 @@ static Bool getMenuInfo(WMPropList * info, int *x, int *y, Bool * lowered)
   return True;
 }
 
-static int restoreMenu(WScreen *scr, WMPropList *menu)
+static int restoreMenu(WScreen *scr, CFTypeRef menu)
 {
   int x, y;
   Bool lowered = False;
@@ -2367,25 +2371,25 @@ static int restoreMenu(WScreen *scr, WMPropList *menu)
   return False;
 }
 
-void wMenuRestoreState(WScreen * scr)
+void wMenuRestoreState(WScreen *scr)
 {
-  WMPropList *menus, *menu, *key, *skey;
+  /* CFTypeRef menus, *menu, *key, *skey; */
 
-  if (!scr->session_state) {
-    return;
-  }
+  /* if (!scr->session_state) { */
+  /*   return; */
+  /* } */
 
-  key = WMCreatePLString("Menus");
-  menus = WMGetFromPLDictionary(scr->session_state, key);
-  WMReleasePropList(key);
+  /* key = WMCreatePLString("Menus"); */
+  /* menus = WMGetFromPLDictionary(scr->session_state, key); */
+  /* WMReleasePropList(key); */
 
-  if (!menus)
-    return;
+  /* if (!menus) */
+  /*   return; */
 
-  /* restore menus */
+  /* /\* restore menus *\/ */
 
-  skey = WMCreatePLString("SwitchMenu");
-  menu = WMGetFromPLDictionary(menus, skey);
-  WMReleasePropList(skey);
-  restoreMenu(scr, menu);
+  /* skey = WMCreatePLString("SwitchMenu"); */
+  /* menu = WMGetFromPLDictionary(menus, skey); */
+  /* WMReleasePropList(skey); */
+  /* restoreMenu(scr, menu); */
 }

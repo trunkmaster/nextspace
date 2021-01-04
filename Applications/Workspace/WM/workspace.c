@@ -77,18 +77,9 @@
 
 #define WORKSPACE_NAME_DISPLAY_PADDING 32
 
-static WMPropList *dWorkspaces = NULL;
-static WMPropList *dClip, *dName;
-
-static void _makeKeys(void)
-{
-  if (dWorkspaces != NULL)
-    return;
-
-  dWorkspaces = WMCreatePLString("Workspaces");
-  dName = WMCreatePLString("Name");
-  dClip = WMCreatePLString("Clip");
-}
+static CFTypeRef dWorkspaces = CFSTR("Workspaces");
+static CFTypeRef dClip = CFSTR("Clip");
+static CFTypeRef dName = CFSTR("Name");
 
 static void _postNotification(CFStringRef name, int workspace_number, void *object)
 {
@@ -917,57 +908,71 @@ void wWorkspaceMenuUpdate(WScreen *scr, WMenu * menu)
   wMenuPaint(menu);
 }
 
-void wWorkspaceSaveState(WScreen *scr, WMPropList * old_state)
+void wWorkspaceSaveState(WScreen *scr, CFDictionaryRef old_state)
 {
-  WMPropList *parr, *pstr, *wks_state, *old_wks_state, *foo, *bar;
-  int i;
+  CFArrayRef old_wks_state;
+  CFMutableArrayRef parr;
+  CFDictionaryRef foo, bar;
+  CFMutableDictionaryRef wks_state;
+  CFStringRef pstr;
+  int i = 0;
 
-  _makeKeys();
-
-  old_wks_state = WMGetFromPLDictionary(old_state, dWorkspaces);
-  parr = WMCreatePLArray(NULL);
+  if (old_state) {
+    old_wks_state = CFDictionaryGetValue(old_state, dWorkspaces);
+  }
+  
+  parr = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
   for (i = 0; i < scr->workspace_count; i++) {
-    pstr = WMCreatePLString(scr->workspaces[i]->name);
-    wks_state = WMCreatePLDictionary(dName, pstr, NULL);
-    WMReleasePropList(pstr);
+    CFDictionaryRef wksp;
+    wks_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+    pstr = CFStringCreateWithCString(kCFAllocatorDefault, scr->workspaces[i]->name,
+                                     kCFStringEncodingUTF8);
+    CFDictionarySetValue(wks_state, dName, pstr);
+    CFRelease(pstr);
+    
     if (!wPreferences.flags.noclip) {
-      pstr = wClipSaveWorkspaceState(scr, i);
-      WMPutInPLDictionary(wks_state, dClip, pstr);
-      WMReleasePropList(pstr);
-    } else if (old_wks_state != NULL) {
-      foo = WMGetFromPLArray(old_wks_state, i);
+      foo = wClipSaveWorkspaceState(scr, i);
+      CFDictionarySetValue(wks_state, dClip, pstr);
+      CFRelease(pstr);
+    }
+    else if (old_wks_state != NULL && CFArrayGetCount(old_wks_state)) {
+      foo = CFArrayGetValueAtIndex(old_wks_state, i);
       if (foo != NULL) {
-        bar = WMGetFromPLDictionary(foo, dClip);
-        if (bar != NULL)
-          WMPutInPLDictionary(wks_state, dClip, bar);
+        bar = CFDictionaryGetValue(foo, dClip);
+        if (bar != NULL) {
+          CFDictionarySetValue(wks_state, dClip, bar);
+        }
       }
     }
-    WMAddToPLArray(parr, wks_state);
-    WMReleasePropList(wks_state);
+
+    wksp = CFDictionaryCreateCopy(kCFAllocatorDefault, wks_state);
+    CFRelease(wks_state);
+    CFArrayAppendValue(parr, wksp);
+    CFRelease(wksp);
   }
-  WMPutInPLDictionary(scr->session_state, dWorkspaces, parr);
-  WMReleasePropList(parr);
+  /* CFShow(scr->session_state); */
+  CFDictionarySetValue(scr->session_state, dWorkspaces, parr);
+  CFShow(scr->session_state);
+  CFRelease(parr);
 }
 
 void wWorkspaceRestoreState(WScreen *scr)
 {
-  WMPropList *parr, *pstr, *wks_state, *clip_state;
+  CFTypeRef parr, wks_state, pstr, clip_state;
   int i, j;
-
-  _makeKeys();
 
   if (scr->session_state == NULL)
     return;
 
-  parr = WMGetFromPLDictionary(scr->session_state, dWorkspaces);
+  parr = CFDictionaryGetValue(scr->session_state, dWorkspaces);
 
   if (!parr)
     return;
 
-  for (i = 0; i < WMIN(WMGetPropListItemCount(parr), MAX_WORKSPACES); i++) {
-    wks_state = WMGetFromPLArray(parr, i);
-    if (WMIsPLDictionary(wks_state))
-      pstr = WMGetFromPLDictionary(wks_state, dName);
+  for (i = 0; i < WMIN(CFArrayGetCount(parr), MAX_WORKSPACES); i++) {
+    wks_state = CFArrayGetValueAtIndex(parr, i);
+    if (CFGetTypeID(wks_state) == CFDictionaryGetTypeID())
+      pstr = CFDictionaryGetValue(wks_state, dName);
     else
       pstr = wks_state;
 
@@ -976,16 +981,16 @@ void wWorkspaceRestoreState(WScreen *scr)
 
     if (scr->workspace_menu) {
       wfree(scr->workspace_menu->entries[i + MC_WORKSPACE1]->text);
-      scr->workspace_menu->entries[i + MC_WORKSPACE1]->text = wstrdup(WMGetFromPLString(pstr));
+      scr->workspace_menu->entries[i + MC_WORKSPACE1]->text = wstrdup(CFStringGetCStringPtr(pstr, kCFStringEncodingUTF8));
       scr->workspace_menu->flags.realized = 0;
     }
 
     wfree(scr->workspaces[i]->name);
-    scr->workspaces[i]->name = wstrdup(WMGetFromPLString(pstr));
+    scr->workspaces[i]->name = wstrdup(CFStringGetCStringPtr(pstr, kCFStringEncodingUTF8));
     if (!wPreferences.flags.noclip) {
       int added_omnipresent_icons = 0;
 
-      clip_state = WMGetFromPLDictionary(wks_state, dClip);
+      clip_state = CFDictionaryGetValue(wks_state, dClip);
       if (scr->workspaces[i]->clip)
         wDockDestroy(scr->workspaces[i]->clip);
 
