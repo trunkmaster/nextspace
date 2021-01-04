@@ -531,7 +531,9 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
   int same = 0;
 
   if (!dict) {
-    dict = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+    dict = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                     &kCFTypeDictionaryKeyCallBacks,
+                                     &kCFTypeDictionaryValueCallBacks);
     if (dict)
       db->dictionary = dict;
     else
@@ -557,7 +559,9 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
 
   if (file) {
     value = CFStringCreateWithCString(kCFAllocatorDefault, file, kCFStringEncodingUTF8);
-    icon_value = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+    icon_value = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                           &kCFTypeDictionaryKeyCallBacks,
+                                           &kCFTypeDictionaryValueCallBacks);
     CFDictionarySetValue(icon_value, AIcon, value);
     CFRelease(value);
 

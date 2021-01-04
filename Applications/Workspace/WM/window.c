@@ -943,7 +943,8 @@ WWindow *wManageWindow(WScreen *scr, Window window)
         for (i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
           if (mask & (1 << i)) {
             if (!scr->shortcutWindows[i])
-              scr->shortcutWindows[i] = CFArrayCreateMutable(kCFAllocatorDefault, 4, NULL);
+              scr->shortcutWindows[i] = CFArrayCreateMutable(kCFAllocatorDefault, 4,
+                                                             &kCFTypeArrayCallBacks);
 
             CFArrayAppendValue(scr->shortcutWindows[i], wwin);
           }
@@ -2039,7 +2040,9 @@ void wWindowChangeWorkspace(WWindow *wwin, int workspace)
     }
   }
   if (!IS_OMNIPRESENT(wwin)) {
-    CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+    CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                                            &kCFTypeDictionaryKeyCallBacks,
+                                                            &kCFTypeDictionaryValueCallBacks);
     int ws = wwin->frame->workspace;
     CFNumberRef workspaceNumber = CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType, &ws);
     CFDictionaryAddValue(info, CFSTR("workspace"), workspaceNumber);
@@ -2858,7 +2861,9 @@ void wWindowSetOmnipresent(WWindow *wwin, Bool flag)
 
   wwin->flags.omnipresent = flag;
   
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                                          &kCFTypeDictionaryKeyCallBacks,
+                                                          &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("omnipresent"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowStateNotification, wwin, info, TRUE);

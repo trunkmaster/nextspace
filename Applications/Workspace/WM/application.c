@@ -185,7 +185,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
   wapp = wmalloc(sizeof(WApplication));
 
-  wapp->windows = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
+  wapp->windows = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
 
   wapp->refcount = 1;
   wapp->last_focused = wwin;

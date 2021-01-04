@@ -44,9 +44,11 @@ static void __notifyStackChange(WCoreWindow *frame, char *detail)
   CFMutableDictionaryRef info;
   CFStringRef dString;
   
-  info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
-  dString = CFStringCreateWithCString(kCFAllocatorDefault, detail, CFStringGetSystemEncoding());
-  CFDictionaryAddValue(info, CFSTR("detail"), detail);
+  info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                   &kCFTypeDictionaryKeyCallBacks,
+                                   &kCFTypeDictionaryValueCallBacks);
+  dString = CFStringCreateWithCString(kCFAllocatorDefault, detail, kCFStringEncodingUTF8);
+  CFDictionaryAddValue(info, CFSTR("detail"), dString);
   
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowStackingNotification,

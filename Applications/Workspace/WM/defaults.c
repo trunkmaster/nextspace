@@ -710,7 +710,9 @@ WDDomain *wDefaultsInitDomain(const char *domain)
   }
   else {
     CFLog(kCFLogLevelError, CFSTR("Creating empty domain: %@"), db->name);
-    db->dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+    db->dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                               &kCFTypeDictionaryKeyCallBacks,
+                                               &kCFTypeDictionaryValueCallBacks);
     WMUserDefaultsSynchronize(db);
     modificationTime = WMUserDefaultsFileModificationTime(db->name, 0);
     db->timestamp = modificationTime;
@@ -2824,11 +2826,8 @@ static int setWorkspaceSpecificBack(WScreen *scr, WDefaultEntry *entry, void *td
 
 static int setWorkspaceBack(WScreen *scr, WDefaultEntry *entry, void *tdata, void *bar)
 {
+  return 0;
   CFTypeRef value = tdata;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) entry;
-  (void) bar;
 
   if (scr->flags.backimage_helper_launched) {
     char *str;

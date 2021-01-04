@@ -110,7 +110,7 @@ Bool wXDNDProcessSelection(XEvent *event)
                      0, 65536, True, selected_typelist, &ret_type, &ret_format,
                      &ret_item, &remain_byte, (unsigned char **)&delme);
 
-  /*send finished */
+  /* send finished */
   memset(&xevent, 0, sizeof(xevent));
   xevent.xany.type = ClientMessage;
   xevent.xany.display = dpy;
@@ -120,7 +120,7 @@ Bool wXDNDProcessSelection(XEvent *event)
   XDND_FINISHED_TARGET_WIN(&xevent) = event->xselection.requestor;
   XSendEvent(dpy, selowner, 0, 0, &xevent);
 
-  /*process dropping */
+  /* process dropping */
   if (delme) {
     CFMutableArrayRef items;
     int length, str_size;
@@ -128,7 +128,7 @@ Bool wXDNDProcessSelection(XEvent *event)
     char *tmp;
 
     scr->xdestring = delme;
-    items = CFArrayCreateMutable(kCFAllocatorDefault, 4, NULL);
+    items = CFArrayCreateMutable(kCFAllocatorDefault, 4, &kCFTypeArrayCallBacks);
     retain = wstrdup(scr->xdestring);
     XFree(scr->xdestring);	/* since xdestring was created by Xlib */
 

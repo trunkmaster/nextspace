@@ -59,7 +59,7 @@
 #include "dock.h"
 #include "resources.h"
 #include "workspace.h"
-#include "session.h"
+/* #include "session.h" */
 #include "balloon.h"
 #include "geomview.h"
 #include "wmspec.h"
@@ -83,7 +83,7 @@ static char STIPPLE_DATA[] = { 0x02, 0x01 };
 
 static int CantManageScreen = 0;
 
-static CFTypeRef dApplications = CFSTR("Applications");
+/* static CFTypeRef dApplications = CFSTR("Applications"); */ // session.h
 static CFTypeRef dWorkspace = CFSTR("Workspace");
 static CFTypeRef dDock = CFSTR("Dock");
 static CFTypeRef dClip = CFSTR("Clip");
@@ -617,7 +617,7 @@ WScreen *wScreenInit(int screen_number)
     scr->usableArea[i].y2 = scr->totalUsableArea[i].y2 = rect.pos.y + rect.size.height;
   }
 
-  scr->fakeGroupLeaders = CFArrayCreateMutable(kCFAllocatorDefault, 16, NULL);
+  scr->fakeGroupLeaders = CFArrayCreateMutable(kCFAllocatorDefault, 16, &kCFTypeArrayCallBacks);
 
   CantManageScreen = 0;
   oldHandler = XSetErrorHandler(alreadyRunningError);
@@ -870,19 +870,13 @@ void wScreenUpdateUsableArea(WScreen *scr)
 
 void wScreenRestoreState(WScreen * scr)
 {
-  /* CFPropertyListRef wmstate; */
   CFDictionaryRef state;
 
-  /* wmstate = WMUserDefaultsReadFromFile(WMUserDefaultsCopyURLForDomain(CFSTR("WMState"))); */
-  /* scr->session_state = CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, wmstate); */
-  /* CFRelease(wmstate); */
   scr->session_state = (CFMutableDictionaryRef)WMUserDefaultsRead(CFSTR("WMState"));
-
   if (!scr->session_state) {
-    scr->session_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
-  }
-  else {
-    WMUserDefaultsWrite(scr->session_state, CFSTR("WMState"));
+    scr->session_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                                   &kCFTypeDictionaryKeyCallBacks,
+                                                   &kCFTypeDictionaryValueCallBacks);
   }
 
   if (!wPreferences.flags.nodock) {
@@ -915,8 +909,7 @@ void wScreenSaveState(WScreen *scr)
 {
   WWindow *wwin;
   CFDictionaryRef old_state = NULL;
-  CFPropertyListRef wmstate;
-  const void *foo;
+  CFTypeRef foo;
 
   /* save state of windows */
   wwin = scr->focused_window;
@@ -928,24 +921,21 @@ void wScreenSaveState(WScreen *scr)
   if (wPreferences.flags.noupdates)
     return;
 
-  /* old_state = CFDictionaryCreateCopy(kCFAllocatorDefault, scr->session_state); */
-  /* old_state = scr->session_state; */
-  /* CFRelease(scr->session_state); */
-  /* scr->session_state = (CFMutableDictionaryRef)WMUserDefaultsRead(CFSTR("WMState")); */
-  /* scr->session_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL); */
-  /* CFDictionaryRemoveAllValues(scr->session_state); */
+  if (!scr->session_state || CFDictionaryGetCount(scr->session_state) <= 0)
+    return;
+
+  old_state = CFDictionaryCreateCopy(kCFAllocatorDefault, scr->session_state);
 
   /* save dock state to file */
-  /* if (!wPreferences.flags.nodock) { */
-  /*   wDockSaveState(scr, NULL/\*old_state*\/); */
-  /*   WMUserDefaultsWrite(scr->session_state, CFSTR("WMDock")); */
-  /* } */
-  /* else { */
-  /*   foo = CFDictionaryGetValue(old_state, dDock); */
-  /*   if (foo != NULL) { */
-  /*     CFDictionarySetValue(scr->session_state, dDock, foo); */
-  /*   } */
-  /* } */
+  if (!wPreferences.flags.nodock) {
+    wDockSaveState(scr, old_state);
+  }
+  else {
+    foo = CFDictionaryGetValue(old_state, dDock);
+    if (foo != NULL) {
+      CFDictionarySetValue(scr->session_state, dDock, foo);
+    }
+  }
   
   /* if (!wPreferences.flags.noclip) { */
   /*   wClipSaveState(scr); */
@@ -957,8 +947,7 @@ void wScreenSaveState(WScreen *scr)
   /*   } */
   /* } */
 
-  wWorkspaceSaveState(scr, NULL/*old_state*/);
-  WMUserDefaultsWrite(scr->session_state, CFSTR("WMWorkspaces"));
+  wWorkspaceSaveState(scr, old_state);
 
   /* if (!wPreferences.flags.nodrawer) { */
   /*   wDrawersSaveState(scr); */
@@ -983,19 +972,15 @@ void wScreenSaveState(WScreen *scr)
   /*   } */
   /* } */
 
-  /* wMenuSaveState(scr); */
+  wMenuSaveState(scr);
 
+  WMUserDefaultsWrite(scr->session_state, CFSTR("WMState"));
+  /* CFRelease(scr->session_state); */
+  /* scr->session_state = (CFMutableDictionaryRef)WMUserDefaultsRead(CFSTR("WMState")); */
+  
   if (old_state) {
     CFRelease(old_state);
   }
-  
-  /* WMUserDefaultsWrite(scr->session_state, CFSTR("WMState")); */
-  /* CFRelease(scr->session_state); */
-  /* scr->session_state = (CFMutableDictionaryRef)WMUserDefaultsRead(CFSTR("WMState")); */
-  /* wmstate = WMUserDefaultsRead(CFSTR("WMState")); */
-  /* scr->session_state = CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, wmstate); */
-  /* CFRelease(wmstate); */
-  
 }
 
 int wScreenBringInside(WScreen * scr, int *x, int *y, int width, int height)

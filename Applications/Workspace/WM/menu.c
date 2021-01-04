@@ -2251,49 +2251,45 @@ static void menuCloseClick(WCoreWindow *sender, void *data, XEvent *event)
   wMenuUnmap(menu);
 }
 
-static void saveMenuInfo(CFTypeRef dict, WMenu *menu, CFTypeRef key)
+static void saveMenuInfo(CFMutableDictionaryRef dict, WMenu *menu, CFTypeRef key)
 {
-  /* CFTypeRef value, *list; */
-  /* char buffer[256]; */
-
-  /* snprintf(buffer, sizeof(buffer), "%i,%i", menu->frame_x, menu->frame_y); */
-  /* value = WMCreatePLString(buffer); */
-  /* list = WMCreatePLArray(value, NULL); */
-  /* if (menu->flags.lowered) */
-  /*   WMAddToPLArray(list, WMCreatePLString("lowered")); */
-  /* WMPutInPLDictionary(dict, key, list); */
-  /* WMReleasePropList(value); */
-  /* WMReleasePropList(list); */
+  CFStringRef value;
+  CFMutableArrayRef list;
+  
+  value = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%i,%i"),
+                                   menu->frame_x, menu->frame_y);
+  list = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
+  CFArrayAppendValue(list, value);
+  if (menu->flags.lowered) {
+    CFArrayAppendValue(list, CFSTR("lowered"));
+  }
+  CFDictionarySetValue(dict, key, list);
+  
+  CFRelease(value);
+  CFRelease(list);
 }
 
-void wMenuSaveState(WScreen * scr)
+void wMenuSaveState(WScreen *scr)
 {
-  /*  CFTypeRef menus, *key;
+  CFMutableDictionaryRef menus;
   int save_menus = 0;
 
-  menus = WMCreatePLDictionary(NULL, NULL);
+  menus = CFDictionaryCreateMutable(kCFAllocatorDefault, 9, &kCFTypeDictionaryKeyCallBacks,
+                                    &kCFTypeDictionaryValueCallBacks);
 
   if (scr->switch_menu && scr->switch_menu->flags.buttoned) {
-    key = WMCreatePLString("SwitchMenu");
-    saveMenuInfo(menus, scr->switch_menu, key);
-    WMReleasePropList(key);
+    saveMenuInfo(menus, scr->switch_menu, CFSTR("SwitchMenu"));
     save_menus = 1;
   }
-
   if (scr->workspace_menu && scr->workspace_menu->flags.buttoned) {
-    key = WMCreatePLString("WorkspaceMenu");
-    saveMenuInfo(menus, scr->workspace_menu, key);
-    WMReleasePropList(key);
+    saveMenuInfo(menus, scr->workspace_menu, CFSTR("WorkspaceMenu"));
     save_menus = 1;
   }
-
   if (save_menus) {
-    key = CFSTR("Menus");
-    CFDictionaryAddValue(scr->session_state, key, menus);
-    WMReleasePropList(key);
+    CFDictionaryAddValue(scr->session_state, CFSTR("Menus"), menus);
   }
-  WMReleasePropList(menus);
-  */
+  
+  CFRelease(menus);
 }
 
 #define COMPLAIN(key) wwarning(_("bad value in menus state info: %s"), key)
@@ -2373,23 +2369,18 @@ static int restoreMenu(WScreen *scr, CFTypeRef menu)
 
 void wMenuRestoreState(WScreen *scr)
 {
-  /* CFTypeRef menus, *menu, *key, *skey; */
+  CFTypeRef menus, menu;
 
-  /* if (!scr->session_state) { */
-  /*   return; */
-  /* } */
+  if (!scr->session_state) {
+    return;
+  }
 
-  /* key = WMCreatePLString("Menus"); */
-  /* menus = WMGetFromPLDictionary(scr->session_state, key); */
-  /* WMReleasePropList(key); */
+  menus = CFDictionaryGetValue(scr->session_state, CFSTR("Menus"));
+  if (!menus)
+    return;
 
-  /* if (!menus) */
-  /*   return; */
+  /* restore menus */
+  menu = CFDictionaryGetValue(menus, CFSTR("SwitchMenu"));
 
-  /* /\* restore menus *\/ */
-
-  /* skey = WMCreatePLString("SwitchMenu"); */
-  /* menu = WMGetFromPLDictionary(menus, skey); */
-  /* WMReleasePropList(skey); */
-  /* restoreMenu(scr, menu); */
+  restoreMenu(scr, menu);
 }

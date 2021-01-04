@@ -22,7 +22,7 @@ CFAbsoluteTime WMUserDefaultsFileModificationTime(CFStringRef domainName,
 
 CFPropertyListRef WMUserDefaultsReadFromFile(CFURLRef fileURL);
 CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName);
-Boolean WMUserDefaultsWrite(CFDictionaryRef dictionary, CFStringRef domainName);
+Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName);
 Boolean WMUserDefaultsSynchronize(WDDomain *domain);
 void WMUserDefaultsMerge(CFMutableDictionaryRef dest, CFDictionaryRef source);
 

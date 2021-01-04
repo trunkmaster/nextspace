@@ -300,7 +300,7 @@ static int numberOfSelectedIcons(WDock *dock)
 
 static CFMutableArrayRef getSelected(WDock *dock)
 {
-  CFMutableArrayRef ret = CFArrayCreateMutable(kCFAllocatorDefault, 8, NULL);
+  CFMutableArrayRef ret = CFArrayCreateMutable(kCFAllocatorDefault, 8, &kCFTypeArrayCallBacks);
   WAppIcon *btn;
   int i;
 
@@ -1404,7 +1404,9 @@ static CFMutableDictionaryRef _dockCreateIconState(WAppIcon *btn)
                                           btn->xindex, btn->yindex);
     }
 
-    node = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+    node = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                     &kCFTypeDictionaryKeyCallBacks,
+                                     &kCFTypeDictionaryValueCallBacks);
     CFDictionaryAddValue(node, dCommand, command);
     CFDictionaryAddValue(node, dName, name);
     CFDictionaryAddValue(node, dAutoLaunch, autolaunch);
@@ -1437,13 +1439,12 @@ static CFMutableDictionaryRef _dockCreateIconState(WAppIcon *btn)
       CFDictionaryAddValue(node, dPasteCommand, command);
       CFRelease(command);
     }
-    /* CFShow(node); */
   }
 
   return node;
 }
 
-static CFMutableDictionaryRef _dockSaveState(WDock *dock)
+static CFMutableDictionaryRef _dockCreateState(WDock *dock)
 {
   int i;
   CFMutableArrayRef list;
@@ -1451,7 +1452,7 @@ static CFMutableDictionaryRef _dockSaveState(WDock *dock)
   CFMutableDictionaryRef dock_state;
   CFStringRef value, key;
 
-  list = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
+  list = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
 
   for (i = (dock->type == WM_DOCK ? 0 : 1); i < dock->max_icons; i++) {
     WAppIcon *btn = dock->icon_array[i];
@@ -1466,7 +1467,9 @@ static CFMutableDictionaryRef _dockSaveState(WDock *dock)
     }
   }
   
-  dock_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+  dock_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                         &kCFTypeDictionaryKeyCallBacks,
+                                         &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(dock_state, dApplications, list);
 
   if (dock->type == WM_DOCK) {
@@ -1501,43 +1504,31 @@ static CFMutableDictionaryRef _dockSaveState(WDock *dock)
     CFDictionaryAddValue(dock_state, dAutoRaiseLower, value);
   }
 
-  CFShow(dock_state);
-  fprintf(stderr, "Dock state has %li elements.\n", CFDictionaryGetCount(dock_state));
-
   return dock_state;
+}
+
+static void _dockSaveOldState(CFTypeRef key, CFTypeRef value, void *dock_state)
+{
+  if ((CFStringCompareWithOptions(key, CFSTR("applications"), CFRangeMake(0, 12),
+                                  kCFCompareCaseInsensitive) == kCFCompareEqualTo)) {
+    CFDictionarySetValue(dock_state, key, value);
+  }
 }
 
 void wDockSaveState(WScreen *scr, CFDictionaryRef old_state)
 {
-  CFMutableDictionaryRef dock_state = _dockSaveState(scr->dock);
+  CFMutableDictionaryRef dock_state = _dockCreateState(scr->dock);
+  CFDictionaryRef dock_old_state;
 
-  /* CFShow(dock_state); */
-  
   /*
    * Copy saved states of docks with different sizes.
    */
-  if (old_state) {
-    CFDictionaryRef old_dock_state = CFDictionaryGetValue(old_state, dDock);
-    const void *keys;
-    const void *values;
-
-    /* CFShow(old_dock_state); */
-    CFDictionaryGetKeysAndValues(old_dock_state, &keys, &values);
-    for (int i = 0; i < CFDictionaryGetCount(old_dock_state); i++) {
-      CFShow(&keys[i]);
-      /* if (strncasecmp(tmp, "applications", 12) == 0 */
-      if ((CFStringCompareWithOptions(&keys[i], CFSTR("applications"), CFRangeMake(0, 12),
-                                      kCFCompareCaseInsensitive) == 0)
-          && !CFDictionaryGetValue(dock_state, &keys[i])) {
-        if (CFDictionaryGetValue(old_dock_state, &keys[i]) != NULL) {
-          CFDictionaryAddValue(dock_state, &keys[i], &values[i]);
-        }
-      }
-    }
+  if (old_state && CFDictionaryGetCount(old_state)) {
+    dock_old_state = CFDictionaryGetValue(old_state, dDock);
+    CFDictionaryApplyFunction(dock_old_state, _dockSaveOldState, dock_state);
   }
 
   if (dock_state && scr->session_state) {
-    /* CFShow(dock_state); */
     CFDictionarySetValue(scr->session_state, dDock, dock_state);
     CFRelease(dock_state);
   }
@@ -1556,7 +1547,7 @@ void wClipSaveState(WScreen *scr)
 
 CFMutableDictionaryRef wClipSaveWorkspaceState(WScreen *scr, int workspace)
 {
-  return _dockSaveState(scr->workspaces[workspace]->clip);
+  return _dockCreateState(scr->workspaces[workspace]->clip);
 }
 
 static Bool getBooleanDockValue(CFStringRef value, CFStringRef key)
@@ -4395,7 +4386,7 @@ static void drawerDestroy(WDock *drawer)
     XMoveWindow(dpy, aicon->icon->core->window, drawer->x_pos, drawer->y_pos);
     XMapWindow(dpy, aicon->icon->core->window);
   } else if (drawer->icon_count > 2) {
-    icons = CFArrayCreateMutable(kCFAllocatorDefault, drawer->icon_count - 1, NULL);
+    icons = CFArrayCreateMutable(kCFAllocatorDefault, drawer->icon_count - 1, &kCFTypeArrayCallBacks);
     for (i = 1; i < drawer->max_icons; i++) {
       aicon = drawer->icon_array[i];
       if (aicon == NULL)

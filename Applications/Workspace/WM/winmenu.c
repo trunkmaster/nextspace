@@ -335,7 +335,7 @@ static void makeShortcutCommand(WMenu * menu, WMenuEntry * entry)
     scr->shortcutWindows[index] = CFArrayCreateMutableCopy(kCFAllocatorDefault ,
                                                            0, scr->selected_windows);
   } else {
-    scr->shortcutWindows[index] = CFArrayCreateMutable(kCFAllocatorDefault, 4, NULL);
+    scr->shortcutWindows[index] = CFArrayCreateMutable(kCFAllocatorDefault, 4, &kCFTypeArrayCallBacks);
     CFArrayAppendValue(scr->shortcutWindows[index], wwin);
   }
 

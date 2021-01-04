@@ -137,7 +137,7 @@ int main(int argc, const char **argv)
   //--- Window Manager thread queue -------------------------------------
   {
     dispatch_queue_t wm_q;
-
+    
     // DISPATCH_QUEUE_CONCURRENT is mandatory for CFRunLoop run.
     wm_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_CONCURRENT);
     fprintf(stderr, "=== Initializing Window Manager... ===\n");

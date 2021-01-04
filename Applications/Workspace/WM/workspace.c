@@ -86,7 +86,9 @@ static void _postNotification(CFStringRef name, int workspace_number, void *obje
   CFMutableDictionaryRef info;
   CFNumberRef workspace;
   
-  info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+  info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                   &kCFTypeDictionaryKeyCallBacks,
+                                   &kCFTypeDictionaryValueCallBacks);
   workspace = CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType, &workspace_number);
   CFDictionaryAddValue(info, CFSTR("workspace"), workspace);
   
@@ -910,7 +912,7 @@ void wWorkspaceMenuUpdate(WScreen *scr, WMenu * menu)
 
 void wWorkspaceSaveState(WScreen *scr, CFDictionaryRef old_state)
 {
-  CFArrayRef old_wks_state;
+  CFArrayRef old_wks_state = NULL;
   CFMutableArrayRef parr;
   CFDictionaryRef foo, bar;
   CFMutableDictionaryRef wks_state;
@@ -921,10 +923,11 @@ void wWorkspaceSaveState(WScreen *scr, CFDictionaryRef old_state)
     old_wks_state = CFDictionaryGetValue(old_state, dWorkspaces);
   }
   
-  parr = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
+  parr = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
   for (i = 0; i < scr->workspace_count; i++) {
-    CFDictionaryRef wksp;
-    wks_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+    wks_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                          &kCFTypeDictionaryKeyCallBacks,
+                                          &kCFTypeDictionaryValueCallBacks);
     pstr = CFStringCreateWithCString(kCFAllocatorDefault, scr->workspaces[i]->name,
                                      kCFStringEncodingUTF8);
     CFDictionarySetValue(wks_state, dName, pstr);
@@ -945,14 +948,10 @@ void wWorkspaceSaveState(WScreen *scr, CFDictionaryRef old_state)
       }
     }
 
-    wksp = CFDictionaryCreateCopy(kCFAllocatorDefault, wks_state);
+    CFArrayAppendValue(parr, wks_state);
     CFRelease(wks_state);
-    CFArrayAppendValue(parr, wksp);
-    CFRelease(wksp);
   }
-  /* CFShow(scr->session_state); */
   CFDictionarySetValue(scr->session_state, dWorkspaces, parr);
-  CFShow(scr->session_state);
   CFRelease(parr);
 }
 

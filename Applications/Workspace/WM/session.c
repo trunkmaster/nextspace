@@ -87,44 +87,20 @@
 #include "dock.h"
 #include "misc.h"
 
+static CFTypeRef sApplications = CFSTR("Applications");
+static CFTypeRef sCommand = CFSTR("Command");
+static CFTypeRef sName = CFSTR("Name");
+static CFTypeRef sHost = CFSTR("Host");
+static CFTypeRef sWorkspace = CFSTR("Workspace");
+static CFTypeRef sShaded = CFSTR("Shaded");
+static CFTypeRef sMiniaturized = CFSTR("Miniaturized");
+static CFTypeRef sHidden = CFSTR("Hidden");
+static CFTypeRef sGeometry = CFSTR("Geometry");
+static CFTypeRef sShortcutMask = CFSTR("ShortcutMask");
 
-static CFTypeRef sApplications = NULL;
-static CFTypeRef sCommand;
-static CFTypeRef sName;
-static CFTypeRef sHost;
-static CFTypeRef sWorkspace;
-static CFTypeRef sShaded;
-static CFTypeRef sMiniaturized;
-static CFTypeRef sHidden;
-static CFTypeRef sGeometry;
-static CFTypeRef sShortcutMask;
-
-static CFTypeRef sDock;
-static CFTypeRef sYes, sNo;
-
-static void make_keys(void)
-{
-  if (sApplications != NULL)
-    return;
-
-  sApplications = CFStringCreateWithCString(kCFAllocatorDefault, "Applications",
-                                            kCFStringEncodingUTF8);
-  sCommand = CFStringCreateWithCString(kCFAllocatorDefault, "Command", kCFStringEncodingUTF8);
-  sName = CFStringCreateWithCString(kCFAllocatorDefault, "Name", kCFStringEncodingUTF8);
-  sHost = CFStringCreateWithCString(kCFAllocatorDefault, "Host", kCFStringEncodingUTF8);
-  sWorkspace = CFStringCreateWithCString(kCFAllocatorDefault, "Workspace", kCFStringEncodingUTF8);
-  sShaded = CFStringCreateWithCString(kCFAllocatorDefault, "Shaded", kCFStringEncodingUTF8);
-  sMiniaturized = CFStringCreateWithCString(kCFAllocatorDefault, "Miniaturized",
-                                            kCFStringEncodingUTF8);
-  sHidden = CFStringCreateWithCString(kCFAllocatorDefault, "Hidden", kCFStringEncodingUTF8);
-  sGeometry = CFStringCreateWithCString(kCFAllocatorDefault, "Geometry", kCFStringEncodingUTF8);
-  sDock = CFStringCreateWithCString(kCFAllocatorDefault, "Dock", kCFStringEncodingUTF8);
-  sShortcutMask = CFStringCreateWithCString(kCFAllocatorDefault, "ShortcutMask",
-                                            kCFStringEncodingUTF8);
-
-  sYes = CFStringCreateWithCString(kCFAllocatorDefault, "Yes", kCFStringEncodingUTF8);
-  sNo = CFStringCreateWithCString(kCFAllocatorDefault, "No", kCFStringEncodingUTF8);
-}
+static CFTypeRef sDock = CFSTR("Dock");
+static CFTypeRef sYes = CFSTR("Yes");
+static CFTypeRef sNo = CFSTR("No");
 
 static int getBool(CFTypeRef value)
 {
@@ -229,7 +205,9 @@ static CFTypeRef makeWindowState(WWindow *wwin, WApplication *wapp)
 
     shortcut = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s"), mask);
 
-    win_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+    win_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                          &kCFTypeDictionaryKeyCallBacks,
+                                          &kCFTypeDictionaryValueCallBacks);
     CFDictionaryAddValue(win_state, sName, name);
     CFDictionaryAddValue(win_state, sCommand, cmd);
     CFDictionaryAddValue(win_state, sWorkspace, workspace);
@@ -295,17 +273,17 @@ void wSessionSaveState(WScreen * scr)
   CFMutableArrayRef list = NULL;
   CFMutableArrayRef wapp_list;
 
-  make_keys();
-
   if (!scr->session_state) {
-    scr->session_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+    scr->session_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                                   &kCFTypeDictionaryKeyCallBacks,
+                                                   &kCFTypeDictionaryValueCallBacks);
     if (!scr->session_state) {
       return;
     }
   }
 
-  list = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
-  wapp_list = CFArrayCreateMutable(kCFAllocatorDefault, 16, NULL);
+  list = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
+  wapp_list = CFArrayCreateMutable(kCFAllocatorDefault, 16, &kCFTypeArrayCallBacks);
 
   while (wwin) {
     WApplication *wapp = wApplicationOf(wwin->main_window);
@@ -345,8 +323,6 @@ void wSessionSaveState(WScreen * scr)
 
 void wSessionClearState(WScreen * scr)
 {
-  make_keys();
-
   if (!scr->session_state)
     return;
 
@@ -474,8 +450,6 @@ void wSessionRestoreState(WScreen *scr)
   int j, n, found;
   char *tmp;
 
-  make_keys();
-
   if (!scr->session_state)
     return;
 
@@ -575,8 +549,6 @@ void wSessionRestoreLastWorkspace(WScreen * scr)
   CFStringRef wks;
   int w;
   const char *value;
-
-  make_keys();
 
   if (!scr->session_state)
     return;

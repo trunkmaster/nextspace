@@ -1145,7 +1145,9 @@ static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_ins
     CFRetain(val);
   } else {
     /* no dictionary for app, so create one */
-    adict = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL);
+    adict = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                      &kCFTypeDictionaryKeyCallBacks,
+                                      &kCFTypeDictionaryValueCallBacks);
     val = CFStringCreateWithCString(kCFAllocatorDefault, iconPath, kCFStringEncodingUTF8);
     CFDictionarySetValue(adict, iconkey, val);
   }
