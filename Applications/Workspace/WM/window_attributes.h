@@ -21,6 +21,7 @@
 #ifndef __WORKSPACE_WM_WDEFAULTS__
 #define __WORKSPACE_WM_WDEFAULTS__
 
+#include <defaults.h>
 
 /* bit flags for the above window attributes */
 #define WA_TITLEBAR  		(1<<0)
@@ -39,6 +40,8 @@
 #define WA_IGNORE_HIDE_OTHERS	(1<<13)
 #define WA_NOT_APPLICATION	(1<<14)
 #define WA_DONT_MOVE_OFF	(1<<15)
+
+WDDomain *wWindowAttributesInitDomain(void);
 
 void wDefaultFillAttributes(const char *instance, const char *class,
                             WWindowAttributes *attr, WWindowAttributes *mask,

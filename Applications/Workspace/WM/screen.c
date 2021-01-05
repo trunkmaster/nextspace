@@ -872,7 +872,7 @@ void wScreenRestoreState(WScreen * scr)
 {
   CFDictionaryRef state;
 
-  scr->session_state = (CFMutableDictionaryRef)WMUserDefaultsRead(CFSTR("WMState"));
+  scr->session_state = (CFMutableDictionaryRef)WMUserDefaultsRead(CFSTR("WMState"), true);
   if (!scr->session_state) {
     scr->session_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                                    &kCFTypeDictionaryKeyCallBacks,

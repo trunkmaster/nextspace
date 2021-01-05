@@ -72,8 +72,8 @@
 #ifdef USE_DOCK_XDND
 #include "xdnd.h"
 #endif
-
 #include "xutil.h"
+#include "window_attributes.h"
 
 /* for SunOS */
 #ifndef SA_RESTART
@@ -546,7 +546,7 @@ void StartUp(Bool defaultScreenOnly)
    * screen independent */
   wDefaultsReadStatic(w_global.domain.wmaker ? w_global.domain.wmaker->dictionary : NULL);
   if (w_global.domain.wmaker) {
-    WMUserDefaultsSynchronize(w_global.domain.wmaker);
+    WMUserDefaultsWrite(w_global.domain.wmaker->dictionary, w_global.domain.wmaker->name);
   }
 
   /* check sanity of some values */
@@ -558,8 +558,8 @@ void StartUp(Bool defaultScreenOnly)
 
   /* init other domains */
   w_global.domain.window_attr = wDefaultsInitDomain("WMWindowAttributes");
-  if (!w_global.domain.window_attr->dictionary)
-    wwarning(_("could not read domain \"%s\" from defaults database"), "WMWindowAttributes");
+  /* if (!w_global.domain.window_attr->dictionary) */
+  /*   wwarning(_("could not read domain \"%s\" from defaults database"), "WMWindowAttributes"); */
 
   XSetErrorHandler((XErrorHandler) catchXError);
 

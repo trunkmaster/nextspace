@@ -53,6 +53,29 @@ CFStringRef WMUserDefaultsCopyPathForDomain(CFStringRef domain)
   return domainPath;
 }
 
+CFURLRef WMUserDefaultsCopySystemURLForDomain(CFStringRef domain)
+{
+  CFURLRef appBundleURL;
+  CFURLRef domainURL;
+
+  appBundleURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, CFSTR(SYSCONFDIR),
+                                               kCFURLPOSIXPathStyle, true);
+  
+  if (CFStringGetLength(domain) > 0) {
+    domainURL = CFURLCreateCopyAppendingPathComponent(kCFAllocatorDefault, appBundleURL,
+                                                      domain, false);
+  }
+  else {
+    CFRetain(appBundleURL);
+    domainURL = appBundleURL;
+  }
+
+  CFRelease(appBundleURL);
+
+  return domainURL;
+}
+
+
 // ---[ Dictionary ] ------------------------------------------------------------------------------
 CFPropertyListRef WMUserDefaultsFromDescription(const char *description)
 {
@@ -184,13 +207,10 @@ CFPropertyListRef WMUserDefaultsReadFromFile(CFURLRef fileURL)
   return pl;
 }
   
-CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName)
+CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName, Boolean useSystemDomain)
 {
   CFURLRef fileURL = NULL;
   CFURLRef osURL = NULL;
-  /* CFURLRef xmlURL = NULL; */
-  /* CFReadStreamRef readStream = NULL; */
-  /* CFErrorRef plError = NULL; */
   CFPropertyListRef pl = NULL;
 
   osURL = WMUserDefaultsCopyURLForDomain(domainName);
@@ -198,14 +218,14 @@ CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName)
   if (WMUserDefaultsFileExists(domainName, kCFPropertyListXMLFormat_v1_0) > 0.0) {
     // Read XML format .plist file
     fileURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
-    /* readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, xmlURL); */
-    /* fileURL = xmlURL; */
   }
   else if (WMUserDefaultsFileExists(domainName, kCFPropertyListOpenStepFormat) > 0.0) {
     // Read OpenStep format (file without .plist extension)
-    /* readStream = CFReadStreamCreateWithFile(kCFAllocatorDefault, osURL); */
     fileURL = osURL;
     CFRetain(osURL);
+  }
+  else if (useSystemDomain == true) {
+    fileURL = WMUserDefaultsCopySystemURLForDomain(domainName);
   }
   else {
     CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) no files exist to read for domain %@"),
@@ -286,41 +306,6 @@ Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
   CFRelease(xmlURL);
 
   return (plError > 0) ? false : true;
-}
-
-Boolean WMUserDefaultsSynchronize(WDDomain *domain)
-{
-  /* struct stat stbuf; */
-  /* char path[PATH_MAX]; */
-  /* WMPropList *shared_dict; */
-  /* Boolean freeDict = False; */
-  Boolean result;
-
-  /* if (CFGetTypeID(domain->dictionary) != CFDictionaryGetTypeID()) { */
-  /*   /\* retrieve global system dictionary *\/ */
-  /*   snprintf(path, sizeof(path), "%s/WindowMaker/%s", SYSCONFDIR, domain->domain_name); */
-  /*   if (stat(path, &stbuf) >= 0) { */
-  /*     shared_dict = WMReadPropListFromFile(path); */
-  /*     if (shared_dict) { */
-  /*       if (WMIsPLDictionary(shared_dict)) { */
-  /*         freeDict = True; */
-  /*         dict = WMDeepCopyPropList(domain->dictionary); */
-  /*         WMSubtractPLDictionaries(dict, shared_dict, True); */
-  /*       } */
-  /*       WMReleasePropList(shared_dict); */
-  /*     } */
-  /*   } */
-  /* } */
-
-  CFLog(kCFLogLevelError, CFSTR("Writing domain: %@"), domain->name);
-
-  result = WMUserDefaultsWrite(domain->dictionary, domain->name);
-  if (!result) {
-    CFRelease(domain->dictionary);
-    domain->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->name);
-  }
-
-  return (result && domain->dictionary != NULL);
 }
 
 void WMUserDefaultsMerge(CFMutableDictionaryRef dest, CFDictionaryRef source)

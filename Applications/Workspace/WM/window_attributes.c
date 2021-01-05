@@ -591,7 +591,7 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
   }
 
   if (!wPreferences.flags.noupdates) {
-    WMUserDefaultsSynchronize(db);
+    WMUserDefaultsWrite(db->dictionary, db->name);
   }
   
   if (attr) {
@@ -613,7 +613,8 @@ void wDefaultPurgeInfo(const char *instance, const char *class)
 
   if (dict) {
     CFDictionaryRemoveValue(w_global.domain.window_attr->dictionary, key);
-    WMUserDefaultsSynchronize(w_global.domain.window_attr);
+    WMUserDefaultsWrite(w_global.domain.window_attr->dictionary,
+                        w_global.domain.window_attr->name);
   }
 
   CFRelease(key);

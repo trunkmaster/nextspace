@@ -10,6 +10,7 @@
 CFURLRef WMUserDefaultsCopyUserLibraryURL(void);
 CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain);
 CFStringRef WMUserDefaultsCopyPathForDomain(CFStringRef domain);
+CFURLRef WMUserDefaultsCopySystemURLForDomain(CFStringRef domain);
 
 /* Property List */
 CFPropertyListRef WMUserDefaultsFromDescription(const char *description);
@@ -21,9 +22,9 @@ CFAbsoluteTime WMUserDefaultsFileModificationTime(CFStringRef domainName,
                                                   CFPropertyListFormat format);
 
 CFPropertyListRef WMUserDefaultsReadFromFile(CFURLRef fileURL);
-CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName);
+/* CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName); */
+CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName, Boolean useSystemDomain);
 Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName);
-Boolean WMUserDefaultsSynchronize(WDDomain *domain);
 void WMUserDefaultsMerge(CFMutableDictionaryRef dest, CFDictionaryRef source);
 
 #endif

@@ -1246,8 +1246,7 @@ pid_t WMExecuteCommand(NSString *command)
 
 //-----------------------------------------------------------------------------
 // Workspace functions which are called from WM's code.
-// Most calls are coming from X11 EventLoop().
-// All the functions below are executed insise 'wwmaker_q' GCD queue.
+// All the functions below are executed inside 'wwmaker_q' GCD queue.
 //-----------------------------------------------------------------------------
 
 //--- Application management

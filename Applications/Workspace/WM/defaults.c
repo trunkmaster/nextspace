@@ -655,38 +655,11 @@ void _updateApplicationIcons(WScreen *scr)
   }
 }
 
-// are placed in /usr/NextSpace/Apps/Workspace.app/Resources/WM
-/* static CFPropertyListRef _readSystemDomain(const char *domainName) */
-/* { */
-/*   CFPropertyListRef systemDict = NULL; */
-/*   CFStringRef path, domain; */
-
-/*   /\* SYSCONFDIR specified in WM.h *\/ */
-/*   path = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/%s"), SYSCONFDIR, domainName); */
-/*   domain = CFStringCreateWithCString(kCFAllocatorDefault, domainName, kCFStringEncodingUTF8); */
-/*   if (WMUserDefaultsFileExists(domain, 0)) { */
-/*     systemDict = WMUserDefaultsReadFromFile(path); */
-/*     if (systemDict && (CFGetTypeID(systemDict) != CFDictionaryGetTypeID())) { */
-/*       wwarning(_("Domain %s (%s) of global defaults database is corrupted!"), */
-/*                domainName, WMUserDefaultsGetCString(path, kCFStringEncodingUTF8)); */
-/*       CFRelease(systemDict); */
-/*     } */
-/*     else if (!systemDict) { */
-/*       wwarning(_("could not load domain %s from system defaults database"), domainName); */
-/*     } */
-/*   } */
-/*   CFRelease(path); */
-/*   CFRelease(domain); */
-
-/*   return systemDict; */
-/* } */
-
 // Called from startup.c
 WDDomain *wDefaultsInitDomain(const char *domain)
 {
   WDDomain *db;
   static int inited = 0;
-  /* CFPropertyListRef shared_dict = NULL; */
   CFAbsoluteTime modificationTime = 0.0;
 
   if (!inited) {
@@ -698,10 +671,12 @@ WDDomain *wDefaultsInitDomain(const char *domain)
   db->name = CFStringCreateWithCString(kCFAllocatorDefault, domain, kCFStringEncodingUTF8);
   db->path = WMUserDefaultsCopyURLForDomain(db->name);
 
-  modificationTime = WMUserDefaultsFileModificationTime(db->name, 0);
-  if (modificationTime > 0) {
-    db->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(db->name);
-    if (db->dictionary && (CFGetTypeID(db->dictionary) != CFDictionaryGetTypeID())) {
+  db->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(db->name, true);
+  /* modificationTime = WMUserDefaultsFileModificationTime(db->name, 0); */
+  /* if (modificationTime > 0) { */
+  if (db->dictionary) {
+    /* db->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(db->name); */
+    if (/*db->dictionary && */(CFGetTypeID(db->dictionary) != CFDictionaryGetTypeID())) {
       CFRelease(db->dictionary);
       db->dictionary = NULL;
       wwarning(_("Domain %s (%s) of defaults database is corrupted!"), domain,
@@ -713,26 +688,10 @@ WDDomain *wDefaultsInitDomain(const char *domain)
     db->dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
                                                &kCFTypeDictionaryKeyCallBacks,
                                                &kCFTypeDictionaryValueCallBacks);
-    WMUserDefaultsSynchronize(db);
+    WMUserDefaultsWrite(db->dictionary, db->name);
     modificationTime = WMUserDefaultsFileModificationTime(db->name, 0);
     db->timestamp = modificationTime;
   }
-
-  /* global system dictionary */
-  /* shared_dict = _readGlobalDomain(domain, requireDictionary); */
-
-  /* if (shared_dict && db->dictionary && WMIsPLDictionary(shared_dict) && */
-  /*     WMIsPLDictionary(db->dictionary)) { */
-  /*   WMMergePLDictionaries(shared_dict, db->dictionary, True); */
-  /*   WMReleasePropList(db->dictionary); */
-  /*   db->dictionary = shared_dict; */
-  /*   if (stbuf.st_mtime > db->timestamp) */
-  /*     db->timestamp = stbuf.st_mtime; */
-  /* } else if (!db->dictionary) { */
-  /*   db->dictionary = shared_dict; */
-  /*   if (stbuf.st_mtime > db->timestamp) */
-  /*     db->timestamp = stbuf.st_mtime; */
-  /* } */
 
   return db;
 }
@@ -922,7 +881,6 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
 void wDefaultsCheckDomains(void* arg)
 {
   WScreen *scr;
-  /* CFTypeRef shared_dict = NULL; */
   CFMutableDictionaryRef dict;
   CFAbsoluteTime time = 0.0;
 
@@ -931,11 +889,8 @@ void wDefaultsCheckDomains(void* arg)
   if (w_global.domain.wmaker->timestamp < time) {
     w_global.domain.wmaker->timestamp = time;
 
-    /* Global dictionary */
-    /* shared_dict = _readGlobalDomain("WindowMaker", True); */
-
     /* User dictionary */
-    dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.wmaker->name);
+    dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.wmaker->name, false);
     if (dict) {
       if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
         CFRelease(dict);
@@ -943,13 +898,6 @@ void wDefaultsCheckDomains(void* arg)
         CFLog(kCFLogLevelError, CFSTR("Domain %s (%@) of defaults database is corrupted!"),
               "WindowMaker", w_global.domain.wmaker->name);
       } else {
-        /* if (shared_dict) { */
-        /*   WMMergePLDictionaries(shared_dict, dict, True); */
-        /*   WMReleasePropList(dict); */
-        /*   dict = shared_dict; */
-        /*   shared_dict = NULL; */
-        /* } */
-
         scr = wDefaultScreen();
         if (scr) {
           wDefaultsRead(scr, dict);
@@ -958,23 +906,19 @@ void wDefaultsCheckDomains(void* arg)
           CFRelease(w_global.domain.wmaker->dictionary);
         }
         w_global.domain.wmaker->dictionary = dict;
-        WMUserDefaultsSynchronize(w_global.domain.wmaker);
+        WMUserDefaultsWrite(w_global.domain.wmaker->dictionary,
+                            w_global.domain.wmaker->name);
       }
     } else {
       wwarning(_("could not load domain %s from user defaults database"), "WindowMaker");
     }
-
-    /* if (shared_dict) */
-    /*   WMReleasePropList(shared_dict); */
   }
 
   // ~/Library/Preferences/.WindowMaker/WMAttributes
   time = WMUserDefaultsFileModificationTime(w_global.domain.window_attr->name, 0);
   if (w_global.domain.window_attr->timestamp < time) {
-    /* global dictionary */
-    /* shared_dict = _readGlobalDomain("WMWindowAttributes", True); */
     /* user dictionary */
-    dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.window_attr->name);
+    dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.window_attr->name, true);
     if (dict) {
       if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
         CFRelease(dict);
@@ -982,16 +926,9 @@ void wDefaultsCheckDomains(void* arg)
         CFLog(kCFLogLevelError, CFSTR("Domain %s (%@) of defaults database is corrupted!"),
               "WMWindowAttributes", w_global.domain.window_attr->path);
       } else {
-        /* if (shared_dict) { */
-        /*   WMMergePLDictionaries(shared_dict, dict, True); */
-        /*   WMReleasePropList(dict); */
-        /*   dict = shared_dict; */
-        /*   shared_dict = NULL; */
-        /* } */
-
-        if (w_global.domain.window_attr->dictionary)
+        if (w_global.domain.window_attr->dictionary) {
           CFRelease(w_global.domain.window_attr->dictionary);
-
+        }
         w_global.domain.window_attr->dictionary = dict;
         scr = wDefaultScreen();
         if (scr) {
@@ -1003,8 +940,6 @@ void wDefaultsCheckDomains(void* arg)
     }
 
     w_global.domain.window_attr->timestamp = WMUserDefaultsFileModificationTime(w_global.domain.window_attr->name, 0);
-    /* if (shared_dict) */
-    /*   CFRelease(shared_dict); */
   }
 
 #ifndef HAVE_INOTIFY

@@ -1157,7 +1157,8 @@ static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_ins
   }
   
   if (val && !wPreferences.flags.noupdates) {
-    WMUserDefaultsSynchronize(w_global.domain.window_attr);
+    WMUserDefaultsWrite(w_global.domain.window_attr->dictionary,
+                        w_global.domain.window_attr->name);
   }
   
   if (adict) {
