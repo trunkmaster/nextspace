@@ -3,7 +3,7 @@
 #include <X11/Xutil.h>
 
 #include <WMcore/util.h>
-#include <WMcore/userdefaults.h>
+/* #include <WMcore/userdefaults.h> */
 #include <WMcore/string.h>
 
 #include "WINGs.h"

@@ -42,7 +42,7 @@
 #include <WINGs/widgets.h>
 #include <WINGs/wcolor.h>
 #include <WINGs/wmisc.h>
-#include <WINGs/wappresource.h>
+/* #include <WINGs/wappresource.h> */
 #include <WINGs/wuserdefaults.h>
 
 #include "WM.h"

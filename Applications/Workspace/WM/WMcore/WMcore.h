@@ -111,23 +111,6 @@ typedef int WMMatchDataProc(const void *item, const void *cdata);
   })
 
 
-/* ---[ WINGs/error.c ]--------------------------------------------------- */
-
-enum {
-	WMESSAGE_TYPE_MESSAGE,
-	WMESSAGE_TYPE_WARNING,
-	WMESSAGE_TYPE_ERROR,
-	WMESSAGE_TYPE_FATAL
-};
-
-/* #define wmessage(fmt, args...) __wmessage( __func__, __FILE__, __LINE__, WMESSAGE_TYPE_MESSAGE, fmt, ## args) */
-#define wwarning(fmt, args...) __wmessage( __func__, __FILE__, __LINE__, WMESSAGE_TYPE_WARNING, fmt, ## args)
-#define werror(fmt, args...) __wmessage( __func__, __FILE__, __LINE__, WMESSAGE_TYPE_ERROR, fmt, ## args)
-#define wfatal(fmt, args...) __wmessage( __func__, __FILE__, __LINE__, WMESSAGE_TYPE_FATAL, fmt, ## args)
-
-void __wmessage(const char *func, const char *file, int line, int type, const char *msg, ...)
-	__attribute__((__format__(printf,5,6)));
-
 /*-------------------------------------------------------------------------*/
 
 /* Global variables */

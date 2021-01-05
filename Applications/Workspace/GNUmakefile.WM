@@ -1,24 +1,18 @@
-# WUtil
+# WMcore
 $(APP_NAME)_C_FILES += \
-	$(WM_DIR)/WMcore/array.c \
-	$(WM_DIR)/WMcore/bagtree.c \
 	$(WM_DIR)/WMcore/data.c \
-	$(WM_DIR)/WMcore/findfile.c \
 	$(WM_DIR)/WMcore/handlers.c \
 	$(WM_DIR)/WMcore/hashtable.c \
 	$(WM_DIR)/WMcore/string.c \
-	$(WM_DIR)/WMcore/tree.c \
 	$(WM_DIR)/WMcore/util.c
-
-#	$(WM_DIR)/WMcore/userdefaults.c
-#	$(WM_DIR)/WMcore/proplist.c
-
 
 # WINGs
 $(APP_NAME)_C_FILES += \
+	$(WM_DIR)/WINGs/bagtree.c \
 	$(WM_DIR)/WINGs/dragcommon.c \
 	$(WM_DIR)/WINGs/dragdestination.c \
 	$(WM_DIR)/WINGs/dragsource.c \
+	$(WM_DIR)/WINGs/fileutils.c \
 	$(WM_DIR)/WINGs/selection.c \
 	$(WM_DIR)/WINGs/wappresource.c \
 	$(WM_DIR)/WINGs/wballoon.c \
@@ -34,7 +28,8 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/WINGs/wview.c \
 	$(WM_DIR)/WINGs/wwindow.c \
         $(WM_DIR)/WINGs/wuserdefaults.c
-        
+
+
 # WindowMaker
 $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/WM_main.c \

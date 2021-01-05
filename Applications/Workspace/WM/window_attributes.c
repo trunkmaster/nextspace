@@ -35,6 +35,7 @@
 #include <wraster.h>
 
 #include <WMcore/util.h>
+#include <WINGs/fileutils.h>
 #include "WINGs/wuserdefaults.h"
 
 #include "WM.h"
@@ -375,7 +376,7 @@ char *get_icon_filename(const char *winstance, const char *wclass, const char *c
 
   /* Check if the file really exists in the disk */
   if (file_name)
-    file_path = FindImage(wPreferences.icon_path, file_name);
+    file_path = WMAbsolutePathForFile(wPreferences.icon_path, file_name);
   else
     file_path = NULL;
 
@@ -386,7 +387,7 @@ char *get_icon_filename(const char *winstance, const char *wclass, const char *c
     file_name = wDefaultGetIconFile(winstance, wclass, False);
 
     if (file_name) {
-      file_path = FindImage(wPreferences.icon_path, file_name);
+      file_path = WMAbsolutePathForFile(wPreferences.icon_path, file_name);
       if (!file_path)
         wwarning(_("icon \"%s\" doesn't exist, check your config files"), file_name);
 
@@ -437,9 +438,9 @@ char *get_default_image_path(void)
   /* Get the default icon */
   file = wDefaultGetIconFile(NULL, NULL, True);
   if (file)
-    path = FindImage(wPreferences.icon_path, file);
+    path = WMAbsolutePathForFile(wPreferences.icon_path, file);
   else
-    path = FindImage(wPreferences.icon_path, DEF_APP_ICON);
+    path = WMAbsolutePathForFile(wPreferences.icon_path, DEF_APP_ICON);
 
   return path;
 }

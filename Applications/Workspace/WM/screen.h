@@ -28,8 +28,7 @@
 #include <CoreFoundation/CFArray.h>
 #include <CoreFoundation/CFRunLoop.h>
 
-/* #include <WMcore/proplist.h> */
-#include <WMcore/bagtree.h>
+#include <WINGs/bagtree.h>
 
 #include <WINGs/wfont.h>
 

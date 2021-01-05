@@ -37,6 +37,7 @@
 
 #include <X11/XKBlib.h>
 
+#include <WINGs/fileutils.h>
 #include <WINGs/wmisc.h>
 #include <WINGs/wuserdefaults.h>
 #include <wraster.h>
@@ -44,7 +45,6 @@
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 #include <WMcore/util.h>
-#include <WMcore/findfile.h>
 #include <WMcore/handlers.h>
 
 #include "window.h"
@@ -133,7 +133,6 @@ static void eatExpose(void)
   XEvent event, foo;
 
   /* compress all expose events into a single one */
-
   if (XCheckMaskEvent(dpy, ExposureMask, &event)) {
     /* ignore other exposure events for this window */
     while (XCheckWindowEvent(dpy, event.xexpose.window, ExposureMask, &foo)) ;
@@ -322,22 +321,6 @@ char *ShrinkString(WMFont *font, const char *string, int width)
   return text;
 }
 
-char *FindImage(const char *paths, const char *file)
-{
-  char *tmp, *path = NULL;
-
-  tmp = strrchr(file, ':');
-  if (tmp) {
-    *tmp = 0;
-    path = wfindfile(paths, file);
-    *tmp = ':';
-  }
-  if (!tmp || !path)
-    path = wfindfile(paths, file);
-
-  return path;
-}
-
 static void timeoutHandler(CFRunLoopTimerRef timer, void *data)
 {
   *(int *)data = 1;
@@ -440,61 +423,6 @@ static char *getselection(WScreen * scr)
   return tmp;
 }
 
-static char*
-parseuserinputpart(const char *line, int *ptr, const char *endchars)
-{
-  int depth = 0, begin;
-  char *value = NULL;
-  begin = ++*ptr;
-
-  while(line[*ptr] != '\0') {
-    if(line[*ptr] == '(') {
-      ++depth;
-    } else if(depth > 0 && line[*ptr] == ')') {
-      --depth;
-    } else if(depth == 0 && strchr(endchars, line[*ptr]) != NULL) {
-      value = wmalloc(*ptr - begin + 1);
-      strncpy(value, line + begin, *ptr - begin);
-      value[*ptr - begin] = '\0';
-      break;
-    }
-    ++*ptr;
-  }
-
-  return value;
-}
-
-static char*
-getuserinput(WScreen *scr, const char *line, int *ptr, Bool advanced)
-{
-  char *ret = NULL, *title = NULL, *prompt = NULL, *name = NULL;
-  int rv = 0;
-
-  if(line[*ptr] == '(')
-    title = parseuserinputpart(line, ptr, ",)");
-  if(title != NULL && line[*ptr] == ',')
-    prompt = parseuserinputpart(line, ptr, ",)");
-  if(prompt != NULL && line[*ptr] == ',')
-    name = parseuserinputpart(line, ptr, ")");
-
-  /* if(advanced) */
-  /*   rv = wAdvancedInputDialog(scr, */
-  /*                             title ? _(title):_("Program Arguments"), */
-  /*                             prompt ? _(prompt):_("Enter command arguments:"), */
-  /*                             name, &ret); */
-  /* else */
-  /*   rv = wInputDialog(scr, */
-  /*                     title ? _(title):_("Program Arguments"), */
-  /*                     prompt ? _(prompt):_("Enter command arguments:"), */
-  /*                     &ret); */
-
-  if(title) wfree(title);
-  if(prompt) wfree(prompt);
-  if(name) wfree(name);
-
-  return rv ? ret : NULL;
-}
-
 #define S_NORMAL 0
 #define S_ESCAPE 1
 #define S_OPTION 2
@@ -518,7 +446,6 @@ char *ExpandOptions(WScreen *scr, const char *cmdline)
   int ptr, optr, state, len, olen;
   char *out, *nout;
   char *selection = NULL;
-  char *user_input = NULL;
   char tmpbuf[TMPBUFSIZE];
   int slen;
 
@@ -602,28 +529,6 @@ char *ExpandOptions(WScreen *scr, const char *cmdline)
         out = nout;
         strcat(out, tmpbuf);
         optr += slen;
-        break;
-
-      case 'a':
-      case 'A':
-        ptr++;
-        user_input = getuserinput(scr, cmdline, &ptr, cmdline[ptr-1] == 'A');
-        if (user_input) {
-          slen = strlen(user_input);
-          olen += slen;
-          nout = realloc(out, olen);
-          if (!nout) {
-            wwarning(_("out of memory during expansion of '%s' for command \"%s\""), "%a", cmdline);
-            goto error;
-          }
-          out = nout;
-          strcat(out, user_input);
-          optr += slen;
-        } else {
-          /* Not an error, but user has Canceled the dialog box.
-           * This will make the command to not be performed. */
-          goto error;
-        }
         break;
 
 #ifdef USE_DOCK_XDND

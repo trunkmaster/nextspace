@@ -32,17 +32,15 @@
 #include <pwd.h>
 #include <limits.h>
 
-#include "WMcore.h"
-#include "util.h"
-#include "string.h"
-#include "proplist.h"
+#include <WMcore/util.h>
+#include <WMcore/string.h>
 
 #ifndef PATH_MAX
 #define PATH_MAX  1024
 #endif
 
 
-char *wgethomedir()
+static char *_homeDirectory()
 {
   static char *home = NULL;
   char *tmp;
@@ -77,16 +75,16 @@ char *wgethomedir()
 }
 
 /*
- *Return the home directory for the specified used
+ * Return the home directory for the specified used
  *
- *If user not found, returns NULL, otherwise always returns a path that is
- *statically stored.
+ * If user not found, returns NULL, otherwise always returns a path that is
+ * statically stored.
  *
- *Please note you must use the path before any other call to 'getpw*' or it
- *may be erased. This is a design choice to avoid duplication considering
- *the use case for this function.
+ * Please note you must use the path before any other call to 'getpw*' or it
+ * may be erased. This is a design choice to avoid duplication considering
+ * the use case for this function.
  */
-static const char *getuserhomedir(const char *username)
+static const char *_userHomeDirectory(const char *username)
 {
   static const char default_home[] = "/";
   struct passwd *user;
@@ -103,7 +101,7 @@ static const char *getuserhomedir(const char *username)
 
 }
 
-char *wexpandpath(const char *path)
+static char *_expandPath(const char *path)
 {
   const char *origpath = path;
   char buffer2[PATH_MAX + 2];
@@ -117,7 +115,7 @@ char *wexpandpath(const char *path)
 
     path++;
     if (*path == '/' || *path == 0) {
-      home = wgethomedir();
+      home = _homeDirectory();
       if (strlen(home) > PATH_MAX ||
           wstrlcpy(buffer, home, sizeof(buffer)) >= sizeof(buffer))
         goto error;
@@ -131,7 +129,7 @@ char *wexpandpath(const char *path)
         buffer2[j] = 0;
         path++;
       }
-      home = getuserhomedir(buffer2);
+      home = _userHomeDirectory(buffer2);
       if (!home || wstrlcat(buffer, home, sizeof(buffer)) >= sizeof(buffer))
         goto error;
     }
@@ -218,7 +216,7 @@ char *wexpandpath(const char *path)
 }
 
 /* return address of next char != tok or end of string whichever comes first */
-static const char *skipchar(const char *string, char tok)
+static const char *_skipCharacter(const char *string, char tok)
 {
   while (*string != 0 && *string == tok)
     string++;
@@ -227,7 +225,7 @@ static const char *skipchar(const char *string, char tok)
 }
 
 /* return address of next char == tok or end of string whichever comes first */
-static const char *nextchar(const char *string, char tok)
+static const char *_nextCharacter(const char *string, char tok)
 {
   while (*string != 0 && *string != tok)
     string++;
@@ -236,21 +234,21 @@ static const char *nextchar(const char *string, char tok)
 }
 
 /*
- *----------------------------------------------------------------------
- *findfile--
- *	Finds a file in a : separated list of paths. ~ expansion is also
- *done.
+ *---------------------------------------------------------------------------
+ * _findFileAtPaths()
+ *	Finds a file in a : separated list of paths. ~ expansion is also 
+ *	done.
  *
- *Returns:
+ * Returns:
  *	The complete path for the file (in a newly allocated string) or
- *NULL if the file was not found.
+ *	NULL if the file was not found.
  *
- *Side effects:
+ * Side effects:
  *	A new string is allocated. It must be freed later.
  *
- *----------------------------------------------------------------------
+ *---------------------------------------------------------------------------
  */
-char *wfindfile(const char *paths, const char *file)
+static char *_findFileAtPaths(const char *paths, const char *file)
 {
   char *path;
   const char *tmp, *tmp2;
@@ -262,7 +260,7 @@ char *wfindfile(const char *paths, const char *file)
 
   if (*file == '/' || *file == '~' || *file == '$' || !paths || *paths == 0) {
     if (access(file, F_OK) < 0) {
-      fullpath = wexpandpath(file);
+      fullpath = _expandPath(file);
       if (!fullpath)
         return NULL;
 
@@ -280,10 +278,10 @@ char *wfindfile(const char *paths, const char *file)
   flen = strlen(file);
   tmp = paths;
   while (*tmp) {
-    tmp = skipchar(tmp, ':');
+    tmp = _skipCharacter(tmp, ':');
     if (*tmp == 0)
       break;
-    tmp2 = nextchar(tmp, ':');
+    tmp2 = _nextCharacter(tmp, ':');
     len = tmp2 - tmp;
     path = wmalloc(len + flen + 2);
     path = memcpy(path, tmp, len);
@@ -299,7 +297,7 @@ char *wfindfile(const char *paths, const char *file)
       return NULL;
     }
 
-    fullpath = wexpandpath(path);
+    fullpath = _expandPath(path);
     wfree(path);
 
     if (fullpath) {
@@ -314,7 +312,25 @@ char *wfindfile(const char *paths, const char *file)
   return NULL;
 }
 
-int wcopy_file(const char *dest_dir, const char *src_file, const char *dest_file)
+/* --- Public --------------------------------------------------------------- */
+
+char *WMAbsolutePathForFile(const char *paths, const char *file)
+{
+  char *tmp, *path = NULL;
+
+  tmp = strrchr(file, ':');
+  if (tmp) {
+    *tmp = 0;
+    path = _findFileAtPaths(paths, file);
+    *tmp = ':';
+  }
+  if (!tmp || !path)
+    path = _findFileAtPaths(paths, file);
+
+  return path;
+}
+
+int WMCopyFile(const char *dest_dir, const char *src_file, const char *dest_file)
 {
   char *path_dst;
   int fd_src, fd_dst;

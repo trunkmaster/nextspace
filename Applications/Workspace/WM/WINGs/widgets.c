@@ -1,4 +1,6 @@
 
+#include <WMcore/util.h>
+
 #include "WMdefs.h"
 
 #include "WINGs.h"

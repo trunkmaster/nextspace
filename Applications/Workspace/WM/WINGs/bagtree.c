@@ -2,9 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "WMcore.h"
+#include <WMcore/util.h>
 #include "bagtree.h"
-#include "util.h"
 
 typedef struct W_Node {
   struct W_Node *parent;

@@ -42,7 +42,6 @@ Bool start_bg_helper(WScreen *scr);
 void SendHelperMessage(WScreen *scr, char type, int workspace, const char *msg);
 
 char *ShrinkString(WMFont *font, const char *string, int width);
-char *FindImage(const char *paths, const char *file);
 char *ExpandOptions(WScreen * scr, const char *cmdline);
 char *GetShortcutString(const char *text);
 char *GetShortcutKey(WShortKey key);

@@ -39,6 +39,7 @@
 #include <WMcore/handlers.h>
 #include <WMcore/string.h>
 
+#include <WINGs/fileutils.h>
 #include <WINGs/wevent.h>
 #include <WINGs/wmisc.h>
 #include <WINGs/wuserdefaults.h>
@@ -413,7 +414,7 @@ int wIconChangeImageFile(WIcon *icon, const char *file)
     return 1;
 
   /* Find the new image */
-  path = FindImage(wPreferences.icon_path, file);
+  path = WMAbsolutePathForFile(wPreferences.icon_path, file);
   if (!path)
     return 0;
 

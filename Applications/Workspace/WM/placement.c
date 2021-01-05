@@ -28,8 +28,8 @@
 #include <limits.h>
 
 #include <WMcore/util.h>
-#include <WMcore/bagtree.h>
 
+#include <WINGs/bagtree.h>
 #include <WINGs/wmisc.h>
 
 #include "GNUstep.h"

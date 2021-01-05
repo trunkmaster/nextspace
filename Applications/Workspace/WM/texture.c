@@ -30,6 +30,7 @@
 #include <wraster.h>
 
 #include <WMcore/util.h>
+#include <WINGs/fileutils.h>
 
 #include "WM.h"
 #include "texture.h"
@@ -328,7 +329,7 @@ static RImage * get_texture_image(WScreen *scr, const char *pixmap_file)
   char *file;
   RImage *image;
 
-  file = FindImage(wPreferences.pixmap_path, pixmap_file);
+  file = WMAbsolutePathForFile(wPreferences.pixmap_path, pixmap_file);
   if (!file) {
     wwarning(_("image file \"%s\" used as texture could not be found."), pixmap_file);
     return NULL;

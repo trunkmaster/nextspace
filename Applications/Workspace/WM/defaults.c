@@ -51,6 +51,7 @@
 #include <WMcore/string.h>
 
 #include <WINGs/WINGs.h>
+#include <WINGs/fileutils.h>
 #include <WINGs/wcolor.h>
 #include <WINGs/wmisc.h>
 #include <WINGs/wuserdefaults.h>
@@ -2079,7 +2080,7 @@ static int parse_cursor(WScreen * scr, CFTypeRef pl, Cursor * cursor)
       return (status);
     }
     val = WMUserDefaultsGetCString(elem, kCFStringEncodingUTF8);
-    bitmap_name = FindImage(wPreferences.pixmap_path, val);
+    bitmap_name = WMAbsolutePathForFile(wPreferences.pixmap_path, val);
     if (!bitmap_name) {
       wwarning(_("could not find cursor bitmap file \"%s\""), val);
       return (status);
@@ -2089,7 +2090,7 @@ static int parse_cursor(WScreen * scr, CFTypeRef pl, Cursor * cursor)
       return (status);
     }
     val = WMUserDefaultsGetCString(elem, kCFStringEncodingUTF8);
-    mask_name = FindImage(wPreferences.pixmap_path, val);
+    mask_name = WMAbsolutePathForFile(wPreferences.pixmap_path, val);
     if (!mask_name) {
       wfree(bitmap_name);
       wwarning(_("could not find cursor bitmap file \"%s\""), val);
@@ -3040,8 +3041,8 @@ static int setSwPOptions(WScreen *scr, WDefaultEntry *entry, void *tdata, void *
       wwarning(_("Invalid arguments for option \"%s\""), entry->key);
       break;
     } else {
-      path = FindImage(wPreferences.pixmap_path,
-                       WMUserDefaultsGetCString(value, kCFStringEncodingUTF8));
+      path = WMAbsolutePathForFile(wPreferences.pixmap_path,
+                                  WMUserDefaultsGetCString(value, kCFStringEncodingUTF8));
     }
 
     if (!path) {
@@ -3114,7 +3115,7 @@ static int setSwPOptions(WScreen *scr, WDefaultEntry *entry, void *tdata, void *
       wwarning(_("Invalid arguments for option \"%s\""), entry->key);
       break;
     } else {
-      path = FindImage(wPreferences.pixmap_path,
+      path = WMAbsolutePathForFile(wPreferences.pixmap_path,
                        WMUserDefaultsGetCString(value, kCFStringEncodingUTF8));
     }
 
