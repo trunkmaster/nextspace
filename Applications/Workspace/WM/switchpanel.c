@@ -381,7 +381,7 @@ static void drawTitle(WSwitchPanel *panel, int idecks, const char *title)
 
 static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped, Bool class_only)
 {
-  CFMutableArrayRef windows = CFArrayCreateMutable(kCFAllocatorDefault, 1, &kCFTypeArrayCallBacks);
+  CFMutableArrayRef windows = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
   WWindow *wwin = scr->focused_window;
 
   /* WApplications */
@@ -439,7 +439,7 @@ static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped,
 
 static CFMutableArrayRef makeWindowFlagsArray(int count)
 {
-  CFMutableArrayRef flags = CFArrayCreateMutable(kCFAllocatorDefault, count, &kCFTypeArrayCallBacks);
+  CFMutableArrayRef flags = CFArrayCreateMutable(kCFAllocatorDefault, count, NULL);
   int i;
 
   for (i = 0; i < count; i++)
@@ -502,8 +502,8 @@ WSwitchPanel *wInitSwitchPanel(WScreen *scr, WWindow *curwin, Bool class_only)
 
   panel->white = WMWhiteColor(scr->wmscreen);
   panel->font = WMBoldSystemFontOfSize(scr->wmscreen, 12);
-  panel->icons = CFArrayCreateMutable(kCFAllocatorDefault, count, &kCFTypeArrayCallBacks);
-  panel->images = CFArrayCreateMutable(kCFAllocatorDefault, count, &kCFTypeArrayCallBacks);
+  panel->icons = CFArrayCreateMutable(kCFAllocatorDefault, count, NULL);
+  panel->images = CFArrayCreateMutable(kCFAllocatorDefault, count, NULL);
 
   panel->win = WMCreateWindow(scr->wmscreen, "");
 

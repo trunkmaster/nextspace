@@ -68,7 +68,7 @@ static CFMutableArrayRef createDropDataArray(CFMutableArrayRef requiredTypes)
     return CFArrayCreateMutable(kCFAllocatorDefault, CFArrayGetCount(requiredTypes), &cbs);
   }
   else {
-    return CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
+    return CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
   }
 }
 

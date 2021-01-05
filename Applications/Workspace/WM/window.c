@@ -943,8 +943,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
         for (i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
           if (mask & (1 << i)) {
             if (!scr->shortcutWindows[i])
-              scr->shortcutWindows[i] = CFArrayCreateMutable(kCFAllocatorDefault, 4,
-                                                             &kCFTypeArrayCallBacks);
+              scr->shortcutWindows[i] = CFArrayCreateMutable(kCFAllocatorDefault, 4, NULL);
 
             CFArrayAppendValue(scr->shortcutWindows[i], wwin);
           }

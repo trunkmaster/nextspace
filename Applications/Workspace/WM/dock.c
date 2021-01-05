@@ -167,41 +167,6 @@ static void drawerConsolidateIcons(WDock *drawer);
 
 static int onScreen(WScreen *scr, int x, int y);
 
-/* static void make_keys(void) */
-/* { */
-/*   if (dCommand != NULL) */
-/*     return; */
-
-/*   /\* dCommand = CFStringCreateWithCString(kCFAllocatorDefault, "Command", kCFStringEncodingUTF8); *\/ */
-/*   dCommand = CFSTR("Command"); */
-/*   dPasteCommand = CFSTR("PasteCommand"); */
-/* #ifdef USE_DOCK_XDND */
-/*   dDropCommand = CFSTR("DropCommand"); */
-/* #endif */
-/*   dLock = CFSTR("Lock"); */
-/*   dAutoLaunch = CFSTR("AutoLaunch"); */
-/*   dName = CFSTR("Name"); */
-/*   dForced = CFSTR("Forced"); */
-/*   dBuggyApplication = CFSTR("BuggyApplication"); */
-/*   dYes = CFSTR("Yes"); */
-/*   dNo = CFSTR("No"); */
-/*   dHost = CFSTR("Host"); */
-
-/*   dPosition = CFSTR("Position"); */
-/*   dApplications = CFSTR("Applications"); */
-/*   dLowered = CFSTR("Lowered"); */
-/*   dCollapsed = CFSTR("Collapsed"); */
-/*   dAutoCollapse = CFSTR("AutoCollapse"); */
-/*   dAutoRaiseLower = CFSTR("AutoRaiseLower"); */
-/*   dAutoAttractIcons = CFSTR("AutoAttractIcons"); */
-
-/*   dOmnipresent = CFSTR("Omnipresent"); */
-
-/*   dDock = CFSTR("Dock"); */
-/*   dClip = CFSTR("Clip"); */
-/*   dDrawers = CFSTR("Drawers"); */
-/* } */
-
 static void toggleLoweredCallback(WMenu *menu, WMenuEntry *entry)
 {
   assert(entry->clientdata != NULL);
@@ -300,7 +265,7 @@ static int numberOfSelectedIcons(WDock *dock)
 
 static CFMutableArrayRef getSelected(WDock *dock)
 {
-  CFMutableArrayRef ret = CFArrayCreateMutable(kCFAllocatorDefault, 8, &kCFTypeArrayCallBacks);
+  CFMutableArrayRef ret = CFArrayCreateMutable(kCFAllocatorDefault, 8, NULL);
   WAppIcon *btn;
   int i;
 
@@ -4386,7 +4351,7 @@ static void drawerDestroy(WDock *drawer)
     XMoveWindow(dpy, aicon->icon->core->window, drawer->x_pos, drawer->y_pos);
     XMapWindow(dpy, aicon->icon->core->window);
   } else if (drawer->icon_count > 2) {
-    icons = CFArrayCreateMutable(kCFAllocatorDefault, drawer->icon_count - 1, &kCFTypeArrayCallBacks);
+    icons = CFArrayCreateMutable(kCFAllocatorDefault, drawer->icon_count - 1, NULL);
     for (i = 1; i < drawer->max_icons; i++) {
       aicon = drawer->icon_array[i];
       if (aicon == NULL)

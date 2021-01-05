@@ -283,7 +283,7 @@ void wSessionSaveState(WScreen * scr)
   }
 
   list = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
-  wapp_list = CFArrayCreateMutable(kCFAllocatorDefault, 16, &kCFTypeArrayCallBacks);
+  wapp_list = CFArrayCreateMutable(kCFAllocatorDefault, 16, NULL);
 
   while (wwin) {
     WApplication *wapp = wApplicationOf(wwin->main_window);

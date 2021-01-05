@@ -42,7 +42,6 @@
 #include <WINGs/widgets.h>
 #include <WINGs/wcolor.h>
 #include <WINGs/wmisc.h>
-/* #include <WINGs/wappresource.h> */
 #include <WINGs/wuserdefaults.h>
 
 #include "WM.h"
@@ -617,7 +616,7 @@ WScreen *wScreenInit(int screen_number)
     scr->usableArea[i].y2 = scr->totalUsableArea[i].y2 = rect.pos.y + rect.size.height;
   }
 
-  scr->fakeGroupLeaders = CFArrayCreateMutable(kCFAllocatorDefault, 16, &kCFTypeArrayCallBacks);
+  scr->fakeGroupLeaders = CFArrayCreateMutable(kCFAllocatorDefault, 16, NULL);
 
   CantManageScreen = 0;
   oldHandler = XSetErrorHandler(alreadyRunningError);

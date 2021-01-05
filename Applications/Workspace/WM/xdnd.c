@@ -128,7 +128,7 @@ Bool wXDNDProcessSelection(XEvent *event)
     char *tmp;
 
     scr->xdestring = delme;
-    items = CFArrayCreateMutable(kCFAllocatorDefault, 4, &kCFTypeArrayCallBacks);
+    items = CFArrayCreateMutable(kCFAllocatorDefault, 4, NULL);
     retain = wstrdup(scr->xdestring);
     XFree(scr->xdestring);	/* since xdestring was created by Xlib */
 

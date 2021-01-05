@@ -2119,7 +2119,7 @@ void wSelectWindow(WWindow *wwin, Bool flag)
       XSetWindowBorderWidth(dpy, wwin->frame->core->window, wwin->screen_ptr->frame_border_width);
 
     if (!scr->selected_windows) {
-      scr->selected_windows = CFArrayCreateMutable(kCFAllocatorDefault, 4, &kCFTypeArrayCallBacks);
+      scr->selected_windows = CFArrayCreateMutable(kCFAllocatorDefault, 4, NULL);
     }
     CFArrayAppendValue(scr->selected_windows, wwin);
   } else {

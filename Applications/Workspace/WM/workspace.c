@@ -922,7 +922,7 @@ void wWorkspaceSaveState(WScreen *scr, CFDictionaryRef old_state)
   if (old_state) {
     old_wks_state = CFDictionaryGetValue(old_state, dWorkspaces);
   }
-  
+
   parr = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
   for (i = 0; i < scr->workspace_count; i++) {
     wks_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,

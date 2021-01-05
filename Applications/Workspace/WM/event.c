@@ -168,7 +168,7 @@ WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler * callback, void *cdata)
   handler->client_data = cdata;
 
   if (!deathHandlers)
-    deathHandlers = CFArrayCreateMutable(kCFAllocatorDefault, 8, &kCFTypeArrayCallBacks);
+    deathHandlers = CFArrayCreateMutable(kCFAllocatorDefault, 8, NULL);
 
   CFArrayAppendValue(deathHandlers, handler);
 
@@ -1986,7 +1986,7 @@ static void handleKeyPress(XEvent * event)
                                                               CFArrayGetCount(scr->selected_windows),
                                                               scr->selected_windows);
       } else {
-        scr->shortcutWindows[widx] = CFArrayCreateMutable(kCFAllocatorDefault, 4, &kCFTypeArrayCallBacks);
+        scr->shortcutWindows[widx] = CFArrayCreateMutable(kCFAllocatorDefault, 4, NULL);
         CFArrayAppendValue(scr->shortcutWindows[widx], wwin);
       }
 
