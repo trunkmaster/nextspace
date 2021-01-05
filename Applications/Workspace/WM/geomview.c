@@ -4,7 +4,7 @@
 #include <WINGs/widgets.h>
 #include <WINGs/wevent.h>
 #include <WINGs/wcolor.h>
-#include <WINGs/wmisc.h>
+#include <WINGs/drawing.h>
 
 #include "geomview.h"
 

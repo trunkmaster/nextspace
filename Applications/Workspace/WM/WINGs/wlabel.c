@@ -2,12 +2,12 @@
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 
-#include "WINGs.h"
+#include "wscreen.h"
 #include "widgets.h"
 #include "wevent.h"
 #include "wpixmap.h"
 #include "wcolor.h"
-#include "wmisc.h"
+#include "drawing.h"
 #include "wlabel.h"
 
 #define DEFAULT_WIDTH		60

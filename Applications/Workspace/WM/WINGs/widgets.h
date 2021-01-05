@@ -2,7 +2,7 @@
 #define __WORKSPACE_WM_WWIDGETS__
 
 #include <stdnoreturn.h>
-#include <WINGs/WINGs.h>
+
 #include <WINGs/wpixmap.h>
 #include <WINGs/wview.h>
 #include <WINGs/wcolor.h>

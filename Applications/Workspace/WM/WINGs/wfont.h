@@ -1,6 +1,11 @@
 #ifndef __WORKSPACE_WM_WFONT__
 #define __WORKSPACE_WM_WFONT__
 
+#ifdef USE_PANGO
+#include <pango/pango.h>
+#endif
+
+#include <WINGs/wscreen.h>
 #include <WINGs/wcolor.h>
 
 typedef struct W_Font {
@@ -18,7 +23,7 @@ typedef struct W_Font {
 #endif
 } W_Font;
 
-#define W_FONTID(f)		(f)->font->fid
+#define W_FONTID(f) (f)->font->fid
 
 /* ---[ WINGs/wfont.c ]--------------------------------------------------- */
 

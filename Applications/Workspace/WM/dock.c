@@ -33,13 +33,13 @@
 #include <math.h>
 #include <limits.h>
 
+#include <WMcore/WMcore.h>
 #include <WMcore/string.h>
 #include <WMcore/util.h>
-#include <WMcore/handlers.h>
 
 #include <WINGs/wevent.h>
 #include <WINGs/wcolor.h>
-#include <WINGs/wmisc.h>
+#include <WINGs/drawing.h>
 #include <WINGs/wuserdefaults.h>
 
 #ifndef PATH_MAX
@@ -122,7 +122,7 @@ static CFStringRef dOmnipresent = CFSTR("Omnipresent");
 
 static CFStringRef dDock = CFSTR("Dock");
 static CFStringRef dClip = CFSTR("Clip");
-static CFStringRef dDrawers = CFSTR("Drawers");
+/* static CFStringRef dDrawers = CFSTR("Drawers"); */
 
 
 static void dockIconPaint(CFRunLoopTimerRef timer, void *data);

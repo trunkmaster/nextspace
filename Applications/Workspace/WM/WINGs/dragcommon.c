@@ -1,12 +1,13 @@
 #include "WMdefs.h"
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 
-#include "WINGs.h"
+#include "wscreen.h"
 #include "dragcommon.h"
 #include "dragdestination.h"
 #include "wpixmap.h"
-#include "wmisc.h"
+#include "drawing.h"
 
 #define XDND_SOURCE_VERSION(dragInfo) dragInfo->protocolVersion
 #define XDND_DEST_INFO(dragInfo) dragInfo->destInfo

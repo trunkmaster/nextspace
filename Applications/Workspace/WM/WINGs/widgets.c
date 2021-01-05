@@ -1,19 +1,4 @@
 
-#include <WMcore/util.h>
-
-#include "WMdefs.h"
-
-#include "WINGs.h"
-#include "wappresource.h"
-#include "winputmethod.h"
-#include "wevent.h"
-#include "wpixmap.h"
-#include "wcolor.h"
-#include "wballoon.h"
-#include "wmisc.h"
-
-#include "widgets.h"
-
 #include <X11/Xft/Xft.h>
 
 #include <X11/Xutil.h>
@@ -22,6 +7,21 @@
 #include <X11/cursorfont.h>
 
 #include <X11/Xlocale.h>
+
+#include <WMcore/WMcore.h>
+#include <WMcore/util.h>
+
+#include "WMdefs.h"
+#include "wscreen.h"
+#include "wappresource.h"
+#include "winputmethod.h"
+#include "wevent.h"
+#include "wpixmap.h"
+#include "wcolor.h"
+#include "wballoon.h"
+#include "drawing.h"
+
+#include "widgets.h"
 
 /********** data ************/
 

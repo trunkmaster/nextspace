@@ -1,7 +1,22 @@
 #ifndef __WORKSPACE_WM_WPXIMAP__
 #define __WORKSPACE_WM_WPXIMAP__
 
-#include "WINGs.h"
+#include "wscreen.h"
+#include "drawing.h"
+
+/* system images */
+#define WSIReturnArrow			1
+#define WSIHighlightedReturnArrow	2
+#define WSIScrollerDimple		3
+#define WSIArrowLeft			4
+#define WSIHighlightedArrowLeft	        5
+#define WSIArrowRight			6
+#define WSIHighlightedArrowRight	7
+#define WSIArrowUp			8
+#define WSIHighlightedArrowUp		9
+#define WSIArrowDown			10
+#define WSIHighlightedArrowDown		11
+#define WSICheckMark			12
 
 typedef struct W_Pixmap {
   struct W_Screen *screen;

@@ -28,12 +28,13 @@
 #include <unistd.h>
 #include <string.h>
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 
 #include <WINGs/widgets.h>
 #include <WINGs/wevent.h>
-#include <WINGs/wmisc.h>
+#include <WINGs/drawing.h>
 
 #include "WM.h"
 #include "framewin.h"

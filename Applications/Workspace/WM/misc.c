@@ -37,15 +37,16 @@
 
 #include <X11/XKBlib.h>
 
-#include <WINGs/fileutils.h>
-#include <WINGs/wmisc.h>
-#include <WINGs/wuserdefaults.h>
 #include <wraster.h>
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 #include <WMcore/string.h>
-#include <WMcore/util.h>
-#include <WMcore/handlers.h>
+
+#include <WINGs/fileutils.h>
+#include <WINGs/wevent.h>
+#include <WINGs/drawing.h>
+#include <WINGs/wuserdefaults.h>
 
 #include "window.h"
 #include "misc.h"

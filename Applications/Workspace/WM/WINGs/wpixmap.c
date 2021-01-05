@@ -1,10 +1,11 @@
 
-#include "WINGs.h"
-#include "wpixmap.h"
+#include <wraster.h>
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 
-#include <wraster.h>
+//#include "wscreen.h"
+#include "wpixmap.h"
 
 WMPixmap *WMRetainPixmap(WMPixmap *pixmap)
 {

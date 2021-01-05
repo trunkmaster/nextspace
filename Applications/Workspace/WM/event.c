@@ -55,10 +55,9 @@
 #include <CoreFoundation/CFLogUtilities.h>
 
 #include <WMcore/util.h>
-#include <WMcore/handlers.h>
 
 #include <WINGs/wevent.h>
-#include <WINGs/wmisc.h>
+#include <WINGs/drawing.h>
 #include <WINGs/wuserdefaults.h>
 
 #include "GNUstep.h"
@@ -2124,7 +2123,7 @@ static void handleMotionNotify(XEvent * event)
 #endif
 
   if (wPreferences.scrollable_menus) {
-    WMPoint p = wmkpoint(event->xmotion.x_root, event->xmotion.y_root);
+    WMPoint p = WMMakePoint(event->xmotion.x_root, event->xmotion.y_root);
     WMRect rect = wGetRectForHead(scr, wGetHeadForPoint(scr, p));
 
     if (scr->flags.jump_back_pending ||

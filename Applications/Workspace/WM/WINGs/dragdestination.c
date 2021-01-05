@@ -3,14 +3,15 @@
 
 #include <CoreFoundation/CFNotificationCenter.h>
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 #include <WMcore/string.h>
-#include <WMcore/handlers.h>
 
-#include "WINGs.h"
+#include "wscreen.h"
+#include "wevent.h"
 #include "dragcommon.h"
 #include "selection.h"
-#include "wmisc.h"
+#include "drawing.h"
 
 #define XDND_SOURCE_RESPONSE_MAX_DELAY 3000
 

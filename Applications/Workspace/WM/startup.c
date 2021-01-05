@@ -45,6 +45,7 @@
 #include <X11/XKBlib.h>
 #endif
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 
 #include <WINGs/wuserdefaults.h>

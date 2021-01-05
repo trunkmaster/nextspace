@@ -2,11 +2,11 @@
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 
-#include "WINGs.h"
+#include "wscreen.h"
 #include "widgets.h"
 #include "wevent.h"
 #include "wcolor.h"
-#include "wmisc.h"
+#include "drawing.h"
 #include "wframe.h"
 
 #define DEFAULT_RELIEF 	WRGroove

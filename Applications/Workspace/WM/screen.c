@@ -36,12 +36,12 @@
 
 #include <CoreFoundation/CFArray.h>
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 
 #include <WINGs/widgets.h>
 #include <WINGs/wcolor.h>
-#include <WINGs/wmisc.h>
 #include <WINGs/wuserdefaults.h>
 
 #include "WM.h"
@@ -83,10 +83,10 @@ static char STIPPLE_DATA[] = { 0x02, 0x01 };
 static int CantManageScreen = 0;
 
 /* static CFTypeRef dApplications = CFSTR("Applications"); */ // session.h
-static CFTypeRef dWorkspace = CFSTR("Workspace");
+/* static CFTypeRef dWorkspace = CFSTR("Workspace"); */
 static CFTypeRef dDock = CFSTR("Dock");
 static CFTypeRef dClip = CFSTR("Clip");
-static CFTypeRef dDrawers = CFSTR("Drawers");
+/* static CFTypeRef dDrawers = CFSTR("Drawers"); */
 
 /*
  * Support for ICCCM 2.0: Window Manager Replacement protocol

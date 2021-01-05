@@ -6,13 +6,14 @@
 
 #include <WMcore/util.h>
 
-#include "WINGs.h"
+#include "wscreen.h"
 #include "dragcommon.h"
 #include "wevent.h"
 #include "wpixmap.h"
 #include "wcolor.h"
 #include "wballoon.h"
-#include "wmisc.h"
+
+#include "wview.h"
 
 /* the notifications about views */
 
@@ -673,7 +674,7 @@ WMPoint WMGetViewScreenPosition(WMView *view)
 
   XTranslateCoordinates(scr->display, W_VIEW_DRAWABLE(view), scr->rootWin, 0, 0, &x, &y, &foo);
 
-  return wmkpoint(x - topX, y - topY);
+  return WMMakePoint(x - topX, y - topY);
 }
 
 /* static void resizedParent(void *self, WMNotification *notif) */

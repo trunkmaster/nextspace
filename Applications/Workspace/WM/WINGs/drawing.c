@@ -1,11 +1,11 @@
 
-#include "WINGs.h"
-#include "wpixmap.h"
-#include "wcolor.h"
-#include "wmisc.h"
-
 #include <wraster.h>
 #include <ctype.h>
+
+#include "wscreen.h"
+#include "wpixmap.h"
+#include "wcolor.h"
+#include "drawing.h"
 
 void
 W_DrawRelief(W_Screen *scr, Drawable d, int x, int y, unsigned int width,
@@ -86,7 +86,7 @@ W_DrawReliefWithGC(W_Screen *scr, Drawable d, int x, int y, unsigned int width,
   }
 }
 
-static int findNextWord(const char *text, int limit)
+static int _nextWordPosition(const char *text, int limit)
 {
   int pos, len;
 
@@ -98,7 +98,7 @@ static int findNextWord(const char *text, int limit)
   return pos;
 }
 
-static int fitText(const char *text, WMFont *font, int width, int wrap)
+static int _fitText(const char *text, WMFont *font, int width, int wrap)
 {
   int i, w, beforecrlf, word1, word2;
 
@@ -116,7 +116,7 @@ static int fitText(const char *text, WMFont *font, int width, int wrap)
 
   word1 = 0;
   while (1) {
-    word2 = word1 + findNextWord(text + word1, beforecrlf - word1);
+    word2 = word1 + _nextWordPosition(text + word1, beforecrlf - word1);
     if (word2 >= beforecrlf)
       break;
     w = WMWidthOfString(font, text, word2);
@@ -153,7 +153,7 @@ int W_GetTextHeight(WMFont *font, const char *text, int width, int wrap)
 
   h = 0;
   while (length > 0) {
-    count = fitText(ptr, font, width, wrap);
+    count = _fitText(ptr, font, width, wrap);
 
     h += fheight;
 
@@ -178,7 +178,7 @@ W_PaintText(W_View *view, Drawable d, WMFont *font, int x, int y,
   int fheight = WMFontHeight(font);
 
   while (length > 0) {
-    count = fitText(ptr, font, width, wrap);
+    count = _fitText(ptr, font, width, wrap);
 
     line_width = WMWidthOfString(font, ptr, count);
     if (alignment == WALeft)
@@ -327,7 +327,7 @@ W_PaintTextAndImage(W_View *view, int wrap, WMColor *textColor, W_Font *font,
 #endif
 }
 
-WMPoint wmkpoint(int x, int y)
+WMPoint WMMakePoint(int x, int y)
 {
   WMPoint point;
 
@@ -337,7 +337,7 @@ WMPoint wmkpoint(int x, int y)
   return point;
 }
 
-WMSize wmksize(unsigned int width, unsigned int height)
+WMSize WMMakeSize(unsigned int width, unsigned int height)
 {
   WMSize size;
 
@@ -347,7 +347,7 @@ WMSize wmksize(unsigned int width, unsigned int height)
   return size;
 }
 
-WMRect wmkrect(int x, int y, unsigned int width, unsigned int height)
+WMRect WMMakeRect(int x, int y, unsigned int width, unsigned int height)
 {
   WMRect rect;
 

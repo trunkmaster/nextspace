@@ -6,6 +6,7 @@
 #include <X11/Xft/Xft.h>
 #include <fontconfig/fontconfig.h>
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 
@@ -13,9 +14,9 @@
 
 #include "WMdefs.h"
 
-#include "WINGs.h"
+#include "wscreen.h"
 #include "wcolor.h"
-#include "wmisc.h"
+#include "drawing.h"
 
 #ifdef USE_PANGO
 #include <pango/pango.h>

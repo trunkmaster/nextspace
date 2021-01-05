@@ -1,16 +1,16 @@
 
 #include "WMdefs.h"
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 #include <WMcore/hashtable.h>
-#include <WMcore/handlers.h>
 #include <WMcore/string.h>
 
-#include "WINGs.h"
+#include "wscreen.h"
 #include "widgets.h"
 #include "wevent.h"
 #include "wcolor.h"
-#include "wmisc.h"
+#include "drawing.h"
 
 #ifdef USE_XSHAPE
 #include <X11/extensions/shape.h>

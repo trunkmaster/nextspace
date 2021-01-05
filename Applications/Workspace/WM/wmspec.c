@@ -34,6 +34,7 @@
 #include <X11/Xatom.h>
 #include <string.h>
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 

@@ -1,12 +1,12 @@
 
-#include <WMcore/util.h>
-
-#include "WINGs.h"
-#include "wcolor.h"
-
 #include "WMdefs.h"
 
 #include <wraster.h>
+
+#include <WMcore/util.h>
+
+#include "wscreen.h"
+#include "wcolor.h"
 
 #define LIGHT_STIPPLE_WIDTH 4
 #define LIGHT_STIPPLE_HEIGHT 4

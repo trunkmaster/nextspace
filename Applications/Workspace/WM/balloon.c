@@ -24,22 +24,23 @@
 #ifdef BALLOON_TEXT
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #ifdef SHAPED_BALLOON
 #include <X11/extensions/shape.h>
 #endif
 
-#include <stdlib.h>
-#include <string.h>
-
 #include <wraster.h>
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 #include <WMcore/string.h>
-#include <WMcore/handlers.h>
 
-#include <WINGs/wmisc.h>
+#include <WINGs/drawing.h>
+#include <WINGs/wevent.h>
 
 #include "WM.h"
 #include "screen.h"
@@ -50,7 +51,6 @@
 #include "workspace.h"
 #include "balloon.h"
 #include "misc.h"
-
 
 typedef struct _WBalloon {
   Window window;

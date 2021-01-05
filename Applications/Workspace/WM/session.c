@@ -70,6 +70,8 @@
 #include <time.h>
 
 #include <CoreFoundation/CFArray.h>
+
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 

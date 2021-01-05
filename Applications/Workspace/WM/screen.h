@@ -28,8 +28,8 @@
 #include <CoreFoundation/CFArray.h>
 #include <CoreFoundation/CFRunLoop.h>
 
-#include <WINGs/bagtree.h>
-
+#include <WINGs/drawing.h>
+#include <WINGs/wbagtree.h>
 #include <WINGs/wfont.h>
 
 #define WTB_LEFT	0

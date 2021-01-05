@@ -36,12 +36,11 @@
 #include <CoreFoundation/CFNumber.h>
 
 #include <WMcore/util.h>
-#include <WMcore/handlers.h>
 #include <WMcore/string.h>
 
 #include <WINGs/fileutils.h>
 #include <WINGs/wevent.h>
-#include <WINGs/wmisc.h>
+#include <WINGs/drawing.h>
 #include <WINGs/wuserdefaults.h>
 
 #include "GNUstep.h"

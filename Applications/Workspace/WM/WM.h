@@ -29,7 +29,7 @@
 #include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFNotificationCenter.h>
 
-#include <WINGs/WINGs.h>
+#include <WINGs/wscreen.h>
 
 #include <WMcore/util.h>
 

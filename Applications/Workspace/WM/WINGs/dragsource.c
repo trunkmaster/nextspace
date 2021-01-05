@@ -1,16 +1,16 @@
 
 #include "WMdefs.h"
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 #include <WMcore/string.h>
-#include <WMcore/handlers.h>
 
-#include "WINGs.h"
+#include "wscreen.h"
 #include "dragcommon.h"
 #include "wevent.h"
 #include "selection.h"
 #include "wpixmap.h"
-#include "wmisc.h"
+#include "drawing.h"
 
 #include <X11/Xatom.h>
 #include <X11/cursorfont.h>
@@ -553,8 +553,8 @@ static void initSourceDragInfo(WMView *sourceView, WMDraggingInfo *info)
 
   XDND_SOURCE_STATE(info) = idleState;
 
-  emptyZone.pos = wmkpoint(0, 0);
-  emptyZone.size = wmksize(0, 0);
+  emptyZone.pos = WMMakePoint(0, 0);
+  emptyZone.size = WMMakeSize(0, 0);
   XDND_NO_POS_ZONE(info) = emptyZone;
 }
 
@@ -906,7 +906,7 @@ void WMDragImageFromView(WMView *view, XEvent *event)
 
   case MotionNotify:
     if (WMIsDraggingFromView(view)) {
-      mouseLocation = wmkpoint(event->xmotion.x_root, event->xmotion.y_root);
+      mouseLocation = WMMakePoint(event->xmotion.x_root, event->xmotion.y_root);
 
       if (abs(XDND_DRAG_ICON_POS(info).x - mouseLocation.x) >=
           MIN_X_MOVE_OFFSET

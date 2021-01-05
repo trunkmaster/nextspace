@@ -24,7 +24,6 @@
 #include "appicon.h"
 #include "screen.h"
 #include "window.h"
-#include <WINGs/WINGs.h>
 
 void wInitXrandr(WScreen *scr);
 void wUpdateXrandrInfo(WScreen *scr);

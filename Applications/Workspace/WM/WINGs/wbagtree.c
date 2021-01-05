@@ -1,9 +1,11 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
-#include "bagtree.h"
+#include "wbagtree.h"
 
 int WBNotFound = INT_MIN;
     

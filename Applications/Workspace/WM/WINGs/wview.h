@@ -3,7 +3,15 @@
 
 #include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFArray.h>
-#include <WINGs/WINGs.h>
+
+#include <WINGs/wscreen.h>
+#include <WINGs/drawing.h>
+
+typedef struct W_FocusInfo {
+  W_View *toplevel;
+  W_View *focused;    /* view that has the focus in this toplevel */
+  struct W_FocusInfo *next;
+} W_FocusInfo;
 
 typedef struct W_ViewDelegate {
     void *data;
@@ -13,12 +21,6 @@ typedef struct W_ViewDelegate {
     void (*willResize)(struct W_ViewDelegate*, WMView*,
                        unsigned int*, unsigned int*);
 } W_ViewDelegate;
-
-typedef struct W_FocusInfo {
-  W_View *toplevel;
-  W_View *focused;    /* view that has the focus in this toplevel */
-  struct W_FocusInfo *next;
-} W_FocusInfo;
 
 typedef struct W_View {
     struct W_Screen *screen;
@@ -163,7 +165,7 @@ void W_BroadcastMessage(W_View *targetParent, XEvent *event);
 
 void W_DispatchMessage(W_View *target, XEvent *event);
 
-/* ---[ WINGs/wview.c ]--------------------------------------------------- */
+/* ---[ wview.c ]--------------------------------------------------- */
 
 Window WMViewXID(WMView *view);
 
@@ -180,7 +182,7 @@ WMPoint WMGetViewScreenPosition(WMView *view);
 
 WMWidget* WMWidgetOfView(WMView *view);
 
-/* notifications */
+/* --- Notifications --- */
 extern CFStringRef WMViewSizeDidChangeNotification;
 extern CFStringRef WMViewDidRealizeNotification;
 

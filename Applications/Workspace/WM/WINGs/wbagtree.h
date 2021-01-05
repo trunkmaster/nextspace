@@ -14,8 +14,8 @@
 #ifndef __WORKSPACE_WM_WBAGTREE__
 #define __WORKSPACE_WM_WBAGTREE__
 
-#include <WMcore/WMcore.h>
-#include <WMcore/data.h>
+/* #include <WMcore/WMcore.h> */
+#include <WINGs/wdata.h>
 
 extern int WMNotFound;
 

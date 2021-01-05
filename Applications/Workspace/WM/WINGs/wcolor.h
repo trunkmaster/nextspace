@@ -1,16 +1,20 @@
 #ifndef __WORKSPACE_WM_WCOLOR__
 #define __WORKSPACE_WM_WCOLOR__
 
-typedef struct W_Color {
-    struct W_Screen *screen;
+#include "wscreen.h"
 
-    XColor color;
-    unsigned short alpha;
-    short refCount;
-    GC gc;
-    struct {
-        unsigned int exact:1;
-    } flags;
+typedef unsigned long WMPixel;
+
+typedef struct W_Color {
+  struct W_Screen *screen;
+
+  XColor color;
+  unsigned short alpha;
+  short refCount;
+  GC gc;
+  struct {
+    unsigned int exact:1;
+  } flags;
 } W_Color;
 
 #define W_PIXEL(c)		(c)->color.pixel

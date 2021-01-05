@@ -5,9 +5,9 @@
 #include <WMcore/string.h>
 
 #include "WMdefs.h"
-#include "WINGs.h"
+#include "wscreen.h"
 #include "winputmethod.h"
-#include "wmisc.h"
+#include "drawing.h"
 
 typedef struct W_IMContext {
   XIM xim;

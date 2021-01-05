@@ -2,19 +2,17 @@
 #include <unistd.h>
 #include <X11/Xutil.h>
 
+#include "WMdefs.h"
+
 #include <WMcore/util.h>
-/* #include <WMcore/userdefaults.h> */
 #include <WMcore/string.h>
 
-#include "WINGs.h"
+#include "wscreen.h"
 #include "wpixmap.h"
 #include "widgets.h"
 #include "wappresource.h"
 
 #include "GNUstep.h"
-
-#include "WMdefs.h"
-
 
 void WMSetApplicationIconWindow(WMScreen *scr, Window window)
 {

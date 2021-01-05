@@ -2,7 +2,8 @@
 #define __WORKSPACE_WM_WDRAGCOMMON__
 
 #include <CoreFoundation/CFArray.h>
-#include <WMcore/data.h>
+#include <WINGs/wdata.h>
+#include <WINGs/drawing.h>
 
 /* drag operations */
 typedef enum {

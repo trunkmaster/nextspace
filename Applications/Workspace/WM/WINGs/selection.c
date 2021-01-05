@@ -6,9 +6,9 @@
 #include <CoreFoundation/CFArray.h>
 #include <WMcore/util.h>
 
-#include "WINGs.h"
+#include "wscreen.h"
 #include "dragcommon.h"
-#include "wmisc.h"
+#include "drawing.h"
 
 #include "selection.h"
 

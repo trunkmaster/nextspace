@@ -32,13 +32,13 @@
 #include <unistd.h>
 #include <ctype.h>
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
-#include <WMcore/handlers.h>
 #include <WMcore/string.h>
 
 #include <WINGs/wevent.h>
 #include <WINGs/wcolor.h>
-#include <WINGs/wmisc.h>
+#include <WINGs/drawing.h>
 
 #include "GNUstep.h"
 #include "WM.h"
@@ -1540,7 +1540,7 @@ static int isPointNearBoder(WMenu * menu, int x, int y)
   int menuX2 = menu->frame_x + MENUW(menu);
   int menuY2 = menu->frame_y + MENUH(menu);
   int flag = 0;
-  int head = wGetHeadForPoint(menu->frame->screen_ptr, wmkpoint(x, y));
+  int head = wGetHeadForPoint(menu->frame->screen_ptr, WMMakePoint(x, y));
   WMRect rect = wGetRectForHead(menu->frame->screen_ptr, head);
 
   /* XXX: handle screen joins properly !! */
@@ -1623,7 +1623,7 @@ void wMenuScroll(WMenu *menu)
         break;
       }
 
-      rect = wGetRectForHead(scr, wGetHeadForPoint(scr, wmkpoint(x, y)));
+      rect = wGetRectForHead(scr, wGetHeadForPoint(scr, WMMakePoint(x, y)));
       on_x_edge = x <= rect.pos.x + 1 || x >= rect.pos.x + rect.size.width - 2;
       on_y_edge = y <= rect.pos.y + 1 || y >= rect.pos.y + rect.size.height - 2;
       on_border = on_x_edge || on_y_edge;

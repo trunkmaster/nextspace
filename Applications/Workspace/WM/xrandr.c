@@ -19,11 +19,14 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <WMcore/util.h>
-
 #include "WMdefs.h"
 
-#include "xrandr.h"
+#ifdef USE_XRANDR
+#  include <X11/extensions/Xrandr.h>
+#endif
+
+#include <WMcore/WMcore.h>
+#include <WMcore/util.h>
 
 #include "screen.h"
 #include "window.h"
@@ -32,12 +35,10 @@
 #include "dock.h"
 #include "stdio.h"
 
+#include "xrandr.h"
+
 #ifdef NEXTSPACE
 #  include <Workspace+WM.h>
-#endif
-
-#ifdef USE_XRANDR
-#  include <X11/extensions/Xrandr.h>
 #endif
 
 void wInitXrandr(WScreen *scr)

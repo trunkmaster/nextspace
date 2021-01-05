@@ -28,7 +28,7 @@
 #include <CoreFoundation/CFLogUtilities.h>
 
 #include <WMcore/util.h>
-#include <WMcore/handlers.h>
+#include <WINGs/wevent.h>
 
 #include "GNUstep.h"
 #include "WM.h"

@@ -21,9 +21,9 @@
 
 #include <string.h>
 
-#include "WMcore.h"
-#include "util.h"
-#include "data.h"
+/* #include "WMcore.h" */
+#include <WMcore/util.h>
+#include "wdata.h"
 
 typedef struct W_Data {
   unsigned length;	/* How many bytes we have */

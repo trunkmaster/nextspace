@@ -39,11 +39,9 @@
 
 #ifdef NDEBUG
 
-#define wassertr(expr)  \
-	if (!(expr)) { return; }
+#define wassertr(expr) if (!(expr)) { return; }
 
-#define wassertrv(expr, val)  \
-	if (!(expr)) { return (val); }
+#define wassertrv(expr, val) if (!(expr)) { return (val); }
 
 #else /* !NDEBUG */
 
@@ -95,12 +93,6 @@ extern "C" {
                          "the macro 'wlengthof' cannot be used on pointers, only on known size arrays"); \
     sizeof(array) / sizeof(array[0]);                                   \
   })
-
-
-/*-------------------------------------------------------------------------*/
-
-/* Global variables */
-extern int WCErrorCode;
 
 /*-------------------------------------------------------------------------*/
 

@@ -1,8 +1,13 @@
 #ifndef __WORKSPACE_WM_WEVENT__
 #define __WORKSPACE_WM_WEVENT__
 
-#include <WINGs/WINGs.h>
+#include <CoreFoundation/CFRunLoop.h>
+
 #include <WINGs/wview.h>
+
+/* -- Event handlers -- */
+
+#define ClientMessageMask	(1L<<30)
 
 typedef void WMEventProc(XEvent *event, void *clientData);
 typedef void WMEventHook(XEvent *event);
@@ -14,8 +19,6 @@ typedef struct W_EventHandler {
 
   void *clientData;
 } W_EventHandler;
-
-/* -- Functions -- */
 
 void W_CallDestroyHandlers(W_View *view);
 
@@ -32,5 +35,13 @@ int WMHandleEvent(XEvent *event);
 void WMNextEvent(Display *dpy, XEvent *event);
 
 void WMMaskEvent(Display *dpy, long mask, XEvent *event);
+
+/* -- Timers -- */
+
+CFRunLoopTimerRef WMAddTimerHandler(CFTimeInterval fireTimeout,
+                                    CFTimeInterval interval,
+                                    CFRunLoopTimerCallBack callback,
+                                    void *cdata);
+void WMDeleteTimerHandler(CFRunLoopTimerRef timer);
 
 #endif

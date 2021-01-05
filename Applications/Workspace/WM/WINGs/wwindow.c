@@ -2,14 +2,14 @@
 #include <X11/Xmd.h>
 #include <X11/Xatom.h>
 
-#include "WMdefs.h"
-
 #include <CoreFoundation/CFNotificationCenter.h>
 
+#include <WMcore/WMcore.h>
 #include <WMcore/util.h>
 #include <WMcore/string.h>
 
-#include "WINGs.h"
+#include "WMdefs.h"
+#include "wscreen.h"
 #include "wappresource.h"
 #include "widgets.h"
 #include "wevent.h"

@@ -32,7 +32,7 @@
 #include <WINGs/wwindow.h>
 #include <WINGs/wlabel.h>
 #include <WINGs/wframe.h>
-#include <WINGs/wmisc.h>
+#include <WINGs/drawing.h>
 
 #include "WM.h"
 #include "screen.h"

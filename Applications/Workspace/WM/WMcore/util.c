@@ -35,7 +35,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include <WINGs/WINGs.h>
+#include <WINGs/wscreen.h>
 
 #include "hashtable.h"
 #include "util.h"

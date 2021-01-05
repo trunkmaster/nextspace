@@ -1,6 +1,17 @@
 #ifndef __WORKSPACE_WM_WFRAME__
 #define __WORKSPACE_WM_WFRAME__
 
+/* frame title positions */
+typedef enum {
+  WTPNoTitle,
+  WTPAboveTop,
+  WTPAtTop,
+  WTPBelowTop,
+  WTPAboveBottom,
+  WTPAtBottom,
+  WTPBelowBottom
+} WMTitlePosition;
+
 typedef struct W_Frame {
 	W_Class widgetClass;
 	W_View *view;

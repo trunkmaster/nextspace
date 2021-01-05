@@ -35,7 +35,7 @@
 
 #include <WINGs/wview.h>
 #include <WINGs/wevent.h>
-#include <WINGs/wmisc.h>
+#include <WINGs/drawing.h>
 
 #include "GNUstep.h"
 #include "WM.h"
@@ -439,7 +439,8 @@ static void remember_geometry(WWindow *wwin, int *x, int *y, int *w, int *h)
   int old_head;
   Bool same_head;
 
-  old_geom_rect = wmkrect(wwin->old_geometry.x, wwin->old_geometry.y, wwin->old_geometry.width, wwin->old_geometry.height);
+  old_geom_rect = WMMakeRect(wwin->old_geometry.x, wwin->old_geometry.y,
+                             wwin->old_geometry.width, wwin->old_geometry.height);
   old_head = wGetHeadForRect(wwin->screen_ptr, old_geom_rect);
   same_head = (wGetHeadForWindow(wwin) == old_head);
   *x = ((wwin->old_geometry.x || wwin->old_geometry.width) && same_head) ? wwin->old_geometry.x : wwin->frame_x;
@@ -1993,7 +1994,7 @@ void wArrangeIcons(WScreen *scr, Bool arrangeAll)
         area.x1 += offset;
     }
 
-    rect = wmkrect(area.x1, area.y1, area.x2 - area.x1, area.y2 - area.y1);
+    rect = WMMakeRect(area.x1, area.y1, area.x2 - area.x1, area.y2 - area.y1);
 
     vars[head].pi = vars[head].si = 0;
     vars[head].sx1 = rect.pos.x;

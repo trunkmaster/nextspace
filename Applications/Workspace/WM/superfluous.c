@@ -31,7 +31,6 @@
 
 #include <wraster.h>
 
-#include <WMcore/handlers.h>
 #include <WMcore/util.h>
 
 #include <WINGs/wevent.h>
