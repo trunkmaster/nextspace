@@ -802,21 +802,6 @@ static void handleDestroyNotify(XEvent * event)
         fPtr->origLeader = None;
       }      
     } while (widx != kCFNotFound);
-
-    /* while ((widx = WMFindInArray(scr->fakeGroupLeaders, matchWindow, (void *)window)) != WANotFound) { */
-    /*   WFakeGroupLeader *fPtr; */
-
-    /*   fPtr = (WFakeGroupLeader *)CFArrayGetValueAtIndex(scr->fakeGroupLeaders, widx); */
-    /*   if (fPtr->retainCount > 0) { */
-    /*     fPtr->retainCount--; */
-    /*     if (fPtr->retainCount == 0 && fPtr->leader != None) { */
-    /*       XDestroyWindow(dpy, fPtr->leader); */
-    /*       fPtr->leader = None; */
-    /*       XFlush(dpy); */
-    /*     } */
-    /*   } */
-    /*   fPtr->origLeader = None; */
-    /* } */
   }
 
   app = wApplicationOf(window);

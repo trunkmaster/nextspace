@@ -6,12 +6,12 @@
 
 /* drag operations */
 typedef enum {
-              WDOperationNone = 0,
-              WDOperationCopy,
-              WDOperationMove,
-              WDOperationLink,
-              WDOperationAsk,
-              WDOperationPrivate
+  WDOperationNone = 0,
+  WDOperationCopy,
+  WDOperationMove,
+  WDOperationLink,
+  WDOperationAsk,
+  WDOperationPrivate
 } WMDragOperationType;
 
 typedef struct WMSelectionProcs {

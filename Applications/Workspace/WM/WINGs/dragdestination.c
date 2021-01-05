@@ -410,7 +410,7 @@ static void sendStatusMessage(WMView * destView, WMDraggingInfo * info, Atom act
 }
 
 static void
-storeDropData(WMView * destView, Atom selection, Atom target, Time timestamp, void *cdata, WMData * data)
+storeDropData(WMView *destView, Atom selection, Atom target, Time timestamp, void *cdata, WMData *data)
 {
   WMScreen *scr = W_VIEW_SCREEN(destView);
   WMDraggingInfo *info = scr->dragInfo;

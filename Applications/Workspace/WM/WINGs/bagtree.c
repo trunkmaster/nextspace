@@ -5,6 +5,8 @@
 #include <WMcore/util.h>
 #include "bagtree.h"
 
+int WBNotFound = INT_MIN;
+    
 typedef struct W_Node {
   struct W_Node *parent;
   struct W_Node *left;

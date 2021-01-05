@@ -15,6 +15,9 @@
 #define __WORKSPACE_WM_WBAGTREE__
 
 #include <WMcore/WMcore.h>
+#include <WMcore/data.h>
+
+extern int WMNotFound;
 
 typedef struct W_Bag WMBag;
 

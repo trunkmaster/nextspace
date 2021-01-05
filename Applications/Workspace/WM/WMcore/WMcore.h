@@ -87,20 +87,6 @@
 extern "C" {
 #endif /* __cplusplus */
 
-/* Notificaions */
-  
-/* Arrays and bags */
-enum {
-    WBNotFound = INT_MIN, /* element was not found in WMBag   */
-    WANotFound = -1       /* element was not found in WMArray */
-};
-
-
-typedef void WMFreeDataProc(void *data);
-typedef int WMCompareDataProc(const void *item1, const void *item2);
-/* Used by WMBag or WMArray for matching data */
-typedef int WMMatchDataProc(const void *item, const void *cdata);
-
 /* ---[ Macros ]---------------------------------------------------------- */
 
 #define wlengthof(array)                                                \
@@ -122,4 +108,4 @@ extern int WCErrorCode;
 }
 #endif /* __cplusplus */
 
-#endif /* _WUTIL_H_ */
+#endif /* __WORKSPACE_WM_WMCORE__ */

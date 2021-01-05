@@ -299,7 +299,6 @@ void wfree(void *ptr)
 }
 
 /* Miscelaneous helper functions */
-
 WMRange wmkrange(int start, int count)
 {
   WMRange range;
@@ -336,4 +335,3 @@ void wusleep(unsigned int usec)
     ;
 
 }
-

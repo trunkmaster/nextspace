@@ -37,50 +37,6 @@ typedef struct W_Data {
 
 /* Creating and destroying data objects */
 
-WMData *WMCreateDataWithCapacity(unsigned capacity)
-{
-  WMData *aData;
-
-  aData = (WMData *) wmalloc(sizeof(WMData));
-
-  if (capacity > 0)
-    aData->bytes = wmalloc(capacity);
-  else
-    aData->bytes = NULL;
-
-  aData->capacity = capacity;
-  aData->growth = capacity / 2 > 0 ? capacity / 2 : 1;
-  aData->length = 0;
-  aData->retainCount = 1;
-  aData->format = 0;
-  aData->destructor = wfree;
-
-  return aData;
-}
-
-WMData *WMCreateDataWithLength(unsigned length)
-{
-  WMData *aData;
-
-  aData = WMCreateDataWithCapacity(length);
-  if (length > 0) {
-    aData->length = length;
-  }
-
-  return aData;
-}
-
-WMData *WMCreateDataWithBytes(const void *bytes, unsigned length)
-{
-  WMData *aData;
-
-  aData = WMCreateDataWithCapacity(length);
-  aData->length = length;
-  memcpy(aData->bytes, bytes, length);
-
-  return aData;
-}
-
 WMData *WMCreateDataWithBytesNoCopy(void *bytes, unsigned length, WMFreeDataProc *destructor)
 {
   WMData *aData;
@@ -95,20 +51,6 @@ WMData *WMCreateDataWithBytesNoCopy(void *bytes, unsigned length, WMFreeDataProc
   aData->destructor = destructor;
 
   return aData;
-}
-
-WMData *WMCreateDataWithData(WMData *aData)
-{
-  WMData *newData;
-
-  if (aData->length > 0) {
-    newData = WMCreateDataWithBytes(aData->bytes, aData->length);
-  } else {
-    newData = WMCreateDataWithCapacity(0);
-  }
-  newData->format = aData->format;
-
-  return newData;
 }
 
 WMData *WMRetainData(WMData *aData)
@@ -128,41 +70,6 @@ void WMReleaseData(WMData *aData)
   wfree(aData);
 }
 
-/* Adjusting capacity */
-
-void WMSetDataCapacity(WMData *aData, unsigned capacity)
-{
-  if (aData->capacity != capacity) {
-    aData->bytes = wrealloc(aData->bytes, capacity);
-    aData->capacity = capacity;
-    aData->growth = capacity / 2 > 0 ? capacity / 2 : 1;
-  }
-  if (aData->length > capacity) {
-    aData->length = capacity;
-  }
-}
-
-void WMSetDataLength(WMData *aData, unsigned length)
-{
-  if (length > aData->capacity) {
-    WMSetDataCapacity(aData, length);
-  }
-  if (length > aData->length) {
-    memset((unsigned char *)aData->bytes + aData->length, 0, length - aData->length);
-  }
-  aData->length = length;
-}
-
-void WMSetDataFormat(WMData *aData, unsigned format)
-{
-  aData->format = format;
-}
-
-void WMIncreaseDataLengthBy(WMData *aData, unsigned extraLength)
-{
-  WMSetDataLength(aData, aData->length + extraLength);
-}
-
 /* Accessing data */
 
 const void *WMDataBytes(WMData *aData)
@@ -170,123 +77,21 @@ const void *WMDataBytes(WMData *aData)
   return aData->bytes;
 }
 
-void WMGetDataBytes(WMData *aData, void *buffer)
-{
-  wassertr(aData->length > 0);
-
-  memcpy(buffer, aData->bytes, aData->length);
-}
-
-unsigned WMGetDataFormat(WMData *aData)
-{
-  return aData->format;
-}
-
-void WMGetDataBytesWithLength(WMData *aData, void *buffer, unsigned length)
-{
-  wassertr(aData->length > 0);
-  wassertr(length <= aData->length);
-
-  memcpy(buffer, aData->bytes, length);
-}
-
-void WMGetDataBytesWithRange(WMData *aData, void *buffer, WMRange aRange)
-{
-  wassertr(aRange.position < aData->length);
-  wassertr(aRange.count <= aData->length - aRange.position);
-
-  memcpy(buffer, (unsigned char *)aData->bytes + aRange.position, aRange.count);
-}
-
-WMData *WMGetSubdataWithRange(WMData *aData, WMRange aRange)
-{
-  void *buffer;
-  WMData *newData;
-
-  if (aRange.count <= 0)
-    return WMCreateDataWithCapacity(0);
-
-  buffer = wmalloc(aRange.count);
-  WMGetDataBytesWithRange(aData, buffer, aRange);
-  newData = WMCreateDataWithBytesNoCopy(buffer, aRange.count, wfree);
-  newData->format = aData->format;
-
-  return newData;
-}
-
 /* Testing data */
-
-Bool WMIsDataEqualToData(WMData *aData, WMData *anotherData)
-{
-  if (aData->length != anotherData->length)
-    return False;
-  else if (!aData->bytes && !anotherData->bytes)	/* both are empty */
-    return True;
-  else if (!aData->bytes || !anotherData->bytes)	/* one of them is empty */
-    return False;
-  return (memcmp(aData->bytes, anotherData->bytes, aData->length) == 0);
-}
 
 unsigned WMGetDataLength(WMData *aData)
 {
   return aData->length;
 }
 
-/* Adding data */
-void WMAppendDataBytes(WMData *aData, const void *bytes, unsigned length)
-{
-  unsigned oldLength = aData->length;
-  unsigned newLength = oldLength + length;
-
-  if (newLength > aData->capacity) {
-    unsigned nextCapacity = aData->capacity + aData->growth;
-    unsigned nextGrowth = aData->capacity ? aData->capacity : 1;
-
-    while (nextCapacity < newLength) {
-      unsigned tmp = nextCapacity + nextGrowth;
-
-      nextGrowth = nextCapacity;
-      nextCapacity = tmp;
-    }
-    WMSetDataCapacity(aData, nextCapacity);
-    aData->growth = nextGrowth;
-  }
-  memcpy((unsigned char *)aData->bytes + oldLength, bytes, length);
-  aData->length = newLength;
-}
-
-void WMAppendData(WMData *aData, WMData *anotherData)
-{
-  if (anotherData->length > 0)
-    WMAppendDataBytes(aData, anotherData->bytes, anotherData->length);
-}
-
 /* Modifying data */
 
-void WMReplaceDataBytesInRange(WMData *aData, WMRange aRange, const void *bytes)
+void WMSetDataFormat(WMData *aData, unsigned format)
 {
-  wassertr(aRange.position < aData->length);
-  wassertr(aRange.count <= aData->length - aRange.position);
-
-  memcpy((unsigned char *)aData->bytes + aRange.position, bytes, aRange.count);
+  aData->format = format;
 }
 
-void WMResetDataBytesInRange(WMData *aData, WMRange aRange)
+unsigned WMGetDataFormat(WMData *aData)
 {
-  wassertr(aRange.position < aData->length);
-  wassertr(aRange.count <= aData->length - aRange.position);
-
-  memset((unsigned char *)aData->bytes + aRange.position, 0, aRange.count);
+  return aData->format;
 }
-
-void WMSetData(WMData *aData, WMData *anotherData)
-{
-  unsigned length = anotherData->length;
-
-  WMSetDataCapacity(aData, length);
-  if (length > 0)
-    memcpy(aData->bytes, anotherData->bytes, length);
-  aData->length = length;
-}
-
-/* Storing data */
