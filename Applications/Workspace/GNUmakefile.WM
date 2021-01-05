@@ -1,38 +1,31 @@
-# WMcore
+# WM core
 $(APP_NAME)_C_FILES += \
-	$(WM_DIR)/WMcore/hashtable.c \
-	$(WM_DIR)/WMcore/string.c \
-	$(WM_DIR)/WMcore/util.c
-        
-#	$(WM_DIR)/WMcore/handlers.c
+	$(WM_DIR)/core/whashtable.c \
+	$(WM_DIR)/core/fileutils.c \
+	$(WM_DIR)/core/stringutils.c \
+	$(WM_DIR)/core/util.c \
+	$(WM_DIR)/core/dragcommon.c \
+	$(WM_DIR)/core/dragdestination.c \
+	$(WM_DIR)/core/dragsource.c \
+	$(WM_DIR)/core/drawing.c \
+	$(WM_DIR)/core/selection.c \
+	$(WM_DIR)/core/wappresource.c \
+	$(WM_DIR)/core/wbagtree.c \
+	$(WM_DIR)/core/wdata.c \
+	$(WM_DIR)/core/wballoon.c \
+	$(WM_DIR)/core/wcolor.c \
+	$(WM_DIR)/core/wevent.c \
+	$(WM_DIR)/core/wframe.c \
+	$(WM_DIR)/core/wfont.c \
+	$(WM_DIR)/core/widgets.c \
+	$(WM_DIR)/core/winputmethod.c \
+	$(WM_DIR)/core/wlabel.c \
+	$(WM_DIR)/core/wpixmap.c \
+	$(WM_DIR)/core/wview.c \
+	$(WM_DIR)/core/wwindow.c \
+        $(WM_DIR)/core/wuserdefaults.c
 
-# WINGs
-$(APP_NAME)_C_FILES += \
-	$(WM_DIR)/WINGs/dragcommon.c \
-	$(WM_DIR)/WINGs/dragdestination.c \
-	$(WM_DIR)/WINGs/dragsource.c \
-	$(WM_DIR)/WINGs/drawing.c \
-	$(WM_DIR)/WINGs/fileutils.c \
-	$(WM_DIR)/WINGs/selection.c \
-	$(WM_DIR)/WINGs/wappresource.c \
-	$(WM_DIR)/WINGs/wbagtree.c \
-	$(WM_DIR)/WINGs/wdata.c \
-	$(WM_DIR)/WINGs/wballoon.c \
-	$(WM_DIR)/WINGs/wcolor.c \
-	$(WM_DIR)/WINGs/wevent.c \
-	$(WM_DIR)/WINGs/wframe.c \
-	$(WM_DIR)/WINGs/wfont.c \
-	$(WM_DIR)/WINGs/widgets.c \
-	$(WM_DIR)/WINGs/winputmethod.c \
-	$(WM_DIR)/WINGs/wlabel.c \
-	$(WM_DIR)/WINGs/wpixmap.c \
-	$(WM_DIR)/WINGs/wview.c \
-	$(WM_DIR)/WINGs/wwindow.c \
-        $(WM_DIR)/WINGs/wuserdefaults.c
-
-#	$(WM_DIR)/WINGs/wmisc.c
-
-# WindowMaker
+# WM
 $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/WM_main.c \
 	$(WM_DIR)/actions.c \

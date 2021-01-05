@@ -33,14 +33,14 @@
 #include <math.h>
 #include <limits.h>
 
-#include <WMcore/WMcore.h>
-#include <WMcore/string.h>
-#include <WMcore/util.h>
+#include <core/WMcore.h>
+#include <core/stringutils.h>
+#include <core/util.h>
 
-#include <WINGs/wevent.h>
-#include <WINGs/wcolor.h>
-#include <WINGs/drawing.h>
-#include <WINGs/wuserdefaults.h>
+#include <core/wevent.h>
+#include <core/wcolor.h>
+#include <core/drawing.h>
+#include <core/wuserdefaults.h>
 
 #ifndef PATH_MAX
 #define PATH_MAX DEFAULT_PATH_MAX

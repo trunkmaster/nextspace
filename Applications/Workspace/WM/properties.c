@@ -26,7 +26,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <WMcore/util.h>
+#include <core/util.h>
 
 #include "WM.h"
 #include "window.h"

@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <WMcore/util.h>
+#include <core/util.h>
 
 #include "WM.h"
 #include "wcore.h"

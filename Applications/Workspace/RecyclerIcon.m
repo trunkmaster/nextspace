@@ -29,8 +29,8 @@
 #import "Recycler.h"
 #import "RecyclerIcon.h"
 
-#include <WMcore/util.h>
-#include <WMcore/string.h>
+#include <core/util.h>
+#include <core/stringutils.h>
 #include <xrandr.h>
 
 static Recycler *recycler = nil;

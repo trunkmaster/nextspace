@@ -39,14 +39,14 @@
 #include <CoreFoundation/CFNotificationCenter.h>
 #include <CoreFoundation/CFNumber.h>
 
-#include <WMcore/WMcore.h>
-#include <WMcore/util.h>
-#include <WMcore/string.h>
+#include <core/WMcore.h>
+#include <core/util.h>
+#include <core/stringutils.h>
 
-#include <WINGs/wscreen.h>
-#include <WINGs/wevent.h>
-#include <WINGs/wcolor.h>
-#include <WINGs/drawing.h>
+#include <core/wscreen.h>
+#include <core/wevent.h>
+#include <core/wcolor.h>
+#include <core/drawing.h>
 
 #include "WM.h"
 #include "framewin.h"

@@ -39,14 +39,14 @@
 
 #include <wraster.h>
 
-#include <WMcore/WMcore.h>
-#include <WMcore/util.h>
-#include <WMcore/string.h>
+#include <core/WMcore.h>
+#include <core/util.h>
+#include <core/stringutils.h>
 
-#include <WINGs/fileutils.h>
-#include <WINGs/wevent.h>
-#include <WINGs/drawing.h>
-#include <WINGs/wuserdefaults.h>
+#include <core/fileutils.h>
+#include <core/wevent.h>
+#include <core/drawing.h>
+#include <core/wuserdefaults.h>
 
 #include "window.h"
 #include "misc.h"

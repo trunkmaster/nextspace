@@ -35,12 +35,11 @@
 
 #include <wraster.h>
 
-#include <WMcore/WMcore.h>
-#include <WMcore/util.h>
-#include <WMcore/string.h>
-
-#include <WINGs/drawing.h>
-#include <WINGs/wevent.h>
+#include <core/WMcore.h>
+#include <core/util.h>
+#include <core/stringutils.h>
+#include <core/drawing.h>
+#include <core/wevent.h>
 
 #include "WM.h"
 #include "screen.h"

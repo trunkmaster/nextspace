@@ -1,10 +1,10 @@
 
-#include <WMcore/util.h>
+#include <core/util.h>
 
-#include <WINGs/widgets.h>
-#include <WINGs/wevent.h>
-#include <WINGs/wcolor.h>
-#include <WINGs/drawing.h>
+#include <core/widgets.h>
+#include <core/wevent.h>
+#include <core/wcolor.h>
+#include <core/drawing.h>
 
 #include "geomview.h"
 

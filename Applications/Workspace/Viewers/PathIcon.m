@@ -28,8 +28,8 @@
 
 #import "Workspace+WM.h"
 
-#import <WMcore/WMcore.h>
-#import <WMcore/string.h>
+#import <core/WMcore.h>
+#import <core/stringutils.h>
 #import <superfluous.h>
 #import <defaults.h>
 #import <window_attributes.h>

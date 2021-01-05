@@ -36,13 +36,13 @@
 
 #include <CoreFoundation/CFArray.h>
 
-#include <WMcore/WMcore.h>
-#include <WMcore/util.h>
-#include <WMcore/string.h>
+#include <core/WMcore.h>
+#include <core/util.h>
+#include <core/stringutils.h>
 
-#include <WINGs/widgets.h>
-#include <WINGs/wcolor.h>
-#include <WINGs/wuserdefaults.h>
+#include <core/widgets.h>
+#include <core/wcolor.h>
+#include <core/wuserdefaults.h>
 
 #include "WM.h"
 #include "def_pixmaps.h"

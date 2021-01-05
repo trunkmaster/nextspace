@@ -32,13 +32,13 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#include <WMcore/WMcore.h>
-#include <WMcore/util.h>
-#include <WMcore/string.h>
+#include <core/WMcore.h>
+#include <core/util.h>
+#include <core/stringutils.h>
 
-#include <WINGs/wevent.h>
-#include <WINGs/wcolor.h>
-#include <WINGs/drawing.h>
+#include <core/wevent.h>
+#include <core/wcolor.h>
+#include <core/drawing.h>
 
 #include "GNUstep.h"
 #include "WM.h"

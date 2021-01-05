@@ -31,9 +31,9 @@
 
 #include <wraster.h>
 
-#include <WMcore/util.h>
+#include <core/util.h>
 
-#include <WINGs/wevent.h>
+#include <core/wevent.h>
 
 #include "WM.h"
 #include "screen.h"

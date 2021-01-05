@@ -29,9 +29,8 @@
 #include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFNotificationCenter.h>
 
-#include <WINGs/wscreen.h>
-
-#include <WMcore/util.h>
+#include <core/wscreen.h>
+#include <core/util.h>
 
 /* class codes */
 typedef enum {

@@ -25,8 +25,8 @@
 #  include <X11/extensions/Xrandr.h>
 #endif
 
-#include <WMcore/WMcore.h>
-#include <WMcore/util.h>
+#include <core/WMcore.h>
+#include <core/util.h>
 
 #include "screen.h"
 #include "window.h"

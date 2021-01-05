@@ -31,11 +31,10 @@
 #include <math.h>
 #include <time.h>
 
-#include <WMcore/util.h>
-
-#include <WINGs/wview.h>
-#include <WINGs/wevent.h>
-#include <WINGs/drawing.h>
+#include <core/util.h>
+#include <core/wview.h>
+#include <core/wevent.h>
+#include <core/drawing.h>
 
 #include "GNUstep.h"
 #include "WM.h"

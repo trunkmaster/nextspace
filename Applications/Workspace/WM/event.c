@@ -54,11 +54,11 @@
 #include <CoreFoundation/CFFileDescriptor.h>
 #include <CoreFoundation/CFLogUtilities.h>
 
-#include <WMcore/util.h>
+#include <core/util.h>
 
-#include <WINGs/wevent.h>
-#include <WINGs/drawing.h>
-#include <WINGs/wuserdefaults.h>
+#include <core/wevent.h>
+#include <core/drawing.h>
+#include <core/wuserdefaults.h>
 
 #include "GNUstep.h"
 #include "WM.h"

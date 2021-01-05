@@ -30,8 +30,8 @@
 #include <X11/Xatom.h>
 
 #include <CoreFoundation/CFArray.h>
-#include <WMcore/util.h>
-#include <WMcore/string.h>
+#include <core/util.h>
+#include <core/stringutils.h>
 
 #include "WM.h"
 #include "dock.h"

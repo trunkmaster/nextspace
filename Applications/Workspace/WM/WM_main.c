@@ -41,13 +41,11 @@
  */
 #include <X11/Xlocale.h>
 
-#include <WINGs/wuserdefaults.h>
+#include <core/wuserdefaults.h>
 
-#include <WMcore/util.h>
-/* #include <WMcore/userdefaults.h> */
-#include <WMcore/string.h>
-/* #include <WMcore/findfile.h> */
-#include <WMcore/util.h>
+#include <core/util.h>
+#include <core/stringutils.h>
+#include <core/util.h>
 
 #define MAINFILE
 

@@ -47,15 +47,15 @@
 
 #include <wraster.h>
 
-#include <WMcore/WMcore.h>
-#include <WMcore/util.h>
-#include <WMcore/string.h>
+#include <core/WMcore.h>
+#include <core/util.h>
+#include <core/stringutils.h>
 
-#include <WINGs/wscreen.h>
-#include <WINGs/fileutils.h>
-#include <WINGs/wcolor.h>
-#include <WINGs/drawing.h>
-#include <WINGs/wuserdefaults.h>
+#include <core/wscreen.h>
+#include <core/fileutils.h>
+#include <core/wcolor.h>
+#include <core/drawing.h>
+#include <core/wuserdefaults.h>
 #include <CoreFoundation/CFLogUtilities.h>
 
 #include "WM.h"

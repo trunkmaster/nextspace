@@ -28,9 +28,9 @@
 #include <CoreFoundation/CFArray.h>
 #include <CoreFoundation/CFRunLoop.h>
 
-#include <WINGs/drawing.h>
-#include <WINGs/wbagtree.h>
-#include <WINGs/wfont.h>
+#include <core/drawing.h>
+#include <core/wbagtree.h>
+#include <core/wfont.h>
 
 #define WTB_LEFT	0
 #define WTB_RIGHT	1

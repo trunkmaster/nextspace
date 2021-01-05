@@ -30,9 +30,9 @@
 #include <X11/Xutil.h>
 #include <X11/XKBlib.h>
 
-#include <WMcore/WMcore.h>
-#include <WMcore/util.h>
-#include <WMcore/string.h>
+#include <core/WMcore.h>
+#include <core/util.h>
+#include <core/stringutils.h>
 
 #include "WM.h"
 #include "actions.h"

@@ -27,7 +27,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#include <WMcore/util.h>
+#include <core/util.h>
 
 #include "WM.h"
 #include "screen.h"

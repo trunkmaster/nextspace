@@ -34,9 +34,9 @@
 
 #include <wraster.h>
 
-#include <WMcore/util.h>
-#include <WINGs/fileutils.h>
-#include "WINGs/wuserdefaults.h"
+#include <core/util.h>
+#include <core/fileutils.h>
+#include "core/wuserdefaults.h"
 
 #include "WM.h"
 #include "window.h"

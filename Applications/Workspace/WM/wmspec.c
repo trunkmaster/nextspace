@@ -34,9 +34,9 @@
 #include <X11/Xatom.h>
 #include <string.h>
 
-#include <WMcore/WMcore.h>
-#include <WMcore/util.h>
-#include <WMcore/string.h>
+#include <core/WMcore.h>
+#include <core/util.h>
+#include <core/stringutils.h>
 
 #include "WM.h"
 #include "window.h"

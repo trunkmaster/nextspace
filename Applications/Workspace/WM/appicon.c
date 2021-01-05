@@ -33,10 +33,10 @@
 
 #include <CoreFoundation/CFLogUtilities.h>
 
-#include <WMcore/util.h>
-#include <WMcore/string.h>
-
-#include <WINGs/wevent.h>
+#include <core/util.h>
+#include <core/stringutils.h>
+#include <core/wevent.h>
+#include "core/wuserdefaults.h"
 
 #include "WM.h"
 #include "window.h"
@@ -47,7 +47,6 @@
 #include "stacking.h"
 #include "dock.h"
 #include "WM_main.h"
-#include "wuserdefaults.h"
 #include "workspace.h"
 #include "superfluous.h"
 #include "menu.h"

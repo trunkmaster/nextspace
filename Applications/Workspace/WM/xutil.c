@@ -30,7 +30,7 @@
 
 #include "xutil.h"
 
-#include <WMcore/WMcore.h>
+#include <core/WMcore.h>
 
 static const char *requestCodes[] = {
     "DUMMY",

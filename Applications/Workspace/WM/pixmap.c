@@ -25,7 +25,7 @@
 
 #include <wraster.h>
 
-#include <WMcore/util.h>
+#include <core/util.h>
 
 #include <stdlib.h>
 #include <string.h>

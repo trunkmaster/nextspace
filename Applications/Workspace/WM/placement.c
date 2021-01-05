@@ -27,11 +27,11 @@
 #include <string.h>
 #include <limits.h>
 
-#include <WMcore/WMcore.h>
-#include <WMcore/util.h>
+#include <core/WMcore.h>
+#include <core/util.h>
 
-#include <WINGs/wbagtree.h>
-#include <WINGs/drawing.h>
+#include <core/wbagtree.h>
+#include <core/drawing.h>
 
 #include "GNUstep.h"
 #include "WM.h"

@@ -45,11 +45,11 @@
 #include <X11/XKBlib.h>
 #endif
 
-#include <WMcore/WMcore.h>
-#include <WMcore/util.h>
+#include <core/WMcore.h>
+#include <core/util.h>
 
-#include <WINGs/wuserdefaults.h>
-#include <WINGs/wevent.h>
+#include <core/wuserdefaults.h>
+#include <core/wevent.h>
 
 #include "WM.h"
 #include "GNUstep.h"

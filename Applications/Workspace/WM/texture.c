@@ -29,8 +29,8 @@
 
 #include <wraster.h>
 
-#include <WMcore/util.h>
-#include <WINGs/fileutils.h>
+#include <core/util.h>
+#include <core/fileutils.h>
 
 #include "WM.h"
 #include "texture.h"

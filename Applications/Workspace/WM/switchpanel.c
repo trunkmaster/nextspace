@@ -25,14 +25,14 @@
 
 #include <CoreFoundation/CFArray.h>
 
-#include <WMcore/util.h>
+#include <core/util.h>
 
-#include <WINGs/widgets.h>
-#include <WINGs/wcolor.h>
-#include <WINGs/wwindow.h>
-#include <WINGs/wlabel.h>
-#include <WINGs/wframe.h>
-#include <WINGs/drawing.h>
+#include <core/widgets.h>
+#include <core/wcolor.h>
+#include <core/wwindow.h>
+#include <core/wlabel.h>
+#include <core/wframe.h>
+#include <core/drawing.h>
 
 #include "WM.h"
 #include "screen.h"

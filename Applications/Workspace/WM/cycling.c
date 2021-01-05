@@ -29,7 +29,7 @@
 #include <X11/keysym.h>
 #include <string.h>
 
-#include <WINGs/wevent.h>
+#include <core/wevent.h>
 
 #include "WM.h"
 #include "GNUstep.h"
