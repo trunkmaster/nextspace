@@ -55,7 +55,6 @@
 #include "actions.h"
 #include "client.h"
 #include "colormap.h"
-#include "keybind.h"
 #include "stacking.h"
 #include "defaults.h"
 #include "workspace.h"

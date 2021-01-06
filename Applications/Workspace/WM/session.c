@@ -82,7 +82,6 @@
 #include "session.h"
 #include "framewin.h"
 #include "workspace.h"
-#include "WM_main.h"
 #include "properties.h"
 #include "application.h"
 #include "appicon.h"
@@ -92,7 +91,6 @@
 static CFTypeRef sApplications = CFSTR("Applications");
 static CFTypeRef sCommand = CFSTR("Command");
 static CFTypeRef sName = CFSTR("Name");
-static CFTypeRef sHost = CFSTR("Host");
 static CFTypeRef sWorkspace = CFSTR("Workspace");
 static CFTypeRef sShaded = CFSTR("Shaded");
 static CFTypeRef sMiniaturized = CFSTR("Miniaturized");

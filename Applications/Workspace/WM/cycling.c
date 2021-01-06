@@ -36,7 +36,7 @@
 #include "screen.h"
 #include "window.h"
 #include "framewin.h"
-#include "keybind.h"
+#include "defaults.h"
 #include "actions.h"
 #include "stacking.h"
 #include "cycling.h"

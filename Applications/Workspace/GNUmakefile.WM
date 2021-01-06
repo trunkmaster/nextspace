@@ -27,7 +27,6 @@ $(APP_NAME)_C_FILES += \
 
 # WM
 $(APP_NAME)_C_FILES += \
-	$(WM_DIR)/WM_main.c \
 	$(WM_DIR)/actions.c \
 	$(WM_DIR)/appicon.c \
 	$(WM_DIR)/application.c \

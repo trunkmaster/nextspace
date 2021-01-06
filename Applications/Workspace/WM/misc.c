@@ -58,8 +58,10 @@
 #include "framewin.h"
 #include "xutil.h"
 #include "xmodifier.h"
-#include "WM_main.h"
 #include "event.h"
+
+#include "dock.h"
+#include "Workspace+WM.h"
 
 
 #define ICON_SIZE wPreferences.icon_size
@@ -939,7 +941,9 @@ char *StrConcatDot(const char *a, const char *b)
   return str;
 }
 
-static char *getCommandForWindow(Window win, int elements)
+/* --- Commands --- */
+
+static char *_getCommandForWindow(Window win, int elements)
 {
   char **argv, *command = NULL;
   int argc;
@@ -965,5 +969,198 @@ static char *getCommandForWindow(Window win, int elements)
 /* Free result when done */
 char *GetCommandForWindow(Window win)
 {
-  return getCommandForWindow(win, 0);
+  return _getCommandForWindow(win, 0);
+}
+
+void SetupEnvironment(WScreen * scr)
+{
+  char *tmp;
+
+  tmp = wmalloc(60);
+  snprintf(tmp, 60, "WRASTER_COLOR_RESOLUTION%i=%i", scr->screen,
+           scr->rcontext->attribs->colors_per_channel);
+  putenv(tmp);
+}
+
+typedef struct {
+  WScreen *scr;
+  char *command;
+} _tuple;
+
+static void _shellCommandHandler(pid_t pid, unsigned int status, void *client_data)
+{
+  _tuple *data = (_tuple *)client_data;
+
+  if (status == 127) {
+    char *buffer;
+
+    buffer = wstrconcat(_("Could not execute command: "), data->command);
+    dispatch_async(workspace_q, ^{
+        WSRunAlertPanel(_("Run Error"), buffer, _("Got It"), NULL, NULL);
+      });
+    wfree(buffer);
+  } else if (status != 127) {
+    /*
+      printf("%s: %i\n", data->command, status);
+    */
+  }
+
+  wfree(data->command);
+  wfree(data);
+}
+
+void ExecuteShellCommand(WScreen *scr, const char *command)
+{
+  static char *shell = NULL;
+  pid_t pid;
+
+  /*
+   * This have a problem: if the shell is tcsh (not sure about others)
+   * and ~/.tcshrc have /bin/stty erase ^H somewhere on it, the shell
+   * will block and the command will not be executed.
+   */
+  shell = "/bin/sh";
+
+  pid = fork();
+
+  if (pid == 0) {
+    SetupEnvironment(scr);
+
+#ifdef HAVE_SETSID
+    setsid();
+#endif
+    execl(shell, shell, "-c", command, NULL);
+    werror("could not execute %s -c %s", shell, command);
+    exit(-1);
+  } else if (pid < 0) {
+    werror("cannot fork a new process");
+  } else {
+    _tuple *data = wmalloc(sizeof(_tuple));
+
+    data->scr = scr;
+    data->command = wstrdup(command);
+
+    wAddDeathHandler(pid, _shellCommandHandler, data);
+  }
+}
+
+/* Launch a new instance of the active window */
+Bool RelaunchWindow(WWindow *wwin)
+{
+  if (! wwin || ! wwin->client_win) {
+    werror("no window to relaunch");
+    return False;
+  }
+
+  char **argv;
+  int argc;
+
+  if (! XGetCommand(dpy, wwin->client_win, &argv, &argc) || argc == 0 || argv == NULL) {
+    werror("cannot relaunch the application because no WM_COMMAND property is set");
+    return False;
+  }
+
+  pid_t pid = fork();
+
+  if (pid == 0) {
+    SetupEnvironment(wwin->screen_ptr);
+#ifdef HAVE_SETSID
+    setsid();
+#endif
+    /* argv is not null-terminated */
+    char **a = (char **) malloc(argc + 1);
+    if (! a) {
+      werror("out of memory trying to relaunch the application");
+      exit(-1);
+    }
+
+    int i;
+    for (i = 0; i < argc; i++)
+      a[i] = argv[i];
+    a[i] = NULL;
+
+    execvp(a[0], a);
+    exit(-1);
+  } else if (pid < 0) {
+    werror("cannot fork a new process");
+
+    XFreeStringList(argv);
+    return False;
+  } else {
+    _tuple *data = wmalloc(sizeof(_tuple));
+
+    data->scr = wwin->screen_ptr;
+    data->command = wtokenjoin(argv, argc);
+
+    /* not actually a shell command */
+    wAddDeathHandler(pid, _shellCommandHandler, data);
+
+    XFreeStringList(argv);
+  }
+
+  return True;
+}
+
+static int *wVisualID = NULL;
+static int wVisualID_len = 0;
+
+int GetWVisualID(int screen)
+{
+  if (wVisualID == NULL)
+    return -1;
+  if (screen < 0 || screen >= wVisualID_len)
+    return -1;
+
+  return wVisualID[screen];
+}
+
+void SetWVisualID(int screen, int val)
+{
+  int i;
+
+  if (screen < 0)
+    return;
+
+  if (wVisualID == NULL) {
+    /* no array at all, alloc space for screen + 1 entries
+     * and init with default value */
+    wVisualID_len = screen + 1;
+    wVisualID = (int *)malloc(wVisualID_len * sizeof(int));
+    for (i = 0; i < wVisualID_len; i++) {
+      wVisualID[i] = -1;
+    }
+  }
+  else if (screen >= wVisualID_len) {
+    /* larger screen number than previously allocated
+       so enlarge array */
+    int oldlen = wVisualID_len;
+
+    wVisualID_len = screen + 1;
+    wVisualID = (int *)wrealloc(wVisualID, wVisualID_len * sizeof(int));
+    for (i = oldlen; i < wVisualID_len; i++) {
+      wVisualID[i] = -1;
+    }
+  }
+
+  wVisualID[screen] = val;
+}
+
+CFTypeRef GetNotificationInfoValue(CFDictionaryRef theDict, CFStringRef key)
+{
+  const void *keys;
+  const void *values;
+  void *desired_value = "";
+
+  if (!theDict)
+    return desired_value;
+  
+  CFDictionaryGetKeysAndValues(theDict, &keys, &values);
+  for (int i = 0; i < CFDictionaryGetCount(theDict); i++) {
+    if (CFStringCompare(&keys[i], key, 0) == 0) {
+      desired_value = (void *)&values[i];
+      break;
+    }
+  }
+
+  return desired_value;
 }

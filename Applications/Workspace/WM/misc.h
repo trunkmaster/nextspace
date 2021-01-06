@@ -22,7 +22,6 @@
 #define __WORKSPACE_WM_MISC__
 
 #include "defaults.h"
-#include "keybind.h"
 #include "appicon.h"
 
 Bool wFetchName(Display *dpy, Window win, char **winname);
@@ -48,4 +47,14 @@ char *GetShortcutKey(WShortKey key);
 char *EscapeWM_CLASS(const char *name, const char *class);
 char *StrConcatDot(const char *a, const char *b);
 char *GetCommandForWindow(Window win);
+
+void SetupEnvironment(WScreen *scr);
+void ExecuteShellCommand(WScreen *scr, const char *command);
+Bool RelaunchWindow(WWindow *wwin);
+
+int GetWVisualID(int screen);
+void SetWVisualID(int screen, int val);
+
+CFTypeRef GetNotificationInfoValue(CFDictionaryRef theDict, CFStringRef key);
+
 #endif

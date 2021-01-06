@@ -47,8 +47,10 @@ extern WorkspaceExitCode ws_quit_code;
 
 #include <wraster.h>
 
-#include <screen.h>
 #include <core/wappresource.h>
+
+#include <screen.h>
+#include <startup.h>
 #include <window.h>
 #include <event.h>
 #include <dock.h>
@@ -62,9 +64,10 @@ extern WorkspaceExitCode ws_quit_code;
 #include <stacking.h>
 #include <placement.h>
 #include <xrandr.h>
+#include <misc.h>
 
 #undef _
-#define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey: (X) value: @"" table: nil]
+#define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey:(X) value:@"" table:nil]
 
 BOOL xIsWindowServerReady(void);
 BOOL xIsWindowManagerAlreadyRunning(void);
@@ -73,8 +76,6 @@ BOOL xIsWindowManagerAlreadyRunning(void);
 // Calls related to internals of Window Manager.
 // 'WM' prefix is a call direction 'to WindowManager'
 //-----------------------------------------------------------------------------
-
-// void WMInitializeWindowMaker(int argc, char **argv);
 void WMSetupFrameOffsetProperty();
 
 // --- Logout/PowerOff related activities

@@ -56,7 +56,6 @@
 #include "actions.h"
 #include "stacking.h"
 #include "dock.h"
-#include "WM_main.h"
 #include "properties.h"
 #include "menu.h"
 #include "client.h"

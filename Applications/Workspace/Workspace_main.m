@@ -27,9 +27,9 @@
 #import "Application.h"
 #import "Workspace+WM.h"
 
-#include <WM/WM_main.h>
+#include <WM/startup.h>
 
-// Global - set in event.c WMRunLoop()
+// Global - set in WM/event.c - WMRunLoop()
 CFRunLoopRef wm_runloop = NULL;
 
 //-----------------------------------------------------------------------------
@@ -89,9 +89,6 @@ static BOOL _isWindowManagerRunning(void)
 // Workspace application GNUstep main function
 //-----------------------------------------------------------------------------
 
-// WM/src/startup.c
-extern void WMSetErrorHandler(void);
-
 int WSApplicationMain(int argc, const char **argv)
 {
   NSDictionary	*infoDict;
@@ -112,7 +109,7 @@ int WSApplicationMain(int argc, const char **argv)
 
   RECREATE_AUTORELEASE_POOL(pool);
 
-  WMSetErrorHandler();
+  wSetErrorHandler();
 
   [NSApp run];
 
@@ -152,7 +149,7 @@ int main(int argc, const char **argv)
           [[[OSEScreen new] autorelease] applySavedDisplayLayout];
         }
 
-        WMInitialize(argc, (char **)argv);
+        wInitialize(argc, (char **)argv);
         
         // Just load saved Dock state without icons drawing.
         WMDockInit();

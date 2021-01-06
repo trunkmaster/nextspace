@@ -22,8 +22,11 @@
 #ifndef __WORKSPACE_WM_STARTUP__
 #define __WORKSPACE_WM_STARTUP__
 
-void StartUp(Bool defaultScreenOnly);
-void WMSetErrorHandler(void);
+#include <screen.h>
+
+void wInitialize(int argc, char **argv);
+void wSetErrorHandler(void);
+WScreen *wDefaultScreen(void);
 
 void wHackedGrabButton(unsigned int button, unsigned int modifiers,
 		       Window grab_window, Bool owner_events,

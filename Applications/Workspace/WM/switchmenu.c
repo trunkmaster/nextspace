@@ -431,7 +431,7 @@ static void windowObserver(CFNotificationCenterRef center,
     UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE);
   }
   else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
-    CFStringRef wstate = (CFStringRef)userInfoValueForKey(userInfo, CFSTR("state"));
+    CFStringRef wstate = (CFStringRef)GetNotificationInfoValue(userInfo, CFSTR("state"));
     if (CFStringCompare(wstate, CFSTR("omnipresent"), 0) == 0) {
       UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_WORKSPACE);
     }
@@ -448,7 +448,7 @@ static void workspaceObserver(CFNotificationCenterRef center,
                               CFDictionaryRef userInfo)
 {
   WScreen *scr = (WScreen *)screen;
-  CFNumberRef ws = (CFNumberRef)userInfoValueForKey(userInfo, CFSTR("workspace"));
+  CFNumberRef ws = (CFNumberRef)GetNotificationInfoValue(userInfo, CFSTR("workspace"));
   int workspace;
   
   CFNumberGetValue(ws, kCFNumberShortType, &workspace);

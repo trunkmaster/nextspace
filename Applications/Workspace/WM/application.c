@@ -41,6 +41,7 @@
 #include "workspace.h"
 #include "dock.h"
 #include "defaults.h"
+#include "startup.h"
 
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>

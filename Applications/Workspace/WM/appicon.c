@@ -46,7 +46,6 @@
 #include "actions.h"
 #include "stacking.h"
 #include "dock.h"
-#include "WM_main.h"
 #include "workspace.h"
 #include "superfluous.h"
 #include "menu.h"

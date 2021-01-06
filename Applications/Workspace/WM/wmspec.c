@@ -51,6 +51,7 @@
 #include "stacking.h"
 #include "xrandr.h"
 #include "properties.h"
+#include "misc.h"
 
 
 /* Root Window Properties */
@@ -1870,7 +1871,7 @@ static void windowObserver(CFNotificationCenterRef center, void *netData,
     updateStateHint(wwin, True, False);
   }
   else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
-    CFStringRef wstate = (CFStringRef)userInfoValueForKey(userInfo, CFSTR("state"));
+    CFStringRef wstate = (CFStringRef)GetNotificationInfoValue(userInfo, CFSTR("state"));
     updateStateHint(wwin, !CFStringCompare(wstate, CFSTR("omnipresent"), 0), False);
   }
 }

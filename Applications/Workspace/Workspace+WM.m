@@ -27,7 +27,6 @@
 #include <X11/Xatom.h>
 
 #include <wraster.h>
-#include <startup.h>
 #include <core/wappresource.h>
 #include <core/util.h>
 #include <core/stringutils.h>
@@ -52,11 +51,7 @@ static WAppIcon **launchingIcons;
 
 // WM functions and vars
 extern Display *dpy;
-extern char *GetCommandForWindow(Window win);
-// WM/src/main.c
-// extern int WMInitialize(int argc, char **argv);
-// WM/src/xrandr.c
-extern void wUpdateXrandrInfo(WScreen *scr);
+// extern char *GetCommandForWindow(Window win);
 
 // TODO: Move to DesktopKit/NXTFileManager
 NSString *fullPathForCommand(NSString *command)

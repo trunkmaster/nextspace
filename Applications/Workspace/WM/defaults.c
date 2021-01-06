@@ -59,14 +59,12 @@
 #include <CoreFoundation/CFLogUtilities.h>
 
 #include "WM.h"
-#include "WM_main.h"
 #include "framewin.h"
 #include "window.h"
 #include "texture.h"
 #include "screen.h"
 #include "resources.h"
 #include "defaults.h"
-#include "keybind.h"
 #include "xmodifier.h"
 #include "icon.h"
 #include "actions.h"
@@ -76,7 +74,11 @@
 #include "misc.h"
 #include "winmenu.h"
 
+#include "defaults.h"
+
 #define MAX_SHORTCUT_LENGTH 32
+
+WShortKey wKeyBindings[WKBD_LAST];
 
 typedef struct _WDefaultEntry WDefaultEntry;
 
@@ -338,16 +340,6 @@ WDefaultEntry staticOptionList[] = {
 #define NUM2STRING(x) NUM2STRING_(x)
 
 /* dynamic options */
-/* 
-   const char 		*key;
-   const char		*default_value;
-   void			*extra_data;     // WOptionEnumeration
-   void			*addr;           // wPreferences
-   WDECallbackConvert	*convert;        // get*
-   WDECallbackUpdate	*update;         // set*
-   CFStringRef		plkey;
-   CFPropertyListRef	plvalue;
-*/
 WDefaultEntry optionList[] = {
   {"IconPosition", "blh", seIconPositions, &wPreferences.icon_yard, getEnum, setIconPosition, NULL, NULL},
   {"IconificationStyle", "Zoom", seIconificationStyles, &wPreferences.iconification_style, getEnum, NULL, NULL, NULL},

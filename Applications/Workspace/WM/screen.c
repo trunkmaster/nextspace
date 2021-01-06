@@ -52,7 +52,6 @@
 #include "menu.h"
 #include "window.h"
 #include "window_attributes.h"
-#include "WM_main.h"
 #include "actions.h"
 #include "properties.h"
 #include "dock.h"
@@ -62,10 +61,9 @@
 #include "balloon.h"
 #include "geomview.h"
 #include "wmspec.h"
-
 #include "xrandr.h"
-
 #include "defaults.h"
+#include "misc.h"
 
 #define EVENT_MASK (LeaveWindowMask|EnterWindowMask|PropertyChangeMask  \
                     |SubstructureNotifyMask|PointerMotionMask           \
@@ -671,9 +669,9 @@ WScreen *wScreenInit(int screen_number)
   /* Use standard colormap */
   rattr.standard_colormap_mode = RUseStdColormap;
 
-  if (getWVisualID(screen_number) >= 0) {
+  if (GetWVisualID(screen_number) >= 0) {
     rattr.flags |= RC_VisualID;
-    rattr.visualid = getWVisualID(screen_number);
+    rattr.visualid = GetWVisualID(screen_number);
   }
 
   scr->rcontext = RCreateContext(dpy, screen_number, &rattr);

@@ -30,7 +30,6 @@
 #include "WM.h"
 #include "window.h"
 #include "client.h"
-#include "WM_main.h"
 #include "properties.h"
 #include "session.h"
 #include "wmspec.h"
@@ -80,8 +79,7 @@ void Shutdown(WShutdownMode mode)
         RestoreDesktop(scr);
     }
     
-    ExecExitScript();
-    Exit(0);
+    exit(0);
     break;
 
   case WSRestartPreparationMode:

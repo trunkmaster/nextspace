@@ -65,9 +65,7 @@
 #include "window.h"
 #include "actions.h"
 #include "client.h"
-#include "WM_main.h"
 #include "cycling.h"
-#include "keybind.h"
 #include "application.h"
 #include "stacking.h"
 #include "defaults.h"
@@ -206,10 +204,8 @@ void DispatchEvent(XEvent * event)
 
   } else if (WCHECK_STATE(WSTATE_NEED_RESTART)) {
     WCHANGE_STATE(WSTATE_RESTARTING);
-
-    Shutdown(WSRestartPreparationMode);
     /* received SIGHUP */
-    Restart(NULL, True);
+    Shutdown(WSRestartPreparationMode);
   } else if (WCHECK_STATE(WSTATE_NEED_REREAD)) {
     WCHANGE_STATE(WSTATE_NORMAL);
     wDefaultsCheckDomains(NULL);

@@ -47,9 +47,10 @@
 
 #include <core/WMcore.h>
 #include <core/util.h>
-
 #include <core/wuserdefaults.h>
 #include <core/wevent.h>
+#include <core/stringutils.h>
+#include <core/wappresource.h>
 
 #include "WM.h"
 #include "GNUstep.h"
@@ -58,11 +59,10 @@
 #include "window.h"
 #include "actions.h"
 #include "client.h"
-#include "WM_main.h"
+/* #include "WM_main.h" */
 #include "startup.h"
 #include "dock.h"
 #include "workspace.h"
-#include "keybind.h"
 #include "framewin.h"
 #include "session.h"
 #include "defaults.h"
@@ -75,6 +75,10 @@
 #endif
 #include "xutil.h"
 #include "window_attributes.h"
+#include "misc.h"
+#include "xmodifier.h"
+#include "dock.h"
+#include <Workspace+WM.h>
 
 /* for SunOS */
 #ifndef SA_RESTART
@@ -86,13 +90,40 @@
 # define SA_NODEFER 0
 #endif
 
+/****** Global ******/
+Display *dpy;
+struct wmaker_global_variables w_global;
+struct WPreferences wPreferences;
+
+/* CoreFoundation notifications */
+CFStringRef WMDidManageWindowNotification = CFSTR("WMDidManageWindowNotification");
+CFStringRef WMDidUnmanageWindowNotification = CFSTR("WMDidUnmanageWindowNotification");
+CFStringRef WMDidChangeWindowWorkspaceNotification = CFSTR("WMDidChangeWindowWorkspaceNotification");
+CFStringRef WMDidChangeWindowStateNotification = CFSTR("WMDidChangeWindowStateNotification");
+CFStringRef WMDidChangeWindowFocusNotification = CFSTR("WMDidChangeWindowFocusNotification");
+CFStringRef WMDidChangeWindowStackingNotification = CFSTR("WMDidChangeWindowStackingNotification");
+CFStringRef WMDidChangeWindowNameNotification = CFSTR("WMDidChangeWindowNameNotification");
+
+CFStringRef WMDidResetWindowStackingNotification = CFSTR("WMDidResetWindowStackingNotification");
+
+CFStringRef WMDidCreateWorkspaceNotification = CFSTR("WMDidCreateWorkspaceNotification");
+CFStringRef WMDidDestroyWorkspaceNotification = CFSTR("WMDidDestroyWorkspaceNotification");
+CFStringRef WMDidChangeWorkspaceNotification = CFSTR("WMDidChangeWorkspaceNotification");
+CFStringRef WMDidChangeWorkspaceNameNotification = CFSTR("WMDidChangeWorkspaceNameNotification");
+
+CFStringRef WMDidChangeWindowAppearanceSettings = CFSTR("WMDidChangeWindowAppearanceSettings");
+CFStringRef WMDidChangeIconAppearanceSettings = CFSTR("WMDidChangeIconAppearanceSettings");
+CFStringRef WMDidChangeIconTileSettings = CFSTR("WMDidChangeIconTileSettings");
+CFStringRef WMDidChangeMenuAppearanceSettings = CFSTR("WMDidChangeMenuAppearanceSettings");
+CFStringRef WMDidChangeMenuTitleAppearanceSettings = CFSTR("WMDidChangeMenuTitleAppearanceSettings");
+
 /***** Local *****/
 static WScreen **wScreen = NULL;
 static unsigned int _NumLockMask = 0;
 static unsigned int _ScrollLockMask = 0;
-static void manageAllWindows(WScreen * scr, int crashed);
 
-static int catchXError(Display * dpy, XErrorEvent * error)
+static void _manageAllWindows(WScreen * scr, int crashed);
+static int _catchXError(Display * dpy, XErrorEvent * error)
 {
   char buffer[MAXLINE];
 
@@ -120,34 +151,16 @@ static int catchXError(Display * dpy, XErrorEvent * error)
   wwarning(_("internal X error: %s"), buffer);
   return -1;
 }
-void WMSetErrorHandler(void)
+
+void wSetErrorHandler(void)
 {
-  XSetErrorHandler((XErrorHandler) catchXError);
+  XSetErrorHandler((XErrorHandler)_catchXError);
 }
 
 /*
- *----------------------------------------------------------------------
- * handleXIO-
- * 	Handle X shutdowns and other stuff.
- *----------------------------------------------------------------------
+ * User generated exit signal handler.
  */
-static int handleXIO(Display * xio_dpy)
-{
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) xio_dpy;
-
-  dpy = NULL;
-  Exit(0);
-  return 0;
-}
-
-/*
- *----------------------------------------------------------------------
- * handleExitSig--
- * 	User generated exit signal handler.
- *----------------------------------------------------------------------
- */
-static RETSIGTYPE handleExitSig(int sig)
+static RETSIGTYPE _handleExitSig(int sig)
 {
   sigset_t sigs;
 
@@ -169,20 +182,19 @@ static RETSIGTYPE handleExitSig(int sig)
   DispatchEvent(NULL);	/* Dispatch events imediately. */
 }
 
-/* Dummy signal handler */
-static void dummyHandler(int sig)
+/* 
+ * Dummy signal handler
+ */
+static void _dummyHandler(int sig)
 {
   /* Parameter is not used, but tell the compiler that it is ok */
   (void) sig;
 }
 
 /*
- *----------------------------------------------------------------------
- * handleSig--
- * 	general signal handler. Exits the program gently.
- *----------------------------------------------------------------------
+ * General signal handler. Exits the program gently.
  */
-static RETSIGTYPE handleSig(int sig)
+static RETSIGTYPE _handleSig(int sig)
 {
   wfatal("got signal %i", sig);
 
@@ -200,7 +212,7 @@ static RETSIGTYPE handleSig(int sig)
   /* wAbort(0); */
 }
 
-static RETSIGTYPE buryChild(int foo)
+static RETSIGTYPE _buryChild(int foo)
 {
   pid_t pid;
   int status;
@@ -230,7 +242,7 @@ static RETSIGTYPE buryChild(int foo)
   errno = save_errno;
 }
 
-static void getOffendingModifiers(void)
+static void _getOffendingModifiers(void)
 {
   int i;
   XModifierKeymap *modmap;
@@ -263,9 +275,8 @@ static void getOffendingModifiers(void)
 }
 
 #ifdef NUMLOCK_HACK
-void
-wHackedGrabKey(int keycode, unsigned int modifiers,
-               Window grab_window, Bool owner_events, int pointer_mode, int keyboard_mode)
+void wHackedGrabKey(int keycode, unsigned int modifiers,
+                    Window grab_window, Bool owner_events, int pointer_mode, int keyboard_mode)
 {
   if (modifiers == AnyModifier)
     return;
@@ -296,11 +307,10 @@ wHackedGrabKey(int keycode, unsigned int modifiers,
 }
 #endif
 
-void
-wHackedGrabButton(unsigned int button, unsigned int modifiers,
-                  Window grab_window, Bool owner_events,
-                  unsigned int event_mask, int pointer_mode, int keyboard_mode,
-                  Window confine_to, Cursor cursor)
+void wHackedGrabButton(unsigned int button, unsigned int modifiers,
+                       Window grab_window, Bool owner_events,
+                       unsigned int event_mask, int pointer_mode, int keyboard_mode,
+                       Window confine_to, Cursor cursor)
 {
   XGrabButton(dpy, button, modifiers, grab_window, owner_events,
               event_mask, pointer_mode, keyboard_mode, confine_to, cursor);
@@ -376,16 +386,13 @@ static char *atomNames[] = {
 };
 
 /*
- *----------------------------------------------------------
- * StartUp--
- * 	starts the window manager and setup global data.
+ * Starts the window manager and setup global data.
  * Called from main() at startup.
  *
  * Side effects:
- * global data declared in main.c is initialized
- *----------------------------------------------------------
+ * 	global data declared in main.c is initialized
  */
-void StartUp(Bool defaultScreenOnly)
+static void _startUp(Bool defaultScreenOnly)
 {
   struct sigaction sig_action;
   int i, j, max;
@@ -397,7 +404,7 @@ void StartUp(Bool defaultScreenOnly)
    */
   w_global.shortcut.modifiers_mask = 0xff & ~LockMask;
 
-  getOffendingModifiers();
+  _getOffendingModifiers();
   /*
    * Ignore NumLock and ScrollLock too
    */
@@ -481,13 +488,13 @@ void StartUp(Bool defaultScreenOnly)
   XFreePixmap(dpy, cur);
 
   /* emergency exit... */
-  sig_action.sa_handler = handleSig;
+  sig_action.sa_handler = _handleSig;
   sigemptyset(&sig_action.sa_mask);
 
   sig_action.sa_flags = SA_RESTART;
   sigaction(SIGQUIT, &sig_action, NULL);
 
-  sig_action.sa_handler = handleExitSig;
+  sig_action.sa_handler = _handleExitSig;
 
   /* Here we set SA_RESTART for safety, because SIGUSR1 may not be handled
    * immediately. -Dan */
@@ -504,12 +511,12 @@ void StartUp(Bool defaultScreenOnly)
    * to children. Hence the dummy handler.
    * Philippe Troin <phil@fifi.org>
    */
-  sig_action.sa_handler = &dummyHandler;
+  sig_action.sa_handler = &_dummyHandler;
   sig_action.sa_flags = SA_RESTART;
   sigaction(SIGPIPE, &sig_action, NULL);
 
   /* handle dead children */
-  sig_action.sa_handler = buryChild;
+  sig_action.sa_handler = _buryChild;
   sig_action.sa_flags = SA_NOCLDSTOP | SA_RESTART;
   sigaction(SIGCHLD, &sig_action, NULL);
 
@@ -528,9 +535,6 @@ void StartUp(Bool defaultScreenOnly)
   signal(SIGHUP, SIG_IGN);   // NEXTSPACE
   signal(SIGUSR1, SIG_IGN);  // NEXTSPACE
   
-  /* handle X shutdowns a such */
-  XSetIOErrorHandler(handleXIO);
-
   /* set hook for out event dispatcher in WINGs event dispatcher */
   WMHookEventHandler(DispatchEvent);
 
@@ -558,7 +562,7 @@ void StartUp(Bool defaultScreenOnly)
   /* if (!w_global.domain.window_attr->dictionary) */
   /*   wwarning(_("could not read domain \"%s\" from defaults database"), "WMWindowAttributes"); */
 
-  XSetErrorHandler((XErrorHandler) catchXError);
+  wSetErrorHandler();
 
 #ifdef USE_XSHAPE
   /* ignore j */
@@ -595,7 +599,7 @@ void StartUp(Bool defaultScreenOnly)
   wScreen[0] = wScreenInit(DefaultScreen(dpy));
   if (!wScreen) {
     wfatal(_("it seems that there is already a window manager running"));
-    Exit(1);
+    exit(1);
   }
 
   // Notification center for notifications inside WM.
@@ -614,7 +618,7 @@ void StartUp(Bool defaultScreenOnly)
   if (!wPreferences.flags.nodock && wScreen[0]->dock)
     wScreen[0]->last_dock = wScreen[0]->dock;
 
-  manageAllWindows(wScreen[0], wPreferences.flags.restarting == 2);
+  _manageAllWindows(wScreen[0], wPreferences.flags.restarting == 2);
 
   /* restore saved menus */
   wMenuRestoreState(wScreen[0]);
@@ -663,7 +667,7 @@ void StartUp(Bool defaultScreenOnly)
 
 }
 
-static Bool windowInList(Window window, Window * list, int count)
+static Bool _windowInList(Window window, Window * list, int count)
 {
   for (; count >= 0; count--) {
     if (window == list[count])
@@ -673,17 +677,13 @@ static Bool windowInList(Window window, Window * list, int count)
 }
 
 /*
- *-----------------------------------------------------------------------
- * manageAllWindows--
- * 	Manages all windows in the screen.
+ * Manages all windows in the screen.
  *
- * Notes:
- * 	Called when the wm is being started.
+ * Notes: Called when the wm is being started.
  *	No events can be processed while the windows are being
- * reparented/managed.
- *-----------------------------------------------------------------------
+ * 	reparented/managed.
  */
-static void manageAllWindows(WScreen * scr, int crashRecovery)
+static void _manageAllWindows(WScreen * scr, int crashRecovery)
 {
   Window root, parent;
   Window *children;
@@ -734,7 +734,7 @@ static void manageAllWindows(WScreen * scr, int crashRecovery)
       if (wwin->flags.miniaturized
           && (wwin->transient_for == None
               || wwin->transient_for == scr->root_win
-              || !windowInList(wwin->transient_for, children, nchildren))) {
+              || !_windowInList(wwin->transient_for, children, nchildren))) {
 
         wwin->flags.skip_next_animation = 1;
         wwin->flags.miniaturized = 0;
@@ -786,4 +786,90 @@ static void manageAllWindows(WScreen * scr, int crashRecovery)
   if (!wPreferences.flags.noclip)
     wDockShowIcons(scr->workspaces[scr->current_workspace]->clip);
   scr->flags.startup2 = 0;
+}
+
+/*
+ * Entry point for Window Manager's part.
+ */
+void wInitialize(int argc, char **argv)
+{
+  char *DisplayName = NULL;
+  // Initialize Xlib support for concurrent threads.
+  XInitThreads();
+
+  memset(&w_global, 0, sizeof(w_global));
+  w_global.program.state = WSTATE_NORMAL;
+  w_global.program.signal_state = WSTATE_NORMAL;
+  w_global.timestamp.last_event = CurrentTime;
+  w_global.timestamp.focus_change = CurrentTime;
+  w_global.ignore_workspace_change = False;
+  w_global.shortcut.modifiers_mask = 0xff;
+
+  /* setup common stuff for the monitor and wmaker itself */
+  WMInitializeApplication("WM", &argc, argv);
+
+  memset(&wPreferences, 0, sizeof(wPreferences));
+  // wDockDoAutoLaunch() called in applicationDidFinishLaunching of Workspace
+  wPreferences.flags.noautolaunch = 1;
+  wPreferences.flags.nodock = 0;
+  wPreferences.flags.noclip = 1;
+  wPreferences.flags.nodrawer = 1;
+
+  setlocale(LC_ALL, "");
+
+  if (w_global.locale) {
+    setenv("LANG", w_global.locale, 1);
+  }
+  else {
+    w_global.locale = getenv("LC_ALL");
+    if (!w_global.locale) {
+      w_global.locale = getenv("LANG");
+    }
+  }
+
+  setlocale(LC_ALL, "");
+
+  if (!w_global.locale || strcmp(w_global.locale, "C") == 0 ||
+      strcmp(w_global.locale, "POSIX") == 0) {
+    w_global.locale = NULL;
+  }
+  else {
+    char *ptr;
+    
+    w_global.locale = wstrdup(w_global.locale);
+    ptr = strchr(w_global.locale, '.');
+    if (ptr)
+      *ptr = 0;
+  }
+
+  /* open display */
+  dpy = XOpenDisplay(DisplayName);
+  if (dpy == NULL) {
+    wfatal(_("could not open display \"%s\""), XDisplayName(DisplayName));
+    exit(1);
+  }
+
+  if (fcntl(ConnectionNumber(dpy), F_SETFD, FD_CLOEXEC) < 0) {
+    werror("error setting close-on-exec flag for X connection");
+    exit(1);
+  }
+
+
+  if (GetWVisualID(0) < 0) {
+    /*
+     *   If unspecified, use default visual instead of waiting
+     * for wrlib/context.c:bestContext() that may end up choosing
+     * the "fake" 24 bits added by the Composite extension.
+     *   This is required to avoid all sort of corruptions when
+     * composite is enabled, and at a depth other than 24.
+     */
+    SetWVisualID(0, (int)DefaultVisual(dpy, DefaultScreen(dpy))->visualid);
+  }
+
+  DisplayName = XDisplayName(DisplayName);
+  setenv("DISPLAY", DisplayName, 1);
+
+  wXModifierInitialize();
+  
+  _startUp(True);
 }

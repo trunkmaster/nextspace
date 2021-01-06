@@ -34,10 +34,139 @@ typedef struct WDDomain {
 } WDDomain;
 
 WDDomain *wDefaultsInitDomain(const char *domain);
-
 void wDefaultsReadStatic(CFMutableDictionaryRef dict);
 void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict);
-
 void wDefaultsCheckDomains(void *arg);
+
+/* --- Key bindings --- */
+
+/* <X11/X.h> doesn't define these, even though XFree supports them */
+#ifndef Button6
+#define Button6 6
+#endif
+
+#ifndef Button7
+#define Button7 7
+#endif
+
+#ifndef Button8
+#define Button8 8
+#endif
+
+#ifndef Button9
+#define Button9 9
+#endif
+
+enum {
+      /* anywhere */
+      WKBD_WINDOWMENU,
+      WKBD_WINDOWLIST,
+
+      /* window */
+      WKBD_MINIATURIZE,
+      WKBD_MINIMIZEALL,
+      WKBD_HIDE,
+      WKBD_HIDE_OTHERS,
+      WKBD_MAXIMIZE,
+      WKBD_VMAXIMIZE,
+      WKBD_HMAXIMIZE,
+      WKBD_LHMAXIMIZE,
+      WKBD_RHMAXIMIZE,
+      WKBD_THMAXIMIZE,
+      WKBD_BHMAXIMIZE,
+      WKBD_LTCMAXIMIZE,
+      WKBD_RTCMAXIMIZE,
+      WKBD_LBCMAXIMIZE,
+      WKBD_RBCMAXIMIZE,
+      WKBD_MAXIMUS,
+      WKBD_SELECT,
+      WKBD_OMNIPRESENT,
+      WKBD_RAISE,
+      WKBD_LOWER,
+      WKBD_RAISELOWER,
+      WKBD_MOVERESIZE,
+      WKBD_SHADE,
+      WKBD_WORKSPACEMAP,
+      WKBD_FOCUSNEXT,
+      WKBD_FOCUSPREV,
+      WKBD_GROUPNEXT,
+      WKBD_GROUPPREV,
+
+      /* window, menu */
+      WKBD_CLOSE,
+
+      /* Dock and Icon Yard*/
+      WKBD_DOCKRAISELOWER,
+      WKBD_DOCKHIDESHOW,
+      WKBD_YARDHIDESHOW,
+
+      /* Clip */
+      WKBD_CLIPRAISELOWER,
+
+      /* workspace */
+      WKBD_WORKSPACE1,
+      WKBD_WORKSPACE2,
+      WKBD_WORKSPACE3,
+      WKBD_WORKSPACE4,
+      WKBD_WORKSPACE5,
+      WKBD_WORKSPACE6,
+      WKBD_WORKSPACE7,
+      WKBD_WORKSPACE8,
+      WKBD_WORKSPACE9,
+      WKBD_WORKSPACE10,
+      WKBD_NEXTWORKSPACE,
+      WKBD_PREVWORKSPACE,
+      WKBD_LASTWORKSPACE,
+      WKBD_NEXTWSLAYER,
+      WKBD_PREVWSLAYER,
+
+      /* move to workspace */
+      WKBD_MOVE_WORKSPACE1,
+      WKBD_MOVE_WORKSPACE2,
+      WKBD_MOVE_WORKSPACE3,
+      WKBD_MOVE_WORKSPACE4,
+      WKBD_MOVE_WORKSPACE5,
+      WKBD_MOVE_WORKSPACE6,
+      WKBD_MOVE_WORKSPACE7,
+      WKBD_MOVE_WORKSPACE8,
+      WKBD_MOVE_WORKSPACE9,
+      WKBD_MOVE_WORKSPACE10,
+      WKBD_MOVE_NEXTWORKSPACE,
+      WKBD_MOVE_PREVWORKSPACE,
+      WKBD_MOVE_LASTWORKSPACE,
+      WKBD_MOVE_NEXTWSLAYER,
+      WKBD_MOVE_PREVWSLAYER,
+
+      /* window shortcuts */
+      WKBD_WINDOW1,
+      WKBD_WINDOW2,
+      WKBD_WINDOW3,
+      WKBD_WINDOW4,
+      WKBD_WINDOW5,
+      WKBD_WINDOW6,
+      WKBD_WINDOW7,
+      WKBD_WINDOW8,
+      WKBD_WINDOW9,
+      WKBD_WINDOW10,
+
+      /* launch a new instance of the active window */
+      WKBD_RELAUNCH,
+
+      /* open "run" dialog */
+      WKBD_RUN,
+
+#ifdef KEEP_XKB_LOCK_STATUS
+      WKBD_TOGGLE,
+#endif
+      /* keep this last */
+      WKBD_LAST
+};
+
+typedef struct WShortKey {
+  unsigned int modifier;
+  KeyCode keycode;
+} WShortKey;
+
+extern WShortKey wKeyBindings[WKBD_LAST];
 
 #endif /* __WORKSPACE_WM_DEFAULTS__ */
