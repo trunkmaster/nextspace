@@ -1992,7 +1992,7 @@ static void handleKeyPress(XEvent * event)
 
   case WKBD_RELAUNCH:
     if (ISMAPPED(wwin) && ISFOCUSED(wwin))
-      (void) RelaunchWindow(wwin);
+      (void) wRelaunchWindow(wwin);
 
     break;
 
@@ -2007,7 +2007,7 @@ static void handleKeyPress(XEvent * event)
                      GrabModeAsync, GrabModeAsync, None, wPreferences.cursor[WCUR_WAIT], CurrentTime);
         XSync(dpy, False);
 
-        ExecuteShellCommand(scr, cmdline);
+        wExecuteShellCommand(scr, cmdline);
         wfree(cmdline);
 
         XUngrabPointer(dpy, CurrentTime);

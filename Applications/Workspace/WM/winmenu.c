@@ -296,7 +296,7 @@ static void execMenuCommand(WMenu * menu, WMenuEntry * entry)
     break;
 
   case MC_RELAUNCH:
-    (void) RelaunchWindow(wwin);
+    (void) wRelaunchWindow(wwin);
     break;
 
   case MC_HIDE:

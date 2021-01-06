@@ -312,7 +312,7 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
   case XA_WM_NAME:
     if (!wwin->flags.net_has_title) {
       /* window title was changed */
-      if (!wFetchName(dpy, wwin->client_win, &tmp)) {
+      if (!wGetWindowName(dpy, wwin->client_win, &tmp)) {
         wWindowUpdateName(wwin, NULL);
       } else {
         wWindowUpdateName(wwin, tmp);
@@ -338,7 +338,7 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
       if (!wapp || !wapp->app_icon || wapp->app_icon->docked)
         break;
 
-      command = GetCommandForWindow(wwin->main_window);
+      command = wGetCommandForWindow(wwin->main_window);
       if (command) {
         if (wapp->app_icon->command)
           wfree(wapp->app_icon->command);

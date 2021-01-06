@@ -167,7 +167,7 @@ static CFTypeRef makeWindowState(WWindow *wwin, WApplication *wapp)
   else
     win = wwin->client_win;
 
-  command = GetCommandForWindow(win);
+  command = wGetCommandForWindow(win);
   if (!command)
     return NULL;
 
@@ -347,7 +347,7 @@ static pid_t execCommand(WScreen *scr, char *command)
     char **args;
     int i;
 
-    SetupEnvironment(scr);
+    wSetupCommandEnvironment(scr);
 
     args = malloc(sizeof(char *) * (argc + 1));
     if (!args)

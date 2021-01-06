@@ -1125,7 +1125,7 @@ NSArray *WMNotDockedAppList(void)
         command = wstrdup(appIcon->command);
       }
       if (command == NULL && appIcon->icon->owner != NULL) {
-        command = GetCommandForWindow(appIcon->icon->owner->client_win);
+        command = wGetCommandForWindow(appIcon->icon->owner->client_win);
       }
       if (command != NULL) {
         appName = [[NSString alloc] initWithFormat:@"%s.%s",
@@ -1285,7 +1285,7 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
   }
 
   // NSApplicationPath = NSString*
-  app_command = GetCommandForWindow(wwin->client_win);
+  app_command = wGetCommandForWindow(wwin->client_win);
   if (app_command != NULL) {
     xAppPath = fullPathForCommand([NSString stringWithCString:app_command]);
     if (xAppPath)

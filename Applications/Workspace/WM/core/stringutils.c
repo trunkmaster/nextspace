@@ -10,6 +10,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <assert.h>
 #include <ctype.h>
 #ifdef HAVE_BSD_STRING_H
@@ -222,6 +223,24 @@ char *wstrconcat(const char *str1, const char *str2)
     wfree(str);
     return NULL;
   }
+
+  return str;
+}
+
+char *wstrconcatdot(const char *a, const char *b)
+{
+  int len;
+  char *str;
+
+  if (!a)
+    a = "";
+  if (!b)
+    b = "";
+
+  len = strlen(a) + strlen(b) + 4;
+  str = wmalloc(len);
+
+  snprintf(str, len, "%s.%s", a, b);
 
   return str;
 }

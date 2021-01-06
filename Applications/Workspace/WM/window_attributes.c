@@ -36,6 +36,7 @@
 
 #include <core/util.h>
 #include <core/fileutils.h>
+#include <core/stringutils.h>
 #include "core/wuserdefaults.h"
 
 #include "WM.h"
@@ -215,7 +216,7 @@ void wDefaultFillAttributes(const char *instance, const char *class,
   dw = dc = dn = da = NULL;
 
   if (class && instance) {
-    buffer = StrConcatDot(instance, class);
+    buffer = wstrconcatdot(instance, class);
     dw = get_value_from_instanceclass(buffer);
     wfree(buffer);
   }
@@ -544,7 +545,7 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
   if (instance && class) {
     char *buffer;
 
-    buffer = StrConcatDot(instance, class);
+    buffer = wstrconcatdot(instance, class);
     key = CFStringCreateWithCString(kCFAllocatorDefault, buffer, kCFStringEncodingUTF8);
     wfree(buffer);
   }

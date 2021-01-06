@@ -12,6 +12,9 @@ char *wstrndup(const char *str, size_t len);
  * Free the returned string when you're done with it. */
 char *wstrconcat(const char *str1, const char *str2);
 
+/* Join string seperated by "." symbol. */
+char *wstrconcatdot(const char *a, const char *b);
+
 /* This will append src to dst, and return dst. dst MUST be either NULL
  * or a string that was a result of a dynamic allocation (malloc, realloc
  * wmalloc, wrealloc, ...). dst CANNOT be a static or a constant string!
@@ -23,7 +26,6 @@ char *wstrappend(char *dst, const char *src);
 
 size_t wstrlcpy(char *, const char *, size_t);
 size_t wstrlcat(char *, const char *, size_t);
-
 
 void wtokensplit(char *command, char ***argv, int *argc);
 

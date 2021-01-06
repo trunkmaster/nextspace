@@ -568,7 +568,7 @@ static void attractIconsCallback(WMenu *menu, WMenuEntry *entry)
       x_pos = clip->x_pos + x * ICON_SIZE;
       y_pos = clip->y_pos + y * ICON_SIZE;
       if (aicon->x_pos != x_pos || aicon->y_pos != y_pos)
-        move_window(aicon->icon->core->window, aicon->x_pos, aicon->y_pos, x_pos, y_pos);
+        wMoveWindow(aicon->icon->core->window, aicon->x_pos, aicon->y_pos, x_pos, y_pos);
 
       aicon->attracted = 1;
       if (!aicon->icon->shadowed) {
@@ -2035,7 +2035,7 @@ Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon
     /* If icon->owner exists, it means the application is running */
     if (icon->icon->owner) {
       wwin = icon->icon->owner;
-      command = GetCommandForWindow(wwin->client_win);
+      command = wGetCommandForWindow(wwin->client_win);
     }
 
     if (command) {
@@ -2161,7 +2161,7 @@ Bool wDockMoveIconBetweenDocks(WDock *src, WDock *dest, WAppIcon *icon, int x, i
     /* If icon->owner exists, it means the application is running */
     if (icon->icon->owner) {
       wwin = icon->icon->owner;
-      command = GetCommandForWindow(wwin->client_win);
+      command = wGetCommandForWindow(wwin->client_win);
     }
 
     if (command) {
@@ -2924,7 +2924,7 @@ static pid_t execCommand(WAppIcon *btn, const char *command, WSavedState *state)
     char **args;
     int i;
 
-    SetupEnvironment(scr);
+    wSetupCommandEnvironment(scr);
 
 #ifdef HAVE_SETSID
     setsid();
@@ -3083,7 +3083,7 @@ void wDockTrackWindowLaunch(WDock *dock, Window window)
     return;
   }
 
-  command = GetCommandForWindow(window);
+  command = wGetCommandForWindow(window);
  retry:
   for (i = 0; i < dock->max_icons; i++) {
     icon = dock->icon_array[i];
@@ -3142,7 +3142,7 @@ void wDockTrackWindowLaunch(WDock *dock, Window window)
         XMapWindow(dpy, aicon->icon->core->window);
         aicon->launching = 1;
         wAppIconPaint(aicon);
-        slide_window(aicon->icon->core->window, x0, y0, icon->x_pos, icon->y_pos);
+        wSlideWindow(aicon->icon->core->window, x0, y0, icon->x_pos, icon->y_pos);
         XUnmapWindow(dpy, aicon->icon->core->window);
         wAppIconDestroy(aicon);
       }
@@ -3748,7 +3748,7 @@ static void handleDockMove(WDock *dock, WAppIcon *aicon, XEvent *event)
             continue;
           wins[tmpaicon->xindex + offset_index] = tmpaicon->icon->core->window;
         }
-        slide_windows(wins, dock->icon_count,
+        wSlideWindowList(wins, dock->icon_count,
                       (dock->on_right_side ? x - (dock->icon_count - 1) * ICON_SIZE : x),
                       y,
                       (dock->on_right_side ? shad_x - (dock->icon_count - 1) * ICON_SIZE : shad_x),
@@ -4589,7 +4589,7 @@ void wSlideAppicons(WAppIcon **appicons, int n, int to_the_left)
     wins[aicon->xindex - min_index] = aicon->icon->core->window;
   }
   aicon = appicons[leftmost];
-  slide_windows(wins, n, from_x, aicon->y_pos, aicon->x_pos, aicon->y_pos);
+  wSlideWindowList(wins, n, from_x, aicon->y_pos, aicon->x_pos, aicon->y_pos);
 }
 
 void wDrawerFillTheGap(WDock *drawer, WAppIcon *aicon, Bool redocking)

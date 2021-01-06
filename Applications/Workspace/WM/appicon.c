@@ -501,7 +501,7 @@ static void relaunchApplication(WApplication *wapp)
     next = wlist->next;
 
     if (wlist->main_window == wapp->main_window) {
-      if (RelaunchWindow(wlist))
+      if (wRelaunchWindow(wlist))
         return;
     }
 
@@ -973,7 +973,7 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
 
       Bool docked = False;
       if (ondock) {
-        slide_window(icon->core->window, x, y, shad_x, shad_y);
+        wSlideWindow(icon->core->window, x, y, shad_x, shad_y);
         XUnmapWindow(dpy, scr->dock_shadow);
         if (originalDock == NULL) { // docking an undocked appicon
           docked = wDockAttachIcon(lastDock, aicon, ix, iy, False);
@@ -986,7 +986,7 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
               // Also fill the gap left in the drawer
               wDrawerFillTheGap(lastDock, aicon, False);
             }
-            slide_window(icon->core->window, x, y, oldX, oldY);
+            wSlideWindow(icon->core->window, x, y, oldX, oldY);
           }
         }
         else { // moving a docked appicon to a dock
@@ -1022,7 +1022,7 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
                 // Trust the appicon is inserted at exactly the same place, so its oldX/oldY are consistent with its "new" location?
               }
 
-              slide_window(icon->core->window, x, y, oldX, oldY);
+              wSlideWindow(icon->core->window, x, y, oldX, oldY);
               wDockReattachIcon(originalDock, aicon, aicon->xindex, aicon->yindex);
             }
             else {
@@ -1064,7 +1064,7 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
             // Move running appicon to Icon Yard
             int x1, y1;
             PlaceIcon(scr, &x1, &y1, wGetHeadForWindow(icon->owner));
-            slide_window(icon->core->window, x, y, x1, y1);
+            wSlideWindow(icon->core->window, x, y, x1, y1);
             wAppIconMove(aicon, x1, y1);
           }
         }

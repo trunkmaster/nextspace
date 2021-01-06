@@ -2717,8 +2717,8 @@ static int setWorkspaceSpecificBack(WScreen *scr, WDefaultEntry *entry, void *td
 
   if (scr->flags.backimage_helper_launched) {
     if (CFArrayGetCount(value) == 0) {
-      SendHelperMessage(scr, 'C', 0, NULL);
-      SendHelperMessage(scr, 'K', 0, NULL);
+      wSendHelperMessage(scr, 'C', 0, NULL);
+      wSendHelperMessage(scr, 'K', 0, NULL);
 
       CFRelease(value);
       return 0;
@@ -2727,12 +2727,12 @@ static int setWorkspaceSpecificBack(WScreen *scr, WDefaultEntry *entry, void *td
     if (CFArrayGetCount(value) == 0)
       return 0;
 
-    if (!start_bg_helper(scr)) {
+    if (!wStartBackgroundHelper(scr)) {
       CFRelease(value);
       return 0;
     }
 
-    SendHelperMessage(scr, 'P', -1, wPreferences.pixmap_path);
+    wSendHelperMessage(scr, 'P', -1, wPreferences.pixmap_path);
   }
 
   for (i = 0; i < CFArrayGetCount(value); i++) {
@@ -2740,11 +2740,11 @@ static int setWorkspaceSpecificBack(WScreen *scr, WDefaultEntry *entry, void *td
     if (val && (CFGetTypeID(val) == CFArrayGetTypeID()) && CFArrayGetCount(val) > 0) {
       str = (char *)WMUserDefaultsGetCString(CFCopyDescription(val), kCFStringEncodingUTF8);
 
-      SendHelperMessage(scr, 'S', i + 1, str);
+      wSendHelperMessage(scr, 'S', i + 1, str);
 
       wfree(str);
     } else {
-      SendHelperMessage(scr, 'U', i + 1, NULL);
+      wSendHelperMessage(scr, 'U', i + 1, NULL);
     }
   }
   sleep(1);
@@ -2762,16 +2762,16 @@ static int setWorkspaceBack(WScreen *scr, WDefaultEntry *entry, void *tdata, voi
     char *str;
 
     if (CFArrayGetCount(value) == 0) {
-      SendHelperMessage(scr, 'U', 0, NULL);
+      wSendHelperMessage(scr, 'U', 0, NULL);
     } else {
       /* set the default workspace background to this one */
       str = (char *)WMUserDefaultsGetCString(CFCopyDescription(value), kCFStringEncodingUTF8);
       if (str) {
-        SendHelperMessage(scr, 'S', 0, str);
+        wSendHelperMessage(scr, 'S', 0, str);
         wfree(str);
-        SendHelperMessage(scr, 'C', scr->current_workspace + 1, NULL);
+        wSendHelperMessage(scr, 'C', scr->current_workspace + 1, NULL);
       } else {
-        SendHelperMessage(scr, 'U', 0, NULL);
+        wSendHelperMessage(scr, 'U', 0, NULL);
       }
     }
   }
@@ -2790,7 +2790,7 @@ static int setWorkspaceBack(WScreen *scr, WDefaultEntry *entry, void *tdata, voi
         snprintf(command, len, "wmsetbg %s -S -p '%s' &", dither, text);
       else
         snprintf(command, len, "wmsetbg %s -p '%s' &", dither, text);
-      ExecuteShellCommand(scr, command);
+      wExecuteShellCommand(scr, command);
     } else
       wwarning(_("Invalid arguments for background \"%s\""), text);
     wfree(text);

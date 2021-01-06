@@ -855,7 +855,7 @@ void wInitialize(int argc, char **argv)
   }
 
 
-  if (GetWVisualID(0) < 0) {
+  if (wGetWVisualID(0) < 0) {
     /*
      *   If unspecified, use default visual instead of waiting
      * for wrlib/context.c:bestContext() that may end up choosing
@@ -863,7 +863,7 @@ void wInitialize(int argc, char **argv)
      *   This is required to avoid all sort of corruptions when
      * composite is enabled, and at a depth other than 24.
      */
-    SetWVisualID(0, (int)DefaultVisual(dpy, DefaultScreen(dpy))->visualid);
+    wSetWVisualID(0, (int)DefaultVisual(dpy, DefaultScreen(dpy))->visualid);
   }
 
   DisplayName = XDisplayName(DisplayName);

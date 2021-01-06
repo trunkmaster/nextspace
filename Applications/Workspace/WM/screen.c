@@ -669,9 +669,9 @@ WScreen *wScreenInit(int screen_number)
   /* Use standard colormap */
   rattr.standard_colormap_mode = RUseStdColormap;
 
-  if (GetWVisualID(screen_number) >= 0) {
+  if (wGetWVisualID(screen_number) >= 0) {
     rattr.flags |= RC_VisualID;
-    rattr.visualid = GetWVisualID(screen_number);
+    rattr.visualid = wGetWVisualID(screen_number);
   }
 
   scr->rcontext = RCreateContext(dpy, screen_number, &rattr);

@@ -502,7 +502,7 @@ static void fixLeaderProperties(WWindow *wwin)
   leaders[1] = wwin->group_id;
 
   if (haveCommand) {
-    command = GetCommandForWindow(wwin->client_win);
+    command = wGetCommandForWindow(wwin->client_win);
     if (command)
       wfree(command); /* command already set. nothing to do. */
     else
@@ -528,7 +528,7 @@ static void fixLeaderProperties(WWindow *wwin)
       }
 
       if (haveCommand) {
-        command = GetCommandForWindow(window);
+        command = wGetCommandForWindow(window);
         if (command)
           wfree(command); /* command already set. nothing to do. */
         else
@@ -657,7 +657,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   title = wNETWMGetWindowName(window);
   if (title)
     wwin->flags.net_has_title = 1;
-  else if (!wFetchName(dpy, window, &title))
+  else if (!wGetWindowName(dpy, window, &title))
     title = NULL;
 
   XSaveContext(dpy, window, w_global.context.client_win, (XPointer) & wwin->client_descriptor);
@@ -799,7 +799,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 
     /* // only enter here if PropGetWMClass() succeds */
     PropGetWMClass(wwin->main_window, &class, &instance);
-    buffer = StrConcatDot(instance, class);
+    buffer = wstrconcatdot(instance, class);
 
     for (CFIndex i = 0; i < CFArrayGetCount(scr->fakeGroupLeaders); i++) {
       item = (WFakeGroupLeader *)CFArrayGetValueAtIndex(scr->fakeGroupLeaders, i);
@@ -2762,7 +2762,7 @@ WMagicNumber wWindowGetSavedState(Window win)
   if (!wstate)
     return NULL;
 
-  command = GetCommandForWindow(win);
+  command = wGetCommandForWindow(win);
   if (!command)
     return NULL;
 

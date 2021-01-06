@@ -2055,7 +2055,7 @@ void wArrangeIcons(WScreen *scr, Bool arrangeAll)
       if (aicon->x_pos != X || aicon->y_pos != Y) {
 #ifdef USE_ANIMATIONS
         if (!wPreferences.no_animations)
-          slide_window(aicon->icon->core->window, aicon->x_pos, aicon->y_pos, X, Y);
+          wSlideWindow(aicon->icon->core->window, aicon->x_pos, aicon->y_pos, X, Y);
 #endif /* USE_ANIMATIONS */
       }
       wAppIconMove(aicon, X, Y);
@@ -2083,7 +2083,7 @@ void wArrangeIcons(WScreen *scr, Bool arrangeAll)
 
       if (arrangeAll || !wwin->flags.icon_moved) {
         if (wwin->icon_x != X || wwin->icon_y != Y)
-          move_window(wwin->icon->core->window, wwin->icon_x, wwin->icon_y, X, Y);
+          wMoveWindow(wwin->icon->core->window, wwin->icon_x, wwin->icon_y, X, Y);
 
         wwin->icon_x = X;
         wwin->icon_y = Y;

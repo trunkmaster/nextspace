@@ -70,7 +70,7 @@
 static void UnescapeWM_CLASS(const char *str, char **name, char **class);
 
 /* XFetchName Wrapper */
-Bool wFetchName(Display *dpy, Window win, char **winname)
+Bool wGetWindowName(Display *dpy, Window win, char **winname)
 {
   XTextProperty text_prop;
   char **list;
@@ -107,7 +107,7 @@ Bool wFetchName(Display *dpy, Window win, char **winname)
 }
 
 /* XGetIconName Wrapper */
-Bool wGetIconName(Display *dpy, Window win, char **iconname)
+Bool wGetWindowIconName(Display *dpy, Window win, char **iconname)
 {
   XTextProperty text_prop;
   char **list;
@@ -147,26 +147,22 @@ static void eatExpose(void)
   }
 }
 
-void move_window(Window win, int from_x, int from_y, int to_x, int to_y)
+void wMoveWindow(Window win, int from_x, int from_y, int to_x, int to_y)
 {
 #ifdef USE_ANIMATIONS
   if (wPreferences.no_animations)
     XMoveWindow(dpy, win, to_x, to_y);
   else
-    slide_window(win, from_x, from_y, to_x, to_y);
+    wSlideWindow(win, from_x, from_y, to_x, to_y);
 #else
   XMoveWindow(dpy, win, to_x, to_y);
-
-  /* Tell the compiler it is normal that those parameters are not used in this case */
-  (void) from_x;
-  (void) from_y;
 #endif
 }
 
 /* wins is an array of Window, sorted from left to right, the first is
  * going to be moved from (from_x,from_y) to (to_x,to_y) and the
  * following windows are going to be offset by (ICON_SIZE*i,0) */
-void slide_windows(Window wins[], int n, int from_x, int from_y, int to_x, int to_y)
+void wSlideWindowList(Window wins[], int n, int from_x, int from_y, int to_x, int to_y)
 {
   time_t time0 = time(NULL);
   float dx, dy, x = from_x, y = from_y, px, py;
@@ -815,6 +811,8 @@ static void UnescapeWM_CLASS(const char *str, char **name, char **class)
   }
 }
 
+/* --- Background helper handling --- */
+
 static void track_bg_helper_death(pid_t pid, unsigned int status, void *client_data)
 {
   WScreen *scr = (WScreen *) client_data;
@@ -829,7 +827,7 @@ static void track_bg_helper_death(pid_t pid, unsigned int status, void *client_d
   scr->flags.backimage_helper_launched = 0;
 }
 
-Bool start_bg_helper(WScreen *scr)
+Bool wStartBackgroundHelper(WScreen *scr)
 {
   pid_t pid;
   int filedes[2];
@@ -854,7 +852,7 @@ Bool start_bg_helper(WScreen *scr)
     /* We don't need this side of the pipe in the child process */
     close(filedes[1]);
 
-    SetupEnvironment(scr);
+    wSetupCommandEnvironment(scr);
 
     close(STDIN_FILENO);
     if (dup2(filedes[0], STDIN_FILENO) < 0) {
@@ -891,7 +889,7 @@ Bool start_bg_helper(WScreen *scr)
   }
 }
 
-void SendHelperMessage(WScreen *scr, char type, int workspace, const char *msg)
+void wSendHelperMessage(WScreen *scr, char type, int workspace, const char *msg)
 {
   char *buffer;
   int len;
@@ -923,24 +921,6 @@ void SendHelperMessage(WScreen *scr, char type, int workspace, const char *msg)
   wfree(buffer);
 }
 
-char *StrConcatDot(const char *a, const char *b)
-{
-  int len;
-  char *str;
-
-  if (!a)
-    a = "";
-  if (!b)
-    b = "";
-
-  len = strlen(a) + strlen(b) + 4;
-  str = wmalloc(len);
-
-  snprintf(str, len, "%s.%s", a, b);
-
-  return str;
-}
-
 /* --- Commands --- */
 
 static char *_getCommandForWindow(Window win, int elements)
@@ -967,12 +947,12 @@ static char *_getCommandForWindow(Window win, int elements)
 }
 
 /* Free result when done */
-char *GetCommandForWindow(Window win)
+char *wGetCommandForWindow(Window win)
 {
   return _getCommandForWindow(win, 0);
 }
 
-void SetupEnvironment(WScreen * scr)
+void wSetupCommandEnvironment(WScreen * scr)
 {
   char *tmp;
 
@@ -986,7 +966,6 @@ typedef struct {
   WScreen *scr;
   char *command;
 } _tuple;
-
 static void _shellCommandHandler(pid_t pid, unsigned int status, void *client_data)
 {
   _tuple *data = (_tuple *)client_data;
@@ -1009,7 +988,7 @@ static void _shellCommandHandler(pid_t pid, unsigned int status, void *client_da
   wfree(data);
 }
 
-void ExecuteShellCommand(WScreen *scr, const char *command)
+void wExecuteShellCommand(WScreen *scr, const char *command)
 {
   static char *shell = NULL;
   pid_t pid;
@@ -1024,7 +1003,7 @@ void ExecuteShellCommand(WScreen *scr, const char *command)
   pid = fork();
 
   if (pid == 0) {
-    SetupEnvironment(scr);
+    wSetupCommandEnvironment(scr);
 
 #ifdef HAVE_SETSID
     setsid();
@@ -1045,7 +1024,7 @@ void ExecuteShellCommand(WScreen *scr, const char *command)
 }
 
 /* Launch a new instance of the active window */
-Bool RelaunchWindow(WWindow *wwin)
+Bool wRelaunchWindow(WWindow *wwin)
 {
   if (! wwin || ! wwin->client_win) {
     werror("no window to relaunch");
@@ -1063,7 +1042,7 @@ Bool RelaunchWindow(WWindow *wwin)
   pid_t pid = fork();
 
   if (pid == 0) {
-    SetupEnvironment(wwin->screen_ptr);
+    wSetupCommandEnvironment(wwin->screen_ptr);
 #ifdef HAVE_SETSID
     setsid();
 #endif
@@ -1104,7 +1083,7 @@ Bool RelaunchWindow(WWindow *wwin)
 static int *wVisualID = NULL;
 static int wVisualID_len = 0;
 
-int GetWVisualID(int screen)
+int wGetWVisualID(int screen)
 {
   if (wVisualID == NULL)
     return -1;
@@ -1114,7 +1093,7 @@ int GetWVisualID(int screen)
   return wVisualID[screen];
 }
 
-void SetWVisualID(int screen, int val)
+void wSetWVisualID(int screen, int val)
 {
   int i;
 
@@ -1145,7 +1124,7 @@ void SetWVisualID(int screen, int val)
   wVisualID[screen] = val;
 }
 
-CFTypeRef GetNotificationInfoValue(CFDictionaryRef theDict, CFStringRef key)
+CFTypeRef wGetNotificationInfoValue(CFDictionaryRef theDict, CFStringRef key)
 {
   const void *keys;
   const void *values;

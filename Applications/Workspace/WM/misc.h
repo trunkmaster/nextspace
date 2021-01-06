@@ -24,37 +24,38 @@
 #include "defaults.h"
 #include "appicon.h"
 
-Bool wFetchName(Display *dpy, Window win, char **winname);
-Bool wGetIconName(Display *dpy, Window win, char **iconname);
+Bool wGetWindowName(Display *dpy, Window win, char **winname);
+Bool wGetWindowIconName(Display *dpy, Window win, char **iconname);
 
-void move_window(Window win, int from_x, int from_y, int to_x, int to_y);
-void slide_windows(Window wins[], int n, int from_x, int from_y, int to_x, int to_y);
+void wMoveWindow(Window win, int from_x, int from_y, int to_x, int to_y);
+void wSlideWindowList(Window wins[], int n, int from_x, int from_y, int to_x, int to_y);
 void ParseWindowName(CFStringRef value, char **winstance, char **wclass, const char *where);
 
-static inline void slide_window(Window win, int from_x, int from_y, int to_x, int to_y)
+static inline void wSlideWindow(Window win, int from_x, int from_y, int to_x, int to_y)
 {
-  slide_windows(&win, 1, from_x, from_y, to_x, to_y);
+  wSlideWindowList(&win, 1, from_x, from_y, to_x, to_y);
 }
 
 /* Helper is a 'wmsetbg' subprocess with sets the background for the current workspace */
-Bool start_bg_helper(WScreen *scr);
-void SendHelperMessage(WScreen *scr, char type, int workspace, const char *msg);
+Bool wStartBackgroundHelper(WScreen *scr);
+void wSendHelperMessage(WScreen *scr, char type, int workspace, const char *msg);
 
 char *ShrinkString(WMFont *font, const char *string, int width);
 char *ExpandOptions(WScreen * scr, const char *cmdline);
+
 char *GetShortcutString(const char *text);
 char *GetShortcutKey(WShortKey key);
+
 char *EscapeWM_CLASS(const char *name, const char *class);
-char *StrConcatDot(const char *a, const char *b);
-char *GetCommandForWindow(Window win);
+char *wGetCommandForWindow(Window win);
 
-void SetupEnvironment(WScreen *scr);
-void ExecuteShellCommand(WScreen *scr, const char *command);
-Bool RelaunchWindow(WWindow *wwin);
+void wSetupCommandEnvironment(WScreen *scr);
+void wExecuteShellCommand(WScreen *scr, const char *command);
+Bool wRelaunchWindow(WWindow *wwin);
 
-int GetWVisualID(int screen);
-void SetWVisualID(int screen, int val);
+int wGetWVisualID(int screen);
+void wSetWVisualID(int screen, int val);
 
-CFTypeRef GetNotificationInfoValue(CFDictionaryRef theDict, CFStringRef key);
+CFTypeRef wGetNotificationInfoValue(CFDictionaryRef theDict, CFStringRef key);
 
 #endif
