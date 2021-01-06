@@ -49,19 +49,11 @@ enum {
 #define werror(fmt, args...) __wmessage( __func__, __FILE__, __LINE__, WMESSAGE_TYPE_ERROR, fmt, ## args)
 #define wfatal(fmt, args...) __wmessage( __func__, __FILE__, __LINE__, WMESSAGE_TYPE_FATAL, fmt, ## args)
 
-void __wmessage(const char *func, const char *file, int line, int type, const char *msg, ...)
-	__attribute__((__format__(printf,5,6)));
-
-/* ---[ WINGs/misc.c ]--------------------------------------------------- */
-typedef struct {
-    int position;
-    int count;
-} WMRange;
-
-WMRange wmkrange(int start, int count);
+void __wmessage(const char *func, const char *file, int line, int type, const char *msg, ...) __attribute__((__format__(printf,5,6)));
 
 /* An application must call this function before exiting, to let WUtil do some internal cleanup */
 void wutil_shutdown(void);
+
 /* ---[ WINGs/usleep.c ]-------------------------------------------------- */
 
 void wusleep(unsigned int usec);

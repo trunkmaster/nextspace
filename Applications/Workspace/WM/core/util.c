@@ -297,17 +297,6 @@ void wfree(void *ptr)
   ptr = NULL;
 }
 
-/* Miscelaneous helper functions */
-WMRange wmkrange(int start, int count)
-{
-  WMRange range;
-
-  range.position = start;
-  range.count = count;
-
-  return range;
-}
-
 /* wutil_shutdown - cleanup in WUtil when user program wants to exit */
 void wutil_shutdown(void)
 {
