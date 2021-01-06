@@ -43,6 +43,7 @@
 
 #include <core/wuserdefaults.h>
 
+#include <core/wappresource.h>
 #include <core/util.h>
 #include <core/stringutils.h>
 #include <core/util.h>
@@ -398,18 +399,35 @@ void ExecExitScript(void)
   /* } */
 }
 
-int WMInitialize(int argc, char **argv)
+void WMInitialize(int argc, char **argv)
 {
-  setlocale(LC_ALL, "");
+  // Initialize Xlib support for concurrent threads.
+  XInitThreads();
 
-  /* if (!wPreferences.flags.noupdates) { */
-  /*   /\* check existence of Defaults DB directory *\/ */
-  /*   wDefaultsCheckDomain("WindowMaker"); */
-  /* } */
+  memset(&w_global, 0, sizeof(w_global));
+  w_global.program.state = WSTATE_NORMAL;
+  w_global.program.signal_state = WSTATE_NORMAL;
+  w_global.timestamp.last_event = CurrentTime;
+  w_global.timestamp.focus_change = CurrentTime;
+  w_global.ignore_workspace_change = False;
+  w_global.shortcut.modifiers_mask = 0xff;
+
+  /* setup common stuff for the monitor and wmaker itself */
+  WMInitializeApplication("WM", &argc, argv);
+
+  memset(&wPreferences, 0, sizeof(wPreferences));
+  // wDockDoAutoLaunch() called in applicationDidFinishLaunching of Workspace
+  wPreferences.flags.noautolaunch = 1;
+  wPreferences.flags.nodock = 0;
+  wPreferences.flags.noclip = 1;
+  wPreferences.flags.nodrawer = 1;
+
+  setlocale(LC_ALL, "");
 
   if (w_global.locale) {
     setenv("LANG", w_global.locale, 1);
-  } else {
+  }
+  else {
     w_global.locale = getenv("LC_ALL");
     if (!w_global.locale) {
       w_global.locale = getenv("LANG");
@@ -459,9 +477,8 @@ int WMInitialize(int argc, char **argv)
   setenv("DISPLAY", DisplayName, 1);
 
   wXModifierInitialize();
+  
   StartUp(True);
 
   /* ExecInitScript(); */
-  
-  return 0;
 }

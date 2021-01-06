@@ -74,11 +74,8 @@ BOOL xIsWindowManagerAlreadyRunning(void);
 // 'WM' prefix is a call direction 'to WindowManager'
 //-----------------------------------------------------------------------------
 
-void WMInitializeWindowMaker(int argc, char **argv);
+// void WMInitializeWindowMaker(int argc, char **argv);
 void WMSetupFrameOffsetProperty();
-void WMSetDockAppiconState(int index_in_dock, int launching);
-// Disable some signal handling inside WindowMaker code.
-void WMSetupSignalHandling(void);
 
 // --- Logout/PowerOff related activities
 void WMWipeDesktop(WScreen * scr);

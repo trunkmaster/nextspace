@@ -54,7 +54,7 @@ static WAppIcon **launchingIcons;
 extern Display *dpy;
 extern char *GetCommandForWindow(Window win);
 // WM/src/main.c
-extern int WMInitialize(int argc, char **argv);
+// extern int WMInitialize(int argc, char **argv);
 // WM/src/xrandr.c
 extern void wUpdateXrandrInfo(WScreen *scr);
 
@@ -136,7 +136,7 @@ void WMInitializeWindowMaker(int argc, char **argv)
   }
 
   // external function (WindowMaker/src/main.c)
-  WMInitialize(argc, argv);
+  // WMInitialize(argc, argv);
   
   // Just load saved Dock state without icons drawing.
   WMDockInit();
@@ -187,21 +187,6 @@ void WMSetupFrameOffsetProperty()
                   XInternAtom(dpy, "_GNUSTEP_FRAME_OFFSETS", False),
                   XA_CARDINAL, 16, PropModeReplace,
                   (unsigned char *)offsets, 60);
-}
-
-void WMSetDockAppiconState(int index_in_dock, int launching)
-{
-  WAppIcon *btn = wDefaultScreen()->dock->icon_array[index_in_dock];
-  int      saved_launching = btn->launching;
-
-  // Set and display dock icon state change
-  btn->launching = launching;
-  wAppIconPaint(btn);
-
-  // Revert attribute back to make dock autolaunch working
-  if (index_in_dock > 0) {
-    btn->launching = saved_launching;
-  }
 }
 
 // --- Logout

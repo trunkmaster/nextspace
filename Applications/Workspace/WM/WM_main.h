@@ -41,4 +41,6 @@ noreturn void wAbort(Bool dumpCore);
 void ExecExitScript(void);
 int getWVisualID(int screen);
 
+void WMInitialize(int argc, char **argv);
+
 #endif

@@ -22,8 +22,12 @@
 #import <CoreFoundation/CFRunLoop.h>
 #import <AppKit/AppKit.h>
 
+#import <SystemKit/OSEScreen.h>
+
 #import "Application.h"
 #import "Workspace+WM.h"
+
+#include <WM/WM_main.h>
 
 // Global - set in event.c WMRunLoop()
 CFRunLoopRef wm_runloop = NULL;
@@ -142,7 +146,26 @@ int main(int argc, const char **argv)
     wm_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_CONCURRENT);
     fprintf(stderr, "=== Initializing Window Manager... ===\n");
     dispatch_sync(wm_q, ^{
-        WMInitializeWindowMaker(argc, (char **)argv);
+        // WMInitializeWindowMaker(argc, (char **)argv);
+        @autoreleasepool {
+          // Restore display layout
+          [[[OSEScreen new] autorelease] applySavedDisplayLayout];
+        }
+
+        WMInitialize(argc, (char **)argv);
+        
+        // Just load saved Dock state without icons drawing.
+        WMDockInit();
+
+        // TODO: go through all screens
+        // Adjust WM elements placing
+        WSUpdateScreenInfo(wDefaultScreen());
+
+        WMDockShowIcons(wDefaultScreen()->dock);
+
+        // Setup predefined _GNUSTEP_FRAME_OFFSETS atom for correct
+        // initialization of GNUstep backend (gnustep-back).
+        WMSetupFrameOffsetProperty(); 
       });
     fprintf(stderr, "=== Window Manager initialized! ===\n");
     
