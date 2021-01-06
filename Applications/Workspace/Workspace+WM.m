@@ -96,7 +96,7 @@ void WMInitializeWindowMaker(int argc, char **argv)
   int  len;
   char *str;
   char *DisplayName = NULL;
-  
+
   // Initialize Xlib support for concurrent threads.
   XInitThreads();
 
@@ -149,12 +149,9 @@ void WMInitializeWindowMaker(int argc, char **argv)
 
   WMDockShowIcons(wDefaultScreen()->dock);
 
-  // Unmanage some signals which are managed by GNUstep part of Workspace
-  WMSetupSignalHandling();
-  
   // Setup predefined _GNUSTEP_FRAME_OFFSETS atom for correct
   // initialization of GNUstep backend (gnustep-back).
-  WMSetupFrameOffsetProperty();
+  WMSetupFrameOffsetProperty(); 
 }
 
 void WMSetupFrameOffsetProperty()
@@ -205,17 +202,6 @@ void WMSetDockAppiconState(int index_in_dock, int launching)
   if (index_in_dock > 0) {
     btn->launching = saved_launching;
   }
-}
-
-// Disable some signal handling inside WM's code.
-// Should be called after WMInitializeWindowMaker().
-void WMSetupSignalHandling(void)
-{
-  // signal(SIGTERM, SIG_DFL); // Logout panel - OK
-  // signal(SIGINT, SIG_DFL);  // Logout panel - OK
-  signal(SIGHUP, SIG_IGN);  //
-  signal(SIGUSR1, SIG_IGN); //
-  // signal(SIGUSR2, SIG_DFL); // WindowMaker reread defaults - OK
 }
 
 // --- Logout

@@ -486,25 +486,17 @@ void StartUp(Bool defaultScreenOnly)
 
   sig_action.sa_flags = SA_RESTART;
   sigaction(SIGQUIT, &sig_action, NULL);
-  /* instead of catching these, we let the default handler abort the
-   * program. The new monitor process will take appropriate action
-   * when it detects the crash.
-   sigaction(SIGSEGV, &sig_action, NULL);
-   sigaction(SIGBUS, &sig_action, NULL);
-   sigaction(SIGFPE, &sig_action, NULL);
-   sigaction(SIGABRT, &sig_action, NULL);
-  */
 
   sig_action.sa_handler = handleExitSig;
 
   /* Here we set SA_RESTART for safety, because SIGUSR1 may not be handled
    * immediately. -Dan */
   sig_action.sa_flags = SA_RESTART;
-  sigaction(SIGTERM, &sig_action, NULL);
-  sigaction(SIGINT, &sig_action, NULL);
-  sigaction(SIGHUP, &sig_action, NULL);
-  sigaction(SIGUSR1, &sig_action, NULL);
-  sigaction(SIGUSR2, &sig_action, NULL);
+  sigaction(SIGTERM, &sig_action, NULL);      // Logout panel - OK
+  sigaction(SIGINT, &sig_action, NULL);       // Logout panel - OK
+  /* sigaction(SIGHUP, &sig_action, NULL); */ // managed by Workspace
+  /* sigaction(SIGUSR1, &sig_action, NULL);*/ // managed by Workspace
+  sigaction(SIGUSR2, &sig_action, NULL);      // WindowMaker reread defaults - OK
 
   /* ignore dead pipe */
   /* Because POSIX mandates that only signal with handlers are reset
@@ -532,6 +524,10 @@ void StartUp(Bool defaultScreenOnly)
   sigfillset(&sig_action.sa_mask);
   sigprocmask(SIG_UNBLOCK, &sig_action.sa_mask, NULL);
 
+  // Unmanage signals which are managed by GNUstep part of Workspace
+  signal(SIGHUP, SIG_IGN);   // NEXTSPACE
+  signal(SIGUSR1, SIG_IGN);  // NEXTSPACE
+  
   /* handle X shutdowns a such */
   XSetIOErrorHandler(handleXIO);
 
