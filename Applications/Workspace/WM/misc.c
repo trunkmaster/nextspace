@@ -66,9 +66,6 @@
 
 #define ICON_SIZE wPreferences.icon_size
 
-/**** Local prototypes *****/
-static void UnescapeWM_CLASS(const char *str, char **name, char **class);
-
 /* XFetchName Wrapper */
 Bool wGetWindowName(Display *dpy, Window win, char **winname)
 {
@@ -131,7 +128,7 @@ Bool wGetWindowIconName(Display *dpy, Window win, char **iconname)
   return False;
 }
 
-static void eatExpose(void)
+static void _compressExposeEvents(void)
 {
   XEvent event, foo;
 
@@ -140,7 +137,7 @@ static void eatExpose(void)
     /* ignore other exposure events for this window */
     while (XCheckWindowEvent(dpy, event.xexpose.window, ExposureMask, &foo)) ;
     /* eat exposes for other windows */
-    eatExpose();
+    _compressExposeEvents();
 
     event.xexpose.count = 0;
     XPutBackEvent(dpy, &event);
@@ -257,8 +254,7 @@ void wSlideWindowList(Window wins[], int n, int from_x, int from_y, int to_x, in
   }
 
   XSync(dpy, 0);
-  /* compress expose events */
-  eatExpose();
+  _compressExposeEvents();
 }
 
 char *ShrinkString(WMFont *font, const char *string, int width)
@@ -589,6 +585,106 @@ char *ExpandOptions(WScreen *scr, const char *cmdline)
   return NULL;
 }
 
+char *EscapeWM_CLASS(const char *name, const char *class)
+{
+  char *ret;
+  char *ename = NULL, *eclass = NULL;
+  int i, j, l;
+
+  if (!name && !class)
+    return NULL;
+
+  if (name) {
+    l = strlen(name);
+    ename = wmalloc(l * 2 + 1);
+    j = 0;
+    for (i = 0; i < l; i++) {
+      if (name[i] == '\\') {
+        ename[j++] = '\\';
+      } else if (name[i] == '.') {
+        ename[j++] = '\\';
+      }
+      ename[j++] = name[i];
+    }
+    ename[j] = 0;
+  }
+  if (class) {
+    l = strlen(class);
+    eclass = wmalloc(l * 2 + 1);
+    j = 0;
+    for (i = 0; i < l; i++) {
+      if (class[i] == '\\') {
+        eclass[j++] = '\\';
+      } else if (class[i] == '.') {
+        eclass[j++] = '\\';
+      }
+      eclass[j++] = class[i];
+    }
+    eclass[j] = 0;
+  }
+
+  if (ename && eclass) {
+    int len = strlen(ename) + strlen(eclass) + 4;
+    ret = wmalloc(len);
+    snprintf(ret, len, "%s.%s", ename, eclass);
+    wfree(ename);
+    wfree(eclass);
+  } else if (ename) {
+    ret = wstrdup(ename);
+    wfree(ename);
+  } else {
+    ret = wstrdup(eclass);
+    wfree(eclass);
+  }
+
+  return ret;
+}
+
+static void UnescapeWM_CLASS(const char *str, char **name, char **class)
+{
+  int i, j, k, dot;
+  int length_of_name;
+
+  j = strlen(str);
+
+  /* separate string in 2 parts */
+  length_of_name = 0;
+  dot = -1;
+  for (i = 0; i < j; i++, length_of_name++) {
+    if (str[i] == '\\') {
+      i++;
+      continue;
+    } else if (str[i] == '.') {
+      dot = i;
+      break;
+    }
+  }
+
+  /* unescape the name */
+  if (length_of_name > 0) {
+    *name = wmalloc(length_of_name + 1);
+    for (i = 0, k = 0; i < dot; i++) {
+      if (str[i] != '\\')
+        (*name)[k++] = str[i];
+    }
+    (*name)[k] = '\0';
+  } else {
+    *name = NULL;
+  }
+
+  /* unescape the class */
+  if (dot < j-1) {
+    *class = wmalloc(j - (dot + 1) + 1);
+    for (i = dot + 1, k = 0; i < j; i++) {
+      if (str[i] != '\\')
+        (*class)[k++] = str[i];
+    }
+    (*class)[k] = 0;
+  } else {
+    *class = NULL;
+  }
+}
+
 void ParseWindowName(CFStringRef value, char **winstance, char **wclass, const char *where)
 {
   const char *name;
@@ -709,106 +805,6 @@ char *GetShortcutKey(WShortKey key)
   return GetShortcutString(buffer);
 #undef append_modifier
 #undef append_string
-}
-
-char *EscapeWM_CLASS(const char *name, const char *class)
-{
-  char *ret;
-  char *ename = NULL, *eclass = NULL;
-  int i, j, l;
-
-  if (!name && !class)
-    return NULL;
-
-  if (name) {
-    l = strlen(name);
-    ename = wmalloc(l * 2 + 1);
-    j = 0;
-    for (i = 0; i < l; i++) {
-      if (name[i] == '\\') {
-        ename[j++] = '\\';
-      } else if (name[i] == '.') {
-        ename[j++] = '\\';
-      }
-      ename[j++] = name[i];
-    }
-    ename[j] = 0;
-  }
-  if (class) {
-    l = strlen(class);
-    eclass = wmalloc(l * 2 + 1);
-    j = 0;
-    for (i = 0; i < l; i++) {
-      if (class[i] == '\\') {
-        eclass[j++] = '\\';
-      } else if (class[i] == '.') {
-        eclass[j++] = '\\';
-      }
-      eclass[j++] = class[i];
-    }
-    eclass[j] = 0;
-  }
-
-  if (ename && eclass) {
-    int len = strlen(ename) + strlen(eclass) + 4;
-    ret = wmalloc(len);
-    snprintf(ret, len, "%s.%s", ename, eclass);
-    wfree(ename);
-    wfree(eclass);
-  } else if (ename) {
-    ret = wstrdup(ename);
-    wfree(ename);
-  } else {
-    ret = wstrdup(eclass);
-    wfree(eclass);
-  }
-
-  return ret;
-}
-
-static void UnescapeWM_CLASS(const char *str, char **name, char **class)
-{
-  int i, j, k, dot;
-  int length_of_name;
-
-  j = strlen(str);
-
-  /* separate string in 2 parts */
-  length_of_name = 0;
-  dot = -1;
-  for (i = 0; i < j; i++, length_of_name++) {
-    if (str[i] == '\\') {
-      i++;
-      continue;
-    } else if (str[i] == '.') {
-      dot = i;
-      break;
-    }
-  }
-
-  /* unescape the name */
-  if (length_of_name > 0) {
-    *name = wmalloc(length_of_name + 1);
-    for (i = 0, k = 0; i < dot; i++) {
-      if (str[i] != '\\')
-        (*name)[k++] = str[i];
-    }
-    (*name)[k] = '\0';
-  } else {
-    *name = NULL;
-  }
-
-  /* unescape the class */
-  if (dot < j-1) {
-    *class = wmalloc(j - (dot + 1) + 1);
-    for (i = dot + 1, k = 0; i < j; i++) {
-      if (str[i] != '\\')
-        (*class)[k++] = str[i];
-    }
-    (*class)[k] = 0;
-  } else {
-    *class = NULL;
-  }
 }
 
 /* --- Background helper handling --- */

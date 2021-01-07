@@ -83,19 +83,6 @@
 
 /***** Local variables ****/
 
-/* static CFStringRef dCommand; */
-/* static CFStringRef dPasteCommand; */
-/* #ifdef USE_DOCK_XDND */
-/* static CFStringRef dDropCommand; */
-/* #endif */
-/* static CFStringRef dAutoLaunch, dLock; */
-/* static CFStringRef dName, dForced, dBuggyApplication, dYes, dNo; */
-/* static CFStringRef dHost, dDock, dClip; */
-/* static CFStringRef dAutoAttractIcons; */
-/* static CFStringRef dPosition, dApplications, dLowered, dCollapsed; */
-/* static CFStringRef dAutoCollapse, dAutoRaiseLower, dOmnipresent; */
-/* static CFStringRef dDrawers; */
-
 static CFStringRef dCommand = CFSTR("Command");
 static CFStringRef dPasteCommand = CFSTR("PasteCommand");
 #ifdef USE_DOCK_XDND

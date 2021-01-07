@@ -69,9 +69,6 @@ extern WorkspaceExitCode ws_quit_code;
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey:(X) value:@"" table:nil]
 
-BOOL xIsWindowServerReady(void);
-BOOL xIsWindowManagerAlreadyRunning(void);
-
 //-----------------------------------------------------------------------------
 // Calls related to internals of Window Manager.
 // 'WM' prefix is a call direction 'to WindowManager'

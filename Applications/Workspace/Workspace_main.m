@@ -27,8 +27,6 @@
 #import "Application.h"
 #import "Workspace+WM.h"
 
-#include <WM/startup.h>
-
 // Global - set in WM/event.c - WMRunLoop()
 CFRunLoopRef wm_runloop = NULL;
 
