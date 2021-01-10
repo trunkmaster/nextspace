@@ -469,6 +469,7 @@ void update_saved_geometry(WWindow *wwin)
     save_old_geometry(wwin, SAVE_GEOMETRY_X);
 }
 
+/* Perform maximization despite the current window state */
 void wMaximizeWindow(WWindow *wwin, int directions)
 {
   unsigned int new_width, new_height, half_scr_width, half_scr_height;
@@ -519,10 +520,13 @@ void wMaximizeWindow(WWindow *wwin, int directions)
 
 
   /* Only save directions, not kbd or xinerama hints */
-  directions &= (MAX_HORIZONTAL | MAX_VERTICAL | MAX_LEFTHALF | MAX_RIGHTHALF | MAX_TOPHALF | MAX_BOTTOMHALF | MAX_MAXIMUS);
+  directions &= (MAX_HORIZONTAL | MAX_VERTICAL
+                 | MAX_LEFTHALF | MAX_RIGHTHALF | MAX_TOPHALF | MAX_BOTTOMHALF
+                 | MAX_MAXIMUS);
 
-  if (WFLAGP(wwin, full_maximize))
+  if (WFLAGP(wwin, full_maximize)) {
     usableArea = totalArea;
+  }
   half_scr_width = (usableArea.x2 - usableArea.x1)/2;
   half_scr_height = (usableArea.y2 - usableArea.y1)/2;
 
@@ -532,7 +536,8 @@ void wMaximizeWindow(WWindow *wwin, int directions)
   }
 
   if (directions & MAX_MAXIMUS) {
-    find_Maximus_geometry(wwin, usableArea, &maximus_x, &maximus_y, &maximus_width, &maximus_height);
+    find_Maximus_geometry(wwin, usableArea, &maximus_x, &maximus_y,
+                          &maximus_width, &maximus_height);
     new_width = maximus_width - adj_size;
     new_height = maximus_height - adj_size;
     new_x = maximus_x;
@@ -541,7 +546,6 @@ void wMaximizeWindow(WWindow *wwin, int directions)
       new_height += wwin->frame->bottom_width - 1;
       new_y -= wwin->frame->top_width;
     }
-
     wwin->maximus_x = new_x;
     wwin->maximus_y = new_y;
     wwin->flags.old_maximized |= MAX_MAXIMUS;
@@ -560,7 +564,8 @@ void wMaximizeWindow(WWindow *wwin, int directions)
     if (directions & MAX_LEFTHALF) {
       new_width = half_scr_width - adj_size;
       new_x = usableArea.x1;
-    } else if (directions & MAX_RIGHTHALF) {
+    }
+    else if (directions & MAX_RIGHTHALF) {
       new_width = half_scr_width - adj_size;
       new_x = usableArea.x1 + half_scr_width;
     }
@@ -568,7 +573,8 @@ void wMaximizeWindow(WWindow *wwin, int directions)
     if (directions & MAX_TOPHALF) {
       new_height = half_scr_height - adj_size;
       new_y = usableArea.y1;
-    } else if (directions & MAX_BOTTOMHALF) {
+    }
+    else if (directions & MAX_BOTTOMHALF) {
       new_height = half_scr_height - adj_size;
       new_y = usableArea.y1 + half_scr_height;
     }
@@ -581,21 +587,23 @@ void wMaximizeWindow(WWindow *wwin, int directions)
     if (directions & MAX_VERTICAL) {
       new_height = usableArea.y2 - usableArea.y1 - adj_size;
       new_y = usableArea.y1;
-      if (WFLAGP(wwin, full_maximize) && (new_y == 0))
+      if (WFLAGP(wwin, full_maximize) && (new_y == 0)) {
         new_y -= wwin->frame->top_width;
+      }
     }
   }
 
-  if (!WFLAGP(wwin, full_maximize) && !(directions == MAX_MAXIMUS || directions == MAX_HORIZONTAL))
+  if (!WFLAGP(wwin, full_maximize)
+      && !(directions == MAX_MAXIMUS || directions == MAX_HORIZONTAL)) {
     new_height -= wwin->frame->top_width + wwin->frame->bottom_width;
+  }
 
   /* set maximization state */
   wwin->flags.maximized = directions;
-  if ((wwin->flags.old_maximized & MAX_MAXIMUS) && !wwin->flags.maximized)
+  if ((wwin->flags.old_maximized & MAX_MAXIMUS) && !wwin->flags.maximized) {
     wwin->flags.maximized = MAX_MAXIMUS;
-
+  }
   wWindowConstrainSize(wwin, &new_width, &new_height);
-
   wWindowCropSize(wwin, usableArea.x2 - usableArea.x1,
                   usableArea.y2 - usableArea.y1, &new_width, &new_height);
 
@@ -611,66 +619,83 @@ void wMaximizeWindow(WWindow *wwin, int directions)
   CFRelease(info);
 }
 
-/* generic (un)maximizer */
+/* If window maximized - unmaximize. Maximize it otherwise. */
+/* void wMaximizeOrRestoreWindow(WWindow *wwin, int directions) */
 void handleMaximize(WWindow *wwin, int directions)
 {
   int current = wwin->flags.maximized;
-  int requested = directions & (MAX_HORIZONTAL | MAX_VERTICAL | MAX_LEFTHALF | MAX_RIGHTHALF | MAX_TOPHALF | MAX_BOTTOMHALF | MAX_MAXIMUS);
+  int requested = directions & (MAX_HORIZONTAL | MAX_VERTICAL
+                                | MAX_LEFTHALF | MAX_RIGHTHALF | MAX_TOPHALF | MAX_BOTTOMHALF
+                                | MAX_MAXIMUS);
   int effective = requested ^ current;
   int flags = directions & ~requested;
 
   if (!effective) {
     /* allow wMaximizeWindow to restore the Maximusized size */
-    if ((wwin->flags.old_maximized & MAX_MAXIMUS) &&
-        !(requested & MAX_MAXIMUS))
+    if ((wwin->flags.old_maximized & MAX_MAXIMUS) && !(requested & MAX_MAXIMUS)) {
       wMaximizeWindow(wwin, MAX_MAXIMUS | flags);
-    else
+    }
+    else {
       wUnmaximizeWindow(wwin);
+    }
     /* these alone mean vertical|horizontal toggle */
-  } else if ((effective == MAX_LEFTHALF) ||
-             (effective == MAX_RIGHTHALF) ||
-             (effective == MAX_TOPHALF) ||
-             (effective == MAX_BOTTOMHALF))
+  }
+  else if ((effective == MAX_LEFTHALF) ||
+           (effective == MAX_RIGHTHALF) ||
+           (effective == MAX_TOPHALF) ||
+           (effective == MAX_BOTTOMHALF)) {
     wUnmaximizeWindow(wwin);
+  }
   else {
-    if ((requested == (MAX_HORIZONTAL | MAX_VERTICAL)) ||
-        (requested == MAX_MAXIMUS))
+    if ((requested == (MAX_HORIZONTAL | MAX_VERTICAL)) || (requested == MAX_MAXIMUS))
       effective = requested;
     else {
       if (requested & MAX_LEFTHALF) {
-        if (!(requested & (MAX_TOPHALF | MAX_BOTTOMHALF)))
+        if (!(requested & (MAX_TOPHALF | MAX_BOTTOMHALF))) {
           effective |= MAX_VERTICAL;
-        else
+        }
+        else {
           effective |= requested & (MAX_TOPHALF | MAX_BOTTOMHALF);
+        }
         effective |= MAX_LEFTHALF;
         effective &= ~(MAX_HORIZONTAL | MAX_RIGHTHALF);
-      } else if (requested & MAX_RIGHTHALF) {
-        if (!(requested & (MAX_TOPHALF | MAX_BOTTOMHALF)))
+      }
+      else if (requested & MAX_RIGHTHALF) {
+        if (!(requested & (MAX_TOPHALF | MAX_BOTTOMHALF))) {
           effective |= MAX_VERTICAL;
-        else
+        }
+        else {
           effective |= requested & (MAX_TOPHALF | MAX_BOTTOMHALF);
+        }
         effective |= MAX_RIGHTHALF;
         effective &= ~(MAX_HORIZONTAL | MAX_LEFTHALF);
       }
       if (requested & MAX_TOPHALF) {
-        if (!(requested & (MAX_LEFTHALF | MAX_RIGHTHALF)))
+        if (!(requested & (MAX_LEFTHALF | MAX_RIGHTHALF))) {
           effective |= MAX_HORIZONTAL;
-        else
+        }
+        else {
           effective |= requested & (MAX_LEFTHALF | MAX_RIGHTHALF);
+        }
         effective |= MAX_TOPHALF;
         effective &= ~(MAX_VERTICAL | MAX_BOTTOMHALF);
-      } else if (requested & MAX_BOTTOMHALF) {
-        if (!(requested & (MAX_LEFTHALF | MAX_RIGHTHALF)))
+      }
+      else if (requested & MAX_BOTTOMHALF) {
+        if (!(requested & (MAX_LEFTHALF | MAX_RIGHTHALF))) {
           effective |= MAX_HORIZONTAL;
-        else
+        }
+        else {
           effective |= requested & (MAX_LEFTHALF | MAX_RIGHTHALF);
+        }
         effective |= MAX_BOTTOMHALF;
         effective &= ~(MAX_VERTICAL | MAX_TOPHALF);
       }
-      if (requested & MAX_HORIZONTAL)
+      if (requested & MAX_HORIZONTAL) {
         effective &= ~(MAX_LEFTHALF | MAX_RIGHTHALF);
-      if (requested & MAX_VERTICAL)
+      }
+      if (requested & MAX_VERTICAL) {
         effective &= ~(MAX_TOPHALF | MAX_BOTTOMHALF);
+      }
       effective &= ~MAX_MAXIMUS;
     }
     wMaximizeWindow(wwin, effective | flags);
