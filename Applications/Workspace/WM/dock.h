@@ -78,6 +78,7 @@ Bool wDockFindFreeSlot(WDock *dock, int *req_x, int *req_y);
 void wDockDetach(WDock *dock, WAppIcon *icon);
 Bool wDockMoveIconBetweenDocks(WDock *src, WDock *dest, WAppIcon *icon, int x, int y);
 void wDockReattachIcon(WDock *dock, WAppIcon *icon, int x, int y);
+WAppIcon *wDockAppiconAtSlot(WDock *dock, int position);
 
 void wSlideAppicons(WAppIcon **appicons, int n, int to_the_left);
 void wDrawerFillTheGap(WDock *drawer, WAppIcon *aicon, Bool redocking);

@@ -87,6 +87,10 @@ void WMIconYardShowIcons(WScreen *screen);
 void WMIconYardHideIcons(WScreen *screen);
 
 // --- Dock
+// WAppIcon *WMDockAppiconAtSlot(int position);
+void WMSetDockAppImage(NSString *path, int position, BOOL save);
+BOOL WMIsDockAppAutolaunch(int position);
+  
 void WMDockInit(void);
 void WMDockShowIcons(WDock *dock);
 void WMDockHideIcons(WDock *dock);
@@ -94,27 +98,9 @@ void WMDockUncollapse(WDock *dock);
 void WMDockCollapse(WDock *dock);
 
 // - Should be called from already existing @autoreleasepool
-NSString     *WMDockStatePath(void);
 NSDictionary *WMDockState(void);
-void         WMDockStateSave(void);
 NSArray      *WMDockStateApps(void);
 void         WMDockAutoLaunch(WDock *dock);
-
-// Appicons getters/setters of on-screen Dock
-NSInteger WMDockAppsCount(void);
-NSString  *WMDockAppName(int position);
-NSImage   *WMDockAppImage(int position);
-void      WMSetDockAppImage(NSString *path, int position, BOOL saved);
-BOOL      WMIsDockAppAutolaunch(int position);
-void      WMSetDockAppAutolaunch(int position, BOOL autolaunch);
-BOOL      WMIsDockAppLocked(int position);
-void      WMSetDockAppLocked(int position, BOOL lock);
-NSString  *WMDockAppCommand(int position);
-void      WMSetDockAppCommand(int position, const char *command);
-NSString  *WMDockAppPasteCommand(int position);
-void      WMSetDockAppPasteCommand(int postion, const char *command);
-NSString  *WMDockAppDndCommand(int position);
-void      WMSetDockAppDndCommand(int position, const char *command);
 
 WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
                                  NSString *launchPath,

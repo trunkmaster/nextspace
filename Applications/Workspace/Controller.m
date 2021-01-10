@@ -597,7 +597,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   fileViewers = [[NSMutableArray alloc] init];
   
   // Now we are ready to show windows and menu
-  if (WMIsDockAppAutolaunch(0) != NO) {
+  // if (WMIsDockAppAutolaunch(0) != NO) {
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, 0);
+  if (appicon && appicon->auto_launch == 1) {
     [self _restoreWindows];
     [[NSApp mainMenu] display];
   }

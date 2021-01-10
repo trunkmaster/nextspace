@@ -21,7 +21,173 @@
 
 #import "DockPrefs.h"
 #import <DesktopKit/NXTDefaults.h>
+#import "Operations/ProcessManager.h"
 #import <Workspace+WM.h>
+
+#include <core/stringutils.h>
+#include <core/wuserdefaults.h>
+#include <screen.h>
+#include <dock.h>
+
+// --- Appicons getters/setters of on-screen Dock
+
+NSInteger WMDockAppsCount(void)
+{
+  WScreen *scr = wDefaultScreen();
+  WDock   *dock = scr->dock;
+
+  if (!dock)
+    return 0;
+  else
+    return dock->max_icons;
+    // return dock->icon_count;
+}
+NSString *WMDockAppName(int position)
+{
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+
+  if (appicon) {
+    return [NSString stringWithFormat:@"%s.%s",
+                     appicon->wm_instance, appicon->wm_class];
+  }
+  else {
+    return @".NoApplication";
+  }
+}
+NSImage *WMDockAppImage(int position)
+{
+  WAppIcon     *btn = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+  NSString     *iconPath;
+  NSString     *appName;
+  NSDictionary *appDesc;
+  NSImage      *icon = nil;
+
+  if (btn) {
+    // NSLog(@"W+W: icon image file: %s", btn->icon->file);
+    if (btn->icon->file) { // Docked and not running application
+      iconPath = [NSString stringWithCString:btn->icon->file];
+      icon = [[NSImage alloc] initWithContentsOfFile:iconPath];
+      [icon autorelease];
+    }
+    else {
+      if (!strcmp(btn->wm_class, "GNUstep")) {
+        appName = [NSString stringWithCString:btn->wm_instance];
+      }
+      else {
+        appName = [NSString stringWithCString:btn->wm_class];
+      }
+          
+      appDesc = [[ProcessManager shared] _applicationWithName:appName];
+          
+      if (!strcmp(btn->wm_class, "GNUstep")) {
+        icon = [[NSApp delegate]
+                       iconForFile:[appDesc objectForKey:@"NSApplicationPath"]];
+      }
+      else {
+        icon = [appDesc objectForKey:@"NSApplicationIcon"];
+      }
+    }
+    if (!icon) {
+      icon = [NSImage imageNamed:@"NXUnknownApplication"];
+    }
+  }
+  
+  return icon;
+}
+// void WMSetDockAppImage(NSString *path, int position, BOOL save) {...} -> Workspace+WM
+// BOOL WMIsDockAppAutolaunch(int position) {...} -> Workspace+WM
+void WMSetDockAppAutolaunch(int position, BOOL autolaunch)
+{
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+    
+  if (appicon) {
+    appicon->auto_launch = (autolaunch == YES) ? 1 : 0;
+    wScreenSaveState(wDefaultScreen());
+  }
+}
+BOOL WMIsDockAppLocked(int position)
+{
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+    
+  if (!appicon || appicon->lock == 0) {
+    return NO;
+  }
+  else {
+    return YES;
+  }
+}
+void WMSetDockAppLocked(int position, BOOL lock)
+{
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+    
+  if (appicon) {
+    appicon->lock = (lock == YES) ? 1 : 0;
+    wScreenSaveState(wDefaultScreen());
+  }
+}
+NSString *WMDockAppCommand(int position)
+{
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+
+  if (appicon) {
+    return [NSString stringWithCString:appicon->command];
+  }
+  else {
+    return nil;
+  }
+}
+void WMSetDockAppCommand(int position, const char *command)
+{
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+  
+  if (appicon) {
+    wfree(appicon->command);
+    appicon->command = wstrdup(command);
+    wScreenSaveState(wDefaultScreen());
+  }
+}
+NSString *WMDockAppPasteCommand(int position)
+{
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+
+  if (appicon) {
+    return [NSString stringWithCString:appicon->paste_command];
+  }
+  else {
+    return nil;
+  }
+}
+void WMSetDockAppPasteCommand(int position, const char *command)
+{
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+  
+  if (appicon) {
+    wfree(appicon->paste_command);
+    appicon->paste_command = wstrdup(command);
+    wScreenSaveState(wDefaultScreen());
+  }
+}
+NSString *WMDockAppDndCommand(int position)
+{
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+
+  if (appicon) {
+    return [NSString stringWithCString:appicon->dnd_command];
+  }
+  else {
+    return nil;
+  }
+}
+void WMSetDockAppDndCommand(int position, const char *command)
+{
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+  
+  if (appicon) {
+    wfree(appicon->dnd_command);
+    appicon->dnd_command = wstrdup(command);
+    wScreenSaveState(wDefaultScreen());
+  }
+}
 
 @implementation DockPrefsAppicon
 - (void)setCursor:(NSCursor *)c
@@ -102,7 +268,16 @@
 //
 - (int)numberOfRowsInTableView:(NSTableView *)tv
 {
-  return WMDockAppsCount();
+  WScreen *scr = wDefaultScreen();
+  WDock   *dock = scr->dock;
+
+  if (!dock) {
+    return 0;
+  }
+  else {
+    return dock->max_icons;
+    // return dock->icon_count;
+  }
 }
 
 - (id)           tableView:(NSTableView *)tv

@@ -22,8 +22,9 @@
 #import "WorkspacesPrefs.h"
 #import <DesktopKit/NXTDefaults.h>
 #import <Workspace+WM.h>
-#include <workspace.h>
 #import <Controller.h>
+
+#include <workspace.h>
 
 @implementation WorkspacesPrefs
 
@@ -175,7 +176,7 @@
                    [name cString]);
   [changeNameBtn setEnabled:NO];
   
-  WMDockStateSave();
+  wScreenSaveState(wDefaultScreen());
   [wmStateWS replaceObjectAtIndex:index withObject:@{@"Name":name}];
 }
 
@@ -219,7 +220,7 @@
       [wsBox setNeedsDisplay:YES];
   }
 
-  WMDockStateSave();
+  wScreenSaveState(wDefaultScreen());
   [wmStateWS setArray:[WMDockState() objectForKey:@"Workspaces"]];
 
   // Select last WS rep button if selected one was removed

@@ -112,31 +112,21 @@ static CFStringRef dClip = CFSTR("Clip");
 
 
 static void dockIconPaint(CFRunLoopTimerRef timer, void *data);
-
 static void iconMouseDown(WObjDescriptor *desc, XEvent *event);
-
 static pid_t execCommand(WAppIcon *btn, const char *command, WSavedState *state);
-
 static void trackDeadProcess(pid_t pid, unsigned char status, WDock *dock);
-
 static int getClipButton(int px, int py);
-
 static void toggleLowered(WDock *dock);
-
 static void toggleCollapsed(WDock *dock);
 
 static void clipIconExpose(WObjDescriptor *desc, XEvent *event);
-
 static void clipLeave(WDock *dock);
-
 static void handleClipChangeWorkspace(WScreen *scr, XEvent *event);
-
 static void clipEnterNotify(WObjDescriptor *desc, XEvent *event);
 static void clipLeaveNotify(WObjDescriptor *desc, XEvent *event);
 static void clipAutoCollapse(CFRunLoopTimerRef timer, void *cdata);
 static void clipAutoExpand(CFRunLoopTimerRef timer, void *cdata);
 static void launchDockedApplication(WAppIcon *btn, Bool withSelection);
-
 static void clipAutoLower(CFRunLoopTimerRef timer, void *cdata);
 static void clipAutoRaise(CFRunLoopTimerRef timer, void *cdata);
 static WAppIcon *mainIconCreate(WScreen *scr, int type, const char *name);
@@ -1320,8 +1310,8 @@ static void dockIconPaint(CFRunLoopTimerRef timer, void *data)
 static CFMutableDictionaryRef _dockCreateIconState(WAppIcon *btn)
 {
   CFMutableDictionaryRef node = NULL;
-  CFStringRef command, autolaunch, lock, name, forced;
-  CFStringRef position, buggy, omnipresent;
+  CFStringRef command, name;
+  CFStringRef position, omnipresent;
   char *tmp;
   
   if (btn) {
@@ -1334,17 +1324,9 @@ static CFMutableDictionaryRef _dockCreateIconState(WAppIcon *btn)
                                           kCFStringEncodingUTF8);
     }
 
-    autolaunch = btn->auto_launch ? dYes : dNo;
-
-    lock = btn->lock ? dYes : dNo;
-
     tmp = EscapeWM_CLASS(btn->wm_instance, btn->wm_class);
     name = CFStringCreateWithCString(kCFAllocatorDefault, tmp, kCFStringEncodingUTF8);
     wfree(tmp);
-
-    forced = btn->forced_dock ? dYes : dNo;
-
-    buggy = btn->buggy_app ? dYes : dNo;
 
     if (!wPreferences.flags.clip_merged_in_dock && btn == btn->icon->core->screen_ptr->clip_icon) {
       position = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%i,%i"),
@@ -1360,10 +1342,10 @@ static CFMutableDictionaryRef _dockCreateIconState(WAppIcon *btn)
                                      &kCFTypeDictionaryValueCallBacks);
     CFDictionaryAddValue(node, dCommand, command);
     CFDictionaryAddValue(node, dName, name);
-    CFDictionaryAddValue(node, dAutoLaunch, autolaunch);
-    CFDictionaryAddValue(node, dLock, lock);
-    CFDictionaryAddValue(node, dForced, forced);
-    CFDictionaryAddValue(node, dBuggyApplication, buggy);
+    CFDictionaryAddValue(node, dAutoLaunch, btn->auto_launch ? dYes : dNo);
+    CFDictionaryAddValue(node, dLock, btn->lock ? dYes : dNo);
+    CFDictionaryAddValue(node, dForced, btn->forced_dock ? dYes : dNo);
+    CFDictionaryAddValue(node, dBuggyApplication, btn->buggy_app ? dYes : dNo);
     CFDictionaryAddValue(node, dPosition, position);
 
     CFRelease(command);
@@ -1426,12 +1408,12 @@ static CFMutableDictionaryRef _dockCreateState(WDock *dock)
   if (dock->type == WM_DOCK) {
     key = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("Applications%i"),
                                    dock->screen_ptr->scr_height);
-    CFDictionaryAddValue(dock_state, key, list);
+    CFDictionarySetValue(dock_state, key, list);
     CFRelease(key);
 
     value = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%i,%i"),
                                      (dock->on_right_side ? -ICON_SIZE : 0), dock->y_pos);
-    CFDictionaryAddValue(dock_state, dPosition, value);
+    CFDictionarySetValue(dock_state, dPosition, value);
     CFRelease(value);
   }
   CFRelease(list);
@@ -1462,7 +1444,9 @@ static void _dockSaveOldState(CFTypeRef key, CFTypeRef value, void *dock_state)
 {
   if ((CFStringCompareWithOptions(key, CFSTR("applications"), CFRangeMake(0, 12),
                                   kCFCompareCaseInsensitive) == kCFCompareEqualTo)) {
-    CFDictionarySetValue(dock_state, key, value);
+    if (CFDictionaryGetValue(dock_state, key) == NULL) {
+      CFDictionarySetValue(dock_state, key, value);
+    }
   }
 }
 
@@ -2309,6 +2293,24 @@ void wDockDetach(WDock *dock, WAppIcon *icon)
 #ifdef NEXTSPACE
   WSDockContentDidChange(dock);
 #endif
+}
+
+WAppIcon *wDockAppiconAtSlot(WDock *dock, int position)
+{
+  if (!dock || position > dock->max_icons-1) {
+    return NULL;
+  }
+
+  for (int i=0; i < dock->max_icons; i++) {
+    if (!dock->icon_array[i]) {
+      continue;
+    }
+    if (dock->icon_array[i]->yindex == position) {
+      return dock->icon_array[i];
+    }
+  }
+  
+  return NULL;
 }
 
 /*
@@ -3755,7 +3757,6 @@ static void handleDockMove(WDock *dock, WAppIcon *aicon, XEvent *event)
   }
 }
 
-
 static int getClipButton(int px, int py)
 {
   int pt = (CLIP_BUTTON_SIZE + 2) * ICON_SIZE / 64;
@@ -4872,3 +4873,4 @@ void wDrawersRestoreState(WScreen *scr)
   /*   // Note: scr->drawers was updated when the the drawer was created */
   /* } */
 }
+
