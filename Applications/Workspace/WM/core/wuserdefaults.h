@@ -4,8 +4,6 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFPropertyList.h>
 
-#include "defaults.h"
-
 /* Files */
 CFURLRef WMUserDefaultsCopyUserLibraryURL(void);
 CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain);

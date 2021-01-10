@@ -1,5 +1,6 @@
 #include <CoreFoundation/CFLogUtilities.h>
 
+#include "defaults.h"
 #include "wuserdefaults.h"
 
 // ---[ Location ] --------------------------------------------------------------------------------
@@ -20,6 +21,7 @@ CFURLRef WMUserDefaultsCopyUserLibraryURL(void)
 // $USER_LIBRARY_DIR/Preferences/.NextSpace
 /* #define DEFAULTS_SUBDIR "Preferences/.NextSpace" */
 #define DEFAULTS_SUBDIR "Preferences/.WindowMaker"
+
 CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain)
 {
   CFURLRef libURL, prefsURL;
