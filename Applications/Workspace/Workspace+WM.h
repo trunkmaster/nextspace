@@ -87,7 +87,6 @@ void WMIconYardShowIcons(WScreen *screen);
 void WMIconYardHideIcons(WScreen *screen);
 
 // --- Dock
-void WMDockInit(void);
 void WMSetDockAppImage(NSString *path, int position, BOOL save);
 BOOL WMIsDockAppAutolaunch(int position);
 

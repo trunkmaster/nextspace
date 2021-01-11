@@ -438,7 +438,7 @@ void wAppIconPaint(WAppIcon *aicon)
   if (aicon->docked && scr->dock && scr->dock == aicon->dock && aicon->yindex == 0)
     updateDockNumbers(scr);
 # endif
-  if (aicon->docked && !aicon->running && aicon->command != NULL) {
+  if (aicon->docked && !aicon->running && aicon->command != NULL && aicon->yindex != 0) {
     XSetClipMask(dpy, scr->copy_gc, scr->dock_dots->mask);
     XSetClipOrigin(dpy, scr->copy_gc, 0, 0);
     XCopyArea(dpy, scr->dock_dots->image, aicon->icon->core->window,

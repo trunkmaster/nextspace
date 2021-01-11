@@ -25,6 +25,7 @@
 #import <SystemKit/OSEScreen.h>
 
 #import "Application.h"
+#import "Recycler.h"
 #import "Workspace+WM.h"
 
 // Global - set in WM/event.c - WMRunLoop()
@@ -141,22 +142,24 @@ int main(int argc, const char **argv)
     wm_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_CONCURRENT);
     fprintf(stderr, "=== Initializing Window Manager... ===\n");
     dispatch_sync(wm_q, ^{
-        // WMInitializeWindowMaker(argc, (char **)argv);
+        WScreen *wScreen;
+        
         @autoreleasepool {
           // Restore display layout
           [[[OSEScreen new] autorelease] applySavedDisplayLayout];
         }
 
         wInitialize(argc, (char **)argv);
+        wScreen = wDefaultScreen();
         
-        // Just load saved Dock state without icons drawing.
-        WMDockInit();
+        // Setup Recycler icon
+        [RecyclerIcon recyclerAppIconForDock:wScreen->dock];
 
         // TODO: go through all screens
         // Adjust WM elements placing
-        WSUpdateScreenInfo(wDefaultScreen());
+        WSUpdateScreenInfo(wScreen);
 
-        wDockShowIcons(wDefaultScreen()->dock);
+        wDockShowIcons(wScreen->dock);
 
         // Setup predefined _GNUSTEP_FRAME_OFFSETS atom for correct
         // initialization of GNUstep backend (gnustep-back).

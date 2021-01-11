@@ -43,14 +43,13 @@
 
 #import "Workspace+WM.h"
 #import "Controller.h"
+#import "Recycler.h"
 #import "Operations/ProcessManager.h"
-
-// #include <WM.h>
 
 NSString *WMShowAlertPanel = @"WMShowAlertPanelNotification";
 dispatch_queue_t workspace_q;
 WorkspaceExitCode ws_quit_code;
-static WAppIcon **launchingIcons;
+static WAppIcon **launchingIcons = NULL;
 
 // WM functions and vars
 extern Display *dpy;
@@ -275,38 +274,6 @@ void WMIconYardHideIcons(WScreen *screen)
 // ----------------------------
 // --- Dock
 // ----------------------------
-
-#import "Recycler.h"
-void WMDockInit(void)
-{
-  WDock    *dock = wDefaultScreen()->dock;
-  WAppIcon *btn;
-  NSString *iconName;
-  NSString *iconPath;
-
-  // Set icon image before GNUstep application sets it
-  iconName = [NSString stringWithCString:APP_ICON];
-  iconPath = [[NSBundle mainBundle] pathForImageResource:iconName];
-  if ([[NSFileManager defaultManager] fileExistsAtPath:iconPath] == YES)
-    WMSetDockAppImage(iconPath, 0, NO);
-
-  // Setup main button properties to let Dock correctrly register Workspace
-  btn = dock->icon_array[0];
-  btn->wm_class = "GNUstep";
-  btn->wm_instance = "Workspace";
-  btn->command = "Workspace Manager";
-  // btn->auto_launch = 1; // disable autolaunch by WindowMaker's functions
-  btn->launching = 1;   // tell Dock to wait for Workspace
-  btn->running = 0;     // ...and we're not running yet
-  btn->lock = 1;
-  wAppIconPaint(btn);
-
-  // Setup Recycler icon
-  [RecyclerIcon recyclerAppIconForDock:dock];
-  
-  launchingIcons = NULL;
-}
-
 void WMSetDockAppImage(NSString *path, int position, BOOL save)
 {
   WAppIcon *btn;
@@ -396,18 +363,17 @@ enum {
 int WSDockLevel()
 {
   int current_level = -1;
-  NSDictionary *dockState = [WMDockState() objectForKey:@"Dock"];
+  WDock *dock = wDefaultScreen()->dock;
   
-  if ([[dockState objectForKey:@"Lowered"] isEqualToString:@"Yes"]) {
-    // Normal or AutoRaiseLower
-    if ([[dockState objectForKey:@"AutoRaiseLower"] isEqualToString:@"Yes"]) {
+  if (dock->lowered == 1) {
+    if (dock->auto_raise_lower == 1) {
       current_level = AutoRaiseLower;
     }
-    else {
+    else { // dock->auto_raise_lower == 0
       current_level = Normal;
     }
   }
-  else {
+  else { // dock->lowered == 0
     current_level = KeepOnTop;
   }
 
@@ -450,7 +416,7 @@ static void toggleLowered(WDock *dock)
 }
 void WSSetDockLevel(int level)
 {
-  int   current_level;
+  int   current_level = -1;
   WDock *dock = wDefaultScreen()->dock;
   
   // From?

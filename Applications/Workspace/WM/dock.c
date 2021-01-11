@@ -655,6 +655,7 @@ static void launchCallback(WMenu *menu, WMenuEntry *entry)
 
   launchDockedApplication(btn, False);
 }
+
 static void hideCallback(WMenu *menu, WMenuEntry *entry)
 {
   WApplication *wapp;
@@ -705,10 +706,21 @@ static WAppIcon *mainIconCreate(WScreen *scr, int type, const char *name)
     break;
   case WM_DOCK:
   default: /* to avoid a warning about btn and x_pos, basically */
-    btn = wAppIconCreateForDock(scr, NULL, "Logo", "WMDock", TILE_NORMAL);
-    if (wPreferences.flags.clip_merged_in_dock)
-      btn->icon->core->descriptor.handle_expose = clipIconExpose;
-    x_pos = scr->scr_width - ICON_SIZE - DOCK_EXTRA_SPACE;
+    {
+      CFMutableDictionaryRef icon_desc;
+      icon_desc = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                            &kCFTypeDictionaryKeyCallBacks,
+                                            &kCFTypeDictionaryValueCallBacks);
+      CFDictionarySetValue(icon_desc, CFSTR("Icon"), CFSTR(APP_ICON));
+      CFDictionarySetValue(w_global.domain.window_attr->dictionary,
+                           CFSTR("Workspace.GNUstep"), icon_desc);
+      CFRelease(icon_desc);
+      btn = wAppIconCreateForDock(scr, NULL, "Workspace", "GNUstep", TILE_NORMAL);
+      x_pos = scr->scr_width - ICON_SIZE - DOCK_EXTRA_SPACE;
+      if (wPreferences.flags.clip_merged_in_dock) {
+        btn->icon->core->descriptor.handle_expose = clipIconExpose;
+      }
+    }
     break;
   case WM_DRAWER:
     if (name == NULL)
@@ -732,8 +744,7 @@ static WAppIcon *mainIconCreate(WScreen *scr, int type, const char *name)
   btn->x_pos = x_pos;
   btn->y_pos = 0;
   btn->docked = 1;
-  if (type == WM_CLIP ||
-      (type == WM_DOCK && wPreferences.flags.clip_merged_in_dock))
+  if (type == WM_CLIP || (type == WM_DOCK && wPreferences.flags.clip_merged_in_dock))
     scr->clip_icon = btn;
 
   return btn;
@@ -1014,7 +1025,6 @@ static void setDockPositionKeepOnTopCallback(WMenu *menu, WMenuEntry *entry)
   toggleLowered(dock);
   entry->flags.indicator_on = 1;
 }
-
 static void updateDockPositionMenu(WMenu *menu, WDock *dock)
 {
   WMenuEntry *entry;
@@ -1038,7 +1048,6 @@ static void updateDockPositionMenu(WMenu *menu, WDock *dock)
   entry->flags.indicator_on = !dock->lowered;
   entry->clientdata = dock;
 }
-
 static WMenu *makeDockPositionMenu(WScreen *scr)
 {
   /* When calling this, the dock is being created, so scr->dock is still not set
@@ -1157,8 +1166,6 @@ WDock *wDockCreate(WScreen *scr, int type, const char *name)
   WDock *dock;
   WAppIcon *btn;
 
-  /* make_keys(); */
-
   dock = wmalloc(sizeof(WDock));
 
   switch (type) {
@@ -1176,7 +1183,6 @@ WDock *wDockCreate(WScreen *scr, int type, const char *name)
   dock->icon_array = wmalloc(sizeof(WAppIcon *) * dock->max_icons);
 
   btn = mainIconCreate(scr, type, name);
-
   btn->dock = dock;
 
   dock->x_pos = btn->x_pos;
@@ -1199,7 +1205,6 @@ WDock *wDockCreate(WScreen *scr, int type, const char *name)
   dock->icon_array[0] = btn;
   wRaiseFrame(btn->icon->core);
   XMoveWindow(dpy, btn->icon->core->window, btn->x_pos, btn->y_pos);
-
   /* create dock menu */
   dock->menu = dockMenuCreate(scr, type);
 
@@ -1703,7 +1708,6 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
 
   /* restore lowered/raised state */
   dock->lowered = 0;
-
   value = CFDictionaryGetValue(dock_state, dLowered);
   if (value) {
     if (CFGetTypeID(value) != CFStringGetTypeID()) {
@@ -1716,7 +1720,6 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
 
   /* restore collapsed state */
   dock->collapsed = 0;
-
   value = CFDictionaryGetValue(dock_state, dCollapsed);
   if (value) {
     if (CFGetTypeID(value) != CFStringGetTypeID()) {
@@ -1753,7 +1756,6 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
 
   /* restore attract icons state */
   dock->attract_icons = 0;
-
   value = CFDictionaryGetValue(dock_state, dAutoAttractIcons);
   if (value) {
     if (CFGetTypeID(value) != CFStringGetTypeID()) {
@@ -1765,7 +1767,6 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
   }
 
   /* application list */
-
   {
     CFStringRef tmp;
 
@@ -1828,11 +1829,12 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
 #ifndef NEXTSPACE
       if (!dock->collapsed)
         XMapWindow(dpy, aicon->icon->core->window);
-#endif
       wRaiseFrame(aicon->icon->core);
+#endif
 
       dock->icon_count++;
-    } else if (dock->icon_count == 0 && type == WM_DOCK) {
+    }
+    else if (dock->icon_count == 0 && type == WM_DOCK) {
       dock->icon_count++;
     }
   }
@@ -1852,12 +1854,18 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
     /* we don't need to increment dock->icon_count here because it was
      * incremented in the loop above.
      */
-  } else if (old_top != dock->icon_array[0]) {
-    if (old_top == scr->clip_icon) // TODO dande: understand the logic
+  }
+  else if (old_top != dock->icon_array[0]) {
+    if (old_top == scr->clip_icon) { // TODO dande: understand the logic
       scr->clip_icon = dock->icon_array[0];
-
+    }
     wAppIconDestroy(old_top);
   }
+
+  // Workspace Manager
+  dock->icon_array[0]->launching = 1;
+  dock->icon_array[0]->running = 0;
+  dock->icon_array[0]->lock = 1;
 
  finish:
   CFRelease(dock_state);
