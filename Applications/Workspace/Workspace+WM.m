@@ -276,6 +276,37 @@ void WMIconYardHideIcons(WScreen *screen)
 // --- Dock
 // ----------------------------
 
+#import "Recycler.h"
+void WMDockInit(void)
+{
+  WDock    *dock = wDefaultScreen()->dock;
+  WAppIcon *btn;
+  NSString *iconName;
+  NSString *iconPath;
+
+  // Set icon image before GNUstep application sets it
+  iconName = [NSString stringWithCString:APP_ICON];
+  iconPath = [[NSBundle mainBundle] pathForImageResource:iconName];
+  if ([[NSFileManager defaultManager] fileExistsAtPath:iconPath] == YES)
+    WMSetDockAppImage(iconPath, 0, NO);
+
+  // Setup main button properties to let Dock correctrly register Workspace
+  btn = dock->icon_array[0];
+  btn->wm_class = "GNUstep";
+  btn->wm_instance = "Workspace";
+  btn->command = "Workspace Manager";
+  // btn->auto_launch = 1; // disable autolaunch by WindowMaker's functions
+  btn->launching = 1;   // tell Dock to wait for Workspace
+  btn->running = 0;     // ...and we're not running yet
+  btn->lock = 1;
+  wAppIconPaint(btn);
+
+  // Setup Recycler icon
+  [RecyclerIcon recyclerAppIconForDock:dock];
+  
+  launchingIcons = NULL;
+}
+
 void WMSetDockAppImage(NSString *path, int position, BOOL save)
 {
   WAppIcon *btn;
@@ -347,90 +378,6 @@ BOOL WMIsDockAppAutolaunch(int position)
   else {
     return YES;
   }
-}
-
-// --- Init
-#import "Recycler.h"
-void WMDockInit(void)
-{
-  WDock    *dock = wDefaultScreen()->dock;
-  WAppIcon *btn;
-  NSString *iconName;
-  NSString *iconPath;
-
-  // Set icon image before GNUstep application sets it
-  iconName = [NSString stringWithCString:APP_ICON];
-  iconPath = [[NSBundle mainBundle] pathForImageResource:iconName];
-  if ([[NSFileManager defaultManager] fileExistsAtPath:iconPath] == YES)
-    WMSetDockAppImage(iconPath, 0, NO);
-
-  // Setup main button properties to let Dock correctrly register Workspace
-  btn = dock->icon_array[0];
-  btn->wm_class = "GNUstep";
-  btn->wm_instance = "Workspace";
-  btn->command = "Workspace Manager";
-  // btn->auto_launch = 1; // disable autolaunch by WindowMaker's functions
-  btn->launching = 1;   // tell Dock to wait for Workspace
-  btn->running = 0;     // ...and we're not running yet
-  btn->lock = 1;
-  wAppIconPaint(btn);
-
-  // Setup Recycler icon
-  [RecyclerIcon recyclerAppIconForDock:dock];
-  
-  launchingIcons = NULL;
-}
-void WMDockShowIcons(WDock *dock)
-{
-  if (dock == NULL || dock->mapped) {
-    return;
-  }
-  for (int i = 0; i < (dock->collapsed ? 1 : dock->max_icons); i++) {
-    if (dock->icon_array[i]) {
-      XMapWindow(dpy, dock->icon_array[i]->icon->core->window);
-    }
-  }
-  XSync(dpy, False);
-  dock->mapped = 1;
-}
-void WMDockHideIcons(WDock *dock)
-{
-  if (dock == NULL || !dock->mapped) {
-    return;
-  }
-  for (int i = 0; i < (dock->collapsed ? 1 : dock->max_icons); i++) {
-    if (dock->icon_array[i]) {
-      XUnmapWindow(dpy, dock->icon_array[i]->icon->core->window);
-    }
-  }
-  XSync(dpy, False);
-  dock->mapped = 0;
-}
-void WMDockUncollapse(WDock *dock)
-{
-  if (dock == NULL || !dock->collapsed) {
-    return;
-  }
-  for (int i = 1; i < dock->max_icons; i++) {
-    if (dock->icon_array[i]) {
-      XMapWindow(dpy, dock->icon_array[i]->icon->core->window);
-    }
-  }
-  XSync(dpy, False);
-  dock->collapsed = 0;
-}
-void WMDockCollapse(WDock *dock)
-{
-  if (dock == NULL || dock->collapsed || !dock->mapped) {
-    return;
-  }
-  for (int i = 1; i < dock->max_icons; i++) {
-    if (dock->icon_array[i]) {
-      XUnmapWindow(dpy, dock->icon_array[i]->icon->core->window);
-    }
-  }
-  XSync(dpy, False);
-  dock->collapsed = 1;
 }
 
 // -- Should be called from already existing @autoreleasepool ---
@@ -556,12 +503,6 @@ NSString *WMDockStatePath(void)
 
   return userDefPath;
 }
-
-// Saves dock on-screen state into WMState file
-// void WMDockStateSave(void)
-// {
-//   wScreenSaveState(wDefaultScreen());
-// }
 
 // Returns NSDictionary representation of WMState file
 NSDictionary *WMDockState(void)

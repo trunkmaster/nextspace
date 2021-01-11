@@ -87,15 +87,9 @@ void WMIconYardShowIcons(WScreen *screen);
 void WMIconYardHideIcons(WScreen *screen);
 
 // --- Dock
-// WAppIcon *WMDockAppiconAtSlot(int position);
+void WMDockInit(void);
 void WMSetDockAppImage(NSString *path, int position, BOOL save);
 BOOL WMIsDockAppAutolaunch(int position);
-  
-void WMDockInit(void);
-void WMDockShowIcons(WDock *dock);
-void WMDockHideIcons(WDock *dock);
-void WMDockUncollapse(WDock *dock);
-void WMDockCollapse(WDock *dock);
 
 // - Should be called from already existing @autoreleasepool
 NSDictionary *WMDockState(void);

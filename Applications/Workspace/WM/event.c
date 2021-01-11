@@ -88,8 +88,6 @@
 #include <Workspace+WM.h>
 extern void WMIconYardShowIcons(WScreen *screen);
 extern void WMIconYardHideIcons(WScreen *screen);
-extern void WMDockShowIcons(WDock *dock);
-extern void WMDockHideIcons(WDock *dock);
 #endif
 
 #define MOD_MASK wPreferences.modifier_mask
@@ -1624,10 +1622,10 @@ static void handleKeyPress(XEvent * event)
   case WKBD_DOCKHIDESHOW:
     if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
       if (scr->dock->mapped) {
-        WMDockHideIcons(scr->dock);
+        wDockHideIcons(scr->dock);
       }
       else {
-        WMDockShowIcons(scr->dock);
+        wDockShowIcons(scr->dock);
       }
     }
     else {

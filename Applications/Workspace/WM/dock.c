@@ -996,7 +996,6 @@ static void setDockPositionAutoRaiseLowerCallback(WMenu *menu, WMenuEntry *entry
   }
   entry->flags.indicator_on = 1;
 }
-
 static void setDockPositionKeepOnTopCallback(WMenu *menu, WMenuEntry *entry)
 {
   WDock *dock = (WDock *) entry->clientdata;
@@ -2956,46 +2955,66 @@ static pid_t execCommand(WAppIcon *btn, const char *command, WSavedState *state)
   return pid;
 }
 
+// NEXTSPACE
 void wDockHideIcons(WDock *dock)
 {
-  int i;
-
-  if (dock == NULL)
+  if (dock == NULL || !dock->mapped) {
     return;
-
-  for (i = 1; i < dock->max_icons; i++) {
+  }
+  for (int i = 0; i < (dock->collapsed ? 1 : dock->max_icons); i++) {
     if (dock->icon_array[i])
       XUnmapWindow(dpy, dock->icon_array[i]->icon->core->window);
   }
+  XSync(dpy, False);
   dock->mapped = 0;
-
-  dockIconPaint(NULL, dock->icon_array[0]);
 }
 
+// NEXTSPACE
 void wDockShowIcons(WDock *dock)
 {
-  int i;
-  WAppIcon *btn;
-
-  if (dock == NULL)
+  if (dock == NULL || dock->mapped) {
     return;
-
-  btn = dock->icon_array[0];
-  moveDock(dock, btn->x_pos, btn->y_pos);
-
-  /* Deleting any change in stacking level, this function is now only about
-     mapping icons */
-
-  if (!dock->collapsed) {
-    for (i = 1; i < dock->max_icons; i++) {
-      if (dock->icon_array[i])
-        XMapWindow(dpy, dock->icon_array[i]->icon->core->window);
+  }
+  for (int i = 0; i < (dock->collapsed ? 1 : dock->max_icons); i++) {
+    if (dock->icon_array[i]) {
+      XMapWindow(dpy, dock->icon_array[i]->icon->core->window);
     }
   }
+  
+  XSync(dpy, False);
   dock->mapped = 1;
-
-  dockIconPaint(NULL, btn);
 }
+
+// NEXTSPACE
+void wDockUncollapse(WDock *dock)
+{
+  if (dock == NULL || !dock->collapsed || !dock->mapped) {
+    return;
+  }
+  for (int i = 1; i < dock->max_icons; i++) {
+    if (dock->icon_array[i]) {
+      XMapWindow(dpy, dock->icon_array[i]->icon->core->window);
+    }
+  }
+  XSync(dpy, False);
+  dock->collapsed = 0;
+}
+
+// NEXTSPACE
+void wDockCollapse(WDock *dock)
+{
+  if (dock == NULL || dock->collapsed || !dock->mapped) {
+    return;
+  }
+  for (int i = 1; i < dock->max_icons; i++) {
+    if (dock->icon_array[i]) {
+      XUnmapWindow(dpy, dock->icon_array[i]->icon->core->window);
+    }
+  }
+  XSync(dpy, False);
+  dock->collapsed = 1;
+}
+
 
 void wDockLower(WDock *dock)
 {

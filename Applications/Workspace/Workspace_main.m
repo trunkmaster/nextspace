@@ -156,7 +156,7 @@ int main(int argc, const char **argv)
         // Adjust WM elements placing
         WSUpdateScreenInfo(wDefaultScreen());
 
-        WMDockShowIcons(wDefaultScreen()->dock);
+        wDockShowIcons(wDefaultScreen()->dock);
 
         // Setup predefined _GNUSTEP_FRAME_OFFSETS atom for correct
         // initialization of GNUstep backend (gnustep-back).

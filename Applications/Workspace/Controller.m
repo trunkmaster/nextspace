@@ -409,7 +409,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // Close XWindow applications - wipeDesktop?
   
   // Hide Dock
-  WMDockHideIcons(wDefaultScreen()->dock);
+  wDockHideIcons(wDefaultScreen()->dock);
   if (recycler) {
     [[recycler appIcon] close];
     [recycler release];
@@ -1141,33 +1141,33 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   WScreen *scr = wDefaultScreen();
 
-  if ([[sender title] isEqualToString:@"Hide"])
-    {
-      WMDockHideIcons(scr->dock);
-      wScreenUpdateUsableArea(scr);
-      if (!scr->dock->mapped)
-        [sender setTitle:@"Show"];
+  if ([[sender title] isEqualToString:@"Hide"]) {
+    wDockHideIcons(scr->dock);
+    wScreenUpdateUsableArea(scr);
+    if (!scr->dock->mapped) {
+      [sender setTitle:@"Show"];
     }
-  else
-    {
-      WMDockShowIcons(scr->dock);
-      wScreenUpdateUsableArea(scr);
-      if (scr->dock->mapped)
-        [sender setTitle:@"Hide"];
+  }
+  else {
+    wDockShowIcons(scr->dock);
+    wScreenUpdateUsableArea(scr);
+    if (scr->dock->mapped) {
+      [sender setTitle:@"Hide"];
     }
+  }
 }
 - (void)setDockCollapse:(id)sender
 {
   WScreen *scr = wDefaultScreen();
   
   if ([[sender title] isEqualToString:@"Collapse"]) {
-    WMDockCollapse(scr->dock);
+    wDockCollapse(scr->dock);
     if (scr->dock->collapsed) {
       [sender setTitle:@"Uncollapse"];
     }
   }
   else {
-    WMDockUncollapse(scr->dock);
+    wDockUncollapse(scr->dock);
     if (!scr->dock->collapsed) {
       [sender setTitle:@"Collapse"];
     }

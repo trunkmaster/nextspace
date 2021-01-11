@@ -66,6 +66,8 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type);
 void wDockDestroy(WDock *dock);
 void wDockHideIcons(WDock *dock);
 void wDockShowIcons(WDock *dock);
+void wDockUncollapse(WDock *dock);
+void wDockCollapse(WDock *dock);
 void wDockLower(WDock *dock);
 void wDockRaise(WDock *dock);
 void wDockRaiseLower(WDock *dock);
