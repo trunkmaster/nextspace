@@ -72,9 +72,6 @@
  */
 #undef CONFIGURE_WINDOW_WHILE_MOVING
 
-/* disable/enable workspace indicator in the dock */
-#undef WS_INDICATOR
-
 /*
  * define HIDDENDOT if you want a dot to be shown in the application icon
  * of applications that are hidden.
@@ -115,36 +112,37 @@
  * There are also some options that can only be configured here, at compile time.
  */
 
-/* list of paths to look for the config files, searched in order of appearance */
-#define DEF_CONFIG_PATHS "~/Library/Preferences/.WindowMaker:"
-
-/* name of the script to execute at startup */
-#define DEF_INIT_SCRIPT "autostart"
-#define DEF_EXIT_SCRIPT "exitscript"
-/* WMcore/userdefaults.c */
-#define DEFAULTS_DIR    "/Preferences/.WindowMaker"
-
 /* pixmap path */
+/* WM/defaults.c */
 #define DEF_PIXMAP_PATHS \
   "(\"~/Library/Images/\", \"/Library/Images/\", \"/usr/NextSpace/Images/\", \"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
 
 /* icon path */
+/* WM/defaults.c */
 #define DEF_ICON_PATHS \
   "(\"~/Library/Images/\", \"/Library/Images/\", \"/usr/NextSpace/Images/\", \"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
 
 /* icon cache path */
+/* WM/icon.c */
 #define CACHE_ICON_PATH "/Workspace/CachedPixmaps"
 
 /* Icon for app without own icon. Bundled with NXAppKit. */
+/* WM/window_attributes.c */
 #define DEF_APP_ICON "NXUnknownApplication.tiff"
 
 /* window title to use for untitled windows */
+/* WM/window.c
+   WM/switchmenu.c*/
 #define DEF_WINDOW_TITLE "UNTITLED"
 
 /* default style */
+/* WM/screen.c */
 #define DEF_FRAME_COLOR   "white"
+/* line width of the move/resize frame */
+#define DEF_FRAME_THICKNESS              1
 
 /* default fonts */
+/* WM/defaults.c */
 #define DEF_TITLE_FONT          "\"Helvetica:bold:pixelsize=12\""
 #define DEF_MENU_TITLE_FONT     "\"Helvetica:bold:pixelsize=12\""
 #define DEF_MENU_ENTRY_FONT     "\"Helvetica:pixelsize=12\""
@@ -152,18 +150,16 @@
 #define DEF_CLIP_TITLE_FONT     "\"Helvetica:pixelsize=10\""
 #define DEF_INFO_TEXT_FONT      "\"Helvetica:pixelsize=12\""
 #define DEF_WORKSPACE_NAME_FONT "\"Helvetica:pixelsize=24\""
-
-/* line width of the move/resize frame */
-#define DEF_FRAME_THICKNESS              1
-
 #define DEF_WINDOW_TITLE_EXTEND_SPACE	"0"
 #define DEF_MENU_TITLE_EXTEND_SPACE	"0"
 #define DEF_MENU_TEXT_EXTEND_SPACE	"0"
 #define TITLEBAR_EXTEND_SPACE            4
 
+/* WM/pixmap.c */
 #define DEF_XPM_CLOSENESS	         40000
 
 /* calculate window edge resistance from edge resistance */
+/* WM/moveres.c */
 #define WIN_RESISTANCE(x)	(((x)*20)/30)
 
 /* Window level where icons reside */
@@ -171,6 +167,7 @@
 
 /* do not divide main menu and submenu in different tiers,
  * opposed to OpenStep */
+/* WM/moveres.c */
 #undef SINGLE_MENULEVEL
 
 /* max. time to spend doing animations in seconds. If the animation
