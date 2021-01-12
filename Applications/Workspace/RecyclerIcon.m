@@ -25,13 +25,13 @@
 #import <Operations/ProcessManager.h>
 #import <Viewers/ShelfView.h>
 
-//#import "Workspace+WM.h"
 #import "Recycler.h"
 #import "RecyclerIcon.h"
 
 #include <core/util.h>
 #include <core/stringutils.h>
 #include <xrandr.h>
+#include <dock.h>
 
 static Recycler *recycler = nil;
 
@@ -303,7 +303,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 + (void)rebuildDock:(WDock *)dock
 {
   WScreen  *scr = dock->screen_ptr;
-  int      new_max_icons = WSDockMaxIcons(dock->screen_ptr);
+  int      new_max_icons = wDockMaxIcons(dock->screen_ptr);
   WAppIcon **new_icon_array;
   
   new_icon_array = wmalloc(sizeof(WAppIcon *) * new_max_icons);

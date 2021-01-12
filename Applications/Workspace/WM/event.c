@@ -984,10 +984,10 @@ static void handleButtonPress(XEvent * event)
       WAppIcon *appicon0 = scr->dock->icon_array[0];
       if ((desc->parent_type == WCLASS_DOCK_ICON) &&
           (appicon->icon->icon_win == appicon0->icon->icon_win)) {
-        if (WSDockLevel() == NSDockWindowLevel)
-          WSSetDockLevel(NSNormalWindowLevel);
+        if (wDockLevel(scr->dock) == NSDockWindowLevel)
+          wDockSetLevel(scr->dock, NSNormalWindowLevel);
         else {
-          WSSetDockLevel(NSDockWindowLevel);
+          wDockSetLevel(scr->dock, NSDockWindowLevel);
         }
         XUngrabPointer(dpy, CurrentTime);
         return;

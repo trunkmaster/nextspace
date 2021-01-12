@@ -1161,6 +1161,13 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
   return menu;
 }
 
+int wDockMaxIcons(WScreen *scr)
+{
+  WMRect head_rect = wGetRectForHead(scr, scr->xrandr_info.primary_head);
+  
+  return head_rect.size.height / wPreferences.icon_size;
+}
+
 WDock *wDockCreate(WScreen *scr, int type, const char *name)
 {
   WDock *dock;
@@ -1177,7 +1184,7 @@ WDock *wDockCreate(WScreen *scr, int type, const char *name)
     break;
   case WM_DOCK:
   default:
-    dock->max_icons = WSDockMaxIcons(scr);
+    dock->max_icons = wDockMaxIcons(scr);
   }
 
   dock->icon_array = wmalloc(sizeof(WAppIcon *) * dock->max_icons);
@@ -3063,6 +3070,84 @@ void wDockRaiseLower(WDock *dock)
   else
     wDockRaise(dock);
 }
+
+// NEXTSPACE
+enum {
+  KeepOnTop = NSDockWindowLevel,
+  Normal = NSNormalWindowLevel,
+  AutoRaiseLower = NSDesktopWindowLevel
+};
+
+// NEXTSPACE
+int wDockLevel(WDock *dock)
+{
+  int current_level = -1;
+  
+  if (dock->lowered == 1 && dock->auto_raise_lower == 1) {
+    current_level = AutoRaiseLower;
+  }
+  else if (dock->lowered == 1 && dock->auto_raise_lower == 0) {
+    current_level = Normal;
+  }
+  else if (dock->lowered == 0) {
+    current_level = KeepOnTop;
+  }
+  
+  return current_level;
+}
+
+// NEXTSPACE
+void wDockSetLevel(WDock *dock, int level)
+{
+  WAppIcon *aicon;
+  
+  if (wDockLevel(dock) == level) {
+    return;
+  }
+
+  switch (level) {
+  case KeepOnTop:
+    dock->lowered = 0;
+    dock->auto_raise_lower = 0;
+    level = NSDockWindowLevel;
+    break;
+  case Normal:
+    dock->lowered = 1;
+    dock->auto_raise_lower = 0;
+    level = NSNormalWindowLevel;
+    break;
+  case AutoRaiseLower:
+    dock->lowered = 1;
+    dock->auto_raise_lower = 1;
+    level = NSNormalWindowLevel;
+    break;
+  }
+
+  // Dock icons
+  for (int i = 0; i < dock->max_icons; i++) {
+    aicon = dock->icon_array[i];
+    if (aicon) {
+      ChangeStackingLevel(aicon->icon->core, level);
+      if (dock->lowered) {
+        wLowerFrame(aicon->icon->core);
+      }
+      else {
+        wRaiseFrame(aicon->icon->core);
+      }
+    }
+  }
+
+  // Drawers
+  if (dock->type == WM_DOCK) {
+    for (WDrawerChain *dc = dock->screen_ptr->drawers; dc != NULL; dc = dc->next) {
+      wDockSetLevel(dc->adrawer, level);
+    }
+    wScreenUpdateUsableArea(dock->screen_ptr);
+  }
+
+  wScreenSaveState(dock->screen_ptr);
+}
+
 
 void wDockFinishLaunch(WAppIcon *icon)
 {

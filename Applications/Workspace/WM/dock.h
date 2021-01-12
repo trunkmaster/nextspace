@@ -60,6 +60,7 @@ typedef struct WDock {
   struct WDDomain *defaults;
 } WDock;
 
+int wDockMaxIcons(WScreen *scr);
 WDock *wDockCreate(WScreen *scr, int type, const char *name);
 WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type);
 
@@ -71,6 +72,9 @@ void wDockCollapse(WDock *dock);
 void wDockLower(WDock *dock);
 void wDockRaise(WDock *dock);
 void wDockRaiseLower(WDock *dock);
+int wDockLevel(WDock *dock);
+void wDockSetLevel(WDock *dock, int level);
+
 void wDockSaveState(WScreen *scr, CFDictionaryRef old_state);
 
 Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon);

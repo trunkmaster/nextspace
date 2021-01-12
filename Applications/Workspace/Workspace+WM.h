@@ -118,9 +118,6 @@ pid_t WMExecuteCommand(NSString *command);
 //-----------------------------------------------------------------------------
 
 // --- Dock
-int WSDockMaxIcons(WScreen *scr);
-int WSDockLevel();
-void WSSetDockLevel(int level);
 void WSDockContentDidChange(WDock *dock);
 
 // --- Application icons
