@@ -26,8 +26,6 @@
 
 #include "config.h"
 
-/*** Change this file (wconfig.h) *after* you ran configure ***/
-
 /*
  * Comment out the following #defines if you want to disable a feature.
  * Also check the features you can enable through configure.
@@ -44,7 +42,9 @@
  * The X server must support the shape extensions and it's support
  * must be enabled (default).
  */
+#ifdef USE_XSHAPE
 #define SHAPED_BALLOON
+#endif
 
 /*
  * Turn on a hack to make mouse and keyboard actions work even if
@@ -100,10 +100,12 @@
 #define NORMAL_ICON_KABOOM
 
 /*
- * #define if you want the window creation animation when superfluous
- * is enabled.
+ * define if you want the window creation animation when superfluous is enabled.
  */
 #undef WINDOW_BIRTH_ZOOM
+
+/* define to hide titles in miniwindows */
+#undef NO_MINIWINDOW_TITLES
 
 /*
  * Some of the following options can be configured in the preference files,
@@ -112,37 +114,15 @@
  * There are also some options that can only be configured here, at compile time.
  */
 
+/*---[ defaults.c ]------------------------------------------------------------*/
+
 /* pixmap path */
-/* WM/defaults.c */
 #define DEF_PIXMAP_PATHS \
   "(\"~/Library/Images/\", \"/Library/Images/\", \"/usr/NextSpace/Images/\", \"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
-
 /* icon path */
-/* WM/defaults.c */
 #define DEF_ICON_PATHS \
   "(\"~/Library/Images/\", \"/Library/Images/\", \"/usr/NextSpace/Images/\", \"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
-
-/* icon cache path */
-/* WM/icon.c */
-#define CACHE_ICON_PATH "/Workspace/CachedPixmaps"
-
-/* Icon for app without own icon. Bundled with NXAppKit. */
-/* WM/window_attributes.c */
-#define DEF_APP_ICON "NXUnknownApplication.tiff"
-
-/* window title to use for untitled windows */
-/* WM/window.c
-   WM/switchmenu.c*/
-#define DEF_WINDOW_TITLE "UNTITLED"
-
-/* default style */
-/* WM/screen.c */
-#define DEF_FRAME_COLOR   "white"
-/* line width of the move/resize frame */
-#define DEF_FRAME_THICKNESS              1
-
 /* default fonts */
-/* WM/defaults.c */
 #define DEF_TITLE_FONT          "\"Helvetica:bold:pixelsize=12\""
 #define DEF_MENU_TITLE_FONT     "\"Helvetica:bold:pixelsize=12\""
 #define DEF_MENU_ENTRY_FONT     "\"Helvetica:pixelsize=12\""
@@ -155,67 +135,59 @@
 #define DEF_MENU_TEXT_EXTEND_SPACE	"0"
 #define TITLEBAR_EXTEND_SPACE            4
 
-/* WM/pixmap.c */
+#ifndef HAVE_INOTIFY
+/* Check defaults database for changes every this many milliseconds */
+#define DEFAULTS_CHECK_INTERVAL	2000
+#endif
+
+/*---[ icon.c ]----------------------------------------------------------------*/
+
+/* icon cache path */
+#define CACHE_ICON_PATH "/Workspace/CachedPixmaps"
+
+/*---[ window_attributes.c ]---------------------------------------------------*/
+
+/* Icon for app without own icon. Bundled with NXAppKit. */
+#define DEF_APP_ICON "NXUnknownApplication.tiff"
+
+/*---[ window.c, switchmenu.c ]------------------------------------------------*/
+
+/* window title to use for untitled windows */
+#define DEF_WINDOW_TITLE "UNTITLED"
+
+/*---[ screen.c ]--------------------------------------------------------------*/
+
+/* default style */
+#define DEF_FRAME_COLOR   "white"
+/* line width of the move/resize frame */
+#define DEF_FRAME_THICKNESS              1
+
+/*---[ pixmap.c ]--------------------------------------------------------------*/
+
 #define DEF_XPM_CLOSENESS	         40000
 
+/*---[ movres.c ]--------------------------------------------------------------*/
+
 /* calculate window edge resistance from edge resistance */
-/* WM/moveres.c */
-#define WIN_RESISTANCE(x)	(((x)*20)/30)
+#define WIN_RESISTANCE(x)		(((x)*20)/30)
+#define HRESIZE_THRESHOLD		3
+#define KEY_CONTROL_WINDOW_WEIGHT 	1
+/* for boxes with high mouse sampling rates (SGI) */
+#define DELAY_BETWEEN_MOUSE_SAMPLING	10
+
+/*---[ dock.c, icon.c ]--------------------------------------------------------*/
 
 /* Window level where icons reside */
 #define NORMAL_ICON_LEVEL NSNormalWindowLevel
 
-/* do not divide main menu and submenu in different tiers,
- * opposed to OpenStep */
-/* WM/moveres.c */
+/*---[ menu.c ]----------------------------------------------------------------*/
+
+/* do not divide main menu and submenu in different tiers, opposed to OpenStep */
 #undef SINGLE_MENULEVEL
-
-/* max. time to spend doing animations in seconds. If the animation
- * time exceeds this value, it is immediately finished. Usefull for
- * moments of high-load. DO NOT set *_DELAY_{Z,T,F} to zero!
- */
-#define MAX_ANIMATION_TIME	         1
-/* Zoom animation */
-#define MINIATURIZE_ANIMATION_FRAMES_Z   7
-#define MINIATURIZE_ANIMATION_STEPS_Z    16
-#define MINIATURIZE_ANIMATION_DELAY_Z    10000
-/* Twist animation */
-#define MINIATURIZE_ANIMATION_FRAMES_T   12
-#define MINIATURIZE_ANIMATION_STEPS_T    16
-#define MINIATURIZE_ANIMATION_DELAY_T    20000
-#define MINIATURIZE_ANIMATION_TWIST_T    0.5
-/* Flip animation */
-#define MINIATURIZE_ANIMATION_FRAMES_F   12
-#define MINIATURIZE_ANIMATION_STEPS_F    16
-#define MINIATURIZE_ANIMATION_DELAY_F    20000
-#define MINIATURIZE_ANIMATION_TWIST_F    0.5
-
-/* delays in ms...*/
-#define BALLOON_DELAY           1000 /* ...before balloon is shown */
-#define MENU_SELECT_DELAY       200  /* ...for menu item selection hysteresis */
-#define MENU_JUMP_BACK_DELAY    400  /* ...for jumpback of scrolled menus */
-
-/* animation speed constants */
-#define ICON_SLIDE_SLOWDOWN_UF	1
-#define ICON_SLIDE_DELAY_UF	0
-#define ICON_SLIDE_STEPS_UF	50
-
-#define ICON_SLIDE_SLOWDOWN_F	3
-#define ICON_SLIDE_DELAY_F	0
-#define ICON_SLIDE_STEPS_F	50
-
-#define ICON_SLIDE_SLOWDOWN_M	5
-#define ICON_SLIDE_DELAY_M	0
-#define ICON_SLIDE_STEPS_M	30
-
-#define ICON_SLIDE_SLOWDOWN_S	10
-#define ICON_SLIDE_DELAY_S	0
-#define ICON_SLIDE_STEPS_S	20
-
-#define ICON_SLIDE_SLOWDOWN_US	20
-#define ICON_SLIDE_DELAY_US	1
-#define ICON_SLIDE_STEPS_US	10
-
+/* delays in ms for menu item selection hysteresis */
+#define MENU_SELECT_DELAY       200
+/* delays in ms for jumpback of scrolled menus */
+#define MENU_JUMP_BACK_DELAY    400
 /* menu scrolling */
 #define MENU_SCROLL_STEPS_UF	14
 #define MENU_SCROLL_DELAY_UF	1
@@ -231,6 +203,34 @@
 
 #define MENU_SCROLL_STEPS_US	1
 #define MENU_SCROLL_DELAY_US	8
+/* blink interval when invoking a menu item */
+#define MENU_BLINK_DELAY	60000
+#define MENU_BLINK_COUNT	0
+  
+/*---[ actions.c ]-------------------------------------------------------------*/
+
+/* max. time to spend doing animations in seconds. If the animation
+ * time exceeds this value, it is immediately finished. Usefull for
+ * moments of high-load. DO NOT set *_DELAY_{Z,T,F} to zero!
+ */
+#define MAX_ANIMATION_TIME	         1     // misc.c, actions.c
+
+/* Zoom animation */
+#define MINIATURIZE_ANIMATION_FRAMES_Z   7     // actions.c
+#define MINIATURIZE_ANIMATION_STEPS_Z    16    // actions.c
+#define MINIATURIZE_ANIMATION_DELAY_Z    10000 // superfluous.c, actions.c
+
+/* Twist animation */
+#define MINIATURIZE_ANIMATION_FRAMES_T   12    // actions.c
+#define MINIATURIZE_ANIMATION_STEPS_T    16    // actions.c
+#define MINIATURIZE_ANIMATION_DELAY_T    20000 // actions.c
+#define MINIATURIZE_ANIMATION_TWIST_T    0.5   // actions.c
+
+/* Flip animation */
+#define MINIATURIZE_ANIMATION_FRAMES_F   12    // actions.c
+#define MINIATURIZE_ANIMATION_STEPS_F    16    // actions.c
+#define MINIATURIZE_ANIMATION_DELAY_F    20000 // actions.c
+#define MINIATURIZE_ANIMATION_TWIST_F    0.5   // actions.c
 
 /* shade animation */
 #define SHADE_STEPS_UF		5
@@ -248,15 +248,51 @@
 #define SHADE_STEPS_US		40
 #define SHADE_DELAY_US		10
 
+/*---[ balloon.c ]-------------------------------------------------------------*/
+
+/* delays in ms before balloon is shown */
+#define BALLOON_DELAY           1000
+
+/*---[ misc.c ]----------------------------------------------------------------*/
+
+/* animation speed constants */
+#define ICON_SLIDE_SLOWDOWN_UF	1
+#define ICON_SLIDE_DELAY_UF	0
+#define ICON_SLIDE_STEPS_UF	50  
+
+#define ICON_SLIDE_SLOWDOWN_F	3
+#define ICON_SLIDE_DELAY_F	0
+#define ICON_SLIDE_STEPS_F	50
+
+#define ICON_SLIDE_SLOWDOWN_M	5
+#define ICON_SLIDE_DELAY_M	0 
+#define ICON_SLIDE_STEPS_M	30
+
+#define ICON_SLIDE_SLOWDOWN_S	10
+#define ICON_SLIDE_DELAY_S	0
+#define ICON_SLIDE_STEPS_S	20
+
+#define ICON_SLIDE_SLOWDOWN_US	20
+#define ICON_SLIDE_DELAY_US	1
+#define ICON_SLIDE_STEPS_US	10
+
+/*---[ workspace.c ]-----------------------------------------------------------*/
+
 /* workspace name on switch display */
 #define WORKSPACE_NAME_FADE_DELAY 30
 #define WORKSPACE_NAME_DELAY     400
 
+/*---[ icon.c ]----------------------------------------------------------------*/
+
 /* Delay when cycling colors of selected icons. */
 #define COLOR_CYCLE_DELAY        200
 
+/*---[ superfluous.c ]---------------------------------------------------------*/
+
 /* size of the pieces in the undocked icon explosion */
 #define ICON_KABOOM_PIECE_SIZE  4
+
+/*---[ placement.c ]-----------------------------------------------------------*/
 
 /*
  * Position increment for smart placement: >= 1
@@ -265,44 +301,26 @@
 #define PLACETEST_HSTEP	        8
 #define PLACETEST_VSTEP	        8
 
-#define DOCK_EXTRA_SPACE	3
+/*---[ dock.c ]----------------------------------------------------------------*/
 
+#define DOCK_EXTRA_SPACE	3 // + xrandr.c
 /* Vicinity in which an icon can be attached to the clip */
 #define CLIP_ATTACH_VICINITY	1
 #define CLIP_BUTTON_SIZE        23
-
 /* The amount of space (in multiples of the icon size)
  * a docked icon must be dragged out to detach it */
 #define DOCK_DETTACH_THRESHOLD	2
-
 /* Max. number of icons the dock and clip can have */
 #define DOCK_MAX_ICONS		32
 
-/* blink interval when invoking a menu item */
-#define MENU_BLINK_DELAY	60000
-#define MENU_BLINK_COUNT	0
-#define CURSOR_BLINK_RATE	300
+
 
 /* how many pixels to move before dragging windows and other objects */
-#define MOVE_THRESHOLD	        5
-#define HRESIZE_THRESHOLD	3
+#define MOVE_THRESHOLD	        5 // appicon, moveres, dock, menu, icon
 
-#define MAX_WORKSPACENAME_WIDTH	64
+#define MAX_WORKSPACENAME_WIDTH	64 // workspace, switchmenu, winmenu, wmspec
 /* max width of window title in window list */
-#define MAX_WINDOWLIST_WIDTH	400
-
-#ifndef HAVE_INOTIFY
-/* Check defaults database for changes every this many milliseconds */
-#define DEFAULTS_CHECK_INTERVAL	2000
-#endif
-
-#define KEY_CONTROL_WINDOW_WEIGHT 1
-
-/* don't put titles in miniwindows */
-#undef NO_MINIWINDOW_TITLES
-
-/* for boxes with high mouse sampling rates (SGI) */
-#define DELAY_BETWEEN_MOUSE_SAMPLING  10
+#define MAX_WINDOWLIST_WIDTH	400 // switchmenu
 
 /*
  * You should not modify the following values, unless you know
@@ -311,7 +329,7 @@
 
 /* number of window shortcuts */
 #define MAX_WINDOW_SHORTCUTS      10
-#define MIN_TITLEFONT_HEIGHT(h)   ((h)>14 ? (h) : 14)
+//#define MIN_TITLEFONT_HEIGHT(h)   ((h)>14 ? (h) : 14)
 #define TITLEBAR_HEIGHT           18  /* window's titlebar height */
 #define RESIZEBAR_HEIGHT          8   /* height of the resizebar */
 #define RESIZEBAR_MIN_WIDTH       20  /* min width of handles-corner_width */
@@ -335,11 +353,6 @@
 # define DEFAULT_PATH_MAX         512
 #endif
 
-/* some rules */
-#ifndef USE_XSHAPE
-#undef SHAPED_BALLOON
-#endif
-
 #ifdef  XKB_MODELOCK
 #define KEEP_XKB_LOCK_STATUS
 /* This is a hidden feature.
@@ -353,22 +366,22 @@
 #endif
 
 #if defined(HAVE_LIBINTL_H) && defined(I18N)
-#include <libintl.h>
-#define _(text) gettext(text)
-/* Use N_() in initializers, it will make xgettext pick
- * the string up for translation
- */
-#define N_(text) (text)
-#if defined(MENU_TEXTDOMAIN)
-#define M_(text) dgettext(MENU_TEXTDOMAIN, text)
+  #include <libintl.h>
+  #define _(text) gettext(text)
+  /* Use N_() in initializers, it will make xgettext pick
+   * the string up for translation
+   */
+  #define N_(text) (text)
+  #if defined(MENU_TEXTDOMAIN)
+    #define M_(text) dgettext(MENU_TEXTDOMAIN, text)
+  #else
+    #define M_(text) (text)
+  #endif
 #else
-#define M_(text) (text)
-#endif
-#else
-#define _(text) (text)
-#define N_(text) (text)
-#define M_(text) (text)
-#endif
+  #define _(text) (text)
+  #define N_(text) (text)
+  #define M_(text) (text)
+#endif /* defined(HAVE_LIBINTL_H) && defined(I18N) */
 
-#endif
+#endif /* __WORKSPACE_WM_DEFS__ */
 
