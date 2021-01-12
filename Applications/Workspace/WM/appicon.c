@@ -399,29 +399,6 @@ void wAppIconMove(WAppIcon * aicon, int x, int y)
   aicon->y_pos = y;
 }
 
-#ifdef WS_INDICATOR
-static void updateDockNumbers(WScreen *scr)
-{
-  int length;
-  char *ws_numbers;
-  WAppIcon *dicon = scr->dock->icon_array[0];
-
-  ws_numbers = wmalloc(20);
-  snprintf(ws_numbers, 20, "%i [ %i ]", scr->current_workspace + 1, ((scr->current_workspace / 10) + 1));
-  length = strlen(ws_numbers);
-
-  XClearArea(dpy, dicon->icon->core->window, 2, 2, 50, WMFontHeight(scr->icon_title_font) + 1, False);
-
-  WMDrawString(scr->wmscreen, dicon->icon->core->window, scr->black,
-               scr->icon_title_font, 4, 3, ws_numbers, length);
-
-  WMDrawString(scr->wmscreen, dicon->icon->core->window, scr->white,
-               scr->icon_title_font, 3, 2, ws_numbers, length);
-
-  wfree(ws_numbers);
-}
-#endif				/* WS_INDICATOR */
-
 void wAppIconPaint(WAppIcon *aicon)
 {
   WApplication *wapp;
@@ -434,10 +411,6 @@ void wAppIconPaint(WAppIcon *aicon)
 
   wIconPaint(aicon->icon);
 
-# ifdef WS_INDICATOR
-  if (aicon->docked && scr->dock && scr->dock == aicon->dock && aicon->yindex == 0)
-    updateDockNumbers(scr);
-# endif
   if (aicon->docked && !aicon->running && aicon->command != NULL && aicon->yindex != 0) {
     XSetClipMask(dpy, scr->copy_gc, scr->dock_dots->mask);
     XSetClipOrigin(dpy, scr->copy_gc, 0, 0);
