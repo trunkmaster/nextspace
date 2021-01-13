@@ -37,6 +37,7 @@
 #include <core/drawing.h>
 
 #include "WM.h"
+#include "defaults.h"
 #include "framewin.h"
 #include "window.h"
 #include "client.h"
@@ -45,14 +46,21 @@
 #include "actions.h"
 #include "workspace.h"
 #include "placement.h"
-
 #include "geomview.h"
 #include "screen.h"
 #include "xrandr.h"
+#include "moveres.h"
 
-/* How many different types of geometry/position
-   display thingies are there? */
-#define NUM_DISPLAYS 5
+/* calculate window edge resistance from edge resistance */
+#define WIN_RESISTANCE(x)		(((x)*20)/30)
+#define HRESIZE_THRESHOLD		3
+#define KEY_CONTROL_WINDOW_WEIGHT 	1
+
+/* for boxes with high mouse sampling rates (SGI) */
+#define DELAY_BETWEEN_MOUSE_SAMPLING	10
+
+/* How many different types of geometry/position display thingies are there? */
+#define NUM_DISPLAYS	5
 
 #define LEFT            1
 #define RIGHT           2
@@ -60,8 +68,7 @@
 #define DOWN            8
 
 /* True if window currently has a border. This also includes borderless
- * windows which are currently selected
- */
+   windows which are currently selected */
 #define HAS_BORDER_WITH_SELECT(w) ((w)->flags.selected || HAS_BORDER(w))
 
 

@@ -55,6 +55,7 @@
 #include "placement.h"
 #include "misc.h"
 #include "event.h"
+#include "moveres.h"
 #ifdef USE_DOCK_XDND
 #include "xdnd.h"
 #endif

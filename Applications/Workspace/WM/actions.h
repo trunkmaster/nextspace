@@ -23,6 +23,46 @@
 
 #include "window.h"
 
+/* max. time to spend doing animations in seconds. If the animation
+ * time exceeds this value, it is immediately finished. Usefull for
+ * moments of high-load. DO NOT set *_DELAY_{Z,T,F} to zero!
+ */
+#define MAX_ANIMATION_TIME	         1     // misc.c, actions.c
+
+/* Zoom animation */
+#define MINIATURIZE_ANIMATION_FRAMES_Z   7     // actions.c
+#define MINIATURIZE_ANIMATION_STEPS_Z    16    // actions.c
+#define MINIATURIZE_ANIMATION_DELAY_Z    10000 // superfluous.c, actions.c
+
+/* Twist animation */
+#define MINIATURIZE_ANIMATION_FRAMES_T   12    // actions.c
+#define MINIATURIZE_ANIMATION_STEPS_T    16    // actions.c
+#define MINIATURIZE_ANIMATION_DELAY_T    20000 // actions.c
+#define MINIATURIZE_ANIMATION_TWIST_T    0.5   // actions.c
+
+/* Flip animation */
+#define MINIATURIZE_ANIMATION_FRAMES_F   12    // actions.c
+#define MINIATURIZE_ANIMATION_STEPS_F    16    // actions.c
+#define MINIATURIZE_ANIMATION_DELAY_F    20000 // actions.c
+#define MINIATURIZE_ANIMATION_TWIST_F    0.5   // actions.c
+
+/* shade animation */
+#define SHADE_STEPS_UF		5
+#define SHADE_DELAY_UF		0
+
+#define SHADE_STEPS_F		10
+#define SHADE_DELAY_F		0
+
+#define SHADE_STEPS_M		15
+#define SHADE_DELAY_M		0
+
+#define SHADE_STEPS_S		30
+#define SHADE_DELAY_S		0
+
+#define SHADE_STEPS_US		40
+#define SHADE_DELAY_US		10
+
+/**/
 #define MAX_HORIZONTAL         (1 << 0)
 #define MAX_VERTICAL           (1 << 1)
 #define MAX_LEFTHALF           (1 << 2)
@@ -33,6 +73,7 @@
 #define MAX_IGNORE_XINERAMA    (1 << 7)
 #define MAX_KEYBOARD           (1 << 8)
 
+/**/
 #define SAVE_GEOMETRY_X        (1 << 0)
 #define SAVE_GEOMETRY_Y        (1 << 1)
 #define SAVE_GEOMETRY_WIDTH    (1 << 2)

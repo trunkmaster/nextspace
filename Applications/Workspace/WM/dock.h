@@ -25,6 +25,19 @@
 
 #include "appicon.h"
 
+#define DOCK_EXTRA_SPACE	3
+
+/* Vicinity in which an icon can be attached to the clip */
+#define CLIP_ATTACH_VICINITY	1
+#define CLIP_BUTTON_SIZE        23
+
+/* The amount of space (in multiples of the icon size)
+ * a docked icon must be dragged out to detach it */
+#define DOCK_DETTACH_THRESHOLD	2
+
+/* Max. number of icons the dock and clip can have */
+#define DOCK_MAX_ICONS		32
+
 typedef struct WDock {
   WScreen *screen_ptr;
   int x_pos, y_pos;		       /* position of the first icon */

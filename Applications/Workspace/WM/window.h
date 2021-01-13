@@ -29,6 +29,9 @@
 #include "menu.h"
 #include "application.h"
 
+/* window title to use for untitled windows */
+#define DEF_WINDOW_TITLE "UNTITLED"
+
 /* not defined in my X11 headers */
 #ifndef UrgencyHint
 #define UrgencyHint (1L << 8)

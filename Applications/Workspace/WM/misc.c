@@ -59,12 +59,34 @@
 #include "xutil.h"
 #include "xmodifier.h"
 #include "event.h"
+#include "actions.h"
 
 #include "dock.h"
 #include "Workspace+WM.h"
 
 
 #define ICON_SIZE wPreferences.icon_size
+
+/* animation speed constants */
+#define ICON_SLIDE_SLOWDOWN_UF	1
+#define ICON_SLIDE_DELAY_UF	0
+#define ICON_SLIDE_STEPS_UF	50  
+
+#define ICON_SLIDE_SLOWDOWN_F	3
+#define ICON_SLIDE_DELAY_F	0
+#define ICON_SLIDE_STEPS_F	50
+
+#define ICON_SLIDE_SLOWDOWN_M	5
+#define ICON_SLIDE_DELAY_M	0 
+#define ICON_SLIDE_STEPS_M	30
+
+#define ICON_SLIDE_SLOWDOWN_S	10
+#define ICON_SLIDE_DELAY_S	0
+#define ICON_SLIDE_STEPS_S	20
+
+#define ICON_SLIDE_SLOWDOWN_US	20
+#define ICON_SLIDE_DELAY_US	1
+#define ICON_SLIDE_STEPS_US	10
 
 /* XFetchName Wrapper */
 Bool wGetWindowName(Display *dpy, Window win, char **winname)

@@ -35,6 +35,7 @@
 
 #include "GNUstep.h"
 #include "WM.h"
+#include "defaults.h"
 #include "wcore.h"
 #include "framewin.h"
 #include "window.h"
@@ -46,6 +47,12 @@
 #include "xrandr.h"
 #include "placement.h"
 
+/*
+ * Position increment for smart placement: >= 1
+ * Raise these values if it's too slow for you
+ */
+#define PLACETEST_HSTEP	        8
+#define PLACETEST_VSTEP	        8
 
 #define X_ORIGIN WMAX(usableArea.x1,                            \
                       wPreferences.window_place_origin.x)

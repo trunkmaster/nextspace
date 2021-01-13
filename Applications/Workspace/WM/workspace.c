@@ -73,10 +73,14 @@
 #define MC_NEW          0
 #define MC_DESTROY_LAST 1
 #define MC_LAST_USED    2
+
 /* index of the first workspace menu entry */
 #define MC_WORKSPACE1   3
 
 #define WORKSPACE_NAME_DISPLAY_PADDING 32
+/* workspace name on switch display */
+#define WORKSPACE_NAME_FADE_DELAY 30
+#define WORKSPACE_NAME_DELAY 400
 
 static CFTypeRef dWorkspaces = CFSTR("Workspaces");
 static CFTypeRef dClip = CFSTR("Clip");

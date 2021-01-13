@@ -77,6 +77,9 @@ typedef struct _WBalloon {
 #define LEFT	0
 #define RIGHT	2
 
+/* delays in ms before balloon is shown */
+#define BALLOON_DELAY 1000
+
 static int countLines(const char *text)
 {
   const char *p = text;

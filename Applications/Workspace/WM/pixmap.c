@@ -32,6 +32,8 @@
 #include "WM.h"
 #include "pixmap.h"
 
+#define DEF_XPM_CLOSENESS	40000
+
 /*
  *----------------------------------------------------------------------
  * wPixmapCreateFromXPMData--

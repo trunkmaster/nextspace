@@ -43,6 +43,9 @@
 #include "framewin.h"
 #include "switchmenu.h"
 
+/* Maximum width of window title in window list */
+#define MAX_WINDOWLIST_WIDTH	400
+
 #define IS_GNUSTEP_MENU(w) ((w)->wm_gnustep_attr &&                     \
                             ((w)->wm_gnustep_attr->flags & GSWindowLevelAttr) && \
                             ((w)->wm_gnustep_attr->window_level == NSMainMenuWindowLevel || \

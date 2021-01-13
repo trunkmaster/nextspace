@@ -22,6 +22,8 @@
 #ifndef __WORKSPACE_WM_WORKSPACE__
 #define __WORKSPACE_WM_WORKSPACE__
 
+#define MAX_WORKSPACENAME_WIDTH	64
+
 typedef struct WWorkspace {
   char *name;
   struct WDock *clip;

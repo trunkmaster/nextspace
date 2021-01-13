@@ -57,13 +57,25 @@
 #include "dock.h"
 #include "resources.h"
 #include "workspace.h"
-/* #include "session.h" */
 #include "balloon.h"
 #include "geomview.h"
 #include "wmspec.h"
 #include "xrandr.h"
 #include "defaults.h"
 #include "misc.h"
+
+#define WTB_LEFT	0
+#define WTB_RIGHT	1
+
+#define WTB_FOCUSED	0
+#define WTB_UNFOCUSED	2
+#define WTB_PFOCUSED	4
+#define WTB_MENU 	6
+
+/* default style */
+#define DEF_FRAME_COLOR "white"
+/* line width of the move/resize frame */
+#define DEF_FRAME_THICKNESS 1
 
 #define EVENT_MASK (LeaveWindowMask|EnterWindowMask|PropertyChangeMask  \
                     |SubstructureNotifyMask|PointerMotionMask           \

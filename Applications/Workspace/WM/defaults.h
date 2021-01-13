@@ -38,6 +38,30 @@ void wDefaultsReadStatic(CFMutableDictionaryRef dict);
 void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict);
 void wDefaultsCheckDomains(void *arg);
 
+/* pixmap path */
+#define DEF_PIXMAP_PATHS \
+  "(\"~/Library/Images/\", \"/Library/Images/\", \"/usr/NextSpace/Images/\", \"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
+/* icon path */
+#define DEF_ICON_PATHS \
+  "(\"~/Library/Images/\", \"/Library/Images/\", \"/usr/NextSpace/Images/\", \"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
+/* default fonts */
+#define DEF_TITLE_FONT          "\"Helvetica:bold:pixelsize=12\""
+#define DEF_MENU_TITLE_FONT     "\"Helvetica:bold:pixelsize=12\""
+#define DEF_MENU_ENTRY_FONT     "\"Helvetica:pixelsize=12\""
+#define DEF_ICON_TITLE_FONT     "\"Helvetica:pixelsize=9\""
+#define DEF_CLIP_TITLE_FONT     "\"Helvetica:pixelsize=10\""
+#define DEF_INFO_TEXT_FONT      "\"Helvetica:pixelsize=12\""
+#define DEF_WORKSPACE_NAME_FONT "\"Helvetica:pixelsize=24\""
+#define DEF_WINDOW_TITLE_EXTEND_SPACE	"0"
+#define DEF_MENU_TITLE_EXTEND_SPACE	"0"
+#define DEF_MENU_TEXT_EXTEND_SPACE	"0"
+#define TITLEBAR_EXTEND_SPACE            4
+
+#ifndef HAVE_INOTIFY
+/* Check defaults database for changes every this many milliseconds */
+#define DEFAULTS_CHECK_INTERVAL	2000
+#endif
+
 /* --- Key bindings --- */
 
 /* <X11/X.h> doesn't define these, even though XFree supports them */

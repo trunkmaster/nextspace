@@ -51,15 +51,45 @@
 #include "xrandr.h"
 #include "workspace.h"
 #include "switchmenu.h"
+#include "moveres.h"
 
 
 #define MOD_MASK wPreferences.modifier_mask
 
+#define MENUW(m)	((m)->frame->core->width+2*(m)->frame->screen_ptr->frame_border_width)
+#define MENUH(m)	((m)->frame->core->height+2*(m)->frame->screen_ptr->frame_border_width)
+
+/* do not divide main menu and submenu in different tiers, opposed to OpenStep */
+#undef SINGLE_MENULEVEL
+
+/* delays in ms for menu item selection hysteresis */
+#define MENU_SELECT_DELAY       200
+
+/* delays in ms for jumpback of scrolled menus */
+#define MENU_JUMP_BACK_DELAY    400
+
+/* menu scrolling */
+#define MENU_SCROLL_STEPS_UF	14
+#define MENU_SCROLL_DELAY_UF	1
+
+#define MENU_SCROLL_STEPS_F	10
+#define MENU_SCROLL_DELAY_F	5
+
+#define MENU_SCROLL_STEPS_M	6
+#define MENU_SCROLL_DELAY_M	5
+
+#define MENU_SCROLL_STEPS_S	4
+#define MENU_SCROLL_DELAY_S	6
+
+#define MENU_SCROLL_STEPS_US	1
+#define MENU_SCROLL_DELAY_US	8
+
 #define MENU_SCROLL_STEP  menuScrollParameters[(int)wPreferences.menu_scroll_speed].steps
 #define MENU_SCROLL_DELAY menuScrollParameters[(int)wPreferences.menu_scroll_speed].delay
 
-#define MENUW(m)	((m)->frame->core->width+2*(m)->frame->screen_ptr->frame_border_width)
-#define MENUH(m)	((m)->frame->core->height+2*(m)->frame->screen_ptr->frame_border_width)
+/* blink interval when invoking a menu item */
+#define MENU_BLINK_DELAY	60000
+#define MENU_BLINK_COUNT	0
 
 /***** Local Stuff ******/
 

@@ -44,15 +44,18 @@
 #include "xrandr.h"
 #include "stacking.h"
 
+#define NORMAL_ICON_KABOOM
+
 #define PIECES ((64/ICON_KABOOM_PIECE_SIZE)*(64/ICON_KABOOM_PIECE_SIZE))
 #define KAB_PRECISION		4
+/* size of the pieces in the undocked icon explosion */
+#define ICON_KABOOM_PIECE_SIZE	4
 #define BOUNCE_HZ		25
 #define BOUNCE_DELAY		(1000/BOUNCE_HZ)
 #define BOUNCE_HEIGHT		24
 #define BOUNCE_LENGTH		0.3
 #define BOUNCE_DAMP		0.6
 #define URGENT_BOUNCE_DELAY	3000
-
 
 void DoKaboom(WScreen * scr, Window win, int x, int y)
 {

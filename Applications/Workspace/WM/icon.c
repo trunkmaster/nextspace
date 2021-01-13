@@ -60,14 +60,20 @@
 #include "startup.h"
 #include "event.h"
 #include "winmenu.h"
+#include "moveres.h"
 
 #include "dock.h"
 #include <Workspace+WM.h>
 
-/**** Global variables ****/
+/* Delay when cycling colors of selected icons. */
+#define COLOR_CYCLE_DELAY 200
+
+/* Icon cache path */
+#define CACHE_ICON_PATH "/Workspace/CachedPixmaps"
 
 #define MOD_MASK wPreferences.modifier_mask
 #define ICON_BORDER 3
+
 
 static void miniwindowExpose(WObjDescriptor *desc, XEvent *event);
 static void miniwindowMouseDown(WObjDescriptor *desc, XEvent *event);
@@ -85,6 +91,7 @@ static void icon_update_pixmap(WIcon *icon, RImage *image);
 static void unset_icon_image(WIcon *icon);
 
 /****** Notification Observer ******/
+
 static void _iconSettingsObserver(CFNotificationCenterRef center,
                                   void *observedIcon, // observer
                                   CFNotificationName name,
@@ -116,6 +123,7 @@ static void _iconSettingsObserver(CFNotificationCenterRef center,
     XClearArea(dpy, icon->core->window, 0, 0, 1, 1, True);
   }
 }
+
 /************************************/
 
 static int getSize(Drawable d, unsigned int *w, unsigned int *h, unsigned int *dep)

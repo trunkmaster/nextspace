@@ -49,6 +49,27 @@
 #include "icon.h"
 #include "misc.h"
 
+/* Icon for app without own icon. Bundled with NXAppKit. */
+#define DEF_APP_ICON "NXUnknownApplication.tiff"
+
+/* bit flags for the above window attributes */
+#define WA_TITLEBAR  		(1<<0)
+#define WA_RESIZABLE  		(1<<1)
+#define WA_CLOSABLE  		(1<<2)
+#define WA_MINIATURIZABLE  	(1<<3)
+#define WA_BROKEN_CLOSE  	(1<<4)
+#define WA_SHADEABLE  		(1<<5)
+#define WA_FOCUSABLE  		(1<<6)
+#define WA_OMNIPRESENT 	 	(1<<7)
+#define WA_SKIP_WINDOW_LIST  	(1<<8)
+#define WA_SKIP_SWITCHPANEL  	(1<<9)
+#define WA_FLOATING  		(1<<10)
+#define WA_IGNORE_KEYS 		(1<<11)
+#define WA_IGNORE_MOUSE  	(1<<12)
+#define WA_IGNORE_HIDE_OTHERS	(1<<13)
+#define WA_NOT_APPLICATION	(1<<14)
+#define WA_DONT_MOVE_OFF	(1<<15)
+
 #define APPLY_VAL(value, flag, attrib)                  \
   if (value) {attr->flag = getBool(attrib, value);      \
     if (mask) mask->flag = 1;}

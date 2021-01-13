@@ -32,6 +32,9 @@
 /* This is the border, in pixel, drawn around a Mini-Preview */
 #define MINIPREVIEW_BORDER 1
 
+/* Window level where icons reside */
+#define NORMAL_ICON_LEVEL NSNormalWindowLevel
+
 typedef struct WIcon {
   WCoreWindow   *core;
   WWindow       *owner;       /* owner window */

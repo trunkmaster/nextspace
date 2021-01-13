@@ -67,6 +67,7 @@
 #include "placement.h"
 #include "misc.h"
 #include "event.h"
+#include "moveres.h"
 
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
