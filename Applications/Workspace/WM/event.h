@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 2013 Window Maker Team
  *
@@ -41,4 +43,4 @@ Bool IsDoubleClick(WScreen *scr, XEvent *event);
 /* called from the signal handler */
 void NotifyDeadProcess(pid_t pid, unsigned char status);
 
-#endif /* WMEVENT_H */
+#endif /* __WORKSPACE_WM_EVENT__ */

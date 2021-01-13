@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -21,7 +23,6 @@
 #ifndef __WORKSPACE_WM_SCREEN__
 #define __WORKSPACE_WM_SCREEN__
 
-#include "WMdefs.h"
 #include "WM.h"
 #include <sys/types.h>
 
@@ -39,7 +40,6 @@ typedef struct {
   int    event_base;
   int    error_base;
 } WXrandrInfo;
-
 
 /* an area of the screen reserved by some window */
 typedef struct WReservedArea {
@@ -320,8 +320,6 @@ typedef struct _WScreen {
   } flags;
 } WScreen;
 
-
-
 WScreen *wScreenInit(int screen_number);
 void wScreenSaveState(WScreen *scr);
 void wScreenRestoreState(WScreen *scr);
@@ -330,9 +328,8 @@ int wScreenBringInside(WScreen *scr, int *x, int *y, int width, int height);
 int wScreenKeepInside(WScreen *scr, int *x, int *y, int width, int height);
 
 
-/* in startup.c */
 WScreen *wDefaultScreen(void);
-
 void wScreenFinish(WScreen *scr);
 void wScreenUpdateUsableArea(WScreen *scr);
-#endif
+
+#endif /* __WORKSPACE_WM_SCREEN__ */

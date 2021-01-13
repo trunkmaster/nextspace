@@ -1,7 +1,9 @@
-/* defaults.c - manage configuration through defaults db
+/*  Manage configuration through defaults db
+ *
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 1998-2003 Dan Pascu
  *  Copyright (c) 2014 Window Maker Team
@@ -22,7 +24,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -73,8 +75,11 @@
 #include "properties.h"
 #include "misc.h"
 #include "winmenu.h"
+#include "moveres.h"
 
 #include "defaults.h"
+
+struct WPreferences wPreferences;
 
 #define MAX_SHORTCUT_LENGTH 32
 
@@ -199,10 +204,9 @@ typedef struct {
   char is_alias;
 } WOptionEnumeration;
 
-static WOptionEnumeration seTitlebarModes[] = {
+static WOptionEnumeration seTitlebarStyles[] = {
   {"new", TS_NEW, 0},
   {"old", TS_OLD, 0},
-  {"next", TS_NEXT, 0},
   {NULL, 0, 0}
 };
 static WOptionEnumeration seColormapModes[] = {
@@ -327,7 +331,7 @@ WDefaultEntry staticOptionList[] = {
   {"IconSize", "64", NULL, &wPreferences.icon_size, getInt, NULL, NULL, NULL},
   {"ModifierKey", "Mod4", NULL, &wPreferences.modifier_mask, getModMask, NULL, NULL, NULL},
   {"AlternateModifierKey", "Mod1", NULL, &wPreferences.alt_modifier_mask, getAltModMask, NULL, NULL, NULL},
-  {"NewStyle", "old", seTitlebarModes, &wPreferences.new_style, getEnum, NULL, NULL, NULL},
+  {"TitlebarStyle", "old", seTitlebarStyles, &wPreferences.titlebar_style, getEnum, NULL, NULL, NULL},
   {"DisableDock", "NO", (void *)WM_DOCK, NULL, getBool, setIfDockPresent, NULL, NULL},
   {"DisableClip", "YES", (void *)WM_CLIP, NULL, getBool, setIfDockPresent, NULL, NULL},
   {"DisableDrawers", "YES", (void *)WM_DRAWER, NULL, getBool, setIfDockPresent, NULL, NULL},
@@ -343,9 +347,8 @@ WDefaultEntry staticOptionList[] = {
 WDefaultEntry optionList[] = {
   {"IconPosition", "blh", seIconPositions, &wPreferences.icon_yard, getEnum, setIconPosition, NULL, NULL},
   {"IconificationStyle", "Zoom", seIconificationStyles, &wPreferences.iconification_style, getEnum, NULL, NULL, NULL},
-  {"PixmapPath", DEF_PIXMAP_PATHS, NULL, &wPreferences.pixmap_path, getPathList, NULL, NULL, NULL},
-  {"IconPath", DEF_ICON_PATHS, NULL, &wPreferences.icon_path, getPathList, NULL, NULL, NULL},
-  {"ColormapMode", "auto", seColormapModes, &wPreferences.colormap_mode, getEnum, NULL, NULL, NULL},
+  {"ImagePaths", DEF_IMAGE_PATHS, NULL, &wPreferences.image_paths, getPathList, NULL, NULL, NULL},
+  {"ColormapMode", "Auto", seColormapModes, &wPreferences.colormap_mode, getEnum, NULL, NULL, NULL},
   {"AutoFocus", "YES", NULL, &wPreferences.auto_focus, getBool, NULL, NULL, NULL},
   {"RaiseDelay", "0", NULL, &wPreferences.raise_delay, getInt, NULL, NULL, NULL},
   {"CirculateRaise", "YES", NULL, &wPreferences.circ_raise, getBool, NULL, NULL, NULL},
@@ -565,11 +568,6 @@ WDefaultEntry optionList[] = {
   {"WindowShortcut10Key", "None", (void *)WKBD_WINDOW10, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"WindowRelaunchKey", "None", (void *)WKBD_RELAUNCH, NULL, getKeybind, setKeyGrab, NULL, NULL},                        
   {"RunKey", "None", (void *)WKBD_RUN, NULL, getKeybind, setKeyGrab, NULL, NULL},
-
-#ifdef KEEP_XKB_LOCK_STATUS
-  {"ToggleKbdModeKey", "None", (void *)WKBD_TOGGLE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"KbdModeLock", "YES", NULL, &wPreferences.modelock, getBool, NULL, NULL, NULL},
-#endif				/* KEEP_XKB_LOCK_STATUS */
 
   /* --- Mouse cursors --- */
   
@@ -1066,7 +1064,7 @@ static int getInt(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *add
 
 static int getCoord(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *addr, void **ret)
 {
-  static WCoord data;
+  static WMPoint data;
   const char *val_x, *val_y;
   int nelem, changed = 0;
   CFStringRef elem_x, elem_y;
@@ -1135,7 +1133,7 @@ static int getCoord(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *a
   if (ret)
     *ret = &data;
   if (addr)
-    *(WCoord *) addr = data;
+    *(WMPoint *) addr = data;
 
   return True;
 }
@@ -2073,7 +2071,7 @@ static int parse_cursor(WScreen * scr, CFTypeRef pl, Cursor * cursor)
       return (status);
     }
     val = WMUserDefaultsGetCString(elem, kCFStringEncodingUTF8);
-    bitmap_name = WMAbsolutePathForFile(wPreferences.pixmap_path, val);
+    bitmap_name = WMAbsolutePathForFile(wPreferences.image_paths, val);
     if (!bitmap_name) {
       wwarning(_("could not find cursor bitmap file \"%s\""), val);
       return (status);
@@ -2083,7 +2081,7 @@ static int parse_cursor(WScreen * scr, CFTypeRef pl, Cursor * cursor)
       return (status);
     }
     val = WMUserDefaultsGetCString(elem, kCFStringEncodingUTF8);
-    mask_name = WMAbsolutePathForFile(wPreferences.pixmap_path, val);
+    mask_name = WMAbsolutePathForFile(wPreferences.image_paths, val);
     if (!mask_name) {
       wfree(bitmap_name);
       wwarning(_("could not find cursor bitmap file \"%s\""), val);
@@ -2732,7 +2730,7 @@ static int setWorkspaceSpecificBack(WScreen *scr, WDefaultEntry *entry, void *td
       return 0;
     }
 
-    wSendHelperMessage(scr, 'P', -1, wPreferences.pixmap_path);
+    wSendHelperMessage(scr, 'P', -1, wPreferences.image_paths);
   }
 
   for (i = 0; i < CFArrayGetCount(value); i++) {
@@ -3034,7 +3032,7 @@ static int setSwPOptions(WScreen *scr, WDefaultEntry *entry, void *tdata, void *
       wwarning(_("Invalid arguments for option \"%s\""), entry->key);
       break;
     } else {
-      path = WMAbsolutePathForFile(wPreferences.pixmap_path,
+      path = WMAbsolutePathForFile(wPreferences.image_paths,
                                   WMUserDefaultsGetCString(value, kCFStringEncodingUTF8));
     }
 
@@ -3108,7 +3106,7 @@ static int setSwPOptions(WScreen *scr, WDefaultEntry *entry, void *tdata, void *
       wwarning(_("Invalid arguments for option \"%s\""), entry->key);
       break;
     } else {
-      path = WMAbsolutePathForFile(wPreferences.pixmap_path,
+      path = WMAbsolutePathForFile(wPreferences.image_paths,
                        WMUserDefaultsGetCString(value, kCFStringEncodingUTF8));
     }
 

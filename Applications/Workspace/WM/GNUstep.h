@@ -1,7 +1,9 @@
-/* GNUstep.h-- stuff for compatibility with GNUstep applications
+/* Stuff for compatibility with GNUstep
+ *
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify

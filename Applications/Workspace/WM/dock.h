@@ -1,7 +1,8 @@
-/* dock.h- built-in Dock module for WindowMaker
+/*
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 1998-2003 Dan Pascu
  *
@@ -139,4 +140,4 @@ typedef enum {
 
 int wClipMakeIconOmnipresent(WAppIcon *aicon, int omnipresent);
 
-#endif
+#endif /* __WORKSPACE_WM_DOCK__ */

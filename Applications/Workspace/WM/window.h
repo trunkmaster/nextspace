@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -23,7 +25,7 @@
 
 #include <wraster.h>
 
-#include "WMdefs.h"
+#include "WM.h"
 #include "GNUstep.h"
 #include "texture.h"
 #include "menu.h"
@@ -95,9 +97,6 @@ typedef struct {
   unsigned int no_closable:1;
   unsigned int no_miniaturizable:1;
   unsigned int no_border:1;	       /* 1 pixel border around window */
-#ifdef XKB_BUTTON_HINT
-  unsigned int no_language_button:1;
-#endif
   unsigned int no_movable:1;
 
   /* decorations */
@@ -150,7 +149,6 @@ typedef struct {
 } WWindowAttributes;
 
 
-
 /*
  * Window manager protocols that both the client as we understand.
  */
@@ -163,7 +161,6 @@ typedef struct {
   unsigned int HIDE_APP:1;
 } WProtocols;
 
-
 /*
  * Structure used for storing fake window group information
  */
@@ -173,7 +170,6 @@ typedef struct WFakeGroupLeader {
   Window origLeader;
   int retainCount;
 } WFakeGroupLeader;
-
 
 /*
  * Stores client window information. Each client window has it's
@@ -404,4 +400,4 @@ void wWindowSetOmnipresent(WWindow *wwin, Bool flag);
 
 void wPrintWindowFocusState(WWindow *wwin, char *prefix);
 
-#endif
+#endif /* __WORKSPACE_WM_WINDOW__ */

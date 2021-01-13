@@ -1,8 +1,9 @@
-/*  session.h
- *
- *  Copyright (c) 1999-2003 Alfredo K. Kojima
+/*
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
+ *  Copyright (c) 1999-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,4 +27,5 @@ void wSessionSaveState(WScreen *scr);
 void wSessionClearState(WScreen *scr);
 void wSessionRestoreState(WScreen *scr);
 void wSessionRestoreLastWorkspace(WScreen *scr);
-#endif
+
+#endif /* __WORKSPACE_WM_SESSION__ */

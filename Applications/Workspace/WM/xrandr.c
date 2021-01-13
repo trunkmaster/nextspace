@@ -1,8 +1,9 @@
 /*
  *  Workspace window manager
- *
- *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 2020- Sergii Stoian
+ *
+ *  Window Maker window manager (xinerama.c)
+ *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #ifdef USE_XRANDR
 #  include <X11/extensions/Xrandr.h>
@@ -34,6 +35,7 @@
 #include "placement.h"
 #include "dock.h"
 #include "stdio.h"
+#include "defaults.h"
 
 #include "xrandr.h"
 

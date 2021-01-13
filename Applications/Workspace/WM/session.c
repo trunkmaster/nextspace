@@ -1,9 +1,11 @@
-/* session.c - session state handling and R6 style session management
+/*  Ssession state handling and R6 style session management
  *
- *  Copyright (c) 1998-2003 Dan Pascu
- *  Copyright (c) 1998-2003 Alfredo Kojima
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
+ *  Copyright (c) 1998-2003 Dan Pascu
+ *  Copyright (c) 1998-2003 Alfredo Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -57,7 +59,7 @@
  * if the Die message is received, exit.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

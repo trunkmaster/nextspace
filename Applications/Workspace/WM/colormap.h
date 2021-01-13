@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 2000-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -24,4 +26,4 @@
 void wColormapInstallForWindow(WScreen *scr, WWindow *wwin);
 void wColormapAllowClientInstallation(WScreen * scr, Bool starting);
 
-#endif /* WMCOLORMAP_H */
+#endif /* __WORKSPACE_WM_COLORMAP__ */

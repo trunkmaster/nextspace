@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -17,7 +19,6 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 
 #ifndef __WORKSPACE_WM_CORE__
 #define __WORKSPACE_WM_CORE__
@@ -52,4 +53,5 @@ WCoreWindow *wCoreCreate(WCoreWindow *parent, int x, int y,
 void wCoreDestroy(WCoreWindow *core);
 void wCoreConfigure(WCoreWindow *core, int req_x, int req_y,
 		    int req_w, int req_h);
-#endif
+
+#endif /* __WORKSPACE_WM_CORE__ */

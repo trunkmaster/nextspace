@@ -1,6 +1,8 @@
 /*
- *  WindowMaker miscelaneous functions
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  WindowMaker miscelaneous functions
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -26,7 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include "xutil.h"
 

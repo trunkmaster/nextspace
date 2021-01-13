@@ -92,13 +92,8 @@ check_symbol_exists(XConvertCase "X11/Xutil.h" HAVE_XCONVERTCASE)
 check_symbol_exists(XInternAtoms "X11/Xlib.h" HAVE_XINTERNATOMS)
 
 check_include_files("X11/extensions/shape.h" USE_XSHAPE)
-#check_include_files("X11/extensions/shape.h" HAVE_XSHAPE_H)
-#if (HAVE_XSHAPE_H)
-#  set(CMAKE_REQUIRED_LIBRARIES "-lXext")
-#  check_c_source_compiles("")
-#endif()
 check_include_files("X11/extensions/Xrandr.h" USE_XRANDR)
-check_include_files("X11/XKBlib.h" XKB_MODELOCK)
+check_include_files("X11/XKBlib.h" USE_XKB)
 
 configure_file(config.h.in ../config.h)
 

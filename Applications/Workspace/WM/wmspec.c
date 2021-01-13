@@ -1,7 +1,8 @@
-/*  wmspec.c-- support for the wm-spec Hints
+/*
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1998-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -28,7 +29,7 @@
  * return to be Success is not enough. -Dan
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>

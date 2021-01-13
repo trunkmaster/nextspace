@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -40,4 +42,4 @@ void PropSetIconTileHint(WScreen *scr, RImage *image);
 
 Window PropGetClientLeader(Window window);
 
-#endif
+#endif /* __WORKSPACE_WM_PROPERTIES__ */

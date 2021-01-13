@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 2013 Window Maker Team
  *
@@ -18,6 +20,7 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 #ifndef __WORKSPACE_WM_MISC__
 #define __WORKSPACE_WM_MISC__
 
@@ -58,4 +61,4 @@ void wSetWVisualID(int screen, int val);
 
 CFTypeRef wGetNotificationInfoValue(CFDictionaryRef theDict, CFStringRef key);
 
-#endif
+#endif /* __WORKSPACE_WM_MISC__ */

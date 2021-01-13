@@ -1,7 +1,8 @@
-/* menu.c- generic menu, used for root menu, application menus etc.
+/*  Generic menu, used for root menu, application menus etc.
  *
- *  Window Maker window manager
+ *  Workspace window manager
  *
+ *  Copyright (c) 2015- Sergii Stoian
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 1998-2003 Dan Pascu
  *
@@ -20,7 +21,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -52,7 +53,7 @@
 #include "workspace.h"
 #include "switchmenu.h"
 #include "moveres.h"
-
+#include "defaults.h"
 
 #define MOD_MASK wPreferences.modifier_mask
 
@@ -525,7 +526,7 @@ void wMenuRealize(WMenu * menu)
   if (menu->flags.titled) {
     twidth = WMWidthOfString(scr->menu_title_font, menu->frame->title, strlen(menu->frame->title));
     theight = menu->frame->top_width;
-    twidth += theight + (wPreferences.new_style == TS_NEW ? 16 : 8);
+    twidth += theight + (wPreferences.titlebar_style == TS_NEW ? 16 : 8);
   } else {
     twidth = 0;
     theight = 0;

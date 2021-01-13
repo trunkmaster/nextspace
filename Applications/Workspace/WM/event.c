@@ -1,7 +1,9 @@
-/* event.c- event loop and handling
+/*  Event loop and events handling
+ *
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 2014 Window Maker Team
  *
@@ -20,7 +22,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #ifdef HAVE_INOTIFY
 #include <sys/select.h>
@@ -45,9 +47,9 @@
 #include "xdnd.h"
 #endif
 
-#ifdef KEEP_XKB_LOCK_STATUS
+#ifdef USE_XKB
 #include <X11/XKBlib.h>
-#endif /* KEEP_XKB_LOCK_STATUS */
+#endif /* USE_XKB */
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFArray.h>
@@ -125,7 +127,7 @@ static void wdelete_death_handler(WMagicNumber id);
 static void handleShapeNotify(XEvent *event);
 #endif
 
-#ifdef KEEP_XKB_LOCK_STATUS
+#ifdef USE_XKB
 static void handleXkbBellNotify(XkbEvent *event);
 static void handleXkbStateNotify(XkbEvent *event);
 #endif
@@ -647,12 +649,13 @@ static void saveTimestamp(XEvent * event)
 static void handleExtensions(XEvent * event)
 {
 #ifdef USE_XSHAPE
-  if (w_global.xext.shape.supported && event->type == (w_global.xext.shape.event_base + ShapeNotify)) {
+  if (w_global.xext.shape.supported
+      && event->type == (w_global.xext.shape.event_base + ShapeNotify)) {
     handleShapeNotify(event);
   }
 #endif
-#ifdef KEEP_XKB_LOCK_STATUS
-  if (wPreferences.modelock && (event->type == w_global.xext.xkb.event_base)) {
+#ifdef USE_XKB
+  if (w_global.xext.xkb.supported && (event->type == w_global.xext.xkb.event_base)) {
     XkbEvent *e = (XkbEvent *)event;
     if (e->any.xkb_type == XkbBellNotify) {
       handleXkbBellNotify(e);
@@ -661,7 +664,7 @@ static void handleExtensions(XEvent * event)
       handleXkbStateNotify(e);
     }
   }
-#endif				/*KEEP_XKB_LOCK_STATUS */
+#endif /* USE_XKB */
 }
 
 static void handleMapRequest(XEvent * ev)
@@ -1402,9 +1405,9 @@ static void handleShapeNotify(XEvent * event)
     wWindowSetShape(wwin);
   }
 }
-#endif				/* USE_XSHAPE */
+#endif /* USE_XSHAPE */
 
-#ifdef KEEP_XKB_LOCK_STATUS
+#ifdef USE_XKB
 static void handleXkbBellNotify(XkbEvent *event)
 {
   WWindow *wwin;
@@ -1416,7 +1419,6 @@ static void handleXkbBellNotify(XkbEvent *event)
     WSRingBell(wwin);
   }
 }
-/* please help ]d if you know what to do */
 static void handleXkbStateNotify(XkbEvent *event)
 {
   WWindow *wwin;
@@ -1428,18 +1430,9 @@ static void handleXkbStateNotify(XkbEvent *event)
   if (wwin && wwin->flags.focused) {
     XkbGetState(dpy, XkbUseCoreKbd, &staterec);
     WSKeyboardGroupDidChange(staterec.group);
-    if (wwin->frame->languagemode != staterec.group) {
-      wwin->frame->last_languagemode = wwin->frame->languagemode;
-      wwin->frame->languagemode = staterec.group;
-    }
-#ifdef XKB_BUTTON_HINT
-    if (wwin->frame->titlebar) {
-      wFrameWindowPaint(wwin->frame);
-    }
-#endif
   }
 }
-#endif				/*KEEP_XKB_LOCK_STATUS */
+#endif /* USE_XKB */
 
 static void handleColormapNotify(XEvent * event)
 {
@@ -1545,9 +1538,6 @@ static void handleKeyPress(XEvent * event)
   short i, widx;
   int modifiers;
   int command = -1;
-#ifdef KEEP_XKB_LOCK_STATUS
-  XkbStateRec staterec;
-#endif				/*KEEP_XKB_LOCK_STATUS */
 
   /* ignore CapsLock */
   modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
@@ -1915,16 +1905,7 @@ static void handleKeyPress(XEvent * event)
     }
     break;
 
-  case WKBD_WINDOW1:
-  case WKBD_WINDOW2:
-  case WKBD_WINDOW3:
-  case WKBD_WINDOW4:
-  case WKBD_WINDOW5:
-  case WKBD_WINDOW6:
-  case WKBD_WINDOW7:
-  case WKBD_WINDOW8:
-  case WKBD_WINDOW9:
-  case WKBD_WINDOW10:
+  case WKBD_WINDOW1 ... WKBD_WINDOW10:
 
     widx = command - WKBD_WINDOW1;
 
@@ -2039,28 +2020,10 @@ static void handleKeyPress(XEvent * event)
     if (!wPreferences.flags.nodock)
       wDockRaiseLower(scr->dock);
     break;
-#ifdef KEEP_XKB_LOCK_STATUS
-  case WKBD_TOGGLE:
-    if (wPreferences.modelock) {
-      /*toggle */
-      wwin = scr->focused_window;
-
-      if (wwin && wwin->flags.mapped
-          && wwin->frame->workspace == wwin->screen_ptr->current_workspace
-          && !wwin->flags.miniaturized && !wwin->flags.hidden) {
-        XkbGetState(dpy, XkbUseCoreKbd, &staterec);
-
-        wwin->frame->languagemode = wwin->frame->last_languagemode;
-        wwin->frame->last_languagemode = staterec.group;
-        XkbLockGroup(dpy, XkbUseCoreKbd, wwin->frame->languagemode);
-
-      }
-    }
-    break;
-#endif	/* KEEP_XKB_LOCK_STATUS */
   }
 }
-#ifdef NEXTSPACE
+
+// NEXTSPACE
 static void handleKeyRelease(XEvent * event)
 {
   WScreen *scr = wDefaultScreen();
@@ -2083,7 +2046,7 @@ static void handleKeyRelease(XEvent * event)
     }
   }
 }
-#endif
+
 static void handleMotionNotify(XEvent * event)
 {
   WScreen *scr = wDefaultScreen();

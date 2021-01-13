@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -329,7 +331,7 @@ static RImage * get_texture_image(WScreen *scr, const char *pixmap_file)
   char *file;
   RImage *image;
 
-  file = WMAbsolutePathForFile(wPreferences.pixmap_path, pixmap_file);
+  file = WMAbsolutePathForFile(wPreferences.image_paths, pixmap_file);
   if (!file) {
     wwarning(_("image file \"%s\" used as texture could not be found."), pixmap_file);
     return NULL;
@@ -554,32 +556,23 @@ void wDrawBevel(Drawable d, unsigned width, unsigned height, WTexSolid * texture
     segs[1].y1 = 1;
     segs[1].x2 = width - 2;
     segs[1].y2 = height - 2;
-    if (wPreferences.new_style == TS_NEXT) {
-      XDrawSegments(dpy, d, dark, segs, 2);
-    } else {
-      XDrawSegments(dpy, d, dim, segs, 2);
-    }
+    XDrawSegments(dpy, d, dim, segs, 2);
+
     segs[0].x1 = 0;
     segs[0].x2 = width - 1;
     segs[0].y2 = segs[0].y1 = height - 1;
     segs[1].x1 = segs[1].x2 = width - 1;
     segs[1].y1 = 0;
     segs[1].y2 = height - 1;
-    if (wPreferences.new_style == TS_NEXT) {
-      XDrawSegments(dpy, d, light, segs, 2);
-    } else {
-      XDrawSegments(dpy, d, dark, segs, 2);
-    }
+    XDrawSegments(dpy, d, dark, segs, 2);
+
     segs[0].x1 = segs[0].y1 = segs[0].y2 = 0;
     segs[0].x2 = width - 2;
     segs[1].x1 = segs[1].y1 = 0;
     segs[1].x2 = 0;
     segs[1].y2 = height - 2;
-    if (wPreferences.new_style == TS_NEXT) {
-      XDrawSegments(dpy, d, dark, segs, 2);
-    } else {
-      XDrawSegments(dpy, d, light, segs, 2);
-    }
+    XDrawSegments(dpy, d, light, segs, 2);
+
     if (relief == WREL_ICON) {
       segs[0].x1 = segs[0].y1 = segs[0].y2 = 1;
       segs[0].x2 = width - 2;

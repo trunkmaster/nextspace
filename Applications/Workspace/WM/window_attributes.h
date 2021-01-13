@@ -1,10 +1,8 @@
 /*
  *  Workspace Window Manager
- *
- *  Copyright (c) 2014-2021 Sergii Stoian
+ *  Copyright (c) 2014- Sergii Stoian
  *  
  *  Window Maker window manager
- *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -45,4 +43,4 @@ const char *wDefaultGetIconFile(const char *instance, const char *class, Bool de
 void wDefaultChangeIcon(const char *instance, const char* class, const char *file);
 void wDefaultPurgeInfo(const char *instance, const char *class);
 
-#endif
+#endif /* __WORKSPACE_WM_WDEFAULTS__ */

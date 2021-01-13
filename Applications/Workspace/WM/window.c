@@ -1,7 +1,9 @@
-/* window.c - client window managing stuffs
+/*  Client window managing
+ *
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -19,16 +21,16 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #ifdef USE_XSHAPE
 #include <X11/extensions/shape.h>
 #endif
-#ifdef KEEP_XKB_LOCK_STATUS
+#ifdef USE_XKB
 #include <X11/XKBlib.h>
-#endif	  /* KEEP_XKB_LOCK_STATUS */
+#endif	  /* USE_XKB */
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
@@ -94,10 +96,6 @@ static void windowCloseDblClick(WCoreWindow *sender, void *data, XEvent *event);
 
 /* iconify button */
 static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event);
-
-#ifdef XKB_BUTTON_HINT
-static void windowLanguageClick(WCoreWindow *sender, void *data, XEvent *event);
-#endif
 
 static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event);
 static void titlebarDblClick(WCoreWindow *sender, void *data, XEvent *event);
@@ -1112,10 +1110,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 
   /* Create frame, borders and do reparenting */
   foo = WFF_LEFT_BUTTON | WFF_RIGHT_BUTTON;
-#ifdef XKB_BUTTON_HINT
-  if (wPreferences.modelock)
-    foo |= WFF_LANGUAGE_BUTTON;
-#endif
+  
   if (HAS_TITLEBAR(wwin))
     foo |= WFF_TITLEBAR;
 
@@ -1151,22 +1146,12 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   if (WFLAGP(wwin, no_miniaturize_button))
     foo |= WFF_LEFT_BUTTON;
 
-#ifdef XKB_BUTTON_HINT
-  if (WFLAGP(wwin, no_language_button) || WFLAGP(wwin, no_focusable))
-    foo |= WFF_LANGUAGE_BUTTON;
-#endif
   if (foo != 0)
     wFrameWindowHideButton(wwin->frame, foo);
 
   wwin->frame->child = wwin;
   wwin->frame->workspace = workspace;
   wwin->frame->on_click_left = windowIconifyClick;
-
-#ifdef XKB_BUTTON_HINT
-  if (wPreferences.modelock)
-    wwin->frame->on_click_language = windowLanguageClick;
-#endif
-
   wwin->frame->on_click_right = windowCloseClick;
   wwin->frame->on_dblclick_right = windowCloseDblClick;
   wwin->frame->on_mousedown_titlebar = titlebarMouseDown;
@@ -1399,9 +1384,6 @@ WWindow *wManageInternalWindow(WScreen *scr, Window window, Window owner,
 
   foo = WFF_RIGHT_BUTTON | WFF_BORDER;
   foo |= WFF_TITLEBAR;
-#ifdef XKB_BUTTON_HINT
-  foo |= WFF_LANGUAGE_BUTTON;
-#endif
 
   wwin->frame = wFrameWindowCreate(scr, NSFloatingWindowLevel,
                                    wwin->frame_x, wwin->frame_y,
@@ -1429,11 +1411,6 @@ WWindow *wManageInternalWindow(WScreen *scr, Window window, Window owner,
 
   wwin->frame->child = wwin;
   wwin->frame->workspace = wwin->screen_ptr->current_workspace;
-
-#ifdef XKB_BUTTON_HINT
-  if (wPreferences.modelock)
-    wwin->frame->on_click_language = windowLanguageClick;
-#endif
 
   wwin->frame->on_click_right = windowCloseClick;
   wwin->frame->on_mousedown_titlebar = titlebarMouseDown;
@@ -1741,11 +1718,6 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
 
   wPrintWindowFocusState(wwin, "[START] wWindowFocus:");
   
-#ifdef KEEP_XKB_LOCK_STATUS
-  if (wPreferences.modelock)
-    XkbLockGroup(dpy, XkbUseCoreKbd, wwin->frame->languagemode);
-#endif /* KEEP_XKB_LOCK_STATUS */
-
   wwin->flags.semi_focused = 0;
 
   /* GNUstep app manages focus itself after WM_TAKE_FOCUS was sent (wSetFocusTo) */
@@ -2291,14 +2263,6 @@ void wWindowUpdateButtonImages(WWindow *wwin)
         fwin->lbutton_image = scr->b_pixmaps[WBUT_ICONIFY];
     }
   }
-#ifdef XKB_BUTTON_HINT
-  if (!WFLAGP(wwin, no_language_button)) {
-    if (fwin->languagebutton_image && !fwin->languagebutton_image->shared)
-      wPixmapDestroy(fwin->languagebutton_image);
-
-    fwin->languagebutton_image = scr->b_pixmaps[WBUT_XKBGROUP1 + fwin->languagemode];
-  }
-#endif
 
   /* close button */
 
@@ -2371,11 +2335,6 @@ void wWindowConfigureBorders(WWindow *wwin)
 
     flags = WFF_LEFT_BUTTON | WFF_RIGHT_BUTTON;
 
-#ifdef XKB_BUTTON_HINT
-    if (wPreferences.modelock)
-      flags |= WFF_LANGUAGE_BUTTON;
-#endif
-
     if (HAS_TITLEBAR(wwin))
       flags |= WFF_TITLEBAR;
     if (HAS_RESIZEBAR(wwin) && IS_RESIZABLE(wwin))
@@ -2402,12 +2361,6 @@ void wWindowConfigureBorders(WWindow *wwin)
         && wwin->frame->flags.hide_left_button)
       flags |= WFF_LEFT_BUTTON;
 
-#ifdef XKB_BUTTON_HINT
-    if (!WFLAGP(wwin, no_language_button)
-        && wwin->frame->flags.hide_language_button)
-      flags |= WFF_LANGUAGE_BUTTON;
-#endif
-
     if (!WFLAGP(wwin, no_close_button)
         && wwin->frame->flags.hide_right_button)
       flags |= WFF_RIGHT_BUTTON;
@@ -2421,12 +2374,6 @@ void wWindowConfigureBorders(WWindow *wwin)
     if (WFLAGP(wwin, no_miniaturize_button)
         && !wwin->frame->flags.hide_left_button)
       flags |= WFF_LEFT_BUTTON;
-
-#ifdef XKB_BUTTON_HINT
-    if (WFLAGP(wwin, no_language_button)
-        && !wwin->frame->flags.hide_language_button)
-      flags |= WFF_LANGUAGE_BUTTON;
-#endif
 
     if (WFLAGP(wwin, no_close_button)
         && !wwin->frame->flags.hide_right_button)
@@ -2695,10 +2642,8 @@ void wWindowResetMouseGrabs(WWindow * wwin)
     }
   }
 
-  if (!wwin->flags.focused && !WFLAGP(wwin, no_focusable)
-      && !wwin->flags.is_gnustep) {
+  if (!wwin->flags.focused && !WFLAGP(wwin, no_focusable) && !wwin->flags.is_gnustep) {
     /* the passive grabs to focus the window */
-    /* if (wPreferences.focus_mode == WKF_CLICK) */
     XGrabButton(dpy, AnyButton, AnyModifier, wwin->client_win,
                 True, ButtonPressMask | ButtonReleaseMask, GrabModeSync, GrabModeAsync, None, None);
   }
@@ -3171,32 +3116,6 @@ static void windowCloseDblClick(WCoreWindow *sender, void *data, XEvent *event)
     wClientKill(wwin);
 }
 
-#ifdef XKB_BUTTON_HINT
-static void windowLanguageClick(WCoreWindow *sender, void *data, XEvent *event)
-{
-  WWindow *wwin = data;
-  WFrameWindow *fwin = wwin->frame;
-  WScreen *scr = fwin->screen_ptr;
-  int tl;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) sender;
-
-  if (event->xbutton.button != Button1 && event->xbutton.button != Button3)
-    return;
-  tl = wwin->frame->languagemode;
-  wwin->frame->languagemode = wwin->frame->last_languagemode;
-  wwin->frame->last_languagemode = tl;
-  wSetFocusTo(scr, wwin);
-  wwin->frame->languagebutton_image =
-    wwin->frame->screen_ptr->b_pixmaps[WBUT_XKBGROUP1 + wwin->frame->languagemode];
-  wFrameWindowUpdateLanguageButton(wwin->frame);
-  if (event->xbutton.button == Button3)
-    return;
-  wRaiseFrame(fwin->core);
-}
-#endif
-
 static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
 {
   WWindow *wwin = data;
@@ -3242,11 +3161,7 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
   }
 }
 
-/* static char *windowLevelDescription(WWindow *wwin) */
-/* { */
-  
-/* } */
-
+/* for debugging purposes */
 void wPrintWindowFocusState(WWindow *wwin, char *prefix)
 {
   WWindow *focused_win = NULL;

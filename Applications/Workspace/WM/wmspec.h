@@ -1,7 +1,9 @@
-/*  wmspec.h-- support for the wm-spec Hints
+/*  Support for the wm-spec Hints
+ *
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1998-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,8 +20,6 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
-
 
 #ifndef __WORKSPACE_WM_WMSPEC__
 #define __WORKSPACE_WM_WMSPEC__
@@ -47,4 +47,5 @@ char *wNETWMGetWindowName(Window window);
 void wNETFrameExtents(WWindow *wwin);
 void wNETCleanupFrameExtents(WWindow *wwin);
 RImage *get_window_image_from_x11(Window window);
-#endif
+
+#endif /* __WORKSPACE_WM_WMSPEC__ */

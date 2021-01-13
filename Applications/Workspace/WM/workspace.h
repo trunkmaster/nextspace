@@ -1,7 +1,8 @@
-/* workspace.c- Workspace management
+/*
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -46,4 +47,4 @@ void wWorkspaceRestoreState(WScreen *scr);
 void wWorkspaceRename(WScreen *scr, int workspace, const char *name);
 void wWorkspaceRelativeChange(WScreen *scr, int amount);
 
-#endif
+#endif /* __WORKSPACE_WM_WORKSPACE__ */

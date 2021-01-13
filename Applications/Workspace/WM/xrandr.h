@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2020- Sergii Stoian
  *
+ *  Window Maker window manager (xinerama.c)
  *  Copyright (c) 1997-2001 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -54,4 +56,4 @@ WMPoint wGetPointToCenterRectInHead(WScreen *scr, int head, int width, int heigh
 Bool wWindowTouchesHead(WWindow *wwin, int head);
 Bool wAppIconTouchesHead(WAppIcon *aicon, int head);
 
-#endif
+#endif /* __WORKSPACE_WM_XRANDR__ */

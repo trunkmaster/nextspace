@@ -1,7 +1,9 @@
-/* cycling.c- window cycling
+/*  Switch between windows
+ *
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 2000-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -21,7 +23,7 @@
 
 #include <stdio.h>
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <stdlib.h>
 #include <X11/Xlib.h>

@@ -1,7 +1,11 @@
 /*
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
+ *
+ *  WINGs library (Window Maker)
  *  Copyright (c) 1998 scottc
  *  Copyright (c) 1999-2004 Dan Pascu
- *  Copyright (c) 1999-2001 Alfredo K. Kojima
+ *  Copyright (c) 1999-2000 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -211,6 +215,6 @@ typedef struct W_Screen {
 } W_Screen;
 typedef struct W_Screen WMScreen;
 
-#define W_DRAWABLE(scr)		(scr)->rcontext->drawable
+#define W_DRAWABLE(scr)	(scr)->rcontext->drawable
 
 #endif /* __WORKSPACE_WM_WSCREEN__ */

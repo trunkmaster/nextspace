@@ -122,8 +122,8 @@
 /* defined when valid XShape library with header was found */
 #cmakedefine USE_XSHAPE
 
-/* whether XKB language MODELOCK should be enabled */
-#cmakedefine XKB_MODELOCK
+/* define when XKB library wa found */
+#cmakedefine USE_XKB
 
 /* Define if Pango is to be used */
 #cmakedefine USE_PANGO

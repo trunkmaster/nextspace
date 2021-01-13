@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -27,24 +29,24 @@
  * time exceeds this value, it is immediately finished. Usefull for
  * moments of high-load. DO NOT set *_DELAY_{Z,T,F} to zero!
  */
-#define MAX_ANIMATION_TIME	         1     // misc.c, actions.c
+#define MAX_ANIMATION_TIME	         1
 
 /* Zoom animation */
-#define MINIATURIZE_ANIMATION_FRAMES_Z   7     // actions.c
-#define MINIATURIZE_ANIMATION_STEPS_Z    16    // actions.c
-#define MINIATURIZE_ANIMATION_DELAY_Z    10000 // superfluous.c, actions.c
+#define MINIATURIZE_ANIMATION_FRAMES_Z   7
+#define MINIATURIZE_ANIMATION_STEPS_Z    16
+#define MINIATURIZE_ANIMATION_DELAY_Z    10000
 
 /* Twist animation */
-#define MINIATURIZE_ANIMATION_FRAMES_T   12    // actions.c
-#define MINIATURIZE_ANIMATION_STEPS_T    16    // actions.c
-#define MINIATURIZE_ANIMATION_DELAY_T    20000 // actions.c
-#define MINIATURIZE_ANIMATION_TWIST_T    0.5   // actions.c
+#define MINIATURIZE_ANIMATION_FRAMES_T   12
+#define MINIATURIZE_ANIMATION_STEPS_T    16
+#define MINIATURIZE_ANIMATION_DELAY_T    20000
+#define MINIATURIZE_ANIMATION_TWIST_T    0.5
 
 /* Flip animation */
-#define MINIATURIZE_ANIMATION_FRAMES_F   12    // actions.c
-#define MINIATURIZE_ANIMATION_STEPS_F    16    // actions.c
-#define MINIATURIZE_ANIMATION_DELAY_F    20000 // actions.c
-#define MINIATURIZE_ANIMATION_TWIST_F    0.5   // actions.c
+#define MINIATURIZE_ANIMATION_FRAMES_F   12
+#define MINIATURIZE_ANIMATION_STEPS_F    16
+#define MINIATURIZE_ANIMATION_DELAY_F    20000
+#define MINIATURIZE_ANIMATION_TWIST_F    0.5
 
 /* shade animation */
 #define SHADE_STEPS_UF		5
@@ -95,7 +97,6 @@ void wIconifyWindow(WWindow *wwin);
 void wDeiconifyWindow(WWindow *wwin);
 
 void wSelectWindows(WScreen *scr, XEvent *ev);
-
 void wSelectWindow(WWindow *wwin, Bool flag);
 void wUnselectWindows(WScreen *scr);
 
@@ -108,8 +109,7 @@ void wHideOtherApplications(WWindow *wwin);
 void wShowAllWindows(WScreen *scr);
 
 void wHideApplication(WApplication *wapp);
-void wUnhideApplication(WApplication *wapp, Bool miniwindows,
-                        Bool bringToCurrentWS);
+void wUnhideApplication(WApplication *wapp, Bool miniwindows, Bool bringToCurrentWS);
 
 void wRefreshDesktop(WScreen *scr);
 
@@ -123,5 +123,4 @@ void wUnfullscreenWindow(WWindow *wwin);
 void animateResize(WScreen *scr, int x, int y, int w, int h, int fx, int fy, int fw, int fh);
 void update_saved_geometry(WWindow *wwin);
 
-#endif
-
+#endif /* __WORKSPACE_WM_ACTIONS__ */

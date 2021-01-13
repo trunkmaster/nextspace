@@ -1,8 +1,12 @@
-/* WUtil.h
+/*
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  WINGs library (Window Maker)
  *  Copyright (c) 1998 scottc
  *  Copyright (c) 1999-2004 Dan Pascu
  *  Copyright (c) 1999-2000 Alfredo K. Kojima
+ *  Copyright (c) 2014 Window Maker Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

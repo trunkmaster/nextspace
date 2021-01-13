@@ -1,6 +1,7 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
  *
+ *  Copyright (c) 2015- Sergii Stoian
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -85,4 +86,4 @@ void wIconSetHighlited(WIcon *icon, Bool flag);
 void set_icon_image_from_image(WIcon *icon, RImage *image);
 void set_icon_minipreview(WIcon *icon, RImage *image);
 
-#endif /* WMICON_H_ */
+#endif /* __WORKSPACE_WM_ICON__ */

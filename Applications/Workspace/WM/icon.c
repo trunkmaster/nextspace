@@ -1,7 +1,8 @@
-/* icon.c - window icon and dock and appicon parent
+/*  Window icon: dock and appicon parent
  *
- *  Window Maker window manager
+ *  Workspace window manager
  *
+ *  Copyright (c) 2015- Sergii Stoian
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -19,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -421,7 +422,7 @@ int wIconChangeImageFile(WIcon *icon, const char *file)
     return 1;
 
   /* Find the new image */
-  path = WMAbsolutePathForFile(wPreferences.icon_path, file);
+  path = WMAbsolutePathForFile(wPreferences.image_paths, file);
   if (!path)
     return 0;
 

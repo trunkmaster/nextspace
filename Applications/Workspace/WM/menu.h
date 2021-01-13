@@ -1,6 +1,7 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
  *
+ *  Copyright (c) 2015- Sergii Stoian
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -133,4 +134,4 @@ WMenu *wMenuUnderPointer(WScreen *screen);
 void wMenuSaveState(WScreen *scr);
 void wMenuRestoreState(WScreen *scr);
 
-#endif
+#endif /* __WORKSPACE_WM_MENU__ */

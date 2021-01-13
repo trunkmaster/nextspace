@@ -1,7 +1,9 @@
-/* wdefaults.c - window specific defaults
+/*  Window specific defaults
+ *
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -19,7 +21,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -108,9 +110,6 @@ static CFStringRef AEmulateAppIcon = CFSTR("EmulateAppIcon");
 static CFStringRef AFocusAcrossWorkspace = CFSTR("FocusAcrossWorkspace");
 static CFStringRef AFullMaximize = CFSTR("FullMaximize");
 static CFStringRef ASharedAppIcon = CFSTR("SharedAppIcon");
-#ifdef XKB_BUTTON_HINT
-static CFStringRef ANoLanguageButton = CFSTR("NoLanguageButton");
-#endif
 static CFStringRef AStartWorkspace = CFSTR("StartWorkspace");
 static CFStringRef AnyWindow = CFSTR("*");
 static CFStringRef No = CFSTR("No");
@@ -326,11 +325,6 @@ void wDefaultFillAttributes(const char *instance, const char *class,
 
   value = get_value(dw, dc, dn, da, AFullMaximize, No, useGlobalDefault);
   APPLY_VAL(value, full_maximize, AFullMaximize);
-
-#ifdef XKB_BUTTON_HINT
-  value = get_value(dw, dc, dn, da, ANoLanguageButton, No, useGlobalDefault);
-  APPLY_VAL(value, no_language_button, ANoLanguageButton);
-#endif
 }
 
 static CFTypeRef get_generic_value(const char *instance, const char *class,
@@ -398,7 +392,7 @@ char *get_icon_filename(const char *winstance, const char *wclass, const char *c
 
   /* Check if the file really exists in the disk */
   if (file_name)
-    file_path = WMAbsolutePathForFile(wPreferences.icon_path, file_name);
+    file_path = WMAbsolutePathForFile(wPreferences.image_paths, file_name);
   else
     file_path = NULL;
 
@@ -409,7 +403,7 @@ char *get_icon_filename(const char *winstance, const char *wclass, const char *c
     file_name = wDefaultGetIconFile(winstance, wclass, False);
 
     if (file_name) {
-      file_path = WMAbsolutePathForFile(wPreferences.icon_path, file_name);
+      file_path = WMAbsolutePathForFile(wPreferences.image_paths, file_name);
       if (!file_path)
         wwarning(_("icon \"%s\" doesn't exist, check your config files"), file_name);
 
@@ -460,9 +454,9 @@ char *get_default_image_path(void)
   /* Get the default icon */
   file = wDefaultGetIconFile(NULL, NULL, True);
   if (file)
-    path = WMAbsolutePathForFile(wPreferences.icon_path, file);
+    path = WMAbsolutePathForFile(wPreferences.image_paths, file);
   else
-    path = WMAbsolutePathForFile(wPreferences.icon_path, DEF_APP_ICON);
+    path = WMAbsolutePathForFile(wPreferences.image_paths, DEF_APP_ICON);
 
   return path;
 }

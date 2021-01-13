@@ -1,6 +1,8 @@
 /*
- *  Window Maker miscelaneous function library
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  WINGs library (Window Maker)
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 2001 Dan Pascu
@@ -22,7 +24,7 @@
  *  MA 02110-1301, USA.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <unistd.h>
 #include <signal.h>

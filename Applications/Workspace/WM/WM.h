@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 2014 Window Maker Team
  *
@@ -22,7 +24,6 @@
 #ifndef __WORKSPACE_WM__
 #define __WORKSPACE_WM__
 
-#include "config.h"
 #include <assert.h>
 #include <limits.h>
 
@@ -31,6 +32,102 @@
 
 #include <core/wscreen.h>
 #include <core/util.h>
+#include <core/drawing.h>
+
+#include "config.h"
+
+/*************************************************************************************************
+ *  Definitions and compile time options                                                         *
+ *************************************************************************************************/
+
+/* Undefine if you don't want balloons for showing extra information, like window titles that 
+   are not fully visible. */
+#define BALLOON_TEXT
+/* If balloons should be shaped or be simple rectangles. The X server must support the shape 
+   extensions and it's support must be  enabled (default). */
+#ifdef USE_XSHAPE
+# define SHAPED_BALLOON
+#endif
+/* Turn on a hack to make mouse and keyboard actions work even if the NumLock or ScrollLock 
+   modifiers are turned on. They might inflict a performance/memory penalty. */
+#define NUMLOCK_HACK
+/* Define if you want the shape setting code to be optimized for applications that change 
+   their shape frequently (like xdaliclock -shape), removing flickering. If wmaker and your 
+   display are on different machines and the network connection is slow, it is not recommended. */
+#undef OPTIMIZE_SHAPE
+/* Define if you want window manager to send the synthetic ConfigureNotify event to windows 
+   while moving at every single movement. Default is to send a synthetic ConfigureNotify event
+   only at the end of window moving, which improves performance. */
+#undef CONFIGURE_WINDOW_WHILE_MOVING
+/* Define if you want a dot to be shown in the application icon of applications that are hidden. */
+#define HIDDENDOT
+/* Ignores the PPosition hint from clients. This is needed for some programs that have buggy 
+   implementations of such hint and place themselves in strange locations. */
+#undef IGNORE_PPOSITION
+/* Define if you want a resizebar with shadows like in AfterStep, instead of the default Openstep 
+   look. NEXTSTEP 3.3 also does not have these shadows. */
+#undef SHADOW_RESIZEBAR
+/* Define if you want the window creation animation when superfluous is enabled. */
+#undef WINDOW_BIRTH_ZOOM
+/* Define to hide titles in miniwindows */
+#undef NO_MINIWINDOW_TITLES
+
+/*
+ * You should not modify the following values, unless you know what you're doing.
+ */
+
+/* number of window shortcuts */
+#define MAX_WINDOW_SHORTCUTS	10
+//#define MIN_TITLEFONT_HEIGHT(h)   ((h)>14 ? (h) : 14)
+/* window's titlebar height */
+#define TITLEBAR_HEIGHT		18
+/* height of the resizebar */
+#define RESIZEBAR_HEIGHT	8
+/* min width of handles-corner_width */
+#define RESIZEBAR_MIN_WIDTH	20
+/* width of the corner of resizebars */
+#define RESIZEBAR_CORNER_WIDTH	28
+#define MENU_INDICATOR_SPACE	12
+/* minimum size for windows */
+#define MIN_WINDOW_SIZE		5
+/* size of the icon window */
+#define ICON_WIDTH		64
+#define ICON_HEIGHT		64
+#define ICON_BORDER_WIDTH	2
+/* size of the icon pixmap */
+#define MAX_ICON_WIDTH		60
+#define MAX_ICON_HEIGHT		48
+#define MAX_WORKSPACES		100
+#define MAX_MENU_TEXT_LENGTH	512
+#define MAX_RESTART_ARGS	16
+#define MAX_DEAD_PROCESSES	128
+#define MAXLINE			1024
+
+#ifdef _MAX_PATH
+#  define DEFAULT_PATH_MAX	_MAX_PATH
+#else
+#  define DEFAULT_PATH_MAX	512
+#endif
+
+#ifdef USE_XKB
+#  define KEEP_XKB_LOCK_STATUS
+#endif
+
+#if defined(HAVE_LIBINTL_H) && defined(I18N)
+#  include <libintl.h>
+#  define _(text) gettext(text)
+/* Use N_() in initializers, it will make xgettext pick the string up for translation */
+#  define N_(text) (text)
+#  if defined(MENU_TEXTDOMAIN)
+#    define M_(text) dgettext(MENU_TEXTDOMAIN, text)
+#  else
+#    define M_(text) (text)
+#  endif
+#else
+#  define _(text) (text)
+#  define N_(text) (text)
+#  define M_(text) (text)
+#endif /* defined(HAVE_LIBINTL_H) && defined(I18N) */
 
 /* class codes */
 typedef enum {
@@ -47,15 +144,13 @@ typedef enum {
 } WClassType;
 
 /*
- * WObjDescriptor will be used by the event dispatcher to
- * send events to a particular object through the methods in the
- * method table. If all objects of the same class share the
- * same methods, the class method table should be used, otherwise
- * a new method table must be created for each object.
- * It is also assigned to find the parent structure of a given
- * window (like the WWindow or WMenu for a button)
+ * WObjDescriptor will be used by the event dispatcher to send events to a particular object 
+ * through the methods in the method table. If all objects of the same class share the same 
+ * methods, the class method table should be used, otherwise a new method table must be created 
+ * for each object.
+ * It is also assigned to find the parent structure of a given window (like the WWindow or 
+ * WMenu for a button)
  */
-
 typedef struct WObjDescriptor {
   void *self;                        /* the object that will be called */
   /* event handlers */
@@ -75,174 +170,19 @@ typedef struct WObjDescriptor {
 #define WBUT_KILL		3
 #define WBUT_MAXIMIZE		4
 #define WBUT_RESTORE		5
-#ifdef XKB_BUTTON_HINT
-# define WBUT_XKBGROUP1		6
-# define WBUT_XKBGROUP2		7
-# define WBUT_XKBGROUP3		8
-# define WBUT_XKBGROUP4		9
-# define PRED_BPIXMAPS		10 /* reserved for 4 groups */
-#else
-# define PRED_BPIXMAPS		6  /* count of WBUT icons */
-#endif /* XKB_BUTTON_HINT */
-
-/* Mouse cursors */
-typedef enum {
-  WCUR_NORMAL,
-  WCUR_MOVE,
-  WCUR_RESIZE,
-  WCUR_TOPLEFTRESIZE,
-  WCUR_TOPRIGHTRESIZE,
-  WCUR_BOTTOMLEFTRESIZE,
-  WCUR_BOTTOMRIGHTRESIZE,
-  WCUR_VERTICALRESIZE,
-  WCUR_HORIZONRESIZE,
-  WCUR_UPRESIZE,
-  WCUR_DOWNRESIZE,
-  WCUR_LEFTRESIZE,
-  WCUR_RIGHTRESIZE,
-  WCUR_WAIT,
-  WCUR_ARROW,
-  WCUR_QUESTION,
-  WCUR_TEXT,
-  WCUR_SELECT,
-  WCUR_ROOT,
-  WCUR_EMPTY,
-
-  /* Count of the number of cursors defined */
-  WCUR_LAST
-} w_cursor;
-
-/* geometry displays */
-#define WDIS_NEW		0	/* new style */
-#define WDIS_CENTER		1	/* center of screen */
-#define WDIS_TOPLEFT		2	/* top left corner of screen */
-#define WDIS_FRAME_CENTER	3	/* center of the frame */
-#define WDIS_TITLEBAR		4	/* titlebar */
-#define WDIS_NONE		5
-
-/* keyboard input focus mode */
-#define WKF_CLICK	0
-#define WKF_SLOPPY	2
-
-/* colormap change mode */
-#define WCM_CLICK	0
-#define WCM_POINTER	1
-
-/* window placement mode */
-#define WPM_MANUAL	0
-#define WPM_CASCADE	1
-#define WPM_SMART	2
-#define WPM_RANDOM	3
-#define WPM_AUTO        4
-#define WPM_CENTER      5
-
-/* text justification */
-#define WTJ_CENTER	0
-#define WTJ_LEFT	1
-#define WTJ_RIGHT	2
-
-/* iconification styles */
-#define WIS_ZOOM        0
-#define WIS_TWIST       1
-#define WIS_FLIP        2
-#define WIS_NONE        3
-#define WIS_RANDOM	4 /* secret */
-
-/* switchmenu actions */
-#define ACTION_ADD		0
-#define ACTION_REMOVE		1
-#define ACTION_CHANGE		2
-#define ACTION_CHANGE_WORKSPACE	3
-#define ACTION_CHANGE_STATE	4
-
-
-/* speeds */
-#define SPEED_ULTRAFAST 0
-#define SPEED_FAST	1
-#define SPEED_MEDIUM	2
-#define SPEED_SLOW	3
-#define SPEED_ULTRASLOW 4
-
-
-/* window states */
-#define WS_FOCUSED	0
-#define WS_UNFOCUSED	1
-#define WS_PFOCUSED	2
-
-/* clip title colors */
-#define CLIP_NORMAL	0
-#define CLIP_COLLAPSED	1
-
-
-/* icon yard position */
-#define	IY_VERT		1
-#define	IY_HORIZ	0
-#define	IY_TOP		2
-#define	IY_BOTTOM	0
-#define	IY_RIGHT	4
-#define	IY_LEFT		0
-
-
-/* menu styles */
-#define MS_NORMAL		0
-#define MS_SINGLE_TEXTURE	1
-#define MS_FLAT			2
-
-/* workspace actions */
-#define WA_NONE                 0
-#define WA_SELECT_WINDOWS       1
-#define WA_OPEN_APPMENU         2
-#define WA_OPEN_WINLISTMENU     3
-#define WA_SWITCH_WORKSPACES    4
-#define WA_MOVE_PREVWORKSPACE   5
-#define WA_MOVE_NEXTWORKSPACE   6
-#define WA_SWITCH_WINDOWS       7
-#define WA_MOVE_PREVWINDOW      8
-#define WA_MOVE_NEXTWINDOW      9
-
-/* workspace display position */
-#define WD_NONE		0
-#define WD_CENTER	1
-#define WD_TOP		2
-#define WD_BOTTOM	3
-#define WD_TOPLEFT	4
-#define WD_TOPRIGHT	5
-#define WD_BOTTOMLEFT	6
-#define WD_BOTTOMRIGHT	7
-
-/* titlebar style */
-#define TS_NEW		0
-#define TS_OLD		1
-#define TS_NEXT		2
-
-/* workspace border position */
-#define	WB_NONE		0
-#define	WB_LEFTRIGHT	1
-#define	WB_TOPBOTTOM	2
-#define WB_ALLDIRS      (WB_LEFTRIGHT|WB_TOPBOTTOM)
-
-/* drag maximized window behaviors */
-enum {
-  DRAGMAX_MOVE,
-  DRAGMAX_RESTORE,
-  DRAGMAX_UNMAXIMIZE,
-  DRAGMAX_NOMOVE
-};
+#define PRED_BPIXMAPS		6  /* count of WBUT icons */
 
 /* program states */
 typedef enum {
-              WSTATE_NORMAL		= 0,
-              WSTATE_NEED_EXIT	= 1,
-              WSTATE_NEED_RESTART	= 2,
-              WSTATE_EXITING		= 3,
-              WSTATE_RESTARTING	= 4,
-              WSTATE_MODAL		= 5,
-              WSTATE_NEED_REREAD	= 6
+  WSTATE_NORMAL		= 0,
+  WSTATE_NEED_EXIT	= 1,
+  WSTATE_NEED_RESTART	= 2,
+  WSTATE_EXITING	= 3,
+  WSTATE_RESTARTING	= 4,
+  WSTATE_MODAL		= 5,
+  WSTATE_NEED_REREAD	= 6
 } wprog_state;
-
-
 #define WCHECK_STATE(chk_state)	(w_global.program.state == (chk_state))
-
 #define WCHANGE_STATE(nstate) {                                 \
     if (w_global.program.state == WSTATE_NORMAL                 \
         || (nstate) != WSTATE_MODAL)                            \
@@ -251,13 +191,7 @@ typedef enum {
       w_global.program.state = w_global.program.signal_state;	\
   }
 
-/* only call inside signal handlers, with signals blocked */
-#define SIG_WCHANGE_STATE(nstate) {             \
-    w_global.program.signal_state = (nstate);	\
-    w_global.program.state = (nstate);		\
-  }
-
-/* Flags for the Window Maker state when restarting/crash situations */
+/* Flags for the WM state when restarting/crash situations */
 #define WFLAGS_NONE       (0)
 #define WFLAGS_CRASHED    (1<<0)
 
@@ -273,182 +207,10 @@ typedef struct {
   int x2, y2;
 } WArea;
 
-typedef struct WCoord {
-  int x, y;
-} WCoord;
-
-extern struct WPreferences {
-  char *pixmap_path;                 /* : separated list of paths to find pixmaps */
-  char *icon_path;                   /* : separated list of paths to find icons */
-  char *logger_shell;                /* shell to log child stdi/o */
-  RImage *button_images;             /* titlebar button images */
-  char smooth_workspace_back;
-  signed char size_display;          /* display type for resize geometry */
-  signed char move_display;          /* display type for move geometry */
-  signed char window_placement;      /* window placement mode */
-  signed char colormap_mode;         /* colormap focus mode */
-
-  char opaque_move;                  /* update window position during move */
-  char opaque_resize;                /* update window position during resize */
-  char opaque_move_resize_keyboard;  /* update window position during move,resize with keyboard */
-  char wrap_menus;                   /* wrap menus at edge of screen */
-  char scrollable_menus;             /* let them be scrolled */
-  char vi_key_menus;                 /* use h/j/k/l to select */
-  char align_menus;                  /* align menu with their parents */
-  char use_saveunders;               /* turn on SaveUnders for menus, icons etc. */
-  char no_window_over_dock;
-  char no_window_over_icons;
-  WCoord window_place_origin;        /* Offset for windows placed on screen */
-
-  char constrain_window_size;        /* don't let windows get bigger than screen */
-  char windows_cycling;              /* windoze cycling */
-  char circ_raise;                   /* raise window after Alt-tabbing */
-  char ignore_focus_click;
-  char open_transients_with_parent;  /* open transient window in same workspace as parent */
-  signed char title_justification;   /* titlebar text alignment */
-  int window_title_clearance;
-  int window_title_min_height;
-  int window_title_max_height;
-  int menu_title_clearance;
-  int menu_title_min_height;
-  int menu_title_max_height;
-  int menu_text_clearance;
-  char multi_byte_text;
-#ifdef KEEP_XKB_LOCK_STATUS
-  char modelock;
-#endif
-  char no_dithering;                 /* use dithering or not */
-  char no_animations;                /* enable/disable animations */
-  char no_autowrap;                  /* wrap workspace when window is moved to the edge */
-  char window_snapping;              /* enable window snapping */
-  int snap_edge_detect;              /* how far from edge to begin snap */
-  int snap_corner_detect;            /* how far from corner to begin snap */
-  char drag_maximized_window;        /* behavior when a maximized window is dragged */
-
-  char auto_arrange_icons;           /* automagically arrange icons */
-  char icon_box_position;            /* position to place icons */
-  signed char iconification_style;   /* position to place icons */
-  char disable_root_mouse;           /* disable button events in root window */
-  char auto_focus;                   /* focus window when it's mapped */
-  char *icon_back_file;              /* background image for icons */
-
-  WCoord *root_menu_pos;             /* initial position of the root menu*/
-  WCoord *app_menu_pos;
-  WCoord *win_menu_pos;
-
-  signed char icon_yard;             /* aka iconbox */
-
-  int raise_delay;                   /* delay for autoraise. 0 is disabled */
-  int cmap_size;                     /* size of dithering colormap in colors per channel */
-
-  int icon_size;                     /* size of the icon */
-  signed char menu_style;            /* menu decoration style */
-  signed char workspace_name_display_position;
-  unsigned int modifier_mask;        /* mask to use as kbd modifier - Alternate */
-  unsigned int alt_modifier_mask;    /* mask to use as kbd modifier - Command */
-  char *modifier_labels[7];          /* Names of the modifiers */
-
-  unsigned int supports_tiff;        /* Use tiff files */
-
-  char ws_advance;                   /* Create new workspace and advance */
-  char ws_cycle;                     /* Cycle existing workspaces */
-  char save_session_on_exit;         /* automatically save session on exit */
-  char sticky_icons;                 /* If miniwindows will be onmipresent */
-  char dont_confirm_kill;            /* do not confirm Kill application */
-  char disable_miniwindows;
-  char enable_workspace_pager;
-  char ignore_gtk_decoration_hints;
-
-  char dont_blink;                   /* do not blink icon selection */
-
-  /* Appearance options */
-  char new_style;                    /* Use newstyle buttons */
-  char superfluous;                  /* Use superfluous things */
-
-  /* root window mouse bindings */
-  signed char mouse_button1;         /* action for left mouse button */
-  signed char mouse_button2;         /* action for middle mouse button */
-  signed char mouse_button3;         /* action for right mouse button */
-  signed char mouse_button8;         /* action for 4th button aka backward mouse button */
-  signed char mouse_button9;         /* action for 5th button aka forward mouse button */
-  signed char mouse_wheel_scroll;    /* action for mouse wheel scroll */
-  signed char mouse_wheel_tilt;      /* action for mouse wheel tilt */
-
-  /* balloon text */
-  char window_balloon;
-  char miniwin_title_balloon;
-  char miniwin_preview_balloon;
-  char appicon_balloon;
-  char help_balloon;
-
-  /* some constants */
-  int dblclick_time;                 /* double click delay time in ms */
-
-  /* animate menus */
-  signed char menu_scroll_speed;     /* how fast menus are scrolled */
-
-  /* animate icon sliding */
-  signed char icon_slide_speed;      /* icon slide animation speed */
-
-  /* shading animation */
-  signed char shade_speed;
-
-  /* bouncing animation */
-  char bounce_appicons_when_urgent;
-  char raise_appicons_when_bouncing;
-  char do_not_make_appicons_bounce;
-
-  int edge_resistance;
-  int resize_increment;
-  char attract;
-
-  unsigned int workspace_border_size; /* Size in pixels of the workspace border */
-  char workspace_border_position;     /* Where to leave a workspace border */
-  char single_click;                  /* single click to lauch applications */
-  int history_lines;                  /* history of "Run..." dialog */
-  char cycle_active_head_only;        /* Cycle only windows on the active head */
-  char cycle_ignore_minimized;        /* Ignore minimized windows when cycling */
-  char strict_windoze_cycle;          /* don't close switch panel when shift is released */
-  char panel_only_open;               /* Only open the switch panel; don't switch */
-  int minipreview_size;               /* Size of Mini-Previews in pixels */
-
-  /* All delays here are in ms. 0 means instant auto-action. */
-  int clip_auto_raise_delay;          /* Delay after which the clip will be raised when entered */
-  int clip_auto_lower_delay;          /* Delay after which the clip will be lowered when leaved */
-  int clip_auto_expand_delay;         /* Delay after which the clip will expand when entered */
-  int clip_auto_collapse_delay;       /* Delay after which the clip will collapse when leaved */
-
-  RImage *swtileImage;
-  RImage *swbackImage[9];
-
-  union WTexture *wsmbackTexture;
-
-  char show_clip_title;
-
-  struct {
-#ifdef USE_ICCCM_WMREPLACE
-    unsigned int replace:1;               /* replace existing window manager */
-#endif
-    unsigned int nodock:1;                /* don't display the dock */
-    unsigned int noclip:1;                /* don't display the clip */
-    unsigned int clip_merged_in_dock:1;   /* disable clip, switch workspaces with dock */
-    unsigned int nodrawer:1;              /* don't use drawers */
-    unsigned int wrap_appicons_in_dock:1; /* Whether to wrap appicons when Dock is moved up and down */
-    unsigned int noupdates:1;             /* don't require ~/GNUstep (-static) */
-    unsigned int noautolaunch:1;          /* don't autolaunch apps */
-    unsigned int norestore:1;             /* don't restore session */
-    unsigned int restarting:2;
-  } flags;                                      /* internal flags */
-
-  /* Map table between w_cursor and actual X id */
-  Cursor cursor[WCUR_LAST];
-
-} wPreferences;
-
 /****** Global Variables  ******/
-extern Display	*dpy;
+extern Display *dpy;
 
-extern struct wmaker_global_variables {
+extern struct wm_global_variables {
   /* Tracking of the state of the program */
   struct {
     wprog_state state;
@@ -612,97 +374,4 @@ extern CFStringRef WMDidChangeMenuTitleAppearanceSettings;
 
 void *userInfoValueForKey(CFDictionaryRef theDict, CFStringRef key);
 
-/*************************************************************************************************
- *  Definitions and compile time options                                                         *
- *************************************************************************************************/
-
-/* Undefine if you don't want balloons for showing extra information, like window titles that 
-   are not fully visible. */
-#define BALLOON_TEXT
-/* If balloons should be shaped or be simple rectangles. The X server must support the shape 
-   extensions and it's support must be  enabled (default). */
-#ifdef USE_XSHAPE
-# define SHAPED_BALLOON
-#endif
-/* Turn on a hack to make mouse and keyboard actions work even if the NumLock or ScrollLock 
-   modifiers are turned on. They might inflict a performance/memory penalty. */
-#define NUMLOCK_HACK
-/* Define if you want the shape setting code to be optimized for applications that change 
-   their shape frequently (like xdaliclock -shape), removing flickering. If wmaker and your 
-   display are on different machines and the network connection is slow, it is not recommended. */
-#undef OPTIMIZE_SHAPE
-/* Define if you want window manager to send the synthetic ConfigureNotify event to windows 
-   while moving at every single movement. Default is to send a synthetic ConfigureNotify event
-   only at the end of window moving, which improves performance. */
-#undef CONFIGURE_WINDOW_WHILE_MOVING
-/* Define if you want a dot to be shown in the application icon of applications that are hidden. */
-#define HIDDENDOT
-/* Ignores the PPosition hint from clients. This is needed for some programs that have buggy 
-   implementations of such hint and place themselves in strange locations. */
-#undef IGNORE_PPOSITION
-/* Define if you want a resizebar with shadows like in AfterStep, instead of the default Openstep 
-   look. NEXTSTEP 3.3 also does not have these shadows. */
-#undef SHADOW_RESIZEBAR
-/* Define if you want the window creation animation when superfluous is enabled. */
-#undef WINDOW_BIRTH_ZOOM
-/* Define to hide titles in miniwindows */
-#undef NO_MINIWINDOW_TITLES
-
-/*
- * You should not modify the following values, unless you know what you're doing.
- */
-
-/* number of window shortcuts */
-#define MAX_WINDOW_SHORTCUTS	10
-//#define MIN_TITLEFONT_HEIGHT(h)   ((h)>14 ? (h) : 14)
-/* window's titlebar height */
-#define TITLEBAR_HEIGHT		18
-/* height of the resizebar */
-#define RESIZEBAR_HEIGHT	8
-/* min width of handles-corner_width */
-#define RESIZEBAR_MIN_WIDTH	20
-/* width of the corner of resizebars */
-#define RESIZEBAR_CORNER_WIDTH	28
-#define MENU_INDICATOR_SPACE	12
-/* minimum size for windows */
-#define MIN_WINDOW_SIZE		5
-/* size of the icon window */
-#define ICON_WIDTH		64
-#define ICON_HEIGHT		64
-#define ICON_BORDER_WIDTH	2
-/* size of the icon pixmap */
-#define MAX_ICON_WIDTH		60
-#define MAX_ICON_HEIGHT		48
-#define MAX_WORKSPACES		100
-#define MAX_MENU_TEXT_LENGTH	512
-#define MAX_RESTART_ARGS	16
-#define MAX_DEAD_PROCESSES	128
-#define MAXLINE			1024
-
-#ifdef _MAX_PATH
-#  define DEFAULT_PATH_MAX	_MAX_PATH
-#else
-#  define DEFAULT_PATH_MAX	512
-#endif
-
-#ifdef  XKB_MODELOCK
-#  define KEEP_XKB_LOCK_STATUS
-#endif
-
-#if defined(HAVE_LIBINTL_H) && defined(I18N)
-#  include <libintl.h>
-#  define _(text) gettext(text)
-/* Use N_() in initializers, it will make xgettext pick the string up for translation */
-#  define N_(text) (text)
-#  if defined(MENU_TEXTDOMAIN)
-#    define M_(text) dgettext(MENU_TEXTDOMAIN, text)
-#  else
-#    define M_(text) (text)
-#  endif
-#else
-#  define _(text) (text)
-#  define N_(text) (text)
-#  define M_(text) (text)
-#endif /* defined(HAVE_LIBINTL_H) && defined(I18N) */
-
-#endif
+#endif // __WORKSPACE_WM__

@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 2013 Window Maker Team
  *
@@ -39,4 +41,4 @@ void wHackedGrabKey(int keycode, unsigned int modifiers,
 		    int keyboard_mode);
 #endif
 
-#endif /* WMSTARTUP_H */
+#endif /* __WORKSPACE_WM_STARTUP__ */

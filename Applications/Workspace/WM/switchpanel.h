@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2004 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -34,4 +36,4 @@ WWindow *wSwitchPanelHandleEvent(WSwitchPanel *panel, XEvent *event);
 
 Window wSwitchPanelGetWindow(WSwitchPanel *swpanel);
 
-#endif /* _SWITCHPANEL_H_ */
+#endif /* __WORKSPACE_WM_SWITCHPANEL__ */

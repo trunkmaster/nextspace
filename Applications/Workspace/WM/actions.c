@@ -1,7 +1,9 @@
-/* action.c- misc. window commands (miniaturize, hide etc.)
+/* misc. window commands (miniaturize, hide etc.)
+ *
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 1998-2003 Dan Pascu
  *  Copyright (c) 2014 Window Maker Team
@@ -21,8 +23,6 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WMdefs.h"
-
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <stdlib.h>
@@ -37,14 +37,12 @@
 #include <core/drawing.h>
 
 #include "GNUstep.h"
-#include "WM.h"
 #include "framewin.h"
 #include "window.h"
 #include "client.h"
 #include "icon.h"
 #include "colormap.h"
 #include "application.h"
-#include "actions.h"
 #include "stacking.h"
 #include "appicon.h"
 #include "dock.h"
@@ -57,6 +55,7 @@
 #include <Workspace+WM.h>
 #endif // NEXTSPACE        
 
+#include "actions.h"
 
 #ifndef HAVE_FLOAT_MATHFUNC
 #define sinf(x) ((float)sin((double)(x)))
@@ -103,12 +102,6 @@ static void shade_animate(WWindow *wwin, Bool what);
 #else
 static inline void shade_animate(WWindow *wwin, Bool what)
 {
-  /*
-   * This function is empty on purpose, so tell the compiler
-   * to not warn about parameters being not used
-   */
-  (void) wwin;
-  (void) what;
 }
 #endif
 
@@ -334,7 +327,6 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
 void wShadeWindow(WWindow *wwin)
 {
-
   if (wwin->flags.shaded)
     return;
 
@@ -938,7 +930,8 @@ void wUnfullscreenWindow(WWindow *wwin)
 }
 
 #ifdef USE_ANIMATIONS
-static void animateResizeFlip(WScreen *scr, int x, int y, int w, int h, int fx, int fy, int fw, int fh, int steps)
+static void animateResizeFlip(WScreen *scr, int x, int y, int w, int h,
+                              int fx, int fy, int fw, int fh, int steps)
 {
 #define FRAMES (MINIATURIZE_ANIMATION_FRAMES_F)
   float cx, cy, cw, ch;
@@ -997,8 +990,8 @@ static void animateResizeFlip(WScreen *scr, int x, int y, int w, int h, int fx, 
 #undef FRAMES
 }
 
-static void
-animateResizeTwist(WScreen *scr, int x, int y, int w, int h, int fx, int fy, int fw, int fh, int steps)
+static void animateResizeTwist(WScreen *scr, int x, int y, int w, int h,
+                               int fx, int fy, int fw, int fh, int steps)
 {
 #define FRAMES (MINIATURIZE_ANIMATION_FRAMES_T)
   float cx, cy, cw, ch;
@@ -1059,7 +1052,8 @@ animateResizeTwist(WScreen *scr, int x, int y, int w, int h, int fx, int fy, int
 #undef FRAMES
 }
 
-static void animateResizeZoom(WScreen *scr, int x, int y, int w, int h, int fx, int fy, int fw, int fh, int steps)
+static void animateResizeZoom(WScreen *scr, int x, int y, int w, int h,
+                              int fx, int fy, int fw, int fh, int steps)
 {
 #define FRAMES (MINIATURIZE_ANIMATION_FRAMES_Z)
   float cx[FRAMES], cy[FRAMES], cw[FRAMES], ch[FRAMES];

@@ -1,7 +1,8 @@
-/* screen.c - screen management
+/*
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -19,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,9 +29,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
-#ifdef KEEP_XKB_LOCK_STATUS
+#ifdef USE_XKB
 #include <X11/XKBlib.h>
-#endif /* KEEP_XKB_LOCK_STATUS */
+#endif /* USE_XKB */
 
 #include <wraster.h>
 
@@ -45,7 +46,6 @@
 #include <core/wuserdefaults.h>
 
 #include "WM.h"
-#include "def_pixmaps.h"
 #include "screen.h"
 #include "texture.h"
 #include "pixmap.h"
@@ -64,17 +64,20 @@
 #include "defaults.h"
 #include "misc.h"
 
+/* Window titlebar text alignment */
 #define WTB_LEFT	0
 #define WTB_RIGHT	1
 
+/* Window titlebar state */
 #define WTB_FOCUSED	0
 #define WTB_UNFOCUSED	2
 #define WTB_PFOCUSED	4
 #define WTB_MENU 	6
 
-/* default style */
+/* Default style */
 #define DEF_FRAME_COLOR "white"
-/* line width of the move/resize frame */
+
+/* Line width of the move/resize frame */
 #define DEF_FRAME_THICKNESS 1
 
 #define EVENT_MASK (LeaveWindowMask|EnterWindowMask|PropertyChangeMask  \
@@ -91,6 +94,140 @@
 static char STIPPLE_DATA[] = { 0x02, 0x01 };
 
 static int CantManageScreen = 0;
+
+/*
+ * Images
+ */
+
+/* diamond mark */
+#define MENU_RADIO_INDICATOR_XBM_SIZE 9
+static unsigned char MENU_RADIO_INDICATOR_XBM_DATA[] = {
+    0x10, 0x00, 0x38, 0x00, 0x7c, 0x00, 0xee, 0x00, 0xc7, 0x01, 0xee, 0x00,
+    0x7c, 0x00, 0x38, 0x00, 0x10, 0x00};
+
+/* check mark */
+#define MENU_CHECK_INDICATOR_XBM_SIZE 9
+static unsigned char MENU_CHECK_INDICATOR_XBM_DATA[] = {
+    0x00, 0x01, 0x83, 0x01, 0xc3, 0x00, 0x63, 0x00, 0x33, 0x00, 0x1b, 0x00,
+    0x0f, 0x00, 0x07, 0x00, 0x03, 0x00};
+
+#define MENU_MINI_INDICATOR_XBM_SIZE 9
+static unsigned char MENU_MINI_INDICATOR_XBM_DATA[] = {
+    0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+    0x01, 0x01, 0x01, 0x01, 0xff, 0x01};
+
+#define MENU_HIDE_INDICATOR_XBM_SIZE 9
+static unsigned char MENU_HIDE_INDICATOR_XBM_DATA[] = {
+    0x99, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x00,
+    0x00, 0x00, 0x00, 0x01, 0x33, 0x01};
+
+#define MENU_SHADE_INDICATOR_XBM_SIZE 9
+static unsigned char MENU_SHADE_INDICATOR_XBM_DATA[] = {
+    0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+/* button pixmaps */
+static char *PRED_CLOSE_XPM[] = {
+"20 10 5 1",
+" 	c None",
+".	c #000000",
+"+	c #555555",
+"@	c #AAAAAA",
+"#	c #FFFFFF",
+".+      +.+@######@+",
+"+.+    +.+@+@####@+@",
+" +.+  +.+ #@+@##@+@#",
+"  +.++.+  ##@+@@+@##",
+"   +..+   ###@++@###",
+"   +..+   ###@++@###",
+"  +.++.+  ##@+@@+@##",
+" +.+  +.+ #@+@##@+@#",
+"+.+    +.+@+@####@+@",
+".+      +.+@######@+"};
+
+static char *PRED_BROKEN_CLOSE_XPM[] = {
+"20 10 5 1",
+" 	c None",
+".	c #000000",
+"+	c #555555",
+"@	c #AAAAAA",
+"#	c #FFFFFF",
+".+      +.+@######@+",
+"+.+    +.+@+@####@+@",
+" +.    .+ #@+####+@#",
+"          ##########",
+"          ##########",
+"          ##########",
+"          ##########",
+" +.    .+ #@+####+@#",
+"+.+    +.+@+@####@+@",
+".+      +.+@######@+"};
+
+static char *PRED_KILL_XPM[] = {
+"10 10 3 1",
+" 	c None",
+".	c #800000",
+"+	c #C22727",
+".+      +.",
+"+.+    +.+",
+" +.+  +.+ ",
+"  +.++.+  ",
+"   +..+   ",
+"   +..+   ",
+"  +.++.+  ",
+" +.+  +.+ ",
+"+.+    +.+",
+".+      +."};
+
+static char *PRED_ICONIFY_XPM[] = {
+"20 10 4 1",
+" 	g None",
+".	g #000000",
+"+	g #555555",
+"@	g #FFFFFF",
+"..........++++++++++",
+"..........++++++++++",
+"..........++++++++++",
+".        .+@@@@@@@@+",
+".        .+@@@@@@@@+",
+".        .+@@@@@@@@+",
+".        .+@@@@@@@@+",
+".        .+@@@@@@@@+",
+".        .+@@@@@@@@+",
+"..........++++++++++"};
+
+static char *PRED_MAXIMIZE_XPM[] = {
+"10 10 3 1",
+" 	c None",
+".	c #555555",
+"+	c #000000",
+"      .+++",
+"       .++",
+"      .+.+",
+"     .+. .",
+"    .+.   ",
+"   .+.    ",
+". .+.     ",
+"+.+.      ",
+"++.       ",
+"+++.      "};
+
+static char *PRED_RESTORE_XPM[] = {
+"10 10 3 1",
+" 	c None",
+".	c #000000",
+"+	c #555555",
+".+ +  + +.",
+"+.+.  .+.+",
+" +..  ..+ ",
+"+...  ...+",
+"          ",
+"          ",
+"+...  ...+",
+" +..  ..+ ",
+"+.+.  .+.+",
+".+ +  + +."};
+
 
 /* static CFTypeRef dApplications = CFSTR("Applications"); */ // session.h
 /* static CFTypeRef dWorkspace = CFSTR("Workspace"); */
@@ -246,84 +383,40 @@ static void allocButtonPixmaps(WScreen * scr)
   WPixmap *pix;
 
   /* create predefined pixmaps */
-  if (wPreferences.new_style == TS_NEXT) {
-    pix = wPixmapCreateFromXPMData(scr, NEXT_CLOSE_XPM);
-  } else {
-    pix = wPixmapCreateFromXPMData(scr, PRED_CLOSE_XPM);
-  }
-  if (pix)
+  pix = wPixmapCreateFromXPMData(scr, PRED_CLOSE_XPM);
+  if (pix) {
     pix->shared = 1;
+  }
   scr->b_pixmaps[WBUT_CLOSE] = pix;
 
-  if (wPreferences.new_style == TS_NEXT) {
-    pix = wPixmapCreateFromXPMData(scr, NEXT_BROKEN_CLOSE_XPM);
-  } else {
-    pix = wPixmapCreateFromXPMData(scr, PRED_BROKEN_CLOSE_XPM);
-  }
-  if (pix)
+  pix = wPixmapCreateFromXPMData(scr, PRED_BROKEN_CLOSE_XPM);
+  if (pix) {
     pix->shared = 1;
+  }
   scr->b_pixmaps[WBUT_BROKENCLOSE] = pix;
 
-  if (wPreferences.new_style == TS_NEXT) {
-    pix = wPixmapCreateFromXPMData(scr, NEXT_ICONIFY_XPM);
-  } else {
-    pix = wPixmapCreateFromXPMData(scr, PRED_ICONIFY_XPM);
-  }
-  if (pix)
+  pix = wPixmapCreateFromXPMData(scr, PRED_ICONIFY_XPM);
+  if (pix) {
     pix->shared = 1;
+  }
   scr->b_pixmaps[WBUT_ICONIFY] = pix;
-#ifdef NEXTSPACE        
+  // NEXTSPACE
   pix = wPixmapCreateFromXPMData(scr, PRED_MAXIMIZE_XPM);
-  if (pix)
+  if (pix) {
     pix->shared = 1;
+  }
   scr->b_pixmaps[WBUT_MAXIMIZE] = pix;
+  // NEXTSPACE
   pix = wPixmapCreateFromXPMData(scr, PRED_RESTORE_XPM);
-  if (pix)
+  if (pix) {
     pix->shared = 1;
+  }
   scr->b_pixmaps[WBUT_RESTORE] = pix;
-#endif
-#ifdef XKB_BUTTON_HINT
-  if (wPreferences.new_style == TS_NEXT) {
-    pix = wPixmapCreateFromXPMData(scr, NEXT_XKBGROUP1_XPM);
-  } else {
-    pix = wPixmapCreateFromXPMData(scr, PRED_XKBGROUP1_XPM);
-  }
-  if (pix)
-    pix->shared = 1;
-  scr->b_pixmaps[WBUT_XKBGROUP1] = pix;
-  if (wPreferences.new_style == TS_NEXT) {
-    pix = wPixmapCreateFromXPMData(scr, NEXT_XKBGROUP2_XPM);
-  } else {
-    pix = wPixmapCreateFromXPMData(scr, PRED_XKBGROUP2_XPM);
-  }
-  if (pix)
-    pix->shared = 1;
-  scr->b_pixmaps[WBUT_XKBGROUP2] = pix;
-  if (wPreferences.new_style == TS_NEXT) {
-    pix = wPixmapCreateFromXPMData(scr, NEXT_XKBGROUP3_XPM);
-  } else {
-    pix = wPixmapCreateFromXPMData(scr, PRED_XKBGROUP3_XPM);
-  }
-  if (pix)
-    pix->shared = 1;
-  scr->b_pixmaps[WBUT_XKBGROUP3] = pix;
-  if (wPreferences.new_style == TS_NEXT) {
-    pix = wPixmapCreateFromXPMData(scr, NEXT_XKBGROUP4_XPM);
-  } else {
-    pix = wPixmapCreateFromXPMData(scr, PRED_XKBGROUP4_XPM);
-  }
-  if (pix)
-    pix->shared = 1;
-  scr->b_pixmaps[WBUT_XKBGROUP4] = pix;
-#endif
 
-  if (wPreferences.new_style == TS_NEXT) {
-    pix = wPixmapCreateFromXPMData(scr, NEXT_KILL_XPM);
-  } else {
-    pix = wPixmapCreateFromXPMData(scr, PRED_KILL_XPM);
-  }
-  if (pix)
+  pix = wPixmapCreateFromXPMData(scr, PRED_KILL_XPM);
+  if (pix) {
     pix->shared = 1;
+  }
   scr->b_pixmaps[WBUT_KILL] = pix;
 }
 
@@ -641,10 +734,7 @@ WScreen *wScreenInit(int screen_number)
   event_mask = EVENT_MASK;
   XSelectInput(dpy, scr->root_win, event_mask);
 
-#ifdef KEEP_XKB_LOCK_STATUS
-  /* Only GroupLock doesn't work correctly in my system since right-alt
-   * can change mode while holding it too - ]d
-   */
+#ifdef USE_XKB
   if (w_global.xext.xkb.supported) {
     unsigned int auto_ctrls, auto_values;
     /* unsigned long int mask = (XkbStateNotifyMask | XkbBellNotifyMask); */
@@ -657,7 +747,7 @@ WScreen *wScreenInit(int screen_number)
     XkbSetAutoResetControls(dpy, XkbAudibleBellMask, &auto_ctrls, &auto_values);
     XkbChangeEnabledControls(dpy, XkbUseCoreKbd, XkbAudibleBellMask, 0);
   }
-#endif				/* KEEP_XKB_LOCK_STATUS */
+#endif /* USE_XKB */
 
   XSync(dpy, False);
   XSetErrorHandler(oldHandler);

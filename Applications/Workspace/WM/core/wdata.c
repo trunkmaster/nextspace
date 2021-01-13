@@ -21,7 +21,6 @@
 
 #include <string.h>
 
-/* #include "WMcore.h" */
 #include "util.h"
 #include "wdata.h"
 

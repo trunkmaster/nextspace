@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 1998-2003 Dan Pascu
  *
@@ -19,7 +21,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +43,7 @@
 #ifdef USE_XSHAPE
 #include <X11/extensions/shape.h>
 #endif
-#ifdef KEEP_XKB_LOCK_STATUS
+#ifdef USE_XKB
 #include <X11/XKBlib.h>
 #endif
 
@@ -59,7 +61,6 @@
 #include "window.h"
 #include "actions.h"
 #include "client.h"
-/* #include "WM_main.h" */
 #include "startup.h"
 #include "dock.h"
 #include "workspace.h"
@@ -90,10 +91,15 @@
 # define SA_NODEFER 0
 #endif
 
+/* call only inside signal handlers, with signals blocked */
+#define SIG_WCHANGE_STATE(nstate) {             \
+    w_global.program.signal_state = (nstate);	\
+    w_global.program.state = (nstate);		\
+  }
+
 /****** Global ******/
 Display *dpy;
-struct wmaker_global_variables w_global;
-struct WPreferences wPreferences;
+struct wm_global_variables w_global;
 
 /* CoreFoundation notifications */
 CFStringRef WMDidManageWindowNotification = CFSTR("WMDidManageWindowNotification");
@@ -552,15 +558,13 @@ static void _startUp(Bool defaultScreenOnly)
 
   /* check sanity of some values */
   if (wPreferences.icon_size < 64) {
-    wwarning(_("icon size is configured to %i, but it's too small. Using 16 instead"),
+    wwarning(_("Icon size is configured to %i, but it's too small. Using 64 instead"),
              wPreferences.icon_size);
     wPreferences.icon_size = 64;
   }
 
   /* init other domains */
   w_global.domain.window_attr = wDefaultsInitDomain("WMWindowAttributes");
-  /* if (!w_global.domain.window_attr->dictionary) */
-  /*   wwarning(_("could not read domain \"%s\" from defaults database"), "WMWindowAttributes"); */
 
   wSetErrorHandler();
 
@@ -569,12 +573,11 @@ static void _startUp(Bool defaultScreenOnly)
   w_global.xext.shape.supported = XShapeQueryExtension(dpy, &w_global.xext.shape.event_base, &j);
 #endif
 
-#ifdef KEEP_XKB_LOCK_STATUS
+#ifdef USE_XKB
   w_global.xext.xkb.supported = XkbQueryExtension(dpy, NULL, &w_global.xext.xkb.event_base,
                                                   NULL, NULL, NULL);
-  if (wPreferences.modelock && !w_global.xext.xkb.supported) {
-    wwarning(_("XKB is not supported. KbdModeLock is automatically disabled."));
-    wPreferences.modelock = 0;
+  if (!w_global.xext.xkb.supported) {
+    wwarning(_("XKB is not supported."));
   }
 #endif
 

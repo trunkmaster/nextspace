@@ -1,7 +1,9 @@
-/* placement.h - window and icon placement on screen
+/*  Window and icon placement on screen
+ *
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 2013 Window Maker Team
  *
@@ -38,4 +40,4 @@ void InteractivePlaceWindow(WWindow * wwin, int *x_ret, int *y_ret, unsigned wid
 /* Set the points x and y inside the screen */
 void get_right_position_on_screen(WScreen *scr, int *x, int *y, int size_x, int size_y);
 
-#endif  /* PLACEMENT_H */
+#endif /* __WORKSPACE_WM_PLACEMENT__ */

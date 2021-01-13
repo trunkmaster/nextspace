@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 2013 Window Maker Team
  *
@@ -26,4 +28,4 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action);
 void OpenSwitchMenu(WScreen *scr, int x, int y, int keyboard);
 void InitializeSwitchMenu(WScreen *scr);
 
-#endif /* WMSWITCHMENU_H */
+#endif /* __WORKSPACE_WM_SWITCHMENU__ */

@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *  Copyright (c) 2013 Window Maker Team
  *
@@ -28,4 +30,4 @@ void OpenMiniwindowMenu(WWindow *wwin, int x, int y);
 void CloseWindowMenu(WScreen *scr);
 void DestroyWindowMenu(WScreen *scr);
 
-#endif /* WMWINMENU_H */
+#endif /* __WORKSPACE_WM_WINMENU__ */

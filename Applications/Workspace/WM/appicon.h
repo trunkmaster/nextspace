@@ -1,7 +1,9 @@
-/* appicon.h- application icon
+/*  application icon
+ *
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -87,4 +89,4 @@ WAppIcon *wAppIconFor(Window window);
 
 void appIconMouseDown(WObjDescriptor * desc, XEvent * event);
 
-#endif
+#endif /* __WORKSPACE_WM_APPICON__ */

@@ -1,7 +1,9 @@
-/* shutdown.c - Shutdown functions
+/*  Shutdown functions
+ *
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
  *  Window Maker window manager
- *
  *  Copyright (c) 2013 Window Maker Team
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -35,4 +37,4 @@ typedef enum {
 void Shutdown(WShutdownMode mode);
 void RestoreDesktop(WScreen *scr);
 
-#endif  /* SHUTDOWN_H */
+#endif /* __WORKSPACE_WM_SHUTDOWN__ */

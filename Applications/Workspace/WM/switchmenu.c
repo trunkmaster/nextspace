@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997      Shige Abe
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
@@ -19,7 +21,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "WMdefs.h"
+#include "WM.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,6 +47,13 @@
 
 /* Maximum width of window title in window list */
 #define MAX_WINDOWLIST_WIDTH	400
+
+/* switchmenu actions */
+#define ACTION_ADD		0
+#define ACTION_REMOVE		1
+#define ACTION_CHANGE		2
+#define ACTION_CHANGE_WORKSPACE	3
+#define ACTION_CHANGE_STATE	4
 
 #define IS_GNUSTEP_MENU(w) ((w)->wm_gnustep_attr &&                     \
                             ((w)->wm_gnustep_attr->flags & GSWindowLevelAttr) && \

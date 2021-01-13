@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -25,4 +27,4 @@ int wGetColorForColormap(Colormap colormap, const char *color_name, XColor *colo
 int wGetColor(WScreen *scr, const char *color_name, XColor *color);
 void wFreeColor(WScreen *scr, unsigned long pixel);
 
-#endif
+#endif /* __WORKSPACE_WM_RESOURCES__ */

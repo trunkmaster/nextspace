@@ -1,5 +1,7 @@
-/* geomview.h
+/*
+ *  Workspace window manager
  *
+ *  Copyright (c) 2015- Sergii Stoian
  *  Copyright (c) 2000 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -30,4 +32,4 @@ void WSetGeometryViewShownPosition(WGeometryView *gview, int x, int y);
 void WSetGeometryViewShownSize(WGeometryView *gview,
                                unsigned width, unsigned height);
 
-#endif  /* GEOMVIEW_H */
+#endif /* __WORKSPACE_WM_GEOMVIEW__ */

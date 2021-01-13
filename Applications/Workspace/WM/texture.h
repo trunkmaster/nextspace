@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -17,7 +19,6 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 
 #ifndef __WORKSPACE_WM_TEXTURE__
 #define __WORKSPACE_WM_TEXTURE__
@@ -78,7 +79,6 @@ typedef struct WTexSolid {
   XColor dark;
 } WTexSolid;
 
-
 typedef struct WTexGradient {
   short type;
   char subtype;
@@ -89,7 +89,6 @@ typedef struct WTexGradient {
   RColor color2;
 } WTexGradient;
 
-
 typedef struct WTexMGradient {
   short type;
   char subtype;
@@ -98,7 +97,6 @@ typedef struct WTexMGradient {
 
   RColor **colors;
 } WTexMGradient;
-
 
 typedef struct WTexIGradient {
   short type;
@@ -111,7 +109,6 @@ typedef struct WTexIGradient {
   int thickness1;
   int thickness2;
 } WTexIGradient;
-
 
 typedef struct WTexPixmap {
   short type;
@@ -180,4 +177,4 @@ void wTexturePaintTitlebar(struct WWindow *wwin, WTexture *texture, Pixmap *tdat
 void wDrawBevel(Drawable d, unsigned width, unsigned height,
                 WTexSolid *texture, int relief);
 
-#endif
+#endif /* __WORKSPACE_WM_TEXTURE__ */

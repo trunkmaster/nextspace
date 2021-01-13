@@ -1,6 +1,8 @@
 /*
- *  Window Maker window manager
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *
+ *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -28,4 +30,4 @@ Pixmap MakeGhostIcon(WScreen *scr, Drawable drawable);
 void DoWindowBirth(WWindow *wwin);
 void wShakeWindow(WWindow *wwin);
 
-#endif
+#endif /* __WORKSPACE_WM_SUPERFLUOUS__ */

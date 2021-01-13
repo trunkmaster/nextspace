@@ -1,5 +1,7 @@
 /* xutil.h
  *
+ *  Workspace window manager
+ *  Copyright (c) 2015- Sergii Stoian
  *  Copyright (c) 1998 scottc
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -21,9 +23,7 @@
 #define __WORKSPACE_WM_XUTIL__
 
 void FormatXError(Display *dpy, XErrorEvent *error, char *buffer, int size);
-
 void RequestSelection(Display *dpy, Window requestor, Time timestamp);
-
 char *GetSelection(Display *dpy, Window requestor);
 
-#endif
+#endif /* __WORKSPACE_WM_XUTIL__ */
