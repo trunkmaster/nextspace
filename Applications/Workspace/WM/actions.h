@@ -31,39 +31,6 @@
  */
 #define MAX_ANIMATION_TIME	         1
 
-/* Zoom animation */
-#define MINIATURIZE_ANIMATION_FRAMES_Z   7
-#define MINIATURIZE_ANIMATION_STEPS_Z    16
-#define MINIATURIZE_ANIMATION_DELAY_Z    10000
-
-/* Twist animation */
-#define MINIATURIZE_ANIMATION_FRAMES_T   12
-#define MINIATURIZE_ANIMATION_STEPS_T    16
-#define MINIATURIZE_ANIMATION_DELAY_T    20000
-#define MINIATURIZE_ANIMATION_TWIST_T    0.5
-
-/* Flip animation */
-#define MINIATURIZE_ANIMATION_FRAMES_F   12
-#define MINIATURIZE_ANIMATION_STEPS_F    16
-#define MINIATURIZE_ANIMATION_DELAY_F    20000
-#define MINIATURIZE_ANIMATION_TWIST_F    0.5
-
-/* shade animation */
-#define SHADE_STEPS_UF		5
-#define SHADE_DELAY_UF		0
-
-#define SHADE_STEPS_F		10
-#define SHADE_DELAY_F		0
-
-#define SHADE_STEPS_M		15
-#define SHADE_DELAY_M		0
-
-#define SHADE_STEPS_S		30
-#define SHADE_DELAY_S		0
-
-#define SHADE_STEPS_US		40
-#define SHADE_DELAY_US		10
-
 /**/
 #define MAX_HORIZONTAL         (1 << 0)
 #define MAX_VERTICAL           (1 << 1)
@@ -86,9 +53,8 @@ WWindow *wNextWindowToFocus(WWindow *wwin);
 void wSetFocusTo(WScreen *scr, WWindow *wwin);
 
 int wMouseMoveWindow(WWindow *wwin, XEvent *ev);
-int wKeyboardMoveResizeWindow(WWindow *wwin);
-
 void wMouseResizeWindow(WWindow *wwin, XEvent *ev);
+int wKeyboardMoveResizeWindow(WWindow *wwin);
 
 void wShadeWindow(WWindow *wwin);
 void wUnshadeWindow(WWindow *wwin);
@@ -111,7 +77,7 @@ void wShowAllWindows(WScreen *scr);
 void wHideApplication(WApplication *wapp);
 void wUnhideApplication(WApplication *wapp, Bool miniwindows, Bool bringToCurrentWS);
 
-void wRefreshDesktop(WScreen *scr);
+/* void wRefreshDesktop(WScreen *scr); */
 
 void wArrangeIcons(WScreen *scr, Bool arrangeAll);
 
@@ -120,7 +86,6 @@ void wMakeWindowVisible(WWindow *wwin);
 void wFullscreenWindow(WWindow *wwin);
 void wUnfullscreenWindow(WWindow *wwin);
 
-void animateResize(WScreen *scr, int x, int y, int w, int h, int fx, int fy, int fw, int fh);
-void update_saved_geometry(WWindow *wwin);
+void wUpdateSavedWindowGeometry(WWindow *wwin);
 
 #endif /* __WORKSPACE_WM_ACTIONS__ */

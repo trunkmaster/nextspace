@@ -51,43 +51,18 @@
 #include "placement.h"
 #include "misc.h"
 #include "event.h"
+#include "animations.h"
+
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
 #endif // NEXTSPACE        
 
 #include "actions.h"
 
-#ifndef HAVE_FLOAT_MATHFUNC
-#define sinf(x) ((float)sin((double)(x)))
-#define cosf(x) ((float)cos((double)(x)))
-#define sqrtf(x) ((float)sqrt((double)(x)))
-#define atan2f(y, x) ((float)atan((double)(y) / (double)(x)))
-#endif
-
 static void find_Maximus_geometry(WWindow *wwin, WArea usableArea, int *new_x, int *new_y,
 				  unsigned int *new_width, unsigned int *new_height);
-static void save_old_geometry(WWindow *wwin, int directions);
 
 /******* Local Variables *******/
-#ifdef USE_ANIMATIONS
-static struct {
-  int steps;
-  int delay;
-} shadePars[5] = {
-                  { SHADE_STEPS_UF, SHADE_DELAY_UF },
-                  { SHADE_STEPS_F, SHADE_DELAY_F },
-                  { SHADE_STEPS_M, SHADE_DELAY_M },
-                  { SHADE_STEPS_S, SHADE_DELAY_S },
-                  { SHADE_STEPS_US, SHADE_DELAY_US }
-};
-
-#define SHADE_STEPS	shadePars[(int)wPreferences.shade_speed].steps
-#define SHADE_DELAY	shadePars[(int)wPreferences.shade_speed].delay
-#endif
-
-#define UNSHADE         0
-#define SHADE           1
-
 static int compareTimes(Time t1, Time t2)
 {
   Time diff;
@@ -96,14 +71,6 @@ static int compareTimes(Time t1, Time t2)
   diff = t1 - t2;
   return (diff < 60000) ? 1 : -1;
 }
-
-#ifdef USE_ANIMATIONS
-static void shade_animate(WWindow *wwin, Bool what);
-#else
-static inline void shade_animate(WWindow *wwin, Bool what)
-{
-}
-#endif
 
 #define ON_CURRENT_WS(wwin) (wwin->frame->workspace == wwin->screen_ptr->current_workspace)
 
@@ -331,7 +298,9 @@ void wShadeWindow(WWindow *wwin)
     return;
 
   /* XLowerWindow(dpy, wwin->client_win); */
-  shade_animate(wwin, SHADE);
+#ifdef USE_ANIMATIONS
+  wAnimateShade(wwin, SHADE);
+#endif
 
   wwin->flags.skip_next_animation = 0;
   wwin->flags.shaded = 1;
@@ -378,8 +347,10 @@ void wUnshadeWindow(WWindow *wwin)
   wwin->flags.mapped = 1;
   XMapWindow(dpy, wwin->client_win);
 
-  shade_animate(wwin, UNSHADE);
-
+#ifdef USE_ANIMATIONS
+  wAnimateShade(wwin, UNSHADE);
+#endif
+  
   wwin->flags.skip_next_animation = 0;
   wFrameWindowResize(wwin->frame, wwin->frame->core->width,
                      wwin->frame->top_width + wwin->client.height + wwin->frame->bottom_width);
@@ -406,7 +377,7 @@ void wUnshadeWindow(WWindow *wwin)
 }
 
 /* Set the old coordinates using the current values */
-static void save_old_geometry(WWindow *wwin, int directions)
+static void _saveOldWindowGeometry(WWindow *wwin, int directions)
 {
   /* never been saved? */
   if (!wwin->old_geometry.width)
@@ -424,7 +395,7 @@ static void save_old_geometry(WWindow *wwin, int directions)
     wwin->old_geometry.height = wwin->client.height;
 }
 
-static void remember_geometry(WWindow *wwin, int *x, int *y, int *w, int *h)
+static void _getWindowGeometry(WWindow *wwin, int *x, int *y, int *w, int *h)
 {
   WMRect old_geom_rect;
   int old_head;
@@ -441,7 +412,7 @@ static void remember_geometry(WWindow *wwin, int *x, int *y, int *w, int *h)
 }
 
 /* Remember geometry for unmaximizing */
-void update_saved_geometry(WWindow *wwin)
+void wUpdateSavedWindowGeometry(WWindow *wwin)
 {
   /* NOT if we aren't already maximized
    * we'll save geometry when maximizing */
@@ -456,9 +427,9 @@ void update_saved_geometry(WWindow *wwin)
 
   /* save the co-ordinate in the axis in which we AREN'T maximized */
   if (wwin->flags.maximized & MAX_HORIZONTAL)
-    save_old_geometry(wwin, SAVE_GEOMETRY_Y);
+    _saveOldWindowGeometry(wwin, SAVE_GEOMETRY_Y);
   if (wwin->flags.maximized & MAX_VERTICAL)
-    save_old_geometry(wwin, SAVE_GEOMETRY_X);
+    _saveOldWindowGeometry(wwin, SAVE_GEOMETRY_X);
 }
 
 /* Perform maximization despite the current window state */
@@ -490,7 +461,7 @@ void wMaximizeWindow(WWindow *wwin, int directions)
 
   /* save old coordinates before we change the current values */
   if (!wwin->flags.maximized)
-    save_old_geometry(wwin, SAVE_GEOMETRY_ALL);
+    _saveOldWindowGeometry(wwin, SAVE_GEOMETRY_ALL);
 
   totalArea.x2 = scr->scr_width;
   totalArea.y2 = scr->scr_height;
@@ -733,7 +704,7 @@ static void find_Maximus_geometry(WWindow *wwin, WArea usableArea, int *new_x, i
   /* set the original coordinate positions of the window to be Maximumized */
   if (wwin->flags.maximized) {
     /* window is already maximized; consider original geometry */
-    remember_geometry(wwin, &orig.left, &orig.top, &orig.width, &orig.height);
+    _getWindowGeometry(wwin, &orig.left, &orig.top, &orig.width, &orig.height);
     orig.bottom = orig.top + orig.height;
     orig.right = orig.left + orig.width;
   } else
@@ -836,7 +807,7 @@ void wUnmaximizeWindow(WWindow *wwin)
     wwin->client_flags.no_movable = 0;
 
   /* Use old coordinates if they are set, current values otherwise */
-  remember_geometry(wwin, &x, &y, &w, &h);
+  _getWindowGeometry(wwin, &x, &y, &w, &h);
 
   /* unMaximusize relative to original position */
   if (wwin->flags.maximized & MAX_MAXIMUS) {
@@ -928,219 +899,6 @@ void wUnfullscreenWindow(WWindow *wwin)
     wwin->screen_ptr->bfs_focused_window = NULL;
   }
 }
-
-#ifdef USE_ANIMATIONS
-static void animateResizeFlip(WScreen *scr, int x, int y, int w, int h,
-                              int fx, int fy, int fw, int fh, int steps)
-{
-#define FRAMES (MINIATURIZE_ANIMATION_FRAMES_F)
-  float cx, cy, cw, ch;
-  float xstep, ystep, wstep, hstep;
-  XPoint points[5];
-  float dx, dch, midy;
-  float angle, final_angle, delta;
-
-  xstep = (float)(fx - x) / steps;
-  ystep = (float)(fy - y) / steps;
-  wstep = (float)(fw - w) / steps;
-  hstep = (float)(fh - h) / steps;
-
-  cx = (float)x;
-  cy = (float)y;
-  cw = (float)w;
-  ch = (float)h;
-
-  final_angle = 2 * WM_PI * MINIATURIZE_ANIMATION_TWIST_F;
-  delta = (float)(final_angle / FRAMES);
-  for (angle = 0;; angle += delta) {
-    if (angle > final_angle)
-      angle = final_angle;
-
-    dx = (cw / 10) - ((cw / 5) * sinf(angle));
-    dch = (ch / 2) * cosf(angle);
-    midy = cy + (ch / 2);
-
-    points[0].x = cx + dx;
-    points[0].y = midy - dch;
-    points[1].x = cx + cw - dx;
-    points[1].y = points[0].y;
-    points[2].x = cx + cw + dx;
-    points[2].y = midy + dch;
-    points[3].x = cx - dx;
-    points[3].y = points[2].y;
-    points[4].x = points[0].x;
-    points[4].y = points[0].y;
-
-    XGrabServer(dpy);
-    XDrawLines(dpy, scr->root_win, scr->frame_gc, points, 5, CoordModeOrigin);
-    XFlush(dpy);
-    wusleep(MINIATURIZE_ANIMATION_DELAY_F);
-
-    XDrawLines(dpy, scr->root_win, scr->frame_gc, points, 5, CoordModeOrigin);
-    XUngrabServer(dpy);
-    cx += xstep;
-    cy += ystep;
-    cw += wstep;
-    ch += hstep;
-    if (angle >= final_angle)
-      break;
-
-  }
-  XFlush(dpy);
-#undef FRAMES
-}
-
-static void animateResizeTwist(WScreen *scr, int x, int y, int w, int h,
-                               int fx, int fy, int fw, int fh, int steps)
-{
-#define FRAMES (MINIATURIZE_ANIMATION_FRAMES_T)
-  float cx, cy, cw, ch;
-  float xstep, ystep, wstep, hstep;
-  XPoint points[5];
-  float angle, final_angle, a, d, delta;
-
-  x += w / 2;
-  y += h / 2;
-  fx += fw / 2;
-  fy += fh / 2;
-
-  xstep = (float)(fx - x) / steps;
-  ystep = (float)(fy - y) / steps;
-  wstep = (float)(fw - w) / steps;
-  hstep = (float)(fh - h) / steps;
-
-  cx = (float)x;
-  cy = (float)y;
-  cw = (float)w;
-  ch = (float)h;
-
-  final_angle = 2 * WM_PI * MINIATURIZE_ANIMATION_TWIST_T;
-  delta = (float)(final_angle / FRAMES);
-  for (angle = 0;; angle += delta) {
-    if (angle > final_angle)
-      angle = final_angle;
-
-    a = atan2f(ch, cw);
-    d = sqrtf((cw / 2) * (cw / 2) + (ch / 2) * (ch / 2));
-
-    points[0].x = cx + cosf(angle - a) * d;
-    points[0].y = cy + sinf(angle - a) * d;
-    points[1].x = cx + cosf(angle + a) * d;
-    points[1].y = cy + sinf(angle + a) * d;
-    points[2].x = cx + cosf(angle - a + (float)WM_PI) * d;
-    points[2].y = cy + sinf(angle - a + (float)WM_PI) * d;
-    points[3].x = cx + cosf(angle + a + (float)WM_PI) * d;
-    points[3].y = cy + sinf(angle + a + (float)WM_PI) * d;
-    points[4].x = cx + cosf(angle - a) * d;
-    points[4].y = cy + sinf(angle - a) * d;
-    XGrabServer(dpy);
-    XDrawLines(dpy, scr->root_win, scr->frame_gc, points, 5, CoordModeOrigin);
-    XFlush(dpy);
-    wusleep(MINIATURIZE_ANIMATION_DELAY_T);
-
-    XDrawLines(dpy, scr->root_win, scr->frame_gc, points, 5, CoordModeOrigin);
-    XUngrabServer(dpy);
-    cx += xstep;
-    cy += ystep;
-    cw += wstep;
-    ch += hstep;
-    if (angle >= final_angle)
-      break;
-
-  }
-  XFlush(dpy);
-#undef FRAMES
-}
-
-static void animateResizeZoom(WScreen *scr, int x, int y, int w, int h,
-                              int fx, int fy, int fw, int fh, int steps)
-{
-#define FRAMES (MINIATURIZE_ANIMATION_FRAMES_Z)
-  float cx[FRAMES], cy[FRAMES], cw[FRAMES], ch[FRAMES];
-  float xstep, ystep, wstep, hstep;
-  int i, j;
-
-  xstep = (float)(fx - x) / steps;
-  ystep = (float)(fy - y) / steps;
-  wstep = (float)(fw - w) / steps;
-  hstep = (float)(fh - h) / steps;
-
-  for (j = 0; j < FRAMES; j++) {
-    cx[j] = (float)x;
-    cy[j] = (float)y;
-    cw[j] = (float)w;
-    ch[j] = (float)h;
-  }
-  XGrabServer(dpy);
-  for (i = 0; i < steps; i++) {
-    for (j = 0; j < FRAMES; j++) {
-      XDrawRectangle(dpy, scr->root_win, scr->frame_gc,
-                     (int)cx[j], (int)cy[j], (int)cw[j], (int)ch[j]);
-    }
-    XFlush(dpy);
-    wusleep(MINIATURIZE_ANIMATION_DELAY_Z);
-
-    for (j = 0; j < FRAMES; j++) {
-      XDrawRectangle(dpy, scr->root_win, scr->frame_gc,
-                     (int)cx[j], (int)cy[j], (int)cw[j], (int)ch[j]);
-      if (j < FRAMES - 1) {
-        cx[j] = cx[j + 1];
-        cy[j] = cy[j + 1];
-        cw[j] = cw[j + 1];
-        ch[j] = ch[j + 1];
-      } else {
-        cx[j] += xstep;
-        cy[j] += ystep;
-        cw[j] += wstep;
-        ch[j] += hstep;
-      }
-    }
-  }
-
-  for (j = 0; j < FRAMES; j++)
-    XDrawRectangle(dpy, scr->root_win, scr->frame_gc, (int)cx[j], (int)cy[j], (int)cw[j], (int)ch[j]);
-  XFlush(dpy);
-  wusleep(MINIATURIZE_ANIMATION_DELAY_Z);
-
-  for (j = 0; j < FRAMES; j++)
-    XDrawRectangle(dpy, scr->root_win, scr->frame_gc, (int)cx[j], (int)cy[j], (int)cw[j], (int)ch[j]);
-
-  XUngrabServer(dpy);
-}
-
-#undef FRAMES
-
-void animateResize(WScreen *scr, int x, int y, int w, int h, int fx, int fy, int fw, int fh)
-{
-  int style = wPreferences.iconification_style;	/* Catch the value */
-  int steps;
-
-  if (style == WIS_NONE)
-    return;
-
-  if (style == WIS_RANDOM)
-    style = rand() % 3;
-
-  switch (style) {
-  case WIS_TWIST:
-    steps = MINIATURIZE_ANIMATION_STEPS_T;
-    if (steps > 0)
-      animateResizeTwist(scr, x, y, w, h, fx, fy, fw, fh, steps);
-    break;
-  case WIS_FLIP:
-    steps = MINIATURIZE_ANIMATION_STEPS_F;
-    if (steps > 0)
-      animateResizeFlip(scr, x, y, w, h, fx, fy, fw, fh, steps);
-    break;
-  case WIS_ZOOM:
-  default:
-    steps = MINIATURIZE_ANIMATION_STEPS_Z;
-    if (steps > 0)
-      animateResizeZoom(scr, x, y, w, h, fx, fy, fw, fh, steps);
-    break;
-  }
-}
-#endif /* USE_ANIMATIONS */
 
 static void flushExpose(void)
 {
@@ -1238,35 +996,6 @@ static WWindow *recursiveTransientFor(WWindow *wwin)
 
   return wwin;
 }
-
-#ifdef USE_ANIMATIONS
-static int getAnimationGeometry(WWindow *wwin, int *ix, int *iy, int *iw, int *ih)
-{
-  if (wwin->screen_ptr->flags.startup || wPreferences.no_animations
-      || wwin->flags.skip_next_animation || wwin->icon == NULL)
-    return 0;
-
-  if (!wPreferences.disable_miniwindows && !wwin->flags.net_handle_icon) {
-    *ix = wwin->icon_x;
-    *iy = wwin->icon_y;
-    *iw = wwin->icon->core->width;
-    *ih = wwin->icon->core->height;
-  } else {
-    if (wwin->flags.net_handle_icon) {
-      *ix = wwin->icon_x;
-      *iy = wwin->icon_y;
-      *iw = wwin->icon_w;
-      *ih = wwin->icon_h;
-    } else {
-      *ix = 0;
-      *iy = 0;
-      *iw = wwin->screen_ptr->scr_width;
-      *ih = wwin->screen_ptr->scr_height;
-    }
-  }
-  return 1;
-}
-#endif	/* USE_ANIMATIONS */
 
 void wIconifyWindow(WWindow *wwin)
 {
@@ -1369,8 +1098,8 @@ void wIconifyWindow(WWindow *wwin)
 
     flushExpose();
 #ifdef USE_ANIMATIONS
-    if (getAnimationGeometry(wwin, &ix, &iy, &iw, &ih))
-      animateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
+    if (wGetAnimationGeometry(wwin, &ix, &iy, &iw, &ih))
+      wAnimateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
                     wwin->frame->core->width, wwin->frame->core->height, ix, iy, iw, ih);
 #endif
   }
@@ -1380,10 +1109,7 @@ void wIconifyWindow(WWindow *wwin)
   if (!wPreferences.disable_miniwindows && !wwin->flags.net_handle_icon) {
     if ((wwin->screen_ptr->current_workspace == wwin->frame->workspace ||
          IS_OMNIPRESENT(wwin) || wPreferences.sticky_icons)
-#ifdef NEXTSPACE
-        && wwin->screen_ptr->flags.icon_yard_mapped
-#endif
-        ) {
+        && wwin->screen_ptr->flags.icon_yard_mapped /* NEXTSPACE */) {
       XMapWindow(dpy, wwin->icon->core->window);
       wwin->icon->mapped = 1;
     }
@@ -1407,9 +1133,7 @@ void wIconifyWindow(WWindow *wwin)
     if (!wwin->screen_ptr->flags.startup) {
       /* Catch up with events not processed while animation was running */
       Window clientwin = wwin->client_win;
-
       ProcessPendingEvents();
-
       /* the window can disappear while ProcessPendingEvents() runs */
       if (!wWindowFor(clientwin))
         return;
@@ -1487,8 +1211,8 @@ void wDeiconifyWindow(WWindow *wwin)
   if (!netwm_hidden) {
 #ifdef USE_ANIMATIONS
     int ix, iy, iw, ih;
-    if (getAnimationGeometry(wwin, &ix, &iy, &iw, &ih))
-      animateResize(wwin->screen_ptr, ix, iy, iw, ih,
+    if (wGetAnimationGeometry(wwin, &ix, &iy, &iw, &ih))
+      wAnimateResize(wwin->screen_ptr, ix, iy, iw, ih,
                     wwin->frame_x, wwin->frame_y,
                     wwin->frame->core->width, wwin->frame->core->height);
 #endif
@@ -1580,15 +1304,10 @@ static void hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int a
 #ifdef USE_ANIMATIONS
   if (!wwin->screen_ptr->flags.startup && !wPreferences.no_animations &&
       !wwin->flags.skip_next_animation && animate) {
-    animateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
+    wAnimateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
                   wwin->frame->core->width, wwin->frame->core->height,
                   icon_x, icon_y, icon->core->width, icon->core->height);
   }
-#else
-  /* Tell the compiler it is normal that those parameters are not used in this case */
-  (void) icon_x;
-  (void) icon_y;
-  (void) animate;
 #endif
   wwin->flags.skip_next_animation = 0;
 
@@ -1676,7 +1395,7 @@ void wHideOtherApplications(WWindow *awin)
       if (tapp != wapp && wwin->protocols.HIDE_APP) {
         WIcon *icon = tapp->app_icon->icon;
         /* wmessage("[actions.c] send WM_HIDE_APP protocol message to client.\n"); */
-        animateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
+        wAnimateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
                       wwin->frame->core->width, wwin->frame->core->height,
                       tapp->app_icon->x_pos, tapp->app_icon->y_pos,
                       icon->core->width, icon->core->height);
@@ -1782,7 +1501,8 @@ void wHideApplication(WApplication *wapp)
 #endif
 }
 
-static void unhideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int animate, int bringToCurrentWS)
+static void unhideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int animate,
+                         int bringToCurrentWS)
 {
   if (bringToCurrentWS)
     wWindowChangeWorkspace(wwin, wwin->screen_ptr->current_workspace);
@@ -1791,17 +1511,11 @@ static void unhideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int
 
 #ifdef USE_ANIMATIONS
   if (!wwin->screen_ptr->flags.startup && !wPreferences.no_animations && animate) {
-    animateResize(wwin->screen_ptr, icon_x, icon_y,
+    wAnimateResize(wwin->screen_ptr, icon_x, icon_y,
                   icon->core->width, icon->core->height,
                   wwin->frame_x, wwin->frame_y,
                   wwin->frame->core->width, wwin->frame->core->height);
   }
-#else
-  /* Tell the compiler it is normal that those parameters are not used in this case */
-  (void) icon;
-  (void) icon_x;
-  (void) icon_y;
-  (void) animate;
 #endif
   wwin->flags.skip_next_animation = 0;
   if (wwin->screen_ptr->current_workspace == wwin->frame->workspace) {
@@ -1960,20 +1674,20 @@ void wShowAllWindows(WScreen *scr)
   /*wRaiseFrame(old_foc->frame->core); */
 }
 
-void wRefreshDesktop(WScreen *scr)
-{
-  Window win;
-  XSetWindowAttributes attr;
+/* void wRefreshDesktop(WScreen *scr) */
+/* { */
+/*   Window win; */
+/*   XSetWindowAttributes attr; */
 
-  attr.backing_store = NotUseful;
-  attr.save_under = False;
-  win = XCreateWindow(dpy, scr->root_win, 0, 0, scr->scr_width,
-                      scr->scr_height, 0, CopyFromParent, CopyFromParent,
-                      (Visual *) CopyFromParent, CWBackingStore | CWSaveUnder, &attr);
-  XMapRaised(dpy, win);
-  XDestroyWindow(dpy, win);
-  XFlush(dpy);
-}
+/*   attr.backing_store = NotUseful; */
+/*   attr.save_under = False; */
+/*   win = XCreateWindow(dpy, scr->root_win, 0, 0, scr->scr_width, */
+/*                       scr->scr_height, 0, CopyFromParent, CopyFromParent, */
+/*                       (Visual *) CopyFromParent, CWBackingStore | CWSaveUnder, &attr); */
+/*   XMapRaised(dpy, win); */
+/*   XDestroyWindow(dpy, win); */
+/*   XFlush(dpy); */
+/* } */
 
 void wArrangeIcons(WScreen *scr, Bool arrangeAll)
 {
@@ -2200,75 +1914,3 @@ void wMakeWindowVisible(WWindow *wwin)
     wRaiseFrame(wwin->frame->core);
   }
 }
-
-/*
- * Do the animation while shading (called with what = SHADE)
- * or unshading (what = UNSHADE).
- */
-#ifdef USE_ANIMATIONS
-static void shade_animate(WWindow *wwin, Bool what)
-{
-  int y, s, w, h;
-  time_t time0 = time(NULL);
-
-  if (wwin->flags.skip_next_animation || wPreferences.no_animations)
-    return;
-
-  switch (what) {
-  case SHADE:
-    if (!wwin->screen_ptr->flags.startup) {
-      /* do the shading animation */
-      h = wwin->frame->core->height;
-      s = h / SHADE_STEPS;
-      if (s < 1)
-        s = 1;
-      w = wwin->frame->core->width;
-      y = wwin->frame->top_width;
-      while (h > wwin->frame->top_width + 1) {
-        XMoveWindow(dpy, wwin->client_win, 0, y);
-        XResizeWindow(dpy, wwin->frame->core->window, w, h);
-        XFlush(dpy);
-
-        if (time(NULL) - time0 > MAX_ANIMATION_TIME)
-          break;
-
-        if (SHADE_DELAY > 0)
-          wusleep(SHADE_DELAY * 1000L);
-        else
-          wusleep(10);
-        h -= s;
-        y -= s;
-      }
-      XMoveWindow(dpy, wwin->client_win, 0, wwin->frame->top_width);
-    }
-    break;
-
-  case UNSHADE:
-    h = wwin->frame->top_width + wwin->frame->bottom_width;
-    y = wwin->frame->top_width - wwin->client.height;
-    s = abs(y) / SHADE_STEPS;
-    if (s < 1)
-      s = 1;
-    w = wwin->frame->core->width;
-    XMoveWindow(dpy, wwin->client_win, 0, y);
-    if (s > 0) {
-      while (h < wwin->client.height + wwin->frame->top_width + wwin->frame->bottom_width) {
-        XResizeWindow(dpy, wwin->frame->core->window, w, h);
-        XMoveWindow(dpy, wwin->client_win, 0, y);
-        XFlush(dpy);
-        if (SHADE_DELAY > 0)
-          wusleep(SHADE_DELAY * 2000L / 3);
-        else
-          wusleep(10);
-        h += s;
-        y += s;
-
-        if (time(NULL) - time0 > MAX_ANIMATION_TIME)
-          break;
-      }
-    }
-    XMoveWindow(dpy, wwin->client_win, 0, wwin->frame->top_width);
-    break;
-  }
-}
-#endif // USE_ANIMATIONS

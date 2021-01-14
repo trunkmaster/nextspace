@@ -53,7 +53,7 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/switchpanel.c \
 	$(WM_DIR)/stacking.c \
 	$(WM_DIR)/startup.c \
-	$(WM_DIR)/superfluous.c \
+	$(WM_DIR)/animations.c \
 	$(WM_DIR)/switchmenu.c \
 	$(WM_DIR)/texture.c \
 	$(WM_DIR)/wcore.c \

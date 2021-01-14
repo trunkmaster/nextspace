@@ -337,7 +337,6 @@ void wWindowClearShape(WWindow *wwin);
 #endif
 
 WWindow *wManageWindow(WScreen *scr, Window window);
-
 void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed);
 
 void wWindowSingleFocus(WWindow *wwin);
@@ -350,15 +349,13 @@ void wWindowUpdateName(WWindow *wwin, const char *newTitle);
 void wWindowConstrainSize(WWindow *wwin, unsigned int *nwidth, unsigned int *nheight);
 void wWindowCropSize(WWindow *wwin, unsigned int maxw, unsigned int maxh,
                      unsigned int *nwidth, unsigned int *nheight);
-void wWindowConfigure(WWindow *wwin, int req_x, int req_y,
-                      int req_width, int req_height);
-
+void wWindowConfigure(WWindow *wwin, int req_x, int req_y, int req_width, int req_height);
+  
 void wWindowMove(WWindow *wwin, int req_x, int req_y);
 
 void wWindowSynthConfigureNotify(WWindow *wwin);
 
 WWindow *wWindowFor(Window window);
-
 
 void wWindowConfigureBorders(WWindow *wwin);
 
@@ -382,16 +379,12 @@ void wWindowSetupInitialAttributes(WWindow *wwin, int *level, int *workspace);
 void wWindowUpdateGNUstepAttr(WWindow *wwin, GNUstepWMAttributes *attr);
 
 void wWindowMap(WWindow *wwin);
-
 void wWindowUnmap(WWindow *wwin);
 
 void wWindowDeleteSavedStatesForPID(pid_t pid);
-
 WMagicNumber wWindowAddSavedState(const char *instance, const char *class, const char *command,
                                   pid_t pid, WSavedState *state);
-
 WMagicNumber wWindowGetSavedState(Window win);
-
 void wWindowDeleteSavedState(WMagicNumber id);
 
 Bool wWindowObscuresWindow(WWindow *wwin, WWindow *obscured);

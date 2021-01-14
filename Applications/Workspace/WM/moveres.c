@@ -1729,7 +1729,7 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
         wArrangeIcons(scr, True);
       }
 
-      update_saved_geometry(wwin);
+      wUpdateSavedWindowGeometry(wwin);
 
       // Restore original title
       wWindowUpdateName(wwin, orig_title);
@@ -2061,7 +2061,7 @@ int wMouseMoveWindow(WWindow * wwin, XEvent * ev)
   }
 
   if (started)
-    update_saved_geometry(wwin);
+    wUpdateSavedWindowGeometry(wwin);
 
   return started;
 }

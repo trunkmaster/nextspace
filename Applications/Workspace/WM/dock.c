@@ -64,7 +64,7 @@
 #include "defaults.h"
 #include "workspace.h"
 #include "framewin.h"
-#include "superfluous.h"
+#include "animations.h"
 #include "xrandr.h"
 #include "placement.h"
 #include "misc.h"

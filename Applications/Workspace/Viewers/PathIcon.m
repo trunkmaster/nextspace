@@ -30,7 +30,7 @@
 
 #import <core/WMcore.h>
 #import <core/stringutils.h>
-#import <superfluous.h>
+#import <animations.h>
 #import <defaults.h>
 #import <window_attributes.h>
 

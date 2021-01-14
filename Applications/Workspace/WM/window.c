@@ -62,7 +62,7 @@
 #include "workspace.h"
 #include "xrandr.h"
 #include "appicon.h"
-#include "superfluous.h"
+#include "animations.h"
 #include "placement.h"
 #include "misc.h"
 #include "startup.h"

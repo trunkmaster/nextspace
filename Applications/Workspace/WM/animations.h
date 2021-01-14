@@ -25,9 +25,16 @@
 
 #include "dock.h"
 
+#define UNSHADE	0
+#define SHADE	1
+
 void DoKaboom(WScreen *scr, Window win, int x, int y);
 Pixmap MakeGhostIcon(WScreen *scr, Drawable drawable);
 void DoWindowBirth(WWindow *wwin);
 void wShakeWindow(WWindow *wwin);
+
+int wGetAnimationGeometry(WWindow *wwin, int *ix, int *iy, int *iw, int *ih);
+void wAnimateResize(WScreen *scr, int x, int y, int w, int h, int fx, int fy, int fw, int fh);
+void wAnimateShade(WWindow *wwin, Bool what);
 
 #endif /* __WORKSPACE_WM_SUPERFLUOUS__ */

@@ -49,7 +49,7 @@
 #include "stacking.h"
 #include "dock.h"
 #include "workspace.h"
-#include "superfluous.h"
+#include "animations.h"
 #include "menu.h"
 #include "framewin.h"
 #include "xrandr.h"
