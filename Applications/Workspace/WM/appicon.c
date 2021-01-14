@@ -142,8 +142,7 @@ WAppIcon *wAppIconCreateForDock(WScreen *scr, const char *command,
   if (wm_instance)
     aicon->wm_instance = wstrdup(wm_instance);
 
-  if (wPreferences.flags.clip_merged_in_dock && wm_class != NULL &&
-      strcmp(wm_class, "WMDock") == 0)
+  if (wPreferences.flags.clip_merged_in_dock && wm_class != NULL && strcmp(wm_class, "WMDock") == 0)
     tile = TILE_CLIP;
   aicon->icon = icon_create_for_dock(scr, command, wm_instance, wm_class, tile);
 
@@ -625,9 +624,6 @@ static void openApplicationMenu(WApplication * wapp, int x, int y)
 
 static void iconExpose(WObjDescriptor *desc, XEvent *event)
 {
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) event;
-
   wAppIconPaint(desc->parent);
 }
 

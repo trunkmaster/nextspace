@@ -81,22 +81,6 @@
 #include "dock.h"
 #include <Workspace+WM.h>
 
-/* for SunOS */
-#ifndef SA_RESTART
-# define SA_RESTART 0
-#endif
-
-/* Just in case, for weirdo systems */
-#ifndef SA_NODEFER
-# define SA_NODEFER 0
-#endif
-
-/* call only inside signal handlers, with signals blocked */
-#define SIG_WCHANGE_STATE(nstate) {             \
-    w_global.program.signal_state = (nstate);	\
-    w_global.program.state = (nstate);		\
-  }
-
 /****** Global ******/
 Display *dpy;
 struct wm_global_variables w_global;
@@ -128,7 +112,13 @@ static WScreen **wScreen = NULL;
 static unsigned int _NumLockMask = 0;
 static unsigned int _ScrollLockMask = 0;
 
-static void _manageAllWindows(WScreen * scr, int crashed);
+WScreen *wDefaultScreen(void)
+{
+  return wScreen[0];
+}
+
+/*--- Xlib errors -------------------------------------------------------------*/
+
 static int _catchXError(Display * dpy, XErrorEvent * error)
 {
   char buffer[MAXLINE];
@@ -163,9 +153,25 @@ void wSetErrorHandler(void)
   XSetErrorHandler((XErrorHandler)_catchXError);
 }
 
-/*
- * User generated exit signal handler.
- */
+/*--- Signals -----------------------------------------------------------------*/
+
+/* for SunOS */
+#ifndef SA_RESTART
+# define SA_RESTART 0
+#endif
+
+/* Just in case, for weirdo systems */
+#ifndef SA_NODEFER
+# define SA_NODEFER 0
+#endif
+
+/* call only inside signal handlers, with signals blocked */
+#define SIG_WCHANGE_STATE(nstate) {             \
+    w_global.program.signal_state = (nstate);	\
+    w_global.program.state = (nstate);		\
+  }
+
+/* User generated exit signal handler. */
 static RETSIGTYPE _handleExitSig(int sig)
 {
   sigset_t sigs;
@@ -188,18 +194,14 @@ static RETSIGTYPE _handleExitSig(int sig)
   DispatchEvent(NULL);	/* Dispatch events imediately. */
 }
 
-/* 
- * Dummy signal handler
- */
+/* Dummy signal handler */
 static void _dummyHandler(int sig)
 {
   /* Parameter is not used, but tell the compiler that it is ok */
   (void) sig;
 }
 
-/*
- * General signal handler. Exits the program gently.
- */
+/* General signal handler. Exits the program gently. */
 static RETSIGTYPE _handleSig(int sig)
 {
   wfatal("got signal %i", sig);
@@ -248,6 +250,61 @@ static RETSIGTYPE _buryChild(int foo)
   errno = save_errno;
 }
 
+static void _setupSignalHandling(void)
+{
+  struct sigaction sig_action;
+  
+  /* emergency exit... */
+  sig_action.sa_handler = _handleSig;
+  sigemptyset(&sig_action.sa_mask);
+
+  sig_action.sa_flags = SA_RESTART;
+  sigaction(SIGQUIT, &sig_action, NULL);
+
+  sig_action.sa_handler = _handleExitSig;
+
+  /* Here we set SA_RESTART for safety, because SIGUSR1 may not be handled
+   * immediately. -Dan */
+  sig_action.sa_flags = SA_RESTART;
+  sigaction(SIGTERM, &sig_action, NULL);      // Logout panel - OK
+  sigaction(SIGINT, &sig_action, NULL);       // Logout panel - OK
+  /* sigaction(SIGHUP, &sig_action, NULL); */ // managed by Workspace
+  /* sigaction(SIGUSR1, &sig_action, NULL);*/ // managed by Workspace
+  sigaction(SIGUSR2, &sig_action, NULL);      // WindowMaker reread defaults - OK
+
+  /* ignore dead pipe */
+  /* Because POSIX mandates that only signal with handlers are reset
+   * accross an exec*(), we do not want to propagate ignoring SIGPIPEs
+   * to children. Hence the dummy handler.
+   * Philippe Troin <phil@fifi.org>
+   */
+  sig_action.sa_handler = &_dummyHandler;
+  sig_action.sa_flags = SA_RESTART;
+  sigaction(SIGPIPE, &sig_action, NULL);
+
+  /* handle dead children */
+  sig_action.sa_handler = _buryChild;
+  sig_action.sa_flags = SA_NOCLDSTOP | SA_RESTART;
+  sigaction(SIGCHLD, &sig_action, NULL);
+
+  /* Now we unblock all signals, that may have been blocked by the parent
+   * who exec()-ed us. This can happen for example if Window Maker crashes
+   * and restarts itself or another window manager from the signal handler.
+   * In this case, the new proccess inherits the blocked signal mask and
+   * will no longer react to that signal, until unblocked.
+   * This is because the signal handler of the proccess who crashed (parent)
+   * didn't return, and the signal remained blocked. -Dan
+   */
+  sigfillset(&sig_action.sa_mask);
+  sigprocmask(SIG_UNBLOCK, &sig_action.sa_mask, NULL);
+
+  // Unmanage signals which are managed by GNUstep part of Workspace
+  signal(SIGHUP, SIG_IGN);   // NEXTSPACE
+  signal(SIGUSR1, SIG_IGN);  // NEXTSPACE  
+}
+
+/*--- Keyboard ----------------------------------------------------------------*/
+
 static void _getOffendingModifiers(void)
 {
   int i;
@@ -281,8 +338,8 @@ static void _getOffendingModifiers(void)
 }
 
 #ifdef NUMLOCK_HACK
-void wHackedGrabKey(int keycode, unsigned int modifiers,
-                    Window grab_window, Bool owner_events, int pointer_mode, int keyboard_mode)
+void wHackedGrabKey(int keycode, unsigned int modifiers, Window grab_window, Bool owner_events,
+                    int pointer_mode, int keyboard_mode)
 {
   if (modifiers == AnyModifier)
     return;
@@ -356,118 +413,57 @@ void wHackedGrabButton(unsigned int button, unsigned int modifiers,
 #endif				/* NUMLOCK_HACK */
 }
 
-WScreen *wDefaultScreen(void)
+/*--- Init and startup --------------------------------------------------------*/
+
+static void _initializeAtoms(void)
 {
-  return wScreen[0];
-}
+  w_global.atom.wm.state = XInternAtom(dpy, "WM_STATE", False);
+  w_global.atom.wm.change_state = XInternAtom(dpy, "WM_CHANGE_STATE", False);
+  w_global.atom.wm.protocols = XInternAtom(dpy, "WM_PROTOCOLS", False);
+  w_global.atom.wm.take_focus = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
+  w_global.atom.wm.delete_window = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
+  w_global.atom.wm.save_yourself = XInternAtom(dpy, "WM_SAVE_YOURSELF", False);
+  w_global.atom.wm.client_leader = XInternAtom(dpy, "WM_CLIENT_LEADER", False);
+  w_global.atom.wm.colormap_windows = XInternAtom(dpy, "WM_COLORMAP_WINDOWS", False);
+  w_global.atom.wm.colormap_notify = XInternAtom(dpy, "WM_COLORMAP_NOTIFY", False);
 
-static char *atomNames[] = {
-  /* 0  */  "WM_STATE",
-  /* 1  */  "WM_CHANGE_STATE",
-  /* 2  */  "WM_PROTOCOLS",
-  /* 3  */  "WM_TAKE_FOCUS",
-  /* 4  */  "WM_DELETE_WINDOW",
-  /* 5  */  "WM_SAVE_YOURSELF",
-  /* 6  */  "WM_CLIENT_LEADER",
-  /* 7  */  "WM_COLORMAP_WINDOWS",
-  /* 8  */  "WM_COLORMAP_NOTIFY",
+  w_global.atom.wmaker.menu = XInternAtom(dpy, "_WINDOWMAKER_MENU", False);
+  w_global.atom.wmaker.state = XInternAtom(dpy, "_WINDOWMAKER_STATE", False);
+  w_global.atom.wmaker.wm_protocols = XInternAtom(dpy, "_WINDOWMAKER_WM_PROTOCOLS", False);
+  w_global.atom.wmaker.wm_function = XInternAtom(dpy, "_WINDOWMAKER_WM_FUNCTION", False);
+  w_global.atom.wmaker.noticeboard = XInternAtom(dpy, "_WINDOWMAKER_NOTICEBOARD", False);
+  w_global.atom.wmaker.command = XInternAtom(dpy, "_WINDOWMAKER_COMMAND", False);
+  w_global.atom.wmaker.icon_size = XInternAtom(dpy, "_WINDOWMAKER_ICON_SIZE", False);
+  w_global.atom.wmaker.icon_tile = XInternAtom(dpy, "_WINDOWMAKER_ICON_TILE", False);
 
-  /* 9  */  "_WINDOWMAKER_MENU",
-  /* 10 */  "_WINDOWMAKER_STATE",
-  /* 11 */  "_WINDOWMAKER_WM_PROTOCOLS",
-  /* 12 */  "_WINDOWMAKER_WM_FUNCTION",
-  /* 13 */  "_WINDOWMAKER_NOTICEBOARD",
-  /* 14 */  "_WINDOWMAKER_COMMAND",
-  /* 15 */  "_WINDOWMAKER_ICON_SIZE",
-  /* 16 */  "_WINDOWMAKER_ICON_TILE",
+  w_global.atom.gnustep.wm_attr = XInternAtom(dpy, "_GNUSTEP_WM_ATTR", False);
+  w_global.atom.gnustep.wm_miniaturize_window = XInternAtom(dpy, "_GNUSTEP_WM_MINIATURIZE_WINDOW", False);
+  w_global.atom.gnustep.wm_hide_app = XInternAtom(dpy, "_GNUSTEP_WM_HIDE_APP", False);
+  w_global.atom.gnustep.titlebar_state = XInternAtom(dpy, "_GNUSTEP_TITLEBAR_STATE", False);
 
-  /* 17 */  "_GNUSTEP_WM_ATTR",
-  /* 18 */  "_GNUSTEP_WM_MINIATURIZE_WINDOW",
-  /* 19 */  "_GNUSTEP_WM_HIDE_APP",
-  /* 20 */  "_GNUSTEP_TITLEBAR_STATE",
+  w_global.atom.desktop.gtk_object_path = XInternAtom(dpy, "_GTK_APPLICATION_OBJECT_PATH", False);
 
-  /* 21 */  "_GTK_APPLICATION_OBJECT_PATH",
-
-  /* 22 */  "WM_IGNORE_FOCUS_EVENTS"
-};
-
-/*
- * Starts the window manager and setup global data.
- * Called from main() at startup.
- *
- * Side effects:
- * 	global data declared in main.c is initialized
- */
-static void _startUp(Bool defaultScreenOnly)
-{
-  struct sigaction sig_action;
-  int i, j, max;
-  char **formats;
-  Atom atom[wlengthof(atomNames)];
-
-  /*
-   * Ignore CapsLock in modifiers
-   */
-  w_global.shortcut.modifiers_mask = 0xff & ~LockMask;
-
-  _getOffendingModifiers();
-  /*
-   * Ignore NumLock and ScrollLock too
-   */
-  w_global.shortcut.modifiers_mask &= ~(_NumLockMask | _ScrollLockMask);
-
-  memset(&wKeyBindings, 0, sizeof(wKeyBindings));
-
-  w_global.context.client_win = XUniqueContext();
-  w_global.context.app_win = XUniqueContext();
-  w_global.context.stack = XUniqueContext();
-
-  /*    _XA_VERSION = XInternAtom(dpy, "VERSION", False); */
-
-#ifdef HAVE_XINTERNATOMS
-  XInternAtoms(dpy, atomNames, wlengthof(atomNames), False, atom);
-#else
-  {
-    int i;
-    for (i = 0; i < wlengthof(atomNames); i++)
-      atom[i] = XInternAtom(dpy, atomNames[i], False);
-  }
-#endif
-
-  w_global.atom.wm.state = atom[0];
-  w_global.atom.wm.change_state = atom[1];
-  w_global.atom.wm.protocols = atom[2];
-  w_global.atom.wm.take_focus = atom[3];
-  w_global.atom.wm.delete_window = atom[4];
-  w_global.atom.wm.save_yourself = atom[5];
-  w_global.atom.wm.client_leader = atom[6];
-  w_global.atom.wm.colormap_windows = atom[7];
-  w_global.atom.wm.colormap_notify = atom[8];
-
-  w_global.atom.wmaker.menu = atom[9];
-  w_global.atom.wmaker.state = atom[10];
-  w_global.atom.wmaker.wm_protocols = atom[11];
-  w_global.atom.wmaker.wm_function = atom[12];
-  w_global.atom.wmaker.noticeboard = atom[13];
-  w_global.atom.wmaker.command = atom[14];
-  w_global.atom.wmaker.icon_size = atom[15];
-  w_global.atom.wmaker.icon_tile = atom[16];
-
-  w_global.atom.gnustep.wm_attr = atom[17];
-  w_global.atom.gnustep.wm_miniaturize_window = atom[18];
-  w_global.atom.gnustep.wm_hide_app = atom[19];
-  w_global.atom.gnustep.titlebar_state = atom[20];
-
-  w_global.atom.desktop.gtk_object_path = atom[21];
-
-  w_global.atom.wm.ignore_focus_events = atom[22];
+  w_global.atom.wm.ignore_focus_events = XInternAtom(dpy, "WM_IGNORE_FOCUS_EVENTS", False);
 
 #ifdef USE_DOCK_XDND
   wXDNDInitializeAtoms();
 #endif
+}
 
-  /* cursors */
-  wPreferences.cursor[WCUR_NORMAL] = None;	/* inherit from root */
+static void _initializeCursors(void)
+{
+  Pixmap cur = XCreatePixmap(dpy, DefaultRootWindow(dpy), 16, 16, 1);
+  GC gc = XCreateGC(dpy, cur, 0, NULL);
+  XColor black;
+  
+  memset(&black, 0, sizeof(XColor));
+  XSetForeground(dpy, gc, 0);
+  XFillRectangle(dpy, cur, gc, 0, 0, 16, 16);
+  XFreeGC(dpy, gc);
+  wPreferences.cursor[WCUR_EMPTY] = XCreatePixmapCursor(dpy, cur, cur, &black, &black, 0, 0);
+  XFreePixmap(dpy, cur);
+
+  wPreferences.cursor[WCUR_NORMAL] = None; /* inherit from root */
   wPreferences.cursor[WCUR_ROOT] = XCreateFontCursor(dpy, XC_left_ptr);
   wPreferences.cursor[WCUR_ARROW] = XCreateFontCursor(dpy, XC_top_left_arrow);
   wPreferences.cursor[WCUR_MOVE] = XCreateFontCursor(dpy, XC_fleur);
@@ -480,197 +476,11 @@ static void _startUp(Bool defaultScreenOnly)
   wPreferences.cursor[WCUR_HORIZONRESIZE] = XCreateFontCursor(dpy, XC_sb_h_double_arrow);
   wPreferences.cursor[WCUR_WAIT] = XCreateFontCursor(dpy, XC_watch);
   wPreferences.cursor[WCUR_QUESTION] = XCreateFontCursor(dpy, XC_question_arrow);
-  wPreferences.cursor[WCUR_TEXT] = XCreateFontCursor(dpy, XC_xterm);	/* odd name??? */
+  wPreferences.cursor[WCUR_TEXT] = XCreateFontCursor(dpy, XC_xterm);
   wPreferences.cursor[WCUR_SELECT] = XCreateFontCursor(dpy, XC_cross);
-
-  Pixmap cur = XCreatePixmap(dpy, DefaultRootWindow(dpy), 16, 16, 1);
-  GC gc = XCreateGC(dpy, cur, 0, NULL);
-  XColor black;
-  memset(&black, 0, sizeof(XColor));
-  XSetForeground(dpy, gc, 0);
-  XFillRectangle(dpy, cur, gc, 0, 0, 16, 16);
-  XFreeGC(dpy, gc);
-  wPreferences.cursor[WCUR_EMPTY] = XCreatePixmapCursor(dpy, cur, cur, &black, &black, 0, 0);
-  XFreePixmap(dpy, cur);
-
-  /* emergency exit... */
-  sig_action.sa_handler = _handleSig;
-  sigemptyset(&sig_action.sa_mask);
-
-  sig_action.sa_flags = SA_RESTART;
-  sigaction(SIGQUIT, &sig_action, NULL);
-
-  sig_action.sa_handler = _handleExitSig;
-
-  /* Here we set SA_RESTART for safety, because SIGUSR1 may not be handled
-   * immediately. -Dan */
-  sig_action.sa_flags = SA_RESTART;
-  sigaction(SIGTERM, &sig_action, NULL);      // Logout panel - OK
-  sigaction(SIGINT, &sig_action, NULL);       // Logout panel - OK
-  /* sigaction(SIGHUP, &sig_action, NULL); */ // managed by Workspace
-  /* sigaction(SIGUSR1, &sig_action, NULL);*/ // managed by Workspace
-  sigaction(SIGUSR2, &sig_action, NULL);      // WindowMaker reread defaults - OK
-
-  /* ignore dead pipe */
-  /* Because POSIX mandates that only signal with handlers are reset
-   * accross an exec*(), we do not want to propagate ignoring SIGPIPEs
-   * to children. Hence the dummy handler.
-   * Philippe Troin <phil@fifi.org>
-   */
-  sig_action.sa_handler = &_dummyHandler;
-  sig_action.sa_flags = SA_RESTART;
-  sigaction(SIGPIPE, &sig_action, NULL);
-
-  /* handle dead children */
-  sig_action.sa_handler = _buryChild;
-  sig_action.sa_flags = SA_NOCLDSTOP | SA_RESTART;
-  sigaction(SIGCHLD, &sig_action, NULL);
-
-  /* Now we unblock all signals, that may have been blocked by the parent
-   * who exec()-ed us. This can happen for example if Window Maker crashes
-   * and restarts itself or another window manager from the signal handler.
-   * In this case, the new proccess inherits the blocked signal mask and
-   * will no longer react to that signal, until unblocked.
-   * This is because the signal handler of the proccess who crashed (parent)
-   * didn't return, and the signal remained blocked. -Dan
-   */
-  sigfillset(&sig_action.sa_mask);
-  sigprocmask(SIG_UNBLOCK, &sig_action.sa_mask, NULL);
-
-  // Unmanage signals which are managed by GNUstep part of Workspace
-  signal(SIGHUP, SIG_IGN);   // NEXTSPACE
-  signal(SIGUSR1, SIG_IGN);  // NEXTSPACE
-  
-  /* set hook for out event dispatcher in WINGs event dispatcher */
-  WMHookEventHandler(DispatchEvent);
-
-  /* initialize defaults stuff */
-  w_global.domain.wmaker = wDefaultsInitDomain("WindowMaker");
-  if (!w_global.domain.wmaker->dictionary)
-    wwarning(_("could not read domain \"%s\" from defaults database"), "WindowMaker");
-
-  /* read defaults that don't change until a restart and are
-   * screen independent */
-  wDefaultsReadStatic(w_global.domain.wmaker ? w_global.domain.wmaker->dictionary : NULL);
-  if (w_global.domain.wmaker) {
-    WMUserDefaultsWrite(w_global.domain.wmaker->dictionary, w_global.domain.wmaker->name);
-  }
-
-  /* check sanity of some values */
-  if (wPreferences.icon_size < 64) {
-    wwarning(_("Icon size is configured to %i, but it's too small. Using 64 instead"),
-             wPreferences.icon_size);
-    wPreferences.icon_size = 64;
-  }
-
-  /* init other domains */
-  w_global.domain.window_attr = wDefaultsInitDomain("WMWindowAttributes");
-
-  wSetErrorHandler();
-
-#ifdef USE_XSHAPE
-  /* ignore j */
-  w_global.xext.shape.supported = XShapeQueryExtension(dpy, &w_global.xext.shape.event_base, &j);
-#endif
-
-#ifdef USE_XKB
-  w_global.xext.xkb.supported = XkbQueryExtension(dpy, NULL, &w_global.xext.xkb.event_base,
-                                                  NULL, NULL, NULL);
-  if (!w_global.xext.xkb.supported) {
-    wwarning(_("XKB is not supported."));
-  }
-#endif
-
-  /* Check if TIFF images are supported */
-  formats = RSupportedFileFormats();
-  if (formats) {
-    for (i = 0; formats[i] != NULL; i++) {
-      if (strcmp(formats[i], "TIFF") == 0) {
-        wPreferences.supports_tiff = 1;
-        break;
-      }
-    }
-  }
-
-  /* manage the screen */
-  if (defaultScreenOnly)
-    max = 1;
-  else
-    max = ScreenCount(dpy);
-
-  wScreen = wmalloc(sizeof(WScreen *) * max);
-  wScreen[0] = wScreenInit(DefaultScreen(dpy));
-  if (!wScreen) {
-    wfatal(_("it seems that there is already a window manager running"));
-    exit(1);
-  }
-
-  // Notification center for notifications inside WM.
-  wScreen[0]->notificationCenter = CFNotificationCenterGetLocalCenter();
-
-  InitializeSwitchMenu(wScreen[0]);
-
-  /* initialize/restore state for the screens */
-  int lastDesktop;
-
-  lastDesktop = wNETWMGetCurrentDesktopFromHint(wScreen[0]);
-
-  wScreenRestoreState(wScreen[0]);
-
-  /* manage all windows that were already here before us */
-  if (!wPreferences.flags.nodock && wScreen[0]->dock)
-    wScreen[0]->last_dock = wScreen[0]->dock;
-
-  _manageAllWindows(wScreen[0], wPreferences.flags.restarting == 2);
-
-  /* restore saved menus */
-  wMenuRestoreState(wScreen[0]);
-
-  /* If we're not restarting, restore session */
-  if (wPreferences.flags.restarting == 0 && !wPreferences.flags.norestore)
-    wSessionRestoreState(wScreen[0]);
-
-  if (!wPreferences.flags.noautolaunch) {
-    /* auto-launch apps */
-    if (!wPreferences.flags.nodock && wScreen[0]->dock) {
-      wScreen[0]->last_dock = wScreen[0]->dock;
-      wDockDoAutoLaunch(wScreen[0]->dock, 0);
-    }
-    /* auto-launch apps in clip */
-    if (!wPreferences.flags.noclip) {
-      int i;
-      for (i = 0; i < wScreen[0]->workspace_count; i++) {
-        if (wScreen[0]->workspaces[i]->clip) {
-          wScreen[0]->last_dock = wScreen[0]->workspaces[i]->clip;
-          wDockDoAutoLaunch(wScreen[0]->workspaces[i]->clip, i);
-        }
-      }
-    }
-    /* auto-launch apps in drawers */
-    if (!wPreferences.flags.nodrawer) {
-      WDrawerChain *dc;
-      for (dc = wScreen[0]->drawers; dc; dc = dc->next) {
-        wScreen[0]->last_dock = dc->adrawer;
-        wDockDoAutoLaunch(dc->adrawer, 0);
-      }
-    }
-
-    /* go to workspace where we were before restart */
-    if (lastDesktop >= 0)
-      wWorkspaceForceChange(wScreen[0], lastDesktop, NULL);
-    else
-      wSessionRestoreLastWorkspace(wScreen[0]);
-  }
-
-#ifndef HAVE_INOTIFY
-  /* setup defaults file polling */
-  if (!wPreferences.flags.noupdates)
-    WMAddTimerHandler(3000, wDefaultsCheckDomains, NULL);
-#endif
-
 }
 
-static Bool _windowInList(Window window, Window * list, int count)
+static Bool _isWindowInList(Window window, Window *list, int count)
 {
   for (; count >= 0; count--) {
     if (window == list[count])
@@ -681,12 +491,10 @@ static Bool _windowInList(Window window, Window * list, int count)
 
 /*
  * Manages all windows in the screen.
- *
- * Notes: Called when the wm is being started.
- *	No events can be processed while the windows are being
- * 	reparented/managed.
+ * Called when the wm is being started. No events can be processed while the windows 
+ * are being reparented/managed.
  */
-static void _manageAllWindows(WScreen * scr, int crashRecovery)
+static void _manageAllWindows(WScreen *scr)
 {
   Window root, parent;
   Window *children;
@@ -694,10 +502,11 @@ static void _manageAllWindows(WScreen * scr, int crashRecovery)
   unsigned int i, j;
   WWindow *wwin;
 
+  // Startup 1 begins
+  scr->flags.startup = 1;
+  
   XGrabServer(dpy);
   XQueryTree(dpy, scr->root_win, &root, &parent, &children, &nchildren);
-
-  scr->flags.startup = 1;
 
   /* first remove all icon windows */
   for (i = 0; i < nchildren; i++) {
@@ -721,7 +530,7 @@ static void _manageAllWindows(WScreen * scr, int crashRecovery)
       XFree(wmhints);
     }
   }
-
+  /* now manage them */
   for (i = 0; i < nchildren; i++) {
     if (children[i] == None)
       continue;
@@ -737,22 +546,13 @@ static void _manageAllWindows(WScreen * scr, int crashRecovery)
       if (wwin->flags.miniaturized
           && (wwin->transient_for == None
               || wwin->transient_for == scr->root_win
-              || !_windowInList(wwin->transient_for, children, nchildren))) {
+              || !_isWindowInList(wwin->transient_for, children, nchildren))) {
 
         wwin->flags.skip_next_animation = 1;
         wwin->flags.miniaturized = 0;
         wIconifyWindow(wwin);
       } else {
         wClientSetState(wwin, NormalState, None);
-      }
-      if (crashRecovery) {
-        int border;
-
-        border = (!HAS_BORDER(wwin) ? 0 : scr->frame_border_width);
-
-        wWindowMove(wwin, wwin->frame_x - border,
-                    wwin->frame_y - border -
-                    (wwin->frame->titlebar ? wwin->frame->titlebar->height : 0));
       }
     }
   }
@@ -775,24 +575,159 @@ static void _manageAllWindows(WScreen * scr, int crashRecovery)
   }
 
   XFree(children);
+
+  /* Startup 1 finished */
   scr->flags.startup = 0;
+
+  /* Startup 2 begins */
   scr->flags.startup2 = 1;
 
   while (XPending(dpy)) {
     XEvent ev;
     WMNextEvent(dpy, &ev);
-    /* XNextEvent(dpy, &ev); */
     WMHandleEvent(&ev);
   }
-  scr->last_workspace = 0;
-  wWorkspaceForceChange(scr, 0, NULL);
-  if (!wPreferences.flags.noclip)
-    wDockShowIcons(scr->workspaces[scr->current_workspace]->clip);
-  scr->flags.startup2 = 0;
+  
+  // Startup 2 finishes in Controller-applicationsDidFinishLaunching
+  /* scr->flags.startup2 = 0; */
 }
 
 /*
- * Entry point for Window Manager's part.
+ * Starts the window manager and setup global data.
+ */
+void wStartUp(Bool defaultScreenOnly)
+{
+  WScreen *scr;
+  int i, j, max;
+  char **formats;
+
+  /* Ignore CapsLock in modifiers */
+  w_global.shortcut.modifiers_mask = 0xff & ~LockMask;
+  _getOffendingModifiers();
+  
+  /* Ignore NumLock and ScrollLock too */
+  w_global.shortcut.modifiers_mask &= ~(_NumLockMask | _ScrollLockMask);
+
+  memset(&wKeyBindings, 0, sizeof(wKeyBindings));
+
+  w_global.context.client_win = XUniqueContext();
+  w_global.context.app_win = XUniqueContext();
+  w_global.context.stack = XUniqueContext();
+
+  /* _XA_VERSION = XInternAtom(dpy, "VERSION", False); */
+
+  _initializeAtoms();
+
+  _initializeCursors();
+
+  _setupSignalHandling();
+  
+  /* set hook for out event dispatcher in WINGs event dispatcher */
+  WMHookEventHandler(DispatchEvent);
+
+  /* initialize defaults stuff */
+  w_global.domain.wmaker = wDefaultsInitDomain("WindowMaker");
+  if (!w_global.domain.wmaker->dictionary) {
+    wwarning(_("could not read domain \"%s\" from defaults database"), "WindowMaker");
+  }
+
+  /* read defaults that don't change until a restart and are screen independent */
+  wDefaultsReadStatic(w_global.domain.wmaker ? w_global.domain.wmaker->dictionary : NULL);
+  if (w_global.domain.wmaker) {
+    WMUserDefaultsWrite(w_global.domain.wmaker->dictionary, w_global.domain.wmaker->name);
+  }
+
+  /* check sanity of some values */
+  if (wPreferences.icon_size < 64) {
+    wwarning(_("Icon size is configured to %i, but it's too small. Using 64 instead"),
+             wPreferences.icon_size);
+    wPreferences.icon_size = 64;
+  }
+
+  /* init other domains */
+  w_global.domain.window_attr = wDefaultsInitDomain("WMWindowAttributes");
+
+  wSetErrorHandler();
+
+#ifdef USE_XSHAPE
+  /* ignore j */
+  w_global.xext.shape.supported = XShapeQueryExtension(dpy, &w_global.xext.shape.event_base, &j);
+#endif
+#ifdef USE_XKB
+  w_global.xext.xkb.supported = XkbQueryExtension(dpy, NULL, &w_global.xext.xkb.event_base,
+                                                  NULL, NULL, NULL);
+  if (!w_global.xext.xkb.supported) {
+    wwarning(_("XKB is not supported."));
+  }
+#endif
+
+  /* Check if TIFF images are supported */
+  formats = RSupportedFileFormats();
+  if (formats) {
+    for (i = 0; formats[i] != NULL; i++) {
+      if (strcmp(formats[i], "TIFF") == 0) {
+        wPreferences.supports_tiff = 1;
+        break;
+      }
+    }
+  }
+  
+  /* manage the screen */
+  max = defaultScreenOnly ? 1 : ScreenCount(dpy);
+  wScreen = wmalloc(sizeof(WScreen *) * max);
+  wScreen[0] = wScreenInit(DefaultScreen(dpy));
+  
+  scr = wScreen[0];
+    
+  /* Center for notifications inside WM. */
+  scr->notificationCenter = CFNotificationCenterGetLocalCenter();
+
+  InitializeSwitchMenu(scr);
+
+  /* initialize/restore state for the screens */
+  wScreenRestoreState(scr);
+
+  /* manage all windows that were already here before us */
+  if (!wPreferences.flags.nodock && wScreen[0]->dock) {
+    wScreen[0]->last_dock = wScreen[0]->dock;
+  }
+  
+  _manageAllWindows(scr);
+
+  scr->last_workspace = 0;
+  wWorkspaceForceChange(scr, 0, NULL);
+  
+  if (!wPreferences.flags.noclip) {
+    wDockShowIcons(scr->workspaces[scr->current_workspace]->clip);
+  }
+
+  /* restore saved menus */
+  wMenuRestoreState(scr);
+
+  /* If we're not restarting, restore session */
+  if (!wPreferences.flags.norestore) {
+    int lastDesktop = wNETWMGetCurrentDesktopFromHint(scr);
+    
+    wSessionRestoreState(scr);
+
+    /* go to workspace where we were before restart */
+    if (lastDesktop >= 0) {
+      wWorkspaceForceChange(scr, lastDesktop, NULL);
+    }
+    else {
+      wSessionRestoreLastWorkspace(scr);
+    }
+  }
+
+#ifndef HAVE_INOTIFY
+  /* setup defaults file polling */
+  if (!wPreferences.flags.noupdates)
+    WMAddTimerHandler(3000, wDefaultsCheckDomains, NULL);
+#endif
+}
+
+/*
+ * Entry point for window manager part.
  */
 void wInitialize(int argc, char **argv)
 {
@@ -857,7 +792,6 @@ void wInitialize(int argc, char **argv)
     exit(1);
   }
 
-
   if (wGetWVisualID(0) < 0) {
     /*
      *   If unspecified, use default visual instead of waiting
@@ -873,6 +807,4 @@ void wInitialize(int argc, char **argv)
   setenv("DISPLAY", DisplayName, 1);
 
   wXModifierInitialize();
-  
-  _startUp(True);
 }

@@ -1548,11 +1548,12 @@ static WAppIcon *_dockRestoreIconState(WScreen *scr, CFDictionaryRef info, int t
   }
 
   aicon = wAppIconCreateForDock(scr, command, winstance, wclass, TILE_NORMAL);
-  if (wclass)
+  if (wclass) {
     wfree(wclass);
-  if (winstance)
+  }
+  if (winstance) {
     wfree(winstance);
-
+  }
   wfree(command);
 
   aicon->icon->core->descriptor.handle_mousedown = iconMouseDown;
@@ -1837,8 +1838,9 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
 
       wCoreConfigure(aicon->icon->core, aicon->x_pos, aicon->y_pos, 0, 0);
 #ifndef NEXTSPACE
-      if (!dock->collapsed)
+      if (!dock->collapsed) {
         XMapWindow(dpy, aicon->icon->core->window);
+      }
       wRaiseFrame(aicon->icon->core);
 #endif
 
@@ -2010,14 +2012,10 @@ int wDockReceiveDNDDrop(WScreen *scr, XEvent *event)
 Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon)
 {
   WWindow *wwin;
-  Bool lupdate_icon = False;
   char *command = NULL;
   int index;
 
   icon->editing = 0;
-
-  if (update_icon)
-    lupdate_icon = True;
 
   if (icon->command == NULL) {
     /* If icon->owner exists, it means the application is running */
@@ -2072,8 +2070,9 @@ Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon
    * Update icon pixmap, RImage doesn't change,
    * so call wIconUpdate is not needed
    */
-  if (lupdate_icon)
+  if (update_icon) {
     update_icon_pixmap(icon->icon);
+  }
 
   /* Paint it */
   wAppIconPaint(icon);
@@ -3055,8 +3054,9 @@ void wDockRaise(WDock *dock)
   WDrawerChain *dc;
 
   for (i = dock->max_icons - 1; i >= 0; i--) {
-    if (dock->icon_array[i])
+    if (dock->icon_array[i]) {
       wRaiseFrame(dock->icon_array[i]->icon->core);
+    }
   }
   if (dock->type == WM_DOCK) {
     for (dc = dock->screen_ptr->drawers; dc != NULL; dc = dc->next)

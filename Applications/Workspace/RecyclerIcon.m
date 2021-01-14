@@ -286,8 +286,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   WAppIcon *btn;
   int      rec_pos = [RecyclerIcon newPositionInDock:dock];
  
-  btn = wAppIconCreateForDock(dock->screen_ptr, "", "Recycler", "GNUstep",
-                              TILE_NORMAL);
+  btn = wAppIconCreateForDock(dock->screen_ptr, "-", "Recycler", "GNUstep", TILE_NORMAL);
   btn->yindex = rec_pos;
   btn->running = 1;
   btn->launching = 0;
@@ -295,7 +294,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   btn->command = wstrdup("-");
   btn->dnd_command = NULL;
   btn->paste_command = NULL;
-  btn->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;  
+  btn->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
 
   return btn;
 }

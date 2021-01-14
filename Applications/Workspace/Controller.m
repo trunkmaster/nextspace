@@ -534,7 +534,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       recycler_icon->main_window = main_dock_icon->main_window;
       [[recycler appIcon] orderFrontRegardless];
     }
-  }    
+  }
 
   // Detect lid close/open events
   systemPower = [OSEPower new];
@@ -634,6 +634,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
   [self _startSavedApplications];
   
+  wDefaultScreen()->flags.startup2 = 0;
+
   fprintf(stderr, "=== Workspace is ready. Welcome to the NeXT world! ===\n");
 }
 

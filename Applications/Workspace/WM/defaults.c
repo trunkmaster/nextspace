@@ -798,7 +798,7 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
   }
   CFLog(kCFLogLevelError, (CFSTR("Processing of options list done.")));
 
-  if (needs_refresh != 0 && !scr->flags.startup) {
+  if (needs_refresh != 0 && !scr->flags.startup && !scr->flags.startup2) {
     int foo;
 
     foo = 0;

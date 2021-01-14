@@ -299,11 +299,9 @@ static void icon_update_pixmap(WIcon *icon, RImage *image)
 
   switch (icon->tile_type) {
   case TILE_NORMAL:
-#ifdef NEXTSPACE
-    if (icon->show_title)
+    if (icon->show_title) // NEXTSPACE
       tile = RCloneImage(scr->miniwindow_tile);
     else
-#endif
       tile = RCloneImage(scr->icon_tile);
     break;
   case TILE_CLIP:

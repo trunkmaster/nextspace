@@ -150,15 +150,12 @@ int main(int argc, const char **argv)
         }
 
         wInitialize(argc, (char **)argv);
-        wScreen = wDefaultScreen();
+        wStartUp(True);
         
-        // Setup Recycler icon
-        [RecyclerIcon recyclerAppIconForDock:wScreen->dock];
-
-        // TODO: go through all screens
-        // Adjust WM elements placing
+        wScreen = wDefaultScreen();
         WSUpdateScreenInfo(wScreen);
 
+        // Dock
         wDockShowIcons(wScreen->dock);
 
         // Setup predefined _GNUSTEP_FRAME_OFFSETS atom for correct

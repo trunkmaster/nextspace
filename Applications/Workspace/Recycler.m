@@ -190,8 +190,6 @@ static NSMutableArray *fileList = nil;
     return nil;
   }
 
-  // _dockIcon->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
-
   classhint.res_name = "Recycler";
   classhint.res_class = "GNUstep";
   XSetClassHint(dpy, _dockIcon->icon->core->window, &classhint);
@@ -200,7 +198,7 @@ static NSMutableArray *fileList = nil;
   [_path retain];
   recyclerDBPath = [_path stringByAppendingPathComponent:@".recycler.db"];
   [recyclerDBPath retain];
-  
+
   if ([fileManager fileExistsAtPath:_path isDirectory:&isDir] == NO) {
     if ([fileManager createDirectoryAtPath:_path attributes:nil] == NO) {
       NXTRunAlertPanel(_(@"Workspace"),
@@ -221,9 +219,8 @@ static NSMutableArray *fileList = nil;
     // TODO: on disable Recycler icon should be removed from screen.
   }
 
-  _appIcon = [[RecyclerIcon alloc]
-               initWithWindowRef:&_dockIcon->icon->core->window
-                        recycler:self];
+  _appIcon = [[RecyclerIcon alloc] initWithWindowRef:&_dockIcon->icon->core->window
+                                            recycler:self];
   
   appIconView = [[RecyclerIconView alloc] initWithFrame:NSMakeRect(0,0,64,64)];
   [_appIcon setContentView:appIconView];
