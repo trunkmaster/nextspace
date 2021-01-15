@@ -31,35 +31,42 @@ fi
 
 REPO_DIR=$1
 
-# libdispatch
+# Apple Grand Central Dispatch
 `dirname $0`/build_libdispatch.sh $1
 if [ $? -eq 1 ]; then
     echo "Aborting..."
     exit 1
 fi
 
-# libobjc2
+# Apple Core Foundation
+`dirname $0`/build_corefoundation.sh $1
+if [ $? -eq 1 ]; then
+    echo "Aborting..."
+    exit 1
+fi
+
+# GNUstep Objective-C runtime
 `dirname $0`/build_libobjc2.sh $1
 if [ $? -eq 1 ]; then
     echo "Aborting..."
     exit 1
 fi
 
-# nextspace-core
-`dirname $0`/build_nextspace-core.sh $1
-if [ $? -eq 1 ]; then
-    echo "Aborting..."
-    exit 1
-fi
-
-# libwraster
+# Raster graphics manipulation
 `dirname $0`/build_libwraster.sh $1
 if [ $? -eq 1 ]; then
     echo "Aborting..."
     exit 1
 fi
 
-# GNUstep
+# NextSpace Core
+`dirname $0`/build_nextspace-core.sh $1
+if [ $? -eq 1 ]; then
+    echo "Aborting..."
+    exit 1
+fi
+
+# GNUstep libraries
 `dirname $0`/build_nextspace-gnustep.sh $1
 if [ $? -eq 1 ]; then
     echo "Aborting..."
