@@ -26,6 +26,9 @@
 
 // /Users/$USER/Library
 #define USER_LIBRARY_DIR "Library"
+// $USER_LIBRARY_DIR/Preferences/.NextSpace
+#define DEFAULTS_SUBDIR "Preferences/.NextSpace"
+
 CFURLRef WMUserDefaultsCopyUserLibraryURL(void)
 {
   CFURLRef homePath = CFCopyHomeDirectoryURL();
@@ -36,10 +39,6 @@ CFURLRef WMUserDefaultsCopyUserLibraryURL(void)
 
   return libPath;
 }
-
-// $USER_LIBRARY_DIR/Preferences/.NextSpace
-/* #define DEFAULTS_SUBDIR "Preferences/.NextSpace" */
-#define DEFAULTS_SUBDIR "Preferences/.WindowMaker"
 
 CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain)
 {
@@ -74,28 +73,30 @@ CFStringRef WMUserDefaultsCopyPathForDomain(CFStringRef domain)
   return domainPath;
 }
 
+// /usr/NextSpace/Apps/Workspace.app/Resources/<domain>.plist
 CFURLRef WMUserDefaultsCopySystemURLForDomain(CFStringRef domain)
 {
-  CFURLRef appBundleURL;
+  CFURLRef sysdefsURL;
   CFURLRef domainURL;
+  CFStringRef domainFileName;
 
-  appBundleURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, CFSTR(SYSCONFDIR),
-                                               kCFURLPOSIXPathStyle, true);
+  sysdefsURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, CFSTR(SYSTEM_DEFAULTS_DIR),
+                                             kCFURLPOSIXPathStyle, true);
   
+  domainFileName = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%@.plist"), domain);
   if (CFStringGetLength(domain) > 0) {
-    domainURL = CFURLCreateCopyAppendingPathComponent(kCFAllocatorDefault, appBundleURL,
-                                                      domain, false);
+    domainURL = CFURLCreateCopyAppendingPathComponent(kCFAllocatorDefault, sysdefsURL,
+                                                      domainFileName, false);
   }
   else {
-    CFRetain(appBundleURL);
-    domainURL = appBundleURL;
+    CFRetain(sysdefsURL);
+    domainURL = sysdefsURL;
   }
 
-  CFRelease(appBundleURL);
+  CFRelease(sysdefsURL);
 
   return domainURL;
 }
-
 
 // ---[ Dictionary ] ------------------------------------------------------------------------------
 CFPropertyListRef WMUserDefaultsFromDescription(const char *description)
@@ -235,7 +236,6 @@ CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName, Boolean useSystemDo
   CFPropertyListRef pl = NULL;
 
   osURL = WMUserDefaultsCopyURLForDomain(domainName);
-  
   if (WMUserDefaultsFileExists(domainName, kCFPropertyListXMLFormat_v1_0) > 0.0) {
     // Read XML format .plist file
     fileURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));

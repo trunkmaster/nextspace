@@ -626,15 +626,15 @@ void wStartUp(Bool defaultScreenOnly)
   WMHookEventHandler(DispatchEvent);
 
   /* initialize defaults stuff */
-  w_global.domain.wmaker = wDefaultsInitDomain("WindowMaker");
-  if (!w_global.domain.wmaker->dictionary) {
-    wwarning(_("could not read domain \"%s\" from defaults database"), "WindowMaker");
+  w_global.domain.wm = wDefaultsInitDomain("WM");
+  if (!w_global.domain.wm->dictionary) {
+    wwarning(_("could not read domain \"%s\" from defaults database"), "WM");
   }
 
   /* read defaults that don't change until a restart and are screen independent */
-  wDefaultsReadStatic(w_global.domain.wmaker ? w_global.domain.wmaker->dictionary : NULL);
-  if (w_global.domain.wmaker) {
-    WMUserDefaultsWrite(w_global.domain.wmaker->dictionary, w_global.domain.wmaker->name);
+  wDefaultsReadStatic(w_global.domain.wm ? w_global.domain.wm->dictionary : NULL);
+  if (w_global.domain.wm) {
+    WMUserDefaultsWrite(w_global.domain.wm->dictionary, w_global.domain.wm->name);
   }
 
   /* check sanity of some values */

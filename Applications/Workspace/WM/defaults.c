@@ -652,7 +652,6 @@ WDDomain *wDefaultsInitDomain(const char *domain)
 {
   WDDomain *db;
   static int inited = 0;
-  CFAbsoluteTime modificationTime = 0.0;
 
   if (!inited) {
     inited = 1;
@@ -664,11 +663,8 @@ WDDomain *wDefaultsInitDomain(const char *domain)
   db->path = WMUserDefaultsCopyURLForDomain(db->name);
 
   db->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(db->name, true);
-  /* modificationTime = WMUserDefaultsFileModificationTime(db->name, 0); */
-  /* if (modificationTime > 0) { */
   if (db->dictionary) {
-    /* db->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(db->name); */
-    if (/*db->dictionary && */(CFGetTypeID(db->dictionary) != CFDictionaryGetTypeID())) {
+    if ((CFGetTypeID(db->dictionary) != CFDictionaryGetTypeID())) {
       CFRelease(db->dictionary);
       db->dictionary = NULL;
       wwarning(_("Domain %s (%s) of defaults database is corrupted!"), domain,
@@ -681,9 +677,8 @@ WDDomain *wDefaultsInitDomain(const char *domain)
                                                &kCFTypeDictionaryKeyCallBacks,
                                                &kCFTypeDictionaryValueCallBacks);
     WMUserDefaultsWrite(db->dictionary, db->name);
-    modificationTime = WMUserDefaultsFileModificationTime(db->name, 0);
-    db->timestamp = modificationTime;
   }
+  db->timestamp = WMUserDefaultsFileModificationTime(db->name, 0);
 
   return db;
 }
@@ -735,8 +730,8 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
   void *tdata;
   CFDictionaryRef old_dict = NULL;
 
-  if (w_global.domain.wmaker->dictionary != new_dict)
-    old_dict = w_global.domain.wmaker->dictionary;
+  if (w_global.domain.wm->dictionary != new_dict)
+    old_dict = w_global.domain.wm->dictionary;
 
   needs_refresh = 0;
 
@@ -877,29 +872,29 @@ void wDefaultsCheckDomains(void* arg)
   CFAbsoluteTime time = 0.0;
 
   // ~/Library/Preferences/.WindowMaker/WindowMaker
-  time = WMUserDefaultsFileModificationTime(w_global.domain.wmaker->name, 0);
-  if (w_global.domain.wmaker->timestamp < time) {
-    w_global.domain.wmaker->timestamp = time;
+  time = WMUserDefaultsFileModificationTime(w_global.domain.wm->name, 0);
+  if (w_global.domain.wm->timestamp < time) {
+    w_global.domain.wm->timestamp = time;
 
     /* User dictionary */
-    dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.wmaker->name, false);
+    dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.wm->name, false);
     if (dict) {
       if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
         CFRelease(dict);
         dict = NULL;
         CFLog(kCFLogLevelError, CFSTR("Domain %s (%@) of defaults database is corrupted!"),
-              "WindowMaker", w_global.domain.wmaker->name);
+              "WindowMaker", w_global.domain.wm->name);
       } else {
         scr = wDefaultScreen();
         if (scr) {
           wDefaultsRead(scr, dict);
         }
-        if (w_global.domain.wmaker->dictionary) {
-          CFRelease(w_global.domain.wmaker->dictionary);
+        if (w_global.domain.wm->dictionary) {
+          CFRelease(w_global.domain.wm->dictionary);
         }
-        w_global.domain.wmaker->dictionary = dict;
-        WMUserDefaultsWrite(w_global.domain.wmaker->dictionary,
-                            w_global.domain.wmaker->name);
+        w_global.domain.wm->dictionary = dict;
+        WMUserDefaultsWrite(w_global.domain.wm->dictionary,
+                            w_global.domain.wm->name);
       }
     } else {
       wwarning(_("could not load domain %s from user defaults database"), "WindowMaker");

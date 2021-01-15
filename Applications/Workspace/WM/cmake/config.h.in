@@ -132,4 +132,4 @@
 #define RETSIGTYPE void
 
 /* where the defaults configuration is stored */
-#define SYSCONFDIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM"
+#define SYSTEM_DEFAULTS_DIR "/usr/NextSpace/Apps/Workspace.app/Resources"
