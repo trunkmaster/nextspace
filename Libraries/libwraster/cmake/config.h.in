@@ -1,0 +1,36 @@
+/* Defined if the 'float'-typed math function are available (sinf, cosf) */
+#cmakedefine01 HAVE_FLOAT_MATHFUNC
+
+/* Defines how to access the value of Pi */
+#cmakedefine WM_PI @M_PI_VALUE@
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#cmakedefine01 HAVE_STDLIB_H
+
+/* Defined if header "stdnoreturn.h" exists, it defines ISO C11 attribute
+   'noreturn' and it works */
+#cmakedefine01 HAVE_STDNORETURN
+
+/* defined when valid XShm library with header was found */
+#cmakedefine01 USE_XSHM
+
+/* defined when valid GIF library with header was found */
+#cmakedefine01 USE_GIF
+
+/* defined when valid JPEG library with header was found */
+#cmakedefine01 USE_JPEG
+
+/* defined when MagickWand library with header was found */
+#cmakedefine01 USE_MAGICK
+
+/* defined when valid PNG library with header was found */
+#cmakedefine01 USE_PNG
+
+/* defined when valid TIFF library with header was found */
+#cmakedefine01 USE_TIFF
+
+/* defined when valid Webp library with header was found */
+#cmakedefine01 USE_WEBP
+
+/* defined when valid XPM library with header was found */
+#cmakedefine01 USE_XPM

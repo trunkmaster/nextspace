@@ -68,19 +68,11 @@ include $(GNUSTEP_MAKEFILES)/clibrary.make
 -include GNUmakefile.postamble
 
 before-all::
-	@ if [ ! -e config.h ]; then \
-	  cp config/config.h.in ./;\
-	  cd config; \
-	  autoreconf -vfi -I m4; \
-	  ./configure \
-		--disable-magick \
-		\
-		--prefix=/usr/NextSpace \
-		--bindir=/usr/NextSpace/bin \
-		--libdir=/usr/NextSpace/lib \
-		--includedir=/usr/NextSpace/include \
-		--mandir=/usr/NextSpace/Documentation/man \
-		\
-		CC=clang CXX=clang++; \
-	  cd ..; rm config.h.in* stamp-h1; \
-	fi
+	@ cd cmake; cmake . -DCMAKE_C_COMPILER=clang
+
+after-clean::
+	@ rm -rf cmake/CMakeFiles
+	@ rm -f cmake/CMakeCache.txt
+	@ rm -f cmake/Makefile
+	@ rm -f cmake/cmake_install.cmake
+	@ rm -f config.h
