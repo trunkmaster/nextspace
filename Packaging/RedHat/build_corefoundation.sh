@@ -15,6 +15,7 @@ CF_VERSION=`rpm_version ${SPEC_FILE}`
 print_H1 " Building Core Foundation (libCoreFoundation) package..."
 cp ${REPO_DIR}/Libraries/libCoreFoundation/*.patch ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/libCoreFoundation/CFNotificationCenter.c ${SOURCES_DIR}
+cp ${REPO_DIR}/Libraries/libCoreFoundation/CFFileDescriptor.[ch] ${SOURCES_DIR}
 
 print_H2 "===== Install Core Foundation build dependencies..."
 DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
