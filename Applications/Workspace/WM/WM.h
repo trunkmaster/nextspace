@@ -40,6 +40,14 @@
  *  Definitions and compile time options                                                         *
  *************************************************************************************************/
 
+/* Define to support ICCCM protocol for window manager replacement */
+#undef USE_ICCCM_WMREPLACE
+/* Undefine if you want to disable animations */
+#define USE_ANIMATIONS
+/* Whether Drag-and-Drop on the dock should be enabled */
+#define USE_DOCK_XDND
+/* Undefine to disable Motif WM hints handling */
+#define USE_MWM_HINTS
 /* Undefine if you don't want balloons for showing extra information, like window titles that 
    are not fully visible. */
 #define BALLOON_TEXT

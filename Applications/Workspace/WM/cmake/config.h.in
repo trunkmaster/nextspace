@@ -128,80 +128,8 @@
 /* Define if Pango is to be used */
 #cmakedefine USE_PANGO
 
-
 /* Define as the return type of signal handlers (`int' or `void') */
 #define RETSIGTYPE void
 
-/* Defined when user did not request to disable animations */
-#define USE_ANIMATIONS //--> wconfig.h
-
-/* whether Drag-and-Drop on the dock should be enabled */
-#define USE_DOCK_XDND //--> wconfig.h
-
-/* Defined when used did not request to disable Motif WM hints */
-#define USE_MWM_HINTS //--> wconfig.h
-
-/* define to support ICCCM protocol for window manager replacement */
-#undef USE_ICCCM_WMREPLACE
-
-
-
-/* defined when valid XShm library with header was found */
-//#cmakedefine01 USE_XSHM --> libwraster
-
-/* defined when valid GIF library with header was found */
-////#cmakedefine01 USE_GIF --> libwraster
-
-/* defined when valid JPEG library with header was found */
-////#cmakedefine01 USE_JPEG --> libwraster
-
-/* defined when MagickWand library with header was found */
-////#cmakedefine01 USE_MAGICK --> libwraster
-
-/* defined when valid PNG library with header was found */
-///#cmakedefine01 USE_PNG --> libwraster
-
-/* defined when valid TIFF library with header was found */
-////#cmakedefine01 USE_TIFF --> libwraster
-
-/* defined when valid Webp library with header was found */
-////#cmakedefine01 USE_WEBP --> libwraster
-
-/* defined when valid XPM library with header was found */
-////#cmakedefine01 USE_XPM --> libwraster
-
-/* Define to empty if `const' does not conform to ANSI C. */
-//#cmakedefine01 const
-
-/* Define to `__inline__' or `__inline' if that's what the C compiler
-   calls it, or to nothing if 'inline' is not supported under any name.  */
-// #ifndef __cplusplus
-// #undef inline
-// #endif
-
-/* Defines the attribute to tell the compiler that a function never returns,
-   if the ISO C11 attribute does not work */
-// #undef noreturn
-
-/* Define to `int' if <sys/types.h> does not define. */
-// #undef pid_t
-
-/* Define to `unsigned int' if <sys/types.h> does not define. */
-//#cmakedefine01 size_t
-
-// --- #include "config-paths.h" ---
-
-/* define where the translations are stored */
-#define LOCALEDIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM"
-//#define LD ${LOCALEDIR}
-
-/* define an extra path for pixmaps */
-#define PIXMAPDIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM"
-//#define PIXMAPDIR ${datadir}
-
-/* where shared data is stored */
-#define PKGDATADIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM"
-//#define PKGDATADIR ${datadir}
-
-/* where the configuration is stored */
+/* where the defaults configuration is stored */
 #define SYSCONFDIR "/usr/NextSpace/Apps/Workspace.app/Resources/WM"

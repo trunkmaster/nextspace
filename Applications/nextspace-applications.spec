@@ -25,9 +25,6 @@ BuildRequires:	libXmu-devel
 BuildRequires:	libexif-devel
 BuildRequires:	libXfixes-devel
 BuildRequires:	fontconfig-devel
-BuildRequires:	autoconf
-BuildRequires:	automake
-BuildRequires:	libtool
 #
 Requires:	nextspace-frameworks
 Requires:	fontconfig
