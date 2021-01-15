@@ -1,5 +1,5 @@
 Name:           nextspace-applications
-Version:        0.90
+Version:        0.91
 Release:        0%{?dist}
 Summary:        NextSpace desktop core applications.
 
@@ -23,6 +23,7 @@ BuildRequires:	nextspace-frameworks-devel
 # Login
 BuildRequires:	pam-devel
 # Workspace
+BuildRequires:	libCoreFoundation-devel
 BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libpng-devel
@@ -36,6 +37,7 @@ BuildRequires:	libXfixes-devel
 BuildRequires:	fontconfig-devel
 #
 Requires:	nextspace-frameworks
+Requires:	libCoreFoundation
 Requires:	fontconfig
 Requires:	libXft
 Requires:	libXinerama
@@ -134,6 +136,11 @@ fi
 #%postun
 
 %changelog
+* Fri Jan 15 2020  Sergii Stoian <stoyan255@gmail.com> - 0.91-0
+- added libCoreFoundation dependency.
+- autotools dependecies were removed (in favour of cmake).
+- use CMAKE variable to build Workspace.
+
 * Sun Jun  9 2019  Sergii Stoian <stoyan255@gmail.com> - 0.85-3
 - fixed %post script.
 
