@@ -11,13 +11,13 @@ Source0:	libwraster-%{WRASTER_VERSION}.tar.gz
 
 %if 0%{?el7}
 BuildRequires:	cmake3
+%define CMAKE cmake3
 BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
 %else
 BuildRequires:	cmake
+%define CMAKE cmake
 BuildRequires:	clang >= 7.0.1
 %endif
-BuildRequires:	automake
-BuildRequires:	libtool
 BuildRequires:	nextspace-core-devel >= 0.95
 BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
@@ -70,16 +70,9 @@ rm -rf %{buildroot}
 #
 %build
 export CC=clang
+export CMAKE=%{CMAKE}
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 source /Developer/Makefiles/GNUstep.sh
-cd cmake
-%if 0%{?el7}
-source /opt/rh/llvm-toolset-7.0/enable
-cmake3 .
-%else
-cmake .
-%endif
-cd ..
 make
 
 #
@@ -89,6 +82,7 @@ make
 source /Developer/Makefiles/GNUstep.sh
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 export QA_SKIP_BUILD_ROOT=1
+export CMAKE=%{CMAKE}
 
 %{make_install}
 

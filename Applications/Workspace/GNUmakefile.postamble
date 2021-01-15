@@ -28,7 +28,7 @@ SHARED = obj
 
 before-all::
 	@ echo "Preparing WM..."
-	@ cd $(WM_DIR)/cmake; cmake . -DCMAKE_C_COMPILER=clang
+	@ cd $(WM_DIR)/cmake; ${CMAKE} . -DCMAKE_C_COMPILER=clang
 
 after-all::
 	@ echo " Copying Viewers bundles into the app wrapper ..."
