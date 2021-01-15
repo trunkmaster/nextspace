@@ -24,9 +24,13 @@ Patch3:		CFNotificationCenter.patch
 %if 0%{?el7}
 BuildRequires:	cmake3
 BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
+%define CMAKE cmake3
+%define CMAKE_BUILD_TYPE -DCMAKE_BUILD_TYPE=Release
 %else
 BuildRequires:	cmake
 BuildRequires:	clang >= 7.0.1
+%define CMAKE cmake
+%define CMAKE_BUILD_TYPE -DCMAKE_BUILD_TYPE=Debug
 %endif
 BuildRequires:	libdispatch-devel
 BuildRequires:	libxml2-devel
@@ -70,11 +74,12 @@ mkdir -p CoreFoundation/.build
 cd CoreFoundation/.build
 #CF_CFLAGS="-I/usr/NextSpace/include -I. -I`pwd`/../Base.subproj -DU_SHOW_DRAFT_API -DCF_BUILDING_CF -DDEPLOYMENT_RUNTIME_C -fconstant-cfstrings -fexceptions -Wno-switch -D_GNU_SOURCE -DCF_CHARACTERSET_DATA_DIR=\"CharacterSets\""
 CF_CFLAGS="-I/usr/NextSpace/include -Wno-implicit-const-int-float-conversion -Wno-switch"
-%if 0%{?el7}
-cmake3 .. \
-%else
-cmake .. \
-%endif
+#%if 0%{?el7}
+#cmake3 .. \
+#%else
+#cmake .. \
+#%endif
+%{CMAKE} .. \
       -DCMAKE_C_COMPILER=clang \
       -DCMAKE_C_FLAGS="$CF_CFLAGS" \
       -DCMAKE_SHARED_LINKER_FLAGS="-L/usr/NextSpace/lib -luuid" \
@@ -83,11 +88,12 @@ cmake .. \
       -DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
       -DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
       -DCMAKE_LIBRARY_PATH=/usr/NextSpace/lib \
-%if 0%{?el7}
-      -DCMAKE_BUILD_TYPE=Release
-%else
-      -DCMAKE_BUILD_TYPE=Debug
-%endif
+      %{CMAKE_BUILD_TYPE}
+#%if 0%{?el7}
+#      -DCMAKE_BUILD_TYPE=Release
+#%else
+#      -DCMAKE_BUILD_TYPE=Debug
+#%endif
 
 make %{?_smp_mflags}
 
