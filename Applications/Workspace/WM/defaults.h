@@ -33,6 +33,9 @@ typedef struct WDDomain {
   CFMutableDictionaryRef dictionary;
   CFURLRef               path;
   CFAbsoluteTime         timestamp;
+#ifdef HAVE_INOTIFY
+  int                    inotify_watch;
+#endif
 } WDDomain;
 
 /* Mouse cursors */
@@ -226,10 +229,14 @@ extern struct WPreferences {
 
 } wPreferences;
 
-WDDomain *wDefaultsInitDomain(const char *domain);
+WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges);
 void wDefaultsReadStatic(CFMutableDictionaryRef dict);
 void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict);
 void wDefaultsCheckDomains(void *arg);
+
+#ifdef HAVE_INOTIFY
+void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shoudTrack);
+#endif
 
 /* Default images path */
 #define DEF_IMAGE_PATHS                                 \
@@ -251,7 +258,7 @@ void wDefaultsCheckDomains(void *arg);
 
 #ifndef HAVE_INOTIFY
 /* Check defaults database for changes every this many milliseconds */
-#define DEFAULTS_CHECK_INTERVAL	2000
+#define DEFAULTS_CHECK_INTERVAL	3000
 #endif
 
 /* window placement mode */

@@ -626,7 +626,7 @@ void wStartUp(Bool defaultScreenOnly)
   WMHookEventHandler(DispatchEvent);
 
   /* initialize defaults stuff */
-  w_global.domain.wm = wDefaultsInitDomain("WM");
+  w_global.domain.wm = wDefaultsInitDomain("WM", true);
   if (!w_global.domain.wm->dictionary) {
     wwarning(_("could not read domain \"%s\" from defaults database"), "WM");
   }
@@ -645,7 +645,7 @@ void wStartUp(Bool defaultScreenOnly)
   }
 
   /* init other domains */
-  w_global.domain.window_attr = wDefaultsInitDomain("WMWindowAttributes");
+  w_global.domain.window_attr = wDefaultsInitDomain("WMWindowAttributes", true);
 
   wSetErrorHandler();
 
@@ -718,12 +718,6 @@ void wStartUp(Bool defaultScreenOnly)
       wSessionRestoreLastWorkspace(scr);
     }
   }
-
-#ifndef HAVE_INOTIFY
-  /* setup defaults file polling */
-  if (!wPreferences.flags.noupdates)
-    WMAddTimerHandler(3000, wDefaultsCheckDomains, NULL);
-#endif
 }
 
 /*

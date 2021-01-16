@@ -24,10 +24,10 @@
 
 #include "WM.h"
 
-#ifdef HAVE_INOTIFY
-#include <sys/select.h>
-#include <sys/inotify.h>
-#endif
+/* #ifdef HAVE_INOTIFY */
+/* #include <sys/select.h> */
+/* #include <sys/inotify.h> */
+/* #endif */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -314,124 +314,6 @@ void DispatchEvent(XEvent * event)
   }
 }
 
-#ifdef HAVE_INOTIFY
-static void _processDefaultsWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
-{
-  ssize_t eventQLength;
-  size_t i = 0;
-  /* Make room for at lease 5 simultaneous events, with path + filenames */
-  char buff[ (sizeof(struct inotify_event) + NAME_MAX + 1) * 5 ];
-  /* Check config only once per read of the event queue */
-  int oneShotFlag = 0;
-
-  CFLog(kCFLogLevelError, CFSTR("_inotifyHandleEvents"));
-
-  /*
-   * Read off the queued events
-   * queue overflow is not checked (IN_Q_OVERFLOW). In practise this should
-   * not occur; the block is on Xevents, but a config file change will normally
-   * occur as a result of an Xevent - so the event queue should never have more than
-   * a few entries before a read().
-   */
-  eventQLength = read(w_global.inotify.fd_event_queue, buff, sizeof(buff));
-
-  if (eventQLength < 0) {
-    wwarning(_("read problem when trying to get INotify event: %s"), strerror(errno));
-    return;
-  }
-
-  /* check what events occured */
-  /* Should really check wd here too, but for now we only have one watch! */
-  while (i < eventQLength) {
-    struct inotify_event *pevent = (struct inotify_event *)&buff[i];
-
-    /*
-     * see inotify.h for event types.
-     */
-    if (pevent->mask & IN_DELETE_SELF) {
-      wwarning(_("the defaults database has been deleted!"
-                 " Restart Window Maker to create the database" " with the default settings"));
-
-      if (w_global.inotify.fd_event_queue >= 0) {
-        close(w_global.inotify.fd_event_queue);
-        w_global.inotify.fd_event_queue = -1;
-      }
-    }
-    if (pevent->mask & IN_UNMOUNT) {
-      wwarning(_("the unit containing the defaults database has"
-                 " been unmounted. Setting --static mode." " Any changes will not be saved."));
-
-      if (w_global.inotify.fd_event_queue >= 0) {
-        close(w_global.inotify.fd_event_queue);
-        w_global.inotify.fd_event_queue = -1;
-      }
-
-      wPreferences.flags.noupdates = 1;
-    }
-    if ((pevent->mask & IN_MODIFY) && oneShotFlag == 0) {
-      wmessage(_("Inotify: Reading config files in defaults database."));
-      wDefaultsCheckDomains(NULL);
-      oneShotFlag = 1;
-    }
-
-    /* move to next event in the buffer */
-    i += sizeof(struct inotify_event) + pevent->len;
-  }
-  
-  CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
-}
-/*
- * Add watch here, used to notify if configuration
- * files have changed, using linux kernel inotify mechanism
- */
-static void _addDefaultsWatch(void)
-{
-  CFStringRef pathString = NULL;
-  const char *watchPath = NULL;
-
-  w_global.inotify.fd_event_queue = inotify_init();	/* Initialise an inotify instance */
-  if (w_global.inotify.fd_event_queue < 0) {
-    wwarning(_("could not initialise an inotify instance."
-               " Changes to the defaults database will require"
-               " a restart to take effect. Check your kernel!"));
-  } else {
-    pathString = WMUserDefaultsCopyPathForDomain(CFSTR(""));
-    watchPath = CFStringGetCStringPtr(pathString, kCFStringEncodingUTF8);
-    CFLog(kCFLogLevelError, CFSTR("inotify: watch for %s"), watchPath);
-    /* Add the watch; really we are only looking for modify events
-     * but we might want more in the future so check all events for now.
-     * The individual events are checked for in event.c.
-     */
-    w_global.inotify.wd_defaults = inotify_add_watch(w_global.inotify.fd_event_queue,
-                                                     watchPath, IN_ALL_EVENTS);
-    if (w_global.inotify.wd_defaults < 0) {
-      wwarning(_("could not add an inotify watch on path %s."
-                 " Changes to the defaults database will require"
-                 " a restart to take effect."), watchPath);
-      close(w_global.inotify.fd_event_queue);
-      w_global.inotify.fd_event_queue = -1;
-    }
-    CFRelease(pathString);
-  }
-
-  // Add to runloop
-  if (w_global.inotify.fd_event_queue > 0) {
-    CFFileDescriptorRef ifd = NULL;
-    CFRunLoopSourceRef  ifd_source = NULL;
-  
-    ifd = CFFileDescriptorCreate(kCFAllocatorDefault, w_global.inotify.fd_event_queue, true,
-                                 _processDefaultsWatchEvents, NULL);
-    CFFileDescriptorEnableCallBacks(ifd, kCFFileDescriptorReadCallBack);
-
-    ifd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, ifd, 0);
-    CFRunLoopAddSource(wm_runloop, ifd_source, kCFRunLoopDefaultMode);
-    CFRelease(ifd_source);
-    CFRelease(ifd);
-  }
-}
-
-#endif /* HAVE_INOTIFY */
-
 static void _runLoopHandleEvent(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
 {
   XEvent event;
@@ -453,11 +335,18 @@ void WMRunLoop_V0()
     WMNextEvent(dpy, &event);
     WMHandleEvent(&event);
   }
-  CFLog(kCFLogLevelError, CFSTR("WMRunLoop0: run loop is ready - bail out."));
+  CFLog(kCFLogLevelError, CFSTR("WMRunLoop_V0: run loop V1 is ready."));
   
 #ifdef HAVE_INOTIFY
-  // Defaults inotify descriptor
-  _addDefaultsWatch();
+  /* Track some defaults files for changes */
+  w_global.inotify.fd_event_queue = -1;
+  wDefaultsShouldTrackChanges(w_global.domain.wm, true);
+  wDefaultsShouldTrackChanges(w_global.domain.window_attr, true);
+#else
+  /* Setup defaults files polling */
+  if (!wPreferences.flags.noupdates) {
+    WMAddTimerHandler(DEFAULTS_CHECK_INTERVAL, wDefaultsCheckDomains, NULL);
+  }
 #endif
 }
 

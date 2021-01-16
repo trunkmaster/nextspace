@@ -39,6 +39,11 @@
 #include <limits.h>
 #include <signal.h>
 
+#ifdef HAVE_INOTIFY
+#include <sys/select.h>
+#include <sys/inotify.h>
+#endif
+
 #ifndef PATH_MAX
 #define PATH_MAX DEFAULT_PATH_MAX
 #endif
@@ -58,6 +63,9 @@
 #include <core/wcolor.h>
 #include <core/drawing.h>
 #include <core/wuserdefaults.h>
+
+#include <CoreFoundation/CoreFoundation.h>
+#include <CoreFoundation/CFFileDescriptor.h>
 #include <CoreFoundation/CFLogUtilities.h>
 
 #include "WM.h"
@@ -76,6 +84,8 @@
 #include "misc.h"
 #include "winmenu.h"
 #include "moveres.h"
+
+#include "Workspace+WM.h"
 
 #include "defaults.h"
 
@@ -647,10 +657,127 @@ void _updateApplicationIcons(WScreen *scr)
   }
 }
 
-// Called from startup.c
-WDDomain *wDefaultsInitDomain(const char *domain)
+#ifdef HAVE_INOTIFY
+
+static void _processWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
 {
-  WDDomain *db;
+  ssize_t eventQLength;
+  size_t i = 0;
+  /* Make room for at lease 5 simultaneous events, with path + filenames */
+  char buff[ (sizeof(struct inotify_event) + NAME_MAX + 1) * 5 ];
+  /* Check config only once per read of the event queue */
+  int oneShotFlag = 0;
+
+  CFLog(kCFLogLevelError, CFSTR("_inotifyHandleEvents"));
+
+  /*
+   * Read off the queued events
+   * queue overflow is not checked (IN_Q_OVERFLOW). In practise this should
+   * not occur; the block is on Xevents, but a config file change will normally
+   * occur as a result of an Xevent - so the event queue should never have more than
+   * a few entries before a read().
+   */
+  eventQLength = read(w_global.inotify.fd_event_queue, buff, sizeof(buff));
+
+  if (eventQLength < 0) {
+    wwarning(_("read problem when trying to get INotify event: %s"), strerror(errno));
+    return;
+  }
+
+  /* check what events occured */
+  /* Should really check wd here too, but for now we only have one watch! */
+  while (i < eventQLength) {
+    struct inotify_event *pevent = (struct inotify_event *)&buff[i];
+
+    /*
+     * see inotify.h for event types.
+     */
+    if (pevent->mask & IN_DELETE_SELF) {
+      wwarning(_("the defaults database has been deleted!"
+                 " Restart Window Maker to create the database" " with the default settings"));
+
+      if (w_global.inotify.fd_event_queue >= 0) {
+        close(w_global.inotify.fd_event_queue);
+        w_global.inotify.fd_event_queue = -1;
+      }
+    }
+    if (pevent->mask & IN_UNMOUNT) {
+      wwarning(_("the unit containing the defaults database has"
+                 " been unmounted. Setting --static mode." " Any changes will not be saved."));
+
+      if (w_global.inotify.fd_event_queue >= 0) {
+        close(w_global.inotify.fd_event_queue);
+        w_global.inotify.fd_event_queue = -1;
+      }
+
+      wPreferences.flags.noupdates = 1;
+    }
+    if ((pevent->mask & IN_MODIFY) && oneShotFlag == 0) {
+      wmessage(_("Inotify: Reading config files in defaults database."));
+      wDefaultsCheckDomains(NULL);
+      oneShotFlag = 1;
+    }
+
+    /* move to next event in the buffer */
+    i += sizeof(struct inotify_event) + pevent->len;
+  }
+  
+  CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
+}
+
+void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shoudTrack)
+{
+  CFStringRef domainPath = NULL;
+  const char  *watchPath = NULL;
+
+  if (!domain)
+    return;
+
+  // Initialize inotify
+  if (w_global.inotify.fd_event_queue < 0) {
+    w_global.inotify.fd_event_queue = inotify_init();
+    if (w_global.inotify.fd_event_queue < 0) {
+      wwarning(_("** inotify ** could not initialise an inotify instance."
+                 " Changes to the defaults database will require a restart to take effect."));
+      return;
+    }
+    else { // Add to runloop
+      CFFileDescriptorRef ifd = NULL;
+      CFRunLoopSourceRef  ifd_source = NULL;
+  
+      ifd = CFFileDescriptorCreate(kCFAllocatorDefault, w_global.inotify.fd_event_queue, true,
+                                   _processWatchEvents, NULL);
+      CFFileDescriptorEnableCallBacks(ifd, kCFFileDescriptorReadCallBack);
+
+      ifd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, ifd, 0);
+      CFRunLoopAddSource(wm_runloop, ifd_source, kCFRunLoopDefaultMode);
+      CFRelease(ifd_source);
+      CFRelease(ifd);
+    }
+  }
+
+  // Create watcher
+  domainPath = CFURLCopyFileSystemPath(domain->path, kCFURLPOSIXPathStyle);
+  watchPath = CFStringGetCStringPtr(domainPath, kCFStringEncodingUTF8);
+  
+  wwarning(_("* inotify: will add watch for %s"), watchPath);
+  domain->inotify_watch = inotify_add_watch(w_global.inotify.fd_event_queue,
+                                            watchPath, IN_DELETE_SELF|IN_UNMOUNT|IN_MODIFY);
+  if (domain->inotify_watch < 0) {
+    wwarning(_("** inotify ** could not add an inotify watch on path %s."
+               " Changes to the defaults database will require a restart to take effect."),
+             watchPath);
+  }
+  
+  CFRelease(domainPath);
+}
+
+#endif /* HAVE_INOTIFY */
+
+// Called from startup.c
+WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
+{
+  WDDomain *domain;
   static int inited = 0;
 
   if (!inited) {
@@ -658,29 +785,35 @@ WDDomain *wDefaultsInitDomain(const char *domain)
     _initializeOptionLists();
   }
 
-  db = wmalloc(sizeof(WDDomain));
-  db->name = CFStringCreateWithCString(kCFAllocatorDefault, domain, kCFStringEncodingUTF8);
-  db->path = WMUserDefaultsCopyURLForDomain(db->name);
+  domain = wmalloc(sizeof(WDDomain));
+  domain->name = CFStringCreateWithCString(kCFAllocatorDefault, domain_name, kCFStringEncodingUTF8);
 
-  db->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(db->name, true);
-  if (db->dictionary) {
-    if ((CFGetTypeID(db->dictionary) != CFDictionaryGetTypeID())) {
-      CFRelease(db->dictionary);
-      db->dictionary = NULL;
-      wwarning(_("Domain %s (%s) of defaults database is corrupted!"), domain,
-               WMUserDefaultsGetCString(CFURLGetString(db->path), kCFStringEncodingUTF8));
+  domain->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->name, true);
+  if (domain->dictionary) {
+    if ((CFGetTypeID(domain->dictionary) != CFDictionaryGetTypeID())) {
+      CFRelease(domain->dictionary);
+      domain->dictionary = NULL;
+      wwarning(_("Domain %s (%s) of defaults database is corrupted!"), domain_name,
+               WMUserDefaultsGetCString(CFURLGetString(domain->path), kCFStringEncodingUTF8));
     }
   }
   else {
-    CFLog(kCFLogLevelError, CFSTR("Creating empty domain: %@"), db->name);
-    db->dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                               &kCFTypeDictionaryKeyCallBacks,
-                                               &kCFTypeDictionaryValueCallBacks);
-    WMUserDefaultsWrite(db->dictionary, db->name);
+    CFLog(kCFLogLevelError, CFSTR("Creating empty domain: %@"), domain->name);
+    domain->dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                                   &kCFTypeDictionaryKeyCallBacks,
+                                                   &kCFTypeDictionaryValueCallBacks);
   }
-  db->timestamp = WMUserDefaultsFileModificationTime(db->name, 0);
+  if (domain->dictionary && WMUserDefaultsWrite(domain->dictionary, domain->name)) {
+    CFURLRef osURL;
+    
+    domain->timestamp = WMUserDefaultsFileModificationTime(domain->name, 0);
+    // Dictionary was written to .plist file - set domain->path
+    osURL = WMUserDefaultsCopyURLForDomain(domain->name);
+    domain->path = CFURLCreateCopyAppendingPathExtension(NULL, osURL, CFSTR("plist"));
+    CFRelease(osURL);
+  }
 
-  return db;
+  return domain;
 }
 
 // Called from startup.c
@@ -864,7 +997,8 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
   }
 }
 
-// Update in-memory representaion of user defaults
+// Update in-memory representaion of user defaults.
+// Also used as CFTimer callback.
 void wDefaultsCheckDomains(void* arg)
 {
   WScreen *scr;
@@ -930,8 +1064,9 @@ void wDefaultsCheckDomains(void* arg)
   }
 
 #ifndef HAVE_INOTIFY
-  if (!arg)
+  if (!arg) {
     WMAddTimerHandler(DEFAULTS_CHECK_INTERVAL, wDefaultsCheckDomains, arg);
+  }
 #endif
 }
 
