@@ -44,7 +44,7 @@ CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain)
 {
   CFURLRef libURL, prefsURL;
   CFURLRef domainURL;
-
+  
   libURL = WMUserDefaultsCopyUserLibraryURL();
   prefsURL = CFURLCreateCopyAppendingPathComponent(NULL, libURL, CFSTR(DEFAULTS_SUBDIR), true);
   CFRelease(libURL);
@@ -56,21 +56,10 @@ CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain)
     CFRetain(prefsURL);
     domainURL = prefsURL;
   }
+
   CFRelease(prefsURL);
-
-  return domainURL;
-}
-
-CFStringRef WMUserDefaultsCopyPathForDomain(CFStringRef domain)
-{
-  CFURLRef    domainURL;
-  CFStringRef domainPath;
-
-  domainURL = WMUserDefaultsCopyURLForDomain(domain);
-  domainPath = CFURLCopyFileSystemPath(domainURL, kCFURLPOSIXPathStyle);
-  CFRelease(domainURL);
   
-  return domainPath;
+  return domainURL;
 }
 
 // /usr/NextSpace/Apps/Workspace.app/Resources/<domain>.plist
@@ -80,10 +69,11 @@ CFURLRef WMUserDefaultsCopySystemURLForDomain(CFStringRef domain)
   CFURLRef domainURL;
   CFStringRef domainFileName;
 
+  domainFileName = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%@.plist"), domain);
+  
   sysdefsURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, CFSTR(SYSTEM_DEFAULTS_DIR),
                                              kCFURLPOSIXPathStyle, true);
   
-  domainFileName = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%@.plist"), domain);
   if (CFStringGetLength(domain) > 0) {
     domainURL = CFURLCreateCopyAppendingPathComponent(kCFAllocatorDefault, sysdefsURL,
                                                       domainFileName, false);
@@ -94,6 +84,7 @@ CFURLRef WMUserDefaultsCopySystemURLForDomain(CFStringRef domain)
   }
 
   CFRelease(sysdefsURL);
+  CFRelease(domainFileName);
 
   return domainURL;
 }
