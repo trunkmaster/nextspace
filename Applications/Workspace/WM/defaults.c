@@ -66,7 +66,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFFileDescriptor.h>
-#include <CoreFoundation/CFLogUtilities.h>
 
 #include "WM.h"
 #include "framewin.h"
@@ -668,7 +667,7 @@ static void _updateDomain(WDDomain *domain)
   CFMutableDictionaryRef dict;
 
   if (!domain) {
-    CFLog(kCFLogLevelError, CFSTR("** Could not update NULL domain."));
+    werror("Could not update NULL domain.");
     return;
   }
 
@@ -682,8 +681,7 @@ static void _updateDomain(WDDomain *domain)
     if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
       CFRelease(dict);
       dict = NULL;
-      CFLog(kCFLogLevelError,
-            CFSTR("Domain %@ of defaults database is corrupted!"), domain->name);
+      werror("Domain %@ of defaults database is corrupted!", domain->name);
     }
     else {
       if ((scr = wDefaultScreen())) {
@@ -696,10 +694,9 @@ static void _updateDomain(WDDomain *domain)
     }
   }
   else {
-    CFLog(kCFLogLevelError,
-          CFSTR("** Could not load domain %@. It is not dictionary!"), domain->name);
+    werror("Could not load domain %@. It is not dictionary!", domain->name);
     if (domain->dictionary) {
-      CFLog(kCFLogLevelError, CFSTR("** Write from memory to path %@."), domain->path);
+      werror("Write from memory to path %@.", domain->path);
       WMUserDefaultsWrite(domain->dictionary, domain->name);
     }
   }
@@ -732,7 +729,7 @@ static void _processWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBac
   char buff[ (sizeof(struct inotify_event) + NAME_MAX + 1) * 5 ];
   WDDomain *domain;
 
-  CFLog(kCFLogLevelError, CFSTR("_inotifyHandleEvents"));
+  werror("_inotifyHandleEvents");
 
   /*
    * Read off the queued events queue overflow is not checked (IN_Q_OVERFLOW).
@@ -823,7 +820,7 @@ void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shouldTrack)
     domainPath = CFURLCopyFileSystemPath(domain->path, kCFURLPOSIXPathStyle);
     watchPath = CFStringGetCStringPtr(domainPath, kCFStringEncodingUTF8);
   
-    CFLog(kCFLogLevelError, CFSTR("* inotify: will add watch for %s."), watchPath);
+    werror("inotify: will add watch for %s.", watchPath);
     domain->inotify_watch = inotify_add_watch(w_global.inotify.fd_event_queue, watchPath, mask);
     CFRelease(domainPath);
     
@@ -834,7 +831,7 @@ void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shouldTrack)
     }
   }
   else if (domain->inotify_watch >= 0) {
-    CFLog(kCFLogLevelError, CFSTR("* inotify: will remove watch for %@."), domain->name);
+    werror("inotify: will remove watch for %@.", domain->name);
 
     if (domain->inotify_watch >= 0) {
       inotify_rm_watch(w_global.inotify.fd_event_queue, domain->inotify_watch);
@@ -873,7 +870,7 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
     }
   }
   else {
-    CFLog(kCFLogLevelError, CFSTR("Creating empty domain: %@"), domain->name);
+    werror("Creating empty domain: %@", domain->name);
     domain->dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
                                                    &kCFTypeDictionaryKeyCallBacks,
                                                    &kCFTypeDictionaryValueCallBacks);
@@ -888,7 +885,7 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
     domain->path = CFURLCreateCopyAppendingPathExtension(NULL, osURL, CFSTR("plist"));
     CFRelease(osURL);
 
-    CFLog(kCFLogLevelError, CFSTR("* start tracking changes for domain: %@"), domain->name);
+    werror("start tracking changes for domain: %@", domain->name);
     wDefaultsShouldTrackChanges(domain, shouldTrackChanges);
   }
 
@@ -965,12 +962,12 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
     }
 
     // No need to hold default value in dictionary
-    /* CFLog(kCFLogLevelError, (CFSTR("Check if default exist: %@"), entry->plkey)); */
+    /* werror("Check if default exist: %@", entry->plkey); */
     if (plvalue && CFEqual(plvalue, entry->plvalue)) {
       plvalue = NULL;
-      /* CFLog(kCFLogLevelError, (CFSTR("Removing setting equal to default: %@"), entry->plkey)); */
+      /* werror("Removing setting equal to default: %@", entry->plkey); */
       CFDictionaryRemoveValue(new_dict, entry->plkey);
-      /* CFLog(kCFLogLevelError, CFSTR("Removed")); */
+      /* werror("Removed"); */
     }
 
     if (!plvalue) {

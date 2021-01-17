@@ -17,8 +17,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <CoreFoundation/CFLogUtilities.h>
-
 #include "defaults.h"
 #include "wuserdefaults.h"
 
@@ -130,11 +128,11 @@ CFPropertyListFormat WMUserDefaultsFileExists(CFStringRef domainName,
     pathExists = CFURLCreatePropertyFromResource(kCFAllocatorDefault, xmlURL,
                                                  kCFURLFileExists, &error);
     if (CFEqual(pathExists, kCFBooleanTrue)) {
-      /* CFLog(kCFLogLevelError, CFSTR("%@.plist does exist."), domainName); */
+      /* werror("%@.plist does exist.", domainName); */
       result = kCFPropertyListXMLFormat_v1_0;
     }
     else {
-      /* CFLog(kCFLogLevelError, CFSTR("No %@.plist exists."), domainName); */
+      /* werror("No %@.plist exists.", domainName); */
     }
     CFRelease(xmlURL);
   }
@@ -143,11 +141,11 @@ CFPropertyListFormat WMUserDefaultsFileExists(CFStringRef domainName,
     pathExists = CFURLCreatePropertyFromResource(kCFAllocatorDefault, osURL,
                                                  kCFURLFileExists, &error);
     if (CFEqual(pathExists, kCFBooleanTrue)) {
-      /* CFLog(kCFLogLevelError, CFSTR("%@ does exist."), domainName); */
+      /* werror("%@ does exist.", domainName); */
       result = kCFPropertyListOpenStepFormat;
     }
     else {
-      /* CFLog(kCFLogLevelError, CFSTR("No %@ exists."), domainName); */
+      /* werror("No %@ exists.", domainName); */
     }
   }
   
@@ -170,12 +168,12 @@ CFAbsoluteTime WMUserDefaultsFileModificationTime(CFStringRef domainName,
   existingFormat = WMUserDefaultsFileExists(domainName, 0);
   
   if (existingFormat == kCFPropertyListXMLFormat_v1_0) {
-    /* CFLog(kCFLogLevelError, CFSTR("XML file exists for domain %@..."), domainName); */
+    /* werror("XML file exists for domain %@...", domainName); */
     fileURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
     CFRelease(osURL);
   }
   else if (existingFormat == kCFPropertyListOpenStepFormat) {
-    /* CFLog(kCFLogLevelError, CFSTR("OpenStep file exists for domain %@..."), domainName); */
+    /* werror("OpenStep file exists for domain %@...", domainName); */
     fileURL = osURL;
   }
   
@@ -208,13 +206,11 @@ CFPropertyListRef WMUserDefaultsReadFromFile(CFURLRef fileURL)
     CFRelease(readStream);
   }
   else {
-    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) cannot open READ stream to %@"),
-          __FILE__, __FUNCTION__, __LINE__, fileURL);
+    werror("cannot open READ stream to %@", fileURL);
   }
   
   if (plError > 0) {
-    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) Failed to read user defaults from %@ (Error: %i)"),
-          __FILE__, __FUNCTION__, __LINE__, fileURL, plError);
+    werror("Failed to read user defaults from %@ (Error: %i)", fileURL, plError);
   }
 
   return pl;
@@ -240,8 +236,7 @@ CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName, Boolean useSystemDo
     fileURL = WMUserDefaultsCopySystemURLForDomain(domainName);
   }
   else {
-    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) no files exist to read for domain %@"),
-          __FILE__, __FUNCTION__, __LINE__, domainName);
+    werror("no files exist to read for domain %@", domainName);
   }
 
   if (fileURL) {
@@ -265,11 +260,10 @@ Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
   xmlURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
   CFRelease(osURL);
 
-  CFLog(kCFLogLevelError, CFSTR("* %s (%s) about to write property list to %@"),
-        __FILE__, __FUNCTION__, xmlURL);
+  werror("about to write property list to %@", xmlURL);
   
   if (dictionary == NULL) {
-    CFLog(kCFLogLevelError, CFSTR("** cannot write a NULL property list to %@"), xmlURL);
+    werror("cannot write a NULL property list to %@", xmlURL);
     return false;
   }
 
@@ -284,7 +278,7 @@ Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
   
   /* If dictionary is empty: do not write to file and remove file if exists. */
   if (isDictionaryEmpty) {
-    CFLog(kCFLogLevelError, CFSTR("** got empty property list for %@"), xmlURL);
+    werror("got empty property list for %@", xmlURL);
     if (WMUserDefaultsFileExists(domainName, kCFPropertyListXMLFormat_v1_0) != 0) {
       unsigned char file_path[MAXPATHLEN];
       CFURLGetFileSystemRepresentation(xmlURL, false, file_path, MAXPATHLEN);
@@ -294,7 +288,7 @@ Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
   }
 
   if (CFPropertyListIsValid(dictionary, kCFPropertyListXMLFormat_v1_0) == false) {
-    CFLog(kCFLogLevelError, CFSTR("** cannot write a invalid property list to %@"), xmlURL);
+    werror("cannot write a invalid property list to %@", xmlURL);
     return false;
   }
 
@@ -306,13 +300,11 @@ Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
     CFWriteStreamClose(writeStream);
   }
   else {
-    CFLog(kCFLogLevelError, CFSTR("*** %s (%s:%s) cannot open WRITE stream to %@"),
-          __FILE__, __FUNCTION__, __LINE__, xmlURL);
+    werror("cannot open WRITE stream to %@", xmlURL);
   }
 
   if (plError > 0) {
-    CFLog(kCFLogLevelError, CFSTR("*** cannot write user defaults to %@ (error: %i)"),
-          xmlURL, plError);
+    werror("cannot write user defaults to %@ (error: %i)", xmlURL, plError);
   }
 
   CFRelease(xmlURL);

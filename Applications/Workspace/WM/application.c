@@ -26,7 +26,6 @@
 #include <string.h>
 
 #include <CoreFoundation/CFString.h>
-#include <CoreFoundation/CFLogUtilities.h>
 
 #include <core/util.h>
 #include <core/wevent.h>
@@ -281,8 +280,7 @@ void wApplicationDestroy(WApplication *wapp)
   /* CFShow(wapp->windows); */
   CFArrayRemoveAllValues(wapp->windows);
   CFRelease(wapp->windows);
-  CFLog(kCFLogLevelError,
-        CFSTR("wapp->windows retain count: %i"), CFGetRetainCount(wapp->windows));
+  werror("wapp->windows retain count: %i", CFGetRetainCount(wapp->windows));
   /* wapp->windows = NULL; */
 
   if (wapp->urgent_bounce_timer) {

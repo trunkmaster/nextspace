@@ -33,8 +33,6 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#include <CoreFoundation/CFLogUtilities.h>
-
 #include <core/util.h>
 #include <core/stringutils.h>
 #include <core/wevent.h>
@@ -1094,8 +1092,7 @@ static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_ins
   char *tmp;
 
   if (!dict) {
-    CFLog(kCFLogLevelError, CFSTR("** %s (%s:%i) cannot save appicon to a NULL WMWindowAttributes"),
-          __FILE__, __FUNCTION__, __LINE__);
+    werror(_("cannot save appicon to a NULL WMWindowAttributes"));
     return;
   }
 

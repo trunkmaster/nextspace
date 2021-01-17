@@ -54,7 +54,6 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFArray.h>
 #include <CoreFoundation/CFFileDescriptor.h>
-#include <CoreFoundation/CFLogUtilities.h>
 
 #include <core/util.h>
 
@@ -318,24 +317,24 @@ static void _runLoopHandleEvent(CFFileDescriptorRef fdref, CFOptionFlags callBac
 {
   XEvent event;
 
-  /* CFLog(kCFLogLevelError, CFSTR("1. _processXEvent() - %i"), XPending(dpy)); */
+  /* werror("1. _processXEvent() - %i", XPending(dpy)); */
   while (XPending(dpy) > 0) {
     XNextEvent(dpy, &event);
     WMHandleEvent(&event);
   }
-  /* CFLog(kCFLogLevelError, CFSTR("2. _processXEvent() - %i"), XPending(dpy)); */
+  /* werror("2. _processXEvent() - %i", XPending(dpy)); */
   CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
 }
 
 void WMRunLoop_V0()
 {
   XEvent event;
-  CFLog(kCFLogLevelError, CFSTR("WMRunLoop0: handling events while run loop is warming up."));
+  werror("WMRunLoop0: handling events while run loop is warming up.");
   while (wm_runloop == NULL) {
     WMNextEvent(dpy, &event);
     WMHandleEvent(&event);
   }
-  CFLog(kCFLogLevelError, CFSTR("WMRunLoop_V0: run loop V1 is ready."));
+  werror("WMRunLoop_V0: run loop V1 is ready.");
   
 #ifdef HAVE_INOTIFY
   /* Track some defaults files for changes */
@@ -356,7 +355,7 @@ void WMRunLoop_V1()
   CFFileDescriptorRef xfd;
   CFRunLoopSourceRef  xfd_source;
 
-  CFLog(kCFLogLevelError, CFSTR("Entering WM runloop with X connection: %i"), ConnectionNumber(dpy));
+  werror("Entering WM runloop with X connection: %i", ConnectionNumber(dpy));
   
   // X connection file descriptor
   xfd = CFFileDescriptorCreate(kCFAllocatorDefault, ConnectionNumber(dpy), true,
@@ -368,13 +367,13 @@ void WMRunLoop_V1()
   CFRelease(xfd_source);
   CFRelease(xfd);
 
-  CFLog(kCFLogLevelError, CFSTR("[WM] Going into CFRunLoop..."));
+  werror("[WM] Going into CFRunLoop...");
   
   wm_runloop = run_loop;
   CFRunLoopRun();
   CFFileDescriptorDisableCallBacks(xfd, kCFFileDescriptorReadCallBack);
   
-  CFLog(kCFLogLevelError, CFSTR("[WM] CFRunLoop finished."));
+  werror("[WM] CFRunLoop finished.");
 }
 
 /*

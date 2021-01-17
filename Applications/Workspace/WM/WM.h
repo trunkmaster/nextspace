@@ -132,9 +132,9 @@
 #    define M_(text) (text)
 #  endif
 #else
-#  define _(text) (text)
-#  define N_(text) (text)
-#  define M_(text) (text)
+#  define _(text) text
+#  define N_(text) text
+#  define M_(text) text
 #endif /* defined(HAVE_LIBINTL_H) && defined(I18N) */
 
 /* class codes */
