@@ -230,7 +230,7 @@ WMColor *WMWhiteColor(WMScreen *scr)
   if (!scr->white) {
     scr->white = WMCreateRGBColor(scr, 0xffff, 0xffff, 0xffff, True);
     if (!scr->white->flags.exact)
-      wwarning(_("could not allocate %s color"), _("white"));
+      WMLogWarning(_("could not allocate %s color"), _("white"));
   }
   return WMRetainColor(scr->white);
 }
@@ -240,7 +240,7 @@ WMColor *WMBlackColor(WMScreen *scr)
   if (!scr->black) {
     scr->black = WMCreateRGBColor(scr, 0, 0, 0, True);
     if (!scr->black->flags.exact)
-      wwarning(_("could not allocate %s color"), _("black"));
+      WMLogWarning(_("could not allocate %s color"), _("black"));
   }
   return WMRetainColor(scr->black);
 }
@@ -276,7 +276,7 @@ WMColor *WMGrayColor(WMScreen *scr)
     } else {
       color = WMCreateRGBColor(scr, 0xaaaa, 0xaaaa, 0xaaaa, True);
       if (!color->flags.exact)
-        wwarning(_("could not allocate %s color"), _("gray"));
+        WMLogWarning(_("could not allocate %s color"), _("gray"));
     }
     scr->gray = color;
   }
@@ -314,7 +314,7 @@ WMColor *WMDarkGrayColor(WMScreen *scr)
     } else {
       color = WMCreateRGBColor(scr, 0x5353, 0x5353, 0x5353, True);
       if (!color->flags.exact)
-        wwarning(_("could not allocate %s color"), _("dark gray"));
+        WMLogWarning(_("could not allocate %s color"), _("dark gray"));
     }
     scr->darkGray = color;
   }

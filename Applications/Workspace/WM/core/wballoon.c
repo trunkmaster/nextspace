@@ -29,7 +29,7 @@
 #include "WMcore.h"
 #include "util.h"
 #include "whashtable.h"
-#include "stringutils.h"
+#include "string_utils.h"
 
 #include "wscreen.h"
 #include "widgets.h"
@@ -426,7 +426,7 @@ static void showText(Balloon *bPtr, int x, int y, int w, int h, const char *text
 
   width += 16;
 
-  textHeight = W_GetTextHeight(font, text, width, False);
+  textHeight = WMGetTextHeight(font, text, width, False);
 
   height = textHeight + 4;
 
@@ -458,7 +458,7 @@ static void showText(Balloon *bPtr, int x, int y, int w, int h, const char *text
   }
   pixmap = makePixmap(scr, width, height, side, &mask);
 
-  W_PaintText(bPtr->view, pixmap, font, 8, ty + (height - textHeight) / 2,
+  WMPaintText(bPtr->view, pixmap, font, 8, ty + (height - textHeight) / 2,
               width, bPtr->flags.alignment,
               bPtr->textColor ? bPtr->textColor : scr->black, False, text, strlen(text));
 

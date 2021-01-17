@@ -41,7 +41,7 @@
 #include <core/WMcore.h>
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 
 #include <core/wscreen.h>
 #include <core/wevent.h>
@@ -625,7 +625,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   Bool withdraw = False;
   Bool raise = False;
 
-  /* wmessage("[window.c] will manage window:%lu\n", window); */
+  /* WMLogInfo("[window.c] will manage window:%lu\n", window); */
 
   /* mutex. */
   XGrabServer(dpy);
@@ -1490,7 +1490,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   WScreen *scr = wwin->screen_ptr;
   WApplication *oapp;
 
-  wmessage("[window.c] will unmanage window:%lu\n", wwin->client_win);
+  WMLogInfo("[window.c] will unmanage window:%lu\n", wwin->client_win);
   
   /* Close window menu if it's open for this window */
   if (wwin->flags.menu_open_for_me)
@@ -1586,7 +1586,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     }
     
     if (wwin->flags.is_gnustep) {
-      wmessage("[window.c] new_focused_window == %lu",
+      WMLogInfo("[window.c] new_focused_window == %lu",
                new_focused_window ? new_focused_window->client_win : 0);
       /* When main menu becomes unmanaged - app's quitting - we should switch
          focus to other app. Otherwise set focus to main menu to prevent 
@@ -1594,7 +1594,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
          result of XUnmapWindow() call, focus goes to root window and application 
          deactivates). */
       if (WINDOW_LEVEL(wwin) == NSMainMenuWindowLevel) {
-        wmessage("[window.c] set focus to new_focused_window == %lu",
+        WMLogInfo("[window.c] set focus to new_focused_window == %lu",
                  new_focused_window ? new_focused_window->client_win : 0);
         /* Application activation executes workspace switch */
         if (napp)
@@ -1604,7 +1604,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
       }
       else if (oapp && oapp->menu_win) {
         /* wSetFocusTo will be called in handleFocusIn() */
-        wmessage("[window.c] set focus to main menu == %lu", oapp->menu_win->client_win);
+        WMLogInfo("[window.c] set focus to main menu == %lu", oapp->menu_win->client_win);
         XSetInputFocus(dpy, oapp->menu_win->client_win, RevertToParent, CurrentTime);
         oapp->menu_win->flags.focused = 1;
       }
@@ -2825,7 +2825,7 @@ static void resizebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 #ifndef NUMLOCK_HACK
   if ((event->xbutton.state & ValidModMask)
       != (event->xbutton.state & ~LockMask)) {
-    wwarning(_("The NumLock, ScrollLock or similar key seems to be turned on. "
+    WMLogWarning(_("The NumLock, ScrollLock or similar key seems to be turned on. "
                "Turn it off or some mouse actions and keyboard shortcuts will not work."));
   }
 #endif
@@ -3003,14 +3003,14 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 
 #ifndef NUMLOCK_HACK
   if ((event->xbutton.state & ValidModMask) != (event->xbutton.state & ~LockMask))
-    wwarning(_("The NumLock, ScrollLock or similar key seems to be turned on. "
+    WMLogWarning(_("The NumLock, ScrollLock or similar key seems to be turned on. "
                "Turn it off or some mouse actions and keyboard shortcuts will not work."));
 #endif
   event->xbutton.state &= w_global.shortcut.modifiers_mask;
 
   CloseWindowMenu(wwin->screen_ptr);
 
-  /* wmessage("[window.c] xbutton.state: %i, Command mask: %i Alternate mask: %i\n", */
+  /* WMLogInfo("[window.c] xbutton.state: %i, Command mask: %i Alternate mask: %i\n", */
   /*         event->xbutton.state, wXModifierFromKey("MOD1"), */
   /*         wXModifierFromKey("MOD4")); */
 
@@ -3176,7 +3176,7 @@ void wPrintWindowFocusState(WWindow *wwin, char *prefix)
   if (wwin)
     focused_win = wwin->screen_ptr->focused_window;
 
-  wmessage("%s %lu (%s:%s) [WM focused: %lu (%s:%s)] [X focused: %lu (%s:%s)]",
+  WMLogInfo("%s %lu (%s:%s) [WM focused: %lu (%s:%s)] [X focused: %lu (%s:%s)]",
             prefix,
             (wwin && wwin->client_win) ? wwin->client_win : 0,
             (wwin && wwin->wm_instance) ? wwin->wm_instance : "",

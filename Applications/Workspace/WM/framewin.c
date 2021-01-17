@@ -32,7 +32,7 @@
 
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 
 #include <core/wevent.h>
 #include <core/wcolor.h>
@@ -530,7 +530,7 @@ static void renderTexture(WScreen * scr, WTexture * texture, int width, int heig
 
   img = wTextureRenderImage(texture, width, height, WREL_FLAT);
   if (!img) {
-    wwarning(_("could not render texture: %s"), RMessageForError(RErrorCode));
+    WMLogWarning(_("could not render texture: %s"), RMessageForError(RErrorCode));
     return;
   }
 
@@ -546,7 +546,7 @@ static void renderTexture(WScreen * scr, WTexture * texture, int width, int heig
     if (limg) {
       RBevelImage(limg, RBEV_RAISED2);
       if (!RConvertImage(scr->rcontext, limg, lbutton))
-        wwarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
+        WMLogWarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
 
       x += limg->width;
       w -= limg->width;
@@ -561,7 +561,7 @@ static void renderTexture(WScreen * scr, WTexture * texture, int width, int heig
     if (rimg) {
       RBevelImage(rimg, RBEV_RAISED2);
       if (!RConvertImage(scr->rcontext, rimg, rbutton))
-        wwarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
+        WMLogWarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
 
       w -= rimg->width;
       RReleaseImage(rimg);
@@ -572,20 +572,20 @@ static void renderTexture(WScreen * scr, WTexture * texture, int width, int heig
       RBevelImage(mimg, RBEV_RAISED2);
 
       if (!RConvertImage(scr->rcontext, mimg, title))
-        wwarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
+        WMLogWarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
 
       RReleaseImage(mimg);
     } else {
       RBevelImage(img, RBEV_RAISED2);
 
       if (!RConvertImage(scr->rcontext, img, title))
-        wwarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
+        WMLogWarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
     }
   } else {
     RBevelImage(img, RBEV_RAISED2);
 
     if (!RConvertImage(scr->rcontext, img, title))
-      wwarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
+      WMLogWarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
   }
 
   RReleaseImage(img);
@@ -602,7 +602,7 @@ static void renderResizebarTexture(WScreen * scr, WTexture * texture, int width,
 
   img = wTextureRenderImage(texture, width, height, WREL_FLAT);
   if (!img) {
-    wwarning(_("could not render texture: %s"), RMessageForError(RErrorCode));
+    WMLogWarning(_("could not render texture: %s"), RMessageForError(RErrorCode));
     return;
   }
 
@@ -630,7 +630,7 @@ static void renderResizebarTexture(WScreen * scr, WTexture * texture, int width,
 #endif				/* SHADOW_RESIZEBAR */
 
   if (!RConvertImage(scr->rcontext, img, pmap))
-    wwarning(_("error rendering image: %s"), RMessageForError(RErrorCode));
+    WMLogWarning(_("error rendering image: %s"), RMessageForError(RErrorCode));
 
   RReleaseImage(img);
 }

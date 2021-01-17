@@ -140,7 +140,7 @@ static void paint(WGeometryView * gview)
                     (W_VIEW_WIDTH(gview->view) - gview->textSize.width) / 2,
                     (W_VIEW_HEIGHT(gview->view) - gview->textSize.height) / 2, buffer, strlen(buffer));
 
-  W_DrawRelief(W_VIEW_SCREEN(gview->view), W_VIEW_DRAWABLE(gview->view),
+  WMDrawRelief(W_VIEW_SCREEN(gview->view), W_VIEW_DRAWABLE(gview->view),
                0, 0, W_VIEW_WIDTH(gview->view), W_VIEW_HEIGHT(gview->view), WRSimple);
 }
 

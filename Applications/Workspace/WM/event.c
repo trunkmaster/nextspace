@@ -312,24 +312,24 @@ static void _runLoopHandleEvent(CFFileDescriptorRef fdref, CFOptionFlags callBac
 {
   XEvent event;
 
-  /* werror("1. _processXEvent() - %i", XPending(dpy)); */
+  /* WMLogError("1. _processXEvent() - %i", XPending(dpy)); */
   while (XPending(dpy) > 0) {
     XNextEvent(dpy, &event);
     WMHandleEvent(&event);
   }
-  /* werror("2. _processXEvent() - %i", XPending(dpy)); */
+  /* WMLogError("2. _processXEvent() - %i", XPending(dpy)); */
   CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
 }
 
 void WMRunLoop_V0()
 {
   XEvent event;
-  werror("WMRunLoop0: handling events while run loop is warming up.");
+  WMLogError("WMRunLoop0: handling events while run loop is warming up.");
   while (wm_runloop == NULL) {
     WMNextEvent(dpy, &event);
     WMHandleEvent(&event);
   }
-  werror("WMRunLoop_V0: run loop V1 is ready.");
+  WMLogError("WMRunLoop_V0: run loop V1 is ready.");
   
 #ifdef HAVE_INOTIFY
   /* Track some defaults files for changes */
@@ -350,7 +350,7 @@ void WMRunLoop_V1()
   CFFileDescriptorRef xfd;
   CFRunLoopSourceRef  xfd_source;
 
-  werror("Entering WM runloop with X connection: %i", ConnectionNumber(dpy));
+  WMLogError("Entering WM runloop with X connection: %i", ConnectionNumber(dpy));
   
   // X connection file descriptor
   xfd = CFFileDescriptorCreate(kCFAllocatorDefault, ConnectionNumber(dpy), true,
@@ -362,13 +362,13 @@ void WMRunLoop_V1()
   CFRelease(xfd_source);
   CFRelease(xfd);
 
-  werror("[WM] Going into CFRunLoop...");
+  WMLogError("[WM] Going into CFRunLoop...");
   
   wm_runloop = run_loop;
   CFRunLoopRun();
   CFFileDescriptorDisableCallBacks(xfd, kCFFileDescriptorReadCallBack);
   
-  werror("[WM] CFRunLoop finished.");
+  WMLogError("[WM] CFRunLoop finished.");
 }
 
 /*
@@ -446,7 +446,7 @@ Bool IsDoubleClick(WScreen * scr, XEvent * event)
 void NotifyDeadProcess(pid_t pid, unsigned char status)
 {
   if (deadProcessPtr >= MAX_DEAD_PROCESSES - 1) {
-    wwarning("stack overflow: too many dead processes");
+    WMLogWarning("stack overflow: too many dead processes");
     return;
   }
   /* stack the process to be handled later,
@@ -560,7 +560,7 @@ static void handleMapRequest(XEvent * ev)
 
   wwin = wWindowFor(window);
   if (wwin != NULL) {
-    /* wmessage("MapRequest %lu", wwin->client_win); */
+    /* WMLogInfo("MapRequest %lu", wwin->client_win); */
     if (!wwin->flags.is_gnustep && wwin->flags.shaded) {
       wUnshadeWindow(wwin);
     }
@@ -651,7 +651,7 @@ static void handleDestroyNotify(XEvent * event)
 
   wwin = wWindowFor(window);
   if (wwin) {
-    /* wmessage("DestroyNotify will unmanage window:%lu", window); */
+    /* WMLogInfo("DestroyNotify will unmanage window:%lu", window); */
 #ifdef NEXTSPACE
     dispatch_sync(workspace_q, ^{ WSApplicationDidCloseWindow(wwin); });
 #endif
@@ -923,7 +923,7 @@ static void handleMapNotify(XEvent * event)
 
   wwin = wWindowFor(event->xmap.event);
   if (wwin && wwin->client_win == event->xmap.event) {
-    /* wmessage(" MapNotify %lu", wwin->client_win); */
+    /* WMLogInfo(" MapNotify %lu", wwin->client_win); */
     if (wwin->flags.miniaturized) {
       wDeiconifyWindow(wwin);
     } else {
@@ -941,7 +941,7 @@ static void handleUnmapNotify(XEvent * event)
   XEvent ev;
   Bool withdraw = False;
 
-  /* wmessage("handleUnmapNotify for window %lu.", event->xunmap.window); */
+  /* WMLogInfo("handleUnmapNotify for window %lu.", event->xunmap.window); */
   
   /* only process windows with StructureNotify selected (ignore SubstructureNotify) */
   wwin = wWindowFor(event->xunmap.window);
@@ -981,7 +981,7 @@ static void handleUnmapNotify(XEvent * event)
       wClientSetState(wwin, WithdrawnState, None);
 
     if (WINDOW_LEVEL(wwin) != NSMainMenuWindowLevel) {
-      /* wmessage("UnmapNotify will unmanage window:%lu is_gnustep=%i", */
+      /* WMLogInfo("UnmapNotify will unmanage window:%lu is_gnustep=%i", */
       /*         event->xunmap.window, wwin->flags.is_gnustep); */
       /* if the window was reparented, do not reparent it back to the
        * root window */
@@ -1064,10 +1064,10 @@ static void handleClientMessage(XEvent * event)
     strncpy(command, event->xclient.data.b, sizeof(event->xclient.data.b));
 
     if (strncmp(command, "Reconfigure", sizeof("Reconfigure")) == 0) {
-      wwarning(_("Got Reconfigure command"));
+      WMLogWarning(_("Got Reconfigure command"));
       wDefaultsUpdateDomainsIfNeeded(NULL);
     } else {
-      wwarning(_("Got unknown command %s"), command);
+      WMLogWarning(_("Got unknown command %s"), command);
     }
 
     wfree(command);
@@ -1077,7 +1077,7 @@ static void handleClientMessage(XEvent * event)
     WApplication *wapp;
     int done = 0;
     wapp = wApplicationOf(event->xclient.window);
-    wmessage("Received client message: %li for: %s",
+    WMLogInfo("Received client message: %li for: %s",
              event->xclient.data.l[0],
              wapp ? wapp->main_window_desc->wm_instance : "Unknown");
     if (wapp) {
@@ -1088,7 +1088,7 @@ static void handleClientMessage(XEvent * event)
         break;
 
       case WMFHideApplication:
-        wmessage("Received WMFHideApplication client message");
+        WMLogInfo("Received WMFHideApplication client message");
         wHideApplication(wapp);
         done = 1;
         break;
@@ -1427,7 +1427,7 @@ static void handleKeyPress(XEvent * event)
 
 #ifdef NEXTSPACE
   /* if (wwin && wwin->client_win) { */
-  /*   wmessage("handleKeyPress: %i state: %i mask: %i" */
+  /*   WMLogInfo("handleKeyPress: %i state: %i mask: %i" */
   /*           " modifiers: %i window:%lu", */
   /*           event->xkey.keycode, event->xkey.state, MOD_MASK, */
   /*           modifiers, wwin->client_win); */
@@ -1464,7 +1464,7 @@ static void handleKeyPress(XEvent * event)
     static int dontLoop = 0;
 
     if (dontLoop > 10) {
-      wwarning("problem with key event processing code");
+      WMLogWarning("problem with key event processing code");
       return;
     }
     dontLoop++;
@@ -1538,7 +1538,7 @@ static void handleKeyPress(XEvent * event)
     if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_miniaturizable)) {
       CloseWindowMenu(scr);
       if (wwin->protocols.MINIATURIZE_WINDOW) {
-        /* wmessage("send WM_MINIATURIZE_WINDOW protocol message to client."); */
+        /* WMLogInfo("send WM_MINIATURIZE_WINDOW protocol message to client."); */
         if (wwin->flags.is_gnustep) {
           XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
         }
@@ -1916,7 +1916,7 @@ static void handleKeyRelease(XEvent * event)
       event->xkey.window == scr->no_focus_win) {
     return;
   }
-  /* wmessage("handleKeyRelease: %i state: %i mask: %i", */
+  /* WMLogInfo("handleKeyRelease: %i state: %i mask: %i", */
   /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
   if ( (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
        (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R)) ) {
@@ -2045,7 +2045,7 @@ static void handle_selection_request(XSelectionRequestEvent *event)
 
  not_our_selection:
   if (notify.property == None)
-    wwarning("received SelectionRequest(%s) for target=\"%s\" from requestor 0x%lX but we have no answer",
+    WMLogWarning("received SelectionRequest(%s) for target=\"%s\" from requestor 0x%lX but we have no answer",
              XGetAtomName(dpy, event->selection), XGetAtomName(dpy, event->target), (long) event->requestor);
 
   /* Send the answer to the requestor */
@@ -2073,7 +2073,7 @@ static void handle_selection_clear(XSelectionClearEvent *event)
   if (event->selection != scr->sn_atom)
     return;
 
-  wmessage(_("another window manager is replacing us!"));
+  WMLogInfo(_("another window manager is replacing us!"));
   Shutdown(WSExitMode);
 #else
   /*

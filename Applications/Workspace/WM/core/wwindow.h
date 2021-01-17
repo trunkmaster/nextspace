@@ -33,48 +33,48 @@ typedef void WMAction(WMWidget *self, void *clientData);
 typedef void WMAction2(void *self, void *clientData);
 
 typedef struct W_Window {
-	W_Class widgetClass;
-	W_View *view;
+  W_Class widgetClass;
+  W_View *view;
 
-	struct W_Window *nextPtr;	/* next in the window list */
+  struct W_Window *nextPtr;	/* next in the window list */
 
-	struct W_Window *owner;
+  struct W_Window *owner;
 
-	char *title;
+  char *title;
 
-	WMPixmap *miniImage;	/* miniwindow */
-	char *miniTitle;
+  WMPixmap *miniImage;	/* miniwindow */
+  char *miniTitle;
 
-	char *wname;
+  char *wname;
 
-	WMSize resizeIncrement;
-	WMSize baseSize;
-	WMSize minSize;
-	WMSize maxSize;
-	WMPoint minAspect;
-	WMPoint maxAspect;
+  WMSize resizeIncrement;
+  WMSize baseSize;
+  WMSize minSize;
+  WMSize maxSize;
+  WMPoint minAspect;
+  WMPoint maxAspect;
 
-	WMPoint upos;
-	WMPoint ppos;
+  WMPoint upos;
+  WMPoint ppos;
 
-	WMAction *closeAction;
-	void *closeData;
+  WMAction *closeAction;
+  void *closeData;
 
-	int level;
+  int level;
 
-	struct {
-		unsigned style:4;
-		unsigned configured:1;
-		unsigned documentEdited:1;
+  struct {
+    unsigned style:4;
+    unsigned configured:1;
+    unsigned documentEdited:1;
 
-		unsigned setUPos:1;
-		unsigned setPPos:1;
-		unsigned setAspect:1;
-	} flags;
+    unsigned setUPos:1;
+    unsigned setPPos:1;
+    unsigned setAspect:1;
+  } flags;
 } W_Window;
 typedef struct W_Window WMWindow;
 
-/* ---[ WINGs/wwindow.c ]------------------------------------------------- */
+/* ----------------------------------------------------------------------- */
 
 WMWindow* WMCreateWindow(WMScreen *screen, const char *name);
 

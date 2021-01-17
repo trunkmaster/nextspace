@@ -36,7 +36,7 @@
 #include <core/WMcore.h>
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 
 #include <core/wevent.h>
 #include <core/wcolor.h>
@@ -446,7 +446,7 @@ static Pixmap renderTexture(WMenu * menu)
     img = wTextureRenderImage(texture, menu->menu->width, menu->menu->height + 1, WREL_MENUENTRY);
   }
   if (!img) {
-    wwarning(_("could not render texture: %s"), RMessageForError(RErrorCode));
+    WMLogWarning(_("could not render texture: %s"), RMessageForError(RErrorCode));
 
     return None;
   }
@@ -473,7 +473,7 @@ static Pixmap renderTexture(WMenu * menu)
     }
   }
   if (!RConvertImage(scr->rcontext, img, &pix)) {
-    wwarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
+    WMLogWarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
   }
   RReleaseImage(img);
 
@@ -2324,7 +2324,7 @@ void wMenuSaveState(WScreen *scr)
   CFRelease(menus);
 }
 
-#define COMPLAIN(key) wwarning(_("bad value in menus state info: %s"), key)
+#define COMPLAIN(key) WMLogWarning(_("bad value in menus state info: %s"), key)
 
 static Bool getMenuInfo(CFTypeRef info, int *x, int *y, Bool *lowered)
 {

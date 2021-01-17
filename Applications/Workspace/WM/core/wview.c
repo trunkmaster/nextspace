@@ -226,14 +226,14 @@ void W_RealizeView(W_View *view)
   assert(view->size.height > 0);
 
   if (view->parent && !view->parent->flags.realized) {
-    wwarning("trying to realize widget of unrealized parent");
+    WMLogWarning("trying to realize widget of unrealized parent");
     return;
   }
 
   if (!view->flags.realized) {
 
     if (view->parent == NULL) {
-      wwarning("trying to realize widget without parent");
+      WMLogWarning("trying to realize widget without parent");
       return;
     }
 
@@ -278,7 +278,7 @@ void W_ReparentView(W_View *view, W_View *newParent, int x, int y)
     if (newParent->flags.realized) {
       XReparentWindow(dpy, view->window, newParent->window, x, y);
     } else {
-      wwarning("trying to reparent realized view to unrealized parent");
+      WMLogWarning("trying to reparent realized view to unrealized parent");
       return;
     }
   }

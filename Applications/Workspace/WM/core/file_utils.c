@@ -37,7 +37,7 @@
 
 #include "util.h"
 #include "log_utils.h"
-#include "stringutils.h"
+#include "string_utils.h"
 
 #ifndef PATH_MAX
 #define PATH_MAX  1024
@@ -65,7 +65,7 @@ static char *_homeDirectory()
 
   user = getpwuid(getuid());
   if (!user) {
-    werror(_("could not get password entry for UID %i"), getuid());
+    WMLogError(_("could not get password entry for UID %i"), getuid());
     home = "/";
     return home;
   }
@@ -95,7 +95,7 @@ static const char *_userHomeDirectory(const char *username)
 
   user = getpwnam(username);
   if (!user) {
-    werror(_("could not get password entry for user %s"), username);
+    WMLogError(_("could not get password entry for user %s"), username);
     return NULL;
   }
   if (!user->pw_dir)
@@ -214,7 +214,7 @@ static char *_expandPath(const char *path)
 
  error:
   errno = ENAMETOOLONG;
-  werror(_("could not expand %s"), origpath);
+  WMLogError(_("could not expand %s"), origpath);
 
   return NULL;
 }
@@ -348,7 +348,7 @@ int WMCopyFile(const char *dest_dir, const char *src_file, const char *dest_file
   if (fd_src == -1) {
     if (errno == EINTR)
       goto try_again_src;
-    werror(_("Could not open input file \"%s\": %s"), src_file, strerror(errno));
+    WMLogError(_("Could not open input file \"%s\": %s"), src_file, strerror(errno));
     return -1;
   }
 
@@ -364,7 +364,7 @@ int WMCopyFile(const char *dest_dir, const char *src_file, const char *dest_file
   if (fd_dst == -1) {
     if (errno == EINTR)
       goto try_again_dst;
-    werror(_("Could not create target file \"%s\": %s"), path_dst, strerror(errno));
+    WMLogError(_("Could not create target file \"%s\": %s"), path_dst, strerror(errno));
     wfree(path_dst);
     close(fd_src);
     return -1;
@@ -372,7 +372,7 @@ int WMCopyFile(const char *dest_dir, const char *src_file, const char *dest_file
 
   buffer = malloc(buffer_size);	/* Don't use wmalloc to avoid the memset(0) we don't need */
   if (buffer == NULL) {
-    werror(_("could not allocate memory for the copy buffer"));
+    WMLogError(_("could not allocate memory for the copy buffer"));
     close(fd_dst);
     goto cleanup_and_return_failure;
   }
@@ -389,7 +389,7 @@ int WMCopyFile(const char *dest_dir, const char *src_file, const char *dest_file
     if (size_data < 0) {
       if (errno == EINTR)
         goto try_again_read;
-      werror(_("could not read from file \"%s\": %s"), src_file, strerror(errno));
+      WMLogError(_("could not read from file \"%s\": %s"), src_file, strerror(errno));
       close(fd_dst);
       goto cleanup_and_return_failure;
     }
@@ -404,7 +404,7 @@ int WMCopyFile(const char *dest_dir, const char *src_file, const char *dest_file
       if (write_done < 0) {
         if (errno == EINTR)
           goto try_again_write;
-        werror(_("could not write data to file \"%s\": %s"), path_dst, strerror(errno));
+        WMLogError(_("could not write data to file \"%s\": %s"), path_dst, strerror(errno));
         close(fd_dst);
         goto cleanup_and_return_failure;
       }
@@ -416,11 +416,11 @@ int WMCopyFile(const char *dest_dir, const char *src_file, const char *dest_file
   /* Keep only the permission-related part of the field: */
   permission_dst = stat_src.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID | S_ISVTX);
   if (fchmod(fd_dst, permission_dst) != 0)
-    wwarning(_("could not set permission 0%03o on file \"%s\": %s"),
+    WMLogWarning(_("could not set permission 0%03o on file \"%s\": %s"),
              permission_dst, path_dst, strerror(errno));
 
   if (close(fd_dst) != 0) {
-    werror(_("could not close the file \"%s\": %s"), path_dst, strerror(errno));
+    WMLogError(_("could not close the file \"%s\": %s"), path_dst, strerror(errno));
   cleanup_and_return_failure:
     free(buffer);
     close(fd_src);

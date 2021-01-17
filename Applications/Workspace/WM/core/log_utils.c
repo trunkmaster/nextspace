@@ -27,7 +27,7 @@ static void _syslogSendMessage(int prio, const char *prog_name, const char *msg)
   syslog(prio, "%s", msg + strlen(prog_name));
 }
 
-void wSyslogClose(void)
+void WMSyslogClose(void)
 {
   if (syslog_initialized) {
     closelog();
@@ -36,7 +36,7 @@ void wSyslogClose(void)
 }
 #endif
 
-void wShowMessage(const char *func, const char *file, int line, int type, CFStringRef fmt, ...)
+void WMLog(const char *func, const char *file, int line, int type, CFStringRef fmt, ...)
 {
   va_list args;
   CFStringRef user_msg, message;

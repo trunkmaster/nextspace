@@ -34,7 +34,7 @@
 #include <CoreFoundation/CFArray.h>
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 
 #include "WM.h"
 #include "dock.h"
@@ -259,7 +259,7 @@ static void wXDNDGetTypeList(Display *dpy, Window window)
   if (type != XA_ATOM || format != 32 || count == 0 || !data) {
     if (data)
       XFree(data);
-    wwarning(_("wXDNDGetTypeList failed = %ld"), _XA_XdndTypeList);
+    WMLogWarning(_("wXDNDGetTypeList failed = %ld"), _XA_XdndTypeList);
     return;
   }
 

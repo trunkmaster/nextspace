@@ -56,12 +56,12 @@ void wInitXrandr(WScreen *scr)
 #ifdef USE_XRANDR
   if (XRRQueryExtension(dpy, &info->event_base, &info->error_base) == True) {
     XRRQueryVersion(dpy, &major_version, &minor_version);
-    wmessage("[xrandr.c] Use XRandR %i.%i, event base:%i, error base:%i\n",
+    WMLogInfo("[xrandr.c] Use XRandR %i.%i, event base:%i, error base:%i\n",
              major_version, minor_version, info->event_base, info->error_base);
     wUpdateXrandrInfo(scr);
   }
   else {
-    wmessage("[xrandr.c] no XRandR extension available.\n");
+    WMLogInfo("[xrandr.c] no XRandR extension available.\n");
   }
 #endif
 }

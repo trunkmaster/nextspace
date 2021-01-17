@@ -29,7 +29,7 @@
 #import "RecyclerIcon.h"
 
 #include <core/util.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 #include <xrandr.h>
 #include <dock.h>
 

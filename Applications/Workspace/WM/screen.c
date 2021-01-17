@@ -40,7 +40,7 @@
 #include <core/WMcore.h>
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 
 #include <core/widgets.h>
 #include <core/wcolor.h>
@@ -263,7 +263,7 @@ static Bool replace_existing_wm(WScreen *scr)
   /* Try to acquire the atom named WM_S<screen> */
   ret = snprintf(atomName, sizeof(atomName), "WM_S%d", scr->screen);
   if (ret < 0 || ret == sizeof(atomName)) {
-    werror("out of memory trying to allocate window manager selection atom for screen %d", scr->screen);
+    WMLogError("out of memory trying to allocate window manager selection atom for screen %d", scr->screen);
     return False;
   }
 
@@ -275,8 +275,8 @@ static Bool replace_existing_wm(WScreen *scr)
   wm = XGetSelectionOwner(dpy, scr->sn_atom);
   if (wm) {
     if (!wPreferences.flags.replace) {
-      wmessage(_("another window manager is running"));
-      wwarning(_("use the --replace flag to replace it"));
+      WMLogInfo(_("another window manager is running"));
+      WMLogWarning(_("use the --replace flag to replace it"));
       return False;
     }
 
@@ -304,7 +304,7 @@ static Bool replace_existing_wm(WScreen *scr)
 
     while (wait < timeout) {
       if (!(wait % 1000000))
-        wmessage(_("waiting %lus for other window manager to exit"), (timeout - wait) / 1000000L);
+        WMLogInfo(_("waiting %lus for other window manager to exit"), (timeout - wait) / 1000000L);
 
       if (XCheckWindowEvent(dpy, wm, StructureNotifyMask, &event))
         if (event.type == DestroyNotify)
@@ -315,11 +315,11 @@ static Bool replace_existing_wm(WScreen *scr)
     }
 
     if (wait >= timeout) {
-      wwarning(_("other window manager hasn't exited!"));
+      WMLogWarning(_("other window manager hasn't exited!"));
       return False;
     }
 
-    wmessage(_("replacing the other window manager"));
+    WMLogInfo(_("replacing the other window manager"));
   }
 
   if (XGetSelectionOwner(dpy, scr->sn_atom) != scr->info_window)
@@ -780,7 +780,7 @@ WScreen *wScreenInit(int screen_number)
   scr->rcontext = RCreateContext(dpy, screen_number, &rattr);
 
   if (!scr->rcontext && RErrorCode == RERR_STDCMAPFAIL) {
-    wwarning("%s", RMessageForError(RErrorCode));
+    WMLogWarning("%s", RMessageForError(RErrorCode));
 
     rattr.flags &= ~RC_StandardColormap;
     rattr.standard_colormap_mode = RUseStdColormap;
@@ -788,7 +788,7 @@ WScreen *wScreenInit(int screen_number)
     scr->rcontext = RCreateContext(dpy, screen_number, &rattr);
   }
   if (scr->rcontext == NULL) {
-    wfatal(_("can't create Context on screen %d, %s"),
+    WMLogCritical(_("can't create Context on screen %d, %s"),
            screen_number, RMessageForError(RErrorCode));
     goto abort_no_context;
   }
@@ -802,7 +802,7 @@ WScreen *wScreenInit(int screen_number)
   scr->wmscreen = WMCreateScreenWithRContext(dpy, screen_number, scr->rcontext);
 
   if (!scr->wmscreen) {
-    wfatal(_("could not initialize WINGs widget set"));
+    WMLogCritical(_("could not initialize WINGs widget set"));
     RDestroyContext(scr->rcontext);
   abort_no_context:
     CFRelease(scr->fakeGroupLeaders);

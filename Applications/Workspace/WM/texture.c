@@ -33,7 +33,7 @@
 
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/fileutils.h>
+#include <core/file_utils.h>
 
 #include "WM.h"
 #include "texture.h"
@@ -334,12 +334,12 @@ static RImage * get_texture_image(WScreen *scr, const char *pixmap_file)
 
   file = WMAbsolutePathForFile(wPreferences.image_paths, pixmap_file);
   if (!file) {
-    wwarning(_("image file \"%s\" used as texture could not be found."), pixmap_file);
+    WMLogWarning(_("image file \"%s\" used as texture could not be found."), pixmap_file);
     return NULL;
   }
   image = RLoadImage(scr->rcontext, file, 0);
   if (!image) {
-    wwarning(_("could not load texture pixmap \"%s\":%s"), file, RMessageForError(RErrorCode));
+    WMLogWarning(_("could not load texture pixmap \"%s\":%s"), file, RMessageForError(RErrorCode));
     wfree(file);
     return NULL;
   }
@@ -457,11 +457,11 @@ RImage *wTextureRenderImage(WTexture * texture, int width, int height, int relie
   if (!image) {
     RColor gray;
 
-    wwarning(_("could not render texture: %s"), RMessageForError(RErrorCode));
+    WMLogWarning(_("could not render texture: %s"), RMessageForError(RErrorCode));
 
     image = RCreateImage(width, height, False);
     if (image == NULL) {
-      wwarning(_("could not allocate image buffer"));
+      WMLogWarning(_("could not allocate image buffer"));
       return NULL;
     }
 

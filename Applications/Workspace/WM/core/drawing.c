@@ -30,15 +30,15 @@
 #include "wcolor.h"
 #include "drawing.h"
 
-void W_DrawRelief(W_Screen *scr, Drawable d, int x, int y, unsigned int width,
+void WMDrawRelief(W_Screen *scr, Drawable d, int x, int y, unsigned int width,
                   unsigned int height, WMReliefType relief)
 {
-  W_DrawReliefWithGC(scr, d, x, y, width, height, relief,
+  WMDrawReliefWithGC(scr, d, x, y, width, height, relief,
                      WMColorGC(scr->black), WMColorGC(scr->darkGray),
                      WMColorGC(scr->gray), WMColorGC(scr->white));
 }
 
-void W_DrawReliefWithGC(W_Screen *scr, Drawable d, int x, int y, unsigned int width,
+void WMDrawReliefWithGC(W_Screen *scr, Drawable d, int x, int y, unsigned int width,
                         unsigned int height, WMReliefType relief,
                         GC black, GC dark, GC light, GC white)
 {
@@ -165,7 +165,7 @@ static int _fitText(const char *text, WMFont *font, int width, int wrap)
   return i;
 }
 
-int W_GetTextHeight(WMFont *font, const char *text, int width, int wrap)
+int WMGetTextHeight(WMFont *font, const char *text, int width, int wrap)
 {
   const char *ptr = text;
   int count;
@@ -189,7 +189,7 @@ int W_GetTextHeight(WMFont *font, const char *text, int width, int wrap)
 }
 
 void
-W_PaintText(W_View *view, Drawable d, WMFont *font, int x, int y,
+WMPaintText(W_View *view, Drawable d, WMFont *font, int x, int y,
 	    int width, WMAlignment alignment, WMColor *color, int wrap,
 	    const char *text, int length)
 {
@@ -226,7 +226,7 @@ W_PaintText(W_View *view, Drawable d, WMFont *font, int x, int y,
 }
 
 void
-W_PaintTextAndImage(W_View *view, int wrap, WMColor *textColor, W_Font *font,
+WMPaintTextAndImage(W_View *view, int wrap, WMColor *textColor, W_Font *font,
 		    WMReliefType relief, const char *text,
 		    WMAlignment alignment, W_Pixmap *image,
 		    WMImagePosition position, WMColor *backColor, int ofs)
@@ -334,13 +334,13 @@ W_PaintTextAndImage(W_View *view, int wrap, WMColor *textColor, W_Font *font,
   if (position != WIPImageOnly && text != NULL) {
     int textHeight;
 
-    textHeight = W_GetTextHeight(font, text, w - 8, wrap);
-    W_PaintText(view, d, font, x + ofs + 4, y + ofs + (h - textHeight) / 2, w - 8,
+    textHeight = WMGetTextHeight(font, text, w - 8, wrap);
+    WMPaintText(view, d, font, x + ofs + 4, y + ofs + (h - textHeight) / 2, w - 8,
                 alignment, textColor, wrap, text, strlen(text));
   }
 
   /* draw relief */
-  W_DrawRelief(screen, d, 0, 0, view->size.width, view->size.height, relief);
+  WMDrawRelief(screen, d, 0, 0, view->size.width, view->size.height, relief);
 
 #ifdef DOUBLE_BUFFER
   XCopyArea(screen->display, d, view->window, screen->copyGC, 0, 0,

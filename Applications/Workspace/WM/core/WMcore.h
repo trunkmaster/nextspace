@@ -51,13 +51,13 @@
 
 #define wassertr(expr) \
     if (!(expr)) { \
-        wwarning("wassertr: assertion %s failed", #expr); \
+        WMLogWarning("wassertr: assertion %s failed", #expr); \
         return;\
     }
 
 #define wassertrv(expr, val) \
     if (!(expr)) { \
-        wwarning("wassertrv: assertion %s failed", #expr); \
+        WMLogWarning("wassertrv: assertion %s failed", #expr); \
         return (val);\
     }
 

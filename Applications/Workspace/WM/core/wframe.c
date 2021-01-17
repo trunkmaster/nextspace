@@ -24,7 +24,7 @@
  */
 
 #include "util.h"
-#include "stringutils.h"
+#include "string_utils.h"
 
 #include "wscreen.h"
 #include "widgets.h"
@@ -189,7 +189,7 @@ static void paintFrame(W_Frame *fPtr)
     }
     XDestroyRegion(region);
 
-    W_DrawReliefWithGC(scrPtr, view->window, 0, fy, view->size.width, fh,
+    WMDrawReliefWithGC(scrPtr, view->window, 0, fy, view->size.width, fh,
                        fPtr->flags.relief, gc[0], gc[1], gc[2], gc[3]);
 
     for (i = 0; i < 4; i++) {

@@ -33,7 +33,7 @@
 #include <core/WMcore.h>
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 
 #include <core/widgets.h>
 #include <core/wevent.h>
@@ -2342,7 +2342,7 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
     return;
 
   if (wwin->flags.shaded) {
-    wwarning("internal error: tryein");
+    WMLogWarning("internal error: tryein");
     return;
   }
   orig_x = ev->xbutton.x_root;

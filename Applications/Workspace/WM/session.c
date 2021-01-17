@@ -76,7 +76,7 @@
 #include <core/WMcore.h>
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 
 #include "WM.h"
 #include "screen.h"
@@ -128,7 +128,7 @@ static int getBool(CFTypeRef value)
     if (sscanf(val, "%i", &i) == 1) {
       return (i != 0);
     } else {
-      wwarning(_("can't convert \"%s\" to boolean"), val);
+      WMLogWarning(_("can't convert \"%s\" to boolean"), val);
       return 0;
     }
   }

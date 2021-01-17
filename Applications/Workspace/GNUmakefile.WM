@@ -1,10 +1,10 @@
 # WM core
 $(APP_NAME)_C_FILES += \
-	$(WM_DIR)/core/log_utils.c \
-	$(WM_DIR)/core/whashtable.c \
-	$(WM_DIR)/core/fileutils.c \
-	$(WM_DIR)/core/stringutils.c \
 	$(WM_DIR)/core/util.c \
+	$(WM_DIR)/core/log_utils.c \
+	$(WM_DIR)/core/file_utils.c \
+	$(WM_DIR)/core/string_utils.c \
+	$(WM_DIR)/core/whashtable.c \
 	$(WM_DIR)/core/dragcommon.c \
 	$(WM_DIR)/core/dragdestination.c \
 	$(WM_DIR)/core/dragsource.c \

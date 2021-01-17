@@ -43,7 +43,7 @@
 #include <core/WMcore.h>
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 
 #include <core/wscreen.h>
 #include <core/wevent.h>
@@ -116,7 +116,7 @@ static void _hideWorkspaceName(CFRunLoopTimerRef timer, void *data) // (void *da
 {
   WScreen *scr = (WScreen *) data;
 
-  wmessage("_hideWorkspaceName: %i (%s)", scr->workspace_name_data->count,
+  WMLogInfo("_hideWorkspaceName: %i (%s)", scr->workspace_name_data->count,
            dispatch_queue_get_label(dispatch_get_current_queue()));
   
   if (!scr->workspace_name_data || scr->workspace_name_data->count == 0
@@ -321,7 +321,7 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
   scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_DELAY,
                                                 WORKSPACE_NAME_DELAY,
                                                 _hideWorkspaceName, scr);
-  wmessage("Timer created in %s", dispatch_queue_get_label(dispatch_get_current_queue()));
+  WMLogInfo("Timer created in %s", dispatch_queue_get_label(dispatch_get_current_queue()));
   
   return;
 
@@ -568,7 +568,7 @@ void wWorkspaceSaveFocusedWindow(WScreen *scr, int workspace, WWindow *wwin)
   }
 
   if (wwin) {
-    wmessage("[workspace.c] save focused window: %lu, %s.%s (%i x %i) to workspace %i\n",
+    WMLogInfo("[workspace.c] save focused window: %lu, %s.%s (%i x %i) to workspace %i\n",
              wwin->client_win, wwin->wm_instance, wwin->wm_class,
              wwin->old_geometry.width, wwin->old_geometry.height,
              workspace);
@@ -687,7 +687,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
       tmp = tmp->prev;
     }
 
-    wmessage("[workspace.c] windows to map: %i to unmap: %i\n", toMapCount, toUnmapCount);
+    WMLogInfo("[workspace.c] windows to map: %i to unmap: %i\n", toMapCount, toUnmapCount);
     while (toUnmapCount > 0) {
       wWindowUnmap(toUnmap[--toUnmapCount]);
     }
@@ -712,7 +712,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
     /* At this point `foc` can hold random selected window or `NULL` */
     if (!foc) {
       foc = scr->workspaces[workspace]->focused_window;
-      wmessage("SAVED focused window for WS-%d: %lu, %s.%s\n", workspace,
+      WMLogInfo("SAVED focused window for WS-%d: %lu, %s.%s\n", workspace,
                foc ? foc->client_win : 0,
                foc ? foc->wm_instance : "-",
                foc ? foc->wm_class : "-");
@@ -741,7 +741,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
 
     if (foc) {
       /* Mapped window found earlier. */
-      wmessage("[workspace.c] NEW focused window after CHECK: %lu, %s.%s (%i x %i)\n",
+      WMLogInfo("[workspace.c] NEW focused window after CHECK: %lu, %s.%s (%i x %i)\n",
                foc->client_win, foc->wm_instance, foc->wm_class,
                foc->old_geometry.width, foc->old_geometry.height);
       if (foc->flags.hidden) {
@@ -838,7 +838,7 @@ WMenu *wWorkspaceMenuMake(WScreen *scr, Bool titled)
 
   wsmenu = wMenuCreate(scr, titled ? _("Workspaces") : NULL, False);
   if (!wsmenu) {
-    wwarning(_("could not create Workspace menu"));
+    WMLogWarning(_("could not create Workspace menu"));
     return NULL;
   }
 

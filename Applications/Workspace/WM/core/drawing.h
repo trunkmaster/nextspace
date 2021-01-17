@@ -75,24 +75,24 @@ typedef enum {
     WIPOverlaps
 } WMImagePosition;
 
-void W_DrawRelief(W_Screen *scr, Drawable d, int x, int y, unsigned int width,
+void WMDrawRelief(W_Screen *scr, Drawable d, int x, int y, unsigned int width,
                   unsigned int height, WMReliefType relief);
 
-void W_DrawReliefWithGC(W_Screen *scr, Drawable d, int x, int y,
+void WMDrawReliefWithGC(W_Screen *scr, Drawable d, int x, int y,
                         unsigned int width, unsigned int height,
                         WMReliefType relief,
                         GC black, GC dark, GC light, GC white);
 
-void W_PaintTextAndImage(W_View *view, int wrap, WMColor *textColor,
+void WMPaintTextAndImage(W_View *view, int wrap, WMColor *textColor,
                          W_Font *font, WMReliefType relief, const char *text,
                          WMAlignment alignment, W_Pixmap *image,
                          WMImagePosition position, WMColor *backColor, int ofs);
 
-void W_PaintText(W_View *view, Drawable d, WMFont *font,  int x, int y,
+void WMPaintText(W_View *view, Drawable d, WMFont *font,  int x, int y,
                  int width, WMAlignment alignment, WMColor *color,
                  int wrap, const char *text, int length);
 
-int W_GetTextHeight(WMFont *font, const char *text, int width, int wrap);
+int WMGetTextHeight(WMFont *font, const char *text, int width, int wrap);
 
 WMPoint WMMakePoint(int x, int y);
 WMSize WMMakeSize(unsigned int width, unsigned int height);

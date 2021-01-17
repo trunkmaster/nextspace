@@ -129,11 +129,11 @@ CFPropertyListFormat WMUserDefaultsFileExists(CFStringRef domainName,
     pathExists = CFURLCreatePropertyFromResource(kCFAllocatorDefault, xmlURL,
                                                  kCFURLFileExists, &error);
     if (CFEqual(pathExists, kCFBooleanTrue)) {
-      /* werror("%@.plist does exist.", domainName); */
+      /* WMLogError("%@.plist does exist.", domainName); */
       result = kCFPropertyListXMLFormat_v1_0;
     }
     else {
-      /* werror("No %@.plist exists.", domainName); */
+      /* WMLogError("No %@.plist exists.", domainName); */
     }
     CFRelease(xmlURL);
   }
@@ -142,11 +142,11 @@ CFPropertyListFormat WMUserDefaultsFileExists(CFStringRef domainName,
     pathExists = CFURLCreatePropertyFromResource(kCFAllocatorDefault, osURL,
                                                  kCFURLFileExists, &error);
     if (CFEqual(pathExists, kCFBooleanTrue)) {
-      /* werror("%@ does exist.", domainName); */
+      /* WMLogError("%@ does exist.", domainName); */
       result = kCFPropertyListOpenStepFormat;
     }
     else {
-      /* werror("No %@ exists.", domainName); */
+      /* WMLogError("No %@ exists.", domainName); */
     }
   }
   
@@ -169,12 +169,12 @@ CFAbsoluteTime WMUserDefaultsFileModificationTime(CFStringRef domainName,
   existingFormat = WMUserDefaultsFileExists(domainName, 0);
   
   if (existingFormat == kCFPropertyListXMLFormat_v1_0) {
-    /* werror("XML file exists for domain %@...", domainName); */
+    /* WMLogError("XML file exists for domain %@...", domainName); */
     fileURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
     CFRelease(osURL);
   }
   else if (existingFormat == kCFPropertyListOpenStepFormat) {
-    /* werror("OpenStep file exists for domain %@...", domainName); */
+    /* WMLogError("OpenStep file exists for domain %@...", domainName); */
     fileURL = osURL;
   }
   
@@ -207,11 +207,11 @@ CFPropertyListRef WMUserDefaultsReadFromFile(CFURLRef fileURL)
     CFRelease(readStream);
   }
   else {
-    werror("cannot open READ stream to %@", fileURL);
+    WMLogError("cannot open READ stream to %@", fileURL);
   }
   
   if (plError && CFErrorGetCode(plError) > 0) {
-    werror("Failed to read user defaults from %@ (Error: %li)", fileURL, CFErrorGetCode(plError));
+    WMLogError("Failed to read user defaults from %@ (Error: %li)", fileURL, CFErrorGetCode(plError));
   }
 
   return pl;
@@ -237,7 +237,7 @@ CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName, Boolean useSystemDo
     fileURL = WMUserDefaultsCopySystemURLForDomain(domainName);
   }
   else {
-    werror("no files exist to read for domain %@", domainName);
+    WMLogError("no files exist to read for domain %@", domainName);
   }
 
   if (fileURL) {
@@ -261,10 +261,10 @@ Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
   xmlURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
   CFRelease(osURL);
 
-  werror("about to write property list to %@", xmlURL);
+  WMLogError("about to write property list to %@", xmlURL);
   
   if (dictionary == NULL) {
-    werror("cannot write a NULL property list to %@", xmlURL);
+    WMLogError("cannot write a NULL property list to %@", xmlURL);
     return false;
   }
 
@@ -279,7 +279,7 @@ Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
   
   /* If dictionary is empty: do not write to file and remove file if exists. */
   if (isDictionaryEmpty) {
-    werror("got empty property list for %@", xmlURL);
+    WMLogError("got empty property list for %@", xmlURL);
     if (WMUserDefaultsFileExists(domainName, kCFPropertyListXMLFormat_v1_0) != 0) {
       unsigned char file_path[MAXPATHLEN];
       CFURLGetFileSystemRepresentation(xmlURL, false, file_path, MAXPATHLEN);
@@ -289,7 +289,7 @@ Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
   }
 
   if (CFPropertyListIsValid(dictionary, kCFPropertyListXMLFormat_v1_0) == false) {
-    werror("cannot write a invalid property list to %@", xmlURL);
+    WMLogError("cannot write a invalid property list to %@", xmlURL);
     return false;
   }
 
@@ -301,11 +301,11 @@ Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
     CFWriteStreamClose(writeStream);
   }
   else {
-    werror("cannot open WRITE stream to %@", xmlURL);
+    WMLogError("cannot open WRITE stream to %@", xmlURL);
   }
 
   if (plError && CFErrorGetCode(plError) > 0) {
-    werror("cannot write user defaults to %@ (error: %li)", xmlURL, CFErrorGetCode(plError));
+    WMLogError("cannot write user defaults to %@ (error: %li)", xmlURL, CFErrorGetCode(plError));
   }
 
   CFRelease(xmlURL);

@@ -44,9 +44,9 @@
 #include <core/WMcore.h>
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
+#include <core/file_utils.h>
 
-#include <core/fileutils.h>
 #include <core/wevent.h>
 #include <core/drawing.h>
 #include <core/wuserdefaults.h>
@@ -407,7 +407,7 @@ static char *getTextSelection(WScreen * screen, Atom selection)
     if (!timeout) {
       WMDeleteTimerHandler(timer);
     } else {
-      wwarning("selection retrieval timed out");
+      WMLogWarning("selection retrieval timed out");
       return NULL;
     }
 
@@ -424,7 +424,7 @@ static char *getTextSelection(WScreen * screen, Atom selection)
       return NULL;
     }
     if (rtype != XA_STRING || bits != 8) {
-      wwarning("invalid data in text selection");
+      WMLogWarning("invalid data in text selection");
       if (data)
         XFree(data);
       return NULL;
@@ -473,7 +473,7 @@ char *ExpandOptions(WScreen *scr, const char *cmdline)
   olen = len + 1;
   out = malloc(olen);
   if (!out) {
-    wwarning(_("out of memory during expansion of \"%s\""), cmdline);
+    WMLogWarning(_("out of memory during expansion of \"%s\""), cmdline);
     return NULL;
   }
   *out = 0;
@@ -526,7 +526,7 @@ char *ExpandOptions(WScreen *scr, const char *cmdline)
           olen += slen;
           nout = realloc(out, olen);
           if (!nout) {
-            wwarning(_("out of memory during expansion of '%s' for command \"%s\""), "%w", cmdline);
+            WMLogWarning(_("out of memory during expansion of '%s' for command \"%s\""), "%w", cmdline);
             goto error;
           }
           out = nout;
@@ -543,7 +543,7 @@ char *ExpandOptions(WScreen *scr, const char *cmdline)
         olen += slen;
         nout = realloc(out, olen);
         if (!nout) {
-          wwarning(_("out of memory during expansion of '%s' for command \"%s\""), "%W", cmdline);
+          WMLogWarning(_("out of memory during expansion of '%s' for command \"%s\""), "%W", cmdline);
           goto error;
         }
         out = nout;
@@ -561,7 +561,7 @@ char *ExpandOptions(WScreen *scr, const char *cmdline)
         olen += slen;
         nout = realloc(out, olen);
         if (!nout) {
-          wwarning(_("out of memory during expansion of '%s' for command \"%s\""), "%d", cmdline);
+          WMLogWarning(_("out of memory during expansion of '%s' for command \"%s\""), "%d", cmdline);
           goto error;
         }
         out = nout;
@@ -575,14 +575,14 @@ char *ExpandOptions(WScreen *scr, const char *cmdline)
           selection = getselection(scr);
         }
         if (!selection) {
-          wwarning(_("selection not available"));
+          WMLogWarning(_("selection not available"));
           goto error;
         }
         slen = strlen(selection);
         olen += slen;
         nout = realloc(out, olen);
         if (!nout) {
-          wwarning(_("out of memory during expansion of '%s' for command \"%s\""), "%s", cmdline);
+          WMLogWarning(_("out of memory during expansion of '%s' for command \"%s\""), "%s", cmdline);
           goto error;
         }
         out = nout;
@@ -717,13 +717,13 @@ void ParseWindowName(CFStringRef value, char **winstance, char **wclass, const c
   *winstance = *wclass = NULL;
 
   if (CFGetTypeID(value) != CFStringGetTypeID()) {
-    wwarning(_("bad window name value in %s state info"), where);
+    WMLogWarning(_("bad window name value in %s state info"), where);
     return;
   }
 
   name = CFStringGetCStringPtr(value, kCFStringEncodingUTF8);
   if (!name || strlen(name) == 0) {
-    wwarning(_("bad window name value in %s state info"), where);
+    WMLogWarning(_("bad window name value in %s state info"), where);
     return;
   }
 
@@ -854,14 +854,14 @@ Bool wStartBackgroundHelper(WScreen *scr)
   int filedes[2];
 
   if (pipe(filedes) < 0) {
-    werror(_("%s failed, can't set workspace specific background image (%s)"),
+    WMLogError(_("%s failed, can't set workspace specific background image (%s)"),
            "pipe()", strerror(errno));
     return False;
   }
 
   pid = fork();
   if (pid < 0) {
-    werror(_("%s failed, can't set workspace specific background image (%s)"),
+    WMLogError(_("%s failed, can't set workspace specific background image (%s)"),
            "fork()", strerror(errno));
     close(filedes[0]);
     close(filedes[1]);
@@ -877,7 +877,7 @@ Bool wStartBackgroundHelper(WScreen *scr)
 
     close(STDIN_FILENO);
     if (dup2(filedes[0], STDIN_FILENO) < 0) {
-      werror(_("%s failed, can't set workspace specific background image (%s)"),
+      WMLogError(_("%s failed, can't set workspace specific background image (%s)"),
              "dup2()", strerror(errno));
       exit(1);
     }
@@ -889,7 +889,7 @@ Bool wStartBackgroundHelper(WScreen *scr)
     else
       execlp("wmsetbg", "wmsetbg", "-helper", dither, NULL);
 
-    werror(_("could not execute \"%s\": %s"), "wmsetbg", strerror(errno));
+    WMLogError(_("could not execute \"%s\": %s"), "wmsetbg", strerror(errno));
     exit(1);
 
   } else {
@@ -897,7 +897,7 @@ Bool wStartBackgroundHelper(WScreen *scr)
     close(filedes[0]);
 
     if (fcntl(filedes[1], F_SETFD, FD_CLOEXEC) < 0)
-      wwarning(_("could not set close-on-exec flag for bg_helper's communication file handle (%s)"),
+      WMLogWarning(_("could not set close-on-exec flag for bg_helper's communication file handle (%s)"),
                strerror(errno));
 
     scr->helper_fd = filedes[1];
@@ -937,7 +937,7 @@ void wSendHelperMessage(WScreen *scr, char type, int workspace, const char *msg)
     strcpy(&buffer[i], msg);
 
   if (write(scr->helper_fd, buffer, len + 4) < 0) {
-    werror(_("could not send message to background image helper"));
+    WMLogError(_("could not send message to background image helper"));
   }
   wfree(buffer);
 }
@@ -1030,10 +1030,10 @@ void wExecuteShellCommand(WScreen *scr, const char *command)
     setsid();
 #endif
     execl(shell, shell, "-c", command, NULL);
-    werror("could not execute %s -c %s", shell, command);
+    WMLogError("could not execute %s -c %s", shell, command);
     exit(-1);
   } else if (pid < 0) {
-    werror("cannot fork a new process");
+    WMLogError("cannot fork a new process");
   } else {
     _tuple *data = wmalloc(sizeof(_tuple));
 
@@ -1048,7 +1048,7 @@ void wExecuteShellCommand(WScreen *scr, const char *command)
 Bool wRelaunchWindow(WWindow *wwin)
 {
   if (! wwin || ! wwin->client_win) {
-    werror("no window to relaunch");
+    WMLogError("no window to relaunch");
     return False;
   }
 
@@ -1056,7 +1056,7 @@ Bool wRelaunchWindow(WWindow *wwin)
   int argc;
 
   if (! XGetCommand(dpy, wwin->client_win, &argv, &argc) || argc == 0 || argv == NULL) {
-    werror("cannot relaunch the application because no WM_COMMAND property is set");
+    WMLogError("cannot relaunch the application because no WM_COMMAND property is set");
     return False;
   }
 
@@ -1070,7 +1070,7 @@ Bool wRelaunchWindow(WWindow *wwin)
     /* argv is not null-terminated */
     char **a = (char **) malloc(argc + 1);
     if (! a) {
-      werror("out of memory trying to relaunch the application");
+      WMLogError("out of memory trying to relaunch the application");
       exit(-1);
     }
 
@@ -1082,7 +1082,7 @@ Bool wRelaunchWindow(WWindow *wwin)
     execvp(a[0], a);
     exit(-1);
   } else if (pid < 0) {
-    werror("cannot fork a new process");
+    WMLogError("cannot fork a new process");
 
     XFreeStringList(argv);
     return False;

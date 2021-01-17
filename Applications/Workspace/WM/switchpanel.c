@@ -389,19 +389,19 @@ static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped,
 
   /* WApplications */
   if (class_only == False) {
-    wmessage ("window list array creation BEGIN");
+    WMLogInfo ("window list array creation BEGIN");
     WApplication *wapp = scr->wapp_list;
     while (wapp) {
       WWindow *w = NULL;
-      wmessage("Inspect application: ");
+      WMLogInfo("Inspect application: ");
       if (wapp->flags.is_gnustep) {
         if (wapp->menu_win) {
           w = wapp->menu_win;
-          wmessage("\t%s (menu: %lu)",  w->wm_instance, w->client_win);
+          WMLogInfo("\t%s (menu: %lu)",  w->wm_instance, w->client_win);
         }
         else {
           w = wapp->main_window_desc;
-          wmessage("\t%s (main window: %lu)",
+          WMLogInfo("\t%s (main window: %lu)",
                    w->wm_instance, w->client_win);
         }
       }
@@ -410,16 +410,16 @@ static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped,
           w = wapp->last_focused;
         else
           w = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
-        wmessage("\t%s (window: %lu)", w->wm_instance, w->client_win);
+        WMLogInfo("\t%s (window: %lu)", w->wm_instance, w->client_win);
       }
 
       if (w)
         CFArrayAppendValue(windows, w);
       
-      wmessage("\tWindow count:%li", CFArrayGetCount(wapp->windows));
+      WMLogInfo("\tWindow count:%li", CFArrayGetCount(wapp->windows));
       wapp = wapp->next;
     }
-    wmessage("window list array creation END");
+    WMLogInfo("window list array creation END");
   }
   else {
     /* Mapped windows */
@@ -783,9 +783,9 @@ WWindow *wSwitchPanelHandleEvent(WSwitchPanel *panel, XEvent *event)
     }
     panel->current = focus;
 
-    wmessage("focus == %i (%li)", focus, CFArrayGetCount(panel->windows));
+    WMLogInfo("focus == %i (%li)", focus, CFArrayGetCount(panel->windows));
     wwin = (WWindow *)CFArrayGetValueAtIndex(panel->windows, focus);
-    wmessage("focus title == %s", wwin->frame->title);
+    WMLogInfo("focus title == %s", wwin->frame->title);
 
     drawTitle(panel, panel->current, wwin->frame->title);
 

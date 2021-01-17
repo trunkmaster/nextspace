@@ -37,6 +37,6 @@ Bool WMRequestSelection(WMView *view, Atom selection, Atom target,
                         Time timestamp, WMSelectionCallback *callback,
                         void *cdata);
 
-void W_HandleSelectionEvent(XEvent *event);
+void WMHandleSelectionEvent(XEvent *event);
 
 #endif /* __WORKSPACE_WM_WSELECTION__ */

@@ -84,7 +84,7 @@ void RemakeStackList(WScreen * scr)
   int i, c;
 
   if (!XQueryTree(dpy, scr->root_win, &junkr, &junkp, &windows, &nwindows)) {
-    wwarning(_("could not get window list!!"));
+    WMLogWarning(_("could not get window list!!"));
     return;
   } else {
     WMEmptyBag(scr->stacking_list);
@@ -582,7 +582,7 @@ void RemoveFromStackList(WCoreWindow * frame)
   int index = frame->stacking->window_level;
 
   if (XDeleteContext(dpy, frame->window, w_global.context.stack) == XCNOENT) {
-    wwarning("RemoveFromStackingList(): window not in list ");
+    WMLogWarning("RemoveFromStackingList(): window not in list ");
     return;
   }
   /* remove from the window stack list */

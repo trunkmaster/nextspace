@@ -43,7 +43,6 @@
 #include "wscreen.h"
 #include "whashtable.h"
 
-
 /* ---[ emergency exit ]------------------------------------------------------*/
 typedef void waborthandler(int);
 waborthandler *wsetabort(waborthandler* handler);
@@ -87,7 +86,7 @@ void *wmalloc(size_t size)
   tmp = malloc(size);
 
   if (tmp == NULL) {
-    wwarning("malloc() failed. Retrying after 2s.");
+    WMLogWarning("malloc() failed. Retrying after 2s.");
     sleep(2);
     tmp = malloc(size);
     if (tmp == NULL) {
@@ -95,7 +94,7 @@ void *wmalloc(size_t size)
         fputs("Really Bad Error: recursive malloc() failure.", stderr);
         exit(-1);
       } else {
-        wfatal("virtual memory exhausted");
+        WMLogCritical("virtual memory exhausted");
         Aborting = 1;
         wAbort(False);
       }
@@ -116,7 +115,7 @@ void *wrealloc(void *ptr, size_t newsize)
   } else {
     nptr = realloc(ptr, newsize);
     if (nptr == NULL) {
-      wwarning("realloc() failed. Retrying after 2s.");
+      WMLogWarning("realloc() failed. Retrying after 2s.");
       sleep(2);
       nptr = realloc(ptr, newsize);
       if (nptr == NULL) {
@@ -124,7 +123,7 @@ void *wrealloc(void *ptr, size_t newsize)
           fputs("Really Bad Error: recursive realloc() failure.", stderr);
           exit(-1);
         } else {
-          wfatal("virtual memory exhausted");
+          WMLogCritical("virtual memory exhausted");
           Aborting = 1;
           wAbort(False);
         }
@@ -164,7 +163,7 @@ void wrelease(void *ptr)
 
   refcount = WMHashGet(table, ptr);
   if (!refcount) {
-    wwarning("trying to release unexisting data %p", ptr);
+    WMLogWarning("trying to release unexisting data %p", ptr);
   } else {
     (*refcount)--;
     if (*refcount < 1) {

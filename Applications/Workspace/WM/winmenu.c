@@ -35,7 +35,7 @@
 #include <core/WMcore.h>
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 
 #include "WM.h"
 #include "actions.h"
@@ -513,7 +513,7 @@ static WMenu *makeWorkspaceMenu(WScreen * scr)
 
   menu = wMenuCreate(scr, NULL, False);
   if (!menu) {
-    wwarning(_("could not create submenu for window menu"));
+    WMLogWarning(_("could not create submenu for window menu"));
     return NULL;
   }
 
@@ -538,7 +538,7 @@ static WMenu *makeOptionsMenu(WScreen * scr)
 
   menu = wMenuCreate(scr, NULL, False);
   if (!menu) {
-    wwarning(_("could not create submenu for window menu"));
+    WMLogWarning(_("could not create submenu for window menu"));
     return NULL;
   }
 
@@ -563,7 +563,7 @@ static WMenu *makeMaximizeMenu(WScreen * scr)
 
   menu = wMenuCreate(scr, NULL, False);
   if (!menu) {
-    wwarning(_("could not create submenu for window menu"));
+    WMLogWarning(_("could not create submenu for window menu"));
     return NULL;
   }
 

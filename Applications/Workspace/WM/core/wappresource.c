@@ -30,7 +30,7 @@
 #include "WM.h"
 
 #include "util.h"
-#include "stringutils.h"
+#include "string_utils.h"
 
 #include "wscreen.h"
 #include "wpixmap.h"

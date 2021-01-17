@@ -38,9 +38,9 @@
 
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
+#include <core/file_utils.h>
 
-#include <core/fileutils.h>
 #include <core/wevent.h>
 #include <core/drawing.h>
 #include <core/wuserdefaults.h>
@@ -317,7 +317,7 @@ static void icon_update_pixmap(WIcon *icon, RImage *image)
      * only to avoid a compiler warning with "tile"
      * "may be used uninitialized"
      */
-    wwarning("Unknown tile type: %d.\n", icon->tile_type);
+    WMLogWarning("Unknown tile type: %d.\n", icon->tile_type);
     tile = RCloneImage(scr->icon_tile);
   }
 
@@ -357,7 +357,7 @@ static void icon_update_pixmap(WIcon *icon, RImage *image)
   }
 
   if (!RConvertImage(scr->rcontext, tile, &pixmap))
-    wwarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
+    WMLogWarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
 
   RReleaseImage(tile);
 
@@ -527,7 +527,7 @@ static int wmkdirhier(const char *path)
     strncpy(buf, thePath, p);
     if (mkdir(buf, 0777) == -1 && errno == EEXIST &&
         stat(buf, &st) == 0 && !S_ISDIR(st.st_mode)) {
-      werror(_("Could not create component %s"), buf);
+      WMLogError(_("Could not create component %s"), buf);
       wfree(thePath);
       return 0;
     }

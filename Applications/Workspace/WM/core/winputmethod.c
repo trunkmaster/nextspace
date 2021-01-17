@@ -27,7 +27,7 @@
 
 #include "util.h"
 #include "log_utils.h"
-#include "stringutils.h"
+#include "string_utils.h"
 
 #include "WM.h"
 #include "wscreen.h"
@@ -91,7 +91,7 @@ void W_InitIM(W_Screen *scr)
     cb.callback = destroyIM_cb;
     cb.client_data = (XPointer) scr;
     if (XSetIMValues(scr->imctx->xim, XNDestroyCallback, &cb, NULL))
-      wwarning(_("could not add destroy callback for XIM input method"));
+      WMLogWarning(_("could not add destroy callback for XIM input method"));
     XUnregisterIMInstantiateCallback(scr->display, NULL, NULL, NULL, instantiateIM_cb, (XPointer) scr);
     /* Get available input style */
     XGetIMValues(scr->imctx->xim, XNQueryInputStyle, &im_styles, NULL);

@@ -35,7 +35,7 @@
 
 #include <core/util.h>
 #include <core/log_utils.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 #include <core/wevent.h>
 #include <core/wuserdefaults.h>
 
@@ -660,14 +660,14 @@ void appIconMouseDown(WObjDescriptor * desc, XEvent * event)
   WScreen *scr = aicon->icon->core->screen_ptr;
   Bool hasMoved;
 
-  wmessage("[appicon.c] Appicon Mouse Down\n");
+  WMLogInfo("[appicon.c] Appicon Mouse Down\n");
     
   if (aicon->editing || WCHECK_STATE(WSTATE_MODAL))
     return;
 
   if (IsDoubleClick(scr, event)) {
     /* Middle or right mouse actions were handled on first click */
-    wmessage("[appicon.c] Appicon Double-click\n");
+    WMLogInfo("[appicon.c] Appicon Double-click\n");
     if (event->xbutton.button == Button1)
       iconDblClick(desc, event);
     return;
@@ -693,7 +693,7 @@ void appIconMouseDown(WObjDescriptor * desc, XEvent * event)
         XGrabPointer(dpy, aicon->icon->core->window, True, ButtonMotionMask
                      | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
                      GrabModeAsync, None, None, CurrentTime) != GrabSuccess) {
-      wwarning("pointer grab failed for appicon menu");
+      WMLogWarning("pointer grab failed for appicon menu");
       return;
     }
 
@@ -761,7 +761,7 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
   if (XGrabPointer(dpy, icon->core->window, True, ButtonMotionMask
                    | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
                    GrabModeAsync, None, None, CurrentTime) != GrabSuccess) {
-    wwarning("Pointer grab failed in wHandleAppIconMove");
+    WMLogWarning("Pointer grab failed in wHandleAppIconMove");
   }
 
   if (originalDock != NULL) {
@@ -987,7 +987,7 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
                 }
                 if (j != originalDock->icon_count - abs(aicon->xindex) - 1)
                   // Trust this never happens?
-                  wwarning("Shifting j=%d appicons (instead of %d!) to reinsert aicon at index %d.",
+                  WMLogWarning("Shifting j=%d appicons (instead of %d!) to reinsert aicon at index %d.",
                            j, originalDock->icon_count - abs(aicon->xindex) - 1, aicon->xindex);
                 wSlideAppicons(aiconsToShift, j, originalDock->on_right_side);
                 // Trust the appicon is inserted at exactly the same place, so its oldX/oldY are consistent with its "new" location?
@@ -1093,7 +1093,7 @@ static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_ins
   char *tmp;
 
   if (!dict) {
-    werror(_("cannot save appicon to a NULL WMWindowAttributes"));
+    WMLogError(_("cannot save appicon to a NULL WMWindowAttributes"));
     return;
   }
 

@@ -33,7 +33,7 @@
 #include "WMcore.h"
 #include "whashtable.h"
 #include "util.h"
-#include "stringutils.h"
+#include "string_utils.h"
 
 #define INITIAL_CAPACITY	23
 

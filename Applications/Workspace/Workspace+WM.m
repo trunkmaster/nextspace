@@ -29,7 +29,7 @@
 #include <wraster.h>
 #include <core/wappresource.h>
 #include <core/util.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 #include <core/wuserdefaults.h>
 
 #import <AppKit/AppKit.h>
@@ -184,7 +184,7 @@ void WMShutdown(WShutdownMode mode)
   
   RShutdown(); /* wrlib clean exit */
 #if HAVE_SYSLOG_H
-  wSyslogClose();
+  WMSyslogClose();
 #endif
 }
 

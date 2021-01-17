@@ -41,7 +41,7 @@
 
 #include "WMcore.h"
 #include "util.h"
-#include "stringutils.h"
+#include "string_utils.h"
 
 #define PRC_ALPHA	0
 #define PRC_BLANK	1

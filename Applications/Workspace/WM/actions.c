@@ -167,17 +167,17 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       if (wwin->flags.shaded) {
         WApplication *wapp = wApplicationOf(wwin->main_window);
 
-        wmessage("wSetFocusTo: Request to focus shaded GNUstep window (%lu).",
+        WMLogInfo("wSetFocusTo: Request to focus shaded GNUstep window (%lu).",
                  wwin->client_win);
         if (!wwin->flags.focused) { // not focused - set it
-          wmessage("           : Send WM_TAKE_FOCUS to shaded GNUstep window %lu.",
+          WMLogInfo("           : Send WM_TAKE_FOCUS to shaded GNUstep window %lu.",
                    wwin->client_win);
           wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
           XFlush(dpy);
           XSync(dpy, False);
         }
         if (wapp && !wapp->menu_win->flags.focused) {
-          wmessage("           : Transfer focus to main menu (%lu).",
+          WMLogInfo("           : Transfer focus to main menu (%lu).",
                    wapp->menu_win->client_win);
           wSetFocusTo(scr, wapp->menu_win);
         }
@@ -202,7 +202,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     // TDDO: hold Workspace main menu in WScreen
     WApplication *wsapp = wApplicationWithName(scr, "Workspace");
     if (wsapp && wsapp->menu_win) {
-      wmessage("        wSetFocusTo: Workspace menu window: %lu", wsapp->menu_win->client_win);
+      WMLogInfo("        wSetFocusTo: Workspace menu window: %lu", wsapp->menu_win->client_win);
       wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
       old_focused = NULL;
     }
@@ -229,25 +229,25 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     /* set input focus */
     switch (wwin->focus_mode) {
     case WFM_NO_INPUT: // !wm_hints->input, !WM_TAKE_FOCUS
-      wmessage("        wSetFocusTo: %lu focus mode == NO_INPUT. Do nothing", wwin->client_win);
+      WMLogInfo("        wSetFocusTo: %lu focus mode == NO_INPUT. Do nothing", wwin->client_win);
       return;
     case WFM_PASSIVE: // wm_hints->input, !WM_TAKE_FOCUS
       {
-        wmessage("        wSetFocusTo: %lu focus mode == PASSIVE.", wwin->client_win);
+        WMLogInfo("        wSetFocusTo: %lu focus mode == PASSIVE.", wwin->client_win);
         XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
         focus_succeeded = True;
       }
       break;
     case WFM_LOCALLY_ACTIVE: // wm_hints->input, WM_TAKE_FOCUS
       {
-        wmessage("        wSetFocusTo: %lu focus mode == LOCALLY_ACTIVE.", wwin->client_win);
+        WMLogInfo("        wSetFocusTo: %lu focus mode == LOCALLY_ACTIVE.", wwin->client_win);
         XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
         focus_succeeded = True;
       }
       break;
     case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
       {
-        wmessage("        wSetFocusTo: %lu focus mode == GLOBALLY_ACTIVE.", wwin->client_win);
+        WMLogInfo("        wSetFocusTo: %lu focus mode == GLOBALLY_ACTIVE.", wwin->client_win);
         wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
         focus_succeeded = True;
       }
@@ -989,7 +989,7 @@ static WWindow *recursiveTransientFor(WWindow *wwin)
     i--;
   }
   if (i == 0 && wwin) {
-    wwarning(_("window \"%s\" has a severely broken WM_TRANSIENT_FOR hint"),
+    WMLogWarning(_("window \"%s\" has a severely broken WM_TRANSIENT_FOR hint"),
              wwin->frame->title);
     return NULL;
   }
@@ -1069,7 +1069,7 @@ void wIconifyWindow(WWindow *wwin)
             snprintf(title_buf, sizeof(title_buf), "(id=0x%lx)", wwin->client_win);
             title = title_buf;
           }
-          wwarning(_("creation of mini-preview failed for window \"%s\""), title);
+          WMLogWarning(_("creation of mini-preview failed for window \"%s\""), title);
         }
       }
     }
@@ -1394,7 +1394,7 @@ void wHideOtherApplications(WWindow *awin)
 
       if (tapp != wapp && wwin->protocols.HIDE_APP) {
         WIcon *icon = tapp->app_icon->icon;
-        /* wmessage("send WM_HIDE_APP protocol message to client."); */
+        /* WMLogInfo("send WM_HIDE_APP protocol message to client."); */
         wAnimateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
                       wwin->frame->core->width, wwin->frame->core->height,
                       tapp->app_icon->x_pos, tapp->app_icon->y_pos,
@@ -1434,11 +1434,11 @@ void wHideApplication(WApplication *wapp)
   Bool is_workspace = False;
 
   if (!wapp) {
-    wwarning("trying to hide a non grouped window");
+    WMLogWarning("trying to hide a non grouped window");
     return;
   }
   if (!wapp->main_window_desc) {
-    wwarning("group leader not found for window group");
+    WMLogWarning("group leader not found for window group");
     return;
   }
   scr = wapp->main_window_desc->screen_ptr;

@@ -28,7 +28,7 @@
 
 #include "WMcore.h"
 #include "util.h"
-#include "stringutils.h"
+#include "string_utils.h"
 #include "log_utils.h"
 
 #include "wscreen.h"
@@ -205,7 +205,7 @@ static CFMutableArrayRef sourceOperationList(WMScreen * scr, Window sourceWin)
                      0, 0x8000000L, False, XA_ATOM, &dataType, &size, &count, &remaining, &actionDatas);
 
   if (dataType != XA_ATOM || size != XDND_PROPERTY_FORMAT || count == 0 || !actionDatas) {
-    wwarning("Cannot read action list");
+    WMLogWarning("Cannot read action list");
     if (actionDatas) {
       XFree(actionDatas);
     }
@@ -219,7 +219,7 @@ static CFMutableArrayRef sourceOperationList(WMScreen * scr, Window sourceWin)
                      &count, &remaining, &descriptionList);
 
   if (dataType != XA_STRING || size != XDND_ACTION_DESCRIPTION_FORMAT || count == 0 || !descriptionList) {
-    wwarning("Cannot read action description list");
+    WMLogWarning("Cannot read action description list");
     if (actionList) {
       XFree(actionList);
     }
@@ -466,7 +466,7 @@ static Bool requestDropDataInSelection(WMView * destView, const char *type)
                             scr->xdndSelectionAtom,
                             XInternAtom(scr->display, type, False),
                             CurrentTime, storeDropData, NULL)) {
-      wwarning("could not request data for dropped data");
+      WMLogWarning("could not request data for dropped data");
       return False;
     }
 
@@ -623,7 +623,7 @@ static void dragSourceResponseTimeOut(CFRunLoopTimerRef timer, void *destView)
   WMView *view = (WMView *) destView;
   WMDraggingInfo *info;
 
-  wwarning("delay for drag source response expired");
+  WMLogWarning("delay for drag source response expired");
   info = W_VIEW_SCREEN(view)->dragInfo;
   if (XDND_DEST_VIEW_IS_REGISTERED(info))
     cancelDrop(view, info);

@@ -150,6 +150,6 @@ int WSRunAlertPanel(char *title, char *message,
                      char *otherButton);
 void WSRingBell(WWindow *wwin);
 void WSMessage(char *fmt, ...);
-// #define wmessage(fmt, args...) WSMessage(fmt, ## args)
+// #define WMLogInfo(fmt, args...) WSMessage(fmt, ## args)
 
 #endif //NEXTSPACE

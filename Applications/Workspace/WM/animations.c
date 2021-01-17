@@ -377,7 +377,7 @@ static int bounceDirection(WAppIcon *aicon)
     break;
 
   default:
-    wwarning(_("Impossible direction: %d"), dir);
+    WMLogWarning(_("Impossible direction: %d"), dir);
     dir = 3;
     break;
   }
@@ -406,7 +406,7 @@ static int appIsUrgent(WApplication *wapp)
   WWindow *wlist;
 
   if (!wapp->main_window_desc) {
-    wwarning("group leader not found for window group");
+    WMLogWarning("group leader not found for window group");
     return 0;
   }
   scr = wapp->main_window_desc->screen_ptr;

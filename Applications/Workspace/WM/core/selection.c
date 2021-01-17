@@ -338,7 +338,7 @@ static void handleNotifyEvent(XEvent *event)
   CFRelease(copy);
 }
 
-void W_HandleSelectionEvent(XEvent *event)
+void WMHandleSelectionEvent(XEvent *event)
 {
   /*//printf("%d received selection ", event->xany.window); */
   /*//switch(event->type) {

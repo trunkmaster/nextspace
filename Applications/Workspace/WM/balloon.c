@@ -39,7 +39,7 @@
 
 #include <core/WMcore.h>
 #include <core/util.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 #include <core/drawing.h>
 #include <core/wevent.h>
 

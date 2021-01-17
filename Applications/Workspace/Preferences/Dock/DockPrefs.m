@@ -24,7 +24,7 @@
 #import "Operations/ProcessManager.h"
 #import <Workspace+WM.h>
 
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 #include <core/wuserdefaults.h>
 #include <screen.h>
 #include <dock.h>

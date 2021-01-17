@@ -33,7 +33,7 @@
 #include "WMcore.h"
 #include "util.h"
 #include "log_utils.h"
-#include "stringutils.h"
+#include "string_utils.h"
 
 #include <wraster.h>
 
@@ -73,7 +73,7 @@ static FcPattern *xlfdToFcPattern(const char *xlfd)
   wfree(fname);
 
   if (!pattern) {
-    wwarning(_("invalid font: %s. Trying '%s'"), xlfd, SYSTEM_FONT);
+    WMLogWarning(_("invalid font: %s. Trying '%s'"), xlfd, SYSTEM_FONT);
     pattern = FcNameParse((FcChar8 *) SYSTEM_FONT);
   }
 
@@ -291,7 +291,7 @@ WMFont *WMSystemFontOfSize(WMScreen *scrPtr, int size)
   font = WMCreateFont(scrPtr, fontSpec);
 
   if (!font) {
-    wwarning(_("could not load font: %s."), fontSpec);
+    WMLogWarning(_("could not load font: %s."), fontSpec);
   }
 
   wfree(fontSpec);
@@ -309,7 +309,7 @@ WMFont *WMBoldSystemFontOfSize(WMScreen *scrPtr, int size)
   font = WMCreateFont(scrPtr, fontSpec);
 
   if (!font) {
-    wwarning(_("could not load font: %s."), fontSpec);
+    WMLogWarning(_("could not load font: %s."), fontSpec);
   }
 
   wfree(fontSpec);

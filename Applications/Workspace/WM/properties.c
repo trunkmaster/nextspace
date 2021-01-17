@@ -192,7 +192,7 @@ void PropSetIconTileHint(WScreen * scr, RImage * image)
 
   tmp = malloc(image->width * image->height * 4 + 4);
   if (!tmp) {
-    wwarning("could not allocate memory to set _WINDOWMAKER_ICON_TILE hint");
+    WMLogWarning("could not allocate memory to set _WINDOWMAKER_ICON_TILE hint");
     return;
   }
 

@@ -41,11 +41,11 @@
 int wGetColorForColormap(Colormap colormap, const char *color_name, XColor *color)
 {
   if (!XParseColor(dpy, colormap, color_name, color)) {
-    wwarning(_("could not parse color \"%s\""), color_name);
+    WMLogWarning(_("could not parse color \"%s\""), color_name);
     return False;
   }
   if (!XAllocColor(dpy, colormap, color)) {
-    wwarning(_("could not allocate color \"%s\""), color_name);
+    WMLogWarning(_("could not allocate color \"%s\""), color_name);
     return False;
   }
   return True;

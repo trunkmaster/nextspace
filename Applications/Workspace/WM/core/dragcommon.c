@@ -89,7 +89,7 @@ WMDragOperationType W_ActionToOperation(WMScreen *scr, Atom action)
   } else {
     char *tmp = XGetAtomName(scr->display, action);
 
-    wwarning(_("unknown XDND action %s"), tmp);
+    WMLogWarning(_("unknown XDND action %s"), tmp);
     XFree(tmp);
 
     return WDOperationCopy;
@@ -172,7 +172,7 @@ W_SendDnDClientMessage(Display *dpy, Window win, Atom message,
 #endif
 
   if (!windowExists(dpy, win)) {
-    wwarning(_("target %lu for XDND message no longer exists"), win);
+    WMLogWarning(_("target %lu for XDND message no longer exists"), win);
     return False;	/* message not sent */
   }
 
@@ -250,7 +250,7 @@ void W_HandleDNDClientMessage(WMView *toplevel, XClientMessageEvent *event)
         return;
       }
     } else {
-      wwarning(_("unsupported version %i for XDND enter message"), XDND_SOURCE_VERSION(info));
+      WMLogWarning(_("unsupported version %i for XDND enter message"), XDND_SOURCE_VERSION(info));
       W_DragDestinationCancelDropOnEnter(toplevel, info);
       return;
     }

@@ -24,7 +24,7 @@
  */
 
 #include "util.h"
-#include "stringutils.h"
+#include "string_utils.h"
 
 #include "wscreen.h"
 #include "widgets.h"
@@ -181,7 +181,7 @@ static void paintLabel(W_Label *lPtr)
 {
   W_Screen *scrPtr = lPtr->view->screen;
 
-  W_PaintTextAndImage(lPtr->view, !lPtr->flags.noWrap,
+  WMPaintTextAndImage(lPtr->view, !lPtr->flags.noWrap,
                       lPtr->textColor ? lPtr->textColor : scrPtr->black,
                       (lPtr->font != NULL ? lPtr->font : scrPtr->normalFont),
                       lPtr->flags.relief, lPtr->caption,

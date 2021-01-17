@@ -37,7 +37,7 @@
 
 #include <core/WMcore.h>
 #include <core/util.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 
 #include "WM.h"
 #include "window.h"
@@ -609,7 +609,7 @@ void wNETWMInitStuff(WScreen *scr)
   int i;
 
 #ifdef DEBUG_WMSPEC
-  wmessage("wNETWMInitStuff");
+  WMLogInfo("wNETWMInitStuff");
 #endif
 
 #ifdef HAVE_XINTERNATOMS
@@ -1221,7 +1221,7 @@ static void doStateAtom(WWindow *wwin, Atom state, int set, Bool init)
 
   } else {
 #ifdef DEBUG_WMSPEC
-    wmessage("doStateAtom unknown atom %s set %d", XGetAtomName(dpy, state), set);
+    WMLogInfo("doStateAtom unknown atom %s set %d", XGetAtomName(dpy, state), set);
 #endif
   }
 }
@@ -1513,7 +1513,7 @@ static Bool updateNetIconInfo(WWindow *wwin)
 void wNETWMCheckInitialClientState(WWindow *wwin)
 {
 #ifdef DEBUG_WMSPEC
-  wmessage("wNETWMCheckInitialClientState");
+  WMLogInfo("wNETWMCheckInitialClientState");
 #endif
 
   wNETWMShowingDesktop(wwin->screen_ptr, False);
@@ -1526,7 +1526,7 @@ void wNETWMCheckInitialClientState(WWindow *wwin)
 void wNETWMCheckInitialFrameState(WWindow *wwin)
 {
 #ifdef DEBUG_WMSPEC
-  wmessage("wNETWMCheckInitialFrameState");
+  WMLogInfo("wNETWMCheckInitialFrameState");
 #endif
 
   updateWindowOpacity(wwin);
@@ -1569,7 +1569,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
   WWindow *wwin;
 
 #ifdef DEBUG_WMSPEC
-  wmessage("processClientMessage type %s",
+  WMLogInfo("processClientMessage type %s",
            XGetAtomName(dpy, event->message_type));
 #endif
 
@@ -1652,7 +1652,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
     long set = event->data.l[0];
 
 #ifdef DEBUG_WMSPEC
-    wmessage("net_wm_state set %ld a1 %s a2 %s", set,
+    WMLogInfo("net_wm_state set %ld a1 %s a2 %s", set,
              XGetAtomName(dpy, event->data.l[1]),
              XGetAtomName(dpy, event->data.l[2]));
 #endif
@@ -1698,7 +1698,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
 void wNETWMCheckClientHintChange(WWindow *wwin, XPropertyEvent *event)
 {
 #ifdef DEBUG_WMSPEC
-  wmessage("%s (%lu) clientHintChange type %s",
+  WMLogInfo("%s (%lu) clientHintChange type %s",
            wwin->wm_class, wwin->client_win,
            XGetAtomName(dpy, event->atom));
 #endif

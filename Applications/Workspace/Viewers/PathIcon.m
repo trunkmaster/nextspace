@@ -29,7 +29,7 @@
 #import "Workspace+WM.h"
 
 #import <core/WMcore.h>
-#import <core/stringutils.h>
+#import <core/string_utils.h>
 #import <animations.h>
 #import <defaults.h>
 #import <window_attributes.h>

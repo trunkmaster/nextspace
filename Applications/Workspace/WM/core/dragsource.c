@@ -27,7 +27,7 @@
 #include "WMcore.h"
 #include "util.h"
 #include "log_utils.h"
-#include "stringutils.h"
+#include "string_utils.h"
 
 #include "wscreen.h"
 #include "dragcommon.h"
@@ -194,7 +194,7 @@ static void selectionLost(WMView *view, Atom selection, void *cdata)
   (void) selection;
   (void) cdata;
 
-  wwarning(_("XDND selection lost during drag operation..."));
+  WMLogWarning(_("XDND selection lost during drag operation..."));
 }
 
 static void selectionDone(WMView *view, Atom selection, Atom target, void *cdata)
@@ -789,7 +789,7 @@ static void storeDestinationProtocolVersion(WMDraggingInfo *info)
     XFree(winXdndVersion);
   } else {
     XDND_DEST_VERSION(info) = 0;
-    wwarning(_("could not get XDND version for target of drop"));
+    WMLogWarning(_("could not get XDND version for target of drop"));
   }
 }
 
@@ -805,7 +805,7 @@ static void initMotionProcess(WMView *view, WMDraggingInfo *info, XEvent *event,
   XDND_TIMESTAMP(info) = event->xmotion.time;
 
   if (!WMCreateSelectionHandler(view, scr->xdndSelectionAtom, CurrentTime, XDND_SELECTION_PROCS(info), NULL)) {
-    wwarning(_("could not get ownership of XDND selection"));
+    WMLogWarning(_("could not get ownership of XDND selection"));
     return;
   }
 
@@ -1053,7 +1053,7 @@ static void *idleState(WMView *view, XClientMessageEvent *event, WMDraggingInfo 
   }
 
   if (destMsg == scr->xdndFinishedAtom) {
-    wwarning("received xdndFinishedAtom before drop began");
+    WMLogWarning("received xdndFinishedAtom before drop began");
   }
 
   W_DragSourceStartTimer(info);
@@ -1101,7 +1101,7 @@ static void dragSourceResponseTimeOut(CFRunLoopTimerRef timer, void *source)
   WMView *view = (WMView *) source;
   WMDraggingInfo *info = W_VIEW_SCREEN(view)->dragInfo;
 
-  wwarning(_("delay for drag destination response expired"));
+  WMLogWarning(_("delay for drag destination response expired"));
   sendLeaveMessage(info);
 
   recolorCursor(info, False);
@@ -1158,7 +1158,7 @@ void W_DragSourceStateHandler(WMDraggingInfo *info, XClientMessageEvent *event)
     }
 
   } else {
-    wwarning("received DnD message without having a target");
+    WMLogWarning("received DnD message without having a target");
   }
 }
 

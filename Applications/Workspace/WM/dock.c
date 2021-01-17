@@ -36,7 +36,7 @@
 #include <limits.h>
 
 #include <core/WMcore.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 #include <core/util.h>
 #include <core/log_utils.h>
 
@@ -825,7 +825,7 @@ static void launchDockedApplication(WAppIcon *btn, Bool withSelection)
         dockIconPaint(NULL, btn);
       }
     } else {
-      wwarning(_("could not launch application %s"), btn->command);
+      WMLogWarning(_("could not launch application %s"), btn->command);
       btn->launching = 0;
       if (!btn->relaunching)
         btn->running = 0;
@@ -871,7 +871,7 @@ static WMenu *makeWorkspaceMenu(WScreen *scr)
 
   menu = wMenuCreate(scr, NULL, False);
   if (!menu)
-    wwarning(_("could not create workspace submenu for Clip menu"));
+    WMLogWarning(_("could not create workspace submenu for Clip menu"));
 
   wMenuAddCallback(menu, "", switchWSCommand, (void *)scr->clip_icon);
 
@@ -927,7 +927,7 @@ static WMenu *makeClipOptionsMenu(WScreen *scr)
 
   menu = wMenuCreate(scr, NULL, False);
   if (!menu) {
-    wwarning(_("could not create options submenu for Clip menu"));
+    WMLogWarning(_("could not create options submenu for Clip menu"));
     return NULL;
   }
 
@@ -1062,7 +1062,7 @@ static WMenu *makeDockPositionMenu(WScreen *scr)
 
   menu = wMenuCreate(scr, NULL, False);
   if (!menu) {
-    wwarning(_("could not create options submenu for dock position menu"));
+    WMLogWarning(_("could not create options submenu for dock position menu"));
     return NULL;
   }
 
@@ -1507,7 +1507,7 @@ static Bool getBooleanDockValue(CFStringRef value, CFStringRef key)
       if (CFStringCompare(value, CFSTR("YES"), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
       return True;
     } else {
-      wwarning(_("bad value in docked icon state info %s"),
+      WMLogWarning(_("bad value in docked icon state info %s"),
                CFStringGetCStringPtr(key, kCFStringEncodingUTF8));
     }
   }
@@ -1598,7 +1598,7 @@ static WAppIcon *_dockRestoreIconState(WScreen *scr, CFDictionaryRef info, int t
   if (value && CFGetTypeID(value) == CFStringGetTypeID()) {
     if (sscanf(CFStringGetCStringPtr(value, kCFStringEncodingUTF8), "%hi,%hi",
                &aicon->xindex, &aicon->yindex) != 2)
-      wwarning(_("bad value in docked icon state info %s"),
+      WMLogWarning(_("bad value in docked icon state info %s"),
                CFStringGetCStringPtr(dPosition, kCFStringEncodingUTF8));
 
     /* check position sanity */
@@ -1622,7 +1622,7 @@ static WAppIcon *_dockRestoreIconState(WScreen *scr, CFDictionaryRef info, int t
   return aicon;
 }
 
-#define COMPLAIN(key) wwarning(_("bad value in dock state info:%s"), key)
+#define COMPLAIN(key) WMLogWarning(_("bad value in dock state info:%s"), key)
 
 WAppIcon *wClipRestoreState(WScreen *scr, CFDictionaryRef clip_state)
 {
@@ -1818,7 +1818,7 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
 
   for (i = 0; i < count; i++) {
     if (dock->icon_count >= dock->max_icons) {
-      wwarning(_("there are too many icons stored in dock. Ignoring what doesn't fit"));
+      WMLogWarning(_("there are too many icons stored in dock. Ignoring what doesn't fit"));
       break;
     }
 
@@ -3347,7 +3347,7 @@ static void trackDeadProcess(pid_t pid, unsigned char status, WDock *dock)
             wfree(message);
           });
 #else
-        wMessageDialog(dock->screen_ptr, _("Error"), msg, _("OK"), NULL, NULL);
+        WMLogInfoDialog(dock->screen_ptr, _("Error"), msg, _("OK"), NULL, NULL);
 #endif
       }
       break;
@@ -3609,7 +3609,7 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
 
     assert(wapp != NULL);
 
-    wmessage("Dock icon Double-click for workspace %i leader: %lu",
+    WMLogInfo("Dock icon Double-click for workspace %i leader: %lu",
              wapp->last_workspace, wapp->main_window);
     
     unhideHere = (event->xbutton.state & ShiftMask);
@@ -3675,7 +3675,7 @@ static void handleDockMove(WDock *dock, WAppIcon *aicon, XEvent *event)
   if (XGrabPointer(dpy, aicon->icon->core->window, True, ButtonMotionMask
                    | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
                    GrabModeAsync, None, None, CurrentTime) != GrabSuccess)
-    wwarning("pointer grab failed for dock move");
+    WMLogWarning("pointer grab failed for dock move");
 
   if (dock->type == WM_DRAWER) {
     Window wins[2];
@@ -3956,7 +3956,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
   WDock *dock = aicon->dock;
   WScreen *scr = aicon->icon->core->screen_ptr;
 
-  wmessage("Dock iconMouseDown");
+  WMLogInfo("Dock iconMouseDown");
   
   if (aicon->editing || WCHECK_STATE(WSTATE_MODAL))
     return;
@@ -4030,7 +4030,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
         XGrabPointer(dpy, aicon->icon->core->window, True, ButtonMotionMask
                      | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
                      GrabModeAsync, None, None, CurrentTime) != GrabSuccess) {
-      wwarning("pointer grab failed for dockicon menu");
+      WMLogWarning("pointer grab failed for dockicon menu");
       return;
     }
 
@@ -4301,7 +4301,7 @@ static void drawerRemoveFromChain(WScreen *scr, WDock *drawer)
   to_remove = &scr->drawers;
   while (True) {
     if (*to_remove == NULL) {
-      wwarning("The drawer to be removed can not be found.");
+      WMLogWarning("The drawer to be removed can not be found.");
       return;
     }
     if ((*to_remove)->adrawer == drawer)
@@ -4339,7 +4339,7 @@ static char * findUniqueName(WScreen *scr, const char *instance_basename)
   }
 
   if (i == UNIQUE_NAME_WATCHDOG)
-    wwarning("Couldn't find a unique name for drawer in %d attempts.", i);
+    WMLogWarning("Couldn't find a unique name for drawer in %d attempts.", i);
 #undef UNIQUE_NAME_WATCHDOG
 
   return buffer;
@@ -4657,12 +4657,12 @@ static int indexOfHole(WDock *drawer, WAppIcon *moving_aicon, int redocking)
     if (drawer->icon_array[i] && drawer->icon_array[i] != moving_aicon)
       index_of_hole -= drawer->icon_array[i]->xindex;
   }
-  /* wmessage(" Index of the moving appicon is %d (%sredocking)", index_of_hole, (redocking ? "" : "not ")); */
+  /* WMLogInfo(" Index of the moving appicon is %d (%sredocking)", index_of_hole, (redocking ? "" : "not ")); */
   if (abs(index_of_hole) > abs(drawer->icon_count) - (redocking ? 1 : 0))
-    wwarning(" index_of_hole is too large ! (%d greater than %d)",
+    WMLogWarning(" index_of_hole is too large ! (%d greater than %d)",
              index_of_hole, abs(drawer->icon_count) - (redocking ? 1 : 0));
   if (index_of_hole == 0)
-    wwarning(" index_of_hole == 0 (%sredocking, icon_count == %d)", (redocking ? "" : "not "), drawer->icon_count);
+    WMLogWarning(" index_of_hole == 0 (%sredocking, icon_count == %d)", (redocking ? "" : "not "), drawer->icon_count);
 
   return index_of_hole;
 }
@@ -4710,7 +4710,7 @@ void wDrawerFillTheGap(WDock *drawer, WAppIcon *aicon, Bool redocking)
       aicons_to_shift[j++] = ai;
   }
   if (j != drawer->icon_count - abs(index_of_hole) - (redocking ? 1 : 0))
-    wwarning("Removing aicon at index %d from %s: j=%d but should be %d",
+    WMLogWarning("Removing aicon at index %d from %s: j=%d but should be %d",
              index_of_hole, drawer->icon_array[0]->wm_instance,
              j, drawer->icon_count - abs(index_of_hole) - (redocking ? 1 : 0));
   wSlideAppicons(aicons_to_shift, j, !drawer->on_right_side);
@@ -4869,7 +4869,7 @@ static void drawerConsolidateIcons(WDock *drawer)
 
 /*   for (i=0; i<count; i++) { */
 /*     if (drawer->icon_count >= drawer->max_icons) { */
-/*       wwarning(_("there are too many icons stored in drawer. Ignoring what doesn't fit")); */
+/*       WMLogWarning(_("there are too many icons stored in drawer. Ignoring what doesn't fit")); */
 /*       break; */
 /*     } */
 

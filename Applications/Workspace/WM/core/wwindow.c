@@ -31,7 +31,7 @@
 #include "WMcore.h"
 #include "util.h"
 #include "log_utils.h"
-#include "stringutils.h"
+#include "string_utils.h"
 
 #include "WM.h"
 #include "wscreen.h"
@@ -154,7 +154,7 @@ static void setWindowTitle(WMWindow *win, const char *title)
 
   result = XmbTextListToTextProperty(scr->display, (char **)&title, 1, XStdICCTextStyle, &property);
   if (result == XNoMemory || result == XLocaleNotSupported) {
-    wwarning(_("window title conversion error... using STRING encoding"));
+    WMLogWarning(_("window title conversion error... using STRING encoding"));
     XStoreName(scr->display, win->view->window, title);
   } else {
     XSetWMName(scr->display, win->view->window, &property);
@@ -175,7 +175,7 @@ static void setMiniwindowTitle(WMWindow *win, const char *title)
 
   result = XmbTextListToTextProperty(scr->display, (char **)&title, 1, XStdICCTextStyle, &property);
   if (result == XNoMemory || result == XLocaleNotSupported) {
-    wwarning(_("icon title conversion error... using STRING encoding"));
+    WMLogWarning(_("icon title conversion error... using STRING encoding"));
     XSetIconName(scr->display, win->view->window, title);
   } else {
     XSetWMIconName(scr->display, win->view->window, &property);
@@ -316,7 +316,7 @@ static void setSizeHints(WMWindow *win)
 
   hints = XAllocSizeHints();
   if (!hints) {
-    wwarning("could not allocate memory for window size hints");
+    WMLogWarning("could not allocate memory for window size hints");
     return;
   }
 
@@ -563,7 +563,7 @@ void WMSetWindowMiniwindowPixmap(WMWindow *win, WMPixmap *pixmap)
       if (!hints) {
         hints = XAllocWMHints();
         if (!hints) {
-          wwarning("could not allocate memory for WM hints");
+          WMLogWarning("could not allocate memory for WM hints");
           return;
         }
         hints->flags = 0;

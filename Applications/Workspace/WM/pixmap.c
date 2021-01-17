@@ -116,7 +116,7 @@ WPixmap *wPixmapCreate(Pixmap image, Pixmap mask)
   pix->image = image;
   pix->mask = mask;
   if (!XGetGeometry(dpy, image, &foo, &bar, &bar, &width, &height, &baz, &depth)) {
-    wwarning("XGetGeometry() failed during wPixmapCreate()");
+    WMLogWarning("XGetGeometry() failed during wPixmapCreate()");
     wfree(pix);
     return NULL;
   }

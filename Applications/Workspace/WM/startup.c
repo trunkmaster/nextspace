@@ -52,7 +52,7 @@
 #include <core/log_utils.h>
 #include <core/wuserdefaults.h>
 #include <core/wevent.h>
-#include <core/stringutils.h>
+#include <core/string_utils.h>
 #include <core/wappresource.h>
 
 #include "WM.h"
@@ -145,7 +145,7 @@ static int _catchXError(Display * dpy, XErrorEvent * error)
     return 0;
   }
   FormatXError(dpy, error, buffer, MAXLINE);
-  wwarning(_("internal X error: %s"), buffer);
+  WMLogWarning(_("internal X error: %s"), buffer);
   return -1;
 }
 
@@ -181,13 +181,13 @@ static RETSIGTYPE _handleExitSig(int sig)
   sigprocmask(SIG_BLOCK, &sigs, NULL);
 
   if (sig == SIGUSR1) {
-    wwarning("got signal %i - restarting", sig);
+    WMLogWarning("got signal %i - restarting", sig);
     SIG_WCHANGE_STATE(WSTATE_NEED_RESTART);
   } else if (sig == SIGUSR2) {
-    wwarning("got signal %i - rereading defaults", sig);
+    WMLogWarning("got signal %i - rereading defaults", sig);
     SIG_WCHANGE_STATE(WSTATE_NEED_REREAD);
   } else if (sig == SIGTERM || sig == SIGINT || sig == SIGHUP) {
-    wwarning("got signal %i - exiting...", sig);
+    WMLogWarning("got signal %i - exiting...", sig);
     SIG_WCHANGE_STATE(WSTATE_NEED_EXIT);
   }
 
@@ -205,7 +205,7 @@ static void _dummyHandler(int sig)
 /* General signal handler. Exits the program gently. */
 static RETSIGTYPE _handleSig(int sig)
 {
-  wfatal("got signal %i", sig);
+  WMLogCritical("got signal %i", sig);
 
   /* Setting the signal behaviour back to default and then reraising the
    * signal is a cleaner way to make program exit and core dump than calling
@@ -629,7 +629,7 @@ void wStartUp(Bool defaultScreenOnly)
   /* initialize defaults stuff */
   w_global.domain.wm = wDefaultsInitDomain("WM", true);
   if (!w_global.domain.wm->dictionary) {
-    wwarning(_("could not read domain \"%s\" from defaults database"), "WM");
+    WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WM");
   }
 
   /* read defaults that don't change until a restart and are screen independent */
@@ -640,7 +640,7 @@ void wStartUp(Bool defaultScreenOnly)
 
   /* check sanity of some values */
   if (wPreferences.icon_size < 64) {
-    wwarning(_("Icon size is configured to %i, but it's too small. Using 64 instead"),
+    WMLogWarning(_("Icon size is configured to %i, but it's too small. Using 64 instead"),
              wPreferences.icon_size);
     wPreferences.icon_size = 64;
   }
@@ -658,7 +658,7 @@ void wStartUp(Bool defaultScreenOnly)
   w_global.xext.xkb.supported = XkbQueryExtension(dpy, NULL, &w_global.xext.xkb.event_base,
                                                   NULL, NULL, NULL);
   if (!w_global.xext.xkb.supported) {
-    wwarning(_("XKB is not supported."));
+    WMLogWarning(_("XKB is not supported."));
   }
 #endif
 
@@ -778,12 +778,12 @@ void wInitialize(int argc, char **argv)
   /* open display */
   dpy = XOpenDisplay(DisplayName);
   if (dpy == NULL) {
-    wfatal(_("could not open display \"%s\""), XDisplayName(DisplayName));
+    WMLogCritical(_("could not open display \"%s\""), XDisplayName(DisplayName));
     exit(1);
   }
 
   if (fcntl(ConnectionNumber(dpy), F_SETFD, FD_CLOEXEC) < 0) {
-    werror("error setting close-on-exec flag for X connection");
+    WMLogError("error setting close-on-exec flag for X connection");
     exit(1);
   }
 

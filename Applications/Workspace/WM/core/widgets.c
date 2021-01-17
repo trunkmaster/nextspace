@@ -464,7 +464,7 @@ WMScreen *WMOpenScreen(const char *display)
   Display *dpy = XOpenDisplay(display);
 
   if (!dpy) {
-    wwarning(_("WINGs: could not open display %s"), XDisplayName(display));
+    WMLogWarning(_("WINGs: could not open display %s"), XDisplayName(display));
     return NULL;
   }
 
@@ -681,7 +681,7 @@ WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *con
 
   /* scrPtr->antialiasedText = WINGsConfiguration.antialiasedText; */
   scrPtr->antialiasedText = False; /* TODO */
-  wwarning("[TODO] Antialised text is set to false. No option exists to configure it.");
+  WMLogWarning("[TODO] Antialised text is set to false. No option exists to configure it.");
 
   scrPtr->normalFont = WMSystemFontOfSize(scrPtr, 0);
 
@@ -691,7 +691,7 @@ WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *con
     scrPtr->boldFont = scrPtr->normalFont;
 
   if (!scrPtr->normalFont) {
-    wwarning(_("could not load any fonts. Make sure your font installation"
+    WMLogWarning(_("could not load any fonts. Make sure your font installation"
                " and locale settings are correct."));
 
     return NULL;
