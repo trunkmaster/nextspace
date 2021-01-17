@@ -32,27 +32,27 @@
 #include "wscreen.h"
 #include "drawing.h"
 
-typedef struct W_FocusInfo {
-  W_View *toplevel;
-  W_View *focused;    /* view that has the focus in this toplevel */
-  struct W_FocusInfo *next;
-} W_FocusInfo;
+typedef struct WMFocusInfo {
+  WMView *toplevel;
+  WMView *focused;    /* view that has the focus in this toplevel */
+  struct WMFocusInfo *next;
+} WMFocusInfo;
 
-typedef struct W_ViewDelegate {
+typedef struct WMViewDelegate {
     void *data;
-    void (*didMove)(struct W_ViewDelegate*, WMView*);
-    void (*didResize)(struct W_ViewDelegate*, WMView*);
-    void (*willMove)(struct W_ViewDelegate*, WMView*, int*, int*);
-    void (*willResize)(struct W_ViewDelegate*, WMView*,
+    void (*didMove)(struct WMViewDelegate*, WMView*);
+    void (*didResize)(struct WMViewDelegate*, WMView*);
+    void (*willMove)(struct WMViewDelegate*, WMView*, int*, int*);
+    void (*willResize)(struct WMViewDelegate*, WMView*,
                        unsigned int*, unsigned int*);
-} W_ViewDelegate;
+} WMViewDelegate;
 
-typedef struct W_View {
-    struct W_Screen *screen;
+typedef struct WMView {
+    struct WMScreen *screen;
 
     WMWidget *self;     /* must point to the widget the view belongs to */
 
-    W_ViewDelegate *delegate;
+    WMViewDelegate *delegate;
 
     Window window;
 
@@ -65,16 +65,16 @@ typedef struct W_View {
 
     WMPoint pos;
 
-    struct W_View *nextFocusChain;     /* next/prev in focus chain */
-    struct W_View *prevFocusChain;
+    struct WMView *nextFocusChain;     /* next/prev in focus chain */
+    struct WMView *prevFocusChain;
 
-    struct W_View *nextResponder;      /* next to receive keyboard events */
+    struct WMView *nextResponder;      /* next to receive keyboard events */
 
-    struct W_View *parent;             /* parent WMView */
+    struct WMView *parent;             /* parent WMView */
 
-    struct W_View *childrenList;       /* first in list of child windows */
+    struct WMView *childrenList;       /* first in list of child windows */
 
-    struct W_View *nextSister;         /* next on parent's children list */
+    struct WMView *nextSister;         /* next on parent's children list */
 
     CFMutableArrayRef eventHandlers;   /* event handlers for this window */
 
@@ -90,8 +90,8 @@ typedef struct W_View {
     Cursor cursor;
 
     Atom *droppableTypes;
-    struct W_DragSourceProcs      *dragSourceProcs;
-    struct W_DragDestinationProcs *dragDestinationProcs;
+    struct WMDragSourceProcs      *dragSourceProcs;
+    struct WMDragDestinationProcs *dragDestinationProcs;
     WMPixmap *dragImage;
     int helpContext;
 
@@ -122,73 +122,73 @@ typedef struct W_View {
     } flags;
 
     int refCount;
-} W_View;
+} WMView;
 
-#define W_VIEW_REALIZED(view)	(view)->flags.realized
-#define W_VIEW_MAPPED(view)	(view)->flags.mapped
+#define WMVIEW_REALIZED(view)	(view)->flags.realized
+#define WMVIEW_MAPPED(view)	(view)->flags.mapped
 
-#define W_VIEW_DISPLAY(view)    (view)->screen->display
-#define W_VIEW_SCREEN(view)	(view)->screen
-#define W_VIEW_DRAWABLE(view)	(view)->window
+#define WMVIEW_DISPLAY(view)    (view)->screen->display
+#define WMVIEW_SCREEN(view)	(view)->screen
+#define WMVIEW_DRAWABLE(view)	(view)->window
 
-#define W_VIEW_WIDTH(view)	(view)->size.width
-#define W_VIEW_HEIGHT(view)	(view)->size.height
+#define WMVIEW_WIDTH(view)	(view)->size.width
+#define WMVIEW_HEIGHT(view)	(view)->size.height
 
 /* -- Functions -- */
 
-W_View *W_GetViewForXWindow(Display *display, Window window);
+WMView *WMGetViewForXWindow(Display *display, Window window);
 
-W_View *W_CreateView(W_View *parent);
+WMView *WMCreateView(WMView *parent);
 
-W_View *W_CreateTopView(W_Screen *screen);
+WMView *WMCreateTopView(WMScreen *screen);
 
-W_View *W_CreateUnmanagedTopView(W_Screen *screen);
+WMView *WMCreateUnmanagedTopView(WMScreen *screen);
 
-W_View *W_CreateRootView(W_Screen *screen);
+WMView *WMCreateRootView(WMScreen *screen);
 
-void W_DestroyView(W_View *view);
+void WMDestroyView(WMView *view);
 
-void W_RealizeView(W_View *view);
+void WMRealizeView(WMView *view);
 
-void W_RedisplayView(WMView *view);
+void WMRedisplayView(WMView *view);
 
-void W_ReparentView(W_View *view, W_View *newParent, int x, int y);
+void WMReparentView(WMView *view, WMView *newParent, int x, int y);
 
-void W_RaiseView(W_View *view);
+void WMRaiseView(WMView *view);
 
-void W_LowerView(W_View *view);
+void WMLowerView(WMView *view);
 
-void W_MapView(W_View *view);
+void WMMapView(WMView *view);
 
-void W_MapSubviews(W_View *view);
+void WMMapSubviews(WMView *view);
 
-void W_UnmapSubviews(W_View *view);
+void WMUnmapSubviews(WMView *view);
 
-W_View *W_TopLevelOfView(W_View *view);
+WMView *WMTopLevelOfView(WMView *view);
 
-void W_UnmapView(W_View *view);
+void WMUnmapView(WMView *view);
 
-WMView *W_RetainView(WMView *view);
+WMView *WMRetainView(WMView *view);
 
-void W_ReleaseView(WMView *view);
+void WMReleaseView(WMView *view);
 
-void W_MoveView(W_View *view, int x, int y);
+void WMMoveView(WMView *view, int x, int y);
 
-void W_ResizeView(W_View *view, unsigned int width, unsigned int height);
+void WMResizeView(WMView *view, unsigned int width, unsigned int height);
 
-void W_SetViewBackgroundColor(W_View *view, WMColor *color);
+void WMSetViewBackgroundColor(WMView *view, WMColor *color);
 
-void W_SetViewBackgroundPixmap(W_View *view, WMPixmap *pix);
+void WMSetViewBackgroundPixmap(WMView *view, WMPixmap *pix);
 
-void W_SetViewCursor(W_View *view, Cursor cursor);
+void WMSetViewCursor(WMView *view, Cursor cursor);
 
-void W_SetFocusOfTopLevel(W_View *toplevel, W_View *view);
+void WMSetFocusOfTopLevel(WMView *toplevel, WMView *view);
 
-W_View *W_FocusedViewOfToplevel(W_View *view);
+WMView *WMFocusedViewOfToplevel(WMView *view);
 
-void W_BroadcastMessage(W_View *targetParent, XEvent *event);
+void WMBroadcastMessage(WMView *targetParent, XEvent *event);
 
-void W_DispatchMessage(W_View *target, XEvent *event);
+void WMDispatchMessage(WMView *target, XEvent *event);
 
 /* ---[ wview.c ]--------------------------------------------------- */
 
@@ -211,4 +211,4 @@ WMWidget* WMWidgetOfView(WMView *view);
 extern CFStringRef WMViewSizeDidChangeNotification;
 extern CFStringRef WMViewDidRealizeNotification;
 
-#endif /* __WORKSPACE_WM_WVIEW__ */
+#endif /* __WORKSPACE_WM_WVIEWM_ */

@@ -30,7 +30,7 @@
 #include "wcolor.h"
 #include "drawing.h"
 
-void WMDrawRelief(W_Screen *scr, Drawable d, int x, int y, unsigned int width,
+void WMDrawRelief(WMScreen *scr, Drawable d, int x, int y, unsigned int width,
                   unsigned int height, WMReliefType relief)
 {
   WMDrawReliefWithGC(scr, d, x, y, width, height, relief,
@@ -38,7 +38,7 @@ void WMDrawRelief(W_Screen *scr, Drawable d, int x, int y, unsigned int width,
                      WMColorGC(scr->gray), WMColorGC(scr->white));
 }
 
-void WMDrawReliefWithGC(W_Screen *scr, Drawable d, int x, int y, unsigned int width,
+void WMDrawReliefWithGC(WMScreen *scr, Drawable d, int x, int y, unsigned int width,
                         unsigned int height, WMReliefType relief,
                         GC black, GC dark, GC light, GC white)
 {
@@ -189,7 +189,7 @@ int WMGetTextHeight(WMFont *font, const char *text, int width, int wrap)
 }
 
 void
-WMPaintText(W_View *view, Drawable d, WMFont *font, int x, int y,
+WMPaintText(WMView *view, Drawable d, WMFont *font, int x, int y,
 	    int width, WMAlignment alignment, WMColor *color, int wrap,
 	    const char *text, int length)
 {
@@ -226,12 +226,12 @@ WMPaintText(W_View *view, Drawable d, WMFont *font, int x, int y,
 }
 
 void
-WMPaintTextAndImage(W_View *view, int wrap, WMColor *textColor, W_Font *font,
+WMPaintTextAndImage(WMView *view, int wrap, WMColor *textColor, WMFont *font,
 		    WMReliefType relief, const char *text,
-		    WMAlignment alignment, W_Pixmap *image,
+		    WMAlignment alignment, WMPixmap *image,
 		    WMImagePosition position, WMColor *backColor, int ofs)
 {
-  W_Screen *screen = view->screen;
+  WMScreen *screen = view->screen;
   int ix, iy;
   int x, y, w, h;
   Drawable d = view->window;

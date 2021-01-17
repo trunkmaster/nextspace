@@ -45,7 +45,7 @@ typedef struct HashItem {
   struct HashItem *next;	/* collided item list */
 } HashItem;
 
-typedef struct W_HashTable {
+typedef struct WMHashTable {
   WMHashTableCallbacks callbacks;
 
   unsigned itemCount;

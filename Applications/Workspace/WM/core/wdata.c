@@ -24,7 +24,7 @@
 #include "util.h"
 #include "wdata.h"
 
-typedef struct W_Data {
+typedef struct WMData {
   unsigned length;	/* How many bytes we have */
   unsigned capacity;	/* How many bytes it can hold */
   unsigned growth;	/* How much to grow */
@@ -32,7 +32,7 @@ typedef struct W_Data {
   unsigned retainCount;
   WMFreeDataProc *destructor;
   int format;		/* 0, 8, 16 or 32 */
-} W_Data;
+} WMData;
 
 /* Creating and destroying data objects */
 

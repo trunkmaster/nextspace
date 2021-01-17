@@ -68,6 +68,13 @@ enum {
   NSIconWindowMask = 64,		// 1 << 6
   NSMiniWindowMask = 128		// 1 << 7
 };
+/* alert panel return values */
+enum {
+  NSAlertDefaultReturn = 1,
+  NSAlertAlternateReturn = 0,
+  NSAlertOtherReturn = -1,
+  NSAlertErrorReturn = -2
+};
 
 #endif
 

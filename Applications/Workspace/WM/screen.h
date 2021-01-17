@@ -256,7 +256,7 @@ typedef struct _WScreen {
 
   struct WDialogData *dialog_data;
 
-  struct W_GeometryView *gview;      /* size/position view */
+  struct WMGeometryView *gview;      /* size/position view */
 
   /* state and other informations */
   short cascade_index;	       /* for cascade window placement */

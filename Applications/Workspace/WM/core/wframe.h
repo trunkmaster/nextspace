@@ -37,9 +37,9 @@ typedef enum {
   WTPBelowBottom
 } WMTitlePosition;
 
-typedef struct W_Frame {
-	W_Class widgetClass;
-	W_View *view;
+typedef struct WMFrame {
+	WMClass widgetClass;
+	WMView *view;
 
 	char *caption;
 	WMColor *textColor;
@@ -48,8 +48,8 @@ typedef struct W_Frame {
 		WMReliefType relief:4;
 		WMTitlePosition titlePosition:4;
 	} flags;
-} W_Frame;
-typedef struct W_Frame WMFrame;
+} WMFrame;
+typedef struct WMFrame WMFrame;
 
 /* ---[ WINGs/wframe.c ]-------------------------------------------------- */
 

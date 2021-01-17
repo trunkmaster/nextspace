@@ -1127,10 +1127,10 @@ void WSDockContentDidChange(WDock *dock)
 // Utility functions
 //------------------------------------------------------------------------------
 // Return values:
-// WMAPRDefault,  NSAlertDefaultReturn = 1;
-// WAPRAlternate, NSAlertAlternateReturn = 0;
-// WAPROther,     NSAlertOtherReturn = -1;
-// WAPRError,     NSAlertErrorReturn  = -2
+// NSAlertDefaultReturn = 1;
+// NSAlertAlternateReturn = 0;
+// NSAlertOtherReturn = -1;
+// NSAlertErrorReturn  = -2
 int WSRunAlertPanel(char *title, char *message,
                      char *defaultButton, char *alternateButton, char *otherButton)
 {

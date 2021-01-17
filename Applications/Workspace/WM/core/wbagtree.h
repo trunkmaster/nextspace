@@ -44,7 +44,22 @@
 
 extern int WMNotFound;
 
-typedef struct W_Bag WMBag;
+typedef struct WMNode {
+  struct WMNode *parent;
+  struct WMNode *left;
+  struct WMNode *right;
+  
+  int  color;
+  void *data;
+  int  index;
+} WMNode;
+typedef struct __WMBag {
+  WMNode *root;
+  WMNode *sentinel; /* nil */
+  int count;
+  void (*destructor) (void *item);
+} __WMBag;
+typedef struct __WMBag WMBag;
 
 typedef void *WMBagIterator;
 

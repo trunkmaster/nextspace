@@ -30,22 +30,22 @@
 
 /* DO NOT ACCESS THE CONTENTS OF THIS STRUCT */
 typedef struct {
-    void *table;
-    void *nextItem;
-    int index;
+  void *table;
+  void *nextItem;
+  int  index;
 } WMHashEnumerator;
 
-typedef struct W_HashTable WMHashTable;
+typedef struct WMHashTable WMHashTable;
 
 typedef struct {
-    /* NULL is pointer hash */
-    unsigned 	(*hash)(const void *);
-    /* NULL is pointer compare */
-    Bool	(*keyIsEqual)(const void *, const void *);
-    /* NULL does nothing */
-    void*	(*retainKey)(const void *);
-    /* NULL does nothing */
-    void	(*releaseKey)(const void *);
+  /* NULL is pointer hash */
+  unsigned 	(*hash)(const void *);
+  /* NULL is pointer compare */
+  Bool	(*keyIsEqual)(const void *, const void *);
+  /* NULL does nothing */
+  void*	(*retainKey)(const void *);
+  /* NULL does nothing */
+  void	(*releaseKey)(const void *);
 } WMHashTableCallbacks;
 
 WMHashTable* WMCreateHashTable(const WMHashTableCallbacks callbacks);

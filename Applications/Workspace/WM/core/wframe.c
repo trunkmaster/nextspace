@@ -38,9 +38,9 @@
 #define DEFAULT_WIDTH		40
 #define DEFAULT_HEIGHT		40
 
-static void destroyFrame(W_Frame *fPtr);
-static void paintFrame(W_Frame *fPtr);
-static void repaintFrame(W_Frame *fPtr);
+static void destroyFrame(WMFrame *fPtr);
+static void paintFrame(WMFrame *fPtr);
+static void repaintFrame(WMFrame *fPtr);
 
 void WMSetFrameTitlePosition(WMFrame *fPtr, WMTitlePosition position)
 {
@@ -75,19 +75,19 @@ void WMSetFrameTitle(WMFrame *fPtr, const char *title)
   }
 }
 
-static void repaintFrame(W_Frame *fPtr)
+static void repaintFrame(WMFrame *fPtr)
 {
-  W_View *view = fPtr->view;
-  W_Screen *scrPtr = view->screen;
+  WMView *view = fPtr->view;
+  WMScreen *scrPtr = view->screen;
 
   XClearWindow(scrPtr->display, view->window);
   paintFrame(fPtr);
 }
 
-static void paintFrame(W_Frame *fPtr)
+static void paintFrame(WMFrame *fPtr)
 {
-  W_View *view = fPtr->view;
-  W_Screen *scrPtr = view->screen;
+  WMView *view = fPtr->view;
+  WMScreen *scrPtr = view->screen;
   WMFont *font = scrPtr->normalFont;
   Display *display = scrPtr->display;
   int tx, ty, tw, th, tlen;
@@ -217,7 +217,7 @@ static void paintFrame(W_Frame *fPtr)
 
 static void handleEvents(XEvent *event, void *data)
 {
-  W_Frame *fPtr = (W_Frame *) data;
+  WMFrame *fPtr = (WMFrame *) data;
 
   CHECK_CLASS(data, WC_Frame);
 
@@ -246,13 +246,13 @@ void WMSetFrameTitleColor(WMFrame *fPtr, WMColor *color)
 
 WMFrame *WMCreateFrame(WMWidget *parent)
 {
-  W_Frame *fPtr;
+  WMFrame *fPtr;
 
-  fPtr = wmalloc(sizeof(W_Frame));
+  fPtr = wmalloc(sizeof(WMFrame));
 
   fPtr->widgetClass = WC_Frame;
 
-  fPtr->view = W_CreateView(W_VIEW(parent));
+  fPtr->view = WMCreateView(WMVIEW(parent));
   if (!fPtr->view) {
     wfree(fPtr);
     return NULL;
@@ -270,7 +270,7 @@ WMFrame *WMCreateFrame(WMWidget *parent)
   return fPtr;
 }
 
-static void destroyFrame(W_Frame *fPtr)
+static void destroyFrame(WMFrame *fPtr)
 {
   if (fPtr->caption)
     wfree(fPtr->caption);

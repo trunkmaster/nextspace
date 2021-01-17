@@ -28,8 +28,8 @@
 
 #include "geomview.h"
 
-struct W_GeometryView {
-  W_Class widgetClass;
+struct WMGeometryView {
+  WMClass widgetClass;
   WMView *view;
 
   WMColor *color;
@@ -58,10 +58,10 @@ WGeometryView *WCreateGeometryView(WMScreen * scr)
 {
   WGeometryView *gview;
   char buffer[64];
-  static W_Class widgetClass = 0;
+  static WMClass widgetClass = 0;
 
   if (!widgetClass) {
-    widgetClass = W_RegisterUserWidget();
+    widgetClass = WMRegisterUserWidget();
   }
 
   gview = malloc(sizeof(WGeometryView));
@@ -72,7 +72,7 @@ WGeometryView *WCreateGeometryView(WMScreen * scr)
 
   gview->widgetClass = widgetClass;
 
-  gview->view = W_CreateTopView(scr);
+  gview->view = WMCreateTopView(scr);
   if (!gview->view) {
     wfree(gview);
 
@@ -82,7 +82,7 @@ WGeometryView *WCreateGeometryView(WMScreen * scr)
 
   gview->font = WMSystemFontOfSize(scr, 12);
   if (!gview->font) {
-    W_DestroyView(gview->view);
+    WMDestroyView(gview->view);
     wfree(gview);
 
     return NULL;
@@ -100,7 +100,7 @@ WGeometryView *WCreateGeometryView(WMScreen * scr)
 
   WMSetWidgetBackgroundColor(gview, gview->bgColor);
 
-  W_ResizeView(gview->view, gview->textSize.width + 8, gview->textSize.height + 6);
+  WMResizeView(gview->view, gview->textSize.width + 8, gview->textSize.height + 6);
 
   return gview;
 }
@@ -134,14 +134,14 @@ static void paint(WGeometryView * gview)
              gview->data.size.width, gview->data.size.height);
   }
 
-  WMDrawImageString(W_VIEW_SCREEN(gview->view),
-                    W_VIEW_DRAWABLE(gview->view),
+  WMDrawImageString(WMVIEW_SCREEN(gview->view),
+                    WMVIEW_DRAWABLE(gview->view),
                     gview->color, gview->bgColor, gview->font,
-                    (W_VIEW_WIDTH(gview->view) - gview->textSize.width) / 2,
-                    (W_VIEW_HEIGHT(gview->view) - gview->textSize.height) / 2, buffer, strlen(buffer));
+                    (WMVIEW_WIDTH(gview->view) - gview->textSize.width) / 2,
+                    (WMVIEW_HEIGHT(gview->view) - gview->textSize.height) / 2, buffer, strlen(buffer));
 
-  WMDrawRelief(W_VIEW_SCREEN(gview->view), W_VIEW_DRAWABLE(gview->view),
-               0, 0, W_VIEW_WIDTH(gview->view), W_VIEW_HEIGHT(gview->view), WRSimple);
+  WMDrawRelief(WMVIEW_SCREEN(gview->view), WMVIEW_DRAWABLE(gview->view),
+               0, 0, WMVIEW_WIDTH(gview->view), WMVIEW_HEIGHT(gview->view), WRSimple);
 }
 
 static void handleEvents(XEvent * event, void *clientData)

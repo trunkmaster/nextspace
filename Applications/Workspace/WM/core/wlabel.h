@@ -28,16 +28,16 @@
 
 #include "wfont.h"
 
-typedef struct W_Label {
-	W_Class widgetClass;
-	W_View *view;
+typedef struct WMLabel {
+	WMClass widgetClass;
+	WMView *view;
 
 	char *caption;
 
 	WMColor *textColor;
 	WMFont *font;		/* if NULL, use default */
 
-	W_Pixmap *image;
+	WMPixmap *image;
 
 	struct {
 		WMReliefType relief:3;
@@ -48,8 +48,8 @@ typedef struct W_Label {
 
 		unsigned int redrawPending:1;
 	} flags;
-} W_Label;
-typedef struct W_Label WMLabel;
+} WMLabel;
+typedef struct WMLabel WMLabel;
 
 /* ---[ WINGs/wlabel.c ]-------------------------------------------------- */
 

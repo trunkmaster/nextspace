@@ -41,8 +41,8 @@
 #include <X11/extensions/shape.h>
 #endif
 
-typedef struct W_Balloon {
-  W_View *view;
+typedef struct WMBalloon {
+  WMView *view;
 
   WMHashTable *table;	/* Table from view ptr to text */
 
@@ -80,13 +80,13 @@ static void handleEvents(XEvent *event, void *data);
 
 static void showText(Balloon *bPtr, int x, int y, int w, int h, const char *text);
 
-struct W_Balloon *W_CreateBalloon(WMScreen *scr)
+struct WMBalloon *WMCreateBalloon(WMScreen *scr)
 {
   Balloon *bPtr;
 
   bPtr = wmalloc(sizeof(Balloon));
 
-  bPtr->view = W_CreateUnmanagedTopView(scr);
+  bPtr->view = WMCreateUnmanagedTopView(scr);
   if (!bPtr->view) {
     wfree(bPtr);
     return NULL;
@@ -97,7 +97,7 @@ struct W_Balloon *W_CreateBalloon(WMScreen *scr)
 
   WMCreateEventHandler(bPtr->view, StructureNotifyMask, handleEvents, bPtr);
 
-  W_ResizeView(bPtr->view, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+  WMResizeView(bPtr->view, DEFAULT_WIDTH, DEFAULT_HEIGHT);
   bPtr->flags.alignment = DEFAULT_ALIGNMENT;
 
   bPtr->table = WMCreateHashTable(WMIntHashCallbacks);
@@ -165,7 +165,7 @@ void WMSetBalloonEnabled(WMScreen *scr, Bool flag)
 {
   scr->balloon->flags.enabled = ((flag == 0) ? 0 : 1);
 
-  W_UnmapView(scr->balloon->view);
+  WMUnmapView(scr->balloon->view);
 }
 
 static void clearNoDelay(CFRunLoopTimerRef timer, void *data)
@@ -176,13 +176,13 @@ static void clearNoDelay(CFRunLoopTimerRef timer, void *data)
   bPtr->noDelayTimer = NULL;
 }
 
-void W_BalloonHandleLeaveView(WMView *view)
+void WMBalloonHandleLeaveView(WMView *view)
 {
   Balloon *bPtr = view->screen->balloon;
 
   if (bPtr->forWindow == view->window) {
     if (bPtr->view->flags.mapped) {
-      W_UnmapView(bPtr->view);
+      WMUnmapView(bPtr->view);
       bPtr->noDelayTimer = WMAddTimerHandler(NO_DELAY_DELAY, 0, clearNoDelay, bPtr);
     }
     if (bPtr->timer)
@@ -217,14 +217,14 @@ static void showBalloon(CFRunLoopTimerRef timer, void *data)
   XTranslateCoordinates(view->screen->display, view->window, view->screen->rootWin, 0, 0, &x, &y, &foo);
 
   if (!bPtr->view->flags.realized)
-    W_RealizeView(bPtr->view);
+    WMRealizeView(bPtr->view);
 
   showText(bPtr, x, y, view->size.width, view->size.height, text);
 
   bPtr->flags.noDelay = 1;
 }
 
-void W_BalloonHandleEnterView(WMView *view)
+void WMBalloonHandleEnterView(WMView *view)
 {
   Balloon *bPtr = view->screen->balloon;
   char *text;
@@ -235,7 +235,7 @@ void W_BalloonHandleEnterView(WMView *view)
   text = WMHashGet(bPtr->table, view);
   if (!text) {
     if (bPtr->view->flags.realized)
-      W_UnmapView(bPtr->view);
+      WMUnmapView(bPtr->view);
 
     return;
   }
@@ -464,7 +464,7 @@ static void showText(Balloon *bPtr, int x, int y, int w, int h, const char *text
 
   XSetWindowBackgroundPixmap(dpy, bPtr->view->window, pixmap);
 
-  W_ResizeView(bPtr->view, width, height + SPACE);
+  WMResizeView(bPtr->view, width, height + SPACE);
 
   XFreePixmap(dpy, pixmap);
 
@@ -473,9 +473,9 @@ static void showText(Balloon *bPtr, int x, int y, int w, int h, const char *text
 #endif
   XFreePixmap(dpy, mask);
 
-  W_MoveView(bPtr->view, bx, by);
+  WMMoveView(bPtr->view, bx, by);
 
-  W_MapView(bPtr->view);
+  WMMapView(bPtr->view);
 }
 
 static void handleEvents(XEvent *event, void *data)

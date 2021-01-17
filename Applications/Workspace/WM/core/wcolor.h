@@ -31,8 +31,8 @@
 
 typedef unsigned long WMPixel;
 
-typedef struct W_Color {
-  struct W_Screen *screen;
+typedef struct WMColor {
+  struct WMScreen *screen;
 
   XColor color;
   unsigned short alpha;
@@ -41,9 +41,9 @@ typedef struct W_Color {
   struct {
     unsigned int exact:1;
   } flags;
-} W_Color;
+} WMColor;
 
-#define W_PIXEL(c)		(c)->color.pixel
+#define WMPIXEL(c)		(c)->color.pixel
 
 WMColor* WMDarkGrayColor(WMScreen *scr);
 

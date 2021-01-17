@@ -354,7 +354,7 @@ void WMDrawString(WMScreen *scr, Drawable d, WMColor *color, WMFont *font, int x
   xftcolor.color.green = color->color.green;
   xftcolor.color.blue = color->color.blue;
   xftcolor.color.alpha = color->alpha;;
-  xftcolor.pixel = W_PIXEL(color);
+  xftcolor.pixel = WMPIXEL(color);
 
   XftDrawChange(scr->xftdraw, d);
 
@@ -367,7 +367,7 @@ void WMDrawString(WMScreen *scr, Drawable d, WMColor *color, WMFont *font, int x
   XftDrawStringUtf8(scr->xftdraw, &xftcolor, font->font, x, y + font->y, (XftChar8 *) text, length);
 #endif
   
-  XftDrawChange(scr->xftdraw, W_DRAWABLE(scr));
+  XftDrawChange(scr->xftdraw, WMDRAWABLE(scr));
 }
 
 void
@@ -386,13 +386,13 @@ WMDrawImageString(WMScreen *scr, Drawable d, WMColor *color, WMColor *background
   textColor.color.green = color->color.green;
   textColor.color.blue = color->color.blue;
   textColor.color.alpha = color->alpha;;
-  textColor.pixel = W_PIXEL(color);
+  textColor.pixel = WMPIXEL(color);
 
   bgColor.color.red = background->color.red;
   bgColor.color.green = background->color.green;
   bgColor.color.blue = background->color.blue;
   bgColor.color.alpha = background->alpha;;
-  bgColor.pixel = W_PIXEL(background);
+  bgColor.pixel = WMPIXEL(background);
 
   XftDrawChange(scr->xftdraw, d);
 
@@ -407,7 +407,7 @@ WMDrawImageString(WMScreen *scr, Drawable d, WMColor *color, WMColor *background
   XftDrawStringUtf8(scr->xftdraw, &textColor, font->font, x, y + font->y, (XftChar8 *) text, length);
 #endif
 
-  XftDrawChange(scr->xftdraw, W_DRAWABLE(scr));
+  XftDrawChange(scr->xftdraw, WMDRAWABLE(scr));
 }
 
 WMFont *WMCopyFontWithStyle(WMScreen *scrPtr, WMFont *font, WMFontStyle style)

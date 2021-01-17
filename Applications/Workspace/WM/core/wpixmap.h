@@ -43,15 +43,15 @@
 #define WSIHighlightedArrowDown		11
 #define WSICheckMark			12
 
-typedef struct W_Pixmap {
-  struct W_Screen *screen;
+typedef struct WMPixmap {
+  struct WMScreen *screen;
   Pixmap pixmap;
   Pixmap mask;
   unsigned short width;
   unsigned short height;
   short depth;
   short refCount;
-} W_Pixmap;
+} WMPixmap;
 
 WMPixmap* WMRetainPixmap(WMPixmap *pixmap);
 

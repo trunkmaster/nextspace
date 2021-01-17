@@ -32,25 +32,25 @@ typedef void WMAction(WMWidget *self, void *clientData);
 /* same as WMAction, but for stuff that arent widgets */
 typedef void WMAction2(void *self, void *clientData);
 
-typedef struct W_Window {
-  W_Class widgetClass;
-  W_View *view;
+typedef struct WMWindow {
+  WMClass widgetClass;
+  WMView *view;
 
-  struct W_Window *nextPtr;	/* next in the window list */
+  struct WMWindow *nextPtr;	/* next in the window list */
 
-  struct W_Window *owner;
+  struct WMWindow *owner;
 
   char *title;
 
   WMPixmap *miniImage;	/* miniwindow */
-  char *miniTitle;
+  char     *miniTitle;
 
   char *wname;
 
-  WMSize resizeIncrement;
-  WMSize baseSize;
-  WMSize minSize;
-  WMSize maxSize;
+  WMSize  resizeIncrement;
+  WMSize  baseSize;
+  WMSize  minSize;
+  WMSize  maxSize;
   WMPoint minAspect;
   WMPoint maxAspect;
 
@@ -58,7 +58,7 @@ typedef struct W_Window {
   WMPoint ppos;
 
   WMAction *closeAction;
-  void *closeData;
+  void     *closeData;
 
   int level;
 
@@ -71,8 +71,8 @@ typedef struct W_Window {
     unsigned setPPos:1;
     unsigned setAspect:1;
   } flags;
-} W_Window;
-typedef struct W_Window WMWindow;
+} WMWindow;
+/* typedef struct WMWindow WMWindow; */
 
 /* ----------------------------------------------------------------------- */
 
@@ -118,4 +118,4 @@ void WMSetWindowDocumentEdited(WMWindow *win, Bool flag);
 
 void WMCloseWindow(WMWindow *win);
 
-#endif /* __WORKSPACE_WM_WWINDOW__ */
+#endif /* __WORKSPACE_WM_WWINDOWM_ */

@@ -29,18 +29,9 @@
 
 #include "wpixmap.h"
 
-typedef struct W_Application {
-    char *applicationName;
-    int argc;
-    char **argv;
-    char *resourcePath;
-} W_Application;
+void WMInitApplication(WMScreen *scr);
 
-extern struct W_Application WMApplication;
-
-void W_InitApplication(WMScreen *scr);
-
-Bool W_ApplicationInitialized(void);
+Bool WMApplicationInitialized(void);
 
 /* ---[ WINGs/wappresource.c ]-------------------------------------------- */
 

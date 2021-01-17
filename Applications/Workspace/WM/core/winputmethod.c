@@ -34,7 +34,7 @@
 #include "winputmethod.h"
 #include "drawing.h"
 
-typedef struct W_IMContext {
+typedef struct WMIMContext {
   XIM xim;
   XIMStyle ximstyle;
 } WMIMContext;
@@ -45,13 +45,13 @@ static void instantiateIM_cb(Display *display, XPointer client_data, XPointer ca
   (void) display;
   (void) call_data;
 
-  W_InitIM((W_Screen *) client_data);
+  WMInitIM((WMScreen *) client_data);
 }
 
 static void destroyIM_cb(XIM xim, XPointer client_data, XPointer call_data)
 {
-  W_Screen *scr = (W_Screen *) client_data;
-  W_View *target;
+  WMScreen *scr = (WMScreen *) client_data;
+  WMView *target;
 
   /* Parameter not used, but tell the compiler that it is ok */
   (void) call_data;
@@ -61,7 +61,7 @@ static void destroyIM_cb(XIM xim, XPointer client_data, XPointer call_data)
 
   target = scr->rootView->childrenList;
   while (target != NULL) {
-    W_DestroyIC(target);
+    WMDestroyIC(target);
     target = target->nextSister;
   }
 
@@ -71,7 +71,7 @@ static void destroyIM_cb(XIM xim, XPointer client_data, XPointer call_data)
   XRegisterIMInstantiateCallback(scr->display, NULL, NULL, NULL, instantiateIM_cb, (XPointer) scr);
 }
 
-void W_InitIM(W_Screen *scr)
+void WMInitIM(WMScreen *scr)
 {
   XIM xim;
 
@@ -113,9 +113,9 @@ void W_InitIM(W_Screen *scr)
   }
 }
 
-void W_CreateIC(WMView *view)
+void WMCreateIC(WMView *view)
 {
-  WMScreen *scr = W_VIEW_SCREEN(view);
+  WMScreen *scr = WMVIEW_SCREEN(view);
   XVaNestedList preedit_attr = NULL;
 
   if (view->xic || !view->flags.realized || !scr->imctx)
@@ -157,7 +157,7 @@ void W_CreateIC(WMView *view)
   }
 }
 
-void W_DestroyIC(WMView *view)
+void WMDestroyIC(WMView *view)
 {
   if (view->xic) {
     XDestroyIC(view->xic);
@@ -165,9 +165,9 @@ void W_DestroyIC(WMView *view)
   }
 }
 
-static void setPreeditArea(W_View *view)
+static void setPreeditArea(WMView *view)
 {
-  WMScreen *scr = W_VIEW_SCREEN(view);
+  WMScreen *scr = WMVIEW_SCREEN(view);
   XVaNestedList preedit_attr = NULL;
 
   if (view->xic && (scr->imctx->ximstyle & XIMPreeditPosition)) {
@@ -189,9 +189,9 @@ static void setPreeditArea(W_View *view)
   }
 }
 
-void W_FocusIC(WMView *view)
+void WMFocusIC(WMView *view)
 {
-  WMScreen *scr = W_VIEW_SCREEN(view);
+  WMScreen *scr = WMVIEW_SCREEN(view);
 
   if (view->xic) {
     XSetICFocus(view->xic);
@@ -203,16 +203,16 @@ void W_FocusIC(WMView *view)
   }
 }
 
-void W_UnFocusIC(WMView *view)
+void WMUnFocusIC(WMView *view)
 {
   if (view->xic) {
     XUnsetICFocus(view->xic);
   }
 }
 
-void W_SetPreeditPositon(W_View *view, int x, int y)
+void WMSetPreeditPositon(WMView *view, int x, int y)
 {
-  WMScreen *scr = W_VIEW_SCREEN(view);
+  WMScreen *scr = WMVIEW_SCREEN(view);
   XVaNestedList preedit_attr = NULL;
 
   if (view->xic && (scr->imctx->ximstyle & XIMPreeditPosition)) {
@@ -230,9 +230,9 @@ void W_SetPreeditPositon(W_View *view, int x, int y)
   }
 }
 
-int W_LookupString(W_View *view, XKeyPressedEvent *event, char *buffer, int buflen, KeySym *keysym, Status *status)
+int WMLookupString(WMView *view, XKeyPressedEvent *event, char *buffer, int buflen, KeySym *keysym, Status *status)
 {
-  WMScreen *scr = W_VIEW_SCREEN(view);
+  WMScreen *scr = WMVIEW_SCREEN(view);
 
   XSetInputFocus(scr->display, view->window, RevertToParent, CurrentTime);
 

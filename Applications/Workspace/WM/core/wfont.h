@@ -33,8 +33,8 @@
 #include "wscreen.h"
 #include "wcolor.h"
 
-typedef struct W_Font {
-    struct W_Screen *screen;
+typedef struct WMFont {
+    struct WMScreen *screen;
 
     struct _XftFont *font;
 
@@ -46,9 +46,9 @@ typedef struct W_Font {
 #ifdef USE_PANGO
     PangoLayout *layout;
 #endif
-} W_Font;
+} WMFont;
 
-#define W_FONTID(f) (f)->font->fid
+#define WMFONTID(f) (f)->font->fid
 
 /* ---[ WINGs/wfont.c ]--------------------------------------------------- */
 

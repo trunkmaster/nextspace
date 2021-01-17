@@ -399,7 +399,7 @@ static int userWidgetCount = 0;
 
 /*****  end data  ******/
 
-static void renderPixmap(W_Screen *screen, Pixmap d, Pixmap mask, char **data, int width, int height)
+static void renderPixmap(WMScreen *screen, Pixmap d, Pixmap mask, char **data, int width, int height)
 {
   int x, y;
   GC whiteGC = WMColorGC(screen->white);
@@ -442,14 +442,14 @@ static void renderPixmap(W_Screen *screen, Pixmap d, Pixmap mask, char **data, i
   }
 }
 
-static WMPixmap *makePixmap(W_Screen *sPtr, char **data, int width, int height, int masked)
+static WMPixmap *makePixmap(WMScreen *sPtr, char **data, int width, int height, int masked)
 {
   Pixmap pixmap, mask = None;
 
-  pixmap = XCreatePixmap(sPtr->display, W_DRAWABLE(sPtr), width, height, sPtr->depth);
+  pixmap = XCreatePixmap(sPtr->display, WMDRAWABLE(sPtr), width, height, sPtr->depth);
 
   if (masked) {
-    mask = XCreatePixmap(sPtr->display, W_DRAWABLE(sPtr), width, height, 1);
+    mask = XCreatePixmap(sPtr->display, WMDRAWABLE(sPtr), width, height, 1);
     XSetForeground(sPtr->display, sPtr->monoGC, 1);
     XFillRectangle(sPtr->display, mask, sPtr->monoGC, 0, 0, width, height);
   }
@@ -490,7 +490,7 @@ WMScreen *WMCreateScreen(Display *display, int screen)
 
 WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *context)
 {
-  W_Screen *scrPtr;
+  WMScreen *scrPtr;
   XGCValues gcv;
   Pixmap stipple;
   static int initialized = 0;
@@ -527,13 +527,13 @@ WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *con
 
   if (!initialized) {
     initialized = 1;
-    assert(W_ApplicationInitialized());
+    assert(WMApplicationInitialized());
   }
 
-  scrPtr = malloc(sizeof(W_Screen));
+  scrPtr = malloc(sizeof(WMScreen));
   if (!scrPtr)
     return NULL;
-  memset(scrPtr, 0, sizeof(W_Screen));
+  memset(scrPtr, 0, sizeof(WMScreen));
 
   scrPtr->aflags.hasAppIcon = 1;
 
@@ -552,7 +552,7 @@ WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *con
 
   scrPtr->fontCache = WMCreateHashTable(WMStringPointerHashCallbacks);
 
-  scrPtr->xftdraw = XftDrawCreate(scrPtr->display, W_DRAWABLE(scrPtr), scrPtr->visual, scrPtr->colormap);
+  scrPtr->xftdraw = XftDrawCreate(scrPtr->display, WMDRAWABLE(scrPtr), scrPtr->visual, scrPtr->colormap);
 
   /* Create missing CUT_BUFFERs */
   {
@@ -645,34 +645,34 @@ WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *con
   gcv.graphics_exposures = False;
 
   gcv.function = GXxor;
-  gcv.foreground = W_PIXEL(scrPtr->white);
+  gcv.foreground = WMPIXEL(scrPtr->white);
   if (gcv.foreground == 0)
     gcv.foreground = 1;
-  scrPtr->xorGC = XCreateGC(display, W_DRAWABLE(scrPtr), GCFunction
+  scrPtr->xorGC = XCreateGC(display, WMDRAWABLE(scrPtr), GCFunction
                             | GCGraphicsExposures | GCForeground, &gcv);
 
   gcv.function = GXxor;
-  gcv.foreground = W_PIXEL(scrPtr->gray);
+  gcv.foreground = WMPIXEL(scrPtr->gray);
   gcv.subwindow_mode = IncludeInferiors;
-  scrPtr->ixorGC = XCreateGC(display, W_DRAWABLE(scrPtr), GCFunction
+  scrPtr->ixorGC = XCreateGC(display, WMDRAWABLE(scrPtr), GCFunction
                              | GCGraphicsExposures | GCForeground | GCSubwindowMode, &gcv);
 
   gcv.function = GXcopy;
-  scrPtr->copyGC = XCreateGC(display, W_DRAWABLE(scrPtr), GCFunction | GCGraphicsExposures, &gcv);
+  scrPtr->copyGC = XCreateGC(display, WMDRAWABLE(scrPtr), GCFunction | GCGraphicsExposures, &gcv);
 
-  scrPtr->clipGC = XCreateGC(display, W_DRAWABLE(scrPtr), GCFunction | GCGraphicsExposures, &gcv);
+  scrPtr->clipGC = XCreateGC(display, WMDRAWABLE(scrPtr), GCFunction | GCGraphicsExposures, &gcv);
 
-  stipple = XCreateBitmapFromData(display, W_DRAWABLE(scrPtr), STIPPLE_BITS, STIPPLE_WIDTH, STIPPLE_HEIGHT);
-  gcv.foreground = W_PIXEL(scrPtr->darkGray);
-  gcv.background = W_PIXEL(scrPtr->gray);
+  stipple = XCreateBitmapFromData(display, WMDRAWABLE(scrPtr), STIPPLE_BITS, STIPPLE_WIDTH, STIPPLE_HEIGHT);
+  gcv.foreground = WMPIXEL(scrPtr->darkGray);
+  gcv.background = WMPIXEL(scrPtr->gray);
   gcv.fill_style = FillStippled;
   gcv.stipple = stipple;
-  scrPtr->stippleGC = XCreateGC(display, W_DRAWABLE(scrPtr),
+  scrPtr->stippleGC = XCreateGC(display, WMDRAWABLE(scrPtr),
                                 GCForeground | GCBackground | GCStipple
                                 | GCFillStyle | GCGraphicsExposures, &gcv);
 
-  scrPtr->drawStringGC = XCreateGC(display, W_DRAWABLE(scrPtr), GCGraphicsExposures, &gcv);
-  scrPtr->drawImStringGC = XCreateGC(display, W_DRAWABLE(scrPtr), GCGraphicsExposures, &gcv);
+  scrPtr->drawStringGC = XCreateGC(display, WMDRAWABLE(scrPtr), GCGraphicsExposures, &gcv);
+  scrPtr->drawImStringGC = XCreateGC(display, WMDRAWABLE(scrPtr), GCGraphicsExposures, &gcv);
 
   /* we need a 1bpp drawable for the monoGC, so borrow this one */
   scrPtr->monoGC = XCreateGC(display, stipple, 0, NULL);
@@ -698,7 +698,7 @@ WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *con
   }
 
   /* create input method stuff */
-  W_InitIM(scrPtr);
+  WMInitIM(scrPtr);
 
   scrPtr->checkButtonImageOn = makePixmap(scrPtr, CHECK_BUTTON_ON,
                                           CHECK_BUTTON_ON_WIDTH, CHECK_BUTTON_ON_HEIGHT, False);
@@ -821,11 +821,11 @@ WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *con
   scrPtr->netwmIconName = atoms[i++];
   scrPtr->netwmIcon = atoms[i++];
 
-  scrPtr->rootView = W_CreateRootView(scrPtr);
+  scrPtr->rootView = WMCreateRootView(scrPtr);
 
-  scrPtr->balloon = W_CreateBalloon(scrPtr);
+  scrPtr->balloon = WMCreateBalloon(scrPtr);
 
-  W_InitApplication(scrPtr);
+  WMInitApplication(scrPtr);
 
   return scrPtr;
 }
@@ -844,23 +844,23 @@ void WMSetWidgetDefaultBoldFont(WMScreen *scr, WMFont *font)
 
 void WMHangData(WMWidget *widget, void *data)
 {
-  W_VIEW(widget)->hangedData = data;
+  WMVIEW(widget)->hangedData = data;
 }
 
 void *WMGetHangedData(WMWidget *widget)
 {
-  return W_VIEW(widget)->hangedData;
+  return WMVIEW(widget)->hangedData;
 }
 
 void WMDestroyWidget(WMWidget *widget)
 {
-  W_UnmapView(W_VIEW(widget));
-  W_DestroyView(W_VIEW(widget));
+  WMUnmapView(WMVIEW(widget));
+  WMDestroyView(WMVIEW(widget));
 }
 
 void WMSetFocusToWidget(WMWidget *widget)
 {
-  W_SetFocusOfTopLevel(W_TopLevelOfView(W_VIEW(widget)), W_VIEW(widget));
+  WMSetFocusOfTopLevel(WMTopLevelOfView(WMVIEW(widget)), WMVIEW(widget));
 }
 
 /*
@@ -870,20 +870,20 @@ void WMSetFocusToWidget(WMWidget *widget)
  */
 void WMRealizeWidget(WMWidget *w)
 {
-  W_RealizeView(W_VIEW(w));
+  WMRealizeView(WMVIEW(w));
 }
 
 void WMMapWidget(WMWidget *w)
 {
-  W_MapView(W_VIEW(w));
+  WMMapView(WMVIEW(w));
 }
 
 void WMReparentWidget(WMWidget *w, WMWidget *newParent, int x, int y)
 {
-  W_ReparentView(W_VIEW(w), W_VIEW(newParent), x, y);
+  WMReparentView(WMVIEW(w), WMVIEW(newParent), x, y);
 }
 
-static void makeChildrenAutomap(W_View *view, int flag)
+static void makeChildrenAutomap(WMView *view, int flag)
 {
   view = view->childrenList;
 
@@ -899,42 +899,42 @@ void WMMapSubwidgets(WMWidget *w)
 {
   /* make sure that subwidgets created after the parent was realized
    *are mapped too */
-  if (!W_VIEW(w)->flags.realized) {
-    makeChildrenAutomap(W_VIEW(w), True);
+  if (!WMVIEW(w)->flags.realized) {
+    makeChildrenAutomap(WMVIEW(w), True);
   } else {
-    W_MapSubviews(W_VIEW(w));
+    WMMapSubviews(WMVIEW(w));
   }
 }
 
 void WMUnmapSubwidgets(WMWidget *w)
 {
-  if (!W_VIEW(w)->flags.realized) {
-    makeChildrenAutomap(W_VIEW(w), False);
+  if (!WMVIEW(w)->flags.realized) {
+    makeChildrenAutomap(WMVIEW(w), False);
   } else {
-    W_UnmapSubviews(W_VIEW(w));
+    WMUnmapSubviews(WMVIEW(w));
   }
 }
 
 void WMUnmapWidget(WMWidget *w)
 {
-  W_UnmapView(W_VIEW(w));
+  WMUnmapView(WMVIEW(w));
 }
 
 Bool WMWidgetIsMapped(WMWidget *w)
 {
-  return W_VIEW(w)->flags.mapped;
+  return WMVIEW(w)->flags.mapped;
 }
 
 void WMSetWidgetBackgroundColor(WMWidget *w, WMColor *color)
 {
-  W_SetViewBackgroundColor(W_VIEW(w), color);
-  if (W_VIEW(w)->flags.mapped)
+  WMSetViewBackgroundColor(WMVIEW(w), color);
+  if (WMVIEW(w)->flags.mapped)
     WMRedisplayWidget(w);
 }
 
 WMColor *WMGetWidgetBackgroundColor(WMWidget *w)
 {
-  return W_VIEW(w)->backColor;
+  return WMVIEW(w)->backColor;
 }
 
 void WMSetWidgetBackgroundPixmap(WMWidget *w, WMPixmap *pix)
@@ -942,37 +942,37 @@ void WMSetWidgetBackgroundPixmap(WMWidget *w, WMPixmap *pix)
   if (!pix)
     return;
 
-  W_SetViewBackgroundPixmap(W_VIEW(w), pix);
-  if (W_VIEW(w)->flags.mapped)
+  WMSetViewBackgroundPixmap(WMVIEW(w), pix);
+  if (WMVIEW(w)->flags.mapped)
     WMRedisplayWidget(w);
 }
 
 WMPixmap *WMGetWidgetBackgroundPixmap(WMWidget *w)
 {
-  return W_VIEW(w)->backImage;
+  return WMVIEW(w)->backImage;
 }
 
 void WMRaiseWidget(WMWidget *w)
 {
-  W_RaiseView(W_VIEW(w));
+  WMRaiseView(WMVIEW(w));
 }
 
 void WMLowerWidget(WMWidget *w)
 {
-  W_LowerView(W_VIEW(w));
+  WMLowerView(WMVIEW(w));
 }
 
 void WMMoveWidget(WMWidget *w, int x, int y)
 {
-  W_MoveView(W_VIEW(w), x, y);
+  WMMoveView(WMVIEW(w), x, y);
 }
 
 void WMResizeWidget(WMWidget *w, unsigned int width, unsigned int height)
 {
-  W_ResizeView(W_VIEW(w), width, height);
+  WMResizeView(WMVIEW(w), width, height);
 }
 
-W_Class W_RegisterUserWidget(void)
+WMClass WMRegisterUserWidget(void)
 {
   userWidgetCount++;
 
@@ -986,22 +986,22 @@ RContext *WMScreenRContext(WMScreen *scr)
 
 unsigned int WMWidgetWidth(WMWidget *w)
 {
-  return W_VIEW(w)->size.width;
+  return WMVIEW(w)->size.width;
 }
 
 unsigned int WMWidgetHeight(WMWidget *w)
 {
-  return W_VIEW(w)->size.height;
+  return WMVIEW(w)->size.height;
 }
 
 Window WMWidgetXID(WMWidget *w)
 {
-  return W_VIEW(w)->window;
+  return WMVIEW(w)->window;
 }
 
 WMScreen *WMWidgetScreen(WMWidget *w)
 {
-  return W_VIEW(w)->screen;
+  return WMVIEW(w)->screen;
 }
 
 void WMBreakModalLoop(WMScreen *scr)
@@ -1053,5 +1053,5 @@ unsigned int WMScreenHeight(WMScreen *scr)
 
 void WMRedisplayWidget(WMWidget *w)
 {
-  W_RedisplayView(W_VIEW(w));
+  WMRedisplayView(WMVIEW(w));
 }

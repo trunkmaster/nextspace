@@ -22,7 +22,7 @@
 #ifndef __WORKSPACE_WM_GEOMVIEW__
 #define __WORKSPACE_WM_GEOMVIEW__
 
-typedef struct W_GeometryView WGeometryView;
+typedef struct WMGeometryView WGeometryView;
 
 
 WGeometryView *WCreateGeometryView(WMScreen *scr);

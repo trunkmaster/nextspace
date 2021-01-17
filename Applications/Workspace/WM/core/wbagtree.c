@@ -34,32 +34,12 @@
 
 int WBNotFound = INT_MIN;
     
-typedef struct W_Node {
-  struct W_Node *parent;
-  struct W_Node *left;
-  struct W_Node *right;
-  int color;
-
-  void *data;
-  int index;
-} W_Node;
-
-typedef struct W_Bag {
-  W_Node *root;
-
-  W_Node *nil;		/* sentinel */
-
-  int count;
-
-  void (*destructor) (void *item);
-} W_Bag;
-
 #define IS_LEFT(node) (node == node->parent->left)
 #define IS_RIGHT(node) (node == node->parent->right)
 
-static void leftRotate(W_Bag *tree, W_Node *node)
+static void leftRotate(WMBag *tree, WMNode *node)
 {
-  W_Node *node2;
+  WMNode *node2;
 
   node2 = node->right;
   node->right = node2->left;
@@ -68,7 +48,7 @@ static void leftRotate(W_Bag *tree, W_Node *node)
 
   node2->parent = node->parent;
 
-  if (node->parent == tree->nil) {
+  if (node->parent == tree->sentinel) {
     tree->root = node2;
   } else {
     if (IS_LEFT(node)) {
@@ -81,9 +61,9 @@ static void leftRotate(W_Bag *tree, W_Node *node)
   node->parent = node2;
 }
 
-static void rightRotate(W_Bag *tree, W_Node *node)
+static void rightRotate(WMBag *tree, WMNode *node)
 {
-  W_Node *node2;
+  WMNode *node2;
 
   node2 = node->left;
   node->left = node2->right;
@@ -92,7 +72,7 @@ static void rightRotate(W_Bag *tree, W_Node *node)
 
   node2->parent = node->parent;
 
-  if (node->parent == tree->nil) {
+  if (node->parent == tree->sentinel) {
     tree->root = node2;
   } else {
     if (IS_LEFT(node)) {
@@ -105,12 +85,12 @@ static void rightRotate(W_Bag *tree, W_Node *node)
   node->parent = node2;
 }
 
-static void treeInsert(W_Bag *tree, W_Node *node)
+static void treeInsert(WMBag *tree, WMNode *node)
 {
-  W_Node *y = tree->nil;
-  W_Node *x = tree->root;
+  WMNode *y = tree->sentinel;
+  WMNode *x = tree->root;
 
-  while (x != tree->nil) {
+  while (x != tree->sentinel) {
     y = x;
     if (node->index <= x->index)
       x = x->left;
@@ -118,7 +98,7 @@ static void treeInsert(W_Bag *tree, W_Node *node)
       x = x->right;
   }
   node->parent = y;
-  if (y == tree->nil)
+  if (y == tree->sentinel)
     tree->root = node;
   else if (node->index <= y->index)
     y->left = node;
@@ -126,9 +106,9 @@ static void treeInsert(W_Bag *tree, W_Node *node)
     y->right = node;
 }
 
-static void rbTreeInsert(W_Bag *tree, W_Node *node)
+static void rbTreeInsert(WMBag *tree, WMNode *node)
 {
-  W_Node *y;
+  WMNode *y;
 
   treeInsert(tree, node);
 
@@ -178,9 +158,9 @@ static void rbTreeInsert(W_Bag *tree, W_Node *node)
   tree->root->color = 'B';
 }
 
-static void rbDeleteFixup(W_Bag *tree, W_Node *node)
+static void rbDeleteFixup(WMBag *tree, WMNode *node)
 {
-  W_Node *w;
+  WMNode *w;
 
   while (node != tree->root && node->color == 'B') {
     if (IS_LEFT(node)) {
@@ -237,23 +217,23 @@ static void rbDeleteFixup(W_Bag *tree, W_Node *node)
 
 }
 
-static W_Node *treeMinimum(W_Node *node, W_Node *nil)
+static WMNode *treeMinimum(WMNode *node, WMNode *nil)
 {
   while (node->left != nil)
     node = node->left;
   return node;
 }
 
-static W_Node *treeMaximum(W_Node *node, W_Node *nil)
+static WMNode *treeMaximum(WMNode *node, WMNode *nil)
 {
   while (node->right != nil)
     node = node->right;
   return node;
 }
 
-static W_Node *treeSuccessor(W_Node *node, W_Node *nil)
+static WMNode *treeSuccessor(WMNode *node, WMNode *nil)
 {
-  W_Node *y;
+  WMNode *y;
 
   if (node->right != nil) {
     return treeMinimum(node->right, nil);
@@ -266,9 +246,9 @@ static W_Node *treeSuccessor(W_Node *node, W_Node *nil)
   return y;
 }
 
-static W_Node *treePredecessor(W_Node *node, W_Node *nil)
+static WMNode *treePredecessor(WMNode *node, WMNode *nil)
 {
-  W_Node *y;
+  WMNode *y;
 
   if (node->left != nil) {
     return treeMaximum(node->left, nil);
@@ -281,10 +261,10 @@ static W_Node *treePredecessor(W_Node *node, W_Node *nil)
   return y;
 }
 
-static W_Node *rbTreeDelete(W_Bag *tree, W_Node *node)
+static WMNode *rbTreeDelete(WMBag *tree, WMNode *node)
 {
-  W_Node *nil = tree->nil;
-  W_Node *x, *y;
+  WMNode *nil = tree->sentinel;
+  WMNode *x, *y;
 
   if (node->left == nil || node->right == nil) {
     y = node;
@@ -320,7 +300,7 @@ static W_Node *rbTreeDelete(W_Bag *tree, W_Node *node)
   return y;
 }
 
-static W_Node *treeSearch(W_Node *root, W_Node *nil, int index)
+static WMNode *treeSearch(WMNode *root, WMNode *nil, int index)
 {
   if (root == nil || root->index == index) {
     return root;
@@ -333,9 +313,9 @@ static W_Node *treeSearch(W_Node *root, W_Node *nil, int index)
   }
 }
 
-static W_Node *treeFind(W_Node *root, W_Node *nil, void *data)
+static WMNode *treeFind(WMNode *root, WMNode *nil, void *data)
 {
-  W_Node *tmp;
+  WMNode *tmp;
 
   if (root == nil || root->data == data)
     return root;
@@ -352,7 +332,7 @@ static W_Node *treeFind(W_Node *root, W_Node *nil, void *data)
 #if 0
 static char buf[512];
 
-static void printNodes(W_Node *node, W_Node *nil, int depth)
+static void printNodes(WMNode *node, WMNode *nil, int depth)
 {
   if (node == nil) {
     return;
@@ -372,9 +352,9 @@ static void printNodes(W_Node *node, W_Node *nil, int depth)
 
 void PrintTree(WMBag *bag)
 {
-  W_TreeBag *tree = (W_TreeBag *) bag->data;
+  WMTreeBag *tree = (WMTreeBag *) bag->data;
 
-  printNodes(tree->root, tree->nil, 0);
+  printNodes(tree->root, tree->sentinel, 0);
 }
 #endif
 
@@ -388,10 +368,10 @@ WMBag *WMCreateTreeBagWithDestructor(WMFreeDataProc *destructor)
   WMBag *bag;
 
   bag = wmalloc(sizeof(WMBag));
-  bag->nil = wmalloc(sizeof(W_Node));
-  bag->nil->left = bag->nil->right = bag->nil->parent = bag->nil;
-  bag->nil->index = WBNotFound;
-  bag->root = bag->nil;
+  bag->sentinel = wmalloc(sizeof(WMNode));
+  bag->sentinel->left = bag->sentinel->right = bag->sentinel->parent = bag->sentinel;
+  bag->sentinel->index = WBNotFound;
+  bag->root = bag->sentinel;
   bag->destructor = destructor;
 
   return bag;
@@ -414,15 +394,15 @@ void WMAppendBag(WMBag *self, WMBag *bag)
 
 void WMPutInBag(WMBag *self, void *item)
 {
-  W_Node *ptr;
+  WMNode *ptr;
 
-  ptr = wmalloc(sizeof(W_Node));
+  ptr = wmalloc(sizeof(WMNode));
 
   ptr->data = item;
   ptr->index = self->count;
-  ptr->left = self->nil;
-  ptr->right = self->nil;
-  ptr->parent = self->nil;
+  ptr->left = self->sentinel;
+  ptr->right = self->sentinel;
+  ptr->parent = self->sentinel;
 
   rbTreeInsert(self, ptr);
 
@@ -431,36 +411,36 @@ void WMPutInBag(WMBag *self, void *item)
 
 void WMInsertInBag(WMBag *self, int index, void *item)
 {
-  W_Node *ptr;
+  WMNode *ptr;
 
-  ptr = wmalloc(sizeof(W_Node));
+  ptr = wmalloc(sizeof(WMNode));
 
   ptr->data = item;
   ptr->index = index;
-  ptr->left = self->nil;
-  ptr->right = self->nil;
-  ptr->parent = self->nil;
+  ptr->left = self->sentinel;
+  ptr->right = self->sentinel;
+  ptr->parent = self->sentinel;
 
   rbTreeInsert(self, ptr);
 
-  while ((ptr = treeSuccessor(ptr, self->nil)) != self->nil) {
+  while ((ptr = treeSuccessor(ptr, self->sentinel)) != self->sentinel) {
     ptr->index++;
   }
 
   self->count++;
 }
 
-static int treeDeleteNode(WMBag *self, W_Node *ptr)
+static int treeDeleteNode(WMBag *self, WMNode *ptr)
 {
-  if (ptr != self->nil) {
-    W_Node *tmp;
+  if (ptr != self->sentinel) {
+    WMNode *tmp;
 
     self->count--;
 
-    tmp = treeSuccessor(ptr, self->nil);
-    while (tmp != self->nil) {
+    tmp = treeSuccessor(ptr, self->sentinel);
+    while (tmp != self->sentinel) {
       tmp->index--;
-      tmp = treeSuccessor(tmp, self->nil);
+      tmp = treeSuccessor(tmp, self->sentinel);
     }
 
     ptr = rbTreeDelete(self, ptr);
@@ -474,15 +454,15 @@ static int treeDeleteNode(WMBag *self, W_Node *ptr)
 
 int WMRemoveFromBag(WMBag *self, void *item)
 {
-  W_Node *ptr = treeFind(self->root, self->nil, item);
+  WMNode *ptr = treeFind(self->root, self->sentinel, item);
   return treeDeleteNode(self, ptr);
 }
 
 int WMEraseFromBag(WMBag *self, int index)
 {
-  W_Node *ptr = treeSearch(self->root, self->nil, index);
+  WMNode *ptr = treeSearch(self->root, self->sentinel, index);
 
-  if (ptr != self->nil) {
+  if (ptr != self->sentinel) {
 
     self->count--;
 
@@ -501,16 +481,16 @@ int WMEraseFromBag(WMBag *self, int index)
 
 int WMDeleteFromBag(WMBag *self, int index)
 {
-  W_Node *ptr = treeSearch(self->root, self->nil, index);
+  WMNode *ptr = treeSearch(self->root, self->sentinel, index);
   return treeDeleteNode(self, ptr);
 }
 
 void *WMGetFromBag(WMBag *self, int index)
 {
-  W_Node *node;
+  WMNode *node;
 
-  node = treeSearch(self->root, self->nil, index);
-  if (node != self->nil)
+  node = treeSearch(self->root, self->sentinel, index);
+  if (node != self->sentinel)
     return node->data;
   else
     return NULL;
@@ -518,16 +498,16 @@ void *WMGetFromBag(WMBag *self, int index)
 
 int WMGetFirstInBag(WMBag *self, void *item)
 {
-  W_Node *node;
+  WMNode *node;
 
-  node = treeFind(self->root, self->nil, item);
-  if (node != self->nil)
+  node = treeFind(self->root, self->sentinel, item);
+  if (node != self->sentinel)
     return node->index;
   else
     return WBNotFound;
 }
 
-static int treeCount(W_Node *root, W_Node *nil, void *item)
+static int treeCount(WMNode *root, WMNode *nil, void *item)
 {
   int count = 0;
 
@@ -548,12 +528,12 @@ static int treeCount(W_Node *root, W_Node *nil, void *item)
 
 int WMCountInBag(WMBag *self, void *item)
 {
-  return treeCount(self->root, self->nil, item);
+  return treeCount(self->root, self->sentinel, item);
 }
 
 void *WMReplaceInBag(WMBag *self, int index, void *item)
 {
-  W_Node *ptr = treeSearch(self->root, self->nil, index);
+  WMNode *ptr = treeSearch(self->root, self->sentinel, index);
   void *old = NULL;
 
   if (item == NULL) {
@@ -562,19 +542,19 @@ void *WMReplaceInBag(WMBag *self, int index, void *item)
     if (self->destructor)
       self->destructor(ptr->data);
     wfree(ptr);
-  } else if (ptr != self->nil) {
+  } else if (ptr != self->sentinel) {
     old = ptr->data;
     ptr->data = item;
   } else {
-    W_Node *ptr;
+    WMNode *ptr;
 
-    ptr = wmalloc(sizeof(W_Node));
+    ptr = wmalloc(sizeof(WMNode));
 
     ptr->data = item;
     ptr->index = index;
-    ptr->left = self->nil;
-    ptr->right = self->nil;
-    ptr->parent = self->nil;
+    ptr->left = self->sentinel;
+    ptr->right = self->sentinel;
+    ptr->parent = self->sentinel;
 
     rbTreeInsert(self, ptr);
 
@@ -587,7 +567,7 @@ void *WMReplaceInBag(WMBag *self, int index, void *item)
 void WMSortBag(WMBag *self, WMCompareDataProc *comparer)
 {
   void **items;
-  W_Node *tmp;
+  WMNode *tmp;
   int i;
 
   if (self->count == 0)
@@ -596,28 +576,28 @@ void WMSortBag(WMBag *self, WMCompareDataProc *comparer)
   items = wmalloc(sizeof(void *) *self->count);
   i = 0;
 
-  tmp = treeMinimum(self->root, self->nil);
-  while (tmp != self->nil) {
+  tmp = treeMinimum(self->root, self->sentinel);
+  while (tmp != self->sentinel) {
     items[i++] = tmp->data;
-    tmp = treeSuccessor(tmp, self->nil);
+    tmp = treeSuccessor(tmp, self->sentinel);
   }
 
   qsort(&items[0], self->count, sizeof(void *), comparer);
 
   i = 0;
-  tmp = treeMinimum(self->root, self->nil);
-  while (tmp != self->nil) {
+  tmp = treeMinimum(self->root, self->sentinel);
+  while (tmp != self->sentinel) {
     tmp->index = i;
     tmp->data = items[i++];
-    tmp = treeSuccessor(tmp, self->nil);
+    tmp = treeSuccessor(tmp, self->sentinel);
   }
 
   wfree(items);
 }
 
-static void deleteTree(WMBag *self, W_Node *node)
+static void deleteTree(WMBag *self, WMNode *node)
 {
-  if (node == self->nil)
+  if (node == self->sentinel)
     return;
 
   deleteTree(self, node->left);
@@ -633,20 +613,20 @@ static void deleteTree(WMBag *self, W_Node *node)
 void WMEmptyBag(WMBag *self)
 {
   deleteTree(self, self->root);
-  self->root = self->nil;
+  self->root = self->sentinel;
   self->count = 0;
 }
 
 void WMFreeBag(WMBag *self)
 {
   WMEmptyBag(self);
-  wfree(self->nil);
+  wfree(self->sentinel);
   wfree(self);
 }
 
-static void mapTree(W_Bag *tree, W_Node *node, void (*function) (void *, void *), void *data)
+static void mapTree(WMBag *tree, WMNode *node, void (*function) (void *, void *), void *data)
 {
-  if (node == tree->nil)
+  if (node == tree->sentinel)
     return;
 
   mapTree(tree, node->left, function, data);
@@ -661,11 +641,11 @@ void WMMapBag(WMBag *self, void (*function) (void *, void *), void *data)
   mapTree(self, self->root, function, data);
 }
 
-static int findInTree(W_Bag *tree, W_Node *node, WMMatchDataProc *function, void *cdata)
+static int findInTree(WMBag *tree, WMNode *node, WMMatchDataProc *function, void *cdata)
 {
   int index;
 
-  if (node == tree->nil)
+  if (node == tree->sentinel)
     return WBNotFound;
 
   index = findInTree(tree, node->left, function, cdata);
@@ -686,11 +666,11 @@ int WMFindInBag(WMBag *self, WMMatchDataProc *match, void *cdata)
 
 void *WMBagFirst(WMBag *self, WMBagIterator *ptr)
 {
-  W_Node *node;
+  WMNode *node;
 
-  node = treeMinimum(self->root, self->nil);
+  node = treeMinimum(self->root, self->sentinel);
 
-  if (node == self->nil) {
+  if (node == self->sentinel) {
     *ptr = NULL;
     return NULL;
   } else {
@@ -702,11 +682,11 @@ void *WMBagFirst(WMBag *self, WMBagIterator *ptr)
 void *WMBagLast(WMBag *self, WMBagIterator *ptr)
 {
 
-  W_Node *node;
+  WMNode *node;
 
-  node = treeMaximum(self->root, self->nil);
+  node = treeMaximum(self->root, self->sentinel);
 
-  if (node == self->nil) {
+  if (node == self->sentinel) {
     *ptr = NULL;
     return NULL;
   } else {
@@ -717,14 +697,14 @@ void *WMBagLast(WMBag *self, WMBagIterator *ptr)
 
 void *WMBagNext(WMBag *self, WMBagIterator *ptr)
 {
-  W_Node *node;
+  WMNode *node;
 
   if (*ptr == NULL)
     return NULL;
 
-  node = treeSuccessor(*ptr, self->nil);
+  node = treeSuccessor(*ptr, self->sentinel);
 
-  if (node == self->nil) {
+  if (node == self->sentinel) {
     *ptr = NULL;
     return NULL;
   } else {
@@ -735,14 +715,14 @@ void *WMBagNext(WMBag *self, WMBagIterator *ptr)
 
 void *WMBagPrevious(WMBag *self, WMBagIterator *ptr)
 {
-  W_Node *node;
+  WMNode *node;
 
   if (*ptr == NULL)
     return NULL;
 
-  node = treePredecessor(*ptr, self->nil);
+  node = treePredecessor(*ptr, self->sentinel);
 
-  if (node == self->nil) {
+  if (node == self->sentinel) {
     *ptr = NULL;
     return NULL;
   } else {
@@ -753,11 +733,11 @@ void *WMBagPrevious(WMBag *self, WMBagIterator *ptr)
 
 void *WMBagIteratorAtIndex(WMBag *self, int index, WMBagIterator *ptr)
 {
-  W_Node *node;
+  WMNode *node;
 
-  node = treeSearch(self->root, self->nil, index);
+  node = treeSearch(self->root, self->sentinel, index);
 
-  if (node == self->nil) {
+  if (node == self->sentinel) {
     *ptr = NULL;
     return NULL;
   } else {
@@ -771,5 +751,5 @@ int WMBagIndexForIterator(WMBag *bag, WMBagIterator ptr)
   /* Parameter not used, but tell the compiler that it is ok */
   (void) bag;
 
-  return ((W_Node *) ptr)->index;
+  return ((WMNode *) ptr)->index;
 }

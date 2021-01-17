@@ -75,20 +75,20 @@ typedef enum {
     WIPOverlaps
 } WMImagePosition;
 
-void WMDrawRelief(W_Screen *scr, Drawable d, int x, int y, unsigned int width,
+void WMDrawRelief(WMScreen *scr, Drawable d, int x, int y, unsigned int width,
                   unsigned int height, WMReliefType relief);
 
-void WMDrawReliefWithGC(W_Screen *scr, Drawable d, int x, int y,
+void WMDrawReliefWithGC(WMScreen *scr, Drawable d, int x, int y,
                         unsigned int width, unsigned int height,
                         WMReliefType relief,
                         GC black, GC dark, GC light, GC white);
 
-void WMPaintTextAndImage(W_View *view, int wrap, WMColor *textColor,
-                         W_Font *font, WMReliefType relief, const char *text,
-                         WMAlignment alignment, W_Pixmap *image,
+void WMPaintTextAndImage(WMView *view, int wrap, WMColor *textColor,
+                         WMFont *font, WMReliefType relief, const char *text,
+                         WMAlignment alignment, WMPixmap *image,
                          WMImagePosition position, WMColor *backColor, int ofs);
 
-void WMPaintText(W_View *view, Drawable d, WMFont *font,  int x, int y,
+void WMPaintText(WMView *view, Drawable d, WMFont *font,  int x, int y,
                  int width, WMAlignment alignment, WMColor *color,
                  int wrap, const char *text, int length);
 

@@ -102,17 +102,17 @@ static WMEventHook *extraEventHandler = NULL;
  */
 void WMCreateEventHandler(WMView *view, unsigned long mask, WMEventProc *eventProc, void *clientData)
 {
-  W_EventHandler *hPtr;
+  WMEventHandler *hPtr;
 
   for (int i = 0; i < CFArrayGetCount(view->eventHandlers); i++) {
-    hPtr = (W_EventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
+    hPtr = (WMEventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
     if (hPtr->clientData == clientData && hPtr->proc == eventProc) {
       hPtr->eventMask |= mask;
       return;
     }
   }
 
-  hPtr = wmalloc(sizeof(W_EventHandler));
+  hPtr = wmalloc(sizeof(WMEventHandler));
 
   /* select events for window */
   hPtr->eventMask = mask;
@@ -129,9 +129,9 @@ void WMCreateEventHandler(WMView *view, unsigned long mask, WMEventProc *eventPr
  */
 void WMDeleteEventHandler(WMView *view, unsigned long mask, WMEventProc *eventProc, void *clientData)
 {
-  W_EventHandler tmp;
-  W_EventHandler *tmp1;
-  W_EventHandler *tmp2;
+  WMEventHandler tmp;
+  WMEventHandler *tmp1;
+  WMEventHandler *tmp2;
 
   tmp.eventMask = mask;
   tmp.proc = eventProc;
@@ -139,7 +139,7 @@ void WMDeleteEventHandler(WMView *view, unsigned long mask, WMEventProc *eventPr
   tmp1 = &tmp;
   
   for (int i = 0; i < CFArrayGetCount(view->eventHandlers); i++) {
-    tmp2 = (W_EventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
+    tmp2 = (WMEventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
     if (((tmp1->eventMask == tmp2->eventMask) &&
          (tmp1->proc == tmp2->proc) &&
          (tmp1->clientData == tmp2->clientData))) {
@@ -176,17 +176,17 @@ static Time _getEventTime(WMScreen *screen, XEvent *event)
   }
 }
 
-void W_CallDestroyHandlers(W_View *view)
+void WMCallDestroyHandlers(WMView *view)
 {
   XEvent event;
-  W_EventHandler *hPtr;
+  WMEventHandler *hPtr;
 
   event.type = DestroyNotify;
   event.xdestroywindow.window = view->window;
   event.xdestroywindow.event = view->window;
 
   for (int i = 0; i < CFArrayGetCount(view->eventHandlers); i++) {
-    hPtr = (W_EventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
+    hPtr = (WMEventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
     if (hPtr->eventMask & StructureNotifyMask) {
       (*hPtr->proc) (&event, hPtr->clientData);
     }
@@ -195,8 +195,8 @@ void W_CallDestroyHandlers(W_View *view)
 
 int WMHandleEvent(XEvent *event)
 {
-  W_EventHandler *hPtr;
-  W_View *view, *toplevel;
+  WMEventHandler *hPtr;
+  WMView *view, *toplevel;
   unsigned long mask;
   Window window;
 
@@ -220,7 +220,7 @@ int WMHandleEvent(XEvent *event)
       window = event->xmap.event;
     }
   }
-  view = W_GetViewForXWindow(event->xany.display, window);
+  view = WMGetViewForXWindow(event->xany.display, window);
 
   if (!view) {
     if (extraEventHandler)
@@ -231,7 +231,7 @@ int WMHandleEvent(XEvent *event)
 
   view->screen->lastEventTime = _getEventTime(view->screen, event);
 
-  toplevel = W_TopLevelOfView(view);
+  toplevel = WMTopLevelOfView(view);
 
   if (event->type == SelectionNotify || event->type == SelectionClear || event->type == SelectionRequest) {
     /* handle selection related events */
@@ -241,7 +241,7 @@ int WMHandleEvent(XEvent *event)
 
   /* if it's a key event, redispatch it to the focused control */
   if (mask & (KeyPressMask | KeyReleaseMask)) {
-    W_View *focused = W_FocusedViewOfToplevel(toplevel);
+    WMView *focused = WMFocusedViewOfToplevel(toplevel);
 
     if (focused) {
       view = focused;
@@ -278,17 +278,17 @@ int WMHandleEvent(XEvent *event)
 
   /* do balloon stuffs */
   if (event->type == EnterNotify)
-    W_BalloonHandleEnterView(view);
+    WMBalloonHandleEnterView(view);
   else if (event->type == LeaveNotify)
-    W_BalloonHandleLeaveView(view);
+    WMBalloonHandleLeaveView(view);
 
   /* This is a hack. It will make the panel be secure while
    *the event handlers are handled, as some event handler
    *might destroy the widget. */
-  W_RetainView(toplevel);
+  WMRetainView(toplevel);
 
   for (int i = 0; i < CFArrayGetCount(view->eventHandlers); i++) {
-    hPtr = (W_EventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
+    hPtr = (WMEventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
     if ((hPtr->eventMask & mask)) {
       (*hPtr->proc) (event, hPtr->clientData);
     }
@@ -302,7 +302,7 @@ int WMHandleEvent(XEvent *event)
       vPtr = vPtr->parent;
 
     for (int i = 0; i < CFArrayGetCount(view->eventHandlers); i++) {
-      hPtr = (W_EventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
+      hPtr = (WMEventHandler *)CFArrayGetValueAtIndex(view->eventHandlers, i);
       if (hPtr->eventMask & mask) {
         (*hPtr->proc) (event, hPtr->clientData);
       }
@@ -321,10 +321,10 @@ int WMHandleEvent(XEvent *event)
 
   if (event->type == ClientMessage) {
     /* must be handled at the end, for such message can destroy the view */
-    W_HandleDNDClientMessage(toplevel, &event->xclient);
+    WMHandleDNDClientMessage(toplevel, &event->xclient);
   }
 
-  W_ReleaseView(toplevel);
+  WMReleaseView(toplevel);
 
   return True;
 }

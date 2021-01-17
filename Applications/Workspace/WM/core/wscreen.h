@@ -40,28 +40,17 @@
 /* global settigns  */
 extern char *_WINGS_progname;
 
-/* alert panel return values */
-enum {
-    WAPRDefault = 1,   // NSAlertDefaultReturn = 1
-    WAPRAlternate = 0, // NSAlertAlternateReturn = 0
-    WAPROther = -1,
-    WAPRError = -2
-};
-
+/* Widgets */
 typedef void WMWidget;
-typedef struct W_View	WMView;
-typedef struct W_Color	WMColor;
-typedef struct W_Font	WMFont;
-typedef struct W_Pixmap	WMPixmap;
 
 /* Pre-definition of internal structs */
-typedef struct W_Color		W_Color;
-typedef struct W_Pixmap		W_Pixmap;
-typedef struct W_View		W_View;
-typedef struct W_DraggingInfo	W_DraggingInfo;
-typedef struct W_FocusInfo	W_FocusInfo;
+typedef struct WMColor		WMColor;
+typedef struct WMPixmap		WMPixmap;
+typedef struct WMView		WMView;
+typedef struct WMDraggingInfo	WMDraggingInfo;
+typedef struct WMFocusInfo	WMFocusInfo;
 
-typedef struct W_Screen {
+typedef struct WMScreen {
   Display *display;
   int screen;
   int depth;
@@ -70,26 +59,26 @@ typedef struct W_Screen {
   Visual *visual;
   Time lastEventTime;
   Window rootWin;
-  W_View *rootView;
+  WMView *rootView;
   RContext *rcontext;
 
-  struct W_IMContext *imctx;
+  struct WMIMContext *imctx;
   struct _XftDraw *xftdraw;          /* shared XftDraw */
 
   /* application related */
 
-  W_FocusInfo *focusInfo;
+  WMFocusInfo *focusInfo;
 
   RImage *applicationIconImage;      /* image (can have alpha channel) */
-  W_Pixmap *applicationIconPixmap; /* pixmap - no alpha channel */
+  WMPixmap *applicationIconPixmap; /* pixmap - no alpha channel */
   Window applicationIconWindow;
 
-  struct W_Window *windowList;       /* list of windows in the app */
+  struct WMWindow *windowList;       /* list of windows in the app */
 
   Window groupLeader;                /* the leader of the application */
   /* also used for other things */
 
-  struct W_SelectionHandlers *selectionHandlerList;
+  struct WMSelectionHandlers *selectionHandlerList;
 
   struct {
     unsigned int hasAppIcon:1;
@@ -98,14 +87,14 @@ typedef struct W_Screen {
 
   Pixmap stipple;
 
-  W_View *dragSourceView;
-  W_DraggingInfo *dragInfo;
+  WMView *dragSourceView;
+  WMDraggingInfo *dragInfo;
 
   /* colors */
-  W_Color *white;
-  W_Color *black;
-  W_Color *gray;
-  W_Color *darkGray;
+  WMColor *white;
+  WMColor *black;
+  WMColor *gray;
+  WMColor *darkGray;
 
   GC stippleGC;
   GC copyGC;
@@ -116,43 +105,43 @@ typedef struct W_Screen {
   GC drawStringGC;                   /* for WMDrawString() */
   GC drawImStringGC;                 /* for WMDrawImageString() */
 
-  struct W_Font *normalFont;
-  struct W_Font *boldFont;
+  struct WMFont *normalFont;
+  struct WMFont *boldFont;
   WMHashTable *fontCache;
   Bool antialiasedText;
 
   unsigned int ignoredModifierMask; /* modifiers to ignore when typing txt */
 
-  struct W_Balloon *balloon;
+  struct WMBalloon *balloon;
 
 
-  W_Pixmap *checkButtonImageOn;
-  W_Pixmap *checkButtonImageOff;
+  WMPixmap *checkButtonImageOn;
+  WMPixmap *checkButtonImageOff;
 
-  W_Pixmap *radioButtonImageOn;
-  W_Pixmap *radioButtonImageOff;
+  WMPixmap *radioButtonImageOn;
+  WMPixmap *radioButtonImageOff;
 
-  W_Pixmap *buttonArrow;
-  W_Pixmap *pushedButtonArrow;
+  WMPixmap *buttonArrow;
+  WMPixmap *pushedButtonArrow;
 
-  W_Pixmap *scrollerDimple;
+  WMPixmap *scrollerDimple;
 
-  W_Pixmap *upArrow;
-  W_Pixmap *downArrow;
-  W_Pixmap *leftArrow;
-  W_Pixmap *rightArrow;
+  WMPixmap *upArrow;
+  WMPixmap *downArrow;
+  WMPixmap *leftArrow;
+  WMPixmap *rightArrow;
 
-  W_Pixmap *hiUpArrow;
-  W_Pixmap *hiDownArrow;
-  W_Pixmap *hiLeftArrow;
-  W_Pixmap *hiRightArrow;
+  WMPixmap *hiUpArrow;
+  WMPixmap *hiDownArrow;
+  WMPixmap *hiLeftArrow;
+  WMPixmap *hiRightArrow;
 
-  W_Pixmap *pullDownIndicator;
-  W_Pixmap *popUpIndicator;
+  WMPixmap *pullDownIndicator;
+  WMPixmap *popUpIndicator;
 
-  W_Pixmap *checkMark;
+  WMPixmap *checkMark;
 
-  W_Pixmap *defaultObjectIcon;
+  WMPixmap *defaultObjectIcon;
 
   Cursor defaultCursor;
 
@@ -200,7 +189,7 @@ typedef struct W_Screen {
   Time lastClickTime;            /* time of last mousedown event */
   Window lastClickWindow;        /* window of the last mousedown */
 
-  struct W_View *modalView;
+  struct WMView *modalView;
   unsigned modalLoop:1;
   unsigned ignoreNextDoubleClick:1;
 
@@ -209,12 +198,11 @@ typedef struct W_Screen {
    * Added at the end of the structure to avoid breaking binary compatibility
    * with previous versions of the toolkit
    */
-  W_Pixmap *tristateButtonImageOn;
-  W_Pixmap *tristateButtonImageOff;
-  W_Pixmap *tristateButtonImageTri;
-} W_Screen;
-typedef struct W_Screen WMScreen;
+  WMPixmap *tristateButtonImageOn;
+  WMPixmap *tristateButtonImageOff;
+  WMPixmap *tristateButtonImageTri;
+} WMScreen;
 
-#define W_DRAWABLE(scr)	(scr)->rcontext->drawable
+#define WMDRAWABLE(scr)	(scr)->rcontext->drawable
 
 #endif /* __WORKSPACE_WM_WSCREEN__ */

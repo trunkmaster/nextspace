@@ -44,9 +44,9 @@
 
 #include "GNUstep.h"
 
-static void willResizeWindow(W_ViewDelegate *, WMView *, unsigned *, unsigned *);
+static void willResizeWindow(WMViewDelegate *, WMView *, unsigned *, unsigned *);
 
-struct W_ViewDelegate _WindowViewDelegate = {
+struct WMViewDelegate _WindowViewDelegate = {
                                              NULL,
                                              NULL,
                                              NULL,
@@ -57,7 +57,7 @@ struct W_ViewDelegate _WindowViewDelegate = {
 #define DEFAULT_WIDTH	400
 #define DEFAULT_HEIGHT	180
 
-static void destroyWindow(W_Window *win);
+static void destroyWindow(WMWindow *win);
 
 static void handleEvents(XEvent *event, void *clientData);
 
@@ -106,12 +106,12 @@ WMWindow *WMCreateWindow(WMScreen *screen, const char *name)
 
 WMWindow *WMCreateWindowWithStyle(WMScreen *screen, const char *name, int style)
 {
-  W_Window *win;
+  WMWindow *win;
 
-  win = wmalloc(sizeof(W_Window));
+  win = wmalloc(sizeof(WMWindow));
   win->widgetClass = WC_Window;
 
-  win->view = W_CreateTopView(screen);
+  win->view = WMCreateTopView(screen);
   if (!win->view) {
     wfree(win);
     return NULL;
@@ -129,7 +129,7 @@ WMWindow *WMCreateWindowWithStyle(WMScreen *screen, const char *name, int style)
   WMCreateEventHandler(win->view, ExposureMask | StructureNotifyMask
                        | ClientMessageMask | FocusChangeMask, handleEvents, win);
 
-  W_ResizeView(win->view, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+  WMResizeView(win->view, DEFAULT_WIDTH, DEFAULT_HEIGHT);
 
   CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), win,
                                   realizeObserver,
@@ -141,7 +141,7 @@ WMWindow *WMCreateWindowWithStyle(WMScreen *screen, const char *name, int style)
   win->level = NSNormalWindowLevel;
 
   /* kluge. Find a better solution */
-  W_SetFocusOfTopLevel(win->view, win->view);
+  WMSetFocusOfTopLevel(win->view, win->view);
 
   return win;
 }
@@ -288,7 +288,7 @@ void WMSetWindowCloseAction(WMWindow *win, WMAction *action, void *clientData)
   win->closeData = clientData;
 }
 
-static void willResizeWindow(W_ViewDelegate *self, WMView *view, unsigned *width, unsigned *height)
+static void willResizeWindow(WMViewDelegate *self, WMView *view, unsigned *width, unsigned *height)
 {
   WMWindow *win = (WMWindow *) view->self;
 
@@ -610,8 +610,8 @@ void WMCloseWindow(WMWindow *win)
 
 static void handleEvents(XEvent *event, void *clientData)
 {
-  W_Window *win = (W_Window *) clientData;
-  W_View *view = win->view;
+  WMWindow *win = (WMWindow *) clientData;
+  WMView *view = win->view;
 
   switch (event->type) {
   case ClientMessage:
@@ -672,7 +672,7 @@ static void handleEvents(XEvent *event, void *clientData)
   }
 }
 
-static void destroyWindow(W_Window *win)
+static void destroyWindow(WMWindow *win)
 {
   WMScreen *scr = win->view->screen;
 

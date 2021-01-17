@@ -27,11 +27,11 @@
 #ifndef __WORKSPACE_WM_WBALLOON__
 #define __WORKSPACE_WM_WBALLOON__
 
-struct W_Balloon *W_CreateBalloon(WMScreen *scr);
+struct WMBalloon *WMCreateBalloon(WMScreen *scr);
 
-void W_BalloonHandleEnterView(WMView *view);
+void WMBalloonHandleEnterView(WMView *view);
 
-void W_BalloonHandleLeaveView(WMView *view);
+void WMBalloonHandleLeaveView(WMView *view);
 
 /* ---[ WINGs/wballoon.c ]------------------------------------------------ */
 

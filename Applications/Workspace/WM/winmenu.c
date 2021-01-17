@@ -253,7 +253,7 @@ static void execMenuCommand(WMenu * menu, WMenuEntry * entry)
         || WSRunAlertPanel(_("Kill Application"),
                            _("This will kill the application.\n"
                              "Any unsaved changes will be lost.\nPlease confirm."),
-                           _("Yes"), _("No"), NULL) == WAPRDefault) {
+                           _("Yes"), _("No"), NULL) == NSAlertDefaultReturn) {
       if (!wwin->flags.destroyed)
         wClientKill(wwin);
     }

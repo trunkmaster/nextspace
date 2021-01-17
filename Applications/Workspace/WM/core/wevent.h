@@ -37,15 +37,15 @@
 typedef void WMEventProc(XEvent *event, void *clientData);
 typedef void WMEventHook(XEvent *event);
 
-typedef struct W_EventHandler {
+typedef struct WMEventHandler {
   unsigned long eventMask;
 
   WMEventProc *proc;
 
   void *clientData;
-} W_EventHandler;
+} WMEventHandler;
 
-void W_CallDestroyHandlers(W_View *view);
+void WMCallDestroyHandlers(WMView *view);
 
 WMEventHook* WMHookEventHandler(WMEventHook *handler);
 

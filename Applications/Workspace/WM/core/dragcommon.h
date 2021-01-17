@@ -47,30 +47,25 @@ typedef struct WMSelectionProcs {
                         void *cdata);
 } WMSelectionProcs;
 
-/* We need to define these structure first because they are used in W_Screen
- * below. The rest of drag-related stuff if after because it needs W_Screen
+/* We need to define these structure first because they are used in WMScreen
+ * below. The rest of drag-related stuff if after because it needs WMScreen
  */
 #ifndef XDND_VERSION
 #define XDND_VERSION 3L
 #endif
 
-typedef struct W_DraggingInfo {
+typedef struct WMDraggingInfo {
   unsigned char protocolVersion; /* version supported on the other side */
   Time timestamp;
-
+  
   Atom sourceAction;
   Atom destinationAction;
+  
+  struct WMDragSourceInfo      *sourceInfo; /* infos needed by source */
+  struct WMDragDestinationInfo *destInfo;   /* infos needed by destination */
+} WMDraggingInfo;
 
-  struct W_DragSourceInfo *sourceInfo;    /* infos needed by source */
-  struct W_DragDestinationInfo *destInfo; /* infos needed by destination */
-} W_DraggingInfo;
-
-typedef struct W_DraggingInfo WMDraggingInfo;
-
-/* links a label to a dnd operation. */
-typedef struct W_DragOperationtItem WMDragOperationItem;
-
-typedef struct W_DragSourceProcs {
+typedef struct WMDragSourceProcs {
   CFMutableArrayRef (*dropDataTypes)(WMView *self);
   WMDragOperationType (*wantedDropOperation)(WMView *self);
   CFMutableArrayRef (*askedOperations)(WMView *self);
@@ -81,7 +76,7 @@ typedef struct W_DragSourceProcs {
   /*Bool (*ignoreModifierKeysWhileDragging)(WMView *view);*/
 } WMDragSourceProcs;
   
-typedef struct W_DragDestinationProcs {
+typedef struct WMDragDestinationProcs {
   void (*prepareForDragOperation)(WMView *self);
   CFMutableArrayRef (*requiredDataTypes)(WMView *self, WMDragOperationType request,
                                          CFMutableArrayRef sourceDataTypes);
@@ -94,18 +89,19 @@ typedef struct W_DragDestinationProcs {
   void (*concludeDragOperation)(WMView *self);
 } WMDragDestinationProcs;
 
-typedef struct W_DragOperationItem {
+/* links a label to a dnd operation. */
+typedef struct WMDragOperationItem {
   WMDragOperationType type;
   char* text;
-} W_DragOperationItem;
+} WMDragOperationItem;
 
-typedef void* W_DndState(WMView *destView, XClientMessageEvent *event,
+typedef void* WMDndState(WMView *destView, XClientMessageEvent *event,
                          WMDraggingInfo *info);
 
-typedef struct W_DragSourceInfo {
+typedef struct WMDragSourceInfo {
   WMView *sourceView;
   Window destinationWindow;
-  W_DndState *state;
+  WMDndState *state;
   WMSelectionProcs *selectionProcs;
   Window icon;
   WMPoint imageLocation;
@@ -113,60 +109,60 @@ typedef struct W_DragSourceInfo {
   Cursor dragCursor;
   WMRect noPositionMessageZone;
   Atom firstThreeTypes[3];
-} W_DragSourceInfo;
+} WMDragSourceInfo;
 
-typedef struct W_DragDestinationInfo {
+typedef struct WMDragDestinationInfo {
   WMView *destView;
   WMView *xdndAwareView;
   Window sourceWindow;
-  W_DndState *state;
+  WMDndState *state;
   Bool sourceActionChanged;
   CFMutableArrayRef sourceTypes;
   CFMutableArrayRef requiredTypes;
   Bool typeListAvailable;
   CFMutableArrayRef dropDatas;
-} W_DragDestinationInfo;
+} WMDragDestinationInfo;
 
 /* -- Functions -- */
 
-void W_HandleDNDClientMessage(WMView *toplevel, XClientMessageEvent *event);
+void WMHandleDNDClientMessage(WMView *toplevel, XClientMessageEvent *event);
 
-Atom W_OperationToAction(WMScreen *scr, WMDragOperationType operation);
+Atom WMOperationToAction(WMScreen *scr, WMDragOperationType operation);
 
-WMDragOperationType W_ActionToOperation(WMScreen *scr, Atom action);
+WMDragOperationType WMActionToOperation(WMScreen *scr, Atom action);
 
-void W_FreeDragOperationItem(void* item);
+void WMFreeDragOperationItem(void* item);
 
-Bool W_SendDnDClientMessage(Display *dpy, Window win, Atom message,
+Bool WMSendDnDClientMessage(Display *dpy, Window win, Atom message,
                             unsigned long data1, unsigned long data2,
                             unsigned long data3, unsigned long data4,
                             unsigned long data5);
 
-void W_DragSourceStartTimer(WMDraggingInfo *info);
+void WMDragSourceStartTimer(WMDraggingInfo *info);
 
-void W_DragSourceStopTimer(void);
+void WMDragSourceStopTimer(void);
 
-void W_DragSourceStateHandler(WMDraggingInfo *info, XClientMessageEvent *event);
+void WMDragSourceStateHandler(WMDraggingInfo *info, XClientMessageEvent *event);
 
-void W_DragDestinationStartTimer(WMDraggingInfo *info);
+void WMDragDestinationStartTimer(WMDraggingInfo *info);
 
-void W_DragDestinationStopTimer(void);
+void WMDragDestinationStopTimer(void);
 
-void W_DragDestinationStoreEnterMsgInfo(WMDraggingInfo *info, WMView *toplevel,
+void WMDragDestinationStoreEnterMsgInfo(WMDraggingInfo *info, WMView *toplevel,
                                         XClientMessageEvent *event);
 
-void W_DragDestinationStorePositionMsgInfo(WMDraggingInfo *info,
+void WMDragDestinationStorePositionMsgInfo(WMDraggingInfo *info,
                                            WMView *toplevel,
                                            XClientMessageEvent *event);
 
-void W_DragDestinationCancelDropOnEnter(WMView *toplevel, WMDraggingInfo *info);
+void WMDragDestinationCancelDropOnEnter(WMView *toplevel, WMDraggingInfo *info);
 
-void W_DragDestinationStateHandler(WMDraggingInfo *info,
+void WMDragDestinationStateHandler(WMDraggingInfo *info,
                                    XClientMessageEvent *event);
 
-void W_DragDestinationInfoClear(WMDraggingInfo *info);
+void WMDragDestinationInfoClear(WMDraggingInfo *info);
 
-void W_FreeViewXdndPart(WMView *view);
+void WMFreeViewXdndPart(WMView *view);
 
 CFMutableArrayRef WMCreateDragOperationArray(int initialSize);
 

@@ -64,9 +64,9 @@ WMPixmap *WMCreatePixmap(WMScreen *scrPtr, int width, int height, int depth, Boo
   pixPtr->depth = depth;
   pixPtr->refCount = 1;
 
-  pixPtr->pixmap = XCreatePixmap(scrPtr->display, W_DRAWABLE(scrPtr), width, height, depth);
+  pixPtr->pixmap = XCreatePixmap(scrPtr->display, WMDRAWABLE(scrPtr), width, height, depth);
   if (masked) {
-    pixPtr->mask = XCreatePixmap(scrPtr->display, W_DRAWABLE(scrPtr), width, height, 1);
+    pixPtr->mask = XCreatePixmap(scrPtr->display, WMDRAWABLE(scrPtr), width, height, 1);
   } else {
     pixPtr->mask = None;
   }

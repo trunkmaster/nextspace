@@ -204,7 +204,7 @@ static void killCallback(WMenu *menu, WMenuEntry *entry)
   dispatch_async(workspace_q, ^{
       if (wPreferences.dont_confirm_kill
           || WSRunAlertPanel(_("Kill Application"),
-                             buffer, _("Keep Running"), _("Kill"), NULL) == WAPRAlternate) {
+                             buffer, _("Keep Running"), _("Kill"), NULL) == NSAlertAlternateReturn) {
         if (fPtr != NULL) {
           WWindow *wwin, *twin;
 
@@ -458,7 +458,7 @@ static void removeIconsCallback(WMenu *menu, WMenuEntry *entry)
   if (CFArrayGetCount(selectedIcons)) {
     if (WSRunAlertPanel(dock->type == WM_CLIP ? _("Workspace Clip") : _("Drawer"),
                         _("All selected icons will be removed!"),
-                        _("OK"), _("Cancel"), NULL) != WAPRDefault) {
+                        _("OK"), _("Cancel"), NULL) != NSAlertDefaultReturn) {
       CFRelease(selectedIcons);
       return;
     }
@@ -4498,7 +4498,7 @@ static void removeDrawerCallback(WMenu *menu, WMenuEntry *entry)
   if (dock->icon_count > 2) {
     if (WSRunAlertPanel(_("Drawer"),
                         _("All icons in this drawer will be detached!"),
-                        _("OK"), _("Cancel"), NULL) != WAPRDefault)
+                        _("OK"), _("Cancel"), NULL) != NSAlertDefaultReturn)
       return;
   }
   drawerDestroy(dock);

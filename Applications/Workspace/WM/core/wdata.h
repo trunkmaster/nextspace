@@ -24,7 +24,7 @@
 
 #include "util.h"
 
-typedef struct W_Data WMData;
+typedef struct WMData WMData;
 
 typedef void WMFreeDataProc(void *data);
 typedef int WMCompareDataProc(const void *item1, const void *item2);

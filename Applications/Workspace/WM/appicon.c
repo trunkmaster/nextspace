@@ -540,7 +540,7 @@ static void killCallback(WMenu * menu, WMenuEntry * entry)
   dispatch_async(workspace_q, ^{
       if (wPreferences.dont_confirm_kill
           || WSRunAlertPanel(_("Kill Application"),
-                             buffer, _("Keep Running"), _("Kill"), NULL) == WAPRAlternate) {
+                             buffer, _("Keep Running"), _("Kill"), NULL) == NSAlertAlternateReturn) {
         if (fPtr != NULL) {
           WWindow *wwin, *twin;
 

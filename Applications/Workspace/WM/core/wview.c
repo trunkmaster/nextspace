@@ -71,9 +71,9 @@ static const XSetWindowAttributes defAtts = {
 
 static XContext ViewContext = 0;	/* context for views */
 
-W_View *W_GetViewForXWindow(Display *display, Window window)
+WMView *WMGetViewForXWindow(Display *display, Window window)
 {
-  W_View *view;
+  WMView *view;
 
   if (XFindContext(display, window, ViewContext, (XPointer *) & view) == 0) {
     return view;
@@ -81,11 +81,11 @@ W_View *W_GetViewForXWindow(Display *display, Window window)
   return NULL;
 }
 
-static void unparentView(W_View *view)
+static void unparentView(WMView *view)
 {
   /* remove from parent's children list */
   if (view->parent != NULL) {
-    W_View *ptr;
+    WMView *ptr;
 
     ptr = view->parent->childrenList;
     if (ptr == view) {
@@ -103,7 +103,7 @@ static void unparentView(W_View *view)
   view->parent = NULL;
 }
 
-static void adoptChildView(W_View *view, W_View *child)
+static void adoptChildView(WMView *view, WMView *child)
 {
   child->nextSister = NULL;
 
@@ -111,7 +111,7 @@ static void adoptChildView(W_View *view, W_View *child)
   if (view->childrenList == NULL) {
     view->childrenList = child;
   } else {
-    W_View *ptr;
+    WMView *ptr;
 
     ptr = view->childrenList;
     while (ptr->nextSister != NULL)
@@ -126,14 +126,14 @@ static void freeHandler(CFAllocatorRef allocator, const void *item)
   wfree((void *)item);
 }
 
-static W_View *createView(W_Screen *screen, W_View *parent)
+static WMView *createView(WMScreen *screen, WMView *parent)
 {
-  W_View *view;
+  WMView *view;
 
   if (ViewContext == 0)
     ViewContext = XUniqueContext();
 
-  view = wmalloc(sizeof(W_View));
+  view = wmalloc(sizeof(WMView));
   view->screen = screen;
 
   if (parent != NULL) {
@@ -143,8 +143,8 @@ static W_View *createView(W_Screen *screen, W_View *parent)
 
     view->attribFlags |= CWBackPixel | CWColormap | CWBorderPixel | CWBackPixmap;
     view->attribs.background_pixmap = None;
-    view->attribs.background_pixel = W_PIXEL(screen->gray);
-    view->attribs.border_pixel = W_PIXEL(screen->black);
+    view->attribs.background_pixel = WMPIXEL(screen->gray);
+    view->attribs.border_pixel = WMPIXEL(screen->black);
     view->attribs.colormap = screen->colormap;
 
     view->backColor = WMRetainColor(screen->gray);
@@ -162,14 +162,14 @@ static W_View *createView(W_Screen *screen, W_View *parent)
   return view;
 }
 
-W_View *W_CreateView(W_View *parent)
+WMView *WMCreateView(WMView *parent)
 {
   return createView(parent->screen, parent);
 }
 
-W_View *W_CreateRootView(W_Screen *screen)
+WMView *WMCreateRootView(WMScreen *screen)
 {
-  W_View *view;
+  WMView *view;
 
   view = createView(screen, NULL);
 
@@ -185,9 +185,9 @@ W_View *W_CreateRootView(W_Screen *screen)
   return view;
 }
 
-W_View *W_CreateTopView(W_Screen *screen)
+WMView *WMCreateTopView(WMScreen *screen)
 {
-  W_View *view;
+  WMView *view;
 
   view = createView(screen, screen->rootView);
   if (!view)
@@ -199,9 +199,9 @@ W_View *W_CreateTopView(W_Screen *screen)
   return view;
 }
 
-W_View *W_CreateUnmanagedTopView(W_Screen *screen)
+WMView *WMCreateUnmanagedTopView(WMScreen *screen)
 {
-  W_View *view;
+  WMView *view;
 
   view = createView(screen, screen->rootView);
   if (!view)
@@ -216,11 +216,11 @@ W_View *W_CreateUnmanagedTopView(W_Screen *screen)
   return view;
 }
 
-void W_RealizeView(W_View *view)
+void WMRealizeView(WMView *view)
 {
   Window parentWID;
   Display *dpy = view->screen->display;
-  W_View *ptr;
+  WMView *ptr;
 
   assert(view->size.width > 0);
   assert(view->size.height > 0);
@@ -248,7 +248,7 @@ void W_RealizeView(W_View *view)
     view->flags.realized = 1;
 
     if (view->flags.mapWhenRealized) {
-      W_MapView(view);
+      WMMapView(view);
       view->flags.mapWhenRealized = 0;
     }
 
@@ -259,13 +259,13 @@ void W_RealizeView(W_View *view)
   /* realize children */
   ptr = view->childrenList;
   while (ptr != NULL) {
-    W_RealizeView(ptr);
+    WMRealizeView(ptr);
 
     ptr = ptr->nextSister;
   }
 }
 
-void W_ReparentView(W_View *view, W_View *newParent, int x, int y)
+void WMReparentView(WMView *view, WMView *newParent, int x, int y)
 {
   Display *dpy = view->screen->display;
 
@@ -287,19 +287,19 @@ void W_ReparentView(W_View *view, W_View *newParent, int x, int y)
   view->pos.y = y;
 }
 
-void W_RaiseView(W_View *view)
+void WMRaiseView(WMView *view)
 {
-  if (W_VIEW_REALIZED(view))
-    XRaiseWindow(W_VIEW_DISPLAY(view), W_VIEW_DRAWABLE(view));
+  if (WMVIEW_REALIZED(view))
+    XRaiseWindow(WMVIEW_DISPLAY(view), WMVIEW_DRAWABLE(view));
 }
 
-void W_LowerView(W_View *view)
+void WMLowerView(WMView *view)
 {
-  if (W_VIEW_REALIZED(view))
-    XLowerWindow(W_VIEW_DISPLAY(view), W_VIEW_DRAWABLE(view));
+  if (WMVIEW_REALIZED(view))
+    XLowerWindow(WMVIEW_DISPLAY(view), WMVIEW_DRAWABLE(view));
 }
 
-void W_MapView(W_View *view)
+void WMMapView(WMView *view)
 {
   if (!view->flags.mapped) {
     if (view->flags.realized) {
@@ -313,10 +313,10 @@ void W_MapView(W_View *view)
 }
 
 /*
- *W_MapSubviews-
+ *WMMapSubviews-
  *    maps all children of the current view that where already realized.
  */
-void W_MapSubviews(W_View *view)
+void WMMapSubviews(WMView *view)
 {
   XMapSubwindows(view->screen->display, view->window);
   XFlush(view->screen->display);
@@ -329,7 +329,7 @@ void W_MapSubviews(W_View *view)
   }
 }
 
-void W_UnmapSubviews(W_View *view)
+void WMUnmapSubviews(WMView *view)
 {
   XUnmapSubwindows(view->screen->display, view->window);
   XFlush(view->screen->display);
@@ -342,7 +342,7 @@ void W_UnmapSubviews(W_View *view)
   }
 }
 
-void W_UnmapView(W_View *view)
+void WMUnmapView(WMView *view)
 {
   view->flags.mapWhenRealized = 0;
   if (!view->flags.mapped)
@@ -354,18 +354,18 @@ void W_UnmapView(W_View *view)
   view->flags.mapped = 0;
 }
 
-W_View *W_TopLevelOfView(W_View *view)
+WMView *WMTopLevelOfView(WMView *view)
 {
-  W_View *toplevel;
+  WMView *toplevel;
 
   for (toplevel = view; toplevel && !toplevel->flags.topLevel; toplevel = toplevel->parent) ;
 
   return toplevel;
 }
 
-static void destroyView(W_View *view)
+static void destroyView(WMView *view)
 {
-  W_View *ptr;
+  WMView *ptr;
 
   if (view->flags.alreadyDead)
     return;
@@ -380,11 +380,11 @@ static void destroyView(W_View *view)
     view->prevFocusChain->nextFocusChain = view->nextFocusChain;
 
   /* Do not leave focus in a inexisting control */
-  if (W_FocusedViewOfToplevel(W_TopLevelOfView(view)) == view)
-    W_SetFocusOfTopLevel(W_TopLevelOfView(view), NULL);
+  if (WMFocusedViewOfToplevel(WMTopLevelOfView(view)) == view)
+    WMSetFocusOfTopLevel(WMTopLevelOfView(view), NULL);
 
   if (view->flags.topLevel) {
-    W_FocusInfo *info = view->screen->focusInfo;
+    WMFocusInfo *info = view->screen->focusInfo;
     /* remove focus information associated to this toplevel */
 
     if (info) {
@@ -398,7 +398,7 @@ static void destroyView(W_View *view)
           info = info->next;
         }
         if (info->next) {
-          W_FocusInfo *next = info->next->next;
+          WMFocusInfo *next = info->next->next;
           wfree(info->next);
           info->next = next;
         }
@@ -412,7 +412,7 @@ static void destroyView(W_View *view)
     ptr = view->childrenList;
     ptr->flags.parentDying = 1;
 
-    W_DestroyView(ptr);
+    WMDestroyView(ptr);
 
     if (ptr == view->childrenList) {
       view->childrenList = ptr->nextSister;
@@ -420,7 +420,7 @@ static void destroyView(W_View *view)
     }
   }
 
-  W_CallDestroyHandlers(view);
+  WMCallDestroyHandlers(view);
 
   if (view->flags.realized) {
     XDeleteContext(view->screen->display, view->window, ViewContext);
@@ -439,7 +439,7 @@ static void destroyView(W_View *view)
 
   CFNotificationCenterRemoveEveryObserver(CFNotificationCenterGetLocalCenter(), view);
 
-  W_FreeViewXdndPart(view);
+  WMFreeViewXdndPart(view);
 
   if (view->backColor)
     WMReleaseColor(view->backColor);
@@ -447,7 +447,7 @@ static void destroyView(W_View *view)
   wfree(view);
 }
 
-void W_DestroyView(W_View *view)
+void WMDestroyView(WMView *view)
 {
   view->refCount--;
 
@@ -456,7 +456,7 @@ void W_DestroyView(W_View *view)
   }
 }
 
-void W_MoveView(W_View *view, int x, int y)
+void WMMoveView(WMView *view, int x, int y)
 {
   assert(view->flags.root == 0);
 
@@ -478,7 +478,7 @@ void W_MoveView(W_View *view, int x, int y)
   }
 }
 
-void W_ResizeView(W_View *view, unsigned int width, unsigned int height)
+void WMResizeView(WMView *view, unsigned int width, unsigned int height)
 {
   /*int shrinked; */
 
@@ -510,7 +510,7 @@ void W_ResizeView(W_View *view, unsigned int width, unsigned int height)
                                          WMViewSizeDidChangeNotification, view, NULL, TRUE);
 }
 
-void W_RedisplayView(W_View *view)
+void WMRedisplayView(WMView *view)
 {
   XEvent ev;
 
@@ -527,21 +527,21 @@ void W_RedisplayView(W_View *view)
   WMHandleEvent(&ev);
 }
 
-void W_SetViewBackgroundColor(W_View *view, WMColor *color)
+void WMSetViewBackgroundColor(WMView *view, WMColor *color)
 {
   if (view->backColor)
     WMReleaseColor(view->backColor);
   view->backColor = WMRetainColor(color);
 
   view->attribFlags |= CWBackPixel;
-  view->attribs.background_pixel = W_PIXEL(color);
+  view->attribs.background_pixel = WMPIXEL(color);
   if (view->flags.realized) {
-    XSetWindowBackground(view->screen->display, view->window, W_PIXEL(color));
+    XSetWindowBackground(view->screen->display, view->window, WMPIXEL(color));
     XClearWindow(view->screen->display, view->window);
   }
 }
 
-void W_SetViewBackgroundPixmap(W_View *view, WMPixmap *pix)
+void WMSetViewBackgroundPixmap(WMView *view, WMPixmap *pix)
 {
   if (view->backImage)
     WMReleasePixmap(view->backImage);
@@ -555,21 +555,21 @@ void W_SetViewBackgroundPixmap(W_View *view, WMPixmap *pix)
   }
 }
 
-void W_SetViewCursor(W_View *view, Cursor cursor)
+void WMSetViewCursor(WMView *view, Cursor cursor)
 {
   view->cursor = cursor;
-  if (W_VIEW_REALIZED(view)) {
-    XDefineCursor(W_VIEW_DISPLAY(view), W_VIEW_DRAWABLE(view), cursor);
+  if (WMVIEW_REALIZED(view)) {
+    XDefineCursor(WMVIEW_DISPLAY(view), WMVIEW_DRAWABLE(view), cursor);
   } else {
     view->attribFlags |= CWCursor;
     view->attribs.cursor = cursor;
   }
 }
 
-W_View *W_FocusedViewOfToplevel(W_View *view)
+WMView *WMFocusedViewOfToplevel(WMView *view)
 {
   WMScreen *scr = view->screen;
-  W_FocusInfo *info;
+  WMFocusInfo *info;
 
   for (info = scr->focusInfo; info != NULL; info = info->next)
     if (view == info->toplevel)
@@ -581,18 +581,18 @@ W_View *W_FocusedViewOfToplevel(W_View *view)
   return info->focused;
 }
 
-void W_SetFocusOfTopLevel(W_View *toplevel, W_View *view)
+void WMSetFocusOfTopLevel(WMView *toplevel, WMView *view)
 {
   WMScreen *scr = toplevel->screen;
   XEvent event;
-  W_FocusInfo *info;
+  WMFocusInfo *info;
 
   for (info = scr->focusInfo; info != NULL; info = info->next)
     if (toplevel == info->toplevel)
       break;
 
   if (!info) {
-    info = wmalloc(sizeof(W_FocusInfo));
+    info = wmalloc(sizeof(WMFocusInfo));
     info->toplevel = toplevel;
     info->focused = view;
     info->next = scr->focusInfo;
@@ -603,30 +603,30 @@ void W_SetFocusOfTopLevel(W_View *toplevel, W_View *view)
     if (info->focused) {
       /* simulate FocusOut event */
       event.xfocus.type = FocusOut;
-      W_DispatchMessage(info->focused, &event);
+      WMDispatchMessage(info->focused, &event);
     }
     info->focused = view;
   }
   if (view) {
     /* simulate FocusIn event */
     event.xfocus.type = FocusIn;
-    W_DispatchMessage(view, &event);
+    WMDispatchMessage(view, &event);
   }
 }
 
-void W_BroadcastMessage(W_View *targetParent, XEvent *event)
+void WMBroadcastMessage(WMView *targetParent, XEvent *event)
 {
-  W_View *target;
+  WMView *target;
 
   target = targetParent->childrenList;
   while (target != NULL) {
-    W_DispatchMessage(target, event);
+    WMDispatchMessage(target, event);
 
     target = target->nextSister;
   }
 }
 
-void W_DispatchMessage(W_View *target, XEvent *event)
+void WMDispatchMessage(WMView *target, XEvent *event)
 {
   if (target->window == None)
     return;
@@ -640,14 +640,14 @@ void W_DispatchMessage(W_View *target, XEvent *event)
   */
 }
 
-WMView *W_RetainView(WMView *view)
+WMView *WMRetainView(WMView *view)
 {
   view->refCount++;
 
   return view;
 }
 
-void W_ReleaseView(WMView *view)
+void WMReleaseView(WMView *view)
 {
   view->refCount--;
 
@@ -683,7 +683,7 @@ Window WMViewXID(WMView *view)
 
 WMPoint WMGetViewScreenPosition(WMView *view)
 {
-  WMScreen *scr = W_VIEW_SCREEN(view);
+  WMScreen *scr = WMVIEW_SCREEN(view);
   Window foo;
   int x, y, topX, topY;
   unsigned int bar;
@@ -693,11 +693,11 @@ WMPoint WMGetViewScreenPosition(WMView *view)
   while (topView->parent && topView->parent != scr->rootView)
     topView = topView->parent;
 
-  if (!XGetGeometry(scr->display, W_VIEW_DRAWABLE(topView), &foo, &topX, &topY, &bar, &bar, &bar, &bar)) {
+  if (!XGetGeometry(scr->display, WMVIEW_DRAWABLE(topView), &foo, &topX, &topY, &bar, &bar, &bar, &bar)) {
     topX = topY = 0;
   }
 
-  XTranslateCoordinates(scr->display, W_VIEW_DRAWABLE(view), scr->rootWin, 0, 0, &x, &y, &foo);
+  XTranslateCoordinates(scr->display, WMVIEW_DRAWABLE(view), scr->rootWin, 0, 0, &x, &y, &foo);
 
   return WMMakePoint(x - topX, y - topY);
 }
@@ -712,8 +712,8 @@ static void resizedParent(CFNotificationCenterRef center,
   WMSize size = WMGetViewSize((WMView *)parentView);
   WMView *view = (WMView *)observedView;
 
-  W_MoveView(view, view->leftOffs, view->topOffs);
-  W_ResizeView(view, size.width - (view->leftOffs + view->rightOffs),
+  WMMoveView(view, view->leftOffs, view->topOffs);
+  WMResizeView(view, size.width - (view->leftOffs + view->rightOffs),
                size.height - (view->topOffs + view->bottomOffs));
 }
 
@@ -731,6 +731,6 @@ void WMSetViewExpandsToParent(WMView *view, int leftOffs, int topOffs, int right
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
   WMSetViewNotifySizeChanges(view->parent, True);
 
-  W_MoveView(view, leftOffs, topOffs);
-  W_ResizeView(view, size.width - (leftOffs + rightOffs), size.height - (topOffs + bottomOffs));
+  WMMoveView(view, leftOffs, topOffs);
+  WMResizeView(view, size.width - (leftOffs + rightOffs), size.height - (topOffs + bottomOffs));
 }

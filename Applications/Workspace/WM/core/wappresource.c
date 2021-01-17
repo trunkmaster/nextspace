@@ -39,6 +39,17 @@
 
 #include "GNUstep.h"
 
+typedef struct _WMApplication {
+  char *applicationName;
+  int  argc;
+  char **argv;
+  char *resourcePath;
+} _WMApplication;
+
+struct _WMApplication WMApplication;
+
+char *_WINGS_progname = NULL;
+
 void WMSetApplicationIconWindow(WMScreen *scr, Window window)
 {
   scr->applicationIconWindow = window;
@@ -135,7 +146,7 @@ void WMSetApplicationHasAppIcon(WMScreen *scr, Bool flag)
   scr->aflags.hasAppIcon = ((flag == 0) ? 0 : 1);
 }
 
-void W_InitApplication(WMScreen *scr)
+void WMInitApplication(WMScreen *scr)
 {
   Window leader;
   XClassHint *classHint;
@@ -180,11 +191,7 @@ void W_InitApplication(WMScreen *scr)
 
 //-------------------------------------
 
-struct W_Application WMApplication;
-
-char *_WINGS_progname = NULL;
-
-Bool W_ApplicationInitialized(void)
+Bool WMApplicationInitialized(void)
 {
   return _WINGS_progname != NULL;
 }

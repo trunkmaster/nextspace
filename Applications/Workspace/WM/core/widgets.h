@@ -32,7 +32,7 @@
 #include "wview.h"
 #include "wcolor.h"
 
-typedef int W_Class;
+typedef int WMClass;
 
 enum {
     WC_Window = 0,
@@ -59,25 +59,25 @@ enum {
 
 /* All widgets must start with the following structure
  * in that order. Used for typecasting to get some generic data */
-typedef struct W_WidgetType {
-    W_Class widgetClass;
-    struct W_View *view;
+typedef struct WMWidgetType {
+    WMClass widgetClass;
+    struct WMView *view;
 
-} W_WidgetType;
+} WMWidgetType;
 
-#define WMWidgetClass(widget)  	(((W_WidgetType*)(widget))->widgetClass)
-#define WMWidgetView(widget)   	(((W_WidgetType*)(widget))->view)
+#define WMWidgetClass(widget)  	(((WMWidgetType*)(widget))->widgetClass)
+#define WMWidgetView(widget)   	(((WMWidgetType*)(widget))->view)
 
 #define WC_UserWidget	128
 
-#define CHECK_CLASS(widget, class) assert(W_CLASS(widget)==(class))
+#define CHECK_CLASS(widget, class) assert(WMCLASS(widget)==(class))
 
-#define W_CLASS(widget)  	(((W_WidgetType*)(widget))->widgetClass)
-#define W_VIEW(widget)   	(((W_WidgetType*)(widget))->view)
+#define WMCLASS(widget)  	(((WMWidgetType*)(widget))->widgetClass)
+#define WMVIEW(widget)   	(((WMWidgetType*)(widget))->view)
 
 /* -- Functions -- */
 
-W_Class W_RegisterUserWidget(void);
+WMClass WMRegisterUserWidget(void);
 
 WMScreen* WMOpenScreen(const char *display);
 

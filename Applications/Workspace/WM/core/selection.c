@@ -73,8 +73,8 @@ static Bool gotXError = False;
 void WMDeleteSelectionHandler(WMView *view, Atom selection, Time timestamp)
 {
   SelectionHandler *handler;
-  Display *dpy = W_VIEW_SCREEN(view)->display;
-  Window win = W_VIEW_DRAWABLE(view);
+  Display *dpy = WMVIEW_SCREEN(view)->display;
+  Window win = WMVIEW_DRAWABLE(view);
 
   if (!selHandlers)
     return;
@@ -196,7 +196,7 @@ static void handleRequestEvent(XEvent *event)
 
     switch (event->type) {
     case SelectionClear:
-      if (W_VIEW_DRAWABLE(handler->view)
+      if (WMVIEW_DRAWABLE(handler->view)
           != event->xselectionclear.window) {
         break;
       }
@@ -209,7 +209,7 @@ static void handleRequestEvent(XEvent *event)
       break;
 
     case SelectionRequest:
-      if (W_VIEW_DRAWABLE(handler->view) != event->xselectionrequest.owner) {
+      if (WMVIEW_DRAWABLE(handler->view) != event->xselectionrequest.owner) {
         break;
       }
 
@@ -304,7 +304,7 @@ static void handleNotifyEvent(XEvent *event)
   for (int i = 0; i < CFArrayGetCount(selCallbacks); i++) {
     handler = (SelectionCallback *)CFArrayGetValueAtIndex(selCallbacks, i);
 
-    if (W_VIEW_DRAWABLE(handler->view) != event->xselection.requestor
+    if (WMVIEW_DRAWABLE(handler->view) != event->xselection.requestor
         || handler->selection != event->xselection.selection) {
       continue;
     }
@@ -367,14 +367,14 @@ static void freeArrayItemCallback(CFAllocatorRef allocator, const void *item)
 Bool WMCreateSelectionHandler(WMView *view, Atom selection, Time timestamp, WMSelectionProcs *procs, void *cdata)
 {
   SelectionHandler *handler;
-  Display *dpy = W_VIEW_SCREEN(view)->display;
+  Display *dpy = WMVIEW_SCREEN(view)->display;
 
-  XSetSelectionOwner(dpy, selection, W_VIEW_DRAWABLE(view), timestamp);
-  if (XGetSelectionOwner(dpy, selection) != W_VIEW_DRAWABLE(view)) {
+  XSetSelectionOwner(dpy, selection, WMVIEW_DRAWABLE(view), timestamp);
+  if (XGetSelectionOwner(dpy, selection) != WMVIEW_DRAWABLE(view)) {
     return False;
   }
 
-  /*//printf("created selection handler for %d\n", W_VIEW_DRAWABLE(view)); */
+  /*//printf("created selection handler for %d\n", WMVIEW_DRAWABLE(view)); */
 
   handler = wmalloc(sizeof(SelectionHandler));
   handler->view = view;
@@ -400,11 +400,11 @@ WMRequestSelection(WMView *view, Atom selection, Atom target, Time timestamp,
 {
   SelectionCallback *handler;
 
-  if (XGetSelectionOwner(W_VIEW_SCREEN(view)->display, selection) == None)
+  if (XGetSelectionOwner(WMVIEW_SCREEN(view)->display, selection) == None)
     return False;
 
-  if (!XConvertSelection(W_VIEW_SCREEN(view)->display, selection, target,
-                         W_VIEW_SCREEN(view)->clipboardAtom, W_VIEW_DRAWABLE(view), timestamp)) {
+  if (!XConvertSelection(WMVIEW_SCREEN(view)->display, selection, target,
+                         WMVIEW_SCREEN(view)->clipboardAtom, WMVIEW_DRAWABLE(view), timestamp)) {
     return False;
   }
 

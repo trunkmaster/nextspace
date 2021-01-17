@@ -40,20 +40,20 @@
 #define DEFAULT_RELIEF		WRFlat
 #define DEFAULT_IMAGE_POSITION	WIPNoImage
 
-static void destroyLabel(W_Label *lPtr);
-static void paintLabel(W_Label *lPtr);
+static void destroyLabel(WMLabel *lPtr);
+static void paintLabel(WMLabel *lPtr);
 
 static void handleEvents(XEvent *event, void *data);
 
 WMLabel *WMCreateLabel(WMWidget *parent)
 {
-  W_Label *lPtr;
+  WMLabel *lPtr;
 
-  lPtr = wmalloc(sizeof(W_Label));
+  lPtr = wmalloc(sizeof(WMLabel));
 
   lPtr->widgetClass = WC_Label;
 
-  lPtr->view = W_CreateView(W_VIEW(parent));
+  lPtr->view = WMCreateView(WMVIEW(parent));
   if (!lPtr->view) {
     wfree(lPtr);
     return NULL;
@@ -64,7 +64,7 @@ WMLabel *WMCreateLabel(WMWidget *parent)
 
   WMCreateEventHandler(lPtr->view, ExposureMask | StructureNotifyMask, handleEvents, lPtr);
 
-  W_ResizeView(lPtr->view, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+  WMResizeView(lPtr->view, DEFAULT_WIDTH, DEFAULT_HEIGHT);
   lPtr->flags.alignment = DEFAULT_ALIGNMENT;
   lPtr->flags.relief = DEFAULT_RELIEF;
   lPtr->flags.imagePosition = DEFAULT_IMAGE_POSITION;
@@ -177,9 +177,9 @@ void WMSetLabelWraps(WMLabel *lPtr, Bool flag)
   }
 }
 
-static void paintLabel(W_Label *lPtr)
+static void paintLabel(WMLabel *lPtr)
 {
-  W_Screen *scrPtr = lPtr->view->screen;
+  WMScreen *scrPtr = lPtr->view->screen;
 
   WMPaintTextAndImage(lPtr->view, !lPtr->flags.noWrap,
                       lPtr->textColor ? lPtr->textColor : scrPtr->black,
@@ -190,7 +190,7 @@ static void paintLabel(W_Label *lPtr)
 
 static void handleEvents(XEvent *event, void *data)
 {
-  W_Label *lPtr = (W_Label *) data;
+  WMLabel *lPtr = (WMLabel *) data;
 
   CHECK_CLASS(data, WC_Label);
 
@@ -207,7 +207,7 @@ static void handleEvents(XEvent *event, void *data)
   }
 }
 
-static void destroyLabel(W_Label *lPtr)
+static void destroyLabel(WMLabel *lPtr)
 {
   if (lPtr->textColor)
     WMReleaseColor(lPtr->textColor);

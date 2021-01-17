@@ -75,7 +75,7 @@ static void *dropAllowedState(WMView *srcView, XClientMessageEvent *event, WMDra
 static void *finishDropState(WMView *srcView, XClientMessageEvent *event, WMDraggingInfo *info);
 
 #ifdef XDND_DEBUG
-static const char *stateName(W_DndState *state)
+static const char *stateName(WMDndState *state)
 {
   if (state == NULL)
     return "no state defined";
@@ -95,13 +95,13 @@ static const char *stateName(W_DndState *state)
 
 static WMScreen *sourceScreen(WMDraggingInfo *info)
 {
-  return W_VIEW_SCREEN(XDND_SOURCE_VIEW(info));
+  return WMVIEW_SCREEN(XDND_SOURCE_VIEW(info));
 }
 
 static void endDragProcess(WMDraggingInfo *info, Bool deposited)
 {
   WMView *view = XDND_SOURCE_VIEW(info);
-  WMScreen *scr = W_VIEW_SCREEN(XDND_SOURCE_VIEW(info));
+  WMScreen *scr = WMVIEW_SCREEN(XDND_SOURCE_VIEW(info));
 
   /* free selection handler while view exists */
   WMDeleteSelectionHandler(view, scr->xdndSelectionAtom, CurrentTime);
@@ -170,7 +170,7 @@ static WMData *convertSelection(WMView *view, Atom selection, Atom target, void 
   (void) selection;
   (void) cdata;
 
-  scr = W_VIEW_SCREEN(view);
+  scr = WMVIEW_SCREEN(view);
   typeName = XGetAtomName(scr->display, target);
 
   *type = target;
@@ -303,8 +303,8 @@ static void initDragImagePos(WMView *view, WMDraggingInfo *info, XEvent *event)
   WMPoint viewPos;
   Window foo;
 
-  XTranslateCoordinates(W_VIEW_SCREEN(view)->display,
-                        WMViewXID(view), W_VIEW_SCREEN(view)->rootWin,
+  XTranslateCoordinates(WMVIEW_SCREEN(view)->display,
+                        WMViewXID(view), WMVIEW_SCREEN(view)->rootWin,
                         0, 0, &(viewPos.x), &(viewPos.y), &foo);
 
   /* set icon pos */
@@ -321,14 +321,14 @@ static void initDragImagePos(WMView *view, WMDraggingInfo *info, XEvent *event)
 
 static void refreshDragImage(WMView *view, WMDraggingInfo *info)
 {
-  WMScreen *scr = W_VIEW_SCREEN(view);
+  WMScreen *scr = WMVIEW_SCREEN(view);
 
   XMoveWindow(scr->display, XDND_DRAG_ICON(info), XDND_DRAG_ICON_POS(info).x, XDND_DRAG_ICON_POS(info).y);
 }
 
 static void startDragImage(WMView *view, WMDraggingInfo *info, XEvent *event)
 {
-  WMScreen *scr = W_VIEW_SCREEN(view);
+  WMScreen *scr = WMVIEW_SCREEN(view);
 
   XDND_DRAG_ICON(info) = makeDragIcon(scr, view->dragImage);
   initDragImagePos(view, info, event);
@@ -341,14 +341,14 @@ static void startDragImage(WMView *view, WMDraggingInfo *info, XEvent *event)
 static void endDragImage(WMDraggingInfo *info, Bool slideBack)
 {
   WMView *view = XDND_SOURCE_VIEW(info);
-  Display *dpy = W_VIEW_SCREEN(view)->display;
+  Display *dpy = WMVIEW_SCREEN(view)->display;
 
   if (slideBack) {
     WMPoint toLocation;
     Window foo;
 
-    XTranslateCoordinates(W_VIEW_SCREEN(view)->display,
-                          WMViewXID(view), W_VIEW_SCREEN(view)->rootWin,
+    XTranslateCoordinates(WMVIEW_SCREEN(view)->display,
+                          WMViewXID(view), WMVIEW_SCREEN(view)->rootWin,
                           0, 0, &(toLocation.x), &(toLocation.y), &foo);
 
     slideWindow(dpy, XDND_DRAG_ICON(info),
@@ -371,7 +371,7 @@ sendDnDClientMessage(WMDraggingInfo *info, Atom message,
   Window srcWin = WMViewXID(XDND_SOURCE_VIEW(info));
   Window destWin = XDND_DEST_WIN(info);
 
-  if (!W_SendDnDClientMessage(dpy, destWin, message, srcWin, data1, data2, data3, data4)) {
+  if (!WMSendDnDClientMessage(dpy, destWin, message, srcWin, data1, data2, data3, data4)) {
     /* drop failed */
     recolorCursor(info, False);
     endDragImage(info, True);
@@ -505,7 +505,7 @@ static void registerOperationList(WMScreen *scr, WMView *view, CFMutableArrayRef
 
   for (i = 0; i < count; i++) {
     operation = WMGetDragOperationItemType((WMDragOperationItem *)CFArrayGetValueAtIndex(operationArray, i));
-    actionList[i] = W_OperationToAction(scr, operation);
+    actionList[i] = WMOperationToAction(scr, operation);
   }
 
   XChangeProperty(scr->display,
@@ -548,7 +548,7 @@ static void registerDescriptionList(WMScreen *scr, WMView *view, CFArrayRef oper
 /* called if wanted operation is WDOperationAsk */
 static void registerSupportedOperations(WMView *view)
 {
-  WMScreen *scr = W_VIEW_SCREEN(view);
+  WMScreen *scr = WMVIEW_SCREEN(view);
   CFMutableArrayRef operationArray;
 
   operationArray = view->dragSourceProcs->askedOperations(view);
@@ -563,13 +563,13 @@ static void initSourceDragInfo(WMView *sourceView, WMDraggingInfo *info)
 {
   WMRect emptyZone;
 
-  XDND_SOURCE_INFO(info) = (W_DragSourceInfo *) wmalloc(sizeof(W_DragSourceInfo));
+  XDND_SOURCE_INFO(info) = (WMDragSourceInfo *) wmalloc(sizeof(WMDragSourceInfo));
 
   XDND_SOURCE_VIEW(info) = sourceView;
   XDND_DEST_WIN(info) = None;
   XDND_DRAG_ICON(info) = None;
 
-  XDND_SOURCE_ACTION(info) = W_OperationToAction(W_VIEW_SCREEN(sourceView),
+  XDND_SOURCE_ACTION(info) = WMOperationToAction(WMVIEW_SCREEN(sourceView),
                                                  sourceView->dragSourceProcs->
                                                  wantedDropOperation(sourceView));
 
@@ -777,7 +777,7 @@ static void storeDestinationProtocolVersion(WMDraggingInfo *info)
   int format;
   unsigned long count, remain;
   unsigned char *winXdndVersion;
-  WMScreen *scr = W_VIEW_SCREEN(XDND_SOURCE_VIEW(info));
+  WMScreen *scr = WMVIEW_SCREEN(XDND_SOURCE_VIEW(info));
 
   wassertr(XDND_DEST_WIN(info) != None);
 
@@ -795,7 +795,7 @@ static void storeDestinationProtocolVersion(WMDraggingInfo *info)
 
 static void initMotionProcess(WMView *view, WMDraggingInfo *info, XEvent *event, WMPoint *startLocation)
 {
-  WMScreen *scr = W_VIEW_SCREEN(view);
+  WMScreen *scr = WMVIEW_SCREEN(view);
 
   /* take ownership of XdndSelection */
   XDND_SELECTION_PROCS(info) = (WMSelectionProcs *) wmalloc(sizeof(WMSelectionProcs));
@@ -811,7 +811,7 @@ static void initMotionProcess(WMView *view, WMDraggingInfo *info, XEvent *event,
 
   registerDropTypes(scr, view, info);
 
-  if (XDND_SOURCE_ACTION(info) == W_VIEW_SCREEN(view)->xdndActionAsk)
+  if (XDND_SOURCE_ACTION(info) == WMVIEW_SCREEN(view)->xdndActionAsk)
     registerSupportedOperations(view);
 
   if (view->dragSourceProcs->beganDrag != NULL) {
@@ -823,7 +823,7 @@ static void processMotion(WMDraggingInfo *info, WMPoint *mousePos)
 {
   Window newDestination = findDestination(info, mousePos);
 
-  W_DragSourceStopTimer();
+  WMDragSourceStopTimer();
 
   if (newDestination != XDND_DEST_WIN(info)) {
     recolorCursor(info, False);
@@ -848,7 +848,7 @@ static void processMotion(WMDraggingInfo *info, WMPoint *mousePos)
         return;
       }
 
-      W_DragSourceStartTimer(info);
+      WMDragSourceStartTimer(info);
     } else {
       XDND_SOURCE_STATE(info) = NULL;
     }
@@ -859,7 +859,7 @@ static void processMotion(WMDraggingInfo *info, WMPoint *mousePos)
         return;
       }
 
-      W_DragSourceStartTimer(info);
+      WMDragSourceStartTimer(info);
     }
   }
 }
@@ -868,33 +868,33 @@ static Bool processButtonRelease(WMDraggingInfo *info)
 {
   if (XDND_SOURCE_STATE(info) == dropAllowedState) {
     /* begin drop */
-    W_DragSourceStopTimer();
+    WMDragSourceStopTimer();
 
     if (!sendDropMessage(info))
       return False;
 
-    W_DragSourceStartTimer(info);
+    WMDragSourceStartTimer(info);
     return True;
   } else {
     if (XDND_DEST_WIN(info) != None)
       sendLeaveMessage(info);
 
-    W_DragSourceStopTimer();
+    WMDragSourceStopTimer();
     return False;
   }
 }
 
 Bool WMIsDraggingFromView(WMView *view)
 {
-  WMDraggingInfo *info = W_VIEW_SCREEN(view)->dragInfo;
+  WMDraggingInfo *info = WMVIEW_SCREEN(view)->dragInfo;
 
   return (XDND_SOURCE_INFO(info) != NULL && XDND_SOURCE_STATE(info) != finishDropState);
-  /* return W_VIEW_SCREEN(view)->dragInfo.sourceInfo != NULL; */
+  /* return WMVIEW_SCREEN(view)->dragInfo.sourceInfo != NULL; */
 }
 
 void WMDragImageFromView(WMView *view, XEvent *event)
 {
-  WMDraggingInfo *info = W_VIEW_SCREEN(view)->dragInfo;
+  WMDraggingInfo *info = WMVIEW_SCREEN(view)->dragInfo;
   WMPoint mouseLocation;
 
   switch (event->type) {
@@ -989,11 +989,11 @@ static void traceStatusMsg(Display *dpy, XClientMessageEvent *statusEvent)
 static void storeDropAction(WMDraggingInfo *info, Atom destAction)
 {
   WMView *sourceView = XDND_SOURCE_VIEW(info);
-  WMScreen *scr = W_VIEW_SCREEN(sourceView);
+  WMScreen *scr = WMVIEW_SCREEN(sourceView);
 
   if (sourceView->dragSourceProcs->acceptDropOperation != NULL) {
     if (sourceView->dragSourceProcs->acceptDropOperation(sourceView,
-                                                         W_ActionToOperation(scr, destAction)))
+                                                         WMActionToOperation(scr, destAction)))
       XDND_DEST_ACTION(info) = destAction;
     else
       XDND_DEST_ACTION(info) = None;
@@ -1036,14 +1036,14 @@ static void *idleState(WMView *view, XClientMessageEvent *event, WMDraggingInfo 
   WMScreen *scr;
   Atom destMsg = event->message_type;
 
-  scr = W_VIEW_SCREEN(view);
+  scr = WMVIEW_SCREEN(view);
 
   if (destMsg == scr->xdndStatusAtom) {
     storeStatusMessageInfos(info, event);
 
     if (XDND_DEST_ACTION(info) != None) {
       recolorCursor(info, True);
-      W_DragSourceStartTimer(info);
+      WMDragSourceStartTimer(info);
       return dropAllowedState;
     } else {
       /* drop denied */
@@ -1056,13 +1056,13 @@ static void *idleState(WMView *view, XClientMessageEvent *event, WMDraggingInfo 
     WMLogWarning("received xdndFinishedAtom before drop began");
   }
 
-  W_DragSourceStartTimer(info);
+  WMDragSourceStartTimer(info);
   return idleState;
 }
 
 static void *dropAllowedState(WMView *view, XClientMessageEvent *event, WMDraggingInfo *info)
 {
-  WMScreen *scr = W_VIEW_SCREEN(view);
+  WMScreen *scr = WMVIEW_SCREEN(view);
   Atom destMsg = event->message_type;
 
   if (destMsg == scr->xdndStatusAtom) {
@@ -1075,13 +1075,13 @@ static void *dropAllowedState(WMView *view, XClientMessageEvent *event, WMDraggi
     }
   }
 
-  W_DragSourceStartTimer(info);
+  WMDragSourceStartTimer(info);
   return dropAllowedState;
 }
 
 static void *finishDropState(WMView *view, XClientMessageEvent *event, WMDraggingInfo *info)
 {
-  WMScreen *scr = W_VIEW_SCREEN(view);
+  WMScreen *scr = WMVIEW_SCREEN(view);
   Atom destMsg = event->message_type;
 
   if (destMsg == scr->xdndFinishedAtom) {
@@ -1089,7 +1089,7 @@ static void *finishDropState(WMView *view, XClientMessageEvent *event, WMDraggin
     return NULL;
   }
 
-  W_DragSourceStartTimer(info);
+  WMDragSourceStartTimer(info);
   return finishDropState;
 }
 
@@ -1099,7 +1099,7 @@ static void *finishDropState(WMView *view, XClientMessageEvent *event, WMDraggin
 static void dragSourceResponseTimeOut(CFRunLoopTimerRef timer, void *source)
 {
   WMView *view = (WMView *) source;
-  WMDraggingInfo *info = W_VIEW_SCREEN(view)->dragInfo;
+  WMDraggingInfo *info = WMVIEW_SCREEN(view)->dragInfo;
 
   WMLogWarning(_("delay for drag destination response expired"));
   sendLeaveMessage(info);
@@ -1114,7 +1114,7 @@ static void dragSourceResponseTimeOut(CFRunLoopTimerRef timer, void *source)
   }
 }
 
-void W_DragSourceStopTimer()
+void WMDragSourceStopTimer()
 {
   if (dndSourceTimer != NULL) {
     WMDeleteTimerHandler(dndSourceTimer);
@@ -1122,9 +1122,9 @@ void W_DragSourceStopTimer()
   }
 }
 
-void W_DragSourceStartTimer(WMDraggingInfo *info)
+void WMDragSourceStartTimer(WMDraggingInfo *info)
 {
-  W_DragSourceStopTimer();
+  WMDragSourceStopTimer();
 
   dndSourceTimer = WMAddTimerHandler(XDND_DESTINATION_RESPONSE_MAX_DELAY, 0,
                                      dragSourceResponseTimeOut, XDND_SOURCE_VIEW(info));
@@ -1132,10 +1132,10 @@ void W_DragSourceStartTimer(WMDraggingInfo *info)
 
 /* ----- End of Destination timer ----- */
 
-void W_DragSourceStateHandler(WMDraggingInfo *info, XClientMessageEvent *event)
+void WMDragSourceStateHandler(WMDraggingInfo *info, XClientMessageEvent *event)
 {
   WMView *view;
-  W_DndState *newState;
+  WMDndState *newState;
 
   if (XDND_SOURCE_VIEW_STORED(info)) {
     if (XDND_SOURCE_STATE(info) != NULL) {
@@ -1145,7 +1145,7 @@ void W_DragSourceStateHandler(WMDraggingInfo *info, XClientMessageEvent *event)
       printf("current source state: %s\n", stateName(XDND_SOURCE_STATE(info)));
 #endif
 
-      newState = (W_DndState *) XDND_SOURCE_STATE(info) (view, event, info);
+      newState = (WMDndState *) XDND_SOURCE_STATE(info) (view, event, info);
 
 #ifdef XDND_DEBUG
 

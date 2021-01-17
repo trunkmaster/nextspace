@@ -40,7 +40,7 @@
 
 static Bool _WindowExists;
 
-Atom W_OperationToAction(WMScreen *scr, WMDragOperationType operation)
+Atom WMOperationToAction(WMScreen *scr, WMDragOperationType operation)
 {
   switch (operation) {
   case WDOperationNone:
@@ -66,7 +66,7 @@ Atom W_OperationToAction(WMScreen *scr, WMDragOperationType operation)
   }
 }
 
-WMDragOperationType W_ActionToOperation(WMScreen *scr, Atom action)
+WMDragOperationType WMActionToOperation(WMScreen *scr, Atom action)
 {
   if (action == scr->xdndActionCopy) {
     return WDOperationCopy;
@@ -109,7 +109,7 @@ CFMutableArrayRef WMCreateDragOperationArray(int initialSize)
 
 WMDragOperationItem *WMCreateDragOperationItem(WMDragOperationType type, char *text)
 {
-  W_DragOperationItem *result = wmalloc(sizeof(W_DragOperationItem));
+  WMDragOperationItem *result = wmalloc(sizeof(WMDragOperationItem));
 
   result->type = type;
   result->text = text;
@@ -119,12 +119,12 @@ WMDragOperationItem *WMCreateDragOperationItem(WMDragOperationType type, char *t
 
 WMDragOperationType WMGetDragOperationItemType(WMDragOperationItem *item)
 {
-  return ((W_DragOperationItem *) item)->type;
+  return ((WMDragOperationItem *) item)->type;
 }
 
 char *WMGetDragOperationItemText(WMDragOperationItem *item)
 {
-  return ((W_DragOperationItem *) item)->text;
+  return ((WMDragOperationItem *) item)->text;
 }
 
 static int handleNoWindowXError(Display *dpy, XErrorEvent *errEvt)
@@ -158,7 +158,7 @@ static Bool windowExists(Display *dpy, Window win)
 }
 
 Bool
-W_SendDnDClientMessage(Display *dpy, Window win, Atom message,
+WMSendDnDClientMessage(Display *dpy, Window win, Atom message,
 		       unsigned long data0,
 		       unsigned long data1, unsigned long data2, unsigned long data3, unsigned long data4)
 {
@@ -203,13 +203,13 @@ static void handleLeaveMessage(WMDraggingInfo *info)
     if (XDND_DEST_VIEW(info)->dragDestinationProcs != NULL) {
       XDND_DEST_VIEW(info)->dragDestinationProcs->concludeDragOperation(XDND_DEST_VIEW(info));
     }
-    W_DragDestinationInfoClear(info);
+    WMDragDestinationInfoClear(info);
   }
 }
 
-void W_HandleDNDClientMessage(WMView *toplevel, XClientMessageEvent *event)
+void WMHandleDNDClientMessage(WMView *toplevel, XClientMessageEvent *event)
 {
-  WMScreen *scr = W_VIEW_SCREEN(toplevel);
+  WMScreen *scr = WMVIEW_SCREEN(toplevel);
   WMDraggingInfo *info = scr->dragInfo;
   Atom messageType = event->message_type;
 
@@ -226,8 +226,8 @@ void W_HandleDNDClientMessage(WMView *toplevel, XClientMessageEvent *event)
 
   /* Messages from destination to source */
   if (messageType == scr->xdndStatusAtom || messageType == scr->xdndFinishedAtom) {
-    W_DragSourceStopTimer();
-    W_DragSourceStateHandler(info, event);
+    WMDragSourceStopTimer();
+    WMDragSourceStateHandler(info, event);
     return;
   }
 
@@ -235,49 +235,49 @@ void W_HandleDNDClientMessage(WMView *toplevel, XClientMessageEvent *event)
   if (messageType == scr->xdndEnterAtom) {
     Bool positionSent = (XDND_DEST_INFO(info) != NULL);
 
-    W_DragDestinationStopTimer();
-    W_DragDestinationStoreEnterMsgInfo(info, toplevel, event);
+    WMDragDestinationStopTimer();
+    WMDragDestinationStoreEnterMsgInfo(info, toplevel, event);
 
     /* Xdnd version 3 and up are not compatible with version 1 or 2 */
     if (XDND_SOURCE_VERSION(info) > 2) {
 
       if (positionSent) {
         /* xdndPosition previously received on xdnd aware view */
-        W_DragDestinationStateHandler(info, event);
+        WMDragDestinationStateHandler(info, event);
         return;
       } else {
-        W_DragDestinationStartTimer(info);
+        WMDragDestinationStartTimer(info);
         return;
       }
     } else {
       WMLogWarning(_("unsupported version %i for XDND enter message"), XDND_SOURCE_VERSION(info));
-      W_DragDestinationCancelDropOnEnter(toplevel, info);
+      WMDragDestinationCancelDropOnEnter(toplevel, info);
       return;
     }
   }
 
   if (messageType == scr->xdndPositionAtom) {
-    W_DragDestinationStopTimer();
-    W_DragDestinationStorePositionMsgInfo(info, toplevel, event);
-    W_DragDestinationStateHandler(info, event);
+    WMDragDestinationStopTimer();
+    WMDragDestinationStorePositionMsgInfo(info, toplevel, event);
+    WMDragDestinationStateHandler(info, event);
     return;
   }
 
   if (messageType == scr->xdndSelectionAtom || messageType == scr->xdndDropAtom) {
-    W_DragDestinationStopTimer();
-    W_DragDestinationStateHandler(info, event);
+    WMDragDestinationStopTimer();
+    WMDragDestinationStateHandler(info, event);
     return;
   }
 
   if (messageType == scr->xdndLeaveAtom) {
     /* conclude drop operation, and clear dragging info */
-    W_DragDestinationStopTimer();
+    WMDragDestinationStopTimer();
     handleLeaveMessage(info);
   }
 }
 
 /* called in destroyView (wview.c) */
-void W_FreeViewXdndPart(WMView *view)
+void WMFreeViewXdndPart(WMView *view)
 {
   WMUnregisterViewDraggedTypes(view);
 
