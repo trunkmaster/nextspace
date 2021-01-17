@@ -34,9 +34,10 @@
 #include <errno.h>
 
 #include <core/util.h>
+#include <core/log_utils.h>
 #include <core/stringutils.h>
 #include <core/wevent.h>
-#include "core/wuserdefaults.h"
+#include <core/wuserdefaults.h>
 
 #include "WM.h"
 #include "window.h"

@@ -36,6 +36,7 @@
 #include <limits.h>
 
 #include "util.h"
+#include "log_utils.h"
 #include "stringutils.h"
 
 #ifndef PATH_MAX

@@ -29,6 +29,7 @@
 #include "WMcore.h"
 #include "util.h"
 #include "stringutils.h"
+#include "log_utils.h"
 
 #include "wscreen.h"
 #include "wevent.h"

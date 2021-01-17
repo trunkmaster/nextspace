@@ -38,6 +38,7 @@
 #include <core/WMcore.h>
 #include <core/stringutils.h>
 #include <core/util.h>
+#include <core/log_utils.h>
 
 #include <core/wevent.h>
 #include <core/wcolor.h>
@@ -3608,7 +3609,7 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
 
     assert(wapp != NULL);
 
-    wmessage("[dock.c] Dock icon Double-click for workspace %i leader: %lu\n",
+    wmessage("Dock icon Double-click for workspace %i leader: %lu",
              wapp->last_workspace, wapp->main_window);
     
     unhideHere = (event->xbutton.state & ShiftMask);
@@ -3955,7 +3956,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
   WDock *dock = aicon->dock;
   WScreen *scr = aicon->icon->core->screen_ptr;
 
-  wmessage("[dock.c] Dock iconMouseDown");
+  wmessage("Dock iconMouseDown");
   
   if (aicon->editing || WCHECK_STATE(WSTATE_MODAL))
     return;

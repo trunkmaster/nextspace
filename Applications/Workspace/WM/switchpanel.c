@@ -28,6 +28,7 @@
 #include <CoreFoundation/CFArray.h>
 
 #include <core/util.h>
+#include <core/log_utils.h>
 
 #include <core/widgets.h>
 #include <core/wcolor.h>
@@ -388,19 +389,19 @@ static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped,
 
   /* WApplications */
   if (class_only == False) {
-    wmessage("[switchpanel.c] window list array creation BEGIN\n");
+    wmessage ("window list array creation BEGIN");
     WApplication *wapp = scr->wapp_list;
     while (wapp) {
       WWindow *w = NULL;
-      wmessage("[switchpanel.c] Inspect application: ");
+      wmessage("Inspect application: ");
       if (wapp->flags.is_gnustep) {
         if (wapp->menu_win) {
           w = wapp->menu_win;
-          wmessage("[switchpanel.c]\t%s (menu: %lu)",  w->wm_instance, w->client_win);
+          wmessage("\t%s (menu: %lu)",  w->wm_instance, w->client_win);
         }
         else {
           w = wapp->main_window_desc;
-          wmessage("[switchpanel.c]\t%s (main window: %lu)",
+          wmessage("\t%s (main window: %lu)",
                    w->wm_instance, w->client_win);
         }
       }
@@ -409,16 +410,16 @@ static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped,
           w = wapp->last_focused;
         else
           w = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
-        wmessage("[switchpanel.c]\t%s (window: %lu)", w->wm_instance, w->client_win);
+        wmessage("\t%s (window: %lu)", w->wm_instance, w->client_win);
       }
 
       if (w)
         CFArrayAppendValue(windows, w);
       
-      wmessage("[switchpanel.c]\tWindow count:%i\n", CFArrayGetCount(wapp->windows));
+      wmessage("\tWindow count:%li", CFArrayGetCount(wapp->windows));
       wapp = wapp->next;
     }
-    wmessage("[switchpanel.c] window list array creation END\n");
+    wmessage("window list array creation END");
   }
   else {
     /* Mapped windows */
@@ -782,7 +783,7 @@ WWindow *wSwitchPanelHandleEvent(WSwitchPanel *panel, XEvent *event)
     }
     panel->current = focus;
 
-    wmessage("focus == %i (%i)", focus, CFArrayGetCount(panel->windows));
+    wmessage("focus == %i (%li)", focus, CFArrayGetCount(panel->windows));
     wwin = (WWindow *)CFArrayGetValueAtIndex(panel->windows, focus);
     wmessage("focus title == %s", wwin->frame->title);
 

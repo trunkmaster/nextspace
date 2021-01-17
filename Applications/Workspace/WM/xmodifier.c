@@ -35,6 +35,8 @@
 #include <X11/keysym.h>
 #include <X11/XKBlib.h>
 
+#include <core/log_utils.h>
+
 #include "WM.h"
 #include "xmodifier.h"
 

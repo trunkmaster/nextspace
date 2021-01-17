@@ -24,11 +24,6 @@
 
 #include "WM.h"
 
-/* #ifdef HAVE_INOTIFY */
-/* #include <sys/select.h> */
-/* #include <sys/inotify.h> */
-/* #endif */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -56,7 +51,7 @@
 #include <CoreFoundation/CFFileDescriptor.h>
 
 #include <core/util.h>
-
+#include <core/log_utils.h>
 #include <core/wevent.h>
 #include <core/drawing.h>
 #include <core/wuserdefaults.h>
@@ -565,7 +560,7 @@ static void handleMapRequest(XEvent * ev)
 
   wwin = wWindowFor(window);
   if (wwin != NULL) {
-    /* wmessage("[event.c] MapRequest %lu\n", wwin->client_win); */
+    /* wmessage("MapRequest %lu", wwin->client_win); */
     if (!wwin->flags.is_gnustep && wwin->flags.shaded) {
       wUnshadeWindow(wwin);
     }
@@ -656,7 +651,7 @@ static void handleDestroyNotify(XEvent * event)
 
   wwin = wWindowFor(window);
   if (wwin) {
-    /* wmessage("[event.c] DestroyNotify will unmanage window:%lu\n", window); */
+    /* wmessage("DestroyNotify will unmanage window:%lu", window); */
 #ifdef NEXTSPACE
     dispatch_sync(workspace_q, ^{ WSApplicationDidCloseWindow(wwin); });
 #endif
@@ -928,7 +923,7 @@ static void handleMapNotify(XEvent * event)
 
   wwin = wWindowFor(event->xmap.event);
   if (wwin && wwin->client_win == event->xmap.event) {
-    /* wmessage("[event.c] MapNotify %lu\n", wwin->client_win); */
+    /* wmessage(" MapNotify %lu", wwin->client_win); */
     if (wwin->flags.miniaturized) {
       wDeiconifyWindow(wwin);
     } else {
@@ -946,7 +941,7 @@ static void handleUnmapNotify(XEvent * event)
   XEvent ev;
   Bool withdraw = False;
 
-  /* wmessage("[event.c] handleUnmapNotify for window %lu.\n", event->xunmap.window); */
+  /* wmessage("handleUnmapNotify for window %lu.", event->xunmap.window); */
   
   /* only process windows with StructureNotify selected (ignore SubstructureNotify) */
   wwin = wWindowFor(event->xunmap.window);
@@ -986,7 +981,7 @@ static void handleUnmapNotify(XEvent * event)
       wClientSetState(wwin, WithdrawnState, None);
 
     if (WINDOW_LEVEL(wwin) != NSMainMenuWindowLevel) {
-      /* wmessage("[event.c] UnmapNotify will unmanage window:%lu is_gnustep=%i\n", */
+      /* wmessage("UnmapNotify will unmanage window:%lu is_gnustep=%i", */
       /*         event->xunmap.window, wwin->flags.is_gnustep); */
       /* if the window was reparented, do not reparent it back to the
        * root window */
@@ -1082,7 +1077,7 @@ static void handleClientMessage(XEvent * event)
     WApplication *wapp;
     int done = 0;
     wapp = wApplicationOf(event->xclient.window);
-    wmessage("Received client message: %i for: %s",
+    wmessage("Received client message: %li for: %s",
              event->xclient.data.l[0],
              wapp ? wapp->main_window_desc->wm_instance : "Unknown");
     if (wapp) {
@@ -1432,8 +1427,8 @@ static void handleKeyPress(XEvent * event)
 
 #ifdef NEXTSPACE
   /* if (wwin && wwin->client_win) { */
-  /*   wmessage("[event.c] handleKeyPress: %i state: %i mask: %i" */
-  /*           " modifiers: %i window:%lu\n", */
+  /*   wmessage("handleKeyPress: %i state: %i mask: %i" */
+  /*           " modifiers: %i window:%lu", */
   /*           event->xkey.keycode, event->xkey.state, MOD_MASK, */
   /*           modifiers, wwin->client_win); */
   /* } */
@@ -1543,7 +1538,7 @@ static void handleKeyPress(XEvent * event)
     if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_miniaturizable)) {
       CloseWindowMenu(scr);
       if (wwin->protocols.MINIATURIZE_WINDOW) {
-        /* wmessage("[event.c] send WM_MINIATURIZE_WINDOW protocol message to client.\n"); */
+        /* wmessage("send WM_MINIATURIZE_WINDOW protocol message to client."); */
         if (wwin->flags.is_gnustep) {
           XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
         }
@@ -1921,7 +1916,7 @@ static void handleKeyRelease(XEvent * event)
       event->xkey.window == scr->no_focus_win) {
     return;
   }
-  /* wmessage("[event.c] handleKeyRelease: %i state: %i mask: %i\n", */
+  /* wmessage("handleKeyRelease: %i state: %i mask: %i", */
   /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
   if ( (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
        (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R)) ) {

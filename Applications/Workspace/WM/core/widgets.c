@@ -34,6 +34,7 @@
 
 #include "WMcore.h"
 #include "util.h"
+#include "log_utils.h"
 
 #include "WM.h"
 #include "wscreen.h"

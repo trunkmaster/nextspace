@@ -29,6 +29,7 @@
 #include <CoreFoundation/CFNotificationCenter.h>
 
 #include "util.h"
+#include "log_utils.h"
 
 #include "wscreen.h"
 #include "dragcommon.h"

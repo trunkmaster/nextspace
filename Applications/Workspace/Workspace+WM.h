@@ -48,6 +48,7 @@ extern WorkspaceExitCode ws_quit_code;
 #include <wraster.h>
 
 #include <core/wappresource.h>
+#include <core/log_utils.h>
 
 #include <screen.h>
 #include <startup.h>
@@ -149,6 +150,6 @@ int WSRunAlertPanel(char *title, char *message,
                      char *otherButton);
 void WSRingBell(WWindow *wwin);
 void WSMessage(char *fmt, ...);
-#define wmessage(fmt, args...) WSMessage(fmt, ## args)
+// #define wmessage(fmt, args...) WSMessage(fmt, ## args)
 
 #endif //NEXTSPACE

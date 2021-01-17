@@ -22,6 +22,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFPropertyList.h>
+#include <CoreFoundation/CFLogUtilities.h>
 
 /* Files */
 CFURLRef WMUserDefaultsCopyUserLibraryURL(void);

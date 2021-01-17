@@ -26,6 +26,7 @@
 
 #include "WMcore.h"
 #include "util.h"
+#include "log_utils.h"
 #include "stringutils.h"
 
 #include "wscreen.h"

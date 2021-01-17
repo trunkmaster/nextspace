@@ -39,6 +39,7 @@
 
 #include <core/WMcore.h>
 #include <core/util.h>
+#include <core/log_utils.h>
 #include <core/stringutils.h>
 
 #include <core/widgets.h>

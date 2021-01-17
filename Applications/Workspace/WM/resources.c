@@ -31,6 +31,7 @@
 #include <X11/Xutil.h>
 
 #include <wraster.h>
+#include <core/log_utils.h>
 
 #include "WM.h"
 #include "texture.h"

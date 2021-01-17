@@ -29,6 +29,7 @@
 #include <stdlib.h>
 
 #include <core/util.h>
+#include <core/log_utils.h>
 
 #include "WM.h"
 #include "window.h"

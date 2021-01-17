@@ -42,6 +42,7 @@
 
 #include <core/WMcore.h>
 #include <core/util.h>
+#include <core/log_utils.h>
 #include <core/stringutils.h>
 
 #include <core/wscreen.h>
@@ -711,7 +712,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
     /* At this point `foc` can hold random selected window or `NULL` */
     if (!foc) {
       foc = scr->workspaces[workspace]->focused_window;
-      wmessage("[workspace.c] SAVED focused window for WS-%lu: %lu, %s.%s\n", workspace,
+      wmessage("SAVED focused window for WS-%d: %lu, %s.%s\n", workspace,
                foc ? foc->client_win : 0,
                foc ? foc->wm_instance : "-",
                foc ? foc->wm_class : "-");

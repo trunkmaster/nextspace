@@ -17,6 +17,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include "log_utils.h"
 #include "defaults.h"
 #include "wuserdefaults.h"
 
@@ -209,8 +210,8 @@ CFPropertyListRef WMUserDefaultsReadFromFile(CFURLRef fileURL)
     werror("cannot open READ stream to %@", fileURL);
   }
   
-  if (plError > 0) {
-    werror("Failed to read user defaults from %@ (Error: %i)", fileURL, plError);
+  if (plError && CFErrorGetCode(plError) > 0) {
+    werror("Failed to read user defaults from %@ (Error: %li)", fileURL, CFErrorGetCode(plError));
   }
 
   return pl;
@@ -303,8 +304,8 @@ Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
     werror("cannot open WRITE stream to %@", xmlURL);
   }
 
-  if (plError > 0) {
-    werror("cannot write user defaults to %@ (error: %i)", xmlURL, plError);
+  if (plError && CFErrorGetCode(plError) > 0) {
+    werror("cannot write user defaults to %@ (error: %li)", xmlURL, CFErrorGetCode(plError));
   }
 
   CFRelease(xmlURL);

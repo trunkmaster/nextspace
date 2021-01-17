@@ -37,6 +37,7 @@
 #include <CoreFoundation/CFNumber.h>
 
 #include <core/util.h>
+#include <core/log_utils.h>
 #include <core/stringutils.h>
 
 #include <core/fileutils.h>

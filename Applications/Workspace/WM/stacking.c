@@ -30,6 +30,7 @@
 #include <X11/Xutil.h>
 
 #include <core/util.h>
+#include <core/log_utils.h>
 
 #include "WM.h"
 #include "screen.h"

@@ -27,6 +27,7 @@
 #include <core/WMcore.h>
 #include <core/util.h>
 
+#include "log_utils.h"
 #include "wscreen.h"
 #include "dragcommon.h"
 #include "dragdestination.h"

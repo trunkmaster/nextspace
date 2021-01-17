@@ -32,6 +32,7 @@
 #include <wraster.h>
 
 #include <core/util.h>
+#include <core/log_utils.h>
 #include <core/fileutils.h>
 
 #include "WM.h"

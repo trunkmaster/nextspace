@@ -179,12 +179,13 @@ void WMShutdown(WShutdownMode mode)
       RestoreDesktop(scr);
   }
   wNETWMCleanup(scr); // Delete _NET_* Atoms
-  // ExecExitScript();
 
   if (launchingIcons) free(launchingIcons);
   
   RShutdown(); /* wrlib clean exit */
-  wutil_shutdown();  /* WUtil clean-up */
+#if HAVE_SYSLOG_H
+  wSyslogClose();
+#endif
 }
 
 // --- Defaults

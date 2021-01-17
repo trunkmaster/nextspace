@@ -28,6 +28,7 @@
 #include <CoreFoundation/CFString.h>
 
 #include <core/util.h>
+#include <core/log_utils.h>
 #include <core/wevent.h>
 
 #include "GNUstep.h"
@@ -108,7 +109,7 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
   if (!wapp)
     return;
   
-  wmessage("[application.c] ADD window: %lu level:%i name: %s refcount=%i\n",
+  wmessage("ADD window: %lu level:%i name: %s refcount=%i",
            wwin->client_win, window_level, wwin->wm_instance, wapp->refcount);
   
   if (wapp->app_icon && wapp->app_icon->docked &&
@@ -141,7 +142,7 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
 
   window_count = CFArrayGetCount(wapp->windows);
 
-  wmessage("[application.c] REMOVE window: %lu name: %s refcount=%i\n",
+  wmessage("REMOVE window: %lu name: %s refcount=%i",
            wwin->client_win, wwin->wm_instance, wapp->refcount);
   
   for (int i = 0; i < window_count; i++) {
@@ -181,7 +182,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
     return wapp;
   }
 
-  wmessage("[application.c] CREATE for window: %lu level:%i name: %s\n",
+  wmessage("CREATE for window: %lu level:%i name: %s",
            wwin->client_win, WINDOW_LEVEL(wwin), wwin->wm_instance);
 
   wapp = wmalloc(sizeof(WApplication));
@@ -236,7 +237,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
     wApplicationMakeFirst(wapp);
   }
 
-  wmessage("[application.c] WApplication `%s` was created! Prev `%s` Next `%s`\n",
+  wmessage("WApplication `%s` was created! Prev `%s` Next `%s`",
            wwin->wm_instance,
            wapp->prev ? wapp->prev->main_window_desc->wm_instance : "NULL",
            wapp->next ? wapp->next->main_window_desc->wm_instance : "NULL");
@@ -269,7 +270,7 @@ void wApplicationDestroy(WApplication *wapp)
   if (!wapp)
     return;
 
-  wmessage("[application.c] DESTROY main window:%lu name:%s windows #:%i refcount:%i\n",
+  wmessage("DESTROY main window:%lu name:%s windows #:%li refcount:%i",
            wapp->main_window, wapp->app_icon->wm_instance,
            CFArrayGetCount(wapp->windows), wapp->refcount);
 
@@ -280,7 +281,7 @@ void wApplicationDestroy(WApplication *wapp)
   /* CFShow(wapp->windows); */
   CFArrayRemoveAllValues(wapp->windows);
   CFRelease(wapp->windows);
-  werror("wapp->windows retain count: %i", CFGetRetainCount(wapp->windows));
+  werror("wapp->windows retain count: %li", CFGetRetainCount(wapp->windows));
   /* wapp->windows = NULL; */
 
   if (wapp->urgent_bounce_timer) {
@@ -330,14 +331,14 @@ void wApplicationDestroy(WApplication *wapp)
 
   wfree(wapp);
   wapp = NULL;
-  wmessage("[application.c] DESTROY END.\n");
+  wmessage("DESTROY END.");
 }
 
 void wApplicationActivate(WApplication *wapp)
 {
   WScreen *scr = wapp->main_window_desc->screen_ptr;
 
-  wmessage("[application.c] wApplicationActivate %s current WS:%i last WS:%i app WS:%i\n",
+  wmessage("wApplicationActivate %s current WS:%i last WS:%i app WS:%i",
            wapp->main_window_desc->wm_instance,
            scr->current_workspace, scr->last_workspace,
            wapp->last_workspace);
@@ -381,12 +382,4 @@ void wApplicationMakeFirst(WApplication *wapp)
   wapp->next = first_wapp;
   
   scr->wapp_list = wapp;
-
-  /* wmessage("[application.c] wApplicationMakeFirst: %s. Application list: ", */
-  /*          wapp->main_window_desc->wm_instance); */
-  /* app = scr->wapp_list; */
-  /* while (app) { */
-  /*   wmessage("%s%s", app->main_window_desc->wm_instance, app->next ? ", " : ""); */
-  /*   app = app->next; */
-  /* } */
 }

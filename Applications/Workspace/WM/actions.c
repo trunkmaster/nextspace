@@ -32,7 +32,7 @@
 #include <time.h>
 
 #include <core/util.h>
-#include <core/wview.h>
+#include <core/log_utils.h>
 #include <core/wevent.h>
 #include <core/drawing.h>
 
@@ -1394,7 +1394,7 @@ void wHideOtherApplications(WWindow *awin)
 
       if (tapp != wapp && wwin->protocols.HIDE_APP) {
         WIcon *icon = tapp->app_icon->icon;
-        /* wmessage("[actions.c] send WM_HIDE_APP protocol message to client.\n"); */
+        /* wmessage("send WM_HIDE_APP protocol message to client."); */
         wAnimateResize(wwin->screen_ptr, wwin->frame_x, wwin->frame_y,
                       wwin->frame->core->width, wwin->frame->core->height,
                       tapp->app_icon->x_pos, tapp->app_icon->y_pos,

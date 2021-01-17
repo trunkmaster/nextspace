@@ -28,6 +28,7 @@
 #include <wraster.h>
 
 #include <core/util.h>
+#include <core/log_utils.h>
 
 #include <stdlib.h>
 #include <string.h>

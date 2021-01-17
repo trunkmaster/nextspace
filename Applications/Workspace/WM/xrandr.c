@@ -28,6 +28,7 @@
 
 #include <core/WMcore.h>
 #include <core/util.h>
+#include <core/log_utils.h>
 
 #include "screen.h"
 #include "window.h"
