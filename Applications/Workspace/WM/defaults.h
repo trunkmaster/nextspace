@@ -232,7 +232,7 @@ extern struct WPreferences {
 WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges);
 void wDefaultsReadStatic(CFMutableDictionaryRef dict);
 void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict);
-void wDefaultsCheckDomains(void *arg);
+void wDefaultsUpdateDomainsIfNeeded(void* arg);
 
 #ifdef HAVE_INOTIFY
 void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shouldTrack);

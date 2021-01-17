@@ -208,7 +208,7 @@ void DispatchEvent(XEvent * event)
     Shutdown(WSRestartPreparationMode);
   } else if (WCHECK_STATE(WSTATE_NEED_REREAD)) {
     WCHANGE_STATE(WSTATE_NORMAL);
-    wDefaultsCheckDomains(NULL);
+    wDefaultsUpdateDomainsIfNeeded(NULL);
   }
 
   /* for the case that all that is wanted to be dispatched is
@@ -1071,7 +1071,7 @@ static void handleClientMessage(XEvent * event)
 
     if (strncmp(command, "Reconfigure", sizeof("Reconfigure")) == 0) {
       wwarning(_("Got Reconfigure command"));
-      wDefaultsCheckDomains(NULL);
+      wDefaultsUpdateDomainsIfNeeded(NULL);
     } else {
       wwarning(_("Got unknown command %s"), command);
     }

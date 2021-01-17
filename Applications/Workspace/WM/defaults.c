@@ -631,7 +631,7 @@ static void _initializeOptionLists(void)
   }
 }
 
-void _updateApplicationIcons(WScreen *scr)
+static void _updateApplicationIcons(WScreen *scr)
 {
   WAppIcon *aicon = scr->app_icon_list;
   WDrawerChain *dc;
@@ -657,6 +657,59 @@ void _updateApplicationIcons(WScreen *scr)
   }
 }
 
+/*
+ * Update in-memory representaion (w_global.domain.<domain>) of defaults domain.
+ * domain->timestamp will be updated only in case of successful read and validate 
+ * of domain file.
+ */
+static void _updateDomain(WDDomain *domain)
+{
+  WScreen *scr;
+  CFMutableDictionaryRef dict;
+
+  if (!domain) {
+    CFLog(kCFLogLevelError, CFSTR("** Could not update NULL domain."));
+    return;
+  }
+
+#ifdef HAVE_INOTIFY
+  wDefaultsShouldTrackChanges(domain, false);
+#endif
+  
+  /* User dictionary */
+  dict = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->name, false);
+  if (dict) {
+    if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
+      CFRelease(dict);
+      dict = NULL;
+      CFLog(kCFLogLevelError,
+            CFSTR("Domain %@ of defaults database is corrupted!"), domain->name);
+    }
+    else {
+      if ((scr = wDefaultScreen())) {
+        wDefaultsRead(scr, dict);
+      }
+      if (domain->dictionary) {
+        CFRelease(domain->dictionary);
+      }
+      domain->dictionary = dict;
+    }
+  }
+  else {
+    CFLog(kCFLogLevelError,
+          CFSTR("** Could not load domain %@. It is not dictionary!"), domain->name);
+    if (domain->dictionary) {
+      CFLog(kCFLogLevelError, CFSTR("** Write from memory to path %@."), domain->path);
+      WMUserDefaultsWrite(domain->dictionary, domain->name);
+    }
+  }
+  
+  domain->timestamp = WMUserDefaultsFileModificationTime(domain->name, 0);
+#ifdef HAVE_INOTIFY
+  wDefaultsShouldTrackChanges(domain, true);
+#endif
+}
+
 #ifdef HAVE_INOTIFY
 
 static WDDomain *_domainForWatchDescriptor(int wd)
@@ -677,15 +730,12 @@ static void _processWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBac
   size_t i = 0;
   /* Make room for at lease 5 simultaneous events, with path + filenames */
   char buff[ (sizeof(struct inotify_event) + NAME_MAX + 1) * 5 ];
+  WDDomain *domain;
 
   CFLog(kCFLogLevelError, CFSTR("_inotifyHandleEvents"));
 
   /*
-   * Read off the queued events
-   * queue overflow is not checked (IN_Q_OVERFLOW). In practise this should
-   * not occur; the block is on Xevents, but a config file change will normally
-   * occur as a result of an Xevent - so the event queue should never have more than
-   * a few entries before a read().
+   * Read off the queued events queue overflow is not checked (IN_Q_OVERFLOW).
    */
   eventQLength = read(w_global.inotify.fd_event_queue, buff, sizeof(buff));
 
@@ -694,36 +744,40 @@ static void _processWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBac
     return;
   }
 
-  /* check what events occured */
-  /* Should really check wd here too, but for now we only have one watch! */
+  /* Check what events occured */
   while (i < eventQLength) {
     struct inotify_event *pevent = (struct inotify_event *)&buff[i];
 
+    domain = _domainForWatchDescriptor(pevent->wd);
+    if (!domain) {
+      wwarning(_("inotify: ignore event for domain that is not tracked anymore."));
+      goto next_event;
+    }
+
     if (pevent->mask & IN_MODIFY) {
       wwarning(_("inotify: defaults domain has been modified. Rereading defaults database."));
-      wDefaultsCheckDomains(NULL);
+      _updateDomain(domain);
     }
     
     if (pevent->mask & IN_MOVE_SELF) {
       wwarning(_("inotify: %i defaults domain has been moved."), pevent->wd);
-      wDefaultsShouldTrackChanges(_domainForWatchDescriptor(pevent->wd), false);
-      wDefaultsCheckDomains(NULL);
+      _updateDomain(domain);
     }
     
     if (pevent->mask & IN_DELETE_SELF) {
       wwarning(_("inotify: %i defaults domain has been deleted!"), pevent->wd);
-      wDefaultsShouldTrackChanges(_domainForWatchDescriptor(pevent->wd), false);
-      wDefaultsCheckDomains(NULL);
+      _updateDomain(domain);
     }
     
     if (pevent->mask & IN_UNMOUNT) {
       wwarning(_("inotify: the unit containing the defaults database has"
                  " been unmounted. Setting --static mode." " Any changes will not be saved."));
 
-      wDefaultsShouldTrackChanges(_domainForWatchDescriptor(pevent->wd), false);
+      wDefaultsShouldTrackChanges(domain, false);
       wPreferences.flags.noupdates = 1;
     }
 
+  next_event:
     /* move to next event in the buffer */
     i += sizeof(struct inotify_event) + pevent->len;
   }
@@ -781,8 +835,10 @@ void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shouldTrack)
   }
   else if (domain->inotify_watch >= 0) {
     CFLog(kCFLogLevelError, CFSTR("* inotify: will remove watch for %@."), domain->name);
-    
-    inotify_rm_watch(w_global.inotify.fd_event_queue, domain->inotify_watch);
+
+    if (domain->inotify_watch >= 0) {
+      inotify_rm_watch(w_global.inotify.fd_event_queue, domain->inotify_watch);
+    }
     domain->inotify_watch = -1;
   }
 }
@@ -800,8 +856,12 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
     _initializeOptionLists();
   }
 
+  // TODO: check if domain already exist
+  wwarning("* initializing domain: %s", domain_name);
+
   domain = wmalloc(sizeof(WDDomain));
   domain->name = CFStringCreateWithCString(kCFAllocatorDefault, domain_name, kCFStringEncodingUTF8);
+  domain->inotify_watch = -1;
 
   domain->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->name, true);
   if (domain->dictionary) {
@@ -818,6 +878,7 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
                                                    &kCFTypeDictionaryKeyCallBacks,
                                                    &kCFTypeDictionaryValueCallBacks);
   }
+  
   if (domain->dictionary && WMUserDefaultsWrite(domain->dictionary, domain->name)) {
     CFURLRef osURL;
     
@@ -826,6 +887,9 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
     osURL = WMUserDefaultsCopyURLForDomain(domain->name);
     domain->path = CFURLCreateCopyAppendingPathExtension(NULL, osURL, CFSTR("plist"));
     CFRelease(osURL);
+
+    CFLog(kCFLogLevelError, CFSTR("* start tracking changes for domain: %@"), domain->name);
+    wDefaultsShouldTrackChanges(domain, shouldTrackChanges);
   }
 
   return domain;
@@ -909,14 +973,6 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
       /* CFLog(kCFLogLevelError, CFSTR("Removed")); */
     }
 
-    /* if (!plvalue && !old_value) { */
-    /*   /\* no default in the DB. Use builtin default *\/ */
-    /*   plvalue = entry->plvalue; */
-    /*   if (plvalue && new_dict) { */
-    /*     CFDictionarySetValue(new_dict, entry->plkey, plvalue); */
-    /*   } */
-    /* } */
-    /* else */
     if (!plvalue) {
       /* value was deleted from DB. Keep current value */
       plvalue = entry->plvalue;
@@ -939,7 +995,6 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
       }
     }
   }
-  CFLog(kCFLogLevelError, (CFSTR("Processing of options list done.")));
 
   if (needs_refresh != 0 && !scr->flags.startup && !scr->flags.startup2) {
     int foo;
@@ -1014,82 +1069,29 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
 
 // Update in-memory representaion of user defaults.
 // Also used as CFTimer callback.
-void wDefaultsCheckDomains(void* arg)
+void wDefaultsUpdateDomainsIfNeeded(void* arg)
 {
   WScreen *scr;
-  CFMutableDictionaryRef dict;
   CFAbsoluteTime time = 0.0;
 
   // ~/Library/Preferences/.NextSpace/WM
   time = WMUserDefaultsFileModificationTime(w_global.domain.wm->name, 0);
   if (w_global.domain.wm->timestamp < time) {
-    w_global.domain.wm->timestamp = time;
-    /* User dictionary */
-    dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.wm->name, false);
-    if (dict) {
-      if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
-        CFRelease(dict);
-        dict = NULL;
-        CFLog(kCFLogLevelError, CFSTR("Domain %@ of defaults database is corrupted!"),
-              w_global.domain.wm->name);
-      }
-      else {
-        if ((scr = wDefaultScreen())) {
-          wDefaultsRead(scr, dict);
-        }
-        if (w_global.domain.wm->dictionary) {
-          CFRelease(w_global.domain.wm->dictionary);
-        }
-        w_global.domain.wm->dictionary = dict;
-        WMUserDefaultsWrite(w_global.domain.wm->dictionary, w_global.domain.wm->name);
-        if (w_global.domain.wm->inotify_watch < 0) {
-          wDefaultsShouldTrackChanges(w_global.domain.wm, true);
-        }
-      }
-      w_global.domain.window_attr->timestamp = time;
-    }
-    else {
-      CFLog(kCFLogLevelError, CFSTR("** Could not load domain %@. It is not dictionary!"),
-            w_global.domain.wm->name);
-      w_global.domain.window_attr->timestamp = 0.0;
-    }
+    _updateDomain(w_global.domain.wm);
   }
 
   // ~/Library/Preferences/.NextSpace/WMWindowAttributes
   time = WMUserDefaultsFileModificationTime(w_global.domain.window_attr->name, 0);
   if (w_global.domain.window_attr->timestamp < time) {
-    /* user dictionary */
-    dict = (CFMutableDictionaryRef)WMUserDefaultsRead(w_global.domain.window_attr->name, true);
-    if (dict) {
-      if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
-        CFRelease(dict);
-        dict = NULL;
-        CFLog(kCFLogLevelError, CFSTR("Domain %@ of defaults database is corrupted!"),
-              w_global.domain.window_attr->name);
-      }
-      else {
-        if (w_global.domain.window_attr->dictionary) {
-          CFRelease(w_global.domain.window_attr->dictionary);
-        }
-        w_global.domain.window_attr->dictionary = dict;
-        if ((scr = wDefaultScreen())) {
-          _updateApplicationIcons(scr);
-        }
-        if (w_global.domain.window_attr->inotify_watch < 0) {
-          wDefaultsShouldTrackChanges(w_global.domain.window_attr, true);
-        }
-      }
-      w_global.domain.window_attr->timestamp = time;
-    } else {
-      CFLog(kCFLogLevelError, CFSTR("** Could not load domain %@. It is not dictionary!"),
-            w_global.domain.window_attr->name);
-      w_global.domain.window_attr->timestamp = 0.0;
+    _updateDomain(w_global.domain.window_attr);
+    if ((scr = wDefaultScreen())) {
+      _updateApplicationIcons(scr);
     }
   }
 
 #ifndef HAVE_INOTIFY
   if (!arg) {
-    WMAddTimerHandler(DEFAULTS_CHECK_INTERVAL, wDefaultsCheckDomains, NULL);
+    WMAddTimerHandler(DEFAULTS_CHECK_INTERVAL, wDefaultsUpdateDomainsIfNeeded, NULL);
   }
 #endif
 }
