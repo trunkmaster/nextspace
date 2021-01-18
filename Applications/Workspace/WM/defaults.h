@@ -235,7 +235,7 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict);
 void wDefaultsCheckDomains(void *arg);
 
 #ifdef HAVE_INOTIFY
-void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shoudTrack);
+void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shouldTrack);
 #endif
 
 /* Default images path */
