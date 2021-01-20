@@ -256,7 +256,7 @@ WMColor *WMGrayColor(WMScreen *scr)
       WMColor *black = WMBlackColor(scr);
       XGCValues gcv;
 
-      stipple = XCreateBitmapFromData(scr->display, WMDRAWABLE(scr),
+      stipple = XCreateBitmapFromData(scr->display, WMScreenDrawable(scr),
                                       LIGHT_STIPPLE_BITS, LIGHT_STIPPLE_WIDTH,
                                       LIGHT_STIPPLE_HEIGHT);
 
@@ -266,7 +266,7 @@ WMColor *WMGrayColor(WMScreen *scr)
       gcv.background = black->color.pixel;
       gcv.fill_style = FillStippled;
       gcv.stipple = stipple;
-      color->gc = XCreateGC(scr->display, WMDRAWABLE(scr), GCForeground
+      color->gc = XCreateGC(scr->display, WMScreenDrawable(scr), GCForeground
                             | GCBackground | GCStipple | GCFillStyle
                             | GCGraphicsExposures, &gcv);
 
@@ -294,7 +294,7 @@ WMColor *WMDarkGrayColor(WMScreen *scr)
       WMColor *black = WMBlackColor(scr);
       XGCValues gcv;
 
-      stipple = XCreateBitmapFromData(scr->display, WMDRAWABLE(scr),
+      stipple = XCreateBitmapFromData(scr->display, WMScreenDrawable(scr),
                                       DARK_STIPPLE_BITS, DARK_STIPPLE_WIDTH,
                                       DARK_STIPPLE_HEIGHT);
 
@@ -304,7 +304,7 @@ WMColor *WMDarkGrayColor(WMScreen *scr)
       gcv.background = black->color.pixel;
       gcv.fill_style = FillStippled;
       gcv.stipple = stipple;
-      color->gc = XCreateGC(scr->display, WMDRAWABLE(scr), GCForeground
+      color->gc = XCreateGC(scr->display, WMScreenDrawable(scr), GCForeground
                             | GCBackground | GCStipple | GCFillStyle
                             | GCGraphicsExposures, &gcv);
 

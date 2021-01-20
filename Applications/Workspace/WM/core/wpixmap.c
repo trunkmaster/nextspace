@@ -64,9 +64,9 @@ WMPixmap *WMCreatePixmap(WMScreen *scrPtr, int width, int height, int depth, Boo
   pixPtr->depth = depth;
   pixPtr->refCount = 1;
 
-  pixPtr->pixmap = XCreatePixmap(scrPtr->display, WMDRAWABLE(scrPtr), width, height, depth);
+  pixPtr->pixmap = XCreatePixmap(scrPtr->display, WMScreenDrawable(scrPtr), width, height, depth);
   if (masked) {
-    pixPtr->mask = XCreatePixmap(scrPtr->display, WMDRAWABLE(scrPtr), width, height, 1);
+    pixPtr->mask = XCreatePixmap(scrPtr->display, WMScreenDrawable(scrPtr), width, height, 1);
   } else {
     pixPtr->mask = None;
   }
@@ -89,6 +89,68 @@ WMPixmap *WMCreatePixmapFromXPixmaps(WMScreen *scrPtr, Pixmap pixmap, Pixmap mas
   pixPtr->refCount = 1;
 
   return pixPtr;
+}
+
+/* Next 2 functions were located in widgets.c with name `makePixmap`.
+   FIXME: not used/useful anymore. */
+static
+void renderPixmap(WMScreen *screen, Pixmap d, Pixmap mask, char **data, int width, int height)
+{
+  int x, y;
+  GC whiteGC = WMColorGC(screen->white);
+  GC blackGC = WMColorGC(screen->black);
+  GC lightGC = WMColorGC(screen->gray);
+  GC darkGC = WMColorGC(screen->darkGray);
+
+  if (mask)
+    XSetForeground(screen->display, screen->monoGC, 0);
+
+  for (y = 0; y < height; y++) {
+    for (x = 0; x < width; x++) {
+      switch (data[y][x]) {
+      case ' ':
+      case 'w':
+        XDrawPoint(screen->display, d, whiteGC, x, y);
+        break;
+
+      case '=':
+        if (mask)
+          XDrawPoint(screen->display, mask, screen->monoGC, x, y);
+
+      case '.':
+      case 'l':
+        XDrawPoint(screen->display, d, lightGC, x, y);
+        break;
+
+      case '%':
+      case 'd':
+        XDrawPoint(screen->display, d, darkGC, x, y);
+        break;
+
+      case '#':
+      case 'b':
+      default:
+        XDrawPoint(screen->display, d, blackGC, x, y);
+        break;
+      }
+    }
+  }
+}
+WMPixmap *WMCreatePixmapFromData(WMScreen *sPtr, char **data, int width, int height, int masked)
+{
+  Pixmap pixmap, mask = None;
+
+  pixmap = XCreatePixmap(sPtr->display, WMScreenDrawable(sPtr), width, height, sPtr->depth);
+
+  if (masked) {
+    mask = XCreatePixmap(sPtr->display, WMScreenDrawable(sPtr), width, height, 1);
+    XSetForeground(sPtr->display, sPtr->monoGC, 1);
+    XFillRectangle(sPtr->display, mask, sPtr->monoGC, 0, 0, width, height);
+  }
+
+  renderPixmap(sPtr, pixmap, mask, data, width, height);
+
+  return WMCreatePixmapFromXPixmaps(sPtr, pixmap, mask, width, height, sPtr->depth);
 }
 
 WMPixmap *WMCreatePixmapFromFile(WMScreen *scrPtr, const char *fileName)
@@ -230,50 +292,6 @@ WMSize WMGetPixmapSize(WMPixmap *pixmap)
   size.height = pixmap->height;
 
   return size;
-}
-
-WMPixmap *WMGetSystemPixmap(WMScreen *scr, int image)
-{
-  switch (image) {
-  case WSIReturnArrow:
-    return WMRetainPixmap(scr->buttonArrow);
-
-  case WSIHighlightedReturnArrow:
-    return WMRetainPixmap(scr->pushedButtonArrow);
-
-  case WSIScrollerDimple:
-    return WMRetainPixmap(scr->scrollerDimple);
-
-  case WSIArrowLeft:
-    return WMRetainPixmap(scr->leftArrow);
-
-  case WSIHighlightedArrowLeft:
-    return WMRetainPixmap(scr->hiLeftArrow);
-
-  case WSIArrowRight:
-    return WMRetainPixmap(scr->rightArrow);
-
-  case WSIHighlightedArrowRight:
-    return WMRetainPixmap(scr->hiRightArrow);
-
-  case WSIArrowUp:
-    return WMRetainPixmap(scr->upArrow);
-
-  case WSIHighlightedArrowUp:
-    return WMRetainPixmap(scr->hiUpArrow);
-
-  case WSIArrowDown:
-    return WMRetainPixmap(scr->downArrow);
-
-  case WSIHighlightedArrowDown:
-    return WMRetainPixmap(scr->hiDownArrow);
-
-  case WSICheckMark:
-    return WMRetainPixmap(scr->checkMark);
-
-  default:
-    return NULL;
-  }
 }
 
 void WMDrawPixmap(WMPixmap *pixmap, Drawable d, int x, int y)

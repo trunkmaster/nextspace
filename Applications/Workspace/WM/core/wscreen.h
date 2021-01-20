@@ -37,12 +37,6 @@
 
 #include "whashtable.h"
 
-/* global settigns  */
-extern char *_WINGS_progname;
-
-/* Widgets */
-/* typedef void WMWidget; */
-
 /* Pre-definition of internal structs */
 typedef struct WMColor		WMColor;
 typedef struct WMPixmap		WMPixmap;
@@ -114,47 +108,14 @@ typedef struct WMScreen {
 
   struct WMBalloon *balloon;
 
-
-  WMPixmap *checkButtonImageOn;
-  WMPixmap *checkButtonImageOff;
-
-  WMPixmap *radioButtonImageOn;
-  WMPixmap *radioButtonImageOff;
-
-  WMPixmap *buttonArrow;
-  WMPixmap *pushedButtonArrow;
-
-  WMPixmap *scrollerDimple;
-
-  WMPixmap *upArrow;
-  WMPixmap *downArrow;
-  WMPixmap *leftArrow;
-  WMPixmap *rightArrow;
-
-  WMPixmap *hiUpArrow;
-  WMPixmap *hiDownArrow;
-  WMPixmap *hiLeftArrow;
-  WMPixmap *hiRightArrow;
-
-  WMPixmap *pullDownIndicator;
-  WMPixmap *popUpIndicator;
-
-  WMPixmap *checkMark;
-
   WMPixmap *defaultObjectIcon;
 
   Cursor defaultCursor;
-
-  Cursor textCursor;
-
   Cursor invisibleCursor;
 
   Atom attribsAtom;              /* GNUstepWindowAttributes */
-
   Atom deleteWindowAtom;         /* WM_DELETE_WINDOW */
-
   Atom protocolsAtom;            /* _XA_WM_PROTOCOLS */
-
   Atom clipboardAtom;            /* CLIPBOARD */
 
   Atom xdndAwareAtom;            /* XdndAware */
@@ -203,6 +164,9 @@ typedef struct WMScreen {
   WMPixmap *tristateButtonImageTri;
 } WMScreen;
 
-#define WMDRAWABLE(scr)	(scr)->rcontext->drawable
+#define WMScreenDrawable(scr)	(scr)->rcontext->drawable
+#define WMScreenDisplay(scr)	(scr)->display
+
+WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *context);
 
 #endif /* __WORKSPACE_WM_WSCREEN__ */

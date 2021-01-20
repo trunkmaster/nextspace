@@ -126,15 +126,15 @@ typedef struct WMView {
     int refCount;
 } WMView;
 
-#define WMVIEW_REALIZED(view)	(view)->flags.realized
-#define WMVIEW_MAPPED(view)	(view)->flags.mapped
+#define WMViewIsRealized(view)	(view)->flags.realized
+#define WMViewIsMapped(view)	(view)->flags.mapped
 
-#define WMVIEW_DISPLAY(view)    (view)->screen->display
-#define WMVIEW_SCREEN(view)	(view)->screen
-#define WMVIEW_DRAWABLE(view)	(view)->window
+#define WMViewDisplay(view)	(view)->screen->display
+#define WMViewScreen(view)	(view)->screen
+#define WMViewDrawable(view)	(view)->window
 
-#define WMVIEW_WIDTH(view)	(view)->size.width
-#define WMVIEW_HEIGHT(view)	(view)->size.height
+#define WMViewWidth(view)	(view)->size.width
+#define WMViewHeight(view)	(view)->size.height
 
 /* -- Functions -- */
 

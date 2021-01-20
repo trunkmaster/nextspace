@@ -289,14 +289,14 @@ void WMReparentView(WMView *view, WMView *newParent, int x, int y)
 
 void WMRaiseView(WMView *view)
 {
-  if (WMVIEW_REALIZED(view))
-    XRaiseWindow(WMVIEW_DISPLAY(view), WMVIEW_DRAWABLE(view));
+  if (WMViewIsRealized(view))
+    XRaiseWindow(WMViewDisplay(view), WMViewDrawable(view));
 }
 
 void WMLowerView(WMView *view)
 {
-  if (WMVIEW_REALIZED(view))
-    XLowerWindow(WMVIEW_DISPLAY(view), WMVIEW_DRAWABLE(view));
+  if (WMViewIsRealized(view))
+    XLowerWindow(WMViewDisplay(view), WMViewDrawable(view));
 }
 
 void WMMapView(WMView *view)
@@ -558,8 +558,8 @@ void WMSetViewBackgroundPixmap(WMView *view, WMPixmap *pix)
 void WMSetViewCursor(WMView *view, Cursor cursor)
 {
   view->cursor = cursor;
-  if (WMVIEW_REALIZED(view)) {
-    XDefineCursor(WMVIEW_DISPLAY(view), WMVIEW_DRAWABLE(view), cursor);
+  if (WMViewIsRealized(view)) {
+    XDefineCursor(WMViewDisplay(view), WMViewDrawable(view), cursor);
   } else {
     view->attribFlags |= CWCursor;
     view->attribs.cursor = cursor;
@@ -683,7 +683,7 @@ Window WMViewXID(WMView *view)
 
 WMPoint WMGetViewScreenPosition(WMView *view)
 {
-  WMScreen *scr = WMVIEW_SCREEN(view);
+  WMScreen *scr = WMViewScreen(view);
   Window foo;
   int x, y, topX, topY;
   unsigned int bar;
@@ -693,11 +693,11 @@ WMPoint WMGetViewScreenPosition(WMView *view)
   while (topView->parent && topView->parent != scr->rootView)
     topView = topView->parent;
 
-  if (!XGetGeometry(scr->display, WMVIEW_DRAWABLE(topView), &foo, &topX, &topY, &bar, &bar, &bar, &bar)) {
+  if (!XGetGeometry(scr->display, WMViewDrawable(topView), &foo, &topX, &topY, &bar, &bar, &bar, &bar)) {
     topX = topY = 0;
   }
 
-  XTranslateCoordinates(scr->display, WMVIEW_DRAWABLE(view), scr->rootWin, 0, 0, &x, &y, &foo);
+  XTranslateCoordinates(scr->display, WMViewDrawable(view), scr->rootWin, 0, 0, &x, &y, &foo);
 
   return WMMakePoint(x - topX, y - topY);
 }

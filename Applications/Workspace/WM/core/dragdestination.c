@@ -147,7 +147,7 @@ static CFMutableArrayRef getTypesFromThreeTypes(WMScreen * scr, XClientMessageEv
 static void storeRequiredTypeList(WMDraggingInfo * info)
 {
   WMView *destView = XDND_DEST_VIEW(info);
-  WMScreen *scr = WMVIEW_SCREEN(destView);
+  WMScreen *scr = WMViewScreen(destView);
   CFMutableArrayRef requiredTypes;
 
   /* First, see if the stored source types are enough for dest requirements */
@@ -282,7 +282,7 @@ static WMView *findChildInView(WMView * parent, int x, int y)
 
 static WMView *findDestinationViewInToplevel(WMView *toplevel, int x, int y)
 {
-  WMScreen *scr = WMVIEW_SCREEN(toplevel);
+  WMScreen *scr = WMViewScreen(toplevel);
   Window toplevelWin = WMViewXID(toplevel);
   int xInToplevel, yInToplevel;
   Window foo;
@@ -336,7 +336,7 @@ static void initDestinationDragInfo(WMDraggingInfo * info, WMView * destView)
 
 void WMDragDestinationStoreEnterMsgInfo(WMDraggingInfo * info, WMView * toplevel, XClientMessageEvent * event)
 {
-  WMScreen *scr = WMVIEW_SCREEN(toplevel);
+  WMScreen *scr = WMViewScreen(toplevel);
 
   if (XDND_DEST_INFO(info) == NULL)
     initDestinationDragInfo(info, toplevel);
@@ -397,7 +397,7 @@ static void
 sendDnDClientMessage(WMDraggingInfo * info, Atom message,
 		     unsigned long data1, unsigned long data2, unsigned long data3, unsigned long data4)
 {
-  if (!WMSendDnDClientMessage(WMVIEW_SCREEN(XDND_AWARE_VIEW(info))->display,
+  if (!WMSendDnDClientMessage(WMViewScreen(XDND_AWARE_VIEW(info))->display,
                               XDND_SOURCE_WIN(info),
                               message, WMViewXID(XDND_AWARE_VIEW(info)), data1, data2, data3, data4)) {
     /* drop failed */
@@ -415,7 +415,7 @@ static void sendStatusMessage(WMView * destView, WMDraggingInfo * info, Atom act
   data1 = (action == None) ? 0 : 1;
 
   if (destView->childrenList == NULL) {
-    WMScreen *scr = WMVIEW_SCREEN(destView);
+    WMScreen *scr = WMViewScreen(destView);
     int destX, destY;
     WMSize destSize = WMGetViewSize(destView);
     Window foo;
@@ -423,21 +423,21 @@ static void sendStatusMessage(WMView * destView, WMDraggingInfo * info, Atom act
     XTranslateCoordinates(scr->display, WMViewXID(destView), scr->rootWin, 0, 0, &destX, &destY, &foo);
 
     sendDnDClientMessage(info,
-                         WMVIEW_SCREEN(destView)->xdndStatusAtom,
+                         WMViewScreen(destView)->xdndStatusAtom,
                          data1,
                          (destX << 16) | destY, (destSize.width << 16) | destSize.height, action);
   } else {
     /* set bit 1 to request explicitly position message on every move */
     data1 = data1 | 2;
 
-    sendDnDClientMessage(info, WMVIEW_SCREEN(destView)->xdndStatusAtom, data1, 0, 0, action);
+    sendDnDClientMessage(info, WMViewScreen(destView)->xdndStatusAtom, data1, 0, 0, action);
   }
 }
 
 static void
 storeDropData(WMView *destView, Atom selection, Atom target, Time timestamp, void *cdata, WMData *data)
 {
-  WMScreen *scr = WMVIEW_SCREEN(destView);
+  WMScreen *scr = WMViewScreen(destView);
   WMDraggingInfo *info = scr->dragInfo;
   WMData *dataToStore = NULL;
 
@@ -459,7 +459,7 @@ storeDropData(WMView *destView, Atom selection, Atom target, Time timestamp, voi
 
 static Bool requestDropDataInSelection(WMView * destView, const char *type)
 {
-  WMScreen *scr = WMVIEW_SCREEN(destView);
+  WMScreen *scr = WMViewScreen(destView);
 
   if (type != NULL) {
     if (!WMRequestSelection(destView,
@@ -533,14 +533,14 @@ void WMDragDestinationCancelDropOnEnter(WMView * toplevel, WMDraggingInfo * info
 
 static void finishDrop(WMView * destView, WMDraggingInfo * info)
 {
-  sendDnDClientMessage(info, WMVIEW_SCREEN(destView)->xdndFinishedAtom, 0, 0, 0, 0);
+  sendDnDClientMessage(info, WMViewScreen(destView)->xdndFinishedAtom, 0, 0, 0, 0);
   concludeDrop(destView);
   WMDragDestinationInfoClear(info);
 }
 
 static Atom getAllowedAction(WMView * destView, WMDraggingInfo * info)
 {
-  WMScreen *scr = WMVIEW_SCREEN(destView);
+  WMScreen *scr = WMViewScreen(destView);
 
   return WMOperationToAction(scr,
                              destView->dragDestinationProcs->allowedOperation(destView,
@@ -594,7 +594,7 @@ static WMPoint *getDropLocationInView(WMView * view)
 
   location = (WMPoint *) wmalloc(sizeof(WMPoint));
 
-  XQueryPointer(WMVIEW_SCREEN(view)->display,
+  XQueryPointer(WMViewScreen(view)->display,
                 WMViewXID(view), &rootWin, &childWin, &rootX, &rootY, &(location->x), &(location->y), &mask);
 
   return location;
@@ -603,7 +603,7 @@ static WMPoint *getDropLocationInView(WMView * view)
 static void callPerformDragOperation(WMView * destView, WMDraggingInfo * info)
 {
   CFMutableArrayRef operationList = NULL;
-  WMScreen *scr = WMVIEW_SCREEN(destView);
+  WMScreen *scr = WMViewScreen(destView);
   WMPoint *dropLocation;
 
   if (XDND_SOURCE_ACTION(info) == scr->xdndActionAsk)
@@ -624,7 +624,7 @@ static void dragSourceResponseTimeOut(CFRunLoopTimerRef timer, void *destView)
   WMDraggingInfo *info;
 
   WMLogWarning("delay for drag source response expired");
-  info = WMVIEW_SCREEN(view)->dragInfo;
+  info = WMViewScreen(view)->dragInfo;
   if (XDND_DEST_VIEW_IS_REGISTERED(info))
     cancelDrop(view, info);
   else {
@@ -690,7 +690,7 @@ static void *idleState(WMView * destView, XClientMessageEvent * event, WMDraggin
   Atom sourceMsg;
 
   if (destView->dragDestinationProcs != NULL) {
-    scr = WMVIEW_SCREEN(destView);
+    scr = WMViewScreen(destView);
     sourceMsg = event->message_type;
 
     if (sourceMsg == scr->xdndPositionAtom) {
@@ -714,7 +714,7 @@ static void *idleState(WMView * destView, XClientMessageEvent * event, WMDraggin
     waiting for xdnd protocol version and source type */
 static void *waitEnterState(WMView * destView, XClientMessageEvent * event, WMDraggingInfo * info)
 {
-  WMScreen *scr = WMVIEW_SCREEN(destView);
+  WMScreen *scr = WMViewScreen(destView);
   Atom sourceMsg = event->message_type;
 
   if (sourceMsg == scr->xdndEnterAtom) {
@@ -731,7 +731,7 @@ static void *inspectDropDataState(WMView * destView, XClientMessageEvent * event
   WMScreen *scr;
   Atom sourceMsg;
 
-  scr = WMVIEW_SCREEN(destView);
+  scr = WMViewScreen(destView);
   sourceMsg = event->message_type;
 
   if (sourceMsg == scr->xdndSelectionAtom) {
@@ -752,7 +752,7 @@ static void *inspectDropDataState(WMView * destView, XClientMessageEvent * event
 
 static void *dropNotAllowedState(WMView * destView, XClientMessageEvent * event, WMDraggingInfo * info)
 {
-  WMScreen *scr = WMVIEW_SCREEN(destView);
+  WMScreen *scr = WMViewScreen(destView);
   Atom sourceMsg = event->message_type;
 
   if (sourceMsg == scr->xdndDropAtom) {
@@ -774,7 +774,7 @@ static void *dropNotAllowedState(WMView * destView, XClientMessageEvent * event,
 
 static void *dropAllowedState(WMView * destView, XClientMessageEvent * event, WMDraggingInfo * info)
 {
-  WMScreen *scr = WMVIEW_SCREEN(destView);
+  WMScreen *scr = WMViewScreen(destView);
   Atom sourceMsg = event->message_type;
 
   if (sourceMsg == scr->xdndDropAtom) {
@@ -810,7 +810,7 @@ static void *dropAllowedState(WMView * destView, XClientMessageEvent * event, WM
 
 static void *waitForDropDataState(WMView * destView, XClientMessageEvent * event, WMDraggingInfo * info)
 {
-  WMScreen *scr = WMVIEW_SCREEN(destView);
+  WMScreen *scr = WMViewScreen(destView);
   Atom sourceMsg = event->message_type;
 
   if (sourceMsg == scr->xdndSelectionAtom) {
@@ -868,9 +868,9 @@ static void realizedObserver(CFNotificationCenterRef center,
                              CFDictionaryRef userInfo)
 {
   WMView *view = (WMView *)viewObject;
-  WMScreen *scr = WMVIEW_SCREEN(view);
+  WMScreen *scr = WMViewScreen(view);
 
-  XChangeProperty(scr->display, WMVIEW_DRAWABLE(view),
+  XChangeProperty(scr->display, WMViewDrawable(view),
                   scr->xdndAwareAtom, XA_ATOM, XDND_PROPERTY_FORMAT, PropModeReplace, &XDNDversion, 1);
 
   CFNotificationCenterRemoveEveryObserver(CFNotificationCenterGetLocalCenter(), self);
@@ -884,7 +884,7 @@ static void WMSetXdndAwareProperty(WMScreen *scr, WMView *view)
     toplevel->flags.xdndHintSet = 1;
 
     if (toplevel->flags.realized) {
-      XChangeProperty(scr->display, WMVIEW_DRAWABLE(toplevel),
+      XChangeProperty(scr->display, WMViewDrawable(toplevel),
                       scr->xdndAwareAtom, XA_ATOM, XDND_PROPERTY_FORMAT,
                       PropModeReplace, &XDNDversion, 1);
     } else {
@@ -908,14 +908,14 @@ void WMRegisterViewForDraggedTypes(WMView *view, CFMutableArrayRef acceptedTypes
   types = wmalloc(sizeof(Atom) * (typeCount + 1));
 
   for (i = 0; i < typeCount; i++) {
-    types[i] = XInternAtom(WMVIEW_SCREEN(view)->display, CFArrayGetValueAtIndex(acceptedTypes, i), False);
+    types[i] = XInternAtom(WMViewScreen(view)->display, CFArrayGetValueAtIndex(acceptedTypes, i), False);
   }
   types[i] = 0;
 
   view->droppableTypes = types;
   /* WMFreeArray(acceptedTypes); */
 
-  WMSetXdndAwareProperty(WMVIEW_SCREEN(view), view);
+  WMSetXdndAwareProperty(WMViewScreen(view), view);
 }
 
 void WMUnregisterViewDraggedTypes(WMView * view)

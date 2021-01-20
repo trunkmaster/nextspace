@@ -90,6 +90,6 @@ Pixmap WMGetPixmapXID(WMPixmap *pixmap);
 
 Pixmap WMGetPixmapMaskXID(WMPixmap *pixmap);
 
-WMPixmap* WMGetSystemPixmap(WMScreen *scr, int image);
+/* WMPixmap* WMGetSystemPixmap(WMScreen *scr, int image); */
 
 #endif /* __WORKSPACE_WM_WPXIMAP__ */

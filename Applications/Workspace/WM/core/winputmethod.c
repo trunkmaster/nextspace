@@ -115,7 +115,7 @@ void WMInitIM(WMScreen *scr)
 
 void WMCreateIC(WMView *view)
 {
-  WMScreen *scr = WMVIEW_SCREEN(view);
+  WMScreen *scr = WMViewScreen(view);
   XVaNestedList preedit_attr = NULL;
 
   if (view->xic || !view->flags.realized || !scr->imctx)
@@ -167,7 +167,7 @@ void WMDestroyIC(WMView *view)
 
 static void setPreeditArea(WMView *view)
 {
-  WMScreen *scr = WMVIEW_SCREEN(view);
+  WMScreen *scr = WMViewScreen(view);
   XVaNestedList preedit_attr = NULL;
 
   if (view->xic && (scr->imctx->ximstyle & XIMPreeditPosition)) {
@@ -191,7 +191,7 @@ static void setPreeditArea(WMView *view)
 
 void WMFocusIC(WMView *view)
 {
-  WMScreen *scr = WMVIEW_SCREEN(view);
+  WMScreen *scr = WMViewScreen(view);
 
   if (view->xic) {
     XSetICFocus(view->xic);
@@ -212,7 +212,7 @@ void WMUnFocusIC(WMView *view)
 
 void WMSetPreeditPositon(WMView *view, int x, int y)
 {
-  WMScreen *scr = WMVIEW_SCREEN(view);
+  WMScreen *scr = WMViewScreen(view);
   XVaNestedList preedit_attr = NULL;
 
   if (view->xic && (scr->imctx->ximstyle & XIMPreeditPosition)) {
@@ -232,7 +232,7 @@ void WMSetPreeditPositon(WMView *view, int x, int y)
 
 int WMLookupString(WMView *view, XKeyPressedEvent *event, char *buffer, int buflen, KeySym *keysym, Status *status)
 {
-  WMScreen *scr = WMVIEW_SCREEN(view);
+  WMScreen *scr = WMViewScreen(view);
 
   XSetInputFocus(scr->display, view->window, RevertToParent, CurrentTime);
 

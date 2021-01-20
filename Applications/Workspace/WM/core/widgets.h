@@ -55,14 +55,7 @@ typedef struct WMWidgetType {
 
 #define CHECK_CLASS(widget, class) assert(WMWidgetClass(widget)==(class))
 
-/* #define WMCLASS(widget)  	(((WMWidgetType*)(widget))->widgetClass) */
 #define WMVIEW(widget)   	(((WMWidgetType*)(widget))->view)
-
-/* -- Functions -- */
-
-WMScreen* WMCreateScreenWithRContext(Display *display, int screen,
-                                     RContext *context);
-Display* WMScreenDisplay(WMScreen *scr);
 
 //---
 
@@ -75,9 +68,9 @@ void WMDestroyWidget(WMWidget *widget);
 
 void WMMoveWidget(WMWidget *w, int x, int y);
 void WMResizeWidget(WMWidget *w, unsigned int width, unsigned int height);
+void WMRedisplayWidget(WMWidget *w);
 
 void WMSetWidgetBackgroundColor(WMWidget *w, WMColor *color);
 void WMMapSubwidgets(WMWidget *w);
-void WMRedisplayWidget(WMWidget *w);
 
 #endif /* __WORKSPACE_WM_WIDGETS__ */

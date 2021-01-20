@@ -209,7 +209,7 @@ static void handleLeaveMessage(WMDraggingInfo *info)
 
 void WMHandleDNDClientMessage(WMView *toplevel, XClientMessageEvent *event)
 {
-  WMScreen *scr = WMVIEW_SCREEN(toplevel);
+  WMScreen *scr = WMViewScreen(toplevel);
   WMDraggingInfo *info = scr->dragInfo;
   Atom messageType = event->message_type;
 

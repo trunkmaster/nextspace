@@ -134,14 +134,14 @@ static void paint(WGeometryView * gview)
              gview->data.size.width, gview->data.size.height);
   }
 
-  WMDrawImageString(WMVIEW_SCREEN(gview->view),
-                    WMVIEW_DRAWABLE(gview->view),
+  WMDrawImageString(WMViewScreen(gview->view),
+                    WMViewDrawable(gview->view),
                     gview->color, gview->bgColor, gview->font,
-                    (WMVIEW_WIDTH(gview->view) - gview->textSize.width) / 2,
-                    (WMVIEW_HEIGHT(gview->view) - gview->textSize.height) / 2, buffer, strlen(buffer));
+                    (WMViewWidth(gview->view) - gview->textSize.width) / 2,
+                    (WMViewHeight(gview->view) - gview->textSize.height) / 2, buffer, strlen(buffer));
 
-  WMDrawRelief(WMVIEW_SCREEN(gview->view), WMVIEW_DRAWABLE(gview->view),
-               0, 0, WMVIEW_WIDTH(gview->view), WMVIEW_HEIGHT(gview->view), WRSimple);
+  WMDrawRelief(WMViewScreen(gview->view), WMViewDrawable(gview->view),
+               0, 0, WMViewWidth(gview->view), WMViewHeight(gview->view), WRSimple);
 }
 
 static void handleEvents(XEvent * event, void *clientData)
