@@ -53,7 +53,6 @@
 #include <core/wuserdefaults.h>
 #include <core/wevent.h>
 #include <core/string_utils.h>
-#include <core/wappresource.h>
 
 #include "WM.h"
 #include "GNUstep.h"
@@ -737,9 +736,6 @@ void wInitialize(int argc, char **argv)
   w_global.timestamp.focus_change = CurrentTime;
   w_global.ignore_workspace_change = False;
   w_global.shortcut.modifiers_mask = 0xff;
-
-  /* setup common stuff for the monitor and wmaker itself */
-  WMInitializeApplication("WM", &argc, argv);
 
   memset(&wPreferences, 0, sizeof(wPreferences));
   // wDockDoAutoLaunch() called in applicationDidFinishLaunching of Workspace

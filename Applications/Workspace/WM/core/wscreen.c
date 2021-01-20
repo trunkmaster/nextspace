@@ -286,8 +286,5 @@ WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *con
 
   scrPtr->balloon = WMCreateBalloon(scrPtr);
 
-  /* FIXME! */
-  /* WMInitApplication(scrPtr); */
-
   return scrPtr;
 }

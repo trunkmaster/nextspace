@@ -37,7 +37,6 @@
 
 #include "WM.h"
 #include "wscreen.h"
-#include "wappresource.h"
 #include "widgets.h"
 #include "wevent.h"
 #include "wpixmap.h"
@@ -48,22 +47,15 @@
 
 static void willResizeWindow(WMViewDelegate *, WMView *, unsigned *, unsigned *);
 
-struct WMViewDelegate _WindowViewDelegate = {
-                                             NULL,
-                                             NULL,
-                                             NULL,
-                                             NULL,
-                                             willResizeWindow
-};
+struct WMViewDelegate _WindowViewDelegate = { NULL, NULL, NULL, NULL, willResizeWindow };
 
 #define DEFAULT_WIDTH	400
 #define DEFAULT_HEIGHT	180
 
 static void destroyWindow(WMWindow *win);
-
 static void handleEvents(XEvent *event, void *clientData);
-
 static void realizeWindow(WMWindow *win);
+
 
 static void realizeObserver(CFNotificationCenterRef center,
                             void *window,
@@ -74,39 +66,13 @@ static void realizeObserver(CFNotificationCenterRef center,
   realizeWindow(window);
 }
 
-WMWindow *WMCreatePanelWithStyleForWindow(WMWindow *owner, const char *name, int style)
+WMWindow *WMCreateWindow(WMScreen *screen)
 {
-  WMWindow *win;
-
-  win = WMCreateWindowWithStyle(owner->view->screen, name, style);
-  win->owner = owner;
-
-  return win;
-}
-
-WMWindow *WMCreatePanelForWindow(WMWindow *owner, const char *name)
-{
-  return WMCreatePanelWithStyleForWindow(owner, name,
-                                         NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask);
-}
-
-void WMChangePanelOwner(WMWindow *win, WMWindow *newOwner)
-{
-  win->owner = newOwner;
-
-  if (win->view->flags.realized && newOwner) {
-    XSetTransientForHint(win->view->screen->display, win->view->window, newOwner->view->window);
-  }
-}
-
-WMWindow *WMCreateWindow(WMScreen *screen, const char *name)
-{
-  return WMCreateWindowWithStyle(screen, name, NSTitledWindowMask
-                                 | NSClosableWindowMask
+  return WMCreateWindowWithStyle(screen, NSTitledWindowMask | NSClosableWindowMask
                                  | NSMiniaturizableWindowMask | NSResizableWindowMask);
 }
 
-WMWindow *WMCreateWindowWithStyle(WMScreen *screen, const char *name, int style)
+WMWindow *WMCreateWindowWithStyle(WMScreen *screen, int style)
 {
   WMWindow *win;
 
@@ -122,7 +88,7 @@ WMWindow *WMCreateWindowWithStyle(WMScreen *screen, const char *name, int style)
 
   win->view->delegate = &_WindowViewDelegate;
 
-  win->wname = wstrdup(name);
+  win->wname = wstrdup("Workspace");
 
   /* add to the window list of the screen (application) */
   win->nextPtr = screen->windowList;
@@ -175,7 +141,8 @@ static void setMiniwindowTitle(WMWindow *win, const char *title)
   XTextProperty property;
   int result;
 
-  result = XmbTextListToTextProperty(scr->display, (char **)&title, 1, XStdICCTextStyle, &property);
+  result = XmbTextListToTextProperty(scr->display, (char **)&title, 1,
+                                     XStdICCTextStyle, &property);
   if (result == XNoMemory || result == XLocaleNotSupported) {
     WMLogWarning(_("icon title conversion error... using STRING encoding"));
     XSetIconName(scr->display, win->view->window, title);
@@ -237,9 +204,9 @@ void WMSetWindowTitle(WMWindow *win, const char *title)
 {
   wassertr(title != NULL);
 
-  if (win->title != NULL)
+  if (win->title != NULL) {
     wfree(win->title);
-
+  }
   win->title = wstrdup(title);
 
   if (win->view->flags.realized) {
@@ -413,8 +380,8 @@ static void realizeWindow(WMWindow *win)
   int count;
 
   classHint = XAllocClassHint();
-  classHint->res_name = win->wname;
-  classHint->res_class = WMGetApplicationName();
+  classHint->res_name = "Workspace";
+  classHint->res_class = "GNUstep";
   XSetClassHint(scr->display, win->view->window, classHint);
   XFree(classHint);
 
@@ -432,8 +399,9 @@ static void realizeWindow(WMWindow *win)
       hints->flags |= IconMaskHint;
     }
   }
-  if (hints->flags != 0)
+  if (hints->flags != 0) {
     XSetWMHints(scr->display, win->view->window, hints);
+  }
   XFree(hints);
 
   count = 0;
@@ -441,13 +409,13 @@ static void realizeWindow(WMWindow *win)
     atoms[count++] = scr->deleteWindowAtom;
   }
 
-  if (count > 0)
+  if (count > 0) {
     XSetWMProtocols(scr->display, win->view->window, atoms, count);
-
-  if (win->title || win->miniTitle)
+  }
+  if (win->title || win->miniTitle) {
     XmbSetWMProperties(scr->display, win->view->window, win->title,
                        win->miniTitle, NULL, 0, NULL, NULL, NULL);
-
+  }
   setWindowMakerHints(win);
 
   setSizeHints(win);
@@ -456,8 +424,9 @@ static void realizeWindow(WMWindow *win)
     XSetTransientForHint(scr->display, win->view->window, win->owner->view->window);
   }
 
-  if (win->title)
+  if (win->title) {
     setWindowTitle(win, win->title);
+  }
 }
 
 void WMSetWindowAspectRatio(WMWindow *win, int minX, int minY, int maxX, int maxY)

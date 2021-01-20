@@ -10,7 +10,6 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/core/dragsource.c \
 	$(WM_DIR)/core/drawing.c \
 	$(WM_DIR)/core/selection.c \
-	$(WM_DIR)/core/wappresource.c \
 	$(WM_DIR)/core/wbagtree.c \
 	$(WM_DIR)/core/wdata.c \
 	$(WM_DIR)/core/wballoon.c \

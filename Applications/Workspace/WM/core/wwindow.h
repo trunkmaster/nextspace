@@ -76,16 +76,13 @@ typedef struct WMWindow {
 
 /* ----------------------------------------------------------------------- */
 
-WMWindow* WMCreateWindow(WMScreen *screen, const char *name);
+WMWindow* WMCreateWindow(WMScreen *screen);
 
-WMWindow* WMCreateWindowWithStyle(WMScreen *screen, const char *name, int style);
+WMWindow* WMCreateWindowWithStyle(WMScreen *screen, int style);
 
-WMWindow* WMCreatePanelWithStyleForWindow(WMWindow *owner, const char *name,
-                                          int style);
-
-WMWindow* WMCreatePanelForWindow(WMWindow *owner, const char *name);
-
-void WMChangePanelOwner(WMWindow *win, WMWindow *newOwner);
+/* WMWindow* WMCreatePanelWithStyleForWindow(WMWindow *owner, const char *name, int style); */
+/* WMWindow* WMCreatePanelForWindow(WMWindow *owner, const char *name); */
+/* void WMChangePanelOwner(WMWindow *win, WMWindow *newOwner); */
 
 void WMSetWindowTitle(WMWindow *wPtr, const char *title);
 
@@ -101,8 +98,7 @@ void WMSetWindowInitialPosition(WMWindow *win, int x, int y);
 
 void WMSetWindowUserPosition(WMWindow *win, int x, int y);
 
-void WMSetWindowAspectRatio(WMWindow *win, int minX, int minY,
-                            int maxX, int maxY);
+void WMSetWindowAspectRatio(WMWindow *win, int minX, int minY, int maxX, int maxY);
 
 void WMSetWindowMaxSize(WMWindow *win, unsigned width, unsigned height);
 

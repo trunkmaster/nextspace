@@ -508,7 +508,7 @@ WSwitchPanel *wInitSwitchPanel(WScreen *scr, WWindow *curwin, Bool class_only)
   panel->icons = CFArrayCreateMutable(kCFAllocatorDefault, count, NULL);
   panel->images = CFArrayCreateMutable(kCFAllocatorDefault, count, NULL);
 
-  panel->win = WMCreateWindow(scr->wmscreen, "");
+  panel->win = WMCreateWindow(scr->wmscreen);
 
   if (!panel->bg) {
     WMFrame *frame = WMCreateFrame(panel->win);

@@ -27,7 +27,6 @@
 #include <X11/Xatom.h>
 
 #include <wraster.h>
-#include <core/wappresource.h>
 #include <core/util.h>
 #include <core/string_utils.h>
 #include <core/wuserdefaults.h>

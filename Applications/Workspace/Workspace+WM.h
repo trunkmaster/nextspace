@@ -47,7 +47,6 @@ extern WorkspaceExitCode ws_quit_code;
 
 #include <wraster.h>
 
-#include <core/wappresource.h>
 #include <core/log_utils.h>
 
 #include <screen.h>
