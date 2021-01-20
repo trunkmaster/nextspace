@@ -1490,7 +1490,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   WScreen *scr = wwin->screen_ptr;
   WApplication *oapp;
 
-  WMLogInfo("[window.c] will unmanage window:%lu\n", wwin->client_win);
+  WMLogInfo("will unmanage window:%lu", wwin->client_win);
   
   /* Close window menu if it's open for this window */
   if (wwin->flags.menu_open_for_me)

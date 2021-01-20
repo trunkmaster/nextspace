@@ -459,35 +459,6 @@ static WMPixmap *makePixmap(WMScreen *sPtr, char **data, int width, int height, 
   return WMCreatePixmapFromXPixmaps(sPtr, pixmap, mask, width, height, sPtr->depth);
 }
 
-WMScreen *WMOpenScreen(const char *display)
-{
-  Display *dpy = XOpenDisplay(display);
-
-  if (!dpy) {
-    WMLogWarning(_("WINGs: could not open display %s"), XDisplayName(display));
-    return NULL;
-  }
-
-  return WMCreateSimpleApplicationScreen(dpy);
-}
-
-WMScreen *WMCreateSimpleApplicationScreen(Display *display)
-{
-  WMScreen *scr;
-
-  scr = WMCreateScreen(display, DefaultScreen(display));
-
-  scr->aflags.hasAppIcon = 0;
-  scr->aflags.simpleApplication = 1;
-
-  return scr;
-}
-
-WMScreen *WMCreateScreen(Display *display, int screen)
-{
-  return WMCreateScreenWithRContext(display, screen, RCreateContext(display, screen, NULL));
-}
-
 WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *context)
 {
   WMScreen *scrPtr;
@@ -830,44 +801,13 @@ WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *con
   return scrPtr;
 }
 
-void WMSetWidgetDefaultFont(WMScreen *scr, WMFont *font)
-{
-  WMReleaseFont(scr->normalFont);
-  scr->normalFont = WMRetainFont(font);
-}
-
-void WMSetWidgetDefaultBoldFont(WMScreen *scr, WMFont *font)
-{
-  WMReleaseFont(scr->boldFont);
-  scr->boldFont = WMRetainFont(font);
-}
-
-void WMHangData(WMWidget *widget, void *data)
-{
-  WMVIEW(widget)->hangedData = data;
-}
-
-void *WMGetHangedData(WMWidget *widget)
-{
-  return WMVIEW(widget)->hangedData;
-}
-
 void WMDestroyWidget(WMWidget *widget)
 {
   WMUnmapView(WMVIEW(widget));
   WMDestroyView(WMVIEW(widget));
 }
 
-void WMSetFocusToWidget(WMWidget *widget)
-{
-  WMSetFocusOfTopLevel(WMTopLevelOfView(WMVIEW(widget)), WMVIEW(widget));
-}
-
-/*
- *WMRealizeWidget-
- *	Realizes the widget and all it's children.
- *
- */
+/* Realizes the widget and all it's children. */
 void WMRealizeWidget(WMWidget *w)
 {
   WMRealizeView(WMVIEW(w));
@@ -878,9 +818,9 @@ void WMMapWidget(WMWidget *w)
   WMMapView(WMVIEW(w));
 }
 
-void WMReparentWidget(WMWidget *w, WMWidget *newParent, int x, int y)
+void WMUnmapWidget(WMWidget *w)
 {
-  WMReparentView(WMVIEW(w), WMVIEW(newParent), x, y);
+  WMUnmapView(WMVIEW(w));
 }
 
 static void makeChildrenAutomap(WMView *view, int flag)
@@ -906,60 +846,11 @@ void WMMapSubwidgets(WMWidget *w)
   }
 }
 
-void WMUnmapSubwidgets(WMWidget *w)
-{
-  if (!WMVIEW(w)->flags.realized) {
-    makeChildrenAutomap(WMVIEW(w), False);
-  } else {
-    WMUnmapSubviews(WMVIEW(w));
-  }
-}
-
-void WMUnmapWidget(WMWidget *w)
-{
-  WMUnmapView(WMVIEW(w));
-}
-
-Bool WMWidgetIsMapped(WMWidget *w)
-{
-  return WMVIEW(w)->flags.mapped;
-}
-
 void WMSetWidgetBackgroundColor(WMWidget *w, WMColor *color)
 {
   WMSetViewBackgroundColor(WMVIEW(w), color);
   if (WMVIEW(w)->flags.mapped)
     WMRedisplayWidget(w);
-}
-
-WMColor *WMGetWidgetBackgroundColor(WMWidget *w)
-{
-  return WMVIEW(w)->backColor;
-}
-
-void WMSetWidgetBackgroundPixmap(WMWidget *w, WMPixmap *pix)
-{
-  if (!pix)
-    return;
-
-  WMSetViewBackgroundPixmap(WMVIEW(w), pix);
-  if (WMVIEW(w)->flags.mapped)
-    WMRedisplayWidget(w);
-}
-
-WMPixmap *WMGetWidgetBackgroundPixmap(WMWidget *w)
-{
-  return WMVIEW(w)->backImage;
-}
-
-void WMRaiseWidget(WMWidget *w)
-{
-  WMRaiseView(WMVIEW(w));
-}
-
-void WMLowerWidget(WMWidget *w)
-{
-  WMLowerView(WMVIEW(w));
 }
 
 void WMMoveWidget(WMWidget *w, int x, int y)
@@ -979,79 +870,127 @@ WMClass WMRegisterUserWidget(void)
   return userWidgetCount + WC_UserWidget - 1;
 }
 
-RContext *WMScreenRContext(WMScreen *scr)
-{
-  return scr->rcontext;
-}
-
-unsigned int WMWidgetWidth(WMWidget *w)
-{
-  return WMVIEW(w)->size.width;
-}
-
-unsigned int WMWidgetHeight(WMWidget *w)
-{
-  return WMVIEW(w)->size.height;
-}
-
-Window WMWidgetXID(WMWidget *w)
-{
-  return WMVIEW(w)->window;
-}
-
-WMScreen *WMWidgetScreen(WMWidget *w)
-{
-  return WMVIEW(w)->screen;
-}
-
-void WMBreakModalLoop(WMScreen *scr)
-{
-  scr->modalLoop = 0;
-}
-
-void WMRunModalLoop(WMScreen *scr, WMView *view)
-{
-  /* why is scr passed if is determined from the view? */
-  /*WMScreen *scr = view->screen; */
-  int oldModalLoop = scr->modalLoop;
-  WMView *oldModalView = scr->modalView;
-
-  scr->modalView = view;
-
-  scr->modalLoop = 1;
-  while (scr->modalLoop) {
-    XEvent event;
-
-    /* WMNextEvent(scr->display, &event); */
-    XNextEvent(scr->display, &event);
-    WMHandleEvent(&event);
-  }
-
-  scr->modalView = oldModalView;
-  scr->modalLoop = oldModalLoop;
-}
-
 Display *WMScreenDisplay(WMScreen *scr)
 {
   return scr->display;
-}
-
-int WMScreenDepth(WMScreen *scr)
-{
-  return scr->depth;
-}
-
-unsigned int WMScreenWidth(WMScreen *scr)
-{
-  return scr->rootView->size.width;
-}
-
-unsigned int WMScreenHeight(WMScreen *scr)
-{
-  return scr->rootView->size.height;
 }
 
 void WMRedisplayWidget(WMWidget *w)
 {
   WMRedisplayView(WMVIEW(w));
 }
+
+
+
+
+
+/* RContext *WMScreenRContext(WMScreen *scr) */
+/* { */
+/*   return scr->rcontext; */
+/* } */
+
+/* WMColor *WMGetWidgetBackgroundColor(WMWidget *w) */
+/* { */
+/*   return WMVIEW(w)->backColor; */
+/* } */
+
+/* void WMSetWidgetBackgroundPixmap(WMWidget *w, WMPixmap *pix) */
+/* { */
+/*   if (!pix) */
+/*     return; */
+
+/*   WMSetViewBackgroundPixmap(WMVIEW(w), pix); */
+/*   if (WMVIEW(w)->flags.mapped) */
+/*     WMRedisplayWidget(w); */
+/* } */
+
+/* WMPixmap *WMGetWidgetBackgroundPixmap(WMWidget *w) */
+/* { */
+/*   return WMVIEW(w)->backImage; */
+/* } */
+
+/* void WMRaiseWidget(WMWidget *w) */
+/* { */
+/*   WMRaiseView(WMVIEW(w)); */
+/* } */
+
+/* void WMLowerWidget(WMWidget *w) */
+/* { */
+/*   WMLowerView(WMVIEW(w)); */
+/* } */
+
+/* void WMUnmapSubwidgets(WMWidget *w) */
+/* { */
+/*   if (!WMVIEW(w)->flags.realized) { */
+/*     makeChildrenAutomap(WMVIEW(w), False); */
+/*   } else { */
+/*     WMUnmapSubviews(WMVIEW(w)); */
+/*   } */
+/* } */
+
+/* Bool WMWidgetIsMapped(WMWidget *w) */
+/* { */
+/*   return WMVIEW(w)->flags.mapped; */
+/* } */
+
+/* void WMReparentWidget(WMWidget *w, WMWidget *newParent, int x, int y) */
+/* { */
+/*   WMReparentView(WMVIEW(w), WMVIEW(newParent), x, y); */
+/* } */
+
+/* void WMSetFocusToWidget(WMWidget *widget) */
+/* { */
+/*   WMSetFocusOfTopLevel(WMTopLevelOfView(WMVIEW(widget)), WMVIEW(widget)); */
+/* } */
+
+/* WMScreen *WMOpenScreen(const char *display) */
+/* { */
+/*   Display *dpy = XOpenDisplay(display); */
+
+/*   if (!dpy) { */
+/*     WMLogWarning(_("WINGs: could not open display %s"), XDisplayName(display)); */
+/*     return NULL; */
+/*   } */
+
+/*   return WMCreateSimpleApplicationScreen(dpy); */
+/* } */
+
+/* WMScreen *WMCreateSimpleApplicationScreen(Display *display) */
+/* { */
+/*   WMScreen *scr; */
+
+/*   scr = WMCreateScreen(display, DefaultScreen(display)); */
+
+/*   scr->aflags.hasAppIcon = 0; */
+/*   scr->aflags.simpleApplication = 1; */
+
+/*   return scr; */
+/* } */
+
+/* WMScreen *WMCreateScreen(Display *display, int screen) */
+/* { */
+/*   return WMCreateScreenWithRContext(display, screen, RCreateContext(display, screen, NULL)); */
+/* } */
+
+/* void WMSetWidgetDefaultFont(WMScreen *scr, WMFont *font) */
+/* { */
+/*   WMReleaseFont(scr->normalFont); */
+/*   scr->normalFont = WMRetainFont(font); */
+/* } */
+
+/* void WMSetWidgetDefaultBoldFont(WMScreen *scr, WMFont *font) */
+/* { */
+/*   WMReleaseFont(scr->boldFont); */
+/*   scr->boldFont = WMRetainFont(font); */
+/* } */
+
+/* void WMHangData(WMWidget *widget, void *data) */
+/* { */
+/*   WMVIEW(widget)->hangedData = data; */
+/* } */
+
+/* void *WMGetHangedData(WMWidget *widget) */
+/* { */
+/*   return WMVIEW(widget)->hangedData; */
+/* } */
+

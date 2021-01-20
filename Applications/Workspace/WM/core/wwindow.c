@@ -36,6 +36,7 @@
 #include "WM.h"
 #include "wscreen.h"
 #include "wappresource.h"
+/* WMWidgetScreen, WMMoveWidget, WMUnmapWidget */
 #include "widgets.h"
 #include "wevent.h"
 #include "wpixmap.h"

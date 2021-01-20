@@ -47,6 +47,8 @@ typedef struct WMViewDelegate {
                        unsigned int*, unsigned int*);
 } WMViewDelegate;
 
+typedef void WMWidget;
+
 typedef struct WMView {
     struct WMScreen *screen;
 

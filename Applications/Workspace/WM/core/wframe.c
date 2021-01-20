@@ -27,6 +27,7 @@
 #include "string_utils.h"
 
 #include "wscreen.h"
+/* WMVIEW, WMResizeWidget */
 #include "widgets.h"
 #include "wevent.h"
 #include "wcolor.h"

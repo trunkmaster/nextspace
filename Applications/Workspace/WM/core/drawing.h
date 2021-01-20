@@ -42,6 +42,7 @@ typedef struct {
     WMSize size;
 } WMRect;
 
+#include "wscreen.h"
 #include "wview.h"
 #include "wfont.h"
 

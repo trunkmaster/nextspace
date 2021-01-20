@@ -27,6 +27,7 @@
 #include "string_utils.h"
 
 #include "wscreen.h"
+/* WC_Label, WMVIEW, CHECK_CLASS */
 #include "widgets.h"
 #include "wevent.h"
 #include "wpixmap.h"

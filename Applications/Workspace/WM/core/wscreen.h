@@ -41,7 +41,7 @@
 extern char *_WINGS_progname;
 
 /* Widgets */
-typedef void WMWidget;
+/* typedef void WMWidget; */
 
 /* Pre-definition of internal structs */
 typedef struct WMColor		WMColor;
