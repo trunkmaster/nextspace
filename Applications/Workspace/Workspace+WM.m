@@ -94,7 +94,7 @@ void WMSetupFrameOffsetProperty()
   NSUInteger	titleBarHeight;
 
   // GSMenuBarHeight defines height for GNUstep menu title bar.
-  // WindowMaker window title bar height stored in
+  // WM window title bar height stored in
   // ~/L/P/.WindowMaker/WindowMaker setting WindowTitle*Height.
   // Should be 23
   titleBarHeight = [[NSUserDefaults standardUserDefaults]

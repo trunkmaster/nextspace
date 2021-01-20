@@ -1,6 +1,6 @@
 /*
  *  Workspace window manager
- *  Copyright (c) 2015- Sergii Stoian
+ *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  WINGs library (Window Maker)
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
@@ -23,6 +23,8 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
  *  MA 02110-1301, USA.
  */
+
+#include <string.h>
 
 #include "WM.h"
 

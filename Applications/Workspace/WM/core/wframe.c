@@ -1,6 +1,6 @@
 /*
  *  Workspace window manager
- *  Copyright (c) 2015- Sergii Stoian
+ *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  WINGs library (Window Maker)
  *  Copyright (c) 1998 scottc
@@ -23,11 +23,12 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <string.h>
+
 #include "util.h"
 #include "string_utils.h"
 
 #include "wscreen.h"
-/* WMVIEW, WMResizeWidget */
 #include "widgets.h"
 #include "wevent.h"
 #include "wcolor.h"
@@ -253,7 +254,7 @@ WMFrame *WMCreateFrame(WMWidget *parent)
 
   fPtr->widgetClass = WC_Frame;
 
-  fPtr->view = WMCreateView(WMVIEW(parent));
+  fPtr->view = WMCreateView(WMWidgetView(parent));
   if (!fPtr->view) {
     wfree(fPtr);
     return NULL;

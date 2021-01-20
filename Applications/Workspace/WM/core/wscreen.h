@@ -1,6 +1,6 @@
 /*
  *  Workspace window manager
- *  Copyright (c) 2015- Sergii Stoian
+ *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  WINGs library (Window Maker)
  *  Copyright (c) 1998 scottc
@@ -25,12 +25,6 @@
 #ifndef __WORKSPACE_WM_WSCREEN__
 #define __WORKSPACE_WM_WSCREEN__
 
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strings.h>
-#include <stdio.h>
-#include <X11/Xutil.h>
 #include <X11/Xlib.h>
 
 #include <wraster.h>

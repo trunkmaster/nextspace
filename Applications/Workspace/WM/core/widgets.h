@@ -1,6 +1,6 @@
 /*
  *  Workspace window manager
- *  Copyright (c) 2015- Sergii Stoian
+ *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  WINGs library (Window Maker)
  *  Copyright (c) 1998 scottc
@@ -26,6 +26,8 @@
 #ifndef __WORKSPACE_WM_WIDGETS__
 #define __WORKSPACE_WM_WIDGETS__
 
+#include <assert.h>
+
 #include "wpixmap.h"
 #include "wcolor.h"
 
@@ -48,14 +50,12 @@ typedef struct WMWidgetType {
 
 #define WMWidgetClass(widget)  	(((WMWidgetType*)(widget))->widgetClass)
 #define WMWidgetView(widget)   	(((WMWidgetType*)(widget))->view)
-#define WMWidgetWidth(widget)  	(WMVIEW(widget)->size.width)
-#define WMWidgetHeight(widget) 	(WMVIEW(widget)->size.height)
-#define WMWidgetXID(widget) 	(WMVIEW(widget)->window)
-#define WMWidgetScreen(widget) 	(WMVIEW(widget)->screen)
+#define WMWidgetWidth(widget)  	(WMWidgetView(widget)->size.width)
+#define WMWidgetHeight(widget) 	(WMWidgetView(widget)->size.height)
+#define WMWidgetXID(widget) 	(WMWidgetView(widget)->window)
+#define WMWidgetScreen(widget) 	(WMWidgetView(widget)->screen)
 
 #define CHECK_CLASS(widget, class) assert(WMWidgetClass(widget)==(class))
-
-#define WMVIEW(widget)   	(((WMWidgetType*)(widget))->view)
 
 //---
 

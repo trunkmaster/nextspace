@@ -1,7 +1,7 @@
 /*  Command menu for windows
  *
  *  Workspace window manager
- *  Copyright (c) 2015- Sergii Stoian
+ *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima

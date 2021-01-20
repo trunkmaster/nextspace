@@ -1,6 +1,6 @@
 /*
  *  Workspace window manager
- *  Copyright (c) 2015- Sergii Stoian
+ *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  WINGs library (Window Maker)
  *  Copyright (c) 1998 scottc
@@ -23,6 +23,8 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <string.h>
+
 #include <X11/Xmd.h>
 #include <X11/Xatom.h>
 
@@ -36,7 +38,6 @@
 #include "WM.h"
 #include "wscreen.h"
 #include "wappresource.h"
-/* WMWidgetScreen, WMMoveWidget, WMUnmapWidget */
 #include "widgets.h"
 #include "wevent.h"
 #include "wpixmap.h"

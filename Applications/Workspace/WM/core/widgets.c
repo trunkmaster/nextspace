@@ -1,6 +1,6 @@
 /*
  *  Workspace window manager
- *  Copyright (c) 2015- Sergii Stoian
+ *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  WINGs library (Window Maker)
  *  Copyright (c) 1998 scottc
@@ -42,46 +42,46 @@ WMClass WMRegisterUserWidget(void)
 /* Realizes the widget and all it's children. */
 void WMRealizeWidget(WMWidget *w)
 {
-  WMRealizeView(WMVIEW(w));
+  WMRealizeView(WMWidgetView(w));
 }
 
 void WMMapWidget(WMWidget *w)
 {
-  WMMapView(WMVIEW(w));
+  WMMapView(WMWidgetView(w));
 }
 
 void WMUnmapWidget(WMWidget *w)
 {
-  WMUnmapView(WMVIEW(w));
+  WMUnmapView(WMWidgetView(w));
 }
 
 void WMDestroyWidget(WMWidget *widget)
 {
-  WMUnmapView(WMVIEW(widget));
-  WMDestroyView(WMVIEW(widget));
+  WMUnmapView(WMWidgetView(widget));
+  WMDestroyView(WMWidgetView(widget));
 }
 
 
 void WMMoveWidget(WMWidget *w, int x, int y)
 {
-  WMMoveView(WMVIEW(w), x, y);
+  WMMoveView(WMWidgetView(w), x, y);
 }
 
 void WMResizeWidget(WMWidget *w, unsigned int width, unsigned int height)
 {
-  WMResizeView(WMVIEW(w), width, height);
+  WMResizeView(WMWidgetView(w), width, height);
 }
 
 void WMRedisplayWidget(WMWidget *w)
 {
-  WMRedisplayView(WMVIEW(w));
+  WMRedisplayView(WMWidgetView(w));
 }
 
 
 void WMSetWidgetBackgroundColor(WMWidget *w, WMColor *color)
 {
-  WMSetViewBackgroundColor(WMVIEW(w), color);
-  if (WMVIEW(w)->flags.mapped)
+  WMSetViewBackgroundColor(WMWidgetView(w), color);
+  if (WMWidgetView(w)->flags.mapped)
     WMRedisplayWidget(w);
 }
 
@@ -101,9 +101,9 @@ void WMMapSubwidgets(WMWidget *w)
 {
   /* make sure that subwidgets created after the parent was realized
    *are mapped too */
-  if (!WMVIEW(w)->flags.realized) {
-    makeChildrenAutomap(WMVIEW(w), True);
+  if (!WMWidgetView(w)->flags.realized) {
+    makeChildrenAutomap(WMWidgetView(w), True);
   } else {
-    WMMapSubviews(WMVIEW(w));
+    WMMapSubviews(WMWidgetView(w));
   }
 }

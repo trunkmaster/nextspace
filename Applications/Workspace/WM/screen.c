@@ -1,6 +1,6 @@
 /*
  *  Workspace window manager
- *  Copyright (c) 2015- Sergii Stoian
+ *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima
@@ -859,7 +859,7 @@ WScreen *wScreenInit(int screen_number)
   icon_size[0].height_inc = 1;
   XSetIconSizes(dpy, scr->root_win, icon_size, 1);
 
-  /* setup WindowMaker protocols property in the root window */
+  /* setup WM protocols property in the root window */
   PropSetWMakerProtocols(scr->root_win);
 
   /* setup our noticeboard */

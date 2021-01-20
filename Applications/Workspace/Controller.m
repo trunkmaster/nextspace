@@ -1,7 +1,7 @@
 //
 // Project: Workspace
 //
-// Copyright (C) 2014-2019 Sergii Stoian
+// Copyright (C) 2014-2021 Sergii Stoian
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
@@ -422,7 +422,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [mediaManager release]; //  mediaAdaptor released also
   [mediaOperations release];
 
-  // NXTSystem objects declared in Workspace+WindowMaker.h
+  // NXTSystem objects declared in Workspace+WM.h
   [systemPower stopEventsMonitor];
   [systemPower release];
 
@@ -697,7 +697,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
           break;
         }
 
-        // Close Workspace windows, hide Dock, quit WindowMaker
+        // Close Workspace windows, hide Dock, quit WM
         [self _finishTerminateProcess];
         terminateReply = NSTerminateNow;
         ws_quit_code = WSLogoutOnQuit;
@@ -1369,7 +1369,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 //============================================================================
-// WindowMaker events
+// WM events
 //============================================================================
 - (void)showWMAlert:(NSMutableDictionary *)alertInfo
 {

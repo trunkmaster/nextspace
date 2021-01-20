@@ -1,6 +1,6 @@
 /*
  *  Workspace window manager
- *  Copyright (c) 2015- Sergii Stoian
+ *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  WINGs library (Window Maker)
  *  Copyright (c) 1998 scottc
@@ -91,7 +91,7 @@ static const unsigned long eventMasks[] = {
                                            0,			/* Mapping Notify */
 };
 
-/* hook for other toolkits or wmaker process their events */
+/* hook for other toolkits or WM process their events */
 static WMEventHook *extraEventHandler = NULL;
 
 /*

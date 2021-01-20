@@ -1,6 +1,6 @@
 /*
  *  Workspace window manager
- *  Copyright (c) 2015- Sergii Stoian
+ *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  WINGs library (Window Maker)
  *  Copyright (c) 1998 scottc
@@ -27,7 +27,6 @@
 #include "string_utils.h"
 
 #include "wscreen.h"
-/* WC_Label, WMVIEW, CHECK_CLASS */
 #include "widgets.h"
 #include "wevent.h"
 #include "wpixmap.h"
@@ -54,7 +53,7 @@ WMLabel *WMCreateLabel(WMWidget *parent)
 
   lPtr->widgetClass = WC_Label;
 
-  lPtr->view = WMCreateView(WMVIEW(parent));
+  lPtr->view = WMCreateView(WMWidgetView(parent));
   if (!lPtr->view) {
     wfree(lPtr);
     return NULL;

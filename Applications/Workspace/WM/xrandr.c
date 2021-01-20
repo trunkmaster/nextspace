@@ -1,6 +1,6 @@
 /*
  *  Workspace window manager
- *  Copyright (c) 2020- Sergii Stoian
+ *  Copyright (c) 2020-2021 Sergii Stoian
  *
  *  Window Maker window manager (xinerama.c)
  *  Copyright (c) 1997-2003 Alfredo K. Kojima

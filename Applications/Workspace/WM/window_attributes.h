@@ -1,6 +1,6 @@
 /*
  *  Workspace Window Manager
- *  Copyright (c) 2014- Sergii Stoian
+ *  Copyright (c) 2014-2021 Sergii Stoian
  *  
  *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima

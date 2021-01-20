@@ -1,7 +1,7 @@
 /*  Dock - stack of application icons at the right edge of the screen
  *
  *  Workspace window manager
- *  Copyright (c) 2015- Sergii Stoian
+ *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  Window Maker window manager
  *  Copyright (c) 1997-2003 Alfredo K. Kojima

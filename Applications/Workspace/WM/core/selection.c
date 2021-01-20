@@ -1,6 +1,6 @@
 /*
  *  Workspace window manager
- *  Copyright (c) 2015- Sergii Stoian
+ *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  WINGs library (Window Maker)
  *  Copyright (c) 1998 scottc
@@ -23,15 +23,15 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
+#include <CoreFoundation/CFArray.h>
 
 #include <X11/Xatom.h>
-
-#include <CoreFoundation/CFArray.h>
-#include "util.h"
 
 #include "wscreen.h"
 #include "dragcommon.h"
 #include "drawing.h"
+#include "util.h"
 
 #include "selection.h"
 
@@ -64,7 +64,7 @@ typedef struct SelectionCallback {
   } flags;
 } SelectionCallback;
 
-static CFMutableArrayRef  selCallbacks = NULL;
+static CFMutableArrayRef selCallbacks = NULL;
 
 static CFMutableArrayRef selHandlers = NULL;
 
