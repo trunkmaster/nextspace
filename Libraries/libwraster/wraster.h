@@ -36,8 +36,8 @@
  * for screen number 1
  */
 
-#ifndef RLRASTER_H_
-#define RLRASTER_H_
+#ifndef __WRASTER_WRASTER_H__
+#define __WRASTER_WRASTER_H__
 
 
 /* version of the header for the library */

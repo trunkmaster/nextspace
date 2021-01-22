@@ -20,10 +20,9 @@
  *  MA 02110-1301, USA.
  */
 
-#include "config.h"
-
 #include <wand/MagickWand.h>
 
+#include "config.h"
 #include "wraster.h"
 #include "imgformat.h"
 

@@ -20,14 +20,13 @@
  *  MA 02110-1301, USA.
  */
 
-#include <config.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include <png.h>
 
+#include "config.h"
 #include "wraster.h"
 #include "imgformat.h"
 

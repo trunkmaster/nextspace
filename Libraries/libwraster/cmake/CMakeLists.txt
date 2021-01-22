@@ -27,7 +27,6 @@ if (HAVE_MATH_H)
   endif()
 endif()
 
-check_include_files("stdlib.h" HAVE_STDLIB_H)
 check_include_files("stdnoreturn.h" HAVE_STDNORETURN)
 
 check_include_files("stdio.h;jpeglib.h" USE_JPEG)

@@ -26,9 +26,10 @@
  * the RLoadImage function defined in 'wraster.h'
  */
 
-#ifndef IMGFORMAT_INTERNAL_H
-#define IMGFORMAT_INTERNAL_H
+#ifndef __WRASTER_IMGFORMAT_H__
+#define __WRASTER_IMGFORMAT_H__
 
+#include "config.h"
 
 typedef enum {
 	IM_ERROR   = -1,

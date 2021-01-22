@@ -17,8 +17,8 @@
  *  License along with this library.
  */
 
-#ifndef WRASTER_SCALE_H
-#define WRASTER_SCALE_H
+#ifndef __WRASTER_SCALE_H__
+#define __WRASTER_SCALE_H__
 
 
 /*

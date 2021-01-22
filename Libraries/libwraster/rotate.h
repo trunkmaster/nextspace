@@ -17,8 +17,8 @@
  *  License along with this library.
  */
 
-#ifndef WRASTER_ROTATE_H
-#define WRASTER_ROTATE_H
+#ifndef __WRASTER_ROTATE_H__
+#define __WRASTER_ROTATE_H__
 
 
 /*
