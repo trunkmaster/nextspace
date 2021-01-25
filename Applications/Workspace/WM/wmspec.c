@@ -38,6 +38,7 @@
 #include <core/WMcore.h>
 #include <core/util.h>
 #include <core/string_utils.h>
+#include <core/log_utils.h>
 
 #include "WM.h"
 #include "window.h"
@@ -67,14 +68,15 @@ static Atom net_desktop_names;
 static Atom net_active_window;
 static Atom net_workarea;
 static Atom net_supporting_wm_check;
-static Atom net_virtual_roots;	/* N/A */
-static Atom net_desktop_layout;	/* XXX */
+static Atom net_virtual_roots;		/* N/A */
+static Atom net_desktop_layout;		/* XXX */
 static Atom net_showing_desktop;
 
 /* Other Root Window Messages */
 static Atom net_close_window;
 static Atom net_moveresize_window;	/* TODO */
-static Atom net_wm_moveresize;	/* TODO */
+static Atom net_wm_moveresize;		/* TODO */
+static Atom net_request_frame_extents;	/* TODO */
 
 /* Application Window Properties */
 static Atom net_wm_name;
@@ -121,10 +123,13 @@ static Atom net_wm_action_fullscreen;
 static Atom net_wm_action_change_desktop;
 static Atom net_wm_action_close;
 static Atom net_wm_strut;
-static Atom net_wm_strut_partial;	/* TODO: doesn't really fit into the current strut scheme */
-static Atom net_wm_icon_geometry;	/* FIXME: should work together with net_wm_handled_icons, gnome-panel-2.2.0.1 doesn't use _NET_WM_HANDLED_ICONS, thus present situation. */
+/* TODO: doesn't really fit into the current strut scheme */
+static Atom net_wm_strut_partial;
+/* FIXME: should work together with net_wm_handled_icons, gnome-panel-2.2.0.1 
+   doesn't use _NET_WM_HANDLED_ICONS, thus present situation. */
+static Atom net_wm_icon_geometry;
 static Atom net_wm_icon;
-static Atom net_wm_pid;		/* TODO */
+static Atom net_wm_pid;			/* TODO */
 static Atom net_wm_handled_icons;	/* FIXME: see net_wm_icon_geometry */
 static Atom net_wm_window_opacity;
 
@@ -141,81 +146,82 @@ typedef struct {
 } atomitem_t;
 
 static atomitem_t atomNames[] = {
-                                 {"_NET_SUPPORTED", &net_supported},
-                                 {"_NET_CLIENT_LIST", &net_client_list},
-                                 {"_NET_CLIENT_LIST_STACKING", &net_client_list_stacking},
-                                 {"_NET_NUMBER_OF_DESKTOPS", &net_number_of_desktops},
-                                 {"_NET_DESKTOP_GEOMETRY", &net_desktop_geometry},
-                                 {"_NET_DESKTOP_VIEWPORT", &net_desktop_viewport},
-                                 {"_NET_CURRENT_DESKTOP", &net_current_desktop},
-                                 {"_NET_DESKTOP_NAMES", &net_desktop_names},
-                                 {"_NET_ACTIVE_WINDOW", &net_active_window},
-                                 {"_NET_WORKAREA", &net_workarea},
-                                 {"_NET_SUPPORTING_WM_CHECK", &net_supporting_wm_check},
-                                 {"_NET_VIRTUAL_ROOTS", &net_virtual_roots},
-                                 {"_NET_DESKTOP_LAYOUT", &net_desktop_layout},
-                                 {"_NET_SHOWING_DESKTOP", &net_showing_desktop},
+  {"_NET_SUPPORTED", &net_supported},
+  {"_NET_CLIENT_LIST", &net_client_list},
+  {"_NET_CLIENT_LIST_STACKING", &net_client_list_stacking},
+  {"_NET_NUMBER_OF_DESKTOPS", &net_number_of_desktops},
+  {"_NET_DESKTOP_GEOMETRY", &net_desktop_geometry},
+  {"_NET_DESKTOP_VIEWPORT", &net_desktop_viewport},
+  {"_NET_CURRENT_DESKTOP", &net_current_desktop},
+  {"_NET_DESKTOP_NAMES", &net_desktop_names},
+  {"_NET_ACTIVE_WINDOW", &net_active_window},
+  {"_NET_WORKAREA", &net_workarea},
+  {"_NET_SUPPORTING_WM_CHECK", &net_supporting_wm_check},
+  {"_NET_VIRTUAL_ROOTS", &net_virtual_roots},
+  {"_NET_DESKTOP_LAYOUT", &net_desktop_layout},
+  {"_NET_SHOWING_DESKTOP", &net_showing_desktop},
 
-                                 {"_NET_CLOSE_WINDOW", &net_close_window},
-                                 {"_NET_MOVERESIZE_WINDOW", &net_moveresize_window},
-                                 {"_NET_WM_MOVERESIZE", &net_wm_moveresize},
+  {"_NET_CLOSE_WINDOW", &net_close_window},
+  {"_NET_MOVERESIZE_WINDOW", &net_moveresize_window},
+  {"_NET_WM_MOVERESIZE", &net_wm_moveresize},
+  {"_NET_REQUEST_FRAME_EXTENTS", &net_request_frame_extents},
 
-                                 {"_NET_WM_NAME", &net_wm_name},
-                                 {"_NET_WM_VISIBLE_NAME", &net_wm_visible_name},
-                                 {"_NET_WM_ICON_NAME", &net_wm_icon_name},
-                                 {"_NET_WM_VISIBLE_ICON_NAME", &net_wm_visible_icon_name},
-                                 {"_NET_WM_DESKTOP", &net_wm_desktop},
-                                 {"_NET_WM_WINDOW_TYPE", &net_wm_window_type},
-                                 {"_NET_WM_WINDOW_TYPE_DESKTOP", &net_wm_window_type_desktop},
-                                 {"_NET_WM_WINDOW_TYPE_DOCK", &net_wm_window_type_dock},
-                                 {"_NET_WM_WINDOW_TYPE_TOOLBAR", &net_wm_window_type_toolbar},
-                                 {"_NET_WM_WINDOW_TYPE_MENU", &net_wm_window_type_menu},
-                                 {"_NET_WM_WINDOW_TYPE_UTILITY", &net_wm_window_type_utility},
-                                 {"_NET_WM_WINDOW_TYPE_SPLASH", &net_wm_window_type_splash},
-                                 {"_NET_WM_WINDOW_TYPE_DIALOG", &net_wm_window_type_dialog},
-                                 {"_NET_WM_WINDOW_TYPE_DROPDOWN_MENU", &net_wm_window_type_dropdown_menu},
-                                 {"_NET_WM_WINDOW_TYPE_POPUP_MENU", &net_wm_window_type_popup_menu},
-                                 {"_NET_WM_WINDOW_TYPE_TOOLTIP", &net_wm_window_type_tooltip},
-                                 {"_NET_WM_WINDOW_TYPE_NOTIFICATION", &net_wm_window_type_notification},
-                                 {"_NET_WM_WINDOW_TYPE_COMBO", &net_wm_window_type_combo},
-                                 {"_NET_WM_WINDOW_TYPE_DND", &net_wm_window_type_dnd},
-                                 {"_NET_WM_WINDOW_TYPE_NORMAL", &net_wm_window_type_normal},
-                                 {"_NET_WM_STATE", &net_wm_state},
-                                 {"_NET_WM_STATE_MODAL", &net_wm_state_modal},
-                                 {"_NET_WM_STATE_STICKY", &net_wm_state_sticky},
-                                 {"_NET_WM_STATE_MAXIMIZED_VERT", &net_wm_state_maximized_vert},
-                                 {"_NET_WM_STATE_MAXIMIZED_HORZ", &net_wm_state_maximized_horz},
-                                 {"_NET_WM_STATE_SHADED", &net_wm_state_shaded},
-                                 {"_NET_WM_STATE_SKIP_TASKBAR", &net_wm_state_skip_taskbar},
-                                 {"_NET_WM_STATE_SKIP_PAGER", &net_wm_state_skip_pager},
-                                 {"_NET_WM_STATE_HIDDEN", &net_wm_state_hidden},
-                                 {"_NET_WM_STATE_FULLSCREEN", &net_wm_state_fullscreen},
-                                 {"_NET_WM_STATE_ABOVE", &net_wm_state_above},
-                                 {"_NET_WM_STATE_BELOW", &net_wm_state_below},
-                                 {"_NET_WM_ALLOWED_ACTIONS", &net_wm_allowed_actions},
-                                 {"_NET_WM_ACTION_MOVE", &net_wm_action_move},
-                                 {"_NET_WM_ACTION_RESIZE", &net_wm_action_resize},
-                                 {"_NET_WM_ACTION_MINIMIZE", &net_wm_action_minimize},
-                                 {"_NET_WM_ACTION_SHADE", &net_wm_action_shade},
-                                 {"_NET_WM_ACTION_STICK", &net_wm_action_stick},
-                                 {"_NET_WM_ACTION_MAXIMIZE_HORZ", &net_wm_action_maximize_horz},
-                                 {"_NET_WM_ACTION_MAXIMIZE_VERT", &net_wm_action_maximize_vert},
-                                 {"_NET_WM_ACTION_FULLSCREEN", &net_wm_action_fullscreen},
-                                 {"_NET_WM_ACTION_CHANGE_DESKTOP", &net_wm_action_change_desktop},
-                                 {"_NET_WM_ACTION_CLOSE", &net_wm_action_close},
-                                 {"_NET_WM_STRUT", &net_wm_strut},
-                                 {"_NET_WM_STRUT_PARTIAL", &net_wm_strut_partial},
-                                 {"_NET_WM_ICON_GEOMETRY", &net_wm_icon_geometry},
-                                 {"_NET_WM_ICON", &net_wm_icon},
-                                 {"_NET_WM_PID", &net_wm_pid},
-                                 {"_NET_WM_HANDLED_ICONS", &net_wm_handled_icons},
-                                 {"_NET_WM_WINDOW_OPACITY", &net_wm_window_opacity},
+  {"_NET_WM_NAME", &net_wm_name},
+  {"_NET_WM_VISIBLE_NAME", &net_wm_visible_name},
+  {"_NET_WM_ICON_NAME", &net_wm_icon_name},
+  {"_NET_WM_VISIBLE_ICON_NAME", &net_wm_visible_icon_name},
+  {"_NET_WM_DESKTOP", &net_wm_desktop},
+  {"_NET_WM_WINDOW_TYPE", &net_wm_window_type},
+  {"_NET_WM_WINDOW_TYPE_DESKTOP", &net_wm_window_type_desktop},
+  {"_NET_WM_WINDOW_TYPE_DOCK", &net_wm_window_type_dock},
+  {"_NET_WM_WINDOW_TYPE_TOOLBAR", &net_wm_window_type_toolbar},
+  {"_NET_WM_WINDOW_TYPE_MENU", &net_wm_window_type_menu},
+  {"_NET_WM_WINDOW_TYPE_UTILITY", &net_wm_window_type_utility},
+  {"_NET_WM_WINDOW_TYPE_SPLASH", &net_wm_window_type_splash},
+  {"_NET_WM_WINDOW_TYPE_DIALOG", &net_wm_window_type_dialog},
+  {"_NET_WM_WINDOW_TYPE_DROPDOWN_MENU", &net_wm_window_type_dropdown_menu},
+  {"_NET_WM_WINDOW_TYPE_POPUP_MENU", &net_wm_window_type_popup_menu},
+  {"_NET_WM_WINDOW_TYPE_TOOLTIP", &net_wm_window_type_tooltip},
+  {"_NET_WM_WINDOW_TYPE_NOTIFICATION", &net_wm_window_type_notification},
+  {"_NET_WM_WINDOW_TYPE_COMBO", &net_wm_window_type_combo},
+  {"_NET_WM_WINDOW_TYPE_DND", &net_wm_window_type_dnd},
+  {"_NET_WM_WINDOW_TYPE_NORMAL", &net_wm_window_type_normal},
+  {"_NET_WM_STATE", &net_wm_state},
+  {"_NET_WM_STATE_MODAL", &net_wm_state_modal},
+  {"_NET_WM_STATE_STICKY", &net_wm_state_sticky},
+  {"_NET_WM_STATE_MAXIMIZED_VERT", &net_wm_state_maximized_vert},
+  {"_NET_WM_STATE_MAXIMIZED_HORZ", &net_wm_state_maximized_horz},
+  {"_NET_WM_STATE_SHADED", &net_wm_state_shaded},
+  {"_NET_WM_STATE_SKIP_TASKBAR", &net_wm_state_skip_taskbar},
+  {"_NET_WM_STATE_SKIP_PAGER", &net_wm_state_skip_pager},
+  {"_NET_WM_STATE_HIDDEN", &net_wm_state_hidden},
+  {"_NET_WM_STATE_FULLSCREEN", &net_wm_state_fullscreen},
+  {"_NET_WM_STATE_ABOVE", &net_wm_state_above},
+  {"_NET_WM_STATE_BELOW", &net_wm_state_below},
+  {"_NET_WM_ALLOWED_ACTIONS", &net_wm_allowed_actions},
+  {"_NET_WM_ACTION_MOVE", &net_wm_action_move},
+  {"_NET_WM_ACTION_RESIZE", &net_wm_action_resize},
+  {"_NET_WM_ACTION_MINIMIZE", &net_wm_action_minimize},
+  {"_NET_WM_ACTION_SHADE", &net_wm_action_shade},
+  {"_NET_WM_ACTION_STICK", &net_wm_action_stick},
+  {"_NET_WM_ACTION_MAXIMIZE_HORZ", &net_wm_action_maximize_horz},
+  {"_NET_WM_ACTION_MAXIMIZE_VERT", &net_wm_action_maximize_vert},
+  {"_NET_WM_ACTION_FULLSCREEN", &net_wm_action_fullscreen},
+  {"_NET_WM_ACTION_CHANGE_DESKTOP", &net_wm_action_change_desktop},
+  {"_NET_WM_ACTION_CLOSE", &net_wm_action_close},
+  {"_NET_WM_STRUT", &net_wm_strut},
+  {"_NET_WM_STRUT_PARTIAL", &net_wm_strut_partial},
+  {"_NET_WM_ICON_GEOMETRY", &net_wm_icon_geometry},
+  {"_NET_WM_ICON", &net_wm_icon},
+  {"_NET_WM_PID", &net_wm_pid},
+  {"_NET_WM_HANDLED_ICONS", &net_wm_handled_icons},
+  {"_NET_WM_WINDOW_OPACITY", &net_wm_window_opacity},
 
-                                 {"_NET_FRAME_EXTENTS", &net_frame_extents},
+  {"_NET_FRAME_EXTENTS", &net_frame_extents},
 
-                                 {"_NET_WM_PING", &net_wm_ping},
+  {"_NET_WM_PING", &net_wm_ping},
 
-                                 {"UTF8_STRING", &utf8_string},
+  {"UTF8_STRING", &utf8_string},
 };
 
 #define _NET_WM_STATE_REMOVE 0
@@ -251,8 +257,6 @@ static atomitem_t atomNames[] = {
 #define _NET_WM_MOVERESIZE_MOVE_KEYBOARD    10	/* move via keyboard */
 #endif
 
-/* static void observer(void *self, WMNotification *notif); */
-/* static void wsobserver(void *self, WMNotification *notif); */
 static void windowObserver(CFNotificationCenterRef center,  void *observer,
                            CFNotificationName name, const void *window,
                            CFDictionaryRef userInfo);
@@ -296,6 +300,7 @@ static void setSupportedHints(WScreen *scr)
 #if 0
   atom[i++] = net_wm_moveresize;
 #endif
+  atom[i++] = net_request_frame_extents;
   atom[i++] = net_wm_desktop;
   atom[i++] = net_wm_window_type;
   atom[i++] = net_wm_window_type_desktop;
@@ -349,7 +354,8 @@ static void setSupportedHints(WScreen *scr)
   atom[i++] = net_wm_name;
   atom[i++] = net_wm_icon_name;
 
-  XChangeProperty(dpy, scr->root_win, net_supported, XA_ATOM, 32, PropModeReplace, (unsigned char *)atom, i);
+  XChangeProperty(dpy, scr->root_win, net_supported, XA_ATOM, 32, PropModeReplace,
+                  (unsigned char *)atom, i);
 
   /* set supporting wm hint */
   XChangeProperty(dpy, scr->root_win, net_supporting_wm_check, XA_WINDOW, 32,
@@ -1238,126 +1244,159 @@ static void removeIcon(WWindow *wwin)
   }
 }
 
+static Bool _getAttributesForWindowType(Atom type, WWindowAttributes *window_attrs,
+                                        WWindow *wwin)
+{
+  Bool success = True;
+  
+  if (type == net_wm_window_type_desktop) {
+    window_attrs->no_titlebar = 1;
+    window_attrs->no_resizable = 1;
+    window_attrs->no_miniaturizable = 1;
+    window_attrs->no_border = 1;
+    window_attrs->no_resizebar = 1;
+    window_attrs->no_shadeable = 1;
+    window_attrs->no_movable = 1;
+    window_attrs->omnipresent = 1;
+    window_attrs->skip_window_list = 1;
+    window_attrs->skip_switchpanel = 1;
+    window_attrs->dont_move_off = 1;
+    window_attrs->no_appicon = 1;
+    if (wwin) {
+      wwin->flags.net_skip_pager = 1;
+      wwin->frame_x = 0;
+      wwin->frame_y = 0;
+    }
+  }
+  else if (type == net_wm_window_type_dock) {
+    window_attrs->no_titlebar = 1;
+    window_attrs->no_resizable = 1;
+    window_attrs->no_miniaturizable = 1;
+    window_attrs->no_border = 1;	/* XXX: really not a single decoration. */
+    window_attrs->no_resizebar = 1;
+    window_attrs->no_shadeable = 1;
+    window_attrs->no_movable = 1;
+    window_attrs->omnipresent = 1;
+    window_attrs->skip_window_list = 1;
+    window_attrs->skip_switchpanel = 1;
+    window_attrs->dont_move_off = 1;
+    if (wwin) {
+      wwin->flags.net_skip_pager = 1;
+    }
+  }
+  else if (type == net_wm_window_type_toolbar
+           || type == net_wm_window_type_menu) {
+    window_attrs->no_resizable = 1;
+    window_attrs->no_miniaturizable = 1;
+    window_attrs->no_resizebar = 1;
+    window_attrs->no_shadeable = 1;
+    window_attrs->skip_window_list = 1;
+    window_attrs->skip_switchpanel = 1;
+    window_attrs->dont_move_off = 1;
+    window_attrs->no_appicon = 1;
+  }
+  else if (type == net_wm_window_type_dropdown_menu
+           || type == net_wm_window_type_popup_menu
+           || type == net_wm_window_type_combo) {
+    window_attrs->no_titlebar = 1;
+    window_attrs->no_resizable = 1;
+    window_attrs->no_miniaturizable = 1;
+    window_attrs->no_resizebar = 1;
+    window_attrs->no_shadeable = 1;
+    window_attrs->skip_window_list = 1;
+    window_attrs->skip_switchpanel = 1;
+    window_attrs->dont_move_off = 1;
+    window_attrs->no_appicon = 1;
+  }
+  else if (type == net_wm_window_type_utility) {
+    window_attrs->no_appicon = 1;
+  }
+  else if (type == net_wm_window_type_splash) {
+    window_attrs->no_titlebar = 1;
+    window_attrs->no_resizable = 1;
+    window_attrs->no_miniaturizable = 1;
+    window_attrs->no_resizebar = 1;
+    window_attrs->no_shadeable = 1;
+    window_attrs->no_movable = 1;
+    window_attrs->skip_window_list = 1;
+    window_attrs->skip_switchpanel = 1;
+    window_attrs->dont_move_off = 1;
+    window_attrs->no_appicon = 1;
+    if (wwin) {
+      wwin->flags.net_skip_pager = 1;
+    }
+  }
+  else if (type == net_wm_window_type_dialog) {
+    /* These also seem a bad idea in our context -Dan
+    // window_attrs->skip_window_list = 1;
+    // window_attrs->no_appicon = 1;
+    */
+  }
+  else if (wwin->type == net_wm_window_type_tooltip) {
+    window_attrs->no_titlebar = 1;
+    window_attrs->no_resizable = 1;
+    window_attrs->no_miniaturizable = 1;
+    window_attrs->no_resizebar = 1;
+    window_attrs->no_shadeable = 1;
+    window_attrs->no_movable = 1;
+    window_attrs->skip_window_list = 1;
+    window_attrs->skip_switchpanel = 1;
+    window_attrs->dont_move_off = 1;
+    window_attrs->no_appicon = 1;
+    window_attrs->no_focusable = 1;
+    if (wwin) {
+      wwin->flags.net_skip_pager = 1;
+    }
+  }
+  else if (wwin->type == net_wm_window_type_notification) {
+    window_attrs->no_titlebar = 1;
+    window_attrs->no_resizable = 1;
+    window_attrs->no_miniaturizable = 1;
+    window_attrs->no_border = 1;
+    window_attrs->no_resizebar = 1;
+    window_attrs->no_shadeable = 1;
+    window_attrs->no_movable = 1;
+    window_attrs->omnipresent = 1;
+    window_attrs->skip_window_list = 1;
+    window_attrs->skip_switchpanel = 1;
+    window_attrs->dont_move_off = 1;
+    window_attrs->no_hide_others= 1;
+    window_attrs->no_appicon = 1;
+    window_attrs->no_focusable = 1;
+    if (wwin) {
+      wwin->flags.net_skip_pager = 1;
+    }
+  }
+  else if (wwin->type == net_wm_window_type_dnd) {
+    window_attrs->no_titlebar = 1;
+    window_attrs->no_resizable = 1;
+    window_attrs->no_miniaturizable = 1;
+    window_attrs->no_border = 1;
+    window_attrs->no_resizebar = 1;
+    window_attrs->no_shadeable = 1;
+    window_attrs->no_movable = 1;
+    window_attrs->skip_window_list = 1;
+    window_attrs->skip_switchpanel = 1;
+    window_attrs->dont_move_off = 1;
+    window_attrs->no_appicon = 1;
+    if (wwin) {
+      wwin->flags.net_skip_pager = 1;
+    }
+  }
+  else if (type == net_wm_window_type_normal) {
+  }
+  else {
+    success = False;
+  }
+
+  return success;
+}
+
 static Bool handleWindowType(WWindow *wwin, Atom type, int *layer)
 {
   Bool ret = True;
 
-  if (type == net_wm_window_type_desktop) {
-    wwin->client_flags.no_titlebar = 1;
-    wwin->client_flags.no_resizable = 1;
-    wwin->client_flags.no_miniaturizable = 1;
-    wwin->client_flags.no_border = 1;
-    wwin->client_flags.no_resizebar = 1;
-    wwin->client_flags.no_shadeable = 1;
-    wwin->client_flags.no_movable = 1;
-    wwin->client_flags.omnipresent = 1;
-    wwin->client_flags.skip_window_list = 1;
-    wwin->client_flags.skip_switchpanel = 1;
-    wwin->client_flags.dont_move_off = 1;
-    wwin->client_flags.no_appicon = 1;
-    wwin->flags.net_skip_pager = 1;
-    wwin->frame_x = 0;
-    wwin->frame_y = 0;
-  } else if (type == net_wm_window_type_dock) {
-    wwin->client_flags.no_titlebar = 1;
-    wwin->client_flags.no_resizable = 1;
-    wwin->client_flags.no_miniaturizable = 1;
-    wwin->client_flags.no_border = 1;	/* XXX: really not a single decoration. */
-    wwin->client_flags.no_resizebar = 1;
-    wwin->client_flags.no_shadeable = 1;
-    wwin->client_flags.no_movable = 1;
-    wwin->client_flags.omnipresent = 1;
-    wwin->client_flags.skip_window_list = 1;
-    wwin->client_flags.skip_switchpanel = 1;
-    wwin->client_flags.dont_move_off = 1;
-    wwin->flags.net_skip_pager = 1;
-  } else if (type == net_wm_window_type_toolbar ||
-             type == net_wm_window_type_menu) {
-    wwin->client_flags.no_resizable = 1;
-    wwin->client_flags.no_miniaturizable = 1;
-    wwin->client_flags.no_resizebar = 1;
-    wwin->client_flags.no_shadeable = 1;
-    wwin->client_flags.skip_window_list = 1;
-    wwin->client_flags.skip_switchpanel = 1;
-    wwin->client_flags.dont_move_off = 1;
-    wwin->client_flags.no_appicon = 1;
-  } else if (type == net_wm_window_type_dropdown_menu ||
-             type == net_wm_window_type_popup_menu ||
-             type == net_wm_window_type_combo) {
-    wwin->client_flags.no_titlebar = 1;
-    wwin->client_flags.no_resizable = 1;
-    wwin->client_flags.no_miniaturizable = 1;
-    wwin->client_flags.no_resizebar = 1;
-    wwin->client_flags.no_shadeable = 1;
-    wwin->client_flags.skip_window_list = 1;
-    wwin->client_flags.skip_switchpanel = 1;
-    wwin->client_flags.dont_move_off = 1;
-    wwin->client_flags.no_appicon = 1;
-  } else if (type == net_wm_window_type_utility) {
-    wwin->client_flags.no_appicon = 1;
-  } else if (type == net_wm_window_type_splash) {
-    wwin->client_flags.no_titlebar = 1;
-    wwin->client_flags.no_resizable = 1;
-    wwin->client_flags.no_miniaturizable = 1;
-    wwin->client_flags.no_resizebar = 1;
-    wwin->client_flags.no_shadeable = 1;
-    wwin->client_flags.no_movable = 1;
-    wwin->client_flags.skip_window_list = 1;
-    wwin->client_flags.skip_switchpanel = 1;
-    wwin->client_flags.dont_move_off = 1;
-    wwin->client_flags.no_appicon = 1;
-    wwin->flags.net_skip_pager = 1;
-  } else if (type == net_wm_window_type_dialog) {
-    /* These also seem a bad idea in our context -Dan
-    // wwin->client_flags.skip_window_list = 1;
-    // wwin->client_flags.no_appicon = 1;
-    */
-  } else if (wwin->type == net_wm_window_type_tooltip) {
-    wwin->client_flags.no_titlebar = 1;
-    wwin->client_flags.no_resizable = 1;
-    wwin->client_flags.no_miniaturizable = 1;
-    wwin->client_flags.no_resizebar = 1;
-    wwin->client_flags.no_shadeable = 1;
-    wwin->client_flags.no_movable = 1;
-    wwin->client_flags.skip_window_list = 1;
-    wwin->client_flags.skip_switchpanel = 1;
-    wwin->client_flags.dont_move_off = 1;
-    wwin->client_flags.no_appicon = 1;
-    wwin->client_flags.no_focusable = 1;
-    wwin->flags.net_skip_pager = 1;
-  } else if (wwin->type == net_wm_window_type_notification) {
-    wwin->client_flags.no_titlebar = 1;
-    wwin->client_flags.no_resizable = 1;
-    wwin->client_flags.no_miniaturizable = 1;
-    wwin->client_flags.no_border = 1;
-    wwin->client_flags.no_resizebar = 1;
-    wwin->client_flags.no_shadeable = 1;
-    wwin->client_flags.no_movable = 1;
-    wwin->client_flags.omnipresent = 1;
-    wwin->client_flags.skip_window_list = 1;
-    wwin->client_flags.skip_switchpanel = 1;
-    wwin->client_flags.dont_move_off = 1;
-    wwin->client_flags.no_hide_others= 1;
-    wwin->client_flags.no_appicon = 1;
-    wwin->client_flags.no_focusable = 1;
-    wwin->flags.net_skip_pager = 1;
-  } else if (wwin->type == net_wm_window_type_dnd) {
-    wwin->client_flags.no_titlebar = 1;
-    wwin->client_flags.no_resizable = 1;
-    wwin->client_flags.no_miniaturizable = 1;
-    wwin->client_flags.no_border = 1;
-    wwin->client_flags.no_resizebar = 1;
-    wwin->client_flags.no_shadeable = 1;
-    wwin->client_flags.no_movable = 1;
-    wwin->client_flags.skip_window_list = 1;
-    wwin->client_flags.skip_switchpanel = 1;
-    wwin->client_flags.dont_move_off = 1;
-    wwin->client_flags.no_appicon = 1;
-    wwin->flags.net_skip_pager = 1;
-  } else if (type == net_wm_window_type_normal) {
-  } else {
-    ret = False;
-  }
+  ret = _getAttributesForWindowType(type, &wwin->client_flags, wwin);
 
   wwin->type = type;
   *layer = getWindowLayer(wwin);
@@ -1569,58 +1608,69 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
   WWindow *wwin;
 
 #ifdef DEBUG_WMSPEC
-  WMLogInfo("processClientMessage type %s",
-           XGetAtomName(dpy, event->message_type));
+  WMLogInfo("processClientMessage type %s", XGetAtomName(dpy, event->message_type));
 #endif
 
   scr = wDefaultScreen();
-  if (scr) {
-    /* generic client messages */
-    if (event->message_type == net_current_desktop) {
-      wWorkspaceChange(scr, event->data.l[0], NULL);
-      return True;
+  if (!scr) {
+    return False;
+  }
+  
+  /* 
+     Root Window properties messages 
+  */
+  if (event->message_type == net_current_desktop) {
+    wWorkspaceChange(scr, event->data.l[0], NULL);
+    return True;
+  }
+  else if (event->message_type == net_number_of_desktops) {
+    long value;
 
-    }
-    else if (event->message_type == net_number_of_desktops) {
-      long value;
+    value = event->data.l[0];
+    if (value > scr->workspace_count) {
+      wWorkspaceMake(scr, value - scr->workspace_count);
+    } else if (value < scr->workspace_count) {
+      int i;
+      Bool rebuild = False;
 
-      value = event->data.l[0];
-      if (value > scr->workspace_count) {
-        wWorkspaceMake(scr, value - scr->workspace_count);
-      } else if (value < scr->workspace_count) {
-        int i;
-        Bool rebuild = False;
-
-        for (i = scr->workspace_count - 1; i >= value; i--) {
-          if (!wWorkspaceDelete(scr, i)) {
-            rebuild = True;
-            break;
-          }
+      for (i = scr->workspace_count - 1; i >= value; i--) {
+        if (!wWorkspaceDelete(scr, i)) {
+          rebuild = True;
+          break;
         }
-
-        if (rebuild)
-          updateWorkspaceCount(scr);
       }
-      return True;
+      if (rebuild) {
+        updateWorkspaceCount(scr);
+      }
+    }
+    return True;
 
-    }
-    else if (event->message_type == net_showing_desktop) {
-      wNETWMShowingDesktop(scr, event->data.l[0]);
-      return True;
-
-    }
-    else if (event->message_type == net_desktop_names) {
-      handleDesktopNames(scr);
-      return True;
-    }
+  }
+  else if (event->message_type == net_showing_desktop) {
+    wNETWMShowingDesktop(scr, event->data.l[0]);
+    return True;
+  }
+  else if (event->message_type == net_desktop_names) {
+    handleDesktopNames(scr);
+    return True;
   }
 
-  /* window specific client messages */
+  /* 
+     Application Window properties messages 
+  */
 
+  /* Window could (and often is) not unmanaged at this point */
+  if (event->message_type == net_request_frame_extents) {
+    WMLogInfo("_NET_REQUEST_FRAME_EXTENTS client message was received.");
+    wNETRequestFrameExtents(event->window, scr);
+    return True;
+  }
+  
   wwin = wWindowFor(event->window);
-  if (!wwin)
+  if (!wwin) {
     return False;
-
+  }
+  
   if (event->message_type == net_active_window) {
     /*
      * Satisfy a client's focus request only if
@@ -1636,13 +1686,13 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
       wMakeWindowVisible(wwin);
     }
     return True;
-
   }
   else if (event->message_type == net_close_window) {
     if (!WFLAGP(wwin, no_closable)) {
-      if (wwin->protocols.DELETE_WINDOW)
+      if (wwin->protocols.DELETE_WINDOW) {
         wClientSendProtocol(wwin, w_global.atom.wm.delete_window,
                             w_global.timestamp.last_event);
+      }
     }
     return True;
 
@@ -1658,9 +1708,9 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
 #endif
 
     doStateAtom(wwin, (Atom) event->data.l[1], set, False);
-    if (event->data.l[2])
+    if (event->data.l[2]) {
       doStateAtom(wwin, (Atom) event->data.l[2], set, False);
-
+    }
     if (wwin->flags.maximized != maximized) {
       if (!wwin->flags.maximized) {
         wwin->flags.maximized = maximized;
@@ -1685,8 +1735,9 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
     if (desktop == -1) {
       wWindowSetOmnipresent(wwin, True);
     } else {
-      if (IS_OMNIPRESENT(wwin))
+      if (IS_OMNIPRESENT(wwin)) {
         wWindowSetOmnipresent(wwin, False);
+      }
       wWindowChangeWorkspace(wwin, desktop);
     }
     return True;
@@ -1792,19 +1843,64 @@ char *wNETWMGetIconName(Window window)
   return ret;
 }
 
+void wNETRequestFrameExtents(Window window, WScreen *scr)
+{
+  long extents[4] = { 0, 0, 0, 0 };
+  GNUstepWMAttributes *gs_attrs;
+  Bool has_border = False, has_titlebar = False, has_resizebar = False;
+
+  if (!PropGetGNUstepWMAttr(window, &gs_attrs)) {
+    Atom type_ret;
+    int fmt_ret;
+    unsigned long nitems_ret, bytes_after_ret;
+    long *data = NULL;
+    
+    WMLogInfo("Setting frame extents for X11 application");
+    
+    int result = XGetWindowProperty(dpy, window, net_wm_window_type, 0, 1, False,
+                                    XA_ATOM, &type_ret, &fmt_ret, &nitems_ret,
+                                    &bytes_after_ret, (unsigned char **)&data);
+    if (result == Success && data) {
+      Atom type = (Atom)data[0];
+      WWindowAttributes win_attrs;
+
+      memset(&win_attrs, 0, sizeof(WWindowAttributes));
+      _getAttributesForWindowType(type, &win_attrs, NULL);
+      XFree(data);
+      
+      has_border = (win_attrs.no_border == 0) ? True : False;
+      has_titlebar =  (win_attrs.no_titlebar == 0) ? True : False;
+      has_resizebar = (win_attrs.no_resizebar == 0) ? True : False;
+    }
+  }
+  else {
+    WMLogInfo("Setting frame extents for GNUstep application");
+
+    has_border = (gs_attrs->window_style & NSBorderlessWindowMask) ? False : True;
+    has_titlebar = (gs_attrs->window_style & NSTitledWindowMask) ? True : False;
+    has_resizebar = (gs_attrs->window_style & NSResizableWindowMask) ? True : False;
+  }
+  
+  if (has_border == True) {
+    extents[0] = scr->frame_border_width;
+    extents[1] = scr->frame_border_width;
+    extents[2] = scr->frame_border_width;
+    extents[3] = scr->frame_border_width;
+  }
+  if (has_titlebar == True) {
+    extents[2] += wPreferences.window_title_max_height;
+  }
+  if (has_resizebar == True) {
+    extents[3] += RESIZEBAR_HEIGHT;
+  }
+  XChangeProperty(dpy, window, net_frame_extents, XA_CARDINAL, 32,
+                  PropModeReplace, (unsigned char *)extents, 4);
+}
+
 void wNETFrameExtents(WWindow *wwin)
 {
   long extents[4] = { 0, 0, 0, 0 };
 
-  /* The extents array describes dimensions which are not
-   * part of the client window.  In our case that means
-   * widths of the border and heights of the titlebar and resizebar.
-   *
-   * Index 0 = left
-   *       1 = right
-   *       2 = top
-   *       3 = bottom
-   */
   if (wwin->frame->titlebar)
     extents[2] = wwin->frame->titlebar->height;
   if (wwin->frame->resizebar)
@@ -1816,7 +1912,8 @@ void wNETFrameExtents(WWindow *wwin)
     extents[3] += wwin->screen_ptr->frame_border_width;
   }
 
-  XChangeProperty(dpy, wwin->client_win, net_frame_extents, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) extents, 4);
+  XChangeProperty(dpy, wwin->client_win, net_frame_extents, XA_CARDINAL, 32,
+                  PropModeReplace, (unsigned char *)extents, 4);
 }
 
 void wNETCleanupFrameExtents(WWindow *wwin)
