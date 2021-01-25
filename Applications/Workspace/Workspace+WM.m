@@ -157,34 +157,32 @@ void WMWipeDesktop(WScreen * scr)
   XSync(dpy, False);
 }
 
-void WMShutdown(WShutdownMode mode)
+void WMShutdown(WMShutdownMode mode)
 {
-  int i;
-  WScreen *scr;
-
   fprintf(stderr, "*** Shutting down Window Manager...\n");
   
-  scr = wDefaultScreen();
-  if (scr) {
-    if (scr->helper_pid) {
-      kill(scr->helper_pid, SIGKILL);
-    }
+  // scr = wDefaultScreen();
+  // if (scr) {
+  //   if (scr->helper_pid) {
+  //     kill(scr->helper_pid, SIGKILL);
+  //   }
 
-    wScreenSaveState(scr);
+  //   wScreenSaveState(scr);
 
-    if (mode == WSKillMode)
-      WMWipeDesktop(scr);
-    else
-      RestoreDesktop(scr);
-  }
-  wNETWMCleanup(scr); // Delete _NET_* Atoms
+  //   if (mode == WSKillMode)
+  //     WMWipeDesktop(scr);
+  //   else
+  //     RestoreDesktop(scr);
+  // }
+  // wNETWMCleanup(scr); // Delete _NET_* Atoms
 
+  wShutdown(WMExitMode);
   if (launchingIcons) free(launchingIcons);
   
-  RShutdown(); /* wrlib clean exit */
-#if HAVE_SYSLOG_H
-  WMSyslogClose();
-#endif
+//   RShutdown(); /* wrlib clean exit */
+// #if HAVE_SYSLOG_H
+//   WMSyslogClose();
+// #endif
 }
 
 // --- Defaults

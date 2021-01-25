@@ -28,13 +28,11 @@
 
 /* shutdown modes */
 typedef enum {
-              WSExitMode,
-              WSLogoutMode,
-              WSKillMode,
-              WSRestartPreparationMode
-} WShutdownMode;
+ WMExitMode,
+ WMRestartMode
+} WMShutdownMode;
 
-void Shutdown(WShutdownMode mode);
-void RestoreDesktop(WScreen *scr);
+void wShutdown(WMShutdownMode mode);
+void wRestoreDesktop(WScreen *scr);
 
 #endif /* __WORKSPACE_WM_SHUTDOWN__ */

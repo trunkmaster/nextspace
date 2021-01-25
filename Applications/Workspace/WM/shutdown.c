@@ -29,6 +29,10 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#include <core/log_utils.h>
+
+/* #include "config.h" */
+
 #include "WM.h"
 #include "window.h"
 #include "client.h"
@@ -39,7 +43,7 @@
 #include "shutdown.h"
 
 
-static void wipeDesktop(WScreen * scr);
+static void _wipeDesktop(WScreen *scr);
 
 /*
  *----------------------------------------------------------------------
@@ -51,58 +55,50 @@ static void wipeDesktop(WScreen * scr);
  *
  *----------------------------------------------------------------------
  */
-void Shutdown(WShutdownMode mode)
+void wShutdown(WMShutdownMode mode)
 {
   WScreen *scr;
 
-  switch (mode) {
-  case WSLogoutMode:
-  case WSKillMode:
-  case WSExitMode:
-    /* if there is no session manager, send SAVE_YOURSELF to
-     * the clients */
 #ifdef HAVE_INOTIFY
-    if (w_global.inotify.fd_event_queue >= 0) {
-      close(w_global.inotify.fd_event_queue);
-      w_global.inotify.fd_event_queue = -1;
-    }
+  if (w_global.inotify.fd_event_queue >= 0) {
+    close(w_global.inotify.fd_event_queue);
+    w_global.inotify.fd_event_queue = -1;
+  }
 #endif
-    
-    scr = wDefaultScreen();
-    if (scr) {
-      if (scr->helper_pid)
-        kill(scr->helper_pid, SIGKILL);
 
-      wScreenSaveState(scr);
-
-      if (mode == WSKillMode)
-        wipeDesktop(scr);
-      else
-        RestoreDesktop(scr);
+  scr = wDefaultScreen();
+  if (scr) {
+    if (scr->helper_pid) {
+      kill(scr->helper_pid, SIGKILL);
     }
-    
-    exit(0);
+  }
+  else {
+    return;
+  }
+
+  switch (mode) {
+  case WMExitMode:
+    wScreenSaveState(scr);
+    _wipeDesktop(scr);
     break;
 
-  case WSRestartPreparationMode:
-#ifdef HAVE_INOTIFY
-    if (w_global.inotify.fd_event_queue >= 0) {
-      close(w_global.inotify.fd_event_queue);
-      w_global.inotify.fd_event_queue = -1;
-    }
-#endif
-    scr = wDefaultScreen();
-    if (scr) {
-      if (scr->helper_pid)
-        kill(scr->helper_pid, SIGKILL);
-      wScreenSaveState(scr);
-      RestoreDesktop(scr);
-    }
+  case WMRestartMode:
+    wScreenSaveState(scr);
+    wRestoreDesktop(scr);
     break;
   }
+
+  wNETWMCleanup(scr); // Delete _NET_* Atoms
+
+  /* if (launchingIcons) free(launchingIcons); */
+  
+  RShutdown(); /* wrlib clean exit */
+#if HAVE_SYSLOG_H
+  WMSyslogClose();
+#endif
 }
 
-static void restoreWindows(WMBag * bag, WMBagIterator iter)
+static void _restoreWindows(WMBag * bag, WMBagIterator iter)
 {
   WCoreWindow *next;
   WCoreWindow *core;
@@ -117,7 +113,7 @@ static void restoreWindows(WMBag * bag, WMBagIterator iter)
   if (core == NULL)
     return;
 
-  restoreWindows(bag, iter);
+  _restoreWindows(bag, iter);
 
   /* go to the end of the list */
   while (core->stacking->under)
@@ -150,7 +146,7 @@ static void restoreWindows(WMBag * bag, WMBagIterator iter)
  *
  *----------------------------------------------------------------------
  */
-void RestoreDesktop(WScreen * scr)
+void wRestoreDesktop(WScreen * scr)
 {
   if (scr->helper_pid > 0) {
     kill(scr->helper_pid, SIGTERM);
@@ -160,7 +156,7 @@ void RestoreDesktop(WScreen * scr)
   XGrabServer(dpy);
 
   /* reparent windows back to the root window, keeping the stacking order */
-  restoreWindows(scr->stacking_list, NULL);
+  _restoreWindows(scr->stacking_list, NULL);
 
   XUngrabServer(dpy);
   XSetInputFocus(dpy, PointerRoot, RevertToParent, CurrentTime);
@@ -182,7 +178,7 @@ void RestoreDesktop(WScreen * scr)
  * TODO: change to XQueryTree()
  *----------------------------------------------------------------------
  */
-static void wipeDesktop(WScreen * scr)
+static void _wipeDesktop(WScreen * scr)
 {
   WWindow *wwin;
 

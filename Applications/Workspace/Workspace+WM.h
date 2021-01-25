@@ -57,7 +57,7 @@ extern WorkspaceExitCode ws_quit_code;
 #include <actions.h> // wArrangeIcons()
 #include <application.h>
 #include <appicon.h>
-#include <shutdown.h> // Shutdown(), WSxxxMode
+#include <shutdown.h> // wShutdown(), WMxxxMode
 #include <client.h>
 #include <wmspec.h>
 // Appicons placement
@@ -77,7 +77,7 @@ void WMSetupFrameOffsetProperty();
 
 // --- Logout/PowerOff related activities
 void WMWipeDesktop(WScreen * scr);
-void WMShutdown(WShutdownMode mode);
+void WMShutdown(WMShutdownMode mode);
 
 // --- Defaults
 NSString *WMDefaultsPath(void);

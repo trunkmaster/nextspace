@@ -194,12 +194,12 @@ void DispatchEvent(XEvent * event)
      * executed inside here, or we can get in a infinite
      * recursive loop.
      */
-    Shutdown(WSExitMode);
+    wShutdown(WMExitMode);
 
   } else if (WCHECK_STATE(WSTATE_NEED_RESTART)) {
     WCHANGE_STATE(WSTATE_RESTARTING);
     /* received SIGHUP */
-    Shutdown(WSRestartPreparationMode);
+    wShutdown(WMRestartMode);
   } else if (WCHECK_STATE(WSTATE_NEED_REREAD)) {
     WCHANGE_STATE(WSTATE_NORMAL);
     wDefaultsUpdateDomainsIfNeeded(NULL);
