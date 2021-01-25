@@ -31,8 +31,6 @@
 
 #include <core/log_utils.h>
 
-/* #include "config.h" */
-
 #include "WM.h"
 #include "window.h"
 #include "client.h"
@@ -79,6 +77,13 @@ void wShutdown(WMShutdownMode mode)
   switch (mode) {
   case WMExitMode:
     wScreenSaveState(scr);
+    wNETWMCleanup(scr);		/* Delete _NET_* Atoms */
+    PropCleanUp(scr->root_win);	/* WM specific properties */
+    RShutdown(); 		/* wraster clean exit */
+#if HAVE_SYSLOG_H
+    WMSyslogClose();
+#endif
+
     _wipeDesktop(scr);
     break;
 
@@ -88,14 +93,7 @@ void wShutdown(WMShutdownMode mode)
     break;
   }
 
-  wNETWMCleanup(scr); // Delete _NET_* Atoms
-
-  /* if (launchingIcons) free(launchingIcons); */
-  
-  RShutdown(); /* wrlib clean exit */
-#if HAVE_SYSLOG_H
-  WMSyslogClose();
-#endif
+  /* if (launchingIcons) free(launchingIcons); */  
 }
 
 static void _restoreWindows(WMBag * bag, WMBagIterator iter)
