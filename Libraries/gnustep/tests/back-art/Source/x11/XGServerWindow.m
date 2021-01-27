@@ -1059,7 +1059,8 @@ Bool _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
                 }
             }
           XNextEvent(dpy, &xEvent);
-          // NSLog(@"Testing ... event %d window %lu\n", xEvent.type, xEvent.xany.window);
+          NSDebugLLog(@"Offset", @"Testing ... event %d window %lu\n",
+                      xEvent.type, xEvent.xany.window);
           if (xEvent.xany.window != window->ident)
             {
               continue;
@@ -1071,7 +1072,7 @@ Bool _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
                 break;
 
               case ReparentNotify:
-                NSDebugLLog(@"FrameExtents", @"%lu ReparentNotify - offset %d %d\n",
+                NSDebugLLog(@"Offset", @"%lu ReparentNotify - offset %d %d\n",
                             xEvent.xreparent.window, xEvent.xreparent.x, xEvent.xreparent.y);
                 repp = xEvent.xreparent.parent;
                 repx = xEvent.xreparent.x;
@@ -1105,8 +1106,7 @@ Bool _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
     }
   else if (repp != 0)
     {
-      // NSDebugLLog(@"Offset", @"Offsets retrieved from ReparentNotify");
-      NSLog(@"Offsets retrieved from ReparentNotify");
+      NSDebugLLog(@"Offset", @"Offsets retrieved from ReparentNotify");
       window->parent = repp;
       if (repp != window->root)
         {
@@ -1125,8 +1125,8 @@ Bool _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
            * to determine our offsets.
            */
           XGetWindowAttributes(dpy, parent, &wattr);
-          NSLog(@"Parent border,width,height %d,%d,%d\n",
-                wattr.border_width, wattr.width, wattr.height);
+          NSDebugLLog(@"Offset", @"Parent border,width,height %d,%d,%d\n",
+                      wattr.border_width, wattr.width, wattr.height);
           l = repx + wattr.border_width;
           t = repy + wattr.border_width;
 
@@ -1195,7 +1195,8 @@ Bool _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
               o->t = (float)t;
               o->b = (float)b;
               o->known = YES;
-              NSLog(@"Style %d lrtb set to %d,%d,%d,%d\n", style, l, r, t, b);
+              NSDebugLLog(@"Offset", @"Style %d lrtb set to %d,%d,%d,%d\n",
+                          style, l, r, t, b);
             }
           else
             {
@@ -2197,7 +2198,8 @@ Bool _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
         {
           *t = 25.0;
         }
-      NSLog(@"Window %lu, windowmaker %f, %f, %f, %f", win, *l, *r, *t, *b);
+      NSDebugLLog(@"Frame", @"Window %lu, windowmaker %f, %f, %f, %f",
+                  win, *l, *r, *t, *b);
     }
   else if ((generic.wm & XGWM_EWMH) != 0)
     {
@@ -2211,7 +2213,7 @@ Bool _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
         {
           *t = 20;
         }
-      NSLog(@"Window %lu, EWMH %f, %f, %f, %f", win, *l, *r, *t, *b);
+      NSDebugLLog(@"Frame", @"Window %lu, EWMH %f, %f, %f, %f", win, *l, *r, *t, *b);
     }
   else
     {
@@ -2221,7 +2223,7 @@ Bool _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
        * This should make a good guess - at the moment use no offsets.
        */
       *l = *r = *t = *b = 0.0;
-      NSLog(@"Window %lu, unknown %f, %f, %f, %f", win, *l, *r, *t, *b);
+      NSDebugLLog(@"Frame", @"Window %lu, unknown %f, %f, %f, %f", win, *l, *r, *t, *b);
     }
 }
 
