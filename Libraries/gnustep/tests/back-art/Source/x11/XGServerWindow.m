@@ -715,6 +715,210 @@ _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
     }
 }
 
+- (gswindow_device_t *) _createServerWindow: (NSRect)frame
+                               backingStore: (NSBackingStoreType)type
+                                      style: (unsigned int)style
+                                     screen: (int)screen
+                                    appName: (char *)app_name
+{
+  gswindow_device_t	*window;
+  gswindow_device_t	*root;
+  XClassHint		classhint;
+  XGCValues		values;
+  unsigned long		valuemask;
+  RContext              *context;
+
+  NSDebugLLog(@"XGTrace", @"DPSwindow: %@ %d", NSStringFromRect(frame), (int)type);
+  
+  root = [self _rootWindow];
+  context = [self screenRContext];
+
+  /* Create the window structure and set the style early so we can use it to
+  convert frames. */
+  window = NSAllocateCollectable(sizeof(gswindow_device_t), NSScannedOption);
+  memset(window, '\0', sizeof(gswindow_device_t));
+  window->display = dpy;
+  window->screen_id = defScreen;
+  window->monitor_id = screen;
+
+  window->win_attrs.flags |= GSWindowStyleAttr;
+  if (handlesWindowDecorations)
+    {
+      window->win_attrs.window_style = style;
+    }
+  else
+    {
+      window->win_attrs.window_style = style & (NSIconWindowMask | NSMiniWindowMask);
+    }
+
+  frame = [self _OSFrameToXFrame: frame for: window];
+
+  /* We're not allowed to create a zero rect window */
+  if (NSWidth(frame) <= 0 || NSHeight(frame) <= 0)
+    {
+      frame.size.width = 2;
+      frame.size.height = 2;
+    }
+  window->xframe = frame;
+  window->type = type;
+  window->root = root->ident;
+  window->parent = root->ident;
+  window->depth = context->depth;
+  window->xwn_attrs.border_pixel = context->black;
+  window->xwn_attrs.background_pixel = context->white;
+  window->xwn_attrs.colormap = context->cmap;
+  window->xwn_attrs.save_under = False;
+  /*
+   * Setting this to True should only be done, when we also grap the pointer.
+   * It could be done for popup windows, but at this point we don't know
+   * about the usage of the window.
+   */
+  window->xwn_attrs.override_redirect = False;
+
+  window->ident = XCreateWindow(dpy, window->root,
+				NSMinX(frame), NSMinY(frame),
+				NSWidth(frame), NSHeight(frame),
+				0,
+				context->depth,
+				CopyFromParent,
+				context->visual,
+                                // Don't set the CWBackPixel, as the background of the
+                                // window may be different.
+				(CWColormap | CWBorderPixel | CWOverrideRedirect),
+				&window->xwn_attrs);
+
+  /*
+   * Mark this as a GNUstep app with the current application name.
+   */
+  classhint.res_name = app_name;
+  classhint.res_class = "GNUstep";
+  XSetClassHint(dpy, window->ident, &classhint);
+
+  window->map_state = IsUnmapped;
+  window->visibility = -1;
+  window->wm_state = WithdrawnState;
+
+  // Create an X GC for the content view set it's colors
+  values.foreground = window->xwn_attrs.background_pixel;
+  values.background = window->xwn_attrs.background_pixel;
+  values.function = GXcopy;
+  valuemask = (GCForeground | GCBackground | GCFunction);
+  window->gc = XCreateGC(dpy, window->ident, valuemask, &values);
+
+  /* Set the X event mask */
+  if (screen < 0)
+    {
+      select_input(dpy, window->ident, YES);
+    }
+  else
+    {
+      select_input(dpy, window->ident, NO);
+    }
+
+  /*
+   * Initial attributes for any GNUstep window tell Window Maker not to
+   * create an app icon for us.
+   */
+  window->win_attrs.flags |= GSExtraFlagsAttr;
+  window->win_attrs.extra_flags |= GSNoApplicationIconFlag;
+
+  /*
+   * Prepare size/position hints, but don't set them now - ordering
+   * the window in should automatically do it.
+   */
+  frame = [self _XFrameToXHints: window->xframe for: window];
+  window->siz_hints.x = NSMinX(frame);
+  window->siz_hints.y = NSMinY(frame);
+  window->siz_hints.width = NSWidth(frame);
+  window->siz_hints.height = NSHeight(frame);
+  window->siz_hints.flags = USPosition|PPosition|USSize|PSize;
+
+  // Always send GNUstepWMAttributes
+  /* Warning ... X-bug .. when we specify 32bit data X actually expects data
+   * of type 'long' or 'unsigned long' even on machines where those types
+   * hold 64bit values.
+   */
+  XChangeProperty(dpy, window->ident, generic._GNUSTEP_WM_ATTR_ATOM,
+		      generic._GNUSTEP_WM_ATTR_ATOM, 32, PropModeReplace,
+		      (unsigned char *)&window->win_attrs,
+		      sizeof(GNUstepWMAttributes)/sizeof(CARD32));
+
+  // send to the WM window style hints
+  if ((generic.wm & XGWM_WINDOWMAKER) == 0)
+    {
+      setWindowHintsForStyle(dpy, window->ident, style, generic._MOTIF_WM_HINTS_ATOM);
+    }
+
+  // For window managers supporting EWMH, but not Window Maker,
+  // where we use a different solution, set the window icon.
+  if ((generic.wm & XGWM_EWMH) != 0)
+    {
+      [self _setNetWMIconFor: window->ident];
+    }
+
+  // Use the globally active input mode
+  window->gen_hints.flags = InputHint;
+  window->gen_hints.input = False;
+  if (screen >= 0) {
+    // All the windows of a GNUstep application belong to one group.
+    window->gen_hints.flags |= WindowGroupHint;
+    window->gen_hints.window_group = ROOT;
+  }
+
+#ifdef HAVE_X11_EXTENSIONS_SYNC_H
+  /* Setup net_wm_sync_request_counter */
+  if (screen >= 0)
+    {
+      XSyncValue value;
+      XSyncIntToValue(&value, 0);
+      window->net_wm_sync_request_counter = XSyncCreateCounter(dpy, value);
+      XChangeProperty(dpy,
+                      window->ident,
+                      generic._NET_WM_SYNC_REQUEST_COUNTER_ATOM,
+                      XA_CARDINAL,
+                      32,
+                      PropModeReplace,
+                      (unsigned char *) &(window->net_wm_sync_request_counter),
+                      1);
+      window->net_wm_sync_request_counter_value_low = 0;
+      window->net_wm_sync_request_counter_value_high = 0;
+    }
+#endif
+
+  /*
+   * Prepare the protocols supported by the window.
+   * These protocols should be set on the window when it is ordered in.
+   */
+  [self _setSupportedWMProtocols: window];
+
+  window->exposedRects = [NSMutableArray new];
+  window->region = XCreateRegion();
+  window->buffer = 0;
+  window->alpha_buffer = 0;
+  window->ic = 0;
+
+  // make sure that new window has the correct cursor
+  [self _initializeCursorForXWindow: window->ident];
+
+  /*
+   * FIXME - should this be protected by a lock for thread safety?
+   * generate a unique tag for this new window.
+   */
+  do
+    {
+      last_win_num++;
+    }
+  while (last_win_num == 0 || WINDOW_WITH_TAG(last_win_num) != 0);
+  window->number = last_win_num;
+
+  // Insert window into the mapping
+  NSMapInsert(windowmaps, (void*)(uintptr_t)window->ident, window);
+  NSMapInsert(windowtags, (void*)(uintptr_t)window->number, window);
+  [self _setWindowOwnedByServer: window->number];
+
+  return window;
+}
+
 - (BOOL) _tryRequestFrameExtents: (gswindow_device_t *)window
 {
   XEvent xEvent;
@@ -794,36 +998,20 @@ _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
 - (BOOL) _checkStyle: (unsigned)style
 {
   gswindow_device_t	*window;
-  gswindow_device_t	*root;
   NSRect		frame;
-  XGCValues		values;
-  unsigned long		valuemask;
-  XClassHint		classhint;
-  RContext              *context;
   XEvent		xEvent;
   unsigned long		*extents;
   Offsets		*o = generic.offsets + (style & 15);
   int			repp = 0;
   int			repx = 0;
   int			repy = 0;
-  BOOL                  onScreen;
+  BOOL                  onScreen = NO;
   BOOL                  reparented = NO;
 
   NSDebugLLog(@"Offset", @"Checking offsets for style %d\n", style);
 
   onScreen = [[NSUserDefaults standardUserDefaults] boolForKey:
     @"GSBackChecksOffsetsOnScreen"];
-
-  root = [self _rootWindow];
-  context = [self screenRContext];
-
-  window = NSAllocateCollectable(sizeof(gswindow_device_t), NSScannedOption);
-  memset(window, '\0', sizeof(gswindow_device_t));
-  window->display = dpy;
-  window->screen_id = defScreen;
-
-  window->win_attrs.flags |= GSWindowStyleAttr;
-  window->win_attrs.window_style = style;
 
   if (onScreen == YES)
     {
@@ -833,119 +1021,13 @@ _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
     {
       frame = NSMakeRect(-200,100,100,100);
     }
-
-  window->xframe = frame;
-  window->type = NSBackingStoreNonretained;
-  window->root = root->ident;
-  window->parent = root->ident;
-  window->depth = context->depth;
-  window->xwn_attrs.border_pixel = context->black;
-  window->xwn_attrs.background_pixel = context->white;
-  window->xwn_attrs.colormap = context->cmap;
-  window->xwn_attrs.save_under = False;
-  window->xwn_attrs.override_redirect = False;
-
-  window->ident = XCreateWindow(dpy, window->root,
-				NSMinX(frame), NSMinY(frame),
-				NSWidth(frame), NSHeight(frame),
-				0,
-				context->depth,
-				CopyFromParent,
-				context->visual,
-				(CWColormap | CWBorderPixel | CWOverrideRedirect),
-				&window->xwn_attrs);
-
-  /*
-   * Mark this as a GNUstep app with the current application name.
-   */
-  classhint.res_name = generic.rootName;
-  classhint.res_class = "GNUstep";
-  XSetClassHint(dpy, window->ident, &classhint);
-
-  window->map_state = IsUnmapped;
+  
+  window = [self _createServerWindow: frame
+                        backingStore: NSBackingStoreNonretained
+                               style: style
+                              screen: -1
+                             appName: "-"];
   window->visibility = 2;
-  window->wm_state = WithdrawnState;
-
-  // Create an X GC for the content view set it's colors
-  values.foreground = window->xwn_attrs.background_pixel;
-  values.background = window->xwn_attrs.background_pixel;
-  values.function = GXcopy;
-  valuemask = (GCForeground | GCBackground | GCFunction);
-  window->gc = XCreateGC(dpy, window->ident, valuemask, &values);
-
-  /* Set the X event mask */
-  select_input(dpy, window->ident, YES);
-
-  /*
-   * Initial attributes for any GNUstep window tell Window Maker not to
-   * create an app icon for us.
-   */
-  window->win_attrs.flags |= GSExtraFlagsAttr;
-  window->win_attrs.extra_flags |= GSNoApplicationIconFlag;
-
-  /*
-   * Prepare size/position hints, but don't set them now - ordering
-   * the window in should automatically do it.
-   */
-  window->siz_hints.x = NSMinX(frame);
-  window->siz_hints.y = NSMinY(frame);
-  window->siz_hints.width = NSWidth(frame);
-  window->siz_hints.height = NSHeight(frame);
-  window->siz_hints.flags = USPosition|PPosition|USSize|PSize;
-
-  // Always send GNUstepWMAttributes
-/* Warning ... X-bug .. when we specify 32bit data X actually expects data
- * of type 'long' or 'unsigned long' even on machines where those types
- * hold 64bit values.
- */
-  XChangeProperty(dpy, window->ident, generic._GNUSTEP_WM_ATTR_ATOM,
-		      generic._GNUSTEP_WM_ATTR_ATOM, 32, PropModeReplace,
-		      (unsigned char *)&window->win_attrs,
-		      sizeof(GNUstepWMAttributes)/sizeof(CARD32));
-
-  // send to the WM window style hints
-  if ((generic.wm & XGWM_WINDOWMAKER) == 0)
-    {
-      setWindowHintsForStyle(dpy, window->ident, style, generic._MOTIF_WM_HINTS_ATOM);
-    }
-
-  // Use the globally active input mode
-  window->gen_hints.flags = InputHint;
-  window->gen_hints.input = False;
-  // All the windows of a GNUstep application belong to one group.
-  window->gen_hints.flags |= WindowGroupHint;
-  window->gen_hints.window_group = ROOT;
-
-  /*
-   * Prepare the protocols supported by the window.
-   * These protocols should be set on the window when it is ordered in.
-   */
-  [self _setSupportedWMProtocols: window];
-
-  window->exposedRects = [NSMutableArray new];
-  window->region = XCreateRegion();
-  window->buffer = 0;
-  window->alpha_buffer = 0;
-  window->ic = 0;
-
-  // make sure that new window has the correct cursor
-  [self _initializeCursorForXWindow: window->ident];
-
-  /*
-   * FIXME - should this be protected by a lock for thread safety?
-   * generate a unique tag for this new window.
-   */
-  do
-    {
-      last_win_num++;
-    }
-  while (last_win_num == 0 || WINDOW_WITH_TAG(last_win_num) != 0);
-  window->number = last_win_num;
-
-  // Insert window into the mapping
-  NSMapInsert(windowmaps, (void*)(uintptr_t)window->ident, window);
-  NSMapInsert(windowtags, (void*)(uintptr_t)window->number, window);
-  [self _setWindowOwnedByServer: window->number];
 
   if (![self _tryRequestFrameExtents: window])
     {
@@ -1855,191 +1937,12 @@ _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
 	      : (int)screen
 {
   gswindow_device_t	*window;
-  gswindow_device_t	*root;
-  XGCValues		values;
-  unsigned long		valuemask;
-  XClassHint		classhint;
-  RContext              *context;
-
-  NSDebugLLog(@"XGTrace", @"DPSwindow: %@ %d", NSStringFromRect(frame), (int)type);
-  root = [self _rootWindow];
-  context = [self screenRContext];
-
-  /* Create the window structure and set the style early so we can use it to
-  convert frames. */
-  window = NSAllocateCollectable(sizeof(gswindow_device_t), NSScannedOption);
-  memset(window, '\0', sizeof(gswindow_device_t));
-  window->display = dpy;
-  window->screen_id = defScreen;
-  window->monitor_id = screen;
-
-  window->win_attrs.flags |= GSWindowStyleAttr;
-  if (handlesWindowDecorations)
-    {
-      window->win_attrs.window_style = style;
-    }
-  else
-    {
-      window->win_attrs.window_style
-        = style & (NSIconWindowMask | NSMiniWindowMask);
-    }
-
-  frame = [self _OSFrameToXFrame: frame for: window];
-
-  /* We're not allowed to create a zero rect window */
-  if (NSWidth(frame) <= 0 || NSHeight(frame) <= 0)
-    {
-      frame.size.width = 2;
-      frame.size.height = 2;
-    }
-  window->xframe = frame;
-  window->type = type;
-  window->root = root->ident;
-  window->parent = root->ident;
-  window->depth = context->depth;
-  window->xwn_attrs.border_pixel = context->black;
-  window->xwn_attrs.background_pixel = context->white;
-  window->xwn_attrs.colormap = context->cmap;
-  window->xwn_attrs.save_under = False;
-  /*
-   * Setting this to True should only be done, when we also grap the pointer.
-   * It could be done for popup windows, but at this point we don't know
-   * about the usage of the window.
-   */
-  window->xwn_attrs.override_redirect = False;
-
-  window->ident = XCreateWindow(dpy, window->root,
-				NSMinX(frame), NSMinY(frame),
-				NSWidth(frame), NSHeight(frame),
-				0,
-				context->depth,
-				CopyFromParent,
-				context->visual,
-                                // Don't set the CWBackPixel, as the background of the
-                                // window may be different.
-				(CWColormap | CWBorderPixel | CWOverrideRedirect),
-				&window->xwn_attrs);
-
-  /*
-   * Mark this as a GNUstep app with the current application name.
-   */
-  classhint.res_name = generic.rootName;
-  classhint.res_class = "GNUstep";
-  XSetClassHint(dpy, window->ident, &classhint);
-
-  window->map_state = IsUnmapped;
-  window->visibility = -1;
-  window->wm_state = WithdrawnState;
-
-  // Create an X GC for the content view set it's colors
-  values.foreground = window->xwn_attrs.background_pixel;
-  values.background = window->xwn_attrs.background_pixel;
-  values.function = GXcopy;
-  valuemask = (GCForeground | GCBackground | GCFunction);
-  window->gc = XCreateGC(dpy, window->ident, valuemask, &values);
-
-  /* Set the X event mask */
-  select_input(dpy, window->ident, NO);
-
-  /*
-   * Initial attributes for any GNUstep window tell Window Maker not to
-   * create an app icon for us.
-   */
-  window->win_attrs.flags |= GSExtraFlagsAttr;
-  window->win_attrs.extra_flags |= GSNoApplicationIconFlag;
-
-  /*
-   * Prepare size/position hints, but don't set them now - ordering
-   * the window in should automatically do it.
-   */
-  frame = [self _XFrameToXHints: window->xframe for: window];
-  window->siz_hints.x = NSMinX(frame);
-  window->siz_hints.y = NSMinY(frame);
-  window->siz_hints.width = NSWidth(frame);
-  window->siz_hints.height = NSHeight(frame);
-  window->siz_hints.flags = USPosition|PPosition|USSize|PSize;
-
-  // Always send GNUstepWMAttributes
-/* Warning ... X-bug .. when we specify 32bit data X actually expects data
- * of type 'long' or 'unsigned long' even on machines where those types
- * hold 64bit values.
- */
-  XChangeProperty(dpy, window->ident, generic._GNUSTEP_WM_ATTR_ATOM,
-		      generic._GNUSTEP_WM_ATTR_ATOM, 32, PropModeReplace,
-		      (unsigned char *)&window->win_attrs,
-		      sizeof(GNUstepWMAttributes)/sizeof(CARD32));
-
-  // send to the WM window style hints
-  if ((generic.wm & XGWM_WINDOWMAKER) == 0)
-    {
-      setWindowHintsForStyle(dpy, window->ident, style, generic._MOTIF_WM_HINTS_ATOM);
-    }
-
-  // For window managers supporting EWMH, but not Window Maker,
-  // where we use a different solution, set the window icon.
-  if ((generic.wm & XGWM_EWMH) != 0)
-    {
-      [self _setNetWMIconFor: window->ident];
-    }
-
-  // Use the globally active input mode
-  window->gen_hints.flags = InputHint;
-  window->gen_hints.input = False;
-  // All the windows of a GNUstep application belong to one group.
-  window->gen_hints.flags |= WindowGroupHint;
-  window->gen_hints.window_group = ROOT;
-
-#ifdef HAVE_X11_EXTENSIONS_SYNC_H
-  /**
-   * Setup net_wm_sync_request_counter
-   */
-  {
-    XSyncValue value;
-    XSyncIntToValue(&value, 0);
-    window->net_wm_sync_request_counter = XSyncCreateCounter(dpy, value);
-    XChangeProperty(dpy,
-		    window->ident,
-		    generic._NET_WM_SYNC_REQUEST_COUNTER_ATOM,
-		    XA_CARDINAL,
-		    32,
-		    PropModeReplace,
-		    (unsigned char *) &(window->net_wm_sync_request_counter),
-		    1);
-    window->net_wm_sync_request_counter_value_low = 0;
-    window->net_wm_sync_request_counter_value_high = 0;
-  }
-#endif
-
-  /*
-   * Prepare the protocols supported by the window.
-   * These protocols should be set on the window when it is ordered in.
-   */
-  [self _setSupportedWMProtocols: window];
-
-  window->exposedRects = [NSMutableArray new];
-  window->region = XCreateRegion();
-  window->buffer = 0;
-  window->alpha_buffer = 0;
-  window->ic = 0;
-
-  // make sure that new window has the correct cursor
-  [self _initializeCursorForXWindow: window->ident];
-
-  /*
-   * FIXME - should this be protected by a lock for thread safety?
-   * generate a unique tag for this new window.
-   */
-  do
-    {
-      last_win_num++;
-    }
-  while (last_win_num == 0 || WINDOW_WITH_TAG(last_win_num) != 0);
-  window->number = last_win_num;
-
-  // Insert window into the mapping
-  NSMapInsert(windowmaps, (void*)(uintptr_t)window->ident, window);
-  NSMapInsert(windowtags, (void*)(uintptr_t)window->number, window);
-  [self _setWindowOwnedByServer: window->number];
+  
+  window = [self _createServerWindow: frame
+                        backingStore: type
+                               style: style
+                              screen: screen
+                             appName: generic.rootName];
 
   return window->number;
 }
