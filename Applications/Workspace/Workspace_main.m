@@ -160,7 +160,7 @@ int main(int argc, const char **argv)
 
         // Setup predefined _GNUSTEP_FRAME_OFFSETS atom for correct
         // initialization of GNUstep backend (gnustep-back).
-        WMSetupFrameOffsetProperty(); 
+        // WMSetupFrameOffsetProperty(); 
       });
     fprintf(stderr, "=== Window Manager initialized! ===\n");
     
