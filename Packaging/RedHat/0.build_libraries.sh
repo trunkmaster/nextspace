@@ -52,15 +52,15 @@ if [ $? -eq 1 ]; then
     exit 1
 fi
 
-# Raster graphics manipulation
-`dirname $0`/build_libwraster.sh $1
+# NextSpace Core
+`dirname $0`/build_nextspace-core.sh $1
 if [ $? -eq 1 ]; then
     echo "Aborting..."
     exit 1
 fi
 
-# NextSpace Core
-`dirname $0`/build_nextspace-core.sh $1
+# Raster graphics manipulation
+`dirname $0`/build_libwraster.sh $1
 if [ $? -eq 1 ]; then
     echo "Aborting..."
     exit 1
