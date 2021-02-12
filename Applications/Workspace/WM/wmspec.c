@@ -1559,7 +1559,12 @@ void wNETWMCheckInitialClientState(WWindow *wwin)
 
   updateWindowType(wwin);
   updateNetIconInfo(wwin);
-  updateIconImage(wwin);
+
+  /* Do it on the first window of application. 
+     Other icon updates should go through NET_WM_ICON_NAME property change. */
+  if (!wApplicationOf(wwin->main_window)) {
+    updateIconImage(wwin);
+  }
 }
 
 void wNETWMCheckInitialFrameState(WWindow *wwin)
