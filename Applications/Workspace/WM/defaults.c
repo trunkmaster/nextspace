@@ -987,7 +987,7 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNot
       continue;
     }
 
-    if (shouldNotify && plvalue) {
+    if (plvalue) {
       /* convert data */
       if ((*entry->convert) (scr, entry, plvalue, entry->addr, &tdata)) {
         if (entry->update) {
@@ -997,7 +997,7 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNot
     }
   }
 
-  if (needs_refresh != 0 && !scr->flags.startup && !scr->flags.startup2) {
+  if (shouldNotify && needs_refresh != 0/* && !scr->flags.startup && !scr->flags.startup2*/) {
     int foo;
 
     foo = 0;
