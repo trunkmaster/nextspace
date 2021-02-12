@@ -662,7 +662,7 @@ static void _updateApplicationIcons(WScreen *scr)
  * domain->timestamp will be updated only in case of successful read and validate 
  * of domain file.
  */
-static void _updateDomain(WDDomain *domain)
+static void _updateDomain(WDDomain *domain, Bool shouldNotify)
 {
   WScreen *scr;
   CFMutableDictionaryRef dict;
@@ -686,7 +686,7 @@ static void _updateDomain(WDDomain *domain)
     }
     else {
       if ((scr = wDefaultScreen())) {
-        wDefaultsRead(scr, dict);
+        wDefaultsRead(scr, dict, shouldNotify);
       }
       if (domain->dictionary) {
         CFRelease(domain->dictionary);
@@ -754,17 +754,20 @@ static void _processWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBac
 
     if (pevent->mask & IN_MODIFY) {
       WMLogWarning(_("inotify: defaults domain has been modified. Rereading defaults database."));
-      _updateDomain(domain);
+      /* _updateDomain(domain); */
+      wDefaultsUpdateDomainsIfNeeded(NULL);
     }
     
     if (pevent->mask & IN_MOVE_SELF) {
       WMLogWarning(_("inotify: %i defaults domain has been moved."), pevent->wd);
-      _updateDomain(domain);
+      /* _updateDomain(domain); */
+      wDefaultsUpdateDomainsIfNeeded(NULL);
     }
     
     if (pevent->mask & IN_DELETE_SELF) {
       WMLogWarning(_("inotify: %i defaults domain has been deleted!"), pevent->wd);
-      _updateDomain(domain);
+      /* _updateDomain(domain); */
+      wDefaultsUpdateDomainsIfNeeded(NULL);
     }
     
     if (pevent->mask & IN_UNMOUNT) {
@@ -930,13 +933,13 @@ void wDefaultsReadStatic(CFMutableDictionaryRef dict)
 }
 
 // Apply `plvalue` from `new_dict` to appropriate `entry->addr` specified in `optionList`
-void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
+void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNotify)
 {
   CFTypeRef plvalue = NULL;
   CFTypeRef old_value = NULL;
   WDefaultEntry *entry;
   unsigned int i;
-  unsigned int needs_refresh;
+  unsigned int needs_refresh = 0;
   void *tdata;
   CFDictionaryRef old_dict = NULL;
 
@@ -984,7 +987,7 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict)
       continue;
     }
 
-    if (plvalue) {
+    if (shouldNotify && plvalue) {
       /* convert data */
       if ((*entry->convert) (scr, entry, plvalue, entry->addr, &tdata)) {
         if (entry->update) {
@@ -1075,13 +1078,13 @@ void wDefaultsUpdateDomainsIfNeeded(void* arg)
   // ~/Library/Preferences/.NextSpace/WM
   time = WMUserDefaultsFileModificationTime(w_global.domain.wm->name, 0);
   if (w_global.domain.wm->timestamp < time) {
-    _updateDomain(w_global.domain.wm);
+    _updateDomain(w_global.domain.wm, True);
   }
 
   // ~/Library/Preferences/.NextSpace/WMWindowAttributes
   time = WMUserDefaultsFileModificationTime(w_global.domain.window_attr->name, 0);
   if (w_global.domain.window_attr->timestamp < time) {
-    _updateDomain(w_global.domain.window_attr);
+    _updateDomain(w_global.domain.window_attr, False);
     if ((scr = wDefaultScreen())) {
       _updateApplicationIcons(scr);
     }
