@@ -1182,13 +1182,13 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   WScreen *scr = wDefaultScreen();
 
   if ([[sender title] isEqualToString:@"Hide"]) {
-    WMIconYardHideIcons(scr);
+    wIconYardHideIcons(scr);
     // wScreenUpdateUsableArea(scr);
     // if (!scr->dock->mapped)
     [sender setTitle:@"Show"];
   }
   else {
-    WMIconYardShowIcons(scr);
+    wIconYardShowIcons(scr);
     // wScreenUpdateUsableArea(scr);
     // if (scr->dock->mapped)
     [sender setTitle:@"Hide"];

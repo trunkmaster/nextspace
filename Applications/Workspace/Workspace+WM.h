@@ -83,10 +83,6 @@ void WMShutdown(WMShutdownMode mode);
 // --- Defaults
 NSString *WMDefaultsPath(void);
   
-// --- Icon Yard
-void WMIconYardShowIcons(WScreen *screen);
-void WMIconYardHideIcons(WScreen *screen);
-
 // --- Dock
 void WMSetDockAppImage(NSString *path, int position, BOOL save);
 BOOL WMIsDockAppAutolaunch(int position);
