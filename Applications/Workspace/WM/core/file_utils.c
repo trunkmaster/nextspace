@@ -435,3 +435,53 @@ int WMCopyFile(const char *dest_dir, const char *src_file, const char *dest_file
 
   return 0;
 }
+
+Bool WMCreateDirectoriesAtPath(const char *path)
+{
+  char *thePath = NULL, buf[1024];
+  size_t p, plen;
+  struct stat st;
+
+  thePath = wstrdup(path);
+  /* Strip the trailing component if it is a file */
+  p = strlen(thePath);
+  while (p && thePath[p] != '/')
+    thePath[p--] = '\0';
+
+  thePath[p] = '\0';
+
+  /* Shortcut if it already exists */
+  if (stat(thePath, &st) == 0) {
+    wfree(thePath);
+    if (S_ISDIR(st.st_mode)) {
+      /* Is a directory alright */
+      return true;
+    } else {
+      /* Exists, but not a directory, the caller
+       * might just as well abort now */
+      return false;
+    }
+  }
+
+  memset(buf, 0, sizeof(buf));
+  p = 0;
+  plen = strlen(thePath);
+  do {
+    while (p++ < plen && thePath[p] != '/')
+      ;
+
+    strncpy(buf, thePath, p);
+
+    if (stat(buf, &st) == -1 && errno == ENOENT) {
+      if (mkdir(buf, 0777) == -1 && stat(buf, &st) == 0 && !S_ISDIR(st.st_mode)) {
+        WMLogError(_("Could not create component %s. It exists and is a file."), buf);
+        wfree(thePath);
+        return false;
+      }
+    }
+    
+  } while (p < plen);
+
+  wfree(thePath);
+  return true;
+}

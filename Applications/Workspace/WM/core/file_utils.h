@@ -27,5 +27,6 @@
 
 /* You have to free the returned string when you no longer need it */
 char *WMAbsolutePathForFile(const char *paths, const char *file);
+Bool WMCreateDirectoriesAtPath(const char *path);
 
 #endif /* __WORKSPACE_WM_FILEUTILS__ */
