@@ -65,6 +65,7 @@ extern WorkspaceExitCode ws_quit_code;
 #include <placement.h>
 #include <xrandr.h>
 #include <misc.h>
+#include "iconyard.h"
 
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey:(X) value:@"" table:nil]

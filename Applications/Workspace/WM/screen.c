@@ -64,6 +64,7 @@
 #include "xrandr.h"
 #include "defaults.h"
 #include "misc.h"
+#include "iconyard.h"
 
 /* Window titlebar text alignment */
 #define WTB_LEFT	0

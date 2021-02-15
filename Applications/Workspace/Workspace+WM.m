@@ -347,31 +347,6 @@ BOOL WMIsDockAppAutolaunch(int position)
 
 // -- Should be called from already existing @autoreleasepool ---
 
-// Returns path to user WMState if exist.
-// Returns 'nil' if user WMState doesn't exist and cannot
-// be recovered from Workspace.app/Resources/WM directory.
-NSString *WMDockStatePath(void)
-{
-  NSString      *userDefPath, *appDefPath;
-  NSFileManager *fm = [NSFileManager defaultManager];
-
-  userDefPath = [NSString stringWithFormat:@"%@/.WindowMaker/WMState",
-                          GSDefaultsRootForUser(NSUserName())];
-  
-  if (![fm fileExistsAtPath:userDefPath]) {
-    appDefPath = [[NSBundle mainBundle] pathForResource:@"WMState"
-                                                 ofType:nil
-                                            inDirectory:@"WM"];
-    if (![fm fileExistsAtPath:appDefPath]) {
-      return nil;
-    }
-
-    [fm copyItemAtPath:appDefPath toPath:userDefPath error:NULL];
-  }
-
-  return userDefPath;
-}
-
 // Returns NSDictionary representation of WMState file
 NSDictionary *WMDockState(void)
 {

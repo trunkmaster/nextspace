@@ -63,6 +63,7 @@
 #include "event.h"
 #include "winmenu.h"
 #include "moveres.h"
+#include "iconyard.h"
 
 #include "dock.h"
 #include <Workspace+WM.h>

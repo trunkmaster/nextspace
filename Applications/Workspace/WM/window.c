@@ -69,6 +69,7 @@
 #include "startup.h"
 #include "winmenu.h"
 #include "osdep.h"
+#include "iconyard.h"
 
 #ifdef USE_MWM_HINTS
 # include "motif.h"

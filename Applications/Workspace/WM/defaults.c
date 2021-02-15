@@ -84,6 +84,7 @@
 #include "misc.h"
 #include "winmenu.h"
 #include "moveres.h"
+#include "iconyard.h"
 
 #include "Workspace+WM.h"
 

@@ -41,6 +41,7 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/framewin.c \
 	$(WM_DIR)/geomview.c \
 	$(WM_DIR)/icon.c \
+	$(WM_DIR)/iconyard.c \
 	$(WM_DIR)/menu.c \
 	$(WM_DIR)/moveres.c \
 	$(WM_DIR)/motif.c \
