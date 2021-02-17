@@ -57,6 +57,7 @@
 #include "misc.h"
 #include "event.h"
 #include "moveres.h"
+#include "iconyard.h"
 #ifdef USE_DOCK_XDND
 #include "xdnd.h"
 #endif

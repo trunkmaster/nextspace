@@ -52,6 +52,8 @@
 #include "geomview.h"
 #include "screen.h"
 #include "xrandr.h"
+#include "iconyard.h"
+
 #include "moveres.h"
 
 /* calculate window edge resistance from edge resistance */

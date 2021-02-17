@@ -2564,12 +2564,12 @@ Bool _get_next_prop_new_event(Display *display, XEvent *event, char *arg)
 }
 
 /*
-Build a Pixmap of our icon so the windowmaker dock will remember our
-icon when we quit.
+  Build a Pixmap of our icon so the windowmaker dock will remember our
+  icon when we quit.
 
-ICCCM really only allows 1-bit pixmaps for IconPixmapHint, but this code is
-only used if windowmaker is the window manager, and windowmaker can handle
-real color pixmaps.
+  ICCCM really only allows 1-bit pixmaps for IconPixmapHint, but this code is
+  only used if windowmaker is the window manager, and windowmaker can handle
+  real color pixmaps.
 */
 static Pixmap xIconPixmap;
 static Pixmap xIconMask;

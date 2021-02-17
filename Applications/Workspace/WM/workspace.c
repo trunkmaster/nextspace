@@ -64,6 +64,8 @@
 #include "wmspec.h"
 #include "xrandr.h"
 #include "event.h"
+#include "iconyard.h"
+
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
 #include "stacking.h"

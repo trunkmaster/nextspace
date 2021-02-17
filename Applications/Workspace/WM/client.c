@@ -46,6 +46,7 @@
 #include "appicon.h"
 #include "wmspec.h"
 #include "misc.h"
+#include "iconyard.h"
 
 
 /*

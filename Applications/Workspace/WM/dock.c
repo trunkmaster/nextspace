@@ -71,6 +71,7 @@
 #include "misc.h"
 #include "event.h"
 #include "moveres.h"
+#include "iconyard.h"
 
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>

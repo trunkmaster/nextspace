@@ -209,67 +209,6 @@ NSString *WMDefaultsPath(void)
 }
 
 // ----------------------------
-// --- Icon Yard
-// ----------------------------
-void WMIconYardShowIcons(WScreen *screen)
-{
-  WAppIcon *appicon = screen->app_icon_list;
-  WWindow  *w_window;
-
-  // Miniwindows
-  w_window = screen->focused_window;
-  while (w_window) {
-    if (w_window && w_window->flags.miniaturized &&
-        w_window->icon && !w_window->icon->mapped ) {
-      XMapWindow(dpy, w_window->icon->core->window);
-      w_window->icon->mapped = 1;
-    }
-    w_window = w_window->prev;
-  }
-  
-  // Appicons
-  appicon = screen->app_icon_list;
-  while (appicon) {
-    if (!appicon->docked) {
-      XMapWindow(dpy, appicon->icon->core->window);
-    }
-    appicon = appicon->next;
-  }
-  
-  XSync(dpy, False);
-  screen->flags.icon_yard_mapped = 1;
-  // wArrangeIcons(screen, True);
-}
-void WMIconYardHideIcons(WScreen *screen)
-{
-  WAppIcon *appicon = screen->app_icon_list;
-  WWindow  *w_window;
-
-  // Miniwindows
-  w_window = screen->focused_window;
-  while (w_window) {
-    if (w_window && w_window->flags.miniaturized &&
-        w_window->icon && w_window->icon->mapped ) {
-      XUnmapWindow(dpy, w_window->icon->core->window);
-      w_window->icon->mapped = 0;
-    }
-    w_window = w_window->prev;
-  }
-
-  // Appicons
-  appicon = screen->app_icon_list;
-  while (appicon) {
-    if (!appicon->docked) {
-      XUnmapWindow(dpy, appicon->icon->core->window);
-    }
-    appicon = appicon->next;
-  }
-  
-  XSync(dpy, False);
-  screen->flags.icon_yard_mapped = 0;
-}
-
-// ----------------------------
 // --- Dock
 // ----------------------------
 void WMSetDockAppImage(NSString *path, int position, BOOL save)
@@ -346,31 +285,6 @@ BOOL WMIsDockAppAutolaunch(int position)
 }
 
 // -- Should be called from already existing @autoreleasepool ---
-
-// Returns path to user WMState if exist.
-// Returns 'nil' if user WMState doesn't exist and cannot
-// be recovered from Workspace.app/Resources/WM directory.
-NSString *WMDockStatePath(void)
-{
-  NSString      *userDefPath, *appDefPath;
-  NSFileManager *fm = [NSFileManager defaultManager];
-
-  userDefPath = [NSString stringWithFormat:@"%@/.WindowMaker/WMState",
-                          GSDefaultsRootForUser(NSUserName())];
-  
-  if (![fm fileExistsAtPath:userDefPath]) {
-    appDefPath = [[NSBundle mainBundle] pathForResource:@"WMState"
-                                                 ofType:nil
-                                            inDirectory:@"WM"];
-    if (![fm fileExistsAtPath:appDefPath]) {
-      return nil;
-    }
-
-    [fm copyItemAtPath:appDefPath toPath:userDefPath error:NULL];
-  }
-
-  return userDefPath;
-}
 
 // Returns NSDictionary representation of WMState file
 NSDictionary *WMDockState(void)

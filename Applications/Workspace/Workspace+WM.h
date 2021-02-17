@@ -65,6 +65,7 @@ extern WorkspaceExitCode ws_quit_code;
 #include <placement.h>
 #include <xrandr.h>
 #include <misc.h>
+#include "iconyard.h"
 
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey:(X) value:@"" table:nil]
@@ -82,10 +83,6 @@ void WMShutdown(WMShutdownMode mode);
 // --- Defaults
 NSString *WMDefaultsPath(void);
   
-// --- Icon Yard
-void WMIconYardShowIcons(WScreen *screen);
-void WMIconYardHideIcons(WScreen *screen);
-
 // --- Dock
 void WMSetDockAppImage(NSString *path, int position, BOOL save);
 BOOL WMIsDockAppAutolaunch(int position);

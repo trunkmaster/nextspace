@@ -79,11 +79,12 @@
 #include "event.h"
 #include "winmenu.h"
 #include "switchmenu.h"
+#include "iconyard.h"
 
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
-extern void WMIconYardShowIcons(WScreen *screen);
-extern void WMIconYardHideIcons(WScreen *screen);
+extern void wIconYardShowIcons(WScreen *screen);
+extern void wIconYardHideIcons(WScreen *screen);
 #endif
 
 #define MOD_MASK wPreferences.modifier_mask
@@ -1508,10 +1509,10 @@ static void handleKeyPress(XEvent * event)
   case WKBD_YARDHIDESHOW:
     if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
       if (scr->flags.icon_yard_mapped) {
-        WMIconYardHideIcons(scr);
+        wIconYardHideIcons(scr);
       }
       else {
-        WMIconYardShowIcons(scr);
+        wIconYardShowIcons(scr);
       }
     }
     else {

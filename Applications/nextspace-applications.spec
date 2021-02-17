@@ -19,7 +19,7 @@ BuildRequires:  clang >= 7.0.1
 %endif
 BuildRequires:	nextspace-frameworks-devel
 # Preferences
-#BuildRequires:	
+# BuildRequires:
 # Login
 BuildRequires:	pam-devel
 # Workspace
@@ -136,7 +136,7 @@ fi
 #%postun
 
 %changelog
-* Fri Jan 15 2020  Sergii Stoian <stoyan255@gmail.com> - 0.91-0
+* Fri Jan 15 2021  Sergii Stoian <stoyan255@gmail.com> - 0.91-0
 - added libCoreFoundation dependency.
 - autotools dependecies were removed (in favour of cmake).
 - use CMAKE variable to build Workspace.

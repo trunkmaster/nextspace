@@ -64,6 +64,7 @@
 #include "xrandr.h"
 #include "defaults.h"
 #include "misc.h"
+#include "iconyard.h"
 
 /* Window titlebar text alignment */
 #define WTB_LEFT	0
@@ -827,7 +828,7 @@ WScreen *wScreenInit(int screen_number)
   allocGCs(scr);
 
   /* read defaults for this screen */
-  wDefaultsRead(scr, w_global.domain.wm->dictionary);
+  wDefaultsRead(scr, w_global.domain.wm->dictionary, True);
 
   {
     XColor xcol;
