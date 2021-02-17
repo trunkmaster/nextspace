@@ -87,76 +87,7 @@ NSString *fullPathForCommand(NSString *command)
 // WM's behaviour, change WM's runtime variables.
 //------------------------------------------------------------------------------
 
-void WMSetupFrameOffsetProperty()
-{
-  int		count, nelements;
-  NSUInteger	titleBarHeight;
-
-  // GSMenuBarHeight defines height for GNUstep menu title bar.
-  // WM window title bar height stored in
-  // ~/L/P/.WindowMaker/WindowMaker setting WindowTitle*Height.
-  // Should be 23
-  titleBarHeight = [[NSUserDefaults standardUserDefaults]
-                     floatForKey:@"GSMenuBarHeight"];
-  if (titleBarHeight < 23) titleBarHeight = 23;
-    
-  uint16_t offsets[] = { 1, 1, titleBarHeight, 1,
-                         1, 1, titleBarHeight, 1,
-                         1, 1, titleBarHeight, 1,
-                         1, 1, titleBarHeight, 1,
-                         1, 1, titleBarHeight, 1,
-                         1, 1, titleBarHeight, 1,
-                         1, 1, titleBarHeight, 1,
-                         1, 1, titleBarHeight, 9,
-                         1, 1, titleBarHeight, 9,
-                         1, 1, titleBarHeight, 9,
-                         1, 1, titleBarHeight, 9,
-                         1, 1, titleBarHeight, 9,
-                         1, 1, titleBarHeight, 9,
-                         1, 1, titleBarHeight, 9,
-                         1, 1, titleBarHeight, 9};
-  
-  XChangeProperty(dpy, wDefaultScreen()->root_win,
-                  XInternAtom(dpy, "_GNUSTEP_FRAME_OFFSETS", False),
-                  XA_CARDINAL, 16, PropModeReplace,
-                  (unsigned char *)offsets, 60);
-}
-
 // --- Logout
-void WMWipeDesktop(WScreen * scr)
-{
-  Window       rootWindow, parentWindow;
-  Window       *childrenWindows;
-  unsigned int nChildrens, i;
-  WWindow      *wwin;
-  WApplication *wapp;
-    
-  XQueryTree(dpy, DefaultRootWindow(dpy),
-             &rootWindow, &parentWindow,
-             &childrenWindows, &nChildrens);
-    
-  for (i=0; i < nChildrens; i++) {
-    wapp = wApplicationOf(childrenWindows[i]);
-    if (wapp) {
-      wwin = wapp->main_window_desc;
-      if (!strcmp(wwin->wm_class, "GNUstep")) {
-        continue;
-      }
-      else {
-        if (wwin->protocols.DELETE_WINDOW) {
-          wClientSendProtocol(wwin, w_global.atom.wm.delete_window,
-                              w_global.timestamp.last_event);
-        }
-        else {
-          wClientKill(wwin);
-        }
-      }
-    }
-  }
-
-  XSync(dpy, False);
-}
-
 void WMShutdown(WMShutdownMode mode)
 {
   fprintf(stderr, "*** Shutting down Window Manager...\n");
@@ -183,29 +114,6 @@ void WMShutdown(WMShutdownMode mode)
 // #if HAVE_SYSLOG_H
 //   WMSyslogClose();
 // #endif
-}
-
-// --- Defaults
-NSString *WMDefaultsPath(void)
-{
-  NSString      *userDefPath, *appDefPath;
-  NSFileManager *fm = [NSFileManager defaultManager];
-
-  userDefPath = [NSString stringWithFormat:@"%@/.WindowMaker/WindowMaker",
-                          GSDefaultsRootForUser(NSUserName())];
-  
-  if (![fm fileExistsAtPath:userDefPath]) {
-    appDefPath = [[NSBundle mainBundle] pathForResource:@"WindowMaker"
-                                                 ofType:nil
-                                            inDirectory:@"WindowMaker"];
-    if (![fm fileExistsAtPath:appDefPath]) {
-      return nil;
-    }
-    
-    [fm copyItemAtPath:appDefPath toPath:userDefPath error:NULL];
-  }
-
-  return userDefPath;
 }
 
 // ----------------------------

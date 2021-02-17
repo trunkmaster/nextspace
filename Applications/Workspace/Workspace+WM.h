@@ -74,15 +74,9 @@ extern WorkspaceExitCode ws_quit_code;
 // Calls related to internals of Window Manager.
 // 'WM' prefix is a call direction 'to WindowManager'
 //-----------------------------------------------------------------------------
-void WMSetupFrameOffsetProperty();
-
 // --- Logout/PowerOff related activities
-void WMWipeDesktop(WScreen * scr);
 void WMShutdown(WMShutdownMode mode);
 
-// --- Defaults
-NSString *WMDefaultsPath(void);
-  
 // --- Dock
 void WMSetDockAppImage(NSString *path, int position, BOOL save);
 BOOL WMIsDockAppAutolaunch(int position);
