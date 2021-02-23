@@ -157,10 +157,6 @@ int main(int argc, const char **argv)
 
         // Dock
         wDockShowIcons(wScreen->dock);
-
-        // Setup predefined _GNUSTEP_FRAME_OFFSETS atom for correct
-        // initialization of GNUstep backend (gnustep-back).
-        // WMSetupFrameOffsetProperty(); 
       });
     fprintf(stderr, "=== Window Manager initialized! ===\n");
     

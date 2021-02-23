@@ -61,6 +61,16 @@ CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain)
   return domainURL;
 }
 
+CFStringRef WMUserDefaultsCopyStringForDomain(CFStringRef domain)
+{
+  CFURLRef url = WMUserDefaultsCopyURLForDomain(domain);
+  CFStringRef stringURL = CFURLGetString(url);
+
+  CFRelease(url);
+  
+  return stringURL;
+}
+
 // /usr/NextSpace/Apps/Workspace.app/Resources/<domain>.plist
 CFURLRef WMUserDefaultsCopySystemURLForDomain(CFStringRef domain)
 {

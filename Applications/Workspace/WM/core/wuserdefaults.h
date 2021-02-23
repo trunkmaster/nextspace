@@ -28,6 +28,7 @@
 CFURLRef WMUserDefaultsCopyUserLibraryURL(void);
 CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain);
 CFURLRef WMUserDefaultsCopySystemURLForDomain(CFStringRef domain);
+CFStringRef WMUserDefaultsCopyStringForDomain(CFStringRef domain);
 
 /* Property List */
 CFPropertyListRef WMUserDefaultsFromDescription(const char *description);
