@@ -1,0 +1,11 @@
+﻿{
+  Version = 1;
+  Foundry = "NextSpace";
+  Faces = (
+    {
+      PostScriptName = "Techno";
+      Name = "Regular";
+      Files = (Techno.ttf);
+    }
+    );
+}

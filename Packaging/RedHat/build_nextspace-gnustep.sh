@@ -19,6 +19,7 @@ cp ${REPO_DIR}/Libraries/gnustep/gdomap.interfaces ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/gdomap.service ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/gpbs.service ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/gnustep-gui-images.tar.gz ${SOURCES_DIR}
+cp ${REPO_DIR}/Libraries/gnustep/gorm-images.tar.gz ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/projectcenter-images.tar.gz ${SOURCES_DIR}
 
 print_H2 "===== Install GNUstep build dependencies..."

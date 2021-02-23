@@ -25,6 +25,7 @@ Source8:	gpbs.service
 Source9:	%{GS_REPO}/apps-gorm/archive/gorm-%{GORM_VERSION}.tar.gz
 Source10:	%{GS_REPO}/apps-projectcenter/archive/projectcenter-%{PC_VERSION}.tar.gz
 Source11:	projectcenter-images.tar.gz
+Source12:	gorm-images.tar.gz
 
 # Build GNUstep libraries in one RPM package
 Provides:	gnustep-base-%{BASE_VERSION}
@@ -208,6 +209,7 @@ cd ..
 # Install GORM
 export GNUSTEP_INSTALLATION_DOMAIN=NETWORK
 cd apps-gorm-gorm-%{GORM_VERSION}
+tar zxf %{_sourcedir}/gorm-images.tar.gz
 %{make_install}
 cd ..
 # Install ProjectCenter
