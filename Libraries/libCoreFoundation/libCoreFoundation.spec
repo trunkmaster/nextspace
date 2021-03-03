@@ -76,6 +76,7 @@ CF_CFLAGS="-I/usr/NextSpace/include -Wno-switch"
   CF_CFLAGS+=" -Wno-implicit-const-int-float-conversion"
 %endif
 %if 0%{?el7}
+source /opt/rh/llvm-toolset-7.0/enable
 cmake3 .. \
 %else
 cmake .. \
