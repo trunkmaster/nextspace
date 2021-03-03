@@ -1,5 +1,5 @@
 Name:           nextspace-applications
-Version:        0.90
+Version:        0.91
 Release:        0%{?dist}
 Summary:        NextSpace desktop core applications.
 
@@ -8,12 +8,22 @@ License:        GPLv2
 URL:		http://www.github.com/trunkmaster/nextspace
 Source0:	nextspace-applications-%{version}.tar.gz
 
+%if 0%{?el7}
+BuildRequires:  cmake3
+%define CMAKE cmake3
+BuildRequires:  llvm-toolset-7.0-clang >= 7.0.1
+%else
+BuildRequires:  cmake
+%define CMAKE cmake
+BuildRequires:  clang >= 7.0.1
+%endif
 BuildRequires:	nextspace-frameworks-devel
 # Preferences
-#BuildRequires:	
+# BuildRequires:
 # Login
 BuildRequires:	pam-devel
 # Workspace
+BuildRequires:	libCoreFoundation-devel
 BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libpng-devel
@@ -25,11 +35,9 @@ BuildRequires:	libXmu-devel
 BuildRequires:	libexif-devel
 BuildRequires:	libXfixes-devel
 BuildRequires:	fontconfig-devel
-BuildRequires:	autoconf
-BuildRequires:	automake
-BuildRequires:	libtool
 #
 Requires:	nextspace-frameworks
+Requires:	libCoreFoundation
 Requires:	fontconfig
 Requires:	libXft
 Requires:	libXinerama
@@ -78,6 +86,7 @@ export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 export ADDITIONAL_INCLUDE_DIRS="-I%{buildroot}/Developer/Headers"
 export ADDITIONAL_LIB_DIRS=" -L%{buildroot}/Library/Libraries"
+export CMAKE=%{CMAKE}
 make
 
 #
@@ -86,6 +95,7 @@ make
 %install
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export QA_SKIP_BUILD_ROOT=1
+export CMAKE=%{CMAKE}
 %{make_install}
 
 #
@@ -126,6 +136,11 @@ fi
 #%postun
 
 %changelog
+* Fri Jan 15 2021  Sergii Stoian <stoyan255@gmail.com> - 0.91-0
+- added libCoreFoundation dependency.
+- autotools dependecies were removed (in favour of cmake).
+- use CMAKE variable to build Workspace.
+
 * Sun Jun  9 2019  Sergii Stoian <stoyan255@gmail.com> - 0.85-3
 - fixed %post script.
 

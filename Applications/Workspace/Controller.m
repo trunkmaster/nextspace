@@ -1,7 +1,7 @@
 //
 // Project: Workspace
 //
-// Copyright (C) 2014-2019 Sergii Stoian
+// Copyright (C) 2014-2021 Sergii Stoian
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
@@ -47,6 +47,8 @@
 #import "Recycler.h"
 
 #import "ModuleLoader.h"
+
+#import "WorkspaceNotificationCenter.h"
 
 #import <Operations/ProcessManager.h>
 #import <Operations/Mounter.h>
@@ -407,7 +409,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // Close XWindow applications - wipeDesktop?
   
   // Hide Dock
-  WMDockHideIcons(wDefaultScreen()->dock);
+  wDockHideIcons(wDefaultScreen()->dock);
   if (recycler) {
     [[recycler appIcon] close];
     [recycler release];
@@ -420,7 +422,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [mediaManager release]; //  mediaAdaptor released also
   [mediaOperations release];
 
-  // NXTSystem objects declared in Workspace+WindowMaker.h
+  // NXTSystem objects declared in Workspace+WM.h
   [systemPower stopEventsMonitor];
   [systemPower release];
 
@@ -516,7 +518,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)applicationWillFinishLaunching:(NSNotification *)notif
 {
   // Update Workspace application icon (main Dock icon)
-  [self updateWorkspaceBadge];
+  [self createWorkspaceBadge];
   WSKeyboardGroupDidChange(0);
       
   // Recycler
@@ -532,7 +534,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       recycler_icon->main_window = main_dock_icon->main_window;
       [[recycler appIcon] orderFrontRegardless];
     }
-  }    
+  }
 
   // Detect lid close/open events
   systemPower = [OSEPower new];
@@ -548,6 +550,18 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
            selector:@selector(applicationDidChangeScreenParameters:)
                name:NSApplicationDidChangeScreenParametersNotification
              object:NSApp];
+  
+  // Window Manager events
+  [[WorkspaceNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(updateWorkspaceBadge:)
+             name:@"WMDidChangeWorkspaceNotification"
+           object:nil];
+  [[WorkspaceNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(wmWindowNotification:)
+             name:@"WMDidChangeWindowStateNotification"
+           object:nil];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
@@ -583,7 +597,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   fileViewers = [[NSMutableArray alloc] init];
   
   // Now we are ready to show windows and menu
-  if (WMIsDockAppAutolaunch(0) != NO) {
+  // if (WMIsDockAppAutolaunch(0) != NO) {
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, 0);
+  if (appicon && appicon->auto_launch == 1) {
     [self _restoreWindows];
     [[NSApp mainMenu] display];
   }
@@ -617,7 +633,20 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [mediaAdaptor checkForRemovableMedia];
   
   [self _startSavedApplications];
+  
+  wDefaultScreen()->flags.startup2 = 0;
+
   fprintf(stderr, "=== Workspace is ready. Welcome to the NeXT world! ===\n");
+}
+
+- (void)wmWindowNotification:(NSNotification *)aNotification
+{
+  CFObject *cfObject = (CFObject *)[aNotification object];
+  WWindow *wwin = (WWindow *)cfObject.object;
+  
+  NSLog(@"[wmWindowNotification] %@",[aNotification name]);
+  NSLog(@"[wmWindowNotification] %@ - %s userInfo:%@",
+        [aNotification name], wwin->wm_instance, [aNotification userInfo]);
 }
 
 - (void)activateApplication:(NSNotification *)aNotification
@@ -668,7 +697,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
           break;
         }
 
-        // Close Workspace windows, hide Dock, quit WindowMaker
+        // Close Workspace windows, hide Dock, quit WM
         [self _finishTerminateProcess];
         terminateReply = NSTerminateNow;
         ws_quit_code = WSLogoutOnQuit;
@@ -845,6 +874,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 //============================================================================
 - (void)createWorkspaceBadge
 {
+  NSString *currentWorkspace;
+  
+  if ([[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"] == NO) {
+    return;
+  }
+    
   workspaceBadge = [[NXTIconBadge alloc]
                              initWithPoint:NSMakePoint(5,48)
                                       text:@"0"
@@ -853,24 +888,34 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                                shadowColor:[NSColor whiteColor]];
   [[[NSApp iconWindow] contentView] addSubview:workspaceBadge];
   [workspaceBadge release];
-  [self updateWorkspaceBadge];
+  
+  currentWorkspace = [NSString stringWithFormat:@"%i",
+                               wDefaultScreen()->current_workspace + 1];
+  [workspaceBadge setStringValue:currentWorkspace];
 }
 
-- (void)updateWorkspaceBadge
+- (void)destroyWorkspaceBadge
 {
-  NSString *wsCurrent;
+  if (workspaceBadge) {
+    [workspaceBadge removeFromSuperview];
+    workspaceBadge = nil;
+  }
+}
 
-  if ([[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"]) {
+- (void)updateWorkspaceBadge:(NSNotification *)aNotification
+{
+  NSDictionary *info = [aNotification userInfo];
+  NSString     *currentWorkspace;
+
+  if ([[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"] != NO) {
     if (!workspaceBadge) {
       [self createWorkspaceBadge];
     }
-    wsCurrent = [NSString stringWithFormat:@"%i",
-                          wDefaultScreen()->current_workspace+1];
-    [workspaceBadge setStringValue:wsCurrent];
-  }
-  else if (workspaceBadge) {
-    [workspaceBadge removeFromSuperview];
-    workspaceBadge = nil;
+    else {
+      currentWorkspace = [NSString stringWithFormat:@"%i",
+                                [[info objectForKey:@"workspace"] intValue] + 1];
+      [workspaceBadge setStringValue:currentWorkspace];
+    }
   }
 }
 
@@ -1098,33 +1143,33 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   WScreen *scr = wDefaultScreen();
 
-  if ([[sender title] isEqualToString:@"Hide"])
-    {
-      WMDockHideIcons(scr->dock);
-      wScreenUpdateUsableArea(scr);
-      if (!scr->dock->mapped)
-        [sender setTitle:@"Show"];
+  if ([[sender title] isEqualToString:@"Hide"]) {
+    wDockHideIcons(scr->dock);
+    wScreenUpdateUsableArea(scr);
+    if (!scr->dock->mapped) {
+      [sender setTitle:@"Show"];
     }
-  else
-    {
-      WMDockShowIcons(scr->dock);
-      wScreenUpdateUsableArea(scr);
-      if (scr->dock->mapped)
-        [sender setTitle:@"Hide"];
+  }
+  else {
+    wDockShowIcons(scr->dock);
+    wScreenUpdateUsableArea(scr);
+    if (scr->dock->mapped) {
+      [sender setTitle:@"Hide"];
     }
+  }
 }
 - (void)setDockCollapse:(id)sender
 {
   WScreen *scr = wDefaultScreen();
   
   if ([[sender title] isEqualToString:@"Collapse"]) {
-    WMDockCollapse(scr->dock);
+    wDockCollapse(scr->dock);
     if (scr->dock->collapsed) {
       [sender setTitle:@"Uncollapse"];
     }
   }
   else {
-    WMDockUncollapse(scr->dock);
+    wDockUncollapse(scr->dock);
     if (!scr->dock->collapsed) {
       [sender setTitle:@"Collapse"];
     }
@@ -1137,13 +1182,13 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   WScreen *scr = wDefaultScreen();
 
   if ([[sender title] isEqualToString:@"Hide"]) {
-    WMIconYardHideIcons(scr);
+    wIconYardHideIcons(scr);
     // wScreenUpdateUsableArea(scr);
     // if (!scr->dock->mapped)
     [sender setTitle:@"Show"];
   }
   else {
-    WMIconYardShowIcons(scr);
+    wIconYardShowIcons(scr);
     // wScreenUpdateUsableArea(scr);
     // if (scr->dock->mapped)
     [sender setTitle:@"Hide"];
@@ -1324,7 +1369,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 //============================================================================
-// WindowMaker events
+// WM events
 //============================================================================
 - (void)showWMAlert:(NSMutableDictionary *)alertInfo
 {

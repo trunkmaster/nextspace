@@ -10,19 +10,19 @@ URL:		https://github.com/trunkmaster/nextspace
 Source0:	libwraster-%{WRASTER_VERSION}.tar.gz
 
 %if 0%{?el7}
+BuildRequires:	cmake3
+%define CMAKE cmake3
 BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
 %else
+BuildRequires:	cmake
+%define CMAKE cmake
 BuildRequires:	clang >= 7.0.1
 %endif
-BuildRequires:	autoconf
-BuildRequires:	automake
-BuildRequires:	libtool
 BuildRequires:	nextspace-core-devel >= 0.95
 BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libtiff-devel
-BuildRequires:  libexif-devel
 BuildRequires:	libXpm-devel
 BuildRequires:	libXmu-devel
 BuildRequires:	libXext-devel
@@ -69,11 +69,8 @@ rm -rf %{buildroot}
 # Build phase
 #
 %build
-%if 0%{?el7}
-source /opt/rh/llvm-toolset-7.0/enable
-%endif
 export CC=clang
-export CXX=clang++
+export CMAKE=%{CMAKE}
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 source /Developer/Makefiles/GNUstep.sh
 make
@@ -85,6 +82,7 @@ make
 source /Developer/Makefiles/GNUstep.sh
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 export QA_SKIP_BUILD_ROOT=1
+export CMAKE=%{CMAKE}
 
 %{make_install}
 

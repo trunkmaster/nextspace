@@ -19,10 +19,17 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
+#import <CoreFoundation/CFRunLoop.h>
 #import <AppKit/AppKit.h>
 
+#import <SystemKit/OSEScreen.h>
+
 #import "Application.h"
+#import "Recycler.h"
 #import "Workspace+WM.h"
+
+// Global - set in WM/event.c - WMRunLoop()
+CFRunLoopRef wm_runloop = NULL;
 
 //-----------------------------------------------------------------------------
 // Workspace X Window related utility functions
@@ -81,9 +88,6 @@ static BOOL _isWindowManagerRunning(void)
 // Workspace application GNUstep main function
 //-----------------------------------------------------------------------------
 
-// WM/src/startup.c
-extern void WMSetErrorHandler(void);
-
 int WSApplicationMain(int argc, const char **argv)
 {
   NSDictionary	*infoDict;
@@ -92,7 +96,7 @@ int WSApplicationMain(int argc, const char **argv)
   CREATE_AUTORELEASE_POOL(pool);
 
   infoDict = [[NSBundle mainBundle] infoDictionary];
-  
+
   [WSApplication sharedApplication];
 
   mainModelFile = [infoDict objectForKey:@"NSMainNibFile"];
@@ -104,7 +108,7 @@ int WSApplicationMain(int argc, const char **argv)
 
   RECREATE_AUTORELEASE_POOL(pool);
 
-  WMSetErrorHandler();
+  wSetErrorHandler();
 
   [NSApp run];
 
@@ -134,19 +138,33 @@ int main(int argc, const char **argv)
   {
     dispatch_queue_t wm_q;
     
-    wm_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_SERIAL);
+    // DISPATCH_QUEUE_CONCURRENT is mandatory for CFRunLoop run.
+    wm_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_CONCURRENT);
     fprintf(stderr, "=== Initializing Window Manager... ===\n");
     dispatch_sync(wm_q, ^{
-        WMInitializeWindowMaker(argc, (char **)argv);
+        WScreen *wScreen;
+        
+        @autoreleasepool {
+          // Restore display layout
+          [[[OSEScreen new] autorelease] applySavedDisplayLayout];
+        }
+
+        wInitialize(argc, (char **)argv);
+        wStartUp(True);
+        
+        wScreen = wDefaultScreen();
+        WSUpdateScreenInfo(wScreen);
+
+        // Dock
+        wDockShowIcons(wScreen->dock);
       });
     fprintf(stderr, "=== Window Manager initialized! ===\n");
-
-    // Start X11 EventLoop in parallel
-    dispatch_async(wm_q, ^{
-        EventLoop();
-      });
+    
+    // Start WM run loop V0 to catch events while V1 is warming up.
+    dispatch_async(wm_q, ^{ WMRunLoop_V0(); });
+    dispatch_async(wm_q, ^{ WMRunLoop_V1(); });
   }
-      
+  
   //--- Workspace (GNUstep) queue ---------------------------------------
   fprintf(stderr, "=== Starting the Workspace... ===\n");
   dispatch_sync(workspace_q, ^{
@@ -156,8 +174,9 @@ int main(int argc, const char **argv)
   //---------------------------------------------------------------------
   
   fprintf(stderr, "=== Quitting Window manager... ===\n");
+  CFRunLoopStop(wm_runloop);
   // Quit WindowManager, close all X11 applications.
-  WMShutdown(WSKillMode);
+  WMShutdown(WMExitMode);
   
   fprintf(stderr, "=== Exit code is %i ===\n", ws_quit_code);
   return ws_quit_code;

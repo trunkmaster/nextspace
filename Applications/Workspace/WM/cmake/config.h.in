@@ -1,0 +1,135 @@
+/* Define to 1 if you have the <bsd/string.h> header file. */
+#cmakedefine01 HAVE_BSD_STRING_H
+
+/* Define to 1 if you have the <ctype.h> header file. */
+#cmakedefine01 HAVE_CTYPE_H
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#cmakedefine01 HAVE_DLFCN_H
+
+/* Define to 1 if you have the <fcntl.h> header file. */
+#cmakedefine01 HAVE_FCNTL_H
+
+/* Defined if the 'float'-typed math function are available (sinf, cosf) */
+#cmakedefine01 HAVE_FLOAT_MATHFUNC
+
+/* Defines how to access the value of Pi */
+#cmakedefine WM_PI @M_PI_VALUE@
+
+/* Define to 1 if you have the `gethostname' function. */
+#cmakedefine01 HAVE_GETHOSTNAME
+
+/* Define to 1 if you have the <sys/inotify.h> header file. */
+#cmakedefine01 HAVE_INOTIFY
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#cmakedefine01 HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <libintl.h> header file. */
+#cmakedefine01 HAVE_LIBINTL_H
+
+/* Define to 1 if you have the <limits.h> header file. */
+#cmakedefine01 HAVE_LIMITS_H
+
+/* Define to 1 if you have the `mallinfo' function. */
+#cmakedefine01 HAVE_MALLINFO
+
+/* Define to 1 if you have the <malloc.h> header file. */
+#cmakedefine01 HAVE_MALLOC_H
+
+/* Define to 1 if you have the <memory.h> header file. */
+#cmakedefine01 HAVE_MEMORY_H
+
+/* Define to 1 if you have the `mkstemp' function. */
+#cmakedefine01 HAVE_MKSTEMP
+
+/* Define to 1 if you have the `poll' function. */
+#cmakedefine01 HAVE_POLL
+
+/* Define to 1 if you have the <poll.h> header file. */
+#cmakedefine01 HAVE_POLL_H
+
+/* defined when GNU's secure_getenv function is available */
+#cmakedefine01 HAVE_SECURE_GETENV
+
+/* Define to 1 if you have the `select' function. */
+#cmakedefine01 HAVE_SELECT
+
+/* Define to 1 if you have the `setsid' function. */
+#cmakedefine01 HAVE_SETSID
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#cmakedefine01 HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#cmakedefine01 HAVE_STDLIB_H
+
+/* Defined if header "stdnoreturn.h" exists, it defines ISO C11 attribute
+   'noreturn' and it works */
+#cmakedefine01 HAVE_STDNORETURN
+
+/* Define to 1 if you have the `strcasecmp' function. */
+#cmakedefine01 HAVE_STRCASECMP
+
+/* Define to 1 if you have the <strings.h> header file. */
+#cmakedefine01 HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#cmakedefine01 HAVE_STRING_H
+
+/* Define if strlcpy is available */
+#cmakedefine HAVE_STRLCAT
+
+/* Define to 1 if you have the `strncasecmp' function. */
+#cmakedefine01 HAVE_STRNCASECMP
+
+/* Define to 1 if you have the `sysconf' function. */
+#cmakedefine01 HAVE_SYSCONF
+
+/* Check for syslog */
+#cmakedefine HAVE_SYSLOG
+
+/* Define to 1 if you have the <syslog.h> header file. */
+#cmakedefine01 HAVE_SYSLOG_H
+
+/* Define to 1 if you have the <sys/ioctl.h> header file. */
+#cmakedefine01 HAVE_SYS_IOCTL_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#cmakedefine01 HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#cmakedefine01 HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
+#cmakedefine01 HAVE_SYS_WAIT_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#cmakedefine01 HAVE_UNISTD_H
+
+/* Define to 1 if you have the `vprintf' function. */
+#cmakedefine01 HAVE_VPRINTF
+
+/* define if your X server has XConvertCase() (set by configure) */
+#cmakedefine HAVE_XCONVERTCASE
+
+/* define if your X server has XInternAtoms() (set by configure) */
+#cmakedefine HAVE_XINTERNATOMS
+
+/* defined when valid XRandR library with header was found */
+#cmakedefine USE_XRANDR
+
+/* defined when valid XShape library with header was found */
+#cmakedefine USE_XSHAPE
+
+/* define when XKB library wa found */
+#cmakedefine USE_XKB
+
+/* Define if Pango is to be used */
+#cmakedefine USE_PANGO
+
+/* Define as the return type of signal handlers (`int' or `void') */
+#define RETSIGTYPE void
+
+/* where the defaults configuration is stored */
+#define SYSTEM_DEFAULTS_DIR "/usr/NextSpace/Apps/Workspace.app/Resources"

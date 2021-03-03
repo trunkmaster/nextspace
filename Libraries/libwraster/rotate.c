@@ -20,18 +20,16 @@
  *  MA 02110-1301, USA.
  */
 
-#include <config.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 #include <X11/Xlib.h>
 
+#include "config.h"
 #include "wraster.h"
 #include "rotate.h"
-
-#include <math.h>
 
 
 static RImage *rotate_image_90(RImage *source);

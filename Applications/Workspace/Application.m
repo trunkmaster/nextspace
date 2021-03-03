@@ -2,7 +2,7 @@
 //
 // Project: Workspace
 //
-// Copyright (C) 2020 Sergii Stoian
+// Copyright (C) 2020-2021 Sergii Stoian
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public

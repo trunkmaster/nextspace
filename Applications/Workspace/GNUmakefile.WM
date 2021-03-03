@@ -1,95 +1,79 @@
-# WindowMaker
-$(APP_NAME)_C_FILES = \
-	$(WM_DIR)/src/actions.c \
-	$(WM_DIR)/src/appicon.c \
-	$(WM_DIR)/src/application.c \
-	$(WM_DIR)/src/balloon.c \
-	$(WM_DIR)/src/client.c \
-	$(WM_DIR)/src/colormap.c \
-	$(WM_DIR)/src/cycling.c \
-	$(WM_DIR)/src/defaults.c \
-	$(WM_DIR)/src/dock.c \
-	$(WM_DIR)/src/event.c \
-	$(WM_DIR)/src/framewin.c \
-	$(WM_DIR)/src/geomview.c \
-	$(WM_DIR)/src/icon.c \
-	$(WM_DIR)/src/main.c \
-	$(WM_DIR)/src/menu.c \
-	$(WM_DIR)/src/moveres.c \
-	$(WM_DIR)/src/motif.c \
-	$(WM_DIR)/src/pixmap.c \
-	$(WM_DIR)/src/placement.c \
-	$(WM_DIR)/src/properties.c \
-	$(WM_DIR)/src/resources.c \
-	$(WM_DIR)/src/screen.c \
-	$(WM_DIR)/src/session.c \
-	$(WM_DIR)/src/shutdown.c \
-	$(WM_DIR)/src/switchpanel.c \
-	$(WM_DIR)/src/stacking.c \
-	$(WM_DIR)/src/startup.c \
-	$(WM_DIR)/src/superfluous.c \
-	$(WM_DIR)/src/switchmenu.c \
-	$(WM_DIR)/src/texture.c \
-	$(WM_DIR)/src/wcore.c \
-	$(WM_DIR)/src/wdefaults.c \
-	$(WM_DIR)/src/window.c \
-	$(WM_DIR)/src/winmenu.c \
-	$(WM_DIR)/src/wmspec.c \
-	$(WM_DIR)/src/workspace.c \
-	$(WM_DIR)/src/misc.c \
-	$(WM_DIR)/src/xrandr.c \
-	$(WM_DIR)/src/xutil.c \
-	$(WM_DIR)/src/xmodifier.c \
-	$(WM_DIR)/src/xdnd.c
-
-# WINGs
+# WM core
 $(APP_NAME)_C_FILES += \
-	$(WM_DIR)/WINGs/configuration.c \
-	$(WM_DIR)/WINGs/dragcommon.c \
-	$(WM_DIR)/WINGs/dragdestination.c \
-	$(WM_DIR)/WINGs/dragsource.c \
-	$(WM_DIR)/WINGs/selection.c \
-	$(WM_DIR)/WINGs/wappresource.c \
-	$(WM_DIR)/WINGs/wballoon.c \
-	$(WM_DIR)/WINGs/wcolor.c \
-	$(WM_DIR)/WINGs/wevent.c \
-	$(WM_DIR)/WINGs/wframe.c \
-	$(WM_DIR)/WINGs/wfont.c \
-	$(WM_DIR)/WINGs/widgets.c \
-	$(WM_DIR)/WINGs/winputmethod.c \
-	$(WM_DIR)/WINGs/wlabel.c \
-	$(WM_DIR)/WINGs/wmisc.c \
-	$(WM_DIR)/WINGs/wpixmap.c \
-	$(WM_DIR)/WINGs/wview.c \
-	$(WM_DIR)/WINGs/wwindow.c
+	$(WM_DIR)/core/util.c \
+	$(WM_DIR)/core/log_utils.c \
+	$(WM_DIR)/core/file_utils.c \
+	$(WM_DIR)/core/string_utils.c \
+	$(WM_DIR)/core/whashtable.c \
+	$(WM_DIR)/core/dragcommon.c \
+	$(WM_DIR)/core/dragdestination.c \
+	$(WM_DIR)/core/dragsource.c \
+	$(WM_DIR)/core/drawing.c \
+	$(WM_DIR)/core/selection.c \
+	$(WM_DIR)/core/wbagtree.c \
+	$(WM_DIR)/core/wdata.c \
+	$(WM_DIR)/core/wballoon.c \
+	$(WM_DIR)/core/wcolor.c \
+	$(WM_DIR)/core/wevent.c \
+	$(WM_DIR)/core/wframe.c \
+	$(WM_DIR)/core/wfont.c \
+	$(WM_DIR)/core/widgets.c \
+	$(WM_DIR)/core/winputmethod.c \
+	$(WM_DIR)/core/wlabel.c \
+	$(WM_DIR)/core/wpixmap.c \
+	$(WM_DIR)/core/wscreen.c \
+        $(WM_DIR)/core/wuserdefaults.c \
+	$(WM_DIR)/core/wview.c \
+	$(WM_DIR)/core/wwindow.c
 
-# WUtil
+# WM
 $(APP_NAME)_C_FILES += \
-	$(WM_DIR)/WMcore/array.c \
-	$(WM_DIR)/WMcore/bagtree.c \
-	$(WM_DIR)/WMcore/data.c \
-	$(WM_DIR)/WMcore/error.c \
-	$(WM_DIR)/WMcore/findfile.c \
-	$(WM_DIR)/WMcore/handlers.c \
-	$(WM_DIR)/WMcore/hashtable.c \
-	$(WM_DIR)/WMcore/memory.c \
-	$(WM_DIR)/WMcore/misc.c \
-	$(WM_DIR)/WMcore/notification.c \
-	$(WM_DIR)/WMcore/proplist.c \
-	$(WM_DIR)/WMcore/string.c \
-	$(WM_DIR)/WMcore/tree.c \
-	$(WM_DIR)/WMcore/userdefaults.c \
-	$(WM_DIR)/WMcore/usleep.c \
-	$(WM_DIR)/WMcore/wapplication.c
+	$(WM_DIR)/actions.c \
+	$(WM_DIR)/appicon.c \
+	$(WM_DIR)/application.c \
+	$(WM_DIR)/balloon.c \
+	$(WM_DIR)/client.c \
+	$(WM_DIR)/colormap.c \
+	$(WM_DIR)/cycling.c \
+	$(WM_DIR)/defaults.c \
+	$(WM_DIR)/dock.c \
+	$(WM_DIR)/event.c \
+	$(WM_DIR)/framewin.c \
+	$(WM_DIR)/geomview.c \
+	$(WM_DIR)/icon.c \
+	$(WM_DIR)/iconyard.c \
+	$(WM_DIR)/menu.c \
+	$(WM_DIR)/moveres.c \
+	$(WM_DIR)/motif.c \
+	$(WM_DIR)/pixmap.c \
+	$(WM_DIR)/placement.c \
+	$(WM_DIR)/properties.c \
+	$(WM_DIR)/resources.c \
+	$(WM_DIR)/screen.c \
+	$(WM_DIR)/session.c \
+	$(WM_DIR)/shutdown.c \
+	$(WM_DIR)/switchpanel.c \
+	$(WM_DIR)/stacking.c \
+	$(WM_DIR)/startup.c \
+	$(WM_DIR)/animations.c \
+	$(WM_DIR)/switchmenu.c \
+	$(WM_DIR)/texture.c \
+	$(WM_DIR)/wcore.c \
+	$(WM_DIR)/window.c \
+	$(WM_DIR)/window_attributes.c \
+	$(WM_DIR)/winmenu.c \
+	$(WM_DIR)/wmspec.c \
+	$(WM_DIR)/workspace.c \
+	$(WM_DIR)/misc.c \
+	$(WM_DIR)/xrandr.c \
+	$(WM_DIR)/xutil.c \
+	$(WM_DIR)/xmodifier.c \
+	$(WM_DIR)/xdnd.c
 
 ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
-$(APP_NAME)_C_FILES += $(WM_DIR)/src/osdep_bsd.c
+$(APP_NAME)_C_FILES += $(WM_DIR)/osdep_bsd.c
 endif
 
 ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-$(APP_NAME)_C_FILES += $(WM_DIR)/src/osdep_linux.c
+$(APP_NAME)_C_FILES += $(WM_DIR)/osdep_linux.c
 endif
-
-#if $(WM_DIR)_OSDEP_GENERIC
-#$(APP_NAME)_C_FILES += $(WM_DIR)/src/osdep_stub.c
-#endif

@@ -183,16 +183,16 @@ static CFSpinLock_t __CFHashStoreLock = CFLockInit;
 static CFTypeID __kCFNotificationCenterTypeID = _kCFRuntimeIDCFNotificationCenter;
 
 // life-cycle stuff can wait for now
-static const CFRuntimeClass __CFNotificationCenterClass = {
-                                                           0,    // version
-                                                           "CFNotificationCenter",
-                                                           NULL, // init
-                                                           NULL, // copy
-                                                           NULL, // __CFDataDeallocate,
-                                                           NULL, // __CFDataEqual,
-                                                           NULL, // __CFDataHash,
-                                                           NULL, // __CFCopyFormattingDescription
-                                                           NULL, // __CFDataCopyDescription
+const CFRuntimeClass __CFNotificationCenterClass = {
+  0,	// version
+  "CFNotificationCenter",
+  NULL,	// init
+  NULL,	// copy
+  NULL,	// __CFDataDeallocate,
+  NULL,	// __CFDataEqual,
+  NULL,	// __CFDataHash,
+  NULL,	// __CFCopyFormattingDescription
+  NULL,	// __CFDataCopyDescription
 };
 
 __private_extern__ void __CFNotificationCenterInitialize(void)
@@ -894,8 +894,6 @@ CFNotificationCenterRef __CFCreateCenter(CFIndex type) {
   CFIndex size = sizeof(struct __CFNotificationCenter) - sizeof(CFRuntimeBase);
   struct __CFNotificationCenter *memory;
 
-  // __CFNotificationCenterInitialize()
-  __kCFNotificationCenterTypeID = _CFRuntimeRegisterClass(&__CFNotificationCenterClass);
   __CFHashStore = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
   
   memory = (CFNotificationCenterRef)_CFRuntimeCreateInstance(kCFAllocatorDefault,

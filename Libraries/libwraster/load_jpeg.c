@@ -20,16 +20,13 @@
  *  MA 02110-1301, USA.
  */
 
-#include <config.h>
-
-/* Avoid a compiler warning */
-#undef HAVE_STDLIB_H
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include <jpeglib.h>
+
+#include "config.h"
 
 #ifdef HAVE_STDNORETURN
 #include <stdnoreturn.h>

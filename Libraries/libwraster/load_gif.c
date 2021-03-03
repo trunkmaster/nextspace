@@ -20,14 +20,13 @@
  *  MA 02110-1301, USA.
  */
 
-#include <config.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include <gif_lib.h>
 
+#include "config.h"
 #include "wraster.h"
 #include "imgformat.h"
 
@@ -56,14 +55,14 @@ RImage *RLoadGIF(const char *file, int index)
 	/* default error message */
 	RErrorCode = RERR_BADINDEX;
 
-#if USE_GIF == 4
+#if GIFLIB_MAJOR == 4
 	gif = DGifOpenFileName(file);
-#else /* USE_GIF == 5 */
+#else /* GIFLIB_MAJOR == 5 */
 	gif = DGifOpenFileName(file, &gif_error);
 #endif
 
 	if (!gif) {
-#if USE_GIF == 4
+#if GIFLIB_MAJOR == 4
 		gif_error = GifLastError();
 #endif
 		switch (gif_error) {
@@ -81,7 +80,7 @@ RImage *RLoadGIF(const char *file, int index)
 	}
 
 	if (gif->SWidth < 1 || gif->SHeight < 1) {
-#if (USE_GIF == 5) && (GIFLIB_MINOR >= 1)
+#if (GIFLIB_MAJOR == 5) && (GIFLIB_MINOR >= 1)
 		DGifCloseFile(gif, NULL);
 #else
 		DGifCloseFile(gif);
@@ -194,7 +193,7 @@ RImage *RLoadGIF(const char *file, int index)
 	/* yuck! */
 	goto did_not_get_any_errors;
  giferr:
-#if USE_GIF == 4
+#if GIFLIB_MAJOR == 4
 	switch (GifLastError()) {
 	case D_GIF_ERR_OPEN_FAILED:
 		RErrorCode = RERR_OPEN;
@@ -220,7 +219,7 @@ RImage *RLoadGIF(const char *file, int index)
 		free(buffer);
 
 	if (gif)
-#if (USE_GIF == 5) && (GIFLIB_MINOR >= 1)
+#if (GIFLIB_MAJOR == 5) && (GIFLIB_MINOR >= 1)
 		DGifCloseFile(gif, NULL);
 #else
 		DGifCloseFile(gif);

@@ -26,8 +26,8 @@
  * Please use functions in 'wraster.h' in applications
  */
 
-#ifndef WRASTER_CONVERT_H
-#define WRASTER_CONVERT_H
+#ifndef __WRASTER_CONVERT_H__
+#define __WRASTER_CONVERT_H__
 
 
 /*

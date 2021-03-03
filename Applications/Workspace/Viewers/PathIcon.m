@@ -28,11 +28,11 @@
 
 #import "Workspace+WM.h"
 
-#import <WMcore/WMcore.h>
-#import <WMcore/memory.h>
-#import <WMcore/string.h>
-#import <superfluous.h>
+#import <core/WMcore.h>
+#import <core/string_utils.h>
+#import <animations.h>
 #import <defaults.h>
+#import <window_attributes.h>
 
 #import "Controller+NSWorkspace.h"
 #import "FileViewer.h"

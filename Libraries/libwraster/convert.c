@@ -25,7 +25,6 @@
  *   2. Ghost dock/appicon is wrong in Pseudocolor, Staticgray, Grayscale
  */
 
-#include <config.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <stdlib.h>
@@ -33,6 +32,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "config.h"
 #include "wraster.h"
 #include "convert.h"
 #include "xutil.h"

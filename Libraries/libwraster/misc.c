@@ -18,13 +18,13 @@
  *  Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
  *  MA 02110-1301, USA.
  */
-#include <config.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <X11/Xlib.h>
 
+#include "config.h"
 #include "wraster.h"
 #include "imgformat.h"
 #include "convert.h"

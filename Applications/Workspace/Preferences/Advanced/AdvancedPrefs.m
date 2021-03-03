@@ -22,6 +22,7 @@
 #import <DesktopKit/NXTDefaults.h>
 #import "AdvancedPrefs.h"
 #import <Workspace+WM.h>
+#import <dock.h>
 
 @implementation AdvancedPrefs
 
@@ -66,14 +67,14 @@
   [slideWhenOpening setState:![df boolForKey:@"DontSlideIconsWhenOpening"]];
   [slideOnBadFop setState:![df boolForKey:@"DontSlideIconBackOnBadFop"]];
 
-  [dockLevelBtn selectItemWithTag:WSDockLevel()];
+  [dockLevelBtn selectItemWithTag:wDockLevel(wDefaultScreen()->dock)];
 }
 
 // --- Actions
 
 - (void)setDockLevel:(id)sender
 {
-  WSSetDockLevel([[sender selectedItem] tag]);
+  wDockSetLevel(wDefaultScreen()->dock, [[sender selectedItem] tag]);
 }
 
 - (void)setSlidesWhenChangingPath:(id)sender

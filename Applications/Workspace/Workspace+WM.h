@@ -2,7 +2,7 @@
 //
 // Project: Workspace
 //
-// Copyright (C) 2018 Sergii Stoian
+// Copyright (C) 2018-2021 Sergii Stoian
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
@@ -30,6 +30,7 @@
 //-----------------------------------------------------------------------------
 #include <dispatch/dispatch.h>
 extern dispatch_queue_t workspace_q;
+extern CFRunLoopRef wm_runloop;
 
 typedef enum WorkspaceExitCode {
       WSLogoutOnQuit = 0,
@@ -46,78 +47,44 @@ extern WorkspaceExitCode ws_quit_code;
 
 #include <wraster.h>
 
+#include <core/log_utils.h>
+
 #include <screen.h>
+#include <startup.h>
 #include <window.h>
 #include <event.h>
 #include <dock.h>
 #include <actions.h> // wArrangeIcons()
 #include <application.h>
 #include <appicon.h>
-#include <shutdown.h> // Shutdown(), WSxxxMode
+#include <shutdown.h> // wShutdown(), WMxxxMode
 #include <client.h>
 #include <wmspec.h>
 // Appicons placement
 #include <stacking.h>
 #include <placement.h>
 #include <xrandr.h>
+#include <misc.h>
+#include "iconyard.h"
 
 #undef _
-#define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey: (X) value: @"" table: nil]
-
-BOOL xIsWindowServerReady(void);
-BOOL xIsWindowManagerAlreadyRunning(void);
+#define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey:(X) value:@"" table:nil]
 
 //-----------------------------------------------------------------------------
 // Calls related to internals of Window Manager.
 // 'WM' prefix is a call direction 'to WindowManager'
 //-----------------------------------------------------------------------------
-
-void WMInitializeWindowMaker(int argc, char **argv);
-void WMSetupFrameOffsetProperty();
-void WMSetDockAppiconState(int index_in_dock, int launching);
-// Disable some signal handling inside WindowMaker code.
-void WMSetupSignalHandling(void);
-
 // --- Logout/PowerOff related activities
-void WMWipeDesktop(WScreen * scr);
-void WMShutdown(WShutdownMode mode);
-
-// --- Defaults
-NSString *WMDefaultsPath(void);
-  
-// --- Icon Yard
-void WMIconYardShowIcons(WScreen *screen);
-void WMIconYardHideIcons(WScreen *screen);
+void WMShutdown(WMShutdownMode mode);
 
 // --- Dock
-void WMDockInit(void);
-void WMDockShowIcons(WDock *dock);
-void WMDockHideIcons(WDock *dock);
-void WMDockUncollapse(WDock *dock);
-void WMDockCollapse(WDock *dock);
+void WMSetDockAppImage(NSString *path, int position, BOOL save);
+BOOL WMIsDockAppAutolaunch(int position);
 
 // - Should be called from already existing @autoreleasepool
-NSString     *WMDockStatePath(void);
 NSDictionary *WMDockState(void);
-void         WMDockStateSave(void);
 NSArray      *WMDockStateApps(void);
 void         WMDockAutoLaunch(WDock *dock);
-
-// Appicons getters/setters of on-screen Dock
-NSInteger WMDockAppsCount(void);
-NSString  *WMDockAppName(int position);
-NSImage   *WMDockAppImage(int position);
-void      WMSetDockAppImage(NSString *path, int position, BOOL saved);
-BOOL      WMIsDockAppAutolaunch(int position);
-void      WMSetDockAppAutolaunch(int position, BOOL autolaunch);
-BOOL      WMIsDockAppLocked(int position);
-void      WMSetDockAppLocked(int position, BOOL lock);
-NSString  *WMDockAppCommand(int position);
-void      WMSetDockAppCommand(int position, const char *command);
-NSString  *WMDockAppPasteCommand(int position);
-void      WMSetDockAppPasteCommand(int postion, const char *command);
-NSString  *WMDockAppDndCommand(int position);
-void      WMSetDockAppDndCommand(int position, const char *command);
 
 WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
                                  NSString *launchPath,
@@ -142,9 +109,6 @@ pid_t WMExecuteCommand(NSString *command);
 //-----------------------------------------------------------------------------
 
 // --- Dock
-int WSDockMaxIcons(WScreen *scr);
-int WSDockLevel();
-void WSSetDockLevel(int level);
 void WSDockContentDidChange(WDock *dock);
 
 // --- Application icons
@@ -155,7 +119,6 @@ char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
   
 // --- Applications creation and destroying
 void WSApplicationDidCreate(WApplication *wapp, WWindow *wwin);
-void WSApplicationDidAddWindow(WApplication *wapp, WWindow *wwin);
 void WSApplicationDidDestroy(WApplication *wapp);
 void WSApplicationDidCloseWindow(WWindow *wwin);
 
@@ -166,7 +129,6 @@ void WSUpdateScreenParameters(void);
 // --- Workspaces
 void WSActivateApplication(WScreen *scr, char *app_name);
 void WSActivateWorkspaceApp(WScreen *scr);
-void WSWorkspaceDidChange(WScreen *scr, int workspace, WWindow *focused_window);
 
 // --- Layout badge in Workspace appicon
 void WSKeyboardGroupDidChange(int group);
@@ -178,6 +140,6 @@ int WSRunAlertPanel(char *title, char *message,
                      char *otherButton);
 void WSRingBell(WWindow *wwin);
 void WSMessage(char *fmt, ...);
-#define wmessage(fmt, args...) WSMessage(fmt, ## args)
+// #define WMLogInfo(fmt, args...) WSMessage(fmt, ## args)
 
 #endif //NEXTSPACE

@@ -21,8 +21,6 @@
  *  MA 02110-1301, USA.
  */
 
-#include <config.h>
-
 #include <errno.h>
 #include <X11/Xlib.h>
 #include <stdlib.h>
@@ -34,6 +32,7 @@
 #include <time.h>
 #include <assert.h>
 
+#include "config.h"
 #include "wraster.h"
 #include "imgformat.h"
 

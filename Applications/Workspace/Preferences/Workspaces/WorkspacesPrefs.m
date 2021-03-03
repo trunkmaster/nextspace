@@ -22,8 +22,10 @@
 #import "WorkspacesPrefs.h"
 #import <DesktopKit/NXTDefaults.h>
 #import <Workspace+WM.h>
-#include <workspace.h>
 #import <Controller.h>
+
+#include <core/wuserdefaults.h>
+#include <workspace.h>
 
 @implementation WorkspacesPrefs
 
@@ -83,12 +85,32 @@
   return box;
 }
 
+- (NSString *)_wmDefaultsPath
+{
+  CFStringRef stringRef;
+  const char  *wm_path;
+  NSString    *path;
+  
+  stringRef = WMUserDefaultsCopyStringForDomain(CFSTR("WMState.plist"));
+  if (!stringRef)
+    return nil;
+  
+  wm_path = CFStringGetCStringPtr(stringRef, kCFStringEncodingUTF8);
+  path = [NSString stringWithCString:wm_path];
+  CFRelease(stringRef);
+  
+  return path;
+}
+
 - (void)revert:sender
 {
+  NSDictionary *wmDefaults;
+  NSString     *shortcut;
+  NSArray      *modifiers;
+
   if (wmStateWS) [wmStateWS release];
   
-  wmStateWS = [[NSMutableArray alloc]
-                initWithArray:[WMDockState() objectForKey:@"Workspaces"]];
+  wmStateWS = [[NSMutableArray alloc] initWithArray:[WMDockState() objectForKey:@"Workspaces"]];
   [self arrangeWorkspaceReps];
   [[wsReps objectAtIndex:wDefaultScreen()->current_workspace] performClick:self];
 
@@ -99,10 +121,7 @@
         [directSwitchKey numberOfItems]);
   
   // Shortcuts
-  NSDictionary *wmDefaults;
-  NSString     *shortcut;
-  NSArray      *modifiers;
-  wmDefaults = [[NSDictionary alloc] initWithContentsOfFile:WMDefaultsPath()];
+  wmDefaults = [[NSDictionary alloc] initWithContentsOfFile:[self _wmDefaultsPath]];
 
   shortcut = [wmDefaults objectForKey:@"NextWorkspaceKey"];
   modifiers = [shortcut componentsSeparatedByString:@"+"];
@@ -175,7 +194,7 @@
                    [name cString]);
   [changeNameBtn setEnabled:NO];
   
-  WMDockStateSave();
+  wScreenSaveState(wDefaultScreen());
   [wmStateWS replaceObjectAtIndex:index withObject:@{@"Name":name}];
 }
 
@@ -219,7 +238,7 @@
       [wsBox setNeedsDisplay:YES];
   }
 
-  WMDockStateSave();
+  wScreenSaveState(wDefaultScreen());
   [wmStateWS setArray:[WMDockState() objectForKey:@"Workspaces"]];
 
   // Select last WS rep button if selected one was removed
@@ -234,12 +253,11 @@
 // --- Shortcuts
 - (void)setSwitchShortcut:(id)sender
 {
-  NSString            *wmDefaultsPath = WMDefaultsPath();
   NSInteger           selectedItemTag = [[sender selectedItem] tag];
   NSMutableDictionary *wmDefaults;
   NSString *prefix;
 
-  wmDefaults = [[NSMutableDictionary alloc] initWithContentsOfFile:wmDefaultsPath];
+  wmDefaults = [[NSMutableDictionary alloc] initWithContentsOfFile:[self _wmDefaultsPath]];
   if (!wmDefaults) {
     wmDefaults = [[NSMutableDictionary alloc] init];
   }
@@ -260,16 +278,15 @@
                  forKey:@"NextWorkspaceKey"];
   [wmDefaults setObject:[NSString stringWithFormat:@"%@+Left", prefix]
                  forKey:@"PrevWorkspaceKey"];
-  [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
+  [wmDefaults writeToFile:[self _wmDefaultsPath] atomically:YES];
   [wmDefaults release];
 }
 - (void)setDirectSwitchShortcut:(id)sender
 {
-  NSString            *wmDefaultsPath = WMDefaultsPath();
   NSMutableDictionary *wmDefaults;
   NSString *prefix;
 
-  wmDefaults = [[NSMutableDictionary alloc] initWithContentsOfFile:wmDefaultsPath];
+  wmDefaults = [[NSMutableDictionary alloc] initWithContentsOfFile:[self _wmDefaultsPath]];
   if (!wmDefaults) {
     wmDefaults = [NSMutableDictionary new];
   }
@@ -292,7 +309,7 @@
   }
   [wmDefaults setObject:[NSString stringWithFormat:@"%@+0", prefix]
                  forKey:@"Workspace10Key"];
-  [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
+  [wmDefaults writeToFile:[self _wmDefaultsPath] atomically:YES];
   [wmDefaults release];
 }
 
@@ -301,7 +318,12 @@
 {
   [[NXTDefaults userDefaults] setBool:[sender state] ? YES : NO
                               forKey:@"ShowWorkspaceInDock"];
-  [[NSApp delegate] updateWorkspaceBadge];
+  if ([sender state]) {
+    [[NSApp delegate] createWorkspaceBadge];
+  }
+  else {
+    [[NSApp delegate] destroyWorkspaceBadge];    
+  }
 }
 
 @end

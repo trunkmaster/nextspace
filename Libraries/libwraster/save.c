@@ -20,8 +20,6 @@
  *  MA 02110-1301, USA.
  */
 
-#include <config.h>
-
 #include <X11/Xlib.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -31,6 +29,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "config.h"
 #include "wraster.h"
 #include "imgformat.h"
 

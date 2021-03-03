@@ -2,7 +2,7 @@
 //
 // Project: Workspace
 //
-// Copyright (C) 2014-2019 Sergii Stoian
+// Copyright (C) 2014-2021 Sergii Stoian
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
@@ -25,13 +25,13 @@
 #import <Operations/ProcessManager.h>
 #import <Viewers/ShelfView.h>
 
-//#import "Workspace+WM.h"
 #import "Recycler.h"
 #import "RecyclerIcon.h"
 
-#include <WMcore/memory.h>
-#include <WMcore/string.h>
+#include <core/util.h>
+#include <core/string_utils.h>
 #include <xrandr.h>
+#include <dock.h>
 
 static Recycler *recycler = nil;
 
@@ -286,8 +286,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   WAppIcon *btn;
   int      rec_pos = [RecyclerIcon newPositionInDock:dock];
  
-  btn = wAppIconCreateForDock(dock->screen_ptr, "", "Recycler", "GNUstep",
-                              TILE_NORMAL);
+  btn = wAppIconCreateForDock(dock->screen_ptr, "-", "Recycler", "GNUstep", TILE_NORMAL);
   btn->yindex = rec_pos;
   btn->running = 1;
   btn->launching = 0;
@@ -295,7 +294,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   btn->command = wstrdup("-");
   btn->dnd_command = NULL;
   btn->paste_command = NULL;
-  btn->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;  
+  btn->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
 
   return btn;
 }
@@ -303,7 +302,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 + (void)rebuildDock:(WDock *)dock
 {
   WScreen  *scr = dock->screen_ptr;
-  int      new_max_icons = WSDockMaxIcons(dock->screen_ptr);
+  int      new_max_icons = wDockMaxIcons(dock->screen_ptr);
   WAppIcon **new_icon_array;
   
   new_icon_array = wmalloc(sizeof(WAppIcon *) * new_max_icons);

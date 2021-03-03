@@ -20,8 +20,6 @@
  *  MA 02110-1301, USA.
  */
 
-#include <config.h>
-
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <stdlib.h>
@@ -29,6 +27,8 @@
 #include <string.h>
 
 #include <assert.h>
+
+#include "config.h"
 
 #ifdef USE_XSHM
 #include <sys/ipc.h>

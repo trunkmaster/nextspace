@@ -17,8 +17,8 @@
  *  License along with this library.
  */
 
-#ifndef WRASTER_XUTIL_H
-#define WRASTER_XUTIL_H
+#ifndef __WRASTER_XUTIL_H__
+#define __WRASTER_XUTIL_H__
 
 
 #ifdef USE_XSHM

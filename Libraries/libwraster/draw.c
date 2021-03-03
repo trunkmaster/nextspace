@@ -21,12 +21,11 @@
  *  MA 02110-1301, USA.
  */
 
-#include <config.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
+#include "config.h"
 #include "wraster.h"
 
 #define MIN(a,b)	((a) < (b) ? (a) : (b))

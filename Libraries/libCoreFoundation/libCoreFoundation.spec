@@ -5,24 +5,32 @@
 %endif
 
 Name:		libCoreFoundation
-Version:	5.3.1
+Version:	1338
 Release:	0%{?dist}
 Summary:	Apple CoreFoundation framework.
 License:	Apache 2.0
 URL:		http://swift.org
 Source0:	https://github.com/apple/swift-corelibs-foundation/archive/%{GIT_TAG}.tar.gz
-Source1:	CFNotificationCenter.c
-Patch0:		BuildSharedOnLinux.patch
+Source1:	CFFileDescriptor.h
+Source2:	CFFileDescriptor.c
+Source3:	CFNotificationCenter.c
+Patch0:		CF_shared_on_linux.patch
 %if 0%{?el7}
-Patch1:		BuildOnCentOS7.patch
+Patch1:		CF_centos7.patch
 %endif
+Patch2:		CFFileDescriptor.patch
+Patch3:		CFNotificationCenter.patch
 
 %if 0%{?el7}
 BuildRequires:	cmake3
 BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
+%define CMAKE cmake3
+%define CMAKE_BUILD_TYPE -DCMAKE_BUILD_TYPE=Release
 %else
 BuildRequires:	cmake
 BuildRequires:	clang >= 7.0.1
+%define CMAKE cmake
+%define CMAKE_BUILD_TYPE -DCMAKE_BUILD_TYPE=Debug
 %endif
 BuildRequires:	libdispatch-devel
 BuildRequires:	libxml2-devel
@@ -52,9 +60,12 @@ Development header files for CoreFoundation framework.
 %if 0%{?el7}
 %patch1 -p1
 %endif
+%patch2 -p1
+%patch3 -p1
 cp %{_sourcedir}/CFNotificationCenter.c CoreFoundation/AppServices.subproj/
-cd CoreFoundation/Base.subproj/
-cp SwiftRuntime/TargetConditionals.h ./
+cp %{_sourcedir}/CFFileDescriptor.h CoreFoundation/RunLoop.subproj/
+cp %{_sourcedir}/CFFileDescriptor.c CoreFoundation/RunLoop.subproj/
+cp CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h CoreFoundation/Base.subproj/
 
 %build
 mkdir -p CoreFoundation/.build
@@ -77,11 +88,12 @@ cmake .. \
       -DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
       -DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
       -DCMAKE_LIBRARY_PATH=/usr/NextSpace/lib \
-%if 0%{?el7}
-      -DCMAKE_BUILD_TYPE=Release
-%else
-      -DCMAKE_BUILD_TYPE=Debug
-%endif
+      %{CMAKE_BUILD_TYPE}
+#%if 0%{?el7}
+#      -DCMAKE_BUILD_TYPE=Release
+#%else
+#      -DCMAKE_BUILD_TYPE=Debug
+#%endif
 
 make %{?_smp_mflags}
 
@@ -146,6 +158,9 @@ ln -s ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
 #%postun
 
 %changelog
+* Tue Dec 1 2020 Sergii Stoian <stoyan255@gmail.com>
+- CFFileDescriptor was added to the build.
+
 * Sat Nov 21 2020 Sergii Stoian <stoyan255@gmail.com>
 - Fixed building on CentOS 7.
 
