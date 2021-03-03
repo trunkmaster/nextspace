@@ -58,9 +58,7 @@ Development header files for CoreFoundation framework.
 %setup -n swift-corelibs-foundation-%{GIT_TAG}
 %patch0 -p1
 %if 0%{?el7}
-cd CoreFoundation
 %patch1 -p1
-cd ..
 %endif
 %patch2 -p1
 %patch3 -p1
@@ -73,13 +71,15 @@ cp CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h CoreFoundation/
 mkdir -p CoreFoundation/.build
 cd CoreFoundation/.build
 #CF_CFLAGS="-I/usr/NextSpace/include -I. -I`pwd`/../Base.subproj -DU_SHOW_DRAFT_API -DCF_BUILDING_CF -DDEPLOYMENT_RUNTIME_C -fconstant-cfstrings -fexceptions -Wno-switch -D_GNU_SOURCE -DCF_CHARACTERSET_DATA_DIR=\"CharacterSets\""
-CF_CFLAGS="-I/usr/NextSpace/include -Wno-implicit-const-int-float-conversion -Wno-switch"
-#%if 0%{?el7}
-#cmake3 .. \
-#%else
-#cmake .. \
-#%endif
-%{CMAKE} .. \
+CF_CFLAGS="-I/usr/NextSpace/include -Wno-switch"
+%if !0%{?el7}
+  CF_CFLAGS+=" -Wno-implicit-const-int-float-conversion"
+%endif
+%if 0%{?el7}
+cmake3 .. \
+%else
+cmake .. \
+%endif
       -DCMAKE_C_COMPILER=clang \
       -DCMAKE_C_FLAGS="$CF_CFLAGS" \
       -DCMAKE_SHARED_LINKER_FLAGS="-L/usr/NextSpace/lib -luuid" \
