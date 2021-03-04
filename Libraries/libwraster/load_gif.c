@@ -55,14 +55,14 @@ RImage *RLoadGIF(const char *file, int index)
 	/* default error message */
 	RErrorCode = RERR_BADINDEX;
 
-#if GIFLIB_MAJOR == 4
-	gif = DGifOpenFileName(file);
-#else /* GIFLIB_MAJOR == 5 */
+#if GIFLIB_MAJOR == 5
 	gif = DGifOpenFileName(file, &gif_error);
+#else /* GIFLIB_VERSION == " Version 4.1, "*/
+	gif = DGifOpenFileName(file);
 #endif
 
 	if (!gif) {
-#if GIFLIB_MAJOR == 4
+#ifndef GIFLIB_MAJOR 
 		gif_error = GifLastError();
 #endif
 		switch (gif_error) {
@@ -193,7 +193,10 @@ RImage *RLoadGIF(const char *file, int index)
 	/* yuck! */
 	goto did_not_get_any_errors;
  giferr:
-#if GIFLIB_MAJOR == 4
+#if GIFLIB_MAJOR == 5
+	/* With gif_lib v5 there's no way to know what went wrong */
+	RErrorCode = RERR_BADIMAGEFILE;
+#else
 	switch (GifLastError()) {
 	case D_GIF_ERR_OPEN_FAILED:
 		RErrorCode = RERR_OPEN;
@@ -205,9 +208,6 @@ RImage *RLoadGIF(const char *file, int index)
 		RErrorCode = RERR_BADIMAGEFILE;
 		break;
 	}
-#else
-	/* With gif_lib v5 there's no way to know what went wrong */
-	RErrorCode = RERR_BADIMAGEFILE;
 #endif
  bye:
 	if (image)
