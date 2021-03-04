@@ -5,7 +5,7 @@
 			Helvetica-Medium.ttf
 		);
 		Name = Medium;
-		PostScriptName = Helvetica;
+		PostScriptName = Helvetica-Medium;
 	},
 	{
 		Files = (
