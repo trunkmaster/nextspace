@@ -8,19 +8,18 @@ NEXTSPACE is a desktop environment that brings a [NeXTSTEP](https://en.wikipedia
 
 ![NEXTSPACE example](Documentation/NEXTSPACE_Screenshot.png)
 
-I want to create a fast, elegant, reliable, and easy to use desktop environment with maximum attention to user experience (usability) and visual maturity. I would like it to become a platform where applications will be running with a taste of NeXT's OS. Core applications such as Login, Workspace, and Preferences are the base for future application development and examples of style and application integration methods.
+I want to create a fast, elegant, reliable, and easy to use desktop environment with maximum attention to user experience (usability) and visual maturity. I would like it to become a platform where applications will be running with a taste of NeXT's OS. Core applications such as Login, Workspace, and Preferences are the base for future application development and examples of visual style and application integration methods.
 
-NEXTSPACE is not just a set of applications loosely integrated to each other. It is a core OS with frameworks, mouse cursors, fonts, colors, animations, and everything I think will help users to be effective and happy.
+NEXTSPACE is not just a set of applications tightly integrated to each other. It is a core OS with frameworks, mouse cursors, fonts, colors, animations, and everything I think will help users to be effective and happy.
 
 ## Why?
 1. I like the look, feel, and design principles of NeXTSTEP.
-2. I think [GNUstep](http://www.gnustep.org) needs a reference implementation of a user-oriented desktop environment.
-3. I believe it will become an interesting environment for developers and comfortable (fast, easy to use, feature-rich) for users.
+2. I believe it will become an interesting environment for developers and comfortable (fast, easy to use, feature-rich) for users.
 
 Unlike other 'real' and 'serious' projects, I have not yet defined a target audience for NEXTSPACE. I intentionally left aside modern UI design trends (fancy animations, shadows, gray blurry lines, flat controls, acid colors, transparency). I like the accurate, clear, grayish, and "boring" UI that helps, not hinder, to get my job done.
 
 ## Not planned
-* Porting to other Linux distributions and operating systems. For now, I want a fast, accurate, and stable version for CentOS 7. However, NEXTSPACE was designed to be portable and thus this point may be changed in future.
+* Porting to other Linux distributions and operating systems. For now, I want a fast, accurate, and stable version for RedHat-based Linux distributions. Currently these are CentOS 7, CentOS Stream and Fedora. However, NEXTSPACE was designed to be portable and thus this point may be changed in future.
 * GNOME, KDE, macOS rival in terms of visual effects, modern design principles, look and feel.
 * Implementing a macOS-like desktop paradigm. There is another good place for this -- see [Étoilé](http://etoileos.com).
 
@@ -55,8 +54,6 @@ A fast and elegant Workspace Manager using multithreading to provide maximum smo
 > * Another implementation of WindowMaker.
 > 
 > Workspace is written from scratch. Some WindowMaker code is a part of Workspace (as well as configuration defaults) to provide window management functions. The code is tightly coupled with Workspace to provide seamless intergation. Configurable parameters of the integrated WindowMaker are spread across Workspace's Preferences and Preferences application.
-
-Theoretically, Workspace can be used without WindowMaker. However, the current development focus is on a **single** application to deliver the best user experience.
 
 ![Workspace](Documentation/Workspace.png)
 
