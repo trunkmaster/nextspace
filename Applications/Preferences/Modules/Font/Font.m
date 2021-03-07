@@ -83,6 +83,7 @@ static NSMutableDictionary *defaultValues(void)
 	@"Helvetica",		@"NSMessageFont",
 	@"Helvetica-Bold",	@"NSPaletteFont",
 	@"Helvetica-Bold",	@"NSTitleBarFont",
+	@"Helvetica-Bold",	@"NSBoldFont",
 	@"Helvetica",		@"NSToolTipsFont",
 	@"Helvetica",		@"NSControlContentFont",
 	@"Helvetica",		@"NSUserFont",
@@ -94,6 +95,7 @@ static NSMutableDictionary *defaultValues(void)
 	[NSString stringWithFormat:@"%g", 12.0],@"NSMessageFontSize",
 	[NSString stringWithFormat:@"%g", 12.0],@"NSPaletteFontSize",
 	[NSString stringWithFormat:@"%g", 12.0],@"NSTitleBarFontSize",
+	[NSString stringWithFormat:@"%g", 12.0],@"NSBoldFontSize",
 	[NSString stringWithFormat:@"%g", 11.0],@"NSToolTipsFontSize",
 	[NSString stringWithFormat:@"%g", 12.0],@"NSControlContentFontSize",
 	[NSString stringWithFormat:@"%g", 12.0],@"NSUserFontSize",
@@ -119,6 +121,7 @@ static BOOL getBoolDefault(NSMutableDictionary *dict, NSString *name)
 
   return num;
 }
+
 static void setBoolDefault(BOOL aBool, NSString *name)
 {
   [domain setObject:(aBool ? @"YES" : @"NO") forKey:name];
@@ -136,6 +139,7 @@ static NSString *getStringDefault(NSMutableDictionary *dict, NSString *name)
 
   return str;
 }
+
 static void setStringDefault(NSString *string, NSString *name)
 {
   [domain setObject:string forKey:name];
