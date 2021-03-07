@@ -95,7 +95,78 @@ NSImage *WMDockAppImage(int position)
   return icon;
 }
 // void WMSetDockAppImage(NSString *path, int position, BOOL save) {...} -> Workspace+WM
+void WMSetDockAppImage(NSString *path, int position, BOOL save)
+{
+  WAppIcon *btn;
+  RImage   *rimage;
+
+  btn = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+  if (!btn) {
+    return;
+  }
+  
+  if (btn->icon->file) {
+    wfree(btn->icon->file);
+  }
+  btn->icon->file = wstrdup([path cString]);
+
+  rimage = RLoadImage(wDefaultScreen()->rcontext, btn->icon->file, 0);
+  if (!rimage) {
+    return;
+  }
+  
+  if (btn->icon->file_image) {
+    RReleaseImage(btn->icon->file_image);
+    btn->icon->file_image = NULL;
+  }
+  btn->icon->file_image = RRetainImage(rimage);
+  
+  // Write to WM's 'WMWindowAttributes' file
+  if (save == YES) {
+    CFMutableDictionaryRef winAttrs, appAttrs;
+    CFStringRef appKey, iconFile;
+
+    winAttrs = w_global.domain.window_attr->dictionary;
+
+    appKey = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s.%s"),
+                                      btn->wm_instance, btn->wm_class);
+    appAttrs = (CFMutableDictionaryRef)CFDictionaryGetValue(winAttrs, appKey);
+    if (!appAttrs) {
+      appAttrs = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                           &kCFTypeDictionaryKeyCallBacks,
+                                           &kCFTypeDictionaryValueCallBacks);
+    }
+    iconFile = CFStringCreateWithCString(kCFAllocatorDefault, btn->icon->file,
+                                         kCFStringEncodingUTF8);
+    CFDictionarySetValue(appAttrs, CFSTR("Icon"), iconFile);
+    CFRelease(iconFile);
+    CFDictionarySetValue(appAttrs, CFSTR("AlwaysUserIcon"), CFSTR("YES"));
+
+    if (position == 0) {
+      CFDictionarySetValue(winAttrs, CFSTR("Logo.WMDock"), appAttrs);
+      CFDictionarySetValue(winAttrs, CFSTR("Logo.WMPanel"), appAttrs);
+    }
+  
+    CFDictionarySetValue(winAttrs, appKey, appAttrs);
+    CFRelease(appKey);
+    CFRelease(appAttrs);
+    WMUserDefaultsWrite(winAttrs, CFSTR("WMWindowAttributes"));
+  }
+  
+  wIconUpdate(btn->icon);
+}
 // BOOL WMIsDockAppAutolaunch(int position) {...} -> Workspace+WM
+BOOL WMIsDockAppAutolaunch(int position)
+{
+  WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+    
+  if (!appicon || appicon->auto_launch == 0) {
+    return NO;
+  }
+  else {
+    return YES;
+  }
+}
 void WMSetDockAppAutolaunch(int position, BOOL autolaunch)
 {
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);

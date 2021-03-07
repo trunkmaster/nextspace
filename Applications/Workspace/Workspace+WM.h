@@ -77,10 +77,6 @@ extern WorkspaceExitCode ws_quit_code;
 // --- Logout/PowerOff related activities
 void WMShutdown(WMShutdownMode mode);
 
-// --- Dock
-void WMSetDockAppImage(NSString *path, int position, BOOL save);
-BOOL WMIsDockAppAutolaunch(int position);
-
 // - Should be called from already existing @autoreleasepool
 NSDictionary *WMDockState(void);
 NSArray      *WMDockStateApps(void);
