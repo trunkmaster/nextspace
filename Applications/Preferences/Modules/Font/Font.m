@@ -77,16 +77,16 @@ static NSMutableDictionary *defaultValues(void)
   if (!dict)
     {
       dict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-	@"Helvetica",		@"NSFont",
-	@"Helvetica",		@"NSLabelFont",
-	@"Helvetica",		@"NSMenuFont",
-	@"Helvetica",		@"NSMessageFont",
+	@"Helvetica-Medium",	@"NSFont",
+	@"Helvetica-Medium",	@"NSLabelFont",
+	@"Helvetica-Medium",	@"NSMenuFont",
+	@"Helvetica-Medium",	@"NSMessageFont",
 	@"Helvetica-Bold",	@"NSPaletteFont",
 	@"Helvetica-Bold",	@"NSTitleBarFont",
 	@"Helvetica-Bold",	@"NSBoldFont",
-	@"Helvetica",		@"NSToolTipsFont",
-	@"Helvetica",		@"NSControlContentFont",
-	@"Helvetica",		@"NSUserFont",
+	@"Helvetica-Medium",	@"NSToolTipsFont",
+	@"Helvetica-Medium",	@"NSControlContentFont",
+	@"Helvetica-Medium",	@"NSUserFont",
 	@"Liberation Mono",	@"NSUserFixedPitchFont",
 
 	[NSString stringWithFormat:@"%g", 12.0],@"NSFontSize",
@@ -121,7 +121,6 @@ static BOOL getBoolDefault(NSMutableDictionary *dict, NSString *name)
 
   return num;
 }
-
 static void setBoolDefault(BOOL aBool, NSString *name)
 {
   [domain setObject:(aBool ? @"YES" : @"NO") forKey:name];
@@ -139,7 +138,6 @@ static NSString *getStringDefault(NSMutableDictionary *dict, NSString *name)
 
   return str;
 }
-
 static void setStringDefault(NSString *string, NSString *name)
 {
   [domain setObject:string forKey:name];
@@ -185,7 +183,7 @@ NSString *WWMDefaultsPath(void)
 {
   NSString *userDefPath;
 
-  userDefPath = [NSString stringWithFormat:@"%@/.WindowMaker/WindowMaker",
+  userDefPath = [NSString stringWithFormat:@"%@/.NextSpace/WM.plist",
                           GSDefaultsRootForUser(NSUserName())];
 
   if (![[NSFileManager defaultManager] fileExistsAtPath:userDefPath]) {
@@ -197,22 +195,24 @@ NSString *WWMDefaultsPath(void)
 
 - (void)setWMFont:(NSFont *)font key:(NSString *)key
 {
-  NSString            *wmDefaultsPath;
+  NSString            *wmDefaultsPath = WWMDefaultsPath();
   NSMutableDictionary *wmDefaults;
   NSMutableString     *value;
 
-  wmDefaultsPath = [NSString stringWithFormat:@"%@/.WindowMaker/WindowMaker",
-                             GSDefaultsRootForUser(NSUserName())];
-
   if (![[NSFileManager defaultManager] fileExistsAtPath:wmDefaultsPath]) {
-    NSLog(@"[Font] can't find WM defaults database!");
-    return;
+    /* TODO: WM doesn't track WM.plist changes if it doesn't exist.
+       We need to send WMDidChangeWindowAppearanceSettings to the distributed
+       notification center (WM should handle this notification and reread file). */
+    NSLog(@"[Font] can't find existing WM defaults database! Creating new...");
+    wmDefaults = [NSMutableDictionary new];
   }
-  wmDefaults = [[NSMutableDictionary alloc]
-                 initWithContentsOfFile:wmDefaultsPath];
+  else {
+    wmDefaults = [[NSMutableDictionary alloc] initWithContentsOfFile:wmDefaultsPath];
+  }
   
   // Convert font name into the FontConfig format.
-  value = [NSString stringWithFormat:@"%@:postscriptname=%@:pixelsize=%.0f:antialias=false", [font familyName], [font fontName], [font pointSize]];
+  value = [NSString stringWithFormat:@"%@:postscriptname=%@:pixelsize=%.0f:antialias=false",
+                    [font familyName], [font fontName], [font pointSize]];
   NSLog(@"[Font] set WM font %@ = `%@`", key, value);
 
   [wmDefaults setObject:value forKey:key];
@@ -225,7 +225,6 @@ NSString *WWMDefaultsPath(void)
   NSString	*fontKey;
   NSString	*fontSizeKey;
   NSFont	*font, *boldFont;
-  // int		subpixel;
 
   fontKey = [fontCategories
               objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
@@ -255,8 +254,7 @@ NSString *WWMDefaultsPath(void)
                                            [boldExampleString length]+1)];
 
   //
-  [enableAntiAliasingButton
-    setIntValue:getIntDefault(domain, @"GSFontAntiAlias")];
+  [enableAntiAliasingButton setIntValue:getBoolDefault(domain, @"GSFontAntiAlias")];
 
   [view setNeedsDisplay:YES];
 }
