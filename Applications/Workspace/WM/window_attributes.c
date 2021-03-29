@@ -544,10 +544,11 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
   WDDomain *db = w_global.domain.window_attr;
   CFMutableDictionaryRef dict = db->dictionary;
   CFMutableDictionaryRef icon_value = NULL;
-  CFMutableDictionaryRef attr;
+  CFMutableDictionaryRef attr = NULL;
   CFTypeRef value, key, def_win, def_icon = NULL;
   int same = 0;
 
+  // WMWindowAttributes is empty
   if (!dict) {
     dict = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                      &kCFTypeDictionaryKeyCallBacks,
@@ -558,6 +559,7 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
       return;
   }
 
+  // `key` definition
   if (instance && class) {
     char *buffer;
 
@@ -592,7 +594,14 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
     }
   }
 
-  attr = CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, CFDictionaryGetValue(dict, key));
+  // `key` and `dict` can't be NULL
+  if (icon_value == NULL) {
+    CFDictionaryRef key_dict = CFDictionaryGetValue(dict, key);
+    if (key_dict) {
+      attr = CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, key_dict);
+    }
+  }
+  
   if (attr != NULL) {
     if (CFGetTypeID(attr) == CFDictionaryGetTypeID()) {
       if (icon_value != NULL && !same) {
