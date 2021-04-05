@@ -543,10 +543,10 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
 {
   WDDomain *db = w_global.domain.window_attr;
   CFMutableDictionaryRef dict = db->dictionary;
-  CFMutableDictionaryRef icon_value = NULL;
-  CFMutableDictionaryRef attr = NULL;
-  CFTypeRef value, key, def_win, def_icon = NULL;
-  int same = 0;
+  CFMutableDictionaryRef icon_entry = NULL;
+  CFMutableDictionaryRef attrs = NULL;
+  CFTypeRef icon_path, key, def_win, def_icon = NULL;
+  unsigned same = 0;
 
   // WMWindowAttributes is empty
   if (!dict) {
@@ -578,54 +578,53 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
   }
 
   if (file) {
-    value = CFStringCreateWithCString(kCFAllocatorDefault, file, kCFStringEncodingUTF8);
-    icon_value = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+    icon_path = CFStringCreateWithCString(kCFAllocatorDefault, file, kCFStringEncodingUTF8);
+    icon_entry = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                            &kCFTypeDictionaryKeyCallBacks,
                                            &kCFTypeDictionaryValueCallBacks);
-    CFDictionarySetValue(icon_value, AIcon, value);
-    CFRelease(value);
+    CFDictionarySetValue(icon_entry, AIcon, icon_path);
+    CFRelease(icon_path);
 
+    // Determine if `file` is the same as for "*"
     def_win = CFDictionaryGetValue(dict, AnyWindow);
     if (def_win != NULL) {
       def_icon = CFDictionaryGetValue(def_win, AIcon);
-    }
-    if (def_icon && !strcmp(CFStringGetCStringPtr(def_icon, kCFStringEncodingUTF8), file)) {
-      same = 1;
+      if (def_icon && !strcmp(CFStringGetCStringPtr(def_icon, kCFStringEncodingUTF8), file)) {
+        same = 1;
+      }
     }
   }
 
-  // `key` and `dict` can't be NULL
-  if (icon_value == NULL) {
-    CFDictionaryRef key_dict = CFDictionaryGetValue(dict, key);
-    if (key_dict) {
-      attr = CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, key_dict);
+  // Get value from WMWindowAttributes
+  {
+    CFDictionaryRef def_attrs = CFDictionaryGetValue(dict, key);
+    if (def_attrs) {
+      attrs = CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, def_attrs);
     }
   }
-  
-  if (attr != NULL) {
-    if (CFGetTypeID(attr) == CFDictionaryGetTypeID()) {
-      if (icon_value != NULL && !same) {
-        WMUserDefaultsMerge(attr, icon_value);
-        CFDictionarySetValue(dict, key, attr);
-      }
-      else {
-        CFDictionaryRemoveValue(attr, AIcon);
-      }
+
+  if (attrs && CFGetTypeID(attrs) == CFDictionaryGetTypeID()) {
+    if (icon_entry && !same) {
+      WMUserDefaultsMerge(attrs, icon_entry);
+      CFDictionarySetValue(dict, key, attrs);
+    }
+    else {
+      CFDictionaryRemoveValue(attrs, AIcon);
     }
   }
-  else if (icon_value != NULL && !same) {
-    CFDictionarySetValue(dict, key, icon_value);
+  else if (icon_entry && !same) {
+    CFDictionarySetValue(dict, key, icon_entry);
   }
 
   if (!wPreferences.flags.noupdates) {
     WMUserDefaultsWrite(db->dictionary, db->name);
   }
   
-  if (attr) {
-    CFRelease(attr);
+  if (attrs) {
+    CFRelease(attrs);
   }
-  if (icon_value) {
-    CFRelease(icon_value);
+  if (icon_entry) {
+    CFRelease(icon_entry);
   }
   CFRelease(key);
 }
