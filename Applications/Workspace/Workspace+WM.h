@@ -78,9 +78,7 @@ extern WorkspaceExitCode ws_quit_code;
 void WMShutdown(WMShutdownMode mode);
 
 // - Should be called from already existing @autoreleasepool
-NSDictionary *WMDockState(void);
-NSArray      *WMDockStateApps(void);
-void         WMDockAutoLaunch(WDock *dock);
+void WMDockAutoLaunch(WDock *dock);
 
 WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
                                  NSString *launchPath,
@@ -90,12 +88,6 @@ WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
 void WMFinishLaunchingIcon(WAppIcon *appIcon);
 void WMDestroyLaunchingIcon(WAppIcon *appIcon);
 // - End of functions which require existing @autorelease pool
-
-// --- Windows and applications
-NSString *WMWindowState(NSWindow *nsWindow);
-NSArray *WMNotDockedAppList(void);
-BOOL WMIsAppRunning(NSString *appName);
-pid_t WMExecuteCommand(NSString *command);
 
 #endif //__OBJC__
 
