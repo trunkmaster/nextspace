@@ -25,6 +25,8 @@
 #import <X11/Xlib.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
+#import <core/string_utils.h>
+
 #import <DesktopKit/DesktopKit.h>
 #import <DesktopKit/NXTDefaults.h>
 #import <SystemKit/OSESystemInfo.h>
@@ -82,6 +84,10 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)_saveWindowsStateAndClose;
 - (void)_startSavedApplications;
 
+- (NSString *)_stateForWindow:(NSWindow *)nsWindow;
+- (NSArray *)_undockedApplicationsList;
+- (BOOL)_isApplicationRunning:(NSString *)appName;
+- (pid_t)_executeCommand:(NSString *)command;
 @end
 
 @implementation Controller (Private)
@@ -180,7 +186,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // Console
   if (console) {
-    winState = WMWindowState([console window]);
+    winState = [self _stateForWindow:[console window]];
     if (winState) {
       winInfo = @{@"Type":@"Console", @"State":winState};
       [windows addObject:winInfo];
@@ -208,7 +214,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
   // Finder
   if (finder) {
-    winState = WMWindowState([finder window]);
+    winState = [self _stateForWindow:[finder window]];
     if (winState) {
       winInfo = @{@"Type":@"Finder", @"State":winState};
       [windows addObject:winInfo];
@@ -234,7 +240,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // Viewers
   for (FileViewer *fv in _fvs) {
-    winState = WMWindowState([fv window]);
+    winState = [self _stateForWindow:[fv window]];
     if (winState) {
       if ([fv isRootViewer] != NO)
         type = @"RootViewer";
@@ -366,7 +372,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_saveRunningApplications
 {
-  [[NXTDefaults userDefaults] setObject:WMNotDockedAppList()
+  [[NXTDefaults userDefaults] setObject:[self _undockedApplicationsList]
                                 forKey:@"SavedApplications"];
 }
 
@@ -376,8 +382,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   savedApps = [[NXTDefaults userDefaults] objectForKey:@"SavedApplications"];
 
   for (NSDictionary *appInfo in savedApps) {
-    if (WMIsAppRunning([appInfo objectForKey:@"Name"]) == NO) {
-      WMExecuteCommand([appInfo objectForKey:@"Command"]);
+    if ([self _isApplicationRunning:[appInfo objectForKey:@"Name"]] == NO) {
+      [self _executeCommand:[appInfo objectForKey:@"Command"]];
     }
   }
 }
@@ -439,6 +445,130 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // Quit NSApplication runloop
   [NSApp stop:self];
+}
+
+
+- (NSString *)_stateForWindow:(NSWindow *)nsWindow
+{
+  WWindow *wWin = wWindowFor(X_WINDOW(nsWindow));
+  
+  if (!wWin)
+    return nil;
+    
+  if (wWin->flags.miniaturized) {
+    return @"Miniaturized";
+  }
+  else if (wWin->flags.shaded) {
+    return @"Shaded";
+  }
+  else if (wWin->flags.hidden) {
+    return @"Hidden";
+  }
+  else {
+    return @"Normal";
+  }
+}
+- (NSArray *)_undockedApplicationsList
+{
+  NSMutableArray *appList = [[NSMutableArray alloc] init];
+  NSString       *appName;
+  NSString       *appCommand;
+  WAppIcon       *appIcon;
+  char           *command = NULL;
+
+  appIcon = wDefaultScreen()->app_icon_list;
+  while (appIcon->next) {
+    if (!strcmp(appIcon->wm_class, "GNUstep") && !strcmp(appIcon->wm_instance, "Login")) {
+      appIcon = appIcon->next;
+      continue;
+    }
+    if (!appIcon->docked) {
+      if (appIcon->command && appIcon->command != NULL) {
+        command = wstrdup(appIcon->command);
+      }
+      if (command == NULL && appIcon->icon->owner != NULL) {
+        command = wGetCommandForWindow(appIcon->icon->owner->client_win);
+      }
+      if (command != NULL) {
+        appName = [[NSString alloc] initWithFormat:@"%s.%s",
+                                    appIcon->wm_instance, appIcon->wm_class];
+        appCommand = [[NSString alloc] initWithCString:command];
+        [appList addObject:@{@"Name":appName, @"Command":appCommand}];
+        [appName release];
+        [appCommand release];
+        wfree(command);
+        command = NULL;
+      }
+      else {
+        NSLog(@"Application `%s.%s` was not saved. No application command found.",
+              appIcon->wm_instance, appIcon->wm_class);
+      }
+    }
+    appIcon = appIcon->next;
+  }
+  
+  return [appList autorelease];
+}
+- (BOOL)_isApplicationRunning:(NSString *)appName
+{
+  NSArray  *nameComps = [appName componentsSeparatedByString:@"."];
+  char     *app_instance = (char *)[[nameComps objectAtIndex:0] cString];
+  char     *app_class = (char *)[[nameComps objectAtIndex:1] cString];
+  BOOL     isAppFound = NO;
+  WAppIcon *appIcon;
+
+  appIcon = wDefaultScreen()->app_icon_list;
+  while (appIcon->next) {
+    if (!strcmp(app_instance, appIcon->wm_instance) &&
+        !strcmp(app_class, appIcon->wm_class)) {
+      isAppFound = YES;
+      break;
+    }
+    appIcon = appIcon->next;
+  }
+
+  return isAppFound;
+}
+
+- (pid_t)_executeCommand:(NSString *)command
+{
+  WScreen *scr = wDefaultScreen();
+  pid_t   pid;
+  char    **argv;
+  int     argc;
+
+  wtokensplit((char *)[command cString], &argv, &argc);
+
+  if (!argc) {
+    return 0;
+  }
+
+  pid = fork();
+  if (pid == 0) {
+    char **args;
+    int i;
+
+    args = malloc(sizeof(char *) * (argc + 1));
+    if (!args)
+      exit(111);
+    for (i = 0; i < argc; i++) {
+      args[i] = argv[i];
+    }
+
+    sigset_t sigs;
+    sigfillset(&sigs);
+    sigprocmask(SIG_UNBLOCK, &sigs, NULL);
+    
+    args[argc] = NULL;
+    execvp(argv[0], args);
+    exit(111);
+  }
+  while (argc > 0) {
+    wfree(argv[--argc]);
+  }
+  wfree(argv);
+  
+  return pid;  
 }
 
 @end
