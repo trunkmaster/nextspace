@@ -63,9 +63,11 @@ CFURLRef WMUserDefaultsCopyURLForDomain(CFStringRef domain)
 
 CFStringRef WMUserDefaultsCopyStringForDomain(CFStringRef domain)
 {
-  CFURLRef url = WMUserDefaultsCopyURLForDomain(domain);
-  CFStringRef stringURL = CFURLGetString(url);
+  CFURLRef url;
+  CFStringRef stringURL;
 
+  url = WMUserDefaultsCopyURLForDomain(domain);
+  stringURL = CFStringCreateCopy(NULL, CFURLGetString(url));
   CFRelease(url);
   
   return stringURL;
