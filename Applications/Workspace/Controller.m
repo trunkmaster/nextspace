@@ -710,7 +710,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   procManager = [ProcessManager shared];
 
   // Start docked applications with `AutoLaunch = Yes`
-  WMDockAutoLaunch(wDefaultScreen()->dock);
+  wDockDoAutoLaunch(wDefaultScreen()->dock, 0);
     
   // Init Workspace's tools
   mediaOperations = [[NSMutableDictionary alloc] init];

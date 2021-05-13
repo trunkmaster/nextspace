@@ -78,8 +78,6 @@ extern WorkspaceExitCode ws_quit_code;
 void WMShutdown(WMShutdownMode mode);
 
 // - Should be called from already existing @autoreleasepool
-void WMDockAutoLaunch(WDock *dock);
-
 WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
                                  NSString *launchPath,
                                  NSImage *anImage,

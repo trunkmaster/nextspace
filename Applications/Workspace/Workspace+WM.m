@@ -116,50 +116,6 @@ void WMShutdown(WMShutdownMode mode)
 // #endif
 }
 
-void WMDockAutoLaunch(WDock *dock)
-{
-  WAppIcon    *btn;
-  WSavedState *state;
-  char        *command = NULL;
-  NSString    *cmd;
-
-  for (int i = 0; i < dock->max_icons; i++) {
-    btn = dock->icon_array[i];
-
-    if (!btn || !btn->auto_launch ||
-        !btn->command || btn->running || btn->launching ||
-        !strcmp(btn->wm_instance, "Workspace")) {
-      continue;
-    }
-
-    state = wmalloc(sizeof(WSavedState));
-    state->workspace = 0;
-    btn->drop_launch = 0;
-    btn->paste_launch = 0;
-
-    // Add '-autolaunch YES' to GNUstep application parameters
-    if (!strcmp(btn->wm_class, "GNUstep")) {
-      cmd = [NSString stringWithCString:btn->command];
-      if ([cmd rangeOfString:@"autolaunch"].location == NSNotFound) {
-        cmd = [cmd stringByAppendingString:@" -autolaunch YES"];
-      }
-      command = wstrdup(btn->command);
-      wfree(btn->command);
-      btn->command = wstrdup([cmd cString]);
-    }
-
-    wDockLaunchWithState(btn, state);
-
-    // Return 'command' field into initial state (without -autolaunch)
-    if (!strcmp(btn->wm_class, "GNUstep")) {
-      wfree(btn->command);
-      btn->command = wstrdup(command);
-      wfree(command);
-      command = NULL;
-    }
-  }  
-}
-
 // ----------------------------
 // --- Launching appicons
 // ----------------------------
