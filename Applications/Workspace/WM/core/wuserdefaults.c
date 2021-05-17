@@ -65,11 +65,16 @@ CFStringRef WMUserDefaultsCopyStringForDomain(CFStringRef domain)
 {
   CFURLRef url;
   CFStringRef stringURL;
+  UInt8 *buffer;
 
   url = WMUserDefaultsCopyURLForDomain(domain);
-  stringURL = CFStringCreateCopy(NULL, CFURLGetString(url));
+  buffer = malloc(sizeof(UInt8) * MAXPATHLEN);
+  CFURLGetFileSystemRepresentation(url, false, buffer, MAXPATHLEN);
   CFRelease(url);
-  
+  stringURL = CFStringCreateWithCString(kCFAllocatorDefault, (const char *)buffer,
+                                        kCFStringEncodingUTF8);
+  free(buffer);
+
   return stringURL;
 }
 
