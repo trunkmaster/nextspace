@@ -564,10 +564,9 @@ static BOOL      _workspaceQuitting = NO;
   BOOL         success = NO;
 
   // No running background processes
-  if ([operations count] <= 0)
-    {
-      return YES;
-    }
+  if ([operations count] <= 0) {
+    return YES;
+  }
 
   switch (NXTRunAlertPanel(@"Log Out",
                            @"You have background file operations running.\n"
@@ -576,30 +575,25 @@ static BOOL      _workspaceQuitting = NO;
                            nil))
     {
     case NSAlertDefaultReturn: // Cancel
-      NSLog(@"Workspace quit: cancel terminating running background "
-            @"operations.");
+      NSLog(@"Workspace quit: cancel terminating running background operations.");
       break;
     case NSAlertAlternateReturn: // Review operations
-      [[[NSApp delegate] processesPanel]
-        showOperation:[operations objectAtIndex:0]];
+      [[[NSApp delegate] processesPanel] showOperation:[operations objectAtIndex:0]];
       break;
     default:
       // Stop running operations
       e = [operations objectEnumerator];
-      while ((bgOp = [e nextObject]))
-        {
-          [bgOp stop:self];
-        }
+      while ((bgOp = [e nextObject])) {
+        [bgOp stop:self];
+      }
       success = YES;
       break;
     }
 
   // Wait for operations to terminate
-  while ([operations count] > 0)
-    {
-      [[NSRunLoop currentRunLoop]
-        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
-    }
+  while ([operations count] > 0 && success != NO) {
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+  }
 
   return success;
 }
