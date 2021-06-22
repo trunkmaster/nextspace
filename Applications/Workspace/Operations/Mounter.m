@@ -80,6 +80,12 @@
   return NO;
 }
 
+// This method used on logout sequence
+- (void)stop:(id)sender
+{
+  [self destroyOperation:nil];
+}
+
 - (void)destroyOperation:(id)object
 {
   NSDictionary *info = nil;
