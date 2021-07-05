@@ -30,7 +30,7 @@
 @interface BrowserViewer : NSObject <Viewer>
 {
   id bogusWindow;
-  id view;
+  NSBrowser     *view;
 
   FileViewer    *fileViewer;
 
