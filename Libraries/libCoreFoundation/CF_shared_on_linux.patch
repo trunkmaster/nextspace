@@ -426,5 +426,5 @@ index 26339d41..447011f8 100644
  #include <assert.h>
 +int UCHAR_EXTENDED_PICTOGRAPHIC=64;
  #include <unicode/uchar.h>
- #if TARGET_OS_MAC || TARGET_OS_WIN32 || TARGET_OS_LINUX
+ #if TARGET_OS_MAC || TARGET_OS_WIN32 || TARGET_OS_LINUX || TARGET_OS_BSD
  #include "CFLocaleInternal.h"
