@@ -41,6 +41,10 @@ create first, using
 If you want to build for a different distribution, adapt as appropriate
 (but sid is the best tested distribution).
 
+To build using Debian stable (Buster) you will need to use clang-8 from backports. So create the pbuilder system this way:
+
+    $ sudo pbuilder create --distribution buster --othermirror "deb http://deb.debian.org/debian buster-backports main"
+
 ### Setting up local packages in pbuilder
 
 Since the packages depend on another but are generated independently,
@@ -84,9 +88,32 @@ Add another file `/etc/pbuilder/hook.d/I99self-archive` containing
     apt-ftparchive packages . > /var/cache/pbuilder/result/Packages
     apt-ftparchive release . > Release
     apt-ftparchive sources . > Sources 2>/dev/null
+    
+For building for stable/Buster with clang from backports you will need to add a further file. `/etc/pbuilder/hook.d/E01clang-backports`:
+
+```
+#!/bin/sh
+set -e
+cat > "/etc/apt/preferences" << EOF
+Package: clang*
+Pin: release a=buster-backports
+Pin-Priority: 999
+
+Package: llvm*   
+Pin: release a=buster-backports
+Pin-Priority: 999
+EOF
+
+apt-get -t buster-backports install --assume-yes clang-8 llvm-8
+update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 50
+update-alternatives --install /usr/bin/cc cc /usr/bin/clang-8 50
+update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-8 50
+update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-8 50
+```
 
 Finally make the files executable with
-`chmod +x /etc/pbuilder/hook.d/{D05self-archive,I99self-archive}`.
+`chmod +x /etc/pbuilder/hook.d/{D05self-archive,I99self-archive,E01clang-backports}`.
+
 
 ### Building a package
 
@@ -119,7 +146,7 @@ To install the entire desktop environment, just install the `nextspace-desktop` 
 
 ## Setting things up to install pbuilder created packages locally
 
-To tell `apt` to look for the packages created by pbuilder, just create a file `/etc/apt/sources.list.d/nextspace` containing
+To tell `apt` to look for the packages created by pbuilder, just create a file `/etc/apt/sources.list.d/nextspace.list` containing
 
     deb [trusted=yes] file:///var/cache/pbuilder/result/ ./
 
