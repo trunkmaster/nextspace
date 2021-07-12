@@ -1,0 +1,46 @@
+.\"nxworkspace(1) man page
+.\"put together by onflapp
+.\"Copyright (C) 2020 Free Software Foundation, Inc.
+.\"Copying and distribution of this file, with or without modification,
+.\"are permitted in any medium without royalty provided the copyright
+.\"notice and this notice are preserved.
+.\"
+.\"Process this file with
+.\"groff -man -Tascii nxworkspace.1
+.\"
+.TH NXWORKSPACE 1 "August 2020" GNUstep "NEXTSPACE System Manual"
+.SH NAME
+nxworkspace \- invoke Workspace commands from command line
+.SH SYNOPSIS
+.B nxworkspace [--open <path> <app>] [--activate <app>]
+.P
+.SH DESCRIPTION
+.P
+nxworkspace enables you to use some of Workspace's functionality from directly command line. 
+
+The most common use of this utility is to open a path in Workspace. Workspace will take appropriate action based on what kind of path this actuall is.
+
+If path is a regular file, Workspace will open it in default application.
+
+  nxworkspace --open ~/Documents/mytext.txt
+
+If path is a directory, Workspace will open it in File Viewer
+
+  nxworkspace --open .
+
+If path is an application, Workspace will launch it
+
+  nxworkspace --open /Applications/Terminal.app
+
+You can specify which application Workspace should open path with by passing application name.
+
+  nxworkspace --open ./nxworkspace.1 ProjectCenter
+
+.SH OPTIONS
+.P
+--open <path>       open path in Workspace
+
+--open <path> <app> open path with specific application
+
+--activate <app>    launch or activate application
+.P
