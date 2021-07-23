@@ -123,7 +123,7 @@
   // should be displayed.
   if ([inspector respondsToSelector:nodepSel])
     {
-      validInspector = (BOOL)[inspector performSelector:nodepSel];
+      validInspector = [inspector performSelector:nodepSel] ? YES : NO;
     }
   
   if (inspector == nil || validInspector == NO)
