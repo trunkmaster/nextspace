@@ -104,27 +104,6 @@ index c1cee458..3d0107de 100644
  #include <CoreFoundation/CFXMLNode.h>
  #include <CoreFoundation/CFXMLParser.h>
  #endif
-diff --git a/CoreFoundation/Base.subproj/ForFoundationOnly.h b/CoreFoundation/Base.subproj/ForFoundationOnly.h
-index 77b0cb12..d61b67aa 100644
---- a/CoreFoundation/Base.subproj/ForFoundationOnly.h
-+++ b/CoreFoundation/Base.subproj/ForFoundationOnly.h
-@@ -43,6 +43,16 @@ CF_EXTERN_C_END \
- CF_ASSUME_NONNULL_END \
- CF_IMPLICIT_BRIDGING_DISABLED
- 
-+#if DEPLOYMENT_RUNTIME_C
-+_CF_EXPORT_SCOPE_BEGIN
-+CF_PRIVATE CFOptionFlags _CFAllocatorHintZeroWhenAllocating;
-+CF_PRIVATE Boolean __CFAllocatorRespectsHintZeroWhenAllocating(CFAllocatorRef allocator);
-+CF_EXPORT Boolean _CFIsMainThread(void);
-+_CF_EXPORT_SCOPE_END
-+typedef pthread_key_t _CFThreadSpecificKey;
-+typedef pthread_t _CFThreadRef;
-+#endif
-+
- // NOTE: miscellaneous declarations are at the end
- 
- #pragma mark - CFRuntime
 diff --git a/CoreFoundation/CMakeLists.txt b/CoreFoundation/CMakeLists.txt
 index 62569e27..355c84d0 100644
 --- a/CoreFoundation/CMakeLists.txt
@@ -428,3 +407,221 @@ index 26339d41..447011f8 100644
  #include <unicode/uchar.h>
  #if TARGET_OS_MAC || TARGET_OS_WIN32 || TARGET_OS_LINUX || TARGET_OS_BSD
  #include "CFLocaleInternal.h"
+diff --git a/CoreFoundation/Base.subproj/ForFoundationOnly.h b/CoreFoundation/Base.subproj/ForFoundationOnly.h
+index 77b0cb1..f535b9a 100644
+--- a/CoreFoundation/Base.subproj/ForFoundationOnly.h
++++ b/CoreFoundation/Base.subproj/ForFoundationOnly.h
+@@ -43,6 +43,19 @@ CF_EXTERN_C_END \
+ CF_ASSUME_NONNULL_END \
+ CF_IMPLICIT_BRIDGING_DISABLED
+ 
++#if DEPLOYMENT_RUNTIME_C
++_CF_EXPORT_SCOPE_BEGIN
++typedef pthread_key_t _CFThreadSpecificKey;
++typedef pthread_t _CFThreadRef;
++CF_PRIVATE CFOptionFlags _CFAllocatorHintZeroWhenAllocating;
++CF_PRIVATE Boolean __CFAllocatorRespectsHintZeroWhenAllocating(CFAllocatorRef allocator);
++CF_EXPORT Boolean _CFIsMainThread(void);
++CF_EXPORT int _CFThreadSetName(_CFThreadRef thread, const char *_Nonnull name);
++CF_PRIVATE int _CFThreadGetName(char *_Nonnull buf, int length);
++_CF_EXPORT_SCOPE_END
++
++#endif
++
+ // NOTE: miscellaneous declarations are at the end
+ 
+ #pragma mark - CFRuntime
+diff --git a/CoreFoundation/Base.subproj/CFPlatform.c b/CoreFoundation/Base.subproj/CFPlatform.c
+index bf33297..9403b93 100644
+--- a/CoreFoundation/Base.subproj/CFPlatform.c
++++ b/CoreFoundation/Base.subproj/CFPlatform.c
+@@ -1501,12 +1501,99 @@ CF_PRIVATE int asprintf(char **ret, const char *format, ...) {
+ 
+ #endif
+ 
++CF_CROSS_PLATFORM_EXPORT int _CFThreadSetName(_CFThreadRef thread, const char *_Nonnull name) {
++#if TARGET_OS_MAC
++    if (pthread_equal(pthread_self(), thread)) {
++        return pthread_setname_np(name);
++    }
++    return EINVAL;
++#elif TARGET_OS_WIN32
++    // Convert To UTF-16
++    int szLength =
++        MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name, -1, NULL, 0);
++    if (szLength == 0) {
++        return EINVAL;
++    }
++
++    WCHAR *pszThreadDescription = calloc(szLength + 1, sizeof(WCHAR));
++    MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name, -1,
++                        pszThreadDescription, szLength);
++
++    // Set Thread Name
++    SetThreadDescription(thread, pszThreadDescription);
++
++    // Free Conversion
++    free(pszThreadDescription);
++
++    return 0;
++#elif TARGET_OS_LINUX
++    return pthread_setname_np(thread, name);
++#elif TARGET_OS_BSD
++    pthread_set_name_np(thread, name);
++    return 0;
++#endif
++}
++
++CF_CROSS_PLATFORM_EXPORT int _CFThreadGetName(char *buf, int length) {
++#if TARGET_OS_MAC
++    return pthread_getname_np(pthread_self(), buf, length);
++#elif TARGET_OS_ANDROID
++    // Android did not get pthread_getname_np until API 26, but prctl seems to
++    // return at most 15 chars of the name + null terminator.
++    char *buffer[16] = {0};
++    if (prctl(PR_GET_NAME, buffer, 0, 0, 0) != 0) {
++        return -1;
++    }
++    size_t sz = MIN(strnlen(buffer, 15), length - 1);
++    memcpy(buf, buffer, sz);
++    buf[sz] = 0;
++    return 0;
++#elif TARGET_OS_LINUX
++    return pthread_getname_np(pthread_self(), buf, length);
++#elif TARGET_OS_BSD
++    pthread_get_name_np(pthread_self(), buf, length);
++    return 0;
++#elif TARGET_OS_WIN32
++    *buf = '\0';
++
++    // Get Thread Name
++    PWSTR pszThreadDescription = NULL;
++    HRESULT hr = GetThreadDescription(GetCurrentThread(), &pszThreadDescription);
++    if (FAILED(hr)) {
++        return -1;
++    }
++
++    // Convert to UTF-8
++    int szLength =
++        WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, pszThreadDescription,
++                            -1, NULL, 0, NULL, NULL);
++    if (szLength) {
++        char *buffer = calloc(szLength + 1, sizeof(char));
++        WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, pszThreadDescription,
++                            -1, buffer, szLength, NULL, NULL);
++        memcpy(buf, buffer, length - 1);
++        buf[MIN(szLength, length - 1)] = '\0';
++        free(buffer);
++    }
++
++    // Free Result
++    LocalFree(pszThreadDescription);
++
++    return 0;
++#endif
++    return -1;
++}
++
+ #if DEPLOYMENT_RUNTIME_SWIFT
+ #include <fcntl.h>
+ 
+ extern void swift_retain(void *);
+ extern void swift_release(void *);
+ 
++typedef pthread_attr_t _CFThreadAttributes;
++typedef void * _CFPosixSpawnFileActionsRef;
++typedef void * _CFPosixSpawnAttrRef;
++
+ #if TARGET_OS_WIN32
+ typedef struct _CFThreadSpecificData {
+     CFTypeRef value;
+@@ -1600,89 +1687,6 @@ _CFThreadRef _CFThreadCreate(const _CFThreadAttributes attrs, void *_Nullable (*
+ #endif
+ }
+ 
+-CF_CROSS_PLATFORM_EXPORT int _CFThreadSetName(_CFThreadRef thread, const char *_Nonnull name) {
+-#if TARGET_OS_MAC
+-    if (pthread_equal(pthread_self(), thread)) {
+-        return pthread_setname_np(name);
+-    }
+-    return EINVAL;
+-#elif TARGET_OS_WIN32
+-    // Convert To UTF-16
+-    int szLength =
+-        MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name, -1, NULL, 0);
+-    if (szLength == 0) {
+-        return EINVAL;
+-    }
+-
+-    WCHAR *pszThreadDescription = calloc(szLength + 1, sizeof(WCHAR));
+-    MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name, -1,
+-                        pszThreadDescription, szLength);
+-
+-    // Set Thread Name
+-    SetThreadDescription(thread, pszThreadDescription);
+-
+-    // Free Conversion
+-    free(pszThreadDescription);
+-
+-    return 0;
+-#elif TARGET_OS_LINUX
+-    return pthread_setname_np(thread, name);
+-#elif TARGET_OS_BSD
+-    pthread_set_name_np(thread, name);
+-    return 0;
+-#endif
+-}
+-
+-CF_CROSS_PLATFORM_EXPORT int _CFThreadGetName(char *buf, int length) {
+-#if TARGET_OS_MAC
+-    return pthread_getname_np(pthread_self(), buf, length);
+-#elif TARGET_OS_ANDROID
+-    // Android did not get pthread_getname_np until API 26, but prctl seems to
+-    // return at most 15 chars of the name + null terminator.
+-    char *buffer[16] = {0};
+-    if (prctl(PR_GET_NAME, buffer, 0, 0, 0) != 0) {
+-        return -1;
+-    }
+-    size_t sz = MIN(strnlen(buffer, 15), length - 1);
+-    memcpy(buf, buffer, sz);
+-    buf[sz] = 0;
+-    return 0;
+-#elif TARGET_OS_LINUX
+-    return pthread_getname_np(pthread_self(), buf, length);
+-#elif TARGET_OS_BSD
+-    pthread_get_name_np(pthread_self(), buf, length);
+-    return 0;
+-#elif TARGET_OS_WIN32
+-    *buf = '\0';
+-
+-    // Get Thread Name
+-    PWSTR pszThreadDescription = NULL;
+-    HRESULT hr = GetThreadDescription(GetCurrentThread(), &pszThreadDescription);
+-    if (FAILED(hr)) {
+-        return -1;
+-    }
+-
+-    // Convert to UTF-8
+-    int szLength =
+-        WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, pszThreadDescription,
+-                            -1, NULL, 0, NULL, NULL);
+-    if (szLength) {
+-        char *buffer = calloc(szLength + 1, sizeof(char));
+-        WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, pszThreadDescription,
+-                            -1, buffer, szLength, NULL, NULL);
+-        memcpy(buf, buffer, length - 1);
+-        buf[MIN(szLength, length - 1)] = '\0';
+-        free(buffer);
+-    }
+-
+-    // Free Result
+-    LocalFree(pszThreadDescription);
+-
+-    return 0;
+-#endif
+-    return -1;
+-}
+-
+ CF_EXPORT char **_CFEnviron(void) {
+ #if TARGET_OS_MAC
+     return *_NSGetEnviron();
