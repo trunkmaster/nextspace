@@ -21,6 +21,7 @@ DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
 sudo yum -y install ${DEPS}
 
 print_H2 "===== Downloading libdispatch sources..."
+rm ${SOURCES_DIR}/swift*.tar.gz
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building libdispatch package..."
@@ -30,10 +31,10 @@ if [ $STATUS -eq 0 ]; then
     print_OK " Building of Grand Central Dispatch library RPM SUCCEEDED!"
     print_H2 "===== Installing libdispatch RPMs..."
 
-    install_rpm libdispatch ${RPMS_DIR}/libdispatch-${DISPATCH_VERSION}.rpm
+    install_rpm libdispatch-${DISPATCH_VERSION} ${RPMS_DIR}/libdispatch-${DISPATCH_VERSION}.rpm
     mv ${RPMS_DIR}/libdispatch-${DISPATCH_VERSION}.rpm ${RELEASE_USR}
 
-    install_rpm libdispatch-devel ${RPMS_DIR}/libdispatch-devel-${DISPATCH_VERSION}.rpm
+    install_rpm libdispatch-devel-${DISPATCH_VERSION} ${RPMS_DIR}/libdispatch-devel-${DISPATCH_VERSION}.rpm
     mv ${RPMS_DIR}/libdispatch-devel-${DISPATCH_VERSION}.rpm ${RELEASE_DEV}
     mv ${RPMS_DIR}/libdispatch-debuginfo-${DISPATCH_VERSION}.rpm ${RELEASE_DEV}
     if [ -f ${RPMS_DIR}/libdispatch-debugsource-${DISPATCH_VERSION}.rpm ];then

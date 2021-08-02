@@ -2,7 +2,8 @@ Name:		libdispatch
 %if 0%{?el7}
 Version:	5.1.5
 %else
-Version:	5.3
+Epoch:		2
+Version:	5.4.2
 %endif
 Release:	0%{?dist}
 Summary:	Grand Central Dispatch (GCD or libdispatch).
@@ -47,7 +48,7 @@ to support more informed thread scheduling.
 
 %package devel
 Summary: Development header files for libdispatch.
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description devel
 Development header files for libdispatch (includes kqueue and pthread_workqueue).
