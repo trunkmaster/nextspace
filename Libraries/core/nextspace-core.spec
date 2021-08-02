@@ -1,5 +1,7 @@
 %global debug_package %{nil}
 
+%define MAKE_VERSION    2_9_0
+
 Name:		nextspace-core
 Version:	0.95
 Release:	11%{?dist}
@@ -7,7 +9,7 @@ Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://github.com/trunkmaster/nextspace
 Source0:	nextspace-os_files-%{version}.tar.gz
-Source1:	https://github.com/gnustep/tools-make/archive/make-2_7_0.tar.gz
+Source1:	https://github.com/gnustep/tools-make/archive/make-%{MAKE_VERSION}.tar.gz
 Source2:	nextspace.fsl
 
 %if 0%{?el7}
@@ -59,7 +61,7 @@ NextSpace environment.
 
 %prep
 %setup -c -n nextspace-core -a 1
-cp %{_sourcedir}/nextspace.fsl %{_builddir}/%{name}/tools-make-make-2_7_0/FilesystemLayouts/nextspace
+cp %{_sourcedir}/nextspace.fsl %{_builddir}/%{name}/tools-make-make-%{MAKE_VERSION}/FilesystemLayouts/nextspace
 
 %build
 %if 0%{?el7}
@@ -71,7 +73,7 @@ export RUNTIME_VERSION="-fobjc-runtime=gnustep-1.8"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Build gnustep-make to include in -devel package
-cd tools-make-make-2_7_0
+cd tools-make-make-%{MAKE_VERSION}
 ./configure \
     --with-config-file=/Library/Preferences/GNUstep.conf \
     --with-layout=nextspace \
@@ -82,7 +84,7 @@ make
 cd ..
 
 %install
-cd tools-make-make-2_7_0
+cd tools-make-make-%{MAKE_VERSION}
 %{make_install}
 rm %{buildroot}/usr/NextSpace/bin/opentool
 cd ..
