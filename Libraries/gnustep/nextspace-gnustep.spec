@@ -20,7 +20,8 @@ Source3:	gdnc.service
 Source4:	gdnc-local.service
 Source5:	%{GS_REPO}/libs-gui/archive/gnustep-gui-%{GUI_VERSION}.tar.gz
 Source6:	gnustep-gui-images.tar.gz
-Source7:	%{GS_REPO}/libs-back/archive/gnustep-back-%{BACK_VERSION}.tar.gz
+#Source7:	%{GS_REPO}/libs-back/archive/gnustep-back-%{BACK_VERSION}.tar.gz
+Source7:	back-art.tar.gz
 Source8:	gpbs.service
 Source9:	%{GS_REPO}/apps-gorm/archive/gorm-%{GORM_VERSION}.tar.gz
 Source10:	%{GS_REPO}/apps-projectcenter/archive/projectcenter-%{PC_VERSION}.tar.gz
@@ -163,7 +164,8 @@ sudo rm /Developer/Makefiles/Additional/base.make
 cd ..
 
 # Build ART GUI backend
-cd libs-back-gnustep-back-%{BACK_VERSION}
+#cd libs-back-gnustep-back-%{BACK_VERSION}
+cd back-art
 export ADDITIONAL_TOOL_LIBS="-lgnustep-gui -lgnustep-base"
 ./configure \
     --enable-server=x11 \
@@ -201,7 +203,8 @@ cd libs-gui-gnustep-gui-%{GUI_VERSION}
 %{make_install}
 cd ..
 
-cd libs-back-gnustep-back-%{BACK_VERSION}
+#cd libs-back-gnustep-back-%{BACK_VERSION}
+cd back-art
 %{make_install} fonts=no
 cd ..
 
