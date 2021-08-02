@@ -39,7 +39,7 @@ if [ $? -eq 1 ]; then
 fi
 
 # Apple Core Foundation
-`dirname $0`/build_corefoundation.sh $1
+`dirname $0`/build_libfoundation.sh $1
 if [ $? -eq 1 ]; then
     echo "Aborting..."
     exit 1

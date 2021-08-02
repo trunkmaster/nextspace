@@ -1,16 +1,15 @@
-%define GIT_TAG main
-
 %if 0%{?el7}
 %global debug_package %{nil}
 %endif
 
-Name:		libCoreFoundation
-Version:	1338
+Name:		libfoundation
+Epoch:		2
+Version:	5.4.2
 Release:	0%{?dist}
 Summary:	Apple CoreFoundation framework.
 License:	Apache 2.0
 URL:		http://swift.org
-Source0:	https://github.com/apple/swift-corelibs-foundation/archive/%{GIT_TAG}.tar.gz
+Source0:	https://github.com/apple/swift-corelibs-foundation/archive/swift-%{version}-RELEASE.tar.gz
 Source1:	CFFileDescriptor.h
 Source2:	CFFileDescriptor.c
 Source3:	CFNotificationCenter.c
@@ -49,13 +48,13 @@ Apple Core Foundation framework.
 
 %package devel
 Summary: Development header files for CoreFoundation framework.
-Requires: %{name}%{?_isa} = %{version}-%{release}
+Requires: %{name}%{?_isa} = %{epoch}:%{version}-%{release}
 
 %description devel
 Development header files for CoreFoundation framework.
 
 %prep
-%setup -n swift-corelibs-foundation-%{GIT_TAG}
+%setup -n swift-corelibs-foundation-swift-%{version}-RELEASE
 %patch0 -p1
 %if 0%{?el7}
 %patch1 -p1
