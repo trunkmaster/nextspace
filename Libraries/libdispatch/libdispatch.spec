@@ -48,7 +48,11 @@ to support more informed thread scheduling.
 
 %package devel
 Summary: Development header files for libdispatch.
+%if 0%{?el7}
+Requires: %{name}%{?_isa} = %{version}-%{release}
+%else
 Requires: %{name}%{?_isa} = %{epoch}:%{version}-%{release}
+%endif
 
 %description devel
 Development header files for libdispatch (includes kqueue and pthread_workqueue).
