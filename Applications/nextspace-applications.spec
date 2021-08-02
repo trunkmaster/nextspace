@@ -23,7 +23,7 @@ BuildRequires:	nextspace-frameworks-devel
 # Login
 BuildRequires:	pam-devel
 # Workspace
-BuildRequires:	libCoreFoundation-devel
+BuildRequires:	libfoundation-devel
 BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libpng-devel
@@ -37,7 +37,7 @@ BuildRequires:	libXfixes-devel
 BuildRequires:	fontconfig-devel
 #
 Requires:	nextspace-frameworks
-Requires:	libCoreFoundation
+Requires:	libfoundation
 Requires:	fontconfig
 Requires:	libXft
 Requires:	libXinerama
@@ -137,7 +137,7 @@ fi
 
 %changelog
 * Fri Jan 15 2021  Sergii Stoian <stoyan255@gmail.com> - 0.91-0
-- added libCoreFoundation dependency.
+- added libfoundation dependency.
 - autotools dependecies were removed (in favour of cmake).
 - use CMAKE variable to build Workspace.
 
