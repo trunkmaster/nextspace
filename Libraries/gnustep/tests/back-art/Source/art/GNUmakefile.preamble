@@ -37,7 +37,7 @@ ADDITIONAL_CPPFLAGS += -Wall $(CONFIG_SYSTEM_DEFS)
 #ADDITIONAL_CFLAGS = 
 
 # Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS = -I../../Headers \
+ADDITIONAL_INCLUDE_DIRS += -I../../Headers \
 	-I../$(GNUSTEP_TARGET_DIR) $(GRAPHIC_CFLAGS) \
 
 # Additional LDFLAGS to pass to the linker
