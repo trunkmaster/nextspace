@@ -13,7 +13,7 @@ fi
 prepare_environment
 
 REPO_DIR=$1
-LOG_FILE=${CWD}/applications_build.log
+LOG_FILE=/dev/null
 SPEC_FILE=${REPO_DIR}/Applications/nextspace-applications.spec
 
 print_H1 " Building NEXTSPACE Applications package..."
