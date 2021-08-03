@@ -66,10 +66,10 @@ cp %{_sourcedir}/nextspace.fsl %{_builddir}/%{name}/tools-make-make-%{MAKE_VERSI
 %build
 %if 0%{?el7}
 source /opt/rh/llvm-toolset-7.0/enable
+export RUNTIME_VERSION="gnustep-1.8"
 %endif
 export CC=clang
 export CXX=clang++
-export RUNTIME_VERSION="-fobjc-runtime=gnustep-1.8"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Build gnustep-make to include in -devel package
