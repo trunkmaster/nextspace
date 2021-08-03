@@ -48,7 +48,6 @@ be displayed through the X window system.
 %package devel
 Summary:	WindowMaker raster library header files.
 Requires:	%{name}%{?_isa} = %{version}-%{release}
-Requires:	nextspace-core >= 0.95
 Requires:	giflib-devel
 Requires:	libjpeg-turbo-devel
 Requires:	libpng-devel
