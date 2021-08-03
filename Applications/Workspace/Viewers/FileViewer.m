@@ -71,8 +71,6 @@
     return;
  }
 
-  [self resetCursorRects];
-
   if ([theEvent type] == NSLeftMouseDown) {
     v = [_wv hitTest:[theEvent locationInWindow]];
     if ([v isKindOfClass:[PathIcon class]]) {

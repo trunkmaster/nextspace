@@ -198,10 +198,6 @@ static NXTSavePanel *_savePanel = nil;
     return;
   }
 
-  // if (!_f.cursor_rects_valid) {
-    [self resetCursorRects];
-  // }
-
   if ([theEvent type] == NSLeftMouseDown) {
     v = [_wv hitTest:[theEvent locationInWindow]];
     // NSLog(@"[NXTSavePanel] mouse down on %@", [v className]);
