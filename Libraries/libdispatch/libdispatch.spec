@@ -1,10 +1,10 @@
 Name:		libdispatch
-%if 0%{?el7}
-Version:	5.1.5
-%else
+#%if 0%{?el7}
+#Version:	5.1.5
+#%else
 Epoch:		2
 Version:	5.4.2
-%endif
+#%endif
 Release:	0%{?dist}
 Summary:	Grand Central Dispatch (GCD or libdispatch).
 License:	Apache 2.0
@@ -48,11 +48,7 @@ to support more informed thread scheduling.
 
 %package devel
 Summary: Development header files for libdispatch.
-%if 0%{?el7}
-Requires: %{name}%{?_isa} = %{version}-%{release}
-%else
 Requires: %{name}%{?_isa} = %{epoch}:%{version}-%{release}
-%endif
 
 %description devel
 Development header files for libdispatch (includes kqueue and pthread_workqueue).
@@ -77,9 +73,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
     -DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
     -DINSTALL_PRIVATE_HEADERS=YES \
-%if 0%{?el7}
-    -DENABLE_TESTING=OFF \
-%endif
+    -DBUILD_TESTING=OFF \
     -DCMAKE_BUILD_TYPE=Debug
 
 make %{?_smp_mflags}
