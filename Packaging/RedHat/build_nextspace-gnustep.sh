@@ -20,7 +20,9 @@ cp ${REPO_DIR}/Libraries/gnustep/gdomap.service ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/gpbs.service ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/gnustep-gui-images.tar.gz ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/projectcenter-images.tar.gz ${SOURCES_DIR}
-tar zcf ${SOURCES_DIR}/back-art.tar.gz -C ${REPO_DIR}/Libraries/gnustep/tests back-art
+tar zcf ${SOURCES_DIR}/back-art.tar.gz -C ${REPO_DIR}/Libraries/gnustep back-art
+curl -L https://github.com/gnustep/apps-projectcenter/archive/master.tar.gz -o ${SOURCES_DIR}/projectcenter-master.tar.gz
+curl -L https://github.com/gnustep/apps-gorm/archive/master.tar.gz -o ${SOURCES_DIR}/gorm-master.tar.gz
 
 print_H2 "===== Install GNUstep build dependencies..."
 DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`

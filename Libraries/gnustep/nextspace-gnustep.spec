@@ -1,9 +1,9 @@
 %define GS_REPO		https://github.com/gnustep
-%define BASE_VERSION	1_27_0
+%define BASE_VERSION	1_28_0
 %define GUI_VERSION	nextspace
 %define BACK_VERSION	nextspace
-%define GORM_VERSION	1_2_26
-%define PC_VERSION	0_6_2
+%define GORM_VERSION	master
+%define PC_VERSION	master
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
@@ -13,18 +13,17 @@ Summary:        GNUstep libraries.
 Group:          Libraries/NextSpace
 License:        GPLv3
 URL:		http://www.gnustep.org
-Source0:	https://github.com/gnustep/libs-base/archive/base-%{BASE_VERSION}.tar.gz
+Source0:	%{GS_REPO}/libs-base/archive/base-%{BASE_VERSION}.tar.gz
 Source1:	gdomap.interfaces
 Source2:	gdomap.service
 Source3:	gdnc.service
 Source4:	gdnc-local.service
 Source5:	%{GS_REPO}/libs-gui/archive/gnustep-gui-%{GUI_VERSION}.tar.gz
 Source6:	gnustep-gui-images.tar.gz
-#Source7:	%{GS_REPO}/libs-back/archive/gnustep-back-%{BACK_VERSION}.tar.gz
 Source7:	back-art.tar.gz
 Source8:	gpbs.service
-Source9:	%{GS_REPO}/apps-gorm/archive/gorm-%{GORM_VERSION}.tar.gz
-Source10:	%{GS_REPO}/apps-projectcenter/archive/projectcenter-%{PC_VERSION}.tar.gz
+Source9:	gorm-master.tar.gz
+Source10:	projectcenter-master.tar.gz
 Source11:	projectcenter-images.tar.gz
 
 # Build GNUstep libraries in one RPM package
@@ -178,12 +177,12 @@ cd ..
 # Build GORM
 export ADDITIONAL_OBJCFLAGS="-I%{buildroot}/Developer/Headers"
 export ADDITIONAL_LDFLAGS+="-L%{buildroot}/Library/Libraries -lgnustep-base -lgnustep-gui"
-cd apps-gorm-gorm-%{GORM_VERSION}
+cd apps-gorm-%{GORM_VERSION}
 make
 cd ..
 
 # Build ProjectCenter
-cd apps-projectcenter-projectcenter-%{PC_VERSION}
+cd apps-projectcenter-%{PC_VERSION}
 make
 cd ..
 
@@ -210,11 +209,11 @@ cd ..
 
 # Install GORM
 export GNUSTEP_INSTALLATION_DOMAIN=NETWORK
-cd apps-gorm-gorm-%{GORM_VERSION}
+cd apps-gorm-%{GORM_VERSION}
 %{make_install}
 cd ..
 # Install ProjectCenter
-cd apps-projectcenter-projectcenter-%{PC_VERSION}
+cd apps-projectcenter-%{PC_VERSION}
 tar zxf %{_sourcedir}/projectcenter-images.tar.gz
 %{make_install}
 cd ..
