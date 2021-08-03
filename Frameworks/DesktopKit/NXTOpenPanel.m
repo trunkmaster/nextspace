@@ -65,7 +65,7 @@ static NXTOpenPanel *_openPanel = nil;
     return;
 
   if (_delegateHasSelectionDidChange) {
-    [_delegate panelSelectionDidChange:self];
+    [self.delegate panelSelectionDidChange:self];
   }
 
   matrix = [_browser matrixInColumn:column];
@@ -391,7 +391,7 @@ static NXTOpenPanel *_openPanel = nil;
 
   if (_delegateHasValidNameFilter) {
     for (NSString *filename in [self filenames]) {
-      if ([_delegate panel:self isValidFilename:filename] == NO) {
+      if ([self.delegate panel:self isValidFilename:filename] == NO) {
         return;
       }
     }

@@ -193,14 +193,14 @@ static NXTSavePanel *_savePanel = nil;
 {
   NSView *v;
 
-  if (!_f.visible && [theEvent type] != NSAppKitDefined) {
+  if (!self.isVisible && [theEvent type] != NSAppKitDefined) {
     NSDebugLLog(@"NSEvent", @"Discard (window not visible) %@", theEvent);
     return;
   }
 
-  if (!_f.cursor_rects_valid) {
+  // if (!_f.cursor_rects_valid) {
     [self resetCursorRects];
-  }
+  // }
 
   if ([theEvent type] == NSLeftMouseDown) {
     v = [_wv hitTest:[theEvent locationInWindow]];
@@ -436,7 +436,7 @@ static NXTSavePanel *_savePanel = nil;
   isLeaf = [selectedCell isLeaf];
 
   if (_delegateHasSelectionDidChange) {
-    [_delegate panelSelectionDidChange:self];
+    [self.delegate panelSelectionDidChange:self];
   }
 
   if (isLeaf) {
@@ -446,7 +446,7 @@ static NXTSavePanel *_savePanel = nil;
   }
   else {
     if (_delegateHasDirectoryDidChange) {
-      [_delegate panel:self directoryDidChange:[_browser pathToColumn:column]];
+      [self.delegate panel:self directoryDidChange:[_browser pathToColumn:column]];
     }
 
     if ([[[_form cellAtIndex:0] stringValue] length] > 0) {
@@ -525,7 +525,7 @@ static NXTSavePanel *_savePanel = nil;
       }
 
       if (_delegateHasShowFilenameFilter) {
-        exists = [_delegate panel:self shouldShowFilename:pathAndFile];
+        exists = [self.delegate panel:self shouldShowFilename:pathAndFile];
       }
 
       if (exists && !isDir) {
@@ -693,7 +693,7 @@ static NXTSavePanel *_savePanel = nil;
   ASSIGN (_fullFileName, [filename stringByStandardizingPath]);
 
   if (_delegateHasUserEnteredFilename) {
-    filename = [_delegate panel:self userEnteredFilename:_fullFileName
+    filename = [self.delegate panel:self userEnteredFilename:_fullFileName
                       confirmed:YES];
     if (!filename) {
       return;
@@ -801,7 +801,7 @@ static NXTSavePanel *_savePanel = nil;
   }
 
   if (_delegateHasValidNameFilter) {
-    if (![_delegate panel: self isValidFilename:[self filename]]) {
+    if (![self.delegate panel:self isValidFilename:[self filename]]) {
       return;
     }
   }

@@ -66,14 +66,12 @@
 {
   NSView *v;
 
-  if (!_f.visible && [theEvent type] != NSAppKitDefined) {
+  if (!self.isVisible && [theEvent type] != NSAppKitDefined) {
     NSDebugLLog(@"NSEvent", @"Discard (window not visible) %@", theEvent);
     return;
  }
 
-  if (!_f.cursor_rects_valid) {
-    [self resetCursorRects];
-  }
+  [self resetCursorRects];
 
   if ([theEvent type] == NSLeftMouseDown) {
     v = [_wv hitTest:[theEvent locationInWindow]];
@@ -83,7 +81,7 @@
     }
   }
   else if ([theEvent type] == NSKeyUp) {
-    [_delegate handleWindowKeyUp:theEvent];
+    [self.delegate handleWindowKeyUp:theEvent];
   }  
 
   [super sendEvent:theEvent];

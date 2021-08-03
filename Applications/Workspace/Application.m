@@ -30,22 +30,27 @@
 // Application icon window
 //-----------------------------------------------------------------------------
 @interface WSIconWindow : NSWindow
-@property (readonly) BOOL canBecomeMainWindow;
-@property (readonly) BOOL canBecomeKeyWindow;
-@property (readonly) BOOL becomesKeyOnlyIfNeeded;
-@property (readonly) BOOL worksWhenModal;
 @end
 @implementation WSIconWindow
 
-- (id)init
+- (BOOL)canBecomeMainWindow
 {
-  self = [super init];
-  _canBecomeMainWindow = NO;
-  _canBecomeKeyWindow = NO;
-  _becomesKeyOnlyIfNeeded = YES;
-  _worksWhenModal = YES;
+  return NO;
+}
 
-  return self;
+- (BOOL)canBecomeKeyWindow
+{
+  return NO;
+}
+
+- (BOOL)becomesKeyOnlyIfNeeded
+{
+  return YES;
+}
+
+- (BOOL)worksWhenModal
+{
+  return YES;
 }
 
 - (void)_initDefaults
