@@ -1,6 +1,6 @@
 Name:           nextspace-frameworks
-Version:        0.90
-Release:        2%{?dist}
+Version:        0.91
+Release:        0%{?dist}
 Summary:        NextSpace core libraries.
 Group:          Libraries/NextSpace
 License:        GPLv2

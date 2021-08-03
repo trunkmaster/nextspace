@@ -4,7 +4,7 @@
 include $(GNUSTEP_MAKEFILES)/common.make
 
 PACKAGE_NAME = nextspace-frameworks
-VERSION = 0.90
+VERSION = 0.91
 SUBPROJECTS = \
     SystemKit \
     DesktopKit \
