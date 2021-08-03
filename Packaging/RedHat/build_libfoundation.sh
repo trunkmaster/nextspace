@@ -22,7 +22,8 @@ DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
 sudo yum -y install ${DEPS}
 
 print_H2 "===== Downloading Core Foundation sources..."
-rm ${SOURCES_DIR}/swift*.tar.gz
+_VER=`rpmspec -q --qf "%{version}:" ${SPEC_FILE} | awk -F: '{print $1}'`
+curl -L https://github.com/apple/swift-corelibs-foundation/archive/swift-${_VER}-RELEASE.tar.gz -o ${SOURCES_DIR}/libfoundation-${_VER}.tar.gz
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building CoreFoundation package..."

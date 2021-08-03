@@ -21,7 +21,8 @@ DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
 sudo yum -y install ${DEPS}
 
 print_H2 "===== Downloading libdispatch sources..."
-rm ${SOURCES_DIR}/swift*.tar.gz
+VER=`rpmspec -q --qf "%{version}:" ${SPEC_FILE} | awk -F: '{print $1}'`
+curl -L https://github.com/apple/swift-corelibs-libdispatch/archive/swift-${VER}-RELEASE.tar.gz -o ${SOURCES_DIR}/libdispatch-${VER}.tar.gz
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building libdispatch package..."

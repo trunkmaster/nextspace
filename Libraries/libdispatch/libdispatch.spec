@@ -1,15 +1,11 @@
 Name:		libdispatch
-#%if 0%{?el7}
-#Version:	5.1.5
-#%else
 Epoch:		2
 Version:	5.4.2
-#%endif
 Release:	0%{?dist}
 Summary:	Grand Central Dispatch (GCD or libdispatch).
 License:	Apache 2.0
-URL:		http://swift.org
-Source0:	https://github.com/apple/swift-corelibs-libdispatch/archive/swift-%{version}-RELEASE.tar.gz
+URL:		https://github.com/apple/swift-corelibs-libdispatch
+Source0:	libdispatch-%{version}.tar.gz
 %if 0%{?el7}
 Patch0:		libdispatch-dispatch.h.patch
 %endif
@@ -93,6 +89,9 @@ rm %{buildroot}/usr/NextSpace/include/Block_private.h
 /usr/NextSpace/share/man/
 
 %changelog
+* Tue Aug 3 2021 Sergii Stoian <stoyan255@gmail.com> - 5.4.2
+  Use version 5.4.2 from Swift repo for CentOS 7.
+
 * Wed Apr 29 2020 Sergii Stoian <stoyan255@gmail.com> - 5.1.5
 - Use clang from RedHat SCL repo on CentOS 7.
 - New libdispatch version 5.1.5.

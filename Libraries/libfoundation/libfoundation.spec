@@ -8,8 +8,8 @@ Version:	5.4.2
 Release:	0%{?dist}
 Summary:	Apple CoreFoundation framework.
 License:	Apache 2.0
-URL:		http://swift.org
-Source0:	https://github.com/apple/swift-corelibs-foundation/archive/swift-%{version}-RELEASE.tar.gz
+URL:		https://github.com/apple/swift-corelibs-foundation
+Source0:	libfoundation-%{version}.tar.gz
 Source1:	CFFileDescriptor.h
 Source2:	CFFileDescriptor.c
 Source3:	CFNotificationCenter.c
