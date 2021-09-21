@@ -18,6 +18,7 @@
  */
 
 #include "log_utils.h"
+#include "file_utils.h"
 #include "defaults.h"
 #include "wuserdefaults.h"
 
@@ -268,12 +269,29 @@ CFPropertyListRef WMUserDefaultsRead(CFStringRef domainName, Boolean useSystemDo
 
 Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
 {
+  CFStringRef defaultsPath;
+  const char *defaults_path;
+  Boolean isPathGood;
   CFURLRef osURL = NULL;
   CFURLRef xmlURL = NULL;
   CFWriteStreamRef writeStream = NULL;
   CFErrorRef plError = NULL;
   Boolean isDictionaryEmpty = false;
 
+  // Check directory hierarchy first
+  /* defaultsPath = CFURLGetString(WMUserDefaultsCopyURLForDomain(domainName)); */
+  defaultsPath = CFURLCopyFileSystemPath(WMUserDefaultsCopyURLForDomain(CFSTR("")),
+                                         kCFURLPOSIXPathStyle);
+  WMLogError("Check if user defaults path exists: %@", defaultsPath);
+  defaults_path = WMUserDefaultsGetCString(defaultsPath, kCFStringEncodingUTF8);
+  isPathGood = WMCreateDirectoriesAtPath(defaults_path);
+  free((void *)defaults_path);
+  CFRelease(defaultsPath);
+  if (isPathGood == false) {
+    WMLogError("Domain %@ write failed. User defaults path doesn't exist.", domainName);
+    return false;
+  }
+  
   osURL = WMUserDefaultsCopyURLForDomain(domainName);
   xmlURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
   CFRelease(osURL);

@@ -436,7 +436,7 @@ int WMCopyFile(const char *dest_dir, const char *src_file, const char *dest_file
   return 0;
 }
 
-Bool WMCreateDirectoriesAtPath(const char *path)
+Boolean WMCreateDirectoriesAtPath(const char *path)
 {
   char *thePath = NULL, buf[1024];
   size_t p, plen;
