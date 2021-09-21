@@ -845,10 +845,18 @@ void OpenMiniwindowMenu(WWindow * wwin, int x, int y)
 void DestroyWindowMenu(WScreen *scr)
 {
   if (scr->window_menu) {
-    scr->window_menu->entries[MC_MINIATURIZE]->text = NULL;
-    scr->window_menu->entries[MC_MAXIMIZE]->text = NULL;
-    scr->window_menu->entries[MC_SHADE]->text = NULL;
-    scr->window_menu->entries[MC_SELECT]->text = NULL;
+    if (scr->window_menu->entries[MC_MINIATURIZE]) {
+      scr->window_menu->entries[MC_MINIATURIZE]->text = NULL;
+    }
+    if (scr->window_menu->entries[MC_MAXIMIZE]) {
+      scr->window_menu->entries[MC_MAXIMIZE]->text = NULL;
+    }
+    if (scr->window_menu->entries[MC_SHADE]) {
+      scr->window_menu->entries[MC_SHADE]->text = NULL;
+    }
+    if (scr->window_menu->entries[MC_SELECT]) {
+      scr->window_menu->entries[MC_SELECT]->text = NULL;
+    }
     wMenuDestroy(scr->window_menu, True);
     scr->window_menu = NULL;
   }
