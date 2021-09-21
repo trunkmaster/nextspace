@@ -19,6 +19,9 @@ Patch1:		CF_centos7.patch
 %endif
 Patch2:		CFFileDescriptor.patch
 Patch3:		CFNotificationCenter.patch
+%if 0%{?rhel} || 0%{?fedora} < 34
+Patch4:		CFString_centos.patch
+%endif
 
 %if 0%{?el7}
 BuildRequires:	cmake3
@@ -61,6 +64,9 @@ Development header files for CoreFoundation framework.
 %endif
 %patch2 -p1
 %patch3 -p1
+%if 0%{?rhel} || 0%{?fedora} < 34
+%patch4 -p1
+%endif
 cp %{_sourcedir}/CFNotificationCenter.c CoreFoundation/AppServices.subproj/
 cp %{_sourcedir}/CFFileDescriptor.h CoreFoundation/RunLoop.subproj/
 cp %{_sourcedir}/CFFileDescriptor.c CoreFoundation/RunLoop.subproj/
