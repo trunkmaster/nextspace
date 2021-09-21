@@ -1727,7 +1727,9 @@ void wSelectWindow(WWindow *wwin, Bool flag)
 
     if (scr->selected_windows) {
       CFIndex idx;
-      idx = CFArrayGetFirstIndexOfValue(scr->selected_windows, CFRangeMake(0,0), wwin);
+      idx = CFArrayGetFirstIndexOfValue(scr->selected_windows,
+                                        CFRangeMake(0, CFArrayGetCount(scr->selected_windows)),
+                                        wwin);
       if (idx != kCFNotFound) {
         CFArrayRemoveValueAtIndex(scr->selected_windows, idx);
       }

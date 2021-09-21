@@ -175,7 +175,8 @@ static void wdelete_death_handler(WMagicNumber id)
   if (!handler || !deathHandlers)
     return;
 
-  idx = CFArrayGetFirstIndexOfValue(deathHandlers, CFRangeMake(0,0), handler);
+  idx = CFArrayGetFirstIndexOfValue(deathHandlers, CFRangeMake(0, CFArrayGetCount(deathHandlers)),
+                                    handler);
   if (idx != kCFNotFound) {
     CFArrayRemoveValueAtIndex(deathHandlers, idx);
     free(handler);

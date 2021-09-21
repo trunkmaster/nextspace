@@ -456,23 +456,23 @@ WSwitchPanel *wInitSwitchPanel(WScreen *scr, WWindow *curwin, Bool class_only)
   WWindow *wwin;
   WSwitchPanel *panel = wmalloc(sizeof(WSwitchPanel));
   WMFrame *viewport;
-  int i, width, height, iconsThatFitCount, count;
+  int i, width, height, iconsThatFitCount, win_count;
   WMRect rect = wGetRectForHead(scr, wGetHeadForPointerLocation(scr));
 
   panel->scr = scr;
   panel->windows = makeWindowListArray(scr, wPreferences.swtileImage != NULL, class_only);
-  count = CFArrayGetCount(panel->windows);
-  if (count)
-    panel->flags = makeWindowFlagsArray(count);
+  win_count = CFArrayGetCount(panel->windows);
+  if (win_count)
+    panel->flags = makeWindowFlagsArray(win_count);
 
-  if (count == 0) {
+  if (win_count == 0) {
     CFRelease(panel->windows);
     wfree(panel);
     return NULL;
   }
 
-  width = ICON_TILE_SIZE * count;
-  iconsThatFitCount = count;
+  width = ICON_TILE_SIZE * win_count;
+  iconsThatFitCount = win_count;
 
   if (width > rect.size.width) {
     iconsThatFitCount = (rect.size.width - SCREEN_BORDER_SPACING) / ICON_TILE_SIZE;
@@ -505,8 +505,8 @@ WSwitchPanel *wInitSwitchPanel(WScreen *scr, WWindow *curwin, Bool class_only)
 
   panel->white = WMWhiteColor(scr->wmscreen);
   panel->font = WMBoldSystemFontOfSize(scr->wmscreen, 12);
-  panel->icons = CFArrayCreateMutable(kCFAllocatorDefault, count, NULL);
-  panel->images = CFArrayCreateMutable(kCFAllocatorDefault, count, NULL);
+  panel->icons = CFArrayCreateMutable(kCFAllocatorDefault, win_count, NULL);
+  panel->images = CFArrayCreateMutable(kCFAllocatorDefault, win_count, NULL);
 
   panel->win = WMCreateWindow(scr->wmscreen);
 
@@ -537,7 +537,7 @@ WSwitchPanel *wInitSwitchPanel(WScreen *scr, WWindow *curwin, Bool class_only)
 
   panel->iconBox = WMCreateFrame(viewport);
   WMMoveWidget(panel->iconBox, 0, 0);
-  WMResizeWidget(panel->iconBox, ICON_TILE_SIZE * count, ICON_TILE_SIZE);
+  WMResizeWidget(panel->iconBox, ICON_TILE_SIZE * win_count, ICON_TILE_SIZE);
   WMSetFrameRelief(panel->iconBox, WRFlat);
 
   for (i = 0; i < CFArrayGetCount(panel->windows); i++) {
@@ -548,7 +548,7 @@ WSwitchPanel *wInitSwitchPanel(WScreen *scr, WWindow *curwin, Bool class_only)
   WMMapSubwidgets(panel->win);
   WMRealizeWidget(panel->win);
 
-  for (i = 0; i < CFArrayGetCount(panel->windows); i++) {
+  for (i = 0; i < win_count; i++) {
     wwin = (WWindow *)CFArrayGetValueAtIndex(panel->windows, i);
     changeImage(panel, i, 0, False, True);
   }
@@ -571,17 +571,18 @@ WSwitchPanel *wInitSwitchPanel(WScreen *scr, WWindow *curwin, Bool class_only)
       XFreePixmap(dpy, mask);
   }
 
-  {
+  if (panel->win) {
     WMPoint center;
     center = wGetPointToCenterRectInHead(scr, wGetHeadForPointerLocation(scr),
                                          width + 2 * BORDER_SPACE, height + 2 * BORDER_SPACE);
     WMMoveWidget(panel->win, center.x, center.y);
   }
 
-  {
-    panel->current = CFArrayGetFirstIndexOfValue(panel->windows, CFRangeMake(0,0), curwin);
-    if (panel->current >= 0)
+  if (win_count > 0) {
+    panel->current = CFArrayGetFirstIndexOfValue(panel->windows, CFRangeMake(0, win_count), curwin);
+    if (panel->current >= 0) {
       changeImage(panel, panel->current, 1, False, False);
+    }
   }
 
   WMMapWidget(panel->win);
@@ -655,7 +656,7 @@ WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimi
   int i;
   Bool dim = False;
 
-  if (count == 0)
+  if (count == 0 || orig < 0)
     return NULL;
 
   if (!wPreferences.cycle_ignore_minimized)

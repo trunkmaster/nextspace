@@ -178,7 +178,7 @@ WWindow *wWindowCreate(void)
 
 void wWindowDestroy(WWindow *wwin)
 {
-  int i;
+  int i, win_count;
   CFIndex idx;
 
   if (wwin->screen_ptr->cmap_window == wwin)
@@ -193,8 +193,9 @@ void wWindowDestroy(WWindow *wwin)
     if (!wwin->screen_ptr->shortcutWindows[i])
       continue;
 
+    win_count = CFArrayGetCount(wwin->screen_ptr->shortcutWindows[i]);
     idx = CFArrayGetFirstIndexOfValue(wwin->screen_ptr->shortcutWindows[i],
-                                      CFRangeMake(0,0), wwin);
+                                      CFRangeMake(0, win_count), wwin);
     if (idx != kCFNotFound) {
       CFArrayRemoveValueAtIndex(wwin->screen_ptr->shortcutWindows[i], idx);
     }
@@ -2415,9 +2416,13 @@ void wWindowSaveState(WWindow *wwin)
   }
 
   for (i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
-    if (wwin->screen_ptr->shortcutWindows[i] &&
-        CFArrayGetCountOfValue(wwin->screen_ptr->shortcutWindows[i], CFRangeMake(0,0), wwin))
-      data[9] |= 1 << i;
+    if (wwin->screen_ptr->shortcutWindows[i]) {
+      int win_count = CFArrayGetCount(wwin->screen_ptr->shortcutWindows[i]);
+      if (CFArrayGetCountOfValue(wwin->screen_ptr->shortcutWindows[i],
+                                 CFRangeMake(0, win_count), wwin)) {
+        data[9] |= 1 << i;
+      }
+    }
   }
 
   XChangeProperty(dpy, wwin->client_win, w_global.atom.wmaker.state,

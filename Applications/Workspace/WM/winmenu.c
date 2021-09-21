@@ -413,12 +413,16 @@ static void updateMakeShortcutMenu(WMenu * menu, WWindow * wwin)
 
     if (!shortSelWindows) {
       entry->flags.indicator_on = 0;
-    } else {
+    }
+    else {
       entry->flags.indicator_on = 1;
-      if (CFArrayGetCountOfValue(shortSelWindows, CFRangeMake(0, 0), wwin))
+      if (CFArrayGetCountOfValue(shortSelWindows, CFRangeMake(0, CFArrayGetCount(shortSelWindows)),
+                                 wwin)) {
         entry->flags.indicator_type = MI_DIAMOND;
-      else
+      }
+      else {
         entry->flags.indicator_type = MI_CHECK;
+      }
     }
 
     if (strcmp(buffer, entry->text) != 0) {

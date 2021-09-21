@@ -202,7 +202,9 @@ static CFTypeRef makeWindowState(WWindow *wwin, WApplication *wapp)
     
     for (mask = 0, i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
       if (scr->shortcutWindows[i] != NULL &&
-          CFArrayGetFirstIndexOfValue(scr->shortcutWindows[i], CFRangeMake(0,0), wwin) != kCFNotFound)
+          CFArrayGetFirstIndexOfValue(scr->shortcutWindows[i],
+                                      CFRangeMake(0, CFArrayGetCount(scr->shortcutWindows[i])),
+                                      wwin) != kCFNotFound)
         mask |= 1 << i;
     }
 
