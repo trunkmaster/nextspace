@@ -51,7 +51,11 @@ Requires:	xorg-x11-drv-vesa
 Requires:	xorg-x11-drv-synaptics
 Requires:	xorg-x11-server-Xorg
 Requires:	xorg-x11-server-utils
+%if 0%{?rhel} || 0%{?fedora} < 34
 Requires:	xorg-x11-xkb-utils
+%else
+Requires:	setxkbmap
+%endif
 Requires:	xorg-x11-fonts-100dpi
 Requires:	xorg-x11-fonts-misc
 Requires:	mesa-dri-drivers
