@@ -666,6 +666,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     }
   }
 
+  // Update Services
+  NSUpdateDynamicServices();
+  
   // Detect lid close/open events
   systemPower = [OSEPower new];
   [systemPower startEventsMonitor];
@@ -700,7 +703,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   NSUserDefaults       *df = [NSUserDefaults standardUserDefaults];
   
   // Services
-  //NSUpdateDynamicServices();
   [NSApp setServicesProvider:self];
 
   // Initialize private NSWorkspace implementation
