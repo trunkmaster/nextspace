@@ -279,10 +279,10 @@ Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
   Boolean isDictionaryEmpty = false;
 
   // Check directory hierarchy first
-  /* defaultsPath = CFURLGetString(WMUserDefaultsCopyURLForDomain(domainName)); */
-  defaultsPath = CFURLCopyFileSystemPath(WMUserDefaultsCopyURLForDomain(CFSTR("")),
-                                         kCFURLPOSIXPathStyle);
-  WMLogError("Check if user defaults path exists: %@", defaultsPath);
+  osURL = WMUserDefaultsCopyURLForDomain(CFSTR(""));
+  defaultsPath = CFURLCopyPath(osURL);
+  CFRelease(osURL);
+
   defaults_path = WMUserDefaultsGetCString(defaultsPath, kCFStringEncodingUTF8);
   isPathGood = WMCreateDirectoriesAtPath(defaults_path);
   free((void *)defaults_path);
@@ -296,7 +296,7 @@ Boolean WMUserDefaultsWrite(CFTypeRef dictionary, CFStringRef domainName)
   xmlURL = CFURLCreateCopyAppendingPathExtension(kCFAllocatorDefault, osURL, CFSTR("plist"));
   CFRelease(osURL);
 
-  WMLogError("about to write property list to %@", xmlURL);
+  /* WMLogError("about to write property list to %@", xmlURL); */
   
   if (dictionary == NULL) {
     WMLogError("cannot write a NULL property list to %@", xmlURL);
