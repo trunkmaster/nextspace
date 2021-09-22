@@ -1,7 +1,7 @@
 Name:		libdispatch
 Epoch:		2
 Version:	5.4.2
-Release:	0%{?dist}
+Release:	1%{?dist}
 Summary:	Grand Central Dispatch (GCD or libdispatch).
 License:	Apache 2.0
 URL:		https://github.com/apple/swift-corelibs-libdispatch
@@ -68,6 +68,7 @@ cmake .. \
     -DCMAKE_CXX_COMPILER=clang++ \
     -DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
     -DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
+    -DCMAKE_INSTALL_MANDIR=/usr/NextSpace/Documentation/man \
     -DINSTALL_PRIVATE_HEADERS=YES \
     -DBUILD_TESTING=OFF \
     -DCMAKE_BUILD_TYPE=Debug
@@ -86,9 +87,12 @@ rm %{buildroot}/usr/NextSpace/include/Block_private.h
 
 %files devel
 /usr/NextSpace/include/
-/usr/NextSpace/share/man/
+/usr/NextSpace/Documentation/
 
 %changelog
+* Wed Sep 22 2021 Sergii Stoian <stoyan255@gmail.com> - 5.4.2-1
+  Install man pages into Documentaion directory.
+
 * Tue Aug 3 2021 Sergii Stoian <stoyan255@gmail.com> - 5.4.2
   Use version 5.4.2 from Swift repo for CentOS 7.
 
