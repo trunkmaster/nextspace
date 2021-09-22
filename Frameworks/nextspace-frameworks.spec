@@ -122,7 +122,8 @@ cd ..
 #%pre
 
 %post
-ldconfig
+/bin/ln -s /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/25-nextspace-fonts.conf /etc/fonts/conf.d/25-nextspace-fonts.conf
+/sbin/ldconfig
 
 #
 # Package removal
@@ -130,7 +131,8 @@ ldconfig
 #%preun
 
 %postun
-ldconfig
+/bin/rm /etc/fonts/conf.d/25-nextspace-fonts.conf
+/sbin/ldconfig
 
 %changelog
 * Fri May 22 2020 Sergii Stoian <stoyan255@gmail.com> - 0.90-2

@@ -66,7 +66,8 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 $(FRAMEWORK_NAME)_RESOURCE_FILES = \
 	Resources/Images \
 	Resources/Fonts \
-	Resources/Sounds
+	Resources/Sounds \
+	Resources/25-nextspace-fonts.conf
 
 $(FRAMEWORK_NAME)_LOCALIZED_RESOURCE_FILES = clockbits.tiff \
 	NXTAlertPanel.gorm \
