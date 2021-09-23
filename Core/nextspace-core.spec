@@ -4,7 +4,7 @@
 
 Name:		nextspace-core
 Version:	0.95
-Release:	11%{?dist}
+Release:	12%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		http://github.com/trunkmaster/nextspace
@@ -145,6 +145,9 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Wed Sep 22 2021 Sergii Stoian <stoyan255@gmail.com> - 0.95-12
+- Fontconfig configuration was made systemwide (link in /etc/fonts/conf.d).
+
 * Fri Jun 12 2020 Sergii Stoian <stoyan255@gmail.com> - 0.95-11
 - Added new files - /Library - contains GlobalDefaults.
 
