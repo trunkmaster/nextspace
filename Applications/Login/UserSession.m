@@ -231,7 +231,7 @@
           status = WEXITSTATUS(status);
         }
         else if (WIFSIGNALED(status)) {
-          fprintf(stderr, "[launchCommand] %s KILLED with signal %d\n", 
+          fprintf(stderr, "[launchCommand] %s KILLED with signal %d",
                   executable, WTERMSIG(status));
           if (WCOREDUMP(status)) {
             fprintf(stderr, " (CORE DUMPED)\n");
@@ -239,16 +239,15 @@
           else {
             fprintf(stderr, "\n");
           }
-          status = 1;
+          status = WTERMSIG(status);
         }
         else if (WIFSTOPPED(status)) {
           fprintf(stderr, "[launchCommand] %s is STOPPED\n", executable);
-          status = 1;
+          status = 0;
         }
         else {
-          fprintf(stderr, "[launchCommand] %s finished with exit code %i\n", 
-                  executable, status);
-          status = 1;
+          fprintf(stderr, "[launchCommand] %s finished with exit code %i\n",  executable, status);
+          status = 0;
         }
       }
       break;
@@ -330,7 +329,7 @@
       command = [scriptCommand objectAtIndex:0];
       if (command == nil || [command isEqualToString:@""])
         continue;
-      NSLog(@"SESSION: starting command %@", command);
+      NSLog(@"SESSION: %@", scriptCommand);
     }
 
     ret = [self launchCommand:scriptCommand
@@ -339,14 +338,15 @@
     if (firstCommand != NO) {
       firstCommand = NO;
     }
-    // Treat exit code of Workspace specially (LoginExitCode in Controller.h)
-    if ([[[scriptCommand objectAtIndex:0] lastPathComponent] isEqualToString:@"Workspace"]) {
-      _exitStatus = (NSInteger)ret;
-    }
-    // if (ret != 0) {
-    //   NSLog(@"Error launching session script command %@", command);
-    //   break;
-    // }
+    // If any of the command in session script finished with error
+    // we should leave info for the Controller.
+    _exitStatus |= (NSInteger)ret;
+
+    if (ret == SIGABRT) {
+       NSLog(@"Command %@ was aborted (SIGABRT). Interrupting session script launch sequence...",
+             scriptCommand);
+       break;
+     }
   }
 }
 
