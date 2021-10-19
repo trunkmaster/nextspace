@@ -5,8 +5,9 @@
 - back-art: removed WindowMaker appicon hack.
 - libfoundation: new library derived from Apple Core Foundation with added CFNotificationCenter and CFFileDescriptor implementations.
 
-Terminal
+Applications
 ---
+### Terminal
 - "Paste Selection" menu item was implemented in Terminal.
 - Unblock signals when launching apps from the dock.
 - Added support for setting title via xterm escape sequence.
@@ -14,8 +15,7 @@ Terminal
 - Use shell configured in preferences if "Default Shell" option was set.
 - Terminal Services: wait for background task until exit before output data processing.
 
-Workspace
----
+### Workspace
 - Launching icon fixes.
 - "Open in Workspace" service was implemented (thanks to OnFlApp)
 - Do not show keyboard layout value if single keyboard layout is used
@@ -30,9 +30,8 @@ Workspace
   - use CFPropertyList to handle WM configuration files (defaults);
   - track for changes each configuration file individually;
   - all static function were prefixed with underscore;
-  - all functions across WM were renamed to w<Object><Action> style;
+  - all functions across WM were renamed to w\<Object\>\<Action\> style;
   - added experimental bridge between AppKit and CoreFoundation notification centers (potentially it may be used for communication between applications and window manager)
-
 
 # Release 0.90
 
