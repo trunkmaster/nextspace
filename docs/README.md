@@ -1,3 +1,39 @@
+# Release 0.91
+
+- NXTSavePanel: center panel on display if there's no saved frame yet.
+- SELinux modules were added.
+- back-art: removed WindowMaker appicon hack.
+- libfoundation: new library derived from Apple Core Foundation with added CFNotificationCenter and CFFileDescriptor implementations.
+
+Terminal
+---
+- "Paste Selection" menu item was implemented in Terminal.
+- Unblock signals when launching apps from the dock.
+- Added support for setting title via xterm escape sequence.
+- Quit alert panel now conforms to OpenStep UI guidelines.
+- Use shell configured in preferences if "Default Shell" option was set.
+- Terminal Services: wait for background task until exit before output data processing.
+
+Workspace
+---
+- Launching icon fixes.
+- "Open in Workspace" service was implemented (thanks to OnFlApp)
+- Do not show keyboard layout value if single keyboard layout is used
+- Another portion of focus handling related fixes and optimizations.
+- Implemented custom 'Hide' menu item action - all windows are hidden, Workspace menu stays on screen, application remains active
+- Sanity check was added to prevent appearance of "BadMatch (invalid parameter attributes)" errors
+- Huge refactoring of Worksapce/WM code (for short: most part of the WINGs was replaced with CoreFoundation): 
+  - use CoreFoundation for data handling instead of WINGs;
+  - event handling loop now is non-blocking (used CFRunLoop and CFFileDescriptor for X11 events monitoring);
+  - all notifications inside WM now implemented using CoreFoundation's notifications and notification center;
+  - use CFRunLoop timers for mouse tracking, balloon and workspace name appearance handling;
+  - use CFPropertyList to handle WM configuration files (defaults);
+  - track for changes each configuration file individually;
+  - all static function were prefixed with underscore;
+  - all functions across WM were renamed to w<Object><Action> style;
+  - added experimental bridge between AppKit and CoreFoundation notification centers (potentially it may be used for communication between applications and window manager)
+
+
 # Release 0.90
 
 General
