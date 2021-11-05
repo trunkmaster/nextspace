@@ -39,10 +39,10 @@
 // 11 - shutdown
 // 12 - reboot
 typedef enum {
-  QuitExitCode = 10,
-  ShutdownExitCode = 11,
-  RebootExitCode = 12,
-  UpdateExitCode = 13
+  QuitExitCode     = 128,
+  ShutdownExitCode = 129,
+  RebootExitCode   = 130,
+  UpdateExitCode   = 131
 } LoginExitCode;
 
 extern LoginExitCode panelExitCode;
