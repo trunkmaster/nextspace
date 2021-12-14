@@ -2469,27 +2469,33 @@ static int handled_mask = (NSDragOperationCopy |
 
   NSDebugLLog(@"dragndrop",@"performDrag %x %@",mask,types);
 
-  if (!(mask&handled_mask)) {
+  if (!(mask & handled_mask)) {
     return NO;
   }
 
   if ([types containsObject:NSFilenamesPboardType]) {
-      NSArray *data;
-      int     i,c;
+    NSArray *data;
+    int     i,c;
 
-      data=[pb propertyListForType:NSFilenamesPboardType];
-      if (!data) {
-        data = [NSUnarchiver
-                 unarchiveObjectWithData:[pb dataForType:NSFilenamesPboardType]];
-      }
-
-      c = [data count];
-      for (i = 0; i < c; i++) {
-        [tp sendString:@" "];
-        [tp sendString:[data objectAtIndex:i]];
-      }
-      return YES;
+    data = [pb propertyListForType:NSFilenamesPboardType];
+    if (!data) {
+      data = [NSUnarchiver unarchiveObjectWithData:[pb dataForType:NSFilenamesPboardType]];
     }
+
+    // Insert space if previous character is not space
+    if (SCREEN(cursor_x - 1, cursor_y).ch != ' ') {
+      [tp sendString:@" "];
+    }
+
+    c = [data count];
+    for (i = 0; i < c; i++) {
+      [tp sendString:[data objectAtIndex:i]];
+      if (i < (c - 1)) {
+        [tp sendString:@" "];
+      }
+    }
+    return YES;
+  }
 
   if ([types containsObject:NSStringPboardType]) {
     NSString *str = [pb stringForType:NSStringPboardType];
