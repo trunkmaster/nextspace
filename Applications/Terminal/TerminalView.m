@@ -390,8 +390,9 @@ NSString *TerminalViewSizeDidChangeNotification=@"TerminalViewSizeDidChange";
 
 static int total_draw = 0;
 
-static const float col_h[8]={  0, 240, 120, 180,   0, 300,  30,   0};
-static const float col_s[8]={0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0};
+static const float color_h[8]={  0, 240, 120, 180,   0, 300,  30,   0};
+static const float color_s[8]={0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0};
+static const float color_b[8]={0.0, 1.0, 0.6, 0.6, 1.0, 1.0, 1.0, 0.7};
 // color values:
 // 	0 - black		"\e[30"
 // 	1 - blue		"\e[34"
@@ -408,7 +409,7 @@ static const float col_s[8]={0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0};
 static void set_background(NSGraphicsContext *gc,
                            unsigned char color,
                            unsigned char in,
-                           BOOL blackOnWhite)
+                           BOOL lightBackground)
 {
   float bh, bs, bb;    // hue, saturation, brightness
   int   bg = color>>4;
@@ -419,20 +420,19 @@ static void set_background(NSGraphicsContext *gc,
       bg -= 8;
   
   if (bg == 0)
-    bb = blackOnWhite ? 1.0 : 0.0;
+    bb = lightBackground ? 1.0 : 0.0;
   else
     bb = 0.6;
   
-  bs = col_s[bg];
-  bh = col_h[bg] / 360.0;
+  bs = color_s[bg];
+  bh = color_h[bg] / 360.0;
 
   DPSsethsbcolor(gc,bh,bs,bb);
 }
 
 static void set_foreground(NSGraphicsContext *gc,
                            unsigned char color,
-                           unsigned char intensity,
-                           BOOL blackOnWhite)
+                           unsigned char intensity)
 {
   int   fg = color;
   float h,s,b = 1.0;
@@ -440,40 +440,46 @@ static void set_foreground(NSGraphicsContext *gc,
   // fprintf(stderr, "set_foreground: %i intensity: %i invert:%s \n",
   //         color, intensity, blackOnWhite ? "YES" : "NO");
 
-  if (fg >= 8) fg -= 8;
+  if (fg >= 8) {
+    fg -= 8;
+  }
 
   // Colors
   // Here 'blackOnWhite' was set to YES if:
   // - window background is light;
   // - FG == BG
   // - FG == 7, BG == 0
-  if (blackOnWhite)
-    {
-      if (color == 0) // Black becomes white
-        fg = 7;
-      else if (color == 7)  // White becomes black
-        fg = 0;
-      else  // Other colors are saturated
-        intensity = 0;
-    }
-  else if (fg == 7)
-    b = 0.6;
+  // if (lightBackground) {
+  //   if (fg == 0) // Black becomes white
+  //     fg = 7;
+  //   else if (fg == 7)  // White becomes black
+  //     fg = 0;
+  //   else  // Other colors are half-bright
+  //     intensity = 0;
+  // }
+  
+  // Hue
+  h = color_h[fg]/360.0;
+
+  // Saturation
+  s = color_s[fg];
+  // if (intensity == 2)
+  //   s *= 0.5;
   
   // Brightness
+  if (intensity == 0) // half-bright
+    b = color_b[fg] * 0.5;
+  else if (intensity == 1) // normal
+    b = color_b[fg] * 0.8;
+  else if (intensity == 2) // bold
+    b = color_b[fg];
+
   if (fg == 0) // black not matter what intensity is
     b = 0.0;
   else if (intensity == 2) // bold
-    b = 1.0;
+    b = color_b[fg];
   else if (intensity == 0) // half-bright
-    b *= 0.8;
-
-  // Hue
-  h = col_h[fg]/360.0;
-
-  // Saturation
-  s = col_s[fg];
-  if (intensity == 2)
-    s *= 0.5;
+    b *= color_b[fg] * 0.8;
   
   DPSsethsbcolor(gc, h, s, b);
 }
@@ -548,27 +554,30 @@ static void set_foreground(NSGraphicsContext *gc,
   {
     float a,b;
       
-    if (r.origin.x<border_x)
-      DPSrectfill(cur,r.origin.x,r.origin.y,border_x-r.origin.x,r.size.height);
-    if (r.origin.y<border_y)
-      DPSrectfill(cur,r.origin.x,r.origin.y,r.size.width,border_y-r.origin.y);
+    if (r.origin.x < border_x) {
+      DPSrectfill(cur, r.origin.x, r.origin.y, border_x - r.origin.x, r.size.height);
+    }
+    if (r.origin.y<border_y) {
+      DPSrectfill(cur, r.origin.x, r.origin.y, r.size.width, border_y - r.origin.y);
+    }
 
-    a=border_x+sx*fx;
-    b=r.origin.x+r.size.width;
-    if (b>a)
-      DPSrectfill(cur,a,r.origin.y,b-a,r.size.height);
-    a=border_y+sy*fy;
-    b=r.origin.y+r.size.height;
-    if (b>a)
-      DPSrectfill(cur,r.origin.x,a,r.size.width,b-a);
+    a = border_x + sx * fx;
+    b = r.origin.x + r.size.width;
+    if (b > a) {
+      DPSrectfill(cur, a, r.origin.y, b - a, r.size.height);
+    }
+    a = border_y + sy * fy;
+    b = r.origin.y + r.size.height;
+    if (b > a) {
+      DPSrectfill(cur, r.origin.x, a, r.size.width, b - a);
+    }
   }
   
   /* draw vertical black line next after scrollbar */
-  if ((max_scrollback > 0) && (r.origin.x < border_x))
-    {
-      DPSsetgray(cur,0.0);
-      DPSrectfill(cur,r.origin.x,r.origin.y,r.origin.x+1,r.size.height);
-    }
+  if ((max_scrollback > 0) && (r.origin.x < border_x)) {
+    DPSsetgray(cur, 0.0);
+    DPSrectfill(cur, r.origin.x, r.origin.y, r.origin.x + 1, r.size.height);
+  }
 
   /* figure out what character cells might need redrawing */
   r.origin.x -= border_x;
@@ -586,367 +595,316 @@ static void set_foreground(NSGraphicsContext *gc,
   if (y0 < 0) y0 = 0;
   if (y1 >= sy) y1 = sy;
 
-  NSDebugLLog(@"draw",@"dirty (%i %i)-(%i %i)\n",x0,y0,x1,y1);
+  NSDebugLLog(@"draw", @"dirty (%i %i)-(%i %i)\n", x0, y0, x1, y1);
 
-  draw_cursor = draw_cursor || draw_all ||
-    (SCREEN(cursor_x,cursor_y).attr&0x80) != 0;
+  draw_cursor = draw_cursor || draw_all || (SCREEN(cursor_x, cursor_y).attr & 0x80) != 0;
 
   {
     int ry;
     screen_char_t *ch;
-    float scr_y,scr_x,start_x;
+    float scr_y, scr_x, start_x;
 
     /* setting the color is slow, so we try to avoid it */
-    unsigned char l_color,color,l_attr;
+    unsigned char last_color, color, last_attr;
 
-    /* Fill the background of dirty cells. Since the background doesn't
-       change that often, runs of dirty cells with the same background color
-       are combined and drawn with a single rectfill. */
-    l_color = -1;
-    l_attr = 0;
-    DPSsethsbcolor(cur, WIN_BG_H, WIN_BG_S, WIN_BG_B);
-    blackOnWhite = (WIN_BG_B > 0.5) ? YES : NO;
-    
-#define R(scr_x,scr_y,fx,fy) DPSrectfill(cur,scr_x,scr_y,fx,fy)
+#define R(scr_x, scr_y, fx, fy) DPSrectfill(cur, scr_x, scr_y, fx, fy)
 
     /* Legend:
-      l_color - last used color in loop
-      color - local temporary color varialble
-      ch->color - 8-bit color value which holds: FG (4 lower) and BG (4 higher)
-      ch->color>>4   - returns BG color in range 0-15
-      ch->color&0xf0 - returns BG color in range 16-255
-      ch->color&0x0f - returns FG color in range 0-15
+       last_color - last used color in loop
+       last_attr  - last used attributes in loop
+       color      - local temporary color varialble
+       ch->color - 8-bit color value which holds: FG (4 lower) and BG (4 higher)
+       ch->color >> 4   - returns BG color in range 0-15
+       ch->color & 0xf0 - returns BG color in range 16-255
+       ch->color & 0x0f - returns FG color in range 0-15
     */
     
 //------------------- BACKGROUND ------------------------------------------------
-    for (iy = y0; iy < y1; iy++)
-      {
-        ry = iy + current_scroll;
-        if (ry >= 0)
-          ch = &SCREEN(x0,ry);
-        else
-          ch = &sbuf[x0 + (max_scrollback + ry) * sx];
+    last_color = -1;
+    last_attr = 0;
+    DPSsethsbcolor(cur, WIN_BG_H, WIN_BG_S, WIN_BG_B);
+    /* Fill the background of dirty cells. Since the background doesn't
+       change that often, runs of dirty cells with the same background color
+       are combined and drawn with a single rectfill. */
+    for (iy = y0; iy < y1; iy++) {
+      ry = iy + current_scroll;
+      if (ry >= 0) {
+        ch = &SCREEN(x0,ry);
+      } else {
+        ch = &sbuf[x0 + (max_scrollback + ry) * sx];
+      }
 
-        scr_y = (sy - 1 - iy) * fy + border_y;
+      scr_y = (sy - 1 - iy) * fy + border_y;
 
-        /* ~400 cycles/cell on average */
-        start_x = -1;
-        for (ix = x0; ix < x1; ix++,ch++)
-          {
-            /* no need to draw && not dirty */
-            if (!draw_all && !(ch->attr & 0x80))
-              {
-                if (start_x != -1)
-                  {
-                    scr_x = ix * fx + border_x;
-                    R(start_x,scr_y,scr_x-start_x,fy);
-                    start_x = -1;
-                  }
-                continue;
-              }
-
-            scr_x = ix * fx + border_x;
-
-            if (ch->attr & 0x8) //------------------------------------ BG INVERSE
-              {
-                color = ch->color & 0x0f;
-                if (ch->attr & 0x40) color ^= 0xf0;
-                
-                if (color != l_color || ch->attr != l_attr)
-                  {
-                    if (start_x != -1)
-                      {
-                        R(start_x,scr_y,scr_x-start_x,fy);
-                        start_x=scr_x;
-                      }
-
-                    l_color = color;
-                    l_attr = ch->attr;
-                    
-                    // fprintf(stderr,
-                    //         "'%c' BG INVERSE color: %i (%i)"
-                    //         " attrs: %i (in:%i sel:%i)"
-                    //         " FG: %i BG: %i\n",
-                    //         ch->ch, ch->color, l_color,
-                    //         ch->attr, l_attr & 0x03, l_attr & 0x40,
-                    //         (ch->color & 0x0f), (ch->color>>4));
-                    
-                    if (ch->attr & 0x40) // selection
-                      {
-                        // fprintf(stderr, "'%c' \tBG INVERSE: setting WIN_SEL\n", ch->ch);
-                        DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
-                      }
-                    else if ((ch->color & 0x0f) == 15 &&  // default foreground
-                             (ch->color>>4) == 15)        // default background
-                      {
-                        // fprintf(stderr, "'%c' \tBG INVERSE: setting INV_BG\n", ch->ch);
-                        DPSsethsbcolor(cur,INV_BG_H,INV_BG_S,INV_BG_B);
-                      }
-                    else
-                      { // example: 'top' command column header background
-                        set_foreground(cur, l_color, l_attr & 0x03, NO);
-                      }
-                  }
-              }
-            else //---------------------------------------------------- BG NORMAL
-              {
-                color = ch->color & 0xf0;
-                if (ch->attr & 0x40) color ^= 0xf0; // selected
-                
-                if (color != l_color || ch->attr != l_attr)
-                  {
-                    if (start_x != -1)
-                      {
-                        R(start_x,scr_y,scr_x-start_x,fy);
-                        start_x = scr_x;
-                      }
-
-                    l_color = color;
-                    l_attr = ch->attr;
-
-                    // fprintf(stderr,
-                    //         "'%c' BG NORMAL color: %i (%i) attrs: %i (in:%i sel:%i)"
-                    //         " FG: %i BG: %i\n",
-                    //         ch->ch, ch->color, l_color, ch->attr, l_attr & 0x03,(ch->attr & 0x40),
-                    //         (ch->color & 0x0f), (ch->color>>4));
-
-                    // Window was resized and added empty chars have no attributes.
-                    // Set FG and BG to default values
-                    if ((color == 0 && (ch->color>>4) == 0) && ch->ch == 0)
-                      {
-                        ch->color = 255; // default FG/BG
-                        l_color = color = ch->color & 0xf0;
-                      }
-                    
-                    if (ch->attr & 0x40) // selection BG
-                      {
-                        // fprintf(stderr, "'%c' \tBG NORMAL: setting WIN_SEL\n", ch->ch);
-                        DPSsethsbcolor(cur, WIN_SEL_H, WIN_SEL_S, WIN_SEL_B);
-                      }
-                    else if ((ch->color>>4) == 15) // default BG
-                      {
-                        // fprintf(stderr, "'%c' \tBG NORMAL: setting WIN_BG\n", ch->ch);
-                        DPSsethsbcolor(cur, WIN_BG_H, WIN_BG_S, WIN_BG_B);
-                      }
-                    else
-                      {
-                        set_background(cur, l_color, l_attr & 0x03, NO);
-                      }
-                  }
-              }
-
-            if (start_x == -1)
-              start_x = scr_x;
-          }
-
-        if (start_x != -1)
-          {
+      /* ~400 cycles/cell on average */
+      start_x = -1;
+      for (ix = x0; ix < x1; ix++,ch++) {
+        /* no need to draw && not dirty */
+        if (!draw_all && !(ch->attr & 0x80)) {
+          if (start_x != -1) {
             scr_x = ix * fx + border_x;
             R(start_x, scr_y, scr_x - start_x, fy);
+            start_x = -1;
           }
+          continue;
+        }
+
+        scr_x = ix * fx + border_x;
+
+        if (ch->attr & 0x8) { //------------------------------------ BG INVERSE
+          color = ch->color & 0x0f;
+          if (ch->attr & 0x40) {
+            color ^= 0xf0;
+          }
+                
+          if (color != last_color || ch->attr != last_attr) {
+            if (start_x != -1) {
+              R(start_x, scr_y, scr_x - start_x, fy);
+              start_x = scr_x;
+            }
+
+            last_color = color;
+            last_attr = ch->attr;
+                    
+            // fprintf(stderr,
+            //         "'%c' BG INVERSE color: %i (%i)"
+            //         " attrs: %i (in:%i sel:%i)"
+            //         " FG: %i BG: %i\n",
+            //         ch->ch, ch->color, l_color,
+            //         ch->attr, l_attr & 0x03, l_attr & 0x40,
+            //         (ch->color & 0x0f), (ch->color>>4));
+                    
+            if (ch->attr & 0x40) { // selection
+              // fprintf(stderr, "'%c' \tBG INVERSE: setting WIN_SEL\n", ch->ch);
+              DPSsethsbcolor(cur,WIN_SEL_H,WIN_SEL_S,WIN_SEL_B);
+            } else if ((ch->color & 0x0f) == 15 &&  // default foreground
+                       (ch->color>>4) == 15) {      // default background
+              // fprintf(stderr, "'%c' \tBG INVERSE: setting INV_BG\n", ch->ch);
+              DPSsethsbcolor(cur,INV_BG_H,INV_BG_S,INV_BG_B);
+            } else { // example: 'top' command column header background
+              set_foreground(cur, last_color, last_attr & 0x03);
+            }
+          }
+        } else { //---------------------------------------------------- BG NORMAL
+          color = ch->color & 0xf0;
+          if (ch->attr & 0x40) {
+            color ^= 0xf0; // selected
+          }
+                
+          if (color != last_color || ch->attr != last_attr) {
+            if (start_x != -1) {
+              R(start_x, scr_y, scr_x - start_x, fy);
+              start_x = scr_x;
+            }
+
+            last_color = color;
+            last_attr = ch->attr;
+
+            // fprintf(stderr,
+            //         "'%c' BG NORMAL color: %i (%i) attrs: %i (in:%i sel:%i)"
+            //         " FG: %i BG: %i\n",
+            //         ch->ch, ch->color, l_color, ch->attr, l_attr & 0x03,(ch->attr & 0x40),
+            //         (ch->color & 0x0f), (ch->color>>4));
+
+            // Window was resized and added empty chars have no attributes.
+            // Set FG and BG to default values
+            if ((color == 0 && (ch->color>>4) == 0) && ch->ch == 0) {
+              ch->color = 255; // default FG/BG
+              last_color = color = ch->color & 0xf0;
+            }
+                    
+            if (ch->attr & 0x40) { // selection BG
+              // fprintf(stderr, "'%c' \tBG NORMAL: setting WIN_SEL\n", ch->ch);
+              DPSsethsbcolor(cur, WIN_SEL_H, WIN_SEL_S, WIN_SEL_B);
+            } else if ((ch->color>>4) == 15) { // default BG
+              // fprintf(stderr, "'%c' \tBG NORMAL: setting WIN_BG\n", ch->ch);
+              DPSsethsbcolor(cur, WIN_BG_H, WIN_BG_S, WIN_BG_B);
+            } else {
+              set_background(cur, last_color, last_attr & 0x03, NO);
+            }
+          }
+        }
+
+        if (start_x == -1) {
+          start_x = scr_x;
+        }
       }
+
+      if (start_x != -1) {
+        scr_x = ix * fx + border_x;
+        R(start_x, scr_y, scr_x - start_x, fy);
+      }
+    }
 //------------------- CHARACTERS ------------------------------------------------
-    l_color = -1;
-    l_attr = 0;
-    /* now draw any dirty characters */
-    for (iy = y0; iy < y1; iy++)
-      {
-        ry = iy + current_scroll;
-        if (ry >= 0)
-          ch = &SCREEN(x0,ry);
-        else
-          ch = &sbuf[x0 + (max_scrollback + ry) * sx];
-
-        scr_y = (sy - 1 - iy) * fy + border_y;
-
-        for (ix = x0; ix < x1; ix++,ch++)
-          {
-            /* no need to draw && not dirty */
-            if (!draw_all && !(ch->attr & 0x80))
-              continue;
-
-            // Clear dirty bit
-            ch->attr &= 0x7f;
-
-            scr_x = ix * fx + border_x;
-
-            //--- FOREGROUND
-            /* ~1700 cycles/change */
-            if ((ch->attr & 0x02) || (ch->ch != 0 && ch->ch != 32))
-              {
-                if (ch->attr & 0x8) //-------------------------------- FG INVERSE
-                  {
-                    color = ch->color & 0xf0;
-                    if (ch->attr & 0x40) color ^= 0x0f;
-                    
-                    if (color != l_color || ch->attr != l_attr)
-                      {
-                        l_color = color;
-                        l_attr = ch->attr;
-                        
-                        // fprintf(stderr,
-                        //         "'%c' FG INVERSE color: %i (%i) attrs: %i (in:%i sel:%i)"
-                        //         " FG: %i BG: %i\n",
-                        //         ch->ch, ch->color, l_color, ch->attr, l_attr & 0x03,l_attr & 0x40,
-                        //         (ch->color & 0x0f), (ch->color>>4));
-                        
-                        if (l_attr & 0x40) // selection FG
-                          {
-                            // fprintf(stderr, "'%c' \tFG INVERSE: setting TEXT_NORM\n", ch->ch);
-                            DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
-                          }
-                        else
-                          {
-                            // fprintf(stderr, "'%c' \tFG INVERSE: setting INV_FG\n", ch->ch);
-                            DPSsethsbcolor(cur,INV_FG_H,INV_FG_S,INV_FG_B);
-                          }
-                      }
-                  }
-                else if (ch->attr & 0x10) //---------------------------- FG BLINK
-                  {
-                    // fprintf(stderr, "'%c' blink\n", ch->ch);
-                    if (ch->attr != l_attr)
-                      {
-                        l_attr = ch->attr;
-                        if (l_attr & 0x40) // selection FG
-                          {
-                            // fprintf(stderr, "'%c' \tFG INVERSE: setting TEXT_NORM\n", ch->ch);
-                            DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
-                          }
-                        else
-                          {
-                            DPSsethsbcolor(cur,TEXT_BLINK_H,TEXT_BLINK_S,TEXT_BLINK_B);
-                          }
-                      }
-                  }
-                else //------------------------------------------------ FG NORMAL
-                  {
-                    color = ch->color & 0x0f;
-                    if (ch->attr & 0x40) color ^= 0x0f;
-                    
-                    if (color != l_color || ch->attr != l_attr)
-                      {
-                        l_color = color;
-                        l_attr = ch->attr;
-                        
-                        // fprintf(stderr,
-                        //         "'%c' FG NORMAL color: %i (%i)"
-                        //         " attrs: %i (in:%i sel:%i)"
-                        //         " FG: %i BG: %i\n",
-                        //         ch->ch, ch->color, l_color,
-                        //         ch->attr, l_attr & 0x03, l_attr & 0x40,
-                        //         (ch->color & 0x0f), (ch->color>>4));
-
-                        if (color == 15 || (ch->attr & 0x40))
-                          {
-                            // fprintf(stderr,
-                            //         "'%c' \tFG NORMAL: setting TEXT_NORM\n",
-                            //         ch->ch);
-                            DPSsethsbcolor(cur,
-                                           TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
-                          }
-                        else
-                          {
-                            set_foreground(cur, l_color, l_attr & 0x03, NO);
-                          }
-                      }
-                  }
-              }
-
-            //--- FONTS & ENCODING
-            if (ch->ch != 0 && ch->ch != 32 && ch->ch != MULTI_CELL_GLYPH)
-              {
-                total_draw++;
-                if ((ch->attr & 3) == 2)
-                  {
-                    encoding = boldFont_encoding;
-                    f = boldFont;
-                    if ((ch->color & 0x0f) == 15)
-                      {
-                        DPSsethsbcolor(cur,TEXT_BOLD_H,TEXT_BOLD_S,TEXT_BOLD_B);
-                      }
-                  }
-                else
-                  {
-                    encoding = font_encoding;
-                    f = font;
-                  }
-                if (f != current_font)
-                  {
-                    /* ~190 cycles/change */
-                    [f set];
-                    current_font = f;
-                  }
-                 
-                /* we short-circuit utf8 for performance with back-art */
-                /* TODO: short-circuit latin1 too? */
-                 if (encoding == NSUTF8StringEncoding)
-                  {
-                    unichar uch = ch->ch;
-                    if (uch >= 0x800)
-                      {
-                        buf[2] = (uch & 0x3f) | 0x80;
-                        uch >>= 6;
-                        buf[1] = (uch & 0x3f) | 0x80;
-                        uch >>= 6;
-                        buf[0] = (uch & 0x0f) | 0xe0;
-                        buf[3] = 0;
-                      }
-                    else if (uch >= 0x80)
-                      {
-                        buf[1] = (uch & 0x3f) | 0x80;
-                        uch >>= 6;
-                        buf[0] = (uch & 0x1f) | 0xc0;
-                        buf[2] = 0;
-                      }
-                    else
-                      {
-                        buf[0] = uch;
-                        buf[1] = 0;
-                      }
-                  }
-                else
-                  {
-                    unichar uch = ch->ch;
-                    if (uch <= 0x80)
-                      {
-                        buf[0] = uch;
-                        buf[1] = 0;
-                      }
-                    else
-                      {
-                        unsigned char *pbuf = (unsigned char *)buf;
-                        unsigned int dlen = sizeof(buf) - 1;
-                        GSFromUnicode(&pbuf,&dlen,&uch,1,encoding,NULL,
-                                      GSUniTerminate);
-                      }
-                  }
-                /* ~580 cycles */
-                DPSmoveto(cur,scr_x+fx0,scr_y+fy0);
-                /* baseline here for mc-case 0.65 */
-                /* ~3800 cycles */
-                DPSshow(cur,buf);
-
-                /* ~95 cycles to ARTGState -DPSshow:... */
-                /* ~343 cycles to isEmpty */
-                /* ~593 cycles to currentpoint */
-                /* ~688 cycles to transform */
-                /* ~1152 cycles to FTFont -drawString:... */
-                /* ~1375 cycles to -drawString:... setup */
-                /* ~1968 cycles cmap lookup */
-                /* ~2718 cycles sbit lookup */
-                /* ~~2750 cycles blit setup */
-                /* ~3140 cycles blit loop, empty call */
-                /* ~3140 cycles blit loop, setup */
-                /* ~3325 cycles blit loop, no write */
-                /* ~3800 cycles total */
-              }
-
-            //--- UNDERLINE
-            if (ch->attr & 0x4)
-              DPSrectfill(cur,scr_x,scr_y,fx,1);
-          }
+    last_color = -1;
+    last_attr = 0;
+    /* Now draw any dirty characters */
+    for (iy = y0; iy < y1; iy++) {
+      ry = iy + current_scroll;
+      if (ry >= 0) {
+        ch = &SCREEN(x0,ry);
+      } else {
+        ch = &sbuf[x0 + (max_scrollback + ry) * sx];
       }
+
+      scr_y = (sy - 1 - iy) * fy + border_y;
+
+      for (ix = x0; ix < x1; ix++,ch++) {
+        /* no need to draw && not dirty */
+        if (!draw_all && !(ch->attr & 0x80)) {
+          continue;
+        }
+
+        // Clear dirty bit
+        ch->attr &= 0x7f;
+
+        scr_x = ix * fx + border_x;
+
+        //--- FOREGROUND
+        /* ~1700 cycles/change */
+        if ((ch->attr & 0x02) || (ch->ch != 0 && ch->ch != 32)) {
+          if (ch->attr & 0x8) { //-------------------------------- FG INVERSE
+            color = ch->color & 0xf0;
+            if (ch->attr & 0x40) {
+              color ^= 0x0f;
+            }
+                    
+            if (color != last_color || ch->attr != last_attr) {
+              last_color = color;
+              last_attr = ch->attr;
+                        
+              // fprintf(stderr,
+              //         "'%c' FG INVERSE color: %i (%i) attrs: %i (in:%i sel:%i)"
+              //         " FG: %i BG: %i\n",
+              //         ch->ch, ch->color, l_color, ch->attr, l_attr & 0x03,l_attr & 0x40,
+              //         (ch->color & 0x0f), (ch->color>>4));
+                        
+              if (last_attr & 0x40) { // selection FG
+                // fprintf(stderr, "'%c' \tFG INVERSE: setting TEXT_NORM\n", ch->ch);
+                DPSsethsbcolor(cur,TEXT_NORM_H,TEXT_NORM_S,TEXT_NORM_B);
+              } else {
+                // fprintf(stderr, "'%c' \tFG INVERSE: setting INV_FG\n", ch->ch);
+                DPSsethsbcolor(cur,INV_FG_H,INV_FG_S,INV_FG_B);
+              }
+            }
+          } else if (ch->attr & 0x10) { //---------------------------- FG BLINK
+            // fprintf(stderr, "'%c' blink\n", ch->ch);
+            if (ch->attr != last_attr) {
+              last_attr = ch->attr;
+              if (last_attr & 0x40) { // selection FG
+                // fprintf(stderr, "'%c' \tFG INVERSE: setting TEXT_NORM\n", ch->ch);
+                DPSsethsbcolor(cur, TEXT_NORM_H  ,TEXT_NORM_S, TEXT_NORM_B);
+              } else {
+                DPSsethsbcolor(cur, TEXT_BLINK_H, TEXT_BLINK_S, TEXT_BLINK_B);
+              }
+            }
+          } else { //------------------------------------------------ FG NORMAL
+            color = ch->color & 0x0f;
+            if (ch->attr & 0x40) {
+              color ^= 0x0f;
+            }
+                    
+            if (color != last_color || ch->attr != last_attr) {
+              last_color = color;
+              last_attr = ch->attr;
+                        
+              // fprintf(stderr,
+              //         "'%c' FG NORMAL color: %i (%i)"
+              //         " attrs: %i (in:%i sel:%i)"
+              //         " FG: %i BG: %i\n",
+              //         ch->ch, ch->color, l_color,
+              //         ch->attr, l_attr & 0x03, l_attr & 0x40,
+              //         (ch->color & 0x0f), (ch->color>>4));
+
+              if (color == 15 || (ch->attr & 0x40)) {
+                // fprintf(stderr,
+                //         "'%c' \tFG NORMAL: setting TEXT_NORM\n",
+                //         ch->ch);
+                DPSsethsbcolor(cur, TEXT_NORM_H, TEXT_NORM_S, TEXT_NORM_B);
+              } else {
+                set_foreground(cur, last_color, last_attr & 0x03);
+              }
+            }
+          }
+        }
+
+        //--- FONTS & ENCODING
+        if (ch->ch != 0 && ch->ch != 32 && ch->ch != MULTI_CELL_GLYPH) {
+          total_draw++;
+          if ((ch->attr & 3) == 2) {
+            encoding = boldFont_encoding;
+            f = boldFont;
+            if ((ch->color & 0x0f) == 15) {
+              DPSsethsbcolor(cur, TEXT_BOLD_H, TEXT_BOLD_S, TEXT_BOLD_B);
+            }
+          } else {
+            encoding = font_encoding;
+            f = font;
+          }
+          if (f != current_font) {
+            /* ~190 cycles/change */
+            [f set];
+            current_font = f;
+          }
+                 
+          /* we short-circuit utf8 for performance with back-art */
+          /* TODO: short-circuit latin1 too? */
+          if (encoding == NSUTF8StringEncoding) {
+            unichar uch = ch->ch;
+            if (uch >= 0x800) {
+              buf[2] = (uch & 0x3f) | 0x80;
+              uch >>= 6;
+              buf[1] = (uch & 0x3f) | 0x80;
+              uch >>= 6;
+              buf[0] = (uch & 0x0f) | 0xe0;
+              buf[3] = 0;
+            } else if (uch >= 0x80) {
+              buf[1] = (uch & 0x3f) | 0x80;
+              uch >>= 6;
+              buf[0] = (uch & 0x1f) | 0xc0;
+              buf[2] = 0;
+            } else {
+              buf[0] = uch;
+              buf[1] = 0;
+            }
+          } else {
+            unichar uch = ch->ch;
+            if (uch <= 0x80) {
+              buf[0] = uch;
+              buf[1] = 0;
+            } else {
+              unsigned char *pbuf = (unsigned char *)buf;
+              unsigned int dlen = sizeof(buf) - 1;
+              GSFromUnicode(&pbuf,&dlen,&uch,1,encoding,NULL, GSUniTerminate);
+            }
+          }
+          /* ~580 cycles */
+          DPSmoveto(cur,scr_x+fx0,scr_y+fy0);
+          /* baseline here for mc-case 0.65 */
+          /* ~3800 cycles */
+          DPSshow(cur,buf);
+
+          /* ~95 cycles to ARTGState -DPSshow:... */
+          /* ~343 cycles to isEmpty */
+          /* ~593 cycles to currentpoint */
+          /* ~688 cycles to transform */
+          /* ~1152 cycles to FTFont -drawString:... */
+          /* ~1375 cycles to -drawString:... setup */
+          /* ~1968 cycles cmap lookup */
+          /* ~2718 cycles sbit lookup */
+          /* ~~2750 cycles blit setup */
+          /* ~3140 cycles blit loop, empty call */
+          /* ~3140 cycles blit loop, setup */
+          /* ~3325 cycles blit loop, no write */
+          /* ~3800 cycles total */
+        }
+
+        //--- UNDERLINE
+        if (ch->attr & 0x4) {
+          DPSrectfill(cur, scr_x, scr_y, fx, 1);
+        }
+      }
+    }
   }
 
 //------------------- CURSOR ----------------------------------------------------
@@ -961,23 +919,22 @@ static void set_foreground(NSGraphicsContext *gc,
       switch (cursorStyle)
         {
         case CURSOR_BLOCK_INVERT: // 0
-          DPScompositerect(cur,x,y,fx,fy,
-                           NSCompositeSourceIn);
+          DPScompositerect(cur, x, y, fx, fy, NSCompositeSourceIn);
           break;
         case CURSOR_BLOCK_STROKE: // 1
-          DPSrectstroke(cur,x+0.5,y+0.5,fx-1.0,fy-1.0);
+          DPSrectstroke(cur, x + 0.5, y + 0.5, fx - 1.0, fy - 1.0);
           break;
         case CURSOR_BLOCK_FILL:   // 2
-          DPSrectfill(cur,x,y,fx,fy);
+          DPSrectfill(cur, x, y, fx, fy);
           break;
         case CURSOR_LINE:         // 3
-          DPSrectfill(cur,x,y,fx,fy*0.1);
+          DPSrectfill(cur, x, y, fx, fy * 0.1);
           break;
         }
       draw_cursor = NO;
     }
 
-  NSDebugLLog(@"draw",@"total_draw=%i",total_draw);
+  NSDebugLLog(@"draw", @"total_draw=%i", total_draw);
 
   draw_all = 1;
 }
