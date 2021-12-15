@@ -1,7 +1,7 @@
 /*
   Copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
   Copyright 2005 forkpty replacement, Riccardo Mottola <rmottola@users.sf.net>
-  Copyright 2015-2017 Sergii Stoian <stoyan255@gmail.com>
+  Copyright 2015-2021 Sergii Stoian <stoyan255@gmail.com>
 
   This file is a part of Terminal.app. Terminal.app is free software; you
   can redistribute it and/or modify it under the terms of the GNU General
@@ -14,52 +14,15 @@
   stupid but fast character cell display view.
 */
 
-/* define this if you need the forkpty replacement and it is not automatically
-   activated */
-#undef USE_FORKPTY_REPLACEMENT
-
-
-/* check for solaris */
-#if defined (__SVR4) && defined (__sun)
-#define __SOLARIS__ 1
-#define USE_FORKPTY_REPLACEMENT 1
-#endif
-
 #include <math.h>
 #include <unistd.h>
 #include <stdlib.h>
-
-#ifdef __NetBSD__
-#  include <sys/types.h>
-#  include <sys/ioctl.h>
-#  include <termios.h>
-#  include <pcap.h>
-#  define TCSETS TIOCSETA
-#elif defined(__FreeBSD__)
-#  include <sys/types.h>
-#  include <sys/ioctl.h>
-#  include <termios.h>
-#  include <libutil.h>
-#  include <pcap.h>
-#elif defined(__OpenBSD__)
-#  include <termios.h>
-#  include <util.h>
-#  include <sys/ioctl.h>
-#elif defined (__GNU__)
-#else
-#  include <termio.h>
-#endif
-
+#include <termio.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#ifndef __FreeBSD__
-#if !(defined (__NetBSD__)) && !(defined (__SOLARIS__)) && !(defined(__OpenBSD__))
-#  include <pty.h>
-#endif
-#endif
-
+#include <pty.h>
 #include <sys/wait.h>
 
 #import <Foundation/NSBundle.h>
@@ -82,209 +45,6 @@
 #import "TerminalWindow.h"
 #import "TerminalView.h"
 
-/* forkpty replacement */
-#ifdef USE_FORKPTY_REPLACEMENT
-#include <stdio.h> /* for stderr and perror*/
-#include <errno.h> /* for int errno */
-#include <fcntl.h>
-#include <sys/termios.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <stropts.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define PATH_TTY "/dev/tty"
-
-int ptyMakeControllingTty(int *slaveFd, const char *slaveName)
-{
-  pid_t pgid;
-  int   fd;
-    
-  if (!slaveFd || *slaveFd < 0)
-    {
-      perror("slaveFd invalid");
-      return -1;
-    }
-    
-  /* disconnect from the old controlling tty */
-#ifdef TIOCNOTTY
-  if ((fd = open(PATH_TTY, O_RDWR | O_NOCTTY)) >= 0 )
-    {
-      ioctl(fd, TIOCNOTTY, NULL);
-      close(fd);
-    }
-#endif
-
-
-  pgid = setsid(); /* create session and set process ID */
-  if (pgid == -1)
-    {
-      if (errno == EPERM)
-        perror("EPERM error on setsid");
-    }
-
-  /* Make it our controlling tty */
-#ifdef TIOCSCTTY
-  if (ioctl(*slaveFd, TIOCSCTTY, NULL) == -1)
-    return -1;
-#else
-#warning TIOCSCTTY replacement
-  {
-    /* first terminal we open after setsid() is the controlling one */
-    char *controllingTty;
-    int ctr_fdes;
- 	
-    controllingTty = ttyname(*slaveFd);
-    ctr_fdes = open(controllingTty, O_RDWR);
-    close(ctr_fdes);
-  }
-#endif /* TIOCSCTTY */
-
-#if defined (TIOCSPGRP)
-  ioctl (0, TIOCSPGRP, &pgid);
-#else
-#warning no TIOCSPGRP
-  tcsetpgrp (0, pgid);
-#endif
-
-
-
-  if ((fd = open(slaveName, O_RDWR)) >= 0)
-    {
-      close(*slaveFd);
-      *slaveFd = fd;
-      printf("Got new filedescriptor...\n");
-    }
-  if ((fd = open(PATH_TTY, O_RDWR)) == -1)
-    return -1;
-    
-  close(fd);
-
-  return 0;
-}
-
-int openpty(int *amaster, int *aslave, char *name,
-            const struct termios *termp, const struct winsize *winp)
-{
-    int fdm, fds;
-    char *slaveName;
-    
-    fdm = open("/dev/ptmx", O_RDWR); /* open master */
-    if (fdm == -1)
-    {
-    	perror("openpty:open(master)");
-	return -1;
-    }
-    if(grantpt(fdm))                    /* grant access to the slave */
-    {
-    	perror("openpty:grantpt(master)");
-	close(fdm);
-	return -1;
-    }
-    if(unlockpt(fdm))                /* unlock the slave terminal */
-    {
-    	perror("openpty:unlockpt(master)");
-	close(fdm);
-	return -1;
-    }
-    
-    slaveName = ptsname(fdm);        /* get name of the slave */
-    if (slaveName == NULL)
-    {
-    	perror("openpty:ptsname(master)");
-	close(fdm);
-	return -1;
-    }
-    if (name)                        /* of name ptr not null, copy it name back */
-        strcpy(name, slaveName);
-    
-    fds = open(slaveName, O_RDWR | O_NOCTTY); /* open slave */
-    if (fds == -1)
-    {
-    	perror("openpty:open(slave)");
-	close (fdm);
-	return -1;
-    }
-    
-    /* ldterm and ttcompat are automatically pushed on the stack on some systems*/
-#ifdef __SOLARIS__
-    if (ioctl(fds, I_PUSH, "ptem") == -1) /* pseudo terminal module */
-    {
-    	perror("openpty:ioctl(I_PUSH, ptem");
-	close(fdm);
-	close(fds);
-	return -1;
-    }
-    if (ioctl(fds, I_PUSH, "ldterm") == -1)  /* ldterm must stay atop ptem */
-    {
-	perror("forkpty:ioctl(I_PUSH, ldterm");
-	close(fdm);
-	close(fds);
-	return -1;
-    }
-#endif
-    
-    /* set terminal parameters if present */
-    if (termp)
-    	ioctl(fds, TCSETS, termp);
-    if (winp)
-        ioctl(fds, TIOCSWINSZ, winp);
-    
-    *amaster = fdm;
-    *aslave = fds;
-    return 0;
-}
-
-int forkpty (int *amaster, char *slaveName, const struct termios *termp,
-             const struct winsize *winp)
-{
-  int fdm, fds; /* master and slave file descriptors */
-  pid_t pid;
-    
-  if (openpty(&fdm, &fds, slaveName, termp, winp) == -1)
-    {
-      perror("forkpty:openpty()");
-      return -1;
-    }
-
-  pid = fork();
-  if (pid == -1)
-    {
-      /* error */
-      perror("forkpty:fork()");
-      close(fdm);
-      close(fds);
-      return -1;
-    }
-  else if (pid == 0)
-    {	
-      /* child */
-      ptyMakeControllingTty(&fds, slaveName);
-      if (fds != STDIN_FILENO && dup2(fds, STDIN_FILENO) == -1)
-        perror("error duplicationg stdin");
-      if (fds != STDOUT_FILENO && dup2(fds, STDOUT_FILENO) == -1)
-        perror("error duplicationg stdout");
-      if (fds != STDERR_FILENO && dup2(fds, STDERR_FILENO) == -1)
-        perror("error duplicationg stderr");
-	
-      if (fds != STDIN_FILENO && fds != STDOUT_FILENO && fds != STDERR_FILENO)
-        close(fds);
-	
-	
-      close (fdm);
-    }
-  else
-    {
-      /* father */
-      close (fds);
-      *amaster = fdm;
-    }
-  return pid;
-}
-
-#endif /* forpkty replacement */
-
 /* TODO */
 @interface NSView (unlockfocus)
 - (void)unlockFocusNeedsFlush:(BOOL)flush;
@@ -296,6 +56,7 @@ NSString *TerminalViewTitleDidChangeNotification=@"TerminalViewTitleDidChange";
 NSString *TerminalViewSizeDidChangeNotification=@"TerminalViewSizeDidChange";
 
 @interface TerminalView (scrolling)
+- (void)_handlePendingScroll:(BOOL)lockFocus;
 - (void)_updateScroller;
 - (void)_scrollTo:(int)new_scroll update:(BOOL)update;
 - (void)setScroller:(NSScroller *)sc;
@@ -320,79 +81,38 @@ NSString *TerminalViewSizeDidChangeNotification=@"TerminalViewSizeDidChange";
 
 @implementation TerminalView (display)
 
-#define ADD_DIRTY(ax0,ay0,asx,asy) do { \
-		if (dirty.x0==-1) \
-		{ \
-			dirty.x0=(ax0); \
-			dirty.y0=(ay0); \
-			dirty.x1=(ax0)+(asx); \
-			dirty.y1=(ay0)+(asy); \
-		} \
-		else \
-		{ \
-			if (dirty.x0>(ax0)) dirty.x0=(ax0); \
-			if (dirty.y0>(ay0)) dirty.y0=(ay0); \
-			if (dirty.x1<(ax0)+(asx)) dirty.x1=(ax0)+(asx); \
-			if (dirty.y1<(ay0)+(asy)) dirty.y1=(ay0)+(asy); \
-		} \
-	} while (0)
+#define ADD_DIRTY(ax0, ay0, asx, asy) do {      \
+    if (dirty.x0 == -1) {                       \
+      dirty.x0 = (ax0);                         \
+      dirty.y0 = (ay0);                         \
+      dirty.x1 = (ax0) + (asx);                 \
+      dirty.y1 = (ay0) + (asy);                 \
+    } else {                                    \
+      if (dirty.x0 > (ax0)) {                   \
+        dirty.x0 = (ax0);                       \
+      }                                         \
+      if (dirty.y0 > (ay0)) {                   \
+        dirty.y0 = (ay0);                       \
+      }                                         \
+      if (dirty.x1 < (ax0) + (asx)) {           \
+        dirty.x1 = (ax0) + (asx);               \
+      }                                         \
+      if (dirty.y1 < (ay0) + (asy)) {           \
+        dirty.y1 = (ay0) + (asy);               \
+      }                                         \
+    }                                           \
+  } while (0)
 
 #define SCREEN(x, y) (screen[(y) * sx + (x)])
 
-/* handle accumulated pending scrolls with a single composite */
-- (void)_handlePendingScroll:(BOOL)lockFocus
-{
-  float x0,y0,w,h,dx,dy;
-
-  if (!pending_scroll)
-    return;
-
-  if (pending_scroll>=sy || pending_scroll<=-sy)
-    {
-      pending_scroll=0;
-      return;
-    }
-
-  NSDebugLLog(@"draw",@"_handlePendingScroll %i %i",pending_scroll,lockFocus);
-
-  dx=x0=0;
-  w=fx*sx;
-
-  if (pending_scroll>0)
-    {
-      y0=0;
-      h=(sy-pending_scroll)*fy;
-      dy=pending_scroll*fy;
-      y0=sy*fy-y0-h;
-      dy=sy*fy-dy-h;
-    }
-  else
-    {
-      pending_scroll=-pending_scroll;
-
-      y0=pending_scroll*fy;
-      h=(sy-pending_scroll)*fy;
-      dy=0;
-      y0=sy*fy-y0-h;
-      dy=sy*fy-dy-h;
-    }
-
-  if (lockFocus)
-    [self lockFocus];
-  DPScomposite(GSCurrentContext(),border_x+x0,border_y+y0,w,h,
-	       [self gState],border_x+dx,border_y+dy,NSCompositeCopy);
-  if (lockFocus)
-    [self unlockFocusNeedsFlush: NO];
-
-  num_scrolls++;
-  pending_scroll=0;
-}
-
 static int total_draw = 0;
 
-static const float color_h[8]={  0, 240, 120, 180,   0, 300,  30,   0};
-static const float color_s[8]={0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0};
-static const float color_b[8]={0.0, 1.0, 0.6, 0.6, 1.0, 1.0, 1.0, 0.7};
+//
+// --- Colors
+//
+static const float color_h[8] = {  0, 240, 120, 180,   0, 300,  30,   0};
+static const float color_s[8] = {0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0};
+static const float color_b[8] = {0.0, 1.0, 0.6, 0.6, 1.0, 1.0, 1.0, 0.7};
 // color values:
 // 	0 - black		"\e[30"
 // 	1 - blue		"\e[34"
@@ -491,7 +211,9 @@ static void set_foreground(NSGraphicsContext *gc,
   if (!prefs)
     prefs = defaults;
 
-  if (cursorColor) [cursorColor release];
+  if (cursorColor) {
+    [cursorColor release];
+  }
   cursorColor = [[prefs cursorColor] retain];
   
   winBG = [prefs windowBackgroundColor];
@@ -530,6 +252,9 @@ static void set_foreground(NSGraphicsContext *gc,
   INV_FG_B = [invFG brightnessComponent];
 }
 
+// ---
+// --- Rendering
+// ---
 - (void)drawRect:(NSRect)r
 {
   int ix,iy;
@@ -544,11 +269,12 @@ static void set_foreground(NSGraphicsContext *gc,
               r.origin.x,r.origin.y,r.size.width,r.size.height,
               draw_all);
 
-  if (pending_scroll)
+  if (pending_scroll) {
     [self _handlePendingScroll:NO];
+  }
 
   // Window Background color set
-  DPSsethsbcolor(cur,WIN_BG_H,WIN_BG_S,WIN_BG_B);
+  DPSsethsbcolor(cur, WIN_BG_H, WIN_BG_S, WIN_BG_B);
   
   /* draw the border around the view if needed */
   {
@@ -574,7 +300,7 @@ static void set_foreground(NSGraphicsContext *gc,
   }
   
   /* draw vertical black line next after scrollbar */
-  if ((max_scrollback > 0) && (r.origin.x < border_x)) {
+  if ((max_sb_depth > 0) && (r.origin.x < border_x)) {
     DPSsetgray(cur, 0.0);
     DPSrectfill(cur, r.origin.x, r.origin.y, r.origin.x + 1, r.size.height);
   }
@@ -627,11 +353,11 @@ static void set_foreground(NSGraphicsContext *gc,
        change that often, runs of dirty cells with the same background color
        are combined and drawn with a single rectfill. */
     for (iy = y0; iy < y1; iy++) {
-      ry = iy + current_scroll;
+      ry = iy + curr_sb_position;
       if (ry >= 0) {
         ch = &SCREEN(x0,ry);
       } else {
-        ch = &sbuf[x0 + (max_scrollback + ry) * sx];
+        ch = &sb_buffer[x0 + (max_sb_depth + ry) * sx];
       }
 
       scr_y = (sy - 1 - iy) * fy + border_y;
@@ -740,11 +466,11 @@ static void set_foreground(NSGraphicsContext *gc,
     last_attr = 0;
     /* Now draw any dirty characters */
     for (iy = y0; iy < y1; iy++) {
-      ry = iy + current_scroll;
+      ry = iy + curr_sb_position;
       if (ry >= 0) {
         ch = &SCREEN(x0,ry);
       } else {
-        ch = &sbuf[x0 + (max_scrollback + ry) * sx];
+        ch = &sb_buffer[x0 + (max_sb_depth + ry) * sx];
       }
 
       scr_y = (sy - 1 - iy) * fy + border_y;
@@ -914,7 +640,7 @@ static void set_foreground(NSGraphicsContext *gc,
       [cursorColor set];
 
       x = cursor_x * fx + border_x;
-      y = (sy - 1 - cursor_y + current_scroll) * fy + border_y;
+      y = (sy - 1 - cursor_y + curr_sb_position) * fy + border_y;
 
       switch (cursorStyle)
         {
@@ -939,7 +665,6 @@ static void set_foreground(NSGraphicsContext *gc,
   draw_all = 1;
 }
 
-
 - (BOOL)isOpaque
 {
   return YES;
@@ -953,58 +678,19 @@ static void set_foreground(NSGraphicsContext *gc,
 
 - (void)setNeedsLazyDisplayInRect:(NSRect)r
 {
-  if (draw_all == 1)
+  if (draw_all == 1) {
     draw_all = 0;
+  }
   [super setNeedsDisplayInRect:r];
 }
 
-
-- (void)benchmark:(id)sender
+// ---
+// --- Text manipulation
+// ---
+- (screen_char_t)ts_getCharAt:(int)x :(int)y
 {
-  int i;
-  double t1,t2;
-  NSRect r = [self frame];
-  
-  t1 = [NSDate timeIntervalSinceReferenceDate];
-  total_draw = 0;
-  for (i = 0; i < 100; i++)
-    {
-      draw_all = 2;
-      [self lockFocus];
-      [self drawRect:r];
-      [self unlockFocusNeedsFlush:NO];
-    }
-  t2 = [NSDate timeIntervalSinceReferenceDate];
-  t2 -= t1;
-  fprintf(stderr,"%8.4f  %8.5f/redraw   total_draw=%i\n",t2,t2/i,total_draw);
-}
-
-
-- (void)ts_setTitle:(NSString *)new_title type:(int)title_type
-{
-  NSDebugLLog(@"ts",@"setTitle: %@  type: %i",new_title,title_type);
-  
-  if (title_type == 1 || title_type == 0)
-    ASSIGN(xtermIconTitle, new_title);
-  
-  if (title_type == 2 || title_type == 0)
-    ASSIGN(xtermTitle, new_title);
-  
-  [[NSNotificationCenter defaultCenter]
-		postNotificationName:TerminalViewTitleDidChangeNotification
-                              object:self];
-}
-
-
-- (void)ts_goto:(int)x :(int)y
-{
-  NSDebugLLog(@"ts",@"goto: %i:%i",x,y);
-  cursor_x = x;
-  cursor_y = y;
-  if (cursor_x >= sx) cursor_x = sx - 1;
-  if (cursor_x < 0) cursor_x=0;
-  if (cursor_y >= sy) cursor_y = sy - 1;
-  if (cursor_y < 0) cursor_y = 0;
+  NSDebugLLog(@"ts",@"getCharAt: %i:%i", x, y);
+  return SCREEN(x, y);
 }
 
 - (void)ts_putChar:(screen_char_t)ch count:(int)c at:(int)x :(int)y
@@ -1013,20 +699,23 @@ static void set_foreground(NSGraphicsContext *gc,
   screen_char_t *s;
 
   NSDebugLLog(@"ts",@"putChar: '%c' %02x %02x count: %i at: %i:%i",
-              ch.ch,ch.color,ch.attr,c,x,y);
+              ch.ch, ch.color, ch.attr, c, x, y);
 
-  if (y < 0 || y >= sy) return;
-  if (x + c > sx)
+  if (y < 0 || y >= sy) {
+    return;
+  }
+  if (x + c > sx) {
     c = sx - x;
-  if (x < 0)
-    {
-      c -= x;
-      x = 0;
-    }
+  }
+  if (x < 0) {
+    c -= x;
+    x = 0;
+  }
   s = &SCREEN(x, y);
   ch.attr |= 0x80;
-  for (i = 0; i < c; i++)
+  for (i = 0; i < c; i++) {
     *s ++= ch;
+  }
   ADD_DIRTY(x, y, c, 1);
 }
 
@@ -1038,107 +727,167 @@ static void set_foreground(NSGraphicsContext *gc,
   NSDebugLLog(@"ts",@"putChar: '%c' %02x %02x count: %i offset: %i",
               ch.ch,ch.color,ch.attr,c,ofs);
 
-  if (ofs + c > sx * sy)
+  if (ofs + c > sx * sy) {
     c = sx * sy - ofs;
-  if (ofs < 0)
-    {
-      c -= ofs;
-      ofs = 0;
-    }
+  }
+  if (ofs < 0) {
+    c -= ofs;
+    ofs = 0;
+  }
   s = &SCREEN(ofs, 0);
   ch.attr |= 0x80;
-  for (i = 0; i < c; i++)
+  for (i = 0; i < c; i++) {
     *s ++= ch;
+  }
   ADD_DIRTY(0, 0, sx, sy); /* TODO */
+}
+
+- (void)addDataToWriteBuffer:(const char *)data
+                      length:(int)len
+{
+  if (!len) {
+    return;
+  }
+
+  if (!write_buf_len) {
+    [[NSRunLoop currentRunLoop] addEvent:(void *)(intptr_t)master_fd
+                                    type:ET_WDESC
+                                 watcher:self
+                                 forMode:NSDefaultRunLoopMode];
+  }
+  if ((write_buf_len + len) > write_buf_size) {
+    /* Round up to nearest multiple of 512 bytes. */
+    write_buf_size = (write_buf_len + len + 511) &~ 511;
+    write_buf = realloc(write_buf, write_buf_size);
+  }
+  memcpy(&write_buf[write_buf_len], data, len);
+  write_buf_len += len;
+}
+
+- (void)ts_sendCString:(const char *)msg
+{
+  [self ts_sendCString:msg length:strlen(msg)];
+}
+
+- (void)ts_sendCString:(const char *)msg length:(int)len
+{
+  int l;
+  
+  if (master_fd == -1) {
+    return;
+  }
+  if (write_buf_len) {
+    [self addDataToWriteBuffer:msg length:len];
+    return;
+  }
+
+  l = write(master_fd, msg, len);
+  if (l != len) {
+    if (errno != EAGAIN)
+      NSLog(@"Unexpected error while writing: %m.");
+    if (l < 0) {
+      l = 0;
+    }
+    [self addDataToWriteBuffer:&msg[l] length:len - l];
+  }
+}
+
+// ---
+// --- Movement
+// ---
+- (void)ts_goto:(int)x :(int)y
+{
+  NSDebugLLog(@"ts", @"goto: %i:%i", x, y);
+  cursor_x = x;
+  cursor_y = y;
+  if (cursor_x >= sx) {
+    cursor_x = sx - 1;
+  }
+  if (cursor_x < 0) {
+    cursor_x = 0;
+  }
+  if (cursor_y >= sy) {
+    cursor_y = sy - 1;
+  }
+  if (cursor_y < 0) {
+    cursor_y = 0;
+  }
 }
 
 - (void)ts_scrollUp:(int)t :(int)b rows:(int)nr save:(BOOL)save
 {
   screen_char_t *d, *s;
 
-  NSDebugLLog(@"ts",@"scrollUp: %i:%i  rows: %i  save: %i",
-              t,b,nr,save);
+  NSDebugLLog(@"ts",@"scrollUp: %i:%i  rows: %i  save: %i", t, b, nr, save);
 
-  if (save && (t == 0) && (b == sy)) /* TODO? */
-    {
-      int num;
-      if (nr < max_scrollback)
-        {
-          memmove(sbuf, &sbuf[sx * nr],
-                  sizeof(screen_char_t) * sx * (max_scrollback - nr));
-          num=nr;
-        }
-      else
-        num = max_scrollback;
-
-      if (num < sy)
-        {
-          memmove(&sbuf[sx * (max_scrollback - num)], screen,
-                  num*sx*sizeof(screen_char_t));
-        }
-      else
-        {
-          memmove(&sbuf[sx * (max_scrollback - num)],screen,
-                  sy*sx*sizeof(screen_char_t));
-
-          /* TODO: should this use video_erase_char? */
-          memset(&sbuf[sx * (max_scrollback - num + sy)], 0,
-                 sx*(num-sy)*sizeof(screen_char_t));
-        }
-      sb_length += num;
-      if (sb_length > max_scrollback)
-        sb_length = max_scrollback;
+  if (save && (t == 0) && (b == sy)) { /* TODO? */
+    int num;
+    if (nr < max_sb_depth) {
+      memmove(sb_buffer, &sb_buffer[sx * nr], sizeof(screen_char_t) * sx * (max_sb_depth - nr));
+      num = nr;
+    } else {
+      num = max_sb_depth;
     }
+    if (num < sy) {
+      memmove(&sb_buffer[sx * (max_sb_depth - num)], screen, num * sx * sizeof(screen_char_t));
+    } else {
+      memmove(&sb_buffer[sx * (max_sb_depth - num)], screen, sy * sx * sizeof(screen_char_t));
+      /* TODO: should this use video_erase_char? */
+      memset(&sb_buffer[sx * (max_sb_depth - num + sy)], 0, sx * (num - sy) * sizeof(screen_char_t));
+    }
+    curr_sb_depth += num;
+    if (curr_sb_depth > max_sb_depth) {
+      curr_sb_depth = max_sb_depth;
+    }
+  }
 
-  if (t+nr >= b)
+  if ((t + nr) >= b) {
     nr = b - t - 1;
-  if (b > sy || t >= b || nr < 1)
+  }
+  if (b > sy || t >= b || nr < 1) {
     return;
+  }
   d = &SCREEN(0, t);
   s = &SCREEN(0, t + nr);
 
-  if (current_y >= t && current_y <= b)
-    {
-      SCREEN(current_x, current_y).attr |= 0x80;
-      draw_cursor = YES;
-      /*
-        TODO: does this properly handle the case when the cursor is in
-        an area that gets scrolled 'over'?
+  if (current_y >= t && current_y <= b) {
+    SCREEN(current_x, current_y).attr |= 0x80;
+    draw_cursor = YES;
+    /*
+      TODO: does this properly handle the case when the cursor is in
+      an area that gets scrolled 'over'?
 
-        now it does, but not in an optimal way. handling of this could be
-        optimized in all scrolling methods, but it probably won't make
-        much difference
-      */
-    }
+      now it does, but not in an optimal way. handling of this could be
+      optimized in all scrolling methods, but it probably won't make
+      much difference
+    */
+  }
   memmove(d, s, (b-t-nr) * sx * sizeof(screen_char_t));
-  if (!current_scroll)
-    {
-      if (t == 0 && b == sy)
-        {
-          pending_scroll -= nr;
-        }
-      else
-        {
-          float x0, y0, w, h, dx, dy;
+  if (!curr_sb_position) {
+    if (t == 0 && b == sy) {
+      pending_scroll -= nr;
+    } else {
+      float x0, y0, w, h, dx, dy;
 
-          if (pending_scroll)
-            [self _handlePendingScroll:YES];
+      if (pending_scroll) {
+        [self _handlePendingScroll:YES];
+      }
 
-          x0 = 0;
-          w = fx * sx;
-          y0 = (t + nr) * fy;
-          h = (b - t - nr) * fy;
-          dx = 0;
-          dy = t * fy;
-          y0 = sy * fy - y0 - h;
-          dy = sy * fy - dy - h;
-          [self lockFocus];
-          DPScomposite(GSCurrentContext(),border_x+x0,border_y+y0,w,h,
-                       [self gState],border_x+dx,border_y+dy,NSCompositeCopy);
-          [self unlockFocusNeedsFlush:NO];
-          num_scrolls++;
-        }
+      x0 = 0;
+      w = fx * sx;
+      y0 = (t + nr) * fy;
+      h = (b - t - nr) * fy;
+      dx = 0;
+      dy = t * fy;
+      y0 = sy * fy - y0 - h;
+      dy = sy * fy - dy - h;
+      [self lockFocus];
+      DPScomposite(GSCurrentContext(), border_x + x0, border_y + y0, w, h,
+                   [self gState], border_x + dx, border_y + dy, NSCompositeCopy);
+      [self unlockFocusNeedsFlush:NO];
+      num_scrolls++;
     }
+  }
   ADD_DIRTY(0, t, sx, b - t);
 }
 
@@ -1147,88 +896,86 @@ static void set_foreground(NSGraphicsContext *gc,
   screen_char_t *s;
   unsigned int step;
 
-  NSDebugLLog(@"ts",@"scrollDown: %i:%i  rows: %i",
-              t,b,nr);
+  NSDebugLLog(@"ts", @"scrollDown: %i:%i  rows: %i", t, b, nr);
 
-  if (t + nr >= b)
+  if (t + nr >= b) {
     nr = b - t - 1;
-  if (b > sy || t >= b || nr < 1)
+  }
+  if (b > sy || t >= b || nr < 1) {
     return;
+  }
   s = &SCREEN(0, t);
   step = sx * nr;
-  if (current_y >= t && current_y <= b)
-    {
-      SCREEN(current_x, current_y).attr |= 0x80;
-      draw_cursor = YES;
-    }
-  memmove(s + step, s, (b-t-nr)*sx*sizeof(screen_char_t));
-  if (!current_scroll)
-    {
-      if (t == 0 && b == sy)
-        {
-          pending_scroll += nr;
-        }
-      else
-        {
-          float x0,y0,w,h,dx,dy;
+  if (current_y >= t && current_y <= b) {
+    SCREEN(current_x, current_y).attr |= 0x80;
+    draw_cursor = YES;
+  }
+  memmove(s + step, s, (b - t - nr) * sx * sizeof(screen_char_t));
+  if (!curr_sb_position) {
+    if (t == 0 && b == sy) {
+      pending_scroll += nr;
+    } else {
+      float x0, y0, w, h, dx, dy;
 
-          if (pending_scroll)
-            [self _handlePendingScroll:YES];
-
-          x0 = 0;
-          w = fx * sx;
-          y0 = (t) * fy;
-          h = (b - t - nr) * fy;
-          dx = 0;
-          dy = (t + nr) * fy;
-          y0 = sy * fy - y0 - h;
-          dy = sy * fy - dy - h;
-          [self lockFocus];
-          DPScomposite(GSCurrentContext(),border_x + x0, border_y + y0, w, h,
-                       [self gState], border_x + dx,border_y + dy,
-                       NSCompositeCopy);
-          [self unlockFocusNeedsFlush:NO];
-          num_scrolls++;
-        }
+      if (pending_scroll) {
+        [self _handlePendingScroll:YES];
+      }
+      x0 = 0;
+      w = fx * sx;
+      y0 = (t) * fy;
+      h = (b - t - nr) * fy;
+      dx = 0;
+      dy = (t + nr) * fy;
+      y0 = sy * fy - y0 - h;
+      dy = sy * fy - dy - h;
+      [self lockFocus];
+      DPScomposite(GSCurrentContext(),border_x + x0, border_y + y0, w, h,
+                   [self gState], border_x + dx,border_y + dy,
+                   NSCompositeCopy);
+      [self unlockFocusNeedsFlush:NO];
+      num_scrolls++;
     }
+  }
   ADD_DIRTY(0, t, sx, b - t);
 }
 
 - (void)ts_shiftRow:(int)y at:(int)x0 delta:(int)delta
 {
-  screen_char_t *s,*d;
-  int x1,c;
-  NSDebugLLog(@"ts",@"shiftRow: %i  at: %i  delta: %i",
-              y,x0,delta);
+  screen_char_t *s, *d;
+  int x1, c;
+  NSDebugLLog(@"ts",@"shiftRow: %i  at: %i  delta: %i", y, x0, delta);
 
-  if (y < 0 || y >= sy) return;
-  if (x0 < 0 || x0 >= sx) return;
+  if (y < 0 || y >= sy) {
+    return;
+  }
+  if (x0 < 0 || x0 >= sx) {
+    return;
+  }
 
-  if (current_y == y)
-    {
-      SCREEN(current_x, current_y).attr |= 0x80;
-      draw_cursor = YES;
-    }
+  if (current_y == y) {
+    SCREEN(current_x, current_y).attr |= 0x80;
+    draw_cursor = YES;
+  }
 
   s = &SCREEN(x0, y);
   x1 = x0 + delta;
   c = sx - x0;
-  if (x1 < 0)
-    {
-      x0 -= x1;
-      c += x1;
-      x1 = 0;
-    }
-  if (x1 + c > sx)
+  if (x1 < 0) {
+    x0 -= x1;
+    c += x1;
+    x1 = 0;
+  }
+  if (x1 + c > sx) {
     c = sx - x1;
+  }
   d = &SCREEN(x1, y);
   memmove(d, s, sizeof(screen_char_t) * c);
-  if (!current_scroll)
-    {
-      float cx0,y0,w,h,dx,dy;
+  if (!curr_sb_position) {
+      float cx0, y0, w, h, dx, dy;
 
-      if (pending_scroll)
+      if (pending_scroll) {
         [self _handlePendingScroll:YES];
+      }
 
       cx0 = x0 * fx;
       w = fx * c;
@@ -1250,89 +997,64 @@ static void set_foreground(NSGraphicsContext *gc,
   ADD_DIRTY(0, y, sx, 1);
 }
 
-- (screen_char_t)ts_getCharAt:(int)x :(int)y
+
+// ---
+// --- Misc
+// ---
+- (void)ts_setTitle:(NSString *)new_title type:(int)title_type
 {
-  NSDebugLLog(@"ts",@"getCharAt: %i:%i", x, y);
-  return SCREEN(x, y);
-}
-
-
-- (void)addDataToWriteBuffer:(const char *)data
-                      length:(int)len
-{
-  if (!len)
-    return;
-
-  if (!write_buf_len)
-    {
-      [[NSRunLoop currentRunLoop]
-			addEvent:(void *)(intptr_t)master_fd
-                            type:ET_WDESC
-                         watcher:self
-                         forMode:NSDefaultRunLoopMode];
-    }
-
-  if (write_buf_len+len > write_buf_size)
-    {
-      /* Round up to nearest multiple of 512 bytes. */
-      write_buf_size = (write_buf_len + len + 511) &~ 511;
-      write_buf = realloc(write_buf, write_buf_size);
-    }
-  memcpy(&write_buf[write_buf_len], data, len);
-  write_buf_len += len;
-}
-
-- (void)ts_sendCString:(const char *)msg
-{
-  [self ts_sendCString:msg length:strlen(msg)];
-}
-- (void)ts_sendCString:(const char *)msg length:(int)len
-{
-  int l;
-  if (master_fd == -1)
-    return;
-
-  if (write_buf_len)
-    {
-      [self addDataToWriteBuffer:msg length:len];
-      return;
-    }
-
-  l = write(master_fd, msg, len);
-  if (l != len)
-    {
-      if (errno != EAGAIN)
-        NSLog(@"Unexpected error while writing: %m.");
-      if (l < 0)
-        l = 0;
-      [self addDataToWriteBuffer:&msg[l] length:len - l];
-    }
-}
-
-
-- (BOOL)useMultiCellGlyphs
-{
-  return use_multi_cell_glyphs;
+  NSDebugLLog(@"ts", @"setTitle: %@  type: %i", new_title, title_type);
+  
+  if (title_type == 1 || title_type == 0) {
+    ASSIGN(xtermIconTitle, new_title);
+  }
+  if (title_type == 2 || title_type == 0) {
+    ASSIGN(xtermTitle, new_title);
+  }
+  [[NSNotificationCenter defaultCenter]
+		postNotificationName:TerminalViewTitleDidChangeNotification
+                              object:self];
 }
 
 - (int)relativeWidthOfCharacter:(unichar)ch
 {
   int s;
-  if (!use_multi_cell_glyphs)
+  if (!use_multi_cell_glyphs) {
     return 1;
+  }
   s = ceil([font boundingRectForGlyph:ch].size.width/fx);
-  if (s < 1)
+  if (s < 1) {
     return 1;
+  }
   return s;
 }
 
 // Menu item "Edit > Clear Buffer"
 - (void)clearBuffer:(id)sender
 {
-  sb_length = 0;
-  current_scroll = 0;
+  curr_sb_depth = 0;
+  curr_sb_position = 0;
   [self _updateScroller];
   [self setNeedsDisplay:YES];
+}
+
+- (void)benchmark:(id)sender
+{
+  int i;
+  double t1,t2;
+  NSRect r = [self frame];
+  
+  t1 = [NSDate timeIntervalSinceReferenceDate];
+  total_draw = 0;
+  for (i = 0; i < 100; i++) {
+    draw_all = 2;
+    [self lockFocus];
+    [self drawRect:r];
+    [self unlockFocusNeedsFlush:NO];
+  }
+  t2 = [NSDate timeIntervalSinceReferenceDate];
+  t2 -= t1;
+  fprintf(stderr,"%8.4f  %8.5f/redraw   total_draw=%i\n", t2, t2/i, total_draw);
 }
 
 @end
@@ -1344,13 +1066,61 @@ static void set_foreground(NSGraphicsContext *gc,
 
 @implementation TerminalView (scrolling)
 
+/* handle accumulated pending scrolls with a single composite */
+- (void)_handlePendingScroll:(BOOL)lockFocus
+{
+  float x0, y0, w, h, dx, dy;
+
+  if (!pending_scroll) {
+    return;
+  }
+
+  if ((pending_scroll >= sy) || (pending_scroll <= -sy)) {
+    pending_scroll = 0;
+    return;
+  }
+
+  NSDebugLLog(@"draw", @"_handlePendingScroll %i %i", pending_scroll, lockFocus);
+
+  dx = x0 = 0;
+  w = fx * sx;
+
+  if (pending_scroll > 0) {
+    y0 = 0;
+    h = (sy - pending_scroll) * fy;
+    dy = pending_scroll * fy;
+    y0 = (sy * fy) - y0 - h;
+    dy = (sy * fy) - dy - h;
+  } else {
+    pending_scroll = -pending_scroll;
+
+    y0 = pending_scroll * fy;
+    h = (sy - pending_scroll) * fy;
+    dy = 0;
+    y0 = sy * fy - y0 - h;
+    dy = sy * fy - dy - h;
+  }
+
+  if (lockFocus) {
+    [self lockFocus];
+  }
+  DPScomposite(GSCurrentContext(), border_x + x0, border_y + y0, w, h,
+	       [self gState], border_x + dx, border_y + dy, NSCompositeCopy);
+  if (lockFocus) {
+    [self unlockFocusNeedsFlush:NO];
+  }
+
+  num_scrolls++;
+  pending_scroll = 0;
+}
+
 - (void)_updateScroller
 {
-  if (sb_length)
+  if (curr_sb_depth)
     {
       [scroller setEnabled:YES];
-      [scroller setFloatValue:(current_scroll+sb_length)/(float)(sb_length)
-               knobProportion:sy/(float)(sy+sb_length)];
+      [scroller setFloatValue:(curr_sb_position+curr_sb_depth)/(float)(curr_sb_depth)
+               knobProportion:sy/(float)(sy+curr_sb_depth)];
     }
   else
     {
@@ -1360,16 +1130,19 @@ static void set_foreground(NSGraphicsContext *gc,
 
 - (void)_scrollTo:(int)new_scroll update:(BOOL)update
 {
-  if (new_scroll > 0)
+  if (new_scroll > 0) {
     new_scroll = 0;
+  }
   
-  if (new_scroll < -sb_length)
-    new_scroll = -sb_length;
+  if (new_scroll < -curr_sb_depth) {
+    new_scroll = -curr_sb_depth;
+  }
 
-  if (new_scroll == current_scroll)
+  if (new_scroll == curr_sb_position) {
     return;
+  }
   
-  current_scroll = new_scroll;
+  curr_sb_position = new_scroll;
 
   if (update)
     [self _updateScroller];
@@ -1390,7 +1163,7 @@ static void set_foreground(NSGraphicsContext *gc,
   else
     shift = delta;			// as specified by backend
 
-  new_scroll = current_scroll - shift;
+  new_scroll = curr_sb_position - shift;
   [self _scrollTo:new_scroll update:YES];
 }
 
@@ -1400,23 +1173,20 @@ static void set_foreground(NSGraphicsContext *gc,
   int  part = [scroller hitPart];
   BOOL update = YES;
 
-  if (part == NSScrollerKnob ||
-      part == NSScrollerKnobSlot)
-    {
-      float f = [scroller floatValue];
-      new_scroll = (f - 1.0) * sb_length;
-      update = NO;
-    }
-  else if (part == NSScrollerDecrementLine)
-    new_scroll = current_scroll - 1;
-  else if (part == NSScrollerDecrementPage)
-    new_scroll = current_scroll - sy/2;
-  else if (part == NSScrollerIncrementLine)
-    new_scroll = current_scroll+1;
-  else if (part == NSScrollerIncrementPage)
-    new_scroll = current_scroll+sy/2;
-  else
+  if (part == NSScrollerKnob || part == NSScrollerKnobSlot) {
+    new_scroll = ([scroller floatValue] - 1.0) * curr_sb_depth;
+    update = NO;
+  } else if (part == NSScrollerDecrementLine) {
+    new_scroll = curr_sb_position - 1;
+  } else if (part == NSScrollerDecrementPage) {
+    new_scroll = curr_sb_position - sy/2;
+  } else if (part == NSScrollerIncrementLine) {
+    new_scroll = curr_sb_position + 1;
+  } else if (part == NSScrollerIncrementPage) {
+    new_scroll = curr_sb_position + sy/2;
+  } else {
     return;
+  }
 
   [self _scrollTo:new_scroll update:update];
 }
@@ -1424,7 +1194,7 @@ static void set_foreground(NSGraphicsContext *gc,
 - (void)setScroller:(NSScroller *)sc
 {
   [scroller setTarget:nil];
-  ASSIGN(scroller,sc);
+  ASSIGN(scroller, sc);
   [self _updateScroller];
   [scroller setTarget:self];
   [scroller setAction:@selector(_updateScroll:)];
@@ -1444,55 +1214,46 @@ static void set_foreground(NSGraphicsContext *gc,
   NSString *s = [e charactersIgnoringModifiers];
 
   NSDebugLLog(@"key",@"got key flags=%08lx  repeat=%i '%@' '%@' %4i %04x %lu %04x %lu\n",
-              [e modifierFlags],[e isARepeat],[e characters],
-              [e charactersIgnoringModifiers],[e keyCode],
-              [[e characters] characterAtIndex: 0],[[e characters] length],
+              [e modifierFlags], [e isARepeat], [e characters],
+              [e charactersIgnoringModifiers], [e keyCode],
+              [[e characters] characterAtIndex: 0], [[e characters] length],
               [[e charactersIgnoringModifiers] characterAtIndex: 0],
               [[e charactersIgnoringModifiers] length]);
 
-  if ([s length] == 1 && ([e modifierFlags] & NSShiftKeyMask))
-    {
-      unichar ch = [s characterAtIndex:0];
+  if ([s length] == 1 && ([e modifierFlags] & NSShiftKeyMask)) {
+    unichar ch = [s characterAtIndex:0];
       
-      if ([e modifierFlags] & NSShiftKeyMask)
-        {
-          if (ch == NSPageUpFunctionKey)
-            {
-              [self _scrollTo:current_scroll - sy + 1 update:YES];
-              return;
-            }
-          if (ch == NSPageDownFunctionKey)
-            {
-              [self _scrollTo:current_scroll + sy - 1 update:YES];
-              return;
-            }
-        }
+    if ([e modifierFlags] & NSShiftKeyMask) {
+      if (ch == NSPageUpFunctionKey) {
+        [self _scrollTo:(curr_sb_position - sy + 1) update:YES];
+        return;
+      }
+      if (ch == NSPageDownFunctionKey) {
+        [self _scrollTo:(curr_sb_position + sy - 1) update:YES];
+        return;
+      }
     }
+  }
 
   /* don't check until we get here so we handle scrollback page-up/down
      even when the view's idle */
-  if (master_fd == -1)
+  if (master_fd == -1) {
     return;
+  }
 
-  [tp handleKeyEvent:e];
-  
-  // unichar ch = [s characterAtIndex:0];
-  // if (ch == NSCarriageReturnCharacter)
-  //   {
-  //     // User pressed 'Return' key - terminal shell run the command
-  //     NSLog(@"'Return' key pressed - command runs in shell? PGID: %i(%i)",
-  //           tcgetpgrp(master_fd), childPID);
-  //   }
+  [terminalParser handleKeyEvent:e];
 }
 
 - (BOOL)acceptsFirstResponder
 {
   return YES;
 }
+
 - (BOOL)becomeFirstResponder
 {
   return YES;
 }
+
 - (BOOL)resignFirstResponder
 {
   return YES;
@@ -1509,7 +1270,7 @@ static void set_foreground(NSGraphicsContext *gc,
 
 - (NSString *)_selectionAsString
 {
-  int ofs = max_scrollback * sx;
+  int ofs = max_sb_depth * sx;
   NSMutableString *mstr;
   NSString *tmp;
   unichar buf[32];
@@ -1529,7 +1290,7 @@ static void set_foreground(NSGraphicsContext *gc,
       while (1)
         {
           if (i < 0)
-            ch = sbuf[ofs+i].ch;
+            ch = sb_buffer[ofs+i].ch;
           else
             ch = screen[i].ch;
 
@@ -1599,10 +1360,10 @@ static void set_foreground(NSGraphicsContext *gc,
 {
   int i,j,ofs2;
 
-  if (s.location < -sb_length * sx)
+  if (s.location < -curr_sb_depth * sx)
     {
-      s.length += sb_length * sx + s.location;
-      s.location =- sb_length * sx;
+      s.length += curr_sb_depth * sx + s.location;
+      s.location =- curr_sb_depth * sx;
     }
   if (s.location + s.length > sx * sy)
     {
@@ -1614,7 +1375,7 @@ static void set_foreground(NSGraphicsContext *gc,
   if (s.length == selection.length && s.location == selection.location)
     return;
 
-  ofs2 = max_scrollback * sx;
+  ofs2 = max_sb_depth * sx;
 
   j = selection.location + selection.length;
   if (j > s.location)
@@ -1622,8 +1383,8 @@ static void set_foreground(NSGraphicsContext *gc,
 
   for (i = selection.location;i < j && i < 0;i++)
     {
-      sbuf[ofs2+i].attr &= 0xbf;
-      sbuf[ofs2+i].attr |= 0x80;
+      sb_buffer[ofs2+i].attr &= 0xbf;
+      sb_buffer[ofs2+i].attr |= 0x80;
     }
   for (;i < j;i++)
     {
@@ -1637,8 +1398,8 @@ static void set_foreground(NSGraphicsContext *gc,
   j = selection.location + selection.length;
   for (;i<j && i<0;i++)
     {
-      sbuf[ofs2+i].attr &= 0xbf;
-      sbuf[ofs2+i].attr |= 0x80;
+      sb_buffer[ofs2+i].attr &= 0xbf;
+      sb_buffer[ofs2+i].attr |= 0x80;
     }
   for (;i<j;i++)
     {
@@ -1650,8 +1411,8 @@ static void set_foreground(NSGraphicsContext *gc,
   j = s.location+s.length;
   for (;i<j && i<0;i++)
     {
-      if (!(sbuf[ofs2+i].attr & 0x40))
-        sbuf[ofs2+i].attr |= 0xc0;
+      if (!(sb_buffer[ofs2+i].attr & 0x40))
+        sb_buffer[ofs2+i].attr |= 0xc0;
     }
   for (;i<j;i++)
     {
@@ -1700,7 +1461,7 @@ static void set_foreground(NSGraphicsContext *gc,
   
   str = [pb stringForType:NSStringPboardType];
   if (str)
-    [tp sendString:str];
+    [terminalParser sendString:str];
 }
 
 // Menu item "Edit > Paste Selection"
@@ -1713,7 +1474,7 @@ static void set_foreground(NSGraphicsContext *gc,
       return;
     }
   if (s)
-    [tp sendString:s];
+    [terminalParser sendString:s];
 }
 
 // Menu item "Font > Copy Font"
@@ -1777,8 +1538,8 @@ static void set_foreground(NSGraphicsContext *gc,
 - (void)selectAll:(id)sender
 {
   struct selection_range s;
-  s.location = 0 - (sb_length * sx);
-  s.length = (sx * sy) + (sb_length * sx);
+  s.location = 0 - (curr_sb_depth * sx);
+  s.length = (sx * sy) + (curr_sb_depth * sx);
   [self _setSelection:s];
 }
 
@@ -1846,13 +1607,13 @@ static void set_foreground(NSGraphicsContext *gc,
 
   if (g == 2)
     { /* select words */
-      int ofs = max_scrollback * sx;
+      int ofs = max_sb_depth * sx;
       unichar ch,ch2;
       NSCharacterSet *cs;
       int i,j;
 
       if (pos < 0)
-        ch = sbuf[ofs+pos].ch;
+        ch = sb_buffer[ofs+pos].ch;
       else
         ch = screen[pos].ch;
       if (ch == 0) ch = ' ';
@@ -1882,7 +1643,7 @@ static void set_foreground(NSGraphicsContext *gc,
       for (i = pos-1; i >= j; i--)
         {
           if (i < 0)
-            ch2 = sbuf[ofs+i].ch;
+            ch2 = sb_buffer[ofs+i].ch;
           else
             ch2 = screen[i].ch;
           if (ch2 == 0) ch2 = ' ';
@@ -1897,7 +1658,7 @@ static void set_foreground(NSGraphicsContext *gc,
       for (i = pos+1; i < j; i++)
         {
           if (i < 0)
-            ch2 = sbuf[ofs+i].ch;
+            ch2 = sb_buffer[ofs+i].ch;
           else
             ch2=screen[i].ch;
           if (ch2 == 0) ch2 = ' ';
@@ -1939,7 +1700,7 @@ static void set_foreground(NSGraphicsContext *gc,
       p.y = ceil((p.y - border_y)/fy);
       if (p.y < -1) p.y = -1;
       if (p.y > sy) p.y = sy;
-      p.y = sy - p.y + current_scroll;
+      p.y = sy - p.y + curr_sb_position;
       ofs1 = ((int)p.x) + ((int)p.y) * sx;
 
       r1 = [self _selectionRangeAt:ofs1 granularity:g];
@@ -1995,11 +1756,13 @@ static void set_foreground(NSGraphicsContext *gc,
   NSString *str;
 
   type=[pb availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]];
-  if (!type)
+  if (!type) {
     return;
+  }
   str = [pb stringForType:NSStringPboardType];
-  if (str)
-    [tp sendString:str];
+  if (str) {
+    [terminalParser sendString:str];
+  }
 }
 
 @end
@@ -2051,18 +1814,18 @@ static void set_foreground(NSGraphicsContext *gc,
 
           [self closeProgram];
 
-          [tp processByte: '\n'];
-          [tp processByte: '\r'];
+          [terminalParser processByte: '\n'];
+          [terminalParser processByte: '\r'];
           msg = _(@"[Process exited]");
           c = [msg length];
           for (i=0; i<c; i++)
             {
               ch = [msg characterAtIndex:i];
               if (ch < 256) /* TODO */
-                [tp processByte:ch];
+                [terminalParser processByte:ch];
             }
-          [tp processByte: '\n'];
-          [tp processByte: '\r'];
+          [terminalParser processByte: '\n'];
+          [terminalParser processByte: '\r'];
 
           // Sending this notification might cause us to be deallocated, in
           // which case we can't let the rest of code here run (and we'd rather
@@ -2085,7 +1848,7 @@ static void set_foreground(NSGraphicsContext *gc,
 
 
       for (i=0;i<size;i++)
-        [tp processByte: buf[i]];
+        [terminalParser processByte: buf[i]];
 
       total+=size;
       /*
@@ -2128,11 +1891,11 @@ static void set_foreground(NSGraphicsContext *gc,
       dr.origin.y += border_y;
       [self setNeedsLazyDisplayInRect:dr];
 
-      if (current_scroll != 0)
+      if (curr_sb_position != 0)
         { /* TODO */
           if (scroll_bottom_on_input == YES)
             {
-              current_scroll = 0;
+              curr_sb_position = 0;
             }
           [self setNeedsDisplay:YES];
         }
@@ -2225,7 +1988,7 @@ static void set_foreground(NSGraphicsContext *gc,
   int flags;
 
   NSDebugLLog(@"pty",@"-runProgram: %@ withArguments: %@ initialInput: %@",
-              path,args,d);
+              path, args, d);
 
   [self closeProgram];
 
@@ -2233,74 +1996,65 @@ static void set_foreground(NSGraphicsContext *gc,
   
   cpath = [path cString];
   programPath = [path copy];
-  if (arg0)
+  if (arg0) {
     cargs[0] = [arg0 cString];
-  else
+  } else {
     cargs[0] = cpath;
-  
-  for (i=0; i<[args count]; i++)
-    {
-      cargs[i+1] = [[args objectAtIndex:i] cString];
-    }
+  }
+  for (i = 0; i < [args count]; i++) {
+    cargs[i+1] = [[args objectAtIndex:i] cString];
+  }
   cargs[i+1] = NULL;
 
-  if (d)
-    {
-      if (pipe(pipefd))
-        {
-          NSLog(@"Unable to open pipe for input: %m.");
-          return -1;
-        }
-      NSDebugLLog(@"pty",@"creating pipe for initial data, got %i %i",
-                  pipefd[0],pipefd[1]);
+  if (d) {
+    if (pipe(pipefd)) {
+      NSLog(@"Unable to open pipe for input: %m.");
+      return -1;
     }
+    NSDebugLLog(@"pty",@"creating pipe for initial data, got %i %i",
+                pipefd[0], pipefd[1]);
+  }
   
   ws.ws_row = sy;
   ws.ws_col = sx;
   tty_name = malloc(128 * sizeof(char)); // 128 should be enough?
   pid = forkpty(&master_fd, tty_name, NULL, &ws);
-  if (pid < 0)
-    {
-      NSLog(@"Unable to fork: %m.");
-      return pid;
+  if (pid < 0) {
+    NSLog(@"Unable to fork: %m.");
+    return pid;
+  }
+
+  if (pid == 0) { // child process
+    if (d) {
+      close(pipefd[1]);
+      dup2(pipefd[0], 0);
     }
 
-  if (pid == 0) // child process
-    {
-      if (d)
-        {
-          close(pipefd[1]);
-          dup2(pipefd[0],0);
-        }
+    if (cdirectory && (chdir(cdirectory) < 0)) {
+      fprintf(stderr, "Unable do set directory: %s\n", cdirectory);
+    }
 
-      if (cdirectory)
-        if (chdir(cdirectory) < 0)
-          fprintf(stderr, "Unable do set directory: %s\n", cdirectory);
+    putenv("TERM=linux");
+    putenv("TERM_PROGRAM=GNUstep_Terminal");
 
-      putenv("TERM=linux");
-      putenv("TERM_PROGRAM=GNUstep_Terminal");
+    // fprintf(stderr, "Child process terminal: %s\n", ttyname(0));
 
-      // fprintf(stderr, "Child process terminal: %s\n", ttyname(0));
-
-      execvp(cpath,(char *const*)cargs);
+    execvp(cpath, (char *const*)cargs);
       
-      fprintf(stderr,"Unable to spawn process '%s': %m!",cpath);
-      exit(1);
-    }
+    fprintf(stderr,"Unable to spawn process '%s': %m!", cpath);
+    exit(1);
+  }
 
   NSDebugLLog(@"pty",@"forked child %i, fd %i",pid,master_fd);
 
   /* Set non-blocking mode for the descriptor. */
   flags = fcntl(master_fd,F_GETFL,0);
-  if (flags == -1)
-    {
-      NSLog(@"Unable to set non-blocking mode: %m.");
-    }
-  else
-    {
-      flags |= O_NONBLOCK;
-      fcntl(master_fd,F_SETFL,flags);
-    }
+  if (flags == -1) {
+    NSLog(@"Unable to set non-blocking mode: %m.");
+  } else {
+    flags |= O_NONBLOCK;
+    fcntl(master_fd, F_SETFL, flags);
+  }
 
   rl = [NSRunLoop currentRunLoop];
   [rl addEvent:(void *)(intptr_t)master_fd
@@ -2324,15 +2078,14 @@ static void set_foreground(NSGraphicsContext *gc,
                               object:self];
 
   // Send initial input
-  if (d)
-    {
-      const char *s = [d UTF8String];
-      close(pipefd[0]);
-      write(pipefd[1], s, strlen(s));
-      close(pipefd[1]);
-    }
+  if (d) {
+    const char *s = [d UTF8String];
+    close(pipefd[0]);
+    write(pipefd[1], s, strlen(s));
+    close(pipefd[1]);
+  }
 
-  childPID = pid;
+  child_pid = pid;
   
   return pid;
 }
@@ -2356,20 +2109,18 @@ static void set_foreground(NSGraphicsContext *gc,
 
   path = [defaults shell];
   args = [path componentsSeparatedByString:@" "];
-  if ([args count] > 1)
-    {
-      path = [args objectAtIndex:0];
-      args = [args subarrayWithRange:NSMakeRange(1,[args count]-1)];
-    }
-  else
-    {
-      args = nil;
-    }
+  if ([args count] > 1) {
+    path = [args objectAtIndex:0];
+    args = [args subarrayWithRange:NSMakeRange(1, [args count] - 1)];
+  } else {
+    args = nil;
+  }
   
-  if ([defaults loginShell])
+  if ([defaults loginShell]) {
     arg0 = [@"-" stringByAppendingString:path];
-  else
+  } else {
     arg0 = path;
+  }
   
   return [self runProgram:path
             withArguments:args
@@ -2441,14 +2192,14 @@ static int handled_mask = (NSDragOperationCopy |
 
     // Insert space if previous character is not space
     if (SCREEN(cursor_x - 1, cursor_y).ch != ' ') {
-      [tp sendString:@" "];
+      [terminalParser sendString:@" "];
     }
 
     c = [data count];
     for (i = 0; i < c; i++) {
-      [tp sendString:[data objectAtIndex:i]];
+      [terminalParser sendString:[data objectAtIndex:i]];
       if (i < (c - 1)) {
-        [tp sendString:@" "];
+        [terminalParser sendString:@" "];
       }
     }
     return YES;
@@ -2456,7 +2207,7 @@ static int handled_mask = (NSDragOperationCopy |
 
   if ([types containsObject:NSStringPboardType]) {
     NSString *str = [pb stringForType:NSStringPboardType];
-    [tp sendString:str];
+    [terminalParser sendString:str];
     return YES;
   }
 
@@ -2477,183 +2228,171 @@ static int handled_mask = (NSDragOperationCopy |
 // ---
 - (void)_resizeTerminalTo:(NSSize)size
 {
-  int nsx,nsy;
+  int nsx, nsy;
   struct winsize ws;
-  screen_char_t *nscreen,*nsbuf;
+  screen_char_t *nscreen, *new_sb_buffer;
   int iy,ny;
   int copy_sx;
 
-  nsx = (size.width-border_x)/fx;
-  nsy = (size.height-border_y)/fy;
+  nsx = (size.width - border_x) / fx;
+  nsy = (size.height - border_y) / fy;
 
   NSDebugLLog(@"term",@"_resizeTerminalTo: (%g %g) %i %i (%g %g)\n",
               size.width, size.height,
               nsx, nsy,
               nsx*fx, nsy*fy);
 
-  if (ignore_resize)
-    {
-      NSDebugLLog(@"term",@"ignored");
-      return;
-    }
+  if (ignore_resize) {
+    NSDebugLLog(@"term",@"ignored");
+    return;
+  }
 
-  if (nsx < 1) nsx = 1;
-  if (nsy < 1) nsy = 1;
+  if (nsx < 1) {
+    nsx = 1;
+  }
+  if (nsy < 1) {
+    nsy = 1;
+  }
 
-  if (nsx==sx && nsy==sy)
-    {
-      /* Do a complete redraw anyway. Even though we don't really need it,
-         the resize might have caused other things to overwrite our part of the
-         window. */
-      draw_all=2;
-      return;
-    }
+  /* Do a complete redraw anyway. Even though we don't really need it,
+     the resize might have caused other things to overwrite our part of the
+     window. */
+  if (nsx == sx && nsy == sy) {
+    draw_all=2;
+    return;
+  }
 
   [self _clearSelection]; /* TODO? */
 
   // Prepare new screen and history buffer
-  nscreen=malloc(nsx*nsy*sizeof(screen_char_t));
-  nsbuf=malloc(nsx*max_scrollback*sizeof(screen_char_t));
-  if (!nscreen || !nsbuf)
-    {
-      NSLog(@"Failed to allocate screen buffer!");
-      if (nscreen)
-        free(nscreen);
-      if (nsbuf)
-        free(nsbuf);
-      return;
-    }
+  nscreen = malloc(nsx * nsy * sizeof(screen_char_t));
+  new_sb_buffer = malloc(nsx * max_sb_depth * sizeof(screen_char_t));
+  if (!nscreen || !new_sb_buffer) {
+    NSLog(@"Failed to allocate screen buffer!");
+    if (nscreen)
+      free(nscreen);
+    if (new_sb_buffer)
+      free(new_sb_buffer);
+    return;
+  }
   memset(nscreen, 0, sizeof(screen_char_t) * nsx * nsy);
-  memset(nsbuf, 0, sizeof(screen_char_t) * nsx * max_scrollback);
+  memset(new_sb_buffer, 0, sizeof(screen_char_t) * nsx * max_sb_depth);
 
-  copy_sx=sx;
-  if (copy_sx > nsx)
+  copy_sx = sx;
+  if (copy_sx > nsx) {
     copy_sx = nsx;
+  }
 
   //NSLog(@"copy %i+%i %i  (%ix%i)-(%ix%i)\n",start,num,copy_sx,sx,sy,nsx,nsy);
 
   /* TODO: handle resizing and scrollback improve? */
   // sy,sx - current screen height(lines) and width(chars)
   // nsy,nsx - screen height(lines) and width(chars) after resize 
-  // sb_length - current scroll buffer length
+  // curr_sb_depth - current scroll buffer length (lines)
   // cursor_y - vertical position of cursor (starts from 0)
   
   // fprintf(stderr,
-  //         "***> sb_length=%i, max_scrollback=%i, sy=%i, nsy=%i cursor_y=%i\n",
-  //         sb_length, max_scrollback, sy, nsy, cursor_y);
+  //         "***> curr_sb_depth=%i, max_sb_depth=%i, sy=%i, nsy=%i cursor_y=%i\n",
+  //         curr_sb_depth, max_sb_depth, sy, nsy, cursor_y);
 
   // what amount of lines shifted?
   // value is positive if gap between last line and view bottom exist
   // value is negative if resized view overlap bottom lines
-  int line_shift = nsy - (cursor_y+1);
-  // int last_line = (sy > nsy) ? sy-1 : sy-1 + sb_length;
+  int line_shift = nsy - (cursor_y + 1);
 
   // increase with scrollbuffer
-  if (sy <= nsy && sb_length > 0 && line_shift > sb_length)
-    line_shift = sb_length;
+  if ((sy <= nsy) && (curr_sb_depth > 0) && (line_shift > curr_sb_depth)) {
+    line_shift = curr_sb_depth;
+  }
 
   // NOTE: this part of code is not very short, but it's clear and simple.
   // Leave it as is.
-  for (iy=-sb_length; iy<sy; iy++)
-    {
-      screen_char_t *src,*dst;
+  for (iy = -curr_sb_depth; iy < sy; iy++) {
+    screen_char_t *src, *dst;
 
-      // what is direction of resize: increase or descrease?
-      if (sy > nsy)
-        // decrease
-        {
-          // cut bottom of 'screen' or not?
-          if (cursor_y < nsy)
-            // cut
-            {
-              ny = iy;
-            }
-          else
-            // not cut
-            {
-              ny = iy + line_shift;
-            }
-        }
-      else
-        // increase
-        {
-          // do we have scrollback buffer filled?
-          if (sb_length > 0)
-            // YES
-            {
-              // if (line_shift > sb_length) line_shift = sb_length;
-              ny = iy + line_shift;
-            }
-          else
-            // NO
-            {
-              ny = iy;
-            }
-        }
-      if (ny >= nsy)
-        break;
-
-      if (ny < -max_scrollback)
-        continue;
-      
-      // fprintf(stderr, "* iy=%i ny=%i\n", iy, ny);
-      
-      if (iy < 0)
-        src = &sbuf[sx*(max_scrollback+iy)];
-      else
-        src = &screen[sx*iy];
-
-      if (ny < 0)
-        dst = &nsbuf[nsx*(max_scrollback+ny)];
-      else
-        dst = &nscreen[nsx*ny];
-
-      memcpy(dst, src, copy_sx*sizeof(screen_char_t));
+    // what is direction of resize: increase or descrease?
+    if (sy > nsy) { // decrease
+      // cut bottom of 'screen' or not?
+      if (cursor_y < nsy) { // cut
+        ny = iy;
+      } else { // not cut
+        ny = iy + line_shift;
+      }
+    } else { // increase
+      // do we have scrollback buffer filled?
+      if (curr_sb_depth > 0) { // YES
+        ny = iy + line_shift;
+      } else { // NO
+        ny = iy;
+      }
     }
+    if (ny >= nsy) {
+      break;
+    }
+    if (ny < -max_sb_depth) {
+      continue;
+    }
+      
+    // fprintf(stderr, "* iy=%i ny=%i\n", iy, ny);
+      
+    if (iy < 0) {
+      src = &sb_buffer[sx * (max_sb_depth + iy)];
+    } else {
+      src = &screen[sx * iy];
+    }
+    if (ny < 0) {
+      dst = &new_sb_buffer[nsx * (max_sb_depth + ny)];
+    } else {
+      dst = &nscreen[nsx * ny];
+    }
+    memcpy(dst, src, copy_sx * sizeof(screen_char_t));
+  }
 
   // update cursor y position
-  if ((sy < nsy) && (sb_length > 0))
-    {
-      cursor_y = cursor_y + line_shift;
-    }
+  if ((sy < nsy) && (curr_sb_depth > 0)) {
+    cursor_y = cursor_y + line_shift;
+  }
 
   // Calculate new scroll buffer length
-  if (nsy <= cursor_y || sy < nsy)
-    sb_length = sb_length - line_shift;
-  
-  if (sb_length > max_scrollback)
-    sb_length = max_scrollback;
-  if (sb_length < 0)
-    sb_length = 0;
-
+  if (nsy <= cursor_y || sy < nsy) {
+    curr_sb_depth = curr_sb_depth - line_shift;
+  }
+  if (curr_sb_depth > max_sb_depth) {
+    curr_sb_depth = max_sb_depth;
+  }
+  if (curr_sb_depth < 0) {
+    curr_sb_depth = 0;
+  }
   // fprintf(stderr,
-  //         "***< sb_length=%i, max_scrollback=%i, sy=%i, nsy=%i cursor_y=%i\n",
-  //         sb_length, max_scrollback, sy, nsy, cursor_y);
+  //         "***< curr_sb_depth=%i, max_sb_depth=%i, sy=%i, nsy=%i cursor_y=%i\n",
+  //         curr_sb_depth, max_sb_depth, sy, nsy, cursor_y);
 
-  sx=nsx;
-  sy=nsy;
+  sx = nsx;
+  sy = nsy;
   free(screen);
-  free(sbuf);
-  screen=nscreen;
-  sbuf=nsbuf;
+  free(sb_buffer);
+  screen = nscreen;
+  sb_buffer = new_sb_buffer;
 
-  if (cursor_x > sx) cursor_x = sx-1;
-  if (cursor_y > sy) cursor_y = sy-1;
-  
+  if (cursor_x > sx) {
+    cursor_x = sx - 1;
+  }
+  if (cursor_y > sy) {
+    cursor_y = sy - 1;
+  }
   // fprintf(stderr,
-  //         "***< sb_length=%i, max_scrollback=%i, sy=%i, nsy=%i cursor_y=%i line_shift=%i\n",
-  //         sb_length, max_scrollback, sy, nsy, cursor_y, line_shift);
+  //         "***< curr_sb_depth=%i, max_sb_depth=%i, sy=%i, nsy=%i cursor_y=%i line_shift=%i\n",
+  //         curr_sb_depth, max_sb_depth, sy, nsy, cursor_y, line_shift);
 
   [self _updateScroller];
 
-  [tp setTerminalScreenWidth:sx height:sy cursorY:cursor_y];
+  [terminalParser setTerminalScreenWidth:sx height:sy cursorY:cursor_y];
 
-  if (master_fd != -1)
-    {
-      ws.ws_row = nsy;
-      ws.ws_col = nsx;
-      ioctl(master_fd,TIOCSWINSZ,&ws);
-    }
+  if (master_fd != -1) {
+    ws.ws_row = nsy;
+    ws.ws_col = nsx;
+    ioctl(master_fd, TIOCSWINSZ, &ws);
+  }
 
   [self setNeedsDisplay:YES];
 }
@@ -2689,15 +2428,11 @@ static int handled_mask = (NSDragOperationCopy |
   if (!(self = [super initWithFrame:frame])) return nil;
 
   [self setFont:[defaults terminalFont]];
-  if ([defaults useBoldTerminalFont])
-    {
-      [self
-        setBoldFont:[Defaults boldTerminalFontForFont:[defaults terminalFont]]];
-    }
-  else
-    {
-      [self setBoldFont:[defaults terminalFont]];
-    }
+  if ([defaults useBoldTerminalFont]) {
+    [self setBoldFont:[Defaults boldTerminalFontForFont:[defaults terminalFont]]];
+  } else {
+    [self setBoldFont:[defaults terminalFont]];
+  }
 
   [self setAdditionalWordCharacters:[defaults wordCharacters]];
 
@@ -2707,14 +2442,14 @@ static int handled_mask = (NSDragOperationCopy |
   memset(screen,0,sizeof(screen_char_t)*sx*sy);
   draw_all = 2;
 
-  max_scrollback = [defaults scrollBackLines];
-  sbuf = malloc(sizeof(screen_char_t)*sx*max_scrollback);
-  memset(sbuf,0,sizeof(screen_char_t)*sx*max_scrollback);
+  max_sb_depth = [defaults scrollBackLines];
+  sb_buffer = malloc(sizeof(screen_char_t)*sx*max_sb_depth);
+  memset(sb_buffer, 0, sizeof(screen_char_t)*sx*max_sb_depth);
   scroll_bottom_on_input = [defaults scrollBottomOnInput];
 
-  tp = [[TerminalParser_Linux alloc] initWithTerminalScreen:self
-                                                      width:sx
-                                                     height:sy];
+  terminalParser = [[TerminalParser_Linux alloc] initWithTerminalScreen:self
+                                                                  width:sx
+                                                                 height:sy];
   master_fd = -1;
 
   [self registerForDraggedTypes:
@@ -2742,7 +2477,7 @@ static int handled_mask = (NSDragOperationCopy |
 
 - (NSObject<TerminalParser> *)terminalParser
 {
-  return tp;
+  return terminalParser;
 }
 
 - (void)dealloc
@@ -2751,15 +2486,15 @@ static int handled_mask = (NSDragOperationCopy |
 
   [self closeProgram];
 
-  DESTROY(tp);
+  DESTROY(terminalParser);
 
   [scroller setTarget:nil];
   DESTROY(scroller);
 
   free(screen);
-  free(sbuf);
-  screen=NULL;
-  sbuf=NULL;
+  free(sb_buffer);
+  screen = NULL;
+  sb_buffer = NULL;
 
   DESTROY(additionalWordCharacters);
   DESTROY(font);
@@ -2786,7 +2521,7 @@ static int handled_mask = (NSDragOperationCopy |
 // - (NSString *)stringForRange:(struct selection_range)range
 - (NSString *)stringRepresentation
 {
-  int			ofs = max_scrollback * sx;
+  int			ofs = max_sb_depth * sx;
   NSMutableString	*mstr = [[NSMutableString alloc] init];
   NSString		*tmp;
   unichar		buf[32];
@@ -2794,74 +2529,76 @@ static int handled_mask = (NSDragOperationCopy |
   int			start_index, end_index;
   int			len;
 
-  if (sb_length > 0)
-    start_index = -(sb_length * sx);
-  else
+  if (curr_sb_depth > 0) {
+    start_index = -(curr_sb_depth * sx);
+  } else {
     start_index = 0;
-  
+  }
   end_index = sx * sy;
-  // j = abs(sb_length * sx) + range.length;
+  // j = abs(curr_sb_depth * sx) + range.length;
   // range.length = scrollbuffer size + visible area size in terms of chars
   len = 0;
-  for (int i = start_index; i < end_index; i++)
-    {
-      if (i < 0)
-        ch = sbuf[ofs+i].ch;
-      else
-        ch = screen[i].ch;
-
-      if (i >= end_index)
-        break;
-
-      buf[len++] = ch;
-      
-      if (len == 32)
-        {
-          tmp = [[NSString alloc] initWithCharacters:buf length:32];
-          [mstr appendString:tmp];
-          DESTROY(tmp);
-          len = 0;
-        }
+  for (int i = start_index; i < end_index; i++) {
+    if (i < 0) {
+      ch = sb_buffer[ofs+i].ch;
+    } else {
+      ch = screen[i].ch;
+    }
+    if (i >= end_index) {
+      break;
     }
 
-  if (len)
-    {
-      tmp = [[NSString alloc] initWithCharacters:buf length:len];
+    buf[len++] = ch;
+      
+    if (len == 32) {
+      tmp = [[NSString alloc] initWithCharacters:buf length:32];
       [mstr appendString:tmp];
       DESTROY(tmp);
+      len = 0;
     }
+  }
+
+  if (len) {
+    tmp = [[NSString alloc] initWithCharacters:buf length:len];
+    [mstr appendString:tmp];
+    DESTROY(tmp);
+  }
 
   NSLog(@"TerminalView stringRepresentation length: %lu", [mstr length]);
 
   return mstr;
 }
+
 - (NSRange)selectedRange
 {
   NSRange range = NSMakeRange(0, 0);
 
   range.length = selection.length;
 
-  if (selection.location < 0)
-    range.location = (sb_length * sx) + selection.location;
-  else
+  if (selection.location < 0) {
+    range.location = (curr_sb_depth * sx) + selection.location;
+  } else {
     range.location = selection.location;
+  }
   
   return range;
 }
+
 - (void)setSelectedRange:(NSRange)range
 {
   struct selection_range s;
 
-  s.location = range.location - (sb_length * sx);
+  s.location = range.location - (curr_sb_depth * sx);
   s.length = range.length;
   
   [self _setSelection:s];
 }
+
 - (void)scrollRangeToVisible:(NSRange)range
 {
   int scroll_to;
   
-  scroll_to = ((range.location/sx) - sb_length); // - sy/2;
+  scroll_to = ((range.location/sx) - curr_sb_depth); // - sy/2;
   [self _scrollTo:scroll_to update:YES];
 }
 
@@ -2909,26 +2646,28 @@ static int handled_mask = (NSDragOperationCopy |
 
 - (int)scrollBufferLength
 {
-  return sb_length;
+  return curr_sb_depth;
 }
 
 - (void)setScrollBufferMaxLength:(int)lines
 {
-  if (max_scrollback == lines) return;
+  if (max_sb_depth == lines) {
+    return;
+  }
   
-  max_scrollback = lines;
+  max_sb_depth = lines;
   
-  if (max_scrollback == 0)
+  if (max_sb_depth == 0)
     [self clearBuffer:self];
 
-  {// Adopt scrollback buffer to new 'max_scrollback' value
-    screen_char_t *nsbuf;
-    int sby = (max_scrollback > 0) ? max_scrollback : 1;
+  {// Adopt scrollback buffer to new 'max_sb_depth' value
+    screen_char_t *new_sb_buffer;
+    int sby = (max_sb_depth > 0) ? max_sb_depth : 1;
 
-    nsbuf = malloc(sizeof(screen_char_t) * sx * sby);
-    memset(nsbuf, 0, sizeof(screen_char_t) * sx * sby);
-    free(sbuf);
-    sbuf = nsbuf;
+    new_sb_buffer = malloc(sizeof(screen_char_t) * sx * sby);
+    memset(new_sb_buffer, 0, sizeof(screen_char_t) * sx * sby);
+    free(sb_buffer);
+    sb_buffer = new_sb_buffer;
   }  
 }
 
@@ -2944,7 +2683,7 @@ static int handled_mask = (NSDragOperationCopy |
 
 - (void)setCharset:(NSString *)charsetName
 {
-  [tp setCharset:charsetName];
+  [terminalParser setCharset:charsetName];
 }
 - (void)setUseMulticellGlyphs:(BOOL)multicellGlyphs
 {
@@ -2952,11 +2691,11 @@ static int handled_mask = (NSDragOperationCopy |
 }
 - (void)setDoubleEscape:(BOOL)doubleEscape
 {
-  [tp setDoubleEscape:doubleEscape];
+  [terminalParser setDoubleEscape:doubleEscape];
 }
 - (void)setAlternateAsMeta:(BOOL)altAsMeta
 {
-  [tp setAlternateAsMeta:altAsMeta];
+  [terminalParser setAlternateAsMeta:altAsMeta];
 }
 
 // ---
@@ -2997,7 +2736,7 @@ static int handled_mask = (NSDragOperationCopy |
 
 - (BOOL)isUserProgramRunning
 {
-  return (master_fd == -1) || (tcgetpgrp(master_fd) == childPID) ? NO : YES;
+  return (master_fd == -1) || (tcgetpgrp(master_fd) == child_pid) ? NO : YES;
 }
 
 
@@ -3032,22 +2771,24 @@ static int handled_mask = (NSDragOperationCopy |
 {
   NSString *itemTitle = [menuItem title];
 
-  if ([itemTitle isEqualToString:@"Clear Buffer"] && (sb_length <= 0))
+  if ([itemTitle isEqualToString:@"Clear Buffer"] && (curr_sb_depth <= 0)) {
     return NO;
-  if ([itemTitle isEqualToString:@"Copy"] && (selection.length <= 0))
+  }
+  if ([itemTitle isEqualToString:@"Copy"] && (selection.length <= 0)) {
     return NO;
-  if ([itemTitle isEqualToString:@"Paste Selection"] && (selection.length <= 0))
+  }
+  if ([itemTitle isEqualToString:@"Paste Selection"] && (selection.length <= 0)) {
     return NO;
-  if ([itemTitle isEqualToString:@"Copy Font"])
-    {
-      // TODO
+  }
+  if ([itemTitle isEqualToString:@"Copy Font"]) {
+    // TODO
+  }
+  if ([itemTitle isEqualToString:@"Paste Font"]) {
+    NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSFontPboard];
+    if ([pb dataForType:NSFontPboardType] == nil) {
+      return NO;
     }
-  if ([itemTitle isEqualToString:@"Paste Font"])
-    {
-      NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSFontPboard];
-      if ([pb dataForType:NSFontPboardType] == nil)
-        return NO;
-    }
+  }
 
   return YES;
 }

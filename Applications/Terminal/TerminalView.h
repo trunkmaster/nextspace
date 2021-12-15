@@ -33,69 +33,74 @@ struct selection_range
 
 @interface TerminalView : NSView
 {
-  NSString	*xtermTitle;
-  NSString	*xtermIconTitle;
+  Defaults     *defaults;
+  NSString     *xtermTitle;
+  NSString     *xtermIconTitle;
   
-  NSString	*programPath;
-  NSString	*childTerminalName;
-  int		childPID;
+  NSString     *programPath;
+  NSString     *childTerminalName;
+  int          child_pid;
 
-  int		master_fd;
-  NSFileHandle	*masterFDHandle;
+  int          master_fd;
+  NSFileHandle *masterFDHandle;
   
-  NSObject<TerminalParser> *tp;
+  NSObject<TerminalParser> *terminalParser;
 
-  NSFont	*font;
-  NSFont	*boldFont;
-  int		font_encoding;
-  int		boldFont_encoding;
-  BOOL		use_multi_cell_glyphs;
-  float		fx,fy,fx0,fy0;
+  NSFont *font;
+  NSFont *boldFont;
+  int    font_encoding;
+  int    boldFont_encoding;
+  BOOL   use_multi_cell_glyphs;
+  float  fx, fy, fx0, fy0;
 
   struct {
-    int x0,y0,x1,y1;
+    int x0, y0, x1, y1;
   } dirty;
 
-  NSScroller	*scroller;
-  BOOL		scroll_bottom_on_input;
 
   unsigned char	*write_buf;
-  int		write_buf_len, write_buf_size;
+  int           write_buf_len;
+  int           write_buf_size;
 
-  int		max_scrollback;
-  int		sb_length;
-  int		current_scroll;
-  screen_char_t	*sbuf;
-
-  int		sx,sy;
-  screen_char_t *screen;
-
-  int cursor_x, cursor_y;
-  int current_x,current_y;
-
-  int  draw_all; /* 0=only lazy, 1=don't know, do all, 2=do all */
-  BOOL draw_cursor;
-
-  struct selection_range selection;
-
-  /* scrolling by compositing takes a long while, so we break out of such
+  // ---
+  // Scrolling
+  // ---
+  NSScroller	*scroller;
+  BOOL		scroll_bottom_on_input; /* preference */
+  // Scrollback
+  screen_char_t	*sb_buffer;       /* scrollback buffer content storage */
+  int		max_sb_depth;     /* maximum scrollback size in lines */
+  int		curr_sb_depth;    /* current scrollback size in lines */
+  int		curr_sb_position; /* 0 = bottom; negative value = posision */
+  
+  /* Scrolling by compositing takes a long while, so we break out of such
      loops fairly often to process other events */
   int num_scrolls;
-
   /* To avoid doing lots of scrolling compositing, we combine multiple
      full-screen scrolls. pending_scroll is the combined pending line delta */
   int pending_scroll;
+  
+  int		sx, sy;
+  screen_char_t *screen;
+
+  int cursor_x, cursor_y;
+  int current_x, current_y;
+
+  int  draw_all; /* 0=only lazy, 1=don't know, do all, 2=do all */
+  BOOL draw_cursor;
 
   BOOL ignore_resize;
 
   float border_x, border_y;
 
-  Defaults      *defaults;
 
   // Selection
+  struct selection_range selection;
   NSString* additionalWordCharacters;
 
+  // ------
   // Colors
+  // ------
   NSColor	*cursorColor;
   NSUInteger	cursorStyle;
   // Window:Background
