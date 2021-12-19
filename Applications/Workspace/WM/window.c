@@ -1583,12 +1583,12 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     }
     
     if (!strcmp(new_focused_window->wm_instance, "Workspace")
-        || napp->last_workspace == scr->current_workspace) {
+        || (napp && napp->last_workspace == scr->current_workspace)) {
       napp = NULL;
     }
-    
+
     if (wwin->flags.is_gnustep) {
-      WMLogInfo("[window.c] new_focused_window == %lu",
+      WMLogInfo("new_focused_window == %lu",
                new_focused_window ? new_focused_window->client_win : 0);
       /* When main menu becomes unmanaged - app's quitting - we should switch
          focus to other app. Otherwise set focus to main menu to prevent 
@@ -1596,25 +1596,28 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
          result of XUnmapWindow() call, focus goes to root window and application 
          deactivates). */
       if (WINDOW_LEVEL(wwin) == NSMainMenuWindowLevel) {
-        WMLogInfo("[window.c] set focus to new_focused_window == %lu",
-                 new_focused_window ? new_focused_window->client_win : 0);
+        WMLogInfo("set focus to new_focused_window == %lu",
+                  new_focused_window ? new_focused_window->client_win : 0);
         /* Application activation executes workspace switch */
-        if (napp)
+        if (napp) {
           wApplicationActivate(napp);
-        else
+        } else {
           wSetFocusTo(scr, new_focused_window);
-      }
-      else if (oapp && oapp->menu_win) {
+        }
+      } else if (oapp && oapp->menu_win) {
         /* wSetFocusTo will be called in handleFocusIn() */
-        WMLogInfo("[window.c] set focus to main menu == %lu", oapp->menu_win->client_win);
+        WMLogInfo("set focus to main menu == %lu", oapp->menu_win->client_win);
         XSetInputFocus(dpy, oapp->menu_win->client_win, RevertToParent, CurrentTime);
         oapp->menu_win->flags.focused = 1;
+      } else {
+        wSetFocusTo(scr, new_focused_window);
       }
     }
     else if (new_focused_window->frame->workspace != scr->current_workspace) {
       wWorkspaceForceChange(scr, new_focused_window->frame->workspace, new_focused_window);
     }
     else if (napp) {
+      WMLogInfo("activating app with main window: %lu", napp->main_window);
       wApplicationActivate(napp);
     }
     else {
@@ -1623,7 +1626,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   }
 
   /* Call it second time because application context might not exist at this point */
-  oapp = wApplicationOf(wwin->main_window);
+  /* oapp = wApplicationOf(wwin->main_window); */
   if (oapp) {
     wApplicationRemoveWindow(oapp, wwin);
   }
