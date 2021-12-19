@@ -687,13 +687,16 @@ static void handleDestroyNotify(XEvent * event)
 
   app = wApplicationOf(window);
   if (app) {
+    /* If main window was destroyed - unmanage all windows of app
+       and remove app's information structure (WApplication). */
     if (window == app->main_window) {
-      wwin = app->main_window_desc->screen_ptr->focused_window;
-      while (wwin) {
-        if (wwin->main_window == window) {
-          wwin->main_window = None;
+      int window_count = CFArrayGetCount(app->windows);
+
+      for (int i = 0; i < window_count; i++) {
+        wwin = (WWindow *)CFArrayGetValueAtIndex(app->windows, 0);
+        if (wwin->client_win != app->main_window) {
+          wUnmanageWindow(wwin, False, True);
         }
-        wwin = wwin->prev;
       }
     }
     wApplicationDestroy(app);
