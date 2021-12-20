@@ -278,11 +278,9 @@ void wApplicationDestroy(WApplication *wapp)
   if (wapp->refcount > 0)
     return;
 
-  /* CFShow(wapp->windows); */
   CFArrayRemoveAllValues(wapp->windows);
   CFRelease(wapp->windows);
-  WMLogError("wapp->windows retain count: %li", CFGetRetainCount(wapp->windows));
-  /* wapp->windows = NULL; */
+  /* WMLogError("wapp->windows retain count: %li", CFGetRetainCount(wapp->windows)); */
 
   if (wapp->urgent_bounce_timer) {
     WMDeleteTimerHandler(wapp->urgent_bounce_timer);
