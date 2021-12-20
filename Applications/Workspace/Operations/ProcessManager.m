@@ -34,8 +34,7 @@ NSString *WMOperationWillDestroyNotification = @"BGOperationWillDestroy";
 NSString *WMOperationDidChangeStateNotification = @"BGOperationDidChangeState";
 NSString *WMOperationProcessingFileNotification = @"BGOperationProcessingFile";
 
-NSString *WMApplicationDidTerminateSubprocessNotification =
-  @"WMAppDidTerminateSubprocess";
+NSString *WMApplicationDidTerminateSubprocessNotification = @"WMAppDidTerminateSubprocess";
 
 
 static Processes *shared = nil;
@@ -288,11 +287,10 @@ static BOOL      _workspaceQuitting = NO;
   if ((appInfo = [self _applicationWithName:appName]))
     {
       [applications removeObject:appInfo];
-    }
-
-  if ([[NSApp delegate] processesPanel])
-    {
-      [[[NSApp delegate] processesPanel] updateAppList];
+      if ([[NSApp delegate] processesPanel])
+        {
+          [[[NSApp delegate] processesPanel] updateAppList];
+        }
     }
 }
 
