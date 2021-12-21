@@ -1666,7 +1666,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
 
   /* Window could (and often is) not unmanaged at this point */
   if (event->message_type == net_request_frame_extents) {
-    WMLogInfo("_NET_REQUEST_FRAME_EXTENTS client message was received.");
+    /* WMLogInfo("_NET_REQUEST_FRAME_EXTENTS client message was received."); */
     wNETRequestFrameExtents(event->window, scr);
     return True;
   }
@@ -1860,8 +1860,7 @@ void wNETRequestFrameExtents(Window window, WScreen *scr)
     unsigned long nitems_ret, bytes_after_ret;
     long *data = NULL;
     
-    WMLogInfo("Setting frame extents for X11 application");
-    
+    /* WMLogInfo("Setting frame extents for X11 application"); */
     int result = XGetWindowProperty(dpy, window, net_wm_window_type, 0, 1, False,
                                     XA_ATOM, &type_ret, &fmt_ret, &nitems_ret,
                                     &bytes_after_ret, (unsigned char **)&data);
@@ -1879,8 +1878,7 @@ void wNETRequestFrameExtents(Window window, WScreen *scr)
     }
   }
   else {
-    WMLogInfo("Setting frame extents for GNUstep application");
-
+    /* WMLogInfo("Setting frame extents for GNUstep application"); */
     has_border = (gs_attrs->window_style & NSBorderlessWindowMask) ? False : True;
     has_titlebar = (gs_attrs->window_style & NSTitledWindowMask) ? True : False;
     has_resizebar = (gs_attrs->window_style & NSResizableWindowMask) ? True : False;
