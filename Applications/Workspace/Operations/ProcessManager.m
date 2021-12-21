@@ -71,11 +71,9 @@ static BOOL      _workspaceQuitting = NO;
 {
   NSNotificationCenter *nc;
   NSWorkspace          *ws;
-  NSFileManager        *fm;
 
   [super init];
 
-  fm = [NSFileManager defaultManager];
   ws = [NSWorkspace sharedWorkspace];
   nc = [ws notificationCenter];
 
@@ -231,7 +229,7 @@ static BOOL      _workspaceQuitting = NO;
 
   newAppInfo = [self _normalizeApplicationInfo:[notif userInfo]];
   
-  // NSLog(@"didLaunchApp: %@", newAppInfo);
+  NSLog(@"didLaunchApp: %@", newAppInfo);
   
   newAppName = [newAppInfo objectForKey:@"NSApplicationName"];
   newAppPID = [newAppInfo objectForKey:@"NSApplicationProcessIdentifier"];

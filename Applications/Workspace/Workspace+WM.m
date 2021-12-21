@@ -369,20 +369,35 @@ char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path)
 static NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
 {
   NSMutableDictionary *appInfo = [NSMutableDictionary dictionary];
-  NSString            *xAppName = nil;
-  NSString            *xAppPath = nil;
+  NSString            *appName = nil;
+  NSString            *appPath = nil;
   int                 app_pid;
   char                *app_command;
 
+  // Gather NSApplicationName and NSApplicationPath
   if (!strcmp(wapp->main_window_desc->wm_class, "GNUstep")) {
     [appInfo setObject:@"NO" forKey:@"IsXWindowApplication"];
-    xAppName = [NSString stringWithCString:wapp->main_window_desc->wm_instance];
+    appName = [NSString stringWithCString:wapp->main_window_desc->wm_instance];
+    appPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
   } else {
-    xAppName = [NSString stringWithCString:wapp->main_window_desc->wm_class];
     [appInfo setObject:@"YES" forKey:@"IsXWindowApplication"];
+    appName = [NSString stringWithCString:wapp->main_window_desc->wm_class];
+    app_command = wGetCommandForWindow(wwin->client_win);
+    if (app_command) {
+      appPath = fullPathForCommand([NSString stringWithCString:app_command]);
+    }
   }
   // NSApplicationName = NSString*
-  [appInfo setObject:xAppName forKey:@"NSApplicationName"];
+  [appInfo setObject:appName forKey:@"NSApplicationName"];
+  // NSApplicationPath = NSString*
+  if (appPath) {
+    [appInfo setObject:appPath forKey:@"NSApplicationPath"];
+  } else if (app_command) {
+    [appInfo setObject:[NSString stringWithCString:app_command]
+                forKey:@"NSApplicationPath"];
+  } else {
+    [appInfo setObject:@"--" forKey:@"NSApplicationPath"];
+  }
 
   // NSApplicationProcessIdentifier = NSString*
   if ((app_pid = wNETWMGetPidForWindow(wwin->client_win)) > 0) {
@@ -397,23 +412,9 @@ static NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
     [appInfo setObject:@"-1" forKey:@"NSApplicationProcessIdentifier"];
   }
 
-  // NSApplicationPath = NSString*
-  app_command = wGetCommandForWindow(wwin->client_win);
-  if (app_command != NULL) {
-    xAppPath = fullPathForCommand([NSString stringWithCString:app_command]);
-    if (xAppPath)
-      [appInfo setObject:xAppPath forKey:@"NSApplicationPath"];
-    else
-      [appInfo setObject:[NSString stringWithCString:app_command]
-                  forKey:@"NSApplicationPath"];
-  }
-  else {
-    [appInfo setObject:@"--" forKey:@"NSApplicationPath"];
-  }
-
   // Get icon image from windowmaker app structure(WApplication)
   // NSApplicationIcon=NSImage*
-  NSLog(@"%@ icon filename: %s", xAppName, wapp->app_icon->icon->file);
+  // NSLog(@"%@ icon filename: %s", xAppName, wapp->app_icon->icon->file);
   if (wapp->app_icon->icon->file_image) {
     [appInfo setObject:_imageForRasterImage(wapp->app_icon->icon->file_image)
                 forKey:@"NSApplicationIcon"];
@@ -438,7 +439,7 @@ void WSApplicationDidCreate(WApplication *wapp, WWindow *wwin)
     appIcon->main_window = wapp->main_window;
   }
 
-  // GNUstep application  will register itself in ProcessManager with AppKit notification.
+  // GNUstep application will register itself in ProcessManager with AppKit notification.
   if (!strcmp(wm_class,"GNUstep")) {
     return;
   }
