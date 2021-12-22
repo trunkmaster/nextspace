@@ -688,13 +688,11 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [[WorkspaceNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(updateWorkspaceBadge:)
-             name:@"WMDidChangeWorkspaceNotification"
-           object:nil];
+             name:WMDidChangeWorkspaceNotification];
   [[WorkspaceNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(wmWindowNotification:)
-             name:@"WMDidChangeWindowStateNotification"
-           object:nil];
+             name:WMDidChangeWindowStateNotification];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
