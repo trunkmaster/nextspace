@@ -31,9 +31,20 @@
   CFNotificationCenterRef coreFoundationCenter;
   //  CFDictionaryRef         cfObservers;
 }
++ (instancetype)defaultCenter;
+
+- (void)addObserver:(id)observer
+           selector:(SEL)selector
+               name:(CFStringRef)name;
 @end
 
 @interface CFObject : NSObject
 @property (readwrite) const void *object;
 @end
 
+// Window manager - notifications defined in WM/WM.h
+extern CFStringRef WMDidManageWindowNotification;
+extern CFStringRef WMDidUnmanageWindowNotification;
+
+extern CFStringRef WMDidChangeWorkspaceNotification;
+extern CFStringRef WMDidChangeWindowStateNotification;

@@ -52,6 +52,7 @@ NSString *_convertCFtoNSString(CFStringRef cfString)
   stringPtr = CFStringGetCStringPtr(cfString, CFStringGetSystemEncoding());
   return [NSString stringWithCString:stringPtr];
 }
+// TODO
 NSArray *_convertCFtoNSArray(CFArrayRef cfArray)
 {
   NSMutableArray *nsArray = [NSMutableArray new];
@@ -95,6 +96,30 @@ id _convertCoreFoundationToFoundation(CFTypeRef value)
   return returnValue;
 }
 
+static CFDictionaryRef _convertNStoCFDictionary(NSDictionary *dictionary);
+
+CFDictionaryRef _convertNStoCFDictionary(NSDictionary *dictionary)
+{
+  CFMutableDictionaryRef cfDictionary;
+  CFStringRef keyCFString;
+  CFStringRef valueCFString;
+
+  cfDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+  for (id key in [dictionary allKeys]) {
+    id value = [dictionary objectForKey:key];
+    if ([value isKindOfClass:[NSString class]]) {
+      keyCFString = CFStringCreateWithCString(kCFAllocatorDefault, [key cString],
+                                              CFStringGetSystemEncoding());
+      valueCFString = CFStringCreateWithCString(kCFAllocatorDefault, [value cString],
+                                                CFStringGetSystemEncoding());
+      CFDictionaryAddValue(cfDictionary, keyCFString, valueCFString);
+      CFRelease(keyCFString);
+      CFRelease(valueCFString);
+    }
+  }
+  return cfDictionary;
+}
+
 @implementation CFObject @end
 
 //-----------------------------------------------------------------------------
@@ -109,57 +134,52 @@ static WorkspaceNotificationCenter *wsnc = nil;
 @end
 @implementation WorkspaceNotificationCenter (Private)
 
-- (void)_postNSLocal:(NSString *)name object:(id)object userInfo:(NSDictionary *)info
+- (void)_postNSLocal:(NSString *)name
+              object:(id)object
+            userInfo:(NSDictionary *)info
 {
-  NSNotification *aNotification;
-
-  aNotification = [NSNotification notificationWithName:name
-						object:object
-					      userInfo:info];
+  NSNotification *aNotification = [NSNotification notificationWithName:name
+                                                                object:object
+                                                              userInfo:info];
   [super postNotification:aNotification];
 }
 
-- (void)_postCFLocal:(NSString *)name userInfo:(NSDictionary *)info
+- (void)_postCFLocal:(NSString *)name
+            userInfo:(NSDictionary *)info
 {
-  const void             *cfObject;
-  CFStringRef            cfName;
-  CFMutableDictionaryRef cfUserInfo;
-  CFStringRef            keyCFString;
-  CFStringRef            valueCFString;
+  const void *cfObject;
+  CFStringRef cfName;
+  CFDictionaryRef cfUserInfo;
 
   // name
   cfName = CFStringCreateWithCString(kCFAllocatorDefault, [name cString], CFStringGetSystemEncoding());
-
+  // userInfo
+  cfUserInfo = _convertNStoCFDictionary(info);
   // object
   cfObject = NULL;
-
-  // userInfo
-  cfUserInfo = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
-  for (id key in [info allKeys]) {
-    id value = [info objectForKey:key];
-    if ([value isKindOfClass:[NSString class]]) {
-      keyCFString = CFStringCreateWithCString(kCFAllocatorDefault, [key cString],
-                                              CFStringGetSystemEncoding());
-      valueCFString = CFStringCreateWithCString(kCFAllocatorDefault, [value cString],
-                                                CFStringGetSystemEncoding());
-      CFDictionaryAddValue(cfUserInfo, keyCFString, valueCFString);
-      CFRelease(keyCFString);
-      CFRelease(valueCFString);
-    }
-  }
-  
+ 
   CFNotificationCenterPostNotification(coreFoundationCenter, cfName, cfObject, cfUserInfo, TRUE);
 
   CFRelease(cfName);
   CFRelease(cfUserInfo);
 }
 
-// CF notification was received.
-// 1. Convert CFNotificationName -> NSString
-// 2. Convert CFDisctionaryRef -> NSDictionary
-// 2. Create and send NSNotification to NSNotificationCenter
-// #import "screen.h"
-// #import "window.h"
+/* CF to NS notification dispatching.
+   1. Convert notification name (CFNotificationName -> NSString)
+   2. Convert userInfo (CFDisctionaryRef -> NSDictionary)
+   3. Create and send NSNotification to NSNotificationCenter with
+   [NSNotification notificationWithName:name   // converted from CFString
+                                 object:object // NSObject.object
+                               userInfo:info]  // converted from CFDictionaryRef
+*/
+/* CF notification sent with this call:
+   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+                                       "WMDidManageWindowNotification", // notification name
+                                       wwin,                            // object
+                                       NULL,                            // userInfo
+                                       TRUE);
+
+*/
 static void _handleCFNotifications(CFNotificationCenterRef center,
                                    void *observer,
                                    CFNotificationName name,
@@ -171,10 +191,13 @@ static void _handleCFNotifications(CFNotificationCenterRef center,
   
   NSLog(@"[WorkspaceNC] _handleCFNotificaition: %@ - %@",
         _convertCFtoNSString(name), _convertCFtoNSDictionary(userInfo));
-
-  [wsnc _postNSLocal:_convertCFtoNSString(name)
-              object:cfObject
-            userInfo:_convertCFtoNSDictionary(userInfo)];
+  
+  // [wsnc _postNSLocal:_convertCFtoNSString(name)
+  //             object:cfObject
+  //           userInfo:_convertCFtoNSDictionary(userInfo)];
+  [wsnc postNotificationName:_convertCFtoNSString(name)
+                      object:cfObject
+                    userInfo:_convertCFtoNSDictionary(userInfo)];
   [cfObject release];
 }
 
@@ -212,25 +235,24 @@ static void _handleCFNotifications(CFNotificationCenterRef center,
 // 'object' is ignored for CoreFoundation call
 - (void)addObserver:(id)observer
            selector:(SEL)selector
-               name:(NSString*)name
-             object:(id)object;
+               name:(CFStringRef)name
 {
-  // Register obsever-name in NSNotificationCenter
+  /* Register observer-name in NSNotificationCenter.
+     In CF notification callback (_handleCFNotifications()) this notification will
+     be forwarded to NSNotificationCenter with name specified in `name` parameter.
+     `selector` of the caller must be registered in NSNotificationCenter to be called. */
   [super addObserver:observer
             selector:selector
-                name:name
-              object:object];
+                name:_convertCFtoNSString(name)
+              object:nil];
 
   // Register handler-name in CFNotificationCenter
-  CFStringRef cfName;
-  cfName = CFStringCreateWithCString(kCFAllocatorDefault, [name cString], CFStringGetSystemEncoding());
-  CFNotificationCenterAddObserver(coreFoundationCenter,
-                                  self,
-                                  _handleCFNotifications,
-                                  cfName,
-                                  NULL,
+  CFNotificationCenterAddObserver(coreFoundationCenter,   // created in -init
+                                  self,                   // observer
+                                  _handleCFNotifications, // callback: CFNotificationCallback
+                                  name,                   // notification name: CFStringRef
+                                  NULL,                   // object
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFRelease(cfName);
 }
 
 // Notification dispatching
@@ -254,9 +276,7 @@ static void _handleCFNotifications(CFNotificationCenterRef center,
                     userInfo:(NSDictionary*)info
 {
   // NSNotificationCenter
-  [self postNotification:[NSNotification notificationWithName:name
-                                                       object:object
-                                                     userInfo:info]];
+  [self _postNSLocal:name object:object userInfo:info];
   // CFNotificationCenter
   [self _postCFLocal:name userInfo:info];
 }

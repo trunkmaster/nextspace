@@ -19,11 +19,13 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <sys/types.h>
-#import <signal.h>
+#include <sys/types.h>
+#include <signal.h>
+
 #import <DesktopKit/NXTAlert.h>
 
 #import "Controller.h"
+#import "WorkspaceNotificationCenter.h"
 #import "Processes/Processes.h"
 
 #import "Operations/ProcessManager.h"
@@ -35,7 +37,6 @@ NSString *WMOperationDidChangeStateNotification = @"BGOperationDidChangeState";
 NSString *WMOperationProcessingFileNotification = @"BGOperationProcessingFile";
 
 NSString *WMApplicationDidTerminateSubprocessNotification = @"WMAppDidTerminateSubprocess";
-
 
 static Processes *shared = nil;
 static BOOL      _workspaceQuitting = NO;
@@ -125,6 +126,15 @@ static BOOL      _workspaceQuitting = NO;
   //          name:WMOperationProcessingFileNotification
   //        object:nil];
 
+  // WM notifications
+  NSString *notifName = [NSString stringWithCString:CFStringGetCStringPtr(WMDidManageWindowNotification,
+                                                                          CFStringGetSystemEncoding())];
+  [[WorkspaceNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(applicationDidStartSubprocess:)
+	   name:notifName
+	 object:nil];
+  
   return self;
 }
 
@@ -327,6 +337,11 @@ static BOOL      _workspaceQuitting = NO;
     {
       [[[NSApp delegate] processesPanel] updateAppList];
     }
+}
+
+- (void)applicationDidStartSubprocess:(NSNotification *)notif
+{
+  NSLog(@"ProcessManager: applicationDidStartSubprocess - %@", notif.object);
 }
 
 // Performs gracefull termination of running GNUstep applications.
