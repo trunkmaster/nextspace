@@ -192,12 +192,9 @@ static void _handleCFNotifications(CFNotificationCenterRef center,
   NSLog(@"[WorkspaceNC] _handleCFNotificaition: %@ - %@",
         _convertCFtoNSString(name), _convertCFtoNSDictionary(userInfo));
   
-  // [wsnc _postNSLocal:_convertCFtoNSString(name)
-  //             object:cfObject
-  //           userInfo:_convertCFtoNSDictionary(userInfo)];
-  [wsnc postNotificationName:_convertCFtoNSString(name)
-                      object:cfObject
-                    userInfo:_convertCFtoNSDictionary(userInfo)];
+  [wsnc _postNSLocal:_convertCFtoNSString(name)
+              object:cfObject
+            userInfo:_convertCFtoNSDictionary(userInfo)];
   [cfObject release];
 }
 
