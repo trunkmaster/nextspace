@@ -423,12 +423,13 @@ static NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
   return (NSDictionary *)appInfo;
 }
 
-void WSApplicationDidCreate(WApplication *wapp, WWindow *wwin)
+void WSApplicationDidCreate(WApplication *wapp)
 {
   NSNotification *notif = nil;
-  NSDictionary   *appInfo = nil;
-  char           *wm_instance, *wm_class;
-  WAppIcon       *appIcon;
+  NSDictionary *appInfo = nil;
+  char *wm_instance, *wm_class;
+  WAppIcon *appIcon;
+  WWindow *wwin;
 
   wm_instance = wapp->main_window_desc->wm_instance;
   wm_class = wapp->main_window_desc->wm_class;
@@ -444,6 +445,7 @@ void WSApplicationDidCreate(WApplication *wapp, WWindow *wwin)
     return;
   }
 
+  wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
   appInfo = _applicationInfoForWApp(wapp, wwin);
   NSDebugLLog(@"WM", @"W+WM: WSApplicationDidCreate: %@", appInfo);
 

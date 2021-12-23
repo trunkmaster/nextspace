@@ -104,7 +104,7 @@ WAppIcon *WSLaunchingIconForCommand(char *command);
 char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
   
 // --- Applications creation and destroying
-void WSApplicationDidCreate(WApplication *wapp, WWindow *wwin);
+void WSApplicationDidCreate(WApplication *wapp);
 void WSApplicationDidDestroy(WApplication *wapp);
 void WSApplicationDidCloseWindow(WWindow *wwin);
 
