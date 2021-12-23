@@ -358,7 +358,10 @@ extern struct wm_global_variables {
   } shortcut;
 } w_global;
 
-/* CoreFoundation notifications */
+/* CoreFoundation notifications -- initialized in startup.c*/
+extern CFStringRef WMDidCreateApplicationNotification;
+extern CFStringRef WMDidDestroyApplicationNotification;
+
 extern CFStringRef WMDidManageWindowNotification;
 extern CFStringRef WMDidUnmanageWindowNotification;
 extern CFStringRef WMDidChangeWindowWorkspaceNotification;

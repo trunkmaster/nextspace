@@ -49,6 +49,8 @@
 #include "framewin.h"
 #endif
 
+
+
 /******** Local variables ********/
 
 static WWindow *makeMainWindow(WScreen * scr, Window window)
@@ -243,7 +245,9 @@ WApplication *wApplicationCreate(WWindow * wwin)
            wapp->next ? wapp->next->main_window_desc->wm_instance : "NULL");
         
 #ifdef NEXTSPACE
-  dispatch_sync(workspace_q, ^{ WSApplicationDidCreate(wapp, wwin); });
+  // CFNotificationCenterPostNotification(scr->notificationCenter,
+  //                                      WMDidCreateApplicationNotification, wapp, NULL, TRUE);
+  dispatch_sync(workspace_q, ^{ WSApplicationDidCreate(wapp); });
 #endif
 
   return wapp;
@@ -293,13 +297,16 @@ void wApplicationDestroy(WApplication *wapp)
     return;
   }
 
+  scr = wapp->main_window_desc->screen_ptr;
+  
 #ifdef NEXTSPACE
+  // CFNotificationCenterPostNotification(scr->notificationCenter,
+  //                                      WMDidDestroyApplicationNotification, wapp, NULL, TRUE);
+  
   // Must be synchronous. Otherwise XWApplicationDidDestroy crashed
   // during access to wapp structure.
   dispatch_sync(workspace_q, ^{ WSApplicationDidDestroy(wapp); });
 #endif
-        
-  scr = wapp->main_window_desc->screen_ptr;
 
   if (wapp == scr->wapp_list) {
     if (wapp->next)
