@@ -250,11 +250,12 @@ typedef struct _WScreen {
 #endif
   struct RImage *clip_tile;          /* tile with arrows to change workspace */
   struct RImage *drawer_tile;        /* tile for a drawer (tile + arrow) */
-  Pixmap icon_tile_pixmap;		/* For app supplied icons */
+  Pixmap icon_tile_pixmap;           /* For app supplied icons */
 
-  struct RImage *def_icon_rimage;	/* Default RImage icon */
+  /* Launching appicons: created in launching state before app start */
+  struct WAppIcon **launching_icons;
 
-  struct WDialogData *dialog_data;
+  struct RImage *def_icon_rimage;    /* Default RImage icon */
 
   struct WMGeometryView *gview;      /* size/position view */
 

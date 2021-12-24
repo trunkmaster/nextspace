@@ -89,4 +89,7 @@ WAppIcon *wAppIconFor(Window window);
 
 void appIconMouseDown(WObjDescriptor * desc, XEvent * event);
 
+void wLaunchingAppIconFinish(WScreen *scr, WAppIcon *appicon);
+void wLaunchingAppIconDestroy(WScreen *scr, WAppIcon *appicon);
+
 #endif /* __WORKSPACE_WM_APPICON__ */

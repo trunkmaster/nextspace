@@ -1249,3 +1249,70 @@ WAppIcon *wAppIconFor(Window window)
 
   return NULL;
 }
+
+// ----------------------------
+// --- Launching appicons
+// ----------------------------
+// It is array of pointers to WAppIcon.
+// These pointers also placed into WScreen->app_icon_list.
+// Launching icons number is much smaller, but I use DOCK_MAX_ICONS as references number.
+static void _addLaunchingAppIcon(WScreen *scr, WAppIcon *appicon)
+{
+  WAppIcon **launching_icons = scr->launching_icons;
+  
+  if (!launching_icons) {
+    launching_icons = wmalloc(DOCK_MAX_ICONS * sizeof(WAppIcon*));
+  }
+  
+  for (int i=0; i < DOCK_MAX_ICONS; i++) {
+    if (launching_icons[i] == NULL) {
+      launching_icons[i] = appicon;
+      RemoveFromStackList(appicon->icon->core);
+      break;
+    }
+  }
+}
+
+static WAppIcon *_findLaunchingIcon(WScreen *scr, char *wm_instance, char *wm_class)
+{
+  WAppIcon *aicon = NULL;
+  WAppIcon *licon = NULL;
+  WAppIcon **launching_icons = scr->launching_icons;
+
+  if (launching_icons) {
+    for (int i=0; i < DOCK_MAX_ICONS; i++) {
+      licon = launching_icons[i];
+      if (licon &&
+          !strcmp(wm_instance, licon->wm_instance) &&
+          !strcmp(wm_class, licon->wm_class)) {
+        aicon = licon;
+        break;
+      }
+    }
+  }
+
+  return aicon;
+}
+
+void wLaunchingAppIconFinish(WScreen *scr, WAppIcon *appicon)
+{
+  WAppIcon **launching_icons = scr->launching_icons;
+  WAppIcon *licon;
+  
+  for (int i=0; i < DOCK_MAX_ICONS; i++) {
+    licon = launching_icons[i];
+    if (licon && (licon == appicon)) {
+      AddToStackList(appicon->icon->core);
+      launching_icons[i] = NULL;
+      break;
+    }
+  }
+  appicon->launching = 0;
+  wAppIconPaint(appicon);
+}
+
+void wLaunchingAppIconDestroy(WScreen *scr, WAppIcon *appicon)
+{
+  wLaunchingAppIconFinish(scr, appicon);
+  wAppIconDestroy(appicon);
+}
