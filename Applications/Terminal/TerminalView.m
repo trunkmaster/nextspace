@@ -2655,20 +2655,54 @@ static int handled_mask = (NSDragOperationCopy |
     return;
   }
   
+  if (lines == 0) {
+    [self clearBuffer:self];
+  }
+
   max_sb_depth = lines;
   
-  if (max_sb_depth == 0)
-    [self clearBuffer:self];
-
-  {// Adopt scrollback buffer to new 'max_sb_depth' value
+  { // Adopt scrollback buffer to new 'max_sb_depth' value
     screen_char_t *new_sb_buffer;
     int sby = (max_sb_depth > 0) ? max_sb_depth : 1;
+
+    curr_sb_depth = max_sb_depth;
 
     new_sb_buffer = malloc(sizeof(screen_char_t) * sx * sby);
     memset(new_sb_buffer, 0, sizeof(screen_char_t) * sx * sby);
     free(sb_buffer);
+    
     sb_buffer = new_sb_buffer;
-  }  
+  }
+  
+  // Adopt scrollback buffer to new 'max_sb_depth' value.
+  // General logic:
+  // - initially allocate memory for 3 terminal screens
+  // - realloc scrollback buffer by screen page until max_sb_depth will be reached
+  // - on window resize or preference change buffer size should be recalculated
+
+#if 0
+  screen_char_t *new_sb_buffer;
+  
+  if (curr_sb_depth > 0) { // not empty
+    if (curr_sb_depth < lines) {
+      // new value is greater - realloc current buffer if needed
+        
+    } else {
+      // new buffer smaller of the currently used - realloc to the `lines` size and refresh screen
+    }
+  }
+
+  // Initial state: unlimited<->sized, empty<->filled
+  if (curr_sb_depth < max_sb_depth) {
+    realloc(sb_buffer, sizeof(screen_char_t) * sx * curr_sb_depth);
+  }
+  curr_sb_depth = max_sb_depth;
+
+  new_sb_buffer = malloc(sizeof(screen_char_t) * sx * curr_sb_depth);
+  memset(new_sb_buffer, 0, sizeof(screen_char_t) * sx * curr_sb_depth);
+  free(sb_buffer);
+  sb_buffer = new_sb_buffer;
+#endif
 }
 
 - (void)setScrollBottomOnInput:(BOOL)scrollBottom

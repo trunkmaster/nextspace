@@ -80,7 +80,8 @@ struct selection_range
      full-screen scrolls. pending_scroll is the combined pending line delta */
   int pending_scroll;
   
-  int		sx, sy;
+  int		sx; // window width in characters (screen_char_t)
+  int		sy; // window height in lines?
   screen_char_t *screen;
 
   int cursor_x, cursor_y;
