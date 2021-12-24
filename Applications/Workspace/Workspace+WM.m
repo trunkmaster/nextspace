@@ -168,15 +168,15 @@ WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
   NSPoint    iconPoint = {0, 0};
   BOOL       iconFound = NO;
   WScreen    *scr = wDefaultScreen();
-  WAppIcon   *appIcon;
+  WAppIcon   *app_icon;
   NSArray    *wmNameParts;
-  const char *wmInstance;
-  const char *wmClass;
+  const char *wm_instance;
+  const char *wm_class;
 
   if (wmName != nil) {
     wmNameParts = [wmName componentsSeparatedByString:@"."];
-    wmInstance = [[wmNameParts objectAtIndex:0] cString];
-    wmClass = [[wmNameParts objectAtIndex:1] cString];
+    wm_instance = [[wmNameParts objectAtIndex:0] cString];
+    wm_class = [[wmNameParts objectAtIndex:1] cString];
   }
   else {
     // Can't create launching icon without application name
@@ -189,47 +189,47 @@ WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
   // NSLog(@"Create icon for: %s.%s, %@", wmInstance, wmClass, launchPath);
   
   // 1. Search for existing icon in IconYard and Dock
-  appIcon = scr->app_icon_list;
-  while (appIcon->next) {
+  app_icon = scr->app_icon_list;
+  while (app_icon->next) {
     // NSLog(@"Analyzing: %s.%s", appIcon->wm_instance, appIcon->wm_class);
-    if (!strcmp(appIcon->wm_instance, wmInstance) &&
-        !strcmp(appIcon->wm_class, wmClass)) {
-      iconPoint.x = appIcon->x_pos + ((ICON_WIDTH - [anImage size].width)/2);
-      iconPoint.y = scr->scr_height - appIcon->y_pos - 64;
+    if (!strcmp(app_icon->wm_instance, wm_instance) &&
+        !strcmp(app_icon->wm_class, wm_class)) {
+      iconPoint.x = app_icon->x_pos + ((ICON_WIDTH - [anImage size].width)/2);
+      iconPoint.y = scr->scr_height - app_icon->y_pos - 64;
       iconPoint.y += (ICON_WIDTH - [anImage size].width)/2;
       [[NSApp delegate] slideImage:anImage
                               from:sourcePoint
                                 to:iconPoint];
-      if (appIcon->docked && !appIcon->running) {
-        appIcon->launching = 1;
-        wAppIconPaint(appIcon);
+      if (app_icon->docked && !app_icon->running) {
+        app_icon->launching = 1;
+        wAppIconPaint(app_icon);
       }
       iconFound = YES;
       break;
     }
-    appIcon = appIcon->next;
+    app_icon = app_icon->next;
   }
 
   // 2. Otherwise create appicon and set its state to launching
   if (iconFound == NO) {
     int x_ret = 0, y_ret = 0;
       
-    appIcon = wAppIconCreateForDock(scr, [launchPath cString],
-                                    (char *)wmInstance, (char *)wmClass,
+    app_icon = wAppIconCreateForDock(scr, [launchPath cString],
+                                    (char *)wm_instance, (char *)wm_class,
                                     TILE_NORMAL);
-    appIcon->icon->core->descriptor.handle_mousedown = NULL;
-    appIcon->launching = 1;
-    _addLaunchingIcon(appIcon);
+    app_icon->icon->core->descriptor.handle_mousedown = NULL;
+    app_icon->launching = 1;
+    _addLaunchingIcon(app_icon);
 
     if (imagePath && [imagePath length] > 0) {
-      wIconChangeImageFile(appIcon->icon, [imagePath cString]);
+      wIconChangeImageFile(app_icon->icon, [imagePath cString]);
     }
     // NSLog(@"First icon in launching list for: %s.%s",
     //       launchingIcons->wm_instance, launchingIcons->wm_class);
 
     // Calculate postion for new launch icon
     PlaceIcon(scr, &x_ret, &y_ret, scr->xrandr_info.primary_head);
-    wAppIconMove(appIcon, x_ret, y_ret);
+    wAppIconMove(app_icon, x_ret, y_ret);
     iconPoint.x = (CGFloat)x_ret;
     iconPoint.y = scr->scr_height - (y_ret + ICON_HEIGHT);
     [[NSApp delegate] slideImage:anImage
@@ -239,14 +239,14 @@ WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
     // NSLog(@"Created launching appicon: %s.%s, %s",
     //       appIcon->wm_instance, appIcon->wm_class, appIcon->command);
 
-    wAppIconPaint(appIcon);
-    XMapWindow(dpy, appIcon->icon->core->window);
+    wAppIconPaint(app_icon);
+    XMapWindow(dpy, app_icon->icon->core->window);
     XSync(dpy, False);
   }
   
   [raceLock unlock];
   
-  return appIcon;
+  return app_icon;
 }
 
 void WMFinishLaunchingIcon(WAppIcon *appIcon)
