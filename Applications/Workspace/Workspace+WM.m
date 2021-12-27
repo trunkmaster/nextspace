@@ -48,11 +48,9 @@
 NSString *WMShowAlertPanel = @"WMShowAlertPanelNotification";
 dispatch_queue_t workspace_q;
 WorkspaceExitCode ws_quit_code;
-static WAppIcon **launchingIcons = NULL;
 
 // WM functions and vars
 extern Display *dpy;
-// extern char *GetCommandForWindow(Window win);
 
 // TODO: Move to DesktopKit/NXTFileManager
 NSString *fullPathForCommand(NSString *command)
@@ -82,81 +80,13 @@ NSString *fullPathForCommand(NSString *command)
   return nil;
 }
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Window Manager(WM) releated functions: call WM's functions, change
 // WM's behaviour, change WM's runtime variables.
 //------------------------------------------------------------------------------
 
-// --- Logout
-void WMShutdown(WMShutdownMode mode)
-{
-  fprintf(stderr, "*** Shutting down Window Manager...\n");
-  
-  // scr = wDefaultScreen();
-  // if (scr) {
-  //   if (scr->helper_pid) {
-  //     kill(scr->helper_pid, SIGKILL);
-  //   }
-
-  //   wScreenSaveState(scr);
-
-  //   if (mode == WSKillMode)
-  //     WMWipeDesktop(scr);
-  //   else
-  //     RestoreDesktop(scr);
-  // }
-  // wNETWMCleanup(scr); // Delete _NET_* Atoms
-
-  wShutdown(WMExitMode);
-  if (launchingIcons) free(launchingIcons);
-  
-//   RShutdown(); /* wrlib clean exit */
-// #if HAVE_SYSLOG_H
-//   WMSyslogClose();
-// #endif
-}
-
-// ----------------------------
-// --- Launching appicons
-// ----------------------------
-// It is array of pointers to WAppIcon.
-// These pointers also placed into WScreen->app_icon_list.
-// Launching icons number is much smaller, but I use DOCK_MAX_ICONS
-// (defined in WM/src/wconfig.h) as references number.
-// static WAppIcon **launchingIcons = NULL;
-void _addLaunchingIcon(WAppIcon *appicon)
-{
-  if (!launchingIcons) {
-    launchingIcons = wmalloc(DOCK_MAX_ICONS * sizeof(WAppIcon*));
-  }
-  
-  for (int i=0; i < DOCK_MAX_ICONS; i++) {
-    if (launchingIcons[i] == NULL) {
-      launchingIcons[i] = appicon;
-      RemoveFromStackList(appicon->icon->core);
-      break;
-    }
-  }
-}
-WAppIcon *_findLaunchingIcon(char *wm_instance, char *wm_class)
-{
-  WAppIcon *aicon = NULL;
-  WAppIcon *licon = NULL;
-
-  if (launchingIcons) {
-    for (int i=0; i < DOCK_MAX_ICONS; i++) {
-      licon = launchingIcons[i];
-      if (licon &&
-          !strcmp(wm_instance, licon->wm_instance) &&
-          !strcmp(wm_class, licon->wm_class)) {
-        aicon = licon;
-        break;
-      }
-    }
-  }
-
-  return aicon;
-}
+// Launching appicons
+// -----------------------------------------------------------------------------
 // wmName is in 'wm_instance.wm_class' format
 static NSLock *raceLock = nil;
 WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
@@ -219,7 +149,7 @@ WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
                                     TILE_NORMAL);
     app_icon->icon->core->descriptor.handle_mousedown = NULL;
     app_icon->launching = 1;
-    _addLaunchingIcon(app_icon);
+    wAddLaunchingAppIcon(scr, app_icon);
 
     if (imagePath && [imagePath length] > 0) {
       wIconChangeImageFile(app_icon->icon, [imagePath cString]);
@@ -249,75 +179,12 @@ WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
   return app_icon;
 }
 
-void WMFinishLaunchingIcon(WAppIcon *appIcon)
-{
-  WAppIcon *licon;
-  
-  for (int i=0; i < DOCK_MAX_ICONS; i++) {
-    licon = launchingIcons[i];
-    if (licon && (licon == appIcon)) {
-      AddToStackList(appIcon->icon->core);
-      launchingIcons[i] = NULL;
-      break;
-    }
-  }
-  appIcon->launching = 0;
-  wAppIconPaint(appIcon);
-}
-void WMDestroyLaunchingIcon(WAppIcon *appIcon)
-{
-  WMFinishLaunchingIcon(appIcon);
-  wAppIconDestroy(appIcon);
-}
-
 //--- End of functions which require existing @autorelease pool ---
 
 //-----------------------------------------------------------------------------
 // Workspace functions which are called from WM's code.
 // All the functions below are executed inside 'wwmaker_q' GCD queue.
 //-----------------------------------------------------------------------------
-
-//--- Application management
-WAppIcon *WSLaunchingIconForApplication(WApplication *wapp)
-{
-  WAppIcon *aicon;
-  WWindow  *mainw = wapp->main_window_desc;
-  
-  aicon = _findLaunchingIcon(mainw->wm_instance, mainw->wm_class);
-  if (!aicon) {
-    return NULL;
-  }
-
-  aicon->icon->owner = mainw;
-  
-  if (mainw->wm_hints && (mainw->wm_hints->flags & IconWindowHint)) {
-    aicon->icon->icon_win = mainw->wm_hints->icon_window;
-  }
-  
-  wIconUpdate(aicon->icon);
-  wIconPaint(aicon->icon);
-    
-  return aicon;
-}
-
-WAppIcon *WSLaunchingIconForCommand(char *command)
-{
-  WAppIcon *aicon = NULL;
-  WAppIcon *licon = NULL;
-
-  if (launchingIcons) {
-    for (int i=0; i < DOCK_MAX_ICONS; i++) {
-      licon = launchingIcons[i];
-      if (licon && licon->command &&
-          !strcmp(command, licon->command)) {
-        aicon = licon;
-        break;
-      }
-    }
-  }
-
-  return aicon;
-}
 
 static NSImage *_imageForRasterImage(RImage *r_image)
 {
@@ -434,9 +301,9 @@ void WSApplicationDidCreate(WApplication *wapp)
   wm_instance = wapp->main_window_desc->wm_instance;
   wm_class = wapp->main_window_desc->wm_class;
   
-  appIcon = _findLaunchingIcon(wm_instance, wm_class);
+  appIcon = wLaunchingAppIconForInstance(wapp->main_window_desc->screen_ptr, wm_instance, wm_class);
   if (appIcon) {
-    WMFinishLaunchingIcon(appIcon);
+    wLaunchingAppIconFinish(wapp->main_window_desc->screen_ptr, appIcon);
     appIcon->main_window = wapp->main_window;
   }
 

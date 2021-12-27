@@ -168,7 +168,7 @@ void create_appicon_for_application(WApplication *wapp, WWindow *wwin)
 #ifdef NEXTSPACE
   /* Check if launching icon was created by Workspace*/
   if (!wapp->app_icon) {
-    wapp->app_icon = WSLaunchingIconForApplication(wapp);
+    wapp->app_icon = wLaunchingAppIconForApplication(wwin->screen_ptr, wapp);
     if (wapp->app_icon) {
       wapp->app_icon->icon->core->descriptor.handle_mousedown = appIconMouseDown;
     }
@@ -1256,13 +1256,14 @@ WAppIcon *wAppIconFor(Window window)
 // It is array of pointers to WAppIcon.
 // These pointers also placed into WScreen->app_icon_list.
 // Launching icons number is much smaller, but I use DOCK_MAX_ICONS as references number.
-static void _addLaunchingAppIcon(WScreen *scr, WAppIcon *appicon)
+void wAddLaunchingAppIcon(WScreen *scr, WAppIcon *appicon)
 {
-  WAppIcon **launching_icons = scr->launching_icons;
+  WAppIcon **launching_icons;
   
-  if (!launching_icons) {
-    launching_icons = wmalloc(DOCK_MAX_ICONS * sizeof(WAppIcon*));
+  if (!scr->launching_icons) {
+    scr->launching_icons = wmalloc(DOCK_MAX_ICONS * sizeof(WAppIcon*));
   }
+  launching_icons = scr->launching_icons;
   
   for (int i=0; i < DOCK_MAX_ICONS; i++) {
     if (launching_icons[i] == NULL) {
@@ -1273,7 +1274,7 @@ static void _addLaunchingAppIcon(WScreen *scr, WAppIcon *appicon)
   }
 }
 
-static WAppIcon *_findLaunchingIcon(WScreen *scr, char *wm_instance, char *wm_class)
+WAppIcon *wLaunchingAppIconForInstance(WScreen *scr, char *wm_instance, char *wm_class)
 {
   WAppIcon *aicon = NULL;
   WAppIcon *licon = NULL;
@@ -1315,4 +1316,47 @@ void wLaunchingAppIconDestroy(WScreen *scr, WAppIcon *appicon)
 {
   wLaunchingAppIconFinish(scr, appicon);
   wAppIconDestroy(appicon);
+}
+
+
+WAppIcon *wLaunchingAppIconForApplication(WScreen *scr, WApplication *wapp)
+{
+  WAppIcon *aicon;
+  WWindow  *mainw = wapp->main_window_desc;
+  
+  aicon = wLaunchingAppIconForInstance(scr, mainw->wm_instance, mainw->wm_class);
+  if (!aicon) {
+    return NULL;
+  }
+
+  aicon->icon->owner = mainw;
+  
+  if (mainw->wm_hints && (mainw->wm_hints->flags & IconWindowHint)) {
+    aicon->icon->icon_win = mainw->wm_hints->icon_window;
+  }
+  
+  wIconUpdate(aicon->icon);
+  wIconPaint(aicon->icon);
+    
+  return aicon;
+}
+
+WAppIcon *wLaunchingAppIconForCommand(WScreen *scr, char *command)
+{
+  WAppIcon *aicon = NULL;
+  WAppIcon *licon = NULL;
+  WAppIcon **launching_icons = scr->launching_icons;
+
+  if (launching_icons) {
+    for (int i=0; i < DOCK_MAX_ICONS; i++) {
+      licon = launching_icons[i];
+      if (licon && licon->command &&
+          !strcmp(command, licon->command)) {
+        aicon = licon;
+        break;
+      }
+    }
+  }
+
+  return aicon;
 }

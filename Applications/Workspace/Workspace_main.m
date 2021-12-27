@@ -176,7 +176,7 @@ int main(int argc, const char **argv)
   fprintf(stderr, "=== Quitting Window manager... ===\n");
   CFRunLoopStop(wm_runloop);
   // Quit WindowManager, close all X11 applications.
-  WMShutdown(WMExitMode);
+  wShutdown(WMExitMode);
   
   fprintf(stderr, "=== Exit code is %i ===\n", ws_quit_code);
   return ws_quit_code;

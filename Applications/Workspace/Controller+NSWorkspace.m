@@ -1575,9 +1575,9 @@ static NSString		*_rootPath = @"/";
             object:task];
   
   command = (char *)[[task launchPath] cString];
-  appicon = WSLaunchingIconForCommand(command);
+  appicon = wLaunchingAppIconForCommand(wDefaultScreen(), command);
   if (appicon) {
-    WMDestroyLaunchingIcon(appicon);
+    wLaunchingAppIconDestroy(wDefaultScreen(), appicon);
   }
   [_workspaceCenter
     postNotificationName:NSWorkspaceDidTerminateApplicationNotification

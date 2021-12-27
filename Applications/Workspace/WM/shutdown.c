@@ -83,8 +83,10 @@ void wShutdown(WMShutdownMode mode)
 #if HAVE_SYSLOG_H
     WMSyslogClose();
 #endif
-
     _wipeDesktop(scr);
+    if (scr->launching_icons) {
+      free(scr->launching_icons);
+    }
     break;
 
   case WMRestartMode:
@@ -93,7 +95,6 @@ void wShutdown(WMShutdownMode mode)
     break;
   }
 
-  /* if (launchingIcons) free(launchingIcons); */  
 }
 
 static void _restoreWindows(WMBag * bag, WMBagIterator iter)

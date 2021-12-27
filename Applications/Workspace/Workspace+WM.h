@@ -74,17 +74,12 @@ extern WorkspaceExitCode ws_quit_code;
 // Calls related to internals of Window Manager.
 // 'WM' prefix is a call direction 'to WindowManager'
 //-----------------------------------------------------------------------------
-// --- Logout/PowerOff related activities
-void WMShutdown(WMShutdownMode mode);
-
 // - Should be called from already existing @autoreleasepool
-WAppIcon *WMCreateLaunchingIcon(NSString *wmName,
-                                 NSString *launchPath,
-                                 NSImage *anImage,
-                                 NSPoint sourcePoint,
-                                 NSString *imagePath);
-void WMFinishLaunchingIcon(WAppIcon *appIcon);
-void WMDestroyLaunchingIcon(WAppIcon *appIcon);
+
+WAppIcon *WMCreateLaunchingIcon(NSString *wmName, NSString *launchPath,
+                                NSImage *anImage, NSPoint sourcePoint,
+                                NSString *imagePath);
+
 // - End of functions which require existing @autorelease pool
 
 #endif //__OBJC__
@@ -96,10 +91,6 @@ void WMDestroyLaunchingIcon(WAppIcon *appIcon);
 
 // --- Dock
 void WSDockContentDidChange(WDock *dock);
-
-// --- Application icons
-WAppIcon *WSLaunchingIconForApplication(WApplication *wapp);
-WAppIcon *WSLaunchingIconForCommand(char *command);
 
 char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
   
