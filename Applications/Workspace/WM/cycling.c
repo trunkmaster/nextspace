@@ -104,7 +104,7 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
   Bool            hasModifier;
   int             modifiers;
   WWindow         *newFocused;
-  WWindow         *oldFocused;
+  /* WWindow         *oldFocused; */
   XEvent          ev;
 
 
@@ -130,7 +130,7 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
   scr->flags.doing_alt_tab = 1;
 
   swpanel = wInitSwitchPanel(scr, wwin, class_only);
-  oldFocused = wwin;
+  /* oldFocused = wwin; */
 
   if (swpanel) {
     if (wwin->flags.mapped && !wPreferences.panel_only_open) {

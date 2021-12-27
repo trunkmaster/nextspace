@@ -229,7 +229,6 @@
 {
   PathIcon *icon;
   NSString *path;
-  NSString *relativePath;
   NSString *rootPath = [_owner rootPath];
 
   if ((path = [paths objectAtIndex:0]) == nil) {
@@ -240,7 +239,6 @@
   if ([path rangeOfString:rootPath].location != 0) {
     return nil;
   }
-  relativePath = [path substringFromIndex:[rootPath length]];
 
   icon = [[PathIcon new] autorelease];
   if ([paths count] == 1) {

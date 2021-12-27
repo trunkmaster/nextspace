@@ -133,6 +133,8 @@ char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path)
   return wstrdup([filePath cString]);
 }
 
+
+
 static NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
 {
   NSMutableDictionary *appInfo = [NSMutableDictionary dictionary];

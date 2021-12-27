@@ -492,7 +492,6 @@ static void drawTransparentFrame(WWindow * wwin, int x, int y, int width, int he
   Window root = wwin->screen_ptr->root_win;
   GC gc = wwin->screen_ptr->frame_gc;
   int h = 0;
-  int bottom = 0;
 
   if (HAS_BORDER_WITH_SELECT(wwin)) {
     x += wwin->screen_ptr->frame_border_width;
@@ -509,11 +508,6 @@ static void drawTransparentFrame(WWindow * wwin, int x, int y, int width, int he
     if (h < wPreferences.window_title_min_height)
       h = wPreferences.window_title_min_height;
   }
-  if (HAS_RESIZEBAR(wwin) && !wwin->flags.shaded) {
-    /* Can't use wwin-frame->bottom_width because, in some cases
-       (e.g. interactive placement), frame does not point to anything. */
-    bottom = RESIZEBAR_HEIGHT;
-  }
 
   if (all_sides == True) {
     XDrawRectangle(dpy, root, gc, x - 1, y - 1, width + 1, height + 1);
@@ -525,8 +519,7 @@ static void drawTransparentFrame(WWindow * wwin, int x, int y, int width, int he
       if (x - 1 < wwin->frame_x) {
         XDrawLine(dpy, root, gc, x - 1, y - 1, wwin->frame_x, y - 1);
       }
-    }
-    else if (y + height > wwin->frame_y + wwin->frame->core->height) {
+    } else if (y + height > wwin->frame_y + wwin->frame->core->height) {
       XDrawLine(dpy, root, gc, x - 1, y + wwin->frame->core->height + 1,
                 x - 1, y + height + 1);
     }
@@ -537,23 +530,19 @@ static void drawTransparentFrame(WWindow * wwin, int x, int y, int width, int he
         XDrawLine(dpy, root, gc, x + wwin->frame->core->width + 1,
                   y - 1, x + width + 1, y - 1);
       }
-    }
-    else if (y + height > wwin->frame_y + wwin->frame->core->height) {
+    } else if (y + height > wwin->frame_y + wwin->frame->core->height) {
       XDrawLine(dpy, root, gc, x + width, y + wwin->frame->core->height + 1,
                 x + width, y + height + 1);
     }
     // bottom
     if (y + height - 1 != wwin->frame_y + wwin->frame->core->height) {
       XDrawLine(dpy, root, gc, x, y + height, x + width, y + height);
-    }
-    else {
+    } else {
       if (x < wwin->frame_x) {
         XDrawLine(dpy, root, gc, x - 1, y + height, wwin->frame_x, y + height);
-      }
-      else if (x + width > wwin->frame_x + wwin->frame->core->width &&
-               x - 1 == wwin->frame_x) {
-        XDrawLine(dpy, root, gc, x +
-                  wwin->frame->core->width + 1, y + height,
+      } else if (x + width > wwin->frame_x + wwin->frame->core->width &&
+                 x - 1 == wwin->frame_x) {
+        XDrawLine(dpy, root, gc, x + wwin->frame->core->width + 1, y + height,
                   x + width + 1, y + height);
       }
     }

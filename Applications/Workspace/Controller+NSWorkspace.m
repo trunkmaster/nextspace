@@ -182,11 +182,11 @@ static NSString		*_rootPath = @"/";
 // NEXTSPACE
 - (id)initNSWorkspace
 {
-  NSArray *documentDir;
-  NSArray *libraryDirs;
+  // NSArray *documentDir;
+  // NSArray *libraryDirs;
+  // NSArray *downloadDir;
+  // NSArray *desktopDir;
   NSArray *sysAppDir;
-  NSArray *downloadDir;
-  NSArray *desktopDir;
   NSString *sysDir;
   int i;
 
@@ -221,16 +221,11 @@ static NSString		*_rootPath = @"/";
   /* icon association and caching */
   folderPathIconDict = [[NSMutableDictionary alloc] initWithCapacity:5];
 
-  documentDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-                                                    NSUserDomainMask, YES);
-  downloadDir = NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory,
-                                                    NSUserDomainMask, YES);
-  desktopDir = NSSearchPathForDirectoriesInDomains(NSDesktopDirectory,
-                                                   NSUserDomainMask, YES);
-  libraryDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-                                                    NSAllDomainsMask, YES);
-  sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory,
-                                                  NSSystemDomainMask, YES);
+  // documentDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+  // downloadDir = NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory, NSUserDomainMask, YES);
+  // desktopDir = NSSearchPathForDirectoriesInDomains(NSDesktopDirectory, NSUserDomainMask, YES);
+  // libraryDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSAllDomainsMask, YES);
+  sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSSystemDomainMask, YES);
 
   /* we try to guess a System directory and check if looks like one */
   sysDir = nil;

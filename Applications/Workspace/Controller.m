@@ -1330,15 +1330,15 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   NSString   *menuTitle = [[menuItem menu] title];
   FileViewer *fileViewer;
-  NSString   *selectedPath;
+  // NSString   *selectedPath;
 
   if (isQuitting != NO)
     return NO;
   
   fileViewer = [self fileViewerForWindow:[NSApp keyWindow]];
-  if (fileViewer) {
-    selectedPath = [fileViewer absolutePath];
-  }
+  // if (fileViewer) {
+  //   selectedPath = [fileViewer absolutePath];
+  // }
   // NSLog(@"Validate menu: %@ item: %@", menuTitle, [menuItem title]);
 
   if ([menuTitle isEqualToString:@"File"]) {

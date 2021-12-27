@@ -151,7 +151,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   WWindow *old_focused;
   WWindow *focused = scr->focused_window;
   Time timestamp = w_global.timestamp.last_event;
-  WApplication *oapp = NULL, *napp = NULL;
+  WApplication *napp = NULL;
   BOOL focus_succeeded = False;
 
   if (scr->flags.ignore_focus_events ||
@@ -189,13 +189,10 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
   wPrintWindowFocusState(wwin, "[START] wSetFocusTo:");
 
-  if (!old_scr)
+  if (!old_scr) {
     old_scr = scr;
-
+  }
   old_focused = old_scr->focused_window;
-  if (old_focused)
-    oapp = wApplicationOf(old_focused->main_window);
-
   w_global.timestamp.focus_change = timestamp;
 
   // Focus Workspace main application menu if there's no window to focus.
@@ -207,10 +204,9 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
       old_focused = NULL;
     }
-    
-    if (old_focused)
+    if (old_focused) {
       wWindowUnfocus(old_focused);
-    
+    }
     CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                          WMDidChangeWindowFocusNotification, wwin, NULL, TRUE);
     return;
@@ -218,15 +214,15 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
   napp = wApplicationOf(wwin->main_window);
 
-  if (old_scr != scr && old_focused)
+  if (old_scr != scr && old_focused) {
     wWindowUnfocus(old_focused);
-
+  }
   /* If it's GNUstep application focus may be set to yet unmapped main menu */
   if (wwin->flags.is_gnustep || wwin->flags.mapped) {
     /* install colormap if colormap mode is lock mode */
-    if (wPreferences.colormap_mode == WCM_CLICK)
+    if (wPreferences.colormap_mode == WCM_CLICK) {
       wColormapInstallForWindow(scr, wwin);
-
+    }
     /* set input focus */
     switch (wwin->focus_mode) {
     case WFM_NO_INPUT: // !wm_hints->input, !WM_TAKE_FOCUS
@@ -254,8 +250,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
       }
       break;
     }
-  }
-  else {
+  } else {
     // Non-GNUstep, not mapped (shaded, iconified)
     XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
   }
@@ -264,12 +259,12 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
 
   /* if this is not the focused window - change the focus window list order */
   if (focused != wwin) {
-    if (wwin->prev)
+    if (wwin->prev) {
       wwin->prev->next = wwin->next;
-
-    if (wwin->next)
+    }
+    if (wwin->next) {
       wwin->next->prev = wwin->prev;
-
+    }
     wwin->prev = focused;
     focused->next = wwin;
     wwin->next = NULL;
