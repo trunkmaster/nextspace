@@ -29,7 +29,7 @@
  * time exceeds this value, it is immediately finished. Usefull for
  * moments of high-load. DO NOT set *_DELAY_{Z,T,F} to zero!
  */
-#define MAX_ANIMATION_TIME	         1
+#define MAX_ANIMATION_TIME     2
 
 /**/
 #define MAX_HORIZONTAL         (1 << 0)

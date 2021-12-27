@@ -90,6 +90,11 @@ WAppIcon *wAppIconFor(Window window);
 void appIconMouseDown(WObjDescriptor * desc, XEvent * event);
 
 void wAddLaunchingAppIcon(WScreen *scr, WAppIcon *appicon);
+WAppIcon *wLaunchingAppIconCreate(const char *wm_instance,
+                                  const char *wm_class,
+                                  const char *launch_path,
+                                  int x0, int y0,
+                                  const char *image_path);
 WAppIcon *wLaunchingAppIconForInstance(WScreen *scr, char *wm_instance, char *wm_class);
 void wLaunchingAppIconFinish(WScreen *scr, WAppIcon *appicon);
 void wLaunchingAppIconDestroy(WScreen *scr, WAppIcon *appicon);

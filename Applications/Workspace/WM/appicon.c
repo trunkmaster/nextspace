@@ -26,6 +26,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/extensions/shape.h>
 #include <stdlib.h>
 #include <libgen.h>
 #include <string.h>
@@ -1256,7 +1257,7 @@ WAppIcon *wAppIconFor(Window window)
 // It is array of pointers to WAppIcon.
 // These pointers also placed into WScreen->app_icon_list.
 // Launching icons number is much smaller, but I use DOCK_MAX_ICONS as references number.
-void wAddLaunchingAppIcon(WScreen *scr, WAppIcon *appicon)
+static void _addLaunchingAppIcon(WScreen *scr, WAppIcon *appicon)
 {
   WAppIcon **launching_icons;
   
@@ -1274,26 +1275,122 @@ void wAddLaunchingAppIcon(WScreen *scr, WAppIcon *appicon)
   }
 }
 
-WAppIcon *wLaunchingAppIconForInstance(WScreen *scr, char *wm_instance, char *wm_class)
+static Window _createIconForSliding(WScreen *scr, int x, int y, const char *image_path)
 {
-  WAppIcon *aicon = NULL;
-  WAppIcon *licon = NULL;
-  WAppIcon **launching_icons = scr->launching_icons;
+  int vmask = CWBackPixel | CWSaveUnder | CWOverrideRedirect | CWColormap | CWBorderPixel;
+  XSetWindowAttributes attribs;
+  Window image_win;
+  RImage *rimage;
+  Pixmap pixmap, mask;
 
-  if (launching_icons) {
-    for (int i=0; i < DOCK_MAX_ICONS; i++) {
-      licon = launching_icons[i];
-      if (licon &&
-          !strcmp(wm_instance, licon->wm_instance) &&
-          !strcmp(wm_class, licon->wm_class)) {
-        aicon = licon;
-        break;
-      }
-    }
+  // Window
+  attribs.save_under = True;
+  attribs.override_redirect = True;
+  attribs.colormap = scr->w_colormap;
+  attribs.background_pixel = scr->icon_back_texture->normal.pixel;
+  attribs.border_pixel = 0;     /* do not care */
+  
+  image_win = XCreateWindow(dpy, scr->root_win,
+                            x, x, MAX_ICON_HEIGHT, MAX_ICON_HEIGHT, 0,
+                            scr->w_depth, CopyFromParent, scr->w_visual, vmask, &attribs);
+
+  // Image
+  rimage = RLoadImage(scr->rcontext, image_path, 0);
+  RConvertImageMask(scr->rcontext, rimage, &pixmap, &mask, 158);
+  
+  XSetWindowBackgroundPixmap(dpy, image_win, pixmap);
+  XShapeCombineMask(dpy, image_win, ShapeBounding, 0, 0, mask, ShapeSet);
+  
+  XFreePixmap(dpy, pixmap);
+  XFreePixmap(dpy, mask);
+  RReleaseImage(rimage);
+  
+  XClearWindow(dpy, image_win);
+  
+  return image_win;
+}
+
+WAppIcon *wLaunchingAppIconCreate(const char *wm_instance, const char *wm_class,
+                                  const char *launch_path,
+                                  int x0, int y0,
+                                  const char *image_path)
+{
+  int x1, y1;
+  Boolean iconFound = false;
+  WScreen *scr = wDefaultScreen();
+  WAppIcon *app_icon = NULL;
+  Window icon_window;
+      
+
+  if (wm_instance == NULL || wm_class == NULL) {
+    // Can't create launching icon without application name
+    return NULL;
   }
 
-  return aicon;
+  // 0. Create icon window
+  icon_window = _createIconForSliding(scr, x0, y0, image_path);
+  // Convert OpenStep to X11
+  y0 = scr->scr_height - y0 - MAX_ICON_HEIGHT;
+  XMoveWindow(dpy, icon_window, x0, y0);
+  XMapRaised(dpy, icon_window);
+  XFlush(dpy);
+
+  // 1. Search for existing icon in IconYard and Dock
+  app_icon = scr->app_icon_list;
+  while (app_icon->next) {
+    if (!strcmp(app_icon->wm_instance, wm_instance) &&
+        !strcmp(app_icon->wm_class, wm_class)) {
+      x1 = app_icon->x_pos + (ICON_WIDTH - MAX_ICON_WIDTH)/2 + 6;
+      y1 = app_icon->y_pos + (ICON_HEIGHT - MAX_ICON_HEIGHT)/2;
+      
+      wSlideWindow(icon_window, x0, y0, x1, y1);
+
+      if (app_icon->docked && !app_icon->running) {
+        app_icon->launching = 1;
+        wAppIconPaint(app_icon);
+      }
+      iconFound = true;
+      break;
+    }
+    app_icon = app_icon->next;
+  }
+
+  // 2. Otherwise create appicon and set its state to launching
+  if (iconFound == false) {
+    app_icon = wAppIconCreateForDock(scr, launch_path,
+                                     (char *)wm_instance, (char *)wm_class,
+                                     TILE_NORMAL);
+    app_icon->icon->core->descriptor.handle_mousedown = NULL;
+    app_icon->launching = 1;
+    _addLaunchingAppIcon(scr, app_icon);
+
+    if (image_path != NULL && strlen(image_path)  > 0) {
+      wIconChangeImageFile(app_icon->icon, image_path);
+    }
+
+    // Calculate postion for new launch icon
+    PlaceIcon(scr, &x1, &y1, scr->xrandr_info.primary_head);
+    wAppIconMove(app_icon, x1, y1);
+
+    // Slide
+    x1 += (ICON_HEIGHT - MAX_ICON_HEIGHT)/2;
+    y1 += (ICON_HEIGHT - MAX_ICON_HEIGHT)/2;
+    wSlideWindow(icon_window, x0, y0, x1, y1);
+
+    // Draw launching appicon
+    wAppIconPaint(app_icon);
+    XMapWindow(dpy, app_icon->icon->core->window);
+    
+    XSync(dpy, False);
+  }
+
+  // Remove temporary icon
+  XUnmapWindow(dpy, icon_window);
+  XDestroyWindow(dpy, icon_window);
+  
+  return app_icon;
 }
+
 
 void wLaunchingAppIconFinish(WScreen *scr, WAppIcon *appicon)
 {
@@ -1318,6 +1415,27 @@ void wLaunchingAppIconDestroy(WScreen *scr, WAppIcon *appicon)
   wAppIconDestroy(appicon);
 }
 
+
+WAppIcon *wLaunchingAppIconForInstance(WScreen *scr, char *wm_instance, char *wm_class)
+{
+  WAppIcon *aicon = NULL;
+  WAppIcon *licon = NULL;
+  WAppIcon **launching_icons = scr->launching_icons;
+
+  if (launching_icons) {
+    for (int i=0; i < DOCK_MAX_ICONS; i++) {
+      licon = launching_icons[i];
+      if (licon &&
+          !strcmp(wm_instance, licon->wm_instance) &&
+          !strcmp(wm_class, licon->wm_class)) {
+        aicon = licon;
+        break;
+      }
+    }
+  }
+
+  return aicon;
+}
 
 WAppIcon *wLaunchingAppIconForApplication(WScreen *scr, WApplication *wapp)
 {

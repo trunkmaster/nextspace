@@ -369,7 +369,7 @@ WDefaultEntry optionList[] = {
   {"WrapMenus", "NO", NULL, &wPreferences.wrap_menus, getBool, NULL, NULL, NULL},
   {"ScrollableMenus", "NO", NULL, &wPreferences.scrollable_menus, getBool, NULL, NULL, NULL},
   {"MenuScrollSpeed", "medium", seSpeeds, &wPreferences.menu_scroll_speed, getEnum, NULL, NULL, NULL},
-  {"IconSlideSpeed", "medium", seSpeeds, &wPreferences.icon_slide_speed, getEnum, NULL, NULL, NULL},
+  {"IconSlideSpeed", "Slow", seSpeeds, &wPreferences.icon_slide_speed, getEnum, NULL, NULL, NULL},
   {"ClipAutoraiseDelay", "600", NULL, &wPreferences.clip_auto_raise_delay, getInt, NULL, NULL, NULL},
   {"ClipAutolowerDelay", "1000", NULL, &wPreferences.clip_auto_lower_delay, getInt, NULL, NULL, NULL},
   {"ClipAutoexpandDelay", "600", NULL, &wPreferences.clip_auto_expand_delay, getInt, NULL, NULL, NULL},

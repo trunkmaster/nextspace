@@ -72,23 +72,23 @@
 
 /* animation speed constants */
 #define ICON_SLIDE_SLOWDOWN_UF	1
-#define ICON_SLIDE_DELAY_UF	0
+#define ICON_SLIDE_DELAY_UF	1
 #define ICON_SLIDE_STEPS_UF	50  
 
 #define ICON_SLIDE_SLOWDOWN_F	3
-#define ICON_SLIDE_DELAY_F	0
+#define ICON_SLIDE_DELAY_F	2
 #define ICON_SLIDE_STEPS_F	50
 
 #define ICON_SLIDE_SLOWDOWN_M	5
-#define ICON_SLIDE_DELAY_M	0 
+#define ICON_SLIDE_DELAY_M	3
 #define ICON_SLIDE_STEPS_M	30
 
 #define ICON_SLIDE_SLOWDOWN_S	10
-#define ICON_SLIDE_DELAY_S	0
+#define ICON_SLIDE_DELAY_S	4
 #define ICON_SLIDE_STEPS_S	20
 
 #define ICON_SLIDE_SLOWDOWN_US	20
-#define ICON_SLIDE_DELAY_US	1
+#define ICON_SLIDE_DELAY_US	5
 #define ICON_SLIDE_STEPS_US	10
 
 /* XFetchName Wrapper */
@@ -209,7 +209,7 @@ void wSlideWindowList(Window wins[], int n, int from_x, int from_y, int to_x, in
   slide_slowdown = apars[(int)wPreferences.icon_slide_speed].slowdown;
   slide_steps = apars[(int)wPreferences.icon_slide_speed].steps;
   slide_delay = apars[(int)wPreferences.icon_slide_speed].delay;
-
+  
   dx_int = to_x - from_x;
   dy_int = to_y - from_y;
   is_dx_nul = (dx_int == 0);
@@ -266,6 +266,7 @@ void wSlideWindowList(Window wins[], int n, int from_x, int from_y, int to_x, in
       XMoveWindow(dpy, wins[i], (int)x + i * ICON_SIZE, (int)y);
     }
     XFlush(dpy);
+    XSync(dpy, 0);
     if (slide_delay > 0) {
       wusleep(slide_delay * 1000L);
     } else {

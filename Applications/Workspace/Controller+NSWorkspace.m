@@ -289,6 +289,7 @@ static NSString		*_rootPath = @"/";
 }
 
 // NEXTSPACE
+static NSLock *raceLock = nil;
 - (BOOL)openFile: (NSString*)fullPath
        fromImage:(NSImage*)anImage
               at:(NSPoint)point
@@ -326,6 +327,10 @@ static NSString		*_rootPath = @"/";
   NSDebugLLog(@"Workspace", @"[Workspace] openFile: type '%@' with app: %@",
               fileType, appName);
   
+  if (!raceLock) {
+    raceLock = [NSLock new];
+  }
+  
   if ([fileType isEqualToString:NSApplicationFileType]) {
     // .app should be launched
       NSString     *wmName;
@@ -358,10 +363,6 @@ static NSString		*_rootPath = @"/";
                          nil, nil, nil, appName);
         return NO;
       }
-      if ([[wmName componentsSeparatedByString:@"."] count] == 1) {
-        wmName = [NSString stringWithFormat:@"%@.GNUstep",
-                           [wmName stringByDeletingPathExtension]];
-      }
       launchPath = [self locateApplicationBinary:fullPath];
       if (launchPath == nil) {
         NXTRunAlertPanel(_(@"Workspace"),
@@ -370,10 +371,13 @@ static NSString		*_rootPath = @"/";
                          nil, nil, nil, appName, fullPath);
         return NO;
       }
-      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
-                                     ofType:nil];
+      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"] ofType:nil];
       
-      WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
+      [raceLock lock];
+      wLaunchingAppIconCreate([[wmName stringByDeletingPathExtension] cString], "GNUstep",
+                              [launchPath cString], point.x, point.y,
+                              [iconPath cString]);
+      [raceLock unlock];        
       
       if ([self launchApplication:fullPath] == NO) {
         NXTRunAlertPanel(_(@"Workspace"),
@@ -381,15 +385,16 @@ static NSString		*_rootPath = @"/";
                          nil, nil, nil, appName);
         return NO;
       }
+      [raceLock unlock];
       return YES;
   }
   else if ([fileType isEqualToString:NSDirectoryFileType] ||
            [fileType isEqualToString:NSFilesystemFileType] ||
            [wrappers containsObject:[fullPath pathExtension]]) {
-      // Open new FileViewer window
-      [self openNewViewerIfNotExistRootedAt:fullPath];
-      return YES;
-    }
+    // Open new FileViewer window
+    [self openNewViewerIfNotExistRootedAt:fullPath];
+    return YES;
+  }
   else if (appName) {
     // .app found for opening file type
     NSBundle     *appBundle;
@@ -401,19 +406,17 @@ static NSString		*_rootPath = @"/";
     appBundle = [self bundleForApp:appName];
     if (appBundle) {
       appInfo = [appBundle infoDictionary];
-      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"]
-                                     ofType:nil];
-      
+      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"] ofType:nil];
       wmName = [appInfo objectForKey:@"NSExecutable"];
-      if ([[wmName componentsSeparatedByString:@"."] count] == 1) {
-        wmName = [NSString stringWithFormat:@"%@.GNUstep",
-                           [appName stringByDeletingPathExtension]];
-      }
       launchPath = [self locateApplicationBinary:appName];
       if (launchPath == nil) {
         return NO;
       }
-      WMCreateLaunchingIcon(wmName, launchPath, anImage, point, iconPath);
+      [raceLock lock];
+      wLaunchingAppIconCreate([[wmName stringByDeletingPathExtension] cString], "GNUstep",
+                              [launchPath cString], point.x, point.y,
+                              [iconPath cString]);
+      [raceLock unlock];
     }
       
     if (![self openFile:fullPath withApplication:appName andDeactivate:YES]) {
@@ -421,6 +424,11 @@ static NSString		*_rootPath = @"/";
                        _(@"Failed to start application \"%@\" for file \"%@\""), 
                        nil, nil, nil, appName, [fullPath lastPathComponent]);
       return NO;
+    }
+    // If multiple files are opened at once we need to wait for app to start.
+    // Otherwise two copies of one application become alive.
+    while([self _connectApplication:appName] == nil) {
+      [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow: 0.5]];
     }
     return YES;
   }

@@ -54,13 +54,12 @@ extern WorkspaceExitCode ws_quit_code;
 #include <window.h>
 #include <event.h>
 #include <dock.h>
-#include <actions.h> // wArrangeIcons()
+#include <actions.h>
 #include <application.h>
 #include <appicon.h>
-#include <shutdown.h> // wShutdown(), WMxxxMode
+#include <shutdown.h>
 #include <client.h>
 #include <wmspec.h>
-// Appicons placement
 #include <stacking.h>
 #include <placement.h>
 #include <xrandr.h>
@@ -69,18 +68,6 @@ extern WorkspaceExitCode ws_quit_code;
 
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey:(X) value:@"" table:nil]
-
-//-----------------------------------------------------------------------------
-// Calls related to internals of Window Manager.
-// 'WM' prefix is a call direction 'to WindowManager'
-//-----------------------------------------------------------------------------
-// - Should be called from already existing @autoreleasepool
-
-WAppIcon *WMCreateLaunchingIcon(NSString *wmName, NSString *launchPath,
-                                NSImage *anImage, NSPoint sourcePoint,
-                                NSString *imagePath);
-
-// - End of functions which require existing @autorelease pool
 
 #endif //__OBJC__
 
