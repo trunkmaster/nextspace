@@ -1569,7 +1569,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   }
 
   if (!wwin->flags.internal_window) {
-    CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+    CFNotificationCenterPostNotification(scr->notificationCenter,
                                          WMDidUnmanageWindowNotification, wwin, NULL, TRUE);
   }
   
