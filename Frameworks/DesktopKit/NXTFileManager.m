@@ -414,6 +414,27 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
   return absPath;
 }
 
+- (NSString *)absolutePathForCommand:(NSString *)command
+{
+  NSString *commandFile;
+  NSString *envPath;
+
+  if ([command isAbsolutePath]) {
+    return command;
+  }
+
+  commandFile = [[command componentsSeparatedByString:@" "] objectAtIndex:0];
+  envPath = [NSString stringWithCString:getenv("PATH")];
+
+  for (NSString *path in [envPath componentsSeparatedByString:@":"]) {
+    if ([[self directoryContentsAtPath:path] containsObject:commandFile]) {
+      return [path stringByAppendingPathComponent:commandFile];
+    }
+  }
+
+  return nil;
+}
+
 - (BOOL)directoryExistsAtPath:(NSString *)path
 {
   BOOL isDir, isExist;
@@ -422,6 +443,7 @@ NSString *NXTIntersectionPath(NSString *aPath, NSString *bPath)
 
   return (isExist && isDir);
 }
+
 
 // --- Files (libmagic)
 - (NSString *)mimeTypeForFile:(NSString *)fullPath
