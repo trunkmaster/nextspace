@@ -654,11 +654,6 @@ static void handleDestroyNotify(XEvent * event)
   wwin = wWindowFor(window);
   if (wwin) {
     /* WMLogInfo("DestroyNotify will unmanage window:%lu", window); */
-#ifdef NEXTSPACE
-    CFNotificationCenterPostNotification(scr->notificationCenter,
-                                         WMDidUnmanageWindowNotification, wwin, NULL, TRUE);
-    // dispatch_sync(workspace_q, ^{ WSApplicationDidCloseWindow(wwin); });
-#endif
     wUnmanageWindow(wwin, False, True);
   }
 
