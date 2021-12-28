@@ -52,41 +52,13 @@ WorkspaceExitCode ws_quit_code;
 // WM functions and vars
 extern Display *dpy;
 
-// TODO: Move to DesktopKit/NXTFileManager
-NSString *fullPathForCommand(NSString *command)
-{
-  NSString      *commandFile;
-  NSString      *envPath;
-  NSEnumerator  *e;
-  NSString      *path;
-  NSFileManager *fm;
-
-  if ([command isAbsolutePath]) {
-    return command;
-  }
-
-  commandFile = [[command componentsSeparatedByString:@" "] objectAtIndex:0];
-  // commandFile = [command lastPathComponent];
-  envPath = [NSString stringWithCString:getenv("PATH")];
-  e = [[envPath componentsSeparatedByString:@":"] objectEnumerator];
-  fm = [NSFileManager defaultManager];
-
-  while ((path = [e nextObject])) {
-    if ([[fm directoryContentsAtPath:path] containsObject:commandFile]) {
-      return [path stringByAppendingPathComponent:commandFile];
-    }
-  }
-
-  return nil;
-}
-
 //-----------------------------------------------------------------------------
 // Workspace functions which are called from WM's code.
 // All the functions below are executed inside 'wwmaker_q' GCD queue.
 // TODO: all events based function should be replaces with CF notifications.
 //-----------------------------------------------------------------------------
 
-static NSImage *_imageForRasterImage(RImage *r_image)
+NSImage *WSImageForRasterImage(RImage *r_image)
 {
   BOOL		   hasAlpha = (r_image->format == RRGBAFormat) ? YES : NO;
   NSBitmapImageRep *rep = nil;
@@ -115,7 +87,7 @@ static NSImage *_imageForRasterImage(RImage *r_image)
 
 char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path)
 {
-  NSImage  *image = _imageForRasterImage(r_image);
+  NSImage  *image = WSImageForRasterImage(r_image);
   NSData   *tiffRep = [image TIFFRepresentation];
   NSString *filePath;
 
@@ -135,127 +107,128 @@ char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path)
 
 
 
-static NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
-{
-  NSMutableDictionary *appInfo = [NSMutableDictionary dictionary];
-  NSString            *appName = nil;
-  NSString            *appPath = nil;
-  int                 app_pid;
-  char                *app_command;
+// static NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
+// {
+//   NSMutableDictionary *appInfo = [NSMutableDictionary dictionary];
+//   NSString            *appName = nil;
+//   NSString            *appPath = nil;
+//   int                 app_pid;
+//   char                *app_command;
 
-  // Gather NSApplicationName and NSApplicationPath
-  if (!strcmp(wapp->main_window_desc->wm_class, "GNUstep")) {
-    [appInfo setObject:@"NO" forKey:@"IsXWindowApplication"];
-    appName = [NSString stringWithCString:wapp->main_window_desc->wm_instance];
-    appPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
-  } else {
-    [appInfo setObject:@"YES" forKey:@"IsXWindowApplication"];
-    appName = [NSString stringWithCString:wapp->main_window_desc->wm_class];
-    app_command = wGetCommandForWindow(wwin->client_win);
-    if (app_command) {
-      appPath = fullPathForCommand([NSString stringWithCString:app_command]);
-    }
-  }
-  // NSApplicationName = NSString*
-  [appInfo setObject:appName forKey:@"NSApplicationName"];
-  // NSApplicationPath = NSString*
-  if (appPath) {
-    [appInfo setObject:appPath forKey:@"NSApplicationPath"];
-  } else if (app_command) {
-    [appInfo setObject:[NSString stringWithCString:app_command]
-                forKey:@"NSApplicationPath"];
-  } else {
-    [appInfo setObject:@"--" forKey:@"NSApplicationPath"];
-  }
+//   // Gather NSApplicationName and NSApplicationPath
+//   if (!strcmp(wapp->main_window_desc->wm_class, "GNUstep")) {
+//     [appInfo setObject:@"NO" forKey:@"IsXWindowApplication"];
+//     appName = [NSString stringWithCString:wapp->main_window_desc->wm_instance];
+//     appPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
+//   } else {
+//     [appInfo setObject:@"YES" forKey:@"IsXWindowApplication"];
+//     appName = [NSString stringWithCString:wapp->main_window_desc->wm_class];
+//     app_command = wGetCommandForWindow(wwin->client_win);
+//     if (app_command) {
+//       appPath = [[NXTFileManager defaultManager]
+//                   absolutePathForCommand:[NSString stringWithCString:app_command]];
+//     }
+//   }
+//   // NSApplicationName = NSString*
+//   [appInfo setObject:appName forKey:@"NSApplicationName"];
+//   // NSApplicationPath = NSString*
+//   if (appPath) {
+//     [appInfo setObject:appPath forKey:@"NSApplicationPath"];
+//   } else if (app_command) {
+//     [appInfo setObject:[NSString stringWithCString:app_command]
+//                 forKey:@"NSApplicationPath"];
+//   } else {
+//     [appInfo setObject:@"--" forKey:@"NSApplicationPath"];
+//   }
 
-  // NSApplicationProcessIdentifier = NSString*
-  if ((app_pid = wNETWMGetPidForWindow(wwin->client_win)) > 0) {
-    [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
-                forKey:@"NSApplicationProcessIdentifier"];
-  }
-  else if ((app_pid = wapp->app_icon->pid) > 0) {
-    [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
-                forKey:@"NSApplicationProcessIdentifier"];
-  }
-  else {
-    [appInfo setObject:@"-1" forKey:@"NSApplicationProcessIdentifier"];
-  }
+//   // NSApplicationProcessIdentifier = NSString*
+//   if ((app_pid = wNETWMGetPidForWindow(wwin->client_win)) > 0) {
+//     [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
+//                 forKey:@"NSApplicationProcessIdentifier"];
+//   }
+//   else if ((app_pid = wapp->app_icon->pid) > 0) {
+//     [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
+//                 forKey:@"NSApplicationProcessIdentifier"];
+//   }
+//   else {
+//     [appInfo setObject:@"-1" forKey:@"NSApplicationProcessIdentifier"];
+//   }
 
-  // Get icon image from windowmaker app structure(WApplication)
-  // NSApplicationIcon=NSImage*
-  // NSLog(@"%@ icon filename: %s", xAppName, wapp->app_icon->icon->file);
-  if (wapp->app_icon->icon->file_image) {
-    [appInfo setObject:_imageForRasterImage(wapp->app_icon->icon->file_image)
-                forKey:@"NSApplicationIcon"];
-  }
+//   // Get icon image from windowmaker app structure(WApplication)
+//   // NSApplicationIcon=NSImage*
+//   // NSLog(@"%@ icon filename: %s", xAppName, wapp->app_icon->icon->file);
+//   if (wapp->app_icon->icon->file_image) {
+//     [appInfo setObject:WSImageForRasterImage(wapp->app_icon->icon->file_image)
+//                 forKey:@"NSApplicationIcon"];
+//   }
 
-  return (NSDictionary *)appInfo;
-}
+//   return (NSDictionary *)appInfo;
+// }
 
-void WSApplicationDidCreate(WApplication *wapp)
-{
-  NSNotification *notif = nil;
-  NSDictionary *appInfo = nil;
-  char *wm_instance, *wm_class;
-  WAppIcon *appIcon;
-  WWindow *wwin;
+// void WSApplicationDidCreate(WApplication *wapp)
+// {
+//   NSNotification *notif = nil;
+//   NSDictionary *appInfo = nil;
+//   char *wm_instance, *wm_class;
+//   WAppIcon *appIcon;
+//   WWindow *wwin;
 
-  wm_instance = wapp->main_window_desc->wm_instance;
-  wm_class = wapp->main_window_desc->wm_class;
+//   wm_instance = wapp->main_window_desc->wm_instance;
+//   wm_class = wapp->main_window_desc->wm_class;
   
-  appIcon = wLaunchingAppIconForInstance(wapp->main_window_desc->screen_ptr, wm_instance, wm_class);
-  if (appIcon) {
-    wLaunchingAppIconFinish(wapp->main_window_desc->screen_ptr, appIcon);
-    appIcon->main_window = wapp->main_window;
-  }
+//   appIcon = wLaunchingAppIconForInstance(wapp->main_window_desc->screen_ptr, wm_instance, wm_class);
+//   if (appIcon) {
+//     wLaunchingAppIconFinish(wapp->main_window_desc->screen_ptr, appIcon);
+//     appIcon->main_window = wapp->main_window;
+//   }
 
-  // GNUstep application will register itself in ProcessManager with AppKit notification.
-  if (!strcmp(wm_class,"GNUstep")) {
-    return;
-  }
+//   // GNUstep application will register itself in ProcessManager with AppKit notification.
+//   if (!strcmp(wm_class,"GNUstep")) {
+//     return;
+//   }
 
-  wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
-  appInfo = _applicationInfoForWApp(wapp, wwin);
-  NSDebugLLog(@"WM", @"W+WM: WSApplicationDidCreate: %@", appInfo);
+//   wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
+//   appInfo = _applicationInfoForWApp(wapp, wwin);
+//   NSDebugLLog(@"WM", @"W+WM: WSApplicationDidCreate: %@", appInfo);
 
-  notif = [NSNotification notificationWithName:NSWorkspaceDidLaunchApplicationNotification
-                                        object:appInfo
-                                      userInfo:appInfo];
-  [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
-}
+//   notif = [NSNotification notificationWithName:NSWorkspaceDidLaunchApplicationNotification
+//                                         object:appInfo
+//                                       userInfo:appInfo];
+//   [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
+// }
 
-void WSApplicationDidDestroy(WApplication *wapp)
-{
-  NSNotification *notif = nil;
-  NSDictionary   *appInfo = nil;
+// void WSApplicationDidDestroy(WApplication *wapp)
+// {
+//   NSNotification *notif = nil;
+//   NSDictionary   *appInfo = nil;
 
-  // Application could terminate in 2 ways:
-  // 1. normal - AppKit notfication mechanism works
-  // 2. crash - no AppKit involved so we should use this code to inform ProcessManager
-  // [ProcessManager applicationDidTerminate:] should expect 2 calls for option #1.
-  appInfo = _applicationInfoForWApp(wapp, wapp->main_window_desc);
-  NSLog(@"W+WM: WSApplicationDidDestroy: %@", appInfo);
+//   // Application could terminate in 2 ways:
+//   // 1. normal - AppKit notfication mechanism works
+//   // 2. crash - no AppKit involved so we should use this code to inform ProcessManager
+//   // [ProcessManager applicationDidTerminate:] should expect 2 calls for option #1.
+//   appInfo = _applicationInfoForWApp(wapp, wapp->main_window_desc);
+//   NSLog(@"W+WM: WSApplicationDidDestroy: %@", appInfo);
   
-  notif = [NSNotification notificationWithName:NSWorkspaceDidTerminateApplicationNotification
-                                        object:nil
-                                      userInfo:appInfo];
-  [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
-}
+//   notif = [NSNotification notificationWithName:NSWorkspaceDidTerminateApplicationNotification
+//                                         object:nil
+//                                       userInfo:appInfo];
+//   [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
+// }
 
-void WSApplicationDidCloseWindow(WWindow *wwin)
-{
-  NSNotification *notif;
-  NSDictionary   *appInfo;
+// void WSApplicationDidCloseWindow(WWindow *wwin)
+// {
+//   NSNotification *notif;
+//   NSDictionary   *appInfo;
   
-  if (!strcmp(wwin->wm_class,"GNUstep"))
-    return;
+//   if (!strcmp(wwin->wm_class,"GNUstep"))
+//     return;
 
-  appInfo = @{@"NSApplicationName":[NSString stringWithCString:wwin->wm_class]};
-  notif = [NSNotification notificationWithName:WMApplicationDidTerminateSubprocessNotification
-                                        object:nil
-                                      userInfo:appInfo];
-  [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
-}
+//   appInfo = @{@"NSApplicationName":[NSString stringWithCString:wwin->wm_class]};
+//   notif = [NSNotification notificationWithName:WMApplicationDidTerminateSubprocessNotification
+//                                         object:nil
+//                                       userInfo:appInfo];
+//   [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
+// }
 
 // Screen resizing
 //------------------------------------------------------------------------------
@@ -398,6 +371,8 @@ void WSActivateWorkspaceApp(WScreen *scr)
   }
 }
 
+// Layout badge in Workspace appicon
+//------------------------------------------------------------------------------
 void WSKeyboardGroupDidChange(int group)
 {
   OSEKeyboard *keyboard = [OSEKeyboard new];
@@ -416,6 +391,8 @@ void WSKeyboardGroupDidChange(int group)
   [keyboard release];
 }
 
+// Dock
+//------------------------------------------------------------------------------
 void WSDockContentDidChange(WDock *dock)
 {
   NSNotification *notif;

@@ -138,7 +138,7 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
   int window_count;
   WWindow *awin;
 
-  /* Application could be already destryed */
+  /* Application could be already destroyed */
   if (wapp == NULL || wapp->windows == NULL || wwin == NULL)
     return;
 
@@ -244,11 +244,10 @@ WApplication *wApplicationCreate(WWindow * wwin)
            wapp->prev ? wapp->prev->main_window_desc->wm_instance : "NULL",
            wapp->next ? wapp->next->main_window_desc->wm_instance : "NULL");
         
-#ifdef NEXTSPACE
-  // CFNotificationCenterPostNotification(scr->notificationCenter,
-  //                                      WMDidCreateApplicationNotification, wapp, NULL, TRUE);
-  dispatch_sync(workspace_q, ^{ WSApplicationDidCreate(wapp); });
-#endif
+  // Notify Workspace's ProcessManager
+  // dispatch_sync(workspace_q, ^{ WSApplicationDidCreate(wapp); });
+  CFNotificationCenterPostNotification(scr->notificationCenter,
+                                       WMDidCreateApplicationNotification, wapp, NULL, TRUE);
 
   return wapp;
 }
@@ -299,14 +298,10 @@ void wApplicationDestroy(WApplication *wapp)
 
   scr = wapp->main_window_desc->screen_ptr;
   
-#ifdef NEXTSPACE
-  // CFNotificationCenterPostNotification(scr->notificationCenter,
-  //                                      WMDidDestroyApplicationNotification, wapp, NULL, TRUE);
-  
-  // Must be synchronous. Otherwise XWApplicationDidDestroy crashed
-  // during access to wapp structure.
-  dispatch_sync(workspace_q, ^{ WSApplicationDidDestroy(wapp); });
-#endif
+  // Notify Workspace's ProcessManager
+  // dispatch_sync(workspace_q, ^{ WSApplicationDidDestroy(wapp); });
+  CFNotificationCenterPostNotification(scr->notificationCenter,
+                                       WMDidDestroyApplicationNotification, wapp, NULL, TRUE);
 
   if (wapp == scr->wapp_list) {
     if (wapp->next)

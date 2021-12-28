@@ -23,9 +23,11 @@
 #include <signal.h>
 
 #import <DesktopKit/NXTAlert.h>
+#import <DesktopKit/NXTFileManager.h>
 
 #import "Controller.h"
 #import "WorkspaceNotificationCenter.h"
+#import "Workspace+WM.h"
 #import "Processes/Processes.h"
 
 #import "Operations/ProcessManager.h"
@@ -39,7 +41,7 @@ NSString *WMOperationProcessingFileNotification = @"BGOperationProcessingFile";
 NSString *WMApplicationDidTerminateSubprocessNotification = @"WMAppDidTerminateSubprocess";
 
 static Processes *shared = nil;
-static BOOL      _workspaceQuitting = NO;
+static BOOL _workspaceQuitting = NO;
 
 @implementation ProcessManager
 
@@ -57,6 +59,7 @@ static BOOL      _workspaceQuitting = NO;
   NSDebugLLog(@"Memory", @"ProcessManager: dealloc");
 
   [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
+  [[WorkspaceNotificationCenter defaultCenter] removeObserver:self];
 
   RELEASE(applications);
   RELEASE(operations);
@@ -90,7 +93,7 @@ static BOOL      _workspaceQuitting = NO;
   
   operations = [[NSMutableArray alloc] init];
 
-  //  Applications
+  //  Applications - AppKit notifications
   [nc addObserver:self
          selector:@selector(applicationWillLaunch:)
              name:NSWorkspaceWillLaunchApplicationNotification
@@ -126,14 +129,23 @@ static BOOL      _workspaceQuitting = NO;
   //          name:WMOperationProcessingFileNotification
   //        object:nil];
 
-  // WM notifications
-  NSString *notifName = [NSString stringWithCString:CFStringGetCStringPtr(WMDidManageWindowNotification,
-                                                                          CFStringGetSystemEncoding())];
+  // WM  - CoreFoundation notifications
   [[WorkspaceNotificationCenter defaultCenter]
     addObserver:self
-       selector:@selector(applicationDidStartSubprocess:)
-	   name:notifName
-	 object:nil];
+       selector:@selector(applicationDidCreate:)
+	   name:WMDidCreateApplicationNotification];
+  [[WorkspaceNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(applicationDidDestroy:)
+	   name:WMDidDestroyApplicationNotification];
+  [[WorkspaceNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(applicationDidOpenWindow:)
+	   name:WMDidManageWindowNotification];
+  [[WorkspaceNotificationCenter defaultCenter]
+    addObserver:self
+       selector:@selector(applicationDidCloseWindow:)
+	   name:WMDidUnmanageWindowNotification];
   
   return self;
 }
@@ -418,6 +430,162 @@ static BOOL      _workspaceQuitting = NO;
   [_appsCopy release];
 
   return _noRunningApps;
+}
+
+@end
+
+@implementation ProcessManager (WindowManager)
+
+NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
+{
+  NSMutableDictionary *appInfo = [NSMutableDictionary dictionary];
+  NSString *appName = nil;
+  NSString *appPath = nil;
+  int app_pid;
+  char *app_command;
+
+  // Gather NSApplicationName and NSApplicationPath
+  if (!strcmp(wapp->main_window_desc->wm_class, "GNUstep")) {
+    [appInfo setObject:@"NO" forKey:@"IsXWindowApplication"];
+    appName = [NSString stringWithCString:wapp->main_window_desc->wm_instance];
+    appPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
+  } else {
+    [appInfo setObject:@"YES" forKey:@"IsXWindowApplication"];
+    appName = [NSString stringWithCString:wapp->main_window_desc->wm_class];
+    app_command = wGetCommandForWindow(wwin->client_win);
+    if (app_command) {
+      appPath = [[NXTFileManager defaultManager]
+                  absolutePathForCommand:[NSString stringWithCString:app_command]];
+    }
+  }
+  // NSApplicationName = NSString*
+  [appInfo setObject:appName forKey:@"NSApplicationName"];
+  // NSApplicationPath = NSString*
+  if (appPath) {
+    [appInfo setObject:appPath forKey:@"NSApplicationPath"];
+  } else if (app_command) {
+    [appInfo setObject:[NSString stringWithCString:app_command]
+                forKey:@"NSApplicationPath"];
+  } else {
+    [appInfo setObject:@"--" forKey:@"NSApplicationPath"];
+  }
+
+  // NSApplicationProcessIdentifier = NSString*
+  if ((app_pid = wNETWMGetPidForWindow(wwin->client_win)) > 0) {
+    [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
+                forKey:@"NSApplicationProcessIdentifier"];
+  }
+  else if ((app_pid = wapp->app_icon->pid) > 0) {
+    [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
+                forKey:@"NSApplicationProcessIdentifier"];
+  }
+  else {
+    [appInfo setObject:@"-1" forKey:@"NSApplicationProcessIdentifier"];
+  }
+
+  // Get icon image from windowmaker app structure(WApplication)
+  // NSApplicationIcon=NSImage*
+  // NSLog(@"%@ icon filename: %s", xAppName, wapp->app_icon->icon->file);
+  if (wapp->app_icon->icon->file_image) {
+    [appInfo setObject:WSImageForRasterImage(wapp->app_icon->icon->file_image)
+                forKey:@"NSApplicationIcon"];
+  }
+
+  return (NSDictionary *)appInfo;
+}
+
+// WMDidCreateApplicationNotification
+// void WSApplicationDidCreate(WApplication *wapp)
+- (void)applicationDidCreate:(NSNotification *)notif
+{
+  WApplication *wapp = (WApplication *)[(CFObject *)[notif object] object];
+  NSNotification *localNotif = nil;
+  NSDictionary *appInfo = nil;
+  char *wm_instance, *wm_class;
+  WAppIcon *appIcon;
+  WWindow *wwin;
+
+  wm_instance = wapp->main_window_desc->wm_instance;
+  wm_class = wapp->main_window_desc->wm_class;
+  
+  appIcon = wLaunchingAppIconForInstance(wapp->main_window_desc->screen_ptr, wm_instance, wm_class);
+  if (appIcon) {
+    wLaunchingAppIconFinish(wapp->main_window_desc->screen_ptr, appIcon);
+    appIcon->main_window = wapp->main_window;
+  }
+
+  // GNUstep application will register itself in ProcessManager with AppKit notification.
+  if (!strcmp(wm_class,"GNUstep")) {
+    return;
+  }
+
+  wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
+  appInfo = _applicationInfoForWApp(wapp, wwin);
+  NSDebugLLog(@"WM", @"W+WM: WSApplicationDidCreate: %@", appInfo);
+
+  localNotif = [NSNotification notificationWithName:NSWorkspaceDidLaunchApplicationNotification
+                                             object:appInfo
+                                           userInfo:appInfo];
+  [self applicationDidLaunch:localNotif];
+}
+
+// WMDidDestroyApplicationNotification
+- (void)applicationDidDestroy:(NSNotification *)notif
+{
+  WApplication *wapp = (WApplication *)[(CFObject *)[notif object] object];
+  NSNotification *localNotif = nil;
+  NSDictionary *appInfo = nil;
+
+  // Application could terminate in 2 ways:
+  // 1. normal - AppKit notfication mechanism works
+  // 2. crash - no AppKit involved so we should use this code to inform ProcessManager
+  // [ProcessManager applicationDidTerminate:] should expect 2 calls for option #1.
+  appInfo = _applicationInfoForWApp(wapp, wapp->main_window_desc);
+  NSLog(@"W+WM: WSApplicationDidDestroy: %@", appInfo);
+  
+  localNotif = [NSNotification notificationWithName:NSWorkspaceDidTerminateApplicationNotification
+                                             object:nil
+                                           userInfo:appInfo];
+  [self applicationDidTerminate:localNotif];
+}
+
+// TODO: WMDidManageWindowNotification;
+// TODO: merge with applicationDidStartSubprocess:
+- (void)applicationDidOpenWindow:(NSNotification *)notif
+{
+  WWindow *wwin = (WWindow *)[(CFObject *)[notif object] object];
+  NSLog(@"TODO: ProcessManager-applicationDidOpenWindow: %s", wwin->wm_instance);
+  
+  // NSNotification *localNotif;
+  // NSDictionary *appInfo;
+  
+  // if (!strcmp(wwin->wm_class,"GNUstep"))
+  //   return;
+
+  // appInfo = @{@"NSApplicationName":[NSString stringWithCString:wwin->wm_class]};
+  // localNotif = [NSNotification notificationWithName:WMApplicationDidTerminateSubprocessNotification
+  //                                            object:nil
+  //                                          userInfo:appInfo];
+  // [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
+}
+
+// TODO: WMDidUnmanageWindowNotification;
+// TODO: merge with applicationDidTerminateSubprocess:
+- (void)applicationDidCloseWindow:(NSNotification *)notif
+{
+  WWindow *wwin = (WWindow *)[(CFObject *)[notif object] object];
+  NSLog(@"TODO: ProcessManager-applicationDidCloseWindow: %s", wwin->wm_instance);
+  // NSNotification *localNotif;
+  // NSDictionary *appInfo;
+  
+  // if (!strcmp(wwin->wm_class,"GNUstep"))
+  //   return;
+
+  // appInfo = @{@"NSApplicationName":[NSString stringWithCString:wwin->wm_class]};
+  // localNotif = [NSNotification notificationWithName:WMApplicationDidTerminateSubprocessNotification
+  //                                            object:nil
+  //                                          userInfo:appInfo];
+  // [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
 }
 
 @end

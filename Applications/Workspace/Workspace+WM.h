@@ -69,6 +69,8 @@ extern WorkspaceExitCode ws_quit_code;
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey:(X) value:@"" table:nil]
 
+NSImage *WSImageForRasterImage(RImage *r_image);
+
 #endif //__OBJC__
 
 //-----------------------------------------------------------------------------
@@ -76,16 +78,8 @@ extern WorkspaceExitCode ws_quit_code;
 // Workspace callbacks for use inside Window Manager.
 //-----------------------------------------------------------------------------
 
-// --- Dock
-void WSDockContentDidChange(WDock *dock);
-
 char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
   
-// --- Applications creation and destroying
-void WSApplicationDidCreate(WApplication *wapp);
-void WSApplicationDidDestroy(WApplication *wapp);
-void WSApplicationDidCloseWindow(WWindow *wwin);
-
 // --- XRandR
 void WSUpdateScreenInfo(WScreen *scr);
 void WSUpdateScreenParameters(void);
@@ -93,6 +87,9 @@ void WSUpdateScreenParameters(void);
 // --- Workspaces
 void WSActivateApplication(WScreen *scr, char *app_name);
 void WSActivateWorkspaceApp(WScreen *scr);
+
+// --- Dock
+void WSDockContentDidChange(WDock *dock);
 
 // --- Layout badge in Workspace appicon
 void WSKeyboardGroupDidChange(int group);

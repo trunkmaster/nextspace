@@ -358,25 +358,25 @@ extern struct wm_global_variables {
   } shortcut;
 } w_global;
 
-/* CoreFoundation notifications -- initialized in startup.c*/
+/* CoreFoundation notifications -- initialized in startup.c */
+/* Applications */
 extern CFStringRef WMDidCreateApplicationNotification;
 extern CFStringRef WMDidDestroyApplicationNotification;
-
 extern CFStringRef WMDidManageWindowNotification;
 extern CFStringRef WMDidUnmanageWindowNotification;
+/* Windows */
 extern CFStringRef WMDidChangeWindowWorkspaceNotification;
 extern CFStringRef WMDidChangeWindowStateNotification;
 extern CFStringRef WMDidChangeWindowFocusNotification;
 extern CFStringRef WMDidChangeWindowStackingNotification;
 extern CFStringRef WMDidChangeWindowNameNotification;
-
 extern CFStringRef WMDidResetWindowStackingNotification;
-
+/* Workspaces */
 extern CFStringRef WMDidCreateWorkspaceNotification;
 extern CFStringRef WMDidDestroyWorkspaceNotification;
 extern CFStringRef WMDidChangeWorkspaceNotification;
 extern CFStringRef WMDidChangeWorkspaceNameNotification;
-
+/* Appearance */
 extern CFStringRef WMDidChangeWindowAppearanceSettings;
 extern CFStringRef WMDidChangeIconAppearanceSettings;
 extern CFStringRef WMDidChangeIconTileSettings;
