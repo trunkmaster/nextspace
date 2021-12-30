@@ -253,7 +253,7 @@ typedef struct _WScreen {
   Pixmap icon_tile_pixmap;           /* For app supplied icons */
 
   /* Launching appicons: created in launching state before app start */
-  struct WAppIcon **launching_icons;
+  CFMutableArrayRef launching_icons;
 
   struct RImage *def_icon_rimage;    /* Default RImage icon */
 

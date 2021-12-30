@@ -116,7 +116,6 @@ typedef enum {
 - (void)applicationWillLaunch:(NSNotification *)notif;
 - (void)applicationDidLaunch:(NSNotification *)notif;
 - (void)applicationDidTerminate:(NSNotification *)notif;
-- (void)applicationDidTerminateSubprocess:(NSNotification *)notif;
 
 - (BOOL)terminateAllApps;
 

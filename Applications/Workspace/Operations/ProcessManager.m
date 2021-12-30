@@ -129,7 +129,7 @@ static BOOL _workspaceQuitting = NO;
   //          name:WMOperationProcessingFileNotification
   //        object:nil];
 
-  // WM  - CoreFoundation notifications
+  // WM - CoreFoundation notifications
   [[WorkspaceNotificationCenter defaultCenter]
     addObserver:self
        selector:@selector(applicationDidCreate:)
@@ -165,12 +165,12 @@ static BOOL _workspaceQuitting = NO;
 
 @implementation ProcessManager (Applications)
 
-// Convert "NSApplicationProcessIdentifier" to mutable array of strings
+// Convert "NSApplicationProcessIdentifier" to mutable set of strings
 - (NSDictionary *)_normalizeApplicationInfo:(NSDictionary *)appInfo
 {
   NSMutableDictionary *_appInfo = [appInfo mutableCopy];
-  id                   nsapi;
-  NSString            *appPID;
+  id nsapi;
+  NSString *appPID;
 
   // Detect class of "NSApplicationProcessIdentifier" value and replace
   // with mutable array of strings.
@@ -179,20 +179,13 @@ static BOOL _workspaceQuitting = NO;
   // "NSApplicationProcessIdentifier" can be NSSmallInt, NSConstantString,
   // GSCInlineString. Expected that all except NSSmallInt is kind of class
   // NSString.
-  if ([nsapi isKindOfClass:[NSArray class]])
-    {
-      return appInfo;
-    }
-  else if ([nsapi isKindOfClass:[NSString class]])
-    {
-      appPID = nsapi;
-    }
-  else
-    {
-      appPID = [NSString stringWithFormat:@"%i", [nsapi intValue]];
-    }
+  if ([nsapi isKindOfClass:[NSString class]]) {
+    appPID = nsapi;
+  } else {
+    appPID = [NSString stringWithFormat:@"%i", [nsapi intValue]];
+  }
   
-  [_appInfo setObject:[NSMutableArray arrayWithObject:appPID]
+  [_appInfo setObject:[NSMutableOrderedSet orderedSetWithObject:appPID]
                forKey:@"NSApplicationProcessIdentifier"];
 
   return [_appInfo autorelease];
@@ -201,16 +194,14 @@ static BOOL _workspaceQuitting = NO;
 - (NSDictionary *)_applicationWithName:(NSString *)appName
 {
   NSDictionary *entry;
-  NSString     *eAppName;
+  NSString *eAppName;
   
-  for (entry in applications)
-    {
-      eAppName = [entry objectForKey:@"NSApplicationName"];
-      if ([eAppName isEqualToString:appName]) 
-	{
-          return entry;
-	}
+  for (entry in applications) {
+    eAppName = [entry objectForKey:@"NSApplicationName"];
+    if ([eAppName isEqualToString:appName]) {
+      return entry;
     }
+  }
   
   return nil;
 }
@@ -218,22 +209,8 @@ static BOOL _workspaceQuitting = NO;
 // NSWorkspaceWillLaunchApplicationNotification
 // Do nothing. Launched application registered upon receiving
 // NSWorkspaceDidLaunchApplicationNotification.
-// TODO
 - (void)applicationWillLaunch:(NSNotification *)notif
 {
-  /*  NSMutableDictionary *info = [[[notif userInfo] mutableCopy] autorelease];
-
-  NSLog(@"willLaunchApp: %@", info);
-
-  [info setObject:@"YES"
-	   forKey:@"StartingUp"];
-
-  [apps addObject:[[info copy] autorelease]];
-
-  if (appList != nil)
-    {
-      [appList reloadData];
-    }*/
 }
 
 // NSWorkspaceDidLaunchApplicationNotification
@@ -241,119 +218,61 @@ static BOOL _workspaceQuitting = NO;
 // TODO
 - (void)applicationDidLaunch:(NSNotification *)notif
 {
-  NSDictionary   *newAppInfo;
-  NSString       *newAppName;
-  NSDictionary   *aInfo;
-  NSString       *aName;
-  NSMutableArray *aPIDList, *newAppPID;
-  NSUInteger     i;
-  BOOL           skipLaunchedApp = NO;
+  NSDictionary *newAppInfo;
+  NSString *newAppName;
+  NSDictionary *aInfo;
+  NSString *aName;
+  NSMutableOrderedSet *aPIDList, *newAppPID;
+  BOOL skipLaunchedApp = NO;
 
+  NSLog(@"NSWorkspaceDidLaunchApplication: %@", [notif userInfo]);
+  
   newAppInfo = [self _normalizeApplicationInfo:[notif userInfo]];
-  
-  NSLog(@"didLaunchApp: %@", newAppInfo);
-  
   newAppName = [newAppInfo objectForKey:@"NSApplicationName"];
   newAppPID = [newAppInfo objectForKey:@"NSApplicationProcessIdentifier"];
 
   // Check if application already in app list. If so - append PID to the
   // "NSApplicationProcessIdentifier" of existing object in 'applications' list.
-  // for (aInfo in applications)
-  for (i=0; i < [applications count]; i++)
-    {
-      aInfo = [applications objectAtIndex:i];
-      aName = [aInfo objectForKey:@"NSApplicationName"];
-      aPIDList = [aInfo objectForKey:@"NSApplicationProcessIdentifier"];
-
-      if ([aName isEqualToString:newAppName])
-        {
-          skipLaunchedApp = YES;
-
-          if (![aPIDList containsObject:@""] &&
-              ([aPIDList indexOfObject:[newAppPID objectAtIndex:0]] == NSNotFound))
-            {
-              [aPIDList addObjectsFromArray:newAppPID];
-            }
-          
-          break;
-        }
+  for (aInfo in applications) {
+    aName = [aInfo objectForKey:@"NSApplicationName"];
+    aPIDList = [aInfo objectForKey:@"NSApplicationProcessIdentifier"];
+    
+    if ([aName isEqualToString:newAppName]) {
+      skipLaunchedApp = YES;
+      if ([aPIDList containsObject:@""] == NO &&
+          ([aPIDList containsObject:[newAppPID firstObject]] == NO)) {
+        [aPIDList unionOrderedSet:newAppPID];
+      }
+      break;
     }
+  }
 
-  if (skipLaunchedApp == NO)
-    {
-      [applications addObject:newAppInfo];
-    }
+  if (skipLaunchedApp == NO) {
+    [applications addObject:newAppInfo];
+  }
   
-  if ([[NSApp delegate] processesPanel])
-    {
-      [[[NSApp delegate] processesPanel] updateAppList];
-    }
-  
-  // NSLog(@"Processes: %@",
-  //       [[NSWorkspace sharedWorkspace] launchedApplications]);
+  if ([[NSApp delegate] processesPanel]) {
+    [[[NSApp delegate] processesPanel] updateAppList];
+  }
 }
 
 // NSWorkspaceDidTerminateApplicationNotification
 - (void)applicationDidTerminate:(NSNotification *)notif
 {
-  NSString     *appName;
+  NSString *appName;
   NSDictionary *appInfo;
 
-  if (_workspaceQuitting)
+  if (_workspaceQuitting) {
     return;
-
+  }
   appName = [[notif userInfo] objectForKey:@"NSApplicationName"];
   
-  if ((appInfo = [self _applicationWithName:appName]))
-    {
-      [applications removeObject:appInfo];
-      if ([[NSApp delegate] processesPanel])
-        {
-          [[[NSApp delegate] processesPanel] updateAppList];
-        }
-    }
-}
-
-// NSWorkspaceDidTerminateSubprocessNotification
-// 1. Determine application which owns subprocess
-// 2. Check if processes still exists from application PID list with
-//    kill (pid, 0).
-- (void)applicationDidTerminateSubprocess:(NSNotification *)notif
-{
-  NSString            *appName;
-  NSDictionary        *appInfo;
-  NSMutableArray      *appPIDList, *_appPIDList;
-  NSString            *pidString;
-  int                 pid;
-
-  if (_workspaceQuitting)
-    return;
-
-  appName = [[notif userInfo] objectForKey:@"NSApplicationName"];
-  if (!(appInfo = [self _applicationWithName:appName]))
-    return;
-  
-  appPIDList = [appInfo objectForKey:@"NSApplicationProcessIdentifier"];
-  _appPIDList = [appPIDList copy];
-  for (pidString in _appPIDList)
-    {
-      pid = [pidString integerValue];
-      if ((kill(pid, 0) == -1) && (errno == ESRCH)) // process doesn't exist
-        {
-          [appPIDList removeObject:pidString];
-        }
-    }
-  [_appPIDList release];
-  
-  if ([[NSApp delegate] processesPanel])
-    {
+  if ((appInfo = [self _applicationWithName:appName])) {
+    [applications removeObject:appInfo];
+    if ([[NSApp delegate] processesPanel]) {
       [[[NSApp delegate] processesPanel] updateAppList];
     }
-}
-
-- (void)applicationDidStartSubprocess:(NSNotification *)notif
-{
-  NSLog(@"ProcessManager: applicationDidStartSubprocess - %@", notif.object);
+  }
 }
 
 // Performs gracefull termination of running GNUstep applications.
@@ -375,14 +294,13 @@ static BOOL _workspaceQuitting = NO;
 
 //  NSLog(@"Launched applications: %@", apps);
   while ((_appDict = [e nextObject])) {
-    if ([[_appDict objectForKey:@"IsXWindowApplication"]
-            isEqualToString:@"YES"]) {
-      NSArray *pidList;
+    if ([[_appDict objectForKey:@"IsXWindowApplication"] isEqualToString:@"YES"]) {
+      NSSet *pidList;
       pidList = [_appDict objectForKey:@"NSApplicationProcessIdentifier"];
           
       for (NSString *pidString in pidList) {
         // If PID is '-1' let window manager kill that app.
-        if (![pidString isEqualToString:@"-1"]) {
+        if ([pidString isEqualToString:@"-1"] == NO) {
           kill([pidString integerValue], SIGKILL);
         }
       }
@@ -391,16 +309,12 @@ static BOOL _workspaceQuitting = NO;
     }
     else {
       _appName = [_appDict objectForKey:@"NSApplicationName"];
-      if ([_appName isEqualToString:@"Workspace"] ||
-          [_appName isEqualToString:@"Login"])
-        {
-          // don't remove from app list - system apps
-          continue; // go to 'while' statement
-        }
+      if ([_appName isEqualToString:@"Workspace"] || [_appName isEqualToString:@"Login"]) {
+        // don't remove from app list - system apps
+        continue; // go to 'while' statement
+      }
       NSLog(@"Terminating - %@", _appName);
-      _app = [NSConnection
-                   rootProxyForConnectionWithRegisteredName:_appName
-                                                       host:@""];
+      _app = [NSConnection rootProxyForConnectionWithRegisteredName:_appName host:@""];
       if (_app == nil) {
         NSLog(@"Connection to %@ failed. Removing from list of known applications",
               _appName);
@@ -411,7 +325,7 @@ static BOOL _workspaceQuitting = NO;
       @try {
         [_app terminate:nil];
       }
-      @catch (NSException *e){
+      @catch (NSException *e) {
         // application terminated -- remove app from launched apps list
         [applications removeObject:_appDict];
         [[_app connectionForProxy] invalidate];
@@ -436,7 +350,7 @@ static BOOL _workspaceQuitting = NO;
 
 @implementation ProcessManager (WindowManager)
 
-NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
+- (NSDictionary *)_applicationInfoForWindow:(WWindow *)wwin
 {
   NSMutableDictionary *appInfo = [NSMutableDictionary dictionary];
   NSString *appName = nil;
@@ -445,13 +359,13 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
   char *app_command;
 
   // Gather NSApplicationName and NSApplicationPath
-  if (!strcmp(wapp->main_window_desc->wm_class, "GNUstep")) {
+  if (!strcmp(wwin->wm_class, "GNUstep")) {
     [appInfo setObject:@"NO" forKey:@"IsXWindowApplication"];
-    appName = [NSString stringWithCString:wapp->main_window_desc->wm_instance];
+    appName = [NSString stringWithCString:wwin->wm_instance];
     appPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
   } else {
     [appInfo setObject:@"YES" forKey:@"IsXWindowApplication"];
-    appName = [NSString stringWithCString:wapp->main_window_desc->wm_class];
+    appName = [NSString stringWithCString:wwin->wm_class];
     app_command = wGetCommandForWindow(wwin->client_win);
     if (app_command) {
       appPath = [[NXTFileManager defaultManager]
@@ -475,7 +389,7 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
     [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
                 forKey:@"NSApplicationProcessIdentifier"];
   }
-  else if ((app_pid = wapp->app_icon->pid) > 0) {
+  else if ((app_pid = wNETWMGetPidForWindow(wwin->main_window)) > 0) {
     [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
                 forKey:@"NSApplicationProcessIdentifier"];
   }
@@ -483,6 +397,13 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
     [appInfo setObject:@"-1" forKey:@"NSApplicationProcessIdentifier"];
   }
 
+  return (NSDictionary *)appInfo;
+}
+
+- (NSDictionary *)_applicationInfoForApp:(WApplication *)wapp window:( WWindow *)wwin
+{
+  NSMutableDictionary *appInfo = [[self _applicationInfoForWindow:wwin] mutableCopy];
+  
   // Get icon image from windowmaker app structure(WApplication)
   // NSApplicationIcon=NSImage*
   // NSLog(@"%@ icon filename: %s", xAppName, wapp->app_icon->icon->file);
@@ -491,37 +412,49 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
                 forKey:@"NSApplicationIcon"];
   }
 
-  return (NSDictionary *)appInfo;
+  return (NSDictionary *)[appInfo autorelease];
+}
+
+- (NSMutableOrderedSet *)_pidsForApplicationWithName:(NSString *)appName
+{
+  NSDictionary *appInfo = [self _applicationWithName:appName];
+
+  if (!appInfo) {
+    return nil;
+  }
+  
+  return [appInfo objectForKey:@"NSApplicationProcessIdentifier"];
 }
 
 // WMDidCreateApplicationNotification
-// void WSApplicationDidCreate(WApplication *wapp)
 - (void)applicationDidCreate:(NSNotification *)notif
 {
   WApplication *wapp = (WApplication *)[(CFObject *)[notif object] object];
   NSNotification *localNotif = nil;
   NSDictionary *appInfo = nil;
-  char *wm_instance, *wm_class;
   WAppIcon *appIcon;
   WWindow *wwin;
 
-  wm_instance = wapp->main_window_desc->wm_instance;
-  wm_class = wapp->main_window_desc->wm_class;
-  
-  appIcon = wLaunchingAppIconForInstance(wapp->main_window_desc->screen_ptr, wm_instance, wm_class);
+  if (_workspaceQuitting != NO || !wapp) {
+    return;
+  }
+
+  appIcon = wLaunchingAppIconForInstance(wapp->main_window_desc->screen_ptr,
+                                         wapp->main_window_desc->wm_instance,
+                                         wapp->main_window_desc->wm_class);
   if (appIcon) {
     wLaunchingAppIconFinish(wapp->main_window_desc->screen_ptr, appIcon);
     appIcon->main_window = wapp->main_window;
   }
 
   // GNUstep application will register itself in ProcessManager with AppKit notification.
-  if (!strcmp(wm_class,"GNUstep")) {
+  if (!strcmp(wapp->main_window_desc->wm_class, "GNUstep")) {
     return;
   }
-
+    
   wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
-  appInfo = _applicationInfoForWApp(wapp, wwin);
-  NSDebugLLog(@"WM", @"W+WM: WSApplicationDidCreate: %@", appInfo);
+  appInfo = [self _applicationInfoForApp:wapp window:wwin];
+  NSDebugLLog(@"WM", @"ProcessManager-applicationDidCreate: %@", appInfo);
 
   localNotif = [NSNotification notificationWithName:NSWorkspaceDidLaunchApplicationNotification
                                              object:appInfo
@@ -530,62 +463,88 @@ NSDictionary *_applicationInfoForWApp(WApplication *wapp, WWindow *wwin)
 }
 
 // WMDidDestroyApplicationNotification
+// Application could be terminate in 2 ways:
+// 1. normal - AppKit notfication mechanism works
+// 2. crash - no AppKit involved so we should use this code to inform ProcessManager
+// [ProcessManager applicationDidTerminate:] should expect 2 calls for option #1.
 - (void)applicationDidDestroy:(NSNotification *)notif
 {
   WApplication *wapp = (WApplication *)[(CFObject *)[notif object] object];
   NSNotification *localNotif = nil;
   NSDictionary *appInfo = nil;
 
-  // Application could terminate in 2 ways:
-  // 1. normal - AppKit notfication mechanism works
-  // 2. crash - no AppKit involved so we should use this code to inform ProcessManager
-  // [ProcessManager applicationDidTerminate:] should expect 2 calls for option #1.
-  appInfo = _applicationInfoForWApp(wapp, wapp->main_window_desc);
-  NSLog(@"W+WM: WSApplicationDidDestroy: %@", appInfo);
+  if (_workspaceQuitting != NO || !wapp || !strcmp(wapp->main_window_desc->wm_class,"GNUstep")) {
+    return;
+  }
   
+  appInfo = [self _applicationInfoForApp:wapp window:wapp->main_window_desc];
   localNotif = [NSNotification notificationWithName:NSWorkspaceDidTerminateApplicationNotification
                                              object:nil
                                            userInfo:appInfo];
   [self applicationDidTerminate:localNotif];
 }
 
-// TODO: WMDidManageWindowNotification;
-// TODO: merge with applicationDidStartSubprocess:
+// WMDidManageWindowNotification
 - (void)applicationDidOpenWindow:(NSNotification *)notif
 {
   WWindow *wwin = (WWindow *)[(CFObject *)[notif object] object];
-  NSLog(@"TODO: ProcessManager-applicationDidOpenWindow: %s", wwin->wm_instance);
+  NSDictionary *appInfo;
+  NSMutableOrderedSet *pidList;
   
-  // NSNotification *localNotif;
-  // NSDictionary *appInfo;
+  if (_workspaceQuitting != NO || !wwin || !strcmp(wwin->wm_class,"GNUstep")) {
+    return;
+  }
   
-  // if (!strcmp(wwin->wm_class,"GNUstep"))
-  //   return;
-
-  // appInfo = @{@"NSApplicationName":[NSString stringWithCString:wwin->wm_class]};
-  // localNotif = [NSNotification notificationWithName:WMApplicationDidTerminateSubprocessNotification
-  //                                            object:nil
-  //                                          userInfo:appInfo];
-  // [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
+  appInfo = [self _applicationInfoForWindow:wwin];
+  NSLog(@"TODO: appInfo - %@", appInfo);
+  if (!appInfo) {
+    return;
+  }
+  pidList = [self _pidsForApplicationWithName:[appInfo objectForKey:@"NSApplicationName"]];
+  if (!pidList) {
+    return;
+  }
+  [pidList addObject:[appInfo objectForKey:@"NSApplicationProcessIdentifier"]];
+  if ([[NSApp delegate] processesPanel]) {
+    [[[NSApp delegate] processesPanel] updateAppList];
+  }
 }
 
-// TODO: WMDidUnmanageWindowNotification;
-// TODO: merge with applicationDidTerminateSubprocess:
+// WMDidUnmanageWindowNotification
+// 1. Determine application which owns subprocess
+// 2. Check if processes still exists from application PID list with
+//    kill (pid, 0).
 - (void)applicationDidCloseWindow:(NSNotification *)notif
 {
   WWindow *wwin = (WWindow *)[(CFObject *)[notif object] object];
-  NSLog(@"TODO: ProcessManager-applicationDidCloseWindow: %s", wwin->wm_instance);
-  // NSNotification *localNotif;
-  // NSDictionary *appInfo;
+  NSDictionary *wwinAppInfo, *appInfo;
+  NSString *appName;
+  NSMutableOrderedSet *appPIDList;
+  NSArray *_appPIDList;
+  int pid;
   
-  // if (!strcmp(wwin->wm_class,"GNUstep"))
-  //   return;
+  if (_workspaceQuitting != NO || !wwin || !strcmp(wwin->wm_class,"GNUstep")) {
+    return;
+  }
 
-  // appInfo = @{@"NSApplicationName":[NSString stringWithCString:wwin->wm_class]};
-  // localNotif = [NSNotification notificationWithName:WMApplicationDidTerminateSubprocessNotification
-  //                                            object:nil
-  //                                          userInfo:appInfo];
-  // [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
+  wwinAppInfo = [self _applicationInfoForWindow:wwin];
+  appName = [wwinAppInfo objectForKey:@"NSApplicationName"];
+  if (!(appInfo = [self _applicationWithName:appName])) {
+    return;
+  }
+  appPIDList = [appInfo objectForKey:@"NSApplicationProcessIdentifier"];
+  _appPIDList = [appPIDList array];
+  for (NSString *pidString in _appPIDList) {
+    pid = [pidString integerValue];
+    if ((kill(pid, 0) == -1) && (errno == ESRCH)) { // process doesn't exist
+      [appPIDList removeObject:pidString];
+    }
+  }
+  [_appPIDList release];
+  
+  if ([[NSApp delegate] processesPanel]) {
+    [[[NSApp delegate] processesPanel] updateAppList];
+  }
 }
 
 @end

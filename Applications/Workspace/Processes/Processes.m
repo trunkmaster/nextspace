@@ -322,7 +322,7 @@ objectValueForTableColumn:(NSTableColumn *)aTableColumn
   NSDictionary *appInfo;
   NSImage      *icon;
   NSString     *name, *path;
-  NSArray      *pid;
+  NSOrderedSet *pid;
   
   NSWorkspace  *ws = [NSWorkspace sharedWorkspace];
 
@@ -351,7 +351,7 @@ objectValueForTableColumn:(NSTableColumn *)aTableColumn
 
   // Process ID:
   pid = [appInfo objectForKey:@"NSApplicationProcessIdentifier"];
-  [appPID setStringValue:[pid componentsJoinedByString:@", "]];
+  [appPID setStringValue:[[pid array] componentsJoinedByString:@", "]];
 
   // Icon
   icon = [appInfo objectForKey:@"NSApplicationIcon"];
@@ -447,17 +447,10 @@ objectValueForTableColumn:(NSTableColumn *)aTableColumn
 
 - (void)updateAppList
 {
-  if (appList != nil)
-    {
-      [appList reloadData];
-      // [self showApp:self];
-      // To avoid problems related to crss-thread calls
-      // [NSTimer scheduledTimerWithTimeInterval:0.5
-      //                                  target:self
-      //                                selector:@selector(showApp:)
-      //                                userInfo:self
-      //                                 repeats:NO];
-    }
+  if (appList != nil) {
+    [appList reloadData];
+    [self showApp:self];
+  }
 }
 
 @end

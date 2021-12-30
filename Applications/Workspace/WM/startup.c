@@ -685,6 +685,9 @@ void wStartUp(Bool defaultScreenOnly)
   /* Center for notifications inside WM. */
   scr->notificationCenter = CFNotificationCenterGetLocalCenter();
 
+  /* Launching icons list */
+  scr->launching_icons = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
+
   InitializeSwitchMenu(scr);
 
   /* initialize/restore state for the screens */

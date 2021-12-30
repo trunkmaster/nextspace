@@ -167,7 +167,7 @@ void create_appicon_for_application(WApplication *wapp, WWindow *wwin)
   create_appicon_from_dock(wwin, wapp, wapp->main_window);
 
 #ifdef NEXTSPACE
-  /* Check if launching icon was created by Workspace*/
+  /* Check if launching icon was created by Workspace */
   if (!wapp->app_icon) {
     wapp->app_icon = wLaunchingAppIconForApplication(wwin->screen_ptr, wapp);
     if (wapp->app_icon) {
@@ -1257,24 +1257,6 @@ WAppIcon *wAppIconFor(Window window)
 // It is array of pointers to WAppIcon.
 // These pointers also placed into WScreen->app_icon_list.
 // Launching icons number is much smaller, but I use DOCK_MAX_ICONS as references number.
-static void _addLaunchingAppIcon(WScreen *scr, WAppIcon *appicon)
-{
-  WAppIcon **launching_icons;
-  
-  if (!scr->launching_icons) {
-    scr->launching_icons = wmalloc(DOCK_MAX_ICONS * sizeof(WAppIcon*));
-  }
-  launching_icons = scr->launching_icons;
-  
-  for (int i=0; i < DOCK_MAX_ICONS; i++) {
-    if (launching_icons[i] == NULL) {
-      launching_icons[i] = appicon;
-      RemoveFromStackList(appicon->icon->core);
-      break;
-    }
-  }
-}
-
 static Window _createIconForSliding(WScreen *scr, int x, int y, const char *image_path)
 {
   int vmask = CWBackPixel | CWSaveUnder | CWOverrideRedirect | CWColormap | CWBorderPixel;
@@ -1320,7 +1302,6 @@ WAppIcon *wLaunchingAppIconCreate(const char *wm_instance, const char *wm_class,
   WScreen *scr = wDefaultScreen();
   WAppIcon *app_icon = NULL;
   Window icon_window;
-      
 
   if (wm_instance == NULL || wm_class == NULL) {
     // Can't create launching icon without application name
@@ -1360,10 +1341,10 @@ WAppIcon *wLaunchingAppIconCreate(const char *wm_instance, const char *wm_class,
     app_icon = wAppIconCreateForDock(scr, launch_path,
                                      (char *)wm_instance, (char *)wm_class,
                                      TILE_NORMAL);
+    CFArrayAppendValue(scr->launching_icons, app_icon);
+    RemoveFromStackList(app_icon->icon->core);
     app_icon->icon->core->descriptor.handle_mousedown = NULL;
     app_icon->launching = 1;
-    _addLaunchingAppIcon(scr, app_icon);
-
     if (image_path != NULL && strlen(image_path)  > 0) {
       wIconChangeImageFile(app_icon->icon, image_path);
     }
@@ -1391,22 +1372,19 @@ WAppIcon *wLaunchingAppIconCreate(const char *wm_instance, const char *wm_class,
   return app_icon;
 }
 
-
 void wLaunchingAppIconFinish(WScreen *scr, WAppIcon *appicon)
 {
-  WAppIcon **launching_icons = scr->launching_icons;
-  WAppIcon *licon;
-  
-  for (int i=0; i < DOCK_MAX_ICONS; i++) {
-    licon = launching_icons[i];
-    if (licon && (licon == appicon)) {
-      AddToStackList(appicon->icon->core);
-      launching_icons[i] = NULL;
-      break;
-    }
-  }
-  appicon->launching = 0;
-  wAppIconPaint(appicon);
+  CFIndex index, count;
+
+  count = CFArrayGetCount(scr->launching_icons);
+  index = CFArrayGetFirstIndexOfValue(scr->launching_icons, CFRangeMake(0, count), appicon);
+
+  if (index != kCFNotFound) {
+    CFArrayRemoveValueAtIndex(scr->launching_icons, index);
+    AddToStackList(appicon->icon->core);
+    appicon->launching = 0;
+    wAppIconPaint(appicon);
+  }  
 }
 
 void wLaunchingAppIconDestroy(WScreen *scr, WAppIcon *appicon)
@@ -1418,39 +1396,37 @@ void wLaunchingAppIconDestroy(WScreen *scr, WAppIcon *appicon)
 
 WAppIcon *wLaunchingAppIconForInstance(WScreen *scr, char *wm_instance, char *wm_class)
 {
+  CFIndex count;
   WAppIcon *aicon = NULL;
-  WAppIcon *licon = NULL;
-  WAppIcon **launching_icons = scr->launching_icons;
 
-  if (launching_icons) {
-    for (int i=0; i < DOCK_MAX_ICONS; i++) {
-      licon = launching_icons[i];
-      if (licon &&
-          !strcmp(wm_instance, licon->wm_instance) &&
-          !strcmp(wm_class, licon->wm_class)) {
-        aicon = licon;
+  if (scr->launching_icons != NULL) {
+    count = CFArrayGetCount(scr->launching_icons);
+    for (CFIndex i = 0; i < count; i++) {
+      aicon = (WAppIcon *)CFArrayGetValueAtIndex(scr->launching_icons, i);
+      if (aicon &&
+          !strcmp(wm_instance, aicon->wm_instance) &&
+          !strcmp(wm_class, aicon->wm_class)) {
         break;
       }
     }
   }
-
   return aicon;
 }
 
 WAppIcon *wLaunchingAppIconForApplication(WScreen *scr, WApplication *wapp)
 {
   WAppIcon *aicon;
-  WWindow  *mainw = wapp->main_window_desc;
+  WWindow  *main_window = wapp->main_window_desc;
   
-  aicon = wLaunchingAppIconForInstance(scr, mainw->wm_instance, mainw->wm_class);
+  aicon = wLaunchingAppIconForInstance(scr, main_window->wm_instance, main_window->wm_class);
   if (!aicon) {
     return NULL;
   }
 
-  aicon->icon->owner = mainw;
+  aicon->icon->owner = main_window;
   
-  if (mainw->wm_hints && (mainw->wm_hints->flags & IconWindowHint)) {
-    aicon->icon->icon_win = mainw->wm_hints->icon_window;
+  if (main_window->wm_hints && (main_window->wm_hints->flags & IconWindowHint)) {
+    aicon->icon->icon_win = main_window->wm_hints->icon_window;
   }
   
   wIconUpdate(aicon->icon);
@@ -1461,16 +1437,14 @@ WAppIcon *wLaunchingAppIconForApplication(WScreen *scr, WApplication *wapp)
 
 WAppIcon *wLaunchingAppIconForCommand(WScreen *scr, char *command)
 {
+  CFIndex count;
   WAppIcon *aicon = NULL;
-  WAppIcon *licon = NULL;
-  WAppIcon **launching_icons = scr->launching_icons;
 
-  if (launching_icons) {
-    for (int i=0; i < DOCK_MAX_ICONS; i++) {
-      licon = launching_icons[i];
-      if (licon && licon->command &&
-          !strcmp(command, licon->command)) {
-        aicon = licon;
+  if (scr->launching_icons != NULL) {
+    count = CFArrayGetCount(scr->launching_icons);
+    for (CFIndex i = 0; i < count; i++) {
+      aicon = (WAppIcon *)CFArrayGetValueAtIndex(scr->launching_icons, i);
+      if (aicon->command && !strcmp(command, aicon->command)) {
         break;
       }
     }

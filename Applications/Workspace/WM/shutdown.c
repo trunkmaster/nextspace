@@ -84,9 +84,7 @@ void wShutdown(WMShutdownMode mode)
     WMSyslogClose();
 #endif
     _wipeDesktop(scr);
-    if (scr->launching_icons) {
-      free(scr->launching_icons);
-    }
+    CFRelease(scr->launching_icons);
     break;
 
   case WMRestartMode:
