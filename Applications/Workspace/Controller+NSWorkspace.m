@@ -372,7 +372,7 @@ static NSLock *raceLock = nil;
       wLaunchingAppIconCreate([[wmName stringByDeletingPathExtension] cString], "GNUstep",
                               [launchPath cString], point.x, point.y,
                               [iconPath cString]);
-      [raceLock unlock];        
+      [raceLock unlock];
       
       if ([self launchApplication:fullPath] == NO) {
         NXTRunAlertPanel(_(@"Workspace"),
@@ -380,7 +380,6 @@ static NSLock *raceLock = nil;
                          nil, nil, nil, appName);
         return NO;
       }
-      [raceLock unlock];
       return YES;
   }
   else if ([fileType isEqualToString:NSDirectoryFileType] ||
