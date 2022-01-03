@@ -110,6 +110,10 @@ CFStringRef WMDidChangeIconTileSettings = CFSTR("WMDidChangeIconTileSettings");
 CFStringRef WMDidChangeMenuAppearanceSettings = CFSTR("WMDidChangeMenuAppearanceSettings");
 CFStringRef WMDidChangeMenuTitleAppearanceSettings = CFSTR("WMDidChangeMenuTitleAppearanceSettings");
 
+CFStringRef WMDidChangeKeyboardLayoutNotification = CFSTR("WMDidChangeKeyboardLayoutNotification");
+CFStringRef WMDidChangeDockContentNotification = CFSTR("WMDidChangeDockContentNotification");
+
+
 /***** Local *****/
 static WScreen **wScreen = NULL;
 static unsigned int _NumLockMask = 0;

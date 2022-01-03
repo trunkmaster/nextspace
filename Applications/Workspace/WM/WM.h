@@ -382,6 +382,10 @@ extern CFStringRef WMDidChangeIconAppearanceSettings;
 extern CFStringRef WMDidChangeIconTileSettings;
 extern CFStringRef WMDidChangeMenuAppearanceSettings;
 extern CFStringRef WMDidChangeMenuTitleAppearanceSettings;
+/* Other */
+// userInfo = { "XkbGroup" = CFNumber }
+extern CFStringRef WMDidChangeKeyboardLayoutNotification;
+extern CFStringRef WMDidChangeDockContentNotification;
 
 void *userInfoValueForKey(CFDictionaryRef theDict, CFStringRef key);
 

@@ -246,40 +246,6 @@ void WSActivateWorkspaceApp(WScreen *scr)
   }
 }
 
-// Layout badge in Workspace appicon
-//------------------------------------------------------------------------------
-void WSKeyboardGroupDidChange(int group)
-{
-  OSEKeyboard *keyboard = [OSEKeyboard new];
-  NSString    *layout = [[keyboard layouts] objectAtIndex:group];
-
-  if ([[keyboard layouts] count] <= 1) {
-    layout = @"";
-  }
-  else {
-    layout = [[keyboard layouts] objectAtIndex:group];
-  }
-  
-  [[NSApp delegate] performSelectorOnMainThread:@selector(updateKeyboardBadge:)
-                                     withObject:layout
-                                  waitUntilDone:YES];
-  [keyboard release];
-}
-
-// Dock
-//------------------------------------------------------------------------------
-void WSDockContentDidChange(WDock *dock)
-{
-  NSNotification *notif;
-  
-  notif = [NSNotification 
-            notificationWithName:@"WMDockContentDidChange"
-                          object:nil
-                        userInfo:nil];
-
-  [[NSNotificationCenter defaultCenter] postNotification:notif];
-}
-
 // Utility functions
 //------------------------------------------------------------------------------
 // Return values:

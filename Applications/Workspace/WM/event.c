@@ -1309,12 +1309,24 @@ static void handleXkbStateNotify(XkbEvent *event)
   WWindow *wwin;
   WScreen *scr;
   XkbStateRec staterec;
+  CFMutableDictionaryRef info;
+  CFNumberRef group;
 
   scr = wDefaultScreen();
   wwin = scr->focused_window;
   if (wwin && wwin->flags.focused) {
     XkbGetState(dpy, XkbUseCoreKbd, &staterec);
-    WSKeyboardGroupDidChange(staterec.group);
+
+    info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                     &kCFTypeDictionaryKeyCallBacks,
+                                     &kCFTypeDictionaryValueCallBacks);
+    group = CFNumberCreate(kCFAllocatorDefault, kCFNumberCharType, &staterec.group);
+    CFDictionaryAddValue(info, CFSTR("XkbGroup"), group);
+    CFRelease(group);
+    CFNotificationCenterPostNotification(scr->notificationCenter,
+                                         WMDidChangeKeyboardLayoutNotification,
+                                         wwin, info, TRUE);
+    CFRelease(info);
   }
 }
 #endif /* USE_XKB */

@@ -47,24 +47,19 @@ extern WorkspaceExitCode ws_quit_code;
 
 #include <wraster.h>
 
-#include <core/log_utils.h>
+#include <WM/core/log_utils.h>
 
-#include <screen.h>
-#include <startup.h>
-#include <window.h>
-#include <event.h>
-#include <dock.h>
-#include <actions.h>
-#include <application.h>
-#include <appicon.h>
-#include <shutdown.h>
-#include <client.h>
-#include <wmspec.h>
-#include <stacking.h>
-#include <placement.h>
-#include <xrandr.h>
-#include <misc.h>
-#include "iconyard.h"
+#include <WM/screen.h>
+#include <WM/dock.h>
+#include <WM/xrandr.h>
+#include <WM/iconyard.h>
+#include <WM/defaults.h>
+#include <WM/event.h>
+#include <WM/actions.h>
+#include <WM/startup.h>
+#include <WM/shutdown.h>
+#include <WM/misc.h>
+#include <WM/wmspec.h>
 
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey:(X) value:@"" table:nil]
@@ -87,12 +82,6 @@ void WSUpdateScreenParameters(void);
 // --- Workspaces
 void WSActivateApplication(WScreen *scr, char *app_name);
 void WSActivateWorkspaceApp(WScreen *scr);
-
-// --- Dock
-void WSDockContentDidChange(WDock *dock);
-
-// --- Layout badge in Workspace appicon
-void WSKeyboardGroupDidChange(int group);
 
 // -- Alerts, messages and sounds
 int WSRunAlertPanel(char *title, char *message,

@@ -35,6 +35,7 @@
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEDisplay.h>
 #import <SystemKit/OSEPower.h>
+#import <SystemKit/OSEKeyboard.h>
 
 #import "Workspace+WM.h"
 
@@ -649,7 +650,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   // Update Workspace application icon (main Dock icon)
   [self createWorkspaceBadge];
-  WSKeyboardGroupDidChange(0);
+  [self updateKeyboardBadge:nil];
       
   // Recycler
   {
@@ -690,9 +691,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
          selector:@selector(updateWorkspaceBadge:)
              name:WMDidChangeWorkspaceNotification];
   [[WorkspaceNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(wmWindowNotification:)
-             name:WMDidChangeWindowStateNotification];
+    addObserver:self
+       selector:@selector(updateKeyboardBadge:)
+           name:WMDidChangeKeyboardLayoutNotification];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
@@ -759,7 +760,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
          selector:@selector(mediaOperationDidEnd:)
              name:OSEMediaOperationDidEnd
            object:mediaAdaptor];
- 
+
   [mediaAdaptor checkForRemovableMedia];
   
   [self _startSavedApplications];
@@ -767,16 +768,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   wDefaultScreen()->flags.startup2 = 0;
 
   fprintf(stderr, "=== Workspace is ready. Welcome to the NeXT world! ===\n");
-}
-
-- (void)wmWindowNotification:(NSNotification *)aNotification
-{
-  CFObject *cfObject = (CFObject *)[aNotification object];
-  WWindow *wwin = (WWindow *)cfObject.object;
-  
-  NSLog(@"[wmWindowNotification] %@",[aNotification name]);
-  NSLog(@"[wmWindowNotification] %@ - %s userInfo:%@",
-        [aNotification name], wwin->wm_instance, [aNotification userInfo]);
 }
 
 - (void)activateApplication:(NSNotification *)aNotification
@@ -1065,8 +1056,25 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [keyboardBadge release];
 }
 
-- (void)updateKeyboardBadge:(NSString *)layout
+- (void)updateKeyboardBadge:(NSNotification *)aNotification
 {
+  OSEKeyboard *keyboard = [OSEKeyboard new];
+  NSString *layout;
+  int group;
+
+  if (aNotification == nil) {
+    group = 0;
+  } else {
+    group = [[[aNotification userInfo] objectForKey:@"XkbGroup"] integerValue];
+  }
+
+  if ([[keyboard layouts] count] <= 1) {
+    layout = @"";
+  } else {
+    layout = [[keyboard layouts] objectAtIndex:group];
+  }
+  [keyboard release];
+
   if (!keyboardBadge) {
     [self createKeyboardBadge];
   }

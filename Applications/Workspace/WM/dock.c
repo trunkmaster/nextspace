@@ -2118,10 +2118,10 @@ Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon
     icon->paste_command = wmalloc(len);
     snprintf(icon->paste_command, len, "%s %%s", icon->command);
   }
-  
-#ifdef NEXTSPACE
-  WSDockContentDidChange(dock);
-#endif
+
+  CFNotificationCenterPostNotification(dock->screen_ptr->notificationCenter,
+                                       WMDidChangeDockContentNotification,
+                                       dock, NULL, true);
 
   return True;
 }
@@ -2142,9 +2142,9 @@ void wDockReattachIcon(WDock *dock, WAppIcon *icon, int x, int y)
   icon->x_pos = dock->x_pos + x * ICON_SIZE;
   icon->y_pos = dock->y_pos + y * ICON_SIZE;
   
-#ifdef NEXTSPACE
-  WSDockContentDidChange(dock);
-#endif
+  CFNotificationCenterPostNotification(dock->screen_ptr->notificationCenter,
+                                       WMDidChangeDockContentNotification,
+                                       dock, NULL, TRUE);
 }
 
 Bool wDockMoveIconBetweenDocks(WDock *src, WDock *dest, WAppIcon *icon, int x, int y)
@@ -2328,9 +2328,10 @@ void wDockDetach(WDock *dock, WAppIcon *icon)
   }
   if (dock->auto_collapse || dock->auto_raise_lower)
     clipLeave(dock);
-#ifdef NEXTSPACE
-  WSDockContentDidChange(dock);
-#endif
+  
+  CFNotificationCenterPostNotification(dock->screen_ptr->notificationCenter,
+                                       WMDidChangeDockContentNotification,
+                                       dock, NULL, TRUE);
 }
 
 WAppIcon *wDockAppiconAtSlot(WDock *dock, int position)
