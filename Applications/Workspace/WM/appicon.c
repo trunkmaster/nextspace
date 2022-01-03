@@ -1028,9 +1028,7 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
               if (aicon->icon->selected) {
                 wIconSelect(aicon->icon);
               }
-              // NEXTSPACE
-              dispatch_async(workspace_q,
-                             ^{ DoKaboom(scr, aicon->icon->core->window, x, y); });
+              DoKaboom(scr, aicon->icon->core->window, x, y);
             }
           }
           else {
@@ -1049,6 +1047,10 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
         if (originalDock->auto_raise_lower) {
           wDockLower(originalDock);
         }
+      }
+      else {
+        wSlideWindow(icon->core->window, x, y, oldX, oldY);
+        wAppIconMove(aicon, oldX, oldY);
       }
       
       // Can't remember why the icon hiding is better done above than below (commented out)
