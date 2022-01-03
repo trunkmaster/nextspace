@@ -281,19 +281,17 @@ static BOOL _workspaceQuitting = NO;
 //    NO -- if some application returns NO on applicationShouldTerminate: call.
 - (BOOL)terminateAllApps
 {
-  NSArray      *_appsCopy = [applications copy];
-  NSEnumerator *e = [_appsCopy objectEnumerator];
-  NSDictionary *_appDict = nil;
-  NSString     *_appName = nil;
-  id           _app;
-  BOOL         _noRunningApps = YES;
+  NSArray *_appsCopy = [applications copy];
+  NSString *_appName = nil;
+  id _app;
+  BOOL _noRunningApps = YES;
 
   // Workspace goes into quit process.
   // Application removal from list will be processed inside this method
   _workspaceQuitting = YES;
 
 //  NSLog(@"Launched applications: %@", apps);
-  while ((_appDict = [e nextObject])) {
+  for (NSDictionary *_appDict in _appsCopy) {
     if ([[_appDict objectForKey:@"IsXWindowApplication"] isEqualToString:@"YES"]) {
       NSSet *pidList;
       pidList = [_appDict objectForKey:@"NSApplicationProcessIdentifier"];
