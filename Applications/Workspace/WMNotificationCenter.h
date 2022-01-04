@@ -20,22 +20,24 @@
 //
 
 #import <Foundation/NSNotification.h>
+#import <Foundation/NSDistributedNotificationCenter.h>
 #import <CoreFoundation/CFNotificationCenter.h>
 
 // #import <AppKit/AppKitDefines.h>
 // APPKIT_EXPORT NSString *GSWorkspaceNotification;
 // APPKIT_EXPORT NSString *GSWorkspacePreferencesChanged;
 
-@interface WorkspaceNotificationCenter : NSNotificationCenter
+@interface WMNotificationCenter : NSNotificationCenter
 {
-  CFNotificationCenterRef coreFoundationCenter;
-  //  CFDictionaryRef         cfObservers;
+  CFNotificationCenterRef _coreFoundationCenter;
+  NSDistributedNotificationCenter *_remoteCenter;
 }
 + (instancetype)defaultCenter;
 
-- (void)addObserver:(id)observer
-           selector:(SEL)selector
-               name:(CFStringRef)name;
+// - (void)addObserver:(id)observer selector:(SEL)selector name:(void *)name;
+// - (void)addCFObserver:(id)observer selector:(SEL)selector name:(CFStringRef)name;
+// - (void)addNSObserver:(id)observer selector:(SEL)selector name:(NSString *)name;
+
 @end
 
 @interface CFObject : NSObject

@@ -26,7 +26,7 @@
 #import <DesktopKit/NXTFileManager.h>
 
 #import "Controller.h"
-#import "WorkspaceNotificationCenter.h"
+#import "WMNotificationCenter.h"
 #import "Workspace+WM.h"
 #import "Processes/Processes.h"
 
@@ -59,7 +59,7 @@ static BOOL _workspaceQuitting = NO;
   NSDebugLLog(@"Memory", @"ProcessManager: dealloc");
 
   [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
-  [[WorkspaceNotificationCenter defaultCenter] removeObserver:self];
+  [[[NSApp delegate] notificationCenter] removeObserver:self];
 
   RELEASE(applications);
   RELEASE(operations);
@@ -130,22 +130,26 @@ static BOOL _workspaceQuitting = NO;
   //        object:nil];
 
   // WM - CoreFoundation notifications
-  [[WorkspaceNotificationCenter defaultCenter]
+  [[[NSApp delegate] notificationCenter]
     addObserver:self
        selector:@selector(applicationDidCreate:)
-	   name:WMDidCreateApplicationNotification];
-  [[WorkspaceNotificationCenter defaultCenter]
+	   name:@"WMDidCreateApplicationNotification"
+         object:nil];
+  [[[NSApp delegate] notificationCenter]
     addObserver:self
        selector:@selector(applicationDidDestroy:)
-	   name:WMDidDestroyApplicationNotification];
-  [[WorkspaceNotificationCenter defaultCenter]
+	   name:@"WMDidDestroyApplicationNotification"
+         object:nil];
+  [[[NSApp delegate] notificationCenter]
     addObserver:self
        selector:@selector(applicationDidOpenWindow:)
-	   name:WMDidManageWindowNotification];
-  [[WorkspaceNotificationCenter defaultCenter]
+	   name:@"WMDidManageWindowNotification"
+         object:nil];
+  [[[NSApp delegate] notificationCenter]
     addObserver:self
        selector:@selector(applicationDidCloseWindow:)
-	   name:WMDidUnmanageWindowNotification];
+	   name:@"WMDidUnmanageWindowNotification"
+         object:nil];
   
   return self;
 }

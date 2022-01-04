@@ -51,7 +51,7 @@
 
 #import "ModuleLoader.h"
 
-#import "WorkspaceNotificationCenter.h"
+#import "WMNotificationCenter.h"
 
 #import <Operations/ProcessManager.h>
 #import <Operations/Mounter.h>
@@ -685,15 +685,21 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                name:NSApplicationDidChangeScreenParametersNotification
              object:NSApp];
   
+  // Services
+  [NSApp setServicesProvider:self];
+
+  // Initialize private NSWorkspace implementation
+  [self initNSWorkspace];
+
   // Window Manager events
-  [[WorkspaceNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(updateWorkspaceBadge:)
-             name:WMDidChangeWorkspaceNotification];
-  [[WorkspaceNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(updateKeyboardBadge:)
-           name:WMDidChangeKeyboardLayoutNotification];
+  [[self notificationCenter] addObserver:self
+                                selector:@selector(updateWorkspaceBadge:)
+                                    name:@"WMDidChangeWorkspaceNotification"
+                                  object:nil];
+  [[self notificationCenter] addObserver:self
+                                selector:@selector(updateKeyboardBadge:)
+                                    name:@"WMDidChangeKeyboardLayoutNotification"
+                                  object:nil];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
@@ -701,11 +707,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   NSUserDefaults       *df = [NSUserDefaults standardUserDefaults];
   
-  // Services
-  [NSApp setServicesProvider:self];
-
-  // Initialize private NSWorkspace implementation
-  [self initNSWorkspace];
 
   // ProcessManager must be ready to register automatically started applications.
   procManager = [ProcessManager shared];

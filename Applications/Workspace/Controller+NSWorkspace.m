@@ -45,7 +45,7 @@
 
 #import "Workspace+WM.h"
 #import "Controller+NSWorkspace.h"
-#import "Controller+WorkspaceCenter.h"
+#import "WMNotificationCenter.h"
 
 #define PosixExecutePermission	(0111)
 
@@ -74,7 +74,6 @@ static NSImage	*unknownTool = nil;
 - (NSImage*)_saveImageFor:(NSString*)iconPath;
 - (NSString*)_thumbnailForFile:(NSString *)file;
 - (NSImage*)_iconForExtension:(NSString*)ext;
-- (NSImage *)_iconForFileContents:(NSString *)fullPath;
 - (NSImage *)_iconForFileContents:(NSString *)fullPath;
 - (BOOL)_extension:(NSString*)ext
               role:(NSString*)role
@@ -182,49 +181,39 @@ static NSString		*_rootPath = @"/";
 // NEXTSPACE
 - (id)initNSWorkspace
 {
-  // NSArray *documentDir;
-  // NSArray *libraryDirs;
-  // NSArray *downloadDir;
-  // NSArray *desktopDir;
   NSArray *sysAppDir;
   NSString *sysDir;
   int i;
 
   [self initPrefs];
 
-  [[NSNotificationCenter defaultCenter]
-    addObserver: self
-       selector: @selector(noteUserDefaultsChanged)
-           name: NSUserDefaultsDidChangeNotification
-         object: nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(noteUserDefaultsChanged)
+                                               name:NSUserDefaultsDidChangeNotification
+                                             object:nil];
 
   /* There's currently no way of knowing if things have changed due to
    * apps being installed etc ... so we actually poll regularly.
    */
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(_workspacePreferencesChanged:)
-           name:@"GSHousekeeping"
-         object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_workspacePreferencesChanged:)
+                                               name:@"GSHousekeeping"
+                                             object:nil];
 
-  _workspaceCenter = [WorkspaceCenter new];
+  _workspaceCenter = [WMNotificationCenter new];
   _iconMap = [NSMutableDictionary new];
   _launched = [NSMutableDictionary new];
   if (applications == nil) {
     [self findApplications];
   }
-  [_workspaceCenter addObserver:self
-                       selector:@selector(_workspacePreferencesChanged:)
-                           name:GSWorkspacePreferencesChanged
-                         object:nil];
+  // [_workspaceCenter addObserver:self
+  //                      selector:@selector(_workspacePreferencesChanged:)
+  //                          name:GSWorkspacePreferencesChanged
+  //                        object:nil];
 
   /* icon association and caching */
   folderPathIconDict = [[NSMutableDictionary alloc] initWithCapacity:5];
 
-  // documentDir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-  // downloadDir = NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory, NSUserDomainMask, YES);
-  // desktopDir = NSSearchPathForDirectoriesInDomains(NSDesktopDirectory, NSUserDomainMask, YES);
-  // libraryDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSAllDomainsMask, YES);
   sysAppDir = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSSystemDomainMask, YES);
 
   /* we try to guess a System directory and check if looks like one */
@@ -240,31 +229,7 @@ static NSString		*_rootPath = @"/";
   }
 
   [folderPathIconDict setObject:@"NXHomeDirectory" forKey:NSHomeDirectory()];
-  // [folderPathIconDict
-  //   setObject:@"ImageFolder"
-  //      forKey:[NSHomeDirectory() stringByAppendingPathComponent:@"Images"]];
-  // [folderPathIconDict
-  //   setObject:@"MusicFolder"
-  //      forKey:[NSHomeDirectory() stringByAppendingPathComponent:@"Music"]];
-  
   [folderPathIconDict setObject:@"NXRoot" forKey:_rootPath];
-
-  // for (i = 0; i < [libraryDirs count]; i++) {
-  //   [folderPathIconDict setObject:@"LibraryFolder"
-  //                          forKey:[libraryDirs objectAtIndex: i]];
-  // }
-  // for (i = 0; i < [documentDir count]; i++) {
-  //   [folderPathIconDict setObject:@"DocsFolder"
-  //                          forKey:[documentDir objectAtIndex:i]];
-  // }
-  // for (i = 0; i < [downloadDir count]; i++) {
-  //   [folderPathIconDict setObject:@"DownloadFolder"
-  //                          forKey:[downloadDir objectAtIndex:i]];
-  // }
-  // for (i = 0; i < [desktopDir count]; i++) {
-  //   [folderPathIconDict setObject:@"Desktop"
-  //                          forKey:[desktopDir objectAtIndex:i]];
-  // }
   folderIconCache = [[NSMutableDictionary alloc] init];
 
   // list of extensions of wrappers (will be shown as plain file in Workspace)
@@ -283,7 +248,85 @@ static NSString		*_rootPath = @"/";
   return [self openFile:fullPath withApplication:nil andDeactivate:YES];
 }
 
-// NEXTSPACE
+- (BOOL) openFile:(NSString*)fullPath
+  withApplication:(NSString*)appName
+{
+  return [self openFile:fullPath withApplication:appName andDeactivate:YES];
+}
+
+// NEXTSPACE modifications
+- (BOOL)openFile:(NSString*)fullPath
+ withApplication:(NSString*)appName
+   andDeactivate:(BOOL)flag
+{
+  id app;
+
+  if (appName == nil) {
+    return [self openFile:fullPath fromImage:nil at:NSZeroPoint inView:nil];
+  }
+
+  app = [self _connectApplication:appName];
+  if (app == nil) {
+    NSArray *args;
+
+    args = [NSArray arrayWithObjects:@"-GSFilePath",fullPath,nil];
+    return [self _launchApplication:appName arguments:args];
+  }
+  else {
+    @try {
+      if (flag == NO) {
+        [app application:NSApp openFileWithoutUI:fullPath];
+      }
+      else {
+        [app application:NSApp openFile:fullPath];
+      }
+    }
+    @catch (NSException *e) {
+      NSWarnLog(@"Failed to contact '%@' to open file", appName);
+      NXTRunAlertPanel(_(@"Workspace"),
+                       _(@"Failed to contact app '%@' to open file"), 
+                       nil, nil, nil, appName);
+      return NO;
+    }
+  }
+  if (flag) {
+    [NSApp deactivate];
+  }
+  return YES;
+}
+
+- (BOOL)openTempFile:(NSString*)fullPath
+{
+  id		app;
+  NSString	*appName;
+  NSString	*ext;
+
+  ext = [fullPath pathExtension];
+  if ([self _extension:ext role:nil app:&appName] == NO) {
+    appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
+  }
+
+  app = [self _connectApplication:appName];
+  if (app == nil) {
+    NSArray *args = [NSArray arrayWithObjects:@"-GSTempPath", fullPath, nil];
+    return [self _launchApplication:appName arguments:args];
+  }
+  else {
+    @try {
+      [app application:NSApp openTempFile:fullPath];
+    }
+    @catch (NSException *e) {
+      NSWarnLog(@"Failed to contact '%@' to open temp file", appName);
+      return NO;
+    }
+  }
+
+  [NSApp deactivate];
+
+  return YES;
+}
+
+// NEXTSPACE addon - calls WM functions
 static NSLock *raceLock = nil;
 - (BOOL)openFile: (NSString*)fullPath
        fromImage:(NSImage*)anImage
@@ -428,84 +471,6 @@ static NSLock *raceLock = nil;
   }
 
   return NO;
-}
-
-- (BOOL) openFile:(NSString*)fullPath
-  withApplication:(NSString*)appName
-{
-  return [self openFile:fullPath withApplication:appName andDeactivate:YES];
-}
-
-// NEXTSPACE
-- (BOOL)openFile:(NSString*)fullPath
- withApplication:(NSString*)appName
-   andDeactivate:(BOOL)flag
-{
-  id app;
-
-  if (appName == nil) {
-    return [self openFile:fullPath fromImage:nil at:NSZeroPoint inView:nil];
-  }
-
-  app = [self _connectApplication:appName];
-  if (app == nil) {
-    NSArray *args;
-
-    args = [NSArray arrayWithObjects:@"-GSFilePath",fullPath,nil];
-    return [self _launchApplication:appName arguments:args];
-  }
-  else {
-    @try {
-      if (flag == NO) {
-        [app application:NSApp openFileWithoutUI:fullPath];
-      }
-      else {
-        [app application:NSApp openFile:fullPath];
-      }
-    }
-    @catch (NSException *e) {
-      NSWarnLog(@"Failed to contact '%@' to open file", appName);
-      NXTRunAlertPanel(_(@"Workspace"),
-                       _(@"Failed to contact app '%@' to open file"), 
-                       nil, nil, nil, appName);
-      return NO;
-    }
-  }
-  if (flag) {
-    [NSApp deactivate];
-  }
-  return YES;
-}
-
-- (BOOL)openTempFile:(NSString*)fullPath
-{
-  id		app;
-  NSString	*appName;
-  NSString	*ext;
-
-  ext = [fullPath pathExtension];
-  if ([self _extension:ext role:nil app:&appName] == NO) {
-    appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
-  }
-
-  app = [self _connectApplication:appName];
-  if (app == nil) {
-    NSArray *args = [NSArray arrayWithObjects:@"-GSTempPath", fullPath, nil];
-    return [self _launchApplication:appName arguments:args];
-  }
-  else {
-    @try {
-      [app application:NSApp openTempFile:fullPath];
-    }
-    @catch (NSException *e) {
-      NSWarnLog(@"Failed to contact '%@' to open temp file", appName);
-      return NO;
-    }
-  }
-
-  [NSApp deactivate];
-
-  return YES;
 }
 
 //-----------------------------------------------------------------------------
@@ -925,9 +890,9 @@ static NSLock *raceLock = nil;
   if (task != nil) {
     [task waitUntilExit];
   }
-  [self _workspacePreferencesChanged:
-          [NSNotification notificationWithName:GSWorkspacePreferencesChanged
-                                        object:self]];
+  // [self _workspacePreferencesChanged:
+  //         [NSNotification notificationWithName:GSWorkspacePreferencesChanged
+  //                                       object:self]];
 }
 
 //-----------------------------------------------------------------------------
@@ -1929,8 +1894,8 @@ static NSLock *raceLock = nil;
   extPreferences = map;
   data = [NSSerializer serializePropertyList:extPreferences];
   if ([data writeToFile:extPrefPath atomically:YES]) {
-    [_workspaceCenter postNotificationName:GSWorkspacePreferencesChanged
-                                    object:self];
+    // [_workspaceCenter postNotificationName:GSWorkspacePreferencesChanged
+    //                                 object:self];
   }
   else {
     NSLog(@"Update %@ of failed", extPrefPath);
@@ -1972,8 +1937,8 @@ static NSLock *raceLock = nil;
   extPreferences = map;
   data = [NSSerializer serializePropertyList:extPreferences];
   if ([data writeToFile:extPrefPath atomically:YES]) {
-    [_workspaceCenter postNotificationName:GSWorkspacePreferencesChanged
-                                    object:self];
+    // [_workspaceCenter postNotificationName:GSWorkspacePreferencesChanged
+    //                                 object:self];
   }
   else {
     NSLog(@"Update %@ of failed", extPrefPath);

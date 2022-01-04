@@ -28,7 +28,18 @@
    If not, see <http://www.gnu.org/licenses/> or write to the 
    Free Software Foundation, 51 Franklin Street, Fifth Floor, 
    Boston, MA 02110-1301, USA.
-*/ 
+*/
+
+/* Methods that are used inside Workspace:
+   - openFile:
+   - iconForFile:
+   - getInfoForFile:
+   - openIconForDirectory:
+   Other areas of interest:
+   - Notification center.
+   - File operations.
+   - Media management.
+ */
 
 //-----------------------------------------------------------------------------
 // NSWorkspace
@@ -156,8 +167,8 @@ APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
     opening a new file viewer if a path is specified by rootFullpath; returns
     YES if file was successfully selected and NO otherwise.*/
 // TODO
-- (BOOL)selectFile:(NSString*)fullPath
-inFileViewerRootedAtPath:(NSString*)rootFullpath;
+- (BOOL)       selectFile:(NSString*)fullPath
+ inFileViewerRootedAtPath:(NSString*)rootFullpath;
 
 //-----------------------------------------------------------------------------
 //--- Requesting Information about Files
@@ -238,7 +249,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 - (NSImage*)iconForFileType:(NSString*)fileType;
 
 // ADDON
-/** Returns an NSImage the icon of directory in opened state.*/
+/** Returns an icon of directory in opened state.*/
 - (NSImage *)openIconForDirectory:(NSString *)fullPath;
 
 //-----------------------------------------------------------------------------
