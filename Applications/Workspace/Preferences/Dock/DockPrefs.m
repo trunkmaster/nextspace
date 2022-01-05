@@ -317,7 +317,7 @@ void WMSetDockAppDndCommand(int position, const char *command)
   [[[NSApp delegate] notificationCenter]
       addObserver:self
          selector:@selector(revert:)
-             name:@"WMDidChangeDockContentNotification"
+             name:CF_NOTIFICATION(WMDidChangeDockContentNotification)
            object:nil];
 }
 

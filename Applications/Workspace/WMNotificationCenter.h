@@ -21,7 +21,10 @@
 
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSDistributedNotificationCenter.h>
-#import <CoreFoundation/CFNotificationCenter.h>
+#include <CoreFoundation/CFNotificationCenter.h>
+
+#include <CoreFoundation/CFString.h>
+#import <Foundation/NSString.h>
 
 // #import <AppKit/AppKitDefines.h>
 // APPKIT_EXPORT NSString *GSWorkspaceNotification;
@@ -33,20 +36,11 @@
   NSDistributedNotificationCenter *_remoteCenter;
 }
 + (instancetype)defaultCenter;
-
-// - (void)addObserver:(id)observer selector:(SEL)selector name:(void *)name;
-// - (void)addCFObserver:(id)observer selector:(SEL)selector name:(CFStringRef)name;
-// - (void)addNSObserver:(id)observer selector:(SEL)selector name:(NSString *)name;
-
 @end
 
+// This is Objective-C type to hold WM objects (WApplication*, WWin* etc).
 @interface CFObject : NSObject
 @property (readwrite) const void *object;
 @end
 
-// Window manager - notifications defined in WM/WM.h
-extern CFStringRef WMDidManageWindowNotification;
-extern CFStringRef WMDidUnmanageWindowNotification;
-
-extern CFStringRef WMDidChangeWorkspaceNotification;
-extern CFStringRef WMDidChangeWindowStateNotification;
+#define CF_NOTIFICATION(X) ([NSString stringWithCString:CFStringGetCStringPtr((X), CFStringGetSystemEncoding())])

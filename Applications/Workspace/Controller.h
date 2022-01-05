@@ -77,9 +77,18 @@
   // NSWorkspace category ivars
   NSMutableDictionary	*_iconMap;
   NSMutableDictionary	*_launched;
+  NSArray               *_wrappers;
   NSNotificationCenter	*_workspaceCenter;
   BOOL			_fileSystemChanged;
   BOOL			_userDefaultsChanged;
+  // ~/Library/Services/.GNUstepAppList
+  NSString		*_appListPath;
+  NSDictionary		*_applications;
+  // ~/Library/Services/.GNUstepExtPrefs
+  NSString		*_extPrefPath;
+  NSDictionary		*_extPreferences;
+
+
 
   NXTIconBadge		*workspaceBadge;
   NXTIconBadge		*keyboardBadge;

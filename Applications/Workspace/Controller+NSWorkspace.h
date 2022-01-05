@@ -157,18 +157,18 @@ APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
     needed using tag as an identifier for asynchronous operations; returns YES
     if operation succeeded and NO otherwise.*/
 // TODO
-- (BOOL)performFileOperation:(NSString*)operation
-                      source:(NSString*)source
-                 destination:(NSString*)destination
-                       files:(NSArray*)files
-                         tag:(int*)tag;
+// - (BOOL)performFileOperation:(NSString*)operation
+//                       source:(NSString*)source
+//                  destination:(NSString*)destination
+//                        files:(NSArray*)files
+//                          tag:(int*)tag;
 
 /** Instructs Workspace Manager to select the file specified by fullPath
     opening a new file viewer if a path is specified by rootFullpath; returns
     YES if file was successfully selected and NO otherwise.*/
 // TODO
-- (BOOL)       selectFile:(NSString*)fullPath
- inFileViewerRootedAtPath:(NSString*)rootFullpath;
+// - (BOOL)       selectFile:(NSString*)fullPath
+//  inFileViewerRootedAtPath:(NSString*)rootFullpath;
 
 //-----------------------------------------------------------------------------
 //--- Requesting Information about Files
@@ -186,7 +186,7 @@ APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
    If the appName has an extension, it is used, otherwise in GNUstep
    the standard app, debug, and profile extensions are tried.*/
 // CHECK
-- (NSString*)fullPathForApplication:(NSString*)appName;
+// - (NSString*)fullPathForApplication:(NSString*)appName;
 
 // TODO (use libmagic)
 /** Describes the file system at fullPath in description and fileSystemType,
@@ -206,12 +206,12 @@ APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
    a non-standard f_basetype field, which provides the name of the underlying
    file system type.*/
 // TODO
-- (BOOL) getFileSystemInfoForPath: (NSString*)fullPath
-		      isRemovable: (BOOL*)removableFlag
-		       isWritable: (BOOL*)writableFlag
-		    isUnmountable: (BOOL*)unmountableFlag
-		      description: (NSString**)description
-			     type: (NSString**)fileSystemType;
+// - (BOOL) getFileSystemInfoForPath: (NSString*)fullPath
+// 		      isRemovable: (BOOL*)removableFlag
+// 		       isWritable: (BOOL*)writableFlag
+// 		    isUnmountable: (BOOL*)unmountableFlag
+// 		      description: (NSString**)description
+// 			     type: (NSString**)fileSystemType;
 
 //--- Return values for type in getInfoForFile:
 // A plain file or a directory that some application claims to be able to open
@@ -259,11 +259,11 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 /** Returns whether a change to the file system has been registered with a
     noteFileSystemChanged message since the last fileSystemChanged message.*/
 // CHECK
-- (BOOL)fileSystemChanged;
+// - (BOOL)fileSystemChanged;
 
 /** Informs Workspace Manager that the file system has changed.*/
 // CHECK
-- (void)noteFileSystemChanged;
+// - (void)noteFileSystemChanged;
 
 //-----------------------------------------------------------------------------
 //--- Updating Registered Services and File Types
@@ -286,7 +286,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
     Instructs all the other running applications to hide themselves.
     <em>not yet implemented</em>*/
 // TODO
-- (void)hideOtherApplications;
+// - (void)hideOtherApplications;
 
 /** Instructs Workspace Manager to launch the application appName and returns
     YES if application was successfully launched and NO otherwise.*/
@@ -340,7 +340,6 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 
 /** Unmounts and ejects the device at path and returns YES if unmount 
     succeeded and NO otherwise.*/
-// TODO
 - (BOOL)unmountAndEjectDeviceAtPath:(NSString *)path;
 
 //-----------------------------------------------------------------------------
@@ -350,14 +349,12 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 /** Causes the Workspace Manager to poll the system's drives for any disks
     that have been inserted but not yet mounted. Asks the Workspace Manager to
     mount the disk asynchronously and returns immediately.*/
-// TODO
 - (void)checkForRemovableMedia;
 
 /** Causes the Workspace Manager to poll the system's drives for any disks
     that have been inserted but not yet mounted, waits until the new disks
     have been mounted, and returns a list of full pathnames to all newly
     mounted disks.*/
-// TODO
 - (NSArray *)mountNewRemovableMedia;
 
 /** Returns a list of the pathnames of all currently mounted removable disks.*/
@@ -404,7 +401,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 /** Requests more time before the power goes off or the user logs out; returns
     the granted number of additional milliseconds.*/
 // TODO
-- (int)extendPowerOffBy:(int)requested;
+// - (int)extendPowerOffBy:(int)requested;
 
 @end
 
@@ -423,13 +420,11 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 // @"NSOperationNumber"
 //   The tag of file operation in Workspace Manager (string).
 //-----------------------------------------------------------------------------
-
-                                                                        // userInfo keys:
-APPKIT_EXPORT NSString *NSWorkspaceDidLaunchApplicationNotification;    //      @"NSApplicationName"
-APPKIT_EXPORT NSString *NSWorkspaceDidMountNotification;                //      @"NSDevicePath"
-APPKIT_EXPORT NSString *NSWorkspaceDidPerformFileOperationNotification; //      @"NSOperationNumber"
-APPKIT_EXPORT NSString *NSWorkspaceDidTerminateApplicationNotification; //      @"NSApplicationName"
-APPKIT_EXPORT NSString *NSWorkspaceDidUnmountNotification;              //      @"NSDevicePath"
-APPKIT_EXPORT NSString *NSWorkspaceWillLaunchApplicationNotification;   //      @"NSApplicationName"
+APPKIT_EXPORT NSString *NSWorkspaceWillLaunchApplicationNotification;   // @"NSApplicationName"
+APPKIT_EXPORT NSString *NSWorkspaceDidLaunchApplicationNotification;    // @"NSApplicationName"
+APPKIT_EXPORT NSString *NSWorkspaceDidTerminateApplicationNotification; // @"NSApplicationName"
+APPKIT_EXPORT NSString *NSWorkspaceDidMountNotification;                // @"NSDevicePath"
+APPKIT_EXPORT NSString *NSWorkspaceDidPerformFileOperationNotification; // @"NSOperationNumber"
+APPKIT_EXPORT NSString *NSWorkspaceDidUnmountNotification;              // @"NSDevicePath"
 APPKIT_EXPORT NSString *NSWorkspaceWillPowerOffNotification;
-APPKIT_EXPORT NSString *NSWorkspaceWillUnmountNotification;             //      @"NSDevicePath"
+APPKIT_EXPORT NSString *NSWorkspaceWillUnmountNotification;             // @"NSDevicePath"

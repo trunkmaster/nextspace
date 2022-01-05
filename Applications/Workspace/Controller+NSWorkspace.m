@@ -51,15 +51,14 @@
 
 #define FILE_CONTENTS_SCAN_SIZE 100
 
-static NSArray *wrappers = nil;
-
 static NSMutableDictionary *folderPathIconDict = nil;
 static NSMutableDictionary *folderIconCache = nil;
 
-static NSImage	*folderImage = nil;
-static NSImage	*multipleFiles = nil;
-static NSImage	*unknownApplication = nil;
-static NSImage	*unknownTool = nil;
+static NSImage *folderImage = nil;
+static NSImage *multipleFiles = nil;
+static NSImage *unknownApplication = nil;
+static NSImage *unknownTool = nil;
+static NSString	*_rootPath = @"/";
 
 //-----------------------------------------------------------------------------
 // Workspace private methods
@@ -80,7 +79,7 @@ static NSImage	*unknownTool = nil;
                app:(NSString**)app;
 
 // Preferences
-- (void)_workspacePreferencesChanged:(NSNotification *)aNotification;
+// - (void)_workspacePreferencesChanged:(NSNotification *)aNotification;
 
 // application communication
 - (BOOL)_launchApplication:(NSString*)appName
@@ -109,33 +108,9 @@ static NSImage	*unknownTool = nil;
 //-----------------------------------------------------------------------------
 @implementation	Controller (NSWorkspace)
 
-// ~/Library/Services/.GNUstepAppList
-static NSString		*appListPath = nil;
-static NSDictionary	*applications = nil;
-
-// ~/Library/Services/.GNUstepExtPrefs
-static NSString		*extPrefPath = nil;
-static NSDictionary	*extPreferences = nil;
-
-static NSString		*_rootPath = @"/";
-
 //-----------------------------------------------------------------------------
 //--- Creating a Workspace
 //-----------------------------------------------------------------------------
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_workspaceCenter removeObserver:self];
-  
-  TEST_RELEASE(_iconMap);
-  TEST_RELEASE(_launched);
-  TEST_RELEASE(_workspaceCenter);
-
-  TEST_RELEASE(wrappers);
- 
-  [super dealloc];
-}
-
 - (void)initPrefs
 {
   NSFileManager	*mgr = [NSFileManager defaultManager];
@@ -152,28 +127,28 @@ static NSString		*_rootPath = @"/";
   /*
    * Load file extension preferences.
    */
-  extPrefPath = [service stringByAppendingPathComponent:@".GNUstepExtPrefs"];
-  RETAIN(extPrefPath);
-  if ([mgr isReadableFileAtPath: extPrefPath] == YES) {
-    data = [NSData dataWithContentsOfFile: extPrefPath];
+  _extPrefPath = [service stringByAppendingPathComponent:@".GNUstepExtPrefs"];
+  RETAIN(_extPrefPath);
+  if ([mgr isReadableFileAtPath: _extPrefPath] == YES) {
+    data = [NSData dataWithContentsOfFile: _extPrefPath];
     if (data) {
       dict = [NSDeserializer deserializePropertyListFromData:data
                                            mutableContainers:NO];
-      extPreferences = RETAIN(dict);
+      _extPreferences = RETAIN(dict);
     }
   }
 	  
   /*
    * Load cached application information.
    */
-  appListPath = [service stringByAppendingPathComponent:@".GNUstepAppList"];
-  RETAIN(appListPath);
-  if ([mgr isReadableFileAtPath:appListPath] == YES) {
-    data = [NSData dataWithContentsOfFile:appListPath];
+  _appListPath = [service stringByAppendingPathComponent:@".GNUstepAppList"];
+  RETAIN(_appListPath);
+  if ([mgr isReadableFileAtPath:_appListPath] == YES) {
+    data = [NSData dataWithContentsOfFile:_appListPath];
     if (data) {
       dict = [NSDeserializer deserializePropertyListFromData:data
                                            mutableContainers:NO];
-      applications = RETAIN(dict);
+      _applications = RETAIN(dict);
     }
   }
 }
@@ -195,15 +170,14 @@ static NSString		*_rootPath = @"/";
   /* There's currently no way of knowing if things have changed due to
    * apps being installed etc ... so we actually poll regularly.
    */
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(_workspacePreferencesChanged:)
-                                               name:@"GSHousekeeping"
-                                             object:nil];
+  // [[NSNotificationCenter defaultCenter] addObserver:self
+  //                                          selector:@selector(_workspacePreferencesChanged:)
+  //                                              name:@"GSHousekeeping"
+  //                                            object:nil];
 
-  _workspaceCenter = [WMNotificationCenter new];
   _iconMap = [NSMutableDictionary new];
   _launched = [NSMutableDictionary new];
-  if (applications == nil) {
+  if (_applications == nil) {
     [self findApplications];
   }
   // [_workspaceCenter addObserver:self
@@ -233,8 +207,8 @@ static NSString		*_rootPath = @"/";
   folderIconCache = [[NSMutableDictionary alloc] init];
 
   // list of extensions of wrappers (will be shown as plain file in Workspace)
-  wrappers = [@"(bundle, preferences, inspector, service)" propertyList];
-  [wrappers retain];
+  _wrappers = [@"(bundle, preferences, inspector, service)" propertyList];
+  [_wrappers retain];
   // NSLog(@"Wrappers list: %@(0=%@)", wrappers, [wrappers objectAtIndex:0]);
 
   return self;
@@ -427,7 +401,7 @@ static NSLock *raceLock = nil;
   }
   else if ([fileType isEqualToString:NSDirectoryFileType] ||
            [fileType isEqualToString:NSFilesystemFileType] ||
-           [wrappers containsObject:[fullPath pathExtension]]) {
+           [_wrappers containsObject:[fullPath pathExtension]]) {
     // Open new FileViewer window
     [self openNewViewerIfNotExistRootedAt:fullPath];
     return YES;
@@ -477,24 +451,24 @@ static NSLock *raceLock = nil;
 //--- Manipulating Files
 //-----------------------------------------------------------------------------
 // FIXME: TODO
-- (BOOL)performFileOperation:(NSString*)operation
-                      source:(NSString*)source
-                 destination:(NSString*)destination
-                       files:(NSArray*)files
-                         tag:(int*)tag
-{
-  // FiXME
+// - (BOOL)performFileOperation:(NSString*)operation
+//                       source:(NSString*)source
+//                  destination:(NSString*)destination
+//                        files:(NSArray*)files
+//                          tag:(int*)tag
+// {
+//   // FiXME
 
-  return NO;
-}
+//   return NO;
+// }
 
 // FIXME: TODO
-- (BOOL)       selectFile:(NSString*)fullPath
- inFileViewerRootedAtPath:(NSString*)rootFullpath
-{
-  // TODO
-  return NO;
-}
+// - (BOOL)       selectFile:(NSString*)fullPath
+//  inFileViewerRootedAtPath:(NSString*)rootFullpath
+// {
+//   // TODO
+//   return NO;
+// }
 
 - (NSString*)fullPathForApplication:(NSString*)appName
 {
@@ -521,18 +495,18 @@ static NSLock *raceLock = nil;
   ext = [appName pathExtension];
   if ([ext length] == 0) { // no extension, let's find one
     path = [appName stringByAppendingPathExtension: @"app"];
-    path = [applications objectForKey: path];
+    path = [_applications objectForKey: path];
     if (path == nil) {
       path = [appName stringByAppendingPathExtension: @"debug"];
-      path = [applications objectForKey: path];
+      path = [_applications objectForKey: path];
     }
     if (path == nil) {
       path = [appName stringByAppendingPathExtension: @"profile"];
-      path = [applications objectForKey: path];
+      path = [_applications objectForKey: path];
     }
   }
   else {
-    path = [applications objectForKey: appName];
+    path = [_applications objectForKey: appName];
   }
 
   /*
@@ -547,32 +521,32 @@ static NSLock *raceLock = nil;
 }
 
 // FIXME: TODO
-- (BOOL)getFileSystemInfoForPath:(NSString*)fullPath
-                     isRemovable:(BOOL*)removableFlag
-                      isWritable:(BOOL*)writableFlag
-                   isUnmountable:(BOOL*)unmountableFlag
-                     description:(NSString **)description
-                            type:(NSString **)fileSystemType
-{
-  // uid_t uid;
-  // struct statfs m;
-  // NSStringEncoding enc;
+// - (BOOL)getFileSystemInfoForPath:(NSString*)fullPath
+//                      isRemovable:(BOOL*)removableFlag
+//                       isWritable:(BOOL*)writableFlag
+//                    isUnmountable:(BOOL*)unmountableFlag
+//                      description:(NSString **)description
+//                             type:(NSString **)fileSystemType
+// {
+//   // uid_t uid;
+//   // struct statfs m;
+//   // NSStringEncoding enc;
 
-  // if (statfs([fullPath fileSystemRepresentation], &m))
-  //   return NO;
+//   // if (statfs([fullPath fileSystemRepresentation], &m))
+//   //   return NO;
 
-  // uid = geteuid();
-  // enc = [NSString defaultCStringEncoding];
-  // *removableFlag = NO; // FIXME
-  // *writableFlag = (m.f_flags & MNT_RDONLY) == 0;
-  // *unmountableFlag =
-  //   (m.f_flags & MNT_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
-  // *description = @"filesystem"; // FIXME
-  // *fileSystemType =
-  // [[NSString alloc] initWithCString: m.f_fstypename encoding: enc];
+//   // uid = geteuid();
+//   // enc = [NSString defaultCStringEncoding];
+//   // *removableFlag = NO; // FIXME
+//   // *writableFlag = (m.f_flags & MNT_RDONLY) == 0;
+//   // *unmountableFlag =
+//   //   (m.f_flags & MNT_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
+//   // *description = @"filesystem"; // FIXME
+//   // *fileSystemType =
+//   // [[NSString alloc] initWithCString: m.f_fstypename encoding: enc];
 
-  return YES;
-}
+//   return YES;
+// }
 
 - (BOOL)getInfoForFile:(NSString*)fullPath
            application:(NSString **)appName
@@ -605,7 +579,7 @@ static NSLock *raceLock = nil;
           || [extension isEqualToString:@"profile"]) {
         *type = NSApplicationFileType;
       }
-      else if ([wrappers containsObject:extension]) {
+      else if ([_wrappers containsObject:extension]) {
         *type = NSPlainFileType;
       }
       else if (*appName != nil && [extension length] > 0) {
@@ -860,18 +834,18 @@ static NSLock *raceLock = nil;
 //-----------------------------------------------------------------------------
 //--- Tracking Changes to the File System
 //-----------------------------------------------------------------------------
-- (BOOL)fileSystemChanged
-{
-  BOOL flag = _fileSystemChanged;
+// - (BOOL)fileSystemChanged
+// {
+//   BOOL flag = _fileSystemChanged;
 
-  _fileSystemChanged = NO;
-  return flag;
-}
+//   _fileSystemChanged = NO;
+//   return flag;
+// }
 
-- (void)noteFileSystemChanged
-{
-  _fileSystemChanged = YES;
-}
+// - (void)noteFileSystemChanged
+// {
+//   _fileSystemChanged = YES;
+// }
 
 //-----------------------------------------------------------------------------
 //--- Updating Registered Services and File Types
@@ -900,10 +874,10 @@ static NSLock *raceLock = nil;
 //-----------------------------------------------------------------------------
 
 // FIXME: TODO
-- (void)hideOtherApplications
-{
-  // TODO
-}
+// - (void)hideOtherApplications
+// {
+//   // TODO
+// }
 
 - (BOOL)launchApplication:(NSString*)appName
 {
@@ -1012,11 +986,11 @@ static NSLock *raceLock = nil;
 //-----------------------------------------------------------------------------
 
 // FIXME: TODO
-- (int)extendPowerOffBy:(int)requested
-{
-  // TODO
-  return 0;
-}
+// - (int)extendPowerOffBy:(int)requested
+// {
+//   // TODO
+//   return 0;
+// }
 
 @end
 
@@ -1162,7 +1136,7 @@ static NSLock *raceLock = nil;
        * If there is a user-specified preference for an image -
        * try to use that one.
        */
-      prefs = [extPreferences objectForKey: ext];
+      prefs = [_extPreferences objectForKey: ext];
       iconPath = [prefs objectForKey: @"Icon"];
       if (iconPath)
 	{
@@ -1279,7 +1253,7 @@ static NSLock *raceLock = nil;
    * Look for the name of the preferred app in this role.
    * A 'nil' roll is a wildcard - find the preferred Editor or Viewer.
    */
-  prefs = [extPreferences objectForKey: ext];
+  prefs = [_extPreferences objectForKey: ext];
   if (role == nil || [role isEqualToString: @"Editor"])
     {
       appName = [prefs objectForKey: @"Editor"];
@@ -1411,42 +1385,42 @@ static NSLock *raceLock = nil;
 //-----------------------------------------------------------------------------
 //--- Preferences
 //-----------------------------------------------------------------------------
-- (void)_workspacePreferencesChanged:(NSNotification *)aNotification
-{
-  /* FIXME reload only those preferences that really were changed
-   * TODO  add a user info to aNotification, which includes a bitmask
-   *       denoting the updated preference files.
-   */
-  NSFileManager		*mgr = [NSFileManager defaultManager];
-  NSData		*data;
-  NSDictionary		*dict;
+// - (void)_workspacePreferencesChanged:(NSNotification *)aNotification
+// {
+//   /* FIXME reload only those preferences that really were changed
+//    * TODO  add a user info to aNotification, which includes a bitmask
+//    *       denoting the updated preference files.
+//    */
+//   NSFileManager		*mgr = [NSFileManager defaultManager];
+//   NSData		*data;
+//   NSDictionary		*dict;
 
-  if ([mgr isReadableFileAtPath: extPrefPath] == YES)
-    {
-      data = [NSData dataWithContentsOfFile: extPrefPath];
-      if (data)
-	{
-	  dict = [NSDeserializer deserializePropertyListFromData: data
-					       mutableContainers: NO];
-	  ASSIGN(extPreferences, dict);
-	}
-    }
+//   if ([mgr isReadableFileAtPath: extPrefPath] == YES)
+//     {
+//       data = [NSData dataWithContentsOfFile: extPrefPath];
+//       if (data)
+// 	{
+// 	  dict = [NSDeserializer deserializePropertyListFromData: data
+// 					       mutableContainers: NO];
+// 	  ASSIGN(extPreferences, dict);
+// 	}
+//     }
 
-  if ([mgr isReadableFileAtPath: appListPath] == YES)
-    {
-      data = [NSData dataWithContentsOfFile: appListPath];
-      if (data)
-	{
-	  dict = [NSDeserializer deserializePropertyListFromData: data
-					       mutableContainers: NO];
-	  ASSIGN(applications, dict);
-	}
-    }
-  /*
-   *	Invalidate the cache of icons for file extensions.
-   */
-  [_iconMap removeAllObjects];
-}
+//   if ([mgr isReadableFileAtPath: appListPath] == YES)
+//     {
+//       data = [NSData dataWithContentsOfFile: appListPath];
+//       if (data)
+// 	{
+// 	  dict = [NSDeserializer deserializePropertyListFromData: data
+// 					       mutableContainers: NO];
+// 	  ASSIGN(applications, dict);
+// 	}
+//     }
+//   /*
+//    *	Invalidate the cache of icons for file extensions.
+//    */
+//   [_iconMap removeAllObjects];
+// }
 
 //-----------------------------------------------------------------------------
 //--- Application management
@@ -1661,10 +1635,10 @@ static NSLock *raceLock = nil;
 {
   NSString	*iconPath = nil;
 
-  if (extPreferences != nil) {
+  if (_extPreferences != nil) {
     NSDictionary	*inf;
 
-    inf = [extPreferences objectForKey:[ext lowercaseString]];
+    inf = [_extPreferences objectForKey:[ext lowercaseString]];
     if (inf != nil) {
       iconPath = [inf objectForKey:@"Icon"];
     }
@@ -1684,7 +1658,7 @@ static NSLock *raceLock = nil;
   NSDictionary  *map;
 
   ext = [ext lowercaseString];
-  map = [applications objectForKey:@"GSExtensionsMap"];
+  map = [_applications objectForKey:@"GSExtensionsMap"];
   return [map objectForKey:ext];
 }
 
@@ -1859,8 +1833,8 @@ static NSLock *raceLock = nil;
   NSData		*data;
 
   ext = [ext lowercaseString];
-  if (extPreferences != nil) {
-    map = [extPreferences mutableCopy];
+  if (_extPreferences != nil) {
+    map = [_extPreferences mutableCopy];
   }
   else {
     map = [NSMutableDictionary new];
@@ -1890,15 +1864,15 @@ static NSLock *raceLock = nil;
   }
   [map setObject:inf forKey:ext];
   RELEASE(inf);
-  RELEASE(extPreferences);
-  extPreferences = map;
-  data = [NSSerializer serializePropertyList:extPreferences];
-  if ([data writeToFile:extPrefPath atomically:YES]) {
+  RELEASE(_extPreferences);
+  _extPreferences = map;
+  data = [NSSerializer serializePropertyList:_extPreferences];
+  if ([data writeToFile:_extPrefPath atomically:YES]) {
     // [_workspaceCenter postNotificationName:GSWorkspacePreferencesChanged
     //                                 object:self];
   }
   else {
-    NSLog(@"Update %@ of failed", extPrefPath);
+    NSLog(@"Update %@ of failed", _extPrefPath);
   }
 }
 
@@ -1914,8 +1888,8 @@ static NSLock *raceLock = nil;
   NSData		*data;
 
   ext = [ext lowercaseString];
-  if (extPreferences != nil) {
-    map = [extPreferences mutableCopy];
+  if (_extPreferences != nil) {
+    map = [_extPreferences mutableCopy];
   }
   else {
     map = [NSMutableDictionary new];
@@ -1933,15 +1907,15 @@ static NSLock *raceLock = nil;
   }
   [map setObject:inf forKey:ext];
   RELEASE(inf);
-  RELEASE(extPreferences);
-  extPreferences = map;
-  data = [NSSerializer serializePropertyList:extPreferences];
-  if ([data writeToFile:extPrefPath atomically:YES]) {
+  RELEASE(_extPreferences);
+  _extPreferences = map;
+  data = [NSSerializer serializePropertyList:_extPreferences];
+  if ([data writeToFile:_extPrefPath atomically:YES]) {
     // [_workspaceCenter postNotificationName:GSWorkspacePreferencesChanged
     //                                 object:self];
   }
   else {
-    NSLog(@"Update %@ of failed", extPrefPath);
+    NSLog(@"Update %@ of failed", _extPrefPath);
   }
 }
 

@@ -393,6 +393,16 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   
+  // Controller (NSWorkspace) objects
+  [_workspaceCenter removeObserver:self];
+  TEST_RELEASE(_wrappers);
+  TEST_RELEASE(_iconMap);
+  TEST_RELEASE(_launched);
+  TEST_RELEASE(_appListPath);
+  TEST_RELEASE(_applications);
+  TEST_RELEASE(_extPrefPath);
+  TEST_RELEASE(_extPreferences);
+  
   // Filesystem monitor
   [fileSystemMonitor pause];
   [fileSystemMonitor terminate];
@@ -441,7 +451,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
         
   // Process manager
   TEST_RELEASE(procManager);
-
+  
+  TEST_RELEASE(_workspaceCenter);
+  
   [[NXTDefaults userDefaults] synchronize];
 
   // Quit NSApplication runloop
@@ -683,23 +695,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
         addObserver:self
            selector:@selector(applicationDidChangeScreenParameters:)
                name:NSApplicationDidChangeScreenParametersNotification
-             object:NSApp];
-  
-  // Services
-  [NSApp setServicesProvider:self];
-
-  // Initialize private NSWorkspace implementation
-  [self initNSWorkspace];
-
-  // Window Manager events
-  [[self notificationCenter] addObserver:self
-                                selector:@selector(updateWorkspaceBadge:)
-                                    name:@"WMDidChangeWorkspaceNotification"
-                                  object:nil];
-  [[self notificationCenter] addObserver:self
-                                selector:@selector(updateKeyboardBadge:)
-                                    name:@"WMDidChangeKeyboardLayoutNotification"
-                                  object:nil];
+             object:NSApp];  
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
@@ -707,6 +703,24 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   NSUserDefaults       *df = [NSUserDefaults standardUserDefaults];
   
+  // Services
+  [NSApp setServicesProvider:self];
+
+  // Initialize private NSWorkspace implementation
+  [self initNSWorkspace];
+
+  // Workspace Notification Central
+  _workspaceCenter = [WMNotificationCenter new];
+  
+  // Window Manager events
+  [_workspaceCenter addObserver:self
+                       selector:@selector(updateWorkspaceBadge:)
+                           name:CF_NOTIFICATION(WMDidChangeWorkspaceNotification)
+                         object:nil];
+  [_workspaceCenter addObserver:self
+                       selector:@selector(updateKeyboardBadge:)
+                           name:CF_NOTIFICATION(WMDidChangeKeyboardLayoutNotification)
+                         object:nil];
 
   // ProcessManager must be ready to register automatically started applications.
   procManager = [ProcessManager shared];

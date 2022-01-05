@@ -57,6 +57,7 @@ static BOOL _workspaceQuitting = NO;
 - (void)dealloc
 {
   NSDebugLLog(@"Memory", @"ProcessManager: dealloc");
+  NSLog(@"ProcessManager: dealloc");
 
   [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
   [[[NSApp delegate] notificationCenter] removeObserver:self];

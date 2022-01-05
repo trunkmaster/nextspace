@@ -256,9 +256,10 @@ static void _handleCFNotification(CFNotificationCenterRef center,
 
 - (void)dealloc
 {
+  NSLog(@"WMNotificationCenter: dealloc");
   CFNotificationCenterRemoveEveryObserver(_coreFoundationCenter, self);
   CFRelease(_coreFoundationCenter);
-  [_remoteCenter removeObserver:self name:nil object:nil];
+  [_remoteCenter removeObserver:self];
   [_remoteCenter release];
   
   [super dealloc];
@@ -288,6 +289,7 @@ static void _handleCFNotification(CFNotificationCenterRef center,
     //   }
     // }
     _coreFoundationCenter = CFNotificationCenterGetLocalCenter();
+    CFRetain(_coreFoundationCenter);
     _workspaceCenter = self;
   }
   
@@ -299,12 +301,10 @@ static void _handleCFNotification(CFNotificationCenterRef center,
 
 // Caller will observe notification with `name` in local, remote and CF notification centers.
  
-// Subscribe by CFString name - notifications will be sent by CoreFoundation.
 /* Register observer-name in NSNotificationCenter.
    In CF notification callback (_handleCFNotification()) this notification will
    be forwarded to NSNotificationCenter with name specified in `name` parameter.
    `selector` of the caller must be registered in NSNotificationCenter to be called. */
-
 - (void)addObserver:(id)observer
            selector:(SEL)selector
                name:(NSString *)name
@@ -334,64 +334,6 @@ static void _handleCFNotification(CFNotificationCenterRef center,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
   CFRelease(cfName);
 }
-
-// - (void)addCFObserver:(id)observer
-//              selector:(SEL)selector
-//                  name:(CFStringRef)name
-// {
-//   NSString *notificationName;
-
-//   // TODO: check of `name` is not empty
-//   notificationName = _convertCFtoNSString(name);
-  
-//   // Register observer-name in NSNotificationCenter and NSDistributedNotificationCenter.
-//   [super addObserver:observer
-//             selector:selector
-//                 name:notificationName
-//               object:nil];
-//   [_remoteCenter addObserver:observer
-//                    selector:selector
-//                        name:notificationName
-//                      object:nil];
-
-//   // Register handler-name in CFNotificationCenter
-//   CFNotificationCenterAddObserver(_coreFoundationCenter,   // created in -init
-//                                   self,                   // observer
-//                                   _handleCFNotification,  // callback: CFNotificationCallback
-//                                   name,                   // notification name: CFStringRef
-//                                   NULL,                   // object
-//                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-// }
-
-// // Subscribe by NSString name - notifications will be sent by Foundation.
-// - (void)addNSObserver:(id)observer
-//              selector:(SEL)selector
-//                  name:(NSString *)name
-// {
-//   CFStringRef cfName;
-
-//   // TODO: check of `name` is not empty
-//   cfName = _convertNStoCFString(name);
-  
-//   // Register observer-name in NSNotificationCenter and NSDistributedNotificationCenter.
-//   [super addObserver:observer
-//             selector:selector
-//                 name:name
-//               object:nil];
-//   [_remoteCenter addObserver:observer
-//                    selector:selector
-//                        name:name
-//                      object:nil];
-
-//   // Register handler-name in CFNotificationCenter
-//   CFNotificationCenterAddObserver(_coreFoundationCenter,  // created in -init
-//                                   self,                   // observer
-//                                   _handleCFNotification, // callback: CFNotificationCallback
-//                                   cfName,                 // notification name: CFStringRef
-//                                   NULL,                   // object
-//                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-//   CFRelease(cfName);
-// }
 
  
 // Notification dispatching
