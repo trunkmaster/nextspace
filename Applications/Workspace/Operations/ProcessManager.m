@@ -59,7 +59,7 @@ static BOOL _workspaceQuitting = NO;
   NSDebugLLog(@"Memory", @"ProcessManager: dealloc");
   NSLog(@"ProcessManager: dealloc");
 
-  [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[[NSApp delegate] notificationCenter] removeObserver:self];
 
   RELEASE(applications);
@@ -74,83 +74,75 @@ static BOOL _workspaceQuitting = NO;
 
 - init
 {
-  NSNotificationCenter *nc;
-  NSWorkspace          *ws;
-
   [super init];
 
-  ws = [NSWorkspace sharedWorkspace];
-  nc = [ws notificationCenter];
-
-  applications = [[NSMutableArray alloc]
-                   initWithArray:[ws launchedApplications]];
-  for (int i=0; i < [applications count]; i++)
-    {
-      NSDictionary *_appInfo;
-      
+  if (self != nil) {
+    NSNotificationCenter *workspaceCenter = [[NSApp delegate] notificationCenter];
+    NSNotificationCenter *localCenter = [NSNotificationCenter defaultCenter];
+    NSDictionary *_appInfo;
+    
+    applications = [[NSMutableArray alloc]
+                     initWithArray:[[NSWorkspace sharedWorkspace] launchedApplications]];
+    for (int i = 0; i < [applications count]; i++) {
       _appInfo = [self _normalizeApplicationInfo:[applications objectAtIndex:i]];
       [applications replaceObjectAtIndex:i withObject:_appInfo];
     }
   
-  operations = [[NSMutableArray alloc] init];
+    operations = [[NSMutableArray alloc] init];
 
-  //  Applications - AppKit notifications
-  [nc addObserver:self
-         selector:@selector(applicationWillLaunch:)
-             name:NSWorkspaceWillLaunchApplicationNotification
-           object:nil];
-  [nc addObserver:self
-         selector:@selector(applicationDidLaunch:)
-             name:NSWorkspaceDidLaunchApplicationNotification
-           object:nil];
-  [nc addObserver:self
-         selector:@selector(applicationDidTerminate:)
-             name:NSWorkspaceDidTerminateApplicationNotification
-           object:nil];
+    //  Applications - AppKit notifications
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationWillLaunch:)
+                            name:NSWorkspaceWillLaunchApplicationNotification
+                          object:nil];
+    // [[[NSWorkspace sharedWorkspace] notificationCenter]
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidLaunch:)
+                            name:NSWorkspaceDidLaunchApplicationNotification
+                          object:nil];
+    // [[[NSWorkspace sharedWorkspace] notificationCenter]
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidTerminate:)
+                            name:NSWorkspaceDidTerminateApplicationNotification
+                          object:nil];
 
-  // Background operations
-  [[NSNotificationCenter defaultCenter] 
-    addObserver:self
-       selector:@selector(operationDidCreate:)
-	   name:WMOperationDidCreateNotification
-	 object:nil];
-  [[NSNotificationCenter defaultCenter] 
-    addObserver:self
-       selector:@selector(operationWillDestroy:)
-	   name:WMOperationWillDestroyNotification
-	 object:nil];
-  [[NSNotificationCenter defaultCenter] 
-    addObserver:self
-       selector:@selector(operationDidChangeState:)
-	   name:WMOperationDidChangeStateNotification
-	 object:nil];
-  // [[NSNotificationCenter defaultCenter] 
-  //   addObserver:self
-  //      selector:@selector(operationProcessingFile:)
-  //          name:WMOperationProcessingFileNotification
-  //        object:nil];
+    // Background operations
+    [localCenter addObserver:self
+                    selector:@selector(operationDidCreate:)
+                        name:WMOperationDidCreateNotification
+                      object:nil];
+    [localCenter addObserver:self
+                    selector:@selector(operationWillDestroy:)
+                        name:WMOperationWillDestroyNotification
+                      object:nil];
+    [localCenter addObserver:self
+                    selector:@selector(operationDidChangeState:)
+                        name:WMOperationDidChangeStateNotification
+                      object:nil];
+    // [[NSNotificationCenter defaultCenter] 
+    //   addObserver:self
+    //      selector:@selector(operationProcessingFile:)
+    //          name:WMOperationProcessingFileNotification
+    //        object:nil];
 
-  // WM - CoreFoundation notifications
-  [[[NSApp delegate] notificationCenter]
-    addObserver:self
-       selector:@selector(applicationDidCreate:)
-	   name:@"WMDidCreateApplicationNotification"
-         object:nil];
-  [[[NSApp delegate] notificationCenter]
-    addObserver:self
-       selector:@selector(applicationDidDestroy:)
-	   name:@"WMDidDestroyApplicationNotification"
-         object:nil];
-  [[[NSApp delegate] notificationCenter]
-    addObserver:self
-       selector:@selector(applicationDidOpenWindow:)
-	   name:@"WMDidManageWindowNotification"
-         object:nil];
-  [[[NSApp delegate] notificationCenter]
-    addObserver:self
-       selector:@selector(applicationDidCloseWindow:)
-	   name:@"WMDidUnmanageWindowNotification"
-         object:nil];
+    // WM - CoreFoundation notifications
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidCreate:)
+                            name:CF_NOTIFICATION(WMDidCreateApplicationNotification)
+                          object:nil];
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidDestroy:)
+                            name:CF_NOTIFICATION(WMDidDestroyApplicationNotification)
+                          object:nil];
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidOpenWindow:)
+                            name:CF_NOTIFICATION(WMDidManageWindowNotification)
+                          object:nil];
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidCloseWindow:)
+                            name:CF_NOTIFICATION(WMDidUnmanageWindowNotification)
+                          object:nil];
+  }
   
   return self;
 }
