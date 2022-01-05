@@ -54,7 +54,7 @@ static NSNumber *_convertCFtoNSNumber(CFNumberRef cfNumber);
 static NSString *_convertCFtoNSString(CFStringRef cfString);
 static NSArray *_convertCFtoNSArray(CFArrayRef cfArray);
 static NSDictionary *_convertCFtoNSDictionary(CFDictionaryRef cfDictionary);
-static id _convertCoreFoundationToFoundation(CFTypeRef value);
+static id _convertCFtoNS(CFTypeRef value);
 
 NSNumber *_convertCFtoNSNumber(CFNumberRef cfNumber)
 {
@@ -68,30 +68,37 @@ NSString *_convertCFtoNSString(CFStringRef cfString)
   stringPtr = CFStringGetCStringPtr(cfString, CFStringGetSystemEncoding());
   return [NSString stringWithCString:stringPtr];
 }
-// TODO
 NSArray *_convertCFtoNSArray(CFArrayRef cfArray)
 {
   NSMutableArray *nsArray = [NSMutableArray new];
+  CFIndex cfCount = CFArrayGetCount(cfArray);
+
+  for (CFIndex i=0; i < cfCount; i++) {
+    [nsArray addObject:_convertCFtoNS(CFArrayGetValueAtIndex(cfArray, i))];
+  }
+  
   return [nsArray autorelease];
 }
 NSDictionary *_convertCFtoNSDictionary(CFDictionaryRef cfDictionary)
 {
   NSMutableDictionary *nsDictionary = nil;
-  const void          *keys;
-  const void          *values;
+  const void *keys;
+  const void *values;
 
-  if (cfDictionary) {
-    nsDictionary = [NSMutableDictionary new];
-    CFDictionaryGetKeysAndValues(cfDictionary, &keys, &values);
-    for (int i = 0; i < CFDictionaryGetCount(cfDictionary); i++) {
-      [nsDictionary setObject:_convertCoreFoundationToFoundation(&values[i]) // may be recursive
-                       forKey:_convertCFtoNSString(&keys[i])]; // always CFStringRef
-    }
+  if (cfDictionary == NULL) {
+    return nil;
   }
   
-  return (nsDictionary ? [nsDictionary autorelease] : nil);
+  nsDictionary = [NSMutableDictionary new];
+  CFDictionaryGetKeysAndValues(cfDictionary, &keys, &values);
+  for (int i = 0; i < CFDictionaryGetCount(cfDictionary); i++) {
+    [nsDictionary setObject:_convertCFtoNS(&values[i]) // may be recursive
+                     forKey:_convertCFtoNSString(&keys[i])]; // always CFStringRef
+  }
+  
+  return nsDictionary;
 }
-id _convertCoreFoundationToFoundation(CFTypeRef value)
+id _convertCFtoNS(CFTypeRef value)
 {
   CFTypeID valueType = CFGetTypeID(value);
   id       returnValue = @"(null)";
@@ -113,7 +120,10 @@ id _convertCoreFoundationToFoundation(CFTypeRef value)
 }
 
 static CFStringRef _convertNStoCFString(NSString *nsString);
+static CFNumberRef _convertNStoCFNumber(NSNumber *nsNumber);
+static CFArrayRef _convertNStoCFArray(NSArray *nsArray);
 static CFDictionaryRef _convertNStoCFDictionary(NSDictionary *dictionary);
+static CFTypeRef _convertNStoCF(id value);
 
 CFStringRef _convertNStoCFString(NSString *nsString)
 {
@@ -122,27 +132,64 @@ CFStringRef _convertNStoCFString(NSString *nsString)
                                        CFStringGetSystemEncoding());
   return cfString;
 }
+CFNumberRef _convertNStoCFNumber(NSNumber *nsNumber)
+{
+  CFNumberRef cfNumber;
+  int number = [nsNumber intValue];
+  cfNumber = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &number);
+  return cfNumber;
+}
+CFArrayRef _convertNStoCFArray(NSArray *nsArray)
+{
+  CFMutableArrayRef cfArray = CFArrayCreateMutable(kCFAllocatorDefault, [nsArray count], NULL);
 
+  for (id object in nsArray) {
+    CFArrayAppendValue(cfArray, _convertNStoCF(object));
+  }
+  
+  return cfArray;
+}
 CFDictionaryRef _convertNStoCFDictionary(NSDictionary *dictionary)
 {
   CFMutableDictionaryRef cfDictionary;
+  CFDictionaryRef returnedDictionary;
   CFStringRef keyCFString;
-  CFStringRef valueCFString;
+  CFTypeRef valueCF;
 
   cfDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
-  for (id key in [dictionary allKeys]) {
-    id value = [dictionary objectForKey:key];
-    if ([value isKindOfClass:[NSString class]]) {
-      keyCFString = CFStringCreateWithCString(kCFAllocatorDefault, [key cString],
-                                              CFStringGetSystemEncoding());
-      valueCFString = CFStringCreateWithCString(kCFAllocatorDefault, [value cString],
-                                                CFStringGetSystemEncoding());
-      CFDictionaryAddValue(cfDictionary, keyCFString, valueCFString);
-      CFRelease(keyCFString);
-      CFRelease(valueCFString);
-    }
+  for (NSString *key in [dictionary allKeys]) {
+    keyCFString = _convertNStoCFString(key);
+    NSLog(@"Converted key: %@", key);
+    valueCF = _convertNStoCF([dictionary objectForKey:key]);
+    NSLog(@"Converted value: %@", [dictionary objectForKey:key]);
+    CFDictionaryAddValue(cfDictionary, keyCFString, valueCF);
+    CFRelease(keyCFString);
+    CFRelease(valueCF);
   }
-  return cfDictionary;
+  returnedDictionary = CFDictionaryCreateCopy(kCFAllocatorDefault, cfDictionary);
+  CFRelease(cfDictionary);
+  
+  return returnedDictionary;
+}
+
+CFTypeRef _convertNStoCF(id value)
+{
+  CFTypeRef returnValue = "(CoreFoundation NULL)";
+  
+  if ([value isKindOfClass:[NSString class]]) {
+    returnValue = _convertNStoCFString(value);
+  }
+  else if ([value isKindOfClass:[NSNumber class]]) {
+    returnValue = _convertNStoCFNumber(value);
+  }
+  else if ([value isKindOfClass:[NSArray class]]) {
+    returnValue = _convertNStoCFArray(value);
+  }
+  else if ([value isKindOfClass:[NSDictionary class]]) {
+    returnValue = _convertNStoCFDictionary(value);
+  }
+
+  return returnValue;
 }
 
 @implementation CFObject @end
@@ -153,24 +200,45 @@ CFDictionaryRef _convertNStoCFDictionary(NSDictionary *dictionary)
 
 static WMNotificationCenter *_workspaceCenter = nil;
 
+typedef enum {
+  LocalNC,
+  DistributedNC,
+  CoreFoundationNC
+} NotificationSource;
+
 @interface WMNotificationCenter (Private)
-- (void)_postNSNotification:(NSString *)name object:(id)object userInfo:(NSDictionary *)info;
-- (void)_postCFNotification:(NSString*)name userInfo:(NSDictionary*)info;
+- (void)_postNSNotification:(NSString *)name
+                     object:(id)object
+                   userInfo:(NSDictionary *)info
+                     source:(NotificationSource)source;
+- (void)_postCFNotification:(NSString*)name
+                   userInfo:(NSDictionary*)info;
 @end
 @implementation WMNotificationCenter (Private)
 
 - (void)_postNSNotification:(NSString *)name
                      object:(id)object
                    userInfo:(NSDictionary *)info
+                     source:(NotificationSource)source
 {
-  NSNotification *aNotification = [NSNotification notificationWithName:name
-                                                                object:object
-                                                              userInfo:info];
+  NSNotification *aNotif;
+  
   // NSNotificationCenter
-  [super postNotification:aNotification];
+  if (source != LocalNC) {
+    aNotif = [NSNotification notificationWithName:name object:object userInfo:info];
+    [super postNotification:aNotif];
+  }
+
   // NSDistributedNotificationCenter
   // TODO: CFObject is not a good object to send
-  // [_remoteCenter postNotification:aNotification];
+  // if (source != DistributedNC) {
+  //   aNotif = [NSNotification notificationWithName:name object:@"GSWorkspaceNotification" userInfo:info];
+  //   @try {
+  //     [_remoteCenter postNotification:aNotif];
+  //   }
+  //   @catch (NSException *e) {
+  //   }
+  // }
 }
 
 - (void)_postCFNotification:(NSString *)name
@@ -181,7 +249,7 @@ static WMNotificationCenter *_workspaceCenter = nil;
   CFDictionaryRef cfUserInfo;
 
   // name
-  cfName = CFStringCreateWithCString(kCFAllocatorDefault, [name cString], CFStringGetSystemEncoding());
+  cfName = _convertNStoCFString(name);
   // userInfo
   cfUserInfo = _convertNStoCFDictionary(info);
   // object
@@ -198,11 +266,21 @@ static WMNotificationCenter *_workspaceCenter = nil;
  */
 - (void)_handleRemoteNotification:(NSNotification*)aNotification
 {
-  // local and remote
+  NSLog(@"WMNC: handle remote notification: %@ - %@", [aNotification name], [aNotification object]);
+  // local
   [self _postNSNotification:[aNotification name]
-                     object:nil
-                   userInfo:[aNotification userInfo]];
-  // CFNotificationCenter
+                     object:[aNotification object]
+                   userInfo:[aNotification userInfo]
+                     source:DistributedNC];
+
+  id object = [aNotification object];
+  if (object &&
+      [object isKindOfClass:[NSString class]] &&
+      [object isEqualToString:@"GSWorkspaceNotification"] != NO) {
+    return;
+  }
+  
+  // TODO: CFNotificationCenter
   [self _postCFNotification:[aNotification name]
                    userInfo:[aNotification userInfo]];
 }
@@ -221,7 +299,6 @@ static WMNotificationCenter *_workspaceCenter = nil;
                                        wwin,                            // object
                                        NULL,                            // userInfo
                                        TRUE);
-
 */
 static void _handleCFNotification(CFNotificationCenterRef center,
                                    void *observer,
@@ -231,15 +308,23 @@ static void _handleCFNotification(CFNotificationCenterRef center,
 {
   CFObject *cfObject = [CFObject new];
   NSString *nsName = _convertCFtoNSString(name);
-  NSDictionary *nsUserInfo = _convertCFtoNSDictionary(userInfo);
+  NSDictionary *nsUserInfo = nil;
   
   cfObject.object = object;
   
+  if (userInfo != NULL) {
+    nsUserInfo = _convertCFtoNSDictionary(userInfo);
+  }
+  
   NSLog(@"[WorkspaceNC] _handleCFNotificaition: %@ - %@", nsName, nsUserInfo);
   
-  [_workspaceCenter _postNSNotification:nsName object:cfObject userInfo:nsUserInfo];
+  [_workspaceCenter _postNSNotification:nsName
+                                 object:cfObject
+                               userInfo:nsUserInfo
+                                 source:CoreFoundationNC];
   
   [cfObject release];
+  [nsUserInfo release];
 }
 
 @end
@@ -270,27 +355,22 @@ static void _handleCFNotification(CFNotificationCenterRef center,
   self = [super init];
   
   if (self != nil) {
+    _workspaceCenter = self;
+    
     _remoteCenter = [[NSDistributedNotificationCenter defaultCenter] retain];
-    // @try {
-    //   [_remoteCenter addObserver:self
-    //                    selector:@selector(_handleRemoteNotification:)
-    //                        name:nil
-    //                      object:nil];
-    // }
-    // @catch (NSException *e) {
-    //   NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+    @try {
+      [_remoteCenter addObserver:self
+                        selector:@selector(_handleRemoteNotification:)
+                            name:nil
+                          object:@"GSWorkspaceNotification"];
+    }
+    @catch (NSException *e) {
+      NSLog(@"Workspace Manager caught exception while connecting to"
+            " Distributed Notification Center %@: %@", [e name], [e reason]);
+    }
 
-    //   if ([defs boolForKey:@"GSLogWorkspaceTimeout"]) {
-    //     NSLog(@"Workspace Manager caught exception while connecting to"
-    //           " Distributed Notification Center %@: %@", [e name], [e reason]);
-    //   }
-    //   else {
-    //     [e raise];
-    //   }
-    // }
     _coreFoundationCenter = CFNotificationCenterGetLocalCenter();
     CFRetain(_coreFoundationCenter);
-    _workspaceCenter = self;
   }
   
   return self;
@@ -312,29 +392,33 @@ static void _handleCFNotification(CFNotificationCenterRef center,
 {
   CFStringRef cfName;
 
-  // TODO: check of `name` is not empty
-  cfName = _convertNStoCFString(name);
+  if (!name || [name length] == 0) {
+    return;
+  }
   
-  // Register observer-name in NSNotificationCenter and NSDistributedNotificationCenter.
+  /* Register observer-name in NSNotificationCenter.
+     There's no need to register in NSDistributedNotificationCenter because */
   [super addObserver:observer
             selector:selector
                 name:name
               object:nil];
-  [_remoteCenter addObserver:observer
-                   selector:selector
-                       name:name
-                     object:nil];
-
+  
   // Register handler-name in CFNotificationCenter
+  cfName = _convertNStoCFString(name);
   CFNotificationCenterAddObserver(_coreFoundationCenter,  // created in -init
                                   self,                   // observer
-                                  _handleCFNotification, // callback: CFNotificationCallback
+                                  _handleCFNotification,  // callback: CFNotificationCallback
                                   cfName,                 // notification name: CFStringRef
                                   NULL,                   // object
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
   CFRelease(cfName);
 }
 
+- (void)removeObserver:(id)observer
+{
+  [super removeObserver:observer];
+  CFNotificationCenterRemoveEveryObserver(_coreFoundationCenter, observer);
+}
  
 // Notification dispatching
 //-------------------------------------------------------------------------------------------------
@@ -368,7 +452,7 @@ static void _handleCFNotification(CFNotificationCenterRef center,
                     userInfo:(NSDictionary*)info
 {
   // local and remote
-  [self _postNSNotification:name object:object userInfo:info];
+  [self _postNSNotification:name object:object userInfo:info source:LocalNC];
   // CFNotificationCenter
   [self _postCFNotification:name userInfo:info];
 }
