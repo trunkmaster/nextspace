@@ -457,7 +457,9 @@
 
   // Processes holds list of labels for FileViewers.
   // This message removes local copy of label from Processes' list
-  [[ProcessManager shared] releaseBackInfoLabel:operationInfo];
+  if ([operationInfo retainCount] > 1) {
+    [[ProcessManager shared] releaseBackInfoLabel:operationInfo];
+  }
   TEST_RELEASE(lock);
 
   NSDebugLLog(@"Memory",@"FileViewer %@: dealloc END", rootPath);
