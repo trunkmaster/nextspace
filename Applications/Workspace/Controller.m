@@ -243,11 +243,11 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   for (FileViewer *fv in _fvs) {
     winState = [self _stateForWindow:[fv window]];
     if (winState) {
-      if ([fv isRootViewer] != NO)
+      if ([fv isRootViewer] != NO) {
         type = @"RootViewer";
-      else
+      } else {
         type = @"FolderViewer";
-        
+      }
       winInfo = @{@"Type":type,
                   @"ViewerType":[[[fv viewer] class] viewerType],
                   @"State":winState,
@@ -255,6 +255,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                   @"Path":[fv displayedPath],
                   @"Selection":([fv selection]) ? [fv selection] : @[]};
       [windows addObject:winInfo];
+      [winInfo release];
       
       if ([winState isEqualToString:@"Shaded"]) {
         wUnshadeWindow(wWindowFor(X_WINDOW([fv window])));
@@ -345,6 +346,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                           isRoot:YES];
     [fv displayPath:NSHomeDirectory() selection:nil sender:self];
     rootViewerWindow = [fv window];
+    rootViewer = fv;
     [[fv window] orderFront:nil];
   }
 
@@ -392,16 +394,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)_finishTerminateProcess
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  
-  // Controller (NSWorkspace) objects
   [_workspaceCenter removeObserver:self];
-  TEST_RELEASE(_wrappers);
-  TEST_RELEASE(_iconMap);
-  TEST_RELEASE(_launched);
-  TEST_RELEASE(_appListPath);
-  TEST_RELEASE(_applications);
-  TEST_RELEASE(_extPrefPath);
-  TEST_RELEASE(_extPreferences);
   
   // Filesystem monitor
   [fileSystemMonitor pause];
@@ -451,8 +444,16 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
         
   // Process manager
   TEST_RELEASE(procManager);
-  
+
+  // Controller (NSWorkspace) objects
   TEST_RELEASE(_workspaceCenter);
+  TEST_RELEASE(_wrappers);
+  TEST_RELEASE(_iconMap);
+  TEST_RELEASE(_launched);
+  TEST_RELEASE(_appListPath);
+  TEST_RELEASE(_applications);
+  TEST_RELEASE(_extPrefPath);
+  TEST_RELEASE(_extPreferences);
   
   [[NXTDefaults userDefaults] synchronize];
 
@@ -664,6 +665,19 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [self createWorkspaceBadge];
   [self updateKeyboardBadge:nil];
       
+  // Workspace Notification Central
+  _workspaceCenter = [WMNotificationCenter new];
+  
+  // Window Manager events
+  [_workspaceCenter addObserver:self
+                       selector:@selector(updateWorkspaceBadge:)
+                           name:CF_NOTIFICATION(WMDidChangeWorkspaceNotification)
+                         object:nil];
+  [_workspaceCenter addObserver:self
+                       selector:@selector(updateKeyboardBadge:)
+                           name:CF_NOTIFICATION(WMDidChangeKeyboardLayoutNotification)
+                         object:nil];
+
   // Recycler
   {
     WDock    *dock = wDefaultScreen()->dock;
@@ -695,7 +709,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
         addObserver:self
            selector:@selector(applicationDidChangeScreenParameters:)
                name:NSApplicationDidChangeScreenParametersNotification
-             object:NSApp];  
+             object:NSApp];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
@@ -708,19 +722,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // Initialize private NSWorkspace implementation
   [self initNSWorkspace];
-
-  // Workspace Notification Central
-  _workspaceCenter = [WMNotificationCenter new];
-  
-  // Window Manager events
-  [_workspaceCenter addObserver:self
-                       selector:@selector(updateWorkspaceBadge:)
-                           name:CF_NOTIFICATION(WMDidChangeWorkspaceNotification)
-                         object:nil];
-  [_workspaceCenter addObserver:self
-                       selector:@selector(updateKeyboardBadge:)
-                           name:CF_NOTIFICATION(WMDidChangeKeyboardLayoutNotification)
-                         object:nil];
 
   // ProcessManager must be ready to register automatically started applications.
   procManager = [ProcessManager shared];
