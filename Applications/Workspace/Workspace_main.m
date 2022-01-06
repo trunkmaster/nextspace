@@ -88,6 +88,11 @@ static BOOL _isWindowManagerRunning(void)
 // Workspace application GNUstep main function
 //-----------------------------------------------------------------------------
 
+void WSUncaughtExceptionHandler(NSException *e)
+{
+  NSLog(@"*** EXCEPTION *** NAME: %@ REASON: %@", [e name], [e reason]);
+}
+
 int WSApplicationMain(int argc, const char **argv)
 {
   NSDictionary	*infoDict;
@@ -168,6 +173,7 @@ int main(int argc, const char **argv)
   //--- Workspace (GNUstep) queue ---------------------------------------
   fprintf(stderr, "=== Starting the Workspace... ===\n");
   dispatch_sync(workspace_q, ^{
+      NSSetUncaughtExceptionHandler(WSUncaughtExceptionHandler);
       WSApplicationMain(argc, argv);
     });
   fprintf(stderr, "=== Workspace successfully finished! ===\n");
