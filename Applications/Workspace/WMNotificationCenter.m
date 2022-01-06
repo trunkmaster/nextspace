@@ -66,7 +66,11 @@ NSString *_convertCFtoNSString(CFStringRef cfString)
 {
   const char *stringPtr;
   stringPtr = CFStringGetCStringPtr(cfString, CFStringGetSystemEncoding());
-  return [NSString stringWithCString:stringPtr];
+  if (!stringPtr) {
+    return @"";
+  } else {
+    return [NSString stringWithCString:stringPtr];
+  }
 }
 NSArray *_convertCFtoNSArray(CFArrayRef cfArray)
 {
@@ -92,7 +96,7 @@ NSDictionary *_convertCFtoNSDictionary(CFDictionaryRef cfDictionary)
   nsDictionary = [NSMutableDictionary new];
   CFDictionaryGetKeysAndValues(cfDictionary, &keys, &values);
   for (int i = 0; i < CFDictionaryGetCount(cfDictionary); i++) {
-    [nsDictionary setObject:_convertCFtoNS(&values[i]) // may be recursive
+    [nsDictionary setObject:_convertCFtoNS(&values[i])
                      forKey:_convertCFtoNSString(&keys[i])]; // always CFStringRef
   }
   
@@ -128,7 +132,8 @@ static CFTypeRef _convertNStoCF(id value);
 CFStringRef _convertNStoCFString(NSString *nsString)
 {
   CFStringRef cfString;
-  cfString = CFStringCreateWithCString(kCFAllocatorDefault, [nsString cString],
+  cfString = CFStringCreateWithCString(kCFAllocatorDefault,
+                                       [nsString cString],
                                        CFStringGetSystemEncoding());
   return cfString;
 }
@@ -156,7 +161,10 @@ CFDictionaryRef _convertNStoCFDictionary(NSDictionary *dictionary)
   CFStringRef keyCFString;
   CFTypeRef valueCF;
 
-  cfDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, NULL, NULL);
+  cfDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
+                                           [[dictionary allKeys] count],
+                                           &kCFTypeDictionaryKeyCallBacks,
+                                           &kCFTypeDictionaryValueCallBacks);
   for (NSString *key in [dictionary allKeys]) {
     keyCFString = _convertNStoCFString(key);
     NSLog(@"Converted key: %@", key);
@@ -223,6 +231,8 @@ typedef enum {
 {
   NSNotification *aNotif;
   
+  NSLog(@"WMNC: post NS notification: %@ - %@ source: %u", name, object, source);
+
   // NSNotificationCenter
   if (source != LocalNC) {
     aNotif = [NSNotification notificationWithName:name object:object userInfo:info];
@@ -244,7 +254,6 @@ typedef enum {
 - (void)_postCFNotification:(NSString *)name
                    userInfo:(NSDictionary *)info
 {
-  const void *cfObject;
   CFStringRef cfName;
   CFDictionaryRef cfUserInfo;
 
@@ -252,10 +261,10 @@ typedef enum {
   cfName = _convertNStoCFString(name);
   // userInfo
   cfUserInfo = _convertNStoCFDictionary(info);
-  // object
-  cfObject = NULL;
  
-  CFNotificationCenterPostNotification(_coreFoundationCenter, cfName, cfObject, cfUserInfo, TRUE);
+  NSLog(@"WMNC: post CF notification: %@ - %@", name, info);
+  
+  CFNotificationCenterPostNotification(_coreFoundationCenter, cfName, self, cfUserInfo, TRUE);
 
   CFRelease(cfName);
   CFRelease(cfUserInfo);
@@ -306,23 +315,30 @@ static void _handleCFNotification(CFNotificationCenterRef center,
                                    const void *object,
                                    CFDictionaryRef userInfo)
 {
-  CFObject *cfObject = [CFObject new];
-  NSString *nsName = _convertCFtoNSString(name);
+  CFObject *cfObject;
+  NSString *nsName;
   NSDictionary *nsUserInfo = nil;
+
+  // This is the mirrored notification sent by us
+  if (object == _workspaceCenter) {
+    NSLog(@"_handleCFNotification: Received mirrored notification from CF. Ignoring...");
+    return;
+  }
   
+  cfObject = [CFObject new];
+  nsName = _convertCFtoNSString(name);
   cfObject.object = object;
   
   if (userInfo != NULL) {
     nsUserInfo = _convertCFtoNSDictionary(userInfo);
   }
   
-  NSLog(@"[WorkspaceNC] _handleCFNotificaition: %@ - %@", nsName, nsUserInfo);
+  NSLog(@"[WMNC] _handleCFNotificaition: dispatching CF notification %@ - %@", nsName, nsUserInfo);
   
   [_workspaceCenter _postNSNotification:nsName
                                  object:cfObject
                                userInfo:nsUserInfo
                                  source:CoreFoundationNC];
-  
   [cfObject release];
   [nsUserInfo release];
 }
@@ -426,13 +442,13 @@ static void _handleCFNotification(CFNotificationCenterRef center,
 {
   NSString *name = [aNotification name];
   
-  if ([name isEqual:NSWorkspaceDidTerminateApplicationNotification] == YES ||
-      [name isEqual:NSWorkspaceDidLaunchApplicationNotification] == YES ||
-      [name isEqualToString:NSApplicationDidBecomeActiveNotification] == YES ||
-      [name isEqualToString:NSApplicationDidResignActiveNotification] == YES) {
-    // Posts distributed notification
-    [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:aNotification];
-  }
+  // if ([name isEqual:NSWorkspaceDidTerminateApplicationNotification] == YES ||
+  //     [name isEqual:NSWorkspaceDidLaunchApplicationNotification] == YES ||
+  //     [name isEqualToString:NSApplicationDidBecomeActiveNotification] == YES ||
+  //     [name isEqualToString:NSApplicationDidResignActiveNotification] == YES) {
+  //   // Posts distributed notification
+  //   [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:aNotification];
+  // }
   
   [self postNotificationName:name
                       object:[aNotification object]
@@ -451,8 +467,10 @@ static void _handleCFNotification(CFNotificationCenterRef center,
                       object:(id)object
                     userInfo:(NSDictionary*)info
 {
+  NSLog(@"[WMNC] postNotificationName: %@:%@ - %@", name, object, info);
   // local and remote
   [self _postNSNotification:name object:object userInfo:info source:LocalNC];
+
   // CFNotificationCenter
   [self _postCFNotification:name userInfo:info];
 }
