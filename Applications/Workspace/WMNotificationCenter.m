@@ -435,22 +435,19 @@ static void _handleCFNotification(CFNotificationCenterRef center,
   [super removeObserver:observer];
   CFNotificationCenterRemoveEveryObserver(_coreFoundationCenter, observer);
 }
- 
-// Notification dispatching
+
+// Native notifications
+//
+// At this time this is used only by classes inside Workspace Manager.
+// Access can be obtained with call to [[NSApp delegate] notificationCenter].
+// After integration with NSWorkspace will be implemented any application could
+// use these calls accessing the [[NSWorkspace sharedWorkspce] notificationCenter].
+//
+// The methods below dispatch notifications to NSNotificationCenter and CFNotificationCenter.
 //-------------------------------------------------------------------------------------------------
 - (void)postNotification:(NSNotification*)aNotification
 {
-  NSString *name = [aNotification name];
-  
-  // if ([name isEqual:NSWorkspaceDidTerminateApplicationNotification] == YES ||
-  //     [name isEqual:NSWorkspaceDidLaunchApplicationNotification] == YES ||
-  //     [name isEqualToString:NSApplicationDidBecomeActiveNotification] == YES ||
-  //     [name isEqualToString:NSApplicationDidResignActiveNotification] == YES) {
-  //   // Posts distributed notification
-  //   [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:aNotification];
-  // }
-  
-  [self postNotificationName:name
+  [self postNotificationName:[aNotification name]
                       object:[aNotification object]
                     userInfo:[aNotification userInfo]];
 }
@@ -467,6 +464,14 @@ static void _handleCFNotification(CFNotificationCenterRef center,
                       object:(id)object
                     userInfo:(NSDictionary*)info
 {
+  // if ([name isEqual:NSWorkspaceDidTerminateApplicationNotification] == YES ||
+  //     [name isEqual:NSWorkspaceDidLaunchApplicationNotification] == YES ||
+  //     [name isEqualToString:NSApplicationDidBecomeActiveNotification] == YES ||
+  //     [name isEqualToString:NSApplicationDidResignActiveNotification] == YES) {
+  //   // Posts distributed notification
+  //   [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:aNotification];
+  // }
+  
   NSLog(@"[WMNC] postNotificationName: %@:%@ - %@", name, object, info);
   // local and remote
   [self _postNSNotification:name object:object userInfo:info source:LocalNC];
