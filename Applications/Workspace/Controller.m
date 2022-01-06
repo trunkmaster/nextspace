@@ -393,8 +393,16 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_finishTerminateProcess
 {
+  // Process manager
+  TEST_RELEASE(procManager);
+
+  // We don't need to handle these events on quit.
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [_workspaceCenter removeObserver:self];
+  TEST_RELEASE(_workspaceCenter);
+
+  CFRelease(wDefaultScreen()->notificationCenter);
+  wDefaultScreen()->notificationCenter = NULL;
   
   // Filesystem monitor
   [fileSystemMonitor pause];
@@ -442,11 +450,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     [bellSound release];
   }
         
-  // Process manager
-  TEST_RELEASE(procManager);
-
   // Controller (NSWorkspace) objects
-  TEST_RELEASE(_workspaceCenter);
   TEST_RELEASE(_wrappers);
   TEST_RELEASE(_iconMap);
   TEST_RELEASE(_launched);
