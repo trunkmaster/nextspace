@@ -393,6 +393,13 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_finishTerminateProcess
 {
+  // Filesystem monitor
+  [fileSystemMonitor pause];
+  [fileSystemMonitor terminate];
+  
+  // Stop events processing inside Window Decorator
+  WCHANGE_STATE(WSTATE_EXITING);
+
   // Process manager
   TEST_RELEASE(procManager);
 
@@ -404,19 +411,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   CFRelease(wDefaultScreen()->notificationCenter);
   wDefaultScreen()->notificationCenter = NULL;
   
-  // Filesystem monitor
-  [fileSystemMonitor pause];
-  [fileSystemMonitor terminate];
-  
   // Close and save file viewers, close panels.
   [self _saveWindowsStateAndClose];
-
-  // FIXME: need to review retain count of `fileSystemMonitor`
-  NSDebugLLog(@"Memory", @"_finishTerminateProcess fileSystemMonitor RC: %lu",
-              [fileSystemMonitor retainCount]);
-  if ([fileSystemMonitor retainCount] > 1) {
-    [fileSystemMonitor release];
-  }
 
   // Launcher
   if (launcher) {
