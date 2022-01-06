@@ -188,20 +188,16 @@ void DispatchEvent(XEvent * event)
   if (deathHandlers)
     handleDeadProcess();
 
-  if (WCHECK_STATE(WSTATE_NEED_EXIT)) {
-    WCHANGE_STATE(WSTATE_EXITING);
-    /* received SIGTERM */
-    /*
-     * WMHandleEvent() can't be called from anything
+  if (WCHECK_STATE(WSTATE_NEED_EXIT) || WCHECK_STATE(WSTATE_EXITING)) {
+    /* WCHANGE_STATE(WSTATE_EXITING); */
+    /* WMHandleEvent() can't be called from anything
      * executed inside here, or we can get in a infinite
-     * recursive loop.
-     */
-    wShutdown(WMExitMode);
-
+     * recursive loop. */
+    return;
   } else if (WCHECK_STATE(WSTATE_NEED_RESTART)) {
     WCHANGE_STATE(WSTATE_RESTARTING);
-    /* received SIGHUP */
-    wShutdown(WMRestartMode);
+    return;
+    /* wShutdown(WMRestartMode); */
   } else if (WCHECK_STATE(WSTATE_NEED_REREAD)) {
     WCHANGE_STATE(WSTATE_NORMAL);
     wDefaultsUpdateDomainsIfNeeded(NULL);

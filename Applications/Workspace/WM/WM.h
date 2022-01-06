@@ -183,12 +183,12 @@ typedef struct WObjDescriptor {
 /* program states */
 typedef enum {
   WSTATE_NORMAL		= 0,
-  WSTATE_NEED_EXIT	= 1,
-  WSTATE_NEED_RESTART	= 2,
-  WSTATE_EXITING	= 3,
-  WSTATE_RESTARTING	= 4,
-  WSTATE_MODAL		= 5,
-  WSTATE_NEED_REREAD	= 6
+  WSTATE_EXITING	= 1,
+  WSTATE_MODAL		= 2,
+  WSTATE_NEED_EXIT	= 10, // SIGTERM, SIGINT, SIGHUP
+  WSTATE_NEED_RESTART	= 11, // SIGUSR1
+  WSTATE_RESTARTING	= 12,
+  WSTATE_NEED_REREAD	= 13  // SIGUSR2
 } wprog_state;
 #define WCHECK_STATE(chk_state)	(w_global.program.state == (chk_state))
 #define WCHANGE_STATE(nstate) {                                 \
