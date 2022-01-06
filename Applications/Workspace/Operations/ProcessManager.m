@@ -60,11 +60,13 @@ static BOOL _workspaceQuitting = NO;
   NSLog(@"ProcessManager: dealloc");
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [[[NSApp delegate] notificationCenter] removeObserver:self];
+  if ([[NSApp delegate] notificationCenter]) {
+    [[[NSApp delegate] notificationCenter] removeObserver:self];
+  }
 
   RELEASE(applications);
   RELEASE(operations);
-  
+
   TEST_RELEASE(backInfoLabelCopies);
   
   shared = nil;
