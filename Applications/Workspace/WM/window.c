@@ -1612,10 +1612,12 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
           wSetFocusTo(scr, new_focused_window);
         }
       } else if (oapp && oapp->menu_win) {
-        /* wSetFocusTo will be called in handleFocusIn() */
-        WMLogInfo("set focus to main menu == %lu", oapp->menu_win->client_win);
-        XSetInputFocus(dpy, oapp->menu_win->client_win, RevertToParent, CurrentTime);
-        oapp->menu_win->flags.focused = 1;
+        if (!scr->flags.ignore_focus_events) {
+          /* wSetFocusTo will be called in handleFocusIn() */
+          WMLogInfo("set focus to main menu == %lu", oapp->menu_win->client_win);
+          XSetInputFocus(dpy, oapp->menu_win->client_win, RevertToParent, CurrentTime);
+          oapp->menu_win->flags.focused = 1;
+        }
       } else {
         wSetFocusTo(scr, new_focused_window);
       }

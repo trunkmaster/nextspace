@@ -176,14 +176,14 @@ int main(int argc, const char **argv)
       NSSetUncaughtExceptionHandler(WSUncaughtExceptionHandler);
       WSApplicationMain(argc, argv);
     });
-  fprintf(stderr, "=== Workspace successfully finished! ===\n");
+  fprintf(stderr, "=== Workspace finished with exit code: %i ===\n", ws_quit_code);
   //---------------------------------------------------------------------
   
-  fprintf(stderr, "=== Quitting Window manager... ===\n");
-  CFRunLoopStop(wm_runloop);
+  // fprintf(stderr, "=== Quitting Window manager... ===\n");
+  // CFRunLoopStop(wm_runloop);
   // Quit WindowManager, close all X11 applications.
-  wShutdown(WMExitMode);
+  // wShutdown(WMExitMode);
   
-  fprintf(stderr, "=== Exit code is %i ===\n", ws_quit_code);
+  // fprintf(stderr, "=== Exit code is %i ===\n", ws_quit_code);
   return ws_quit_code;
 }

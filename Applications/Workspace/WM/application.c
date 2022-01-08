@@ -49,8 +49,6 @@
 #include "framewin.h"
 #endif
 
-
-
 /******** Local variables ********/
 
 static WWindow *makeMainWindow(WScreen * scr, Window window)
@@ -144,7 +142,7 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
 
   window_count = CFArrayGetCount(wapp->windows);
 
-  WMLogInfo("REMOVE window: %lu name: %s refcount=%i",
+  WMLogInfo("REMOVE window: %lu name: %s WApplication refcount=%i",
            wwin->client_win, wwin->wm_instance, wapp->refcount);
   
   for (int i = 0; i < window_count; i++) {

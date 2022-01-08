@@ -239,6 +239,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     [legalPanel release];
   }
 
+  // Launcher
+  if (launcher) {
+    [launcher deactivate];
+    [launcher release];
+  }
+
   // Viewers
   for (FileViewer *fv in _fvs) {
     winState = [self _stateForWindow:[fv window]];
@@ -394,33 +400,24 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)_finishTerminateProcess
 {
   // Filesystem monitor
-  [fileSystemMonitor pause];
-  [fileSystemMonitor terminate];
-  
-  // Stop events processing inside Window Decorator
-  WCHANGE_STATE(WSTATE_EXITING);
-
+  if (fileSystemMonitor) {
+    [fileSystemMonitor pause];
+    [fileSystemMonitor terminate];
+  }
   // Process manager
   TEST_RELEASE(procManager);
-
-  // We don't need to handle these events on quit.
+  // We don't need to handle events on quit.
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [_workspaceCenter removeObserver:self];
-  TEST_RELEASE(_workspaceCenter);
-
-  CFRelease(wDefaultScreen()->notificationCenter);
-  wDefaultScreen()->notificationCenter = NULL;
+  if (_workspaceCenter) {
+    [_workspaceCenter removeObserver:self];
+    [_workspaceCenter release];
+  }
   
   // Close and save file viewers, close panels.
   [self _saveWindowsStateAndClose];
 
-  // Launcher
-  if (launcher) {
-    [launcher deactivate];
-    [launcher release];
-  }
-
-  // Close XWindow applications - wipeDesktop?
+  // Quit Window Manager - stop runloop and make cleanup
+  wShutdown(WMExitMode);
   
   // Hide Dock
   wDockHideIcons(wDefaultScreen()->dock);
