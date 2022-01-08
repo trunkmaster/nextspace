@@ -313,6 +313,8 @@
 
   NSLog(@"launchSession: %@", sessionScript);
 
+  _exitStatus = 0;
+
   for (id scriptCommand in sessionScript) {
     if (scriptCommand == nil ||
         ([scriptCommand isKindOfClass:[NSArray class]] != NO &&
