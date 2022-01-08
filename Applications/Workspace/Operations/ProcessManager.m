@@ -472,7 +472,7 @@ static BOOL _workspaceQuitting = NO;
   NSNotification *localNotif = nil;
   NSDictionary *appInfo = nil;
 
-  if (_workspaceQuitting != NO || !wapp || !strcmp(wapp->main_window_desc->wm_class,"GNUstep")) {
+  if (_workspaceQuitting != NO || !wapp) {
     return;
   }
   
