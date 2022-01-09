@@ -47,10 +47,9 @@ static BOOL _workspaceQuitting = NO;
 
 + shared
 {
-  if (shared == nil)
-    {
-      shared = [self new];
-    }
+  if (shared == nil) {
+    shared = [self new];
+  }
   return shared;
 }
 
@@ -60,10 +59,7 @@ static BOOL _workspaceQuitting = NO;
   NSLog(@"ProcessManager: dealloc");
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  if ([[NSApp delegate] notificationCenter]) {
-    [[[NSApp delegate] notificationCenter] removeObserver:self];
-  }
-
+ 
   RELEASE(applications);
   RELEASE(operations);
 
@@ -79,7 +75,7 @@ static BOOL _workspaceQuitting = NO;
   [super init];
 
   if (self != nil) {
-    NSNotificationCenter *workspaceCenter = [[NSApp delegate] notificationCenter];
+    NSNotificationCenter *workspaceCenter = [WMNotificationCenter defaultCenter];
     NSNotificationCenter *localCenter = [NSNotificationCenter defaultCenter];
     NSDictionary *_appInfo;
     
