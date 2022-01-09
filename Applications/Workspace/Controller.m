@@ -198,20 +198,19 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     }
     [console release];
   }
+  
   // Inspector
   if (inspector && [[inspector window] isVisible]) {
     [inspector deactivateInspector:self];
     [inspector release];
   }
-  // Processes
-  if (procPanel && [[procPanel window] isVisible]) {
-    [[procPanel window] close];
-    [procPanel release];
-  }
+  
+  // Processes Panel & Process Manager
+  TEST_RELEASE(procManager);
+  TEST_RELEASE(procPanel);
+  
   // Preferences
-  if (preferences) {
-    [preferences release];
-  }
+  TEST_RELEASE(preferences);
   
   // Finder
   if (finder) {
@@ -404,14 +403,11 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     [fileSystemMonitor pause];
     [fileSystemMonitor terminate];
   }
-  // Process manager
-  TEST_RELEASE(procManager);
+
   // We don't need to handle events on quit.
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  if (_workspaceCenter) {
-    [_workspaceCenter removeObserver:self];
-    [_workspaceCenter release];
-  }
+  // Not need to remove observers explicitely for NSWorkspaceCenter.
+  [_workspaceCenter release];
   
   // Close and save file viewers, close panels.
   [self _saveWindowsStateAndClose];
@@ -663,7 +659,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [self updateKeyboardBadge:nil];
       
   // Workspace Notification Central
-  _workspaceCenter = [WMNotificationCenter new];
+  _workspaceCenter = [WMNotificationCenter defaultCenter];
   
   // Window Manager events
   [_workspaceCenter addObserver:self
@@ -812,9 +808,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     {
     case NSAlertDefaultReturn: // Log Out
       {
-        isQuitting = YES;
+        _isQuitting = YES;
         if ([procManager terminateAllBGOperations] == NO) {
-          isQuitting = NO;
+          _isQuitting = NO;
           terminateReply = NSTerminateCancel;
           break;
         }
@@ -826,7 +822,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
           NXTRunAlertPanel(_(@"Log Out"),
                            _(@"Some application terminate power off process."),
                            _(@"Dismiss"), nil, nil);
-          isQuitting = NO;
+          _isQuitting = NO;
           terminateReply = NSTerminateCancel;
           break;
         }
@@ -839,9 +835,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       break;
     case NSAlertAlternateReturn: // Power off
       {
-        isQuitting = YES;
+        _isQuitting = YES;
         if ([procManager terminateAllBGOperations] == NO) {
-          isQuitting = NO;
+          _isQuitting = NO;
           terminateReply = NSTerminateCancel;
           break;
         }
@@ -853,7 +849,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
           NXTRunAlertPanel(_(@"Power Off"),
                            _(@"Some application terminate power off process."),
                            _(@"Dismiss"), nil, nil);
-          isQuitting = NO;
+          _isQuitting = NO;
           terminateReply = NSTerminateCancel;
           break;
         }
@@ -865,7 +861,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       break;
     default:
       // NSLog(@"Workspace->Quit->Cancel");
-      isQuitting = NO;
+      _isQuitting = NO;
       terminateReply = NSTerminateCancel;
       break;
     }
@@ -877,7 +873,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)activate
 {
-  if (isQuitting != NO)
+  if (_isQuitting != NO)
     return;
   
   // NSLog(@"Activating Workspace from Controller!");
@@ -930,7 +926,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (Inspector *)inspectorPanel
 {
-  if (isQuitting != NO) {
+  if (_isQuitting != NO) {
     return nil;
   }
   return inspector;
@@ -940,7 +936,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // fileSystemMonitor will be released on application termination.
 - (OSEFileSystemMonitor *)fileSystemMonitor
 {
-  if (isQuitting != NO) {
+  if (_isQuitting != NO) {
     return nil;
   }
   if (!fileSystemMonitor)
@@ -966,7 +962,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (id<MediaManager>)mediaManager
 {
-  if (isQuitting != NO) {
+  if (_isQuitting != NO) {
     return nil;
   }
   if (!mediaManager) {
@@ -978,7 +974,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (Processes *)processesPanel
 {
-  if (isQuitting != NO) {
+  if (_isQuitting != NO) {
     return nil;
   }
   return procPanel;
@@ -986,7 +982,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (Recycler *)recycler
 {
-  if (isQuitting != NO) {
+  if (_isQuitting != NO) {
     return nil;
   }
   return recycler;
@@ -994,7 +990,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (Finder *)finder
 {
-  if (isQuitting != NO) {
+  if (_isQuitting != NO) {
     return nil;
   }
   if (finder == nil) {
@@ -1353,7 +1349,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   FileViewer *fileViewer;
   // NSString   *selectedPath;
 
-  if (isQuitting != NO)
+  if (_isQuitting != NO)
     return NO;
   
   fileViewer = [self fileViewerForWindow:[NSApp keyWindow]];
@@ -1460,7 +1456,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     }
   else if (bgop)
     {
-      if (isQuitting)
+      if (_isQuitting)
         {
           [bgop destroyOperation:info];
         }
