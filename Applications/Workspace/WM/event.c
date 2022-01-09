@@ -365,6 +365,9 @@ void WMRunLoop_V1()
   wm_runloop = run_loop;
   CFRunLoopRun();
   CFFileDescriptorDisableCallBacks(xfd, kCFFileDescriptorReadCallBack);
+  CFRunLoopRemoveSource(run_loop, xfd_source, kCFRunLoopDefaultMode);
+  /* Do not call CFFileDescriptorInvalidate(xfd)!
+     This FD is a connection of Workspace application to X server. */
   
   WMLogError("[WM] CFRunLoop finished.");
 }
