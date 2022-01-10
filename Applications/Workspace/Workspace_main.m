@@ -177,13 +177,6 @@ int main(int argc, const char **argv)
       WSApplicationMain(argc, argv);
     });
   fprintf(stderr, "=== Workspace finished with exit code: %i ===\n", ws_quit_code);
-  //---------------------------------------------------------------------
   
-  // fprintf(stderr, "=== Quitting Window manager... ===\n");
-  // CFRunLoopStop(wm_runloop);
-  // Quit WindowManager, close all X11 applications.
-  // wShutdown(WMExitMode);
-  
-  // fprintf(stderr, "=== Exit code is %i ===\n", ws_quit_code);
   return ws_quit_code;
 }
