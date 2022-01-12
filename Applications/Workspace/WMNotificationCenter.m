@@ -272,24 +272,16 @@ typedef enum {
 
 /*
  * Forward a notification from a remote application to observers in this application.
+ * We receive notifications with object == @"GSWorkspaceNotification" only.
  */
 - (void)_handleRemoteNotification:(NSNotification*)aNotification
 {
   NSLog(@"WMNC: handle remote notification: %@ - %@", [aNotification name], [aNotification object]);
-  // local
-  [self _postNSNotification:[aNotification name]
-                     object:[aNotification object]
-                   userInfo:[aNotification userInfo]
-                     source:DistributedNC];
-
-  id object = [aNotification object];
-  if (object &&
-      [object isKindOfClass:[NSString class]] &&
-      [object isEqualToString:@"GSWorkspaceNotification"] != NO) {
-    return;
-  }
   
-  // TODO: CFNotificationCenter
+  // local NSNotificationCenter
+  [self postNSNotification:aNotification];
+
+  // CFNotificationCenter
   [self _postCFNotification:[aNotification name]
                    userInfo:[aNotification userInfo]];
 }
@@ -464,20 +456,26 @@ static void _handleCFNotification(CFNotificationCenterRef center,
                       object:(id)object
                     userInfo:(NSDictionary*)info
 {
-  // if ([name isEqual:NSWorkspaceDidTerminateApplicationNotification] == YES ||
-  //     [name isEqual:NSWorkspaceDidLaunchApplicationNotification] == YES ||
-  //     [name isEqualToString:NSApplicationDidBecomeActiveNotification] == YES ||
-  //     [name isEqualToString:NSApplicationDidResignActiveNotification] == YES) {
-  //   // Posts distributed notification
-  //   [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:aNotification];
-  // }
-  
-  NSLog(@"[WMNC] postNotificationName: %@:%@ - %@", name, object, info);
-  // local and remote
-  [self _postNSNotification:name object:object userInfo:info source:LocalNC];
+  if (!object) {
+    NSLog(@"[WMNC postNotification:::] can't post notification with nil object!!!");
+    return;
+  }
 
-  // CFNotificationCenter
-  [self _postCFNotification:name userInfo:info];
+  // locally
+  [super postNotificationName:name object:object userInfo:info];
+
+  // globally
+  if ([object isKindOfClass:[NSString class]] != NO &&
+      [object isEqualToString:@"GSWorkspaceNotification"] != NO) {
+    // dispatch to NSDistributedNotificationCenter
+    [_remoteCenter postNotificationName:name object:object userInfo:info];
+  }
+
+  // post to CFNC only if this method was not called by _handleCFNotification
+  if ([object isKindOfClass:[CFObject class]] != NO) {
+    [_remoteCenter postNotificationName:name object:@"NXTWorkspaceNotification" userInfo:info];
+    [self _postCFNotification:name userInfo:info];
+  }  
 }
 
 @end
