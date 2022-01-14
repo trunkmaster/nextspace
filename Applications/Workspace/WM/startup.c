@@ -113,6 +113,16 @@ CFStringRef WMDidChangeMenuTitleAppearanceSettings = CFSTR("WMDidChangeMenuTitle
 CFStringRef WMDidChangeKeyboardLayoutNotification = CFSTR("WMDidChangeKeyboardLayoutNotification");
 CFStringRef WMDidChangeDockContentNotification = CFSTR("WMDidChangeDockContentNotification");
 
+/* GNUstep applications notifications */
+CFStringRef WMShouldHideAllNotification = CFSTR("WMShouldHideAllNotification");
+CFStringRef WMShouldMinmizeWindowNotification = CFSTR("WMShouldMinmizeWindowNotification");
+CFStringRef WMShouldZoomWindowNotification = CFSTR("WMShouldZoomWindowNotification");
+CFStringRef WMShouldTileWindowNotification = CFSTR("WMShouldTileWindowNotification");
+CFStringRef WMShouldShadeWindowNotification = CFSTR("WMShouldShadeWindowNotification");
+CFStringRef WMShouldCloseWindowNotification = CFSTR("WMShouldCloseWindowNotification");
+CFStringRef WMShouldArrangeWindowsNotification = CFSTR("WMShouldArrangeWindowsNotification");
+CFStringRef WMShouldKillApplicationNotification = CFSTR("WMShouldKillApplicationNotification");
+
 
 /***** Local *****/
 static WScreen **wScreen = NULL;

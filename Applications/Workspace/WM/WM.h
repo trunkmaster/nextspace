@@ -387,6 +387,23 @@ extern CFStringRef WMDidChangeMenuTitleAppearanceSettings;
 extern CFStringRef WMDidChangeKeyboardLayoutNotification;
 extern CFStringRef WMDidChangeDockContentNotification;
 
+/* Notifications from applications. WMShould prefix is mandatory! */
+/* All notifications must contain in userInfo:
+   "WindowID" = CFNumber;
+   "ApplicationName" = CFString; */
+extern CFStringRef WMShouldHideAllNotification;
+extern CFStringRef WMShouldMinmizeWindowNotification;
+/* additional userInfo element:
+   "ZoomType" = "Vertical" | "Horizontal" | "Maximize"; */
+extern CFStringRef WMShouldZoomWindowNotification;
+/* additional userInfo element:
+   "TileDirection" = "Left" | "Right" | "Top" | "Bottom"; */
+extern CFStringRef WMShouldTileWindowNotification;
+extern CFStringRef WMShouldShadeWindowNotification;
+extern CFStringRef WMShouldCloseWindowNotification;
+extern CFStringRef WMShouldArrangeWindowsNotification;
+extern CFStringRef WMShouldKillApplicationNotification;
+
 void *userInfoValueForKey(CFDictionaryRef theDict, CFStringRef key);
 
 #endif // __WORKSPACE_WM__
