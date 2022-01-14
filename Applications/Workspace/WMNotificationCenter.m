@@ -447,16 +447,15 @@ static void _handleCFNotification(CFNotificationCenterRef center,
     [super postNotificationName:name object:object userInfo:info];
   }
 
-  // globally from Workspace to applications
+  // globally from Workspace to applications (from _handleCFNotificaition: or Workspace)
   if ([object isKindOfClass:[NSString class]] != NO &&
       [object isEqualToString:@"GSWorkspaceNotification"] != NO) {
     // dispatch to NSDistributedNotificationCenter
     [_remoteCenter postNotificationName:name object:object userInfo:info];
   }
 
-  // post to CFNC only if this is a notification from remote center
-  if ([object isKindOfClass:[CFObject class]] == NO /*&&
-      [name hasPrefix:@"WMShould"] || [name hasPrefix:@"NS"]*/ ) {
+  // post to CFNC only if it hasn't came from CFNC
+  if ([object isKindOfClass:[CFObject class]] == NO) {
     [self _postCFNotification:name userInfo:info];
   }
 }
