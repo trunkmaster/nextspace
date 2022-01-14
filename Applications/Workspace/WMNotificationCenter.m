@@ -20,14 +20,23 @@
 //
 
 /**
-   Workspace notification center is a connection point (bridge) of 3 notification centers:
-   1. NSNotificationCenter - local, used inside Workspace Manager;
-   2. NSDistributesNotificationCenter- global, inter-application notifications;
-   3. CFNotificationCenter - notification center of Window Manager.
+   Workspace notification center is a connection point (bridge) of 3
+   notification centers:
+     1. NSNotificationCenter - local, used inside Workspace Manager;
+     2. NSDistributesNotificationCenter - global, inter-application notifications;
+     3. CFNotificationCenter - notification center of Window Manager.
 
-   If notification was received from CoreFoundation:
-     - converts userInfo objects from CoreFoundation to Foundation;
-     - sends notification to local and global NCs of Foundation;
+  Notification names may have prefix:
+    "NSApplication..." - from AppKit
+    "NSWorkspace..." - from AppkKit or Workspace (Controller+NSWorkspace.m)
+    "WMShould..." - from GNUstep app to Workspace Manager
+    "WMDid*" - from Window Manager to Workspace Manager
+
+  If notification was received from CoreFoundation:
+     - userInfo objects are converted from CoreFoundation to Foundation;
+     - notification is sent to local (if `name` has "WMDid..." prefix) and global
+       (if object == @"GSWorkspaceNotification") NCs;
+
  */
 
 #include <CoreFoundation/CFBase.h>
@@ -167,9 +176,9 @@ CFDictionaryRef _convertNStoCFDictionary(NSDictionary *dictionary)
                                            &kCFTypeDictionaryValueCallBacks);
   for (NSString *key in [dictionary allKeys]) {
     keyCFString = _convertNStoCFString(key);
-    NSLog(@"Converted key: %@", key);
+    // NSLog(@"Converted key: %@", key);
     valueCF = _convertNStoCF([dictionary objectForKey:key]);
-    NSLog(@"Converted value: %@", [dictionary objectForKey:key]);
+    // NSLog(@"Converted value: %@", [dictionary objectForKey:key]);
     CFDictionaryAddValue(cfDictionary, keyCFString, valueCF);
     CFRelease(keyCFString);
     CFRelease(valueCF);
@@ -215,42 +224,13 @@ typedef enum {
 } NotificationSource;
 
 @interface WMNotificationCenter (Private)
-- (void)_postNSNotification:(NSString *)name
-                     object:(id)object
-                   userInfo:(NSDictionary *)info
-                     source:(NotificationSource)source;
 - (void)_postCFNotification:(NSString*)name
                    userInfo:(NSDictionary*)info;
 @end
 @implementation WMNotificationCenter (Private)
 
-- (void)_postNSNotification:(NSString *)name
-                     object:(id)object
-                   userInfo:(NSDictionary *)info
-                     source:(NotificationSource)source
-{
-  NSNotification *aNotif;
-  
-  NSLog(@"WMNC: post NS notification: %@ - %@ source: %u", name, object, source);
-
-  // NSNotificationCenter
-  if (source != LocalNC) {
-    aNotif = [NSNotification notificationWithName:name object:object userInfo:info];
-    [super postNotification:aNotif];
-  }
-
-  // NSDistributedNotificationCenter
-  // TODO: CFObject is not a good object to send
-  // if (source != DistributedNC) {
-  //   aNotif = [NSNotification notificationWithName:name object:@"GSWorkspaceNotification" userInfo:info];
-  //   @try {
-  //     [_remoteCenter postNotification:aNotif];
-  //   }
-  //   @catch (NSException *e) {
-  //   }
-  // }
-}
-
+// CoreFoundation notifications
+//-------------------------------------------------------------------------------------------------
 - (void)_postCFNotification:(NSString *)name
                    userInfo:(NSDictionary *)info
 {
@@ -270,36 +250,16 @@ typedef enum {
   CFRelease(cfUserInfo);
 }
 
-/*
- * Forward a notification from a remote application to observers in this application.
- * We receive notifications with object == @"GSWorkspaceNotification" only.
- */
-- (void)_handleRemoteNotification:(NSNotification*)aNotification
-{
-  NSLog(@"WMNC: handle remote notification: %@ - %@", [aNotification name], [aNotification object]);
-  
-  // local NSNotificationCenter
-  [self postNSNotification:aNotification];
-
-  // CFNotificationCenter
-  [self _postCFNotification:[aNotification name]
-                   userInfo:[aNotification userInfo]];
-}
-
-/* CF to NS notification dispatching.
+/* CF to NS notification conversion.
    1. Convert notification name (CFNotificationName -> NSString)
    2. Convert userInfo (CFDisctionaryRef -> NSDictionary)
-   3. Create and send NSNotification to NSNotificationCenter with
-   [NSNotification notificationWithName:name   // converted from CFString
-                                 object:object // NSObject.object
-                               userInfo:info]  // converted from CFDictionaryRef
-*/
-/* CF notification sent with this call:
-   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                       "WMDidManageWindowNotification", // notification name
-                                       wwin,                            // object
-                                       NULL,                            // userInfo
-                                       TRUE);
+   3. Create and send NSNotification to WMNotificationCenter with
+   [WMNotificationCenter
+      postNotificationWithName:name   // converted from CFString
+                        object:object // CFObject.object
+                      userInfo:info]  // converted from CFDictionaryRef
+
+  Dispatching is performed in WMNotificationCenter's method called as described above.
 */
 static void _handleCFNotification(CFNotificationCenterRef center,
                                    void *observer,
@@ -307,7 +267,7 @@ static void _handleCFNotification(CFNotificationCenterRef center,
                                    const void *object,
                                    CFDictionaryRef userInfo)
 {
-  CFObject *cfObject;
+  CFObject *nsObject;
   NSString *nsName;
   NSDictionary *nsUserInfo = nil;
 
@@ -317,9 +277,9 @@ static void _handleCFNotification(CFNotificationCenterRef center,
     return;
   }
   
-  cfObject = [CFObject new];
+  nsObject = [CFObject new];
   nsName = _convertCFtoNSString(name);
-  cfObject.object = object;
+  nsObject.object = object;
   
   if (userInfo != NULL) {
     nsUserInfo = _convertCFtoNSDictionary(userInfo);
@@ -327,12 +287,33 @@ static void _handleCFNotification(CFNotificationCenterRef center,
   
   NSLog(@"[WMNC] _handleCFNotificaition: dispatching CF notification %@ - %@", nsName, nsUserInfo);
   
-  [_workspaceCenter _postNSNotification:nsName
-                                 object:cfObject
-                               userInfo:nsUserInfo
-                                 source:CoreFoundationNC];
-  [cfObject release];
+  [_workspaceCenter postNotificationName:nsName object:nsObject userInfo:nsUserInfo];
+  
+  [nsObject release];
   [nsUserInfo release];
+}
+
+// Global notifications
+//-------------------------------------------------------------------------------------------------
+/*
+  Forward a notification from a remote application to observers in this
+  application. Object always has value @"GSWorkspaceNotification" because we
+  observe notifications to that object only.
+ */
+- (void)_handleRemoteNotification:(NSNotification*)aNotification
+{
+  NSString *name = [aNotification name];
+  
+  NSLog(@"WMNC: handle remote notification: %@ - %@", [aNotification name], [aNotification object]);
+  
+  if ([name hasPrefix:@"WMShould"]) {
+    [self _postCFNotification:[aNotification name] userInfo:[aNotification userInfo]];
+  } else {
+    // NSWorkspaceWillLaunchApplicationNotification - by Controller+NSWorkspace
+    // NSWorkspaceDidLaunchApplicationNotification - by AppKit
+    // NSWorkspaceDidTerminateApplicationNotification - by AppKit or Controller+NSWorkspace
+    [super postNotification:aNotification];
+  }
 }
 
 @end
@@ -461,21 +442,23 @@ static void _handleCFNotification(CFNotificationCenterRef center,
     return;
   }
 
-  // locally
-  [super postNotificationName:name object:object userInfo:info];
+  // locally (e.g. Controller or ProcessManager)
+  if ([name hasPrefix:@"WMDid"]) {
+    [super postNotificationName:name object:object userInfo:info];
+  }
 
-  // globally
+  // globally from Workspace to applications
   if ([object isKindOfClass:[NSString class]] != NO &&
       [object isEqualToString:@"GSWorkspaceNotification"] != NO) {
     // dispatch to NSDistributedNotificationCenter
     [_remoteCenter postNotificationName:name object:object userInfo:info];
   }
 
-  // post to CFNC only if this method was not called by _handleCFNotification
-  if ([object isKindOfClass:[CFObject class]] != NO) {
-    [_remoteCenter postNotificationName:name object:@"NXTWorkspaceNotification" userInfo:info];
+  // post to CFNC only if this is a notification from remote center
+  if ([object isKindOfClass:[CFObject class]] == NO /*&&
+      [name hasPrefix:@"WMShould"] || [name hasPrefix:@"NS"]*/ ) {
     [self _postCFNotification:name userInfo:info];
-  }  
+  }
 }
 
 @end
