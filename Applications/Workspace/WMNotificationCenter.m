@@ -23,20 +23,22 @@
    Workspace notification center is a connection point (bridge) of 3
    notification centers:
      1. NSNotificationCenter - local, used inside Workspace Manager;
-     2. NSDistributesNotificationCenter - global, inter-application notifications;
+     2. NSDistributesNotificationCenter - global, inter-application
+        notifications;
      3. CFNotificationCenter - notification center of Window Manager.
 
-  Notification names may have prefix:
-    "NSApplication..." - from AppKit
-    "NSWorkspace..." - from AppkKit or Workspace (Controller+NSWorkspace.m)
-    "WMShould..." - from GNUstep app to Workspace Manager
-    "WMDid*" - from Window Manager to Workspace Manager
+   Notification names may have prefix:
+     "NSApplication..." - from AppKit
+     "NSWorkspace..." - from AppkKit or Workspace (Controller+NSWorkspace.m)
+     "WMShould..." - from GNUstep app to Workspace Manager
+     "WMDid..." - from Window Manager to Workspace Manager
 
-  If notification was received from CoreFoundation:
+   If notification was received from CoreFoundation:
      - userInfo objects are converted from CoreFoundation to Foundation;
-     - notification is sent to local (if `name` has "WMDid..." prefix) and global
-       (if object == @"GSWorkspaceNotification") NCs;
+     - notification is sent to local (if `name` has "WMDid..." prefix) and
+       global (if object == @"GSWorkspaceNotification") NCs;
 
+   User info dictionary may contain (NS or CF): Array, Dictionary, String, Number.
  */
 
 #include <CoreFoundation/CFBase.h>
@@ -223,10 +225,6 @@ typedef enum {
   CoreFoundationNC
 } NotificationSource;
 
-@interface WMNotificationCenter (Private)
-- (void)_postCFNotification:(NSString*)name
-                   userInfo:(NSDictionary*)info;
-@end
 @implementation WMNotificationCenter (Private)
 
 // CoreFoundation notifications
@@ -251,15 +249,11 @@ typedef enum {
 }
 
 /* CF to NS notification conversion.
-   1. Convert notification name (CFNotificationName -> NSString)
-   2. Convert userInfo (CFDisctionaryRef -> NSDictionary)
-   3. Create and send NSNotification to WMNotificationCenter with
-   [WMNotificationCenter
-      postNotificationWithName:name   // converted from CFString
-                        object:object // CFObject.object
-                      userInfo:info]  // converted from CFDictionaryRef
+     1. Convert notification name (CFNotificationName -> NSString)
+     2. Convert userInfo (CFDisctionaryRef -> NSDictionary)
+     3. Create and send NSNotification to WMNotificationCenter with
 
-  Dispatching is performed in WMNotificationCenter's method called as described above.
+   Dispatching is performed in WMNotificationCenter's postNotificationName::: method call.
 */
 static void _handleCFNotification(CFNotificationCenterRef center,
                                    void *observer,
@@ -277,8 +271,8 @@ static void _handleCFNotification(CFNotificationCenterRef center,
     return;
   }
   
-  nsObject = [CFObject new];
   nsName = _convertCFtoNSString(name);
+  nsObject = [CFObject new];
   nsObject.object = object;
   
   if (userInfo != NULL) {
@@ -369,10 +363,10 @@ static void _handleCFNotification(CFNotificationCenterRef center,
 //-------------------------------------------------------------------------------------------------
 
 // Caller will observe notification with `name` in local, remote and CF notification centers.
- 
-/* Register observer-name in NSNotificationCenter.
-   In CF notification callback (_handleCFNotification()) this notification will
-   be forwarded to NSNotificationCenter with name specified in `name` parameter.
+
+/* Register observer-name in NSNotificationCenter and CFNotificationCenter.
+   In CF callback _handleCFNotification() notification will be forwarded to
+   NSNotificationCenter with name specified in `name` parameter.
    `selector` of the caller must be registered in NSNotificationCenter to be called. */
 - (void)addObserver:(id)observer
            selector:(SEL)selector
@@ -384,9 +378,10 @@ static void _handleCFNotification(CFNotificationCenterRef center,
   if (!name || [name length] == 0) {
     return;
   }
-  
+
   /* Register observer-name in NSNotificationCenter.
-     There's no need to register in NSDistributedNotificationCenter because */
+     There's no need to register in NSDistributedNotificationCenter because
+     notifications which are sent to it will be forwarded to NSNotificationCenter. */
   [super addObserver:observer
             selector:selector
                 name:name

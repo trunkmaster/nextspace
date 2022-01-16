@@ -387,22 +387,44 @@ extern CFStringRef WMDidChangeMenuTitleAppearanceSettings;
 extern CFStringRef WMDidChangeKeyboardLayoutNotification;
 extern CFStringRef WMDidChangeDockContentNotification;
 
-/* Notifications from applications. WMShould prefix is mandatory! */
-/* All notifications must contain in userInfo:
-   "WindowID" = CFNumber;
-   "ApplicationName" = CFString; */
-extern CFStringRef WMShouldHideAllNotification;
-extern CFStringRef WMShouldMinmizeWindowNotification;
+/* Notifications to communicate with applications. Manadatory prefixes in
+   notification names are:
+     - WMShould for notification from application to perform some action
+     - WMDid to notify application about action completion
+
+   Every WMDid should complement WMDid notification.
+
+   All notifications must contain in userInfo:
+     "WindowID" = CFNumber;
+     "ApplicationName" = CFString; */
+// Hide All
+extern CFStringRef WMShouldHideOthersNotification;
+extern CFStringRef WMDidHideOthersNotification;
+// Quit or Force Quit
+extern CFStringRef WMShouldTerminateApplicationNotification;
+extern CFStringRef WMDidTerminateApplicationNotification;
+// Zoom Window
 /* additional userInfo element:
    "ZoomType" = "Vertical" | "Horizontal" | "Maximize"; */
 extern CFStringRef WMShouldZoomWindowNotification;
+extern CFStringRef WMDidZoomWindowNotification;
+// Tile Window
 /* additional userInfo element:
    "TileDirection" = "Left" | "Right" | "Top" | "Bottom"; */
 extern CFStringRef WMShouldTileWindowNotification;
+extern CFStringRef WMDidTileWindowNotification;
+// Shade Window
 extern CFStringRef WMShouldShadeWindowNotification;
-extern CFStringRef WMShouldCloseWindowNotification;
+extern CFStringRef WMDidShadeWindowNotification;
+// Arrange in Front
 extern CFStringRef WMShouldArrangeWindowsNotification;
-extern CFStringRef WMShouldKillApplicationNotification;
+extern CFStringRef WMDidArrangeWindowsNotification;
+// Miniaturize Window
+extern CFStringRef WMShouldMinmizeWindowNotification;
+extern CFStringRef WMDidMinmizeWindowNotification;
+// Close Window
+extern CFStringRef WMShouldCloseWindowNotification;
+extern CFStringRef WMDidCloseWindowNotification;
 
 void *userInfoValueForKey(CFDictionaryRef theDict, CFStringRef key);
 

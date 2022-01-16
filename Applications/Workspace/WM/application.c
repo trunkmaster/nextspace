@@ -43,13 +43,98 @@
 #include "dock.h"
 #include "defaults.h"
 #include "startup.h"
+#include "actions.h"
 
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
 #include "framewin.h"
 #endif
 
-/******** Local variables ********/
+/******** Notification observers ********/
+
+static void postWorkspaceNotification(WWindow *wwin, CFStringRef name)
+{
+  CFMutableDictionaryRef info;
+  CFNumberRef windowID;
+  CFStringRef appName;
+  
+  if (wwin->screen_ptr->notificationCenter) {
+    info = CFDictionaryCreateMutable(kCFAllocatorDefault, 2,
+                                     &kCFTypeDictionaryKeyCallBacks,
+                                     &kCFTypeDictionaryValueCallBacks);
+    windowID = CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &wwin->client_win);
+    CFDictionaryAddValue(info, CFSTR("WindowID"), windowID);
+    appName = CFStringCreateWithCString(kCFAllocatorDefault, wwin->wm_class,
+                                        CFStringGetSystemEncoding());
+    CFDictionaryAddValue(info, CFSTR("ApplicationName"), appName);
+
+    CFNotificationCenterPostNotification(wwin->screen_ptr->notificationCenter, name,
+                                         CFSTR("GSWorkspaceNotification"),
+                                         info, TRUE);
+    CFRelease(windowID);
+    CFRelease(appName);
+    CFRelease(info);
+  }
+}
+
+static void shadeObserver(CFNotificationCenterRef center,
+                          void *wobserver,     // wapp
+                          CFNotificationName name,
+                          const void *object,      // object - ignored
+                          CFDictionaryRef userInfo)
+{
+  CFNumberRef windowID = CFDictionaryGetValue(userInfo, CFSTR("WindowID"));
+  /* CFStringRef appName = CFDictionaryGetValue(userInfo, CFSTR("ApplicationName")); */
+  /* const char *app_name = CFStringGetCStringPtr(appName, CFStringGetSystemEncoding()); */
+  WApplication *observer_wapp = (WApplication *)wobserver;
+  WApplication *wapp;
+  Window window = 0;
+  WWindow *wwin;
+
+  if (windowID) {
+    WMLogInfo("Will shade window %lu", window);
+    CFNumberGetValue(windowID, kCFNumberLongType, &window);
+    wwin = wWindowFor(window);
+    wapp = wApplicationOf(wwin->main_window);
+    
+    /* if (!wapp || wapp->main_window_desc != observer_wapp->main_window_desc) { */
+    if (wapp != observer_wapp) {
+      WMLogInfo("WM wapp %s received foreing notification",
+                observer_wapp->main_window_desc->wm_instance);
+      return;
+    }
+    
+    WMLogInfo("WM will shade window %lu for application %s.", window, wwin->wm_instance);
+    if (wwin->flags.shaded == 1) {
+      wUnshadeWindow(wwin);
+    } else {
+      wShadeWindow(wwin);
+    }
+    postWorkspaceNotification(wwin, WMDidShadeWindowNotification);
+  }
+}
+
+static void hideOthersObserver(CFNotificationCenterRef center,
+                            void *wobserver,     // wapp
+                            CFNotificationName name,
+                            const void *object,      // object - ignored
+                            CFDictionaryRef userInfo)
+{
+  CFNumberRef windowID = CFDictionaryGetValue(userInfo, CFSTR("WindowID"));
+  /* WApplication *observer_wapp = (WApplication *)wobserver; */
+  /* WApplication *wapp; */
+  Window window = 0;
+  WWindow *wwin;
+
+  if (windowID) {
+    WMLogInfo("Will hide other applications for window %lu", window);
+    CFNumberGetValue(windowID, kCFNumberLongType, &window);
+    wwin = wWindowFor(window);
+    wHideOtherApplications(wwin);
+    postWorkspaceNotification(wwin, WMDidHideOthersNotification);
+  }
+}
+
 
 static WWindow *makeMainWindow(WScreen * scr, Window window)
 {
@@ -242,10 +327,19 @@ WApplication *wApplicationCreate(WWindow * wwin)
            wapp->prev ? wapp->prev->main_window_desc->wm_instance : "NULL",
            wapp->next ? wapp->next->main_window_desc->wm_instance : "NULL");
         
-  // Notify Workspace's ProcessManager
-  // dispatch_sync(workspace_q, ^{ WSApplicationDidCreate(wapp); });
-  CFNotificationCenterPostNotification(scr->notificationCenter,
-                                       WMDidCreateApplicationNotification, wapp, NULL, TRUE);
+  if (scr->notificationCenter) {
+    CFNotificationCenterAddObserver(scr->notificationCenter, wapp, shadeObserver,
+                                    WMShouldShadeWindowNotification, NULL,
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+    CFNotificationCenterAddObserver(scr->notificationCenter, wapp, hideOthersObserver,
+                                    WMShouldHideOthersNotification, NULL,
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+  
+    // Notify Workspace's ProcessManager
+    CFNotificationCenterPostNotification(scr->notificationCenter,
+                                         WMDidCreateApplicationNotification,
+                                         wapp, NULL, TRUE);
+  }
 
   return wapp;
 }
