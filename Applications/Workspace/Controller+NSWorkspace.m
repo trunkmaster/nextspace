@@ -383,7 +383,7 @@ static NSLock *raceLock = nil;
                          nil, nil, nil, appName, fullPath);
         return NO;
       }
-      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"] ofType:nil];
+      iconPath = [appBundle pathForImageResource:[appInfo objectForKey:@"NSIcon"]];
       
       [raceLock lock];
       wLaunchingAppIconCreate([[wmName stringByDeletingPathExtension] cString], "GNUstep",
