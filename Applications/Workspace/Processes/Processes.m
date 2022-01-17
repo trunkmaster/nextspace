@@ -123,8 +123,10 @@ static Processes *shared = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   
   [manager release];
-  
-  if (procWindow && [procWindow isVisible]) [procWindow close];
+
+  if (procWindow && [procWindow isVisible]) {
+    [procWindow close];
+  }
   [procWindow release];
 
   shared = nil;

@@ -26,7 +26,7 @@
 #import <DesktopKit/NXTFileManager.h>
 
 #import "Controller.h"
-#import "WorkspaceNotificationCenter.h"
+#import "WMNotificationCenter.h"
 #import "Workspace+WM.h"
 #import "Processes/Processes.h"
 
@@ -47,23 +47,22 @@ static BOOL _workspaceQuitting = NO;
 
 + shared
 {
-  if (shared == nil)
-    {
-      shared = [self new];
-    }
+  if (shared == nil) {
+    shared = [self new];
+  }
   return shared;
 }
 
 - (void)dealloc
 {
   NSDebugLLog(@"Memory", @"ProcessManager: dealloc");
+  NSLog(@"ProcessManager: dealloc");
 
-  [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
-  [[WorkspaceNotificationCenter defaultCenter] removeObserver:self];
-
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+ 
   RELEASE(applications);
   RELEASE(operations);
-  
+
   TEST_RELEASE(backInfoLabelCopies);
   
   shared = nil;
@@ -73,79 +72,75 @@ static BOOL _workspaceQuitting = NO;
 
 - init
 {
-  NSNotificationCenter *nc;
-  NSWorkspace          *ws;
-
   [super init];
 
-  ws = [NSWorkspace sharedWorkspace];
-  nc = [ws notificationCenter];
-
-  applications = [[NSMutableArray alloc]
-                   initWithArray:[ws launchedApplications]];
-  for (int i=0; i < [applications count]; i++)
-    {
-      NSDictionary *_appInfo;
-      
+  if (self != nil) {
+    NSNotificationCenter *workspaceCenter = [WMNotificationCenter defaultCenter];
+    NSNotificationCenter *localCenter = [NSNotificationCenter defaultCenter];
+    NSDictionary *_appInfo;
+    
+    applications = [[NSMutableArray alloc]
+                     initWithArray:[[NSWorkspace sharedWorkspace] launchedApplications]];
+    for (int i = 0; i < [applications count]; i++) {
       _appInfo = [self _normalizeApplicationInfo:[applications objectAtIndex:i]];
       [applications replaceObjectAtIndex:i withObject:_appInfo];
     }
   
-  operations = [[NSMutableArray alloc] init];
+    operations = [[NSMutableArray alloc] init];
 
-  //  Applications - AppKit notifications
-  [nc addObserver:self
-         selector:@selector(applicationWillLaunch:)
-             name:NSWorkspaceWillLaunchApplicationNotification
-           object:nil];
-  [nc addObserver:self
-         selector:@selector(applicationDidLaunch:)
-             name:NSWorkspaceDidLaunchApplicationNotification
-           object:nil];
-  [nc addObserver:self
-         selector:@selector(applicationDidTerminate:)
-             name:NSWorkspaceDidTerminateApplicationNotification
-           object:nil];
+    //  Applications - AppKit notifications
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationWillLaunch:)
+                            name:NSWorkspaceWillLaunchApplicationNotification
+                          object:nil];
+    // [[[NSWorkspace sharedWorkspace] notificationCenter]
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidLaunch:)
+                            name:NSWorkspaceDidLaunchApplicationNotification
+                          object:nil];
+    // [[[NSWorkspace sharedWorkspace] notificationCenter]
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidTerminate:)
+                            name:NSWorkspaceDidTerminateApplicationNotification
+                          object:nil];
 
-  // Background operations
-  [[NSNotificationCenter defaultCenter] 
-    addObserver:self
-       selector:@selector(operationDidCreate:)
-	   name:WMOperationDidCreateNotification
-	 object:nil];
-  [[NSNotificationCenter defaultCenter] 
-    addObserver:self
-       selector:@selector(operationWillDestroy:)
-	   name:WMOperationWillDestroyNotification
-	 object:nil];
-  [[NSNotificationCenter defaultCenter] 
-    addObserver:self
-       selector:@selector(operationDidChangeState:)
-	   name:WMOperationDidChangeStateNotification
-	 object:nil];
-  // [[NSNotificationCenter defaultCenter] 
-  //   addObserver:self
-  //      selector:@selector(operationProcessingFile:)
-  //          name:WMOperationProcessingFileNotification
-  //        object:nil];
+    // Background operations
+    [localCenter addObserver:self
+                    selector:@selector(operationDidCreate:)
+                        name:WMOperationDidCreateNotification
+                      object:nil];
+    [localCenter addObserver:self
+                    selector:@selector(operationWillDestroy:)
+                        name:WMOperationWillDestroyNotification
+                      object:nil];
+    [localCenter addObserver:self
+                    selector:@selector(operationDidChangeState:)
+                        name:WMOperationDidChangeStateNotification
+                      object:nil];
+    // [[NSNotificationCenter defaultCenter] 
+    //   addObserver:self
+    //      selector:@selector(operationProcessingFile:)
+    //          name:WMOperationProcessingFileNotification
+    //        object:nil];
 
-  // WM - CoreFoundation notifications
-  [[WorkspaceNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(applicationDidCreate:)
-	   name:WMDidCreateApplicationNotification];
-  [[WorkspaceNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(applicationDidDestroy:)
-	   name:WMDidDestroyApplicationNotification];
-  [[WorkspaceNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(applicationDidOpenWindow:)
-	   name:WMDidManageWindowNotification];
-  [[WorkspaceNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(applicationDidCloseWindow:)
-	   name:WMDidUnmanageWindowNotification];
+    // WM - CoreFoundation notifications
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidCreate:)
+                            name:CF_NOTIFICATION(WMDidCreateApplicationNotification)
+                          object:nil];
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidDestroy:)
+                            name:CF_NOTIFICATION(WMDidDestroyApplicationNotification)
+                          object:nil];
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidOpenWindow:)
+                            name:CF_NOTIFICATION(WMDidManageWindowNotification)
+                          object:nil];
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidCloseWindow:)
+                            name:CF_NOTIFICATION(WMDidUnmanageWindowNotification)
+                          object:nil];
+  }
   
   return self;
 }
@@ -471,7 +466,7 @@ static BOOL _workspaceQuitting = NO;
   NSNotification *localNotif = nil;
   NSDictionary *appInfo = nil;
 
-  if (_workspaceQuitting != NO || !wapp || !strcmp(wapp->main_window_desc->wm_class,"GNUstep")) {
+  if (_workspaceQuitting != NO || !wapp) {
     return;
   }
   

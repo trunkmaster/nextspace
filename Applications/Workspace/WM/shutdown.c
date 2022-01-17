@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -33,6 +34,7 @@
 
 #include "WM.h"
 #include "window.h"
+#include "framewin.h"
 #include "client.h"
 #include "properties.h"
 #include "session.h"
@@ -40,8 +42,39 @@
 #include "colormap.h"
 #include "shutdown.h"
 
+#import <Workspace+WM.h>
 
-static void _wipeDesktop(WScreen *scr);
+/*
+ *----------------------------------------------------------------------
+ * wipeDesktop--
+ * 	Kills all windows in a screen. Send DeleteWindow to all windows
+ * that support it and KillClient on all windows that don't.
+ *
+ * Side effects:
+ * 	All managed windows are closed.
+ *
+ * TODO: change to XQueryTree()
+ *----------------------------------------------------------------------
+ */
+static void _wipeDesktop(WScreen * scr)
+{
+  WWindow *wwin;
+
+  wwin = scr->focused_window;
+  while (wwin) {
+    // Do not kill Workspace menu
+    if (WINDOW_LEVEL(wwin) != NSMainMenuWindowLevel) {
+      if (wwin->protocols.DELETE_WINDOW) {
+        wClientSendProtocol(wwin, w_global.atom.wm.delete_window,
+                            w_global.timestamp.last_event);
+      } else {
+        wClientKill(wwin);
+      }
+    }
+    wwin = wwin->prev;
+  }
+  XSync(dpy, False);
+}
 
 /*
  *----------------------------------------------------------------------
@@ -76,6 +109,13 @@ void wShutdown(WMShutdownMode mode)
 
   switch (mode) {
   case WMExitMode:
+    CFRelease(scr->notificationCenter);
+    scr->notificationCenter = NULL;
+  
+    // Stop events processing inside Window Decorator
+    CFRunLoopStop(wm_runloop);
+    WCHANGE_STATE(WSTATE_EXITING);
+
     wScreenSaveState(scr);
     wNETWMCleanup(scr);		/* Delete _NET_* Atoms */
     PropCleanUp(scr->root_win);	/* WM specific properties */
@@ -161,32 +201,4 @@ void wRestoreDesktop(WScreen * scr)
   PropCleanUp(scr->root_win);
   wNETWMCleanup(scr);
   XSync(dpy, 0);
-}
-
-/*
- *----------------------------------------------------------------------
- * wipeDesktop--
- * 	Kills all windows in a screen. Send DeleteWindow to all windows
- * that support it and KillClient on all windows that don't.
- *
- * Side effects:
- * 	All managed windows are closed.
- *
- * TODO: change to XQueryTree()
- *----------------------------------------------------------------------
- */
-static void _wipeDesktop(WScreen * scr)
-{
-  WWindow *wwin;
-
-  wwin = scr->focused_window;
-  while (wwin) {
-    if (wwin->protocols.DELETE_WINDOW)
-      wClientSendProtocol(wwin, w_global.atom.wm.delete_window,
-                          w_global.timestamp.last_event);
-    else
-      wClientKill(wwin);
-    wwin = wwin->prev;
-  }
-  XSync(dpy, False);
 }

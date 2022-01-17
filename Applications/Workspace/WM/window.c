@@ -184,8 +184,10 @@ void wWindowDestroy(WWindow *wwin)
   if (wwin->screen_ptr->cmap_window == wwin)
     wwin->screen_ptr->cmap_window = NULL;
 
-  CFNotificationCenterRemoveObserver(wwin->screen_ptr->notificationCenter,
-                                     wwin, WMDidChangeWindowAppearanceSettings, NULL);
+  if (wwin->screen_ptr->notificationCenter) {
+    CFNotificationCenterRemoveObserver(wwin->screen_ptr->notificationCenter,
+                                       wwin, WMDidChangeWindowAppearanceSettings, NULL);
+  }
 
   wwin->flags.destroyed = 1;
 
@@ -1330,15 +1332,18 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   if (!WFLAGP(wwin, no_bind_keys))
     wWindowSetKeyGrabs(wwin);
 
-  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                       WMDidManageWindowNotification, wwin, NULL, TRUE);
+  if (scr->notificationCenter) {
+    CFNotificationCenterPostNotification(scr->notificationCenter,
+                                         WMDidManageWindowNotification, wwin, NULL, TRUE);
+  }
   wColormapInstallForWindow(scr, scr->cmap_window);
 
   /* Setup Notification Observers */
-  CFNotificationCenterAddObserver(scr->notificationCenter, wwin, appearanceObserver,
-                                  WMDidChangeWindowAppearanceSettings, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
-
+  if (scr->notificationCenter) {
+    CFNotificationCenterAddObserver(scr->notificationCenter, wwin, appearanceObserver,
+                                    WMDidChangeWindowAppearanceSettings, NULL,
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+  }
   /*  Cleanup temporary stuff */
   if (win_state)
     wWindowDeleteSavedState(win_state);
@@ -1363,9 +1368,11 @@ WWindow *wManageInternalWindow(WScreen *scr, Window window, Window owner,
 
   wwin = wWindowCreate();
 
-  CFNotificationCenterAddObserver(scr->notificationCenter, wwin, appearanceObserver,
-                                  WMDidChangeWindowAppearanceSettings, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  if (scr->notificationCenter) {
+    CFNotificationCenterAddObserver(scr->notificationCenter, wwin, appearanceObserver,
+                                    WMDidChangeWindowAppearanceSettings, NULL,
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+  }
 
   wwin->flags.internal_window = 1;
 
@@ -1568,7 +1575,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     new_focused_window = wNextWindowToFocus(wwin);
   }
 
-  if (!wwin->flags.internal_window) {
+  if (!wwin->flags.internal_window && scr->notificationCenter) {
     CFNotificationCenterPostNotification(scr->notificationCenter,
                                          WMDidUnmanageWindowNotification, wwin, NULL, TRUE);
   }
@@ -1605,10 +1612,12 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
           wSetFocusTo(scr, new_focused_window);
         }
       } else if (oapp && oapp->menu_win) {
-        /* wSetFocusTo will be called in handleFocusIn() */
-        WMLogInfo("set focus to main menu == %lu", oapp->menu_win->client_win);
-        XSetInputFocus(dpy, oapp->menu_win->client_win, RevertToParent, CurrentTime);
-        oapp->menu_win->flags.focused = 1;
+        if (!scr->flags.ignore_focus_events) {
+          /* wSetFocusTo will be called in handleFocusIn() */
+          WMLogInfo("set focus to main menu == %lu", oapp->menu_win->client_win);
+          XSetInputFocus(dpy, oapp->menu_win->client_win, RevertToParent, CurrentTime);
+          oapp->menu_win->flags.focused = 1;
+        }
       } else {
         wSetFocusTo(scr, new_focused_window);
       }
@@ -1736,9 +1745,11 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
 
   wWindowResetMouseGrabs(wwin);
 
-  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                       WMDidChangeWindowFocusNotification, wwin,
-                                       (void *)True, TRUE);
+  if (wwin->screen_ptr->notificationCenter) {
+    CFNotificationCenterPostNotification(wwin->screen_ptr->notificationCenter,
+                                         WMDidChangeWindowFocusNotification, wwin,
+                                         (void *)True, TRUE);
+  }
 
   if (owin == wwin || !owin)
     return;
@@ -1821,9 +1832,11 @@ void wWindowUnfocus(WWindow *wwin)
   
   wwin->flags.focused = 0;
   wWindowResetMouseGrabs(wwin);
-  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                       WMDidChangeWindowFocusNotification, wwin,
-                                       (void *)False, TRUE);
+  if (wwin->screen_ptr->notificationCenter) {
+    CFNotificationCenterPostNotification(wwin->screen_ptr->notificationCenter,
+                                         WMDidChangeWindowFocusNotification, wwin,
+                                         (void *)False, TRUE);
+  }
   wPrintWindowFocusState(wwin, "[ END ] wWindowUnfocus:");
 }
 
@@ -1839,8 +1852,8 @@ void wWindowUpdateName(WWindow *wwin, const char *newTitle)
   else
     title = newTitle;
 
-  if (wFrameWindowChangeTitle(wwin->frame, title)) {
-    CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+  if (wFrameWindowChangeTitle(wwin->frame, title) && wwin->screen_ptr->notificationCenter) {
+    CFNotificationCenterPostNotification(wwin->screen_ptr->notificationCenter,
                                          WMDidChangeWindowNameNotification, wwin,
                                          NULL, TRUE);
   }
@@ -2017,18 +2030,20 @@ void wWindowChangeWorkspace(WWindow *wwin, int workspace)
     }
   }
   if (!IS_OMNIPRESENT(wwin)) {
-    CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                            &kCFTypeDictionaryKeyCallBacks,
-                                                            &kCFTypeDictionaryValueCallBacks);
-    int ws = wwin->frame->workspace;
-    CFNumberRef workspaceNumber = CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType, &ws);
-    CFDictionaryAddValue(info, CFSTR("workspace"), workspaceNumber);
-    CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                         WMDidChangeWorkspaceNotification, wwin, info, TRUE);
-    CFRelease(workspaceNumber);
-    CFRelease(info);
-    
     wwin->frame->workspace = workspace;
+    
+    if (scr->notificationCenter) {
+      CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                                              &kCFTypeDictionaryKeyCallBacks,
+                                                              &kCFTypeDictionaryValueCallBacks);
+      CFNumberRef workspaceNumber = CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType,
+                                                   &workspace);
+      CFDictionaryAddValue(info, CFSTR("workspace"), workspaceNumber);
+      CFNotificationCenterPostNotification(scr->notificationCenter,
+                                           WMDidChangeWorkspaceNotification, wwin, info, TRUE);
+      CFRelease(workspaceNumber);
+      CFRelease(info);
+    }    
   }
 
   if (unmap)
@@ -2814,14 +2829,16 @@ void wWindowSetOmnipresent(WWindow *wwin, Bool flag)
     return;
 
   wwin->flags.omnipresent = flag;
-  
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                          &kCFTypeDictionaryKeyCallBacks,
-                                                          &kCFTypeDictionaryValueCallBacks);
-  CFDictionaryAddValue(info, CFSTR("state"), CFSTR("omnipresent"));
-  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                       WMDidChangeWindowStateNotification, wwin, info, TRUE);
-  CFRelease(info);
+
+  if (wwin->screen_ptr->notificationCenter) {
+    CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
+                                                            &kCFTypeDictionaryKeyCallBacks,
+                                                            &kCFTypeDictionaryValueCallBacks);
+    CFDictionaryAddValue(info, CFSTR("state"), CFSTR("omnipresent"));
+    CFNotificationCenterPostNotification(wwin->screen_ptr->notificationCenter,
+                                         WMDidChangeWindowStateNotification, wwin, info, TRUE);
+    CFRelease(info);
+  }
 }
 
 static void resizebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)

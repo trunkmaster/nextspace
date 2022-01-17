@@ -2,7 +2,7 @@
 //
 // Project: Workspace
 //
-// Copyright (C) 2014-2021 Sergii Stoian
+// Copyright (C) 2014-2019 Sergii Stoian
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
@@ -20,13 +20,27 @@
 //
 
 #import <Foundation/NSNotification.h>
-#import <AppKit/AppKitDefines.h>
+#import <Foundation/NSDistributedNotificationCenter.h>
+#include <CoreFoundation/CFNotificationCenter.h>
 
-APPKIT_EXPORT NSString *GSWorkspaceNotification;
-APPKIT_EXPORT NSString *GSWorkspacePreferencesChanged;
+#include <CoreFoundation/CFString.h>
+#import <Foundation/NSString.h>
 
-@interface WorkspaceCenter : NSNotificationCenter
+// #import <AppKit/AppKitDefines.h>
+// APPKIT_EXPORT NSString *GSWorkspaceNotification;
+// APPKIT_EXPORT NSString *GSWorkspacePreferencesChanged;
+
+@interface WMNotificationCenter : NSNotificationCenter
 {
-  NSNotificationCenter	*remote;
+  CFNotificationCenterRef _coreFoundationCenter;
+  NSDistributedNotificationCenter *_remoteCenter;
 }
++ (instancetype)defaultCenter;
 @end
+
+// This is Objective-C type to hold WM objects (WApplication*, WWin* etc).
+@interface CFObject : NSObject
+@property (readwrite) const void *object;
+@end
+
+#define CF_NOTIFICATION(X) ([NSString stringWithCString:CFStringGetCStringPtr((X), CFStringGetSystemEncoding())])

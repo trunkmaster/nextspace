@@ -23,7 +23,7 @@
 #import <DesktopKit/NXTDefaults.h>
 #import "Operations/ProcessManager.h"
 #import <Workspace+WM.h>
-#import <WorkspaceNotificationCenter.h>
+#import <WMNotificationCenter.h>
 
 #include <core/string_utils.h>
 #include <core/wuserdefaults.h>
@@ -314,10 +314,11 @@ void WMSetDockAppDndCommand(int position, const char *command)
   [appIconBtn setRefusesFirstResponder:YES];
   [appLockedBtn setRefusesFirstResponder:YES];
 
-  [[WorkspaceNotificationCenter defaultCenter]
+  [[[NSApp delegate] notificationCenter]
       addObserver:self
          selector:@selector(revert:)
-             name:WMDidChangeDockContentNotification];
+             name:CF_NOTIFICATION(WMDidChangeDockContentNotification)
+           object:nil];
 }
 
 - (NSString *)moduleName

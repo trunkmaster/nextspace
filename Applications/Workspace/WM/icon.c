@@ -170,13 +170,15 @@ WIcon *icon_create_for_wwindow(WWindow *wwin)
   /* Update the icon, because icon could be NULL */
   wIconUpdate(icon);
 
-  CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), icon, _iconSettingsObserver,
-                                  WMDidChangeIconAppearanceSettings, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), icon, _iconSettingsObserver,
-                                  WMDidChangeIconTileSettings, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
- 
+  if (scr->notificationCenter) {
+    CFNotificationCenterAddObserver(scr->notificationCenter, icon, _iconSettingsObserver,
+                                    WMDidChangeIconAppearanceSettings, NULL,
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+    CFNotificationCenterAddObserver(scr->notificationCenter, icon, _iconSettingsObserver,
+                                    WMDidChangeIconTileSettings, NULL,
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+  }
+  
   return icon;
 }
 
@@ -191,12 +193,14 @@ WIcon *icon_create_for_dock(WScreen *scr, const char *command, const char *wm_in
   /* Update the icon, because icon could be NULL */
   wIconUpdate(icon);
 
-  CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), icon, _iconSettingsObserver,
-                                  WMDidChangeIconAppearanceSettings, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), icon, _iconSettingsObserver,
-                                  WMDidChangeIconTileSettings, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  if (scr->notificationCenter) {
+    CFNotificationCenterAddObserver(scr->notificationCenter, icon, _iconSettingsObserver,
+                                    WMDidChangeIconAppearanceSettings, NULL,
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+    CFNotificationCenterAddObserver(scr->notificationCenter, icon, _iconSettingsObserver,
+                                    WMDidChangeIconTileSettings, NULL,
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+  }
 
   return icon;
 }
@@ -246,10 +250,12 @@ void wIconDestroy(WIcon *icon)
   WCoreWindow *core = icon->core;
   WScreen *scr = core->screen_ptr;
 
-  CFNotificationCenterRemoveObserver(CFNotificationCenterGetLocalCenter(),
-                                     icon, WMDidChangeIconAppearanceSettings, NULL);
-  CFNotificationCenterRemoveObserver(CFNotificationCenterGetLocalCenter(),
-                                     icon, WMDidChangeIconTileSettings, NULL);
+  if (scr->notificationCenter) {
+    CFNotificationCenterRemoveObserver(scr->notificationCenter, icon,
+                                       WMDidChangeIconAppearanceSettings, NULL);
+    CFNotificationCenterRemoveObserver(scr->notificationCenter, icon,
+                                       WMDidChangeIconTileSettings, NULL);
+  }
 
   if (icon->handlerID)
     WMDeleteTimerHandler(icon->handlerID);

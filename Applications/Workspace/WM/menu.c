@@ -254,12 +254,15 @@ WMenu *wMenuCreate(WScreen *screen, const char *title, int main_menu)
     menu->brother->flags.brother = 1;
     menu->brother->brother = menu;
   }
-  CFNotificationCenterAddObserver(screen->notificationCenter, menu, appearanceObserver,
-                                  WMDidChangeMenuAppearanceSettings, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(screen->notificationCenter, menu, appearanceObserver,
-                                  WMDidChangeMenuTitleAppearanceSettings, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+
+  if (screen->notificationCenter) {
+    CFNotificationCenterAddObserver(screen->notificationCenter, menu, appearanceObserver,
+                                    WMDidChangeMenuAppearanceSettings, NULL,
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+    CFNotificationCenterAddObserver(screen->notificationCenter, menu, appearanceObserver,
+                                    WMDidChangeMenuTitleAppearanceSettings, NULL,
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+  }
   
   return menu;
 }
@@ -587,10 +590,12 @@ void wMenuDestroy(WMenu *menu, int recurse)
 {
   int i;
 
-  CFNotificationCenterRemoveObserver(CFNotificationCenterGetLocalCenter(),
-                                     menu, WMDidChangeMenuAppearanceSettings, NULL);
-  CFNotificationCenterRemoveObserver(CFNotificationCenterGetLocalCenter(),
-                                     menu, WMDidChangeMenuTitleAppearanceSettings, NULL);
+  if (menu->frame->screen_ptr->notificationCenter) {
+    CFNotificationCenterRemoveObserver(menu->frame->screen_ptr->notificationCenter,
+                                       menu, WMDidChangeMenuAppearanceSettings, NULL);
+    CFNotificationCenterRemoveObserver(menu->frame->screen_ptr->notificationCenter,
+                                       menu, WMDidChangeMenuTitleAppearanceSettings, NULL);
+  }
 
   /* remove any pending timers */
   if (menu->timer) {

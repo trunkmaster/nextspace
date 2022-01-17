@@ -72,21 +72,29 @@
   Preferences          *preferences;
  
   BOOL dontOpenRootViewer;
-  BOOL isQuitting;
-
-  // NSWorkspace category ivars
-  NSMutableDictionary	*_iconMap;
-  NSMutableDictionary	*_launched;
-  NSNotificationCenter	*_workspaceCenter;
-  BOOL			_fileSystemChanged;
-  BOOL			_userDefaultsChanged;
 
   NXTIconBadge		*workspaceBadge;
   NXTIconBadge		*keyboardBadge;
   Recycler		*recycler;
 
   NXTSound              *bellSound;
+  
+  // NSWorkspace category ivars
+  NSMutableDictionary	*_iconMap;
+  NSMutableDictionary	*_launched;
+  NSArray               *_wrappers;
+  NSNotificationCenter	*_workspaceCenter;
+  BOOL			_fileSystemChanged;
+  BOOL			_userDefaultsChanged;
+  // ~/Library/Services/.GNUstepAppList
+  NSString		*_appListPath;
+  NSDictionary		*_applications;
+  // ~/Library/Services/.GNUstepExtPrefs
+  NSString		*_extPrefPath;
+  NSDictionary		*_extPreferences;
 }
+
+@property (readonly) BOOL isQuitting;
 
 - (FileViewer *)newViewerRootedAt:(NSString *)path
                            viewer:(NSString *)viewerType

@@ -88,6 +88,11 @@ static BOOL _isWindowManagerRunning(void)
 // Workspace application GNUstep main function
 //-----------------------------------------------------------------------------
 
+void WSUncaughtExceptionHandler(NSException *e)
+{
+  NSLog(@"*** EXCEPTION *** NAME: %@ REASON: %@", [e name], [e reason]);
+}
+
 int WSApplicationMain(int argc, const char **argv)
 {
   NSDictionary	*infoDict;
@@ -168,16 +173,10 @@ int main(int argc, const char **argv)
   //--- Workspace (GNUstep) queue ---------------------------------------
   fprintf(stderr, "=== Starting the Workspace... ===\n");
   dispatch_sync(workspace_q, ^{
+      NSSetUncaughtExceptionHandler(WSUncaughtExceptionHandler);
       WSApplicationMain(argc, argv);
     });
-  fprintf(stderr, "=== Workspace successfully finished! ===\n");
-  //---------------------------------------------------------------------
+  fprintf(stderr, "=== Workspace finished with exit code: %i ===\n", ws_quit_code);
   
-  fprintf(stderr, "=== Quitting Window manager... ===\n");
-  CFRunLoopStop(wm_runloop);
-  // Quit WindowManager, close all X11 applications.
-  wShutdown(WMExitMode);
-  
-  fprintf(stderr, "=== Exit code is %i ===\n", ws_quit_code);
   return ws_quit_code;
 }

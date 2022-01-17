@@ -183,12 +183,12 @@ typedef struct WObjDescriptor {
 /* program states */
 typedef enum {
   WSTATE_NORMAL		= 0,
-  WSTATE_NEED_EXIT	= 1,
-  WSTATE_NEED_RESTART	= 2,
-  WSTATE_EXITING	= 3,
-  WSTATE_RESTARTING	= 4,
-  WSTATE_MODAL		= 5,
-  WSTATE_NEED_REREAD	= 6
+  WSTATE_EXITING	= 1,
+  WSTATE_MODAL		= 2,
+  WSTATE_NEED_EXIT	= 10, // SIGTERM, SIGINT, SIGHUP
+  WSTATE_NEED_RESTART	= 11, // SIGUSR1
+  WSTATE_RESTARTING	= 12,
+  WSTATE_NEED_REREAD	= 13  // SIGUSR2
 } wprog_state;
 #define WCHECK_STATE(chk_state)	(w_global.program.state == (chk_state))
 #define WCHANGE_STATE(nstate) {                                 \
@@ -386,6 +386,45 @@ extern CFStringRef WMDidChangeMenuTitleAppearanceSettings;
 // userInfo = { "XkbGroup" = CFNumber }
 extern CFStringRef WMDidChangeKeyboardLayoutNotification;
 extern CFStringRef WMDidChangeDockContentNotification;
+
+/* Notifications to communicate with applications. Manadatory prefixes in
+   notification names are:
+     - WMShould for notification from application to perform some action
+     - WMDid to notify application about action completion
+
+   Every WMDid should complement WMDid notification.
+
+   All notifications must contain in userInfo:
+     "WindowID" = CFNumber;
+     "ApplicationName" = CFString; */
+// Hide All
+extern CFStringRef WMShouldHideOthersNotification;
+extern CFStringRef WMDidHideOthersNotification;
+// Quit or Force Quit
+extern CFStringRef WMShouldTerminateApplicationNotification;
+extern CFStringRef WMDidTerminateApplicationNotification;
+// Zoom Window
+/* additional userInfo element:
+   "ZoomType" = "Vertical" | "Horizontal" | "Maximize"; */
+extern CFStringRef WMShouldZoomWindowNotification;
+extern CFStringRef WMDidZoomWindowNotification;
+// Tile Window
+/* additional userInfo element:
+   "TileDirection" = "Left" | "Right" | "Top" | "Bottom"; */
+extern CFStringRef WMShouldTileWindowNotification;
+extern CFStringRef WMDidTileWindowNotification;
+// Shade Window
+extern CFStringRef WMShouldShadeWindowNotification;
+extern CFStringRef WMDidShadeWindowNotification;
+// Arrange in Front
+extern CFStringRef WMShouldArrangeWindowsNotification;
+extern CFStringRef WMDidArrangeWindowsNotification;
+// Miniaturize Window
+extern CFStringRef WMShouldMinmizeWindowNotification;
+extern CFStringRef WMDidMinmizeWindowNotification;
+// Close Window
+extern CFStringRef WMShouldCloseWindowNotification;
+extern CFStringRef WMDidCloseWindowNotification;
 
 void *userInfoValueForKey(CFDictionaryRef theDict, CFStringRef key);
 

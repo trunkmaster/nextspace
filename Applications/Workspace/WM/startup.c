@@ -113,6 +113,32 @@ CFStringRef WMDidChangeMenuTitleAppearanceSettings = CFSTR("WMDidChangeMenuTitle
 CFStringRef WMDidChangeKeyboardLayoutNotification = CFSTR("WMDidChangeKeyboardLayoutNotification");
 CFStringRef WMDidChangeDockContentNotification = CFSTR("WMDidChangeDockContentNotification");
 
+/* GNUstep applications notifications */
+// Hide Others
+CFStringRef WMShouldHideOthersNotification = CFSTR("WMShouldHideOthersNotification");
+CFStringRef WMDidHideOthersNotification = CFSTR("WMDidHideOthersNotification");
+// Quit or Force Quit
+CFStringRef WMShouldTerminateApplicationNotification = CFSTR("WMShouldTerminateApplicationNotification");
+CFStringRef WMDidTerminateApplicationNotification = CFSTR("WMDidTerminateApplicationNotification");
+// Windows -> Zoom Window
+CFStringRef WMShouldZoomWindowNotification = CFSTR("WMShouldZoomWindowNotification");
+CFStringRef WMDidZoomWindowNotification = CFSTR("WMDidZoomWindowNotification");
+// Windows -> Tile Window -> Left | Right | Top | Bottom
+CFStringRef WMShouldTileWindowNotification = CFSTR("WMShouldTileWindowNotification");
+CFStringRef WMDidTileWindowNotification = CFSTR("WMDidTileWindowNotification");
+// Windows -> Shade Window
+CFStringRef WMShouldShadeWindowNotification = CFSTR("WMShouldShadeWindowNotification");
+CFStringRef WMDidShadeWindowNotification = CFSTR("WMDidShadeWindowNotification");
+// Windows -> Arrange in Front
+CFStringRef WMShouldArrangeWindowsNotification = CFSTR("WMShouldArrangeWindowsNotification");
+CFStringRef WMDidArrangeWindowsNotification = CFSTR("WMDidArrangeWindowsNotification");
+// Windows -> Miniaturize Window
+CFStringRef WMShouldMinmizeWindowNotification = CFSTR("WMShouldMinmizeWindowNotification");
+CFStringRef WMDidMinmizeWindowNotification = CFSTR("WMDidMinmizeWindowNotification");
+// Windows -> Close Window
+CFStringRef WMShouldCloseWindowNotification = CFSTR("WMShouldCloseWindowNotification");
+CFStringRef WMDidCloseWindowNotification = CFSTR("WMDidCloseWindowNotification");
+
 
 /***** Local *****/
 static WScreen **wScreen = NULL;
