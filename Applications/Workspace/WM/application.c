@@ -48,6 +48,7 @@
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
 #include "framewin.h"
+#include "appmenu.h"
 #endif
 
 /******** Notification observers ********/
@@ -322,6 +323,12 @@ WApplication *wApplicationCreate(WWindow * wwin)
     wApplicationMakeFirst(wapp);
   }
 
+  /* Application menu */
+  if (!wapp->flags.is_gnustep) {
+    wapp->menu = wApplicationCreateMenu(scr, wapp);
+    wApplicationOpenMenu(wapp, 0, 0);
+  }
+
   WMLogInfo("WApplication `%s` was created! Prev `%s` Next `%s`",
            wwin->wm_instance,
            wapp->prev ? wapp->prev->main_window_desc->wm_instance : "NULL",
@@ -376,6 +383,11 @@ void wApplicationDestroy(WApplication *wapp)
   CFArrayRemoveAllValues(wapp->windows);
   CFRelease(wapp->windows);
   /* WMLogError("wapp->windows retain count: %li", CFGetRetainCount(wapp->windows)); */
+
+  if (wapp->menu) {
+    wMenuUnmap(wapp->menu);
+    /* wMenuDestroy(wapp->menu, True); */
+  }
 
   if (wapp->urgent_bounce_timer) {
     WMDeleteTimerHandler(wapp->urgent_bounce_timer);

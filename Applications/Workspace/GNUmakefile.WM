@@ -31,6 +31,7 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/actions.c \
 	$(WM_DIR)/appicon.c \
 	$(WM_DIR)/application.c \
+	$(WM_DIR)/appmenu.c \
 	$(WM_DIR)/balloon.c \
 	$(WM_DIR)/client.c \
 	$(WM_DIR)/colormap.c \

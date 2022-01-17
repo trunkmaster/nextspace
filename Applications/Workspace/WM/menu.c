@@ -175,29 +175,25 @@ WMenu *wMenuCreate(WScreen *screen, const char *title, int main_menu)
 {
   WMenu *menu;
   static int brother = 0;
-  int tmp, flags;
+  int window_flags;
 
   menu = wmalloc(sizeof(WMenu));
-
-#ifdef SINGLE_MENULEVEL
-  tmp = NSSubmenuWindowLevel;
-#else
-  tmp = (main_menu ? NSMainMenuWindowLevel : NSSubmenuWindowLevel);
-#endif
-
-  flags = WFF_SINGLE_STATE | WFF_BORDER;
+  menu->flags.app_menu = main_menu;
+  
+  window_flags = WFF_SINGLE_STATE | WFF_BORDER;
   if (title) {
-    flags |= WFF_TITLEBAR | WFF_RIGHT_BUTTON;
+    window_flags |= WFF_TITLEBAR | WFF_RIGHT_BUTTON;
     menu->flags.titled = 1;
   }
-  menu->frame =
-    wFrameWindowCreate(screen, tmp, 8, 2, 1, 1, &wPreferences.menu_title_clearance,
-                       &wPreferences.menu_title_min_height,
-                       &wPreferences.menu_title_max_height,
-                       flags,
-                       screen->menu_title_texture, NULL,
-                       screen->menu_title_color, &screen->menu_title_font,
-                       screen->w_depth, screen->w_visual, screen->w_colormap);
+  menu->frame = wFrameWindowCreate(screen,
+                                   (main_menu ? NSMainMenuWindowLevel : NSSubmenuWindowLevel),
+                                   8, 2, 1, 1, &wPreferences.menu_title_clearance,
+                                   &wPreferences.menu_title_min_height,
+                                   &wPreferences.menu_title_max_height,
+                                   window_flags,
+                                   screen->menu_title_texture, NULL,
+                                   screen->menu_title_color, &screen->menu_title_font,
+                                   screen->w_depth, screen->w_visual, screen->w_colormap);
 
   menu->frame->core->descriptor.parent = menu;
   menu->frame->core->descriptor.parent_type = WCLASS_MENU;
@@ -210,7 +206,6 @@ WMenu *wMenuCreate(WScreen *screen, const char *title, int main_menu)
   }
 
   menu->frame->flags.justification = WTJ_LEFT;
-
   menu->frame->rbutton_image = screen->b_pixmaps[WBUT_CLOSE];
 
   menu->entry_no = 0;
@@ -2030,7 +2025,9 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
       }
 #endif
       /* unmap the menu, it's parents and call the callback */
-      if (!menu->flags.buttoned && (!menu->flags.app_menu || menu->parent != NULL)) {
+      /* if (!menu->flags.buttoned && (!menu->flags.app_menu || menu->parent != NULL)) { */
+      /* WMLogInfo("Menu %s item was clicked!"); */
+      if (!menu->flags.app_menu) {
         closeCascade(menu);
       } else {
         selectEntry(menu, -1);
