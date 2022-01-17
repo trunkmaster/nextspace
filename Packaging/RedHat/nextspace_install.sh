@@ -3,7 +3,7 @@
 # This script should be placed along with NSUser and NSDeveloper
 # directories.
 
-RELEASE=0.90
+RELEASE=0.91
 
 if [ -f /etc/os-release ]; then 
     source /etc/os-release

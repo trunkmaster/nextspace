@@ -13,8 +13,10 @@ License:	GPLv3
 BuildRequires:	checkpolicy
 BuildRequires:	selinux-policy-devel
 BuildRequires:	hardlink
-%if "%{%_selinux_policy_version}" != ""
-Requires:	selinux-policy >= %{%_selinux_policy_version}
+%if 0%{?el7}
+Requires:       selinux-policy >= 3.13.1
+%else
+Requires:       selinux-policy >= 3.14.3
 %endif
 Requires:	policycoreutils
 Requires:	nextspace-gnustep
@@ -80,7 +82,7 @@ cd -
 # SELinux installation of modules in the supported policies
 for selinuxvariant in %{selinux_variants}
 do
-    install -d %{_datadir}/selinux/${selinuxvariant}/nextspace
+    install -d %{_datadir}/selinux/${selinuxvariant}/%{name}
     for module in %{selinux_modules}
     do	
 	/usr/sbin/semodule -s ${selinuxvariant} -i \
