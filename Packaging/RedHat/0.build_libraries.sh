@@ -39,17 +39,19 @@ if [ $? -eq 1 ]; then
 fi
 
 # Apple Core Foundation
-`dirname $0`/build_libfoundation.sh $1
+`dirname $0`/build_libcorefoundation.sh $1
 if [ $? -eq 1 ]; then
     echo "Aborting..."
     exit 1
 fi
 
 # GNUstep Objective-C runtime
-`dirname $0`/build_libobjc2.sh $1
-if [ $? -eq 1 ]; then
-    echo "Aborting..."
-    exit 1
+if [ "$OS_NAME" == "CentOS Linux" ];then
+    `dirname $0`/build_libobjc2.sh $1
+    if [ $? -eq 1 ]; then
+        echo "Aborting..."
+        exit 1
+    fi
 fi
 
 # NextSpace Core

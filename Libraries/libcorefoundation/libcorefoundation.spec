@@ -2,14 +2,14 @@
 %global debug_package %{nil}
 %endif
 
-Name:		libfoundation
-Epoch:		2
+Name:		libcorefoundation
+#Epoch:		2
 Version:	5.4.2
 Release:	0%{?dist}
 Summary:	Apple CoreFoundation framework.
 License:	Apache 2.0
 URL:		https://github.com/apple/swift-corelibs-foundation
-Source0:	libfoundation-%{version}.tar.gz
+Source0:	libcorefoundation-%{version}.tar.gz
 Source1:	CFFileDescriptor.h
 Source2:	CFFileDescriptor.c
 Source3:	CFNotificationCenter.c
@@ -164,6 +164,10 @@ ln -s ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
 #%postun
 
 %changelog
+* Tue Jan 18 2022 flatpak-session-helper
+Renamed to libcorefoundation to not interfere with libfoundation
+on Fedora.
+
 * Tue Dec 1 2020 Sergii Stoian <stoyan255@gmail.com>
 - CFFileDescriptor was added to the build.
 

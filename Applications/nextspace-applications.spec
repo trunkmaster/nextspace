@@ -23,7 +23,7 @@ BuildRequires:	nextspace-frameworks-devel
 # Login
 BuildRequires:	pam-devel
 # Workspace
-BuildRequires:	libfoundation-devel
+BuildRequires:	libcorefoundation-devel
 BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libpng-devel
@@ -37,7 +37,7 @@ BuildRequires:	libXfixes-devel
 BuildRequires:	fontconfig-devel
 #
 Requires:	nextspace-frameworks
-Requires:	libfoundation
+Requires:	libcorefoundation
 Requires:	fontconfig
 Requires:	libXft
 Requires:	libXinerama
@@ -50,19 +50,19 @@ Requires:	xorg-x11-drv-intel
 Requires:	xorg-x11-drv-vesa
 Requires:	xorg-x11-drv-synaptics
 Requires:	xorg-x11-server-Xorg
-Requires:	xorg-x11-server-utils
-%if 0%{?rhel} || 0%{?fedora} < 34
-Requires:	xorg-x11-xkb-utils
-%else
-Requires:	setxkbmap
-%endif
-Requires:	xorg-x11-fonts-100dpi
-Requires:	xorg-x11-fonts-misc
-Requires:	mesa-dri-drivers
 %if 0%{?el7}
 Requires:	xorg-x11-drv-keyboard
 Requires:	xorg-x11-drv-mouse
 %endif
+%if 0%{?rhel} || 0%{?fedora} < 34
+Requires:	xorg-x11-xkb-utils
+Requires:	xorg-x11-server-utils
+%else
+Requires:	xrdb
+%endif
+Requires:	xorg-x11-fonts-100dpi
+Requires:	xorg-x11-fonts-misc
+Requires:	mesa-dri-drivers
 
 %description
 NextSpace desktop core applications.
@@ -70,6 +70,10 @@ NextSpace desktop core applications.
 %package devel
 Summary:	NextSpace desktop core applications headers (Preferences, Workspace).
 Requires:	%{name}%{?_isa} = %{version}-%{release}
+Requires:	setxkbmap
+Requires:	xrandr
+Requires:	xwininfo
+Requires:	xprop
 
 %description devel
 Header file for NextSpace core applications (Preferences, Workspace).
