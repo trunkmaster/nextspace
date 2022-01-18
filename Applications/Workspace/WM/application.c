@@ -326,7 +326,6 @@ WApplication *wApplicationCreate(WWindow * wwin)
   /* Application menu */
   if (!wapp->flags.is_gnustep) {
     wapp->menu = wApplicationCreateMenu(scr, wapp);
-    wApplicationOpenMenu(wapp, 0, 0);
   }
 
   WMLogInfo("WApplication `%s` was created! Prev `%s` Next `%s`",

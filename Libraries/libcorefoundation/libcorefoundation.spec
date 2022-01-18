@@ -3,8 +3,8 @@
 %endif
 
 Name:		libcorefoundation
-#Epoch:		2
 Version:	5.4.2
+Epoch:		0
 Release:	0%{?dist}
 Summary:	Apple CoreFoundation framework.
 License:	Apache 2.0

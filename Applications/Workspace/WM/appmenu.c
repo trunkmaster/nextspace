@@ -29,18 +29,23 @@ WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp)
   wMenuEntrySetCascade(menu, info_item, info);
 
   edit = wMenuCreate(scr, _("Edit"), False);
-  wMenuAddCallback(edit, _("Cut"), nullCallback, NULL);
-  wMenuAddCallback(edit, _("Copy"), nullCallback, NULL);
-  wMenuAddCallback(edit, _("Paste"), nullCallback, NULL);
-  wMenuAddCallback(edit, _("Select All"), nullCallback, NULL);
+  tmp_item = wMenuAddCallback(edit, _("Cut"), nullCallback, NULL);
+  tmp_item->rtext = wstrdup("x");
+  tmp_item = wMenuAddCallback(edit, _("Copy"), nullCallback, NULL);
+  tmp_item->rtext = wstrdup("c");
+  tmp_item = wMenuAddCallback(edit, _("Paste"), nullCallback, NULL);
+  tmp_item->rtext = wstrdup("v");
+  tmp_item = wMenuAddCallback(edit, _("Select All"), nullCallback, NULL);
+  tmp_item->rtext = wstrdup("a");
   edit_item = wMenuAddCallback(menu, _("Edit"), NULL, NULL);
   wMenuEntrySetCascade(menu, edit_item, edit);
 
   windows = wMenuCreate(scr, _("Windows"), False);
   wMenuAddCallback(windows, _("Arrange in Front"), nullCallback, NULL);
-  wMenuAddCallback(windows, _("Miniaturize Window"), nullCallback, NULL);
+  tmp_item = wMenuAddCallback(windows, _("Miniaturize Window"), nullCallback, NULL);
+  tmp_item->rtext = wstrdup("m");
   wMenuAddCallback(windows, _("Close Window"), nullCallback, NULL);
-  wMenuAddCallback(windows, _("Select All"), nullCallback, NULL);
+  tmp_item->rtext = wstrdup("w");
   windows_item = wMenuAddCallback(menu, _("Windows"), NULL, NULL);
   wMenuEntrySetCascade(menu, windows_item, windows);
   
