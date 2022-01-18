@@ -607,12 +607,12 @@ void wMenuDestroy(WMenu *menu, int recurse)
    */
   if (!menu->flags.brother) {
     for (i = 0; i < menu->entry_no; i++) {
-
-      wfree(menu->entries[i]->text);
-
-      if (menu->entries[i]->rtext)
+      if (menu->entries[i]->text) {
+        wfree(menu->entries[i]->text);
+      }
+      if (menu->entries[i]->rtext) {
         wfree(menu->entries[i]->rtext);
-
+      }
       if (menu->entries[i]->free_cdata && menu->entries[i]->clientdata) {
         (*menu->entries[i]->free_cdata) (menu->entries[i]->clientdata);
       }
@@ -1114,13 +1114,9 @@ void wMenuMapAt(WMenu * menu, int x, int y, int keyboard)
       if (y + MENUH(menu) > rect.pos.y + rect.size.height)
         y = rect.pos.y + rect.size.height - MENUH(menu);
     }
-
-    XMoveWindow(dpy, menu->frame->core->window, x, y);
     menu->frame_x = x;
     menu->frame_y = y;
-    XMapWindow(dpy, menu->frame->core->window);
-    wRaiseFrame(menu->frame->core);
-    menu->flags.mapped = 1;
+    wMenuMap(menu);
   } else {
     selectEntry(menu, 0);
   }
@@ -1132,14 +1128,10 @@ void wMenuMapAt(WMenu * menu, int x, int y, int keyboard)
 void wMenuMap(WMenu * menu)
 {
   if (!menu->flags.realized) {
-    menu->flags.realized = 1;
     wMenuRealize(menu);
+    menu->flags.realized = 1;
   }
-  if (menu->flags.app_menu && menu->parent == NULL) {
-    menu->frame_x = menu->frame->screen_ptr->app_menu_x;
-    menu->frame_y = menu->frame->screen_ptr->app_menu_y;
-    XMoveWindow(dpy, menu->frame->core->window, menu->frame_x, menu->frame_y);
-  }
+  XMoveWindow(dpy, menu->frame->core->window, menu->frame_x, menu->frame_y);
   XMapWindow(dpy, menu->frame->core->window);
   wRaiseFrame(menu->frame->core);
   menu->flags.mapped = 1;
@@ -1158,9 +1150,8 @@ void wMenuUnmap(WMenu * menu)
   menu->flags.open_to_left = 0;
 
   for (i = 0; i < menu->cascade_no; i++) {
-    if (menu->cascades[i] != NULL
-        && menu->cascades[i]->flags.mapped && !menu->cascades[i]->flags.buttoned) {
-
+    if (menu->cascades[i] != NULL && menu->cascades[i]->flags.mapped
+        /*&& !menu->cascades[i]->flags.buttoned*/) {
       wMenuUnmap(menu->cascades[i]);
     }
   }
@@ -2306,22 +2297,15 @@ static void saveMenuInfo(CFMutableDictionaryRef dict, WMenu *menu, CFTypeRef key
 void wMenuSaveState(WScreen *scr)
 {
   CFMutableDictionaryRef menus;
-  int save_menus = 0;
 
   menus = CFDictionaryCreateMutable(kCFAllocatorDefault, 9, &kCFTypeDictionaryKeyCallBacks,
                                     &kCFTypeDictionaryValueCallBacks);
 
   if (scr->switch_menu && scr->switch_menu->flags.buttoned) {
     saveMenuInfo(menus, scr->switch_menu, CFSTR("SwitchMenu"));
-    save_menus = 1;
   }
-  if (scr->workspace_menu && scr->workspace_menu->flags.buttoned) {
-    saveMenuInfo(menus, scr->workspace_menu, CFSTR("WorkspaceMenu"));
-    save_menus = 1;
-  }
-  if (save_menus) {
-    CFDictionaryAddValue(scr->session_state, CFSTR("Menus"), menus);
-  }
+  
+  CFDictionarySetValue(scr->session_state, CFSTR("Menus"), menus);
   
   CFRelease(menus);
 }

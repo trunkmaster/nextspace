@@ -386,7 +386,7 @@ void wApplicationDestroy(WApplication *wapp)
 
   if (wapp->menu) {
     wMenuUnmap(wapp->menu);
-    /* wMenuDestroy(wapp->menu, True); */
+    wMenuDestroy(wapp->menu, True);
   }
 
   if (wapp->urgent_bounce_timer) {
@@ -452,6 +452,9 @@ void wApplicationActivate(WApplication *wapp)
     wWorkspaceChange(scr, wapp->last_workspace, NULL);
   }
   wApplicationMakeFirst(wapp);
+  if (wapp->menu) {
+    wMenuMap(wapp->menu);
+  }
 }
 
 void wApplicationDeactivate(WApplication *wapp)
@@ -459,6 +462,9 @@ void wApplicationDeactivate(WApplication *wapp)
   if (wapp->app_icon) {
     wIconSetHighlited(wapp->app_icon->icon, False);
     wAppIconPaint(wapp->app_icon);
+  }
+  if (wapp->menu) {
+    wMenuUnmap(wapp->menu);
   }
 }
 

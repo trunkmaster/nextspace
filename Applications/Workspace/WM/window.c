@@ -1736,7 +1736,7 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
   wwin->flags.semi_focused = 0;
 
   /* GNUstep app manages focus itself after WM_TAKE_FOCUS was sent (wSetFocusTo) */
-  if (wwin->flags.is_gnustep == 0) {
+  if (!wwin->flags.is_gnustep) {
     wFrameWindowChangeState(wwin->frame, WS_FOCUSED);
     wRaiseFrame(wwin->frame->core);
   }
@@ -1768,29 +1768,30 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
   /* new window is owner of old window */
   if (wwin == oowner) {
     wWindowUnfocus(owin);
-    return;
-  }
-
-  if (!nowner) {
+  } else if (!nowner) {
     wWindowUnfocus(owin);
-    return;
-  }
-
-  /* new window has same owner of old window */
-  if (oowner == nowner) {
+    if (wwin->main_window != owin->main_window) {
+      WApplication *wapp = wApplicationOf(wwin->main_window);
+      WApplication *old_app = wApplicationOf(owin->main_window);
+      if (!wapp->flags.is_gnustep) {
+        wApplicationActivate(wapp);
+      }
+      if (!old_app->flags.is_gnustep) {
+        wApplicationDeactivate(old_app);
+      }
+    }
+  } else if (oowner == nowner) { /* new window has same owner of old window */
     /* prevent unfocusing of owner */
     oowner->flags.semi_focused = 0;
     wWindowUnfocus(owin);
     oowner->flags.semi_focused = 1;
-
-    return;
+  } else {
+    /* nowner != NULL && oowner != nowner */
+    nowner->flags.semi_focused = 1;
+    wWindowUnfocus(nowner);
+    wWindowUnfocus(owin);
+    wPrintWindowFocusState(wwin, "[ END ] wWindowFocus:");
   }
-
-  /* nowner != NULL && oowner != nowner */
-  nowner->flags.semi_focused = 1;
-  wWindowUnfocus(nowner);
-  wWindowUnfocus(owin);
-  wPrintWindowFocusState(wwin, "[ END ] wWindowFocus:");
 }
 
 void wWindowUnfocus(WWindow *wwin)

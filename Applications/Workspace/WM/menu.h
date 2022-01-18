@@ -54,31 +54,25 @@ typedef struct WMenu {
   struct WMenu *parent;
   struct WMenu *brother;
 
-  time_t timestamp;		       /* for the root menu. Last time
-                                        * menu was reloaded */
-
   /* decorations */
   struct WFrameWindow *frame;
-  WCoreWindow *menu;		       /* the window menu */
+  WCoreWindow *menu;		       /* the menu window */
   Pixmap menu_texture_data;
-  int frame_x, frame_y;	       /* position of the frame in root*/
+  int frame_x, frame_y;	               /* position of the frame in root window */
 
-  WMenuEntry **entries;	       /* array of entries. This is shared
-                                * by the menu and it's "brother" */
-  short alloced_entries;	       /* number of entries allocated in
-                                        * entry array */
-  struct WMenu **cascades;	       /* array of cascades */
+  WMenuEntry **entries;                /* array of entries. This is shared by the menu
+                                          and it's "brother" */
+  short alloced_entries;               /* number of entries allocated in entry array */
+  struct WMenu **cascades;             /* array of cascades */
   short cascade_no;
 
-  short entry_no;		       /* number of entries */
+  short entry_no;                      /* number of entries */
   short selected_entry;
+  short entry_height;                  /* height of each entry */
 
-  short entry_height;		       /* height of each entry */
+  CFRunLoopTimerRef timer;             /* timer for the autoscroll */
 
-  /*WMHandlerID timer;*/
-  CFRunLoopTimerRef timer;		/* timer for the autoscroll */
-
-  void *jump_back;                   /* jump back data */
+  void *jump_back;                     /* jump back data */
 
   /* to be called when some entry is edited */
   void (*on_edit)(struct WMenu *menu, struct WMenuEntry *entry);
@@ -87,12 +81,11 @@ typedef struct WMenu {
 
   struct {
     unsigned int titled:1;
-    unsigned int realized:1;       /* whether the window was configured */
-    unsigned int app_menu:1;       /* this is a application or root menu */
-    unsigned int mapped:1;	       /* if menu is already mapped on screen*/
-    unsigned int buttoned:1;       /* if the close button is visible
-                                    * (menu was torn off) */
-    unsigned int open_to_left:1;   /* direction to open submenus */
+    unsigned int realized:1;           /* whether the window was configured */
+    unsigned int app_menu:1;           /* this is a application or root menu */
+    unsigned int mapped:1;             /* if menu is already mapped on screen*/
+    unsigned int buttoned:1;           /* if the close button is visible (menu was torn off) */
+    unsigned int open_to_left:1;       /* direction to open submenus */
     unsigned int lowered:1;
 
     unsigned int brother:1;	       /* if this is a copy of the menu*/
