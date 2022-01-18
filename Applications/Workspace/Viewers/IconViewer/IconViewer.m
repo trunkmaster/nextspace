@@ -420,7 +420,7 @@ static NSRect viewFrame;
   pathList = [NSMutableArray new];
   pathPrefix = [rootPath stringByAppendingPathComponent:currentPath];
   
-  if ([selection count] > 0) {
+  if (selection && [selection count] > 0) {
     for (NSString *path in selection) {
       path = [pathPrefix stringByAppendingPathComponent:path];
       [pathList addObject:path];
