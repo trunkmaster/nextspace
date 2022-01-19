@@ -32,7 +32,8 @@ typedef struct WApplication {
   struct WApplication *prev;
 
   int refcount;
-  
+
+  const char *app_name;
   Window main_window;			/* ID of the group leader */
   struct WWindow *main_window_desc;	/* main (leader) window descriptor */
   struct WAppIcon *app_icon;

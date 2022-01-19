@@ -1,9 +1,11 @@
-#include "core/log_utils.h"
+#include <string.h>
+#include <core/log_utils.h>
 #include <core/string_utils.h>
 
 #include "appmenu.h"
 #include "window.h"
 #include "framewin.h"
+#include "actions.h"
 
 // Main application menu
 //-------------------------------------------------------------------------------------------------
@@ -12,12 +14,23 @@ static void nullCallback(WMenu *menu, WMenuEntry *entry)
   WMLogInfo("Item %s was clicked in menu %s", entry->text, menu->frame->title);
 }
 
+static void mainCallback(WMenu *menu, WMenuEntry *entry)
+{
+  WApplication *wapp = (WApplication *)entry->clientdata;
+  
+  if (!strcmp(entry->text, "Hide")) {
+    wHideApplication(wapp);
+  } else if (!strcmp(entry->text, "Hide Others")) {
+    wHideOtherApplications(wapp->last_focused);
+  }
+}
+
 WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp)
 {
   WMenu *menu, *info, *edit, *windows;
   WMenuEntry *info_item, *edit_item, *windows_item, *tmp_item;
 
-  menu = wMenuCreate(scr, wapp->main_window_desc->wm_class, True);
+  menu = wMenuCreate(scr, wapp->app_name, True);
   
   /* Info */
 
@@ -44,14 +57,18 @@ WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp)
   wMenuAddCallback(windows, _("Arrange in Front"), nullCallback, NULL);
   tmp_item = wMenuAddCallback(windows, _("Miniaturize Window"), nullCallback, NULL);
   tmp_item->rtext = wstrdup("m");
-  wMenuAddCallback(windows, _("Close Window"), nullCallback, NULL);
+  tmp_item = wMenuAddCallback(windows, _("Shade Window"), nullCallback, NULL);
+  tmp_item = wMenuAddCallback(windows, _("Zoom window"), nullCallback, NULL);
+  tmp_item = wMenuAddCallback(windows, _("Close Window"), nullCallback, NULL);
   tmp_item->rtext = wstrdup("w");
   windows_item = wMenuAddCallback(menu, _("Windows"), NULL, NULL);
   wMenuEntrySetCascade(menu, windows_item, windows);
   
-  tmp_item = wMenuAddCallback(menu, _("Hide"), nullCallback, NULL);
+  tmp_item = wMenuAddCallback(menu, _("Hide"), mainCallback, wapp);
   tmp_item->rtext = wstrdup("h");
-  tmp_item = wMenuAddCallback(menu, _("Quit"), nullCallback, NULL);
+  tmp_item = wMenuAddCallback(menu, _("Hide Others"), mainCallback, wapp);
+  tmp_item->rtext = wstrdup("H");
+  tmp_item = wMenuAddCallback(menu, _("Quit"), mainCallback, wapp);
   tmp_item->rtext = wstrdup("q");
   
   return menu;

@@ -29,6 +29,7 @@
 
 #include <core/util.h>
 #include <core/log_utils.h>
+#include <core/string_utils.h>
 #include <core/wevent.h>
 
 #include "GNUstep.h"
@@ -280,6 +281,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
   wapp->urgent_bounce_timer = NULL;
   wapp->menu_win = NULL;
   wapp->flags.is_gnustep = wwin->flags.is_gnustep;
+  wapp->app_name = wwin->flags.is_gnustep ? wstrdup(wwin->wm_instance) : wstrdup(wwin->wm_class);
 
   wApplicationAddWindow(wapp, wwin);
   
@@ -308,6 +310,11 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
   create_appicon_for_application(wapp, wwin);
 
+  /* Application menu */
+  if (!wapp->flags.is_gnustep) {
+    wapp->menu = wApplicationCreateMenu(scr, wapp);
+  }
+
   if (!scr->wapp_list) {
     scr->wapp_list = wapp;
     wapp->prev = NULL;
@@ -321,11 +328,6 @@ WApplication *wApplicationCreate(WWindow * wwin)
     wapp->prev = wa;
     wapp->next = NULL;
     wApplicationMakeFirst(wapp);
-  }
-
-  /* Application menu */
-  if (!wapp->flags.is_gnustep) {
-    wapp->menu = wApplicationCreateMenu(scr, wapp);
   }
 
   WMLogInfo("WApplication `%s` was created! Prev `%s` Next `%s`",
