@@ -1024,7 +1024,7 @@ static void handlePropertyNotify(XEvent * event)
   }
   wapp = wApplicationOf(event->xproperty.window);
   if (wapp) {
-    wClientCheckProperty(wapp->main_window_desc, &event->xproperty);
+    wClientCheckProperty(wapp->main_wwin, &event->xproperty);
   }
 }
 
@@ -1080,11 +1080,11 @@ static void handleClientMessage(XEvent * event)
     wapp = wApplicationOf(event->xclient.window);
     WMLogInfo("Received client message: %li for: %s",
              event->xclient.data.l[0],
-             wapp ? wapp->main_window_desc->wm_instance : "Unknown");
+             wapp ? wapp->main_wwin->wm_instance : "Unknown");
     if (wapp) {
       switch (event->xclient.data.l[0]) {
       case WMFHideOtherApplications:
-        wHideOtherApplications(wapp->main_window_desc);
+        wHideOtherApplications(wapp->main_wwin);
         done = 1;
         break;
 
@@ -1570,7 +1570,7 @@ static void handleKeyPress(XEvent * event)
       WApplication *wapp = wApplicationOf(wwin->main_window);
       CloseWindowMenu(scr);
 
-      if (wapp && !WFLAGP(wapp->main_window_desc, no_appicon)) {
+      if (wapp && !WFLAGP(wapp->main_wwin, no_appicon)) {
         if (wwin->flags.is_gnustep) {
           XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
         }

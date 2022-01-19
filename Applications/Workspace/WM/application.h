@@ -34,12 +34,16 @@ typedef struct WApplication {
   int refcount;
 
   const char *app_name;
-  Window main_window;			/* ID of the group leader */
-  struct WWindow *main_window_desc;	/* main (leader) window descriptor */
+  Window main_window;               /* ID of the group leader */
+  struct WWindow *main_wwin;        /* main (leader) window */
   struct WAppIcon *app_icon;
-  struct WWindow *last_focused;		/* focused window before hide */
-  int last_workspace;		 	/* last workspace used to work on the app */
+  struct WWindow *last_focused;     /* focused window before hide or switch to other */
+  int last_workspace;               /* last workspace the app used to work on */
   
+  CFMutableArrayRef windows;
+  struct WWindow *gsmenu_wwin;      /* GNUstep application menu window */
+  WMenu *app_menu;                  /* application menu */
+
   CFRunLoopTimerRef urgent_bounce_timer;
   struct {
     unsigned int is_gnustep:1;
@@ -48,13 +52,6 @@ typedef struct WApplication {
     unsigned int emulated:1;
     unsigned int bouncing:1;
   } flags;
-  
-  /* GNUstep application */
-  struct WWindow *menu_win;
-  CFMutableArrayRef windows;
-
-  /* WINGs application */
-  WMenu *menu;				/* application menu */
   
 } WApplication;
 

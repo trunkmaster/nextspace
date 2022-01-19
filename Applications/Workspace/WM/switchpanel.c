@@ -395,12 +395,12 @@ static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped,
       WWindow *w = NULL;
       WMLogInfo("Inspect application: ");
       if (wapp->flags.is_gnustep) {
-        if (wapp->menu_win) {
-          w = wapp->menu_win;
+        if (wapp->gsmenu_wwin) {
+          w = wapp->gsmenu_wwin;
           WMLogInfo("\t%s (menu: %lu)",  w->wm_instance, w->client_win);
         }
         else {
-          w = wapp->main_window_desc;
+          w = wapp->main_wwin;
           WMLogInfo("\t%s (main window: %lu)",
                    w->wm_instance, w->client_win);
         }

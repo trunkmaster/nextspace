@@ -2090,6 +2090,8 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   }
 
   /* tear off the menu if it's a root menu or a cascade application menu */
+  WMLogInfo("menuTitleMouseDown: buttoned: %i, brother: %i, app_menu: %i",
+            menu->flags.buttoned, menu->flags.brother, menu->flags.app_menu);
   if (!menu->flags.buttoned && !menu->flags.brother &&
       (!menu->flags.app_menu || menu->parent != NULL)) {
     menu->flags.buttoned = 1;

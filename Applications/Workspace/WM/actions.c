@@ -177,10 +177,10 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
           XFlush(dpy);
           XSync(dpy, False);
         }
-        if (wapp && !wapp->menu_win->flags.focused) {
+        if (wapp && !wapp->gsmenu_wwin->flags.focused) {
           WMLogInfo("           : Transfer focus to main menu (%lu).",
-                   wapp->menu_win->client_win);
-          wSetFocusTo(scr, wapp->menu_win);
+                   wapp->gsmenu_wwin->client_win);
+          wSetFocusTo(scr, wapp->gsmenu_wwin);
         }
         return;
       }
@@ -199,9 +199,9 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
   if (wwin == NULL) {
     // TDDO: hold Workspace main menu in WScreen
     WApplication *wsapp = wApplicationWithName(scr, "Workspace");
-    if (wsapp && wsapp->menu_win) {
-      WMLogInfo("        wSetFocusTo: Workspace menu window: %lu", wsapp->menu_win->client_win);
-      wClientSendProtocol(wsapp->menu_win, w_global.atom.wm.take_focus, timestamp);
+    if (wsapp && wsapp->gsmenu_wwin) {
+      WMLogInfo("        wSetFocusTo: Workspace menu window: %lu", wsapp->gsmenu_wwin->client_win);
+      wClientSendProtocol(wsapp->gsmenu_wwin, w_global.atom.wm.take_focus, timestamp);
       old_focused = NULL;
     }
     if (old_focused) {
@@ -273,7 +273,7 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     if (napp && focus_succeeded == True && wwin != NULL) {
       wApplicationMakeFirst(napp);
       /* remember last workspace and focused window of application */
-      if (wwin != napp->menu_win) {
+      if (wwin != napp->gsmenu_wwin) {
         napp->last_focused = wwin;
         napp->last_workspace = scr->current_workspace;
       }
@@ -1433,11 +1433,11 @@ void wHideApplication(WApplication *wapp)
     WMLogWarning("trying to hide a non grouped window");
     return;
   }
-  if (!wapp->main_window_desc) {
+  if (!wapp->main_wwin) {
     WMLogWarning("group leader not found for window group");
     return;
   }
-  scr = wapp->main_window_desc->screen_ptr;
+  scr = wapp->main_wwin->screen_ptr;
   hadfocus = 0;
   wlist = scr->focused_window;
   if (!wlist)
@@ -1454,14 +1454,14 @@ void wHideApplication(WApplication *wapp)
   /* Special treatment of Workspace: set focus to main menu prior to any window 
      hiding to prevent searching for next focused window. Workspace's main menu
      will not be unmapped on hiding. */
-  if (wapp->menu_win && !strcmp(wapp->menu_win->wm_instance, "Workspace")) {
-    XSetInputFocus(dpy, wapp->menu_win->client_win, RevertToParent, CurrentTime);
+  if (wapp->gsmenu_wwin && !strcmp(wapp->gsmenu_wwin->wm_instance, "Workspace")) {
+    XSetInputFocus(dpy, wapp->gsmenu_wwin->client_win, RevertToParent, CurrentTime);
     is_workspace = True;
   }
 
   while (wlist) {
     if (wlist->main_window == wapp->main_window
-        && (is_workspace == False || wlist != wapp->menu_win)) {
+        && (is_workspace == False || wlist != wapp->gsmenu_wwin)) {
       if (wlist->flags.focused)
         hadfocus = 1;
       if (wapp->app_icon) {
@@ -1541,7 +1541,7 @@ void wUnhideApplication(WApplication *wapp, Bool miniwindows, Bool bringToCurren
   if (!wapp)
     return;
 
-  scr = wapp->main_window_desc->screen_ptr;
+  scr = wapp->main_wwin->screen_ptr;
   wlist = scr->focused_window;
   if (!wlist)
     return;

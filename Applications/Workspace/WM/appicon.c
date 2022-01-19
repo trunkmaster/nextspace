@@ -179,11 +179,11 @@ void create_appicon_for_application(WApplication *wapp, WWindow *wwin)
   /* If app_icon was not found, create it */
   if (!wapp->app_icon) {
     /* Create the icon */
-    wapp->app_icon = wAppIconCreate(wapp->main_window_desc);
+    wapp->app_icon = wAppIconCreate(wapp->main_wwin);
     wIconUpdate(wapp->app_icon->icon);
 
     /* Now, paint the icon */
-    if (!WFLAGP(wapp->main_window_desc, no_appicon))
+    if (!WFLAGP(wapp->main_wwin, no_appicon))
       paint_app_icon(wapp);
   }
 
@@ -206,7 +206,7 @@ void unpaint_app_icon(WApplication *wapp)
   if (aicon->docked)
     return;
 
-  scr = wapp->main_window_desc->screen_ptr;
+  scr = wapp->main_wwin->screen_ptr;
   clip = scr->workspaces[scr->current_workspace]->clip;
 
   if (!clip || !aicon->attracted || !clip->collapsed)
@@ -229,11 +229,11 @@ void paint_app_icon(WApplication *wapp)
   int x = 0, y = 0;
   Bool update_icon = False;
 
-  if (!wapp || !wapp->app_icon || !wapp->main_window_desc)
+  if (!wapp || !wapp->app_icon || !wapp->main_wwin)
     return;
 
   icon = wapp->app_icon->icon;
-  scr = wapp->main_window_desc->screen_ptr;
+  scr = wapp->main_wwin->screen_ptr;
   wapp->app_icon->main_window = wapp->main_window;
 
   /* If the icon is docked, don't continue */
@@ -256,7 +256,7 @@ void paint_app_icon(WApplication *wapp)
      * because if painted, then PlaceIcon will return the next
      * space on the screen, and the icon will move */
     if (wapp->app_icon->next == NULL && wapp->app_icon->prev == NULL) {
-      PlaceIcon(scr, &x, &y, wGetHeadForWindow(wapp->main_window_desc));
+      PlaceIcon(scr, &x, &y, wGetHeadForWindow(wapp->main_wwin));
       wAppIconMove(wapp->app_icon, x, y);
       wLowerFrame(icon->core);
     }
@@ -265,7 +265,7 @@ void paint_app_icon(WApplication *wapp)
   /* If we want appicon (no_appicon is not set) and the icon is not
    * in the appicon_list, we must add it. Else, we want to avoid
    * having it on the list */
-  if (!WFLAGP(wapp->main_window_desc, no_appicon) &&
+  if (!WFLAGP(wapp->main_wwin, no_appicon) &&
       wapp->app_icon->next == NULL && wapp->app_icon->prev == NULL)
     add_to_appicon_list(scr, wapp->app_icon);
 
@@ -318,7 +318,7 @@ void removeAppIconFor(WApplication *wapp)
   wapp->app_icon = NULL;
 
   if (wPreferences.auto_arrange_icons)
-    wArrangeIcons(wapp->main_window_desc->screen_ptr, True);
+    wArrangeIcons(wapp->main_wwin->screen_ptr, True);
 }
 
 static WAppIcon *wAppIconCreate(WWindow *leader_win)
@@ -465,7 +465,7 @@ static void relaunchApplication(WApplication *wapp)
   WScreen *scr;
   WWindow *wlist, *next;
 
-  scr = wapp->main_window_desc->screen_ptr;
+  scr = wapp->main_wwin->screen_ptr;
   wlist = scr->focused_window;
   if (! wlist)
     return;
@@ -536,9 +536,9 @@ static void killCallback(WMenu * menu, WMenuEntry * entry)
                       _(" will be forcibly closed.\n"
                         "Any unsaved changes will be lost.\n" "Please confirm."));
 
-  fPtr = wapp->main_window_desc->fake_group;
+  fPtr = wapp->main_wwin->fake_group;
 
-  wretain(wapp->main_window_desc);
+  wretain(wapp->main_wwin);
   dispatch_async(workspace_q, ^{
       if (wPreferences.dont_confirm_kill
           || WSRunAlertPanel(_("Kill Application"),
@@ -546,18 +546,18 @@ static void killCallback(WMenu * menu, WMenuEntry * entry)
         if (fPtr != NULL) {
           WWindow *wwin, *twin;
 
-          wwin = wapp->main_window_desc->screen_ptr->focused_window;
+          wwin = wapp->main_wwin->screen_ptr->focused_window;
           while (wwin) {
             twin = wwin->prev;
             if (wwin->fake_group == fPtr)
               wClientKill(wwin);
             wwin = twin;
           }
-        } else if (!wapp->main_window_desc->flags.destroyed) {
-          wClientKill(wapp->main_window_desc);
+        } else if (!wapp->main_wwin->flags.destroyed) {
+          wClientKill(wapp->main_wwin);
         }
       }
-      wrelease(wapp->main_window_desc);
+      wrelease(wapp->main_wwin);
       wfree(buffer);
       WCHANGE_STATE(WSTATE_NORMAL);
     });
@@ -579,7 +579,7 @@ static WMenu *createApplicationMenu(WScreen *scr)
 static void openApplicationMenu(WApplication * wapp, int x, int y)
 {
   WMenu *menu;
-  WScreen *scr = wapp->main_window_desc->screen_ptr;
+  WScreen *scr = wapp->main_wwin->screen_ptr;
   int i;
 
   if (!scr->icon_menu) {
@@ -1191,7 +1191,7 @@ static void create_appicon_from_dock(WWindow *wwin, WApplication *wapp, Window m
 
   /* If created, then set some flags */
   if (wapp->app_icon) {
-    WWindow *mainw = wapp->main_window_desc;
+    WWindow *mainw = wapp->main_wwin;
 
     wapp->app_icon->running = 1;
     wapp->app_icon->icon->owner = mainw;
@@ -1418,7 +1418,7 @@ WAppIcon *wLaunchingAppIconForInstance(WScreen *scr, char *wm_instance, char *wm
 WAppIcon *wLaunchingAppIconForApplication(WScreen *scr, WApplication *wapp)
 {
   WAppIcon *aicon;
-  WWindow  *main_window = wapp->main_window_desc;
+  WWindow  *main_window = wapp->main_wwin;
   
   aicon = wLaunchingAppIconForInstance(scr, main_window->wm_instance, main_window->wm_class);
   if (!aicon) {

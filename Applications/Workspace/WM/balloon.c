@@ -553,8 +553,8 @@ static void appiconBalloon(WObjDescriptor *object)
     if (object->parent_type == WCLASS_DOCK_ICON) {
       if (aicon->main_window) {
         app = wApplicationOf(aicon->main_window);
-        if (app && app->main_window_desc && app->main_window_desc->fake_group)
-          app_win_cnt = app->main_window_desc->fake_group->retainCount - 1;
+        if (app && app->main_wwin && app->main_wwin->fake_group)
+          app_win_cnt = app->main_wwin->fake_group->retainCount - 1;
       }
     }
 

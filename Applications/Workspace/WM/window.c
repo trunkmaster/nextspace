@@ -1219,7 +1219,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
          * in a previous incarnation and that state was restored */
         app->flags.hidden = 1;
       } else if (app->flags.hidden) {
-        if (WFLAGP(app->main_window_desc, start_hidden)) {
+        if (WFLAGP(app->main_wwin, start_hidden)) {
           wwin->flags.hidden = 1;
         } else if (!wwin->flags.is_gnustep) { // GNUstep application unhides itself
           wUnhideApplication(app, False, False);
@@ -1611,12 +1611,12 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
         } else {
           wSetFocusTo(scr, new_focused_window);
         }
-      } else if (oapp && oapp->menu_win) {
+      } else if (oapp && oapp->gsmenu_wwin) {
         if (!scr->flags.ignore_focus_events) {
           /* wSetFocusTo will be called in handleFocusIn() */
-          WMLogInfo("set focus to main menu == %lu", oapp->menu_win->client_win);
-          XSetInputFocus(dpy, oapp->menu_win->client_win, RevertToParent, CurrentTime);
-          oapp->menu_win->flags.focused = 1;
+          WMLogInfo("set focus to main menu == %lu", oapp->gsmenu_wwin->client_win);
+          XSetInputFocus(dpy, oapp->gsmenu_wwin->client_win, RevertToParent, CurrentTime);
+          oapp->gsmenu_wwin->flags.focused = 1;
         }
       } else {
         wSetFocusTo(scr, new_focused_window);

@@ -432,16 +432,16 @@ static BOOL _workspaceQuitting = NO;
     return;
   }
 
-  appIcon = wLaunchingAppIconForInstance(wapp->main_window_desc->screen_ptr,
-                                         wapp->main_window_desc->wm_instance,
-                                         wapp->main_window_desc->wm_class);
+  appIcon = wLaunchingAppIconForInstance(wapp->main_wwin->screen_ptr,
+                                         wapp->main_wwin->wm_instance,
+                                         wapp->main_wwin->wm_class);
   if (appIcon) {
-    wLaunchingAppIconFinish(wapp->main_window_desc->screen_ptr, appIcon);
+    wLaunchingAppIconFinish(wapp->main_wwin->screen_ptr, appIcon);
     appIcon->main_window = wapp->main_window;
   }
 
   // GNUstep application will register itself in ProcessManager with AppKit notification.
-  if (!strcmp(wapp->main_window_desc->wm_class, "GNUstep")) {
+  if (!strcmp(wapp->main_wwin->wm_class, "GNUstep")) {
     return;
   }
     
@@ -470,7 +470,7 @@ static BOOL _workspaceQuitting = NO;
     return;
   }
   
-  appInfo = [self _applicationInfoForApp:wapp window:wapp->main_window_desc];
+  appInfo = [self _applicationInfoForApp:wapp window:wapp->main_wwin];
   localNotif = [NSNotification notificationWithName:NSWorkspaceDidTerminateApplicationNotification
                                              object:nil
                                            userInfo:appInfo];

@@ -1,4 +1,6 @@
 #include <string.h>
+#include <stdio.h>
+
 #include <core/log_utils.h>
 #include <core/string_utils.h>
 
@@ -6,6 +8,7 @@
 #include "window.h"
 #include "framewin.h"
 #include "actions.h"
+#include "misc.h"
 
 // Main application menu
 //-------------------------------------------------------------------------------------------------
@@ -23,6 +26,257 @@ static void mainCallback(WMenu *menu, WMenuEntry *entry)
   } else if (!strcmp(entry->text, "Hide Others")) {
     wHideOtherApplications(wapp->last_focused);
   }
+}
+
+// "Windows" menu
+//-------------------------------------------------------------------------------------------------
+#define MAX_WINDOWLIST_WIDTH    400
+#define ACTION_ADD              0
+#define ACTION_REMOVE           1
+#define ACTION_CHANGE           2
+#define ACTION_CHANGE_WORKSPACE 3
+#define ACTION_CHANGE_STATE     4
+
+static void focusWindow(WMenu *menu, WMenuEntry *entry)
+{
+  WWindow *wwin = (WWindow *)entry->clientdata;
+  wWindowSingleFocus(wwin);
+}
+
+static void windowsCallback(WMenu *menu, WMenuEntry *entry) {}
+
+static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
+{
+  int idx;
+
+  if (menu->entry_no <= old_pos)
+    return -1;
+
+#define WS(i)  ((WWindow*)menu->entries[i]->clientdata)->frame->workspace
+  if (old_pos >= 0) {
+    if (WS(old_pos) >= wwin->frame->workspace
+        && (old_pos == 0 || WS(old_pos - 1) <= wwin->frame->workspace)) {
+      return old_pos;
+    }
+  }
+#undef WS
+
+  for (idx = 0; idx < menu->entry_no; idx++) {
+    WWindow *tw = (WWindow *)menu->entries[idx]->clientdata;
+
+    if (!IS_OMNIPRESENT(tw)
+        && tw->frame->workspace > wwin->frame->workspace) {
+      break;
+    }
+  }
+
+  return idx;
+}
+
+static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
+{
+  WMenuEntry *entry;
+  char title[MAX_MENU_TEXT_LENGTH + 6];
+  int len = sizeof(title);
+  int i;
+  int checkVisibility = 0;
+
+  /*
+   *  This menu is updated under the following conditions:
+   *    1.  When a window is created.
+   *    2.  When a window is destroyed.
+   *    3.  When a window changes it's title.
+   */
+  if (action == ACTION_ADD) {
+    char *t;
+    int idx;
+
+    if (wwin->flags.internal_window || WFLAGP(wwin, skip_window_list)) {
+      return;
+    }
+
+    if (wwin->frame->title)
+      snprintf(title, len, "%s", wwin->frame->title);
+    else
+      snprintf(title, len, "%s", DEF_WINDOW_TITLE);
+    t = ShrinkString(wwin->screen_ptr->menu_entry_font, title, MAX_WINDOWLIST_WIDTH);
+
+    if (IS_OMNIPRESENT(wwin))
+      idx = -1;
+    else {
+      idx = menuIndexForWindow(windows_menu, wwin, -1);
+    }
+
+    entry = wMenuInsertCallback(windows_menu, idx, t, focusWindow, wwin);
+    wfree(t);
+
+    entry->flags.indicator = 1;
+    if (wwin->flags.hidden) {
+      entry->flags.indicator_type = MI_HIDDEN;
+      entry->flags.indicator_on = 1;
+    } else if (wwin->flags.miniaturized) {
+      entry->flags.indicator_type = MI_MINIWINDOW;
+      entry->flags.indicator_on = 1;
+    } else if (wwin->flags.focused) {
+      entry->flags.indicator_type = MI_DIAMOND;
+      entry->flags.indicator_on = 1;
+    } else if (wwin->flags.shaded) {
+      entry->flags.indicator_type = MI_SHADED;
+      entry->flags.indicator_on = 1;
+    }
+
+    wMenuRealize(windows_menu);
+    checkVisibility = 1;
+  } else {
+    char *t;
+    for (i = 0; i < windows_menu->entry_no; i++) {
+      entry = windows_menu->entries[i];
+      /* this is the entry that was changed */
+      if (entry->clientdata == wwin) {
+        switch (action) {
+        case ACTION_REMOVE:
+          wMenuRemoveItem(windows_menu, i);
+          wMenuRealize(windows_menu);
+          checkVisibility = 1;
+          break;
+
+        case ACTION_CHANGE:
+          if (entry->text)
+            wfree(entry->text);
+
+          if (wwin->frame->title)
+            snprintf(title, MAX_MENU_TEXT_LENGTH, "%s", wwin->frame->title);
+          else
+            snprintf(title, MAX_MENU_TEXT_LENGTH, "%s", DEF_WINDOW_TITLE);
+
+          t = ShrinkString(wwin->screen_ptr->menu_entry_font, title, MAX_WINDOWLIST_WIDTH);
+          entry->text = t;
+
+          wMenuRealize(windows_menu);
+          checkVisibility = 1;
+          break;
+
+        case ACTION_CHANGE_STATE:
+          if (wwin->flags.hidden) {
+            entry->flags.indicator_type = MI_HIDDEN;
+            entry->flags.indicator_on = 1;
+          } else if (wwin->flags.miniaturized) {
+            entry->flags.indicator_type = MI_MINIWINDOW;
+            entry->flags.indicator_on = 1;
+          } else if (wwin->flags.shaded && !wwin->flags.focused) {
+            entry->flags.indicator_type = MI_SHADED;
+            entry->flags.indicator_on = 1;
+          } else {
+            entry->flags.indicator_on = wwin->flags.focused;
+            entry->flags.indicator_type = MI_DIAMOND;
+          }
+          break;
+        }
+        break;
+      }
+    }
+  }
+  if (checkVisibility) {
+    int tmp;
+
+    tmp = windows_menu->frame->top_width + 5;
+    /* if menu got unreachable, bring it to a visible place */
+    if (windows_menu->frame_x < tmp - (int)windows_menu->frame->core->width) {
+      wMenuMove(windows_menu, tmp - (int)windows_menu->frame->core->width,
+                windows_menu->frame_y, False);
+    }
+  }
+  wMenuPaint(windows_menu);
+}
+
+static void windowObserver(CFNotificationCenterRef center,
+                           void *menu,
+                           CFNotificationName name,
+                           const void *window,
+                           CFDictionaryRef userInfo)
+{
+  WMenu *windows_menu = (WMenu *)menu;
+  WWindow *wwin = (WWindow *)window;
+    
+  if (!wwin)
+    return;
+  
+  if (CFStringCompare(name, WMDidManageWindowNotification, 0) == 0) {
+    updateWindowsMenu(windows_menu, wwin, ACTION_ADD);
+  }
+  else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0) {
+    updateWindowsMenu(windows_menu, wwin, ACTION_REMOVE);
+  }
+  else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0) {
+    updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_STATE);
+  }
+  else if (CFStringCompare(name, WMDidChangeWindowNameNotification, 0) == 0) {
+    updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE);
+  }
+  else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
+    CFStringRef wstate = (CFStringRef)wGetNotificationInfoValue(userInfo, CFSTR("state"));
+    if (CFStringCompare(wstate, CFSTR("omnipresent"), 0) == 0) {
+      updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_WORKSPACE);
+    }
+    else {
+      updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_STATE);
+    }
+  }
+}
+
+static WMenu *createWindowsMenu(WApplication *wapp)
+{
+  WMenu *windows_menu;
+  WMenuEntry *tmp_item;
+  CFIndex winCount = CFArrayGetCount(wapp->windows);
+  WWindow *wwin = NULL;
+  char *t;
+  char title[MAX_MENU_TEXT_LENGTH + 6];
+  int len = sizeof(title);
+  WScreen *scr = wapp->main_wwin->screen_ptr;
+  
+  windows_menu = wMenuCreate(scr, _("Windows"), False);
+  wMenuInsertCallback(windows_menu, 0, _("Arrange in Front"), windowsCallback, NULL);
+
+  for (CFIndex i = 0; i < winCount; i++) {
+    wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, i);
+    if (wwin->frame->title) {
+      snprintf(title, len, "%s", wwin->frame->title);
+    } else {
+      snprintf(title, len, "%s", DEF_WINDOW_TITLE);
+    }
+    t = ShrinkString(wwin->screen_ptr->menu_entry_font, title, MAX_WINDOWLIST_WIDTH);
+    wMenuInsertCallback(windows_menu, i+1, t, windowsCallback, wwin);
+  }
+  
+  tmp_item = wMenuAddCallback(windows_menu, _("Miniaturize Window"), windowsCallback, NULL);
+  tmp_item->rtext = wstrdup("m");
+  tmp_item = wMenuAddCallback(windows_menu, _("Shade Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddCallback(windows_menu, _("Zoom window"), windowsCallback, NULL);
+  tmp_item = wMenuAddCallback(windows_menu, _("Close Window"), windowsCallback, NULL);
+  tmp_item->rtext = wstrdup("w");
+
+  CFNotificationCenterAddObserver(scr->notificationCenter, windows_menu, windowObserver,
+                                  WMDidManageWindowNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, windows_menu, windowObserver,
+                                  WMDidUnmanageWindowNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, windows_menu, windowObserver,
+                                  WMDidChangeWindowStateNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, windows_menu, windowObserver,
+                                  WMDidChangeWindowFocusNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, windows_menu, windowObserver,
+                                  WMDidChangeWindowStackingNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, windows_menu, windowObserver,
+                                  WMDidChangeWindowNameNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+
+
+  return windows_menu;
 }
 
 WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp)
@@ -53,14 +307,7 @@ WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp)
   edit_item = wMenuAddCallback(menu, _("Edit"), NULL, NULL);
   wMenuEntrySetCascade(menu, edit_item, edit);
 
-  windows = wMenuCreate(scr, _("Windows"), False);
-  wMenuAddCallback(windows, _("Arrange in Front"), nullCallback, NULL);
-  tmp_item = wMenuAddCallback(windows, _("Miniaturize Window"), nullCallback, NULL);
-  tmp_item->rtext = wstrdup("m");
-  tmp_item = wMenuAddCallback(windows, _("Shade Window"), nullCallback, NULL);
-  tmp_item = wMenuAddCallback(windows, _("Zoom window"), nullCallback, NULL);
-  tmp_item = wMenuAddCallback(windows, _("Close Window"), nullCallback, NULL);
-  tmp_item->rtext = wstrdup("w");
+  windows = createWindowsMenu(wapp);
   windows_item = wMenuAddCallback(menu, _("Windows"), NULL, NULL);
   wMenuEntrySetCascade(menu, windows_item, windows);
   
@@ -76,15 +323,15 @@ WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp)
 
 void wApplicationOpenMenu(WApplication *wapp, int x, int y)
 {
-  WScreen *scr = wapp->main_window_desc->screen_ptr;
+  WScreen *scr = wapp->main_wwin->screen_ptr;
   WMenu *menu;
   int i;
 
-  if (!wapp->menu) {
+  if (!wapp->app_menu) {
     WMLogError("Applicastion menu can't be opened because it was not created");
     return;
   }
-  menu = wapp->menu;
+  menu = wapp->app_menu;
 
   /* set client data */
   for (i = 0; i < menu->entry_no; i++) {

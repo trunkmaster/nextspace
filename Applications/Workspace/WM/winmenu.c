@@ -629,7 +629,7 @@ static void updateMenuForWindow(WMenu * menu, WWindow * wwin)
   updateMakeShortcutMenu(menu, wwin);
 
   if (menu->entries[MC_MINIATURIZE])
-    wMenuSetEnabled(menu, MC_HIDE, wapp != NULL && !WFLAGP(wapp->main_window_desc, no_appicon));
+    wMenuSetEnabled(menu, MC_HIDE, wapp != NULL && !WFLAGP(wapp->main_wwin, no_appicon));
 
   if (menu->entries[MC_CLOSE])
     wMenuSetEnabled(menu, MC_CLOSE, (wwin->protocols.DELETE_WINDOW && !WFLAGP(wwin, no_closable)));

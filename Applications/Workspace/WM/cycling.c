@@ -262,8 +262,8 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
       wApplicationActivate(wapp);
     }
     if (wapp && wapp->flags.is_gnustep && !class_only) {
-      if (wapp->menu_win)
-        wSetFocusTo(scr, wapp->menu_win);
+      if (wapp->gsmenu_wwin)
+        wSetFocusTo(scr, wapp->gsmenu_wwin);
       else
         WSActivateApplication(scr, newFocused->wm_instance);
     }

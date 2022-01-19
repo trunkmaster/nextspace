@@ -102,7 +102,7 @@ static void shadeObserver(CFNotificationCenterRef center,
     /* if (!wapp || wapp->main_window_desc != observer_wapp->main_window_desc) { */
     if (wapp != observer_wapp) {
       WMLogInfo("WM wapp %s received foreing notification",
-                observer_wapp->main_window_desc->wm_instance);
+                observer_wapp->main_wwin->wm_instance);
       return;
     }
     
@@ -200,7 +200,7 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
            wwin->client_win, window_level, wwin->wm_instance, wapp->refcount);
   
   if (wapp->app_icon && wapp->app_icon->docked &&
-      wapp->app_icon->relaunching && wapp->main_window_desc->fake_group) {
+      wapp->app_icon->relaunching && wapp->main_wwin->fake_group) {
     wDockFinishLaunch(wapp->app_icon);
   }
 
@@ -208,7 +208,7 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
     return;
 
   if (window_level == NSMainMenuWindowLevel)
-    wapp->menu_win = wwin;
+    wapp->gsmenu_wwin = wwin;
   
   /* Do not add short-living objects to window list: tooltips, submenus, popups, etc. */
   if (window_level != NSNormalWindowLevel && window_level != NSFloatingWindowLevel)
@@ -279,7 +279,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
   wapp->refcount = 1;
   wapp->last_focused = wwin;
   wapp->urgent_bounce_timer = NULL;
-  wapp->menu_win = NULL;
+  wapp->gsmenu_wwin = NULL;
   wapp->flags.is_gnustep = wwin->flags.is_gnustep;
   wapp->app_name = wwin->flags.is_gnustep ? wstrdup(wwin->wm_instance) : wstrdup(wwin->wm_class);
 
@@ -288,22 +288,22 @@ WApplication *wApplicationCreate(WWindow * wwin)
   wapp->last_workspace = wwin->screen_ptr->current_workspace;
 
   wapp->main_window = main_window;
-  wapp->main_window_desc = makeMainWindow(scr, main_window);
-  if (!wapp->main_window_desc) {
+  wapp->main_wwin = makeMainWindow(scr, main_window);
+  if (!wapp->main_wwin) {
     wfree(wapp);
     return NULL;
   }
 
-  wapp->main_window_desc->fake_group = wwin->fake_group;
-  wapp->main_window_desc->net_icon_image = RRetainImage(wwin->net_icon_image);
+  wapp->main_wwin->fake_group = wwin->fake_group;
+  wapp->main_wwin->net_icon_image = RRetainImage(wwin->net_icon_image);
 
   leader = wWindowFor(main_window);
   if (leader)
     leader->main_window = main_window;
 
   /* Set application wide attributes from the leader */
-  wapp->flags.hidden = WFLAGP(wapp->main_window_desc, start_hidden);
-  wapp->flags.emulated = WFLAGP(wapp->main_window_desc, emulate_appicon);
+  wapp->flags.hidden = WFLAGP(wapp->main_wwin, start_hidden);
+  wapp->flags.emulated = WFLAGP(wapp->main_wwin, emulate_appicon);
 
   /* application descriptor */
   XSaveContext(dpy, main_window, w_global.context.app_win, (XPointer) wapp);
@@ -312,7 +312,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
   /* Application menu */
   if (!wapp->flags.is_gnustep) {
-    wapp->menu = wApplicationCreateMenu(scr, wapp);
+    wapp->app_menu = wApplicationCreateMenu(scr, wapp);
   }
 
   if (!scr->wapp_list) {
@@ -332,8 +332,8 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
   WMLogInfo("WApplication `%s` was created! Prev `%s` Next `%s`",
            wwin->wm_instance,
-           wapp->prev ? wapp->prev->main_window_desc->wm_instance : "NULL",
-           wapp->next ? wapp->next->main_window_desc->wm_instance : "NULL");
+           wapp->prev ? wapp->prev->main_wwin->wm_instance : "NULL",
+           wapp->next ? wapp->next->main_wwin->wm_instance : "NULL");
         
   if (scr->notificationCenter) {
     CFNotificationCenterAddObserver(scr->notificationCenter, wapp, shadeObserver,
@@ -357,7 +357,7 @@ WApplication *wApplicationWithName(WScreen *scr, char *app_name)
   WApplication *app = scr ? scr->wapp_list : wDefaultScreen()->wapp_list;
   
   while (app) {
-    if (!strcmp(app->main_window_desc->wm_instance, app_name))
+    if (!strcmp(app->main_wwin->wm_instance, app_name))
       return app;
     app = app->next;
   }
@@ -385,9 +385,9 @@ void wApplicationDestroy(WApplication *wapp)
   CFRelease(wapp->windows);
   /* WMLogError("wapp->windows retain count: %li", CFGetRetainCount(wapp->windows)); */
 
-  if (wapp->menu) {
-    wMenuUnmap(wapp->menu);
-    wMenuDestroy(wapp->menu, True);
+  if (wapp->app_menu) {
+    wMenuUnmap(wapp->app_menu);
+    wMenuDestroy(wapp->app_menu, True);
   }
 
   if (wapp->urgent_bounce_timer) {
@@ -401,7 +401,7 @@ void wApplicationDestroy(WApplication *wapp)
     return;
   }
 
-  scr = wapp->main_window_desc->screen_ptr;
+  scr = wapp->main_wwin->screen_ptr;
   
   // Notify Workspace's ProcessManager
   // dispatch_sync(workspace_q, ^{ WSApplicationDidDestroy(wapp); });
@@ -424,9 +424,9 @@ void wApplicationDestroy(WApplication *wapp)
   /* Remove application icon */
   removeAppIconFor(wapp);
 
-  wwin = wWindowFor(wapp->main_window_desc->client_win);
+  wwin = wWindowFor(wapp->main_wwin->client_win);
 
-  wWindowDestroy(wapp->main_window_desc);
+  wWindowDestroy(wapp->main_wwin);
   if (wwin) {
     /* undelete client window context that was deleted in
      * wWindowDestroy */
@@ -441,10 +441,10 @@ void wApplicationDestroy(WApplication *wapp)
 
 void wApplicationActivate(WApplication *wapp)
 {
-  WScreen *scr = wapp->main_window_desc->screen_ptr;
+  WScreen *scr = wapp->main_wwin->screen_ptr;
 
   WMLogInfo("wApplicationActivate %s current WS:%i last WS:%i app WS:%i",
-           wapp->main_window_desc->wm_instance,
+           wapp->main_wwin->wm_instance,
            scr->current_workspace, scr->last_workspace,
            wapp->last_workspace);
   
@@ -453,8 +453,8 @@ void wApplicationActivate(WApplication *wapp)
     wWorkspaceChange(scr, wapp->last_workspace, NULL);
   }
   wApplicationMakeFirst(wapp);
-  if (wapp->menu) {
-    wMenuMap(wapp->menu);
+  if (wapp->app_menu) {
+    wMenuMap(wapp->app_menu);
   }
 }
 
@@ -464,14 +464,14 @@ void wApplicationDeactivate(WApplication *wapp)
     wIconSetHighlited(wapp->app_icon->icon, False);
     wAppIconPaint(wapp->app_icon);
   }
-  if (wapp->menu) {
-    wMenuUnmap(wapp->menu);
+  if (wapp->app_menu) {
+    wMenuUnmap(wapp->app_menu);
   }
 }
 
 void wApplicationMakeFirst(WApplication *wapp)
 {
-  WScreen *scr = wapp->main_window_desc->screen_ptr;
+  WScreen *scr = wapp->main_wwin->screen_ptr;
   WApplication *first_wapp;
   /* WApplication *app; */
   

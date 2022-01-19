@@ -405,11 +405,11 @@ static int appIsUrgent(WApplication *wapp)
   WScreen *scr;
   WWindow *wlist;
 
-  if (!wapp->main_window_desc) {
+  if (!wapp->main_wwin) {
     WMLogWarning("group leader not found for window group");
     return 0;
   }
-  scr = wapp->main_window_desc->screen_ptr;
+  scr = wapp->main_wwin->screen_ptr;
   wlist = scr->focused_window;
   if (!wlist)
     return 0;

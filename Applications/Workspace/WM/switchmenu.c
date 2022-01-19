@@ -95,7 +95,7 @@ void InitializeSwitchMenu(WScreen *scr)
     WMenu *switchmenu = NULL;
     WWindow *wwin;
 
-    switchmenu = wMenuCreate(scr, _("Windows"), True);
+    switchmenu = wMenuCreate(scr, _("Windows"), False);
     scr->switch_menu = switchmenu;
     wretain(scr->switch_menu);
 
@@ -148,10 +148,9 @@ void OpenSwitchMenu(WScreen *scr, int x, int y, int keyboard)
   /* WWindow *wwin; */
 
   if (switchmenu) {
-    
-    if (!switchmenu->flags.realized)
+    if (!switchmenu->flags.realized) {
       wMenuRealize(switchmenu);
-    
+    }
     if (switchmenu->flags.mapped) {
       if (!switchmenu->flags.buttoned) {
         wMenuUnmap(switchmenu);
@@ -170,24 +169,6 @@ void OpenSwitchMenu(WScreen *scr, int x, int y, int keyboard)
     }
     return;
   }
-  
-  /* if (switchmenu) { */
-  /*   int newx, newy; */
-    
-  /*   if (!switchmenu->flags.realized) */
-  /*     wMenuRealize(switchmenu); */
-    
-  /*   if (keyboard && x == 0 && y == 0) { */
-  /*     newx = newy = 0; */
-  /*   } else if (keyboard && x == scr->scr_width / 2 && y == scr->scr_height / 2) { */
-  /*     newx = x - switchmenu->frame->core->width / 2; */
-  /*     newy = y - switchmenu->frame->core->height / 2; */
-  /*   } else { */
-  /*     newx = x - switchmenu->frame->core->width / 2; */
-  /*     newy = y; */
-  /*   } */
-  /*   wMenuMapAt(switchmenu, newx, newy, keyboard); */
-  /* } */
 }
 
 static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
