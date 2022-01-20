@@ -174,6 +174,11 @@ WApplication *wApplicationOf(Window window)
   return wapp;
 }
 
+WApplication *wApplicationForWindow(struct WWindow *wwin)
+{
+  return wApplicationOf(wwin->main_window);
+}
+
 BOOL _isWindowAlreadyRegistered(WApplication *wapp, WWindow *wwin)
 {
   CFMutableArrayRef windows = wapp->windows;

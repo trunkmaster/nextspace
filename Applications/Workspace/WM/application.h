@@ -61,6 +61,7 @@ void wApplicationRemoveWindow(WApplication *wapp, struct WWindow *wwin);
 WApplication *wApplicationCreate(struct WWindow *wwin);
 WApplication *wApplicationWithName(WScreen *scr, char *app_name);
 WApplication *wApplicationOf(Window window);
+WApplication *wApplicationForWindow(struct WWindow *wwin);
 void wApplicationDestroy(WApplication *wapp);
 
 void wAppBounce(WApplication *);
