@@ -274,7 +274,7 @@ static WMenu *submenuWithTitle(WMenu *menu, char *title)
   return NULL;
 }
 
-WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp)
+WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
 {
   WMenu *menu, *info, *edit, *windows;
   WMenuEntry *info_item, *edit_item, *windows_item, *tmp_item;
@@ -317,7 +317,7 @@ WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp)
   return menu;
 }
 
-void wApplicationDestroyMenu(WApplication *wapp)
+void wApplicationMenuDestroy(WApplication *wapp)
 {
   WMenu *windows_menu = submenuWithTitle(wapp->app_menu, "Windows");
   
@@ -327,7 +327,7 @@ void wApplicationDestroyMenu(WApplication *wapp)
   wMenuDestroy(wapp->app_menu, True);
 }
 
-void wApplicationOpenMenu(WApplication *wapp, int x, int y)
+void wApplicationMenuOpen(WApplication *wapp, int x, int y)
 {
   WScreen *scr = wapp->main_wwin->screen_ptr;
   WMenu *menu;
@@ -362,4 +362,102 @@ void wApplicationOpenMenu(WApplication *wapp, int x, int y)
     x = 0;
   }
   wMenuMapAt(menu, x, y, False);
+}
+
+void wApplicationMenuClose(WApplication *wapp)
+{
+  WMenu *main_menu;
+  WMenu *tmp_menu;
+
+  main_menu = wapp->app_menu;
+  if (!main_menu) {
+    return;
+  }
+  
+  for (int i = 0; i < main_menu->cascade_no; i++) {
+    tmp_menu = main_menu->cascades[i];
+    WMLogInfo("Unmap submenu %s is mapped: %i brother mapped: %i",
+              tmp_menu->frame->title, tmp_menu->flags.mapped, tmp_menu->brother->flags.mapped);
+    if (tmp_menu->flags.mapped) {
+      wMenuUnmap(tmp_menu);
+    } else if (tmp_menu->flags.brother && tmp_menu->brother->flags.mapped) {
+      wMenuUnmap(tmp_menu->brother);
+    }
+  }
+  wMenuUnmap(wapp->app_menu);
+}
+
+/* This is a live information about posisions of menu and submenus on screen.
+   It's used on application activation and deactivation. */
+static CFDictionaryRef getMenuState(WMenu *menu)
+{
+  CFMutableDictionaryRef state;
+  CFStringRef title;
+  CFNumberRef pos;
+  
+  state = CFDictionaryCreateMutable(kCFAllocatorDefault, 9,
+                                    &kCFTypeDictionaryKeyCallBacks,
+                                    &kCFTypeDictionaryValueCallBacks);
+
+  // Title
+  title = CFStringCreateWithCString(kCFAllocatorDefault, menu->frame->title,
+                                    kCFStringEncodingUTF8);
+  CFDictionarySetValue(state, CFSTR("Title"), title);
+  CFRelease(title);
+
+  // Type
+  if (menu->flags.app_menu) {
+    CFDictionarySetValue(state, CFSTR("Type"), CFSTR("Main"));
+  } else if (menu->flags.buttoned) {
+    CFDictionarySetValue(state, CFSTR("Type"), CFSTR("TearOff"));
+  } else {
+    CFDictionarySetValue(state, CFSTR("Type"), CFSTR("Attached"));
+  }
+
+  // Position
+  pos = CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType, &menu->frame_x);
+  CFDictionarySetValue(state, CFSTR("X"), pos);
+  CFRelease(pos);
+  pos = CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType, &menu->frame_y);
+  CFDictionarySetValue(state, CFSTR("Y"), pos);
+  CFRelease(pos);
+
+  return state;
+}
+
+CFDictionaryRef wApplicationMenuGetState(WMenu *main_menu)
+{
+  CFMutableDictionaryRef state;
+  CFMutableArrayRef submenus;
+  CFDictionaryRef menu_info;
+  WMenu *tmp_menu, *menu;
+
+  state = CFDictionaryCreateMutable(kCFAllocatorDefault, 9,
+                                    &kCFTypeDictionaryKeyCallBacks,
+                                    &kCFTypeDictionaryValueCallBacks);
+  
+  submenus = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
+  
+  menu_info = getMenuState(main_menu);
+  CFArrayAppendValue(submenus, menu_info);
+  /* CFDictionarySetValue(state, CFSTR("MainMenu"), menu_info); */
+  CFRelease(menu_info);
+  
+  for (int i = 0; i < main_menu->cascade_no; i++) {
+    tmp_menu = main_menu->cascades[i];
+    if (tmp_menu->flags.mapped) { // attached submenu opened
+      menu = tmp_menu;
+    } else if (tmp_menu->flags.brother && tmp_menu->brother->flags.mapped){
+      menu = tmp_menu->brother;
+    }
+    menu_info = getMenuState(menu);
+    CFShow(menu_info);
+    CFArrayAppendValue(submenus, menu_info);
+    CFRelease(menu_info);
+  }
+  
+  CFDictionarySetValue(state, CFSTR("Submenus"), submenus);
+  CFRelease(submenus);
+  
+  return state;
 }

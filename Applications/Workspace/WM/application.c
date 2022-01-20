@@ -179,7 +179,7 @@ WApplication *wApplicationForWindow(struct WWindow *wwin)
   return wApplicationOf(wwin->main_window);
 }
 
-BOOL _isWindowAlreadyRegistered(WApplication *wapp, WWindow *wwin)
+static BOOL _isWindowAlreadyRegistered(WApplication *wapp, WWindow *wwin)
 {
   CFMutableArrayRef windows = wapp->windows;
   WWindow *w;
@@ -317,7 +317,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
   /* Application menu */
   if (!wapp->flags.is_gnustep) {
-    wapp->app_menu = wApplicationCreateMenu(scr, wapp);
+    wapp->app_menu = wApplicationMenuCreate(scr, wapp);
   }
 
   if (!scr->wapp_list) {
@@ -391,7 +391,7 @@ void wApplicationDestroy(WApplication *wapp)
   /* WMLogError("wapp->windows retain count: %li", CFGetRetainCount(wapp->windows)); */
 
   if (wapp->app_menu) {
-    wApplicationDestroyMenu(wapp);
+    wApplicationMenuDestroy(wapp);
   }
 
   if (wapp->urgent_bounce_timer) {
@@ -469,7 +469,10 @@ void wApplicationDeactivate(WApplication *wapp)
     wAppIconPaint(wapp->app_icon);
   }
   if (wapp->app_menu) {
-    wMenuUnmap(wapp->app_menu);
+    CFDictionaryRef menu_state = wApplicationMenuGetState(wapp->app_menu);
+    /* CFShow(menu_state); */
+    CFRelease(menu_state);
+    wApplicationMenuClose(wapp);
   }
 }
 

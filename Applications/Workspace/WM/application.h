@@ -43,6 +43,7 @@ typedef struct WApplication {
   CFMutableArrayRef windows;
   struct WWindow *gsmenu_wwin;      /* GNUstep application menu window */
   WMenu *app_menu;                  /* application menu */
+  CFDictionaryRef menusState;
 
   CFRunLoopTimerRef urgent_bounce_timer;
   struct {

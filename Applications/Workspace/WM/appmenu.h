@@ -2,6 +2,9 @@
 #include "menu.h"
 #include "application.h"
 
-WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp);
-void wApplicationOpenMenu(WApplication *wapp, int x, int y);
-void wApplicationDestroyMenu(WApplication *wapp);
+WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp);
+void wApplicationMenuDestroy(WApplication *wapp);
+void wApplicationMenuOpen(WApplication *wapp, int x, int y);
+void wApplicationMenuClose(WApplication *wapp);
+
+CFDictionaryRef wApplicationMenuGetState(WMenu *main_menu);

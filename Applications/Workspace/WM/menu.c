@@ -2076,7 +2076,8 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 
   /* lower/raise all submenus */
   while (1) {
-    if (tmp->selected_entry >= 0 && tmp->cascades && tmp->entries[tmp->selected_entry]->cascade >= 0) {
+    if (tmp->selected_entry >= 0 && tmp->cascades &&
+        tmp->entries[tmp->selected_entry]->cascade >= 0) {
       tmp = tmp->cascades[tmp->entries[tmp->selected_entry]->cascade];
       if (!tmp || !tmp->flags.mapped)
         break;
@@ -2099,10 +2100,11 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
     if (menu->parent) {
       /* turn off selected menu entry in parent menu */
       selectEntry(menu->parent, -1);
-
       /* make parent map the copy in place of the original */
       for (i = 0; i < menu->parent->cascade_no; i++) {
         if (menu->parent->cascades[i] == menu) {
+          WMLogInfo("Found submenu position in parent (%s) menu for %s",
+                    menu->parent->frame->title, menu->frame->title);
           menu->parent->cascades[i] = menu->brother;
           break;
         }
