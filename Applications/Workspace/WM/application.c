@@ -386,8 +386,7 @@ void wApplicationDestroy(WApplication *wapp)
   /* WMLogError("wapp->windows retain count: %li", CFGetRetainCount(wapp->windows)); */
 
   if (wapp->app_menu) {
-    wMenuUnmap(wapp->app_menu);
-    wMenuDestroy(wapp->app_menu, True);
+    wApplicationDestroyMenu(wapp);
   }
 
   if (wapp->urgent_bounce_timer) {

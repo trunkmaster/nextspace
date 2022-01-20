@@ -64,8 +64,7 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
   for (idx = 0; idx < menu->entry_no; idx++) {
     WWindow *tw = (WWindow *)menu->entries[idx]->clientdata;
 
-    if (!IS_OMNIPRESENT(tw)
-        && tw->frame->workspace > wwin->frame->workspace) {
+    if (!tw || (!IS_OMNIPRESENT(tw) && tw->frame->workspace > wwin->frame->workspace)) {
       break;
     }
   }
@@ -107,7 +106,7 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
       idx = menuIndexForWindow(windows_menu, wwin, -1);
     }
 
-    entry = wMenuInsertCallback(windows_menu, idx, t, focusWindow, wwin);
+    entry = wMenuInsertCallback(windows_menu, idx+1, t, focusWindow, wwin);
     wfree(t);
 
     entry->flags.indicator = 1;
@@ -226,57 +225,51 @@ static void windowObserver(CFNotificationCenterRef center,
 
 static WMenu *createWindowsMenu(WApplication *wapp)
 {
-  WMenu *windows_menu;
+  WMenu *_menu;
   WMenuEntry *tmp_item;
-  CFIndex winCount = CFArrayGetCount(wapp->windows);
-  WWindow *wwin = NULL;
-  char *t;
-  char title[MAX_MENU_TEXT_LENGTH + 6];
-  int len = sizeof(title);
   WScreen *scr = wapp->main_wwin->screen_ptr;
   
-  windows_menu = wMenuCreate(scr, _("Windows"), False);
-  wMenuInsertCallback(windows_menu, 0, _("Arrange in Front"), windowsCallback, NULL);
-
-  for (CFIndex i = 0; i < winCount; i++) {
-    wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, i);
-    if (wwin->frame->title) {
-      snprintf(title, len, "%s", wwin->frame->title);
-    } else {
-      snprintf(title, len, "%s", DEF_WINDOW_TITLE);
-    }
-    t = ShrinkString(wwin->screen_ptr->menu_entry_font, title, MAX_WINDOWLIST_WIDTH);
-    wMenuInsertCallback(windows_menu, i+1, t, windowsCallback, wwin);
-  }
-  
-  tmp_item = wMenuAddCallback(windows_menu, _("Miniaturize Window"), windowsCallback, NULL);
+  _menu = wMenuCreate(scr, _("Windows"), False);
+  wMenuInsertCallback(_menu, 0, _("Arrange in Front"), windowsCallback, NULL);
+  tmp_item = wMenuAddCallback(_menu, _("Miniaturize Window"), windowsCallback, NULL);
   tmp_item->rtext = wstrdup("m");
-  tmp_item = wMenuAddCallback(windows_menu, _("Shade Window"), windowsCallback, NULL);
-  tmp_item = wMenuAddCallback(windows_menu, _("Zoom window"), windowsCallback, NULL);
-  tmp_item = wMenuAddCallback(windows_menu, _("Close Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddCallback(_menu, _("Shade Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddCallback(_menu, _("Zoom window"), windowsCallback, NULL);
+  tmp_item = wMenuAddCallback(_menu, _("Close Window"), windowsCallback, NULL);
   tmp_item->rtext = wstrdup("w");
 
-  CFNotificationCenterAddObserver(scr->notificationCenter, windows_menu, windowObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
                                   WMDidManageWindowNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, windows_menu, windowObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
                                   WMDidUnmanageWindowNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, windows_menu, windowObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
                                   WMDidChangeWindowStateNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, windows_menu, windowObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
                                   WMDidChangeWindowFocusNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, windows_menu, windowObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
                                   WMDidChangeWindowStackingNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, windows_menu, windowObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
                                   WMDidChangeWindowNameNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
 
+  return _menu;
+}
 
-  return windows_menu;
+static WMenu *submenuWithTitle(WMenu *menu, char *title)
+{
+  WMenu **submenus = menu->cascades;
+
+  for (int i = 0; i < menu->cascade_no; i++) {
+    if (!strcmp(submenus[i]->frame->title, title)) {
+      return submenus[i];
+    }
+  }
+  return NULL;
 }
 
 WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp)
@@ -319,6 +312,16 @@ WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp)
   tmp_item->rtext = wstrdup("q");
   
   return menu;
+}
+
+void wApplicationDestroyMenu(WApplication *wapp)
+{
+  WMenu *windows_menu = submenuWithTitle(wapp->app_menu, "Windows");
+  
+  CFNotificationCenterRemoveEveryObserver(wapp->main_wwin->screen_ptr->notificationCenter,
+                                          windows_menu);
+  wMenuUnmap(wapp->app_menu);
+  wMenuDestroy(wapp->app_menu, True);
 }
 
 void wApplicationOpenMenu(WApplication *wapp, int x, int y)

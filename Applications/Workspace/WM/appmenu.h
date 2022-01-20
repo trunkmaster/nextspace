@@ -4,3 +4,4 @@
 
 WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp);
 void wApplicationOpenMenu(WApplication *wapp, int x, int y);
+void wApplicationDestroyMenu(WApplication *wapp);
