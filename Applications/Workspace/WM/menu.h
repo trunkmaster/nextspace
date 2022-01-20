@@ -53,6 +53,7 @@ typedef struct WMenuEntry {
 typedef struct WMenu {
   struct WMenu *parent;
   struct WMenu *brother;
+  struct WApplication *app;
 
   /* decorations */
   struct WFrameWindow *frame;

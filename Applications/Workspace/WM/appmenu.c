@@ -196,9 +196,10 @@ static void windowObserver(CFNotificationCenterRef center,
 {
   WMenu *windows_menu = (WMenu *)menu;
   WWindow *wwin = (WWindow *)window;
-    
-  if (!wwin)
+
+  if (!wwin || (wApplicationForWindow(wwin) != windows_menu->app)) {
     return;
+  }
   
   if (CFStringCompare(name, WMDidManageWindowNotification, 0) == 0) {
     updateWindowsMenu(windows_menu, wwin, ACTION_ADD);
@@ -230,6 +231,7 @@ static WMenu *createWindowsMenu(WApplication *wapp)
   WScreen *scr = wapp->main_wwin->screen_ptr;
   
   _menu = wMenuCreate(scr, _("Windows"), False);
+  _menu->app = wapp;
   wMenuInsertCallback(_menu, 0, _("Arrange in Front"), windowsCallback, NULL);
   tmp_item = wMenuAddCallback(_menu, _("Miniaturize Window"), windowsCallback, NULL);
   tmp_item->rtext = wstrdup("m");
@@ -278,6 +280,7 @@ WMenu *wApplicationCreateMenu(WScreen *scr, WApplication *wapp)
   WMenuEntry *info_item, *edit_item, *windows_item, *tmp_item;
 
   menu = wMenuCreate(scr, wapp->app_name, True);
+  menu->app = wapp;
   
   /* Info */
 
