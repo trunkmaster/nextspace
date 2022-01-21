@@ -1725,7 +1725,7 @@ static void delaySelection(CFRunLoopTimerRef timer, void *data) // (void *data)
 
 static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
 {
-  XButtonEvent *bev = &event->xbutton;
+  XButtonEvent *button_event = &event->xbutton;
   WMenu *menu = desc->parent;
   WMenu *smenu;
   WScreen *scr = menu->frame->screen_ptr;
@@ -1734,11 +1734,13 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
   int close_on_exit = 0;
   int done = 0;
   int entry_no;
+  int old_selected_entry_no; // selected entry before click
   int x, y;
   int prevx, prevy;
   int old_frame_x = 0;
   int old_frame_y = 0;
   delay_data d_data = { NULL, NULL, NULL };
+  BOOL first_run = true;
 
   if (!wPreferences.wrap_menus) {
     smenu = parentMenu(menu);
@@ -1748,7 +1750,7 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
 
   wRaiseFrame(menu->frame->core);
 
-  close_on_exit = (bev->send_event || menu->flags.brother);
+  close_on_exit = (button_event->send_event || menu->flags.brother);
 
   smenu = findMenu(scr, &x, &y);
   if (!smenu) {
@@ -1761,40 +1763,35 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
   if (menu->flags.editing) {
     goto byebye;
   }
+
+  old_selected_entry_no = menu->selected_entry;
   entry_no = getEntryAt(menu, x, y);
-  if (entry_no >= 0) {
-    entry = menu->entries[entry_no];
-
-    if (bev->state & ControlMask) {
-      goto byebye;
-    }
-
-    if (entry->flags.enabled && entry->cascade >= 0 && menu->cascades) {
-      // Click on item with submenu attached
-      WMenu *submenu = menu->cascades[entry->cascade];
-      if (submenu->flags.mapped && !submenu->flags.buttoned) {
-        wMenuUnmap(submenu);
-        selectEntry(menu, -1);
-      } else {
-        selectEntry(menu, entry_no);
-      }
-    } else {
-      selectEntry(menu, entry_no);
-    }
-
-    /* if (!wPreferences.wrap_menus && !wPreferences.scrollable_menus && !menu->timer) { */
-    /*   dragScrollMenuCallback(NULL, menu); */
-    /* } */
-  }
-
-  prevx = bev->x_root;
-  prevy = bev->y_root;
+  WMLogInfo("Menu mouse down on item #%i. Event = %i", entry_no, event->type);
+  /* if (entry_no < 0) { */
+  /*   entry_no = menu->selected_entry; */
+  /* } */
+  /* if (entry_no >= 0) { */
+  /*   if (bev->state & ControlMask) { */
+  /*     goto byebye; */
+  /*   } */
+  /*   /\* if (!wPreferences.wrap_menus && !wPreferences.scrollable_menus && !menu->timer) { *\/ */
+  /*   /\*   dragScrollMenuCallback(NULL, menu); *\/ */
+  /*   /\* } *\/ */
+  /* } */
+  entry = menu->entries[entry_no];
+  ev.type = event->type; // to process first event (click) below
+  prevx = button_event->x_root;
+  prevy = button_event->y_root;
   while (!done) {
     int x, y;
-
-    XAllowEvents(dpy, AsyncPointer | SyncPointer, CurrentTime);
-    WMMaskEvent(dpy, ExposureMask | ButtonMotionMask | ButtonReleaseMask | ButtonPressMask, &ev);
     
+    if (first_run == false) {
+      XAllowEvents(dpy, AsyncPointer | SyncPointer, CurrentTime);
+      WMMaskEvent(dpy, ExposureMask | ButtonMotionMask | ButtonReleaseMask | ButtonPressMask, &ev);
+    } else {
+      first_run = false;
+    }
+
     switch (ev.type) {
     case MotionNotify:
       {
@@ -1814,7 +1811,7 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
           break;
         } else if (menu && menu != smenu &&
                    (menu->selected_entry < 0 || menu->entries[menu->selected_entry]->cascade < 0)) {
-          selectEntry(menu, -1);
+          /* selectEntry(menu, -1); */
         } else {
           /* hysteresis for item selection */
 
@@ -1906,13 +1903,34 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
       break;
 
     case ButtonPress:
+      /* if (entry->flags.enabled && entry->cascade >= 0 && menu->cascades) { */
+      /*   // Click on item with submenu attached */
+      /*   WMenu *submenu = menu->cascades[entry->cascade]; */
+      /*   if (submenu->flags.mapped && !submenu->flags.buttoned) { */
+      /*     wMenuUnmap(submenu); */
+      /*     selectEntry(menu, -1); */
+      /*   } else { */
+      /*     selectEntry(menu, entry_no); */
+      /*   } */
+      /* } else { */
+      /*   selectEntry(menu, entry_no); */
+      /* } */
+      WMLogInfo("-= Buton Press =-");
+      if (entry_no >= 0) {
+        WMLogInfo("Buton Press on entry #%i", entry_no);
+        if (entry->flags.enabled) {
+          selectEntry(menu, entry_no);
+        }
+      }
       break;
 
     case ButtonRelease:
       if (ev.xbutton.button == event->xbutton.button) {
         if (menu && menu->selected_entry >= 0) {
+          WMLogInfo("ButtonRelease: cascade index: %i", entry->cascade);
           entry = menu->entries[menu->selected_entry];
-          if (entry->callback != NULL && entry->flags.enabled && entry->cascade < 0) {
+          // entry->cascade: > 0 - item has submenu, -1 - plain item
+          if (entry->callback != NULL && entry->flags.enabled && entry->cascade < 0) { // plain
             /* unmap the menu, it's parents and call the callback */
             if (!menu->flags.app_menu) {
               closeCascade(menu);
@@ -1920,10 +1938,14 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
               selectEntry(menu, -1);
             }
             (*entry->callback) (menu, entry);
-          } else if (entry->callback != NULL && entry->cascade < 0) {
-            selectEntry(menu, -1);
-          } else if (entry->cascade >= 0 && menu->cascades &&
-                     menu->cascades[entry->cascade]->flags.brother) {
+          } else if (entry->cascade >= 0 && menu->cascades) { // has submenu
+            WMenu *submenu = menu->cascades[entry->cascade];
+            if (submenu->flags.mapped && !submenu->flags.buttoned &&  // submenu attached
+                menu->selected_entry == old_selected_entry_no) { // on already selected item
+              wMenuUnmap(submenu);
+              selectEntry(menu, -1);
+            }
+          } else if (!entry->flags.enabled) {
             selectEntry(menu, -1);
           }
         }
@@ -1937,6 +1959,7 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
     }
   }
 
+  XFlush(dpy);
   if (menu && menu->timer) {
     WMDeleteTimerHandler(menu->timer);
     menu->timer = NULL;
