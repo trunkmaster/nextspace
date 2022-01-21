@@ -458,7 +458,12 @@ void wApplicationActivate(WApplication *wapp)
   }
   wApplicationMakeFirst(wapp);
   if (wapp->app_menu) {
-    wMenuMap(wapp->app_menu);
+    if (wapp->menus_state) {
+      wApplicationMenuRestoreFromState(wapp->app_menu, wapp->menus_state);
+      CFRelease(wapp->menus_state);
+    } else {
+      wMenuMap(wapp->app_menu);
+    }
   }
 }
 
@@ -469,9 +474,7 @@ void wApplicationDeactivate(WApplication *wapp)
     wAppIconPaint(wapp->app_icon);
   }
   if (wapp->app_menu) {
-    CFDictionaryRef menu_state = wApplicationMenuGetState(wapp->app_menu);
-    /* CFShow(menu_state); */
-    CFRelease(menu_state);
+    wapp->menus_state = wApplicationMenuGetState(wapp->app_menu);
     wApplicationMenuClose(wapp);
   }
 }

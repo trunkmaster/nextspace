@@ -7,4 +7,6 @@ void wApplicationMenuDestroy(WApplication *wapp);
 void wApplicationMenuOpen(WApplication *wapp, int x, int y);
 void wApplicationMenuClose(WApplication *wapp);
 
-CFDictionaryRef wApplicationMenuGetState(WMenu *main_menu);
+CFArrayRef wApplicationMenuGetState(WMenu *main_menu);
+void wApplicationMenuRestoreFromState(WMenu *main_menu, CFArrayRef state);
+

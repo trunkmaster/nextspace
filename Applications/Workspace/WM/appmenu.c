@@ -425,39 +425,69 @@ static CFDictionaryRef getMenuState(WMenu *menu)
   return state;
 }
 
-CFDictionaryRef wApplicationMenuGetState(WMenu *main_menu)
+CFArrayRef wApplicationMenuGetState(WMenu *main_menu)
 {
-  CFMutableDictionaryRef state;
-  CFMutableArrayRef submenus;
+  CFMutableArrayRef menus_state;
   CFDictionaryRef menu_info;
   WMenu *tmp_menu, *menu;
 
-  state = CFDictionaryCreateMutable(kCFAllocatorDefault, 9,
-                                    &kCFTypeDictionaryKeyCallBacks,
-                                    &kCFTypeDictionaryValueCallBacks);
-  
-  submenus = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
-  
+  menus_state = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
+
+  // Main menu
   menu_info = getMenuState(main_menu);
-  CFArrayAppendValue(submenus, menu_info);
-  /* CFDictionarySetValue(state, CFSTR("MainMenu"), menu_info); */
+  CFArrayAppendValue(menus_state, menu_info);
   CFRelease(menu_info);
-  
+
+  // Teared-off submenus
   for (int i = 0; i < main_menu->cascade_no; i++) {
+    menu = NULL;
     tmp_menu = main_menu->cascades[i];
     if (tmp_menu->flags.mapped) { // attached submenu opened
       menu = tmp_menu;
     } else if (tmp_menu->flags.brother && tmp_menu->brother->flags.mapped){
       menu = tmp_menu->brother;
     }
-    menu_info = getMenuState(menu);
-    CFShow(menu_info);
-    CFArrayAppendValue(submenus, menu_info);
-    CFRelease(menu_info);
+    if (menu) {
+      menu_info = getMenuState(menu);
+      CFArrayAppendValue(menus_state, menu_info);
+      CFRelease(menu_info);
+    }
   }
+
+  /* for (CFIndex i = 0; i < CFArrayGetCount(menus_state); i++) { */
+  /*   menu_info = CFArrayGetValueAtIndex(menus_state, i); */
+  /*   CFShow(menu_info); */
+  /* } */
   
-  CFDictionarySetValue(state, CFSTR("Submenus"), submenus);
-  CFRelease(submenus);
-  
-  return state;
+  return menus_state;
+}
+
+void wApplicationMenuRestoreFromState(WMenu *main_menu, CFArrayRef state)
+{
+  CFDictionaryRef menu_info;
+  WMenu *menu;
+  char *menu_title, *menu_type;
+  int x = 0, y = 0;
+
+  for (CFIndex i = 0; i < CFArrayGetCount(state); i++) {
+    menu_info = CFArrayGetValueAtIndex(state, i);
+    menu_type = (char *)CFStringGetCStringPtr(CFDictionaryGetValue(menu_info, CFSTR("Type")),
+                                              kCFStringEncodingUTF8);
+    CFNumberGetValue(CFDictionaryGetValue(menu_info, CFSTR("X")), kCFNumberShortType, &x);
+    CFNumberGetValue(CFDictionaryGetValue(menu_info, CFSTR("Y")), kCFNumberShortType, &y);
+
+    WMLogInfo("Restoring menu `%s` at %i, %i", menu_type, x, y);
+    
+    if (!strcmp(menu_type, "Main")) {
+      wMenuMapAt(main_menu, x, y, false);
+    } else {
+      menu_title = (char *)CFStringGetCStringPtr(CFDictionaryGetValue(menu_info, CFSTR("Title")),
+                                                 kCFStringEncodingUTF8);
+      menu = submenuWithTitle(main_menu, menu_title);
+      menu->brother->flags.buttoned = 1;
+      wFrameWindowShowButton(menu->brother->frame, WFF_RIGHT_BUTTON);
+      wMenuMapAt(menu->brother, x, y, false);
+    }
+    CFShow(menu_info);
+  }
 }
