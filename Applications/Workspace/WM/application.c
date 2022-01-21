@@ -456,8 +456,10 @@ void wApplicationActivate(WApplication *wapp)
       scr->last_workspace == scr->current_workspace) {
     wWorkspaceChange(scr, wapp->last_workspace, NULL);
   }
+  
   wApplicationMakeFirst(wapp);
-  if (wapp->app_menu) {
+  
+  if (wapp->app_menu && !wapp->app_menu->flags.mapped) {
     if (wapp->menus_state) {
       wApplicationMenuRestoreFromState(wapp->app_menu, wapp->menus_state);
       CFRelease(wapp->menus_state);
@@ -473,7 +475,7 @@ void wApplicationDeactivate(WApplication *wapp)
     wIconSetHighlited(wapp->app_icon->icon, False);
     wAppIconPaint(wapp->app_icon);
   }
-  if (wapp->app_menu) {
+  if (wapp->app_menu && wapp->app_menu->flags.mapped) {
     wapp->menus_state = wApplicationMenuGetState(wapp->app_menu);
     wApplicationMenuClose(wapp);
   }

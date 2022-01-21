@@ -438,13 +438,13 @@ CFArrayRef wApplicationMenuGetState(WMenu *main_menu)
   CFArrayAppendValue(menus_state, menu_info);
   CFRelease(menu_info);
 
-  // Teared-off submenus
+  // Submenus
   for (int i = 0; i < main_menu->cascade_no; i++) {
     menu = NULL;
     tmp_menu = main_menu->cascades[i];
     if (tmp_menu->flags.mapped) { // attached submenu opened
       menu = tmp_menu;
-    } else if (tmp_menu->flags.brother && tmp_menu->brother->flags.mapped){
+    } else if (tmp_menu->flags.brother && tmp_menu->brother->flags.mapped){ // teared-off
       menu = tmp_menu->brother;
     }
     if (menu) {
@@ -454,11 +454,6 @@ CFArrayRef wApplicationMenuGetState(WMenu *main_menu)
     }
   }
 
-  /* for (CFIndex i = 0; i < CFArrayGetCount(menus_state); i++) { */
-  /*   menu_info = CFArrayGetValueAtIndex(menus_state, i); */
-  /*   CFShow(menu_info); */
-  /* } */
-  
   return menus_state;
 }
 
