@@ -417,7 +417,7 @@ static NSLock *raceLock = nil;
     appBundle = [self bundleForApp:appName];
     if (appBundle) {
       appInfo = [appBundle infoDictionary];
-      iconPath = [appBundle pathForResource:[appInfo objectForKey:@"NSIcon"] ofType:nil];
+      iconPath = [appBundle pathForImageResource:[appInfo objectForKey:@"NSIcon"]];
       wmName = [appInfo objectForKey:@"NSExecutable"];
       launchPath = [self locateApplicationBinary:appName];
       if (launchPath == nil) {
