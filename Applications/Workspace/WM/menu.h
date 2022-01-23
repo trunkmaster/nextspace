@@ -90,7 +90,6 @@ typedef struct WMenu {
     unsigned int lowered:1;
 
     unsigned int brother:1;	       /* if this is a copy of the menu*/
-    unsigned int editing:1;
     unsigned int jump_back_pending:1;
   } flags;
 } WMenu;
