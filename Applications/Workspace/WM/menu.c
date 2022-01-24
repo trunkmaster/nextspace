@@ -1756,10 +1756,10 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
   WMLogInfo("Menu mouse down on item #%i. Event = %i", entry_no, event->type);
   if (entry_no < 0) {
     entry_no = menu->selected_entry;
-  /* } else if (!wPreferences.wrap_menus && !wPreferences.scrollable_menus && !menu->timer) { */
   }
-  
-  entry = menu->entries[entry_no];
+  if (entry_no >= 0) {
+    entry = menu->entries[entry_no];
+  }
   ev.type = event->type; // to process first ButtonPress event below
   prevx = button_event->x_root;
   prevy = button_event->y_root;
