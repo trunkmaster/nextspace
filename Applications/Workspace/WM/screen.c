@@ -1006,7 +1006,6 @@ void wScreenRestoreState(WScreen * scr)
                                                    &kCFTypeDictionaryValueCallBacks);
     CFDictionarySetValue(scr->session_state, dDock, dock_state);
     CFRelease(dock_state);
-    WMUserDefaultsWrite(scr->session_state, CFSTR("WMState-restored"));
   }
 
   if (!wPreferences.flags.nodock) {
