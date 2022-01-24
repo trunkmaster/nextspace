@@ -800,7 +800,7 @@ void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shouldTrack)
     w_global.inotify.fd_event_queue = inotify_init();
     if (w_global.inotify.fd_event_queue < 0) {
       WMLogWarning(_("** inotify ** could not initialise an inotify instance."
-                 " Changes to the defaults database will require a restart to take effect."));
+                     " Changes to the defaults database will require a restart to take effect."));
       return;
     }
     else { // Add to runloop
@@ -827,13 +827,13 @@ void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shouldTrack)
   
     WMLogError("inotify: will add watch for %s.", watchPath);
     domain->inotify_watch = inotify_add_watch(w_global.inotify.fd_event_queue, watchPath, mask);
-    CFRelease(domainPath);
     
     if (domain->inotify_watch < 0) {
-      WMLogWarning(_("** inotify ** could not add an inotify watch on path %s."
-                 " Changes to the defaults database will require a restart to take effect."),
-               watchPath);
+      WMLogWarning(_("** inotify ** could not add an inotify watch on path %s (error: %i %s)."
+                     " Changes to the defaults database will require a restart to take effect."),
+                   watchPath, errno, strerror(errno));
     }
+    CFRelease(domainPath);
   }
   else if (domain->inotify_watch >= 0) {
     WMLogError("inotify: will remove watch for %@.", domain->name);
@@ -859,7 +859,7 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
   }
 
   // TODO: check if domain already exist
-  WMLogWarning("* initializing domain: %s", domain_name);
+  WMLogWarning("initializing domain: %s", domain_name);
 
   domain = wmalloc(sizeof(WDDomain));
   domain->name = CFStringCreateWithCString(kCFAllocatorDefault, domain_name, kCFStringEncodingUTF8);
@@ -870,12 +870,12 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
     if ((CFGetTypeID(domain->dictionary) != CFDictionaryGetTypeID())) {
       CFRelease(domain->dictionary);
       domain->dictionary = NULL;
-      WMLogWarning(_("Domain %s (%s) of defaults database is corrupted!"), domain_name,
-               WMUserDefaultsGetCString(CFURLGetString(domain->path), kCFStringEncodingUTF8));
+      WMLogError(_("domain %s (%s) of defaults database is corrupted!"), domain_name,
+                 WMUserDefaultsGetCString(CFURLGetString(domain->path), kCFStringEncodingUTF8));
     }
   }
   else {
-    WMLogError("Creating empty domain: %@", domain->name);
+    WMLogError("creating empty domain: %@", domain->name);
     domain->dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
                                                    &kCFTypeDictionaryKeyCallBacks,
                                                    &kCFTypeDictionaryValueCallBacks);
@@ -890,8 +890,10 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
     domain->path = CFURLCreateCopyAppendingPathExtension(NULL, osURL, CFSTR("plist"));
     CFRelease(osURL);
 
-    WMLogError("start tracking changes for domain: %@", domain->name);
-    wDefaultsShouldTrackChanges(domain, shouldTrackChanges);
+    if (wm_runloop) {
+      WMLogInfo("start tracking changes for domain: %@", domain->name);
+      wDefaultsShouldTrackChanges(domain, shouldTrackChanges);
+    }
   }
 
   return domain;
