@@ -322,6 +322,7 @@ static void _runLoopHandleEvent(CFFileDescriptorRef fdref, CFOptionFlags callBac
 void WMRunLoop_V0()
 {
   XEvent event;
+
   WMLogError("WMRunLoop0: handling events while run loop is warming up.");
   while (wm_runloop == NULL) {
     WMNextEvent(dpy, &event);
@@ -348,7 +349,7 @@ void WMRunLoop_V1()
   CFFileDescriptorRef xfd;
   CFRunLoopSourceRef  xfd_source;
 
-  WMLogError("Entering WM runloop with X connection: %i", ConnectionNumber(dpy));
+  WMLogError("V1: Entering WM runloop with X connection: %i", ConnectionNumber(dpy));
   
   // X connection file descriptor
   xfd = CFFileDescriptorCreate(kCFAllocatorDefault, ConnectionNumber(dpy), true,
@@ -360,7 +361,7 @@ void WMRunLoop_V1()
   CFRelease(xfd_source);
   CFRelease(xfd);
 
-  WMLogError("[WM] Going into CFRunLoop...");
+  WMLogError("V1: Going into CFRunLoop...");
   
   wm_runloop = run_loop;
   CFRunLoopRun();
@@ -369,7 +370,7 @@ void WMRunLoop_V1()
   /* Do not call CFFileDescriptorInvalidate(xfd)!
      This FD is a connection of Workspace application to X server. */
   
-  WMLogError("[WM] CFRunLoop finished.");
+  WMLogError("V1: CFRunLoop finished.");
 }
 
 /*
