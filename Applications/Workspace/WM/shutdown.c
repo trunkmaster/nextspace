@@ -98,12 +98,7 @@ void wShutdown(WMShutdownMode mode)
 #endif
 
   scr = wDefaultScreen();
-  if (scr) {
-    if (scr->helper_pid) {
-      kill(scr->helper_pid, SIGKILL);
-    }
-  }
-  else {
+  if (!scr) {
     return;
   }
 
@@ -132,7 +127,6 @@ void wShutdown(WMShutdownMode mode)
     wRestoreDesktop(scr);
     break;
   }
-
 }
 
 static void _restoreWindows(WMBag * bag, WMBagIterator iter)
@@ -185,11 +179,6 @@ static void _restoreWindows(WMBag * bag, WMBagIterator iter)
  */
 void wRestoreDesktop(WScreen * scr)
 {
-  if (scr->helper_pid > 0) {
-    kill(scr->helper_pid, SIGTERM);
-    scr->helper_pid = 0;
-  }
-
   XGrabServer(dpy);
 
   /* reparent windows back to the root window, keeping the stacking order */

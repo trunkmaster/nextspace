@@ -594,8 +594,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
   if (workspace >= MAX_WORKSPACES || workspace < 0 || workspace == scr->current_workspace)
     return;
 
-  wSendHelperMessage(scr, 'C', workspace + 1, NULL);
-
   if (workspace > scr->workspace_count - 1)
     wWorkspaceMake(scr, workspace - scr->workspace_count + 1);
 

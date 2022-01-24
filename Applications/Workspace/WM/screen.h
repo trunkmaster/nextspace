@@ -296,9 +296,6 @@ typedef struct _WScreen {
 
   struct NetData *netdata;
 
-  int helper_fd;
-  pid_t helper_pid;
-
   struct {
     unsigned int startup:1;	       /* during window manager startup */
     unsigned int regenerate_icon_textures:1;

@@ -39,10 +39,6 @@ static inline void wSlideWindow(Window win, int from_x, int from_y, int to_x, in
   wSlideWindowList(&win, 1, from_x, from_y, to_x, to_y);
 }
 
-/* Helper is a 'wmsetbg' subprocess with sets the background for the current workspace */
-Bool wStartBackgroundHelper(WScreen *scr);
-void wSendHelperMessage(WScreen *scr, char type, int workspace, const char *msg);
-
 char *ShrinkString(WMFont *font, const char *string, int width);
 char *ExpandOptions(WScreen * scr, const char *cmdline);
 

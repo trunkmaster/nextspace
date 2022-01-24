@@ -119,8 +119,6 @@ static WDECallbackConvert getCoord;
 static WDECallbackConvert getPathList;
 static WDECallbackConvert getEnum;
 static WDECallbackConvert getTexture;
-static WDECallbackConvert getWSBackground;
-static WDECallbackConvert getWSSpecificBackground;
 static WDECallbackConvert getFont;
 static WDECallbackConvert getColor;
 static WDECallbackConvert getKeybind;
@@ -154,8 +152,6 @@ static WDECallbackUpdate setFTitleBack;
 static WDECallbackUpdate setPTitleBack;
 static WDECallbackUpdate setUTitleBack;
 static WDECallbackUpdate setResizebarBack;
-static WDECallbackUpdate setWorkspaceBack;
-static WDECallbackUpdate setWorkspaceSpecificBack;
 static WDECallbackUpdate setMenuTitleColor;
 static WDECallbackUpdate setMenuTextColor;
 static WDECallbackUpdate setMenuDisabledColor;
@@ -446,12 +442,6 @@ WDefaultEntry optionList[] = {
 
   {"MenuStyle", "normal", seMenuStyles, &wPreferences.menu_style, getEnum, setMenuStyle, NULL, NULL},
   {"WidgetColor", "(solid, \"#aaaaaa\")", NULL, NULL, getTexture, setWidgetColor, NULL, NULL},
-  {"WorkspaceSpecificBack", "()", NULL, NULL, getWSSpecificBackground, setWorkspaceSpecificBack, NULL, NULL},
-  /* WorkspaceBack must come after WorkspaceSpecificBack or
-   * WorkspaceBack wont know WorkspaceSpecificBack was also
-   * specified and 2 copies of wmsetbg will be launched */
-  {"WorkspaceBack", "(solid, \"#535374\")", NULL, NULL, getWSBackground, setWorkspaceBack, NULL, NULL},
-  {"SmoothWorkspaceBack", "NO", NULL, NULL, getBool, NULL, NULL, NULL},
   {"IconBack", "(\"tpixmap\", \"/Library/Images/common_Tile.tiff\", \"#000000\")", NULL, NULL, getTexture, setIconTile, NULL, NULL},
   {"MiniwindowBack", "(\"tpixmap\", \"/Library/Images/common_MiniWindowTile.tiff\", \"#000000\")", NULL, NULL, getTexture, setMiniwindowTile, NULL, NULL}, /* NEXTSPACE */
   {"TitleJustify", "center", seJustifications, &wPreferences.title_justification, getEnum, setJustify, NULL, NULL},
@@ -1782,93 +1772,6 @@ static int getTexture(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void 
   return True;
 }
 
-static int getWSBackground(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *addr, void **ret)
-{
-  CFTypeRef elem;
-  int changed = 0;
-  const char *val;
-  int nelem;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) scr;
-  (void) addr;
-
- again:
-  if (CFArrayGetTypeID() != CFGetTypeID(value)) {
-    WMLogWarning(_("Wrong option format for key \"%s\". Should be %s."),
-             "WorkspaceBack", "Texture or None");
-    if (changed == 0) {
-      value = entry->plvalue;
-      changed = 1;
-      WMLogWarning(_("using default \"%s\" instead"), entry->default_value);
-      goto again;
-    }
-    return False;
-  }
-
-  /* only do basic error checking and verify for None texture */
-
-  nelem = CFArrayGetCount(value);
-  if (nelem > 0) {
-    elem = CFArrayGetValueAtIndex(value, 0);
-    if (!elem || (CFGetTypeID(elem) != CFStringGetTypeID())) {
-      WMLogWarning(_("Wrong type for workspace background. Should be a texture type."));
-      if (changed == 0) {
-        value = entry->plvalue;
-        changed = 1;
-        WMLogWarning(_("using default \"%s\" instead"), entry->default_value);
-        goto again;
-      }
-      return False;
-    }
-    val = WMUserDefaultsGetCString(elem, kCFStringEncodingUTF8);
-
-    if (strcasecmp(val, "None") == 0)
-      return True;
-  }
-  *ret = (void *)CFRetain(value);
-
-  return True;
-}
-
-static int
-getWSSpecificBackground(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *addr, void **ret)
-{
-  CFTypeRef elem;
-  int nelem;
-  int changed = 0;
-
- again:
-  if (CFGetTypeID(value) != CFArrayGetTypeID()) {
-    WMLogWarning(_("Wrong option format for key \"%s\". Should be %s."),
-             "WorkspaceSpecificBack", "an array of textures");
-    if (changed == 0) {
-      value = entry->plvalue;
-      changed = 1;
-      WMLogWarning(_("using default \"%s\" instead"), entry->default_value);
-      goto again;
-    }
-    return False;
-  }
-
-  /* only do basic error checking and verify for None texture */
-
-  nelem = CFArrayGetCount(value);
-  if (nelem > 0) {
-    while (nelem--) {
-      elem = CFArrayGetValueAtIndex(value, nelem);
-      if (!elem || (CFGetTypeID(elem) != CFArrayGetTypeID())) {
-        WMLogWarning(_("Wrong type for background of workspace %i. Should be a texture."),
-                 nelem);
-      }
-    }
-  }
-
-  *ret = (void *)CFRetain(value);
-
-  return True;
-}
-
 static int getFont(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *addr, void **ret)
 {
   static WMFont *font;
@@ -2864,98 +2767,6 @@ static int setFrameSelectedBorderColor(WScreen *scr, WDefaultEntry *entry, void 
   wFreeColor(scr, color->pixel);
 
   return REFRESH_FRAME_BORDER;
-}
-
-static int setWorkspaceSpecificBack(WScreen *scr, WDefaultEntry *entry, void *tdata, void *bar)
-{
-  CFTypeRef value = tdata;
-  CFTypeRef val;
-  char *str;
-  int i;
-
-  if (scr->flags.backimage_helper_launched) {
-    if (CFArrayGetCount(value) == 0) {
-      wSendHelperMessage(scr, 'C', 0, NULL);
-      wSendHelperMessage(scr, 'K', 0, NULL);
-
-      CFRelease(value);
-      return 0;
-    }
-  } else {
-    if (CFArrayGetCount(value) == 0)
-      return 0;
-
-    if (!wStartBackgroundHelper(scr)) {
-      CFRelease(value);
-      return 0;
-    }
-
-    wSendHelperMessage(scr, 'P', -1, wPreferences.image_paths);
-  }
-
-  for (i = 0; i < CFArrayGetCount(value); i++) {
-    val = CFArrayGetValueAtIndex(value, i);
-    if (val && (CFGetTypeID(val) == CFArrayGetTypeID()) && CFArrayGetCount(val) > 0) {
-      str = (char *)WMUserDefaultsGetCString(CFCopyDescription(val), kCFStringEncodingUTF8);
-
-      wSendHelperMessage(scr, 'S', i + 1, str);
-
-      wfree(str);
-    } else {
-      wSendHelperMessage(scr, 'U', i + 1, NULL);
-    }
-  }
-  sleep(1);
-
-  CFRelease(value);
-  return 0;
-}
-
-static int setWorkspaceBack(WScreen *scr, WDefaultEntry *entry, void *tdata, void *bar)
-{
-  return 0;
-  CFTypeRef value = tdata;
-
-  if (scr->flags.backimage_helper_launched) {
-    char *str;
-
-    if (CFArrayGetCount(value) == 0) {
-      wSendHelperMessage(scr, 'U', 0, NULL);
-    } else {
-      /* set the default workspace background to this one */
-      str = (char *)WMUserDefaultsGetCString(CFCopyDescription(value), kCFStringEncodingUTF8);
-      if (str) {
-        wSendHelperMessage(scr, 'S', 0, str);
-        wfree(str);
-        wSendHelperMessage(scr, 'C', scr->current_workspace + 1, NULL);
-      } else {
-        wSendHelperMessage(scr, 'U', 0, NULL);
-      }
-    }
-  }
-  else if (CFArrayGetCount(value) > 0) {
-    char *text;
-    char *dither;
-    int len;
-
-    text = (char *)WMUserDefaultsGetCString(CFCopyDescription(value), kCFStringEncodingUTF8);
-    len = strlen(text) + 40;
-    dither = wPreferences.no_dithering ? "-m" : "-d";
-    if (!strchr(text, '\'') && !strchr(text, '\\')) {
-      char command[len];
-
-      if (wPreferences.smooth_workspace_back)
-        snprintf(command, len, "wmsetbg %s -S -p '%s' &", dither, text);
-      else
-        snprintf(command, len, "wmsetbg %s -p '%s' &", dither, text);
-      wExecuteShellCommand(scr, command);
-    } else
-      WMLogWarning(_("Invalid arguments for background \"%s\""), text);
-    wfree(text);
-  }
-  CFRelease(value);
-
-  return 0;
 }
 
 static int setWidgetColor(WScreen *scr, WDefaultEntry *entry, void *tdata, void *foo)
