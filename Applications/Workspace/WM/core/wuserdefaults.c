@@ -229,7 +229,8 @@ CFPropertyListRef WMUserDefaultsReadFromFile(CFURLRef fileURL)
   }
   
   if (plError && CFErrorGetCode(plError) > 0) {
-    WMLogError("Failed to read user defaults from %@ (Error: %li)", fileURL, CFErrorGetCode(plError));
+    WMLogError("Failed to read user defaults from %@ (Error: %li)",
+               fileURL, CFErrorGetCode(plError));
   }
 
   return pl;
