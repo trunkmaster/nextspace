@@ -3232,7 +3232,7 @@ void wDockTrackWindowLaunch(WDock *dock, Window window)
       if (icon->wm_class && wm_class && strcmp(icon->wm_class, wm_class) != 0)
         continue;
 
-      if (firstPass && command && strcmp(icon->command, command) != 0)
+      if (firstPass && command && icon->command && strcmp(icon->command, command) != 0)
         continue;
 
       if (!icon->relaunching) {
