@@ -36,6 +36,7 @@
 #include <wraster.h>
 
 #include <CoreFoundation/CFArray.h>
+#include <CoreFoundation/CFDictionary.h>
 
 #include <core/WMcore.h>
 #include <core/util.h>
@@ -975,9 +976,37 @@ void wScreenRestoreState(WScreen * scr)
 
   scr->session_state = (CFMutableDictionaryRef)WMUserDefaultsRead(CFSTR("WMState"), true);
   if (!scr->session_state) {
+    CFMutableDictionaryRef dock_state;
+    CFMutableArrayRef dock_apps_state;
+    CFMutableDictionaryRef app_state;
+    
+    app_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                          &kCFTypeDictionaryKeyCallBacks,
+                                          &kCFTypeDictionaryValueCallBacks);
+    CFDictionarySetValue(app_state, CFSTR("AutoLaunch"), CFSTR("Yes"));
+    CFDictionarySetValue(app_state, CFSTR("BuggyApplication"), CFSTR("No"));
+    CFDictionarySetValue(app_state, CFSTR("Command"), CFSTR("NEXTSPACE internal: don't edit it!"));
+    CFDictionarySetValue(app_state, CFSTR("Forced"), CFSTR("No"));
+    CFDictionarySetValue(app_state, CFSTR("Lock"), CFSTR("Yes"));
+    CFDictionarySetValue(app_state, CFSTR("Name"), CFSTR("Workspace.GNUstep"));
+    CFDictionarySetValue(app_state, CFSTR("Position"), CFSTR("0,0"));
+
+    dock_apps_state = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
+    CFArrayAppendValue(dock_apps_state, app_state);
+    CFRelease(app_state);
+    
+    dock_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                           &kCFTypeDictionaryKeyCallBacks,
+                                           &kCFTypeDictionaryValueCallBacks);
+    CFDictionarySetValue(dock_state, CFSTR("Applications"), dock_apps_state);
+    CFRelease(dock_apps_state);
+    
     scr->session_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                                    &kCFTypeDictionaryKeyCallBacks,
                                                    &kCFTypeDictionaryValueCallBacks);
+    CFDictionarySetValue(scr->session_state, dDock, dock_state);
+    CFRelease(dock_state);
+    WMUserDefaultsWrite(scr->session_state, CFSTR("WMState-restored"));
   }
 
   if (!wPreferences.flags.nodock) {
