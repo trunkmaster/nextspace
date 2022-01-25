@@ -931,7 +931,7 @@ void wWorkspaceSaveState(WScreen *scr, CFDictionaryRef old_state)
   }
 
   parr = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
-  for (i = 0; i < scr->workspace_count; i++) {
+  for (i = 0; i < scr->workspace_count-1; i++) {
     wks_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
                                           &kCFTypeDictionaryKeyCallBacks,
                                           &kCFTypeDictionaryValueCallBacks);
