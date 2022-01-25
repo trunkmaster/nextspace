@@ -874,7 +874,6 @@ void wWorkspaceMenuUpdate(WScreen *scr, WMenu * menu)
 
       entry = wMenuAddCallback(menu, title, _switchWSCommand, (void *)ws);
       entry->flags.indicator = 1;
-      entry->flags.editable = 1;
 
       i--;
       ws++;

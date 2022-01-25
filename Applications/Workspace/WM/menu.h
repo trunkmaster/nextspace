@@ -35,17 +35,17 @@
 typedef struct WMenuEntry {
   int order;
   char *text;			       /* entry text */
-  char *rtext;		       /* text to show in the right part */
+  char *rtext;                         /* text to show in the right part */
   void (*callback)(struct WMenu *menu, struct WMenuEntry *entry);
-  void (*free_cdata)(void *data);    /* proc to be used to free clientdata */
+  void (*free_cdata)(void *data);      /* proc to be used to free clientdata */
   void *clientdata;		       /* data to pass to callback */
-  int cascade;		       /* cascade menu index */
+  int cascade;                         /* cascade menu index */
   struct {
     unsigned int enabled:1;	       /* entry is selectable */
-    unsigned int indicator:1;      /* left indicator */
+    unsigned int selected:1;	       /* entry is highlighted */
+    unsigned int indicator:1;          /* left indicator */
     unsigned int indicator_on:1;
     unsigned int indicator_type:3;
-    unsigned int editable:1;
   } flags;
 } WMenuEntry;
 
