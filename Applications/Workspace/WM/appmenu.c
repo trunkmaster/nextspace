@@ -479,9 +479,14 @@ void wApplicationMenuRestoreFromState(WMenu *main_menu, CFArrayRef state)
       menu_title = (char *)CFStringGetCStringPtr(CFDictionaryGetValue(menu_info, CFSTR("Title")),
                                                  kCFStringEncodingUTF8);
       menu = submenuWithTitle(main_menu, menu_title);
-      menu->brother->flags.buttoned = 1;
-      wFrameWindowShowButton(menu->brother->frame, WFF_RIGHT_BUTTON);
-      wMenuMapAt(menu->brother, x, y, false);
+      if (!strcmp(menu_type, "TearOff")) {
+        menu->brother->flags.buttoned = 1;
+        wFrameWindowShowButton(menu->brother->frame, WFF_RIGHT_BUTTON);
+        wMenuMapAt(menu->brother, x, y, false);
+      } else {
+        menu->flags.buttoned = 0;
+        wMenuMapAt(menu, x, y, false);
+      }
     }
     CFShow(menu_info);
   }
