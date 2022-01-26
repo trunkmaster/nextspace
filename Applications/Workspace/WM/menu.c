@@ -1760,8 +1760,8 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
     entry = event_menu->entries[entry_index];
   }
   ev.type = event->type; // to process first ButtonPress event below
-  prevx = button_event->x_root;
-  prevy = button_event->y_root;
+  /* prevx = button_event->x_root; */
+  /* prevy = button_event->y_root; */
   
   while (!done) {
     int x, y;
@@ -1773,56 +1773,80 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
       first_run = false;
     }
 
+    mouse_menu = findMenu(scr, &x, &y);
+    
     switch (ev.type) {
     case MotionNotify:
       {
-        mouse_menu = findMenu(scr, &x, &y);
-        if (mouse_menu == NULL) { /* moved mouse out of menu */
-          WMLogInfo("Mouse moved out of menu");
-          if (event_menu == NULL ||
-              (event_menu->selected_entry >= 0 &&
-               event_menu->entries[event_menu->selected_entry]->cascade >= 0)) {
-            WMLogInfo("Event contains no menu");
-            prevx = ev.xmotion.x_root;
-            prevy = ev.xmotion.y_root;
-          } else {
-            selectEntry(event_menu, -1);
-            event_menu = mouse_menu;
-            prevx = ev.xmotion.x_root;
-            prevy = ev.xmotion.y_root;
+        // This part should detect these cases:
+        // - mouse moved completely out of menu
+        // - mouse moved inside menu (highlight/unhighlight items, open/close submenus)
+        // - mouse moved from submenu to menu and vice versa
+        
+        if (mouse_menu == NULL) {
+          /* mouse moved out of menu */
+          /* mouse could leave menu in 2 cases:
+             1. from opened submenu - deselect item in submenu, submenu stays opened
+             2. from menu with submenu opened - deselect item in submenu, submenu stays opened
+             3. from menu with plain item selected - deselect item in menu
+          */
+          /* WMLogInfo("Mouse moved out of menu mouse: %s event: %s", */
+          /*           mouse_menu ? "Exists" : "Absent", event_menu ? "Exists" : "Absent"); */
+          WMLogInfo("Mouse moved out of menu mouse: %s event: %s",
+                    mouse_menu->frame->title, event_menu->frame->title);
+          
+          if (event_menu != NULL) {
+            entry_index = getEntryAt(event_menu, x, y);
+            WMLogInfo("Entry index: %i", entry_index);
+            if (entry_index >= 0 && entry_index < event_menu->entry_no) {
+              entry = event_menu->entries[entry_index];
+            } else {
+              entry = NULL;
+            }
+            
+            if (entry && entry->cascade >= 0 && event_menu->cascades) {
+              WMenu *submenu = event_menu->cascades[entry->cascade];
+              if (submenu && submenu->flags.mapped && !submenu->flags.buttoned) {
+                /* deselect item in opened submenu */
+                selectEntry(submenu, -1);
+              }
+            } else {
+              /* deselect plain item in menu */
+              selectEntry(event_menu, -1);
+            }
           }
           break;
-        } else {
+        }
+        /* else { */
           /* hysteresis for item selection */
 
           /* check if the motion was to the side, indicating that
            * the user may want to cross to a submenu */
-          if (event_menu) {
-            int dx;
-            Bool moved_to_submenu;	/* moved to direction of submenu */
+          /* if (event_menu) { */
+          /*   int dx; */
+          /*   Bool moved_to_submenu;	/\* moved to direction of submenu *\/ */
 
-            dx = abs(prevx - ev.xmotion.x_root);
+          /*   dx = abs(prevx - ev.xmotion.x_root); */
 
-            moved_to_submenu = False;
-            if (dx > 0	&& /* if moved enough to the side */
-                event_menu->selected_entry >= 0 && /* maybe a open submenu */
-                (ev.xmotion.y_root >= prevy) /* moving to the right direction */) {
-              int index;
+            /* moved_to_submenu = False; */
+            /* if (dx > 0	&& /\* if moved enough to the side *\/ */
+            /*     event_menu->selected_entry >= 0 && /\* maybe a open submenu *\/ */
+            /*     (ev.xmotion.y_root >= prevy) /\* moving to the right direction *\/) { */
+            /*   int index; */
 
-              index = event_menu->entries[event_menu->selected_entry]->cascade;
-              if (index >= 0) {
-                if (event_menu->cascades[index]->frame_x > event_menu->frame_x) {
-                  if (prevx < ev.xmotion.x_root) {
-                    moved_to_submenu = True;
-                  }
-                } else {
-                  if (prevx > ev.xmotion.x_root) {
-                    moved_to_submenu = True;
-                    selectEntry(event_menu, -1);
-                  }
-                }
-              }
-            }
+            /*   index = event_menu->entries[event_menu->selected_entry]->cascade; */
+            /*   if (index >= 0) { */
+            /*     if (event_menu->cascades[index]->frame_x > event_menu->frame_x) { */
+            /*       if (prevx < ev.xmotion.x_root) { */
+            /*         moved_to_submenu = True; */
+            /*       } */
+            /*     } else { */
+            /*       if (prevx > ev.xmotion.x_root) { */
+            /*         moved_to_submenu = True; */
+            /*       } */
+            /*     } */
+            /*   } */
+            /* } */
 
             /* if (event_menu != mouse_menu) { */
             /*   if (d_data.magic) { */
@@ -1846,10 +1870,10 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
             /*     d_data.magic = NULL; */
             /*   } */
             /* } */
-          }
-        }
-        prevx = ev.xmotion.x_root;
-        prevy = ev.xmotion.y_root;
+          /* } */
+        /* } */
+        /* prevx = ev.xmotion.x_root; */
+        /* prevy = ev.xmotion.y_root; */
         /* if (event_menu != mouse_menu) { */
         /*   /\* pointer crossed menus *\/ */
         /*   if (event_menu && event_menu->timer) { */
@@ -1859,29 +1883,27 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
         /*   if (mouse_menu) */
         /*     dragScrollMenuCallback(NULL, mouse_menu); */
         /* } */
-        event_menu = mouse_menu;
+        /* event_menu = mouse_menu; */
         /* if (!event_menu->timer) { */
         /*   dragScrollMenuCallback(NULL, event_menu); */
         /* } */
         
-        entry_index = getEntryAt(event_menu, x, y);
-        WMLogInfo("Mouse on entry %i in %s", entry_index, event_menu->frame->title);
+        entry_index = getEntryAt(mouse_menu, x, y);
+        WMLogInfo("Mouse on entry %i in %s", entry_index, mouse_menu->frame->title);
         if (entry_index >= 0) {
-          entry = event_menu->entries[entry_index];
-          if (entry->flags.enabled && entry->cascade >= 0 && event_menu->cascades) {
-            WMenu *submenu = event_menu->cascades[entry->cascade];
-            if (submenu->flags.mapped && !submenu->flags.buttoned
-                && event_menu->selected_entry != entry_index) {
-              wMenuUnmap(submenu);
-              selectEntry(event_menu, -1);
+          entry = mouse_menu->entries[entry_index];
+          if (/*entry->flags.enabled && */entry->cascade >= 0 && mouse_menu->cascades) {
+            WMenu *submenu = mouse_menu->cascades[entry->cascade];
+            if (submenu->flags.mapped && !submenu->flags.buttoned) {
+              selectEntry(submenu, -1);
             } else {
-              selectEntry(event_menu, entry_index);
+              selectEntry(mouse_menu, entry_index);
             }
           } else {
-            selectEntry(event_menu, -1);
+            selectEntry(mouse_menu, entry_index);
           }
         } else {
-          selectEntry(event_menu, -1);
+          selectEntry(mouse_menu, -1);
         }
       }
       break;
