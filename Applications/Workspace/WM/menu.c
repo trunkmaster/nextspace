@@ -2012,13 +2012,10 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   WMenu *menu = data;
   WMenu *tmp;
   XEvent ev;
-  int x = menu->frame_x, y = menu->frame_y;
+  int x = menu->frame_x, old_x = x, y = menu->frame_y, old_y = y;
   int dx = event->xbutton.x_root, dy = event->xbutton.y_root;
   int i, lower;
   Bool started;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) sender;
 
   /* can't touch the menu copy */
   if (menu->flags.brother)
@@ -2052,28 +2049,6 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
     }
   }
 
-  /* tear off the menu if it's a root menu or a cascade application menu */
-  WMLogInfo("menuTitleMouseDown: buttoned: %i, brother: %i, app_menu: %i",
-            menu->flags.buttoned, menu->flags.brother, menu->flags.app_menu);
-  if (!menu->flags.buttoned && !menu->flags.brother &&
-      (!menu->flags.app_menu || menu->parent != NULL)) {
-    menu->flags.buttoned = 1;
-    wFrameWindowShowButton(menu->frame, WFF_RIGHT_BUTTON);
-    if (menu->parent) {
-      /* turn off selected menu entry in parent menu */
-      selectEntry(menu->parent, -1);
-      /* make parent map the copy in place of the original */
-      for (i = 0; i < menu->parent->cascade_no; i++) {
-        if (menu->parent->cascades[i] == menu) {
-          WMLogInfo("Found submenu position in parent (%s) menu for %s",
-                    menu->parent->frame->title, menu->frame->title);
-          menu->parent->cascades[i] = menu->brother;
-          break;
-        }
-      }
-    }
-  }
-
   started = False;
   while (1) {
     WMMaskEvent(dpy, ButtonMotionMask | ButtonReleaseMask | ButtonPressMask | ExposureMask, &ev);
@@ -2091,8 +2066,7 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
                  abs(ev.xmotion.y_root - dy) > MOVE_THRESHOLD) {
         started = True;
         XGrabPointer(dpy, menu->frame->titlebar->window, False,
-                     ButtonMotionMask | ButtonReleaseMask
-                     | ButtonPressMask,
+                     ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
                      GrabModeAsync, GrabModeAsync, None,
                      wPreferences.cursor[WCUR_MOVE], CurrentTime);
       }
@@ -2102,8 +2076,26 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
       break;
 
     case ButtonRelease:
-      if (ev.xbutton.button != event->xbutton.button)
+      if (ev.xbutton.button != event->xbutton.button) {
         break;
+      }
+      /* tear off the menu if it's a root menu or a cascade application menu */
+      if (!menu->flags.buttoned && !menu->flags.brother &&
+          (!menu->flags.app_menu || menu->parent != NULL) &&
+          (abs(old_x - x) > 5 || abs(old_y - y) > 5)) {
+        menu->flags.buttoned = 1;
+        wFrameWindowShowButton(menu->frame, WFF_RIGHT_BUTTON);
+        if (menu->parent) {
+          /* turn off selected menu entry in parent menu */
+          selectEntry(menu->parent, -1);
+          /* make parent map the copy in place of the original */
+          for (i = 0; i < menu->parent->cascade_no; i++) {
+            if (menu->parent->cascades[i] == menu) {
+              menu->parent->cascades[i] = menu->brother;
+            }
+          }
+        }
+      }
       XUngrabPointer(dpy, CurrentTime);
       return;
 
