@@ -9,6 +9,7 @@
 #include "framewin.h"
 #include "actions.h"
 #include "misc.h"
+#include "workspace.h"
 
 // Main application menu
 //-------------------------------------------------------------------------------------------------
@@ -106,7 +107,7 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
       idx = menuIndexForWindow(windows_menu, wwin, -1);
     }
 
-    entry = wMenuInsertCallback(windows_menu, idx+1, t, focusWindow, wwin);
+    entry = wMenuInsertItem(windows_menu, idx+1, t, focusWindow, wwin);
     wfree(t);
 
     entry->flags.indicator = 1;
@@ -188,6 +189,55 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
   wMenuPaint(windows_menu);
 }
 
+static void switchDesktopCallback(WMenu *menu, WMenuEntry *entry)
+{
+  WWindow *wwin = (WWindow *) entry->clientdata;
+
+  wSelectWindow(wwin, False);
+  wWindowChangeWorkspace(wwin, entry->order);
+}
+
+static void updateDesktopsMenu(WMenu *menu)
+{
+  WScreen *scr = menu->frame->screen_ptr;
+  char title[MAX_WORKSPACENAME_WIDTH + 1];
+  WMenuEntry *entry;
+  int i;
+
+  for (i = 0; i < scr->workspace_count; i++) {
+    if (i < menu->entry_no) {
+
+      entry = menu->entries[i];
+      if (strcmp(entry->text, scr->workspaces[i]->name) != 0) {
+        wfree(entry->text);
+        strncpy(title, scr->workspaces[i]->name, MAX_WORKSPACENAME_WIDTH);
+        title[MAX_WORKSPACENAME_WIDTH] = 0;
+        menu->entries[i]->text = wstrdup(title);
+        menu->entries[i]->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
+        menu->flags.realized = 0;
+      }
+    } else {
+      strncpy(title, scr->workspaces[i]->name, MAX_WORKSPACENAME_WIDTH);
+      title[MAX_WORKSPACENAME_WIDTH] = 0;
+
+      entry = wMenuAddItem(menu, title, switchDesktopCallback, NULL);
+      entry->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
+
+      menu->flags.realized = 0;
+    }
+
+    /* workspace shortcut labels */
+    if (i / 10 == scr->current_workspace / 10)
+      entry->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + (i % 10)]);
+    else
+      entry->rtext = NULL;
+  }
+
+  if (!menu->flags.realized) {
+    wMenuRealize(menu);
+  }
+}
+
 static void windowObserver(CFNotificationCenterRef center,
                            void *menu,
                            CFNotificationName name,
@@ -226,18 +276,26 @@ static void windowObserver(CFNotificationCenterRef center,
 
 static WMenu *createWindowsMenu(WApplication *wapp)
 {
-  WMenu *_menu;
+  WMenu *_menu, *desktops_menu;
   WMenuEntry *tmp_item;
   WScreen *scr = wapp->main_wwin->screen_ptr;
   
+  desktops_menu = wMenuCreate(scr, _("Move Window To"), False);
+  desktops_menu->app = wapp;
+  updateDesktopsMenu(desktops_menu);
+  
   _menu = wMenuCreate(scr, _("Windows"), False);
   _menu->app = wapp;
-  wMenuInsertCallback(_menu, 0, _("Arrange in Front"), windowsCallback, NULL);
-  tmp_item = wMenuAddCallback(_menu, _("Miniaturize Window"), windowsCallback, NULL);
+  wMenuInsertItem(_menu, 0, _("Arrange in Front"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Miniaturize Window"), windowsCallback, NULL);
   tmp_item->rtext = wstrdup("m");
-  tmp_item = wMenuAddCallback(_menu, _("Shade Window"), windowsCallback, NULL);
-  tmp_item = wMenuAddCallback(_menu, _("Zoom window"), windowsCallback, NULL);
-  tmp_item = wMenuAddCallback(_menu, _("Close Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Move Window To"), windowsCallback, NULL);
+  
+  tmp_item = wMenuAddItem(_menu, _("Shade Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Resize/Move Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Select Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Zoom window"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Close Window"), windowsCallback, NULL);
   tmp_item->rtext = wstrdup("w");
 
   CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
@@ -276,42 +334,27 @@ static WMenu *submenuWithTitle(WMenu *menu, char *title)
 
 WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
 {
-  WMenu *menu, *info, *edit, *windows;
-  WMenuEntry *info_item, *edit_item, *windows_item, *tmp_item;
+  WMenu *menu, *info, *windows;
+  WMenuEntry *info_item, *windows_item, *tmp_item;
 
   menu = wMenuCreate(scr, wapp->app_name, True);
   menu->app = wapp;
   
-  /* Info */
-
   info = wMenuCreate(scr, _("Info"), False);
-  wMenuAddCallback(info, _("Info Panel..."), nullCallback, NULL);
-  wMenuAddCallback(info, _("Legal..."), nullCallback, NULL);
-  wMenuAddCallback(info, _("Preferences..."), nullCallback, NULL);
-  info_item = wMenuAddCallback(menu, _("Info"), NULL, NULL);
+  wMenuAddItem(info, _("Info Panel..."), nullCallback, NULL);
+  tmp_item = wMenuAddItem(info, _("Preferences..."), nullCallback, NULL);
+  info_item = wMenuAddItem(menu, _("Info"), NULL, NULL);
   wMenuEntrySetCascade(menu, info_item, info);
 
-  edit = wMenuCreate(scr, _("Edit"), False);
-  tmp_item = wMenuAddCallback(edit, _("Cut"), nullCallback, NULL);
-  tmp_item->rtext = wstrdup("x");
-  tmp_item = wMenuAddCallback(edit, _("Copy"), nullCallback, NULL);
-  tmp_item->rtext = wstrdup("c");
-  tmp_item = wMenuAddCallback(edit, _("Paste"), nullCallback, NULL);
-  tmp_item->rtext = wstrdup("v");
-  tmp_item = wMenuAddCallback(edit, _("Select All"), nullCallback, NULL);
-  tmp_item->rtext = wstrdup("a");
-  edit_item = wMenuAddCallback(menu, _("Edit"), NULL, NULL);
-  wMenuEntrySetCascade(menu, edit_item, edit);
-
   windows = createWindowsMenu(wapp);
-  windows_item = wMenuAddCallback(menu, _("Windows"), NULL, NULL);
+  windows_item = wMenuAddItem(menu, _("Windows"), NULL, NULL);
   wMenuEntrySetCascade(menu, windows_item, windows);
   
-  tmp_item = wMenuAddCallback(menu, _("Hide"), mainCallback, wapp);
+  tmp_item = wMenuAddItem(menu, _("Hide"), mainCallback, wapp);
   tmp_item->rtext = wstrdup("h");
-  tmp_item = wMenuAddCallback(menu, _("Hide Others"), mainCallback, wapp);
+  tmp_item = wMenuAddItem(menu, _("Hide Others"), mainCallback, wapp);
   tmp_item->rtext = wstrdup("H");
-  tmp_item = wMenuAddCallback(menu, _("Quit"), mainCallback, wapp);
+  tmp_item = wMenuAddItem(menu, _("Quit"), mainCallback, wapp);
   tmp_item->rtext = wstrdup("q");
   
   return menu;

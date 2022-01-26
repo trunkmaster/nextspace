@@ -242,7 +242,7 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
       idx = menuIndexForWindow(switchmenu, wwin, -1);
     }
 
-    entry = wMenuInsertCallback(switchmenu, idx, t, focusWindow, wwin);
+    entry = wMenuInsertItem(switchmenu, idx, t, focusWindow, wwin);
     wfree(t);
 
     entry->flags.indicator = 1;
@@ -326,7 +326,7 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
 
             wMenuRemoveItem(switchmenu, i);
 
-            entry = wMenuInsertCallback(switchmenu, idx, t, focusWindow, wwin);
+            entry = wMenuInsertItem(switchmenu, idx, t, focusWindow, wwin);
             wfree(t);
             entry->rtext = rt;
             entry->flags.indicator = 1;

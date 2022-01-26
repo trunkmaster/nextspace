@@ -98,17 +98,16 @@ typedef struct WMenu {
 void wMenuPaint(WMenu *menu);
 void wMenuDestroy(WMenu *menu, int recurse);
 void wMenuRealize(WMenu *menu);
+
 WMenuEntry *wMenuInsertCascade(WMenu *menu, int index, const char *text,
                                WMenu *cascade);
-WMenuEntry *wMenuInsertCallback(WMenu *menu, int index, const char *text,
-                                void (*callback)(WMenu *menu, WMenuEntry *entry),
-                                void *clientdata);
-
 void wMenuEntrySetCascade(WMenu *menu, WMenuEntry *entry, WMenu *cascade);
+void wMenuEntryRemoveCascade(WMenu *menu, WMenuEntry *entry);
 
-#define wMenuAddCallback(menu, text, callback, data)    \
-  wMenuInsertCallback(menu, -1, text, callback, data)
-
+WMenuEntry *wMenuInsertItem(WMenu *menu, int index, const char *text,
+                            void (*callback)(WMenu *menu, WMenuEntry *entry),
+                            void *clientdata);
+#define wMenuAddItem(menu, text, callback, data) wMenuInsertItem(menu, -1, text, callback, data)
 void wMenuRemoveItem(WMenu *menu, int index);
 
 WMenu *wMenuCreate(WScreen *screen, const char *title, int main_menu);
@@ -119,7 +118,6 @@ void wMenuMapAt(WMenu *menu, int x, int y, int keyboard);
 void wMenuUnmap(WMenu *menu);
 void wMenuSetEnabled(WMenu *menu, int index, int enable);
 void wMenuMove(WMenu *menu, int x, int y, int submenus);
-void wMenuEntryRemoveCascade(WMenu *menu, WMenuEntry *entry);
 void wMenuScroll(WMenu *menu);
 WMenu *wMenuUnderPointer(WScreen *screen);
 void wMenuSaveState(WScreen *scr);

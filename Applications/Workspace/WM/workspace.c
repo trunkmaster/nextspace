@@ -845,10 +845,10 @@ WMenu *wWorkspaceMenuMake(WScreen *scr, Bool titled)
   /* callback to be called when an entry is edited */
   wsmenu->on_edit = _onMenuEntryEdited;
 
-  wMenuAddCallback(wsmenu, _("New"), _newWSCommand, NULL);
-  wMenuAddCallback(wsmenu, _("Destroy Last"), _deleteWSCommand, NULL);
+  wMenuAddItem(wsmenu, _("New"), _newWSCommand, NULL);
+  wMenuAddItem(wsmenu, _("Destroy Last"), _deleteWSCommand, NULL);
 
-  entry = wMenuAddCallback(wsmenu, _("Last Used"), _lastWSCommand, NULL);
+  entry = wMenuAddItem(wsmenu, _("Last Used"), _lastWSCommand, NULL);
   entry->rtext = GetShortcutKey(wKeyBindings[WKBD_LASTWORKSPACE]);
 
   return wsmenu;
@@ -872,7 +872,7 @@ void wWorkspaceMenuUpdate(WScreen *scr, WMenu * menu)
     while (i > 0) {
       wstrlcpy(title, scr->workspaces[ws]->name, MAX_WORKSPACENAME_WIDTH);
 
-      entry = wMenuAddCallback(menu, title, _switchWSCommand, (void *)ws);
+      entry = wMenuAddItem(menu, title, _switchWSCommand, (void *)ws);
       entry->flags.indicator = 1;
 
       i--;

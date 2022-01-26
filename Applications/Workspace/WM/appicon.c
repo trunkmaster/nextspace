@@ -568,10 +568,10 @@ static WMenu *createApplicationMenu(WScreen *scr)
   WMenu *menu;
 
   menu = wMenuCreate(scr, "WindowMaker", False);
-  wMenuAddCallback(menu, _("Launch"), relaunchCallback, NULL);
-  wMenuAddCallback(menu, _("Unhide Here"), unhideHereCallback, NULL);
-  wMenuAddCallback(menu, _("Hide"), hideCallback, NULL);
-  wMenuAddCallback(menu, _("Kill"), killCallback, NULL);
+  wMenuAddItem(menu, _("Launch"), relaunchCallback, NULL);
+  wMenuAddItem(menu, _("Unhide Here"), unhideHereCallback, NULL);
+  wMenuAddItem(menu, _("Hide"), hideCallback, NULL);
+  wMenuAddItem(menu, _("Force Quit"), killCallback, NULL);
 
   return menu;
 }

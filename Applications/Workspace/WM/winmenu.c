@@ -373,7 +373,7 @@ static void updateWorkspaceMenu(WMenu * menu)
       strncpy(title, scr->workspaces[i]->name, MAX_WORKSPACENAME_WIDTH);
       title[MAX_WORKSPACENAME_WIDTH] = 0;
 
-      entry = wMenuAddCallback(menu, title, switchWSCommand, NULL);
+      entry = wMenuAddItem(menu, title, switchWSCommand, NULL);
       entry->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
 
       menu->flags.realized = 0;
@@ -547,13 +547,13 @@ static WMenu *makeOptionsMenu(WScreen * scr)
   }
 
   for (i = 0; i < wlengthof(menu_options_entries); i++) {
-    entry = wMenuAddCallback(menu, _(menu_options_entries[i]), execWindowOptionCommand, NULL);
+    entry = wMenuAddItem(menu, _(menu_options_entries[i]), execWindowOptionCommand, NULL);
     entry->flags.indicator = 1;
     entry->flags.indicator_type = MI_CHECK;
   }
 
   for (i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
-    entry = wMenuAddCallback(menu, "", makeShortcutCommand, NULL);
+    entry = wMenuAddItem(menu, "", makeShortcutCommand, NULL);
     entry->flags.indicator = 1;
   }
 
@@ -572,7 +572,7 @@ static WMenu *makeMaximizeMenu(WScreen * scr)
   }
 
   for (i = 0; i < wlengthof(menu_maximize_entries); i++)
-    wMenuAddCallback(menu, _(menu_maximize_entries[i].label), execMaximizeCommand, NULL);
+    wMenuAddItem(menu, _(menu_maximize_entries[i].label), execMaximizeCommand, NULL);
 
   return menu;
 }
@@ -588,7 +588,7 @@ static WMenu *createWindowMenu(WScreen * scr)
     WMenuEntry *entry;
 
     if (window_menu_entries[i].label != NULL)
-      entry = wMenuAddCallback(menu, _(window_menu_entries[i].label),
+      entry = wMenuAddItem(menu, _(window_menu_entries[i].label),
                                (window_menu_entries[i].generate_submenu == NULL)?execMenuCommand:NULL,
                                NULL);
     if (window_menu_entries[i].generate_submenu != NULL) {

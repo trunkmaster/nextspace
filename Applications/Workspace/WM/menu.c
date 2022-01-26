@@ -282,9 +282,9 @@ static void insertEntry(WMenu * menu, WMenuEntry * entry, int index)
   menu->entries[index] = entry;
 }
 
-WMenuEntry *wMenuInsertCallback(WMenu *menu, int index, const char *text,
-				void (*callback) (WMenu * menu, WMenuEntry * entry),
-                                void *clientdata)
+WMenuEntry *wMenuInsertItem(WMenu *menu, int index, const char *text,
+                            void (*callback) (WMenu * menu, WMenuEntry * entry),
+                            void *clientdata)
 {
   WMenuEntry *entry;
 
@@ -321,6 +321,42 @@ WMenuEntry *wMenuInsertCallback(WMenu *menu, int index, const char *text,
   menu->brother->entry_no = menu->entry_no;
 
   return entry;
+}
+
+void wMenuRemoveItem(WMenu * menu, int index)
+{
+  int i;
+
+  if (menu->flags.brother) {
+    wMenuRemoveItem(menu->brother, index);
+    return;
+  }
+
+  if (index >= menu->entry_no)
+    return;
+
+  /* destroy cascade menu */
+  wMenuEntryRemoveCascade(menu, menu->entries[index]);
+
+  /* destroy unshared data */
+
+  if (menu->entries[index]->text)
+    wfree(menu->entries[index]->text);
+
+  if (menu->entries[index]->rtext)
+    wfree(menu->entries[index]->rtext);
+
+  if (menu->entries[index]->free_cdata && menu->entries[index]->clientdata)
+    (*menu->entries[index]->free_cdata) (menu->entries[index]->clientdata);
+
+  wfree(menu->entries[index]);
+
+  for (i = index; i < menu->entry_no - 1; i++) {
+    menu->entries[i + 1]->order--;
+    menu->entries[i] = menu->entries[i + 1];
+  }
+  menu->entry_no--;
+  menu->brother->entry_no--;
 }
 
 void wMenuEntrySetCascade(WMenu * menu, WMenuEntry * entry, WMenu * cascade)
@@ -386,42 +422,6 @@ void wMenuEntryRemoveCascade(WMenu * menu, WMenuEntry * entry)
 
     entry->cascade = -1;
   }
-}
-
-void wMenuRemoveItem(WMenu * menu, int index)
-{
-  int i;
-
-  if (menu->flags.brother) {
-    wMenuRemoveItem(menu->brother, index);
-    return;
-  }
-
-  if (index >= menu->entry_no)
-    return;
-
-  /* destroy cascade menu */
-  wMenuEntryRemoveCascade(menu, menu->entries[index]);
-
-  /* destroy unshared data */
-
-  if (menu->entries[index]->text)
-    wfree(menu->entries[index]->text);
-
-  if (menu->entries[index]->rtext)
-    wfree(menu->entries[index]->rtext);
-
-  if (menu->entries[index]->free_cdata && menu->entries[index]->clientdata)
-    (*menu->entries[index]->free_cdata) (menu->entries[index]->clientdata);
-
-  wfree(menu->entries[index]);
-
-  for (i = index; i < menu->entry_no - 1; i++) {
-    menu->entries[i + 1]->order--;
-    menu->entries[i] = menu->entries[i + 1];
-  }
-  menu->entry_no--;
-  menu->brother->entry_no--;
 }
 
 static Pixmap renderTexture(WMenu * menu)
@@ -1467,7 +1467,7 @@ static void getScrollAmount(WMenu *menu, int *hamount, int *vamount)
   }
 }
 
-static void dragScrollMenuCallback(CFRunLoopTimerRef timer, void *data) // (void *data)
+static void dragScrollMenuCallback(CFRunLoopTimerRef timer, void *data)
 {
   WMenu *menu = (WMenu *) data;
   WScreen *scr = menu->menu->screen_ptr;
@@ -1512,7 +1512,7 @@ static void dragScrollMenuCallback(CFRunLoopTimerRef timer, void *data) // (void
   }
 }
 
-static void scrollMenuCallback(CFRunLoopTimerRef timer, void *data) // (void *data)
+static void scrollMenuCallback(CFRunLoopTimerRef timer, void *data)
 {
   WMenu *menu = (WMenu *) data;
   WMenu *parent = parentMenu(menu);
@@ -1705,7 +1705,7 @@ typedef struct {
   CFRunLoopTimerRef magic;
 } delay_data;
 
-static void delaySelection(CFRunLoopTimerRef timer, void *data) // (void *data)
+static void delaySelection(CFRunLoopTimerRef timer, void *data)
 {
   delay_data *d = (delay_data *) data;
   int x, y, entry_no;

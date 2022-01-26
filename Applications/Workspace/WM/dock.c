@@ -851,7 +851,7 @@ static void updateWorkspaceMenu(WMenu *menu, WAppIcon *icon)
       }
       menu->entries[i]->clientdata = (void *)icon;
     } else {
-      wMenuAddCallback(menu, scr->workspaces[i]->name, switchWSCommand, (void *)icon);
+      wMenuAddItem(menu, scr->workspaces[i]->name, switchWSCommand, (void *)icon);
 
       menu->flags.realized = 0;
     }
@@ -874,7 +874,7 @@ static WMenu *makeWorkspaceMenu(WScreen *scr)
   if (!menu)
     WMLogWarning(_("could not create workspace submenu for Clip menu"));
 
-  wMenuAddCallback(menu, "", switchWSCommand, (void *)scr->clip_icon);
+  wMenuAddItem(menu, "", switchWSCommand, (void *)scr->clip_icon);
 
   menu->flags.realized = 0;
   wMenuRealize(menu);
@@ -932,27 +932,27 @@ static WMenu *makeClipOptionsMenu(WScreen *scr)
     return NULL;
   }
 
-  entry = wMenuAddCallback(menu, _("Keep on Top"), toggleLoweredCallback, NULL);
+  entry = wMenuAddItem(menu, _("Keep on Top"), toggleLoweredCallback, NULL);
   entry->flags.indicator = 1;
   entry->flags.indicator_on = 1;
   entry->flags.indicator_type = MI_CHECK;
 
-  entry = wMenuAddCallback(menu, _("Collapsed"), toggleCollapsedCallback, NULL);
+  entry = wMenuAddItem(menu, _("Collapsed"), toggleCollapsedCallback, NULL);
   entry->flags.indicator = 1;
   entry->flags.indicator_on = 1;
   entry->flags.indicator_type = MI_CHECK;
 
-  entry = wMenuAddCallback(menu, _("Autocollapse"), toggleAutoCollapseCallback, NULL);
+  entry = wMenuAddItem(menu, _("Autocollapse"), toggleAutoCollapseCallback, NULL);
   entry->flags.indicator = 1;
   entry->flags.indicator_on = 1;
   entry->flags.indicator_type = MI_CHECK;
 
-  entry = wMenuAddCallback(menu, _("Autoraise"), toggleAutoRaiseLowerCallback, NULL);
+  entry = wMenuAddItem(menu, _("Autoraise"), toggleAutoRaiseLowerCallback, NULL);
   entry->flags.indicator = 1;
   entry->flags.indicator_on = 1;
   entry->flags.indicator_type = MI_CHECK;
 
-  entry = wMenuAddCallback(menu, _("Autoattract Icons"), toggleAutoAttractCallback, NULL);
+  entry = wMenuAddItem(menu, _("Autoattract Icons"), toggleAutoAttractCallback, NULL);
   entry->flags.indicator = 1;
   entry->flags.indicator_on = 1;
   entry->flags.indicator_type = MI_CHECK;
@@ -1106,13 +1106,13 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
     wMenuEntrySetCascade(menu, entry, scr->dock_pos_menu);
 #endif
     if (!wPreferences.flags.nodrawer)
-      wMenuAddCallback(menu, _("Add a drawer"), addADrawerCallback, NULL);
+      wMenuAddItem(menu, _("Add a drawer"), addADrawerCallback, NULL);
 
   } else {
     if (type == WM_CLIP)
-      entry = wMenuAddCallback(menu, _("Clip Options"), NULL, NULL);
+      entry = wMenuAddItem(menu, _("Clip Options"), NULL, NULL);
     else /* if (type == WM_DRAWER) */
-      entry = wMenuAddCallback(menu, _("Drawer options"), NULL, NULL);
+      entry = wMenuAddItem(menu, _("Drawer options"), NULL, NULL);
 
     if (scr->clip_options == NULL)
       scr->clip_options = makeClipOptionsMenu(scr);
@@ -1123,17 +1123,17 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
      * entry text is different between the two contexts, or if it can
      * change depending on some state, free the duplicated string (from
      * wMenuInsertCallback) and use gettext's string */
-    entry = wMenuAddCallback(menu, _("Selected"), selectCallback, NULL);
+    entry = wMenuAddItem(menu, _("Selected"), selectCallback, NULL);
     entry->flags.indicator = 1;
     entry->flags.indicator_on = 1;
     entry->flags.indicator_type = MI_CHECK;
 
-    entry = wMenuAddCallback(menu, _("Select All Icons"), selectIconsCallback, NULL);
+    entry = wMenuAddItem(menu, _("Select All Icons"), selectIconsCallback, NULL);
     wfree(entry->text);
     entry->text = _("Select All Icons"); /* can be: Unselect all icons */
 
     if (type == WM_CLIP) {
-      entry = wMenuAddCallback(menu, _("Move Icon To"), NULL, NULL);
+      entry = wMenuAddItem(menu, _("Move Icon To"), NULL, NULL);
       wfree(entry->text);
       entry->text = _("Move Icon To"); /* can be: Move Icons to */
       scr->clip_submenu = makeWorkspaceMenu(scr);
@@ -1141,19 +1141,19 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
         wMenuEntrySetCascade(menu, entry, scr->clip_submenu);
     }
 
-    entry = wMenuAddCallback(menu, _("Remove Icon"), removeIconsCallback, NULL);
+    entry = wMenuAddItem(menu, _("Remove Icon"), removeIconsCallback, NULL);
     wfree(entry->text);
     entry->text = _("Remove Icon"); /* can be: Remove Icons */
 
-    wMenuAddCallback(menu, _("Attract Icons"), attractIconsCallback, NULL);
+    wMenuAddItem(menu, _("Attract Icons"), attractIconsCallback, NULL);
   }
 
-  wMenuAddCallback(menu, _("Launch"), launchCallback, NULL);
-  wMenuAddCallback(menu, _("Unhide Here"), unhideHereCallback, NULL);
-  entry = wMenuAddCallback(menu, _("Hide"), hideCallback, NULL);
+  wMenuAddItem(menu, _("Launch"), launchCallback, NULL);
+  wMenuAddItem(menu, _("Unhide Here"), unhideHereCallback, NULL);
+  entry = wMenuAddItem(menu, _("Hide"), hideCallback, NULL);
   wfree(entry->text);
   entry->text = _("Hide"); /* can be: Unhide */
-  entry = wMenuAddCallback(menu, _("Kill"), killCallback, NULL);
+  entry = wMenuAddItem(menu, _("Kill"), killCallback, NULL);
   wfree(entry->text);
   entry->text = _("Kill"); /* can be: Remove drawer */
 
