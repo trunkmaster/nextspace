@@ -191,7 +191,7 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
 
 static void switchDesktopCallback(WMenu *menu, WMenuEntry *entry)
 {
-  WWindow *wwin = (WWindow *) entry->clientdata;
+  WWindow *wwin = menu->frame->screen_ptr->focused_window;
 
   wSelectWindow(wwin, False);
   wWindowChangeWorkspace(wwin, entry->order);
