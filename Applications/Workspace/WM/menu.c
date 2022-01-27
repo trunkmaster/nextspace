@@ -1775,11 +1775,15 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
             entry = event_menu->entries[event_menu->selected_entry];
             if (entry && entry->cascade >= 0 && event_menu->cascades) {
               WMenu *submenu = event_menu->cascades[entry->cascade];
-              WMLogInfo("Submenu: %s for entry %s", submenu ? submenu->frame->title : "NONE",
+              WMLogInfo("Submenu: %s for entry %s",
+                        submenu ? submenu->frame->title : "NONE",
                         entry ? entry->text : "NONE");
-              if (submenu && submenu->flags.mapped && !submenu->flags.buttoned) {
+              // Menu is attached and selected item has no submenu
+              if (submenu && submenu->flags.mapped && !submenu->flags.buttoned &&
+                  submenu->cascades && submenu->selected_entry >= 0 &&
+                  submenu->entries[submenu->selected_entry]->cascade < 0) {
                 /* deselect item in opened submenu */
-                WMLogInfo("Deselect item in submenu %s", event_menu->frame->title);
+                WMLogInfo("Deselect item in submenu %s", submenu->frame->title);
                 selectEntry(submenu, -1);
               }
             } else {
