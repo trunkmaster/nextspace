@@ -290,6 +290,7 @@ static WMenu *createWindowsMenu(WApplication *wapp)
   tmp_item = wMenuAddItem(_menu, _("Miniaturize Window"), windowsCallback, NULL);
   tmp_item->rtext = wstrdup("m");
   tmp_item = wMenuAddItem(_menu, _("Move Window To"), windowsCallback, NULL);
+  wMenuEntrySetCascade(_menu, tmp_item, desktops_menu);
   
   tmp_item = wMenuAddItem(_menu, _("Shade Window"), windowsCallback, NULL);
   tmp_item = wMenuAddItem(_menu, _("Resize/Move Window"), windowsCallback, NULL);
