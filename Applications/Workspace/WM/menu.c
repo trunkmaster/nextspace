@@ -1722,6 +1722,21 @@ static void delaySelection(CFRunLoopTimerRef timer, void *data)
     *(d->delayed_select) = 0;
 }
 
+static WMMenuEntry *getSelectedLeaf(WMenu *menu)
+{
+  WMMenuEntry *selected = NULL, *tmp_selected = NULL;
+
+  if (menu && menu->entry_no > 0 && menu->selected_entry >= 0) {
+    tmp_selected = menu->entries[menu->selected_entry];
+    if (tmp_selected && tmp_selected->cascade >= 0) { // selected item has
+      tmp_selected = getSelectedLeaf(menu->cascades[tmp_selected->cascade]);
+      if (tmp_selected) {
+        selected = tmp_selected;
+      }
+    }
+  }
+}
+
 static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
 {
   WMenu *event_menu = desc->parent; // menu where button click has happend
@@ -1780,7 +1795,7 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
                         entry ? entry->text : "NONE");
               // Menu is attached and selected item has no submenu
               if (submenu && submenu->flags.mapped && !submenu->flags.buttoned &&
-                  submenu->cascades && submenu->selected_entry >= 0 &&
+                  submenu->selected_entry >= 0 &&
                   submenu->entries[submenu->selected_entry]->cascade < 0) {
                 /* deselect item in opened submenu */
                 WMLogInfo("Deselect item in submenu %s", submenu->frame->title);
