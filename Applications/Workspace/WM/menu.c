@@ -1722,19 +1722,44 @@ static void delaySelection(CFRunLoopTimerRef timer, void *data)
     *(d->delayed_select) = 0;
 }
 
-static WMMenuEntry *getSelectedLeaf(WMenu *menu)
+static WMenuEntry *getSelectedLeafItem(WMenu *menu)
 {
-  WMMenuEntry *selected = NULL, *tmp_selected = NULL;
+  WMenuEntry *selected = NULL;
 
   if (menu && menu->entry_no > 0 && menu->selected_entry >= 0) {
-    tmp_selected = menu->entries[menu->selected_entry];
-    if (tmp_selected && tmp_selected->cascade >= 0) { // selected item has
-      tmp_selected = getSelectedLeaf(menu->cascades[tmp_selected->cascade]);
-      if (tmp_selected) {
-        selected = tmp_selected;
+    
+    selected = menu->entries[menu->selected_entry];
+    
+    if (selected && selected->cascade >= 0) { // selected item has submenu
+      selected = getSelectedLeafItem(menu->cascades[selected->cascade]);
+      if (selected == NULL && menu->parent) {
+        selected = menu->parent->entries[menu->parent->selected_entry];
+      } else {
+        selected = menu->entries[menu->selected_entry];
       }
     }
   }
+  return selected;
+}
+
+static WMenu *getSelectedLeafMenu(WMenu *menu)
+{
+  WMenuEntry *selected_item = NULL;
+  WMenu *selected_menu = NULL;
+
+  if (menu->selected_entry >= 0) {
+    selected_item = menu->entries[menu->selected_entry];
+  }
+
+  if (selected_item == NULL) { // no selected item in this menu
+    return menu->parent;
+  } else if (selected_item->cascade >= 0) { // going deeper
+    selected_menu = getSelectedLeafMenu(menu->cascades[selected_item->cascade]);
+  } else {
+    selected_menu = menu;
+  }
+
+  return selected_menu;
 }
 
 static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
@@ -1773,6 +1798,9 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
         // - mouse moved inside menu (highlight/unhighlight items, open/close submenus)
         // - mouse moved from submenu to menu and vice versa
         
+        WMLogInfo("MotionNotify: mouse_menu: %s event_menu: %s",
+                  mouse_menu ? mouse_menu->frame->title : "NONE",
+                  event_menu ? event_menu->frame->title : "NONE");
         if (mouse_menu == NULL) { /* mouse moved out of menu */
           /* mouse could leave menu:
              1. from opened submenu - deselect item in submenu, submenu stays opened
@@ -1782,36 +1810,39 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
           WMLogInfo("Mouse moved out of menu mouse: %s event: %s",
                     mouse_menu ? mouse_menu->frame->title : "NONE",
                     event_menu ? event_menu->frame->title : "NONE");
-          
           WMLogInfo("Event menu selected item: %i", event_menu->selected_entry);
-          if (event_menu != NULL && event_menu->selected_entry >= 0) {
+          
+          if (event_menu != NULL) {
+            WMenu *main_menu, *submenu;
             /* depending on where click was performed, entry may be an item in parent
                menu (click on parent) or item in opened submenu (click on submenu) */
-            entry = event_menu->entries[event_menu->selected_entry];
-            if (entry && entry->cascade >= 0 && event_menu->cascades) {
-              WMenu *submenu = event_menu->cascades[entry->cascade];
-              WMLogInfo("Submenu: %s for entry %s",
-                        submenu ? submenu->frame->title : "NONE",
-                        entry ? entry->text : "NONE");
-              // Menu is attached and selected item has no submenu
-              if (submenu && submenu->flags.mapped && !submenu->flags.buttoned &&
-                  submenu->selected_entry >= 0 &&
-                  submenu->entries[submenu->selected_entry]->cascade < 0) {
-                /* deselect item in opened submenu */
-                WMLogInfo("Deselect item in submenu %s", submenu->frame->title);
-                selectEntry(submenu, -1);
-              }
-            } else {
-              /* deselect plain item in menu */
-              WMLogInfo("Deselect item in %s", event_menu->frame->title);
-              selectEntry(event_menu, -1);
+            //entry = getSelectedLeafItem(event_menu); // TODO: remove
+            /* always go to toplevel menu because event_menu could be a submenu
+               of deselected item */
+            main_menu = event_menu;
+            while (main_menu->parent) {
+              main_menu = main_menu->parent;
+            }
+            WMLogInfo("Main menu: %s", main_menu ? main_menu->frame->title : "NONE");
+            submenu = getSelectedLeafMenu(main_menu);
+            WMLogInfo("Submenu: %s for entry %s",
+                      submenu ? submenu->frame->title : "NONE",
+                      entry ? entry->text : "NONE");
+            // Menu is attached and selected item has no submenu
+            if (submenu && submenu->flags.mapped && !submenu->flags.buttoned &&
+                submenu->selected_entry >= 0 &&
+                submenu->entries[submenu->selected_entry]->cascade < 0) {
+              /* deselect item in opened submenu */
+              WMLogInfo("Deselect item in submenu %s", submenu->frame->title);
+              selectEntry(submenu, -1);
             }
           }
+            
           break;
         }
         
         entry_index = getEntryAt(mouse_menu, x, y);
-        /* WMLogInfo("Mouse on entry %i in %s", entry_index, mouse_menu->frame->title); */
+        WMLogInfo("Mouse on entry %i in %s", entry_index, mouse_menu->frame->title);
         if (entry_index >= 0) {
           entry = mouse_menu->entries[entry_index];
           if (/*entry->flags.enabled && */entry->cascade >= 0 && mouse_menu->cascades) {
