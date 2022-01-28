@@ -1797,20 +1797,23 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
         // - mouse moved completely out of menu
         // - mouse moved inside menu (highlight/unhighlight items, open/close submenus)
         // - mouse moved from submenu to menu and vice versa
+
         WMLogInfo("MotionNotify: mouse_menu: %s event_menu: %s",
                   mouse_menu ? mouse_menu->frame->title : "NONE",
                   event_menu ? event_menu->frame->title : "NONE");
+
         if (mouse_menu == NULL) { /* mouse moved out of menu */
           /* mouse could leave menu:
              1. from opened submenu - deselect item in submenu, submenu stays opened
              2. from menu with submenu opened - deselect item in submenu, submenu stays opened
              3. from menu with plain item selected - deselect item in menu
           */
+
           WMLogInfo("Mouse moved out of menu mouse: %s event: %s",
                     mouse_menu ? mouse_menu->frame->title : "NONE",
                     event_menu ? event_menu->frame->title : "NONE");
           WMLogInfo("Event menu selected item: %i", event_menu->selected_entry);
-          
+
           if (event_menu != NULL) {
             WMenu *main_menu, *submenu;
             /* depending on where click was performed, entry may be an item in parent
@@ -1893,7 +1896,6 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
         /*           event_menu ? event_menu->frame->title : "NULL", */
         /*           mouse_menu ? mouse_menu->frame->title : "NULL"); */
         if (ev.xbutton.button == event->xbutton.button) {
-        
           if (mouse_menu) { // button released on menu
             /* WMLogInfo("ButtonRelease: on menu"); */
             if (mouse_menu->selected_entry >= 0) {
@@ -1902,11 +1904,9 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
               if (entry->cascade < 0) { // on plain item
                 /* WMLogInfo("Plain"); */
                 /* unmap the menu, it's parents */
-                /* if (!event_menu->flags.app_menu || mouse_menu != event_menu) { */
                 selectEntry(mouse_menu, -1);
                 if (mouse_menu != event_menu || !mouse_menu->parent) {
-                  closeCascade(event_menu);
-                  selectEntry(event_menu, -1);
+                  closeCascade(mouse_menu);
                 }
                 /* call callback if needed */
                 if (entry->callback != NULL && entry->flags.enabled) {
@@ -1918,13 +1918,14 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
                 entry = mouse_menu->entries[mouse_menu->selected_entry];
                 WMenu *submenu = mouse_menu->cascades[entry->cascade];
                 /* clicked menu has submenu attached */
-                if (submenu->flags.mapped && !submenu->flags.buttoned &&
-                    /* on item selected with last click */
-                    (mouse_menu->selected_entry == old_selected_entry_no ||
-                     /* teared-off version of submenu is visible */
-                     submenu->brother->flags.mapped)) {
-                  selectEntry(mouse_menu, -1);
-                  wMenuUnmap(submenu);
+                if (submenu->flags.mapped && !submenu->flags.buttoned) {
+                  /* on item selected with last click or
+                     teared-off version of submenu is visible */
+                  if (mouse_menu->selected_entry == old_selected_entry_no ||
+                      submenu->brother->flags.mapped) {
+                    selectEntry(mouse_menu, -1);
+                    wMenuUnmap(submenu);
+                  }
                 } else if (!mouse_menu->flags.app_menu) {
                   selectEntry(mouse_menu, -1);
                   wMenuUnmap(mouse_menu);
@@ -1932,24 +1933,18 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
               }
             }
             else { //...without selection - probably on menu titlebar
-              /* if (event_menu == mouse_menu) { */
-                if (!mouse_menu->flags.app_menu) {
-                  closeCascade(mouse_menu);
-                  selectEntry(mouse_menu, -1);
-                } else {
-                  closeCascade(mouse_menu);
-                }
-              /* } */
+              if (event_menu != mouse_menu && !mouse_menu->flags.app_menu) {
+                closeCascade(mouse_menu);
+              }
+              selectEntry(mouse_menu, -1);
             }
           }
           else if (event_menu) { // outside of menu
-            /* WMLogInfo("ButtonRelease: out of menu %s", event_menu->frame->title); */
-            if (/*event_menu == mouse_menu &&*/ !event_menu->flags.app_menu) {
+            WMLogInfo("ButtonRelease: out of menu %s", event_menu->frame->title);
+            if (!event_menu->flags.app_menu) {
               closeCascade(event_menu);
-              wMenuUnmap(event_menu);
-            } else {
-              selectEntry(event_menu, -1);
             }
+            selectEntry(event_menu, -1);
           }
           done = 1;
         }
