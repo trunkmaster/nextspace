@@ -178,5 +178,8 @@ int main(int argc, const char **argv)
     });
   fprintf(stderr, "=== Workspace finished with exit code: %i ===\n", ws_quit_code);
   
+  wShutdown(WMExitMode);
+  fprintf(stderr, "=== Window Manager execution has been stopped ===\n");
+  
   return ws_quit_code;
 }

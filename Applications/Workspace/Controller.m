@@ -413,7 +413,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [self _saveWindowsStateAndClose];
 
   // Quit Window Manager - stop runloop and make cleanup
-  wShutdown(WMExitMode);
+  // wShutdown(WMExitMode);
   
   // Hide Dock
   wDockHideIcons(wDefaultScreen()->dock);
