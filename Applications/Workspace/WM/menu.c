@@ -1132,7 +1132,7 @@ void wMenuUnmap(WMenu * menu)
 
   for (i = 0; i < menu->cascade_no; i++) {
     if (menu->cascades[i] != NULL && menu->cascades[i]->flags.mapped
-        /*&& !menu->cascades[i]->flags.buttoned*/) {
+        && !menu->cascades[i]->flags.buttoned) {
       wMenuUnmap(menu->cascades[i]);
     }
   }
@@ -1764,7 +1764,7 @@ static WMenu *getSelectedLeafMenu(WMenu *menu)
 
 static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
 {
-  WMenu *event_menu = desc->parent; // menu where button click has happend
+  WMenu *event_menu = desc->parent; // menu where button press has happend
   WMenu *mouse_menu = NULL;         // menu where button release has happend
   WMenuEntry *entry = NULL;
   WScreen *scr = event_menu->frame->screen_ptr;
@@ -1797,7 +1797,6 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
         // - mouse moved completely out of menu
         // - mouse moved inside menu (highlight/unhighlight items, open/close submenus)
         // - mouse moved from submenu to menu and vice versa
-        
         WMLogInfo("MotionNotify: mouse_menu: %s event_menu: %s",
                   mouse_menu ? mouse_menu->frame->title : "NONE",
                   event_menu ? event_menu->frame->title : "NONE");
@@ -1837,7 +1836,6 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
               selectEntry(submenu, -1);
             }
           }
-            
           break;
         }
         
@@ -1915,21 +1913,21 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
                   (*entry->callback) (event_menu, entry);
                 }
               }
-              else if (entry->cascade >= 0 && event_menu->cascades) { // on item with submenu
+              else if (entry->cascade >= 0 && mouse_menu->cascades) { // on item with submenu
                 WMLogInfo("Submenu");
-                entry = event_menu->entries[event_menu->selected_entry];
-                WMenu *submenu = event_menu->cascades[entry->cascade];
+                entry = mouse_menu->entries[mouse_menu->selected_entry];
+                WMenu *submenu = mouse_menu->cascades[entry->cascade];
                 /* clicked menu has submenu attached */
                 if (submenu->flags.mapped && !submenu->flags.buttoned &&
                     /* on item selected with last click */
-                    (event_menu->selected_entry == old_selected_entry_no ||
+                    (mouse_menu->selected_entry == old_selected_entry_no ||
                      /* teared-off version of submenu is visible */
                      submenu->brother->flags.mapped)) {
-                  selectEntry(event_menu, -1);
+                  selectEntry(mouse_menu, -1);
                   wMenuUnmap(submenu);
-                } else if (!event_menu->flags.app_menu) {
-                  selectEntry(event_menu, -1);
-                  wMenuUnmap(event_menu);
+                } else if (!mouse_menu->flags.app_menu) {
+                  selectEntry(mouse_menu, -1);
+                  wMenuUnmap(mouse_menu);
                 }
               }
             }
@@ -1964,6 +1962,7 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
     }
   }
 
+  XSync(dpy, 0);
   XFlush(dpy);
   /* if (event_menu && event_menu->timer) { */
   /*   WMDeleteTimerHandler(event_menu->timer); */
