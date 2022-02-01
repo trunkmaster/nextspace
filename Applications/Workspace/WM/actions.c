@@ -1332,8 +1332,8 @@ void wHideAll(WScreen *scr)
   windows = wmalloc(sizeof(WWindow *));
 
   if (menu != NULL) {
-    for (i = 0; i < menu->entry_no; i++) {
-      windows[wcount] = (WWindow *) menu->entries[i]->clientdata;
+    for (i = 0; i < menu->items_count; i++) {
+      windows[wcount] = (WWindow *) menu->items[i]->clientdata;
       wcount++;
       windows = wrealloc(windows, sizeof(WWindow *) * (wcount + 1));
     }

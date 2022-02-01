@@ -138,7 +138,7 @@ static const struct {
 
 static void updateOptionsMenu(WMenu * menu, WWindow * wwin);
 
-static void execWindowOptionCommand(WMenu * menu, WMenuEntry * entry)
+static void execWindowOptionCommand(WMenu * menu, WMenuItem * entry)
 {
   WWindow *wwin = (WWindow *) entry->clientdata;
 
@@ -166,7 +166,7 @@ static void execWindowOptionCommand(WMenu * menu, WMenuEntry * entry)
   }
 }
 
-static void execMaximizeCommand(WMenu * menu, WMenuEntry * entry)
+static void execMaximizeCommand(WMenu * menu, WMenuItem * entry)
 {
   WWindow *wwin = (WWindow *) entry->clientdata;
 	
@@ -176,7 +176,7 @@ static void execMaximizeCommand(WMenu * menu, WMenuEntry * entry)
   handleMaximize(wwin, menu_maximize_entries[entry->order].maxim_direction);
 }
 
-static void updateUnmaximizeShortcut(WMenuEntry * entry, int flags)
+static void updateUnmaximizeShortcut(WMenuItem * entry, int flags)
 {
   int key;
 
@@ -233,7 +233,7 @@ static void updateUnmaximizeShortcut(WMenuEntry * entry, int flags)
   entry->rtext = GetShortcutKey(wKeyBindings[key]);
 }
 
-static void execMenuCommand(WMenu * menu, WMenuEntry * entry)
+static void execMenuCommand(WMenu * menu, WMenuItem * entry)
 {
   WWindow *wwin = (WWindow *) entry->clientdata;
   WApplication *wapp;
@@ -309,7 +309,7 @@ static void execMenuCommand(WMenu * menu, WMenuEntry * entry)
   }
 }
 
-static void switchWSCommand(WMenu * menu, WMenuEntry * entry)
+static void switchWSCommand(WMenu * menu, WMenuItem * entry)
 {
   WWindow *wwin = (WWindow *) entry->clientdata;
 
@@ -320,7 +320,7 @@ static void switchWSCommand(WMenu * menu, WMenuEntry * entry)
   wWindowChangeWorkspace(wwin, entry->order);
 }
 
-static void makeShortcutCommand(WMenu * menu, WMenuEntry * entry)
+static void makeShortcutCommand(WMenu * menu, WMenuItem * entry)
 {
   WWindow *wwin = (WWindow *) entry->clientdata;
   WScreen *scr = wwin->screen_ptr;
@@ -354,19 +354,19 @@ static void updateWorkspaceMenu(WMenu * menu)
 {
   WScreen *scr = menu->frame->screen_ptr;
   char title[MAX_WORKSPACENAME_WIDTH + 1];
-  WMenuEntry *entry;
+  WMenuItem *entry;
   int i;
 
   for (i = 0; i < scr->workspace_count; i++) {
-    if (i < menu->entry_no) {
+    if (i < menu->items_count) {
 
-      entry = menu->entries[i];
+      entry = menu->items[i];
       if (strcmp(entry->text, scr->workspaces[i]->name) != 0) {
         wfree(entry->text);
         strncpy(title, scr->workspaces[i]->name, MAX_WORKSPACENAME_WIDTH);
         title[MAX_WORKSPACENAME_WIDTH] = 0;
-        menu->entries[i]->text = wstrdup(title);
-        menu->entries[i]->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
+        menu->items[i]->text = wstrdup(title);
+        menu->items[i]->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
         menu->flags.realized = 0;
       }
     } else {
@@ -392,7 +392,7 @@ static void updateWorkspaceMenu(WMenu * menu)
 
 static void updateMakeShortcutMenu(WMenu * menu, WWindow * wwin)
 {
-  WMenu *smenu = menu->cascades[menu->entries[MC_OPTIONS]->cascade];
+  WMenu *smenu = menu->submenus[menu->items[MC_OPTIONS]->submenu_index];
   int i;
   char *buffer;
   int buflen;
@@ -404,9 +404,9 @@ static void updateMakeShortcutMenu(WMenu * menu, WWindow * wwin)
   buflen = strlen(_("Set Shortcut")) + 16;
   buffer = wmalloc(buflen);
 
-  for (i = wlengthof(menu_options_entries); i < smenu->entry_no; i++) {
+  for (i = wlengthof(menu_options_entries); i < smenu->items_count; i++) {
     int shortcutNo = i - wlengthof(menu_options_entries);
-    WMenuEntry *entry = smenu->entries[i];
+    WMenuItem *entry = smenu->items[i];
     CFArrayRef shortSelWindows = wwin->screen_ptr->shortcutWindows[shortcutNo];
 
     snprintf(buffer, buflen, "%s %i", _("Set Shortcut"), shortcutNo + 1);
@@ -475,23 +475,23 @@ static void updateMakeShortcutMenu(WMenu * menu, WWindow * wwin)
 
 static void updateOptionsMenu(WMenu * menu, WWindow * wwin)
 {
-  WMenu *smenu = menu->cascades[menu->entries[MC_OPTIONS]->cascade];
+  WMenu *smenu = menu->submenus[menu->items[MC_OPTIONS]->submenu_index];
 
   /* keep on top check */
-  smenu->entries[WO_KEEP_ON_TOP]->clientdata = wwin;
-  smenu->entries[WO_KEEP_ON_TOP]->flags.indicator_on =
+  smenu->items[WO_KEEP_ON_TOP]->clientdata = wwin;
+  smenu->items[WO_KEEP_ON_TOP]->flags.indicator_on =
     (wwin->frame->core->stacking->window_level == NSFloatingWindowLevel) ? 1 : 0;
   wMenuSetEnabled(smenu, WO_KEEP_ON_TOP, !wwin->flags.miniaturized);
 
   /* keep at bottom check */
-  smenu->entries[WO_KEEP_AT_BOTTOM]->clientdata = wwin;
-  smenu->entries[WO_KEEP_AT_BOTTOM]->flags.indicator_on =
+  smenu->items[WO_KEEP_AT_BOTTOM]->clientdata = wwin;
+  smenu->items[WO_KEEP_AT_BOTTOM]->flags.indicator_on =
     (wwin->frame->core->stacking->window_level == NSSunkenWindowLevel) ? 1 : 0;
   wMenuSetEnabled(smenu, WO_KEEP_AT_BOTTOM, !wwin->flags.miniaturized);
 
   /* omnipresent check */
-  smenu->entries[WO_OMNIPRESENT]->clientdata = wwin;
-  smenu->entries[WO_OMNIPRESENT]->flags.indicator_on = IS_OMNIPRESENT(wwin);
+  smenu->items[WO_OMNIPRESENT]->clientdata = wwin;
+  smenu->items[WO_OMNIPRESENT]->flags.indicator_on = IS_OMNIPRESENT(wwin);
 
   smenu->flags.realized = 0;
   wMenuRealize(smenu);
@@ -499,12 +499,12 @@ static void updateOptionsMenu(WMenu * menu, WWindow * wwin)
 
 static void updateMaximizeMenu(WMenu * menu, WWindow * wwin)
 {
-  WMenu *smenu = menu->cascades[menu->entries[MC_OTHERMAX]->cascade];
+  WMenu *smenu = menu->submenus[menu->items[MC_OTHERMAX]->submenu_index];
   int i;
 
-  for (i = 0; i < smenu->entry_no; i++) {
-    smenu->entries[i]->clientdata = wwin;
-    smenu->entries[i]->rtext = GetShortcutKey(wKeyBindings[menu_maximize_entries[i].shortcut_idx]);
+  for (i = 0; i < smenu->items_count; i++) {
+    smenu->items[i]->clientdata = wwin;
+    smenu->items[i]->rtext = GetShortcutKey(wKeyBindings[menu_maximize_entries[i].shortcut_idx]);
   }
 
   smenu->flags.realized = 0;
@@ -537,7 +537,7 @@ static WMenu *makeWorkspaceMenu(WScreen * scr)
 static WMenu *makeOptionsMenu(WScreen * scr)
 {
   WMenu *menu;
-  WMenuEntry *entry;
+  WMenuItem *entry;
   int i;
 
   menu = wMenuCreate(scr, NULL, False);
@@ -585,7 +585,7 @@ static WMenu *createWindowMenu(WScreen * scr)
   menu = wMenuCreate(scr, NULL, False);
 
   for (i = 0; i < wlengthof(window_menu_entries); i++) {
-    WMenuEntry *entry;
+    WMenuItem *entry;
 
     if (window_menu_entries[i].label != NULL)
       entry = wMenuAddItem(menu, _(window_menu_entries[i].label),
@@ -595,7 +595,7 @@ static WMenu *createWindowMenu(WScreen * scr)
       WMenu *submenu;
 
       submenu = window_menu_entries[i].generate_submenu(scr);
-      wMenuEntrySetCascade(menu, entry, submenu);
+      wMenuItemSetSubmenu(menu, entry, submenu);
     }
   }
 
@@ -608,12 +608,12 @@ void CloseWindowMenu(WScreen * scr)
     if (scr->window_menu->flags.mapped)
       wMenuUnmap(scr->window_menu);
 
-    if (scr->window_menu->entries[0]->clientdata) {
-      WWindow *wwin = (WWindow *) scr->window_menu->entries[0]->clientdata;
+    if (scr->window_menu->items[0]->clientdata) {
+      WWindow *wwin = (WWindow *) scr->window_menu->items[0]->clientdata;
 
       wwin->flags.menu_open_for_me = 0;
     }
-    scr->window_menu->entries[0]->clientdata = NULL;
+    scr->window_menu->items[0]->clientdata = NULL;
   }
 }
 
@@ -628,45 +628,45 @@ static void updateMenuForWindow(WMenu * menu, WWindow * wwin)
 
   updateMakeShortcutMenu(menu, wwin);
 
-  if (menu->entries[MC_MINIATURIZE])
+  if (menu->items[MC_MINIATURIZE])
     wMenuSetEnabled(menu, MC_HIDE, wapp != NULL && !WFLAGP(wapp->main_wwin, no_appicon));
 
-  if (menu->entries[MC_CLOSE])
+  if (menu->items[MC_CLOSE])
     wMenuSetEnabled(menu, MC_CLOSE, (wwin->protocols.DELETE_WINDOW && !WFLAGP(wwin, no_closable)));
 
-  if (menu->entries[MC_MINIATURIZE]) {
+  if (menu->items[MC_MINIATURIZE]) {
     if (wwin->flags.miniaturized) {
       static char *text = NULL;
       if (!text)
         text = _("Deminiaturize");
 
-      menu->entries[MC_MINIATURIZE]->text = text;
+      menu->items[MC_MINIATURIZE]->text = text;
     } else {
       static char *text = NULL;
       if (!text)
         text = _("Miniaturize");
 
-      menu->entries[MC_MINIATURIZE]->text = text;
+      menu->items[MC_MINIATURIZE]->text = text;
     }
     wMenuSetEnabled(menu, MC_MINIATURIZE, !WFLAGP(wwin, no_miniaturizable));
-    menu->entries[MC_MINIATURIZE]->rtext = GetShortcutKey(wKeyBindings[WKBD_MINIATURIZE]);
+    menu->items[MC_MINIATURIZE]->rtext = GetShortcutKey(wKeyBindings[WKBD_MINIATURIZE]);
   }
 
-  if (menu->entries[MC_MAXIMIZE]) {
+  if (menu->items[MC_MAXIMIZE]) {
     if (wwin->flags.maximized) {
       static char *text = NULL;
       if (!text)
         text = _("Unmaximize");
 
-      menu->entries[MC_MAXIMIZE]->text = text;
-      updateUnmaximizeShortcut(menu->entries[MC_MAXIMIZE], wwin->flags.maximized);
+      menu->items[MC_MAXIMIZE]->text = text;
+      updateUnmaximizeShortcut(menu->items[MC_MAXIMIZE], wwin->flags.maximized);
     } else {
       static char *text = NULL;
       if (!text)
         text = _("Maximize");
 
-      menu->entries[MC_MAXIMIZE]->text = text;
-      menu->entries[MC_MAXIMIZE]->rtext = GetShortcutKey(wKeyBindings[WKBD_MAXIMIZE]);
+      menu->items[MC_MAXIMIZE]->text = text;
+      menu->items[MC_MAXIMIZE]->rtext = GetShortcutKey(wKeyBindings[WKBD_MAXIMIZE]);
     }
     wMenuSetEnabled(menu, MC_MAXIMIZE, IS_RESIZABLE(wwin));
   }
@@ -679,13 +679,13 @@ static void updateMenuForWindow(WMenu * menu, WWindow * wwin)
     if (!text)
       text = _("Unshade");
 
-    menu->entries[MC_SHADE]->text = text;
+    menu->items[MC_SHADE]->text = text;
   } else {
     static char *text = NULL;
     if (!text)
       text = _("Shade");
 
-    menu->entries[MC_SHADE]->text = text;
+    menu->items[MC_SHADE]->text = text;
   }
 
   wMenuSetEnabled(menu, MC_SHADE, !WFLAGP(wwin, no_shadeable)	&& !wwin->flags.miniaturized);
@@ -695,13 +695,13 @@ static void updateMenuForWindow(WMenu * menu, WWindow * wwin)
     if (!text)
       text = _("Deselect");
 
-    menu->entries[MC_SELECT]->text = text;
+    menu->items[MC_SELECT]->text = text;
   } else {
     static char *text = NULL;
     if (!text)
       text = _("Select");
 
-    menu->entries[MC_SELECT]->text = text;
+    menu->items[MC_SELECT]->text = text;
   }
 
   wMenuSetEnabled(menu, MC_CHANGEWKSPC, !IS_OMNIPRESENT(wwin));
@@ -709,26 +709,26 @@ static void updateMenuForWindow(WMenu * menu, WWindow * wwin)
   /* Update shortcut labels except for (Un)Maximize which is
    * handled separately.
    */
-  if (menu->entries[MC_SHADE])
-    menu->entries[MC_SHADE]->rtext = GetShortcutKey(wKeyBindings[WKBD_SHADE]);
-  if (menu->entries[MC_HIDE])
-    menu->entries[MC_HIDE]->rtext = GetShortcutKey(wKeyBindings[WKBD_HIDE]);
-  if (menu->entries[MC_MOVERESIZE])
-    menu->entries[MC_MOVERESIZE]->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVERESIZE]);
-  if (menu->entries[MC_SELECT])
-    menu->entries[MC_SELECT]->rtext = GetShortcutKey(wKeyBindings[WKBD_SELECT]);
-  if (menu->entries[MC_RELAUNCH])
-    menu->entries[MC_RELAUNCH]->rtext = GetShortcutKey(wKeyBindings[WKBD_RELAUNCH]);
-  if (menu->entries[MC_CLOSE])
-    menu->entries[MC_CLOSE]->rtext = GetShortcutKey(wKeyBindings[WKBD_CLOSE]);
+  if (menu->items[MC_SHADE])
+    menu->items[MC_SHADE]->rtext = GetShortcutKey(wKeyBindings[WKBD_SHADE]);
+  if (menu->items[MC_HIDE])
+    menu->items[MC_HIDE]->rtext = GetShortcutKey(wKeyBindings[WKBD_HIDE]);
+  if (menu->items[MC_MOVERESIZE])
+    menu->items[MC_MOVERESIZE]->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVERESIZE]);
+  if (menu->items[MC_SELECT])
+    menu->items[MC_SELECT]->rtext = GetShortcutKey(wKeyBindings[WKBD_SELECT]);
+  if (menu->items[MC_RELAUNCH])
+    menu->items[MC_RELAUNCH]->rtext = GetShortcutKey(wKeyBindings[WKBD_RELAUNCH]);
+  if (menu->items[MC_CLOSE])
+    menu->items[MC_CLOSE]->rtext = GetShortcutKey(wKeyBindings[WKBD_CLOSE]);
 
   /* set the client data of the entries to the window */
-  for (i = 0; i < menu->entry_no; i++) {
-    menu->entries[i]->clientdata = wwin;
+  for (i = 0; i < menu->items_count; i++) {
+    menu->items[i]->clientdata = wwin;
   }
 
-  for (i = 0; i < scr->workspace_submenu->entry_no; i++) {
-    scr->workspace_submenu->entries[i]->clientdata = wwin;
+  for (i = 0; i < scr->workspace_submenu->items_count; i++) {
+    scr->workspace_submenu->items[i]->clientdata = wwin;
     if (i == scr->current_workspace)
       wMenuSetEnabled(scr->workspace_submenu, i, False);
     else
@@ -750,14 +750,14 @@ static WMenu *open_window_menu_core(WWindow *wwin)
     scr->window_menu = createWindowMenu(scr);
 
     /* hack to save some memory allocation/deallocation */
-    if (scr->window_menu->entries[MC_MINIATURIZE])
-      wfree(scr->window_menu->entries[MC_MINIATURIZE]->text);
-    if (scr->window_menu->entries[MC_MAXIMIZE])
-      wfree(scr->window_menu->entries[MC_MAXIMIZE]->text);
-    if (scr->window_menu->entries[MC_SHADE])
-      wfree(scr->window_menu->entries[MC_SHADE]->text);
-    if (scr->window_menu->entries[MC_SELECT])
-      wfree(scr->window_menu->entries[MC_SELECT]->text);
+    if (scr->window_menu->items[MC_MINIATURIZE])
+      wfree(scr->window_menu->items[MC_MINIATURIZE]->text);
+    if (scr->window_menu->items[MC_MAXIMIZE])
+      wfree(scr->window_menu->items[MC_MAXIMIZE]->text);
+    if (scr->window_menu->items[MC_SHADE])
+      wfree(scr->window_menu->items[MC_SHADE]->text);
+    if (scr->window_menu->items[MC_SELECT])
+      wfree(scr->window_menu->items[MC_SELECT]->text);
   } else {
     updateWorkspaceMenu(scr->workspace_submenu);
   }
@@ -765,7 +765,7 @@ static WMenu *open_window_menu_core(WWindow *wwin)
   menu = scr->window_menu;
   if (menu->flags.mapped) {
     wMenuUnmap(menu);
-    if (menu->entries[0]->clientdata == wwin)
+    if (menu->items[0]->clientdata == wwin)
       return NULL;
   }
 
@@ -819,8 +819,8 @@ void OpenWindowMenu2(WWindow *wwin, int x, int y, int keyboard)
     return;
 
   /* Specific menu position */
-  for (i = 0; i < scr->workspace_submenu->entry_no; i++) {
-    scr->workspace_submenu->entries[i]->clientdata = wwin;
+  for (i = 0; i < scr->workspace_submenu->items_count; i++) {
+    scr->workspace_submenu->items[i]->clientdata = wwin;
     wMenuSetEnabled(scr->workspace_submenu, i, True);
   }
 
@@ -849,17 +849,17 @@ void OpenMiniwindowMenu(WWindow * wwin, int x, int y)
 void DestroyWindowMenu(WScreen *scr)
 {
   if (scr->window_menu) {
-    if (scr->window_menu->entries[MC_MINIATURIZE]) {
-      scr->window_menu->entries[MC_MINIATURIZE]->text = NULL;
+    if (scr->window_menu->items[MC_MINIATURIZE]) {
+      scr->window_menu->items[MC_MINIATURIZE]->text = NULL;
     }
-    if (scr->window_menu->entries[MC_MAXIMIZE]) {
-      scr->window_menu->entries[MC_MAXIMIZE]->text = NULL;
+    if (scr->window_menu->items[MC_MAXIMIZE]) {
+      scr->window_menu->items[MC_MAXIMIZE]->text = NULL;
     }
-    if (scr->window_menu->entries[MC_SHADE]) {
-      scr->window_menu->entries[MC_SHADE]->text = NULL;
+    if (scr->window_menu->items[MC_SHADE]) {
+      scr->window_menu->items[MC_SHADE]->text = NULL;
     }
-    if (scr->window_menu->entries[MC_SELECT]) {
-      scr->window_menu->entries[MC_SELECT]->text = NULL;
+    if (scr->window_menu->items[MC_SELECT]) {
+      scr->window_menu->items[MC_SELECT]->text = NULL;
     }
     wMenuDestroy(scr->window_menu, True);
     scr->window_menu = NULL;

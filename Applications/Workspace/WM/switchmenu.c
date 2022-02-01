@@ -81,7 +81,7 @@ static void workspaceObserver(CFNotificationCenterRef center, void *observer,
  *    Unshade if shaded
  *    If iconified then deiconify else focus/raise.
  */
-static void focusWindow(WMenu *menu, WMenuEntry *entry)
+static void focusWindow(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin;
 
@@ -152,7 +152,7 @@ void OpenSwitchMenu(WScreen *scr, int x, int y, int keyboard)
       wMenuRealize(switchmenu);
     }
     if (switchmenu->flags.mapped) {
-      if (!switchmenu->flags.buttoned) {
+      if (!switchmenu->flags.tornoff) {
         wMenuUnmap(switchmenu);
       } else {
         wRaiseFrame(switchmenu->frame->core);
@@ -175,10 +175,10 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
 {
   int idx;
 
-  if (menu->entry_no <= old_pos)
+  if (menu->items_count <= old_pos)
     return -1;
 
-#define WS(i)  ((WWindow*)menu->entries[i]->clientdata)->frame->workspace
+#define WS(i)  ((WWindow*)menu->items[i]->clientdata)->frame->workspace
   if (old_pos >= 0) {
     if (WS(old_pos) >= wwin->frame->workspace
         && (old_pos == 0 || WS(old_pos - 1) <= wwin->frame->workspace)) {
@@ -187,8 +187,8 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
   }
 #undef WS
 
-  for (idx = 0; idx < menu->entry_no; idx++) {
-    WWindow *tw = (WWindow *) menu->entries[idx]->clientdata;
+  for (idx = 0; idx < menu->items_count; idx++) {
+    WWindow *tw = (WWindow *) menu->items[idx]->clientdata;
 
     if (!IS_OMNIPRESENT(tw)
         && tw->frame->workspace > wwin->frame->workspace) {
@@ -205,7 +205,7 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
 void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
 {
   WMenu *switchmenu = scr->switch_menu;
-  WMenuEntry *entry;
+  WMenuItem *entry;
   char title[MAX_MENU_TEXT_LENGTH + 6];
   int len = sizeof(title);
   int i;
@@ -234,7 +234,7 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
       snprintf(title, len, "%s", wwin->frame->title);
     else
       snprintf(title, len, "%s", DEF_WINDOW_TITLE);
-    t = ShrinkString(scr->menu_entry_font, title, MAX_WINDOWLIST_WIDTH);
+    t = ShrinkString(scr->menu_item_font, title, MAX_WINDOWLIST_WIDTH);
 
     if (IS_OMNIPRESENT(wwin))
       idx = -1;
@@ -271,8 +271,8 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
     checkVisibility = 1;
   } else {
     char *t;
-    for (i = 0; i < switchmenu->entry_no; i++) {
-      entry = switchmenu->entries[i];
+    for (i = 0; i < switchmenu->items_count; i++) {
+      entry = switchmenu->items[i];
       /* this is the entry that was changed */
       if (entry->clientdata == wwin) {
         switch (action) {
@@ -291,7 +291,7 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
           else
             snprintf(title, MAX_MENU_TEXT_LENGTH, "%s", DEF_WINDOW_TITLE);
 
-          t = ShrinkString(scr->menu_entry_font, title, MAX_WINDOWLIST_WIDTH);
+          t = ShrinkString(scr->menu_item_font, title, MAX_WINDOWLIST_WIDTH);
           entry->text = t;
 
           wMenuRealize(switchmenu);
@@ -378,14 +378,14 @@ static void UpdateSwitchMenuWorkspace(WScreen *scr, int workspace)
   if (!menu)
     return;
 
-  for (int i = 0; i < menu->entry_no; i++) {
-    wwin = (WWindow *) menu->entries[i]->clientdata;
+  for (int i = 0; i < menu->items_count; i++) {
+    wwin = (WWindow *) menu->items[i]->clientdata;
 
     if (wwin->frame->workspace == workspace && !IS_OMNIPRESENT(wwin)) {
       if (IS_OMNIPRESENT(wwin))
-        snprintf(menu->entries[i]->rtext, MAX_WORKSPACENAME_WIDTH, "[*]");
+        snprintf(menu->items[i]->rtext, MAX_WORKSPACENAME_WIDTH, "[*]");
       else
-        snprintf(menu->entries[i]->rtext, MAX_WORKSPACENAME_WIDTH, "[%s]",
+        snprintf(menu->items[i]->rtext, MAX_WORKSPACENAME_WIDTH, "[%s]",
                  scr->workspaces[wwin->frame->workspace]->name);
       menu->flags.realized = 0;
     }

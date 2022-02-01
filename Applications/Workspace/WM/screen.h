@@ -150,7 +150,7 @@ typedef struct _WScreen {
                                         * transparent icon simulation */
   WMFont *title_font;		       /* default font for the titlebars */
   WMFont *menu_title_font;	       /* font for menu titlebars */
-  WMFont *menu_entry_font;	       /* font for menu items */
+  WMFont *menu_item_font;	       /* font for menu items */
   WMFont *icon_title_font;	       /* for icon titles */
   WMFont *clip_title_font;	       /* for clip titles */
   WMFont *info_text_font;	       /* text on things like geometry

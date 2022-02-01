@@ -341,12 +341,12 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
   scr->workspace_name_data = NULL;
 }
 
-static void _switchWSCommand(WMenu *menu, WMenuEntry *entry)
+static void _switchWSCommand(WMenu *menu, WMenuItem *entry)
 {
   wWorkspaceChange(menu->frame->screen_ptr, (long)entry->clientdata, NULL);
 }
 
-static void _lastWSCommand(WMenu *menu, WMenuEntry *entry)
+static void _lastWSCommand(WMenu *menu, WMenuItem *entry)
 {
   /* Parameter not used, but tell the compiler that it is ok */
   (void) entry;
@@ -354,7 +354,7 @@ static void _lastWSCommand(WMenu *menu, WMenuEntry *entry)
   wWorkspaceChange(menu->frame->screen_ptr, menu->frame->screen_ptr->last_workspace, NULL);
 }
 
-static void _deleteWSCommand(WMenu *menu, WMenuEntry *entry)
+static void _deleteWSCommand(WMenu *menu, WMenuItem *entry)
 {
   /* Parameter not used, but tell the compiler that it is ok */
   (void) entry;
@@ -362,7 +362,7 @@ static void _deleteWSCommand(WMenu *menu, WMenuEntry *entry)
   wWorkspaceDelete(menu->frame->screen_ptr, menu->frame->screen_ptr->workspace_count - 1);
 }
 
-static void _newWSCommand(WMenu *menu, WMenuEntry *foo)
+static void _newWSCommand(WMenu *menu, WMenuItem *foo)
 {
   int ws;
 
@@ -377,7 +377,7 @@ static void _newWSCommand(WMenu *menu, WMenuEntry *foo)
 }
 
 /* callback for when menu entry is edited */
-static void _onMenuEntryEdited(WMenu *menu, WMenuEntry *entry)
+static void _onMenuEntryEdited(WMenu *menu, WMenuItem *entry)
 {
   char *tmp;
 
@@ -496,7 +496,7 @@ Bool wWorkspaceDelete(WScreen *scr, int workspace)
   if (scr->workspace_submenu) {
     WMenu *menu = scr->workspace_submenu;
 
-    i = menu->entry_no;
+    i = menu->items_count;
     while (i > scr->workspace_count)
       wMenuRemoveItem(menu, --i);
     wMenuRealize(menu);
@@ -505,7 +505,7 @@ Bool wWorkspaceDelete(WScreen *scr, int workspace)
   if (scr->clip_submenu) {
     WMenu *menu = scr->clip_submenu;
 
-    i = menu->entry_no;
+    i = menu->items_count;
     while (i > scr->workspace_count)
       wMenuRemoveItem(menu, --i);
     wMenuRealize(menu);
@@ -811,16 +811,16 @@ void wWorkspaceRename(WScreen *scr, int workspace, const char *name)
   scr->workspaces[workspace]->name = wstrdup(buf);
 
   if (scr->clip_ws_menu) {
-    if (strcmp(scr->clip_ws_menu->entries[workspace + MC_WORKSPACE1]->text, buf) != 0) {
-      wfree(scr->clip_ws_menu->entries[workspace + MC_WORKSPACE1]->text);
-      scr->clip_ws_menu->entries[workspace + MC_WORKSPACE1]->text = wstrdup(buf);
+    if (strcmp(scr->clip_ws_menu->items[workspace + MC_WORKSPACE1]->text, buf) != 0) {
+      wfree(scr->clip_ws_menu->items[workspace + MC_WORKSPACE1]->text);
+      scr->clip_ws_menu->items[workspace + MC_WORKSPACE1]->text = wstrdup(buf);
       wMenuRealize(scr->clip_ws_menu);
     }
   }
   if (scr->workspace_menu) {
-    if (strcmp(scr->workspace_menu->entries[workspace + MC_WORKSPACE1]->text, buf) != 0) {
-      wfree(scr->workspace_menu->entries[workspace + MC_WORKSPACE1]->text);
-      scr->workspace_menu->entries[workspace + MC_WORKSPACE1]->text = wstrdup(buf);
+    if (strcmp(scr->workspace_menu->items[workspace + MC_WORKSPACE1]->text, buf) != 0) {
+      wfree(scr->workspace_menu->items[workspace + MC_WORKSPACE1]->text);
+      scr->workspace_menu->items[workspace + MC_WORKSPACE1]->text = wstrdup(buf);
       wMenuRealize(scr->workspace_menu);
     }
   }
@@ -834,7 +834,7 @@ void wWorkspaceRename(WScreen *scr, int workspace, const char *name)
 WMenu *wWorkspaceMenuMake(WScreen *scr, Bool titled)
 {
   WMenu *wsmenu;
-  WMenuEntry *entry;
+  WMenuItem *entry;
 
   wsmenu = wMenuCreate(scr, titled ? _("Workspaces") : NULL, False);
   if (!wsmenu) {
@@ -859,16 +859,16 @@ void wWorkspaceMenuUpdate(WScreen *scr, WMenu * menu)
   int i;
   long ws;
   char title[MAX_WORKSPACENAME_WIDTH + 1];
-  WMenuEntry *entry;
+  WMenuItem *entry;
   int tmp;
 
   if (!menu)
     return;
 
-  if (menu->entry_no < scr->workspace_count + MC_WORKSPACE1) {
+  if (menu->items_count < scr->workspace_count + MC_WORKSPACE1) {
     /* new workspace(s) added */
-    i = scr->workspace_count - (menu->entry_no - MC_WORKSPACE1);
-    ws = menu->entry_no - MC_WORKSPACE1;
+    i = scr->workspace_count - (menu->items_count - MC_WORKSPACE1);
+    ws = menu->items_count - MC_WORKSPACE1;
     while (i > 0) {
       wstrlcpy(title, scr->workspaces[ws]->name, MAX_WORKSPACENAME_WIDTH);
 
@@ -878,22 +878,22 @@ void wWorkspaceMenuUpdate(WScreen *scr, WMenu * menu)
       i--;
       ws++;
     }
-  } else if (menu->entry_no > scr->workspace_count + MC_WORKSPACE1) {
+  } else if (menu->items_count > scr->workspace_count + MC_WORKSPACE1) {
     /* removed workspace(s) */
-    for (i = menu->entry_no - 1; i >= scr->workspace_count + MC_WORKSPACE1; i--)
+    for (i = menu->items_count - 1; i >= scr->workspace_count + MC_WORKSPACE1; i--)
       wMenuRemoveItem(menu, i);
   }
 
   for (i = 0; i < scr->workspace_count; i++) {
     /* workspace shortcut labels */
     if (i / 10 == scr->current_workspace / 10)
-      menu->entries[i + MC_WORKSPACE1]->rtext = GetShortcutKey(wKeyBindings[WKBD_WORKSPACE1 + (i % 10)]);
+      menu->items[i + MC_WORKSPACE1]->rtext = GetShortcutKey(wKeyBindings[WKBD_WORKSPACE1 + (i % 10)]);
     else
-      menu->entries[i + MC_WORKSPACE1]->rtext = NULL;
+      menu->items[i + MC_WORKSPACE1]->rtext = NULL;
 
-    menu->entries[i + MC_WORKSPACE1]->flags.indicator_on = 0;
+    menu->items[i + MC_WORKSPACE1]->flags.indicator_on = 0;
   }
-  menu->entries[scr->current_workspace + MC_WORKSPACE1]->flags.indicator_on = 1;
+  menu->items[scr->current_workspace + MC_WORKSPACE1]->flags.indicator_on = 1;
   wMenuRealize(menu);
 
   /* don't let user destroy current workspace */
@@ -985,8 +985,8 @@ void wWorkspaceRestoreState(WScreen *scr)
       wWorkspaceNew(scr);
 
     if (scr->workspace_menu) {
-      wfree(scr->workspace_menu->entries[i + MC_WORKSPACE1]->text);
-      scr->workspace_menu->entries[i + MC_WORKSPACE1]->text = wstrdup(CFStringGetCStringPtr(pstr, kCFStringEncodingUTF8));
+      wfree(scr->workspace_menu->items[i + MC_WORKSPACE1]->text);
+      scr->workspace_menu->items[i + MC_WORKSPACE1]->text = wstrdup(CFStringGetCStringPtr(pstr, kCFStringEncodingUTF8));
       scr->workspace_menu->flags.realized = 0;
     }
 

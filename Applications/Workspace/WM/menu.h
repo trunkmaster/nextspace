@@ -32,22 +32,22 @@
 #define MI_HIDDEN	3
 #define MI_SHADED	4
 
-typedef struct WMenuEntry {
+typedef struct WMenuItem {
   int order;
   char *text;			       /* entry text */
   char *rtext;                         /* text to show in the right part */
-  void (*callback)(struct WMenu *menu, struct WMenuEntry *entry);
+  void (*callback)(struct WMenu *menu, struct WMenuItem *item);
   void (*free_cdata)(void *data);      /* proc to be used to free clientdata */
   void *clientdata;		       /* data to pass to callback */
-  int cascade;                         /* cascade menu index */
+  int submenu_index;                         /* cascade menu index */
   struct {
-    unsigned int enabled:1;	       /* entry is selectable */
-    unsigned int selected:1;	       /* entry is highlighted */
+    unsigned int enabled:1;	       /* item is selectable */
+    unsigned int selected:1;	       /* item is highlighted */
     unsigned int indicator:1;          /* left indicator */
     unsigned int indicator_on:1;
     unsigned int indicator_type:3;
   } flags;
-} WMenuEntry;
+} WMenuItem;
 
 
 typedef struct WMenu {
@@ -61,22 +61,21 @@ typedef struct WMenu {
   Pixmap menu_texture_data;
   int frame_x, frame_y;	               /* position of the frame in root window */
 
-  WMenuEntry **entries;                /* array of entries. This is shared by the menu
-                                          and it's "brother" */
-  short alloced_entries;               /* number of entries allocated in entry array */
-  struct WMenu **cascades;             /* array of cascades */
-  short cascade_no;
-
-  short entry_no;                      /* number of entries */
-  short selected_entry;
-  short entry_height;                  /* height of each entry */
+  WMenuItem **items;                   /* array of items. shared by the menu and it's "brother" */
+  short allocated_items;               /* number of items allocated in `items` array */
+  short items_count;                   /* number of items in `items` array */
+  short selected_item_index;           /* index of item in `items` array */
+  short item_height;                   /* height of each item */
+  
+  struct WMenu **submenus;             /* array of submenus attached to items */
+  short submenus_count;
 
   CFRunLoopTimerRef timer;             /* timer for the autoscroll */
 
   void *jump_back;                     /* jump back data */
 
-  /* to be called when some entry is edited */
-  void (*on_edit)(struct WMenu *menu, struct WMenuEntry *entry);
+  /* to be called when some item is edited */
+  void (*on_edit)(struct WMenu *menu, struct WMenuItem *item);
   /* to be called when destroyed */
   void (*on_destroy)(struct WMenu *menu);
 
@@ -85,11 +84,10 @@ typedef struct WMenu {
     unsigned int realized:1;           /* whether the window was configured */
     unsigned int app_menu:1;           /* this is a application or root menu */
     unsigned int mapped:1;             /* if menu is already mapped on screen*/
-    unsigned int buttoned:1;           /* if the close button is visible (menu was torn off) */
+    unsigned int tornoff:1;           /* if the close button is visible (menu was torn off) */
     unsigned int open_to_left:1;       /* direction to open submenus */
     unsigned int lowered:1;
-
-    unsigned int brother:1;	       /* if this is a copy of the menu*/
+    unsigned int brother:1;	       /* if this is a copy of the menu */
     unsigned int jump_back_pending:1;
   } flags;
 } WMenu;
@@ -99,13 +97,13 @@ void wMenuPaint(WMenu *menu);
 void wMenuDestroy(WMenu *menu, int recurse);
 void wMenuRealize(WMenu *menu);
 
-WMenuEntry *wMenuInsertCascade(WMenu *menu, int index, const char *text,
-                               WMenu *cascade);
-void wMenuEntrySetCascade(WMenu *menu, WMenuEntry *entry, WMenu *cascade);
-void wMenuEntryRemoveCascade(WMenu *menu, WMenuEntry *entry);
+WMenuItem *wMenuInsertSubmenu(WMenu *menu, int index, const char *text,
+                               WMenu *submenu);
+void wMenuItemSetSubmenu(WMenu *menu, WMenuItem *item, WMenu *submenu);
+void wMenuItemRemoveSubmenu(WMenu *menu, WMenuItem *item);
 
-WMenuEntry *wMenuInsertItem(WMenu *menu, int index, const char *text,
-                            void (*callback)(WMenu *menu, WMenuEntry *entry),
+WMenuItem *wMenuInsertItem(WMenu *menu, int index, const char *text,
+                            void (*callback)(WMenu *menu, WMenuItem *index),
                             void *clientdata);
 #define wMenuAddItem(menu, text, callback, data) wMenuInsertItem(menu, -1, text, callback, data)
 void wMenuRemoveItem(WMenu *menu, int index);

@@ -485,7 +485,7 @@ static void relaunchApplication(WApplication *wapp)
   }
 }
 
-static void relaunchCallback(WMenu * menu, WMenuEntry * entry)
+static void relaunchCallback(WMenu * menu, WMenuItem * entry)
 {
   WApplication *wapp = (WApplication *) entry->clientdata;
 
@@ -495,7 +495,7 @@ static void relaunchCallback(WMenu * menu, WMenuEntry * entry)
   relaunchApplication(wapp);
 }
 
-static void hideCallback(WMenu * menu, WMenuEntry * entry)
+static void hideCallback(WMenu * menu, WMenuItem * entry)
 {
   WApplication *wapp = (WApplication *) entry->clientdata;
 
@@ -507,7 +507,7 @@ static void hideCallback(WMenu * menu, WMenuEntry * entry)
   }
 }
 
-static void unhideHereCallback(WMenu * menu, WMenuEntry * entry)
+static void unhideHereCallback(WMenu * menu, WMenuItem * entry)
 {
   WApplication *wapp = (WApplication *) entry->clientdata;
 
@@ -516,7 +516,7 @@ static void unhideHereCallback(WMenu * menu, WMenuEntry * entry)
 
   wUnhideApplication(wapp, False, True);
 }
-static void killCallback(WMenu * menu, WMenuEntry * entry)
+static void killCallback(WMenu * menu, WMenuItem * entry)
 {
   WApplication *wapp = (WApplication *) entry->clientdata;
   WFakeGroupLeader *fPtr;
@@ -584,8 +584,8 @@ static void openApplicationMenu(WApplication * wapp, int x, int y)
 
   if (!scr->icon_menu) {
     scr->icon_menu = createApplicationMenu(scr);
-    wfree(scr->icon_menu->entries[1]->text);
-    wfree(scr->icon_menu->entries[2]->text);
+    wfree(scr->icon_menu->items[1]->text);
+    wfree(scr->icon_menu->items[2]->text);
   }
   if (scr->icon_menu->frame->title) {
     wfree(scr->icon_menu->frame->title);
@@ -595,14 +595,14 @@ static void openApplicationMenu(WApplication * wapp, int x, int y)
   menu = scr->icon_menu;
 
   if (wapp && wapp->flags.hidden)
-    menu->entries[1]->text = _("Unhide Here");
+    menu->items[1]->text = _("Unhide Here");
   else
-    menu->entries[1]->text = _("Bring Here");
+    menu->items[1]->text = _("Bring Here");
   
   if (wapp->flags.hidden)
-    menu->entries[2]->text = _("Unhide");
+    menu->items[2]->text = _("Unhide");
   else
-    menu->entries[2]->text = _("Hide");
+    menu->items[2]->text = _("Hide");
 
   menu->flags.realized = 0;
   wMenuRealize(menu);
@@ -615,8 +615,8 @@ static void openApplicationMenu(WApplication * wapp, int x, int y)
     x = 0;
 
   /* set client data */
-  for (i = 0; i < menu->entry_no; i++)
-    menu->entries[i]->clientdata = wapp;
+  for (i = 0; i < menu->items_count; i++)
+    menu->items[i]->clientdata = wapp;
 
   wMenuMapAt(menu, x, y, False);
 }

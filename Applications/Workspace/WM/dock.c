@@ -137,10 +137,10 @@ static void clipAutoRaise(CFRunLoopTimerRef timer, void *cdata);
 static WAppIcon *mainIconCreate(WScreen *scr, int type, const char *name);
 
 static void drawerIconExpose(WObjDescriptor *desc, XEvent *event);
-static void removeDrawerCallback(WMenu *menu, WMenuEntry *entry);
+static void removeDrawerCallback(WMenu *menu, WMenuItem *entry);
 static void drawerAppendToChain(WScreen *scr, WDock *drawer);
 static char *findUniqueName(WScreen *scr, const char *instance_basename);
-static void addADrawerCallback(WMenu *menu, WMenuEntry *entry);
+static void addADrawerCallback(WMenu *menu, WMenuItem *entry);
 static void swapDrawers(WScreen *scr, int new_x);
 static WDock* getDrawer(WScreen *scr, int y_index);
 static int indexOfHole(WDock *drawer, WAppIcon *moving_aicon, int redocking);
@@ -148,7 +148,7 @@ static void drawerConsolidateIcons(WDock *drawer);
 
 static int onScreen(WScreen *scr, int x, int y);
 
-static void toggleLoweredCallback(WMenu *menu, WMenuEntry *entry)
+static void toggleLoweredCallback(WMenu *menu, WMenuItem *entry)
 {
   assert(entry->clientdata != NULL);
 
@@ -159,7 +159,7 @@ static void toggleLoweredCallback(WMenu *menu, WMenuEntry *entry)
   wMenuPaint(menu);
 }
 
-static void killCallback(WMenu *menu, WMenuEntry *entry)
+static void killCallback(WMenu *menu, WMenuItem *entry)
 {
   WScreen *scr = menu->menu->screen_ptr;
   WAppIcon *icon;
@@ -371,7 +371,7 @@ RImage *wClipMakeTile(RImage *normalTile)
   return tile;
 }
 
-static void omnipresentCallback(WMenu *menu, WMenuEntry *entry)
+static void omnipresentCallback(WMenu *menu, WMenuItem *entry)
 {
   WAppIcon *clickedIcon = entry->clientdata;
   WAppIcon *aicon;
@@ -441,7 +441,7 @@ static void removeIcons(CFMutableArrayRef icons, WDock *dock)
     wArrangeIcons(dock->screen_ptr, True);
 }
 
-static void removeIconsCallback(WMenu *menu, WMenuEntry *entry)
+static void removeIconsCallback(WMenu *menu, WMenuItem *entry)
 {
   WAppIcon *clickedIcon = (WAppIcon *) entry->clientdata;
   WDock *dock;
@@ -478,7 +478,7 @@ static void removeIconsCallback(WMenu *menu, WMenuEntry *entry)
   }
 }
 
-static void toggleAutoAttractCallback(WMenu *menu, WMenuEntry *entry)
+static void toggleAutoAttractCallback(WMenu *menu, WMenuItem *entry)
 {
   WDock *dock = (WDock *) entry->clientdata;
   WScreen *scr = dock->screen_ptr;
@@ -518,7 +518,7 @@ static void toggleAutoAttractCallback(WMenu *menu, WMenuEntry *entry)
   }
 }
 
-static void selectCallback(WMenu *menu, WMenuEntry *entry)
+static void selectCallback(WMenu *menu, WMenuItem *entry)
 {
   WAppIcon *icon = (WAppIcon *) entry->clientdata;
 
@@ -529,7 +529,7 @@ static void selectCallback(WMenu *menu, WMenuEntry *entry)
   wMenuPaint(menu);
 }
 
-static void attractIconsCallback(WMenu *menu, WMenuEntry *entry)
+static void attractIconsCallback(WMenu *menu, WMenuItem *entry)
 {
   WAppIcon *clickedIcon = (WAppIcon *) entry->clientdata;
   WDock *clip; /* clip... is a WM_CLIP or a WM_DRAWER */
@@ -565,7 +565,7 @@ static void attractIconsCallback(WMenu *menu, WMenuEntry *entry)
   }
 }
 
-static void selectIconsCallback(WMenu *menu, WMenuEntry *entry)
+static void selectIconsCallback(WMenu *menu, WMenuItem *entry)
 {
   WAppIcon *clickedIcon = (WAppIcon *) entry->clientdata;
   WDock *dock;
@@ -595,7 +595,7 @@ static void selectIconsCallback(WMenu *menu, WMenuEntry *entry)
   wMenuPaint(menu);
 }
 
-static void toggleCollapsedCallback(WMenu *menu, WMenuEntry *entry)
+static void toggleCollapsedCallback(WMenu *menu, WMenuItem *entry)
 {
   assert(entry->clientdata != NULL);
 
@@ -606,7 +606,7 @@ static void toggleCollapsedCallback(WMenu *menu, WMenuEntry *entry)
   wMenuPaint(menu);
 }
 
-static void toggleAutoCollapseCallback(WMenu *menu, WMenuEntry *entry)
+static void toggleAutoCollapseCallback(WMenu *menu, WMenuItem *entry)
 {
   WDock *dock;
   assert(entry->clientdata != NULL);
@@ -633,7 +633,7 @@ static void toggleAutoRaiseLower(WDock *dock)
     }
 }
 
-static void toggleAutoRaiseLowerCallback(WMenu *menu, WMenuEntry *entry)
+static void toggleAutoRaiseLowerCallback(WMenu *menu, WMenuItem *entry)
 {
   WDock *dock;
 
@@ -651,7 +651,7 @@ static void toggleAutoRaiseLowerCallback(WMenu *menu, WMenuEntry *entry)
   wMenuPaint(menu);
 }
 
-static void launchCallback(WMenu *menu, WMenuEntry *entry)
+static void launchCallback(WMenu *menu, WMenuItem *entry)
 {
   WAppIcon *btn = (WAppIcon *) entry->clientdata;
 
@@ -661,7 +661,7 @@ static void launchCallback(WMenu *menu, WMenuEntry *entry)
   launchDockedApplication(btn, False);
 }
 
-static void hideCallback(WMenu *menu, WMenuEntry *entry)
+static void hideCallback(WMenu *menu, WMenuItem *entry)
 {
   WApplication *wapp;
   WAppIcon *btn = (WAppIcon *) entry->clientdata;
@@ -679,7 +679,7 @@ static void hideCallback(WMenu *menu, WMenuEntry *entry)
   }
 }
 
-static void unhideHereCallback(WMenu *menu, WMenuEntry *entry)
+static void unhideHereCallback(WMenu *menu, WMenuItem *entry)
 {
   WApplication *wapp;
   WAppIcon *btn = (WAppIcon *) entry->clientdata;
@@ -755,7 +755,7 @@ static WAppIcon *mainIconCreate(WScreen *scr, int type, const char *name)
   return btn;
 }
 
-static void switchWSCommand(WMenu *menu, WMenuEntry *entry)
+static void switchWSCommand(WMenu *menu, WMenuItem *entry)
 {
   WAppIcon *btn, *icon = (WAppIcon *) entry->clientdata;
   WScreen *scr = icon->icon->core->screen_ptr;
@@ -843,13 +843,13 @@ static void updateWorkspaceMenu(WMenu *menu, WAppIcon *icon)
     return;
 
   for (i = 0; i < scr->workspace_count; i++) {
-    if (i < menu->entry_no) {
-      if (strcmp(menu->entries[i]->text, scr->workspaces[i]->name) != 0) {
-        wfree(menu->entries[i]->text);
-        menu->entries[i]->text = wstrdup(scr->workspaces[i]->name);
+    if (i < menu->items_count) {
+      if (strcmp(menu->items[i]->text, scr->workspaces[i]->name) != 0) {
+        wfree(menu->items[i]->text);
+        menu->items[i]->text = wstrdup(scr->workspaces[i]->name);
         menu->flags.realized = 0;
       }
-      menu->entries[i]->clientdata = (void *)icon;
+      menu->items[i]->clientdata = (void *)icon;
     } else {
       wMenuAddItem(menu, scr->workspaces[i]->name, switchWSCommand, (void *)icon);
 
@@ -884,36 +884,36 @@ static WMenu *makeWorkspaceMenu(WScreen *scr)
 
 static void updateClipOptionsMenu(WMenu *menu, WDock *dock)
 {
-  WMenuEntry *entry;
+  WMenuItem *entry;
   int index = 0;
 
   if (!menu || !dock)
     return;
 
   /* keep on top */
-  entry = menu->entries[index];
+  entry = menu->items[index];
   entry->flags.indicator_on = !dock->lowered;
   entry->clientdata = dock;
   wMenuSetEnabled(menu, index, dock->type == WM_CLIP);
 
   /* collapsed */
-  entry = menu->entries[++index];
+  entry = menu->items[++index];
   entry->flags.indicator_on = dock->collapsed;
   entry->clientdata = dock;
 
   /* auto-collapse */
-  entry = menu->entries[++index];
+  entry = menu->items[++index];
   entry->flags.indicator_on = dock->auto_collapse;
   entry->clientdata = dock;
 
   /* auto-raise/lower */
-  entry = menu->entries[++index];
+  entry = menu->items[++index];
   entry->flags.indicator_on = dock->auto_raise_lower;
   entry->clientdata = dock;
   wMenuSetEnabled(menu, index, dock->lowered && (dock->type == WM_CLIP));
 
   /* attract icons */
-  entry = menu->entries[++index];
+  entry = menu->items[++index];
   entry->flags.indicator_on = dock->attract_icons;
   entry->clientdata = dock;
 
@@ -924,7 +924,7 @@ static void updateClipOptionsMenu(WMenu *menu, WDock *dock)
 static WMenu *makeClipOptionsMenu(WScreen *scr)
 {
   WMenu *menu;
-  WMenuEntry *entry;
+  WMenuItem *entry;
 
   menu = wMenuCreate(scr, NULL, False);
   if (!menu) {
@@ -1089,7 +1089,7 @@ static WMenu *makeDockPositionMenu(WScreen *scr)
 static WMenu *dockMenuCreate(WScreen *scr, int type)
 {
   WMenu *menu;
-  WMenuEntry *entry;
+  WMenuItem *entry;
 
   if (type == WM_CLIP && scr->clip_menu)
     return scr->clip_menu;
@@ -1117,7 +1117,7 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
     if (scr->clip_options == NULL)
       scr->clip_options = makeClipOptionsMenu(scr);
 
-    wMenuEntrySetCascade(menu, entry, scr->clip_options);
+    wMenuItemSetSubmenu(menu, entry, scr->clip_options);
 
     /* The same menu is used for the dock and its appicons. If the menu
      * entry text is different between the two contexts, or if it can
@@ -1138,7 +1138,7 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
       entry->text = _("Move Icon To"); /* can be: Move Icons to */
       scr->clip_submenu = makeWorkspaceMenu(scr);
       if (scr->clip_submenu)
-        wMenuEntrySetCascade(menu, entry, scr->clip_submenu);
+        wMenuItemSetSubmenu(menu, entry, scr->clip_submenu);
     }
 
     entry = wMenuAddItem(menu, _("Remove Icon"), removeIconsCallback, NULL);
@@ -3432,7 +3432,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
 {
   WScreen *scr = dock->screen_ptr;
   WObjDescriptor *desc;
-  WMenuEntry *entry;
+  WMenuItem *entry;
   WApplication *wapp = NULL;
   int index = 0;
   int x_pos;
@@ -3458,7 +3458,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
     dock->menu->flags.realized = 0;
     if (!wPreferences.flags.nodrawer) {
       /* add a drawer */
-      entry = dock->menu->entries[++index];
+      entry = dock->menu->items[++index];
       entry->clientdata = aicon;
       wMenuSetEnabled(dock->menu, index, True);
     }
@@ -3471,7 +3471,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
 
     if (dock->type == WM_CLIP) {
       /* Rename Workspace */
-      entry = dock->menu->entries[++index];
+      entry = dock->menu->items[++index];
       if (aicon != scr->clip_icon) {
         entry->callback = omnipresentCallback;
         entry->clientdata = aicon;
@@ -3488,13 +3488,13 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
     }
 
     /* select/unselect icon */
-    entry = dock->menu->entries[++index];
+    entry = dock->menu->items[++index];
     entry->clientdata = aicon;
     entry->flags.indicator_on = aicon->icon->selected;
     wMenuSetEnabled(dock->menu, index, aicon != scr->clip_icon && !wIsADrawer(aicon));
 
     /* select/unselect all icons */
-    entry = dock->menu->entries[++index];
+    entry = dock->menu->items[++index];
     entry->clientdata = aicon;
     if (n_selected > 0)
       entry->text = _("Unselect All Icons");
@@ -3504,7 +3504,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
     wMenuSetEnabled(dock->menu, index, dock->icon_count > 1);
 
     /* keep icon(s) */
-    entry = dock->menu->entries[++index];
+    entry = dock->menu->items[++index];
     entry->clientdata = aicon;
     if (n_selected > 1)
       entry->text = _("Keep Icons");
@@ -3515,7 +3515,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
 
     if (dock->type == WM_CLIP) {
       /* this is the workspace submenu part */
-      entry = dock->menu->entries[++index];
+      entry = dock->menu->items[++index];
       if (n_selected > 1)
         entry->text = _("Move Icons To");
       else
@@ -3528,7 +3528,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
     }
 
     /* remove icon(s) */
-    entry = dock->menu->entries[++index];
+    entry = dock->menu->items[++index];
     entry->clientdata = aicon;
     if (n_selected > 1)
       entry->text = _("Remove Icons");
@@ -3538,7 +3538,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
     wMenuSetEnabled(dock->menu, index, dock->icon_count > 1);
 
     /* attract icon(s) */
-    entry = dock->menu->entries[++index];
+    entry = dock->menu->items[++index];
     entry->clientdata = aicon;
 
     dock->menu->flags.realized = 0;
@@ -3551,12 +3551,12 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
     wapp = NULL;
 
   /* launch */
-  entry = dock->menu->entries[++index];
+  entry = dock->menu->items[++index];
   entry->clientdata = aicon;
   wMenuSetEnabled(dock->menu, index, aicon->command != NULL);
 
   /* unhide here */
-  entry = dock->menu->entries[++index];
+  entry = dock->menu->items[++index];
   entry->clientdata = aicon;
   if (wapp && wapp->flags.hidden)
     entry->text = _("Unhide Here");
@@ -3566,7 +3566,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
   wMenuSetEnabled(dock->menu, index, appIsRunning);
 
   /* hide */
-  entry = dock->menu->entries[++index];
+  entry = dock->menu->items[++index];
   entry->clientdata = aicon;
   if (wapp && wapp->flags.hidden)
     entry->text = _("Unhide");
@@ -3583,7 +3583,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
 #endif
   
   /* kill or remove drawer */
-  entry = dock->menu->entries[++index];
+  entry = dock->menu->items[++index];
   entry->clientdata = aicon;
   if (wIsADrawer(aicon)) {
     entry->callback = removeDrawerCallback;
@@ -4436,7 +4436,7 @@ static int addADrawer(WScreen *scr)
   return 0;
 }
 
-static void addADrawerCallback(WMenu *menu, WMenuEntry *entry)
+static void addADrawerCallback(WMenu *menu, WMenuItem *entry)
 {
   /* Parameter not used, but tell the compiler that it is ok */
   (void) menu;
@@ -4508,7 +4508,7 @@ static void drawerDestroy(WDock *drawer)
   wfree(drawer);
 }
 
-static void removeDrawerCallback(WMenu *menu, WMenuEntry *entry)
+static void removeDrawerCallback(WMenu *menu, WMenuItem *entry)
 {
   WDock *dock = ((WAppIcon*)entry->clientdata)->dock;
 

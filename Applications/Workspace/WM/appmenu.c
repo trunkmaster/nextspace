@@ -13,12 +13,12 @@
 
 // Main application menu
 //-------------------------------------------------------------------------------------------------
-static void nullCallback(WMenu *menu, WMenuEntry *entry)
+static void nullCallback(WMenu *menu, WMenuItem *entry)
 {
   WMLogInfo("Item %s was clicked in menu %s", entry->text, menu->frame->title);
 }
 
-static void mainCallback(WMenu *menu, WMenuEntry *entry)
+static void mainCallback(WMenu *menu, WMenuItem *entry)
 {
   WApplication *wapp = (WApplication *)entry->clientdata;
   
@@ -38,22 +38,22 @@ static void mainCallback(WMenu *menu, WMenuEntry *entry)
 #define ACTION_CHANGE_WORKSPACE 3
 #define ACTION_CHANGE_STATE     4
 
-static void focusWindow(WMenu *menu, WMenuEntry *entry)
+static void focusWindow(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin = (WWindow *)entry->clientdata;
   wWindowSingleFocus(wwin);
 }
 
-static void windowsCallback(WMenu *menu, WMenuEntry *entry) {}
+static void windowsCallback(WMenu *menu, WMenuItem *entry) {}
 
 static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
 {
   int idx;
 
-  if (menu->entry_no <= old_pos)
+  if (menu->items_count <= old_pos)
     return -1;
 
-#define WS(i)  ((WWindow*)menu->entries[i]->clientdata)->frame->workspace
+#define WS(i)  ((WWindow*)menu->items[i]->clientdata)->frame->workspace
   if (old_pos >= 0) {
     if (WS(old_pos) >= wwin->frame->workspace
         && (old_pos == 0 || WS(old_pos - 1) <= wwin->frame->workspace)) {
@@ -62,8 +62,8 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
   }
 #undef WS
 
-  for (idx = 0; idx < menu->entry_no; idx++) {
-    WWindow *tw = (WWindow *)menu->entries[idx]->clientdata;
+  for (idx = 0; idx < menu->items_count; idx++) {
+    WWindow *tw = (WWindow *)menu->items[idx]->clientdata;
 
     if (!tw || (!IS_OMNIPRESENT(tw) && tw->frame->workspace > wwin->frame->workspace)) {
       break;
@@ -75,7 +75,7 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
 
 static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
 {
-  WMenuEntry *entry;
+  WMenuItem *entry;
   char title[MAX_MENU_TEXT_LENGTH + 6];
   int len = sizeof(title);
   int i;
@@ -99,7 +99,7 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
       snprintf(title, len, "%s", wwin->frame->title);
     else
       snprintf(title, len, "%s", DEF_WINDOW_TITLE);
-    t = ShrinkString(wwin->screen_ptr->menu_entry_font, title, MAX_WINDOWLIST_WIDTH);
+    t = ShrinkString(wwin->screen_ptr->menu_item_font, title, MAX_WINDOWLIST_WIDTH);
 
     if (IS_OMNIPRESENT(wwin))
       idx = -1;
@@ -129,8 +129,8 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
     checkVisibility = 1;
   } else {
     char *t;
-    for (i = 0; i < windows_menu->entry_no; i++) {
-      entry = windows_menu->entries[i];
+    for (i = 0; i < windows_menu->items_count; i++) {
+      entry = windows_menu->items[i];
       /* this is the entry that was changed */
       if (entry->clientdata == wwin) {
         switch (action) {
@@ -149,7 +149,7 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
           else
             snprintf(title, MAX_MENU_TEXT_LENGTH, "%s", DEF_WINDOW_TITLE);
 
-          t = ShrinkString(wwin->screen_ptr->menu_entry_font, title, MAX_WINDOWLIST_WIDTH);
+          t = ShrinkString(wwin->screen_ptr->menu_item_font, title, MAX_WINDOWLIST_WIDTH);
           entry->text = t;
 
           wMenuRealize(windows_menu);
@@ -189,7 +189,7 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
   wMenuPaint(windows_menu);
 }
 
-static void switchDesktopCallback(WMenu *menu, WMenuEntry *entry)
+static void switchDesktopCallback(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin = menu->frame->screen_ptr->focused_window;
 
@@ -201,19 +201,19 @@ static void updateDesktopsMenu(WMenu *menu)
 {
   WScreen *scr = menu->frame->screen_ptr;
   char title[MAX_WORKSPACENAME_WIDTH + 1];
-  WMenuEntry *entry;
+  WMenuItem *entry;
   int i;
 
   for (i = 0; i < scr->workspace_count; i++) {
-    if (i < menu->entry_no) {
+    if (i < menu->items_count) {
 
-      entry = menu->entries[i];
+      entry = menu->items[i];
       if (strcmp(entry->text, scr->workspaces[i]->name) != 0) {
         wfree(entry->text);
         strncpy(title, scr->workspaces[i]->name, MAX_WORKSPACENAME_WIDTH);
         title[MAX_WORKSPACENAME_WIDTH] = 0;
-        menu->entries[i]->text = wstrdup(title);
-        menu->entries[i]->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
+        menu->items[i]->text = wstrdup(title);
+        menu->items[i]->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
         menu->flags.realized = 0;
       }
     } else {
@@ -277,7 +277,7 @@ static void windowObserver(CFNotificationCenterRef center,
 static WMenu *createWindowsMenu(WApplication *wapp)
 {
   WMenu *_menu, *desktops_menu;
-  WMenuEntry *tmp_item;
+  WMenuItem *tmp_item;
   WScreen *scr = wapp->main_wwin->screen_ptr;
   
   desktops_menu = wMenuCreate(scr, _("Move Window To"), False);
@@ -290,7 +290,7 @@ static WMenu *createWindowsMenu(WApplication *wapp)
   tmp_item = wMenuAddItem(_menu, _("Miniaturize Window"), windowsCallback, NULL);
   tmp_item->rtext = wstrdup("m");
   tmp_item = wMenuAddItem(_menu, _("Move Window To"), windowsCallback, NULL);
-  wMenuEntrySetCascade(_menu, tmp_item, desktops_menu);
+  wMenuItemSetSubmenu(_menu, tmp_item, desktops_menu);
   
   tmp_item = wMenuAddItem(_menu, _("Shade Window"), windowsCallback, NULL);
   tmp_item = wMenuAddItem(_menu, _("Resize/Move Window"), windowsCallback, NULL);
@@ -323,9 +323,9 @@ static WMenu *createWindowsMenu(WApplication *wapp)
 
 static WMenu *submenuWithTitle(WMenu *menu, char *title)
 {
-  WMenu **submenus = menu->cascades;
+  WMenu **submenus = menu->submenus;
 
-  for (int i = 0; i < menu->cascade_no; i++) {
+  for (int i = 0; i < menu->submenus_count; i++) {
     if (!strcmp(submenus[i]->frame->title, title)) {
       return submenus[i];
     }
@@ -336,7 +336,7 @@ static WMenu *submenuWithTitle(WMenu *menu, char *title)
 WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
 {
   WMenu *menu, *info, *windows;
-  WMenuEntry *info_item, *windows_item, *tmp_item;
+  WMenuItem *info_item, *windows_item, *tmp_item;
 
   menu = wMenuCreate(scr, wapp->app_name, True);
   menu->app = wapp;
@@ -345,11 +345,11 @@ WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
   wMenuAddItem(info, _("Info Panel..."), nullCallback, NULL);
   tmp_item = wMenuAddItem(info, _("Preferences..."), nullCallback, NULL);
   info_item = wMenuAddItem(menu, _("Info"), NULL, NULL);
-  wMenuEntrySetCascade(menu, info_item, info);
+  wMenuItemSetSubmenu(menu, info_item, info);
 
   windows = createWindowsMenu(wapp);
   windows_item = wMenuAddItem(menu, _("Windows"), NULL, NULL);
-  wMenuEntrySetCascade(menu, windows_item, windows);
+  wMenuItemSetSubmenu(menu, windows_item, windows);
   
   tmp_item = wMenuAddItem(menu, _("Hide"), mainCallback, wapp);
   tmp_item->rtext = wstrdup("h");
@@ -384,14 +384,14 @@ void wApplicationMenuOpen(WApplication *wapp, int x, int y)
   menu = wapp->app_menu;
 
   /* set client data */
-  for (i = 0; i < menu->entry_no; i++) {
-    menu->entries[i]->clientdata = wapp;
+  for (i = 0; i < menu->items_count; i++) {
+    menu->items[i]->clientdata = wapp;
   }
   
   if (wapp->flags.hidden) {
-    menu->entries[3]->text = wstrdup(_("Unhide"));
+    menu->items[3]->text = wstrdup(_("Unhide"));
   } else {
-    menu->entries[3]->text = wstrdup(_("Hide"));
+    menu->items[3]->text = wstrdup(_("Hide"));
   }
 
   menu->flags.realized = 0;
@@ -418,8 +418,8 @@ void wApplicationMenuClose(WApplication *wapp)
     return;
   }
   
-  for (int i = 0; i < main_menu->cascade_no; i++) {
-    tmp_menu = main_menu->cascades[i];
+  for (int i = 0; i < main_menu->submenus_count; i++) {
+    tmp_menu = main_menu->submenus[i];
     WMLogInfo("Unmap submenu %s is mapped: %i brother mapped: %i",
               tmp_menu->frame->title, tmp_menu->flags.mapped, tmp_menu->brother->flags.mapped);
     if (tmp_menu->flags.mapped) {
@@ -452,7 +452,7 @@ static CFDictionaryRef getMenuState(WMenu *menu)
   // Type
   if (menu->flags.app_menu) {
     CFDictionarySetValue(state, CFSTR("Type"), CFSTR("Main"));
-  } else if (menu->flags.buttoned) {
+  } else if (menu->flags.tornoff) {
     CFDictionarySetValue(state, CFSTR("Type"), CFSTR("TearOff"));
   } else {
     CFDictionarySetValue(state, CFSTR("Type"), CFSTR("Attached"));
@@ -483,9 +483,9 @@ CFArrayRef wApplicationMenuGetState(WMenu *main_menu)
   CFRelease(menu_info);
 
   // Submenus
-  for (int i = 0; i < main_menu->cascade_no; i++) {
+  for (int i = 0; i < main_menu->submenus_count; i++) {
     menu = NULL;
-    tmp_menu = main_menu->cascades[i];
+    tmp_menu = main_menu->submenus[i];
     if (tmp_menu->flags.mapped) { // attached submenu opened
       menu = tmp_menu;
     } else if (tmp_menu->flags.brother && tmp_menu->brother->flags.mapped){ // teared-off
@@ -524,11 +524,11 @@ void wApplicationMenuRestoreFromState(WMenu *main_menu, CFArrayRef state)
                                                  kCFStringEncodingUTF8);
       menu = submenuWithTitle(main_menu, menu_title);
       if (!strcmp(menu_type, "TearOff")) {
-        menu->brother->flags.buttoned = 1;
+        menu->brother->flags.tornoff = 1;
         wFrameWindowShowButton(menu->brother->frame, WFF_RIGHT_BUTTON);
         wMenuMapAt(menu->brother, x, y, false);
       } else {
-        menu->flags.buttoned = 0;
+        menu->flags.tornoff = 0;
         wMenuMapAt(menu, x, y, false);
       }
     }

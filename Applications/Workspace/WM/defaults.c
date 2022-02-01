@@ -2475,10 +2475,10 @@ static int setMenuTextFont(WScreen *scr, WDefaultEntry *entry, void *tdata, void
   (void) entry;
   (void) foo;
 
-  if (scr->menu_entry_font) {
-    WMReleaseFont(scr->menu_entry_font);
+  if (scr->menu_item_font) {
+    WMReleaseFont(scr->menu_item_font);
   }
-  scr->menu_entry_font = font;
+  scr->menu_item_font = font;
 
   return REFRESH_MENU_FONT;
 }
