@@ -99,7 +99,7 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
       snprintf(title, len, "%s", wwin->frame->title);
     else
       snprintf(title, len, "%s", DEF_WINDOW_TITLE);
-    t = ShrinkString(wwin->screen_ptr->menu_item_font, title, MAX_WINDOWLIST_WIDTH);
+    t = ShrinkString(wwin->screen->menu_item_font, title, MAX_WINDOWLIST_WIDTH);
 
     if (IS_OMNIPRESENT(wwin))
       idx = -1;
@@ -149,7 +149,7 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
           else
             snprintf(title, MAX_MENU_TEXT_LENGTH, "%s", DEF_WINDOW_TITLE);
 
-          t = ShrinkString(wwin->screen_ptr->menu_item_font, title, MAX_WINDOWLIST_WIDTH);
+          t = ShrinkString(wwin->screen->menu_item_font, title, MAX_WINDOWLIST_WIDTH);
           entry->text = t;
 
           wMenuRealize(windows_menu);
@@ -278,7 +278,7 @@ static WMenu *createWindowsMenu(WApplication *wapp)
 {
   WMenu *_menu, *desktops_menu;
   WMenuItem *tmp_item;
-  WScreen *scr = wapp->main_wwin->screen_ptr;
+  WScreen *scr = wapp->main_wwin->screen;
   
   desktops_menu = wMenuCreate(scr, _("Move Window To"), False);
   desktops_menu->app = wapp;
@@ -365,7 +365,7 @@ void wApplicationMenuDestroy(WApplication *wapp)
 {
   WMenu *windows_menu = submenuWithTitle(wapp->app_menu, "Windows");
   
-  CFNotificationCenterRemoveEveryObserver(wapp->main_wwin->screen_ptr->notificationCenter,
+  CFNotificationCenterRemoveEveryObserver(wapp->main_wwin->screen->notificationCenter,
                                           windows_menu);
   wMenuUnmap(wapp->app_menu);
   wMenuDestroy(wapp->app_menu, True);
@@ -373,7 +373,7 @@ void wApplicationMenuDestroy(WApplication *wapp)
 
 void wApplicationMenuOpen(WApplication *wapp, int x, int y)
 {
-  WScreen *scr = wapp->main_wwin->screen_ptr;
+  WScreen *scr = wapp->main_wwin->screen;
   WMenu *menu;
   int i;
 
@@ -399,8 +399,8 @@ void wApplicationMenuOpen(WApplication *wapp, int x, int y)
   
   /* Place menu on screen */
   x -= menu->frame->core->width / 2;
-  if (x + menu->frame->core->width > scr->scr_width) {
-    x = scr->scr_width - menu->frame->core->width;
+  if (x + menu->frame->core->width > scr->width) {
+    x = scr->width - menu->frame->core->width;
   }
   if (x < 0) {
     x = 0;

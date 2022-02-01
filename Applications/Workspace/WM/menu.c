@@ -1240,7 +1240,7 @@ static void selectItem(WMenu *menu, int items_count)
             x = menu->frame_x + MENUW(menu);
 
             if (x + MENUW(submenu)
-                >= menu->frame->screen_ptr->scr_width) {
+                >= menu->frame->screen_ptr->width) {
 
               x = menu->frame_x - MENUW(submenu);
               submenu->flags.open_to_left = 1;

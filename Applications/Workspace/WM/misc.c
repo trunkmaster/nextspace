@@ -1064,7 +1064,7 @@ Bool wRelaunchWindow(WWindow *wwin)
   pid_t pid = fork();
 
   if (pid == 0) {
-    wSetupCommandEnvironment(wwin->screen_ptr);
+    wSetupCommandEnvironment(wwin->screen);
 #ifdef HAVE_SETSID
     setsid();
 #endif
@@ -1090,7 +1090,7 @@ Bool wRelaunchWindow(WWindow *wwin)
   } else {
     _tuple *data = wmalloc(sizeof(_tuple));
 
-    data->scr = wwin->screen_ptr;
+    data->scr = wwin->screen;
     data->command = wtokenjoin(argv, argc);
 
     /* not actually a shell command */

@@ -432,11 +432,11 @@ static BOOL _workspaceQuitting = NO;
     return;
   }
 
-  appIcon = wLaunchingAppIconForInstance(wapp->main_wwin->screen_ptr,
+  appIcon = wLaunchingAppIconForInstance(wapp->main_wwin->screen,
                                          wapp->main_wwin->wm_instance,
                                          wapp->main_wwin->wm_class);
   if (appIcon) {
-    wLaunchingAppIconFinish(wapp->main_wwin->screen_ptr, appIcon);
+    wLaunchingAppIconFinish(wapp->main_wwin->screen, appIcon);
     appIcon->main_window = wapp->main_window;
   }
 

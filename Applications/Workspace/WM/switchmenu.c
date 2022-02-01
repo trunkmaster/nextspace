@@ -162,7 +162,7 @@ void OpenSwitchMenu(WScreen *scr, int x, int y, int keyboard)
           wMenuMapCopyAt(switchmenu, x - switchmenu->frame->core->width / 2, y);
       }
     } else {
-      if (keyboard && x == scr->scr_width / 2 && y == scr->scr_height / 2) {
+      if (keyboard && x == scr->width / 2 && y == scr->height / 2) {
         y = y - switchmenu->frame->core->height / 2;
       }
       wMenuMapAt(switchmenu, x - switchmenu->frame->core->width / 2, y, keyboard);
@@ -211,7 +211,7 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
   int i;
   int checkVisibility = 0;
 
-  if (!wwin->screen_ptr->switch_menu)
+  if (!wwin->screen->switch_menu)
     return;
   /*
    *  This menu is updated under the following conditions:
@@ -409,27 +409,27 @@ static void windowObserver(CFNotificationCenterRef center,
     return;
   
   if (CFStringCompare(name, WMDidManageWindowNotification, 0) == 0) {
-    UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_ADD);
+    UpdateSwitchMenu(wwin->screen, wwin, ACTION_ADD);
   }
   else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0) {
-    UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_REMOVE);
+    UpdateSwitchMenu(wwin->screen, wwin, ACTION_REMOVE);
   }
   else if (CFStringCompare(name, WMDidChangeWindowWorkspaceNotification, 0) == 0) {
-    UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_WORKSPACE);
+    UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_WORKSPACE);
   }
   else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0) {
-    UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_STATE);
+    UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_STATE);
   }
   else if (CFStringCompare(name, WMDidChangeWindowNameNotification, 0) == 0) {
-    UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE);
+    UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE);
   }
   else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
     CFStringRef wstate = (CFStringRef)wGetNotificationInfoValue(userInfo, CFSTR("state"));
     if (CFStringCompare(wstate, CFSTR("omnipresent"), 0) == 0) {
-      UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_WORKSPACE);
+      UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_WORKSPACE);
     }
     else {
-      UpdateSwitchMenu(wwin->screen_ptr, wwin, ACTION_CHANGE_STATE);
+      UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_STATE);
     }
   }
 }

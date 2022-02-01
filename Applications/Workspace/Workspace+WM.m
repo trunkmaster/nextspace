@@ -153,8 +153,8 @@ void WSUpdateScreenInfo(WScreen *scr)
     
     screenRect = NSUnionRect(screenRect, headRect);
   }
-  scr->scr_width = (int)screenRect.size.width;
-  scr->scr_height = (int)screenRect.size.height;
+  scr->width = (int)screenRect.size.width;
+  scr->height = (int)screenRect.size.height;
 
   // Update WM usable area info
   wScreenUpdateUsableArea(scr);

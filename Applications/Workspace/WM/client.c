@@ -70,7 +70,7 @@ void wClientRestore(WWindow * wwin)
     wwin->frame_y += (wwin->frame->top_width + wwin->frame->bottom_width);
 #endif
   XSetWindowBorderWidth(dpy, wwin->client_win, wwin->old_border_width);
-  XReparentWindow(dpy, wwin->client_win, wwin->screen_ptr->root_win, wwin->frame_x, wwin->frame_y);
+  XReparentWindow(dpy, wwin->client_win, wwin->screen->root_win, wwin->frame_x, wwin->frame_y);
 
   /* don't let the window get iconified after restart */
   /*
@@ -209,7 +209,7 @@ void wClientConfigure(WWindow * wwin, XConfigureRequestEvent * xcre)
     XConfigureWindow(dpy, wwin->frame->core->window,
                      xcre->value_mask & (CWSibling | CWStackMode), &xwc);
     /* fix stacking order */
-    RemakeStackList(wwin->screen_ptr);
+    RemakeStackList(wwin->screen);
   }
 
   wClientGetGravityOffsets(wwin, &ofs_x, &ofs_y);
@@ -514,7 +514,7 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
         new_owner = None;
       } else {
         if (new_owner == 0 || new_owner == wwin->client_win) {
-          new_owner = wwin->screen_ptr->root_win;
+          new_owner = wwin->screen->root_win;
         }
       }
       if (new_owner != wwin->transient_for) {
@@ -572,7 +572,7 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
     } else if (event->atom == w_global.atom.wm.colormap_windows) {
 
       GetColormapWindows(wwin);
-      wColormapInstallForWindow(wwin->screen_ptr, wwin);
+      wColormapInstallForWindow(wwin->screen, wwin);
 
     } else if (event->atom == w_global.atom.wmaker.menu) {
       WApplication *wapp;
@@ -580,7 +580,7 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
       wapp = wApplicationOf(wwin->main_window);
       if (wapp) {
         if (wwin->fake_group) {
-          WScreen *scr = wwin->screen_ptr;
+          WScreen *scr = wwin->screen;
           WWindow *foo = scr->focused_window;
           WFakeGroupLeader *fPtr = wwin->fake_group;
 
@@ -612,12 +612,12 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
           fPtr->origLeader = None;
 
           if (wPreferences.auto_arrange_icons) {
-            wArrangeIcons(wwin->screen_ptr, True);
+            wArrangeIcons(wwin->screen, True);
           }
         }
         /* make the appmenu be mapped */
-        wSetFocusTo(wwin->screen_ptr, NULL);
-        wSetFocusTo(wwin->screen_ptr, wwin->screen_ptr->focused_window);
+        wSetFocusTo(wwin->screen, NULL);
+        wSetFocusTo(wwin->screen, wwin->screen->focused_window);
       }
     } else if (event->atom == w_global.atom.gnustep.wm_attr) {
       GNUstepWMAttributes *attr;
@@ -674,8 +674,8 @@ wClientGetNormalHints(WWindow * wwin, XWindowAttributes * wattribs, Bool geometr
     wwin->normal_hints->base_height = 0;
   }
   if (!(wwin->normal_hints->flags & PMaxSize)) {
-    wwin->normal_hints->max_width = wwin->screen_ptr->scr_width * 2;
-    wwin->normal_hints->max_height = wwin->screen_ptr->scr_height * 2;
+    wwin->normal_hints->max_width = wwin->screen->width * 2;
+    wwin->normal_hints->max_height = wwin->screen->height * 2;
   }
 
   /* some buggy apps set weird hints.. */
@@ -723,7 +723,7 @@ wClientGetNormalHints(WWindow * wwin, XWindowAttributes * wattribs, Bool geometr
   wwin->normal_hints->flags &= ~PPosition;
 #endif
 
-  if (pre_icccm && !wwin->screen_ptr->flags.startup && geometry) {
+  if (pre_icccm && !wwin->screen->flags.startup && geometry) {
     if (wwin->normal_hints->flags & (USPosition | PPosition)) {
       *x = wwin->normal_hints->x;
       *y = wwin->normal_hints->y;

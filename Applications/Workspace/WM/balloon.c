@@ -293,7 +293,7 @@ static void showText(WScreen *scr, int x, int y, int h, int w, const char *text)
   if (width < height)
     width = height;
 
-  if (x + width > scr->scr_width) {
+  if (x + width > scr->width) {
     side = RIGHT;
     bx = x - width + w / 2;
     if (bx < 0)
@@ -302,8 +302,8 @@ static void showText(WScreen *scr, int x, int y, int h, int w, const char *text)
     side = LEFT;
     bx = x + w / 2;
   }
-  if (bx + width > scr->scr_width)
-    bx = scr->scr_width - width;
+  if (bx + width > scr->width)
+    bx = scr->width - width;
 
   if (y - (height + SPACE) < 0) {
     side |= TOP;
@@ -347,8 +347,8 @@ static void showText(WScreen *scr, int x, int y, int h, int w, const char *text)
 
   if (x < 0)
     x = 0;
-  else if (x + width > scr->scr_width - 1)
-    x = scr->scr_width - width;
+  else if (x + width > scr->width - 1)
+    x = scr->width - width;
 
   if (y - height - 2 < 0) {
     y += h;
@@ -406,8 +406,8 @@ static void show_minipreview(WScreen *scr, int x, int y, const char *title, Pixm
 
   if (x < 0)
     x = 0;
-  else if (x + width > scr->scr_width - 1)
-    x = scr->scr_width - width - 1;
+  else if (x + width > scr->width - 1)
+    x = scr->width - width - 1;
 
   if (y - height - 2 < 0) {
     y += wPreferences.icon_size;

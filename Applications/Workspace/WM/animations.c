@@ -122,7 +122,7 @@ void DoKaboom(WScreen *scr, Window win, int x, int y)
 {
 #ifdef NORMAL_ICON_KABOOM
   int i, j, k;
-  int sw = scr->scr_width, sh = scr->scr_height;
+  int sw = scr->width, sh = scr->height;
   int px[PIECES];
   short py[PIECES];
   char pvx[PIECES], pvy[PIECES];
@@ -409,7 +409,7 @@ static int appIsUrgent(WApplication *wapp)
     WMLogWarning("group leader not found for window group");
     return 0;
   }
-  scr = wapp->main_wwin->screen_ptr;
+  scr = wapp->main_wwin->screen;
   wlist = scr->focused_window;
   if (!wlist)
     return 0;
@@ -685,7 +685,7 @@ static void animateResizeZoom(WScreen *scr, int x, int y, int w, int h,
 
 int wGetAnimationGeometry(WWindow *wwin, int *ix, int *iy, int *iw, int *ih)
 {
-  if (wwin->screen_ptr->flags.startup || wPreferences.no_animations
+  if (wwin->screen->flags.startup || wPreferences.no_animations
       || wwin->flags.skip_next_animation || wwin->icon == NULL)
     return 0;
 
@@ -703,8 +703,8 @@ int wGetAnimationGeometry(WWindow *wwin, int *ix, int *iy, int *iw, int *ih)
     } else {
       *ix = 0;
       *iy = 0;
-      *iw = wwin->screen_ptr->scr_width;
-      *ih = wwin->screen_ptr->scr_height;
+      *iw = wwin->screen->width;
+      *ih = wwin->screen->height;
     }
   }
   return 1;
@@ -752,7 +752,7 @@ void wAnimateShade(WWindow *wwin, Bool what)
 
   switch (what) {
   case SHADE:
-    if (!wwin->screen_ptr->flags.startup) {
+    if (!wwin->screen->flags.startup) {
       /* do the shading animation */
       h = wwin->frame->core->height;
       s = h / SHADE_STEPS;

@@ -69,8 +69,8 @@ typedef struct _WScreen {
   Atom sn_atom;		       /* window manager selection */
 #endif
 
-  int scr_width;		       /* size of the screen */
-  int scr_height;
+  int width;		       /* size of the screen */
+  int height;
 
   Window root_win;		       /* root window of screen */
   int  depth;			       /* depth of the default visual */

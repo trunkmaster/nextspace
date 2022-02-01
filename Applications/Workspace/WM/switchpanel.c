@@ -92,11 +92,11 @@ struct SwitchPanel {
 
 static int canReceiveFocus(WWindow *wwin)
 {
-  if (wwin->frame && wwin->frame->workspace != wwin->screen_ptr->current_workspace)
+  if (wwin->frame && wwin->frame->workspace != wwin->screen->current_workspace)
     return 0;
 
   if (wPreferences.cycle_active_head_only &&
-      wGetHeadForWindow(wwin) != wGetHeadForPointerLocation(wwin->screen_ptr))
+      wGetHeadForWindow(wwin) != wGetHeadForPointerLocation(wwin->screen))
     return 0;
 
   if (WFLAGP(wwin, no_focusable))

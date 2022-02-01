@@ -140,7 +140,7 @@ static int getSize(Drawable d, unsigned int *w, unsigned int *h, unsigned int *d
 
 WIcon *icon_create_for_wwindow(WWindow *wwin)
 {
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   WIcon *icon;
 
   icon = icon_create_core(scr, wwin->icon_x, wwin->icon_y);
@@ -924,7 +924,7 @@ static void miniwindowMouseDown(WObjDescriptor *desc, XEvent *event)
     OpenMiniwindowMenu(wwin, event->xbutton.x_root, event->xbutton.y_root);
 
     /* allow drag select of menu */
-    desc = &wwin->screen_ptr->window_menu->menu->descriptor;
+    desc = &wwin->screen->window_menu->menu->descriptor;
     event->xbutton.send_event = True;
     (*desc->handle_mousedown) (desc, event);
 
@@ -978,7 +978,7 @@ static void miniwindowMouseDown(WObjDescriptor *desc, XEvent *event)
       XUngrabPointer(dpy, CurrentTime);
 
       if (wPreferences.auto_arrange_icons)
-        wArrangeIcons(wwin->screen_ptr, True);
+        wArrangeIcons(wwin->screen, True);
       if (wPreferences.single_click && !hasMoved)
         miniwindowDblClick(desc, event);
       return;

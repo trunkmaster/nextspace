@@ -706,8 +706,8 @@ WScreen *wScreenInit(int screen_number)
   scr->depth = DefaultDepth(dpy, screen_number);
   scr->colormap = DefaultColormap(dpy, screen_number);
 
-  scr->scr_width = WidthOfScreen(ScreenOfDisplay(dpy, screen_number));
-  scr->scr_height = HeightOfScreen(ScreenOfDisplay(dpy, screen_number));
+  scr->width = WidthOfScreen(ScreenOfDisplay(dpy, screen_number));
+  scr->height = HeightOfScreen(ScreenOfDisplay(dpy, screen_number));
 
   wInitXrandr(scr);
 

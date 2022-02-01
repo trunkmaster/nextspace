@@ -1273,12 +1273,12 @@ static int getCoord(WScreen *scr, WDefaultEntry *entry, CFTypeRef value, void *a
 
   if (data.x < 0)
     data.x = 0;
-  else if (data.x > scr->scr_width / 3)
-    data.x = scr->scr_width / 3;
+  else if (data.x > scr->width / 3)
+    data.x = scr->width / 3;
   if (data.y < 0)
     data.y = 0;
-  else if (data.y > scr->scr_height / 3)
-    data.y = scr->scr_height / 3;
+  else if (data.y > scr->height / 3)
+    data.y = scr->height / 3;
 
   if (ret)
     *ret = &data;

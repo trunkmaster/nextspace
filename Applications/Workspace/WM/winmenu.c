@@ -323,7 +323,7 @@ static void switchWSCommand(WMenu * menu, WMenuItem * entry)
 static void makeShortcutCommand(WMenu * menu, WMenuItem * entry)
 {
   WWindow *wwin = (WWindow *) entry->clientdata;
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   int index = entry->order - wlengthof(menu_options_entries);
 
   /* Parameter not used, but tell the compiler that it is ok */
@@ -407,7 +407,7 @@ static void updateMakeShortcutMenu(WMenu * menu, WWindow * wwin)
   for (i = wlengthof(menu_options_entries); i < smenu->items_count; i++) {
     int shortcutNo = i - wlengthof(menu_options_entries);
     WMenuItem *entry = smenu->items[i];
-    CFArrayRef shortSelWindows = wwin->screen_ptr->shortcutWindows[shortcutNo];
+    CFArrayRef shortSelWindows = wwin->screen->shortcutWindows[shortcutNo];
 
     snprintf(buffer, buflen, "%s %i", _("Set Shortcut"), shortcutNo + 1);
 
@@ -620,7 +620,7 @@ void CloseWindowMenu(WScreen * scr)
 static void updateMenuForWindow(WMenu * menu, WWindow * wwin)
 {
   WApplication *wapp = wApplicationOf(wwin->main_window);
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   int i;
 
   updateOptionsMenu(menu, wwin);
@@ -741,7 +741,7 @@ static void updateMenuForWindow(WMenu * menu, WWindow * wwin)
 
 static WMenu *open_window_menu_core(WWindow *wwin)
 {
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   WMenu *menu;
 
   wwin->flags.menu_open_for_me = 1;
@@ -812,7 +812,7 @@ void OpenWindowMenu2(WWindow *wwin, int x, int y, int keyboard)
 {
   int i;
   WMenu *menu;
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
 
   menu = open_window_menu_core(wwin);
   if (!menu)

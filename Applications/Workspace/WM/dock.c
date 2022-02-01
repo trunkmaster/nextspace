@@ -721,7 +721,7 @@ static WAppIcon *mainIconCreate(WScreen *scr, int type, const char *name)
                            CFSTR("Workspace.GNUstep"), icon_desc);
       CFRelease(icon_desc);
       btn = wAppIconCreateForDock(scr, NULL, "Workspace", "GNUstep", TILE_NORMAL);
-      x_pos = scr->scr_width - ICON_SIZE - DOCK_EXTRA_SPACE;
+      x_pos = scr->width - ICON_SIZE - DOCK_EXTRA_SPACE;
       if (wPreferences.flags.clip_merged_in_dock) {
         btn->icon->core->descriptor.handle_expose = clipIconExpose;
       }
@@ -1185,7 +1185,7 @@ WDock *wDockCreate(WScreen *scr, int type, const char *name)
     dock->max_icons = DOCK_MAX_ICONS;
     break;
   case WM_DRAWER:
-    dock->max_icons = scr->scr_width / wPreferences.icon_size;
+    dock->max_icons = scr->width / wPreferences.icon_size;
     break;
   case WM_DOCK:
   default:
@@ -1423,7 +1423,7 @@ static CFMutableDictionaryRef _dockCreateState(WDock *dock)
 
   if (dock->type == WM_DOCK) {
     key = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("Applications%i"),
-                                   dock->screen_ptr->scr_height);
+                                   dock->screen_ptr->height);
     CFDictionarySetValue(dock_state, key, list);
     CFRelease(key);
 
@@ -1704,15 +1704,15 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
       if (type == WM_CLIP) {
         if (dock->x_pos < 0) {
           dock->x_pos = 0;
-        } else if (dock->x_pos > scr->scr_width - ICON_SIZE) {
-          dock->x_pos = scr->scr_width - ICON_SIZE;
+        } else if (dock->x_pos > scr->width - ICON_SIZE) {
+          dock->x_pos = scr->width - ICON_SIZE;
         }
       } else {
         if (dock->x_pos >= 0) {
           dock->x_pos = DOCK_EXTRA_SPACE;
           dock->on_right_side = 0;
         } else {
-          dock->x_pos = scr->scr_width - DOCK_EXTRA_SPACE - ICON_SIZE;
+          dock->x_pos = scr->width - DOCK_EXTRA_SPACE - ICON_SIZE;
           dock->on_right_side = 1;
         }
       }
@@ -1792,7 +1792,7 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
      */
 
     tmp = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("Applications%i"),
-                                   scr->scr_height);
+                                   scr->height);
     apps = CFDictionaryGetValue(dock_state, tmp);
     CFRelease(tmp);
 
@@ -2615,7 +2615,7 @@ Bool wDockFindFreeSlot(WDock *dock, int *x_pos, int *y_pos)
   int x, y;
   int i, done = False;
   int corner;
-  int ex = scr->scr_width, ey = scr->scr_height;
+  int ex = scr->width, ey = scr->height;
   int extra_count = 0;
 
   if (dock->type == WM_DRAWER) {
@@ -2668,8 +2668,8 @@ Bool wDockFindFreeSlot(WDock *dock, int *x_pos, int *y_pos)
     char *hmap, *vmap;
     int hcount, vcount;
 
-    hcount = WMIN(dock->max_icons, scr->scr_width / ICON_SIZE);
-    vcount = WMIN(dock->max_icons, scr->scr_height / ICON_SIZE);
+    hcount = WMIN(dock->max_icons, scr->width / ICON_SIZE);
+    vcount = WMIN(dock->max_icons, scr->height / ICON_SIZE);
     hmap = wmalloc(hcount + 1);
     vmap = wmalloc(vcount + 1);
 
@@ -2902,7 +2902,7 @@ static void swapDock(WDock *dock)
   int x, i;
 
   if (dock->on_right_side)
-    x = dock->x_pos = scr->scr_width - ICON_SIZE - DOCK_EXTRA_SPACE;
+    x = dock->x_pos = scr->width - ICON_SIZE - DOCK_EXTRA_SPACE;
   else
     x = dock->x_pos = DOCK_EXTRA_SPACE;
 
@@ -3603,8 +3603,8 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
     x_pos = event->xbutton.x_root - dock->menu->frame->core->width / 2 - 1;
     if (x_pos < 0) {
       x_pos = 0;
-    } else if (x_pos + dock->menu->frame->core->width > scr->scr_width - 2) {
-      x_pos = scr->scr_width - dock->menu->frame->core->width - 4;
+    } else if (x_pos + dock->menu->frame->core->width > scr->width - 2) {
+      x_pos = scr->width - dock->menu->frame->core->width - 4;
     }
   } else {
     x_pos = dock->on_right_side ? event->xbutton.x_root - (dock->menu->frame->core->width/2) : 0;
@@ -4033,8 +4033,8 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
       xpos = event->xbutton.x_root - wsMenu->frame->core->width / 2 - 1;
       if (xpos < 0) {
         xpos = 0;
-      } else if (xpos + wsMenu->frame->core->width > scr->scr_width - 2) {
-        xpos = scr->scr_width - wsMenu->frame->core->width - 4;
+      } else if (xpos + wsMenu->frame->core->width > scr->width - 2) {
+        xpos = scr->width - wsMenu->frame->core->width - 4;
       }
       wMenuMapAt(wsMenu, xpos, event->xbutton.y_root + 2, False);
 

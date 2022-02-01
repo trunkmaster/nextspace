@@ -181,30 +181,30 @@ void wWindowDestroy(WWindow *wwin)
   int i, win_count;
   CFIndex idx;
 
-  if (wwin->screen_ptr->cmap_window == wwin)
-    wwin->screen_ptr->cmap_window = NULL;
+  if (wwin->screen->cmap_window == wwin)
+    wwin->screen->cmap_window = NULL;
 
-  if (wwin->screen_ptr->notificationCenter) {
-    CFNotificationCenterRemoveObserver(wwin->screen_ptr->notificationCenter,
+  if (wwin->screen->notificationCenter) {
+    CFNotificationCenterRemoveObserver(wwin->screen->notificationCenter,
                                        wwin, WMDidChangeWindowAppearanceSettings, NULL);
   }
 
   wwin->flags.destroyed = 1;
 
   for (i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
-    if (!wwin->screen_ptr->shortcutWindows[i])
+    if (!wwin->screen->shortcutWindows[i])
       continue;
 
-    win_count = CFArrayGetCount(wwin->screen_ptr->shortcutWindows[i]);
-    idx = CFArrayGetFirstIndexOfValue(wwin->screen_ptr->shortcutWindows[i],
+    win_count = CFArrayGetCount(wwin->screen->shortcutWindows[i]);
+    idx = CFArrayGetFirstIndexOfValue(wwin->screen->shortcutWindows[i],
                                       CFRangeMake(0, win_count), wwin);
     if (idx != kCFNotFound) {
-      CFArrayRemoveValueAtIndex(wwin->screen_ptr->shortcutWindows[i], idx);
+      CFArrayRemoveValueAtIndex(wwin->screen->shortcutWindows[i], idx);
     }
 
-    if (CFArrayGetCount(wwin->screen_ptr->shortcutWindows[i]) == 0) {
-      CFRelease(wwin->screen_ptr->shortcutWindows[i]);
-      wwin->screen_ptr->shortcutWindows[i] = NULL;
+    if (CFArrayGetCount(wwin->screen->shortcutWindows[i]) == 0) {
+      CFRelease(wwin->screen->shortcutWindows[i]);
+      wwin->screen->shortcutWindows[i] = NULL;
     }
   }
 
@@ -245,7 +245,7 @@ void wWindowDestroy(WWindow *wwin)
     RemoveFromStackList(wwin->icon->core);
     wIconDestroy(wwin->icon);
     if (wPreferences.auto_arrange_icons)
-      wArrangeIcons(wwin->screen_ptr, True);
+      wArrangeIcons(wwin->screen, True);
   }
   if (wwin->net_icon_image)
     RReleaseImage(wwin->net_icon_image);
@@ -334,7 +334,7 @@ static void discard_hints_from_gtk(WWindow *wwin)
 
 void wWindowSetupInitialAttributes(WWindow *wwin, int *level, int *workspace)
 {
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
 
   /* set some default values if WMWindowAttributes doesn't exist */
   wwin->client_flags.shared_appicon = 1;
@@ -446,7 +446,7 @@ void wWindowSetupInitialAttributes(WWindow *wwin, int *level, int *workspace)
       wwin->user_flags.emulate_appicon = 0;
   }
 
-  if (wwin->transient_for != None && wwin->transient_for != wwin->screen_ptr->root_win)
+  if (wwin->transient_for != None && wwin->transient_for != wwin->screen->root_win)
     wwin->user_flags.emulate_appicon = 0;
 
   if (wwin->user_flags.sunken && wwin->defined_user_flags.sunken
@@ -683,7 +683,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 
   /* setup descriptor */
   wwin->client_win = window;
-  wwin->screen_ptr = scr;
+  wwin->screen = scr;
   wwin->old_border_width = wattribs.border_width;
   wwin->event_mask = CLIENT_EVENTS;
   attribs.event_mask = CLIENT_EVENTS;
@@ -1078,8 +1078,8 @@ WWindow *wManageWindow(WScreen *scr, Window window)
         head = wGetHeadForPointerLocation(scr);
         rect = wGetRectForHead(scr, head);
 
-        x = rect.pos.x + (x * rect.size.width) / scr->scr_width;
-        y = rect.pos.y + (y * rect.size.height) / scr->scr_height;
+        x = rect.pos.x + (x * rect.size.width) / scr->width;
+        y = rect.pos.y + (y * rect.size.height) / scr->height;
         break;
 
       case 2:
@@ -1383,7 +1383,7 @@ WWindow *wManageInternalWindow(WScreen *scr, Window window, Window owner,
 
   wwin->focus_mode = WFM_PASSIVE;
   wwin->client_win = window;
-  wwin->screen_ptr = scr;
+  wwin->screen = scr;
   wwin->transient_for = owner;
   wwin->client.x = x;
   wwin->client.y = y;
@@ -1420,7 +1420,7 @@ WWindow *wManageInternalWindow(WScreen *scr, Window window, Window owner,
   wFrameWindowHideButton(wwin->frame, WFF_RIGHT_BUTTON);
 
   wwin->frame->child = wwin;
-  wwin->frame->workspace = wwin->screen_ptr->current_workspace;
+  wwin->frame->workspace = wwin->screen->current_workspace;
 
   wwin->frame->on_click_right = windowCloseClick;
   wwin->frame->on_mousedown_titlebar = titlebarMouseDown;
@@ -1496,7 +1496,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
   WWindow *owner = NULL;
   WWindow *new_focused_window = NULL;
   int wasFocused;
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   WApplication *oapp;
 
   WMLogInfo("will unmanage window:%lu", wwin->client_win);
@@ -1679,7 +1679,7 @@ void wWindowSingleFocus(WWindow *wwin)
   if (!wwin)
     return;
 
-  scr = wwin->screen_ptr;
+  scr = wwin->screen;
   wMakeWindowVisible(wwin);
 
   x = wwin->frame_x;
@@ -1745,8 +1745,8 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
 
   wWindowResetMouseGrabs(wwin);
 
-  if (wwin->screen_ptr->notificationCenter) {
-    CFNotificationCenterPostNotification(wwin->screen_ptr->notificationCenter,
+  if (wwin->screen->notificationCenter) {
+    CFNotificationCenterPostNotification(wwin->screen->notificationCenter,
                                          WMDidChangeWindowFocusNotification, wwin,
                                          (void *)True, TRUE);
   }
@@ -1796,7 +1796,7 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
 
 void wWindowUnfocus(WWindow *wwin)
 {
-  CloseWindowMenu(wwin->screen_ptr);
+  CloseWindowMenu(wwin->screen);
 
   wPrintWindowFocusState(wwin, "[START] wWindowUnfocus:");
   
@@ -1820,7 +1820,7 @@ void wWindowUnfocus(WWindow *wwin)
     XSendEvent(dpy, wwin->client_win, True, FocusChangeMask, &ev);
   }
 
-  if (wwin->transient_for != None && wwin->transient_for != wwin->screen_ptr->root_win) {
+  if (wwin->transient_for != None && wwin->transient_for != wwin->screen->root_win) {
     WWindow *owner = wWindowFor(wwin->transient_for);
     if (owner && owner->flags.semi_focused) {
       owner->flags.semi_focused = 0;
@@ -1833,8 +1833,8 @@ void wWindowUnfocus(WWindow *wwin)
   
   wwin->flags.focused = 0;
   wWindowResetMouseGrabs(wwin);
-  if (wwin->screen_ptr->notificationCenter) {
-    CFNotificationCenterPostNotification(wwin->screen_ptr->notificationCenter,
+  if (wwin->screen->notificationCenter) {
+    CFNotificationCenterPostNotification(wwin->screen->notificationCenter,
                                          WMDidChangeWindowFocusNotification, wwin,
                                          (void *)False, TRUE);
   }
@@ -1853,8 +1853,8 @@ void wWindowUpdateName(WWindow *wwin, const char *newTitle)
   else
     title = newTitle;
 
-  if (wFrameWindowChangeTitle(wwin->frame, title) && wwin->screen_ptr->notificationCenter) {
-    CFNotificationCenterPostNotification(wwin->screen_ptr->notificationCenter,
+  if (wFrameWindowChangeTitle(wwin->frame, title) && wwin->screen->notificationCenter) {
+    CFNotificationCenterPostNotification(wwin->screen->notificationCenter,
                                          WMDidChangeWindowNameNotification, wwin,
                                          NULL, TRUE);
   }
@@ -1880,8 +1880,8 @@ void wWindowConstrainSize(WWindow *wwin, unsigned int *nwidth, unsigned int *nhe
   int winc = 1;
   int hinc = 1;
   int minW = 1, minH = 1;
-  int maxW = wwin->screen_ptr->scr_width * 2;
-  int maxH = wwin->screen_ptr->scr_height * 2;
+  int maxW = wwin->screen->width * 2;
+  int maxH = wwin->screen->height * 2;
   int minAX = -1, minAY = -1;
   int maxAX = -1, maxAY = -1;
   int baseW = 0;
@@ -1992,7 +1992,7 @@ void wWindowCropSize(WWindow *wwin, unsigned int maxW, unsigned int maxH,
 
 void wWindowChangeWorkspace(WWindow *wwin, int workspace)
 {
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   WApplication *wapp;
   int unmap = 0;
 
@@ -2053,7 +2053,7 @@ void wWindowChangeWorkspace(WWindow *wwin, int workspace)
 
 void wWindowChangeWorkspaceRelative(WWindow *wwin, int amount)
 {
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   int w = scr->current_workspace + amount;
 
   if (amount < 0) {
@@ -2145,7 +2145,7 @@ void wWindowConfigure(WWindow *wwin, int req_x, int req_y, int req_width, int re
     synth_notify = True;
 
   if (WFLAGP(wwin, dont_move_off))
-    wScreenBringInside(wwin->screen_ptr, &req_x, &req_y, req_width, req_height);
+    wScreenBringInside(wwin->screen, &req_x, &req_y, req_width, req_height);
 
   if (resize) {
     if (req_width < MIN_WINDOW_SIZE)
@@ -2187,8 +2187,8 @@ void wWindowConfigure(WWindow *wwin, int req_x, int req_y, int req_width, int re
   wwin->frame_x = req_x;
   wwin->frame_y = req_y;
   if (HAS_BORDER(wwin)) {
-    wwin->client.x += wwin->screen_ptr->frame_border_width;
-    wwin->client.y += wwin->screen_ptr->frame_border_width;
+    wwin->client.x += wwin->screen->frame_border_width;
+    wwin->client.y += wwin->screen->frame_border_width;
   }
 #ifdef USE_XSHAPE
   if (w_global.xext.shape.supported && wwin->flags.shaped && resize)
@@ -2218,14 +2218,14 @@ void wWindowMove(WWindow *wwin, int req_x, int req_y)
 #endif
 
   if (WFLAGP(wwin, dont_move_off))
-    wScreenBringInside(wwin->screen_ptr, &req_x, &req_y,
+    wScreenBringInside(wwin->screen, &req_x, &req_y,
                        wwin->frame->core->width, wwin->frame->core->height);
 
   wwin->client.x = req_x;
   wwin->client.y = req_y + wwin->frame->top_width;
   if (HAS_BORDER(wwin)) {
-    wwin->client.x += wwin->screen_ptr->frame_border_width;
-    wwin->client.y += wwin->screen_ptr->frame_border_width;
+    wwin->client.x += wwin->screen->frame_border_width;
+    wwin->client.y += wwin->screen->frame_border_width;
   }
 
   XMoveWindow(dpy, wwin->frame->core->window, req_x, req_y);
@@ -2241,7 +2241,7 @@ void wWindowMove(WWindow *wwin, int req_x, int req_y)
 
 void wWindowUpdateButtonImages(WWindow *wwin)
 {
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   Pixmap pixmap, mask;
   WFrameWindow *fwin = wwin->frame;
 
@@ -2435,9 +2435,9 @@ void wWindowSaveState(WWindow *wwin)
   }
 
   for (i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
-    if (wwin->screen_ptr->shortcutWindows[i]) {
-      int win_count = CFArrayGetCount(wwin->screen_ptr->shortcutWindows[i]);
-      if (CFArrayGetCountOfValue(wwin->screen_ptr->shortcutWindows[i],
+    if (wwin->screen->shortcutWindows[i]) {
+      int win_count = CFArrayGetCount(wwin->screen->shortcutWindows[i]);
+      if (CFArrayGetCountOfValue(wwin->screen->shortcutWindows[i],
                                  CFRangeMake(0, win_count), wwin)) {
         data[9] |= 1 << i;
       }
@@ -2831,12 +2831,12 @@ void wWindowSetOmnipresent(WWindow *wwin, Bool flag)
 
   wwin->flags.omnipresent = flag;
 
-  if (wwin->screen_ptr->notificationCenter) {
+  if (wwin->screen->notificationCenter) {
     CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
                                                             &kCFTypeDictionaryKeyCallBacks,
                                                             &kCFTypeDictionaryValueCallBacks);
     CFDictionaryAddValue(info, CFSTR("state"), CFSTR("omnipresent"));
-    CFNotificationCenterPostNotification(wwin->screen_ptr->notificationCenter,
+    CFNotificationCenterPostNotification(wwin->screen->notificationCenter,
                                          WMDidChangeWindowStateNotification, wwin, info, TRUE);
     CFRelease(info);
   }
@@ -2859,10 +2859,10 @@ static void resizebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 
   event->xbutton.state &= w_global.shortcut.modifiers_mask;
 
-  CloseWindowMenu(wwin->screen_ptr);
+  CloseWindowMenu(wwin->screen);
 
   if (!(event->xbutton.state & ControlMask) && !WFLAGP(wwin, no_focusable)) {
-    wSetFocusTo(wwin->screen_ptr, wwin);
+    wSetFocusTo(wwin->screen, wwin);
   }
 
   if (event->xbutton.button == Button1)
@@ -2970,10 +2970,10 @@ static void frameMouseDown(WObjDescriptor *desc, XEvent *event)
 
   event->xbutton.state &= w_global.shortcut.modifiers_mask;
 
-  CloseWindowMenu(wwin->screen_ptr);
+  CloseWindowMenu(wwin->screen);
 
   if (!(event->xbutton.state & ControlMask) && !WFLAGP(wwin, no_focusable))
-    wSetFocusTo(wwin->screen_ptr, wwin);
+    wSetFocusTo(wwin->screen, wwin);
 
   if (event->xbutton.button == Button1)
     wRaiseFrame(wwin->frame->core);
@@ -3035,7 +3035,7 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 #endif
   event->xbutton.state &= w_global.shortcut.modifiers_mask;
 
-  CloseWindowMenu(wwin->screen_ptr);
+  CloseWindowMenu(wwin->screen);
 
   /* WMLogInfo("[window.c] xbutton.state: %i, Command mask: %i Alternate mask: %i\n", */
   /*         event->xbutton.state, wXModifierFromKey("MOD1"), */
@@ -3045,7 +3045,7 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
       && !(event->xbutton.state & MOD_MASK) // not Mod4, Alternate
       && !(event->xbutton.state & ALT_MOD_MASK) // not Mod1, Command
       && !WFLAGP(wwin, no_focusable)) { // focusable
-    wSetFocusTo(wwin->screen_ptr, wwin);
+    wSetFocusTo(wwin->screen, wwin);
   }
 
   // Handle Click, Shift + Click and Command + Click
@@ -3090,7 +3090,7 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
     OpenWindowMenu(wwin, event->xbutton.x_root, wwin->frame_y + wwin->frame->top_width, False);
 
     /* allow drag select */
-    desc = &wwin->screen_ptr->window_menu->menu->descriptor;
+    desc = &wwin->screen->window_menu->menu->descriptor;
     event->xany.send_event = True;
     (*desc->handle_mousedown) (desc, event);
 
@@ -3107,7 +3107,7 @@ static void windowCloseClick(WCoreWindow *sender, void *data, XEvent *event)
 
   event->xbutton.state &= w_global.shortcut.modifiers_mask;
 
-  CloseWindowMenu(wwin->screen_ptr);
+  CloseWindowMenu(wwin->screen);
 
   if (event->xbutton.button < Button1 || event->xbutton.button > Button3)
     return;
@@ -3131,7 +3131,7 @@ static void windowCloseDblClick(WCoreWindow *sender, void *data, XEvent *event)
   /* Parameter not used, but tell the compiler that it is ok */
   (void) sender;
 
-  CloseWindowMenu(wwin->screen_ptr);
+  CloseWindowMenu(wwin->screen);
 
   if (event->xbutton.button < Button1 || event->xbutton.button > Button3)
     return;
@@ -3153,7 +3153,7 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
 
   event->xbutton.state &= w_global.shortcut.modifiers_mask;
 
-  CloseWindowMenu(wwin->screen_ptr);
+  CloseWindowMenu(wwin->screen);
 
   if (event->xbutton.button < Button1 || event->xbutton.button > Button3)
     return;
@@ -3201,7 +3201,7 @@ void wPrintWindowFocusState(WWindow *wwin, char *prefix)
   x_focused_win = wWindowFor(fwin);
 
   if (wwin)
-    focused_win = wwin->screen_ptr->focused_window;
+    focused_win = wwin->screen->focused_window;
 
   WMLogInfo("%s %lu (%s:%s) [WM focused: %lu (%s:%s)] [X focused: %lu (%s:%s)]",
             prefix,

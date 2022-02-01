@@ -127,7 +127,7 @@ int wGetRectPlacementInfo(WScreen *scr, WMRect rect, int *flags)
   if (scr->xrandr_info.count <= 1) {
     unsigned long a;
 
-    a = calcIntersectionArea(rx, ry, rw, rh, 0, 0, scr->scr_width, scr->scr_height);
+    a = calcIntersectionArea(rx, ry, rw, rh, 0, 0, scr->width, scr->height);
 
     if (a == 0) {
       *flags |= XFLAG_DEAD;
@@ -215,7 +215,7 @@ Bool wWindowTouchesHead(WWindow * wwin, int head)
   if (!wwin || !wwin->frame)
     return False;
 
-  scr = wwin->screen_ptr;
+  scr = wwin->screen;
   rect = wGetRectForHead(scr, head);
   a = calcIntersectionArea(wwin->frame_x, wwin->frame_y,
                            wwin->frame->core->width,
@@ -256,7 +256,7 @@ int wGetHeadForWindow(WWindow * wwin)
   rect.size.width = wwin->frame->core->width;
   rect.size.height = wwin->frame->core->height;
 
-  return wGetHeadForRect(wwin->screen_ptr, rect);
+  return wGetHeadForRect(wwin->screen, rect);
 }
 
 int wGetHeadForPoint(WScreen * scr, WMPoint point)
@@ -304,8 +304,8 @@ WMRect wGetRectForHead(WScreen *scr, int head)
   } else {
     rect.pos.x = 0;
     rect.pos.y = 0;
-    rect.size.width = scr->scr_width;
-    rect.size.height = scr->scr_height;
+    rect.size.width = scr->width;
+    rect.size.height = scr->height;
   }
 
   return rect;

@@ -169,7 +169,7 @@ void create_appicon_for_application(WApplication *wapp, WWindow *wwin)
 #ifdef NEXTSPACE
   /* Check if launching icon was created by Workspace */
   if (!wapp->app_icon) {
-    wapp->app_icon = wLaunchingAppIconForApplication(wwin->screen_ptr, wapp);
+    wapp->app_icon = wLaunchingAppIconForApplication(wwin->screen, wapp);
     if (wapp->app_icon) {
       wapp->app_icon->icon->core->descriptor.handle_mousedown = appIconMouseDown;
     }
@@ -206,7 +206,7 @@ void unpaint_app_icon(WApplication *wapp)
   if (aicon->docked)
     return;
 
-  scr = wapp->main_wwin->screen_ptr;
+  scr = wapp->main_wwin->screen;
   clip = scr->workspaces[scr->current_workspace]->clip;
 
   if (!clip || !aicon->attracted || !clip->collapsed)
@@ -233,7 +233,7 @@ void paint_app_icon(WApplication *wapp)
     return;
 
   icon = wapp->app_icon->icon;
-  scr = wapp->main_wwin->screen_ptr;
+  scr = wapp->main_wwin->screen;
   wapp->app_icon->main_window = wapp->main_window;
 
   /* If the icon is docked, don't continue */
@@ -318,7 +318,7 @@ void removeAppIconFor(WApplication *wapp)
   wapp->app_icon = NULL;
 
   if (wPreferences.auto_arrange_icons)
-    wArrangeIcons(wapp->main_wwin->screen_ptr, True);
+    wArrangeIcons(wapp->main_wwin->screen, True);
 }
 
 static WAppIcon *wAppIconCreate(WWindow *leader_win)
@@ -465,7 +465,7 @@ static void relaunchApplication(WApplication *wapp)
   WScreen *scr;
   WWindow *wlist, *next;
 
-  scr = wapp->main_wwin->screen_ptr;
+  scr = wapp->main_wwin->screen;
   wlist = scr->focused_window;
   if (! wlist)
     return;
@@ -546,7 +546,7 @@ static void killCallback(WMenu * menu, WMenuItem * entry)
         if (fPtr != NULL) {
           WWindow *wwin, *twin;
 
-          wwin = wapp->main_wwin->screen_ptr->focused_window;
+          wwin = wapp->main_wwin->screen->focused_window;
           while (wwin) {
             twin = wwin->prev;
             if (wwin->fake_group == fPtr)
@@ -579,7 +579,7 @@ static WMenu *createApplicationMenu(WScreen *scr)
 static void openApplicationMenu(WApplication * wapp, int x, int y)
 {
   WMenu *menu;
-  WScreen *scr = wapp->main_wwin->screen_ptr;
+  WScreen *scr = wapp->main_wwin->screen;
   int i;
 
   if (!scr->icon_menu) {
@@ -608,8 +608,8 @@ static void openApplicationMenu(WApplication * wapp, int x, int y)
   wMenuRealize(menu);
 
   x -= menu->frame->core->width / 2;
-  if (x + menu->frame->core->width > scr->scr_width)
-    x = scr->scr_width - menu->frame->core->width;
+  if (x + menu->frame->core->width > scr->width)
+    x = scr->width - menu->frame->core->width;
 
   if (x < 0)
     x = 0;
@@ -1155,7 +1155,7 @@ static WAppIcon *findDockIconFor(WDock *dock, Window main_window)
 
 static void create_appicon_from_dock(WWindow *wwin, WApplication *wapp, Window main_window)
 {
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   wapp->app_icon = NULL;
 
   if (scr->last_dock)
@@ -1313,7 +1313,7 @@ WAppIcon *wLaunchingAppIconCreate(const char *wm_instance, const char *wm_class,
   // 0. Create icon window
   icon_window = _createIconForSliding(scr, x0, y0, image_path);
   // Convert OpenStep to X11
-  y0 = scr->scr_height - y0 - MAX_ICON_HEIGHT;
+  y0 = scr->height - y0 - MAX_ICON_HEIGHT;
   XMoveWindow(dpy, icon_window, x0, y0);
   XMapRaised(dpy, icon_window);
   XFlush(dpy);

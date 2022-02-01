@@ -60,7 +60,7 @@ static void postWorkspaceNotification(WWindow *wwin, CFStringRef name)
   CFNumberRef windowID;
   CFStringRef appName;
   
-  if (wwin->screen_ptr->notificationCenter) {
+  if (wwin->screen->notificationCenter) {
     info = CFDictionaryCreateMutable(kCFAllocatorDefault, 2,
                                      &kCFTypeDictionaryKeyCallBacks,
                                      &kCFTypeDictionaryValueCallBacks);
@@ -70,7 +70,7 @@ static void postWorkspaceNotification(WWindow *wwin, CFStringRef name)
                                         CFStringGetSystemEncoding());
     CFDictionaryAddValue(info, CFSTR("ApplicationName"), appName);
 
-    CFNotificationCenterPostNotification(wwin->screen_ptr->notificationCenter, name,
+    CFNotificationCenterPostNotification(wwin->screen->notificationCenter, name,
                                          CFSTR("GSWorkspaceNotification"),
                                          info, TRUE);
     CFRelease(windowID);
@@ -147,7 +147,7 @@ static WWindow *makeMainWindow(WScreen * scr, Window window)
     return NULL;
 
   wwin = wWindowCreate();
-  wwin->screen_ptr = scr;
+  wwin->screen = scr;
   wwin->client_win = window;
   wwin->main_window = window;
   wwin->wm_hints = XGetWMHints(dpy, window);
@@ -251,7 +251,7 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
 
 WApplication *wApplicationCreate(WWindow * wwin)
 {
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   Window main_window = wwin->main_window;
   WApplication *wapp;
   WWindow *leader;
@@ -290,7 +290,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
   wApplicationAddWindow(wapp, wwin);
   
-  wapp->last_workspace = wwin->screen_ptr->current_workspace;
+  wapp->last_workspace = wwin->screen->current_workspace;
 
   wapp->main_window = main_window;
   wapp->main_wwin = makeMainWindow(scr, main_window);
@@ -405,7 +405,7 @@ void wApplicationDestroy(WApplication *wapp)
     return;
   }
 
-  scr = wapp->main_wwin->screen_ptr;
+  scr = wapp->main_wwin->screen;
   
   // Notify Workspace's ProcessManager
   // dispatch_sync(workspace_q, ^{ WSApplicationDidDestroy(wapp); });
@@ -445,7 +445,7 @@ void wApplicationDestroy(WApplication *wapp)
 
 void wApplicationActivate(WApplication *wapp)
 {
-  WScreen *scr = wapp->main_wwin->screen_ptr;
+  WScreen *scr = wapp->main_wwin->screen;
 
   WMLogInfo("wApplicationActivate %s current WS:%i last WS:%i app WS:%i",
            wapp->main_wwin->wm_instance,
@@ -483,7 +483,7 @@ void wApplicationDeactivate(WApplication *wapp)
 
 void wApplicationMakeFirst(WApplication *wapp)
 {
-  WScreen *scr = wapp->main_wwin->screen_ptr;
+  WScreen *scr = wapp->main_wwin->screen;
   WApplication *first_wapp;
   /* WApplication *app; */
   

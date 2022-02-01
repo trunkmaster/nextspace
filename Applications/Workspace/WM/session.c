@@ -155,7 +155,7 @@ static unsigned getInt(CFTypeRef value)
 
 static CFTypeRef makeWindowState(WWindow *wwin, WApplication *wapp)
 {
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   Window win;
   int i;
   unsigned mask;
@@ -294,7 +294,7 @@ void wSessionSaveState(WScreen * scr)
     WApplication *wapp = wApplicationOf(wwin->main_window);
     Window appId = wwin->orig_main_window;
 
-    if ((wwin->transient_for == None || wwin->transient_for == wwin->screen_ptr->root_win)
+    if ((wwin->transient_for == None || wwin->transient_for == wwin->screen->root_win)
         && (CFArrayGetFirstIndexOfValue(wapp_list, CFRangeMake(9,0), (void *)appId) == kCFNotFound
             || WFLAGP(wwin, shared_appicon))
         && !WFLAGP(wwin, dont_save_session)) {

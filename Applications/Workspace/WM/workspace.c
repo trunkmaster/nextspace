@@ -204,8 +204,8 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
     yy = rect.pos.y + (scr->xrandr_info.screens[head].size.height - (h + 4)) / 2;
   }
   else {
-    xx = (scr->scr_width - (w + 4)) / 2;
-    yy = (scr->scr_height - (h + 4)) / 2;
+    xx = (scr->width - (w + 4)) / 2;
+    yy = (scr->height - (h + 4)) / 2;
   }
 #endif
 
@@ -224,23 +224,23 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
 #else
     px = (scr->scr_width - (w + 4)) / 2;
 #endif
-    py = scr->scr_height - (h + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
+    py = scr->height - (h + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
     break;
   case WD_TOPLEFT:
     px = WORKSPACE_NAME_DISPLAY_PADDING;
     py = WORKSPACE_NAME_DISPLAY_PADDING;
     break;
   case WD_TOPRIGHT:
-    px = scr->scr_width - (w + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
+    px = scr->width - (w + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
     py = WORKSPACE_NAME_DISPLAY_PADDING;
     break;
   case WD_BOTTOMLEFT:
     px = WORKSPACE_NAME_DISPLAY_PADDING;
-    py = scr->scr_height - (h + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
+    py = scr->height - (h + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
     break;
   case WD_BOTTOMRIGHT:
-    px = scr->scr_width - (w + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
-    py = scr->scr_height - (h + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
+    px = scr->width - (w + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
+    py = scr->height - (h + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
     break;
   case WD_CENTER:
   default:

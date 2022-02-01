@@ -179,7 +179,7 @@ typedef struct WWindow {
   struct WWindow *prev;                 /* window focus list */
   struct WWindow *next;
 
-  WScreen *screen_ptr;                  /* pointer to the screen structure */
+  WScreen *screen;                      /* pointer to the screen structure */
   WWindowAttributes user_flags;         /* window attribute flags set by user */
   WWindowAttributes defined_user_flags; /* mask for user_flags */
   WWindowAttributes client_flags;       /* window attribute flags set by app

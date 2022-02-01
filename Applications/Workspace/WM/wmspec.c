@@ -375,8 +375,8 @@ void wNETWMUpdateDesktop(WScreen *scr)
 
   count = scr->workspace_count * 2;
   views = wmalloc(sizeof(long) * count);
-  sizes[0] = scr->scr_width;
-  sizes[1] = scr->scr_height;
+  sizes[0] = scr->width;
+  sizes[1] = scr->height;
 
   for (i = 0; i < scr->workspace_count; i++) {
     views[2 * i + 0] = 0;
@@ -757,8 +757,8 @@ void wNETWMUpdateWorkarea(WScreen *scr)
     /* If we don't have any info, we fall back on using the complete screen area */
     total_usable.x1 = 0;
     total_usable.y1 = 0;
-    total_usable.x2 = scr->scr_width;
-    total_usable.y2 = scr->scr_height;
+    total_usable.x2 = scr->width;
+    total_usable.y2 = scr->height;
 
   } else {
     int i;
@@ -1407,7 +1407,7 @@ static Bool handleWindowType(WWindow *wwin, Atom type, int *layer)
 void wNETWMPositionSplash(WWindow *wwin, int *x, int *y, int width, int height)
 {
   if (wwin->type == net_wm_window_type_splash) {
-    WScreen *scr = wwin->screen_ptr;
+    WScreen *scr = wwin->screen;
     WMRect rect = wGetRectForHead(scr, wGetHeadForPointerLocation(scr));
     *x = rect.pos.x + (rect.size.width - width) / 2;
     *y = rect.pos.y + (rect.size.height - height) / 2;
@@ -1487,10 +1487,10 @@ void wNETWMCheckClientHints(WWindow *wwin, int *layer, int *workspace)
   }
 
   wNETWMUpdateActions(wwin, False);
-  updateStrut(wwin->screen_ptr, wwin->client_win, False);
-  updateStrut(wwin->screen_ptr, wwin->client_win, True);
+  updateStrut(wwin->screen, wwin->client_win, False);
+  updateStrut(wwin->screen, wwin->client_win, True);
 
-  wScreenUpdateUsableArea(wwin->screen_ptr);
+  wScreenUpdateUsableArea(wwin->screen);
 }
 
 static Bool updateNetIconInfo(WWindow *wwin)
@@ -1555,7 +1555,7 @@ void wNETWMCheckInitialClientState(WWindow *wwin)
   WMLogInfo("wNETWMCheckInitialClientState");
 #endif
 
-  wNETWMShowingDesktop(wwin->screen_ptr, False);
+  wNETWMShowingDesktop(wwin->screen, False);
 
   updateWindowType(wwin);
   updateNetIconInfo(wwin);
@@ -1684,7 +1684,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
      * - giving the client the focus does not cause a change in
      *   the active workspace (XXX: or the active head if Xinerama)
      */
-    if (wwin->frame->workspace == wwin->screen_ptr->current_workspace /* No workspace change */
+    if (wwin->frame->workspace == wwin->screen->current_workspace /* No workspace change */
         || event->data.l[0] == 2 /* Requested by pager */
         || WFLAGP(wwin, focus_across_wksp) /* Explicitly allowed */) {
       wNETWMShowingDesktop(scr, False);
@@ -1760,9 +1760,9 @@ void wNETWMCheckClientHintChange(WWindow *wwin, XPropertyEvent *event)
 #endif
 
   if (event->atom == net_wm_strut || event->atom == net_wm_strut_partial) {
-    updateStrut(wwin->screen_ptr, wwin->client_win, False);
-    updateStrut(wwin->screen_ptr, wwin->client_win, True);
-    wScreenUpdateUsableArea(wwin->screen_ptr);
+    updateStrut(wwin->screen, wwin->client_win, False);
+    updateStrut(wwin->screen, wwin->client_win, True);
+    wScreenUpdateUsableArea(wwin->screen);
   }
   else if (event->atom == net_wm_handled_icons ||
            event->atom == net_wm_icon_geometry) {
@@ -1909,10 +1909,10 @@ void wNETFrameExtents(WWindow *wwin)
   if (wwin->frame->resizebar)
     extents[3] = wwin->frame->resizebar->height;
   if (HAS_BORDER(wwin)) {
-    extents[0] += wwin->screen_ptr->frame_border_width;
-    extents[1] += wwin->screen_ptr->frame_border_width;
-    extents[2] += wwin->screen_ptr->frame_border_width;
-    extents[3] += wwin->screen_ptr->frame_border_width;
+    extents[0] += wwin->screen->frame_border_width;
+    extents[1] += wwin->screen->frame_border_width;
+    extents[2] += wwin->screen->frame_border_width;
+    extents[3] += wwin->screen->frame_border_width;
   }
 
   XChangeProperty(dpy, wwin->client_win, net_frame_extents, XA_CARDINAL, 32,
@@ -1938,30 +1938,30 @@ static void windowObserver(CFNotificationCenterRef center, void *netData,
     return;
 
   if (CFStringCompare(name, WMDidManageWindowNotification, 0) == 0) {
-    updateClientList(wwin->screen_ptr);
-    updateClientListStacking(wwin->screen_ptr, NULL);
+    updateClientList(wwin->screen);
+    updateClientListStacking(wwin->screen, NULL);
     updateStateHint(wwin, True, False);
     
-    updateStrut(wwin->screen_ptr, wwin->client_win, False);
-    updateStrut(wwin->screen_ptr, wwin->client_win, True);
-    wScreenUpdateUsableArea(wwin->screen_ptr);
+    updateStrut(wwin->screen, wwin->client_win, False);
+    updateStrut(wwin->screen, wwin->client_win, True);
+    wScreenUpdateUsableArea(wwin->screen);
   }
   else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0) {
-    updateClientList(wwin->screen_ptr);
-    updateClientListStacking(wwin->screen_ptr, wwin);
+    updateClientList(wwin->screen);
+    updateClientListStacking(wwin->screen, wwin);
     updateWorkspaceHint(wwin, False, True);
     updateStateHint(wwin, False, True);
     wNETWMUpdateActions(wwin, True);
 
-    updateStrut(wwin->screen_ptr, wwin->client_win, False);
-    wScreenUpdateUsableArea(wwin->screen_ptr);
+    updateStrut(wwin->screen, wwin->client_win, False);
+    wScreenUpdateUsableArea(wwin->screen);
   }
   else if (CFStringCompare(name, WMDidResetWindowStackingNotification, 0) == 0) {
-    updateClientListStacking(wwin->screen_ptr, NULL);
+    updateClientListStacking(wwin->screen, NULL);
     updateStateHint(wwin, False, False);
   }
   else if (CFStringCompare(name, WMDidChangeWindowStackingNotification, 0) == 0) {
-    updateClientListStacking(wwin->screen_ptr, NULL);
+    updateClientListStacking(wwin->screen, NULL);
     updateStateHint(wwin, False, False);
   }
   else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0) {

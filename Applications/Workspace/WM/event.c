@@ -574,7 +574,7 @@ static void handleMapRequest(XEvent * ev)
       WApplication *wapp = wApplicationOf(wwin->main_window);
       /* go to the last workspace that the user worked on the app */
       if (wapp) {
-        wWorkspaceChange(wwin->screen_ptr, wapp->last_workspace, NULL);
+        wWorkspaceChange(wwin->screen, wapp->last_workspace, NULL);
       }
       wUnhideApplication(wapp, False, False);
     }
@@ -951,14 +951,14 @@ static void handleUnmapNotify(XEvent * event)
     return;
 
   /* whether the event is a Withdrawal request */
-  if (event->xunmap.event == wwin->screen_ptr->root_win && event->xunmap.send_event)
+  if (event->xunmap.event == wwin->screen->root_win && event->xunmap.send_event)
     withdraw = True;
 
   if (wwin->client_win != event->xunmap.event && !withdraw)
     return;
 
   if (!wwin->flags.mapped && !withdraw
-      && wwin->frame->workspace == wwin->screen_ptr->current_workspace
+      && wwin->frame->workspace == wwin->screen->current_workspace
       && !wwin->flags.miniaturized && !wwin->flags.hidden)
     return;
 
@@ -1341,7 +1341,7 @@ static void handleColormapNotify(XEvent * event)
   if (!wwin)
     return;
 
-  scr = wwin->screen_ptr;
+  scr = wwin->screen;
 
   do {
     if (wwin) {
@@ -1395,11 +1395,11 @@ static void handleFocusIn(XEvent * event)
   wwin = wWindowFor(event->xfocus.window);
   if (wwin && !wwin->flags.focused) {
     if (wwin->flags.mapped) {
-      wSetFocusTo(wwin->screen_ptr, wwin);
+      wSetFocusTo(wwin->screen, wwin);
       wRaiseFrame(wwin->frame->core);
     }
     else {
-      wSetFocusTo(wwin->screen_ptr, NULL);
+      wSetFocusTo(wwin->screen, NULL);
     }
   }
   else if (!wwin) {

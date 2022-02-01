@@ -83,7 +83,7 @@ iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2,
               || wPreferences.sticky_icons)
              && (((WIcon *) parent)->mapped
 #ifdef NEXTSPACE
-                 ||!((WIcon *) parent)->owner->screen_ptr->flags.icon_yard_mapped)
+                 ||!((WIcon *) parent)->owner->screen->flags.icon_yard_mapped)
 #endif
              ) {
 
@@ -273,7 +273,7 @@ static int calcSumOfCoveredAreas(WWindow *wwin, int x, int y, int w, int h)
   WWindow *test_window;
   int tw, tx, ty, th;
 
-  test_window = wwin->screen_ptr->focused_window;
+  test_window = wwin->screen->focused_window;
   for (; test_window != NULL && test_window->prev != NULL;)
     test_window = test_window->prev;
 
@@ -288,7 +288,7 @@ static int calcSumOfCoveredAreas(WWindow *wwin, int x, int y, int w, int h)
     ty = test_window->frame_y;
 
     if (test_window->flags.mapped || (test_window->flags.shaded &&
-                                      test_window->frame->workspace == wwin->screen_ptr->current_workspace &&
+                                      test_window->frame->workspace == wwin->screen->current_workspace &&
                                       !(test_window->flags.miniaturized || test_window->flags.hidden))) {
       sum_isect += calcIntersectionArea(tx, ty, tw, th, x, y, w, h);
     }
@@ -308,8 +308,8 @@ static void set_width_height(WWindow *wwin, unsigned int *width, unsigned int *h
       *height += RESIZEBAR_HEIGHT;
   }
   if (HAS_BORDER(wwin)) {
-    *height += 2 * wwin->screen_ptr->frame_border_width;
-    *width  += 2 * wwin->screen_ptr->frame_border_width;
+    *height += 2 * wwin->screen->frame_border_width;
+    *width  += 2 * wwin->screen->frame_border_width;
   }
 }
 
@@ -332,7 +332,7 @@ window_overlaps(WWindow *win, int x, int y, int w, int h, Bool ignore_sunken)
       (ty < (y + h)) && ((ty + th) > y) &&
       (win->flags.mapped ||
        (win->flags.shaded &&
-        win->frame->workspace == win->screen_ptr->current_workspace &&
+        win->frame->workspace == win->screen->current_workspace &&
         !(win->flags.miniaturized || win->flags.hidden)))) {
     return True;
   }
@@ -445,7 +445,7 @@ autoPlaceWindow(WWindow *wwin, int *x_ret, int *y_ret,
 		unsigned int width, unsigned int height,
 		Bool ignore_sunken, WArea usableArea)
 {
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   int x, y;
   int sw, sh;
 
@@ -511,7 +511,7 @@ static void randomPlaceWindow(WWindow *wwin, int *x_ret, int *y_ret,
 
 void PlaceWindow(WWindow *wwin, int *x_ret, int *y_ret, unsigned width, unsigned height)
 {
-  WScreen *scr = wwin->screen_ptr;
+  WScreen *scr = wwin->screen;
   int h = WMFontHeight(scr->title_font)
     + (wPreferences.window_title_clearance + TITLEBAR_EXTEND_SPACE) * 2;
 
