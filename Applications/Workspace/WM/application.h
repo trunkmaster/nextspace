@@ -33,7 +33,9 @@ typedef struct WApplication {
 
   int refcount;
 
-  const char *app_name;
+  CFStringRef appName;
+  CFMutableDictionaryRef appState;
+  
   Window main_window;               /* ID of the group leader */
   struct WWindow *main_wwin;        /* main (leader) window */
   struct WAppIcon *app_icon;
@@ -43,7 +45,7 @@ typedef struct WApplication {
   CFMutableArrayRef windows;
   struct WWindow *gsmenu_wwin;      /* GNUstep application menu window */
   WMenu *app_menu;                  /* application menu */
-  CFArrayRef menus_state;
+  CFMutableArrayRef menus_state;    /* live menu state info */
 
   CFRunLoopTimerRef urgent_bounce_timer;
   struct {
