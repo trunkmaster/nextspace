@@ -1077,7 +1077,6 @@ static int keyboardMenu(WMenu *menu)
 void wMenuMapAt(WMenu *menu, int x, int y, int keyboard)
 {
   if (!menu->flags.realized) {
-    menu->flags.realized = 1;
     wMenuRealize(menu);
   }
 
@@ -1110,7 +1109,6 @@ void wMenuMap(WMenu *menu)
 {
   if (!menu->flags.realized) {
     wMenuRealize(menu);
-    menu->flags.realized = 1;
   }
   XMoveWindow(dpy, menu->frame->core->window, menu->frame_x, menu->frame_y);
   XMapWindow(dpy, menu->frame->core->window);
@@ -1123,10 +1121,6 @@ void wMenuUnmap(WMenu *menu)
   int i;
 
   XUnmapWindow(dpy, menu->frame->core->window);
-  if (menu->flags.titled && menu->flags.tornoff) {
-    wFrameWindowHideButton(menu->frame, WFF_RIGHT_BUTTON);
-  }
-  menu->flags.tornoff = 0;
   menu->flags.mapped = 0;
   menu->flags.open_to_left = 0;
 
@@ -1198,8 +1192,7 @@ static void selectItem(WMenu *menu, int items_count)
     }
     item = menu->items[items_count];
 
-    if (item->submenu_index >= 0 && menu->submenus && item->flags.enabled) {
-      /* Callback for when the submenu is opened. */
+    if (item->flags.enabled && item->submenu_index >= 0 && menu->submenus) {
       submenu = menu->submenus[item->submenu_index];
       if (submenu && submenu->flags.brother) {
         submenu = submenu->brother;
@@ -1210,22 +1203,17 @@ static void selectItem(WMenu *menu, int items_count)
           if (!submenu || !submenu->flags.mapped) {
             (*item->callback) (menu->brother, item);
           }
-        } else {
-          if (!submenu || !submenu->flags.tornoff) {
-            (*item->callback) (menu, item);
-          }
+        } else if (!submenu || !submenu->flags.tornoff) {
+          (*item->callback) (menu, item);
         }
       }
-
       /* the submenu menu might have changed */
       submenu = menu->submenus[item->submenu_index];
 
-      /* map cascade */
+      /* map submenu */
       if (!submenu->flags.mapped) {
         int x, y;
 
-        if (!submenu->flags.realized)
-          wMenuRealize(submenu);
         if (wPreferences.wrap_menus) {
           if (menu->flags.open_to_left)
             submenu->flags.open_to_left = 1;
@@ -1238,10 +1226,7 @@ static void selectItem(WMenu *menu, int items_count)
             }
           } else {
             x = menu->frame_x + MENUW(menu);
-
-            if (x + MENUW(submenu)
-                >= menu->frame->screen_ptr->width) {
-
+            if (x + MENUW(submenu) >= menu->frame->screen_ptr->width) {
               x = menu->frame_x - MENUW(submenu);
               submenu->flags.open_to_left = 1;
             }
@@ -1771,7 +1756,7 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
   XEvent ev;
   int done = 0;
   int item_index = -1;
-  int old_selected_items_count = event_menu->selected_item_index; // selected item before click
+  int old_selected_item_index = event_menu->selected_item_index; // selected item before click
   int x, y;
   BOOL first_run = true;
 
@@ -1921,7 +1906,8 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
                 if (submenu->flags.mapped && !submenu->flags.tornoff) {
                   /* on item selected with last click or
                      teared-off version of submenu is visible */
-                  if (mouse_menu->selected_item_index == old_selected_items_count ||
+                  if ((mouse_menu == event_menu &&
+                       mouse_menu->selected_item_index == old_selected_item_index) ||
                       submenu->brother->flags.mapped) {
                     selectItem(mouse_menu, -1);
                     wMenuUnmap(submenu);
@@ -2152,32 +2138,29 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 
 /*
  *----------------------------------------------------------------------
- * menuCloseClick--
+ * menuCloseClick()
  * 	Handles mouse click on the close button of menus. The menu is
- * closed when the button is clicked.
+ *      closed when the button is clicked.
  *
  * Side effects:
- * 	The closed menu is reinserted at it's parent menus
- * cascade list.
+ * 	The closed menu is reinserted at it's parent menus cascade list.
  *----------------------------------------------------------------------
  */
 static void menuCloseClick(WCoreWindow *sender, void *data, XEvent *event)
 {
-  WMenu *menu = (WMenu *) data;
+  WMenu *menu = (WMenu *)data;
   WMenu *parent = menu->parent;
   int i;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) sender;
-  (void) event;
 
   if (parent) {
     for (i = 0; i < parent->submenus_count; i++) {
       /* find the item that points to the copy */
       if (parent->submenus[i] == menu->brother) {
+        /* if this function was called menu has title and close button on it */
+        wFrameWindowHideButton(menu->frame, WFF_RIGHT_BUTTON);
+        menu->flags.tornoff = 0;
         /* make it point to the original */
         parent->submenus[i] = menu;
-        menu->parent = parent;
         break;
       }
     }
