@@ -806,59 +806,64 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     {
     case NSAlertDefaultReturn: // Log Out
       {
+        [[NSApp mainMenu] close];
         _isQuitting = YES;
         if ([procManager terminateAllBGOperations] == NO) {
           _isQuitting = NO;
           terminateReply = NSTerminateCancel;
-          break;
         }
-
-        // Save running applications
-        [self _saveRunningApplications];
+        if (_isQuitting != NO) {
+          // Save running applications
+          [self _saveRunningApplications];
   
-        if ([procManager terminateAllApps] == NO) {
-          NXTRunAlertPanel(_(@"Log Out"),
-                           _(@"Some application terminate power off process."),
-                           _(@"Dismiss"), nil, nil);
-          _isQuitting = NO;
-          terminateReply = NSTerminateCancel;
-          break;
+          if ([procManager terminateAllApps] == NO) {
+            NXTRunAlertPanel(_(@"Log Out"),
+                             _(@"Some application terminate power off process."),
+                             _(@"Dismiss"), nil, nil);
+            _isQuitting = NO;
+            terminateReply = NSTerminateCancel;
+          }
         }
-
-        // Close Workspace windows, hide Dock, quit WM
-        [self _finishTerminateProcess];
-        terminateReply = NSTerminateNow;
-        ws_quit_code = WSLogoutOnQuit;
+        if (_isQuitting != NO) {
+          // Close Workspace windows, hide Dock, quit WM
+          [self _finishTerminateProcess];
+          terminateReply = NSTerminateNow;
+          ws_quit_code = WSLogoutOnQuit;
+        } else {
+          [[NSApp mainMenu] display];
+        }
       }
       break;
     case NSAlertAlternateReturn: // Power off
       {
+        [[NSApp mainMenu] close];
         _isQuitting = YES;
         if ([procManager terminateAllBGOperations] == NO) {
           _isQuitting = NO;
           terminateReply = NSTerminateCancel;
-          break;
         }
+        if (_isQuitting != NO) {
+          // Save running applications
+          [self _saveRunningApplications];
         
-        // Save running applications
-        [self _saveRunningApplications];
-        
-        if ([procManager terminateAllApps] == NO) {
-          NXTRunAlertPanel(_(@"Power Off"),
-                           _(@"Some application terminate power off process."),
-                           _(@"Dismiss"), nil, nil);
-          _isQuitting = NO;
-          terminateReply = NSTerminateCancel;
-          break;
+          if ([procManager terminateAllApps] == NO) {
+            NXTRunAlertPanel(_(@"Power Off"),
+                             _(@"Some application terminate power off process."),
+                             _(@"Dismiss"), nil, nil);
+            _isQuitting = NO;
+            terminateReply = NSTerminateCancel;
+          }
         }
-      
-        [self _finishTerminateProcess];
-        terminateReply = NSTerminateNow;
-        ws_quit_code = WSPowerOffOnQuit;
+        if (_isQuitting != NO) {
+          [self _finishTerminateProcess];
+          terminateReply = NSTerminateNow;
+          ws_quit_code = WSPowerOffOnQuit;
+        } else {
+          [[NSApp mainMenu] display];
+        }
       }
       break;
     default:
-      // NSLog(@"Workspace->Quit->Cancel");
       _isQuitting = NO;
       terminateReply = NSTerminateCancel;
       break;
