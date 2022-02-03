@@ -378,6 +378,21 @@ WApplication *wApplicationWithName(WScreen *scr, char *app_name)
   return NULL;
 }
 
+static void saveMenuState(WApplication *wapp, Boolean is_live)
+{
+  if (!wapp->app_menu || !wapp->app_menu->flags.mapped) {
+    return;
+  }
+  
+  if (wapp->menus_state == NULL) {
+    wapp->menus_state = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
+  } else {
+    CFArrayRemoveAllValues(wapp->menus_state);
+  }
+  wApplicationMenuSaveState(wapp->app_menu, wapp->menus_state, is_live);
+  /* CFShow(wapp->menus_state); */
+}
+
 void wApplicationDestroy(WApplication *wapp)
 {
   WWindow *wwin;
@@ -401,10 +416,11 @@ void wApplicationDestroy(WApplication *wapp)
   
   if (wapp->app_menu) {
     /* saves app menu state */
-    wApplicationDeactivate(wapp);
+    saveMenuState(wapp, false);
     CFDictionaryAddValue(wapp->appState, CFSTR("MenusState"), wapp->menus_state);
     WMUserDefaultsWrite(wapp->appState, wapp->appName);
     CFRelease(wapp->menus_state);
+    wApplicationMenuClose(wapp);
     wApplicationMenuDestroy(wapp);
   }
   if (!wapp->flags.is_gnustep) {
@@ -486,7 +502,7 @@ void wApplicationActivate(WApplication *wapp)
       }
     }
     if (wapp->menus_state) {
-      /* wApplicationMenuRestoreFromState(wapp->app_menu, wapp->menus_state); */
+      wApplicationMenuRestoreFromState(wapp, wapp->menus_state);
     } else {
       wMenuMap(wapp->app_menu);
     }
@@ -505,13 +521,7 @@ void wApplicationDeactivate(WApplication *wapp)
     wAppIconPaint(wapp->app_icon);
   }
   if (wapp->app_menu && wapp->app_menu->flags.mapped) {
-    if (wapp->menus_state == NULL) {
-      wapp->menus_state = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
-    } else {
-      CFArrayRemoveAllValues(wapp->menus_state);
-    }
-    wApplicationMenuSaveState(wapp->app_menu, wapp->menus_state);
-    CFShow(wapp->menus_state);
+    saveMenuState(wapp, true);
     wApplicationMenuClose(wapp);
   }
 }
