@@ -2046,6 +2046,7 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   int dx = event->xbutton.x_root, dy = event->xbutton.y_root;
   int i, lower;
   Bool started;
+  WMRect head_rect;
 
   /* can't touch the menu copy */
   if (menu->flags.brother)
@@ -2080,6 +2081,8 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   }
 
   started = False;
+  head_rect = wGetRectForHead(menu->frame->screen_ptr,
+                              wGetHeadForPointerLocation(menu->frame->screen_ptr));
   while (1) {
     WMMaskEvent(dpy, ButtonMotionMask | ButtonReleaseMask | ButtonPressMask | ExposureMask, &ev);
     switch (ev.type) {
@@ -2087,8 +2090,14 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
       if (started) {
         x += ev.xmotion.x_root - dx;
         x = (x < 0) ? 0 : x;
+        if ((x + MENUW(menu)) > head_rect.size.width) {
+          x = head_rect.size.width - MENUW(menu);
+        }
         y += ev.xmotion.y_root - dy;
         y = (y < 0) ? 0 : y;
+        if ((y + menu->item_height) > head_rect.size.height) {
+          y = head_rect.size.height - menu->item_height;
+        }
         dx = ev.xmotion.x_root;
         dy = ev.xmotion.y_root;
         wMenuMove(menu, x, y, True);
