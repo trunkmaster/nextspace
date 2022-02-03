@@ -541,8 +541,17 @@ void wApplicationMenuSaveState(WMenu *menu, CFMutableArrayRef menus_state, Boole
   info = getMenuState(menu, is_live);
   menuType = CFDictionaryGetValue(info, WMenuType);
   if (is_live == true || CFStringCompare(menuType, WMenuTypeAttached, 0) != 0) {
+    /* make parent map the original in place of the copy */
+    if (menu->parent) {
+      for (int i = 0; i < menu->parent->submenus_count; i++) {
+        if (menu->parent->submenus[i] == menu->brother) {
+          menu->parent->submenus[i] = menu;
+        }
+      }
+    }
     CFArrayAppendValue(menus_state, info);
   }
+  /* CFShow(info); */
   CFRelease(info);
 }
 
