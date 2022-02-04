@@ -202,6 +202,94 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
   wMenuPaint(windows_menu);
 }
 
+static void windowObserver(CFNotificationCenterRef center,
+                           void *menu,
+                           CFNotificationName name,
+                           const void *window,
+                           CFDictionaryRef userInfo)
+{
+  WMenu *windows_menu = (WMenu *)menu;
+  WWindow *wwin = (WWindow *)window;
+
+  if (!wwin || (wApplicationForWindow(wwin) != windows_menu->app)) {
+    return;
+  }
+  
+  if (CFStringCompare(name, WMDidManageWindowNotification, 0) == 0) {
+    updateWindowsMenu(windows_menu, wwin, ACTION_ADD);
+  }
+  else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0) {
+    updateWindowsMenu(windows_menu, wwin, ACTION_REMOVE);
+  }
+  else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0) {
+    updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_STATE);
+  }
+  else if (CFStringCompare(name, WMDidChangeWindowNameNotification, 0) == 0) {
+    updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE);
+  }
+  else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
+    CFStringRef wstate = (CFStringRef)wGetNotificationInfoValue(userInfo, CFSTR("state"));
+    if (CFStringCompare(wstate, CFSTR("omnipresent"), 0) == 0) {
+      updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_WORKSPACE);
+    }
+    else {
+      updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_STATE);
+    }
+  }
+}
+
+static void updateDesktopsMenu(WMenu *menu);
+
+static WMenu *createWindowsMenu(WApplication *wapp)
+{
+  WMenu *_menu, *desktops_menu;
+  WMenuItem *tmp_item;
+  WScreen *scr = wapp->main_wwin->screen;
+  
+  desktops_menu = wMenuCreate(scr, _("Move Window To"), False);
+  desktops_menu->app = wapp;
+  updateDesktopsMenu(desktops_menu);
+  
+  _menu = wMenuCreate(scr, _("Windows"), False);
+  _menu->app = wapp;
+  wMenuInsertItem(_menu, 0, _("Arrange in Front"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Miniaturize Window"), windowsCallback, NULL);
+  tmp_item->rtext = wstrdup("m");
+  tmp_item = wMenuAddItem(_menu, _("Move Window To"), windowsCallback, NULL);
+  wMenuItemSetSubmenu(_menu, tmp_item, desktops_menu);
+  
+  tmp_item = wMenuAddItem(_menu, _("Shade Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Resize/Move Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Select Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Zoom window"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Close Window"), windowsCallback, NULL);
+  tmp_item->rtext = wstrdup("w");
+
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
+                                  WMDidManageWindowNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
+                                  WMDidUnmanageWindowNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
+                                  WMDidChangeWindowStateNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
+                                  WMDidChangeWindowFocusNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
+                                  WMDidChangeWindowStackingNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
+                                  WMDidChangeWindowNameNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+
+  return _menu;
+}
+
+// "Windows > Move Window To" menu
+//-------------------------------------------------------------------------------------------------
+
 static void switchDesktopCallback(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin = menu->frame->screen_ptr->focused_window;
@@ -251,89 +339,8 @@ static void updateDesktopsMenu(WMenu *menu)
   }
 }
 
-static void windowObserver(CFNotificationCenterRef center,
-                           void *menu,
-                           CFNotificationName name,
-                           const void *window,
-                           CFDictionaryRef userInfo)
-{
-  WMenu *windows_menu = (WMenu *)menu;
-  WWindow *wwin = (WWindow *)window;
-
-  if (!wwin || (wApplicationForWindow(wwin) != windows_menu->app)) {
-    return;
-  }
-  
-  if (CFStringCompare(name, WMDidManageWindowNotification, 0) == 0) {
-    updateWindowsMenu(windows_menu, wwin, ACTION_ADD);
-  }
-  else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0) {
-    updateWindowsMenu(windows_menu, wwin, ACTION_REMOVE);
-  }
-  else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0) {
-    updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_STATE);
-  }
-  else if (CFStringCompare(name, WMDidChangeWindowNameNotification, 0) == 0) {
-    updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE);
-  }
-  else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
-    CFStringRef wstate = (CFStringRef)wGetNotificationInfoValue(userInfo, CFSTR("state"));
-    if (CFStringCompare(wstate, CFSTR("omnipresent"), 0) == 0) {
-      updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_WORKSPACE);
-    }
-    else {
-      updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_STATE);
-    }
-  }
-}
-
-static WMenu *createWindowsMenu(WApplication *wapp)
-{
-  WMenu *_menu, *desktops_menu;
-  WMenuItem *tmp_item;
-  WScreen *scr = wapp->main_wwin->screen;
-  
-  desktops_menu = wMenuCreate(scr, _("Move Window To"), False);
-  desktops_menu->app = wapp;
-  updateDesktopsMenu(desktops_menu);
-  
-  _menu = wMenuCreate(scr, _("Windows"), False);
-  _menu->app = wapp;
-  wMenuInsertItem(_menu, 0, _("Arrange in Front"), windowsCallback, NULL);
-  tmp_item = wMenuAddItem(_menu, _("Miniaturize Window"), windowsCallback, NULL);
-  tmp_item->rtext = wstrdup("m");
-  tmp_item = wMenuAddItem(_menu, _("Move Window To"), windowsCallback, NULL);
-  wMenuItemSetSubmenu(_menu, tmp_item, desktops_menu);
-  
-  tmp_item = wMenuAddItem(_menu, _("Shade Window"), windowsCallback, NULL);
-  tmp_item = wMenuAddItem(_menu, _("Resize/Move Window"), windowsCallback, NULL);
-  tmp_item = wMenuAddItem(_menu, _("Select Window"), windowsCallback, NULL);
-  tmp_item = wMenuAddItem(_menu, _("Zoom window"), windowsCallback, NULL);
-  tmp_item = wMenuAddItem(_menu, _("Close Window"), windowsCallback, NULL);
-  tmp_item->rtext = wstrdup("w");
-
-  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
-                                  WMDidManageWindowNotification, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
-                                  WMDidUnmanageWindowNotification, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
-                                  WMDidChangeWindowStateNotification, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
-                                  WMDidChangeWindowFocusNotification, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
-                                  WMDidChangeWindowStackingNotification, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
-                                  WMDidChangeWindowNameNotification, NULL,
-                                  CFNotificationSuspensionBehaviorDeliverImmediately);
-
-  return _menu;
-}
-
+// General application menu code
+//-------------------------------------------------------------------------------------------------
 static WMenu *submenuWithTitle(WMenu *menu, char *title)
 {
   WMenu **submenus = menu->submenus;
