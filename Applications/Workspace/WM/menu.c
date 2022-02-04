@@ -1130,7 +1130,7 @@ void wMenuUnmap(WMenu *menu)
       wMenuUnmap(menu->submenus[i]);
     }
   }
-  menu->selected_item_index = -1;
+  /* menu->selected_item_index = -1; */
 }
 
 void wMenuPaint(WMenu *menu)

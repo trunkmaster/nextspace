@@ -326,6 +326,11 @@ WApplication *wApplicationCreate(WWindow * wwin)
   /* Application menu */
   if (!wapp->flags.is_gnustep) {
     wapp->app_menu = wApplicationMenuCreate(scr, wapp);
+    wapp->appState = (CFMutableDictionaryRef)WMUserDefaultsRead(wapp->appName, false);
+    if (wapp->appState) {
+      CFRetain(wapp->appState);
+      wapp->menus_state = (CFMutableArrayRef)CFDictionaryGetValue(wapp->appState, CFSTR("MenusState"));
+    }
   }
 
   if (!scr->wapp_list) {
@@ -378,21 +383,6 @@ WApplication *wApplicationWithName(WScreen *scr, char *app_name)
   return NULL;
 }
 
-static void saveMenuState(WApplication *wapp, Boolean is_live)
-{
-  if (!wapp->app_menu || !wapp->app_menu->flags.mapped) {
-    return;
-  }
-  
-  if (wapp->menus_state == NULL) {
-    wapp->menus_state = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
-  } else {
-    CFArrayRemoveAllValues(wapp->menus_state);
-  }
-  wApplicationMenuSaveState(wapp->app_menu, wapp->menus_state, is_live);
-  /* CFShow(wapp->menus_state); */
-}
-
 void wApplicationDestroy(WApplication *wapp)
 {
   WWindow *wwin;
@@ -413,15 +403,20 @@ void wApplicationDestroy(WApplication *wapp)
   CFRelease(wapp->windows);
   /* WMLogError("wapp->windows retain count: %li", CFGetRetainCount(wapp->windows)); */
 
-  
-  if (wapp->app_menu) {
+  if (wapp->app_menu && wapp->app_menu->flags.mapped) {
     /* saves app menu state */
-    saveMenuState(wapp, false);
+    if (wapp->menus_state == NULL) {
+      wapp->menus_state = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
+    } else {
+      CFArrayRemoveAllValues(wapp->menus_state);
+    }
+    wApplicationMenuSaveState(wapp->app_menu, wapp->menus_state);
+    wApplicationMenuHide(wapp->app_menu);
+    wApplicationMenuDestroy(wapp);
+    /* save app state */
     CFDictionaryAddValue(wapp->appState, CFSTR("MenusState"), wapp->menus_state);
     WMUserDefaultsWrite(wapp->appState, wapp->appName);
-    CFRelease(wapp->menus_state);
-    wApplicationMenuClose(wapp);
-    wApplicationMenuDestroy(wapp);
+    CFRelease(wapp->menus_state);    
   }
   if (!wapp->flags.is_gnustep) {
     CFRelease(wapp->appState);
@@ -442,7 +437,6 @@ void wApplicationDestroy(WApplication *wapp)
   scr = wapp->main_wwin->screen;
   
   // Notify Workspace's ProcessManager
-  // dispatch_sync(workspace_q, ^{ WSApplicationDidDestroy(wapp); });
   CFNotificationCenterPostNotification(scr->notificationCenter,
                                        WMDidDestroyApplicationNotification, wapp, NULL, TRUE);
 
@@ -466,8 +460,7 @@ void wApplicationDestroy(WApplication *wapp)
 
   wWindowDestroy(wapp->main_wwin);
   if (wwin) {
-    /* undelete client window context that was deleted in
-     * wWindowDestroy */
+    /* undelete client window context that was deleted in wWindowDestroy */
     XSaveContext(dpy, wwin->client_win, w_global.context.client_win,
                  (XPointer) & wwin->client_descriptor);
   }
@@ -493,20 +486,13 @@ void wApplicationActivate(WApplication *wapp)
   
   wApplicationMakeFirst(wapp);
   
-  if (wapp->app_menu && !wapp->app_menu->flags.mapped) {
-    if (!wapp->menus_state) {
-      wapp->appState = (CFMutableDictionaryRef)WMUserDefaultsRead(wapp->appName, false);
-      if (wapp->appState) {
-        CFRetain(wapp->appState);
-        wapp->menus_state = (CFMutableArrayRef)CFDictionaryGetValue(wapp->appState, CFSTR("MenusState"));
-      }
-    }
-    if (wapp->menus_state) {
-      wApplicationMenuRestoreFromState(wapp, wapp->menus_state);
-    } else {
-      wMenuMap(wapp->app_menu);
-    }
+  if (wapp->menus_state && !wapp->app_menu->flags.restored) {
+    wApplicationMenuRestoreFromState(wapp->app_menu, wapp->menus_state);
+    wapp->app_menu->flags.restored = 1;
+  } else {
+    wApplicationMenuShow(wapp->app_menu);
   }
+  
   if (!wapp->appState) {
     wapp->appState = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
                                                &kCFTypeDictionaryKeyCallBacks,
@@ -521,8 +507,7 @@ void wApplicationDeactivate(WApplication *wapp)
     wAppIconPaint(wapp->app_icon);
   }
   if (wapp->app_menu && wapp->app_menu->flags.mapped) {
-    saveMenuState(wapp, true);
-    wApplicationMenuClose(wapp);
+    wApplicationMenuHide(wapp->app_menu);
   }
 }
 
