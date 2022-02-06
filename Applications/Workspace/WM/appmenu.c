@@ -6,6 +6,7 @@
 
 #include "appmenu.h"
 #include "window.h"
+#include "client.h"
 #include "framewin.h"
 #include "actions.h"
 #include "misc.h"
@@ -52,7 +53,28 @@ static void focusWindow(WMenu *menu, WMenuItem *entry)
   wWindowSingleFocus(wwin);
 }
 
-static void windowsCallback(WMenu *menu, WMenuItem *entry) {}
+static void windowsCallback(WMenu *menu, WMenuItem *entry)
+{
+  WWindow *wwin = menu->menu->screen_ptr->focused_window;
+
+  WMLogInfo("windowsCallback");
+  
+  if (!strcmp(entry->text, "Miniaturize Window")) {
+    wIconifyWindow(wwin);
+  } else if (!strcmp(entry->text, "Shade Window")) {
+    wShadeWindow(wwin);
+    wfree(entry->text);
+    entry->text = wstrdup("Unshade Window");
+  } else if (!strcmp(entry->text, "Unshade Window")) {
+    wUnshadeWindow(wwin);
+    wfree(entry->text);
+    entry->text = wstrdup("Shade Window");
+  } else if (!strcmp(entry->text, "Close Window")) {
+    if (wwin->protocols.DELETE_WINDOW) {
+      wClientSendProtocol(wwin, w_global.atom.wm.delete_window, w_global.timestamp.last_event);
+    }
+  }
+}
 
 static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
 {
@@ -189,6 +211,23 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
       }
     }
   }
+
+  /* Update menu entries according to focused window state */
+  WWindow *focused_win = wwin->screen->focused_window;
+  if (focused_win->flags.shaded) {
+    entry = wMenuItemWithTitle(windows_menu, "Shade Window");
+    if (entry) {
+      wfree(entry->text);
+      entry->text = wstrdup("Unshade Window");
+    }
+  } else {
+    entry = wMenuItemWithTitle(windows_menu, "Unshade Window");
+    if (entry) {
+      wfree(entry->text);
+      entry->text = wstrdup("Shade Window");
+    }
+  }
+  
   if (checkVisibility) {
     int tmp;
 
@@ -199,6 +238,7 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
                 windows_menu->frame_y, False);
     }
   }
+  
   wMenuPaint(windows_menu);
 }
 
@@ -252,18 +292,22 @@ static WMenu *createWindowsMenu(WApplication *wapp)
   
   _menu = wMenuCreate(scr, _("Windows"), False);
   _menu->app = wapp;
-  wMenuInsertItem(_menu, 0, _("Arrange in Front"), windowsCallback, NULL);
+  tmp_item = wMenuInsertItem(_menu, 0, _("Arrange in Front"), windowsCallback, NULL);
+  wMenuItemSetEnabled(_menu, tmp_item, False);
   tmp_item = wMenuAddItem(_menu, _("Miniaturize Window"), windowsCallback, NULL);
   tmp_item->rtext = wstrdup("m");
   tmp_item = wMenuAddItem(_menu, _("Move Window To"), windowsCallback, NULL);
   wMenuItemSetSubmenu(_menu, tmp_item, desktops_menu);
   
   tmp_item = wMenuAddItem(_menu, _("Shade Window"), windowsCallback, NULL);
-  tmp_item = wMenuAddItem(_menu, _("Resize/Move Window"), windowsCallback, NULL);
-  tmp_item = wMenuAddItem(_menu, _("Select Window"), windowsCallback, NULL);
+  /* tmp_item = wMenuAddItem(_menu, _("Resize/Move Window"), windowsCallback, NULL); */
+  /* tmp_item = wMenuAddItem(_menu, _("Select Window"), windowsCallback, NULL); */
   tmp_item = wMenuAddItem(_menu, _("Zoom window"), windowsCallback, NULL);
+  wMenuItemSetEnabled(_menu, tmp_item, False);
   tmp_item = wMenuAddItem(_menu, _("Close Window"), windowsCallback, NULL);
   tmp_item->rtext = wstrdup("w");
+
+  /* TODO: think about "Options" submenu */
 
   CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
                                   WMDidManageWindowNotification, NULL,
@@ -375,8 +419,10 @@ WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
   tmp_item->rtext = wstrdup("h");
   tmp_item = wMenuAddItem(menu, _("Hide Others"), mainCallback, wapp);
   tmp_item->rtext = wstrdup("H");
+  wMenuItemSetEnabled(menu, tmp_item, False);
   tmp_item = wMenuAddItem(menu, _("Quit"), mainCallback, wapp);
   tmp_item->rtext = wstrdup("q");
+  wMenuItemSetEnabled(menu, tmp_item, False);
   
   return menu;
 }
@@ -473,6 +519,18 @@ void wApplicationMenuShow(WMenu *menu)
   
   wMenuMap(menu);
   menu->flags.hidden = 0;
+}
+
+WMenuItem *wMenuItemWithTitle(WMenu *menu, char *title)
+{
+  WMenuItem **items = menu->items;
+
+  for (int i = 0; i < menu->items_count; i++) {
+    if (!strcmp(items[i]->text, title)) {
+      return items[i];
+    }
+  }
+  return NULL;
 }
 
 // Menu state
