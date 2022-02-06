@@ -117,6 +117,7 @@ void wMenuMapAt(WMenu *menu, int x, int y, int keyboard);
 #define wMenuMapCopyAt(menu, x, y) wMenuMapAt((menu)->brother, (x), (y), False)
 void wMenuUnmap(WMenu *menu);
 void wMenuSetEnabled(WMenu *menu, int index, int enable);
+void wMenuItemSetEnabled(WMenu *menu, WMenuItem *item, Bool enable);
 void wMenuMove(WMenu *menu, int x, int y, int submenus);
 void wMenuScroll(WMenu *menu);
 WMenu *wMenuUnderPointer(WScreen *screen);

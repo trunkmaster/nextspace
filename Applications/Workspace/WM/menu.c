@@ -1156,6 +1156,20 @@ void wMenuSetEnabled(WMenu *menu, int index, int enable)
   paintItem(menu->brother, index, index == menu->selected_item_index);
 }
 
+void wMenuItemSetEnabled(WMenu *menu, WMenuItem *item, Bool enable)
+{
+  if (!menu || !item) {
+    return;
+  }
+  
+  for (int i = 0; i < menu->items_count; i++) {
+    if (menu->items[i] == item) {
+      menu->items[i]->flags.enabled = enable;
+      paintItem(menu, i, i == menu->selected_item_index);
+      paintItem(menu->brother, i, i == menu->selected_item_index);
+    }
+  }
+}
 
 
 static void selectItem(WMenu *menu, int items_count)
