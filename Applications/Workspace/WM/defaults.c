@@ -490,8 +490,8 @@ WDefaultEntry optionList[] = {
   {"WindowListKey", "None", (void *)WKBD_WINDOWLIST, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"WindowMenuKey", "None", (void *)WKBD_WINDOWMENU, NULL, getKeybind, setKeyGrab, NULL, NULL},
   /* Dock and Icon Yard */
-  {"DockHideShowKey", "\"Mod4+Shift+D\"", (void*)WKBD_DOCKHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL}, /* NEXTSPACE */
-  {"IconYardHideShowKey", "\"Mod4+Shift+Y\"", (void*)WKBD_YARDHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL},  /* NEXTSPACE */
+  {"DockHideShowKey", "\"Mod4+Shift+D\"", (void*)WKBD_DOCKHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"IconYardHideShowKey", "\"Mod4+Shift+Y\"", (void*)WKBD_YARDHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL},
   /* Window Resizing */
   {"MoveResizeKey", "None", (void *)WKBD_MOVERESIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"MaximusKey", "\"Mod4+KP_5\"", (void*)WKBD_MAXIMUS, NULL, getKeybind, setKeyGrab, NULL, NULL},
@@ -508,7 +508,7 @@ WDefaultEntry optionList[] = {
   {"LBCMaximizeKey", "\"Mod4+KP_1\"", (void*)WKBD_LBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"RBCMaximizeKey", "\"Mod4+KP_3\"", (void*)WKBD_RBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
   /* Window Ordering */
-  {"CloseKey", "None", (void *)WKBD_CLOSE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"CloseKey", "\"Mod1+w\"", (void *)WKBD_CLOSE, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"HideKey", "\"Mod1+h\"", (void *)WKBD_HIDE, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"HideOthersKey", "\"Mod1+Shift+h\"", (void *)WKBD_HIDE_OTHERS, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"MiniaturizeKey", "\"Mod1+m\"", (void *)WKBD_MINIATURIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
@@ -557,16 +557,6 @@ WDefaultEntry optionList[] = {
   {"MoveToLastWorkspaceKey", "None", (void *)WKBD_MOVE_LASTWORKSPACE, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"MoveToNextWorkspaceLayerKey", "None", (void *)WKBD_MOVE_NEXTWSLAYER, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"MoveToPrevWorkspaceLayerKey", "None", (void *)WKBD_MOVE_PREVWSLAYER, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"WindowShortcut1Key", "None", (void *)WKBD_WINDOW1, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"WindowShortcut2Key", "None", (void *)WKBD_WINDOW2, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"WindowShortcut3Key", "None", (void *)WKBD_WINDOW3, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"WindowShortcut4Key", "None", (void *)WKBD_WINDOW4, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"WindowShortcut5Key", "None", (void *)WKBD_WINDOW5, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"WindowShortcut6Key", "None", (void *)WKBD_WINDOW6, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"WindowShortcut7Key", "None", (void *)WKBD_WINDOW7, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"WindowShortcut8Key", "None", (void *)WKBD_WINDOW8, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"WindowShortcut9Key", "None", (void *)WKBD_WINDOW9, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"WindowShortcut10Key", "None", (void *)WKBD_WINDOW10, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"WindowRelaunchKey", "None", (void *)WKBD_RELAUNCH, NULL, getKeybind, setKeyGrab, NULL, NULL},                        
   {"RunKey", "None", (void *)WKBD_RUN, NULL, getKeybind, setKeyGrab, NULL, NULL},
 
@@ -3119,7 +3109,7 @@ static int setModifierKeyLabels(WScreen *scr, WDefaultEntry *entry, void *tdata,
     return 0;
   }
 
-  DestroyWindowMenu(scr);
+  /* DestroyWindowMenu(scr); */
 
   for (i = 0; i < 7; i++) {
     if (prefs->modifier_labels[i])

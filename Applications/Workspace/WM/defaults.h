@@ -448,18 +448,6 @@ enum {
       WKBD_MOVE_NEXTWSLAYER,
       WKBD_MOVE_PREVWSLAYER,
 
-      /* window shortcuts */
-      WKBD_WINDOW1,
-      WKBD_WINDOW2,
-      WKBD_WINDOW3,
-      WKBD_WINDOW4,
-      WKBD_WINDOW5,
-      WKBD_WINDOW6,
-      WKBD_WINDOW7,
-      WKBD_WINDOW8,
-      WKBD_WINDOW9,
-      WKBD_WINDOW10,
-
       /* launch a new instance of the active window */
       WKBD_RELAUNCH,
 
