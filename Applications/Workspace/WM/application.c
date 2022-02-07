@@ -476,10 +476,6 @@ void wApplicationActivate(WApplication *wapp)
 {
   WScreen *scr = wapp->main_wwin->screen;
 
-  if (wapp->app_menu->flags.mapped) {
-    return;
-  }
-
   WMLogInfo("wApplicationActivate %s current WS:%i last WS:%i app WS:%i",
            wapp->main_wwin->wm_instance,
            scr->current_workspace, scr->last_workspace,
@@ -487,11 +483,15 @@ void wApplicationActivate(WApplication *wapp)
   
   if (wapp->last_workspace != scr->current_workspace &&
       scr->last_workspace == scr->current_workspace) {
-    wWorkspaceChange(scr, wapp->last_workspace, NULL);
+    wWorkspaceChange(scr, wapp->last_workspace, wapp->flags.is_gnustep ? wapp->gsmenu_wwin : wapp->last_focused);
   }
   
   wApplicationMakeFirst(wapp);
   
+  if (wapp->flags.is_gnustep || wapp->app_menu->flags.mapped) {
+    return;
+  }
+
   if (wapp->menus_state && !wapp->app_menu->flags.restored) {
     wApplicationMenuRestoreFromState(wapp->app_menu, wapp->menus_state);
     wapp->app_menu->flags.restored = 1;
