@@ -1731,8 +1731,10 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
 {
   WWindow *nowner;
   WWindow *oowner;
+  WApplication *old_app;
+  WApplication *wapp;
 
-  wPrintWindowFocusState(wwin, "[START] wWindowFocus:");
+  /* wPrintWindowFocusState(wwin, "[START] wWindowFocus:"); */
   
   wwin->flags.semi_focused = 0;
 
@@ -1752,8 +1754,22 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
                                          (void *)True, TRUE);
   }
 
-  if (owin == wwin || !owin)
+  wapp = wApplicationOf(wwin->main_window);
+  /* hide old application menu */
+  if (owin) {
+    old_app = wApplicationOf(owin->main_window);
+    if (old_app && !old_app->flags.is_gnustep && old_app->main_window != wapp->main_window) {
+      wApplicationDeactivate(old_app);
+    }
+  }
+  /* show application menu of focused window */
+  if (wapp && !wapp->flags.is_gnustep) {
+    wApplicationActivate(wapp);
+  }
+
+  if (!owin || owin == wwin) {
     return;
+  }
 
   nowner = wWindowFor(wwin->transient_for);
 
@@ -1771,16 +1787,6 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
     wWindowUnfocus(owin);
   } else if (!nowner) {
     wWindowUnfocus(owin);
-    if (wwin->main_window != owin->main_window) {
-      WApplication *wapp = wApplicationOf(wwin->main_window);
-      WApplication *old_app = wApplicationOf(owin->main_window);
-      if (!wapp->flags.is_gnustep) {
-        wApplicationActivate(wapp);
-      }
-      if (!old_app->flags.is_gnustep) {
-        wApplicationDeactivate(old_app);
-      }
-    }
   } else if (oowner == nowner) { /* new window has same owner of old window */
     /* prevent unfocusing of owner */
     oowner->flags.semi_focused = 0;
@@ -1791,7 +1797,7 @@ void wWindowFocus(WWindow *wwin, WWindow *owin)
     nowner->flags.semi_focused = 1;
     wWindowUnfocus(nowner);
     wWindowUnfocus(owin);
-    wPrintWindowFocusState(wwin, "[ END ] wWindowFocus:");
+    /* wPrintWindowFocusState(wwin, "[ END ] wWindowFocus:"); */
   }
 }
 
