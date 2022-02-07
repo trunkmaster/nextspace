@@ -476,6 +476,10 @@ void wApplicationActivate(WApplication *wapp)
 {
   WScreen *scr = wapp->main_wwin->screen;
 
+  if (wapp->app_menu->flags.mapped) {
+    return;
+  }
+
   WMLogInfo("wApplicationActivate %s current WS:%i last WS:%i app WS:%i",
            wapp->main_wwin->wm_instance,
            scr->current_workspace, scr->last_workspace,
