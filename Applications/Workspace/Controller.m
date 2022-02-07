@@ -687,7 +687,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   }
 
   // Update Services
-  NSUpdateDynamicServices();
+  // NSUpdateDynamicServices();
   
   // Detect lid close/open events
   systemPower = [OSEPower new];
