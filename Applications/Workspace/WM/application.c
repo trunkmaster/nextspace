@@ -703,3 +703,17 @@ void wApplicationHideOthers(WWindow *awin)
   }
 }
 
+void wApplicationQuit(WApplication *wapp, Bool force)
+{
+  CFArrayRef windows = CFArrayCreateCopy(kCFAllocatorDefault, wapp->windows);
+  WWindow *wwin;
+
+  for (int i = 0; i < CFArrayGetCount(windows); i++) {
+    wwin = (WWindow *)CFArrayGetValueAtIndex(windows, i);
+    if (wwin && wwin->protocols.DELETE_WINDOW) {
+      wClientSendProtocol(wwin, w_global.atom.wm.delete_window, w_global.timestamp.last_event);
+    }
+  }
+  
+  CFRelease(windows);
+}

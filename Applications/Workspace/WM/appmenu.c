@@ -35,6 +35,10 @@ static void mainCallback(WMenu *menu, WMenuItem *entry)
     wApplicationHide(wapp);
   } else if (!strcmp(entry->text, "Hide Others")) {
     wApplicationHideOthers(wapp->last_focused);
+  } else if (!strcmp(entry->text, "Quit")) {
+    wApplicationQuit(wapp, False);
+  } else if (!strcmp(entry->text, "Force Quit")) {
+    wApplicationQuit(wapp, True);
   }
 }
 
@@ -423,7 +427,6 @@ WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
   tmp_item->rtext = wstrdup("H");
   tmp_item = wMenuAddItem(menu, _("Quit"), mainCallback, wapp);
   tmp_item->rtext = wstrdup("q");
-  wMenuItemSetEnabled(menu, tmp_item, False);
   
   return menu;
 }
