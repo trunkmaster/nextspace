@@ -54,10 +54,6 @@
 #include "animations.h"
 #include "iconyard.h"
 
-#ifdef NEXTSPACE
-#include <Workspace+WM.h>
-#endif // NEXTSPACE        
-
 #include "actions.h"
 
 static void find_Maximus_geometry(WWindow *wwin, WArea usableArea, int *new_x, int *new_y,
@@ -1272,50 +1268,6 @@ void wDeiconifyWindow(WWindow *wwin)
   w_global.ignore_workspace_change = False;
 }
 
-static void hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int animate)
-{
-  if (wwin->flags.miniaturized) {
-    if (wwin->icon) {
-      XUnmapWindow(dpy, wwin->icon->core->window);
-      wwin->icon->mapped = 0;
-    }
-    wwin->flags.hidden = 1;
-
-    CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                            &kCFTypeDictionaryKeyCallBacks,
-                                                            &kCFTypeDictionaryValueCallBacks);
-    CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
-    CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                         WMDidChangeWindowStateNotification, wwin, info, TRUE);
-    CFRelease(info);
-    return;
-  }
-
-  wwin->flags.hidden = 1;
-  wWindowUnmap(wwin);
-
-  wClientSetState(wwin, IconicState, icon->icon_win);
-  flushExpose();
-
-#ifdef USE_ANIMATIONS
-  if (!wwin->screen->flags.startup && !wPreferences.no_animations &&
-      !wwin->flags.skip_next_animation && animate) {
-    wAnimateResize(wwin->screen, wwin->frame_x, wwin->frame_y,
-                  wwin->frame->core->width, wwin->frame->core->height,
-                  icon_x, icon_y, icon->core->width, icon->core->height);
-  }
-#endif
-  wwin->flags.skip_next_animation = 0;
-
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                          &kCFTypeDictionaryKeyCallBacks,
-                                                          &kCFTypeDictionaryValueCallBacks);
-  CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
-  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                       WMDidChangeWindowStateNotification, wwin, info, TRUE);
-  CFRelease(info);
-}
-
 void wHideAll(WScreen *scr)
 {
   WWindow *wwin;
@@ -1367,134 +1319,6 @@ void wHideAll(WScreen *scr)
   }
 
   wfree(windows);
-}
-
-void wHideOtherApplications(WWindow *awin)
-{
-  WWindow *wwin;
-  WApplication *wapp;
-  WApplication *tapp;
-
-  if (!awin)
-    return;
-  wwin = awin->screen->focused_window;
-  wapp = wApplicationOf(wwin->main_window);
-
-  while (wwin) {
-    tapp = wApplicationOf(wwin->main_window);
-    if (wwin != awin && tapp != wapp
-        && wwin->frame->workspace == awin->screen->current_workspace
-        && !(wwin->flags.miniaturized || wwin->flags.hidden)
-        && !wwin->flags.internal_window
-        && !WFLAGP(wwin, no_hide_others)) {
-
-      if (tapp != wapp && wwin->protocols.HIDE_APP) {
-        WIcon *icon = tapp->app_icon->icon;
-        /* WMLogInfo("send WM_HIDE_APP protocol message to client."); */
-        wAnimateResize(wwin->screen, wwin->frame_x, wwin->frame_y,
-                      wwin->frame->core->width, wwin->frame->core->height,
-                      tapp->app_icon->x_pos, tapp->app_icon->y_pos,
-                      icon->core->width, icon->core->height);
-        wClientSendProtocol(wwin, w_global.atom.gnustep.wm_hide_app, CurrentTime);
-      }
-      else if (wwin->main_window == None || WFLAGP(wwin, no_appicon)) {
-        if (!WFLAGP(wwin, no_miniaturizable)) {
-          wwin->flags.skip_next_animation = 1;
-          wIconifyWindow(wwin);
-        }
-      } else if (wwin->main_window != None && awin->main_window != wwin->main_window) {
-        if (tapp) {
-          tapp->flags.skip_next_animation = 1;
-          wHideApplication(tapp);
-        } else {
-          if (!WFLAGP(wwin, no_miniaturizable)) {
-            wwin->flags.skip_next_animation = 1;
-            wIconifyWindow(wwin);
-          }
-        }
-      }
-    }
-    wwin = wwin->prev;
-  }
-  /*
-    wSetFocusTo(awin->screen_ptr, awin);
-  */
-}
-
-void wHideApplication(WApplication *wapp)
-{
-  WScreen *scr;
-  WWindow *wlist;
-  int hadfocus;
-  int animate;
-  Bool is_workspace = False;
-
-  if (!wapp) {
-    WMLogWarning("trying to hide a non grouped window");
-    return;
-  }
-  if (!wapp->main_wwin) {
-    WMLogWarning("group leader not found for window group");
-    return;
-  }
-  scr = wapp->main_wwin->screen;
-  hadfocus = 0;
-  wlist = scr->focused_window;
-  if (!wlist)
-    return;
-
-  if (wlist->main_window == wapp->main_window)
-    wapp->last_focused = wlist;
-  else
-    wapp->last_focused = NULL;
-
-  /* animate = !wapp->flags.skip_next_animation; */
-  animate = 0;
-
-  /* Special treatment of Workspace: set focus to main menu prior to any window 
-     hiding to prevent searching for next focused window. Workspace's main menu
-     will not be unmapped on hiding. */
-  if (wapp->gsmenu_wwin && !strcmp(wapp->gsmenu_wwin->wm_instance, "Workspace")) {
-    XSetInputFocus(dpy, wapp->gsmenu_wwin->client_win, RevertToParent, CurrentTime);
-    is_workspace = True;
-  }
-
-  while (wlist) {
-    if (wlist->main_window == wapp->main_window
-        && (is_workspace == False || wlist != wapp->gsmenu_wwin)) {
-      if (wlist->flags.focused)
-        hadfocus = 1;
-      if (wapp->app_icon) {
-        hideWindow(wapp->app_icon->icon, wapp->app_icon->x_pos,
-                   wapp->app_icon->y_pos, wlist, animate);
-        animate = False;
-      }
-    }
-    wlist = wlist->prev;
-  }
-
-  wapp->flags.skip_next_animation = 0;
-
-  if (hadfocus && is_workspace == False) {
-    wlist = scr->focused_window;
-    while (wlist) {
-      if (!WFLAGP(wlist, no_focusable) && !wlist->flags.hidden
-          && (wlist->flags.mapped || wlist->flags.shaded))
-        break;
-      wlist = wlist->prev;
-    }
-    wSetFocusTo(scr, wlist);
-  }
-
-  wapp->flags.hidden = 1;
-
-  if (wPreferences.auto_arrange_icons)
-    wArrangeIcons(scr, True);
-
-#ifdef HIDDENDOT
-  if (wapp->app_icon)
-    wAppIconPaint(wapp->app_icon);
-#endif
 }
 
 static void unhideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int animate,

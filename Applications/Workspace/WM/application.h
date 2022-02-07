@@ -74,4 +74,7 @@ void wApplicationDeactivate(WApplication *);
 
 void wApplicationMakeFirst(WApplication *);
 
+void wApplicationHide(WApplication *wapp);
+void wApplicationHideOthers(struct WWindow *awin);
+
 #endif /* __WORKSPACE_WM_APPLICATION__ */

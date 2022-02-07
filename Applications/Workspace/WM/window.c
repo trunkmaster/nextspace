@@ -70,6 +70,7 @@
 #include "winmenu.h"
 #include "osdep.h"
 #include "iconyard.h"
+#include "application.h"
 
 #ifdef USE_MWM_HINTS
 # include "motif.h"
@@ -2936,7 +2937,7 @@ static void titlebarDblClick(WCoreWindow *sender, void *data, XEvent *event)
   }
   else if (event->xbutton.button == Button3) {
     if (event->xbutton.state & MOD_MASK)
-      wHideOtherApplications(wwin);
+      wApplicationHideOthers(wwin);
   }
   else if (event->xbutton.button == Button2) {
     wSelectWindow(wwin, !wwin->flags.selected);
@@ -3184,7 +3185,7 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
                           event->xbutton.time);
     }
     else if (wapp && !WFLAGP(wwin, no_appicon)) {
-      wHideApplication(wapp);
+      wApplicationHide(wapp);
     }
   }
 }

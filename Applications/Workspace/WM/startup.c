@@ -79,6 +79,7 @@
 #include "misc.h"
 #include "xmodifier.h"
 #include "dock.h"
+#include "application.h"
 #include <Workspace+WM.h>
 
 /****** Global ******/
@@ -599,7 +600,7 @@ static void _manageAllWindows(WScreen *scr)
 
       if (wapp) {
         wwin->flags.hidden = 0;
-        wHideApplication(wapp);
+        wApplicationHide(wapp);
       } else {
         wwin->flags.hidden = 0;
       }

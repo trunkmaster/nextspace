@@ -32,9 +32,9 @@ static void mainCallback(WMenu *menu, WMenuItem *entry)
   WApplication *wapp = (WApplication *)entry->clientdata;
   
   if (!strcmp(entry->text, "Hide")) {
-    wHideApplication(wapp);
+    wApplicationHide(wapp);
   } else if (!strcmp(entry->text, "Hide Others")) {
-    wHideOtherApplications(wapp->last_focused);
+    wApplicationHideOthers(wapp->last_focused);
   }
 }
 
@@ -406,8 +406,10 @@ WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
   menu->app = wapp;
   
   info = wMenuCreate(scr, _("Info"), False);
-  wMenuAddItem(info, _("Info Panel..."), nullCallback, NULL);
+  tmp_item = wMenuAddItem(info, _("Info Panel..."), nullCallback, NULL);
+  wMenuItemSetEnabled(info, tmp_item, False);
   tmp_item = wMenuAddItem(info, _("Preferences..."), nullCallback, NULL);
+  wMenuItemSetEnabled(info, tmp_item, False);
   info_item = wMenuAddItem(menu, _("Info"), NULL, NULL);
   wMenuItemSetSubmenu(menu, info_item, info);
 
@@ -419,7 +421,6 @@ WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
   tmp_item->rtext = wstrdup("h");
   tmp_item = wMenuAddItem(menu, _("Hide Others"), mainCallback, wapp);
   tmp_item->rtext = wstrdup("H");
-  wMenuItemSetEnabled(menu, tmp_item, False);
   tmp_item = wMenuAddItem(menu, _("Quit"), mainCallback, wapp);
   tmp_item->rtext = wstrdup("q");
   wMenuItemSetEnabled(menu, tmp_item, False);

@@ -51,6 +51,7 @@
 #include "icon.h"
 #include "xrandr.h"
 #include "winmenu.h"
+#include "application.h"
 
 #include "dock.h"
 #include <Workspace+WM.h>
@@ -304,7 +305,7 @@ static void execMenuCommand(WMenu * menu, WMenuItem * entry)
 
   case MC_HIDE:
     wapp = wApplicationOf(wwin->main_window);
-    wHideApplication(wapp);
+    wApplicationHide(wapp);
     break;
   }
 }

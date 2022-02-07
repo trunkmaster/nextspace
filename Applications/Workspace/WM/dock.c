@@ -675,7 +675,7 @@ static void hideCallback(WMenu *menu, WMenuItem *entry)
     wWorkspaceChange(btn->icon->core->screen_ptr, wapp->last_workspace, NULL);
     wUnhideApplication(wapp, False, False);
   } else {
-    wHideApplication(wapp);
+    wApplicationHide(wapp);
   }
 }
 
@@ -3644,7 +3644,7 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
     wUnhideApplication(wapp, event->xbutton.button == Button2, unhideHere);
 
     if (event->xbutton.state & ALT_MOD_MASK)
-      wHideOtherApplications(btn->icon->owner);
+      wApplicationHideOthers(btn->icon->owner);
   }
   else {
     if (event->xbutton.button == Button1) {

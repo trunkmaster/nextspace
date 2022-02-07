@@ -71,10 +71,8 @@ void wUnmaximizeWindow(WWindow *wwin);
 void handleMaximize(WWindow *wwin, int directions);
 
 void wHideAll(WScreen *src);
-void wHideOtherApplications(WWindow *wwin);
 void wShowAllWindows(WScreen *scr);
 
-void wHideApplication(WApplication *wapp);
 void wUnhideApplication(WApplication *wapp, Bool miniwindows, Bool bringToCurrentWS);
 
 /* void wRefreshDesktop(WScreen *scr); */

@@ -80,6 +80,7 @@
 #include "winmenu.h"
 #include "switchmenu.h"
 #include "iconyard.h"
+#include "application.h"
 
 #ifdef NEXTSPACE
 #include <Workspace+WM.h>
@@ -637,7 +638,7 @@ static void handleMapRequest(XEvent * ev)
       wwin->flags.hidden = 0;
       wwin->flags.skip_next_animation = 1;
       if (wapp) {
-        wHideApplication(wapp);
+        wApplicationHide(wapp);
       }
     }
   }
@@ -1085,13 +1086,13 @@ static void handleClientMessage(XEvent * event)
     if (wapp) {
       switch (event->xclient.data.l[0]) {
       case WMFHideOtherApplications:
-        wHideOtherApplications(wapp->main_wwin);
+        wApplicationHideOthers(wapp->main_wwin);
         done = 1;
         break;
 
       case WMFHideApplication:
         WMLogInfo("Received WMFHideApplication client message");
-        wHideApplication(wapp);
+        wApplicationHide(wapp);
         done = 1;
         break;
       }
@@ -1101,11 +1102,11 @@ static void handleClientMessage(XEvent * event)
       if (wwin) {
         switch (event->xclient.data.l[0]) {
         case WMFHideOtherApplications:
-          wHideOtherApplications(wwin);
+          wApplicationHideOthers(wwin);
           break;
 
         case WMFHideApplication:
-          wHideApplication(wApplicationOf(wwin->main_window));
+          wApplicationHide(wApplicationOf(wwin->main_window));
           break;
         }
       }
@@ -1576,7 +1577,7 @@ static void handleKeyPress(XEvent * event)
           XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
         }
         else {
-          wHideApplication(wapp);
+          wApplicationHide(wapp);
         }
       }
     }
@@ -1585,7 +1586,7 @@ static void handleKeyPress(XEvent * event)
     if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
       CloseWindowMenu(scr);
 
-      wHideOtherApplications(wwin);
+      wApplicationHideOthers(wwin);
     }
     break;
   case WKBD_MAXIMIZE:
