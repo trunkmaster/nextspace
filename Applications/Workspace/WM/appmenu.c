@@ -77,6 +77,10 @@ static void windowsCallback(WMenu *menu, WMenuItem *entry)
     if (wwin->protocols.DELETE_WINDOW) {
       wClientSendProtocol(wwin, w_global.atom.wm.delete_window, w_global.timestamp.last_event);
     }
+  } else if (!strcmp(entry->text, "Zoom Window")) {
+    wMaximizeWindow(wwin, MAX_MAXIMUS);
+  } else if (!strcmp(entry->text, "Unzoom Window")) {
+    wUnmaximizeWindow(wwin);
   }
 }
 
@@ -231,6 +235,19 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
       entry->text = wstrdup("Shade Window");
     }
   }
+  if (focused_win->flags.maximized) {
+    entry = wMenuItemWithTitle(windows_menu, "Zoom Window");
+    if (entry) {
+      wfree(entry->text);
+      entry->text = wstrdup("Unzoom Window");
+    }
+  } else {
+    entry = wMenuItemWithTitle(windows_menu, "Unzoom Window");
+    if (entry) {
+      wfree(entry->text);
+      entry->text = wstrdup("Zoom Window");
+    }
+  }
   
   if (checkVisibility) {
     int tmp;
@@ -306,8 +323,7 @@ static WMenu *createWindowsMenu(WApplication *wapp)
   tmp_item = wMenuAddItem(_menu, _("Shade Window"), windowsCallback, NULL);
   /* tmp_item = wMenuAddItem(_menu, _("Resize/Move Window"), windowsCallback, NULL); */
   /* tmp_item = wMenuAddItem(_menu, _("Select Window"), windowsCallback, NULL); */
-  tmp_item = wMenuAddItem(_menu, _("Zoom window"), windowsCallback, NULL);
-  wMenuItemSetEnabled(_menu, tmp_item, False);
+  tmp_item = wMenuAddItem(_menu, _("Zoom Window"), windowsCallback, NULL);
   tmp_item = wMenuAddItem(_menu, _("Close Window"), windowsCallback, NULL);
   tmp_item->rtext = wstrdup("w");
 
