@@ -476,6 +476,9 @@ static void openApplicationMenu(WApplication *wapp, int x, int y)
   if (y + MENU_HEIGHT(menu) > scr->height) {
     y -= MENU_HEIGHT(menu);
   }
+  if (y < 0 ) {
+    y = 0;
+  }
   
   wMenuMapAt(menu, x, y, False);
 }

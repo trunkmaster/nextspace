@@ -1861,7 +1861,6 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
     case ButtonPress:
       {
         item_index = getItemIndexAt(event_menu, x, y);
-        /* WMLogInfo("Menu mouse down on item #%i. Event = %i", item_index, event->type); */
         if (item_index < 0) {
           item_index = event_menu->selected_item_index;
         }
@@ -1890,34 +1889,30 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
         /*           event_menu ? event_menu->frame->title : "NULL", */
         /*           mouse_menu ? mouse_menu->frame->title : "NULL"); */
         if (ev.xbutton.button == event->xbutton.button) {
-          if (mouse_menu) { // button released on menu
+          if (mouse_menu) { // on menu
             /* WMLogInfo("ButtonRelease: on menu"); */
             if (mouse_menu->selected_item_index >= 0) {
               item = mouse_menu->items[mouse_menu->selected_item_index];
-              /* WMLogInfo("ButtonRelease: cascade index: %i", item->submenu_index); */
-              if (item->submenu_index < 0) { // on plain item
-                /* WMLogInfo("Plain"); */
-                /* unmap the menu, it's parents */
+              if (item->submenu_index < 0) {
+                /* WMLogInfo("ButtonRelease: on plain item"); */
+                if (item->callback != NULL && item->flags.enabled) {
+                  (*item->callback) (event_menu, item);
+                }
                 selectItem(mouse_menu, -1);
                 if (mouse_menu != event_menu || !mouse_menu->parent) {
                   closeCascade(mouse_menu);
                 }
-                /* call callback if needed */
-                if (item->callback != NULL && item->flags.enabled) {
-                  (*item->callback) (event_menu, item);
-                }
-              }
-              else if (item->submenu_index >= 0 && mouse_menu->submenus) { // on item with submenu
-                item = mouse_menu->items[mouse_menu->selected_item_index];
-                /* WMLogInfo("Submenu. Selected item: %s", item->text); */
+              } else if (item->submenu_index >= 0 && mouse_menu->submenus) {
                 WMenu *submenu = mouse_menu->submenus[item->submenu_index];
-                /* clicked menu has submenu attached */
-                if (submenu->flags.mapped && !submenu->flags.tornoff) {
-                  /* on item selected with last click or
-                     teared-off version of submenu is visible */
-                  if ((mouse_menu == event_menu &&
-                       mouse_menu->selected_item_index == old_selected_item_index) ||
-                      submenu->brother->flags.mapped) {
+                /* WMLogInfo("ButtonRelease: on submenu. Selected item: %s", item->text); */
+                if (submenu && submenu->flags.mapped && !submenu->flags.tornoff) {
+                  if (event_menu->flags.brother) {
+                    /* submenu of main menu copy */
+                    closeCascade(event_menu);
+                  } else if ((mouse_menu == event_menu &&
+                              mouse_menu->selected_item_index == old_selected_item_index) ||
+                             submenu->brother->flags.mapped) {
+                    /* selected with last click or tornoff submenu is visible */
                     selectItem(mouse_menu, -1);
                     wMenuUnmap(submenu);
                   }
@@ -1926,15 +1921,13 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
                   wMenuUnmap(mouse_menu);
                 }
               }
-            }
-            else { //...without selection - probably on menu titlebar
+            } else { //...without selection - probably on menu titlebar
               if (!mouse_menu->flags.app_menu || mouse_menu->flags.brother) {
                 closeCascade(mouse_menu);
               }
               selectItem(mouse_menu, -1);
             }
-          }
-          else if (event_menu) { // outside of menu
+          } else if (event_menu) { // outside of menu
             /* WMLogInfo("ButtonRelease: out of menu %s", event_menu->frame->title); */
             if (!event_menu->flags.app_menu || event_menu->flags.brother) {
               closeCascade(event_menu);
