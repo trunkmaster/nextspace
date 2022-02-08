@@ -1012,9 +1012,9 @@ void wWorkspaceRestoreState(WScreen *scr)
         WAppIcon *aicon = scr->workspaces[i]->clip->icon_array[j];
         int k;
 
-        if (!aicon || !aicon->omnipresent)
+        if (!aicon || !aicon->flags.omnipresent)
           continue;
-        aicon->omnipresent = 0;
+        aicon->flags.omnipresent = 0;
         if (wClipMakeIconOmnipresent(aicon, True) != WO_SUCCESS)
           continue;
         if (i == 0)

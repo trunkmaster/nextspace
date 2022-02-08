@@ -489,7 +489,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       appIcon = appIcon->next;
       continue;
     }
-    if (!appIcon->docked) {
+    if (!appIcon->flags.docked) {
       if (appIcon->command && appIcon->command != NULL) {
         command = wstrdup(appIcon->command);
       }
@@ -738,7 +738,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   
   // Now we are ready to show windows and menu
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, 0);
-  if (appicon && appicon->auto_launch == 1) {
+  if (appicon && appicon->flags.auto_launch == 1) {
     [self _restoreWindows];
     [[NSApp mainMenu] display];
   } else {

@@ -207,8 +207,8 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
   WMLogInfo("ADD window: %lu level:%i name: %s refcount=%i",
            wwin->client_win, window_level, wwin->wm_instance, wapp->refcount);
   
-  if (wapp->app_icon && wapp->app_icon->docked &&
-      wapp->app_icon->relaunching && wapp->main_wwin->fake_group) {
+  if (wapp->app_icon && wapp->app_icon->flags.docked &&
+      wapp->app_icon->flags.relaunching && wapp->main_wwin->fake_group) {
     wDockFinishLaunch(wapp->app_icon);
   }
 
@@ -721,3 +721,51 @@ void wApplicationQuit(WApplication *wapp, Bool force)
   
   CFRelease(windows);
 }
+
+/* TODO */
+/***************************************************************************************************/
+
+void wApplicationForceQuit(WApplication *wapp)
+{
+  WFakeGroupLeader *fPtr;
+  char *buffer;
+  char *shortname;
+
+  if (!WCHECK_STATE(WSTATE_NORMAL))
+    return;
+
+  WCHANGE_STATE(WSTATE_MODAL);
+
+  shortname = basename(wapp->app_icon->wm_instance);
+  fPtr = wapp->main_wwin->fake_group;
+
+  buffer = wstrconcat(wapp->app_icon ? shortname : NULL,
+                      _(" will be forcibly closed.\n"
+                        "Any unsaved changes will be lost.\n" "Please confirm."));
+
+  wretain(wapp->main_wwin);
+  dispatch_async(workspace_q, ^{
+      if (wPreferences.dont_confirm_kill
+          || WSRunAlertPanel(_("Kill Application"),
+                             buffer, _("Keep Running"), _("Kill"), NULL) == NSAlertAlternateReturn) {
+        if (fPtr != NULL) {
+          WWindow *wwin, *twin;
+
+          wwin = wapp->main_wwin->screen->focused_window;
+          while (wwin) {
+            twin = wwin->prev;
+            if (wwin->fake_group == fPtr)
+              wClientKill(wwin);
+            wwin = twin;
+          }
+        } else if (!wapp->main_wwin->flags.destroyed) {
+          wClientKill(wapp->main_wwin);
+        }
+      }
+      wrelease(wapp->main_wwin);
+      wfree(buffer);
+      WCHANGE_STATE(WSTATE_NORMAL);
+    });
+}
+
+

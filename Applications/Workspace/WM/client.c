@@ -338,7 +338,7 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
       WApplication *wapp = wApplicationOf(wwin->main_window);
       char *command;
 
-      if (!wapp || !wapp->app_icon || wapp->app_icon->docked)
+      if (!wapp || !wapp->app_icon || wapp->app_icon->flags.docked)
         break;
 
       command = wGetCommandForWindow(wwin->main_window);

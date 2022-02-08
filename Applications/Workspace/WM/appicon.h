@@ -32,43 +32,43 @@
 #include "application.h"
 
 typedef struct WAppIcon {
-  short xindex;
-  short yindex;
   struct WAppIcon *next;
   struct WAppIcon *prev;
+  
   WIcon *icon;
-  int x_pos, y_pos;		/* absolute screen coordinate */
-  char *command;			/* command used to launch app */
-#ifdef USE_DOCK_XDND
-  char *dnd_command;		/* command to use when something is */
-  /* dropped on us */
-#endif
-  char *paste_command;		/* command to run when
-                                 * something is pasted */
+  Window main_window;
   char *wm_class;
   char *wm_instance;
-  pid_t pid;			 /* for apps launched from the dock */
-  Window main_window;
-  struct WDock *dock;		 /* In which dock is docked. */
-  struct _AppSettingsPanel *panel; /* Settings Panel */
-  unsigned int docked:1;
-  unsigned int omnipresent:1;	 /* If omnipresent when
-                                  * docked in clip */
-  unsigned int attracted:1;	 /* If it was attracted by the clip */
-  unsigned int launching:1;
-  unsigned int running:1;		 /* application is already running */
-  unsigned int relaunching:1;	 /* launching 2nd instance */
-  unsigned int forced_dock:1;
-  unsigned int auto_launch:1;	 /* launch app on startup */
-  unsigned int remote_start:1;
-  unsigned int updated:1;
-  unsigned int editing:1;		 /* editing docked icon */
-  unsigned int drop_launch:1;	 /* launching from drop action */
-  unsigned int paste_launch:1;	 /* launching from paste action */
-  unsigned int destroyed:1;	 /* appicon was destroyed */
-  unsigned int buggy_app:1;	 /* do not make dock rely on hints
-                                  * set by app */
-  unsigned int lock:1;		 /* do not allow to be destroyed */
+  struct WDock *dock;            /* In which dock is docked. */
+  
+  short xindex;
+  short yindex;
+  int x_pos, y_pos;              /* absolute screen coordinate */
+  char *command;                 /* command used to launch app */
+#ifdef USE_DOCK_XDND
+  char *dnd_command;             /* command to use when something is */
+  /* dropped on us */
+#endif
+  char *paste_command;           /* command to run when something is pasted */
+  pid_t pid;                     /* for apps launched from the dock */
+  struct {
+    unsigned int docked:1;
+    unsigned int omnipresent:1;  /* If omnipresent when docked in clip */
+    unsigned int attracted:1;    /* If it was attracted by the clip */
+    unsigned int launching:1;
+    unsigned int running:1;      /* application is already running */
+    unsigned int relaunching:1;  /* launching 2nd instance */
+    unsigned int forced_dock:1;
+    unsigned int auto_launch:1;  /* launch app on startup */
+    unsigned int remote_start:1;
+    unsigned int updated:1;
+    unsigned int editing:1;      /* editing docked icon */
+    unsigned int drop_launch:1;  /* launching from drop action */
+    unsigned int paste_launch:1; /* launching from paste action */
+    unsigned int destroyed:1;    /* appicon was destroyed */
+    unsigned int buggy_app:1;    /* do not make dock rely on hints set by app */
+    unsigned int lock:1;         /* do not allow to be destroyed */
+  } flags;
 } WAppIcon;
 
 WAppIcon *wAppIconCreateForDock(WScreen *scr, const char *command, const char *wm_instance,

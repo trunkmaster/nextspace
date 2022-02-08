@@ -83,8 +83,8 @@ static NSDragOperation savedMask;
     if (!strcmp(wm_instance, appicon->wm_instance) &&
         !strcmp(wm_class, appicon->wm_class)) {
       NSLog(@"Appicon found: destroyed=%i running=%i launching=%i docked=%i editing=%i",
-            appicon->destroyed, appicon->running, appicon->launching, appicon->docked,
-            appicon->editing);
+            appicon->flags.destroyed, appicon->flags.running, appicon->flags.launching, appicon->flags.docked,
+            appicon->flags.editing);
       return appicon;
     }
     appicon = appicon->next;
@@ -222,9 +222,9 @@ static NSDragOperation savedMask;
     if (!wDockAttachIcon(wScreen->dock, wAppIconNew, dock_x, dock_y, YES)) {
       NSLog(@"[PathIcon] WARNING: the icon was not docked!");
     }
-    wAppIconNew->running = 0;
-    wAppIconNew->launching = 0;
-    wAppIconNew->editing = 0;
+    wAppIconNew->flags.running = 0;
+    wAppIconNew->flags.launching = 0;
+    wAppIconNew->flags.editing = 0;
     // wAppIconNew->relaunching = 0;
     // wAppIconNew->auto_launch = 0;
     // wAppIconNew->forced_dock = 0;

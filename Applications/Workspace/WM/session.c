@@ -527,7 +527,7 @@ void wSessionRestoreState(WScreen *scr)
         if (btn && is_same(instance, btn->wm_instance) &&
             is_same(class, btn->wm_class) &&
             is_same(command, btn->command) &&
-            !btn->launching) {
+            !btn->flags.launching) {
           found = 1;
           break;
         }

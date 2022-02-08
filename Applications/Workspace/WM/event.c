@@ -783,13 +783,11 @@ static void executeButtonAction(WScreen *scr, XEvent *event, int action)
 /* bindable */
 static void handleButtonPress(XEvent * event)
 {
-  WObjDescriptor *desc;
-  WScreen *scr;
+  WObjDescriptor *desc = NULL;
+  WScreen *scr = wDefaultScreen();
+  WApplication *wapp = NULL;
 
-  scr = wDefaultScreen();
-  
-#ifdef NEXTSPACE
-  // reset current focused window button beacuse ButtonPress may change focus
+  // reset current focused window button because ButtonPress may change focus
   WWindow *wwin = scr->focused_window;
   if (wwin && wwin->client_win != scr->no_focus_win && wwin->frame &&
       wwin->frame->left_button &&
@@ -799,7 +797,6 @@ static void handleButtonPress(XEvent * event)
     scr->flags.modifier_pressed = 0;
     wWindowUpdateButtonImages(wwin);
   }
-#endif
 
 #ifdef BALLOON_TEXT
   wBalloonHide(scr);
@@ -807,33 +804,24 @@ static void handleButtonPress(XEvent * event)
 
   if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win) {
     if (event->xbutton.button == Button1 && wPreferences.mouse_button1 != WA_NONE) {
-#ifdef NEXTSPACE
       if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
         XSendEvent(dpy, scr->focused_window->client_win, False, ButtonPressMask, event);
-      }
-      else {
+      } else {
         XSendEvent(dpy, scr->dock->icon_array[0]->icon->icon_win, False, ButtonPressMask, event);
       }
-#else
-      executeButtonAction(scr, event, wPreferences.mouse_button1);
-#endif
     } else if (event->xbutton.button == Button2 && wPreferences.mouse_button2 != WA_NONE) {
       executeButtonAction(scr, event, wPreferences.mouse_button2);
     } else if (event->xbutton.button == Button3 && wPreferences.mouse_button3 != WA_NONE) {
-#ifdef NEXTSPACE
+      if (scr->focused_window) {
+        wapp = wApplicationForWindow(scr->focused_window);
+      }
       if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
         XSendEvent(dpy, scr->focused_window->client_win, False, ButtonPressMask, event);
-      }
-      else {
+      } else if (wapp) {
+        desc = &wapp->app_icon->icon->core->descriptor;
+      } else {
         XSendEvent(dpy, scr->dock->icon_array[0]->icon->icon_win, False, ButtonPressMask, event);
       }
-#else
-      executeButtonAction(scr, event, wPreferences.mouse_button3);
-#endif
-    } else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
-      executeButtonAction(scr, event, wPreferences.mouse_button8);
-    } else if (event->xbutton.button == Button9 && wPreferences.mouse_button9 != WA_NONE) {
-      executeButtonAction(scr, event, wPreferences.mouse_button9);
     } else if (event->xbutton.button == Button4 && wPreferences.mouse_wheel_scroll != WA_NONE) {
       executeWheelAction(scr, event, wPreferences.mouse_wheel_scroll);
     } else if (event->xbutton.button == Button5 && wPreferences.mouse_wheel_scroll != WA_NONE) {
@@ -842,13 +830,21 @@ static void handleButtonPress(XEvent * event)
       executeWheelAction(scr, event, wPreferences.mouse_wheel_tilt);
     } else if (event->xbutton.button == Button7 && wPreferences.mouse_wheel_tilt != WA_NONE) {
       executeWheelAction(scr, event, wPreferences.mouse_wheel_tilt);
+    } else if (event->xbutton.button == Button8 && wPreferences.mouse_button8 != WA_NONE) {
+      executeButtonAction(scr, event, wPreferences.mouse_button8);
+    } else if (event->xbutton.button == Button9 && wPreferences.mouse_button9 != WA_NONE) {
+      executeButtonAction(scr, event, wPreferences.mouse_button9);
     }
   }
 
-  desc = NULL;
-  if (XFindContext(dpy, event->xbutton.subwindow, w_global.context.client_win, (XPointer *) & desc) == XCNOENT) {
-    if (XFindContext(dpy, event->xbutton.window, w_global.context.client_win, (XPointer *) & desc) == XCNOENT) {
-      return;
+  /* desc = NULL; */
+  if (desc == NULL) {
+    if (XFindContext(dpy, event->xbutton.subwindow,
+                     w_global.context.client_win, (XPointer *)&desc) == XCNOENT) {
+      if (XFindContext(dpy, event->xbutton.window,
+                       w_global.context.client_win, (XPointer *)&desc) == XCNOENT) {
+        return;
+      }
     }
   }
 
@@ -864,31 +860,29 @@ static void handleButtonPress(XEvent * event)
       XAllowEvents(dpy, ReplayPointer, CurrentTime);
     }
     XSync(dpy, 0);
-  }
-  else if (desc->parent_type == WCLASS_APPICON
-           || desc->parent_type == WCLASS_MINIWINDOW
-           || desc->parent_type == WCLASS_DOCK_ICON) {
+  } else if (desc->parent_type == WCLASS_APPICON
+             || desc->parent_type == WCLASS_MINIWINDOW
+             || desc->parent_type == WCLASS_DOCK_ICON) {
     if (event->xbutton.state & wPreferences.modifier_mask) {
       WAppIcon *appicon = wAppIconFor(event->xbutton.window);
       WAppIcon *appicon0 = scr->dock->icon_array[0];
       if ((desc->parent_type == WCLASS_DOCK_ICON) &&
           (appicon->icon->icon_win == appicon0->icon->icon_win)) {
-        if (wDockLevel(scr->dock) == NSDockWindowLevel)
+        if (wDockLevel(scr->dock) == NSDockWindowLevel) {
           wDockSetLevel(scr->dock, NSNormalWindowLevel);
-        else {
+        } else {
           wDockSetLevel(scr->dock, NSDockWindowLevel);
         }
         XUngrabPointer(dpy, CurrentTime);
         return;
-      }
-      else {
+      } else {
         XSync(dpy, 0);
         XAllowEvents(dpy, AsyncPointer, CurrentTime);
         XSync(dpy, 0);
       }
     }
   }
-
+  
   if (desc->handle_mousedown != NULL) {
     (*desc->handle_mousedown) (desc, event);
   }
@@ -903,7 +897,6 @@ static void handleButtonPress(XEvent * event)
   }
 }
 
-#ifdef NEXTSPACE
 static void handleButtonRelease(XEvent * event)
 {
   WScreen *scr = wDefaultScreen();
@@ -918,7 +911,6 @@ static void handleButtonRelease(XEvent * event)
     }
   }
 }
-#endif
 
 static void handleMapNotify(XEvent * event)
 {

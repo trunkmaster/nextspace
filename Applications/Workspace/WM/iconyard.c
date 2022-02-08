@@ -27,7 +27,7 @@ void wIconYardShowIcons(WScreen *screen)
   // Appicons
   appicon = screen->app_icon_list;
   while (appicon) {
-    if (!appicon->docked) {
+    if (!appicon->flags.docked) {
       XMapWindow(dpy, appicon->icon->core->window);
     }
     appicon = appicon->next;
@@ -57,7 +57,7 @@ void wIconYardHideIcons(WScreen *screen)
   // Appicons
   appicon = screen->app_icon_list;
   while (appicon) {
-    if (!appicon->docked) {
+    if (!appicon->flags.docked) {
       XUnmapWindow(dpy, appicon->icon->core->window);
     }
     appicon = appicon->next;
@@ -157,7 +157,7 @@ void wArrangeIcons(WScreen *scr, Bool arrangeAll)
     aicon = aicon->next;
 
   while (aicon) {
-    if (!aicon->docked) {
+    if (!aicon->flags.docked) {
       /* CHECK: can icon be NULL here ? */
       /* The intention here is to place the AppIcon on the head that
        * contains most of the applications _main_ window. */

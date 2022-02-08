@@ -32,6 +32,9 @@
 #define MI_HIDDEN	3
 #define MI_SHADED	4
 
+#define MENU_WIDTH(m)	((m)->frame->core->width+2*(m)->frame->screen_ptr->frame_border_width)
+#define MENU_HEIGHT(m)	((m)->frame->core->height+2*(m)->frame->screen_ptr->frame_border_width)
+
 typedef struct WMenuItem {
   int order;
   char *text;			       /* entry text */

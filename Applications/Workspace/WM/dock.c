@@ -174,7 +174,7 @@ static void killCallback(WMenu *menu, WMenuItem *entry)
 
   icon = (WAppIcon *) entry->clientdata;
 
-  icon->editing = 1;
+  icon->flags.editing = 1;
 
   WCHANGE_STATE(WSTATE_MODAL);
 
@@ -223,7 +223,7 @@ static void killCallback(WMenu *menu, WMenuItem *entry)
       }
       wfree(buffer);
       wtokenfree(argv, argc);
-      icon->editing = 0;
+      icon->flags.editing = 0;
       WCHANGE_STATE(WSTATE_NORMAL);
     });
 }
@@ -394,7 +394,7 @@ static void omnipresentCallback(WMenu *menu, WMenuItem *entry)
   failed = 0;
   for (CFIndex i = 0; i < CFArrayGetCount(selectedIcons); i++) {
     aicon = (WAppIcon *)CFArrayGetValueAtIndex(selectedIcons, i);
-    if (wClipMakeIconOmnipresent(aicon, !aicon->omnipresent) == WO_FAILED)
+    if (wClipMakeIconOmnipresent(aicon, !aicon->flags.omnipresent) == WO_FAILED)
       failed++;
     else if (aicon->icon->selected)
       wIconSelect(aicon->icon);
@@ -424,7 +424,7 @@ static void removeIcons(CFMutableArrayRef icons, WDock *dock)
 
   for (CFIndex i = 0; i < CFArrayGetCount(icons); i++) {
     aicon = (WAppIcon *)CFArrayGetValueAtIndex(icons, i);
-    keepit = aicon->running && wApplicationOf(aicon->main_window);
+    keepit = aicon->flags.running && wApplicationOf(aicon->main_window);
     wDockDetach(dock, aicon);
     if (keepit) {
       /* XXX: can: aicon->icon == NULL ? */
@@ -546,13 +546,13 @@ static void attractIconsCallback(WMenu *menu, WMenuItem *entry)
   aicon = clip->screen_ptr->app_icon_list;
 
   while (aicon) {
-    if (!aicon->docked && wDockFindFreeSlot(clip, &x, &y)) {
+    if (!aicon->flags.docked && wDockFindFreeSlot(clip, &x, &y)) {
       x_pos = clip->x_pos + x * ICON_SIZE;
       y_pos = clip->y_pos + y * ICON_SIZE;
       if (aicon->x_pos != x_pos || aicon->y_pos != y_pos)
         wMoveWindow(aicon->icon->core->window, aicon->x_pos, aicon->y_pos, x_pos, y_pos);
 
-      aicon->attracted = 1;
+      aicon->flags.attracted = 1;
       if (!aicon->icon->shadowed) {
         aicon->icon->shadowed = 1;
         update_icon = True;
@@ -748,7 +748,7 @@ static WAppIcon *mainIconCreate(WScreen *scr, int type, const char *name)
 #endif
   btn->x_pos = x_pos;
   btn->y_pos = 0;
-  btn->docked = 1;
+  btn->flags.docked = 1;
   if (type == WM_CLIP || (type == WM_DOCK && wPreferences.flags.clip_merged_in_dock))
     scr->clip_icon = btn;
 
@@ -795,41 +795,41 @@ static void launchDockedApplication(WAppIcon *btn, Bool withSelection)
 {
   WScreen *scr = btn->icon->core->screen_ptr;
 
-  if (!btn->launching &&
+  if (!btn->flags.launching &&
       ((!withSelection && btn->command != NULL) || (withSelection && btn->paste_command != NULL))) {
-    if (!btn->forced_dock) {
-      btn->relaunching = btn->running;
-      btn->running = 1;
+    if (!btn->flags.forced_dock) {
+      btn->flags.relaunching = btn->flags.running;
+      btn->flags.running = 1;
     }
     if (btn->wm_instance || btn->wm_class) {
       WWindowAttributes attr;
       memset(&attr, 0, sizeof(WWindowAttributes));
       wDefaultFillAttributes(btn->wm_instance, btn->wm_class, &attr, NULL, True);
 
-      if (!attr.no_appicon && !btn->buggy_app)
-        btn->launching = 1;
+      if (!attr.no_appicon && !btn->flags.buggy_app)
+        btn->flags.launching = 1;
       else
-        btn->running = 0;
+        btn->flags.running = 0;
     }
-    btn->drop_launch = 0;
-    btn->paste_launch = withSelection;
+    btn->flags.drop_launch = 0;
+    btn->flags.paste_launch = withSelection;
     scr->last_dock = btn->dock;
     btn->pid = execCommand(btn, (withSelection ? btn->paste_command : btn->command), NULL);
     if (btn->pid > 0) {
-      if (btn->buggy_app) {
+      if (btn->flags.buggy_app) {
         /* give feedback that the app was launched */
-        btn->launching = 1;
+        btn->flags.launching = 1;
         dockIconPaint(NULL, btn);
-        btn->launching = 0;
+        btn->flags.launching = 0;
         WMAddTimerHandler(200, 0, dockIconPaint, btn);
       } else {
         dockIconPaint(NULL, btn);
       }
     } else {
       WMLogWarning(_("could not launch application %s"), btn->command);
-      btn->launching = 0;
-      if (!btn->relaunching)
-        btn->running = 0;
+      btn->flags.launching = 0;
+      if (!btn->flags.relaunching)
+        btn->flags.running = 0;
     }
   }
 }
@@ -1236,7 +1236,7 @@ void wDockDestroy(WDock *dock)
   for (i = (dock->type == WM_CLIP) ? 1 : 0; i < dock->max_icons; i++) {
     aicon = dock->icon_array[i];
     if (aicon) {
-      int keepit = aicon->running && wApplicationOf(aicon->main_window);
+      int keepit = aicon->flags.running && wApplicationOf(aicon->main_window);
       wDockDetach(dock, aicon);
       if (keepit) {
         /* XXX: can: aicon->icon == NULL ? */
@@ -1294,7 +1294,7 @@ void wClipIconPaint(WAppIcon *aicon)
 
   wfree(ws_name);
 
-  if (aicon->launching)
+  if (aicon->flags.launching)
     XFillRectangle(dpy, aicon->icon->core->window, scr->stipple_gc,
                    0, 0, wPreferences.icon_size, wPreferences.icon_size);
 
@@ -1358,17 +1358,17 @@ static CFMutableDictionaryRef _dockCreateIconState(WAppIcon *btn)
                                      &kCFTypeDictionaryValueCallBacks);
     CFDictionaryAddValue(node, dCommand, command);
     CFDictionaryAddValue(node, dName, name);
-    CFDictionaryAddValue(node, dAutoLaunch, btn->auto_launch ? dYes : dNo);
-    CFDictionaryAddValue(node, dLock, btn->lock ? dYes : dNo);
-    CFDictionaryAddValue(node, dForced, btn->forced_dock ? dYes : dNo);
-    CFDictionaryAddValue(node, dBuggyApplication, btn->buggy_app ? dYes : dNo);
+    CFDictionaryAddValue(node, dAutoLaunch, btn->flags.auto_launch ? dYes : dNo);
+    CFDictionaryAddValue(node, dLock, btn->flags.lock ? dYes : dNo);
+    CFDictionaryAddValue(node, dForced, btn->flags.forced_dock ? dYes : dNo);
+    CFDictionaryAddValue(node, dBuggyApplication, btn->flags.buggy_app ? dYes : dNo);
     CFDictionaryAddValue(node, dPosition, position);
 
     CFRelease(command);
     CFRelease(name);
     CFRelease(position);
 
-    omnipresent = btn->omnipresent ? dYes : dNo;
+    omnipresent = btn->flags.omnipresent ? dYes : dNo;
     if (btn->dock != btn->icon->core->screen_ptr->dock && (btn->xindex != 0 || btn->yindex != 0)) {
       CFDictionaryAddValue(node, dOmnipresent, omnipresent);
     }
@@ -1406,7 +1406,7 @@ static CFMutableDictionaryRef _dockCreateState(WDock *dock)
   for (i = (dock->type == WM_DOCK ? 0 : 1); i < dock->max_icons; i++) {
     WAppIcon *btn = dock->icon_array[i];
 
-    if (!btn || btn->attracted)
+    if (!btn || btn->flags.attracted)
       continue;
 
     icon_info = _dockCreateIconState(dock->icon_array[i]);
@@ -1577,22 +1577,22 @@ static WAppIcon *_dockRestoreIconState(WScreen *scr, CFDictionaryRef info, int t
   /* check auto launch */
   value = CFDictionaryGetValue(info, dAutoLaunch);
 
-  aicon->auto_launch = getBooleanDockValue(value, dAutoLaunch);
+  aicon->flags.auto_launch = getBooleanDockValue(value, dAutoLaunch);
 
   /* check lock */
   value = CFDictionaryGetValue(info, dLock);
 
-  aicon->lock = getBooleanDockValue(value, dLock);
+  aicon->flags.lock = getBooleanDockValue(value, dLock);
 
   /* check if it wasn't normally docked */
   value = CFDictionaryGetValue(info, dForced);
 
-  aicon->forced_dock = getBooleanDockValue(value, dForced);
+  aicon->flags.forced_dock = getBooleanDockValue(value, dForced);
 
   /* check if we can rely on the stuff in the app */
   value = CFDictionaryGetValue(info, dBuggyApplication);
 
-  aicon->buggy_app = getBooleanDockValue(value, dBuggyApplication);
+  aicon->flags.buggy_app = getBooleanDockValue(value, dBuggyApplication);
 
   /* get position in the dock */
   value = CFDictionaryGetValue(info, dPosition);
@@ -1615,10 +1615,10 @@ static WAppIcon *_dockRestoreIconState(WScreen *scr, CFDictionaryRef info, int t
   /* check if icon is omnipresent */
   value = CFDictionaryGetValue(info, dOmnipresent);
 
-  aicon->omnipresent = getBooleanDockValue(value, dOmnipresent);
+  aicon->flags.omnipresent = getBooleanDockValue(value, dOmnipresent);
 
-  aicon->running = 0;
-  aicon->docked = 1;
+  aicon->flags.running = 0;
+  aicon->flags.docked = 1;
 
   return aicon;
 }
@@ -1877,9 +1877,9 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
   }
 
   // Workspace Manager
-  dock->icon_array[0]->launching = 1;
-  dock->icon_array[0]->running = 0;
-  dock->icon_array[0]->lock = 1;
+  dock->icon_array[0]->flags.launching = 1;
+  dock->icon_array[0]->flags.running = 0;
+  dock->icon_array[0]->flags.lock = 1;
 
  finish:
   CFRelease(dock_state);
@@ -1889,15 +1889,15 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
 
 void wDockLaunchWithState(WAppIcon *btn, WSavedState *state)
 {
-  if (btn && btn->command && !btn->running && !btn->launching) {
-    btn->drop_launch = 0;
-    btn->paste_launch = 0;
+  if (btn && btn->command && !btn->flags.running && !btn->flags.launching) {
+    btn->flags.drop_launch = 0;
+    btn->flags.paste_launch = 0;
 
     btn->pid = execCommand(btn, btn->command, state);
 
     if (btn->pid > 0) {
-      if (!btn->forced_dock && !btn->buggy_app) {
-        btn->launching = 1;
+      if (!btn->flags.forced_dock && !btn->flags.buggy_app) {
+        btn->flags.launching = 1;
         dockIconPaint(NULL, btn);
       }
     }
@@ -1915,8 +1915,8 @@ void wDockDoAutoLaunch(WDock *dock, int workspace)
 
   for (int i = 0; i < dock->max_icons; i++) {
     btn = dock->icon_array[i];
-    if (!btn || !btn->auto_launch ||
-        !btn->command || btn->running || btn->launching ||
+    if (!btn || !btn->flags.auto_launch ||
+        !btn->command || btn->flags.running || btn->flags.launching ||
         !strcmp(btn->wm_instance, "Workspace")) {
       continue;
     }
@@ -2000,9 +2000,9 @@ int wDockReceiveDNDDrop(WScreen *scr, XEvent *event)
 
     btn = dock->icon_array[icon_pos];
 
-    if (!btn->forced_dock) {
-      btn->relaunching = btn->running;
-      btn->running = 1;
+    if (!btn->flags.forced_dock) {
+      btn->flags.relaunching = btn->flags.running;
+      btn->flags.running = 1;
     }
     if (btn->wm_instance || btn->wm_class) {
       WWindowAttributes attr;
@@ -2010,21 +2010,21 @@ int wDockReceiveDNDDrop(WScreen *scr, XEvent *event)
       wDefaultFillAttributes(btn->wm_instance, btn->wm_class, &attr, NULL, True);
 
       if (!attr.no_appicon)
-        btn->launching = 1;
+        btn->flags.launching = 1;
       else
-        btn->running = 0;
+        btn->flags.running = 0;
     }
 
-    btn->paste_launch = 0;
-    btn->drop_launch = 1;
+    btn->flags.paste_launch = 0;
+    btn->flags.drop_launch = 1;
     scr->last_dock = dock;
     btn->pid = execCommand(btn, btn->dnd_command, NULL);
     if (btn->pid > 0) {
       dockIconPaint(NULL, btn);
     } else {
-      btn->launching = 0;
-      if (!btn->relaunching)
-        btn->running = 0;
+      btn->flags.launching = 0;
+      if (!btn->flags.relaunching)
+        btn->flags.running = 0;
     }
   }
   return False;
@@ -2037,7 +2037,7 @@ Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon
   char *command = NULL;
   int index;
 
-  icon->editing = 0;
+  icon->flags.editing = 0;
 
   if (icon->command == NULL) {
     /* If icon->owner exists, it means the application is running */
@@ -2068,16 +2068,16 @@ Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon
   icon->yindex = y;
   icon->xindex = x;
 
-  icon->omnipresent = 0;
+  icon->flags.omnipresent = 0;
 
   icon->x_pos = dock->x_pos + x * ICON_SIZE;
   icon->y_pos = dock->y_pos + y * ICON_SIZE;
 
   dock->icon_count++;
 
-  icon->running = 1;
-  icon->launching = 0;
-  icon->docked = 1;
+  icon->flags.running = 1;
+  icon->flags.launching = 0;
+  icon->flags.docked = 1;
   icon->dock = dock;
   icon->icon->core->descriptor.handle_mousedown = iconMouseDown;
   icon->icon->core->descriptor.handle_enternotify = clipEnterNotify;
@@ -2216,7 +2216,7 @@ Bool wDockMoveIconBetweenDocks(WDock *src, WDock *dest, WAppIcon *icon, int x, i
    * Unless the icon does not have a command set
    */
   if (icon->command && (dest->type == WM_DOCK || dest->type == WM_DRAWER)) {
-    icon->attracted = 0;
+    icon->flags.attracted = 0;
     if (icon->icon->shadowed) {
       icon->icon->shadowed = 0;
       update_icon = True;
@@ -2260,10 +2260,10 @@ void wDockDetach(WDock *dock, WAppIcon *icon)
    */
   wClipMakeIconOmnipresent(icon, False);
 
-  icon->docked = 0;
+  icon->flags.docked = 0;
   icon->dock = NULL;
-  icon->attracted = 0;
-  icon->auto_launch = 0;
+  icon->flags.attracted = 0;
+  icon->flags.auto_launch = 0;
   if (icon->icon->shadowed) {
     icon->icon->shadowed = 0;
     update_icon = True;
@@ -2302,7 +2302,7 @@ void wDockDetach(WDock *dock, WAppIcon *icon)
   /* if the dock is not attached to an application or
    * the application did not set the appropriate hints yet,
    * destroy the icon */
-  if (!icon->running || !wApplicationOf(icon->main_window)) {
+  if (!icon->flags.running || !wApplicationOf(icon->main_window)) {
     wAppIconDestroy(icon);
   } else {
     icon->icon->core->descriptor.handle_mousedown = appIconMouseDown;
@@ -2496,8 +2496,8 @@ Bool wDockSnapIcon(WDock *dock, WAppIcon *icon, int req_x, int req_y, int *ret_x
       int neighbours = 0;
       int start, stop, k;
 
-      start = icon->omnipresent ? 0 : scr->current_workspace;
-      stop = icon->omnipresent ? scr->workspace_count : start + 1;
+      start = icon->flags.omnipresent ? 0 : scr->current_workspace;
+      stop = icon->flags.omnipresent ? scr->workspace_count : start + 1;
 
       aicon = NULL;
       for (k = start; k < stop; k++) {
@@ -2981,7 +2981,7 @@ static pid_t execCommand(WAppIcon *btn, const char *command, WSavedState *state)
       state->hidden = -1;
       state->miniaturized = -1;
       state->shaded = -1;
-      if (btn->dock == scr->dock || btn->dock->type == WM_DRAWER || btn->omnipresent)
+      if (btn->dock == scr->dock || btn->dock->type == WM_DRAWER || btn->flags.omnipresent)
         state->workspace = -1;
       else
         state->workspace = scr->current_workspace;
@@ -3177,8 +3177,8 @@ void wDockSetLevel(WDock *dock, int level)
 
 void wDockFinishLaunch(WAppIcon *icon)
 {
-  icon->launching = 0;
-  icon->relaunching = 0;
+  icon->flags.launching = 0;
+  icon->flags.relaunching = 0;
   dockIconPaint(NULL, icon);
 }
 
@@ -3224,7 +3224,7 @@ void wDockTrackWindowLaunch(WDock *dock, Window window)
     }
 
     if ((icon->wm_instance || icon->wm_class)
-        && (icon->launching || !icon->running)) {
+        && (icon->flags.launching || !icon->flags.running)) {
 
       if (icon->wm_instance && wm_instance && strcmp(icon->wm_instance, wm_instance) != 0)
         continue;
@@ -3235,7 +3235,7 @@ void wDockTrackWindowLaunch(WDock *dock, Window window)
       if (firstPass && command && icon->command && strcmp(icon->command, command) != 0)
         continue;
 
-      if (!icon->relaunching) {
+      if (!icon->flags.relaunching) {
         WApplication *wapp;
 
         /* Possibly an application that was docked with dockit,
@@ -3243,19 +3243,19 @@ void wDockTrackWindowLaunch(WDock *dock, Window window)
          * it was docked by force */
         wapp = wApplicationOf(window);
         if (!wapp) {
-          icon->forced_dock = 1;
-          icon->running = 0;
+          icon->flags.forced_dock = 1;
+          icon->flags.running = 0;
         }
-        if (!icon->forced_dock)
+        if (!icon->flags.forced_dock)
           icon->main_window = window;
       }
       found = True;
-      if (!wPreferences.no_animations && !icon->launching &&
+      if (!wPreferences.no_animations && !icon->flags.launching &&
           !dock->screen_ptr->flags.startup && !dock->collapsed) {
         WAppIcon *aicon;
         int x0, y0;
 
-        icon->launching = 1;
+        icon->flags.launching = 1;
         dockIconPaint(NULL, icon);
 
         aicon = wAppIconCreateForDock(dock->screen_ptr, NULL,
@@ -3267,7 +3267,7 @@ void wDockTrackWindowLaunch(WDock *dock, Window window)
         if (dock->lowered)
           wLowerFrame(aicon->icon->core);
         XMapWindow(dpy, aicon->icon->core->window);
-        aicon->launching = 1;
+        aicon->flags.launching = 1;
         wAppIconPaint(aicon);
         wSlideWindow(aicon->icon->core->window, x0, y0, icon->x_pos, icon->y_pos);
         XUnmapWindow(dpy, aicon->icon->core->window);
@@ -3339,9 +3339,9 @@ static void trackDeadProcess(pid_t pid, unsigned char status, WDock *dock)
     if (!icon)
       continue;
 
-    if (icon->launching && icon->pid == pid) {
-      if (!icon->relaunching) {
-        icon->running = 0;
+    if (icon->flags.launching && icon->pid == pid) {
+      if (!icon->flags.relaunching) {
+        icon->flags.running = 0;
         icon->main_window = None;
       }
       wDockFinishLaunch(icon);
@@ -3351,11 +3351,11 @@ static void trackDeadProcess(pid_t pid, unsigned char status, WDock *dock)
         char *cmd;
 
 #ifdef USE_DOCK_XDND
-        if (icon->drop_launch)
+        if (icon->flags.drop_launch)
           cmd = icon->dnd_command;
         else
 #endif
-          if (icon->paste_launch)
+          if (icon->flags.paste_launch)
             cmd = icon->paste_command;
           else
             cmd = icon->command;
@@ -3437,7 +3437,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
   int index = 0;
   int x_pos;
   int n_selected;
-  int appIsRunning = aicon->running && aicon->icon && aicon->icon->owner;
+  int appIsRunning = aicon->flags.running && aicon->icon && aicon->icon->owner;
 
   if (dock->type == WM_DOCK) {
     /* Dock position menu */
@@ -3480,7 +3480,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
           entry->text = _("Toggle Omnipresent");
         } else {
           entry->flags.indicator = 1;
-          entry->flags.indicator_on = aicon->omnipresent;
+          entry->flags.indicator_on = aicon->flags.omnipresent;
           entry->flags.indicator_type = MI_CHECK;
           entry->text = _("Omnipresent");
         }
@@ -3524,7 +3524,7 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
       if (scr->clip_submenu)
         updateWorkspaceMenu(scr->clip_submenu, aicon);
 
-      wMenuSetEnabled(dock->menu, index, !aicon->omnipresent);
+      wMenuSetEnabled(dock->menu, index, !aicon->flags.omnipresent);
     }
 
     /* remove icon(s) */
@@ -3659,8 +3659,8 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
         else if (wPreferences.flags.clip_merged_in_dock) {
           // Is actually the dock
           if (btn->command) {
-            if (!btn->launching
-                && (!btn->running || (event->xbutton.state & ControlMask))) {
+            if (!btn->flags.launching
+                && (!btn->flags.running || (event->xbutton.state & ControlMask))) {
               launchDockedApplication(btn, False);
             }
           }
@@ -3673,7 +3673,7 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
         toggleCollapsed(dock);
       }
       else if (btn->command) {
-        if (!btn->launching && (!btn->running || (event->xbutton.state & ControlMask)))
+        if (!btn->flags.launching && (!btn->flags.running || (event->xbutton.state & ControlMask)))
           launchDockedApplication(btn, False);
       }
     }
@@ -3980,7 +3980,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
 
   WMLogInfo("Dock iconMouseDown");
   
-  if (aicon->editing || WCHECK_STATE(WSTATE_MODAL))
+  if (aicon->flags.editing || WCHECK_STATE(WSTATE_MODAL))
     return;
 
   scr->last_dock = dock;
@@ -4045,7 +4045,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
   }
   else if (event->xbutton.button == Button2 && dock->type == WM_CLIP &&
            (event->xbutton.state & ShiftMask) && aicon != scr->clip_icon) {
-    wClipMakeIconOmnipresent(aicon, !aicon->omnipresent);
+    wClipMakeIconOmnipresent(aicon, !aicon->flags.omnipresent);
   }
   else if (event->xbutton.button == Button3) {
     if (event->xbutton.send_event &&
@@ -4061,7 +4061,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
   else if (event->xbutton.button == Button2) {
     WAppIcon *btn = desc->parent;
 
-    if (!btn->launching && (!btn->running || (event->xbutton.state & ControlMask)))
+    if (!btn->flags.launching && (!btn->flags.running || (event->xbutton.state & ControlMask)))
       launchDockedApplication(btn, True);
   }
   else if (event->xbutton.button == Button4 && dock->type == WM_CLIP) {
@@ -4259,23 +4259,23 @@ int wClipMakeIconOmnipresent(WAppIcon *aicon, int omnipresent)
   if ((scr->dock && aicon->dock == scr->dock) || aicon == scr->clip_icon)
     return WO_NOT_APPLICABLE;
 
-  if (aicon->omnipresent == omnipresent)
+  if (aicon->flags.omnipresent == omnipresent)
     return WO_SUCCESS;
 
   if (omnipresent) {
     if (iconCanBeOmnipresent(aicon)) {
-      aicon->omnipresent = 1;
+      aicon->flags.omnipresent = 1;
       new_entry = wmalloc(sizeof(WAppIconChain));
       new_entry->aicon = aicon;
       new_entry->next = scr->global_icons;
       scr->global_icons = new_entry;
       scr->global_icon_count++;
     } else {
-      aicon->omnipresent = 0;
+      aicon->flags.omnipresent = 0;
       status = WO_FAILED;
     }
   } else {
-    aicon->omnipresent = 0;
+    aicon->flags.omnipresent = 0;
     if (aicon == scr->global_icons->aicon) {
       tmp = scr->global_icons->next;
       wfree(scr->global_icons);

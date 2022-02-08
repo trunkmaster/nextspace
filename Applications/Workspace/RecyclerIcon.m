@@ -288,9 +288,9 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
  
   btn = wAppIconCreateForDock(dock->screen_ptr, "-", "Recycler", "GNUstep", TILE_NORMAL);
   btn->yindex = rec_pos;
-  btn->running = 1;
-  btn->launching = 0;
-  btn->lock = 1;
+  btn->flags.running = 1;
+  btn->flags.launching = 0;
+  btn->flags.lock = 1;
   btn->command = wstrdup("-");
   btn->dnd_command = NULL;
   btn->paste_command = NULL;
@@ -362,7 +362,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   new_yindex = [RecyclerIcon newPositionInDock:dock];
   
   // 3. Place Recycler to the new position if Dock has room.
-  if (rec_icon->docked) {
+  if (rec_icon->flags.docked) {
     if (new_yindex == 0) {
       // Dock has no room
       NSDebugLLog(@"Recycler", @"Recycler detach");

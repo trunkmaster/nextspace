@@ -72,7 +72,7 @@ iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2,
   parent = wcore->descriptor.parent;
 
   /* if it is an application icon */
-  if (wcore->descriptor.parent_type == WCLASS_APPICON && !((WAppIcon *) parent)->docked) {
+  if (wcore->descriptor.parent_type == WCLASS_APPICON && !((WAppIcon *) parent)->flags.docked) {
     *retX = ((WAppIcon *) parent)->x_pos;
     *retY = ((WAppIcon *) parent)->y_pos;
 

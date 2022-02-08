@@ -161,7 +161,7 @@ BOOL WMIsDockAppAutolaunch(int position)
 {
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
     
-  if (!appicon || appicon->auto_launch == 0) {
+  if (!appicon || appicon->flags.auto_launch == 0) {
     return NO;
   }
   else {
@@ -173,7 +173,7 @@ void WMSetDockAppAutolaunch(int position, BOOL autolaunch)
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
     
   if (appicon) {
-    appicon->auto_launch = (autolaunch == YES) ? 1 : 0;
+    appicon->flags.auto_launch = (autolaunch == YES) ? 1 : 0;
     wScreenSaveState(wDefaultScreen());
   }
 }
@@ -181,7 +181,7 @@ BOOL WMIsDockAppLocked(int position)
 {
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
     
-  if (!appicon || appicon->lock == 0) {
+  if (!appicon || appicon->flags.lock == 0) {
     return NO;
   }
   else {
@@ -193,7 +193,7 @@ void WMSetDockAppLocked(int position, BOOL lock)
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
     
   if (appicon) {
-    appicon->lock = (lock == YES) ? 1 : 0;
+    appicon->flags.lock = (lock == YES) ? 1 : 0;
     wScreenSaveState(wDefaultScreen());
   }
 }
