@@ -1794,9 +1794,9 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
         // - mouse moved inside menu (highlight/unhighlight items, open/close submenus)
         // - mouse moved from submenu to menu and vice versa
 
-        WMLogInfo("MotionNotify: mouse_menu: %s event_menu: %s",
-                  mouse_menu ? mouse_menu->frame->title : "NONE",
-                  event_menu ? event_menu->frame->title : "NONE");
+        /* WMLogInfo("MotionNotify: mouse_menu: %s event_menu: %s", */
+        /*           mouse_menu ? mouse_menu->frame->title : "NONE", */
+        /*           event_menu ? event_menu->frame->title : "NONE"); */
 
         if (mouse_menu == NULL) { /* mouse moved out of menu */
           /* mouse could leave menu:
