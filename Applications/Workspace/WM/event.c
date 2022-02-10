@@ -1235,6 +1235,13 @@ static void handleEnterNotify(XEvent * event)
 #ifdef BALLOON_TEXT
   wBalloonEnteredObject(scr, desc);
 #endif
+
+  if (wPreferences.scrollable_menus) {
+    WMenu *menu = wMenuUnderPointer(scr);
+    if (menu != NULL && menu->timer == NULL) {
+      wMenuSlideIfNeeded(menu);
+    }
+  }
 }
 
 static void handleLeaveNotify(XEvent * event)
@@ -1875,49 +1882,24 @@ static void handleKeyRelease(XEvent * event)
 
 static void handleMotionNotify(XEvent * event)
 {
-  WScreen *scr = wDefaultScreen();
-
-#ifdef NEXTSPACE
   WWindow *wwin = wWindowFor(event->xmotion.window);
 
-  if (event->xmotion.state == 0 || wwin == NULL) {
-    return;
-  }
-
-  if (event->xmotion.state & Button1Mask &&
-      XGrabPointer(dpy, event->xmotion.window, False,
-                   ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
-                   GrabModeAsync, GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
-    // wMouseMoveWindow checks for button on ButtonRelease event inside it's loop
-
-    event->xbutton.button = Button1;
-    if (event->xmotion.window == wwin->frame->titlebar->window ||
-        event->xmotion.state & MOD_MASK) {
-      /* move the window */
-      wMouseMoveWindow(wwin, event);
-    }
-    else if (IS_RESIZABLE(wwin) &&
-             event->xmotion.window == wwin->frame->resizebar->window) {
-      wMouseResizeWindow(wwin, event);
-    }
-    
-    XUngrabPointer(dpy, CurrentTime);
-  }
-#endif
-
-  if (wPreferences.scrollable_menus) {
-    WMPoint p = WMMakePoint(event->xmotion.x_root, event->xmotion.y_root);
-    WMRect rect = wGetRectForHead(scr, wGetHeadForPoint(scr, p));
-
-    if (scr->flags.jump_back_pending ||
-        p.x <= (rect.pos.x + 1) ||
-        p.x >= (rect.pos.x + rect.size.width - 2) ||
-        p.y <= (rect.pos.y + 1) || p.y >= (rect.pos.y + rect.size.height - 2)) {
-      WMenu *menu;
-
-      menu = wMenuUnderPointer(scr);
-      if (menu != NULL)
-        wMenuScroll(menu);
+  if (event->xmotion.state != 0 && wwin != NULL) {
+    if (event->xmotion.state & Button1Mask &&
+        XGrabPointer(dpy, event->xmotion.window, False,
+                     ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
+                     GrabModeAsync, GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
+      // wMouseMoveWindow checks for button on ButtonRelease event inside it's loop
+      event->xbutton.button = Button1;
+      if (event->xmotion.window == wwin->frame->titlebar->window ||
+          event->xmotion.state & MOD_MASK) {
+        /* move the window */
+        wMouseMoveWindow(wwin, event);
+      } else if (IS_RESIZABLE(wwin) &&
+                 event->xmotion.window == wwin->frame->resizebar->window) {
+        wMouseResizeWindow(wwin, event);
+      }
+      XUngrabPointer(dpy, CurrentTime);
     }
   }
 }

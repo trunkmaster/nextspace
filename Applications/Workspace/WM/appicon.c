@@ -459,23 +459,14 @@ void save_appicon(WAppIcon *aicon, Bool dock)
 static void openApplicationMenu(WApplication *wapp, int x, int y)
 {
   WMenu *menu = wapp->app_menu->brother;
-  WScreen *scr = wapp->main_wwin->screen;
 
   x -= MENU_WIDTH(menu) / 2;
-  if (x + MENU_WIDTH(menu) > scr->width) {
-    x = scr->width - MENU_WIDTH(menu) + 3;
-  }
   if (x < 0) {
     x = 0;
   }
 
   /* mouse pointer will be located at the middle of titlebar */
   y -= menu->frame->titlebar->height / 2;
-  /* mouse pointer will be below last menu item, so distance to last will be the same
-     as in case above with opposite direction */
-  if (y + MENU_HEIGHT(menu) > scr->height) {
-    y -= MENU_HEIGHT(menu);
-  }
   if (y < 0 ) {
     y = 0;
   }

@@ -363,7 +363,7 @@ WDefaultEntry optionList[] = {
   {"StickyIcons", "YES", NULL, &wPreferences.sticky_icons, getBool, setStickyIcons, NULL, NULL},
   {"SaveSessionOnExit", "NO", NULL, &wPreferences.save_session_on_exit, getBool, NULL, NULL, NULL},
   {"WrapMenus", "NO", NULL, &wPreferences.wrap_menus, getBool, NULL, NULL, NULL},
-  {"ScrollableMenus", "NO", NULL, &wPreferences.scrollable_menus, getBool, NULL, NULL, NULL},
+  {"ScrollableMenus", "YES", NULL, &wPreferences.scrollable_menus, getBool, NULL, NULL, NULL},
   {"MenuScrollSpeed", "medium", seSpeeds, &wPreferences.menu_scroll_speed, getEnum, NULL, NULL, NULL},
   {"IconSlideSpeed", "Slow", seSpeeds, &wPreferences.icon_slide_speed, getEnum, NULL, NULL, NULL},
   {"ClipAutoraiseDelay", "600", NULL, &wPreferences.clip_auto_raise_delay, getInt, NULL, NULL, NULL},

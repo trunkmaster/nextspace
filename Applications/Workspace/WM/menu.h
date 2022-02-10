@@ -63,6 +63,7 @@ typedef struct WMenu {
   WCoreWindow *menu;		       /* the menu window */
   Pixmap menu_texture_data;
   int frame_x, frame_y;	               /* position of the frame in root window */
+  int old_frame_x, old_frame_y;	       /* position of the frame before slide */
 
   WMenuItem **items;                   /* array of items. shared by the menu and it's "brother" */
   short allocated_items;               /* number of items allocated in `items` array */
@@ -122,7 +123,9 @@ void wMenuUnmap(WMenu *menu);
 void wMenuSetEnabled(WMenu *menu, int index, int enable);
 void wMenuItemSetEnabled(WMenu *menu, WMenuItem *item, Bool enable);
 void wMenuMove(WMenu *menu, int x, int y, int submenus);
-void wMenuScroll(WMenu *menu);
+
+void wMenuSlideToScreenIfNeeded(CFRunLoopTimerRef timer, void *data);
+
 WMenu *wMenuUnderPointer(WScreen *screen);
 void wMenuSaveState(WScreen *scr);
 void wMenuRestoreState(WScreen *scr);
