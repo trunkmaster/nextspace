@@ -124,7 +124,7 @@ void wMenuSetEnabled(WMenu *menu, int index, int enable);
 void wMenuItemSetEnabled(WMenu *menu, WMenuItem *item, Bool enable);
 void wMenuMove(WMenu *menu, int x, int y, int submenus);
 
-void wMenuSlideToScreenIfNeeded(CFRunLoopTimerRef timer, void *data);
+void wMenuSlideIfNeeded(WMenu *menu);
 
 WMenu *wMenuUnderPointer(WScreen *screen);
 void wMenuSaveState(WScreen *scr);
