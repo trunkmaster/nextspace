@@ -4055,8 +4055,11 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
       WMLogWarning("pointer grab failed for dockicon menu");
       return;
     }
-
-    openDockMenu(dock, aicon, event);
+    if (aicon->flags.running) {
+      appIconMouseDown(desc, event);
+    } else {
+      openDockMenu(dock, aicon, event);
+    }
   }
   else if (event->xbutton.button == Button2) {
     WAppIcon *btn = desc->parent;
