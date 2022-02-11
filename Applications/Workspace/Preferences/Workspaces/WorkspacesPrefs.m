@@ -85,16 +85,12 @@
   [box removeFromSuperview];
 
   // Names and Numbers
-  wsReps = [[NSMutableArray alloc]
-                initWithObjects:ws1,ws2,ws3,ws4,ws5,ws6,ws7,ws8,ws9,ws10,nil];
+  wsReps = [[NSMutableArray alloc] initWithObjects:ws1,ws2,ws3,ws4,ws5,ws6,ws7,ws8,ws9,ws10,nil];
 
-  wmStateWS = [[NSMutableArray alloc]
-                        initWithArray:[[self _wmState] objectForKey:@"Workspaces"]];
-  wsCount = [wmStateWS count];
-  for (int i = 9; i >= 0; i--) {
-    if (i >= wsCount) {
-      [[wsReps objectAtIndex:i] removeFromSuperview];
-    }
+  wmStateWS = [[NSMutableArray alloc] initWithArray:[[self _wmState] objectForKey:@"Workspaces"]];
+  wsCount = (wmStateWS && [wmStateWS count] > 0) ? [wmStateWS count] : 1;
+  for (int i = 9; i >= wsCount; i--) {
+    [[wsReps objectAtIndex:i] removeFromSuperview];
   }
 
   [wsNumber selectItemWithTag:wsCount];
@@ -139,11 +135,11 @@
   [self arrangeWorkspaceReps];
   [[wsReps objectAtIndex:wDefaultScreen()->current_workspace] performClick:self];
 
-  NSLog(@"switchKey = %@ (%li/%li), directSwitchKey = %@ (%li/%li)",
-        [switchKey className], [[switchKey selectedItem] tag],
-        [switchKey numberOfItems],
-        [directSwitchKey className], [[directSwitchKey selectedItem] tag],
-        [directSwitchKey numberOfItems]);
+  // NSLog(@"switchKey = %@ (%li/%li), directSwitchKey = %@ (%li/%li)",
+  //       [switchKey className], [[switchKey selectedItem] tag],
+  //       [switchKey numberOfItems],
+  //       [directSwitchKey className], [[directSwitchKey selectedItem] tag],
+  //       [directSwitchKey numberOfItems]);
   
   // Shortcuts
   shortcut = [wmDefaults objectForKey:@"NextWorkspaceKey"];
@@ -195,16 +191,19 @@
 - (void)selectWorkspace:(id)sender
 {
   NSButton *button;
-  NSString *name;
+  NSString *name = nil;
 
-  // NSLog(@"selectWorkspace: sender == %@ (%@) buttons # %lu", [sender className], sender, [wsButtons count]);
-  for (int i=0; i < wsCount; i++) {
+  for (int i = 0; i < wsCount; i++) {
     button = [wsReps objectAtIndex:i];
-    [button setState:(sender == button) ? NSOnState : NSOffState];
-    if ([sender isEqualTo:button] != NO) {
-      name = [[wmStateWS objectAtIndex:i] objectForKey:@"Name"];
-      [nameField setStringValue:name];
+    if (sender == button) {
+      [button setState:NSOnState];
+      if ([wmStateWS count] > 0) {
+        name = [[wmStateWS objectAtIndex:i] objectForKey:@"Name"];
+      }
+      [nameField setStringValue:(name ? name : @"Desktop 1")];
       selectedWSRep = button;
+    } else {
+      [button setState:NSOffState];
     }
   }
 }
@@ -224,21 +223,23 @@
 
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
-  NSDictionary *wsInfo;
-  NSString     *wsName;
+  NSDictionary *wsInfo = nil;
+  NSString     *wsName = nil;
 
   // NSLog(@"Text changed in %@", [object className]);
-  if ([aNotification object] != nameField)
+  if ([aNotification object] != nameField) {
     return;
+  }
 
-  wsInfo = [wmStateWS objectAtIndex:[wsReps indexOfObject:selectedWSRep]];
+  if ([wmStateWS count] > 0) {
+    wsInfo = [wmStateWS objectAtIndex:[wsReps indexOfObject:selectedWSRep]];
+  }
   wsName = [nameField stringValue];
   
   if ([wsName rangeOfCharacterFromSet:[NSCharacterSet alphanumericCharacterSet]].location != NSNotFound &&
-      [wsName isEqualTo:[wsInfo objectForKey:@"Name"]] == NO) {
+      (!wsInfo || [wsName isEqualTo:[wsInfo objectForKey:@"Name"]] == NO)) {
     [changeNameBtn setEnabled:YES];
-  }
-  else {
+  } else {
     [changeNameBtn setEnabled:NO];
   }
 }
