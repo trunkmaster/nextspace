@@ -1078,19 +1078,6 @@ void wMenuMapAt(WMenu *menu, int x, int y, int keyboard)
   }
 
   if (!menu->flags.mapped) {
-    if (wPreferences.wrap_menus) {
-      WScreen *scr = menu->frame->screen_ptr;
-      WMRect rect = wGetRectForHead(scr, wGetHeadForPointerLocation(scr));
-
-      if (x < rect.pos.x)
-        x = rect.pos.x;
-      if (y < rect.pos.y)
-        y = rect.pos.y;
-      if (x + MENU_WIDTH(menu) > rect.pos.x + rect.size.width)
-        x = rect.pos.x + rect.size.width - MENU_WIDTH(menu);
-      if (y + MENU_HEIGHT(menu) > rect.pos.y + rect.size.height)
-        y = rect.pos.y + rect.size.height - MENU_HEIGHT(menu);
-    }
     menu->frame_x = x;
     menu->frame_y = y;
     wMenuMap(menu);
@@ -1119,7 +1106,6 @@ void wMenuUnmap(WMenu *menu)
 
   XUnmapWindow(dpy, menu->frame->core->window);
   menu->flags.mapped = 0;
-  menu->flags.open_to_left = 0;
 
   for (i = 0; i < menu->submenus_count; i++) {
     if (menu->submenus[i] != NULL && menu->submenus[i]->flags.mapped
@@ -1225,35 +1211,18 @@ static void selectItem(WMenu *menu, int items_count)
       if (!submenu->flags.mapped) {
         int x, y;
 
-        if (wPreferences.wrap_menus) {
-          if (menu->flags.open_to_left)
-            submenu->flags.open_to_left = 1;
-
-          if (submenu->flags.open_to_left) {
-            x = menu->frame_x - MENU_WIDTH(submenu);
-            if (x < 0) {
-              x = 0;
-              submenu->flags.open_to_left = 0;
-            }
-          } else {
-            x = menu->frame_x + MENU_WIDTH(menu);
-            if (x + MENU_WIDTH(submenu) >= menu->frame->screen_ptr->width) {
-              x = menu->frame_x - MENU_WIDTH(submenu);
-              submenu->flags.open_to_left = 1;
-            }
-          }
-        } else {
-          x = menu->frame_x + MENU_WIDTH(menu);
-        }
+        x = menu->frame_x + MENU_WIDTH(menu);
 
         if (wPreferences.align_menus) {
           y = menu->frame_y;
         } else {
           y = menu->frame_y + menu->item_height * items_count;
-          if (menu->flags.titled)
+          if (menu->flags.titled) {
             y += menu->frame->top_width;
-          if (menu->submenus[item->submenu_index]->flags.titled)
+          }
+          if (menu->submenus[item->submenu_index]->flags.titled) {
             y -= menu->submenus[item->submenu_index]->frame->top_width;
+          }
         }
 
         wMenuMapAt(menu->submenus[item->submenu_index], x, y, False);
@@ -1484,46 +1453,7 @@ static void dragScrollMenuCallback(CFRunLoopTimerRef timer, void *data)
   }
 }
 
-/* #define MENU_SCROLL_BORDER   5 */
-
-/* static int isPointNearBoder(WMenu *menu, int x, int y) */
-/* { */
-/*   int menuX1 = menu->frame_x; */
-/*   int menuY1 = menu->frame_y; */
-/*   int menuX2 = menu->frame_x + MENU_WIDTH(menu); */
-/*   int menuY2 = menu->frame_y + MENU_HEIGHT(menu); */
-/*   int flag = 0; */
-/*   int head = wGetHeadForPoint(menu->frame->screen_ptr, WMMakePoint(x, y)); */
-/*   WMRect rect = wGetRectForHead(menu->frame->screen_ptr, head); */
-
-/*   /\* XXX: handle screen joins properly !! *\/ */
-
-/*   if (x >= menuX1 && x <= menuX2 && */
-/*       (y < rect.pos.y + MENU_SCROLL_BORDER || y >= rect.pos.y + rect.size.height - MENU_SCROLL_BORDER)) */
-/*     flag = 1; */
-/*   else if (y >= menuY1 && y <= menuY2 && */
-/*            (x < rect.pos.x + MENU_SCROLL_BORDER || x >= rect.pos.x + rect.size.width - MENU_SCROLL_BORDER)) */
-/*     flag = 1; */
-
-/*   return flag; */
-/* } */
-
-typedef struct _delay {
-  WMenu *menu;
-  int ox, oy;
-} _delay;
-
-static void menuJumpBackCallback(CFRunLoopTimerRef timer, void *user_param)
-{
-  _delay *dl = (_delay *) user_param;
-
-  wMenuMove(dl->menu, dl->ox, dl->oy, True);
-  dl->menu->jump_back = NULL;
-  dl->menu->menu->screen_ptr->flags.jump_back_pending = 0;
-  wfree(dl);
-  
-  WMDeleteTimerHandler(timer);
-}
+static void trackMenuMouse(WMenu *menu);
 
 Bool isMenuContainsSubmenu(WMenu *menu, WMenu *submenu)
 {
@@ -1532,7 +1462,7 @@ Bool isMenuContainsSubmenu(WMenu *menu, WMenu *submenu)
 
   for (int i = 0; i < menu->submenus_count; i++) {
     smenu = menu->submenus[i];
-    if (smenu == menu) {
+    if (smenu == submenu || smenu->brother == submenu) {
       result = True;
       break;
     } else if (smenu->submenus_count > 0) {
@@ -1542,88 +1472,6 @@ Bool isMenuContainsSubmenu(WMenu *menu, WMenu *submenu)
     }
   }
   return result;
-}
-
-static void trackMenuMouse(WMenu *menu)
-{
-  WMenu *smenu;
-  WMenu *omenu = parentMenu(menu);
-  WScreen *scr = menu->frame->screen_ptr;
-  int done = 0;
-  int jump_back = 0;
-  XEvent ev;
-
-  if (omenu->jump_back) {
-    WMDeleteTimerHandler(omenu->jump_back);
-  }
-  if (!wPreferences.wrap_menus || omenu->flags.app_menu) {
-    jump_back = 1;
-  }
-  
-  if (!wPreferences.wrap_menus) {
-    raiseMenus(omenu, True);
-  } else {
-    raiseMenus(menu, False);
-  }
-
-  WMLogInfo("Entering wMenuScroll event loop.");
-  while (!done) {
-    WMNextEvent(dpy, &ev);
-    WMLogInfo("Event");
-    
-    switch (ev.type)
-      {
-      case LeaveNotify:
-        {
-          smenu = wMenuUnderPointer(scr);
-          if (smenu == NULL ||
-              ((isMenuContainsSubmenu(menu, smenu) == False) && smenu != menu)) {
-            done = 1;
-          }
-        }
-        break;
-      case ButtonPress:
-        {
-          Bool click_on_title = False;
-          /* True if we push on title, or drag the omenu to other position */
-          click_on_title = ev.xbutton.x_root >= omenu->frame_x &&
-            ev.xbutton.x_root <= omenu->frame_x + MENU_WIDTH(omenu) &&
-            ev.xbutton.y_root >= omenu->frame_y &&
-            ev.xbutton.y_root <= omenu->frame_y + omenu->frame->top_width;
-          WMHandleEvent(&ev);
-          smenu = wMenuUnderPointer(scr);
-          if (smenu == NULL || (smenu && smenu->flags.tornoff && smenu != omenu)) {
-            done = 1;
-          } else if (smenu == omenu && click_on_title) {
-            jump_back = 0;
-            done = 1;
-          }
-        }
-        break;
-      case KeyPress:
-        done = 1;
-      default:
-        WMHandleEvent(&ev);
-        break;
-      }
-  }
-
-  WMLogInfo("Exiting wMenuScroll event loop.");
-  
-  if (jump_back) {
-    _delay *delayer;
-
-    if (!omenu->jump_back) {
-      delayer = wmalloc(sizeof(_delay));
-      delayer->menu = omenu;
-      delayer->ox = omenu->old_frame_x;
-      delayer->oy = omenu->old_frame_y;
-      omenu->jump_back = delayer;
-      scr->flags.jump_back_pending = 1;
-    } else
-      delayer = omenu->jump_back;
-    WMAddTimerHandler(MENU_JUMP_BACK_DELAY, 0, menuJumpBackCallback, delayer);
-  }
 }
 
 static void slideMenuCallback(CFRunLoopTimerRef timer, void *data)
@@ -1645,6 +1493,80 @@ static void slideMenuCallback(CFRunLoopTimerRef timer, void *data)
   }
 }
 
+static void slideMenuBackCallback(CFRunLoopTimerRef timer, void *data)
+{
+  WMenu *menu = (WMenu *)data;
+  WMenu *parent = parentMenu(menu);
+  
+  if (menu->old_frame_y > 0 && menu->frame_y != menu->old_frame_y) {
+    wMenuMove(parent, parent->frame_x, parent->frame_y + 1, True);
+  } else {
+    /* don't need to scroll anymore */
+    if (menu->timer) {
+      WMDeleteTimerHandler(menu->timer);
+    }
+    menu->timer = NULL;
+    menu->old_frame_y = -1;
+  }
+}
+
+static void trackMenuMouse(WMenu *menu)
+{
+  WMenu *smenu;
+  WMenu *omenu = parentMenu(menu);
+  WScreen *scr = menu->frame->screen_ptr;
+  int done = 0;
+  XEvent ev;
+
+  if (omenu->timer) {
+    WMDeleteTimerHandler(omenu->timer);
+  }
+  
+  raiseMenus(omenu, True);
+
+  /* WMLogInfo("Entering wMenuScroll event loop."); */
+  while (!done) {
+    WMNextEvent(dpy, &ev);
+    switch (ev.type)
+      {
+      case LeaveNotify:
+        {
+          smenu = wMenuUnderPointer(scr);
+          if (smenu == NULL || ((isMenuContainsSubmenu(menu, smenu) == False) && smenu != menu)) {
+            done = 1;
+          }
+        }
+        break;
+      case ButtonPress:
+        {
+          Bool click_on_title = False;
+          /* True if we push on title, or drag the omenu to other position */
+          click_on_title = ev.xbutton.x_root >= omenu->frame_x &&
+            ev.xbutton.x_root <= omenu->frame_x + MENU_WIDTH(omenu) &&
+            ev.xbutton.y_root >= omenu->frame_y &&
+            ev.xbutton.y_root <= omenu->frame_y + omenu->frame->top_width;
+          WMHandleEvent(&ev);
+          smenu = wMenuUnderPointer(scr);
+          if (smenu == NULL || (smenu && smenu->flags.tornoff && smenu != omenu)) {
+            done = 1;
+          } else if (smenu == omenu && click_on_title) {
+            done = 1;
+          }
+        }
+        break;
+      case KeyPress:
+        done = 1;
+      default:
+        WMHandleEvent(&ev);
+        break;
+      }
+  }
+
+  /* WMLogInfo("Exiting wMenuScroll event loop."); */
+  
+  menu->timer = WMAddTimerHandler(0, MENU_SCROLL_DELAY, slideMenuBackCallback, menu);
+}
+
 void wMenuSlideIfNeeded(WMenu *menu)
 {
   WMRect rect = wGetRectForHead(menu->menu->screen_ptr, wGetHeadForPointerLocation(menu->menu->screen_ptr));
@@ -1655,6 +1577,7 @@ void wMenuSlideIfNeeded(WMenu *menu)
     menu->timer = WMAddTimerHandler(0, MENU_SCROLL_DELAY, slideMenuCallback, menu);
   }
 }
+
 
 static void menuExpose(WObjDescriptor *desc, XEvent *event)
 {

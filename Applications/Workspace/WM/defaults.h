@@ -78,7 +78,6 @@ extern struct WPreferences {
   char opaque_move;                  /* update window position during move */
   char opaque_resize;                /* update window position during resize */
   char opaque_move_resize_keyboard;  /* update window position during move,resize with keyboard */
-  char wrap_menus;                   /* wrap menus at edge of screen */
   char scrollable_menus;             /* let them be scrolled */
   char vi_key_menus;                 /* use h/j/k/l to select */
   char align_menus;                  /* align menu with their parents */

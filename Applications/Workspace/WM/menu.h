@@ -76,8 +76,6 @@ typedef struct WMenu {
 
   CFRunLoopTimerRef timer;             /* timer for the autoscroll */
 
-  void *jump_back;                     /* jump back data */
-
   /* to be called when some item is edited */
   void (*on_edit)(struct WMenu *menu, struct WMenuItem *item);
   /* to be called when destroyed */
@@ -91,10 +89,8 @@ typedef struct WMenu {
     unsigned int mapped:1;             /* if menu is already mapped on screen*/
     unsigned int hidden:1;             /* if menu was hidden on app deactivation */
     unsigned int tornoff:1;            /* if the close button is visible (menu was torn off) */
-    unsigned int open_to_left:1;       /* direction to open submenus */
     unsigned int lowered:1;
     unsigned int brother:1;	       /* if this is a copy of the menu */
-    unsigned int jump_back_pending:1;
   } flags;
 } WMenu;
 
