@@ -60,11 +60,10 @@ static Preferences * shared = nil;
   [popup removeAllItems];
   [self loadModules];
 
-  if ([popup numberOfItems] > 0)
-    {
-      [popup selectItemAtIndex:0];
-      [self switchModule:popup];
-    }
+  if ([popup numberOfItems] > 0) {
+    [popup selectItemAtIndex:0];
+    [self switchModule:popup];
+  }
 }
 
 - (void)loadModules
@@ -79,20 +78,18 @@ static Preferences * shared = nil;
   modules = [[NXTBundle shared] loadRegisteredBundles:mRegistry
                                                 type:@"WSPreferences"
                                             protocol:@protocol(PrefsModule)];
-  for (id<PrefsModule> b in modules)
-    {
-      title = [b moduleName];
-      [popup addItemWithTitle:title];
-      [[popup itemWithTitle:title] setRepresentedObject:b];
-    }
+  for (id<PrefsModule> b in modules) {
+    title = [b moduleName];
+    [popup addItemWithTitle:title];
+    [[popup itemWithTitle:title] setRepresentedObject:b];
+  }
 }
 
 - (void)activate
 {
-  if (panel == nil)
-    {
-      [NSBundle loadNibNamed:@"Preferences" owner:self];
-    }
+  if (panel == nil) {
+    [NSBundle loadNibNamed:@"Preferences" owner:self];
+  }
 
   [panel makeKeyAndOrderFront:nil];
 }
