@@ -414,7 +414,7 @@ int wWorkspaceNew(WScreen *scr)
       static size_t name_length;
 
       if (new_name == NULL) {
-        new_name = _("Workspace %i");
+        new_name = _("Desktop %i");
         name_length = strlen(new_name) + 8;
       }
       wspace->name = wmalloc(name_length);
@@ -976,14 +976,14 @@ void wWorkspaceRestoreState(WScreen *scr)
 
   for (i = 0; i < WMIN(CFArrayGetCount(parr), MAX_WORKSPACES); i++) {
     wks_state = CFArrayGetValueAtIndex(parr, i);
-    if (CFGetTypeID(wks_state) == CFDictionaryGetTypeID())
+    if (CFGetTypeID(wks_state) == CFDictionaryGetTypeID()) {
       pstr = CFDictionaryGetValue(wks_state, dName);
-    else
+    } else {
       pstr = wks_state;
-
-    if (i >= scr->workspace_count)
+    }
+    if (i >= scr->workspace_count) {
       wWorkspaceNew(scr);
-
+    }
     if (scr->workspace_menu) {
       wfree(scr->workspace_menu->items[i + MC_WORKSPACE1]->text);
       scr->workspace_menu->items[i + MC_WORKSPACE1]->text = wstrdup(CFStringGetCStringPtr(pstr, kCFStringEncodingUTF8));

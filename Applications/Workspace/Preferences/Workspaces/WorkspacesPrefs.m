@@ -190,19 +190,24 @@
 // --- Names and Numbers
 - (void)selectWorkspace:(id)sender
 {
-  NSButton *button;
+  NSButton *button = nil;
   NSString *name = nil;
 
   for (int i = 0; i < wsCount; i++) {
     button = [wsReps objectAtIndex:i];
+    // NSLog(@"%d - Sender: %@, Button: %@", i, [sender title], [button title]);
     if (sender == button) {
-      [button setState:NSOnState];
-      if ([wmStateWS count] > 0) {
+      [sender setState:NSOnState];
+      if (wmStateWS && [wmStateWS count] > i) {
         name = [[wmStateWS objectAtIndex:i] objectForKey:@"Name"];
       }
-      [nameField setStringValue:(name ? name : @"Desktop 1")];
-      selectedWSRep = button;
+      if (!name) {
+        name = [NSString stringWithFormat:@"Desktop %d", i+1];
+      }
+      [nameField setStringValue:name];
+      selectedWSRep = sender;
     } else {
+      // NSLog(@"%d -  Button: %@ set to NSOffState", i, [button title]);
       [button setState:NSOffState];
     }
   }
