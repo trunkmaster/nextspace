@@ -1517,6 +1517,7 @@ static void trackMenuMouse(WMenu *menu)
   WScreen *scr = menu->frame->screen_ptr;
   int done = 0;
   XEvent ev;
+  Bool should_slide_back = True;
 
   if (omenu->timer) {
     WMDeleteTimerHandler(omenu->timer);
@@ -1547,9 +1548,10 @@ static void trackMenuMouse(WMenu *menu)
             ev.xbutton.y_root <= omenu->frame_y + omenu->frame->top_width;
           WMHandleEvent(&ev);
           smenu = wMenuUnderPointer(scr);
-          if (smenu == NULL || (smenu && smenu->flags.tornoff && smenu != omenu)) {
+          if (smenu == NULL || (smenu->flags.tornoff && smenu != omenu)) {
             done = 1;
           } else if (smenu == omenu && click_on_title) {
+            should_slide_back = False;
             done = 1;
           }
         }
@@ -1563,8 +1565,9 @@ static void trackMenuMouse(WMenu *menu)
   }
 
   /* WMLogInfo("Exiting wMenuScroll event loop."); */
-  
-  menu->timer = WMAddTimerHandler(0, MENU_SCROLL_DELAY, slideMenuBackCallback, menu);
+  if (should_slide_back) {
+    menu->timer = WMAddTimerHandler(0, MENU_SCROLL_DELAY, slideMenuBackCallback, menu);
+  }
 }
 
 void wMenuSlideIfNeeded(WMenu *menu)
@@ -2018,6 +2021,10 @@ static void menuCloseClick(WCoreWindow *sender, void *data, XEvent *event)
         break;
       }
     }
+  } else {
+    wFrameWindowHideButton(menu->frame, WFF_RIGHT_BUTTON);
+    menu->flags.tornoff = 0;
+    wMenuUnmap(menu);
   }
   closeCascade(menu);
 }
