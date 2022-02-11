@@ -1297,8 +1297,7 @@ static void closeCascade(WMenu *menu)
 {
   WMenu *parent = menu->parent;
 
-  if (menu->flags.brother || (!menu->flags.tornoff && (!menu->flags.app_menu || menu->parent != NULL))) {
-
+  if (menu->flags.brother || (!menu->flags.tornoff && (!menu->flags.app_menu || menu->parent))) {
     selectItem(menu, -1);
     XSync(dpy, 0);
     wMenuUnmap(menu);
@@ -1309,26 +1308,8 @@ static void closeCascade(WMenu *menu)
       wMenuUnmap(parent);
       parent = parent->parent;
     }
-    if (parent)
+    if (parent) {
       selectItem(parent, -1);
-  }
-}
-
-static void closeBrotherCascadesOf(WMenu *menu)
-{
-  WMenu *tmp;
-  int i;
-
-  for (i = 0; i < menu->submenus_count; i++) {
-    if (menu->submenus[i]->flags.brother) {
-      tmp = menu->submenus[i];
-    } else {
-      tmp = menu->submenus[i]->brother;
-    }
-    if (tmp->flags.mapped) {
-      selectItem(tmp->parent, -1);
-      closeBrotherCascadesOf(tmp);
-      break;
     }
   }
 }
@@ -1594,13 +1575,12 @@ static void trackMenuMouse(WMenu *menu)
       {
       case LeaveNotify:
         {
-          WMenu *on_menu = wMenuUnderPointer(scr);
-          if (!on_menu || (isMenuContainsSubmenu(menu, on_menu) == False)) {
+          smenu = wMenuUnderPointer(scr);
+          if (smenu == NULL ||
+              ((isMenuContainsSubmenu(menu, smenu) == False) && smenu != menu)) {
             done = 1;
           }
         }
-        break;
-      case MotionNotify:
         break;
       case ButtonPress:
         {
@@ -2116,7 +2096,7 @@ static void menuCloseClick(WCoreWindow *sender, void *data, XEvent *event)
       }
     }
   }
-  wMenuUnmap(menu);
+  closeCascade(menu);
 }
 
 static void saveMenuInfo(CFMutableDictionaryRef dict, WMenu *menu, CFTypeRef key)
