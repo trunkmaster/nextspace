@@ -216,13 +216,15 @@
 - (void)changeName:(id)sender
 {
   NSInteger index = [wsReps indexOfObject:selectedWSRep];
-  NSString  *name = [nameField stringValue];
+  NSString *name = [nameField stringValue];
+  WScreen *scr = wDefaultScreen();
   
   wWorkspaceRename(wDefaultScreen(), [wsReps indexOfObject:selectedWSRep],
                    [name cString]);
   [changeNameBtn setEnabled:NO];
   
-  wScreenSaveState(wDefaultScreen());
+  wWorkspaceSaveState(scr);
+  WMUserDefaultsWrite(scr->session_state, CFSTR("WMState"));
   [wmStateWS replaceObjectAtIndex:index withObject:@{@"Name":name}];
 }
 
@@ -251,31 +253,33 @@
 
 - (void)setWorkspaceQuantity:(id)sender
 {
-  NSInteger wsQuantity = [[sender selectedItem] tag];
-  int       diff = wsQuantity - wsCount;
+  NSInteger wsCountNew = [[sender selectedItem] tag];
+  int diff = wsCountNew - wsCount;
+  WScreen *scr = wDefaultScreen();
 
   if (diff < 0) { // remove WS
-    for (int i = wsCount; i > wsQuantity; i--) {
+    for (int i = wsCount; i > wsCountNew; i--) {
       wWorkspaceDelete(wDefaultScreen(), i);
       [[wsReps objectAtIndex:i-1] removeFromSuperview];
     }
-  }
-  else {
-      wWorkspaceMake(wDefaultScreen(), diff);
-      for (int i = wsCount; i < wsQuantity; i++) {
-        [wsBox addSubview:[wsReps objectAtIndex:i]];
-      }
-      [wsBox setNeedsDisplay:YES];
+  } else {
+    wWorkspaceMake(wDefaultScreen(), diff);
+    for (int i = wsCount; i < wsCountNew; i++) {
+      [wsBox addSubview:[wsReps objectAtIndex:i]];
+    }
+    [wsBox setNeedsDisplay:YES];
   }
 
-  wScreenSaveState(wDefaultScreen());
+  wWorkspaceSaveState(scr);
+  WMUserDefaultsWrite(scr->session_state, CFSTR("WMState"));
+
   [wmStateWS setArray:[[self _wmState] objectForKey:@"Workspaces"]];
 
   // Select last WS rep button if selected one was removed
-  if ([wsReps indexOfObject:selectedWSRep] >= wsQuantity) {
-    [self selectWorkspace:[wsReps objectAtIndex:wsQuantity-1]];
+  if ([wsReps indexOfObject:selectedWSRep] >= wsCountNew) {
+    [self selectWorkspace:[wsReps objectAtIndex:wsCountNew-1]];
   }
-  wsCount = wsQuantity;
+  wsCount = wsCountNew;
   
   [self arrangeWorkspaceReps];
 }

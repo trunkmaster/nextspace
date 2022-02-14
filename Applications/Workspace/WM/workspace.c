@@ -87,7 +87,6 @@
 #define WORKSPACE_NAME_DELAY 400
 
 static CFTypeRef dWorkspaces = CFSTR("Workspaces");
-static CFTypeRef dClip = CFSTR("Clip");
 static CFTypeRef dName = CFSTR("Name");
 
 static void _postNotification(CFStringRef name, int workspace_number, void *object)
@@ -597,8 +596,6 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
   if (workspace > scr->workspace_count - 1)
     wWorkspaceMake(scr, workspace - scr->workspace_count + 1);
 
-  wClipUpdateForWorkspaceChange(scr, workspace);
-
   /* save focused window to the workspace before switch */
   if (scr->focused_window
       && scr->focused_window->frame->workspace == scr->current_workspace) {
@@ -759,22 +756,12 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
    * can be superposed.
    * This can be avoided if appicons are also workspace specific.
    */
-  if (!wPreferences.sticky_icons)
+  if (!wPreferences.sticky_icons) {
     wArrangeIcons(scr, False);
-
-  if (scr->dock)
+  }
+  if (scr->dock) {
     wAppIconPaint(scr->dock->icon_array[0]);
-
-  if (!wPreferences.flags.noclip && (scr->workspaces[workspace]->clip->auto_collapse ||
-                                     scr->workspaces[workspace]->clip->auto_raise_lower)) {
-    /* to handle enter notify. This will also */
-    XUnmapWindow(dpy, scr->clip_icon->icon->core->window);
-    XMapWindow(dpy, scr->clip_icon->icon->core->window);
   }
-  else if (scr->clip_icon != NULL) {
-    wClipIconPaint(scr->clip_icon);
-  }
-  
   wScreenUpdateUsableArea(scr);
   wNETWMUpdateDesktop(scr);
   _showWorkspaceName(scr, workspace);
@@ -824,9 +811,6 @@ void wWorkspaceRename(WScreen *scr, int workspace, const char *name)
       wMenuRealize(scr->workspace_menu);
     }
   }
-
-  if (scr->clip_icon)
-    wClipIconPaint(scr->clip_icon);
 
   _postNotification(WMDidChangeWorkspaceNameNotification, workspace, scr);
 }
@@ -916,21 +900,15 @@ void wWorkspaceMenuUpdate(WScreen *scr, WMenu * menu)
   wMenuPaint(menu);
 }
 
-void wWorkspaceSaveState(WScreen *scr, CFDictionaryRef old_state)
+void wWorkspaceSaveState(WScreen *scr)
 {
-  CFArrayRef old_wks_state = NULL;
   CFMutableArrayRef parr;
-  CFDictionaryRef foo, bar;
   CFMutableDictionaryRef wks_state;
   CFStringRef pstr;
   int i = 0;
 
-  if (old_state) {
-    old_wks_state = CFDictionaryGetValue(old_state, dWorkspaces);
-  }
-
   parr = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
-  for (i = 0; i < scr->workspace_count-1; i++) {
+  for (i = 0; i < scr->workspace_count; i++) {
     wks_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
                                           &kCFTypeDictionaryKeyCallBacks,
                                           &kCFTypeDictionaryValueCallBacks);
@@ -939,21 +917,6 @@ void wWorkspaceSaveState(WScreen *scr, CFDictionaryRef old_state)
     CFDictionarySetValue(wks_state, dName, pstr);
     CFRelease(pstr);
     
-    if (!wPreferences.flags.noclip) {
-      foo = wClipSaveWorkspaceState(scr, i);
-      CFDictionarySetValue(wks_state, dClip, pstr);
-      CFRelease(pstr);
-    }
-    else if (old_wks_state != NULL && CFArrayGetCount(old_wks_state)) {
-      foo = CFArrayGetValueAtIndex(old_wks_state, i);
-      if (foo != NULL) {
-        bar = CFDictionaryGetValue(foo, dClip);
-        if (bar != NULL) {
-          CFDictionarySetValue(wks_state, dClip, bar);
-        }
-      }
-    }
-
     CFArrayAppendValue(parr, wks_state);
     CFRelease(wks_state);
   }
@@ -963,8 +926,7 @@ void wWorkspaceSaveState(WScreen *scr, CFDictionaryRef old_state)
 
 void wWorkspaceRestoreState(WScreen *scr)
 {
-  CFTypeRef parr, wks_state, pstr, clip_state;
-  int i, j;
+  CFTypeRef parr, wks_state, pstr;
 
   if (scr->session_state == NULL)
     return;
@@ -974,7 +936,7 @@ void wWorkspaceRestoreState(WScreen *scr)
   if (!parr)
     return;
 
-  for (i = 0; i < WMIN(CFArrayGetCount(parr), MAX_WORKSPACES); i++) {
+  for (int i = 0; i < WMIN(CFArrayGetCount(parr), MAX_WORKSPACES); i++) {
     wks_state = CFArrayGetValueAtIndex(parr, i);
     if (CFGetTypeID(wks_state) == CFDictionaryGetTypeID()) {
       pstr = CFDictionaryGetValue(wks_state, dName);
@@ -992,51 +954,6 @@ void wWorkspaceRestoreState(WScreen *scr)
 
     wfree(scr->workspaces[i]->name);
     scr->workspaces[i]->name = wstrdup(CFStringGetCStringPtr(pstr, kCFStringEncodingUTF8));
-    if (!wPreferences.flags.noclip) {
-      int added_omnipresent_icons = 0;
-
-      clip_state = CFDictionaryGetValue(wks_state, dClip);
-      if (scr->workspaces[i]->clip)
-        wDockDestroy(scr->workspaces[i]->clip);
-
-      scr->workspaces[i]->clip = wDockRestoreState(scr, clip_state, WM_CLIP);
-      if (i > 0)
-        wDockHideIcons(scr->workspaces[i]->clip);
-
-      /* We set the global icons here, because scr->workspaces[i]->clip
-       * was not valid in wDockRestoreState().
-       * There we only set icon->omnipresent to know which icons we
-       * need to set here.
-       */
-      for (j = 0; j < scr->workspaces[i]->clip->max_icons; j++) {
-        WAppIcon *aicon = scr->workspaces[i]->clip->icon_array[j];
-        int k;
-
-        if (!aicon || !aicon->flags.omnipresent)
-          continue;
-        aicon->flags.omnipresent = 0;
-        if (wClipMakeIconOmnipresent(aicon, True) != WO_SUCCESS)
-          continue;
-        if (i == 0)
-          continue;
-
-        /* Move this appicon from workspace i to workspace 0 */
-        scr->workspaces[i]->clip->icon_array[j] = NULL;
-        scr->workspaces[i]->clip->icon_count--;
-
-        added_omnipresent_icons++;
-        /* If there are too many omnipresent appicons, we are in trouble */
-        assert(scr->workspaces[0]->clip->icon_count + added_omnipresent_icons
-               <= scr->workspaces[0]->clip->max_icons);
-        /* Find first free spot on workspace 0 */
-        for (k = 0; k < scr->workspaces[0]->clip->max_icons; k++)
-          if (scr->workspaces[0]->clip->icon_array[k] == NULL)
-            break;
-        scr->workspaces[0]->clip->icon_array[k] = aicon;
-        aicon->dock = scr->workspaces[0]->clip;
-      }
-      scr->workspaces[0]->clip->icon_count += added_omnipresent_icons;
-    }
 
     _postNotification(WMDidChangeWorkspaceNameNotification, i, scr);
   }
