@@ -389,6 +389,13 @@ static void updateDesktopsMenu(WMenu *menu)
   WMenuItem *item;
   int i;
 
+  // Remove deleted desktops
+  for (i = menu->items_count; i >= scr->workspace_count; i--) {
+    wMenuRemoveItem(menu, i);
+    menu->flags.realized = 0;
+  }
+
+  // Update names or add new desktops
   for (i = 0; i < scr->workspace_count; i++) {
     if (i < menu->items_count) {
       item = menu->items[i];
@@ -403,18 +410,16 @@ static void updateDesktopsMenu(WMenu *menu)
     } else {
       strncpy(title, scr->workspaces[i]->name, MAX_WORKSPACENAME_WIDTH);
       title[MAX_WORKSPACENAME_WIDTH] = 0;
-
       item = wMenuAddItem(menu, title, switchDesktopCallback, NULL);
       item->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
-
-      menu->flags.realized = 0;
     }
 
     /* workspace shortcut labels */
-    if (i / 10 == scr->current_workspace / 10)
+    if (i / 10 == scr->current_workspace / 10) {
       item->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + (i % 10)]);
-    else
+    } else {
       item->rtext = NULL;
+    }
   }
 
   if (!menu->flags.realized) {
