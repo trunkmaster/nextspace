@@ -301,6 +301,15 @@ static void windowObserver(CFNotificationCenterRef center,
 
 static void updateDesktopsMenu(WMenu *menu);
 
+static void desktopsObserver(CFNotificationCenterRef center,
+                             void *menu,
+                             CFNotificationName name,
+                             const void *window,
+                             CFDictionaryRef userInfo)
+{
+  updateDesktopsMenu(menu);
+}
+
 static WMenu *createWindowsMenu(WApplication *wapp)
 {
   WMenu *_menu, *desktops_menu;
@@ -348,6 +357,17 @@ static WMenu *createWindowsMenu(WApplication *wapp)
                                   WMDidChangeWindowNameNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
 
+  CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, desktopsObserver,
+                                  WMDidChangeWorkspaceNameNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, desktopsObserver,
+                                  WMDidCreateWorkspaceNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+  CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, desktopsObserver,
+                                  WMDidDestroyWorkspaceNotification, NULL,
+                                  CFNotificationSuspensionBehaviorDeliverImmediately);
+
+  
   return _menu;
 }
 
@@ -366,15 +386,14 @@ static void updateDesktopsMenu(WMenu *menu)
 {
   WScreen *scr = menu->frame->screen_ptr;
   char title[MAX_WORKSPACENAME_WIDTH + 1];
-  WMenuItem *entry;
+  WMenuItem *item;
   int i;
 
   for (i = 0; i < scr->workspace_count; i++) {
     if (i < menu->items_count) {
-
-      entry = menu->items[i];
-      if (strcmp(entry->text, scr->workspaces[i]->name) != 0) {
-        wfree(entry->text);
+      item = menu->items[i];
+      if (strcmp(item->text, scr->workspaces[i]->name) != 0) {
+        wfree(item->text);
         strncpy(title, scr->workspaces[i]->name, MAX_WORKSPACENAME_WIDTH);
         title[MAX_WORKSPACENAME_WIDTH] = 0;
         menu->items[i]->text = wstrdup(title);
@@ -385,17 +404,17 @@ static void updateDesktopsMenu(WMenu *menu)
       strncpy(title, scr->workspaces[i]->name, MAX_WORKSPACENAME_WIDTH);
       title[MAX_WORKSPACENAME_WIDTH] = 0;
 
-      entry = wMenuAddItem(menu, title, switchDesktopCallback, NULL);
-      entry->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
+      item = wMenuAddItem(menu, title, switchDesktopCallback, NULL);
+      item->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
 
       menu->flags.realized = 0;
     }
 
     /* workspace shortcut labels */
     if (i / 10 == scr->current_workspace / 10)
-      entry->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + (i % 10)]);
+      item->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + (i % 10)]);
     else
-      entry->rtext = NULL;
+      item->rtext = NULL;
   }
 
   if (!menu->flags.realized) {
