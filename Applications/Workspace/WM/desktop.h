@@ -23,28 +23,28 @@
 #ifndef __WORKSPACE_WM_WORKSPACE__
 #define __WORKSPACE_WM_WORKSPACE__
 
-#define MAX_WORKSPACENAME_WIDTH	64
+#define MAX_DESKTOPNAME_WIDTH 64
 
-typedef struct WWorkspace {
+typedef struct WDesktop {
   char *name;
   struct WDock *clip;
   RImage *map;
   WWindow *focused_window;
-} WWorkspace;
+} WDesktop;
 
-void wWorkspaceMake(WScreen *scr, int count);
-int wWorkspaceNew(WScreen *scr);
-int wGetWorkspaceNumber(WScreen *scr, const char *value);
-Bool wWorkspaceDelete(WScreen *scr, int workspace);
-void wWorkspaceChange(WScreen *scr, int workspace, WWindow *focus_win);
-void wWorkspaceSaveFocusedWindow(WScreen *scr, int workspace, WWindow *wwin);
-void wWorkspaceForceChange(WScreen *scr, int workspace, WWindow *focus_win);
-WMenu *wWorkspaceMenuMake(WScreen *scr, Bool titled);
-void wWorkspaceMenuUpdate(WScreen *scr, WMenu *menu);
-void wWorkspaceMenuEdit(WScreen *scr);
-void wWorkspaceSaveState(WScreen *scr);
-void wWorkspaceRestoreState(WScreen *scr);
-void wWorkspaceRename(WScreen *scr, int workspace, const char *name);
-void wWorkspaceRelativeChange(WScreen *scr, int amount);
+void wDesktopMake(WScreen *scr, int count);
+int wDesktopNew(WScreen *scr);
+int wGetDesktopNumber(WScreen *scr, const char *value);
+Bool wDesktopDelete(WScreen *scr, int desktop);
+void wDesktopChange(WScreen *scr, int desktop, WWindow *focus_win);
+void wDesktopSaveFocusedWindow(WScreen *scr, int desktop, WWindow *wwin);
+void wDesktopForceChange(WScreen *scr, int desktop, WWindow *focus_win);
+WMenu *wDesktopMenuMake(WScreen *scr, Bool titled);
+void wDesktopMenuUpdate(WScreen *scr, WMenu *menu);
+void wDesktopMenuEdit(WScreen *scr);
+void wDesktopSaveState(WScreen *scr);
+void wDesktopRestoreState(WScreen *scr);
+void wDesktopRename(WScreen *scr, int desktop, const char *name);
+void wDesktopRelativeChange(WScreen *scr, int amount);
 
 #endif /* __WORKSPACE_WM_WORKSPACE__ */

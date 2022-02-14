@@ -305,7 +305,7 @@ typedef struct WWindow {
  * Changes to this must update wWindowSaveState/getSavedState
  */
 typedef struct WSavedState {
-  int workspace;
+  int desktop;
   int miniaturized;
   int shaded;
   int hidden;
@@ -340,8 +340,8 @@ WWindow *wManageWindow(WScreen *scr, Window window);
 void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed);
 
 void wWindowSingleFocus(WWindow *wwin);
-void wWindowFocusPrev(WWindow *wwin, Bool inSameWorkspace);
-void wWindowFocusNext(WWindow *wwin, Bool inSameWorkspace);
+void wWindowFocusPrev(WWindow *wwin, Bool inSameDesktop);
+void wWindowFocusNext(WWindow *wwin, Bool inSameDesktop);
 void wWindowFocus(WWindow *wwin, WWindow *owin);
 void wWindowUnfocus(WWindow *wwin);
 
@@ -363,8 +363,8 @@ void wWindowUpdateButtonImages(WWindow *wwin);
 
 void wWindowSaveState(WWindow *wwin);
 
-void wWindowChangeWorkspace(WWindow *wwin, int workspace);
-void wWindowChangeWorkspaceRelative(WWindow *wwin, int amount);
+void wWindowChangeDesktop(WWindow *wwin, int desktop);
+void wWindowChangeDesktopRelative(WWindow *wwin, int amount);
 
 void wWindowSetKeyGrabs(WWindow *wwin);
 
@@ -374,7 +374,7 @@ WWindow *wManageInternalWindow(WScreen *scr, Window window, Window owner,
                                const char *title, int x, int y,
                                int width, int height);
 
-void wWindowSetupInitialAttributes(WWindow *wwin, int *level, int *workspace);
+void wWindowSetupInitialAttributes(WWindow *wwin, int *level, int *desktop);
 
 void wWindowUpdateGNUstepAttr(WWindow *wwin, GNUstepWMAttributes *attr);
 

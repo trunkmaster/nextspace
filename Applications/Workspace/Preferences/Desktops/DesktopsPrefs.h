@@ -26,28 +26,28 @@
 
 #import <Preferences/PrefsModule.h>
 
-@interface WorkspacesPrefs : NSObject <PrefsModule>
+@interface DesktopsPrefs : NSObject <PrefsModule>
 {
   // Workspaces
   id window;
   id box;
 
-  id wsBox;
-  id ws1, ws2, ws3, ws4, ws5, ws6, ws7, ws8, ws9, ws10;
-  id wsNumber;
+  id desktopsBox;
+  id dt1, dt2, dt3, dt4, dt5, dt6, dt7, dt8, dt9, dt10;
+  id desktopsNumber;
   id nameField;
   id changeNameBtn;
   id switchKey;
   id directSwitchKey;
   id showInDockBtn;
 
-  NSUInteger     wsCount;
-  NSMutableArray *wsReps;
-  NSButton       *selectedWSRep;
-  NSMutableArray *wmStateWS;
+  NSUInteger     desktopsCount;
+  NSMutableArray *desktopReps;
+  NSButton       *selectedDesktopRep;
+  NSMutableArray *wmStateDesktops;
 }
 
-- (void)arrangeWorkspaceReps;
+- (void)arrangeDesktopReps;
 - (void)revert:sender;
 
 @end

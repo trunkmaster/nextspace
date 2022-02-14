@@ -47,7 +47,7 @@
 #include "icon.h"
 #include "dock.h"
 #include "actions.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "placement.h"
 #include "geomview.h"
 #include "screen.h"
@@ -597,15 +597,15 @@ static void flushMotion(void)
   while (XCheckMaskEvent(dpy, ButtonMotionMask, &ev)) ;
 }
 
-static void crossWorkspace(WScreen * scr, WWindow * wwin, int opaque_move, int new_workspace, int rewind)
+static void crossDesktop(WScreen * scr, WWindow * wwin, int opaque_move, int new_desktop, int rewind)
 {
   /* do not let window be unmapped */
   if (opaque_move) {
     wwin->flags.changing_workspace = 1;
-    wWindowChangeWorkspace(wwin, new_workspace);
+    wWindowChangeDesktop(wwin, new_desktop);
   }
   /* go to new workspace */
-  wWorkspaceChange(scr, new_workspace, NULL);
+  wDesktopChange(scr, new_desktop, NULL);
 
   wwin->flags.changing_workspace = 0;
 
@@ -811,7 +811,7 @@ static void updateMoveData(WWindow * wwin, MoveData * data)
   data->count = 0;
   tmp = scr->focused_window;
   while (tmp) {
-    if (tmp != wwin && scr->current_workspace == tmp->frame->workspace
+    if (tmp != wwin && scr->current_desktop == tmp->frame->desktop
         && !tmp->flags.miniaturized
         && !tmp->flags.hidden && !tmp->flags.obscured && !WFLAGP(tmp, sunken)) {
       data->topList[data->count] = tmp;
@@ -902,29 +902,29 @@ static void initMoveData(WWindow * wwin, MoveData * data)
   data->snap = SNAP_NONE;
 }
 
-static Bool checkWorkspaceChange(WWindow * wwin, MoveData * data, Bool opaqueMove)
+static Bool checkDesktopChange(WWindow * wwin, MoveData * data, Bool opaqueMove)
 {
   WScreen *scr = wwin->screen;
   Bool changed = False;
 
   if (data->mouseX <= 1) {
-    if (scr->current_workspace > 0) {
-      crossWorkspace(scr, wwin, opaqueMove, scr->current_workspace - 1, True);
+    if (scr->current_desktop > 0) {
+      crossDesktop(scr, wwin, opaqueMove, scr->current_desktop - 1, True);
       changed = True;
       data->rubCount = 0;
-    } else if (scr->current_workspace == 0 && wPreferences.ws_cycle) {
-      crossWorkspace(scr, wwin, opaqueMove, scr->workspace_count - 1, True);
+    } else if (scr->current_desktop == 0 && wPreferences.ws_cycle) {
+      crossDesktop(scr, wwin, opaqueMove, scr->desktop_count - 1, True);
       changed = True;
       data->rubCount = 0;
     }
   } else if (data->mouseX >= scr->width - 2) {
-    if (scr->current_workspace == scr->workspace_count - 1) {
-      if (wPreferences.ws_cycle || scr->workspace_count == MAX_WORKSPACES) {
-        crossWorkspace(scr, wwin, opaqueMove, 0, False);
+    if (scr->current_desktop == scr->desktop_count - 1) {
+      if (wPreferences.ws_cycle || scr->desktop_count == MAX_DESKTOPS) {
+        crossDesktop(scr, wwin, opaqueMove, 0, False);
         changed = True;
         data->rubCount = 0;
       }
-      /* if user insists on trying to go to next workspace even when
+      /* if user insists on trying to go to next desktop even when
        * it's already the last, create a new one */
       else if (data->omouseX == data->mouseX && wPreferences.ws_advance) {
 
@@ -938,18 +938,18 @@ static Bool checkWorkspaceChange(WWindow * wwin, MoveData * data, Bool opaqueMov
           data->rubCount = -data->rubCount + 1;
         }
       }
-      /* create a new workspace */
+      /* create a new desktop */
       if (abs(data->rubCount) > 2) {
-        /* go to next workspace */
-        wWorkspaceNew(scr);
+        /* go to next desktop */
+        wDesktopNew(scr);
 
-        crossWorkspace(scr, wwin, opaqueMove, scr->current_workspace + 1, False);
+        crossDesktop(scr, wwin, opaqueMove, scr->current_desktop + 1, False);
         changed = True;
         data->rubCount = 0;
       }
-    } else if (scr->current_workspace < scr->workspace_count) {
-      /* go to next workspace */
-      crossWorkspace(scr, wwin, opaqueMove, scr->current_workspace + 1, False);
+    } else if (scr->current_desktop < scr->desktop_count) {
+      /* go to next desktop */
+      crossDesktop(scr, wwin, opaqueMove, scr->current_desktop + 1, False);
       changed = True;
       data->rubCount = 0;
     }
@@ -1583,17 +1583,17 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
 
         if (wPreferences.ws_cycle) {
           if (src_x + off_x + ww < 20) {
-            if (!scr->current_workspace)
-              wWorkspaceChange(scr, scr->workspace_count - 1, NULL);
+            if (!scr->current_desktop)
+              wDesktopChange(scr, scr->desktop_count - 1, NULL);
             else
-              wWorkspaceChange(scr, scr->current_workspace - 1, NULL);
+              wDesktopChange(scr, scr->current_desktop - 1, NULL);
 
             off_x += width;
           } else if (src_x + off_x + 20 > width) {
-            if (scr->current_workspace == scr->workspace_count - 1)
-              wWorkspaceChange(scr, 0, NULL);
+            if (scr->current_desktop == scr->desktop_count - 1)
+              wDesktopChange(scr, 0, NULL);
             else
-              wWorkspaceChange(scr, scr->current_workspace + 1, NULL);
+              wDesktopChange(scr, scr->current_desktop + 1, NULL);
 
             off_x -= width;
           }
@@ -1712,7 +1712,7 @@ int wKeyboardMoveResizeWindow(WWindow * wwin)
           wWindowConfigure(wwin, src_x + off_x, src_y + off_y, ww, wh - vert_border);
           wWindowSynthConfigureNotify(wwin);
         }
-        wWindowChangeWorkspace(wwin, scr->current_workspace);
+        wWindowChangeDesktop(wwin, scr->current_desktop);
         wSetFocusTo(scr, wwin);
       }
 
@@ -1884,7 +1884,7 @@ int wMouseMoveWindow(WWindow * wwin, XEvent * ev)
           draw_snap_frame(wwin, moveData.snap);
 
         if (!warped && !wPreferences.no_autowrap) {
-          int oldWorkspace = scr->current_workspace;
+          int oldDesktop = scr->current_desktop;
 
           if (wPreferences.move_display == WDIS_NEW && !scr->selected_windows) {
             showPosition(wwin, moveData.realX, moveData.realY);
@@ -1895,8 +1895,8 @@ int wMouseMoveWindow(WWindow * wwin, XEvent * ev)
                        moveData.realX - wwin->frame_x,
                        moveData.realY - wwin->frame_y);
           }
-          if (checkWorkspaceChange(wwin, &moveData, opaqueMove)) {
-            if (scr->current_workspace != oldWorkspace
+          if (checkDesktopChange(wwin, &moveData, opaqueMove)) {
+            if (scr->current_desktop != oldDesktop
                 && wPreferences.edge_resistance > 0
                 && scr->selected_windows == NULL)
               updateMoveData(wwin, &moveData);
@@ -1991,7 +1991,7 @@ int wMouseMoveWindow(WWindow * wwin, XEvent * ev)
         XUngrabKeyboard(dpy, CurrentTime);
         XUngrabServer(dpy);
         if (!opaqueMove) {
-          wWindowChangeWorkspace(wwin, scr->current_workspace);
+          wWindowChangeDesktop(wwin, scr->current_desktop);
           wSetFocusTo(scr, wwin);
         }
         if (wPreferences.move_display == WDIS_NEW)
@@ -2585,7 +2585,7 @@ static void selectWindowsInside(WScreen * scr, int x1, int y1, int x2, int y2)
   tmpw = scr->focused_window;
   while (tmpw != NULL) {
     if (!(tmpw->flags.miniaturized || tmpw->flags.hidden)) {
-      if ((tmpw->frame->workspace == scr->current_workspace || IS_OMNIPRESENT(tmpw))
+      if ((tmpw->frame->desktop == scr->current_desktop || IS_OMNIPRESENT(tmpw))
           && (tmpw->frame_x >= x1) && (tmpw->frame_y >= y1)
           && (tmpw->frame->core->width + tmpw->frame_x <= x2)
           && (tmpw->frame->core->height + tmpw->frame_y <= y2)) {

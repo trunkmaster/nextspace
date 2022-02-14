@@ -64,7 +64,7 @@
 /* Returns True if it is an icon and is in this workspace */
 static Bool
 iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2,
-	     int workspace, int *retX, int *retY)
+	     int desktop, int *retX, int *retY)
 {
   void *parent;
   int ok = 0;
@@ -78,7 +78,7 @@ iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2,
 
     ok = 1;
   } else if (wcore->descriptor.parent_type == WCLASS_MINIWINDOW &&
-             (((WIcon *) parent)->owner->frame->workspace == workspace
+             (((WIcon *) parent)->owner->frame->desktop == desktop
               || IS_OMNIPRESENT(((WIcon *) parent)->owner)
               || wPreferences.sticky_icons)
              && (((WIcon *) parent)->mapped
@@ -93,7 +93,7 @@ iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2,
     ok = 1;
   } else if (wcore->descriptor.parent_type == WCLASS_WINDOW
              && ((WWindow *) parent)->flags.icon_moved
-             && (((WWindow *) parent)->frame->workspace == workspace || IS_OMNIPRESENT((WWindow *) parent)
+             && (((WWindow *) parent)->frame->desktop == desktop || IS_OMNIPRESENT((WWindow *) parent)
                  || wPreferences.sticky_icons)) {
     *retX = ((WWindow *) parent)->icon_x;
     *retY = ((WWindow *) parent)->icon_y;
@@ -191,7 +191,7 @@ void PlaceIcon(WScreen *scr, int *x_ret, int *y_ret, int head)
     while (obj) {
       int x, y;
 
-      if (iconPosition(obj, sx1, sy1, sx2, sy2, scr->current_workspace, &x, &y)) {
+      if (iconPosition(obj, sx1, sy1, sx2, sy2, scr->current_desktop, &x, &y)) {
         int xdi, ydi;	/* rounded down */
         int xui, yui;	/* rounded up */
 
@@ -288,7 +288,7 @@ static int calcSumOfCoveredAreas(WWindow *wwin, int x, int y, int w, int h)
     ty = test_window->frame_y;
 
     if (test_window->flags.mapped || (test_window->flags.shaded &&
-                                      test_window->frame->workspace == wwin->screen->current_workspace &&
+                                      test_window->frame->desktop == wwin->screen->current_desktop &&
                                       !(test_window->flags.miniaturized || test_window->flags.hidden))) {
       sum_isect += calcIntersectionArea(tx, ty, tw, th, x, y, w, h);
     }
@@ -332,7 +332,7 @@ window_overlaps(WWindow *win, int x, int y, int w, int h, Bool ignore_sunken)
       (ty < (y + h)) && ((ty + th) > y) &&
       (win->flags.mapped ||
        (win->flags.shaded &&
-        win->frame->workspace == win->screen->current_workspace &&
+        win->frame->desktop == win->screen->current_desktop &&
         !(win->flags.miniaturized || win->flags.hidden)))) {
     return True;
   }

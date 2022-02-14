@@ -84,7 +84,7 @@
 #include "client.h"
 #include "session.h"
 #include "framewin.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "properties.h"
 #include "application.h"
 #include "appicon.h"
@@ -190,7 +190,7 @@ static CFTypeRef makeWindowState(WWindow *wwin, WApplication *wapp)
     
     cmd = CFStringCreateWithCString(kCFAllocatorDefault, command, kCFStringEncodingUTF8);
     workspace = CFStringCreateWithCString(kCFAllocatorDefault,
-                                          scr->workspaces[wwin->frame->workspace]->name,
+                                          scr->desktops[wwin->frame->desktop]->name,
                                           kCFStringEncodingUTF8);
 
     shaded = wwin->flags.shaded ? sYes : sNo;
@@ -235,11 +235,11 @@ static CFTypeRef makeWindowState(WWindow *wwin, WApplication *wapp)
 
       /* Try the clips */
       if (name == NULL) {
-        for (i = 0; i < scr->workspace_count; i++)
-          if (scr->workspaces[i]->clip == wapp->app_icon->dock)
+        for (i = 0; i < scr->desktop_count; i++)
+          if (scr->desktops[i]->clip == wapp->app_icon->dock)
             break;
-        if (i < scr->workspace_count)
-          name = scr->workspaces[i]->name;
+        if (i < scr->desktop_count)
+          name = scr->desktops[i]->name;
       }
       /* Try the drawers */
       if (name == NULL) {
@@ -318,7 +318,7 @@ void wSessionSaveState(WScreen * scr)
   CFRelease(list);
 
   wks = CFStringCreateWithCString(kCFAllocatorDefault,
-                                  scr->workspaces[scr->current_workspace]->name,
+                                  scr->desktops[scr->current_desktop]->name,
                                   kCFStringEncodingUTF8);
   CFDictionarySetValue(scr->session_state, sWorkspace, wks);
   CFRelease(wks);
@@ -378,20 +378,20 @@ static WSavedState *getWindowState(WScreen *scr, CFDictionaryRef win_state)
   unsigned mask;
   int i;
 
-  state->workspace = -1;
+  state->desktop = -1;
   value = CFDictionaryGetValue(win_state, sWorkspace);
   if (value && (CFGetTypeID(value) == CFStringGetTypeID())) {
     tmp = CFStringGetCStringPtr(value, kCFStringEncodingUTF8);
-    if (sscanf(tmp, "%i", &state->workspace) != 1) {
-      state->workspace = -1;
-      for (i = 0; i < scr->workspace_count; i++) {
-        if (strcmp(scr->workspaces[i]->name, tmp) == 0) {
-          state->workspace = i;
+    if (sscanf(tmp, "%i", &state->desktop) != 1) {
+      state->desktop = -1;
+      for (i = 0; i < scr->desktop_count; i++) {
+        if (strcmp(scr->desktops[i]->name, tmp) == 0) {
+          state->desktop = i;
           break;
         }
       }
     } else {
-      state->workspace--;
+      state->desktop--;
     }
   }
 
@@ -495,9 +495,9 @@ void wSessionRestoreState(WScreen *scr)
 
         /* Try the clips */
         if (dock == NULL) {
-          for (j = 0; j < scr->workspace_count; j++) {
-            if (strcmp(scr->workspaces[j]->name, tmp) == 0) {
-              dock = scr->workspaces[j]->clip;
+          for (j = 0; j < scr->desktop_count; j++) {
+            if (strcmp(scr->desktops[j]->name, tmp) == 0) {
+              dock = scr->desktops[j]->clip;
               break;
             }
           }
@@ -514,8 +514,8 @@ void wSessionRestoreState(WScreen *scr)
       } else {
         if (n == 0) {
           dock = scr->dock;
-        } else if (n > 0 && n <= scr->workspace_count) {
-          dock = scr->workspaces[n - 1]->clip;
+        } else if (n > 0 && n <= scr->desktop_count) {
+          dock = scr->desktops[n - 1]->clip;
         }
       }
     }
@@ -549,7 +549,7 @@ void wSessionRestoreState(WScreen *scr)
   }
 }
 
-void wSessionRestoreLastWorkspace(WScreen * scr)
+void wSessionRestoreLastDesktop(WScreen * scr)
 {
   CFStringRef wks;
   int w;
@@ -569,8 +569,8 @@ void wSessionRestoreLastWorkspace(WScreen * scr)
     return;
 
   /* Get the workspace number for the workspace name */
-  w = wGetWorkspaceNumber(scr, value);
+  w = wGetDesktopNumber(scr, value);
 
-  if (w != scr->current_workspace && w < scr->workspace_count)
-    wWorkspaceChange(scr, w, NULL);
+  if (w != scr->current_desktop && w < scr->desktop_count)
+    wDesktopChange(scr, w, NULL);
 }

@@ -51,7 +51,7 @@
 #include "winmenu.h"
 #include "stacking.h"
 #include "xrandr.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "switchmenu.h"
 #include "moveres.h"
 #include "defaults.h"

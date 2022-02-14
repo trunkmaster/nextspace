@@ -65,7 +65,7 @@
 #include "application.h"
 #include "stacking.h"
 #include "defaults.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "dock.h"
 #include "framewin.h"
 #include "properties.h"
@@ -575,7 +575,7 @@ static void handleMapRequest(XEvent * ev)
       WApplication *wapp = wApplicationOf(wwin->main_window);
       /* go to the last workspace that the user worked on the app */
       if (wapp) {
-        wWorkspaceChange(wwin->screen, wapp->last_workspace, NULL);
+        wDesktopChange(wwin->screen, wapp->last_desktop, NULL);
       }
       wUnhideApplication(wapp, False, False);
     }
@@ -730,9 +730,9 @@ static void executeWheelAction(WScreen *scr, XEvent *event, int action)
   switch (action) {
   case WA_SWITCH_WORKSPACES:
     if (next_direction)
-      wWorkspaceRelativeChange(scr, 1);
+      wDesktopRelativeChange(scr, 1);
     else
-      wWorkspaceRelativeChange(scr, -1);
+      wDesktopRelativeChange(scr, -1);
     break;
 
   case WA_SWITCH_WINDOWS:
@@ -764,10 +764,10 @@ static void executeButtonAction(WScreen *scr, XEvent *event, int action)
     }
     break;
   case WA_MOVE_PREVWORKSPACE:
-    wWorkspaceRelativeChange(scr, -1);
+    wDesktopRelativeChange(scr, -1);
     break;
   case WA_MOVE_NEXTWORKSPACE:
-    wWorkspaceRelativeChange(scr, 1);
+    wDesktopRelativeChange(scr, 1);
     break;
   case WA_MOVE_PREVWINDOW:
     wwin = scr->focused_window;
@@ -951,7 +951,7 @@ static void handleUnmapNotify(XEvent * event)
     return;
 
   if (!wwin->flags.mapped && !withdraw
-      && wwin->frame->workspace == wwin->screen->current_workspace
+      && wwin->frame->desktop == wwin->screen->current_desktop
       && !wwin->flags.miniaturized && !wwin->flags.hidden)
     return;
 
@@ -1747,39 +1747,39 @@ static void handleKeyPress(XEvent * event)
 
   case WKBD_WORKSPACE1 ... WKBD_WORKSPACE10:
     widx = command - WKBD_WORKSPACE1;
-    i = (scr->current_workspace / 10) * 10 + widx;
-    if (wPreferences.ws_advance || i < scr->workspace_count)
-      wWorkspaceChange(scr, i, NULL);
+    i = (scr->current_desktop / 10) * 10 + widx;
+    if (wPreferences.ws_advance || i < scr->desktop_count)
+      wDesktopChange(scr, i, NULL);
     break;
 
   case WKBD_NEXTWORKSPACE:
-    wWorkspaceRelativeChange(scr, 1);
+    wDesktopRelativeChange(scr, 1);
     break;
   case WKBD_PREVWORKSPACE:
-    wWorkspaceRelativeChange(scr, -1);
+    wDesktopRelativeChange(scr, -1);
     break;
   case WKBD_LASTWORKSPACE:
-    wWorkspaceChange(scr, scr->last_workspace, NULL);
+    wDesktopChange(scr, scr->last_desktop, NULL);
     break;
 
   case WKBD_MOVE_WORKSPACE1 ... WKBD_MOVE_WORKSPACE10:
     widx = command - WKBD_MOVE_WORKSPACE1;
-    i = (scr->current_workspace / 10) * 10 + widx;
-    if (wwin && (wPreferences.ws_advance || i < scr->workspace_count))
-      wWindowChangeWorkspace(wwin, i);
+    i = (scr->current_desktop / 10) * 10 + widx;
+    if (wwin && (wPreferences.ws_advance || i < scr->desktop_count))
+      wWindowChangeDesktop(wwin, i);
     break;
 
   case WKBD_MOVE_NEXTWORKSPACE:
     if (wwin)
-      wWindowChangeWorkspaceRelative(wwin, 1);
+      wWindowChangeDesktopRelative(wwin, 1);
     break;
   case WKBD_MOVE_PREVWORKSPACE:
     if (wwin)
-      wWindowChangeWorkspaceRelative(wwin, -1);
+      wWindowChangeDesktopRelative(wwin, -1);
     break;
   case WKBD_MOVE_LASTWORKSPACE:
     if (wwin)
-      wWindowChangeWorkspace(wwin, scr->last_workspace);
+      wWindowChangeDesktop(wwin, scr->last_desktop);
     break;
 
   case WKBD_MOVE_NEXTWSLAYER:
@@ -1788,15 +1788,15 @@ static void handleKeyPress(XEvent * event)
       if (wwin) {
         int row, column;
 
-        row = scr->current_workspace / 10;
-        column = scr->current_workspace % 10;
+        row = scr->current_desktop / 10;
+        column = scr->current_desktop % 10;
 
         if (command == WKBD_MOVE_NEXTWSLAYER) {
-          if ((row + 1) * 10 < scr->workspace_count)
-            wWindowChangeWorkspace(wwin, column + (row + 1) * 10);
+          if ((row + 1) * 10 < scr->desktop_count)
+            wWindowChangeDesktop(wwin, column + (row + 1) * 10);
         } else {
           if (row > 0)
-            wWindowChangeWorkspace(wwin, column + (row - 1) * 10);
+            wWindowChangeDesktop(wwin, column + (row - 1) * 10);
         }
       }
     }
@@ -1833,21 +1833,21 @@ static void handleKeyPress(XEvent * event)
     {
       int row, column;
 
-      row = scr->current_workspace / 10;
-      column = scr->current_workspace % 10;
+      row = scr->current_desktop / 10;
+      column = scr->current_desktop % 10;
 
       if (command == WKBD_NEXTWSLAYER) {
-        if ((row + 1) * 10 < scr->workspace_count)
-          wWorkspaceChange(scr, column + (row + 1) * 10, NULL);
+        if ((row + 1) * 10 < scr->desktop_count)
+          wDesktopChange(scr, column + (row + 1) * 10, NULL);
       } else {
         if (row > 0)
-          wWorkspaceChange(scr, column + (row - 1) * 10, NULL);
+          wDesktopChange(scr, column + (row - 1) * 10, NULL);
       }
     }
     break;
   case WKBD_CLIPRAISELOWER:
     if (!wPreferences.flags.noclip)
-      wDockRaiseLower(scr->workspaces[scr->current_workspace]->clip);
+      wDockRaiseLower(scr->desktops[scr->current_desktop]->clip);
     break;
   case WKBD_DOCKRAISELOWER:
     if (!wPreferences.flags.nodock)

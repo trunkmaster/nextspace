@@ -1,5 +1,5 @@
 /*
- *  Workspace window manager
+ *  Desktop window manager
  *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  Window Maker window manager
@@ -49,7 +49,7 @@
 #include "framewin.h"
 #include "icon.h"
 #include "appicon.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "balloon.h"
 #include "misc.h"
 
@@ -536,10 +536,10 @@ static void appiconBalloon(WObjDescriptor *object)
   WScreen *scr = aicon->icon->core->screen_ptr;
   char *tmp;
 
-  /* Show balloon if it is the Clip and the workspace name is > 5 chars */
+  /* Show balloon if it is the Clip and the desktop name is > 5 chars */
   if (object->parent == scr->clip_icon) {
-    if (strlen(scr->workspaces[scr->current_workspace]->name) > 5) {
-      scr->balloon->text = wstrdup(scr->workspaces[scr->current_workspace]->name);
+    if (strlen(scr->desktops[scr->current_desktop]->name) > 5) {
+      scr->balloon->text = wstrdup(scr->desktops[scr->current_desktop]->name);
     } else {
       wBalloonHide(scr);
       return;

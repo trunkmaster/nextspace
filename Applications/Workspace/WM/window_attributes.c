@@ -47,7 +47,7 @@
 #include "window_attributes.h"
 #include "appicon.h"
 #include "screen.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "defaults.h"
 #include "icon.h"
 #include "misc.h"
@@ -515,7 +515,7 @@ int wDefaultGetStartWorkspace(WScreen *scr, const char *instance, const char *cl
     return -1;
 
   /* Get the workspace number for the workspace name */
-  w = wGetWorkspaceNumber(scr, tmp);
+  w = wGetDesktopNumber(scr, tmp);
 
   return w;
 }

@@ -40,7 +40,7 @@ typedef struct WApplication {
   struct WWindow *main_wwin;        /* main (leader) window */
   struct WAppIcon *app_icon;
   struct WWindow *last_focused;     /* focused window before hide or switch to other */
-  int last_workspace;               /* last workspace the app used to work on */
+  int last_desktop;               /* last workspace the app used to work on */
   
   CFMutableArrayRef windows;
   struct WWindow *gsmenu_wwin;      /* GNUstep application menu window */

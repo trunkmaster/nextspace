@@ -10,7 +10,7 @@
 #include "framewin.h"
 #include "actions.h"
 #include "misc.h"
-#include "workspace.h"
+#include "desktop.h"
 
 static CFStringRef WMenuPath = CFSTR("Path");
 static CFStringRef WMenuType = CFSTR("Type");
@@ -48,7 +48,7 @@ static void mainCallback(WMenu *menu, WMenuItem *entry)
 #define ACTION_ADD              0
 #define ACTION_REMOVE           1
 #define ACTION_CHANGE           2
-#define ACTION_CHANGE_WORKSPACE 3
+#define ACTION_CHANGE_DESKTOP 3
 #define ACTION_CHANGE_STATE     4
 
 static void focusWindow(WMenu *menu, WMenuItem *entry)
@@ -91,10 +91,10 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
   if (menu->items_count <= old_pos)
     return -1;
 
-#define WS(i)  ((WWindow*)menu->items[i]->clientdata)->frame->workspace
+#define WS(i)  ((WWindow*)menu->items[i]->clientdata)->frame->desktop
   if (old_pos >= 0) {
-    if (WS(old_pos) >= wwin->frame->workspace
-        && (old_pos == 0 || WS(old_pos - 1) <= wwin->frame->workspace)) {
+    if (WS(old_pos) >= wwin->frame->desktop
+        && (old_pos == 0 || WS(old_pos - 1) <= wwin->frame->desktop)) {
       return old_pos;
     }
   }
@@ -103,7 +103,7 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
   for (idx = 0; idx < menu->items_count; idx++) {
     WWindow *tw = (WWindow *)menu->items[idx]->clientdata;
 
-    if (!tw || (!IS_OMNIPRESENT(tw) && tw->frame->workspace > wwin->frame->workspace)) {
+    if (!tw || (!IS_OMNIPRESENT(tw) && tw->frame->desktop > wwin->frame->desktop)) {
       break;
     }
   }
@@ -291,7 +291,7 @@ static void windowObserver(CFNotificationCenterRef center,
   else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
     CFStringRef wstate = (CFStringRef)wGetNotificationInfoValue(userInfo, CFSTR("state"));
     if (CFStringCompare(wstate, CFSTR("omnipresent"), 0) == 0) {
-      updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_WORKSPACE);
+      updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_DESKTOP);
     }
     else {
       updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_STATE);
@@ -358,13 +358,13 @@ static WMenu *createWindowsMenu(WApplication *wapp)
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
 
   CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, desktopsObserver,
-                                  WMDidChangeWorkspaceNameNotification, NULL,
+                                  WMDidChangeDesktopNameNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
   CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, desktopsObserver,
-                                  WMDidCreateWorkspaceNotification, NULL,
+                                  WMDidCreateDesktopNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
   CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, desktopsObserver,
-                                  WMDidDestroyWorkspaceNotification, NULL,
+                                  WMDidDestroyDesktopNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
 
   
@@ -379,43 +379,43 @@ static void switchDesktopCallback(WMenu *menu, WMenuItem *entry)
   WWindow *wwin = menu->frame->screen_ptr->focused_window;
 
   wSelectWindow(wwin, False);
-  wWindowChangeWorkspace(wwin, entry->order);
+  wWindowChangeDesktop(wwin, entry->order);
 }
 
 static void updateDesktopsMenu(WMenu *menu)
 {
   WScreen *scr = menu->frame->screen_ptr;
-  char title[MAX_WORKSPACENAME_WIDTH + 1];
+  char title[MAX_DESKTOPNAME_WIDTH + 1];
   WMenuItem *item;
   int i;
 
   // Remove deleted desktops
-  for (i = menu->items_count; i >= scr->workspace_count; i--) {
+  for (i = menu->items_count; i >= scr->desktop_count; i--) {
     wMenuRemoveItem(menu, i);
     menu->flags.realized = 0;
   }
 
   // Update names or add new desktops
-  for (i = 0; i < scr->workspace_count; i++) {
+  for (i = 0; i < scr->desktop_count; i++) {
     if (i < menu->items_count) {
       item = menu->items[i];
-      if (strcmp(item->text, scr->workspaces[i]->name) != 0) {
+      if (strcmp(item->text, scr->desktops[i]->name) != 0) {
         wfree(item->text);
-        strncpy(title, scr->workspaces[i]->name, MAX_WORKSPACENAME_WIDTH);
-        title[MAX_WORKSPACENAME_WIDTH] = 0;
+        strncpy(title, scr->desktops[i]->name, MAX_DESKTOPNAME_WIDTH);
+        title[MAX_DESKTOPNAME_WIDTH] = 0;
         menu->items[i]->text = wstrdup(title);
         menu->items[i]->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
         menu->flags.realized = 0;
       }
     } else {
-      strncpy(title, scr->workspaces[i]->name, MAX_WORKSPACENAME_WIDTH);
-      title[MAX_WORKSPACENAME_WIDTH] = 0;
+      strncpy(title, scr->desktops[i]->name, MAX_DESKTOPNAME_WIDTH);
+      title[MAX_DESKTOPNAME_WIDTH] = 0;
       item = wMenuAddItem(menu, title, switchDesktopCallback, NULL);
       item->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
     }
 
     /* workspace shortcut labels */
-    if (i / 10 == scr->current_workspace / 10) {
+    if (i / 10 == scr->current_desktop / 10) {
       item->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + (i % 10)]);
     } else {
       item->rtext = NULL;

@@ -26,7 +26,7 @@ SUBPROJECTS = \
 	Preferences/FileCopyOptions \
 	Preferences/IconView \
 	Preferences/Shelf \
-	Preferences/Workspaces
+	Preferences/Desktops
 
 $(APP_NAME)_OBJC_FILES = \
 	$(wildcard *.m) \

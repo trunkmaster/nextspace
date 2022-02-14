@@ -58,7 +58,7 @@
 #include "properties.h"
 #include "dock.h"
 #include "resources.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "balloon.h"
 #include "geomview.h"
 #include "wmspec.h"
@@ -847,7 +847,7 @@ WScreen *wScreenInit(int screen_number)
   wNETWMInitStuff(scr);
 
   /* create initial workspace */
-  wWorkspaceNew(scr);
+  wDesktopNew(scr);
 
   /* create shared pixmaps */
   createPixmaps(scr);
@@ -1030,7 +1030,7 @@ void wScreenRestoreState(WScreen * scr)
     wDrawersRestoreState(scr);
   }
 
-  wWorkspaceRestoreState(scr);
+  wDesktopRestoreState(scr);
   wScreenUpdateUsableArea(scr);
 }
 
@@ -1061,7 +1061,7 @@ void wScreenSaveState(WScreen *scr)
     }
   }
   
-  wWorkspaceSaveState(scr);
+  wDesktopSaveState(scr);
 
   /* if (!wPreferences.flags.nodrawer) { */
   /*   wDrawersSaveState(scr); */

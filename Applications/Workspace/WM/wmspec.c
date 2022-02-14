@@ -43,7 +43,7 @@
 #include "WM.h"
 #include "window.h"
 #include "screen.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "framewin.h"
 #include "actions.h"
 #include "client.h"
@@ -260,16 +260,16 @@ static atomitem_t atomNames[] = {
 static void windowObserver(CFNotificationCenterRef center,  void *observer,
                            CFNotificationName name, const void *window,
                            CFDictionaryRef userInfo);
-static void workspaceObserver(CFNotificationCenterRef center, void *observer,
+static void desktopObserver(CFNotificationCenterRef center, void *observer,
                               CFNotificationName name, const void *screen,
                               CFDictionaryRef userInfo);
 
 static void updateClientList(WScreen *scr);
 static void updateClientListStacking(WScreen *scr, WWindow *);
 
-static void updateWorkspaceNames(WScreen *scr);
-static void updateCurrentWorkspace(WScreen *scr);
-static void updateWorkspaceCount(WScreen *scr);
+static void updateDesktopNames(WScreen *scr);
+static void updateCurrentDesktop(WScreen *scr);
+static void updateDesktopCount(WScreen *scr);
 static void wNETWMShowingDesktop(WScreen *scr, Bool show);
 
 typedef struct NetData {
@@ -370,15 +370,15 @@ void wNETWMUpdateDesktop(WScreen *scr)
   long *views, sizes[2];
   int count, i;
 
-  if (scr->workspace_count == 0)
+  if (scr->desktop_count == 0)
     return;
 
-  count = scr->workspace_count * 2;
+  count = scr->desktop_count * 2;
   views = wmalloc(sizeof(long) * count);
   sizes[0] = scr->width;
   sizes[1] = scr->height;
 
-  for (i = 0; i < scr->workspace_count; i++) {
+  for (i = 0; i < scr->desktop_count; i++) {
     views[2 * i + 0] = 0;
     views[2 * i + 1] = 0;
   }
@@ -594,15 +594,15 @@ static void wNETWMShowingDesktop(WScreen *scr, Bool show)
     scr->netdata->show_desktop = wins;
     updateShowDesktop(scr, True);
   } else if (scr->netdata->show_desktop != NULL) {
-    /* FIXME: get rid of workspace flashing ! */
-    int ws = scr->current_workspace;
+    /* FIXME: get rid of desktop flashing ! */
+    int ws = scr->current_desktop;
     WWindow **tmp;
     for (tmp = scr->netdata->show_desktop; *tmp; ++tmp) {
       wDeiconifyWindow(*tmp);
       (*tmp)->flags.net_show_desktop = 0;
     }
-    if (ws != scr->current_workspace)
-      wWorkspaceChange(scr, ws, NULL);
+    if (ws != scr->current_desktop)
+      wDesktopChange(scr, ws, NULL);
     wfree(scr->netdata->show_desktop);
     scr->netdata->show_desktop = NULL;
     updateShowDesktop(scr, False);
@@ -652,7 +652,7 @@ void wNETWMInitStuff(WScreen *scr)
                                   WMDidUnmanageWindowNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
   CFNotificationCenterAddObserver(scr->notificationCenter, data, windowObserver,
-                                  WMDidChangeWindowWorkspaceNotification, NULL,
+                                  WMDidChangeWindowDesktopNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
   CFNotificationCenterAddObserver(scr->notificationCenter, data, windowObserver,
                                   WMDidChangeWindowStateNotification, NULL,
@@ -667,23 +667,23 @@ void wNETWMInitStuff(WScreen *scr)
                                   WMDidChangeWindowNameNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
 
-  CFNotificationCenterAddObserver(scr->notificationCenter, data, workspaceObserver,
-                                  WMDidCreateWorkspaceNotification, NULL,
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, desktopObserver,
+                                  WMDidCreateDesktopNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, data, workspaceObserver,
-                                  WMDidDestroyWorkspaceNotification, NULL,
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, desktopObserver,
+                                  WMDidDestroyDesktopNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, data, workspaceObserver,
-                                  WMDidChangeWorkspaceNotification, NULL,
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, desktopObserver,
+                                  WMDidChangeDesktopNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, data, workspaceObserver,
-                                  WMDidChangeWorkspaceNameNotification, NULL,
+  CFNotificationCenterAddObserver(scr->notificationCenter, data, desktopObserver,
+                                  WMDidChangeDesktopNameNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
 
   updateClientList(scr);
   updateClientListStacking(scr, NULL);
-  updateWorkspaceCount(scr);
-  updateWorkspaceNames(scr);
+  updateDesktopCount(scr);
+  updateDesktopNames(scr);
   updateShowDesktop(scr, False);
 
   wScreenUpdateUsableArea(scr);
@@ -746,7 +746,7 @@ void wNETWMUpdateActions(WWindow *wwin, Bool del)
 void wNETWMUpdateWorkarea(WScreen *scr)
 {
   WArea total_usable;
-  int nb_workspace;
+  int nb_desktop;
 
   if (!scr->netdata) {
     /* If the _NET_xxx were not initialised, it not necessary to do anything */
@@ -786,17 +786,17 @@ void wNETWMUpdateWorkarea(WScreen *scr)
 
   }
 
-  /* We are expected to repeat the information for each workspace */
-  if (scr->workspace_count == 0)
-    nb_workspace = 1;
+  /* We are expected to repeat the information for each desktop */
+  if (scr->desktop_count == 0)
+    nb_desktop = 1;
   else
-    nb_workspace = scr->workspace_count;
+    nb_desktop = scr->desktop_count;
 
   {
-    long property_value[nb_workspace * 4];
+    long property_value[nb_desktop * 4];
     int i;
 
-    for (i = 0; i < nb_workspace; i++) {
+    for (i = 0; i < nb_desktop; i++) {
       property_value[4 * i + 0] = total_usable.x1;
       property_value[4 * i + 1] = total_usable.y1;
       property_value[4 * i + 2] = total_usable.x2 - total_usable.x1;
@@ -804,7 +804,7 @@ void wNETWMUpdateWorkarea(WScreen *scr)
     }
 
     XChangeProperty(dpy, scr->root_win, net_workarea, XA_CARDINAL, 32, PropModeReplace,
-                    (unsigned char *) property_value, nb_workspace * 4);
+                    (unsigned char *) property_value, nb_desktop * 4);
   }
 }
 
@@ -905,36 +905,36 @@ static void updateClientListStacking(WScreen *scr, WWindow *wwin_excl)
   XFlush(dpy);
 }
 
-static void updateWorkspaceCount(WScreen *scr)
+static void updateDesktopCount(WScreen *scr)
 {				/* changeable */
   long count;
 
-  count = scr->workspace_count;
+  count = scr->desktop_count;
 
   XChangeProperty(dpy, scr->root_win, net_number_of_desktops, XA_CARDINAL,
                   32, PropModeReplace, (unsigned char *)&count, 1);
 }
 
-static void updateCurrentWorkspace(WScreen *scr)
+static void updateCurrentDesktop(WScreen *scr)
 {				/* changeable */
   long count;
 
-  count = scr->current_workspace;
+  count = scr->current_desktop;
 
   XChangeProperty(dpy, scr->root_win, net_current_desktop, XA_CARDINAL, 32,
                   PropModeReplace, (unsigned char *)&count, 1);
 }
 
-static void updateWorkspaceNames(WScreen *scr)
+static void updateDesktopNames(WScreen *scr)
 {
-  char buf[MAX_WORKSPACES * (MAX_WORKSPACENAME_WIDTH + 1)], *pos;
+  char buf[MAX_DESKTOPS * (MAX_DESKTOPNAME_WIDTH + 1)], *pos;
   unsigned int i, len, curr_size;
 
   pos = buf;
   len = 0;
-  for (i = 0; i < scr->workspace_count; i++) {
-    curr_size = strlen(scr->workspaces[i]->name);
-    strcpy(pos, scr->workspaces[i]->name);
+  for (i = 0; i < scr->desktop_count; i++) {
+    curr_size = strlen(scr->desktops[i]->name);
+    strcpy(pos, scr->desktops[i]->name);
     pos += (curr_size + 1);
     len += (curr_size + 1);
   }
@@ -956,20 +956,20 @@ static void updateFocusHint(WScreen *scr)
                   PropModeReplace, (unsigned char *)&window, 1);
 }
 
-static void updateWorkspaceHint(WWindow *wwin, Bool fake, Bool del)
+static void updateDesktopHint(WWindow *wwin, Bool fake, Bool del)
 {
   long l;
 
   if (del) {
     XDeleteProperty(dpy, wwin->client_win, net_wm_desktop);
   } else {
-    l = ((fake || IS_OMNIPRESENT(wwin)) ? -1 : wwin->frame->workspace);
+    l = ((fake || IS_OMNIPRESENT(wwin)) ? -1 : wwin->frame->desktop);
     XChangeProperty(dpy, wwin->client_win, net_wm_desktop, XA_CARDINAL,
                     32, PropModeReplace, (unsigned char *)&l, 1);
   }
 }
 
-static void updateStateHint(WWindow *wwin, Bool changedWorkspace, Bool del)
+static void updateStateHint(WWindow *wwin, Bool changedDesktop, Bool del)
 {				/* changeable */
   if (del) {
     XDeleteProperty(dpy, wwin->client_win, net_wm_state);
@@ -977,8 +977,8 @@ static void updateStateHint(WWindow *wwin, Bool changedWorkspace, Bool del)
     Atom state[15];	/* nr of defined state atoms */
     int i = 0;
 
-    if (changedWorkspace || (wPreferences.sticky_icons && !IS_OMNIPRESENT(wwin)))
-      updateWorkspaceHint(wwin, False, False);
+    if (changedDesktop || (wPreferences.sticky_icons && !IS_OMNIPRESENT(wwin)))
+      updateDesktopHint(wwin, False, False);
 
     if (IS_OMNIPRESENT(wwin))
       state[i++] = net_wm_state_sticky;
@@ -998,7 +998,7 @@ static void updateStateHint(WWindow *wwin, Bool changedWorkspace, Bool del)
 
       if (wwin->flags.miniaturized && wPreferences.sticky_icons) {
         if (!IS_OMNIPRESENT(wwin))
-          updateWorkspaceHint(wwin, True, False);
+          updateDesktopHint(wwin, True, False);
         state[i++] = net_wm_state_sticky;
       }
     }
@@ -1443,7 +1443,7 @@ static void updateWindowType(WWindow *wwin)
   }
 }
 
-void wNETWMCheckClientHints(WWindow *wwin, int *layer, int *workspace)
+void wNETWMCheckClientHints(WWindow *wwin, int *layer, int *desktop)
 {
   Atom type_ret;
   int fmt_ret, i;
@@ -1454,13 +1454,13 @@ void wNETWMCheckClientHints(WWindow *wwin, int *layer, int *workspace)
                          XA_CARDINAL, &type_ret, &fmt_ret, &nitems_ret,
                          &bytes_after_ret, (unsigned char **)&data) == Success && data) {
 
-    long desktop = *data;
+    long nw_desktop = *data;
     XFree(data);
 
-    if (desktop == -1)
+    if (nw_desktop == -1)
       wwin->client_flags.omnipresent = 1;
     else
-      *workspace = desktop;
+      *desktop = nw_desktop;
   }
 
   if (XGetWindowProperty(dpy, wwin->client_win, net_wm_state, 0, 1, False,
@@ -1602,7 +1602,7 @@ static void handleDesktopNames(WScreen *scr)
       names[n] = &data[i];
     } else if (*names[n] == 0) {
       names[n] = &data[i];
-      wWorkspaceRename(scr, n, names[n]);
+      wDesktopRename(scr, n, names[n]);
     }
   }
 }
@@ -1625,27 +1625,27 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
      Root Window properties messages 
   */
   if (event->message_type == net_current_desktop) {
-    wWorkspaceChange(scr, event->data.l[0], NULL);
+    wDesktopChange(scr, event->data.l[0], NULL);
     return True;
   }
   else if (event->message_type == net_number_of_desktops) {
     long value;
 
     value = event->data.l[0];
-    if (value > scr->workspace_count) {
-      wWorkspaceMake(scr, value - scr->workspace_count);
-    } else if (value < scr->workspace_count) {
+    if (value > scr->desktop_count) {
+      wDesktopMake(scr, value - scr->desktop_count);
+    } else if (value < scr->desktop_count) {
       int i;
       Bool rebuild = False;
 
-      for (i = scr->workspace_count - 1; i >= value; i--) {
-        if (!wWorkspaceDelete(scr, i)) {
+      for (i = scr->desktop_count - 1; i >= value; i--) {
+        if (!wDesktopDelete(scr, i)) {
           rebuild = True;
           break;
         }
       }
       if (rebuild) {
-        updateWorkspaceCount(scr);
+        updateDesktopCount(scr);
       }
     }
     return True;
@@ -1682,9 +1682,9 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
      * - request comes from a pager, or
      * - it's explicitly allowed in Advanced Options, or
      * - giving the client the focus does not cause a change in
-     *   the active workspace (XXX: or the active head if Xinerama)
+     *   the active desktop (XXX: or the active head if Xinerama)
      */
-    if (wwin->frame->workspace == wwin->screen->current_workspace /* No workspace change */
+    if (wwin->frame->desktop == wwin->screen->current_desktop /* No desktop change */
         || event->data.l[0] == 2 /* Requested by pager */
         || WFLAGP(wwin, focus_across_wksp) /* Explicitly allowed */) {
       wNETWMShowingDesktop(scr, False);
@@ -1743,7 +1743,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
       if (IS_OMNIPRESENT(wwin)) {
         wWindowSetOmnipresent(wwin, False);
       }
-      wWindowChangeWorkspace(wwin, desktop);
+      wWindowChangeDesktop(wwin, desktop);
     }
     return True;
   }
@@ -1949,7 +1949,7 @@ static void windowObserver(CFNotificationCenterRef center, void *netData,
   else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0) {
     updateClientList(wwin->screen);
     updateClientListStacking(wwin->screen, wwin);
-    updateWorkspaceHint(wwin, False, True);
+    updateDesktopHint(wwin, False, True);
     updateStateHint(wwin, False, True);
     wNETWMUpdateActions(wwin, True);
 
@@ -1967,8 +1967,8 @@ static void windowObserver(CFNotificationCenterRef center, void *netData,
   else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0) {
     updateFocusHint(ndata->scr);
   }
-  else if (CFStringCompare(name, WMDidChangeWindowWorkspaceNotification, 0) == 0) {
-    updateWorkspaceHint(wwin, False, False);
+  else if (CFStringCompare(name, WMDidChangeWindowDesktopNotification, 0) == 0) {
+    updateDesktopHint(wwin, False, False);
     updateStateHint(wwin, True, False);
   }
   else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
@@ -1977,27 +1977,27 @@ static void windowObserver(CFNotificationCenterRef center, void *netData,
   }
 }
 
-static void workspaceObserver(CFNotificationCenterRef center, void *netData,
+static void desktopObserver(CFNotificationCenterRef center, void *netData,
                               CFNotificationName name, const void *screen,
                               CFDictionaryRef userInfo)
 {
   WScreen *scr = (WScreen *)screen;
 
-  if (CFStringCompare(name, WMDidCreateWorkspaceNotification, 0) == 0) {
-    updateWorkspaceCount(scr);
-    updateWorkspaceNames(scr);
+  if (CFStringCompare(name, WMDidCreateDesktopNotification, 0) == 0) {
+    updateDesktopCount(scr);
+    updateDesktopNames(scr);
     wNETWMUpdateWorkarea(scr);
   }
-  else if (CFStringCompare(name, WMDidDestroyWorkspaceNotification, 0) == 0) {
-    updateWorkspaceCount(scr);
-    updateWorkspaceNames(scr);
+  else if (CFStringCompare(name, WMDidDestroyDesktopNotification, 0) == 0) {
+    updateDesktopCount(scr);
+    updateDesktopNames(scr);
     wNETWMUpdateWorkarea(scr);
   }
-  else if (CFStringCompare(name, WMDidChangeWorkspaceNotification, 0) == 0) {
-    updateCurrentWorkspace(scr);
+  else if (CFStringCompare(name, WMDidChangeDesktopNotification, 0) == 0) {
+    updateCurrentDesktop(scr);
   }
-  else if (CFStringCompare(name, WMDidChangeWorkspaceNameNotification, 0) == 0) {
-    updateWorkspaceNames(scr);
+  else if (CFStringCompare(name, WMDidChangeDesktopNameNotification, 0) == 0) {
+    updateDesktopNames(scr);
   }
 }
 

@@ -60,7 +60,7 @@
 #include "colormap.h"
 #include "stacking.h"
 #include "defaults.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "xrandr.h"
 #include "appicon.h"
 #include "animations.h"
@@ -426,7 +426,7 @@ void wWindowSetupInitialAttributes(WWindow *wwin, int *level, int *workspace)
     }
 
     if (tmp_workspace >= 0)
-      *workspace = tmp_workspace % scr->workspace_count;
+      *workspace = tmp_workspace % scr->desktop_count;
   }
 
   /*
@@ -473,7 +473,7 @@ Bool wWindowObscuresWindow(WWindow *wwin, WWindow *obscured)
   h2 = obscured->frame->core->height;
 
   if (!IS_OMNIPRESENT(wwin) && !IS_OMNIPRESENT(obscured)
-      && wwin->frame->workspace != obscured->frame->workspace)
+      && wwin->frame->desktop != obscured->frame->desktop)
     return False;
 
   if (wwin->frame_x + w1 < obscured->frame_x
@@ -897,15 +897,15 @@ WWindow *wManageWindow(WScreen *scr, Window window)
     if (!IS_OMNIPRESENT(wwin)) {
       int w = wDefaultGetStartWorkspace(scr, wwin->wm_instance,
                                         wwin->wm_class);
-      if (w < 0 || w >= scr->workspace_count) {
-        workspace = win_state->state->workspace;
-        if (workspace >= scr->workspace_count)
-          workspace = scr->current_workspace;
+      if (w < 0 || w >= scr->desktop_count) {
+        workspace = win_state->state->desktop;
+        if (workspace >= scr->desktop_count)
+          workspace = scr->current_desktop;
       } else {
         workspace = w;
       }
     } else {
-      workspace = scr->current_workspace;
+      workspace = scr->current_desktop;
     }
   }
 
@@ -926,7 +926,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
         wwin->old_geometry.height = wstate->h;
       }
 
-      workspace = wstate->workspace;
+      workspace = wstate->desktop;
     } else {
       wstate = NULL;
     }
@@ -968,20 +968,20 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 
   /* set workspace on which the window starts */
   if (workspace >= 0) {
-    if (workspace > scr->workspace_count - 1)
-      workspace = workspace % scr->workspace_count;
+    if (workspace > scr->desktop_count - 1)
+      workspace = workspace % scr->desktop_count;
   } else {
     int w;
 
     w = wDefaultGetStartWorkspace(scr, wwin->wm_instance, wwin->wm_class);
 
-    if (w >= 0 && w < scr->workspace_count && !(IS_OMNIPRESENT(wwin))) {
+    if (w >= 0 && w < scr->desktop_count && !(IS_OMNIPRESENT(wwin))) {
       workspace = w;
     } else {
       if (wPreferences.open_transients_with_parent && transientOwner)
-        workspace = transientOwner->frame->workspace;
+        workspace = transientOwner->frame->desktop;
       else
-        workspace = scr->current_workspace;
+        workspace = scr->current_desktop;
     }
   }
 
@@ -1005,7 +1005,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
       y = win_state->state->y;
     } else if ((wwin->transient_for == None || wPreferences.window_placement != WPM_MANUAL)
                && !scr->flags.startup
-               && workspace == scr->current_workspace
+               && workspace == scr->current_desktop
                && !wwin->flags.miniaturized
                && !wwin->flags.maximized && !(wwin->normal_hints->flags & (USPosition | PPosition))) {
 
@@ -1156,7 +1156,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
     wFrameWindowHideButton(wwin->frame, foo);
 
   wwin->frame->child = wwin;
-  wwin->frame->workspace = workspace;
+  wwin->frame->desktop = workspace;
   wwin->frame->on_click_left = windowIconifyClick;
   wwin->frame->on_click_right = windowCloseClick;
   wwin->frame->on_dblclick_right = windowCloseDblClick;
@@ -1210,7 +1210,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 
     app = wApplicationCreate(wwin);
     if (app) {
-      app->last_workspace = workspace;
+      app->last_desktop = workspace;
 
       /* Do application specific stuff, like setting application
        * wide attributes. */
@@ -1242,7 +1242,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   XLowerWindow(dpy, window);
 
   /* if window is in this workspace and should be mapped, then  map it */
-  if (!wwin->flags.miniaturized && (workspace == scr->current_workspace || IS_OMNIPRESENT(wwin))
+  if (!wwin->flags.miniaturized && (workspace == scr->current_desktop || IS_OMNIPRESENT(wwin))
       && !wwin->flags.hidden && !withdraw) {
 
     /* The following "if" is to avoid crashing of clients that expect
@@ -1305,7 +1305,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
      .is_dockapp is set for windows created with Withdrawn state */
   if (!wwin->flags.is_gnustep && !wwin->flags.is_dockapp
       && !wwin->flags.miniaturized && !wwin->flags.hidden
-      && workspace == scr->current_workspace) {
+      && workspace == scr->current_desktop) {
     if (((transientOwner && transientOwner->flags.focused)
          || wPreferences.auto_focus) && !WFLAGP(wwin, no_focusable)) {
 
@@ -1421,7 +1421,7 @@ WWindow *wManageInternalWindow(WScreen *scr, Window window, Window owner,
   wFrameWindowHideButton(wwin->frame, WFF_RIGHT_BUTTON);
 
   wwin->frame->child = wwin;
-  wwin->frame->workspace = wwin->screen->current_workspace;
+  wwin->frame->desktop = wwin->screen->current_desktop;
 
   wwin->frame->on_click_right = windowCloseClick;
   wwin->frame->on_mousedown_titlebar = titlebarMouseDown;
@@ -1591,7 +1591,7 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
     }
     
     if (!strcmp(new_focused_window->wm_instance, "Workspace")
-        || (napp && napp->last_workspace == scr->current_workspace)) {
+        || (napp && napp->last_desktop == scr->current_desktop)) {
       napp = NULL;
     }
 
@@ -1623,8 +1623,8 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
         wSetFocusTo(scr, new_focused_window);
       }
     }
-    else if (new_focused_window->frame->workspace != scr->current_workspace) {
-      wWorkspaceForceChange(scr, new_focused_window->frame->workspace, new_focused_window);
+    else if (new_focused_window->frame->desktop != scr->current_desktop) {
+      wDesktopForceChange(scr, new_focused_window->frame->desktop, new_focused_window);
     }
     else if (napp) {
       WMLogInfo("activating app with main window: %lu", napp->main_window);
@@ -1706,7 +1706,7 @@ void wWindowFocusPrev(WWindow *wwin, Bool inSameWorkspace)
     tmp = tmp->prev;
 
   if (inSameWorkspace)
-    while (tmp && (tmp->frame->workspace != wwin->frame->workspace))
+    while (tmp && (tmp->frame->desktop != wwin->frame->desktop))
       tmp = tmp->next;
 
   wWindowSingleFocus(tmp);
@@ -1721,7 +1721,7 @@ void wWindowFocusNext(WWindow *wwin, Bool inSameWorkspace)
 
   tmp = wwin->prev;
   if (inSameWorkspace)
-    while (tmp && (tmp->frame->workspace != wwin->frame->workspace))
+    while (tmp && (tmp->frame->desktop != wwin->frame->desktop))
       tmp = tmp->prev;
 
   wWindowSingleFocus(tmp);
@@ -1997,16 +1997,16 @@ void wWindowCropSize(WWindow *wwin, unsigned int maxW, unsigned int maxH,
     *height = maxH - (maxH - baseH) % hinc;
 }
 
-void wWindowChangeWorkspace(WWindow *wwin, int workspace)
+void wWindowChangeDesktop(WWindow *wwin, int workspace)
 {
   WScreen *scr = wwin->screen;
   WApplication *wapp;
   int unmap = 0;
 
-  if (workspace >= scr->workspace_count || workspace < 0 || workspace == wwin->frame->workspace)
+  if (workspace >= scr->desktop_count || workspace < 0 || workspace == wwin->frame->desktop)
     return;
 
-  if (workspace != scr->current_workspace) {
+  if (workspace != scr->current_desktop) {
     /* Sent to other workspace. Unmap window */
     if ((wwin->flags.mapped
          || wwin->flags.shaded || (wwin->flags.miniaturized && !wPreferences.sticky_icons))
@@ -2014,7 +2014,7 @@ void wWindowChangeWorkspace(WWindow *wwin, int workspace)
 
       wapp = wApplicationOf(wwin->main_window);
       if (wapp)
-        wapp->last_workspace = workspace;
+        wapp->last_desktop = workspace;
 
       if (wwin->flags.miniaturized) {
         if (wwin->icon) {
@@ -2038,7 +2038,7 @@ void wWindowChangeWorkspace(WWindow *wwin, int workspace)
     }
   }
   if (!IS_OMNIPRESENT(wwin)) {
-    wwin->frame->workspace = workspace;
+    wwin->frame->desktop = workspace;
     
     if (scr->notificationCenter) {
       CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
@@ -2048,7 +2048,7 @@ void wWindowChangeWorkspace(WWindow *wwin, int workspace)
                                                    &workspace);
       CFDictionaryAddValue(info, CFSTR("workspace"), workspaceNumber);
       CFNotificationCenterPostNotification(scr->notificationCenter,
-                                           WMDidChangeWorkspaceNotification, wwin, info, TRUE);
+                                           WMDidChangeDesktopNotification, wwin, info, TRUE);
       CFRelease(workspaceNumber);
       CFRelease(info);
     }    
@@ -2058,26 +2058,26 @@ void wWindowChangeWorkspace(WWindow *wwin, int workspace)
     wWindowUnmap(wwin);
 }
 
-void wWindowChangeWorkspaceRelative(WWindow *wwin, int amount)
+void wWindowChangeDesktopRelative(WWindow *wwin, int amount)
 {
   WScreen *scr = wwin->screen;
-  int w = scr->current_workspace + amount;
+  int w = scr->current_desktop + amount;
 
   if (amount < 0) {
     if (w >= 0) {
-      wWindowChangeWorkspace(wwin, w);
+      wWindowChangeDesktop(wwin, w);
     } else if (wPreferences.ws_cycle) {
-      wWindowChangeWorkspace(wwin, scr->workspace_count + w);
+      wWindowChangeDesktop(wwin, scr->desktop_count + w);
     }
   } else if (amount > 0) {
-    if (w < scr->workspace_count) {
-      wWindowChangeWorkspace(wwin, w);
+    if (w < scr->desktop_count) {
+      wWindowChangeDesktop(wwin, w);
     } else if (wPreferences.ws_advance) {
-      int workspace = WMIN(w, MAX_WORKSPACES - 1);
-      wWorkspaceMake(scr, workspace);
-      wWindowChangeWorkspace(wwin, workspace);
+      int workspace = WMIN(w, MAX_DESKTOPS - 1);
+      wDesktopMake(scr, workspace);
+      wWindowChangeDesktop(wwin, workspace);
     } else if (wPreferences.ws_cycle) {
-      wWindowChangeWorkspace(wwin, w % scr->workspace_count);
+      wWindowChangeDesktop(wwin, w % scr->desktop_count);
     }
   }
 }
@@ -2424,7 +2424,7 @@ void wWindowSaveState(WWindow *wwin)
   int i;
 
   memset(data, 0, sizeof(long) * 10);
-  data[0] = wwin->frame->workspace;
+  data[0] = wwin->frame->desktop;
   data[1] = wwin->flags.miniaturized;
   data[2] = wwin->flags.shaded;
   data[3] = wwin->flags.hidden;
@@ -2476,7 +2476,7 @@ static int getSavedState(Window window, WSavedState ** state)
 
   *state = wmalloc(sizeof(WSavedState));
 
-  (*state)->workspace = data[0];
+  (*state)->desktop = data[0];
   (*state)->miniaturized = data[1];
   (*state)->shaded = data[2];
   (*state)->hidden = data[3];

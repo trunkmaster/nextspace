@@ -58,7 +58,7 @@ typedef struct WFrameWindow {
   WCoreWindow *left_button;	       /* miniaturize button */
   WCoreWindow *right_button;	       /* close button */
 
-  short workspace;		       /* workspace that the window occupies */
+  short desktop;		       /* desktop that the window occupies */
 
   short top_width;
   int *title_clearance;

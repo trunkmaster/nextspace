@@ -106,7 +106,7 @@ void wDrawerFillTheGap(WDock *drawer, WAppIcon *aicon, Bool redocking);
 void wDockFinishLaunch(WAppIcon *icon);
 void wDockTrackWindowLaunch(WDock *dock, Window window);
 WAppIcon *wDockFindIconForWindow(WDock *dock, Window window);
-void wDockDoAutoLaunch(WDock *dock, int workspace);
+void wDockDoAutoLaunch(WDock *dock, int desktop);
 void wDockLaunchWithState(WAppIcon *btn, WSavedState *state);
 
 #ifdef USE_DOCK_XDND
@@ -115,7 +115,7 @@ int wDockReceiveDNDDrop(WScreen *scr, XEvent *event);
 
 void wClipIconPaint(WAppIcon *aicon);
 void wClipSaveState(WScreen *scr);
-CFMutableDictionaryRef wClipSaveWorkspaceState(WScreen *scr, int workspace);
+CFMutableDictionaryRef wClipSaveDesktopState(WScreen *scr, int desktop);
 WAppIcon *wClipRestoreState(WScreen *scr, CFDictionaryRef clip_state);
 
 void wDrawerIconPaint(WAppIcon *dicon);
@@ -123,7 +123,7 @@ void wDrawersSaveState(WScreen *scr);
 void wDrawersRestoreState(WScreen *scr);
 int wIsADrawer(WAppIcon *aicon);
 
-void wClipUpdateForWorkspaceChange(WScreen *scr, int workspace);
+void wClipUpdateForDesktopChange(WScreen *scr, int desktop);
 
 RImage *wClipMakeTile(RImage *normalTile);
 RImage* wDrawerMakeTile(WScreen *scr, RImage *normalTile);
@@ -140,4 +140,4 @@ typedef enum {
 
 int wClipMakeIconOmnipresent(WAppIcon *aicon, int omnipresent);
 
-#endif /* __WORKSPACE_WM_DOCK__ */
+#endif /* __WORKSPACEWM_DOCK__ */

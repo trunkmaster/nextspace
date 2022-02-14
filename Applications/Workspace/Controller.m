@@ -664,7 +664,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // Window Manager events
   [_workspaceCenter addObserver:self
                        selector:@selector(updateWorkspaceBadge:)
-                           name:CF_NOTIFICATION(WMDidChangeWorkspaceNotification)
+                           name:CF_NOTIFICATION(WMDidChangeDesktopNotification)
                          object:nil];
   [_workspaceCenter addObserver:self
                        selector:@selector(updateKeyboardBadge:)
@@ -1023,7 +1023,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [workspaceBadge release];
   
   currentWorkspace = [NSString stringWithFormat:@"%i",
-                               wDefaultScreen()->current_workspace + 1];
+                               wDefaultScreen()->current_desktop + 1];
   [workspaceBadge setStringValue:currentWorkspace];
 }
 

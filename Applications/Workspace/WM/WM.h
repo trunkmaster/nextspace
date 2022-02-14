@@ -105,7 +105,7 @@
 /* size of the icon pixmap */
 #define MAX_ICON_WIDTH		60
 #define MAX_ICON_HEIGHT		48
-#define MAX_WORKSPACES		100
+#define MAX_DESKTOPS		100
 #define MAX_MENU_TEXT_LENGTH	512
 #define MAX_RESTART_ARGS	16
 #define MAX_DEAD_PROCESSES	128
@@ -254,7 +254,7 @@ extern struct wm_global_variables {
    * this variable is used to prevent workspace switch while certain
    * operations are ongoing.
    */
-  Bool ignore_workspace_change;
+  Bool ignore_desktop_change;
 
   /*
    * Process WorkspaceMap Event:
@@ -365,17 +365,17 @@ extern CFStringRef WMDidDestroyApplicationNotification;
 extern CFStringRef WMDidManageWindowNotification;
 extern CFStringRef WMDidUnmanageWindowNotification;
 /* Windows */
-extern CFStringRef WMDidChangeWindowWorkspaceNotification;
+extern CFStringRef WMDidChangeWindowDesktopNotification;
 extern CFStringRef WMDidChangeWindowStateNotification;
 extern CFStringRef WMDidChangeWindowFocusNotification;
 extern CFStringRef WMDidChangeWindowStackingNotification;
 extern CFStringRef WMDidChangeWindowNameNotification;
 extern CFStringRef WMDidResetWindowStackingNotification;
 /* Workspaces */
-extern CFStringRef WMDidCreateWorkspaceNotification;
-extern CFStringRef WMDidDestroyWorkspaceNotification;
-extern CFStringRef WMDidChangeWorkspaceNotification;
-extern CFStringRef WMDidChangeWorkspaceNameNotification;
+extern CFStringRef WMDidCreateDesktopNotification;
+extern CFStringRef WMDidDestroyDesktopNotification;
+extern CFStringRef WMDidChangeDesktopNotification;
+extern CFStringRef WMDidChangeDesktopNameNotification;
 /* Appearance */
 extern CFStringRef WMDidChangeWindowAppearanceSettings;
 extern CFStringRef WMDidChangeIconAppearanceSettings;

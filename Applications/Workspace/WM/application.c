@@ -41,7 +41,7 @@
 #include "appicon.h"
 #include "application.h"
 #include "properties.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "dock.h"
 #include "defaults.h"
 #include "startup.h"
@@ -300,7 +300,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
   wApplicationAddWindow(wapp, wwin);
   
-  wapp->last_workspace = wwin->screen->current_workspace;
+  wapp->last_desktop = wwin->screen->current_desktop;
 
   wapp->main_window = main_window;
   wapp->main_wwin = makeMainWindow(scr, main_window);
@@ -478,12 +478,12 @@ void wApplicationActivate(WApplication *wapp)
 
   WMLogInfo("wApplicationActivate %s current WS:%i last WS:%i app WS:%i",
            wapp->main_wwin->wm_instance,
-           scr->current_workspace, scr->last_workspace,
-           wapp->last_workspace);
+           scr->current_desktop, scr->last_desktop,
+           wapp->last_desktop);
   
-  if (wapp->last_workspace != scr->current_workspace &&
-      scr->last_workspace == scr->current_workspace) {
-    wWorkspaceChange(scr, wapp->last_workspace, wapp->flags.is_gnustep ? wapp->gsmenu_wwin : wapp->last_focused);
+  if (wapp->last_desktop != scr->current_desktop &&
+      scr->last_desktop == scr->current_desktop) {
+    wDesktopChange(scr, wapp->last_desktop, wapp->flags.is_gnustep ? wapp->gsmenu_wwin : wapp->last_focused);
   }
   
   wApplicationMakeFirst(wapp);
@@ -679,7 +679,7 @@ void wApplicationHideOthers(WWindow *awin)
   while (wwin) {
     tapp = wApplicationOf(wwin->main_window);
     if (wwin != awin && tapp != wapp &&
-        wwin->frame->workspace == awin->screen->current_workspace &&
+        wwin->frame->desktop == awin->screen->current_desktop &&
         !(wwin->flags.miniaturized || wwin->flags.hidden) &&
         !wwin->flags.internal_window &&
         !WFLAGP(wwin, no_hide_others)) {

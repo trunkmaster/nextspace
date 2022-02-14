@@ -41,7 +41,7 @@
 #include "client.h"
 #include "misc.h"
 #include "stacking.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "framewin.h"
 #include "switchmenu.h"
 
@@ -52,7 +52,7 @@
 #define ACTION_ADD		0
 #define ACTION_REMOVE		1
 #define ACTION_CHANGE		2
-#define ACTION_CHANGE_WORKSPACE	3
+#define ACTION_CHANGE_DESKTOP	3
 #define ACTION_CHANGE_STATE	4
 
 #define IS_GNUSTEP_MENU(w) ((w)->wm_gnustep_attr &&                     \
@@ -66,9 +66,9 @@ static int initialized = 0;
 static void windowObserver(CFNotificationCenterRef center,  void *observer,
                            CFNotificationName name, const void *window,
                            CFDictionaryRef userInfo);
-static void workspaceObserver(CFNotificationCenterRef center, void *observer,
-                              CFNotificationName name, const void *screen,
-                              CFDictionaryRef userInfo);
+static void desktopObserver(CFNotificationCenterRef center, void *observer,
+                            CFNotificationName name, const void *screen,
+                            CFDictionaryRef userInfo);
 
 /*
  * FocusWindow
@@ -113,7 +113,7 @@ void InitializeSwitchMenu(WScreen *scr)
                                     WMDidUnmanageWindowNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
     CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, windowObserver,
-                                    WMDidChangeWindowWorkspaceNotification, NULL,
+                                    WMDidChangeWindowDesktopNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
     CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, windowObserver,
                                     WMDidChangeWindowStateNotification, NULL,
@@ -128,11 +128,11 @@ void InitializeSwitchMenu(WScreen *scr)
                                     WMDidChangeWindowNameNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
     /* workspaces */
-    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, workspaceObserver,
-                                    WMDidChangeWorkspaceNotification, NULL,
+    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, desktopObserver,
+                                    WMDidChangeDesktopNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, workspaceObserver,
-                                    WMDidChangeWorkspaceNameNotification, NULL,
+    CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, desktopObserver,
+                                    WMDidChangeDesktopNameNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
     
     initialized = 1;
@@ -178,10 +178,10 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
   if (menu->items_count <= old_pos)
     return -1;
 
-#define WS(i)  ((WWindow*)menu->items[i]->clientdata)->frame->workspace
+#define WS(i)  ((WWindow*)menu->items[i]->clientdata)->frame->desktop
   if (old_pos >= 0) {
-    if (WS(old_pos) >= wwin->frame->workspace
-        && (old_pos == 0 || WS(old_pos - 1) <= wwin->frame->workspace)) {
+    if (WS(old_pos) >= wwin->frame->desktop
+        && (old_pos == 0 || WS(old_pos - 1) <= wwin->frame->desktop)) {
       return old_pos;
     }
   }
@@ -191,7 +191,7 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
     WWindow *tw = (WWindow *) menu->items[idx]->clientdata;
 
     if (!IS_OMNIPRESENT(tw)
-        && tw->frame->workspace > wwin->frame->workspace) {
+        && tw->frame->desktop > wwin->frame->desktop) {
       break;
     }
   }
@@ -220,7 +220,7 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
    *    2.  When a window is destroyed.
    *
    *    3.  When a window changes it's title.
-   *    4.  When a window changes its workspace.
+   *    4.  When a window changes its desktop.
    */
   if (action == ACTION_ADD) {
     char *t;
@@ -246,12 +246,12 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
     wfree(t);
 
     entry->flags.indicator = 1;
-    entry->rtext = wmalloc(MAX_WORKSPACENAME_WIDTH + 8);
+    entry->rtext = wmalloc(MAX_DESKTOPNAME_WIDTH + 8);
     if (IS_OMNIPRESENT(wwin))
-      snprintf(entry->rtext, MAX_WORKSPACENAME_WIDTH, "[*]");
+      snprintf(entry->rtext, MAX_DESKTOPNAME_WIDTH, "[*]");
     else
-      snprintf(entry->rtext, MAX_WORKSPACENAME_WIDTH, "[%s]",
-               scr->workspaces[wwin->frame->workspace]->name);
+      snprintf(entry->rtext, MAX_DESKTOPNAME_WIDTH, "[%s]",
+               scr->desktops[wwin->frame->desktop]->name);
 
     if (wwin->flags.hidden) {
       entry->flags.indicator_type = MI_HIDDEN;
@@ -298,18 +298,18 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
           checkVisibility = 1;
           break;
 
-        case ACTION_CHANGE_WORKSPACE:
+        case ACTION_CHANGE_DESKTOP:
           if (entry->rtext) {
             int idx = -1;
             char *t, *rt;
             int it, ion;
 
             if (IS_OMNIPRESENT(wwin)) {
-              snprintf(entry->rtext, MAX_WORKSPACENAME_WIDTH, "[*]");
+              snprintf(entry->rtext, MAX_DESKTOPNAME_WIDTH, "[*]");
             } else {
-              snprintf(entry->rtext, MAX_WORKSPACENAME_WIDTH,
+              snprintf(entry->rtext, MAX_DESKTOPNAME_WIDTH,
                        "[%s]",
-                       scr->workspaces[wwin->frame->workspace]->name);
+                       scr->desktops[wwin->frame->desktop]->name);
             }
 
             rt = entry->rtext;
@@ -370,7 +370,7 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
   wMenuPaint(switchmenu);
 }
 
-static void UpdateSwitchMenuWorkspace(WScreen *scr, int workspace)
+static void UpdateSwitchMenuDesktop(WScreen *scr, int desktop)
 {
   WMenu *menu = scr->switch_menu;
   WWindow *wwin;
@@ -381,12 +381,12 @@ static void UpdateSwitchMenuWorkspace(WScreen *scr, int workspace)
   for (int i = 0; i < menu->items_count; i++) {
     wwin = (WWindow *) menu->items[i]->clientdata;
 
-    if (wwin->frame->workspace == workspace && !IS_OMNIPRESENT(wwin)) {
+    if (wwin->frame->desktop == desktop && !IS_OMNIPRESENT(wwin)) {
       if (IS_OMNIPRESENT(wwin))
-        snprintf(menu->items[i]->rtext, MAX_WORKSPACENAME_WIDTH, "[*]");
+        snprintf(menu->items[i]->rtext, MAX_DESKTOPNAME_WIDTH, "[*]");
       else
-        snprintf(menu->items[i]->rtext, MAX_WORKSPACENAME_WIDTH, "[%s]",
-                 scr->workspaces[wwin->frame->workspace]->name);
+        snprintf(menu->items[i]->rtext, MAX_DESKTOPNAME_WIDTH, "[%s]",
+                 scr->desktops[wwin->frame->desktop]->name);
       menu->flags.realized = 0;
     }
   }
@@ -414,8 +414,8 @@ static void windowObserver(CFNotificationCenterRef center,
   else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0) {
     UpdateSwitchMenu(wwin->screen, wwin, ACTION_REMOVE);
   }
-  else if (CFStringCompare(name, WMDidChangeWindowWorkspaceNotification, 0) == 0) {
-    UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_WORKSPACE);
+  else if (CFStringCompare(name, WMDidChangeWindowDesktopNotification, 0) == 0) {
+    UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_DESKTOP);
   }
   else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0) {
     UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_STATE);
@@ -426,7 +426,7 @@ static void windowObserver(CFNotificationCenterRef center,
   else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
     CFStringRef wstate = (CFStringRef)wGetNotificationInfoValue(userInfo, CFSTR("state"));
     if (CFStringCompare(wstate, CFSTR("omnipresent"), 0) == 0) {
-      UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_WORKSPACE);
+      UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_DESKTOP);
     }
     else {
       UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_STATE);
@@ -434,22 +434,22 @@ static void windowObserver(CFNotificationCenterRef center,
   }
 }
 
-static void workspaceObserver(CFNotificationCenterRef center,
+static void desktopObserver(CFNotificationCenterRef center,
                               void *observer,
                               CFNotificationName name,
                               const void *screen,
                               CFDictionaryRef userInfo)
 {
   WScreen *scr = (WScreen *)screen;
-  CFNumberRef ws = (CFNumberRef)wGetNotificationInfoValue(userInfo, CFSTR("workspace"));
-  int workspace;
+  CFNumberRef ws = (CFNumberRef)wGetNotificationInfoValue(userInfo, CFSTR("desktop"));
+  int desktop;
   
-  CFNumberGetValue(ws, kCFNumberShortType, &workspace);
+  CFNumberGetValue(ws, kCFNumberShortType, &desktop);
 
-  if (CFStringCompare(name, WMDidChangeWorkspaceNameNotification, 0) == 0) {
-    UpdateSwitchMenuWorkspace(scr, workspace);
+  if (CFStringCompare(name, WMDidChangeDesktopNameNotification, 0) == 0) {
+    UpdateSwitchMenuDesktop(scr, desktop);
   }
-  else if (CFStringCompare(name, WMDidChangeWorkspaceNotification, 0) == 0) {
+  else if (CFStringCompare(name, WMDidChangeDesktopNotification, 0) == 0) {
     
   }
 }

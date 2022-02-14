@@ -79,7 +79,7 @@
 #include "icon.h"
 #include "actions.h"
 #include "dock.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "properties.h"
 #include "misc.h"
 #include "winmenu.h"
@@ -200,7 +200,6 @@ static WDECallbackUpdate setCursor;
 #define REFRESH_BUTTON_IMAGES		(1<<12)
 #define REFRESH_ICON_TITLE_COLOR	(1<<13)
 #define REFRESH_ICON_TITLE_BACK		(1<<14)
-#define REFRESH_WORKSPACE_MENU		(1<<15)
 
 #define REFRESH_FRAME_BORDER REFRESH_MENU_FONT|REFRESH_WINDOW_FONT
 
@@ -1036,16 +1035,6 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNot
       CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                            WMDidChangeIconTileSettings, 
                                            NULL, NULL, TRUE);
-    }
-    if (needs_refresh & REFRESH_WORKSPACE_MENU) {
-      if (scr->workspace_menu)
-        wWorkspaceMenuUpdate(scr, scr->workspace_menu);
-      if (scr->clip_ws_menu)
-        wWorkspaceMenuUpdate(scr, scr->clip_ws_menu);
-      if (scr->workspace_submenu)
-        scr->workspace_submenu->flags.realized = 0;
-      if (scr->clip_submenu)
-        scr->clip_submenu->flags.realized = 0;
     }
   }
 }
@@ -2301,8 +2290,8 @@ static int setStickyIcons(WScreen * scr, WDefaultEntry * entry, void *bar, void 
   (void) bar;
   (void) foo;
 
-  if (scr->workspaces) {
-    wWorkspaceForceChange(scr, scr->current_workspace, NULL);
+  if (scr->desktops) {
+    wDesktopForceChange(scr, scr->current_desktop, NULL);
     wArrangeIcons(scr, False);
   }
   return 0;
@@ -2894,14 +2883,6 @@ static int setKeyGrab(WScreen *scr, WDefaultEntry *entry, void *tdata, void *ext
     }
     wwin = wwin->prev;
   }
-
-  /* do we need to update window menus? */
-  if (widx >= WKBD_WORKSPACE1 && widx <= WKBD_WORKSPACE10)
-    return REFRESH_WORKSPACE_MENU;
-  if (widx == WKBD_LASTWORKSPACE)
-    return REFRESH_WORKSPACE_MENU;
-  if (widx >= WKBD_MOVE_WORKSPACE1 && widx <= WKBD_MOVE_WORKSPACE10)
-    return REFRESH_WORKSPACE_MENU;
 
   return 0;
 }

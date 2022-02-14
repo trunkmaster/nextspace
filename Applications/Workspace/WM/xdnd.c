@@ -39,7 +39,7 @@
 #include "WM.h"
 #include "dock.h"
 #include "xdnd.h"
-#include "workspace.h"
+#include "desktop.h"
 
 
 static Atom _XA_XdndAware;
@@ -221,7 +221,7 @@ static Bool acceptXDND(Window window)
     }
   }
   if (icon_pos < 0) {
-    dock = scr->workspaces[scr->current_workspace]->clip;
+    dock = scr->desktops[scr->current_desktop]->clip;
     if (dock) {
       for (i = 0; i < dock->max_icons; i++) {
         if (dock->icon_array[i]

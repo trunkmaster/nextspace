@@ -38,7 +38,7 @@
 #include "actions.h"
 #include "properties.h"
 #include "stacking.h"
-#include "workspace.h"
+#include "desktop.h"
 
 
 static void __notifyStackChange(WCoreWindow *frame, char *detail)

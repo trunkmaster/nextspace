@@ -48,7 +48,7 @@
 #include "actions.h"
 #include "stacking.h"
 #include "dock.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "animations.h"
 #include "menu.h"
 #include "framewin.h"
@@ -204,7 +204,7 @@ void unpaint_app_icon(WApplication *wapp)
     return;
 
   scr = wapp->main_wwin->screen;
-  clip = scr->workspaces[scr->current_workspace]->clip;
+  clip = scr->desktops[scr->current_desktop]->clip;
 
   if (!clip || !aicon->flags.attracted || !clip->collapsed)
     XUnmapWindow(dpy, aicon->icon->core->window);
@@ -239,7 +239,7 @@ void paint_app_icon(WApplication *wapp)
 
   attracting_dock = scr->attracting_drawer != NULL ?
     scr->attracting_drawer :
-    scr->workspaces[scr->current_workspace]->clip;
+    scr->desktops[scr->current_desktop]->clip;
   if (attracting_dock && attracting_dock->attract_icons &&
       wDockFindFreeSlot(attracting_dock, &x, &y)) {
     wapp->app_icon->flags.attracted = 1;
@@ -524,7 +524,7 @@ static void iconDblClick(WObjDescriptor *desc, XEvent *event)
 
   unhideHere = (event->xbutton.state & ShiftMask);
   /* go to the last workspace that the user worked on the app */
-  if (!unhideHere && wapp->last_workspace != scr->current_workspace) {
+  if (!unhideHere && wapp->last_desktop != scr->current_desktop) {
     wApplicationActivate(wapp);
   }
 
@@ -675,8 +675,8 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
     allDocks[ i++ ] = scr->dock;
 
   if (!wPreferences.flags.noclip &&
-      originalDock != scr->workspaces[scr->current_workspace]->clip)
-    allDocks[ i++ ] = scr->workspaces[scr->current_workspace]->clip;
+      originalDock != scr->desktops[scr->current_desktop]->clip)
+    allDocks[ i++ ] = scr->desktops[scr->current_desktop]->clip;
 
   for ( ; i < scr->drawer_count + 2; i++) /* In case the clip, the dock, or both, are disabled */
     allDocks[ i ] = NULL;
@@ -727,11 +727,11 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
 
       if (omnipresent && !showed_all_clips) {
         int i;
-        for (i = 0; i < scr->workspace_count; i++) {
-          if (i == scr->current_workspace)
+        for (i = 0; i < scr->desktop_count; i++) {
+          if (i == scr->current_desktop)
             continue;
 
-          wDockShowIcons(scr->workspaces[i]->clip);
+          wDockShowIcons(scr->desktops[i]->clip);
           /* Note: if dock is collapsed (for instance, because it
              auto-collapses), its icons still won't show up */
         }
@@ -949,11 +949,11 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
       }
       if (showed_all_clips) {
         int i;
-        for (i = 0; i < scr->workspace_count; i++) {
-          if (i == scr->current_workspace) {
+        for (i = 0; i < scr->desktop_count; i++) {
+          if (i == scr->current_desktop) {
             continue;
           }
-          wDockHideIcons(scr->workspaces[i]->clip);
+          wDockHideIcons(scr->desktops[i]->clip);
         }
       }
       /* Need to rearrange unless moving from dock to dock */
@@ -1047,8 +1047,8 @@ static void create_appicon_from_dock(WWindow *wwin, WApplication *wapp, Window m
   /* check clips */
   if (!wapp->app_icon) {
     int i;
-    for (i = 0; i < scr->workspace_count; i++) {
-      WDock *dock = scr->workspaces[i]->clip;
+    for (i = 0; i < scr->desktop_count; i++) {
+      WDock *dock = scr->desktops[i]->clip;
 
       if (dock)
         wapp->app_icon = findDockIconFor(dock, main_window);

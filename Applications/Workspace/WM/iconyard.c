@@ -187,7 +187,7 @@ void wArrangeIcons(WScreen *scr, Bool arrangeAll)
 
   while (wwin) {
     if (wwin->icon && wwin->flags.miniaturized && !wwin->flags.hidden &&
-        (wwin->frame->workspace == scr->current_workspace ||
+        (wwin->frame->desktop == scr->current_desktop ||
          IS_OMNIPRESENT(wwin) || wPreferences.sticky_icons)) {
 
       head = wGetHeadForWindow(wwin);

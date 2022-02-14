@@ -63,7 +63,7 @@
 #include "client.h"
 #include "startup.h"
 #include "dock.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "framewin.h"
 #include "session.h"
 #include "defaults.h"
@@ -92,7 +92,7 @@ CFStringRef WMDidDestroyApplicationNotification = CFSTR("WMDidDestroyApplication
 
 CFStringRef WMDidManageWindowNotification = CFSTR("WMDidManageWindowNotification");
 CFStringRef WMDidUnmanageWindowNotification = CFSTR("WMDidUnmanageWindowNotification");
-CFStringRef WMDidChangeWindowWorkspaceNotification = CFSTR("WMDidChangeWindowWorkspaceNotification");
+CFStringRef WMDidChangeWindowDesktopNotification = CFSTR("WMDidChangeWindowDesktopNotification");
 CFStringRef WMDidChangeWindowStateNotification = CFSTR("WMDidChangeWindowStateNotification");
 CFStringRef WMDidChangeWindowFocusNotification = CFSTR("WMDidChangeWindowFocusNotification");
 CFStringRef WMDidChangeWindowStackingNotification = CFSTR("WMDidChangeWindowStackingNotification");
@@ -100,10 +100,10 @@ CFStringRef WMDidChangeWindowNameNotification = CFSTR("WMDidChangeWindowNameNoti
 
 CFStringRef WMDidResetWindowStackingNotification = CFSTR("WMDidResetWindowStackingNotification");
 
-CFStringRef WMDidCreateWorkspaceNotification = CFSTR("WMDidCreateWorkspaceNotification");
-CFStringRef WMDidDestroyWorkspaceNotification = CFSTR("WMDidDestroyWorkspaceNotification");
-CFStringRef WMDidChangeWorkspaceNotification = CFSTR("WMDidChangeWorkspaceNotification");
-CFStringRef WMDidChangeWorkspaceNameNotification = CFSTR("WMDidChangeWorkspaceNameNotification");
+CFStringRef WMDidCreateDesktopNotification = CFSTR("WMDidCreateDesktopNotification");
+CFStringRef WMDidDestroyDesktopNotification = CFSTR("WMDidDestroyDesktopNotification");
+CFStringRef WMDidChangeDesktopNotification = CFSTR("WMDidChangeDesktopNotification");
+CFStringRef WMDidChangeDesktopNameNotification = CFSTR("WMDidChangeDesktopNameNotification");
 
 CFStringRef WMDidChangeWindowAppearanceSettings = CFSTR("WMDidChangeWindowAppearanceSettings");
 CFStringRef WMDidChangeIconAppearanceSettings = CFSTR("WMDidChangeIconAppearanceSettings");
@@ -302,8 +302,8 @@ static void _setupSignalHandling(void)
   sig_action.sa_flags = SA_RESTART;
   sigaction(SIGTERM, &sig_action, NULL);      // Logout panel - OK
   sigaction(SIGINT, &sig_action, NULL);       // Logout panel - OK
-  /* sigaction(SIGHUP, &sig_action, NULL); */ // managed by Workspace
-  /* sigaction(SIGUSR1, &sig_action, NULL);*/ // managed by Workspace
+  /* sigaction(SIGHUP, &sig_action, NULL); */ // managed by Desktop
+  /* sigaction(SIGUSR1, &sig_action, NULL);*/ // managed by Desktop
   sigaction(SIGUSR2, &sig_action, NULL);      // WindowMaker reread defaults - OK
 
   /* ignore dead pipe */
@@ -332,7 +332,7 @@ static void _setupSignalHandling(void)
   sigfillset(&sig_action.sa_mask);
   sigprocmask(SIG_UNBLOCK, &sig_action.sa_mask, NULL);
 
-  // Unmanage signals which are managed by GNUstep part of Workspace
+  // Unmanage signals which are managed by GNUstep part of Desktop
   signal(SIGHUP, SIG_IGN);   // NEXTSPACE
   signal(SIGUSR1, SIG_IGN);  // NEXTSPACE  
 }
@@ -731,11 +731,11 @@ void wStartUp(Bool defaultScreenOnly)
   
   _manageAllWindows(scr);
 
-  scr->last_workspace = 0;
-  wWorkspaceForceChange(scr, 0, NULL);
+  scr->last_desktop = 0;
+  wDesktopForceChange(scr, 0, NULL);
   
   if (!wPreferences.flags.noclip) {
-    wDockShowIcons(scr->workspaces[scr->current_workspace]->clip);
+    wDockShowIcons(scr->desktops[scr->current_desktop]->clip);
   }
 
   /* restore saved menus */
@@ -747,12 +747,12 @@ void wStartUp(Bool defaultScreenOnly)
     
     wSessionRestoreState(scr);
 
-    /* go to workspace where we were before restart */
+    /* go to desktop where we were before restart */
     if (lastDesktop >= 0) {
-      wWorkspaceForceChange(scr, lastDesktop, NULL);
+      wDesktopForceChange(scr, lastDesktop, NULL);
     }
     else {
-      wSessionRestoreLastWorkspace(scr);
+      wSessionRestoreLastDesktop(scr);
     }
   }
 }
@@ -771,7 +771,7 @@ void wInitialize(int argc, char **argv)
   w_global.program.signal_state = WSTATE_NORMAL;
   w_global.timestamp.last_event = CurrentTime;
   w_global.timestamp.focus_change = CurrentTime;
-  w_global.ignore_workspace_change = False;
+  w_global.ignore_desktop_change = False;
   w_global.shortcut.modifiers_mask = 0xff;
 
   memset(&wPreferences, 0, sizeof(wPreferences));

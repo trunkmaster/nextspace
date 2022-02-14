@@ -539,7 +539,7 @@ char *ExpandOptions(WScreen *scr, const char *cmdline)
         break;
 
       case 'W':
-        snprintf(tmpbuf, sizeof(tmpbuf), "0x%x", (unsigned int)scr->current_workspace + 1);
+        snprintf(tmpbuf, sizeof(tmpbuf), "0x%x", (unsigned int)scr->current_desktop + 1);
         slen = strlen(tmpbuf);
         olen += slen;
         nout = realloc(out, olen);

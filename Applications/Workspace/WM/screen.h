@@ -118,13 +118,10 @@ typedef struct _WScreen {
 
   int window_count;		       /* number of windows in window_list */
 
-  int workspace_count;	       /* number of workspaces */
-
-  struct WWorkspace **workspaces;    /* workspace array */
-
-  int current_workspace;	       /* current workspace number */
-  int last_workspace;		       /* last used workspace number */
-
+  struct WDesktop **desktops;          /* workspace array */
+  int desktop_count;                   /* number of workspaces */
+  int current_desktop;                 /* current workspace number */
+  int last_desktop;		       /* last used workspace number */
 
   WReservedArea *reservedAreas;      /* used to build totalUsableArea */
 

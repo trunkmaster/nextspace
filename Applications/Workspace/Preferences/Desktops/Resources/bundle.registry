@@ -1,0 +1,6 @@
+{
+  type = WSPreferences;
+  mode = Desktops;
+  class = DesktopsPrefs;
+  priority = 1;
+}

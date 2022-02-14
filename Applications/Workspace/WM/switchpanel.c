@@ -92,7 +92,7 @@ struct SwitchPanel {
 
 static int canReceiveFocus(WWindow *wwin)
 {
-  if (wwin->frame && wwin->frame->workspace != wwin->screen->current_workspace)
+  if (wwin->frame && wwin->frame->desktop != wwin->screen->current_desktop)
     return 0;
 
   if (wPreferences.cycle_active_head_only &&

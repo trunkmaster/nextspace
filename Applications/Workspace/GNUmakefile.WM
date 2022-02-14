@@ -64,7 +64,7 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/window_attributes.c \
 	$(WM_DIR)/winmenu.c \
 	$(WM_DIR)/wmspec.c \
-	$(WM_DIR)/workspace.c \
+	$(WM_DIR)/desktop.c \
 	$(WM_DIR)/misc.c \
 	$(WM_DIR)/xrandr.c \
 	$(WM_DIR)/xutil.c \

@@ -19,20 +19,20 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import "WorkspacesPrefs.h"
+#import "DesktopsPrefs.h"
 #import <DesktopKit/NXTDefaults.h>
 #import <Workspace+WM.h>
 #import <Controller.h>
 
 #include <core/wuserdefaults.h>
-#include <workspace.h>
+#include <desktop.h>
 
-@interface WorkspacesPrefs (Private)
+@interface DesktopsPrefs (Private)
 - (NSString *)_wmStatePath;
 - (NSDictionary *)_wmState;
 @end
 
-@implementation WorkspacesPrefs (Private)
+@implementation DesktopsPrefs (Private)
 
 - (NSString *)_wmStatePath
 {
@@ -65,15 +65,15 @@
 
 @end
 
-@implementation WorkspacesPrefs
+@implementation DesktopsPrefs
 
 - (void)dealloc
 {
-  NSDebugLLog(@"WorkspacesPrefs", @"WorkspacesPrefs: dealloc");
+  NSDebugLLog(@"DesktopsPrefs", @"DesktopsPrefs: dealloc");
 
   [box release];
-  [wsReps release];
-  [wmStateWS release];
+  [desktopReps release];
+  [wmStateDesktops release];
   
   [super dealloc];
 }
@@ -85,20 +85,20 @@
   [box removeFromSuperview];
 
   // Names and Numbers
-  wsReps = [[NSMutableArray alloc] initWithObjects:ws1,ws2,ws3,ws4,ws5,ws6,ws7,ws8,ws9,ws10,nil];
+  desktopReps = [[NSMutableArray alloc] initWithObjects:dt1,dt2,dt3,dt4,dt5,dt6,dt7,dt8,dt9,dt10,nil];
 
-  wmStateWS = [[NSMutableArray alloc] initWithArray:[[self _wmState] objectForKey:@"Workspaces"]];
-  wsCount = (wmStateWS && [wmStateWS count] > 0) ? [wmStateWS count] : 1;
-  for (int i = 9; i >= wsCount; i--) {
-    [[wsReps objectAtIndex:i] removeFromSuperview];
+  wmStateDesktops = [[NSMutableArray alloc] initWithArray:[[self _wmState] objectForKey:@"Desktops"]];
+  desktopsCount = (wmStateDesktops && [wmStateDesktops count] > 0) ? [wmStateDesktops count] : 1;
+  for (int i = 9; i >= desktopsCount; i--) {
+    [[desktopReps objectAtIndex:i] removeFromSuperview];
   }
 
-  [wsNumber selectItemWithTag:wsCount];
+  [desktopsNumber selectItemWithTag:desktopsCount];
   [nameField setStringValue:@""];
 
   // Show In Dock button
   [showInDockBtn setRefusesFirstResponder:YES];
-  [showInDockBtn setState:[[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"]];
+  [showInDockBtn setState:[[NXTDefaults userDefaults] boolForKey:@"ShowDesktopInDock"]];
 
   DESTROY(window);
 }
@@ -106,13 +106,13 @@
 // --- Protocol
 - (NSString *)moduleName
 {
-  return _(@"Workspaces");
+  return _(@"Desktops");
 }
 
 - (NSView *)view
 {
   if (box == nil) {
-      [NSBundle loadNibNamed:@"WorkspacesPrefs" owner:self];
+      [NSBundle loadNibNamed:@"Desktops" owner:self];
     }
 
   return box;
@@ -129,11 +129,11 @@
   if (!wmDefaults)
     return;
   
-  if (wmStateWS) [wmStateWS release];
+  if (wmStateDesktops) [wmStateDesktops release];
   
-  wmStateWS = [[NSMutableArray alloc] initWithArray:[wmDefaults objectForKey:@"Workspaces"]];
-  [self arrangeWorkspaceReps];
-  [[wsReps objectAtIndex:wDefaultScreen()->current_workspace] performClick:self];
+  wmStateDesktops = [[NSMutableArray alloc] initWithArray:[wmDefaults objectForKey:@"Desktops"]];
+  [self arrangeDesktopReps];
+  [[desktopReps objectAtIndex:wDefaultScreen()->current_desktop] performClick:self];
 
   // NSLog(@"switchKey = %@ (%li/%li), directSwitchKey = %@ (%li/%li)",
   //       [switchKey className], [[switchKey selectedItem] tag],
@@ -170,21 +170,21 @@
 }
 
 // --- Utility
-- (void)arrangeWorkspaceReps
+- (void)arrangeDesktopReps
 {
-  NSRect     repFrame = [[wsReps objectAtIndex:0] frame];
-  NSUInteger repsWidth = (wsCount * repFrame.size.width) + ((wsCount-1) * 4);
-  CGFloat    boxWidth = [wsBox frame].size.width;
+  NSRect     repFrame = [[desktopReps objectAtIndex:0] frame];
+  NSUInteger repsWidth = (desktopsCount * repFrame.size.width) + ((desktopsCount-1) * 4);
+  CGFloat    boxWidth = [desktopsBox frame].size.width;
   NSPoint    repPoint = repFrame.origin;
   NSButton   *rep;
 
   repPoint.x = (boxWidth - repsWidth) / 2;
-  for (int i=0; i < wsCount; i++) {
-    rep = [wsReps objectAtIndex:i];
+  for (int i=0; i < desktopsCount; i++) {
+    rep = [desktopReps objectAtIndex:i];
     [rep setFrameOrigin:repPoint];
     repPoint.x += [rep frame].size.width + 4;
   }
-  [wsBox setNeedsDisplay:YES];
+  [desktopsBox setNeedsDisplay:YES];
 }
 
 // --- Names and Numbers
@@ -193,19 +193,19 @@
   NSButton *button = nil;
   NSString *name = nil;
 
-  for (int i = 0; i < wsCount; i++) {
-    button = [wsReps objectAtIndex:i];
+  for (int i = 0; i < desktopsCount; i++) {
+    button = [desktopReps objectAtIndex:i];
     // NSLog(@"%d - Sender: %@, Button: %@", i, [sender title], [button title]);
     if (sender == button) {
       [sender setState:NSOnState];
-      if (wmStateWS && [wmStateWS count] > i) {
-        name = [[wmStateWS objectAtIndex:i] objectForKey:@"Name"];
+      if (wmStateDesktops && [wmStateDesktops count] > i) {
+        name = [[wmStateDesktops objectAtIndex:i] objectForKey:@"Name"];
       }
       if (!name) {
         name = [NSString stringWithFormat:@"Desktop %d", i+1];
       }
       [nameField setStringValue:name];
-      selectedWSRep = sender;
+      selectedDesktopRep = sender;
     } else {
       // NSLog(@"%d -  Button: %@ set to NSOffState", i, [button title]);
       [button setState:NSOffState];
@@ -215,17 +215,17 @@
 
 - (void)changeName:(id)sender
 {
-  NSInteger index = [wsReps indexOfObject:selectedWSRep];
+  NSInteger index = [desktopReps indexOfObject:selectedDesktopRep];
   NSString *name = [nameField stringValue];
   WScreen *scr = wDefaultScreen();
   
-  wWorkspaceRename(wDefaultScreen(), [wsReps indexOfObject:selectedWSRep],
+  wDesktopRename(wDefaultScreen(), [desktopReps indexOfObject:selectedDesktopRep],
                    [name cString]);
   [changeNameBtn setEnabled:NO];
   
-  wWorkspaceSaveState(scr);
+  wDesktopSaveState(scr);
   WMUserDefaultsWrite(scr->session_state, CFSTR("WMState"));
-  [wmStateWS replaceObjectAtIndex:index withObject:@{@"Name":name}];
+  [wmStateDesktops replaceObjectAtIndex:index withObject:@{@"Name":name}];
 }
 
 - (void)controlTextDidChange:(NSNotification *)aNotification
@@ -238,8 +238,8 @@
     return;
   }
 
-  if ([wmStateWS count] > 0) {
-    wsInfo = [wmStateWS objectAtIndex:[wsReps indexOfObject:selectedWSRep]];
+  if ([wmStateDesktops count] > 0) {
+    wsInfo = [wmStateDesktops objectAtIndex:[desktopReps indexOfObject:selectedDesktopRep]];
   }
   wsName = [nameField stringValue];
   
@@ -254,34 +254,34 @@
 - (void)setWorkspaceQuantity:(id)sender
 {
   NSInteger wsCountNew = [[sender selectedItem] tag];
-  int diff = wsCountNew - wsCount;
+  int diff = wsCountNew - desktopsCount;
   WScreen *scr = wDefaultScreen();
 
   if (diff < 0) { // remove WS
-    for (int i = wsCount; i > wsCountNew; i--) {
-      wWorkspaceDelete(wDefaultScreen(), i);
-      [[wsReps objectAtIndex:i-1] removeFromSuperview];
+    for (int i = desktopsCount; i > wsCountNew; i--) {
+      wDesktopDelete(wDefaultScreen(), i);
+      [[desktopReps objectAtIndex:i-1] removeFromSuperview];
     }
   } else {
-    wWorkspaceMake(wDefaultScreen(), diff);
-    for (int i = wsCount; i < wsCountNew; i++) {
-      [wsBox addSubview:[wsReps objectAtIndex:i]];
+    wDesktopMake(wDefaultScreen(), diff);
+    for (int i = desktopsCount; i < wsCountNew; i++) {
+      [desktopsBox addSubview:[desktopReps objectAtIndex:i]];
     }
-    [wsBox setNeedsDisplay:YES];
+    [desktopsBox setNeedsDisplay:YES];
   }
 
-  wWorkspaceSaveState(scr);
+  wDesktopSaveState(scr);
   WMUserDefaultsWrite(scr->session_state, CFSTR("WMState"));
 
-  [wmStateWS setArray:[[self _wmState] objectForKey:@"Workspaces"]];
+  [wmStateDesktops setArray:[[self _wmState] objectForKey:@"Desktops"]];
 
   // Select last WS rep button if selected one was removed
-  if ([wsReps indexOfObject:selectedWSRep] >= wsCountNew) {
-    [self selectWorkspace:[wsReps objectAtIndex:wsCountNew-1]];
+  if ([desktopReps indexOfObject:selectedDesktopRep] >= wsCountNew) {
+    [self selectWorkspace:[desktopReps objectAtIndex:wsCountNew-1]];
   }
-  wsCount = wsCountNew;
+  desktopsCount = wsCountNew;
   
-  [self arrangeWorkspaceReps];
+  [self arrangeDesktopReps];
 }
 
 // --- Shortcuts

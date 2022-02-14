@@ -59,7 +59,7 @@
 #include "application.h"
 #include "dock.h"
 #include "actions.h"
-#include "workspace.h"
+#include "desktop.h"
 #include "appicon.h"
 #include "wmspec.h"
 #include "xrandr.h"
@@ -71,22 +71,12 @@
 #include "stacking.h"
 #endif // NEXTSPACE        
 
-/* 
-   Local namespace
-*/
-#define MC_NEW          0
-#define MC_DESTROY_LAST 1
-#define MC_LAST_USED    2
-
-/* index of the first workspace menu entry */
-#define MC_WORKSPACE1   3
-
 #define WORKSPACE_NAME_DISPLAY_PADDING 32
 /* workspace name on switch display */
 #define WORKSPACE_NAME_FADE_DELAY 30
 #define WORKSPACE_NAME_DELAY 400
 
-static CFTypeRef dWorkspaces = CFSTR("Workspaces");
+static CFTypeRef dDesktops = CFSTR("Desktops");
 static CFTypeRef dName = CFSTR("Name");
 
 static void _postNotification(CFStringRef name, int workspace_number, void *object)
@@ -163,7 +153,7 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
   Pixmap text, mask;
   int w, h;
   int px, py;
-  char *name = scr->workspaces[workspace]->name;
+  char *name = scr->desktops[workspace]->name;
   int len = strlen(name);
   int x, y;
 #ifdef USE_XRANDR
@@ -172,7 +162,7 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
   int xx, yy;
 #endif
 
-  if (wPreferences.workspace_name_display_position == WD_NONE || scr->workspace_count < 2)
+  if (wPreferences.workspace_name_display_position == WD_NONE || scr->desktop_count < 2)
     return;
 
   if (scr->workspace_name_timer) {
@@ -340,70 +330,26 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
   scr->workspace_name_data = NULL;
 }
 
-static void _switchWSCommand(WMenu *menu, WMenuItem *entry)
-{
-  wWorkspaceChange(menu->frame->screen_ptr, (long)entry->clientdata, NULL);
-}
-
-static void _lastWSCommand(WMenu *menu, WMenuItem *entry)
-{
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) entry;
-
-  wWorkspaceChange(menu->frame->screen_ptr, menu->frame->screen_ptr->last_workspace, NULL);
-}
-
-static void _deleteWSCommand(WMenu *menu, WMenuItem *entry)
-{
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) entry;
-
-  wWorkspaceDelete(menu->frame->screen_ptr, menu->frame->screen_ptr->workspace_count - 1);
-}
-
-static void _newWSCommand(WMenu *menu, WMenuItem *foo)
-{
-  int ws;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) foo;
-
-  ws = wWorkspaceNew(menu->frame->screen_ptr);
-
-  /* autochange workspace */
-  if (ws >= 0)
-    wWorkspaceChange(menu->frame->screen_ptr, ws, NULL);
-}
-
-/* callback for when menu entry is edited */
-static void _onMenuEntryEdited(WMenu *menu, WMenuItem *entry)
-{
-  char *tmp;
-
-  tmp = entry->text;
-  wWorkspaceRename(menu->frame->screen_ptr, (long)entry->clientdata, tmp);
-}
-
 /* 
    Public namespace
 */
-void wWorkspaceMake(WScreen *scr, int count)
+void wDesktopMake(WScreen *scr, int count)
 {
   while (count > 0) {
-    wWorkspaceNew(scr);
+    wDesktopNew(scr);
     count--;
   }
 }
 
-int wWorkspaceNew(WScreen *scr)
+int wDesktopNew(WScreen *scr)
 {
-  WWorkspace *wspace, **list;
+  WDesktop *wspace, **list;
   int i;
 
-  if (scr->workspace_count < MAX_WORKSPACES) {
-    scr->workspace_count++;
+  if (scr->desktop_count < MAX_DESKTOPS) {
+    scr->desktop_count++;
 
-    wspace = wmalloc(sizeof(WWorkspace));
+    wspace = wmalloc(sizeof(WDesktop));
     wspace->name = NULL;
     wspace->clip = NULL;
     wspace->focused_window = NULL;
@@ -417,39 +363,37 @@ int wWorkspaceNew(WScreen *scr)
         name_length = strlen(new_name) + 8;
       }
       wspace->name = wmalloc(name_length);
-      snprintf(wspace->name, name_length, new_name, scr->workspace_count);
+      snprintf(wspace->name, name_length, new_name, scr->desktop_count);
     }
 
     if (!wPreferences.flags.noclip)
       wspace->clip = wDockCreate(scr, WM_CLIP, NULL);
 
-    list = wmalloc(sizeof(WWorkspace *) * scr->workspace_count);
+    list = wmalloc(sizeof(WDesktop *) * scr->desktop_count);
 
-    for (i = 0; i < scr->workspace_count - 1; i++)
-      list[i] = scr->workspaces[i];
+    for (i = 0; i < scr->desktop_count - 1; i++)
+      list[i] = scr->desktops[i];
 
     list[i] = wspace;
-    if (scr->workspaces)
-      wfree(scr->workspaces);
+    if (scr->desktops)
+      wfree(scr->desktops);
 
-    scr->workspaces = list;
+    scr->desktops = list;
 
-    wWorkspaceMenuUpdate(scr, scr->workspace_menu);
-    wWorkspaceMenuUpdate(scr, scr->clip_ws_menu);
     wNETWMUpdateDesktop(scr);
-    _postNotification(WMDidCreateWorkspaceNotification, (scr->workspace_count - 1), scr);
+    _postNotification(WMDidCreateDesktopNotification, (scr->desktop_count - 1), scr);
     XFlush(dpy);
 
-    return scr->workspace_count - 1;
+    return scr->desktop_count - 1;
   }
 
   return -1;
 }
 
-Bool wWorkspaceDelete(WScreen *scr, int workspace)
+Bool wDesktopDelete(WScreen *scr, int workspace)
 {
   WWindow *tmp;
-  WWorkspace **list;
+  WDesktop **list;
   int i, j;
 
   if (workspace <= 0)
@@ -458,79 +402,55 @@ Bool wWorkspaceDelete(WScreen *scr, int workspace)
   /* verify if workspace is in use by some window */
   tmp = scr->focused_window;
   while (tmp) {
-    if (!IS_OMNIPRESENT(tmp) && tmp->frame->workspace == workspace)
+    if (!IS_OMNIPRESENT(tmp) && tmp->frame->desktop == workspace)
       return False;
     tmp = tmp->prev;
   }
 
   if (!wPreferences.flags.noclip) {
-    wDockDestroy(scr->workspaces[workspace]->clip);
-    scr->workspaces[workspace]->clip = NULL;
+    wDockDestroy(scr->desktops[workspace]->clip);
+    scr->desktops[workspace]->clip = NULL;
   }
 
-  list = wmalloc(sizeof(WWorkspace *) * (scr->workspace_count - 1));
+  list = wmalloc(sizeof(WDesktop *) * (scr->desktop_count - 1));
   j = 0;
-  for (i = 0; i < scr->workspace_count; i++) {
+  for (i = 0; i < scr->desktop_count; i++) {
     if (i != workspace-1) {
-      list[j++] = scr->workspaces[i];
+      list[j++] = scr->desktops[i];
     } else {
-      if (scr->workspaces[i]->name)
-        wfree(scr->workspaces[i]->name);
-      if (scr->workspaces[i]->map)
-        RReleaseImage(scr->workspaces[i]->map);
-      wfree(scr->workspaces[i]);
+      if (scr->desktops[i]->name)
+        wfree(scr->desktops[i]->name);
+      if (scr->desktops[i]->map)
+        RReleaseImage(scr->desktops[i]->map);
+      wfree(scr->desktops[i]);
     }
   }
-  wfree(scr->workspaces);
-  scr->workspaces = list;
+  wfree(scr->desktops);
+  scr->desktops = list;
+  scr->desktop_count--;
 
-  scr->workspace_count--;
-
-  /* update menu */
-  wWorkspaceMenuUpdate(scr, scr->workspace_menu);
-  /* clip workspace menu */
-  wWorkspaceMenuUpdate(scr, scr->clip_ws_menu);
-
-  /* update also window menu */
-  if (scr->workspace_submenu) {
-    WMenu *menu = scr->workspace_submenu;
-
-    i = menu->items_count;
-    while (i > scr->workspace_count)
-      wMenuRemoveItem(menu, --i);
-    wMenuRealize(menu);
-  }
-  /* and clip menu */
-  if (scr->clip_submenu) {
-    WMenu *menu = scr->clip_submenu;
-
-    i = menu->items_count;
-    while (i > scr->workspace_count)
-      wMenuRemoveItem(menu, --i);
-    wMenuRealize(menu);
-  }
   wNETWMUpdateDesktop(scr);
   
-  _postNotification(WMDidDestroyWorkspaceNotification, (scr->workspace_count - 1), scr);
+  _postNotification(WMDidDestroyDesktopNotification, (scr->desktop_count - 1), scr);
   
-  if (scr->current_workspace >= scr->workspace_count)
-    wWorkspaceChange(scr, scr->workspace_count - 1, NULL);
-  if (scr->last_workspace >= scr->workspace_count)
-    scr->last_workspace = 0;
+  if (scr->current_desktop >= scr->desktop_count)
+    wDesktopChange(scr, scr->desktop_count - 1, NULL);
+  if (scr->last_desktop >= scr->desktop_count)
+    scr->last_desktop = 0;
 
   return True;
 }
 
-void wWorkspaceChange(WScreen *scr, int workspace, WWindow *focus_win)
+void wDesktopChange(WScreen *scr, int workspace, WWindow *focus_win)
 {
   if (scr->flags.startup || scr->flags.startup2 || scr->flags.ignore_focus_events)
     return;
 
-  if (workspace != scr->current_workspace)
-    wWorkspaceForceChange(scr, workspace, focus_win);
+  if (workspace != scr->current_desktop)
+    wDesktopForceChange(scr, workspace, focus_win);
 }
 
-void wWorkspaceRelativeChange(WScreen * scr, int amount)
+void wDesktopRelativeChange(WScreen * scr, int amount)
 {
   int w;
 
@@ -538,38 +458,38 @@ void wWorkspaceRelativeChange(WScreen * scr, int amount)
    * still "flying" to its final position and we don't want to
    * change workspace before the animation finishes, otherwise
    * the window will land in the new workspace */
-  if (w_global.ignore_workspace_change)
+  if (w_global.ignore_desktop_change)
     return;
 
-  w = scr->current_workspace + amount;
+  w = scr->current_desktop + amount;
 
   if (amount < 0) {
     if (w >= 0) {
-      wWorkspaceChange(scr, w, NULL);
+      wDesktopChange(scr, w, NULL);
     } else if (wPreferences.ws_cycle) {
-      wWorkspaceChange(scr, scr->workspace_count + w, NULL);
+      wDesktopChange(scr, scr->desktop_count + w, NULL);
     }
   } else if (amount > 0) {
-    if (w < scr->workspace_count) {
-      wWorkspaceChange(scr, w, NULL);
+    if (w < scr->desktop_count) {
+      wDesktopChange(scr, w, NULL);
     } else if (wPreferences.ws_advance) {
-      wWorkspaceChange(scr, WMIN(w, MAX_WORKSPACES - 1), NULL);
+      wDesktopChange(scr, WMIN(w, MAX_DESKTOPS - 1), NULL);
     } else if (wPreferences.ws_cycle) {
-      wWorkspaceChange(scr, w % scr->workspace_count, NULL);
+      wDesktopChange(scr, w % scr->desktop_count, NULL);
     }
   }
 }
 
-void wWorkspaceSaveFocusedWindow(WScreen *scr, int workspace, WWindow *wwin)
+void wDesktopSaveFocusedWindow(WScreen *scr, int workspace, WWindow *wwin)
 {
   WWindow *saved_wwin;
     
-  if (scr->workspaces[workspace]->focused_window) {
-    wrelease(scr->workspaces[workspace]->focused_window);
+  if (scr->desktops[workspace]->focused_window) {
+    wrelease(scr->desktops[workspace]->focused_window);
   }
 
   if (wwin) {
-    WMLogInfo("[workspace.c] save focused window: %lu, %s.%s (%i x %i) to workspace %i\n",
+    WMLogInfo("save focused window: %lu, %s.%s (%i x %i) to workspace %i\n",
              wwin->client_win, wwin->wm_instance, wwin->wm_class,
              wwin->old_geometry.width, wwin->old_geometry.height,
              workspace);
@@ -579,34 +499,34 @@ void wWorkspaceSaveFocusedWindow(WScreen *scr, int workspace, WWindow *wwin)
     saved_wwin->wm_instance = wstrdup(wwin->wm_instance);
     saved_wwin->client_win = wwin->client_win;
     
-    scr->workspaces[workspace]->focused_window = saved_wwin;
+    scr->desktops[workspace]->focused_window = saved_wwin;
   }
   else {
-    scr->workspaces[workspace]->focused_window = NULL;
+    scr->desktops[workspace]->focused_window = NULL;
   }
 }
 
-void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
+void wDesktopForceChange(WScreen * scr, int workspace, WWindow *focus_win)
 {
   WWindow *tmp, *foc = NULL;
 
-  if (workspace >= MAX_WORKSPACES || workspace < 0 || workspace == scr->current_workspace)
+  if (workspace >= MAX_DESKTOPS || workspace < 0 || workspace == scr->current_desktop)
     return;
 
-  if (workspace > scr->workspace_count - 1)
-    wWorkspaceMake(scr, workspace - scr->workspace_count + 1);
+  if (workspace > scr->desktop_count - 1)
+    wDesktopMake(scr, workspace - scr->desktop_count + 1);
 
   /* save focused window to the workspace before switch */
   if (scr->focused_window
-      && scr->focused_window->frame->workspace == scr->current_workspace) {
-    wWorkspaceSaveFocusedWindow(scr, scr->current_workspace, scr->focused_window);
+      && scr->focused_window->frame->desktop == scr->current_desktop) {
+    wDesktopSaveFocusedWindow(scr, scr->current_desktop, scr->focused_window);
   }
   else {
-    wWorkspaceSaveFocusedWindow(scr, scr->current_workspace, NULL);
+    wDesktopSaveFocusedWindow(scr, scr->current_desktop, NULL);
   }
 
-  scr->last_workspace = scr->current_workspace;
-  scr->current_workspace = workspace;
+  scr->last_desktop = scr->current_desktop;
+  scr->current_desktop = workspace;
 
   tmp = scr->focused_window;
   if (tmp != NULL) {
@@ -624,7 +544,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
     toMap = wmalloc(toMapSize * sizeof(WWindow *));
     
     while (tmp) {
-      if (tmp->frame->workspace != workspace && !tmp->flags.selected) /* Unmap */ {
+      if (tmp->frame->desktop != workspace && !tmp->flags.selected) /* Unmap */ {
         /* manage unmap list */
         if (toUnmapCount == toUnmapSize) {
           toUnmapSize *= 2;
@@ -640,9 +560,9 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
         else { // OMNIPRESENT
           /* update current workspace of omnipresent windows */
           WApplication *wapp = wApplicationOf(tmp->main_window);
-          tmp->frame->workspace = workspace;
+          tmp->frame->desktop = workspace;
           if (wapp && WINDOW_LEVEL(tmp) != NSMainMenuWindowLevel) {
-            wapp->last_workspace = workspace;
+            wapp->last_desktop = workspace;
           }
         }
         /* unmap miniwindows not on this workspace */
@@ -661,7 +581,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
         
         /* change selected windows' workspace */
         if (tmp->flags.selected) {
-          wWindowChangeWorkspace(tmp, workspace);
+          wWindowChangeDesktop(tmp, workspace);
           if (!tmp->flags.miniaturized && !foc) {
             foc = tmp;
           }
@@ -684,7 +604,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
       tmp = tmp->prev;
     }
 
-    WMLogInfo("[workspace.c] windows to map: %i to unmap: %i\n", toMapCount, toUnmapCount);
+    WMLogInfo("windows to map: %i to unmap: %i\n", toMapCount, toUnmapCount);
     while (toUnmapCount > 0) {
       wWindowUnmap(toUnmap[--toUnmapCount]);
     }
@@ -708,7 +628,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
 
     /* At this point `foc` can hold random selected window or `NULL` */
     if (!foc) {
-      foc = scr->workspaces[workspace]->focused_window;
+      foc = scr->desktops[workspace]->focused_window;
       WMLogInfo("SAVED focused window for WS-%d: %lu, %s.%s\n", workspace,
                foc ? foc->client_win : 0,
                foc ? foc->wm_instance : "-",
@@ -738,7 +658,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
 
     if (foc) {
       /* Mapped window found earlier. */
-      WMLogInfo("[workspace.c] NEW focused window after CHECK: %lu, %s.%s (%i x %i)\n",
+      WMLogInfo("NEW focused window after CHECK: %lu, %s.%s (%i x %i)\n",
                foc->client_win, foc->wm_instance, foc->wm_class,
                foc->old_geometry.width, foc->old_geometry.height);
       if (foc->flags.hidden) {
@@ -752,7 +672,7 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
   }
 
   /* We need to always arrange icons when changing workspace, even if
-   * no autoarrange icons, because else the icons in different workspaces
+   * no autoarrange icons, because else the icons in different desktops
    * can be superposed.
    * This can be avoided if appicons are also workspace specific.
    */
@@ -767,19 +687,19 @@ void wWorkspaceForceChange(WScreen * scr, int workspace, WWindow *focus_win)
   _showWorkspaceName(scr, workspace);
 
   /* Workspace switch completed */
-  scr->last_workspace = workspace;
+  scr->last_desktop = workspace;
 
-  _postNotification(WMDidChangeWorkspaceNotification, workspace, scr);
+  _postNotification(WMDidChangeDesktopNotification, workspace, scr);
 
   XSync(dpy, False);
 }
 
-void wWorkspaceRename(WScreen *scr, int workspace, const char *name)
+void wDesktopRename(WScreen *scr, int workspace, const char *name)
 {
-  char buf[MAX_WORKSPACENAME_WIDTH + 1];
+  char buf[MAX_DESKTOPNAME_WIDTH + 1];
   char *tmp;
 
-  if (workspace >= scr->workspace_count)
+  if (workspace >= scr->desktop_count)
     return;
 
   /* trim white spaces */
@@ -788,119 +708,19 @@ void wWorkspaceRename(WScreen *scr, int workspace, const char *name)
   if (strlen(tmp) == 0) {
     snprintf(buf, sizeof(buf), _("Workspace %i"), workspace + 1);
   } else {
-    strncpy(buf, tmp, MAX_WORKSPACENAME_WIDTH);
+    strncpy(buf, tmp, MAX_DESKTOPNAME_WIDTH);
   }
-  buf[MAX_WORKSPACENAME_WIDTH] = 0;
+  buf[MAX_DESKTOPNAME_WIDTH] = 0;
   wfree(tmp);
 
   /* update workspace */
-  wfree(scr->workspaces[workspace]->name);
-  scr->workspaces[workspace]->name = wstrdup(buf);
+  wfree(scr->desktops[workspace]->name);
+  scr->desktops[workspace]->name = wstrdup(buf);
 
-  if (scr->clip_ws_menu) {
-    if (strcmp(scr->clip_ws_menu->items[workspace + MC_WORKSPACE1]->text, buf) != 0) {
-      wfree(scr->clip_ws_menu->items[workspace + MC_WORKSPACE1]->text);
-      scr->clip_ws_menu->items[workspace + MC_WORKSPACE1]->text = wstrdup(buf);
-      wMenuRealize(scr->clip_ws_menu);
-    }
-  }
-  if (scr->workspace_menu) {
-    if (strcmp(scr->workspace_menu->items[workspace + MC_WORKSPACE1]->text, buf) != 0) {
-      wfree(scr->workspace_menu->items[workspace + MC_WORKSPACE1]->text);
-      scr->workspace_menu->items[workspace + MC_WORKSPACE1]->text = wstrdup(buf);
-      wMenuRealize(scr->workspace_menu);
-    }
-  }
-
-  _postNotification(WMDidChangeWorkspaceNameNotification, workspace, scr);
+  _postNotification(WMDidChangeDesktopNameNotification, workspace, scr);
 }
 
-WMenu *wWorkspaceMenuMake(WScreen *scr, Bool titled)
-{
-  WMenu *wsmenu;
-  WMenuItem *entry;
-
-  wsmenu = wMenuCreate(scr, titled ? _("Workspaces") : NULL, False);
-  if (!wsmenu) {
-    WMLogWarning(_("could not create Workspace menu"));
-    return NULL;
-  }
-
-  /* callback to be called when an entry is edited */
-  wsmenu->on_edit = _onMenuEntryEdited;
-
-  wMenuAddItem(wsmenu, _("New"), _newWSCommand, NULL);
-  wMenuAddItem(wsmenu, _("Destroy Last"), _deleteWSCommand, NULL);
-
-  entry = wMenuAddItem(wsmenu, _("Last Used"), _lastWSCommand, NULL);
-  entry->rtext = GetShortcutKey(wKeyBindings[WKBD_LASTWORKSPACE]);
-
-  return wsmenu;
-}
-
-void wWorkspaceMenuUpdate(WScreen *scr, WMenu * menu)
-{
-  int i;
-  long ws;
-  char title[MAX_WORKSPACENAME_WIDTH + 1];
-  WMenuItem *entry;
-  int tmp;
-
-  if (!menu)
-    return;
-
-  if (menu->items_count < scr->workspace_count + MC_WORKSPACE1) {
-    /* new workspace(s) added */
-    i = scr->workspace_count - (menu->items_count - MC_WORKSPACE1);
-    ws = menu->items_count - MC_WORKSPACE1;
-    while (i > 0) {
-      wstrlcpy(title, scr->workspaces[ws]->name, MAX_WORKSPACENAME_WIDTH);
-
-      entry = wMenuAddItem(menu, title, _switchWSCommand, (void *)ws);
-      entry->flags.indicator = 1;
-
-      i--;
-      ws++;
-    }
-  } else if (menu->items_count > scr->workspace_count + MC_WORKSPACE1) {
-    /* removed workspace(s) */
-    for (i = menu->items_count - 1; i >= scr->workspace_count + MC_WORKSPACE1; i--)
-      wMenuRemoveItem(menu, i);
-  }
-
-  for (i = 0; i < scr->workspace_count; i++) {
-    /* workspace shortcut labels */
-    if (i / 10 == scr->current_workspace / 10)
-      menu->items[i + MC_WORKSPACE1]->rtext = GetShortcutKey(wKeyBindings[WKBD_WORKSPACE1 + (i % 10)]);
-    else
-      menu->items[i + MC_WORKSPACE1]->rtext = NULL;
-
-    menu->items[i + MC_WORKSPACE1]->flags.indicator_on = 0;
-  }
-  menu->items[scr->current_workspace + MC_WORKSPACE1]->flags.indicator_on = 1;
-  wMenuRealize(menu);
-
-  /* don't let user destroy current workspace */
-  if (scr->current_workspace == scr->workspace_count - 1)
-    wMenuSetEnabled(menu, MC_DESTROY_LAST, False);
-  else
-    wMenuSetEnabled(menu, MC_DESTROY_LAST, True);
-
-  /* back to last workspace */
-  if (scr->workspace_count && scr->last_workspace != scr->current_workspace)
-    wMenuSetEnabled(menu, MC_LAST_USED, True);
-  else
-    wMenuSetEnabled(menu, MC_LAST_USED, False);
-
-  tmp = menu->frame->top_width + 5;
-  /* if menu got unreachable, bring it to a visible place */
-  if (menu->frame_x < tmp - (int)menu->frame->core->width)
-    wMenuMove(menu, tmp - (int)menu->frame->core->width, menu->frame_y, False);
-
-  wMenuPaint(menu);
-}
-
-void wWorkspaceSaveState(WScreen *scr)
+void wDesktopSaveState(WScreen *scr)
 {
   CFMutableArrayRef parr;
   CFMutableDictionaryRef wks_state;
@@ -908,11 +728,11 @@ void wWorkspaceSaveState(WScreen *scr)
   int i = 0;
 
   parr = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
-  for (i = 0; i < scr->workspace_count; i++) {
+  for (i = 0; i < scr->desktop_count; i++) {
     wks_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
                                           &kCFTypeDictionaryKeyCallBacks,
                                           &kCFTypeDictionaryValueCallBacks);
-    pstr = CFStringCreateWithCString(kCFAllocatorDefault, scr->workspaces[i]->name,
+    pstr = CFStringCreateWithCString(kCFAllocatorDefault, scr->desktops[i]->name,
                                      kCFStringEncodingUTF8);
     CFDictionarySetValue(wks_state, dName, pstr);
     CFRelease(pstr);
@@ -920,54 +740,49 @@ void wWorkspaceSaveState(WScreen *scr)
     CFArrayAppendValue(parr, wks_state);
     CFRelease(wks_state);
   }
-  CFDictionarySetValue(scr->session_state, dWorkspaces, parr);
+  CFDictionarySetValue(scr->session_state, dDesktops, parr);
   CFRelease(parr);
 }
 
-void wWorkspaceRestoreState(WScreen *scr)
+void wDesktopRestoreState(WScreen *scr)
 {
   CFTypeRef parr, wks_state, pstr;
 
   if (scr->session_state == NULL)
     return;
 
-  parr = CFDictionaryGetValue(scr->session_state, dWorkspaces);
+  parr = CFDictionaryGetValue(scr->session_state, dDesktops);
 
   if (!parr)
     return;
 
-  for (int i = 0; i < WMIN(CFArrayGetCount(parr), MAX_WORKSPACES); i++) {
+  for (int i = 0; i < WMIN(CFArrayGetCount(parr), MAX_DESKTOPS); i++) {
     wks_state = CFArrayGetValueAtIndex(parr, i);
     if (CFGetTypeID(wks_state) == CFDictionaryGetTypeID()) {
       pstr = CFDictionaryGetValue(wks_state, dName);
     } else {
       pstr = wks_state;
     }
-    if (i >= scr->workspace_count) {
-      wWorkspaceNew(scr);
-    }
-    if (scr->workspace_menu) {
-      wfree(scr->workspace_menu->items[i + MC_WORKSPACE1]->text);
-      scr->workspace_menu->items[i + MC_WORKSPACE1]->text = wstrdup(CFStringGetCStringPtr(pstr, kCFStringEncodingUTF8));
-      scr->workspace_menu->flags.realized = 0;
+    if (i >= scr->desktop_count) {
+      wDesktopNew(scr);
     }
 
-    wfree(scr->workspaces[i]->name);
-    scr->workspaces[i]->name = wstrdup(CFStringGetCStringPtr(pstr, kCFStringEncodingUTF8));
+    wfree(scr->desktops[i]->name);
+    scr->desktops[i]->name = wstrdup(CFStringGetCStringPtr(pstr, kCFStringEncodingUTF8));
 
-    _postNotification(WMDidChangeWorkspaceNameNotification, i, scr);
+    _postNotification(WMDidChangeDesktopNameNotification, i, scr);
   }
 }
 
 /* Returns the workspace number for a given workspace name */
-int wGetWorkspaceNumber(WScreen *scr, const char *value)
+int wGetDesktopNumber(WScreen *scr, const char *value)
 {
   int w, i;
 
   if (sscanf(value, "%i", &w) != 1) {
     w = -1;
-    for (i = 0; i < scr->workspace_count; i++) {
-      if (strcmp(scr->workspaces[i]->name, value) == 0) {
+    for (i = 0; i < scr->desktop_count; i++) {
+      if (strcmp(scr->desktops[i]->name, value) == 0) {
         w = i;
         break;
       }
