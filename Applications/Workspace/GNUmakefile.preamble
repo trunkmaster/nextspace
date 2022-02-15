@@ -8,7 +8,7 @@ ADDITIONAL_CPPFLAGS += -DWITH_UPOWER -DREVISION=\"$(REVISION)\"
 ADDITIONAL_CPPFLAGS += -DAPP_ICON=\"$($(APP_NAME)_APPLICATION_ICON)\"
 
 # Additional flags to pass to Objective C compiler
-ADDITIONAL_OBJCFLAGS += -Wall -Wno-unused-variable -Wno-typedef-redefinition -DNEXTSPACE
+ADDITIONAL_OBJCFLAGS += -Wall -Wno-unused-variable -Wno-typedef-redefinition
 
 # Additional flags to pass to C compiler
 #ADDITIONAL_CFLAGS +=
@@ -28,7 +28,7 @@ ADDITIONAL_GUI_LIBS += -lSystemKit -lDesktopKit -lSoundKit -lX11 -lCoreFoundatio
 #
 # Window manager addons
 #
-ADDITIONAL_CFLAGS += -DHAVE_CONFIG_H -DWITH_GNUSTEP -DNEXTSPACE -fno-strict-aliasing -fblocks
+ADDITIONAL_CFLAGS += -DHAVE_CONFIG_H -DWITH_GNUSTEP -fno-strict-aliasing -fblocks
 ADDITIONAL_CFLAGS += -DNDEBUG -D_XOPEN_SOURCE=600 -D_GNU_SOURCE
 ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR) -I./$(WM_DIR)/WINGs
 ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags fontconfig`

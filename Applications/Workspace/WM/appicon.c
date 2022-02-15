@@ -163,7 +163,6 @@ void create_appicon_for_application(WApplication *wapp, WWindow *wwin)
   /* Try to create an icon from the dock or clip */
   create_appicon_from_dock(wwin, wapp, wapp->main_window);
 
-#ifdef NEXTSPACE
   /* Check if launching icon was created by Workspace */
   if (!wapp->app_icon) {
     wapp->app_icon = wLaunchingAppIconForApplication(wwin->screen, wapp);
@@ -171,7 +170,6 @@ void create_appicon_for_application(WApplication *wapp, WWindow *wwin)
       wapp->app_icon->icon->core->descriptor.handle_mousedown = appIconMouseDown;
     }
   }
-#endif // NEXTSPACE
 
   /* If app_icon was not found, create it */
   if (!wapp->app_icon) {
@@ -266,16 +264,13 @@ void paint_app_icon(WApplication *wapp)
       wapp->app_icon->next == NULL && wapp->app_icon->prev == NULL)
     add_to_appicon_list(scr, wapp->app_icon);
 
-#ifdef NEXTSPACE
   if ((!attracting_dock || !wapp->app_icon->flags.attracted || !attracting_dock->collapsed) &&
-      scr->flags.icon_yard_mapped)
-#else
-    if (!attracting_dock || !wapp->app_icon->attracted || !attracting_dock->collapsed)
-#endif
-      XMapWindow(dpy, icon->core->window);
-
-  if (wPreferences.auto_arrange_icons && !wapp->app_icon->flags.attracted)
+      scr->flags.icon_yard_mapped) {
+    XMapWindow(dpy, icon->core->window);
+  }
+  if (wPreferences.auto_arrange_icons && !wapp->app_icon->flags.attracted) {
     wArrangeIcons(scr, True);
+  }
 }
 
 void removeAppIconFor(WApplication *wapp)

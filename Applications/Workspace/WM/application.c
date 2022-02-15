@@ -48,12 +48,10 @@
 #include "actions.h"
 #include "iconyard.h"
 #include "client.h"
-
-#ifdef NEXTSPACE
-#include <Workspace+WM.h>
 #include "framewin.h"
 #include "appmenu.h"
-#endif
+
+#include <Workspace+WM.h>
 
 /******** Notification observers ********/
 

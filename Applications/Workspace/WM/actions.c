@@ -1101,7 +1101,7 @@ void wIconifyWindow(WWindow *wwin)
   if (!wPreferences.disable_miniwindows && !wwin->flags.net_handle_icon) {
     if ((wwin->screen->current_desktop == wwin->frame->desktop ||
          IS_OMNIPRESENT(wwin) || wPreferences.sticky_icons)
-        && wwin->screen->flags.icon_yard_mapped /* NEXTSPACE */) {
+        && wwin->screen->flags.icon_yard_mapped) {
       XMapWindow(dpy, wwin->icon->core->window);
       wwin->icon->mapped = 1;
     }

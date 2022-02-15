@@ -48,15 +48,11 @@
 #include "misc.h"
 #include "xrandr.h"
 
-
 #ifdef USE_XSHAPE
 #include <X11/extensions/shape.h>
 #endif
 
-#ifdef NEXTSPACE
 #include "dock.h"
-#include <Workspace+WM.h>
-#endif
 
 struct SwitchPanel {
   WScreen *scr;

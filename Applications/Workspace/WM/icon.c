@@ -285,17 +285,6 @@ void wIconDestroy(WIcon *icon)
   wfree(icon);
 }
 
-#ifndef NEXTSPACE
-static void drawIconTitleBackground(WScreen *scr, Pixmap pixmap, int height)
-{
-  XFillRectangle(dpy, pixmap, scr->icon_title_texture->normal_gc, 0, 0, wPreferences.icon_size, height + 1);
-  XDrawLine(dpy, pixmap, scr->icon_title_texture->light_gc, 0, 0, wPreferences.icon_size, 0);
-  XDrawLine(dpy, pixmap, scr->icon_title_texture->light_gc, 0, 0, 0, height + 1);
-  XDrawLine(dpy, pixmap, scr->icon_title_texture->dim_gc,
-            wPreferences.icon_size - 1, 0, wPreferences.icon_size - 1, height + 1);
-}
-#endif /* NEXTSPACE */
-
 static void icon_update_pixmap(WIcon *icon, RImage *image)
 {
   RImage *tile;
@@ -363,17 +352,10 @@ static void icon_update_pixmap(WIcon *icon, RImage *image)
     RLightImage(tile, &color);
   }
 
-  if (!RConvertImage(scr->rcontext, tile, &pixmap))
+  if (!RConvertImage(scr->rcontext, tile, &pixmap)) {
     WMLogWarning(_("error rendering image:%s"), RMessageForError(RErrorCode));
-
+  }
   RReleaseImage(tile);
-
-  /* Draw the icon's title background (without text) */
-#ifndef NEXTSPACE
-  if (icon->show_title)
-    drawIconTitleBackground(scr, pixmap, theight);
-#endif
-
   icon->pixmap = pixmap;
 }
 
@@ -559,21 +541,20 @@ char *wIconStore(WIcon *icon)
   CFStringGetCString(iconPath, path, len, kCFStringEncodingUTF8);
 
   /* If icon exists, exit */
-  if (access(path, F_OK) == 0)
+  if (access(path, F_OK) == 0) {
     return path;
-
-  if (wwin->net_icon_image)
+  }
+  if (wwin->net_icon_image) {
     image = RRetainImage(wwin->net_icon_image);
-  else
+  } else {
     image = get_wwindow_image_from_wmhints(wwin, icon);
-
+  }
   if (!image) {
     wfree(path);
     return NULL;
   }
 
   path = WSSaveRasterImageAsTIFF(image, path); // NEXTSPACE
-
   RReleaseImage(image);
 
   return path;
@@ -830,24 +811,26 @@ RImage *get_rimage_icon_from_wm_hints(WIcon *icon)
 static void update_icon_title(WIcon *icon)
 {
   WScreen *scr = icon->core->screen_ptr;
-  int x, l, w;
-  char *tmp;
+  int x, string_length, string_width;
+  char *tmp_string;
 
   /* draw the icon title */
   if (icon->show_title && icon->icon_name != NULL) {
-    tmp = ShrinkString(scr->icon_title_font, icon->icon_name, wPreferences.icon_size - 4);
-    w = WMWidthOfString(scr->icon_title_font, tmp, l = strlen(tmp));
+    tmp_string = ShrinkString(scr->icon_title_font, icon->icon_name, wPreferences.icon_size - 4);
+    string_length = strlen(tmp_string);
+    string_width = WMWidthOfString(scr->icon_title_font, tmp_string, string_length);
 
-    if (w > icon->core->width - 4)
-      x = (icon->core->width - 4) - w;
-    else
-      x = (icon->core->width - w) / 2;
-#ifdef NEXTSPACE
-    if (x < 2) x = 2;
-#endif /* NEXTSPACE */
+    if (string_width > icon->core->width - 4) {
+      x = (icon->core->width - 4) - string_width;
+    } else {
+      x = (icon->core->width - string_width) / 2;
+    }
+    if (x < 2) {
+      x = 2;
+    }
     WMDrawString(scr->wmscreen, icon->core->window, scr->icon_title_color,
-                 scr->icon_title_font, x, 1, tmp, l);
-    wfree(tmp);
+                 scr->icon_title_font, x, 1, tmp_string, string_length);
+    wfree(tmp_string);
   }
 }
 

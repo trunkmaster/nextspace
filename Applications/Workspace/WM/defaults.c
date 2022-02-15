@@ -51,6 +51,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
+#include <X11/Xcursor/Xcursor.h>
 
 #include <wraster.h>
 
@@ -2038,9 +2039,6 @@ static void check_bitmap_status(int status, const char *filename, Pixmap bitmap)
   }
 }
 
-#ifdef NEXTSPACE
-#include <X11/Xcursor/Xcursor.h>
-#endif
 /*
  * (none)
  * (builtin, <cursor_name>)
@@ -2142,9 +2140,7 @@ static int parse_cursor(WScreen * scr, CFTypeRef pl, Cursor * cursor)
     check_bitmap_status(mask_status, mask_name, mask);
     wfree(bitmap_name);
     wfree(mask_name);
-  }
-#ifdef NEXTSPACE
-  else if (strcasecmp(val, "library") == 0) {
+  } else if (strcasecmp(val, "library") == 0) {
     if (nelem != 2) {
       WMLogWarning(_("bad number of arguments in cursor specification"));
       return (status);
@@ -2162,7 +2158,6 @@ static int parse_cursor(WScreen * scr, CFTypeRef pl, Cursor * cursor)
       WMLogWarning(_("unknown builtin cursor name \"%s\""), val);
     }
   }
-#endif
   return (status);
 }
 
@@ -2362,7 +2357,6 @@ static int setIconTile(WScreen * scr, WDefaultEntry * entry, void *tdata, void *
   return (reset ? REFRESH_ICON_TILE : 0);
 }
 
-#ifdef NEXTSPACE
 static int setMiniwindowTile(WScreen *scr, WDefaultEntry *entry, void *tdata, void *foo)
 {
   Pixmap	pixmap;
@@ -2410,7 +2404,6 @@ static int setMiniwindowTile(WScreen *scr, WDefaultEntry *entry, void *tdata, vo
 
   return (reset ? REFRESH_ICON_TILE : 0);
 }
-#endif
 
 static int setWinTitleFont(WScreen *scr, WDefaultEntry *entry, void *tdata, void *foo)
 {

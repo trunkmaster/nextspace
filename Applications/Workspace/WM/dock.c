@@ -73,9 +73,7 @@
 #include "moveres.h"
 #include "iconyard.h"
 
-#ifdef NEXTSPACE
 #include <Workspace+WM.h>
-#endif
 
 /**** Local variables ****/
 #define CLIP_REWIND       1
@@ -743,9 +741,7 @@ static WAppIcon *mainIconCreate(WScreen *scr, int type, const char *name)
   btn->icon->core->descriptor.handle_leavenotify = clipLeaveNotify;
   btn->icon->core->descriptor.parent_type = WCLASS_DOCK_ICON;
   btn->icon->core->descriptor.parent = btn;
-#ifndef NEXTSPACE
-  XMapWindow(dpy, btn->icon->core->window);
-#endif
+  
   btn->x_pos = x_pos;
   btn->y_pos = 0;
   btn->flags.docked = 1;
@@ -963,129 +959,6 @@ static WMenu *makeClipOptionsMenu(WScreen *scr)
   return menu;
 }
 
-#ifndef NEXTSPACE
-static void setDockPositionNormalCallback(WMenu *menu, WMenuEntry *entry)
-{
-  WDock *dock = (WDock *) entry->clientdata;
-  WDrawerChain *dc;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) menu;
-
-  if (entry->flags.indicator_on) // already set, nothing to do
-    return;
-  // Do we come from auto raise lower or keep on top?
-  if (dock->auto_raise_lower)
-    {
-      dock->auto_raise_lower = 0;
-      // Only for aesthetic purposes, can be removed when Autoraise status is no longer exposed in drawer option menu
-      for (dc = dock->screen_ptr->drawers; dc != NULL; dc = dc->next) {
-        dc->adrawer->auto_raise_lower = 0;
-      }
-    }
-  else
-    {
-      // Will take care of setting lowered = 0 in drawers
-      toggleLowered(dock);
-    }
-  entry->flags.indicator_on = 1;
-}
-static void setDockPositionAutoRaiseLowerCallback(WMenu *menu, WMenuEntry *entry)
-{
-  WDock *dock = (WDock *) entry->clientdata;
-  WDrawerChain *dc;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) menu;
-
-  if (entry->flags.indicator_on) // already set, nothing to do
-    return;
-  // Do we come from normal or keep on top?
-  if (!dock->lowered)
-    {
-      toggleLowered(dock);
-    }
-  dock->auto_raise_lower = 1;
-  // Only for aesthetic purposes, can be removed when Autoraise status is no longer exposed in drawer option menu
-  for (dc = dock->screen_ptr->drawers; dc != NULL; dc = dc->next) {
-    dc->adrawer->auto_raise_lower = 1;
-  }
-  entry->flags.indicator_on = 1;
-}
-static void setDockPositionKeepOnTopCallback(WMenu *menu, WMenuEntry *entry)
-{
-  WDock *dock = (WDock *) entry->clientdata;
-  WDrawerChain *dc;
-
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) menu;
-
-  if (entry->flags.indicator_on) // already set, nothing to do
-    return;
-  dock->auto_raise_lower = 0;
-  // Only for aesthetic purposes, can be removed when Autoraise status is no longer exposed in drawer option menu
-  for (dc = dock->screen_ptr->drawers; dc != NULL; dc = dc->next) {
-    dc->adrawer->auto_raise_lower = 0;
-  }
-  toggleLowered(dock);
-  entry->flags.indicator_on = 1;
-}
-static void updateDockPositionMenu(WMenu *menu, WDock *dock)
-{
-  WMenuEntry *entry;
-  int index = 0;
-
-  assert(menu);
-  assert(dock);
-
-  /* Normal level */
-  entry = menu->entries[index++];
-  entry->flags.indicator_on = (dock->lowered && !dock->auto_raise_lower);
-  entry->clientdata = dock;
-
-  /* Auto-raise/lower */
-  entry = menu->entries[index++];
-  entry->flags.indicator_on = dock->auto_raise_lower;
-  entry->clientdata = dock;
-
-  /* Keep on top */
-  entry = menu->entries[index++];
-  entry->flags.indicator_on = !dock->lowered;
-  entry->clientdata = dock;
-}
-static WMenu *makeDockPositionMenu(WScreen *scr)
-{
-  /* When calling this, the dock is being created, so scr->dock is still not set
-   * Therefore the callbacks' clientdata and the indicators can't be set,
-   * they will be updated when the dock menu is opened. */
-  WMenu *menu;
-  WMenuEntry *entry;
-
-  menu = wMenuCreate(scr, NULL, False);
-  if (!menu) {
-    WMLogWarning(_("could not create options submenu for dock position menu"));
-    return NULL;
-  }
-
-  entry = wMenuAddCallback(menu, _("Normal"), setDockPositionNormalCallback, NULL);
-  entry->flags.indicator = 1;
-  entry->flags.indicator_type = MI_DIAMOND;
-
-  entry = wMenuAddCallback(menu, _("Auto raise & lower"), setDockPositionAutoRaiseLowerCallback, NULL);
-  entry->flags.indicator = 1;
-  entry->flags.indicator_type = MI_DIAMOND;
-
-  entry = wMenuAddCallback(menu, _("Keep on Top"), setDockPositionKeepOnTopCallback, NULL);
-  entry->flags.indicator = 1;
-  entry->flags.indicator_type = MI_DIAMOND;
-
-  menu->flags.realized = 0;
-  wMenuRealize(menu);
-
-  return menu;
-}
-#endif // !NEXTSPACE
-
 static WMenu *dockMenuCreate(WScreen *scr, int type)
 {
   WMenu *menu;
@@ -1099,15 +972,9 @@ static WMenu *dockMenuCreate(WScreen *scr, int type)
 
   menu = wMenuCreate(scr, "Dock", False);
   if (type == WM_DOCK) {
-#ifndef NEXTSPACE
-    entry = wMenuAddCallback(menu, _("Dock position"), NULL, NULL);
-    if (scr->dock_pos_menu == NULL)
-      scr->dock_pos_menu = makeDockPositionMenu(scr);
-    wMenuEntrySetCascade(menu, entry, scr->dock_pos_menu);
-#endif
-    if (!wPreferences.flags.nodrawer)
+    if (!wPreferences.flags.nodrawer) {
       wMenuAddItem(menu, _("Add a drawer"), addADrawerCallback, NULL);
-
+    }
   } else {
     if (type == WM_CLIP)
       entry = wMenuAddItem(menu, _("Clip Options"), NULL, NULL);
@@ -1833,22 +1700,14 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
       aicon->x_pos = dock->x_pos + (aicon->xindex * ICON_SIZE);
       aicon->y_pos = dock->y_pos + (aicon->yindex * ICON_SIZE);
 
-      if (dock->lowered)
+      if (dock->lowered) {
         ChangeStackingLevel(aicon->icon->core, NSNormalWindowLevel);
-      else
+      } else {
         ChangeStackingLevel(aicon->icon->core, NSDockWindowLevel);
-
-      wCoreConfigure(aicon->icon->core, aicon->x_pos, aicon->y_pos, 0, 0);
-#ifndef NEXTSPACE
-      if (!dock->collapsed) {
-        XMapWindow(dpy, aicon->icon->core->window);
       }
-      wRaiseFrame(aicon->icon->core);
-#endif
-
+      wCoreConfigure(aicon->icon->core, aicon->x_pos, aicon->y_pos, 0, 0);
       dock->icon_count++;
-    }
-    else if (dock->icon_count == 0 && type == WM_DOCK) {
+    } else if (dock->icon_count == 0 && type == WM_DOCK) {
       dock->icon_count++;
     }
   }
@@ -3349,6 +3208,7 @@ static void trackDeadProcess(pid_t pid, unsigned char status, WDock *dock)
       if (status == 111) {
         char msg[PATH_MAX];
         char *cmd;
+        char *message;
 
 #ifdef USE_DOCK_XDND
         if (icon->flags.drop_launch)
@@ -3361,16 +3221,11 @@ static void trackDeadProcess(pid_t pid, unsigned char status, WDock *dock)
             cmd = icon->command;
 
         snprintf(msg, sizeof(msg), _("Could not execute command \"%s\""), cmd);
-
-#ifdef NEXTSPACE
-        char *message = wstrdup(msg);
+        message = wstrdup(msg);
         dispatch_async(workspace_q, ^{
-            WSRunAlertPanel(_("Desktop Dock"), message, _("Got It"), NULL, NULL);
+            WSRunAlertPanel(_("Workspace Dock"), message, _("Got It"), NULL, NULL);
             wfree(message);
           });
-#else
-        WMLogInfoDialog(dock->screen_ptr, _("Error"), msg, _("OK"), NULL, NULL);
-#endif
       }
       break;
     }
@@ -3441,9 +3296,6 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
 
   if (dock->type == WM_DOCK) {
     /* Dock position menu */
-#ifndef NEXTSPACE
-    updateDockPositionMenu(scr->dock_pos_menu, dock);
-#else
     index -= 1;
     if (dock->menu->frame->title) {
       wfree(dock->menu->frame->title);
@@ -3454,7 +3306,6 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
     else {
       dock->menu->frame->title = wstrdup(aicon->wm_class);
     }
-#endif
     dock->menu->flags.realized = 0;
     if (!wPreferences.flags.nodrawer) {
       /* add a drawer */
@@ -3575,13 +3426,6 @@ static void openDockMenu(WDock *dock, WAppIcon *aicon, XEvent *event)
 
   wMenuSetEnabled(dock->menu, index, appIsRunning);
 
-#ifndef NEXTSPACE
-  /* settings */
-  entry = dock->menu->entries[++index];
-  entry->clientdata = aicon;
-  wMenuSetEnabled(dock->menu, index, !aicon->editing && !wPreferences.flags.noupdates);
-#endif
-  
   /* kill or remove drawer */
   entry = dock->menu->items[++index];
   entry->clientdata = aicon;

@@ -53,8 +53,20 @@
 #include "screen.h"
 #include "xrandr.h"
 #include "iconyard.h"
-
 #include "moveres.h"
+
+#include <X11/extensions/Xfixes.h>
+typedef struct {
+  PointerBarrier h_min;
+  PointerBarrier h_max;
+  PointerBarrier v_min;
+  PointerBarrier v_max;
+  PointerBarrier wl_min;
+  PointerBarrier wr_min;
+  PointerBarrier wl_max;
+  PointerBarrier wr_max;
+} MouseBarriers;
+
 
 /* calculate window edge resistance from edge resistance */
 #define WIN_RESISTANCE(x)		(((x)*20)/30)
@@ -2118,18 +2130,9 @@ static int getResizeDirection(WWindow * wwin, int x, int y, int dy, int flags)
   return dir;
 }
 
-#ifdef NEXTSPACE
-#include <X11/extensions/Xfixes.h>
-typedef struct {
-  PointerBarrier h_min;
-  PointerBarrier h_max;
-  PointerBarrier v_min;
-  PointerBarrier v_max;
-  PointerBarrier wl_min;
-  PointerBarrier wr_min;
-  PointerBarrier wl_max;
-  PointerBarrier wr_max;
-} MouseBarriers;
+/*
+  Mouse barriers
+*/
 
 Cursor wMouseResizeCursor(WWindow *wwin, int res, int fw, int fh)
 {
@@ -2279,7 +2282,6 @@ MouseBarriers wMouseSetResizeBarriers(WWindow *wwin, int x_root, int y_root, int
 	
   return barriers;
 }
-#endif // NEXTSPACE
 
 void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 {
@@ -2310,11 +2312,9 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
               : scr->xrandr_info.primary_head);
   int opaqueResize = wPreferences.opaque_resize;
   Cursor cursor;
-#ifdef NEXTSPACE
   MouseBarriers barriers;
   Cursor        new_cursor;
   char          *orig_title;
-#endif // NEXTSPACE
 
   if (!IS_RESIZABLE(wwin))
     return;
@@ -2390,14 +2390,12 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
         fw = rw;
         fh = rh - vert_border;
         wWindowConstrainSize(wwin, (unsigned int *)&fw, (unsigned int *)&fh);
-#ifdef NEXTSPACE
         new_cursor = wMouseResizeCursor(wwin, res, fw, fh);
         if (cursor != new_cursor) {
           cursor = new_cursor;
           XChangeActivePointerGrab(dpy, ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
                                      cursor, CurrentTime);
           }
-#endif // NEXTSPACE
         fh += vert_border;
         if (res & LEFT)
           fx = rx2 - fw + 1;
@@ -2429,40 +2427,20 @@ void wMouseResizeWindow(WWindow * wwin, XEvent * ev)
 
         res = getResizeDirection(wwin, tx, ty, orig_y - event.xmotion.y_root, flags);
 
-#ifdef NEXTSPACE
         barriers = wMouseSetResizeBarriers(wwin, orig_x, orig_y, res);
         cursor = wMouseResizeCursor(wwin, res, fw, fh);
-#else
-        cursor = wPreferences.cursor[WCUR_ARROW];
-	
-        if (resize_direction == (UP | LEFT))
-          cursor = wPreferences.cursor[WCUR_TOPLEFTRESIZE];
-        else if (resize_direction == (UP | RIGHT))
-          cursor = wPreferences.cursor[WCUR_TOPRIGHTRESIZE];
-        else if (resize_direction == (DOWN | LEFT))
-          cursor = wPreferences.cursor[WCUR_BOTTOMLEFTRESIZE];
-        else if (resize_direction == (DOWN | RIGHT))
-          cursor = wPreferences.cursor[WCUR_BOTTOMRIGHTRESIZE];
-        else if (resize_direction == DOWN || resize_direction == UP)
-          cursor = wPreferences.cursor[WCUR_VERTICALRESIZE];
-        else if (resize_direction & (DOWN | UP))
-          cursor = wPreferences.cursor[WCUR_VERTICALRESIZE];
-        else if (resize_direction & (LEFT | RIGHT))
-          cursor = wPreferences.cursor[WCUR_HORIZONRESIZE];
-#endif // NEXTSPACE
+
         XChangeActivePointerGrab(dpy, ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
                                  cursor, CurrentTime);
-
         XGrabKeyboard(dpy, root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
-
         XGrabServer(dpy);
 
         /* Draw the resize frame for the first time. */
         mapGeometryDisplay(wwin, fx, fy, fw, fh);
 
-        if (!opaqueResize)
+        if (!opaqueResize) {
           drawTransparentFrame(wwin, fx, fy, fw, fh, False);
-
+        }
         showGeometry(wwin, fx, fy, fx + fw, fy + fh, res);
 
         started = 1;

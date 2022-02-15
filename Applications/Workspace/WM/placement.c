@@ -62,9 +62,8 @@
                       wPreferences.window_place_origin.y)
 
 /* Returns True if it is an icon and is in this workspace */
-static Bool
-iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2,
-	     int desktop, int *retX, int *retY)
+static Bool iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2,
+                         int desktop, int *retX, int *retY)
 {
   void *parent;
   int ok = 0;
@@ -81,15 +80,10 @@ iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2,
              (((WIcon *) parent)->owner->frame->desktop == desktop
               || IS_OMNIPRESENT(((WIcon *) parent)->owner)
               || wPreferences.sticky_icons)
-             && (((WIcon *) parent)->mapped
-#ifdef NEXTSPACE
-                 ||!((WIcon *) parent)->owner->screen->flags.icon_yard_mapped)
-#endif
-             ) {
-
+             && (((WIcon *) parent)->mapped || !((WIcon *) parent)->owner->screen->flags.icon_yard_mapped)) {
+    
     *retX = ((WIcon *) parent)->owner->icon_x;
     *retY = ((WIcon *) parent)->owner->icon_y;
-
     ok = 1;
   } else if (wcore->descriptor.parent_type == WCLASS_WINDOW
              && ((WWindow *) parent)->flags.icon_moved

@@ -77,10 +77,6 @@
 #endif
 #include "wmspec.h"
 
-#ifdef NEXTSPACE
-#include <Workspace+WM.h>
-#endif
-
 #define MOD_MASK wPreferences.modifier_mask
 #define ALT_MOD_MASK wPreferences.alt_modifier_mask
 
@@ -2277,19 +2273,18 @@ void wWindowUpdateButtonImages(WWindow *wwin)
         fwin->lbutton_image->client_owned_mask = 1;
       }
     } else {
-      if (fwin->lbutton_image && !fwin->lbutton_image->shared)
+      if (fwin->lbutton_image && !fwin->lbutton_image->shared) {
         wPixmapDestroy(fwin->lbutton_image);
-
-#ifdef NEXTSPACE
+      }
       if (scr->flags.modifier_pressed) {
         if (wwin->flags.maximized) {
           fwin->lbutton_image = scr->b_pixmaps[WBUT_RESTORE];
         } else {
           fwin->lbutton_image = scr->b_pixmaps[WBUT_MAXIMIZE];
         }
-      } else
-#endif
+      } else {
         fwin->lbutton_image = scr->b_pixmaps[WBUT_ICONIFY];
+      }
     }
   }
 
@@ -2332,15 +2327,14 @@ void wWindowUpdateButtonImages(WWindow *wwin)
       fwin->rbutton_image = scr->b_pixmaps[WBUT_BROKENCLOSE];
 
     } else {
-      if (fwin->rbutton_image && !fwin->rbutton_image->shared)
+      if (fwin->rbutton_image && !fwin->rbutton_image->shared) {
         wPixmapDestroy(fwin->rbutton_image);
-
-#ifdef NEXTSPACE
-      if (scr->flags.modifier_pressed)
+      }
+      if (scr->flags.modifier_pressed) {
         fwin->rbutton_image = scr->b_pixmaps[WBUT_KILL];
-      else
-#endif
+      } else {
         fwin->rbutton_image = scr->b_pixmaps[WBUT_CLOSE];
+      }
     }
   }
 
@@ -2628,12 +2622,10 @@ void wWindowSetKeyGrabs(WWindow * wwin)
              wwin->frame->core->window, True, GrabModeAsync, GrabModeAsync);
   }
 
-#ifdef NEXTSPACE
   XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_L), 0, wwin->client_win, True,
            GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_R), 0, wwin->client_win, True,
            GrabModeAsync, GrabModeAsync);
-#endif
 }
 
 void wWindowResetMouseGrabs(WWindow * wwin)
@@ -2853,9 +2845,6 @@ static void resizebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
 {
   WWindow *wwin = data;
 
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void) sender;
-
 #ifndef NUMLOCK_HACK
   if ((event->xbutton.state & ValidModMask)
       != (event->xbutton.state & ~LockMask)) {
@@ -2871,33 +2860,13 @@ static void resizebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   if (!(event->xbutton.state & ControlMask) && !WFLAGP(wwin, no_focusable)) {
     wSetFocusTo(wwin->screen, wwin);
   }
-
-  if (event->xbutton.button == Button1)
+  if (event->xbutton.button == Button1) {
     wRaiseFrame(wwin->frame->core);
-
+  }
   // For NEXTSPACE resize events are handled in handleMotionNotify() (evenc.c)
   // It was implemented to provide immediate chnage of focus and window raise
   // after mouse down. With the code below window will be raised or focused on mouse
   // release.
-#ifndef NEXTSPACE
-  if (event->xbutton.window != wwin->frame->resizebar->window) {
-    if (XGrabPointer(dpy, wwin->frame->resizebar->window, True,
-                     ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
-                     GrabModeAsync, GrabModeAsync, None, None, CurrentTime)
-        != GrabSuccess) {
-      return;
-    }
-  }
-
-  if (event->xbutton.state & MOD_MASK) {
-    /* move the window */
-    wMouseMoveWindow(wwin, event);
-    XUngrabPointer(dpy, CurrentTime);
-  } else {
-    wMouseResizeWindow(wwin, event);
-    XUngrabPointer(dpy, CurrentTime);
-  }
-#endif
 }
 
 static void titlebarDblClick(WCoreWindow *sender, void *data, XEvent *event)
@@ -3068,23 +3037,8 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
       wSelectWindow(wwin, !wwin->flags.selected);
       return;
     }
-#ifndef NEXTSPACE
-    if (event->xbutton.window != wwin->frame->titlebar->window
-        && XGrabPointer(dpy, wwin->frame->titlebar->window, False,
-                        ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
-                        GrabModeAsync, GrabModeAsync, None, None, CurrentTime) != GrabSuccess) {
-      return;
-    }
-
-    /* move the window */
-    wMouseMoveWindow(wwin, event);
-
-    XUngrabPointer(dpy, CurrentTime);
-#endif
-  }
-  else if (event->xbutton.button == Button3
-           && !wwin->flags.internal_window
-           && !WCHECK_STATE(WSTATE_MODAL)) {
+  } else if (event->xbutton.button == Button3 && !wwin->flags.internal_window
+             && !WCHECK_STATE(WSTATE_MODAL)) {
     WObjDescriptor *desc;
 
     if (event->xbutton.window != wwin->frame->titlebar->window
@@ -3169,28 +3123,21 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
     if (wwin->protocols.MINIATURIZE_WINDOW) {
       wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window,
                           w_global.timestamp.last_event);
-    }
-    else {
+    } else {
       wIconifyWindow(wwin);
     }
-  }
-#ifdef NEXTSPACE
-  else if (event->xbutton.button == Button1 && event->xbutton.state & MOD_MASK) {
+  } else if (event->xbutton.button == Button1 && event->xbutton.state & MOD_MASK) {
     if (wwin->flags.maximized) {
       wUnmaximizeWindow(wwin);
-    }
-    else {
+    } else {
       wMaximizeWindow(wwin, MAX_VERTICAL | MAX_HORIZONTAL);
     }
-  }
-#endif
-  else if (event->xbutton.button == Button3) {
+  } else if (event->xbutton.button == Button3) {
     WApplication *wapp = wApplicationOf(wwin->main_window);
     if (wwin->protocols.HIDE_APP) {
       wClientSendProtocol(wwin, w_global.atom.gnustep.wm_hide_app,
                           event->xbutton.time);
-    }
-    else if (wapp && !WFLAGP(wwin, no_appicon)) {
+    } else if (wapp && !WFLAGP(wwin, no_appicon)) {
       wApplicationHide(wapp);
     }
   }

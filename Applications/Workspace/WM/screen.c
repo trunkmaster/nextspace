@@ -884,9 +884,7 @@ WScreen *wScreenInit(int screen_number)
   scr->gview = WCreateGeometryView(scr->wmscreen);
   WMRealizeWidget(scr->gview);
 
-#ifdef NEXTSPACE
   scr->flags.icon_yard_mapped = 1;
-#endif        
   wScreenUpdateUsableArea(scr);
 
   return scr;

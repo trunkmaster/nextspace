@@ -82,11 +82,9 @@
 #include "iconyard.h"
 #include "application.h"
 
-#ifdef NEXTSPACE
 #include <Workspace+WM.h>
 extern void wIconYardShowIcons(WScreen *screen);
 extern void wIconYardHideIcons(WScreen *screen);
-#endif
 
 #define MOD_MASK wPreferences.modifier_mask
 
@@ -97,10 +95,8 @@ static void handleColormapNotify(XEvent *event);
 static void handleMapNotify(XEvent *event);
 static void handleUnmapNotify(XEvent *event);
 static void handleButtonPress(XEvent *event);
-#ifdef NEXTSPACE
-static void handleButtonRelease(XEvent * event);
-static void handleKeyRelease(XEvent * event);
-#endif
+static void handleButtonRelease(XEvent * event); /* NEXTSPACE */
+static void handleKeyRelease(XEvent * event); /* NEXTSPACE */
 static void handleExpose(XEvent *event);
 static void handleDestroyNotify(XEvent *event);
 static void handleConfigureRequest(XEvent *event);
@@ -219,11 +215,10 @@ void DispatchEvent(XEvent * event)
     handleKeyPress(event);
     break;
 
-#ifdef NEXTSPACE
   case KeyRelease:
     handleKeyRelease(event);
     break;
-#endif
+    
   case MotionNotify:
     handleMotionNotify(event);
     break;
@@ -252,11 +247,10 @@ void DispatchEvent(XEvent * event)
     handleExpose(event);
     break;
 
-#ifdef NEXTSPACE
   case ButtonRelease:
     handleButtonRelease(event);
     break;
-#endif
+
   case PropertyNotify:
     handlePropertyNotify(event);
     break;
@@ -1439,7 +1433,6 @@ static void handleKeyPress(XEvent * event)
   /* ignore CapsLock */
   modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
 
-#ifdef NEXTSPACE
   /* if (wwin && wwin->client_win) { */
   /*   WMLogInfo("handleKeyPress: %i state: %i mask: %i" */
   /*           " modifiers: %i window:%lu", */
@@ -1461,7 +1454,6 @@ static void handleKeyPress(XEvent * event)
     scr->flags.modifier_pressed = 0;
     wWindowUpdateButtonImages(wwin);
   }
-#endif
 
   for (i = 0; i < WKBD_LAST; i++) {
     if (wKeyBindings[i].keycode == 0)

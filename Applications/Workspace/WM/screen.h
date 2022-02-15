@@ -242,9 +242,7 @@ typedef struct _WScreen {
   WMScreen *wmscreen;		       /* for widget library */
 
   struct RImage *icon_tile;
-#ifdef NEXTSPACE
   struct RImage *miniwindow_tile;
-#endif
   struct RImage *clip_tile;          /* tile with arrows to change workspace */
   struct RImage *drawer_tile;        /* tile for a drawer (tile + arrow) */
   Pixmap icon_tile_pixmap;           /* For app supplied icons */
@@ -308,10 +306,8 @@ typedef struct _WScreen {
     unsigned int doing_alt_tab:1;
     unsigned int jump_back_pending:1;
     unsigned int ignore_focus_events:1;
-#ifdef NEXTSPACE
     unsigned int icon_yard_mapped:1;
     unsigned int modifier_pressed:1;
-#endif
   } flags;
 } WScreen;
 

@@ -6,7 +6,7 @@
 ADDITIONAL_CPPFLAGS += 
 
 # Additional flags to pass to Objective C compiler
-ADDITIONAL_OBJCFLAGS += -Wno-import -Wno-unused -pipe -DNEXTSPACE
+ADDITIONAL_OBJCFLAGS += -Wno-import -Wno-unused -pipe
 
 # Additional flags to pass to C compiler
 ADDITIONAL_CFLAGS +=

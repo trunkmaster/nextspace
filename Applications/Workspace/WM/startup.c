@@ -80,7 +80,6 @@
 #include "xmodifier.h"
 #include "dock.h"
 #include "application.h"
-#include <Workspace+WM.h>
 
 /****** Global ******/
 Display *dpy;

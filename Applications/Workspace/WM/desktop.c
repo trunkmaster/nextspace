@@ -65,11 +65,7 @@
 #include "xrandr.h"
 #include "event.h"
 #include "iconyard.h"
-
-#ifdef NEXTSPACE
-#include <Workspace+WM.h>
 #include "stacking.h"
-#endif // NEXTSPACE        
 
 #define WORKSPACE_NAME_DISPLAY_PADDING 32
 /* workspace name on switch display */

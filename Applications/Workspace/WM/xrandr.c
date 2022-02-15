@@ -37,12 +37,7 @@
 #include "dock.h"
 #include "stdio.h"
 #include "defaults.h"
-
 #include "xrandr.h"
-
-#ifdef NEXTSPACE
-#  include <Workspace+WM.h>
-#endif
 
 void wInitXrandr(WScreen *scr)
 {

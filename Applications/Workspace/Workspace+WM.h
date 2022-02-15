@@ -23,8 +23,6 @@
 // This header is for Window Manager(X11) and Workspace(GNUstep) integration
 //
 
-#ifdef NEXTSPACE
-
 //-----------------------------------------------------------------------------
 // Common part
 //-----------------------------------------------------------------------------
@@ -91,5 +89,3 @@ int WSRunAlertPanel(char *title, char *message,
 void WSRingBell(WWindow *wwin);
 void WSMessage(char *fmt, ...);
 // #define WMLogInfo(fmt, args...) WSMessage(fmt, ## args)
-
-#endif //NEXTSPACE
