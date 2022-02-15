@@ -38,9 +38,9 @@ enum {
   WO_OMNIPRESENT
 };
 static const char *const window_menu_items[] = {
-  [WO_KEEP_ON_TOP]    = N_("Keep Window on Top"),
-  [WO_KEEP_AT_BOTTOM] = N_("Keep Window at Bottom"),
-  [WO_OMNIPRESENT]    = N_("Omnipresent")
+  [WO_KEEP_ON_TOP]    = N_("Keep Above All Windows"),
+  [WO_KEEP_AT_BOTTOM] = N_("Keep Below All Windows"),
+  [WO_OMNIPRESENT]    = N_("Show on All Desktops")
 };
 
 static void execWindowCommand(WMenu *menu, WMenuItem *entry)
