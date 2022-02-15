@@ -764,3 +764,30 @@ void wApplicationMenuRestoreFromState(WMenu *menu, CFArrayRef state)
     restoreMenuFromInfo(menu, menu_info);
   }
 }
+
+// Menu state
+//--------------------------------------------------------------------------------------------------
+static WMenuItem *itemForShortcutKeycode(WMenu *menu, KeyCode keycode)
+{
+  WMenuItem *item;
+  KeySym sym_a = XStringToKeysym("A");
+  KeyCode code_a = XKeysymToKeycode(dpy, sym_a);
+  
+  return NULL;
+}
+
+Bool wApplicationMenuHandleKeyPress(WWindow *focused_window, XEvent *event)
+{
+  WApplication *wapp = wApplicationForWindow(focused_window);
+  WMenuItem *item;
+  CFStringRef modifier;
+
+  WMLogInfo("App menu key press. Modifier: %x Key: %x", event->xkey.state, event->xkey.keycode);
+
+  if (wapp && wapp->app_menu) {
+    // recursively go through menu items and check if keycode was assigned as `rtext`.
+    item = itemForShortcutKeycode(wapp->app_menu, event->xkey.keycode);
+  }
+
+  return False;
+}

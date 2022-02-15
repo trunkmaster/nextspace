@@ -13,3 +13,4 @@ void wApplicationMenuRestoreFromState(WMenu *menu, CFArrayRef state);
 
 WMenuItem *wMenuItemWithTitle(WMenu *menu, char *title);
 
+Bool wApplicationMenuHandleKeyPress(struct WWindow *focused_window, XEvent *event);
