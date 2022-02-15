@@ -530,15 +530,16 @@ void wApplicationMenuHide(WMenu *menu)
     submenu = menu->submenus[i];
     /* WMLogInfo("Hide submenu %s is mapped: %i brother mapped: %i", */
     /*           submenu->frame->title, submenu->flags.mapped, submenu->brother->flags.mapped); */
-    if (submenu->flags.mapped) {
-      wApplicationMenuHide(submenu);
-    } else if (submenu->flags.brother && submenu->brother->flags.mapped) {
+    wApplicationMenuHide(submenu);
+    if (submenu->flags.brother) {
       wApplicationMenuHide(submenu->brother);
     }
   }
-  
-  wMenuUnmap(menu);
-  menu->flags.hidden = 1;
+
+  if (menu->flags.mapped) {
+    wMenuUnmap(menu);
+    menu->flags.hidden = 1;
+  }
 }
 
 void wApplicationMenuShow(WMenu *menu)
@@ -553,16 +554,16 @@ void wApplicationMenuShow(WMenu *menu)
     submenu = menu->submenus[i];
     /* WMLogInfo("Show submenu %s is mapped: %i brother mapped: %i", */
     /*           submenu->frame->title, submenu->flags.mapped, submenu->brother->flags.mapped); */
-    if (submenu->flags.hidden && !submenu->flags.mapped) {
-      wApplicationMenuShow(submenu);
-    } else if (submenu->flags.brother &&
-               !submenu->brother->flags.mapped && submenu->brother->flags.hidden) {
+    wApplicationMenuShow(submenu);
+    if (submenu->flags.brother) {
       wApplicationMenuShow(submenu->brother);
     }
   }
   
-  wMenuMap(menu);
-  menu->flags.hidden = 0;
+  if (menu->flags.hidden && !menu->flags.mapped) {
+    wMenuMap(menu);
+    menu->flags.hidden = 0;
+  }
 }
 
 WMenuItem *wMenuItemWithTitle(WMenu *menu, char *title)
@@ -654,14 +655,24 @@ void wApplicationMenuSaveState(WMenu *menu, CFMutableArrayRef menus_state)
   CFStringRef menuType;
   WMenu *submenu = NULL;
 
+  if (!menu) {
+    WMLogError("wApplicationMenuSaveState was called with no `menu` specified!");
+  }
+  if (!menus_state) {
+    WMLogError("wApplicationMenuSaveState was called with no `menus_state` specified!");
+  }
+
   for (int i = 0; i < menu->submenus_count; i++) {
     submenu = menu->submenus[i];
-    if (submenu->flags.mapped) {
-      wApplicationMenuSaveState(submenu, menus_state);
-    } else if (submenu->flags.brother && submenu->brother->flags.mapped) { // tornoff
+    wApplicationMenuSaveState(submenu, menus_state);
+    if (submenu->flags.brother && submenu->brother->flags.mapped) { // tornoff
       wApplicationMenuSaveState(submenu->brother, menus_state);
     }
   }
+
+   if (!menu->flags.mapped) {
+     return;
+   }
 
   /* WMLogInfo("Saving state for `%s`", menu->frame->title); */
   info = getMenuState(menu);
@@ -686,6 +697,10 @@ static CFDictionaryRef getMenuInfoFromState(WMenu *menu, CFArrayRef state)
   CFStringRef path;
   CFDictionaryRef info = NULL;
 
+  if (!menu || !state) {
+    return NULL;
+  }
+
   for (int i = 0; i < CFArrayGetCount(state); i++) {
     info = CFArrayGetValueAtIndex(state, i);
     path = CFDictionaryGetValue(info, WMenuPath);
@@ -702,7 +717,7 @@ static void restoreMenuFromInfo(WMenu *menu, CFDictionaryRef menu_info)
   CFStringRef menuType;
   int x = 0, y = 0;
 
-  if (!menu_info) {
+  if (!menu || !menu_info) {
     return;
   }
   CFNumberGetValue(CFDictionaryGetValue(menu_info, WMenuPositionX), kCFNumberShortType, &x);
@@ -734,18 +749,18 @@ void wApplicationMenuRestoreFromState(WMenu *menu, CFArrayRef state)
   CFDictionaryRef menu_info;
   WMenu *submenu;
 
-  if (!menu) {
+  if (!menu || !state) {
+    WMLogError("wApplicationMenuRestoreState was called without `menu` or `state` specified!");
     return;
   }
 
   for (int i = 0; i < menu->submenus_count; i++) {
     submenu = menu->submenus[i];
-    menu_info = getMenuInfoFromState(submenu, state);
-    if (menu_info) {
-      wApplicationMenuRestoreFromState(submenu, state);
-    }
+    wApplicationMenuRestoreFromState(submenu, state);
   }
 
   menu_info = getMenuInfoFromState(menu, state);
-  restoreMenuFromInfo(menu, menu_info);
+  if (menu_info) {
+    restoreMenuFromInfo(menu, menu_info);
+  }
 }
