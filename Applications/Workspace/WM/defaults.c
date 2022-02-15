@@ -557,8 +557,6 @@ WDefaultEntry optionList[] = {
   {"MoveToNextWorkspaceLayerKey", "None", (void *)WKBD_MOVE_NEXTWSLAYER, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"MoveToPrevWorkspaceLayerKey", "None", (void *)WKBD_MOVE_PREVWSLAYER, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"WindowRelaunchKey", "None", (void *)WKBD_RELAUNCH, NULL, getKeybind, setKeyGrab, NULL, NULL},                        
-  {"RunKey", "None", (void *)WKBD_RUN, NULL, getKeybind, setKeyGrab, NULL, NULL},
-
   /* --- Mouse cursors --- */
   
   {"NormalCursor", "(builtin, left_ptr)", (void *)WCUR_ROOT, NULL, getCursor, setCursor, NULL, NULL},

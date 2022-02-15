@@ -450,9 +450,6 @@ enum {
       /* launch a new instance of the active window */
       WKBD_RELAUNCH,
 
-      /* open "run" dialog */
-      WKBD_RUN,
-      
       /* keep this last */
       WKBD_LAST
 };
