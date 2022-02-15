@@ -24,8 +24,6 @@
 
 #include "WM.h"
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <libgen.h>
@@ -34,6 +32,10 @@
 #include <unistd.h>
 #include <math.h>
 #include <limits.h>
+
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
 
 #include <core/WMcore.h>
 #include <core/string_utils.h>
@@ -2777,6 +2779,7 @@ static void swapDock(WDock *dock)
 
   wScreenUpdateUsableArea(scr);
 }
+
 
 static pid_t execCommand(WAppIcon *btn, const char *command, WSavedState *state)
 {

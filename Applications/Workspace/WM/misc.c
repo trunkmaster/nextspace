@@ -444,10 +444,6 @@ static char *getselection(WScreen * scr)
   return tmp;
 }
 
-#define S_NORMAL 0
-#define S_ESCAPE 1
-#define S_OPTION 2
-
 /*
  * state    	input   new-state	output
  * NORMAL	%	OPTION		<nil>
@@ -461,6 +457,10 @@ static char *getselection(WScreen * scr)
  * OPTION	W	NORMAL		<current workspace>
  * OPTION	etc.	NORMAL		%<input>
  */
+#define S_NORMAL 0
+#define S_ESCAPE 1
+#define S_OPTION 2
+
 #define TMPBUFSIZE 64
 char *ExpandOptions(WScreen *scr, const char *cmdline)
 {
@@ -832,116 +832,6 @@ char *GetShortcutKey(WShortKey key)
 #undef append_modifier
 #undef append_string
 }
-
-/* --- Background helper handling --- */
-
-/* static void track_bg_helper_death(pid_t pid, unsigned int status, void *client_data) */
-/* { */
-/*   WScreen *scr = (WScreen *) client_data; */
-
-/*   /\* Parameter not used, but tell the compiler that it is ok *\/ */
-/*   (void) pid; */
-/*   (void) status; */
-
-/*   close(scr->helper_fd); */
-/*   scr->helper_fd = 0; */
-/*   scr->helper_pid = 0; */
-/*   scr->flags.backimage_helper_launched = 0; */
-/* } */
-
-/* Bool wStartBackgroundHelper(WScreen *scr) */
-/* { */
-/*   pid_t pid; */
-/*   int filedes[2]; */
-
-/*   if (pipe(filedes) < 0) { */
-/*     WMLogError(_("%s failed, can't set workspace specific background image (%s)"), */
-/*            "pipe()", strerror(errno)); */
-/*     return False; */
-/*   } */
-
-/*   pid = fork(); */
-/*   if (pid < 0) { */
-/*     WMLogError(_("%s failed, can't set workspace specific background image (%s)"), */
-/*            "fork()", strerror(errno)); */
-/*     close(filedes[0]); */
-/*     close(filedes[1]); */
-/*     return False; */
-
-/*   } else if (pid == 0) { */
-/*     const char *dither; */
-
-/*     /\* We don't need this side of the pipe in the child process *\/ */
-/*     close(filedes[1]); */
-
-/*     wSetupCommandEnvironment(scr); */
-
-/*     close(STDIN_FILENO); */
-/*     if (dup2(filedes[0], STDIN_FILENO) < 0) { */
-/*       WMLogError(_("%s failed, can't set workspace specific background image (%s)"), */
-/*              "dup2()", strerror(errno)); */
-/*       exit(1); */
-/*     } */
-/*     close(filedes[0]); */
-
-/*     dither = wPreferences.no_dithering ? "-m" : "-d"; */
-/*     if (wPreferences.smooth_workspace_back) */
-/*       execlp("wmsetbg", "wmsetbg", "-helper", "-S", dither, NULL); */
-/*     else */
-/*       execlp("wmsetbg", "wmsetbg", "-helper", dither, NULL); */
-
-/*     WMLogError(_("could not execute \"%s\": %s"), "wmsetbg", strerror(errno)); */
-/*     exit(1); */
-
-/*   } else { */
-/*     /\* We don't need this side of the pipe in the parent process *\/ */
-/*     close(filedes[0]); */
-
-/*     if (fcntl(filedes[1], F_SETFD, FD_CLOEXEC) < 0) */
-/*       WMLogWarning(_("could not set close-on-exec flag for bg_helper's communication file handle (%s)"), */
-/*                strerror(errno)); */
-
-/*     scr->helper_fd = filedes[1]; */
-/*     scr->helper_pid = pid; */
-/*     scr->flags.backimage_helper_launched = 1; */
-
-/*     wAddDeathHandler(pid, track_bg_helper_death, scr); */
-
-/*     return True; */
-/*   } */
-/* } */
-
-/* void wSendHelperMessage(WScreen *scr, char type, int workspace, const char *msg) */
-/* { */
-/*   char *buffer; */
-/*   int len; */
-/*   int i; */
-/*   char buf[16]; */
-
-/*   if (!scr->flags.backimage_helper_launched) { */
-/*     return; */
-/*   } */
-
-/*   len = (msg ? strlen(msg) : 0) + (workspace >= 0 ? 4 : 0) + 1; */
-/*   buffer = wmalloc(len + 5); */
-/*   snprintf(buf, sizeof(buf), "%4i", len); */
-/*   memcpy(buffer, buf, 4); */
-/*   buffer[4] = type; */
-/*   i = 5; */
-/*   if (workspace >= 0) { */
-/*     snprintf(buf, sizeof(buf), "%4i", workspace); */
-/*     memcpy(&buffer[i], buf, 4); */
-/*     i += 4; */
-/*     buffer[i] = 0; */
-/*   } */
-/*   if (msg) */
-/*     strcpy(&buffer[i], msg); */
-
-/*   if (write(scr->helper_fd, buffer, len + 4) < 0) { */
-/*     WMLogError(_("could not send message to background image helper")); */
-/*   } */
-/*   wfree(buffer); */
-/* } */
 
 /* --- Commands --- */
 
