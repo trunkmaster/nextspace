@@ -297,14 +297,14 @@
   }
   
   switch(selectedItemTag) {
-  case 0: // Alt + Control + Arrow Keys
-    prefix = @"Mod4+Control";
+  case 0: // Alternate + Control + Arrow Keys
+    prefix = @"Super+Control";
     break;
   case 1: // Control + Arrow Keys (default)
     prefix = @"Control";
     break;
-  case 2: // Cmd + Control + Arrow Keys
-    prefix = @"Mod1+Control";
+  case 2: // Command + Control + Arrow Keys
+    prefix = @"Alt+Control";
     break;
   }
   
@@ -326,14 +326,14 @@
   }
   
   switch([[sender selectedItem] tag]) {
-  case 0: // Alt + Control + Number Keys
-    prefix = @"Mod4+Control";
+  case 0: // Alternate + Control + Number Keys
+    prefix = @"Super+Control";
     break;
   case 1: // Control + Number Keys (default)
     prefix = @"Control";
     break;
-  case 2: // Cmd + Control + Number Keys
-    prefix = @"Mod1+Control";
+  case 2: // Command + Control + Number Keys
+    prefix = @"Alt+Control";
     break;
   }
 
