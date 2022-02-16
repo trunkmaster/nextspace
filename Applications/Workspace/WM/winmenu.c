@@ -47,7 +47,7 @@ static void execWindowCommand(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin = (WWindow *)entry->clientdata;
 
-  switch (entry->order) {
+  switch (entry->index) {
   case WO_KEEP_ON_TOP:
     if (wwin->frame->core->stacking->window_level != NSFloatingWindowLevel)
       ChangeStackingLevel(wwin->frame->core, NSFloatingWindowLevel);

@@ -36,7 +36,8 @@
 #define MENU_HEIGHT(m)	((m)->frame->core->height+2*(m)->frame->screen_ptr->frame_border_width)
 
 typedef struct WMenuItem {
-  int order;
+  struct WMenu *menu;                         /* menu this item belongs to */
+  int index;                           /* index of item in menu */
   char *text;			       /* entry text */
   char *rtext;                         /* text to show in the right part */
   void (*callback)(struct WMenu *menu, struct WMenuItem *item);
@@ -104,11 +105,14 @@ WMenuItem *wMenuInsertSubmenu(WMenu *menu, int index, const char *text,
 void wMenuItemSetSubmenu(WMenu *menu, WMenuItem *item, WMenu *submenu);
 void wMenuItemRemoveSubmenu(WMenu *menu, WMenuItem *item);
 
-WMenuItem *wMenuInsertItem(WMenu *menu, int index, const char *text,
+WMenuItem *wMenuItemInsert(WMenu *menu, int index, const char *text,
                             void (*callback)(WMenu *menu, WMenuItem *index),
                             void *clientdata);
-#define wMenuAddItem(menu, text, callback, data) wMenuInsertItem(menu, -1, text, callback, data)
-void wMenuRemoveItem(WMenu *menu, int index);
+#define wMenuAddItem(menu, text, callback, data) wMenuItemInsert(menu, -1, text, callback, data)
+void wMenuItemRemove(WMenu *menu, int index);
+void wMenuItemPaint(WMenu *menu, int item_index, int selected);
+void wMenuItemSetEnabled(WMenu *menu, WMenuItem *item, Bool enable);
+void wMenuItemSelect(WMenu *menu, int item_index);
 
 WMenu *wMenuCreate(WScreen *screen, const char *title, int main_menu);
 WMenu *wMenuCreateForApp(WScreen *screen, const char *title, int main_menu);
@@ -117,9 +121,8 @@ void wMenuMapAt(WMenu *menu, int x, int y, int keyboard);
 #define wMenuMapCopyAt(menu, x, y) wMenuMapAt((menu)->brother, (x), (y), False)
 void wMenuUnmap(WMenu *menu);
 void wMenuSetEnabled(WMenu *menu, int index, int enable);
-void wMenuItemSetEnabled(WMenu *menu, WMenuItem *item, Bool enable);
-void wMenuMove(WMenu *menu, int x, int y, int submenus);
 
+void wMenuMove(WMenu *menu, int x, int y, int submenus);
 void wMenuSlideIfNeeded(WMenu *menu);
 
 WMenu *wMenuUnderPointer(WScreen *screen);

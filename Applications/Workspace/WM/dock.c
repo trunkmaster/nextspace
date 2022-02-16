@@ -764,11 +764,11 @@ static void switchWSCommand(WMenu *menu, WMenuItem *entry)
   /* Parameter not used, but tell the compiler that it is ok */
   (void) menu;
 
-  if (entry->order == scr->current_desktop)
+  if (entry->index == scr->current_desktop)
     return;
 
   src = icon->dock;
-  dest = scr->desktops[entry->order]->clip;
+  dest = scr->desktops[entry->index]->clip;
 
   selectedIcons = getSelected(src);
 

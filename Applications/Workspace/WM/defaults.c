@@ -435,7 +435,7 @@ WDefaultEntry optionList[] = {
   {"RaiseAppIconsWhenBouncing", "NO", NULL, &wPreferences.raise_appicons_when_bouncing, getBool, NULL, NULL, NULL},
   {"DoNotMakeAppIconsBounce", "YES", NULL, &wPreferences.do_not_make_appicons_bounce, getBool, NULL, NULL, NULL},
   
-  /* --- Options need to ged rid of or fix --- */
+  /* --- Options need to get rid of or fix --- */
 
   /* --- Style options --- */
 

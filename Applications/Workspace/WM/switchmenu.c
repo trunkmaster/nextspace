@@ -242,7 +242,7 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
       idx = menuIndexForWindow(switchmenu, wwin, -1);
     }
 
-    entry = wMenuInsertItem(switchmenu, idx, t, focusWindow, wwin);
+    entry = wMenuItemInsert(switchmenu, idx, t, focusWindow, wwin);
     wfree(t);
 
     entry->flags.indicator = 1;
@@ -277,7 +277,7 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
       if (entry->clientdata == wwin) {
         switch (action) {
         case ACTION_REMOVE:
-          wMenuRemoveItem(switchmenu, i);
+          wMenuItemRemove(switchmenu, i);
           wMenuRealize(switchmenu);
           checkVisibility = 1;
           break;
@@ -324,9 +324,9 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
               idx = menuIndexForWindow(switchmenu, wwin, i);
             }
 
-            wMenuRemoveItem(switchmenu, i);
+            wMenuItemRemove(switchmenu, i);
 
-            entry = wMenuInsertItem(switchmenu, idx, t, focusWindow, wwin);
+            entry = wMenuItemInsert(switchmenu, idx, t, focusWindow, wwin);
             wfree(t);
             entry->rtext = rt;
             entry->flags.indicator = 1;
