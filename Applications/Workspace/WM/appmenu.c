@@ -51,13 +51,13 @@ static void mainCallback(WMenu *menu, WMenuItem *entry)
 #define ACTION_CHANGE_DESKTOP 3
 #define ACTION_CHANGE_STATE   4
 
-static void focusWindow(WMenu *menu, WMenuItem *entry)
+static void _focusWindow(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin = (WWindow *)entry->clientdata;
   wWindowSingleFocus(wwin);
 }
 
-static void windowsCallback(WMenu *menu, WMenuItem *entry)
+static void _windowsCallback(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin = menu->menu->screen_ptr->focused_window;
 
@@ -84,7 +84,7 @@ static void windowsCallback(WMenu *menu, WMenuItem *entry)
   }
 }
 
-static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
+static int _menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
 {
   int idx;
 
@@ -111,7 +111,7 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
   return idx;
 }
 
-static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
+static void _updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
 {
   WMenuItem *entry;
   char title[MAX_MENU_TEXT_LENGTH + 6];
@@ -142,10 +142,10 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
     if (IS_OMNIPRESENT(wwin))
       idx = -1;
     else {
-      idx = menuIndexForWindow(windows_menu, wwin, -1);
+      idx = _menuIndexForWindow(windows_menu, wwin, -1);
     }
 
-    entry = wMenuInsertItem(windows_menu, idx+1, t, focusWindow, wwin);
+    entry = wMenuItemInsert(windows_menu, idx+1, t, _focusWindow, wwin);
     wfree(t);
 
     entry->flags.indicator = 1;
@@ -175,7 +175,7 @@ static void updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
       if (entry->clientdata == wwin) {
         switch (action) {
         case ACTION_REMOVE:
-          wMenuRemoveItem(windows_menu, i);
+          wMenuItemRemove(windows_menu, i);
           if (windows_menu->selected_item_index >= 0) {
             windows_menu->selected_item_index--;
           }
@@ -277,40 +277,40 @@ static void windowObserver(CFNotificationCenterRef center,
   }
   
   if (CFStringCompare(name, WMDidManageWindowNotification, 0) == 0) {
-    updateWindowsMenu(windows_menu, wwin, ACTION_ADD);
+    _updateWindowsMenu(windows_menu, wwin, ACTION_ADD);
   }
   else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0) {
-    updateWindowsMenu(windows_menu, wwin, ACTION_REMOVE);
+    _updateWindowsMenu(windows_menu, wwin, ACTION_REMOVE);
   }
   else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0) {
-    updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_STATE);
+    _updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_STATE);
   }
   else if (CFStringCompare(name, WMDidChangeWindowNameNotification, 0) == 0) {
-    updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE);
+    _updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE);
   }
   else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
     CFStringRef wstate = (CFStringRef)wGetNotificationInfoValue(userInfo, CFSTR("state"));
     if (CFStringCompare(wstate, CFSTR("omnipresent"), 0) == 0) {
-      updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_DESKTOP);
+      _updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_DESKTOP);
     }
     else {
-      updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_STATE);
+      _updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_STATE);
     }
   }
 }
 
-static void updateDesktopsMenu(WMenu *menu);
+static void _updateDesktopsMenu(WMenu *menu);
 
-static void desktopsObserver(CFNotificationCenterRef center,
+static void _desktopsObserver(CFNotificationCenterRef center,
                              void *menu,
                              CFNotificationName name,
                              const void *window,
                              CFDictionaryRef userInfo)
 {
-  updateDesktopsMenu(menu);
+  _updateDesktopsMenu(menu);
 }
 
-static WMenu *createWindowsMenu(WApplication *wapp)
+static WMenu *_createWindowsMenu(WApplication *wapp)
 {
   WMenu *_menu, *desktops_menu;
   WMenuItem *tmp_item;
@@ -318,22 +318,22 @@ static WMenu *createWindowsMenu(WApplication *wapp)
   
   desktops_menu = wMenuCreate(scr, _("Move Window To"), False);
   desktops_menu->app = wapp;
-  updateDesktopsMenu(desktops_menu);
+  _updateDesktopsMenu(desktops_menu);
   
   _menu = wMenuCreate(scr, _("Windows"), False);
   _menu->app = wapp;
-  tmp_item = wMenuInsertItem(_menu, 0, _("Arrange in Front"), windowsCallback, NULL);
+  tmp_item = wMenuItemInsert(_menu, 0, _("Arrange in Front"), _windowsCallback, NULL);
   wMenuItemSetEnabled(_menu, tmp_item, False);
-  tmp_item = wMenuAddItem(_menu, _("Miniaturize Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Miniaturize Window"), _windowsCallback, NULL);
   tmp_item->rtext = wstrdup("m");
-  tmp_item = wMenuAddItem(_menu, _("Move Window To"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Move Window To"), _windowsCallback, NULL);
   wMenuItemSetSubmenu(_menu, tmp_item, desktops_menu);
   
-  tmp_item = wMenuAddItem(_menu, _("Shade Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Shade Window"), _windowsCallback, NULL);
   /* tmp_item = wMenuAddItem(_menu, _("Resize/Move Window"), windowsCallback, NULL); */
   /* tmp_item = wMenuAddItem(_menu, _("Select Window"), windowsCallback, NULL); */
-  tmp_item = wMenuAddItem(_menu, _("Zoom Window"), windowsCallback, NULL);
-  tmp_item = wMenuAddItem(_menu, _("Close Window"), windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Zoom Window"), _windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Close Window"), _windowsCallback, NULL);
   tmp_item->rtext = wstrdup("w");
 
   /* TODO: think about "Options" submenu */
@@ -357,13 +357,13 @@ static WMenu *createWindowsMenu(WApplication *wapp)
                                   WMDidChangeWindowNameNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
 
-  CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, desktopsObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, _desktopsObserver,
                                   WMDidChangeDesktopNameNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, desktopsObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, _desktopsObserver,
                                   WMDidCreateDesktopNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, desktopsObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, _desktopsObserver,
                                   WMDidDestroyDesktopNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
 
@@ -374,15 +374,15 @@ static WMenu *createWindowsMenu(WApplication *wapp)
 // "Windows > Move Window To" menu
 //-------------------------------------------------------------------------------------------------
 
-static void switchDesktopCallback(WMenu *menu, WMenuItem *entry)
+static void _switchDesktopCallback(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin = menu->frame->screen_ptr->focused_window;
 
   wSelectWindow(wwin, False);
-  wWindowChangeDesktop(wwin, entry->order);
+  wWindowChangeDesktop(wwin, entry->index);
 }
 
-static void updateDesktopsMenu(WMenu *menu)
+static void _updateDesktopsMenu(WMenu *menu)
 {
   WScreen *scr = menu->frame->screen_ptr;
   char title[MAX_DESKTOPNAME_WIDTH + 1];
@@ -391,7 +391,7 @@ static void updateDesktopsMenu(WMenu *menu)
 
   // Remove deleted desktops
   for (i = menu->items_count; i >= scr->desktop_count; i--) {
-    wMenuRemoveItem(menu, i);
+    wMenuItemRemove(menu, i);
     menu->flags.realized = 0;
   }
 
@@ -404,22 +404,16 @@ static void updateDesktopsMenu(WMenu *menu)
         strncpy(title, scr->desktops[i]->name, MAX_DESKTOPNAME_WIDTH);
         title[MAX_DESKTOPNAME_WIDTH] = 0;
         menu->items[i]->text = wstrdup(title);
-        menu->items[i]->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
         menu->flags.realized = 0;
       }
     } else {
       strncpy(title, scr->desktops[i]->name, MAX_DESKTOPNAME_WIDTH);
       title[MAX_DESKTOPNAME_WIDTH] = 0;
-      item = wMenuAddItem(menu, title, switchDesktopCallback, NULL);
-      item->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + i]);
+      item = wMenuAddItem(menu, title, _switchDesktopCallback, NULL);
     }
 
     /* workspace shortcut labels */
-    if (i / 10 == scr->current_desktop / 10) {
-      item->rtext = GetShortcutKey(wKeyBindings[WKBD_MOVE_WORKSPACE1 + (i % 10)]);
-    } else {
-      item->rtext = NULL;
-    }
+    item->rtext = NULL;
   }
 
   if (!menu->flags.realized) {
@@ -429,7 +423,7 @@ static void updateDesktopsMenu(WMenu *menu)
 
 // General application menu code
 //-------------------------------------------------------------------------------------------------
-static WMenu *submenuWithTitle(WMenu *menu, char *title)
+static WMenu *_submenuWithTitle(WMenu *menu, char *title)
 {
   WMenu **submenus = menu->submenus;
 
@@ -457,7 +451,7 @@ WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
   info_item = wMenuAddItem(menu, _("Info"), NULL, NULL);
   wMenuItemSetSubmenu(menu, info_item, info);
 
-  windows = createWindowsMenu(wapp);
+  windows = _createWindowsMenu(wapp);
   windows_item = wMenuAddItem(menu, _("Windows"), NULL, NULL);
   wMenuItemSetSubmenu(menu, windows_item, windows);
   
@@ -473,7 +467,7 @@ WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
 
 void wApplicationMenuDestroy(WApplication *wapp)
 {
-  WMenu *windows_menu = submenuWithTitle(wapp->app_menu, "Windows");
+  WMenu *windows_menu = _submenuWithTitle(wapp->app_menu, "Windows");
   
   CFNotificationCenterRemoveEveryObserver(wapp->main_wwin->screen->notificationCenter,
                                           windows_menu);
@@ -581,7 +575,7 @@ WMenuItem *wMenuItemWithTitle(WMenu *menu, char *title)
 // Menu state
 //--------------------------------------------------------------------------------------------------
 
-static CFStringRef getMenuPath(WMenu *menu)
+static CFStringRef _getMenuPath(WMenu *menu)
 {
   WMenu *tmp_menu, *main_menu;
   CFStringRef menuPath;
@@ -615,7 +609,7 @@ static CFStringRef getMenuPath(WMenu *menu)
   return menuPath;
 }
 
-static CFDictionaryRef getMenuState(WMenu *menu)
+static CFDictionaryRef _getMenuState(WMenu *menu)
 {
   CFMutableDictionaryRef state;
   CFStringRef menuPath;
@@ -625,7 +619,7 @@ static CFDictionaryRef getMenuState(WMenu *menu)
                                     &kCFTypeDictionaryKeyCallBacks,
                                     &kCFTypeDictionaryValueCallBacks);
 
-  menuPath = getMenuPath(menu);
+  menuPath = _getMenuPath(menu);
   CFDictionarySetValue(state, WMenuPath, menuPath);
   CFRelease(menuPath);
   
@@ -675,7 +669,7 @@ void wApplicationMenuSaveState(WMenu *menu, CFMutableArrayRef menus_state)
    }
 
   /* WMLogInfo("Saving state for `%s`", menu->frame->title); */
-  info = getMenuState(menu);
+  info = _getMenuState(menu);
   menuType = CFDictionaryGetValue(info, WMenuType);
   if (CFStringCompare(menuType, WMenuTypeAttached, 0) != 0) {
     /* make parent map the original in place of the copy */
@@ -691,9 +685,9 @@ void wApplicationMenuSaveState(WMenu *menu, CFMutableArrayRef menus_state)
   CFRelease(info);
 }
 
-static CFDictionaryRef getMenuInfoFromState(WMenu *menu, CFArrayRef state)
+static CFDictionaryRef _getMenuInfoFromState(WMenu *menu, CFArrayRef state)
 {
-  CFStringRef menuPath = getMenuPath(menu);
+  CFStringRef menuPath = _getMenuPath(menu);
   CFStringRef path;
   CFDictionaryRef info = NULL;
 
@@ -712,7 +706,7 @@ static CFDictionaryRef getMenuInfoFromState(WMenu *menu, CFArrayRef state)
   return NULL;
 }
 
-static void restoreMenuFromInfo(WMenu *menu, CFDictionaryRef menu_info)
+static void _restoreMenuFromInfo(WMenu *menu, CFDictionaryRef menu_info)
 {
   CFStringRef menuType;
   int x = 0, y = 0;
@@ -759,34 +753,97 @@ void wApplicationMenuRestoreFromState(WMenu *menu, CFArrayRef state)
     wApplicationMenuRestoreFromState(submenu, state);
   }
 
-  menu_info = getMenuInfoFromState(menu, state);
+  menu_info = _getMenuInfoFromState(menu, state);
   if (menu_info) {
-    restoreMenuFromInfo(menu, menu_info);
+    _restoreMenuFromInfo(menu, menu_info);
   }
 }
 
 // Menu state
 //--------------------------------------------------------------------------------------------------
-static WMenuItem *itemForShortcutKeycode(WMenu *menu, KeyCode keycode)
+static WMenuItem *_itemForShortcut(WMenu *menu, KeyCode keycode, int state)
 {
   WMenuItem *item;
-  KeySym sym_a = XStringToKeysym("A");
-  KeyCode code_a = XKeysymToKeycode(dpy, sym_a);
+  Bool is_uppercase = (state & ShiftMask);
+  KeySym item_keysym;
+  KeyCode item_keycode;
+
+  WMLogInfo("Searching for shortcut in %s", menu->frame->title);
+
+  // Go through menu items
+  for (int i = 0; i < menu->items_count; i++) {
+    item = menu->items[i];
+    if (item->submenu_index >= 0) {
+      item = _itemForShortcut(menu->submenus[item->submenu_index], keycode, state);
+      if (item != NULL) {
+        return item;
+      }
+    } else if (item->rtext && strlen(item->rtext) == 1) {
+      item_keysym = XStringToKeysym(item->rtext);
+      item_keycode = XKeysymToKeycode(dpy, item_keysym);
+      if (item_keycode == keycode) {
+        if (!is_uppercase || (is_uppercase && isupper(item->rtext[0]))) {
+          WMLogInfo("Found uppercase menu item `%s` with index: %i order: %i", item->text, i, item->index);
+          return item;
+        }
+      }
+    }
+  }
   
   return NULL;
 }
+
+#include "core/wevent.h"
 
 Bool wApplicationMenuHandleKeyPress(WWindow *focused_window, XEvent *event)
 {
   WApplication *wapp = wApplicationForWindow(focused_window);
   WMenuItem *item;
-  CFStringRef modifier;
+  WMenuItem *parent_item = NULL;
 
   WMLogInfo("App menu key press. Modifier: %x Key: %x", event->xkey.state, event->xkey.keycode);
 
+  if (event->xkey.state & wPreferences.modifier_mask) {
+    WMLogInfo("Command+ shortcut was pressed.");
+  } else if (event->xkey.state & wPreferences.alt_modifier_mask) {
+    WMLogInfo("Alternate+ shortcut was pressed - Not supported for application menu yet.");
+    return False;
+  }
+
   if (wapp && wapp->app_menu) {
     // recursively go through menu items and check if keycode was assigned as `rtext`.
-    item = itemForShortcutKeycode(wapp->app_menu, event->xkey.keycode);
+    item = _itemForShortcut(wapp->app_menu, event->xkey.keycode, event->xkey.state);
+    if (item != NULL) {
+      WMLogInfo("Menu item %s found!", item->text);
+      if (!item->menu->flags.mapped) {
+        WMenu *menu = item->menu;
+        while (!menu->flags.mapped && menu->parent) {
+          WMLogInfo("Checking menu %s", menu->frame->title);
+          parent_item = wMenuItemWithTitle(menu->parent, menu->frame->title);
+          menu = parent_item->menu;
+        }
+        if (parent_item) {
+          WMLogInfo("Parent menu %s item index %i", parent_item->menu->frame->title, parent_item->index);
+          wMenuItemPaint(parent_item->menu, parent_item->index, True);
+        }
+      } else {
+        wMenuItemPaint(item->menu, item->index, True);
+      }
+      XFlush(dpy);
+      XSync(dpy, False);
+      usleep(150000);
+      
+      (*item->callback) (item->menu, item);
+      
+      if (!item->menu->flags.mapped) {
+        if (parent_item) {
+          wMenuItemPaint(parent_item->menu, parent_item->index, False);
+        }
+      } else {
+        wMenuItemPaint(item->menu, item->index, False);
+      }
+      return True;
+    }
   }
 
   return False;
