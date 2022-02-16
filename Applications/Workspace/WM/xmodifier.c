@@ -85,7 +85,7 @@
    use a pop-up-window instead.)
 */
 
-static int HyperMask, SuperMask, AltMask, ModeMask;
+static int HyperMask, SuperMask, AltMask;
 
 static const char *index_to_name(int indice)
 {
@@ -248,7 +248,6 @@ static void x_reset_modifier_mapping(Display * display)
   HyperMask = (hyper_bit ? (1 << hyper_bit) : 0);
   SuperMask = (super_bit ? (1 << super_bit) : 0);
   AltMask = (alt_bit ? (1 << alt_bit) : 0);
-  ModeMask = (mode_bit ? (1 << mode_bit) : 0);	/* unused */
 
   XFreeModifiermap(x_modifier_keymap);
 #undef store_modifier
@@ -295,16 +294,6 @@ int wXModifierFromKey(const char *key)
     return SuperMask;
   else if (strcasecmp(key, "HYPER") == 0 && HyperMask != 0)
     return HyperMask;
-  else if (strcasecmp(key, "MOD1") == 0 && Mod1Mask != 0)
-    return Mod1Mask;
-  else if (strcasecmp(key, "MOD2") == 0 && Mod2Mask != 0)
-    return Mod2Mask;
-  else if (strcasecmp(key, "MOD3") == 0 && Mod3Mask != 0)
-    return Mod3Mask;
-  else if (strcasecmp(key, "MOD4") == 0 && Mod4Mask != 0)
-    return Mod4Mask;
-  else if (strcasecmp(key, "MOD5") == 0 && Mod5Mask != 0)
-    return Mod5Mask;
   else
     return -1;
 }

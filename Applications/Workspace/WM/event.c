@@ -86,7 +86,7 @@
 extern void wIconYardShowIcons(WScreen *screen);
 extern void wIconYardHideIcons(WScreen *screen);
 
-#define MOD_MASK wPreferences.modifier_mask
+#define ALT_MOD_MASK wPreferences.alt_modifier_mask
 
 /************ Local stuff ***********/
 
@@ -844,7 +844,7 @@ static void handleButtonPress(XEvent * event)
 
   if (desc->parent_type == WCLASS_WINDOW) {
     XSync(dpy, 0);
-    if (event->xbutton.state & ( MOD_MASK | ControlMask)) {
+    if (event->xbutton.state & ( ALT_MOD_MASK | ControlMask)) {
       XAllowEvents(dpy, AsyncPointer, CurrentTime);
     }
     else if (wPreferences.ignore_focus_click) {
@@ -1423,12 +1423,12 @@ static void handleKeyPress(XEvent * event)
   /*             modifiers, wwin->client_win); */
   /* } */
   WMLogInfo("handleKeyPress: %i state: %i mask: %i modifiers: %i",
-            event->xkey.keycode, event->xkey.state, MOD_MASK, modifiers);
+            event->xkey.keycode, event->xkey.state, ALT_MOD_MASK, modifiers);
 
-  /* Handle Alternate (Super) button press to change miniaturize button image at titlebar */
+  /* Handle Alternate button press to change miniaturize button image at titlebar */
   if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
        (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) && modifiers == 0) {
-    if (wwin && wwin->client_win != scr->no_focus_win && event->xkey.window != event->xkey.root) {
+    if (wwin && wwin->client_win /* != scr->no_focus_win && event->xkey.window != event->xkey.root */) {
       scr->flags.modifier_pressed = 1;
       wWindowUpdateButtonImages(wwin);
     }
@@ -1828,7 +1828,7 @@ static void handleMotionNotify(XEvent * event)
       // wMouseMoveWindow checks for button on ButtonRelease event inside it's loop
       event->xbutton.button = Button1;
       if (event->xmotion.window == wwin->frame->titlebar->window ||
-          event->xmotion.state & MOD_MASK) {
+          event->xmotion.state & ALT_MOD_MASK) {
         /* move the window */
         wMouseMoveWindow(wwin, event);
       } else if (IS_RESIZABLE(wwin) &&

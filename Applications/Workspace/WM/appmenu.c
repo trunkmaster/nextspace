@@ -44,12 +44,12 @@ static void mainCallback(WMenu *menu, WMenuItem *entry)
 
 // "Windows" menu
 //-------------------------------------------------------------------------------------------------
-#define MAX_WINDOWLIST_WIDTH    400
-#define ACTION_ADD              0
-#define ACTION_REMOVE           1
-#define ACTION_CHANGE           2
+#define MAX_WINDOWLIST_WIDTH  400
+#define ACTION_ADD            0
+#define ACTION_REMOVE         1
+#define ACTION_CHANGE         2
 #define ACTION_CHANGE_DESKTOP 3
-#define ACTION_CHANGE_STATE     4
+#define ACTION_CHANGE_STATE   4
 
 static void focusWindow(WMenu *menu, WMenuItem *entry)
 {

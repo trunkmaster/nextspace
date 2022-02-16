@@ -2626,6 +2626,10 @@ void wWindowSetKeyGrabs(WWindow * wwin)
            GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_R), 0, wwin->client_win, True,
            GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Alt_L), 0, wwin->client_win, True,
+           GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Alt_R), 0, wwin->client_win, True,
+           GrabModeAsync, GrabModeAsync);
 }
 
 void wWindowResetMouseGrabs(WWindow * wwin)
@@ -2641,8 +2645,8 @@ void wWindowResetMouseGrabs(WWindow * wwin)
   XUngrabButton(dpy, AnyButton, AnyModifier, wwin->client_win);
 
   if (!WFLAGP(wwin, no_bind_mouse)) {
-    /* grabs for Meta+drag */
-    wHackedGrabButton(AnyButton, MOD_MASK, wwin->client_win,
+    /* grabs for Alternate+drag */
+    wHackedGrabButton(AnyButton, ALT_MOD_MASK, wwin->client_win,
                       True, ButtonPressMask | ButtonReleaseMask,
                       GrabModeSync, GrabModeAsync, None, None);
 
@@ -2658,10 +2662,10 @@ void wWindowResetMouseGrabs(WWindow * wwin)
                         True, ButtonPressMask | ButtonReleaseMask,
                         GrabModeSync, GrabModeAsync, None, None);
 
-      wHackedGrabButton(Button4, MOD_MASK | ControlMask, wwin->client_win,
+      wHackedGrabButton(Button4, ALT_MOD_MASK | ControlMask, wwin->client_win,
                         True, ButtonPressMask | ButtonReleaseMask,
                         GrabModeSync, GrabModeAsync, None, None);
-      wHackedGrabButton(Button5, MOD_MASK | ControlMask, wwin->client_win,
+      wHackedGrabButton(Button5, ALT_MOD_MASK | ControlMask, wwin->client_win,
                         True, ButtonPressMask | ButtonReleaseMask,
                         GrabModeSync, GrabModeAsync, None, None);
     }
@@ -2911,7 +2915,7 @@ static void titlebarDblClick(WCoreWindow *sender, void *data, XEvent *event)
     }
   }
   else if (event->xbutton.button == Button3) {
-    if (event->xbutton.state & MOD_MASK)
+    if (event->xbutton.state & ALT_MOD_MASK)
       wApplicationHideOthers(wwin);
   }
   else if (event->xbutton.button == Button2) {
@@ -2967,7 +2971,7 @@ static void frameMouseDown(WObjDescriptor *desc, XEvent *event)
     }
   }
 
-  if (event->xbutton.state & MOD_MASK) {
+  if (event->xbutton.state & ALT_MOD_MASK) {
     /* move the window */
     if (XGrabPointer(dpy, wwin->client_win, False,
                      ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
@@ -3018,8 +3022,8 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   /*         wXModifierFromKey("MOD4")); */
 
   if (event->xbutton.button == Button1
-      && !(event->xbutton.state & MOD_MASK) // not Mod4, Alternate
-      && !(event->xbutton.state & ALT_MOD_MASK) // not Mod1, Command
+      && !(event->xbutton.state & ALT_MOD_MASK) // not Alternate
+      && !(event->xbutton.state & MOD_MASK) // not Command
       && !WFLAGP(wwin, no_focusable)) { // focusable
     wSetFocusTo(wwin->screen, wwin);
   }
@@ -3027,7 +3031,7 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   // Handle Click, Shift + Click and Command + Click
   if (event->xbutton.button == Button1 || event->xbutton.button == Button2) {
     if (event->xbutton.button == Button1) {
-      if (event->xbutton.state & ALT_MOD_MASK) // Command + Click
+      if (event->xbutton.state & MOD_MASK) // Command + Click
         wLowerFrame(wwin->frame->core);
       else
         wRaiseFrame(wwin->frame->core);
@@ -3074,7 +3078,7 @@ static void windowCloseClick(WCoreWindow *sender, void *data, XEvent *event)
     return;
 
   /* if control-click or modifier-click, kill the client */
-  if (event->xbutton.state & ControlMask || event->xbutton.state & MOD_MASK) {
+  if (event->xbutton.state & ControlMask || event->xbutton.state & ALT_MOD_MASK) {
     wClientKill(wwin);
   } else {
     if (wwin->protocols.DELETE_WINDOW && event->xbutton.state == 0) {
@@ -3126,7 +3130,7 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
     } else {
       wIconifyWindow(wwin);
     }
-  } else if (event->xbutton.button == Button1 && event->xbutton.state & MOD_MASK) {
+  } else if (event->xbutton.button == Button1 && event->xbutton.state & ALT_MOD_MASK) {
     if (wwin->flags.maximized) {
       wUnmaximizeWindow(wwin);
     } else {
