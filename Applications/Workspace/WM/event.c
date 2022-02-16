@@ -81,6 +81,7 @@
 #include "switchmenu.h"
 #include "iconyard.h"
 #include "application.h"
+#include "appmenu.h"
 
 #include <Workspace+WM.h>
 extern void wIconYardShowIcons(WScreen *screen);
@@ -1442,7 +1443,7 @@ static void handleKeyPress(XEvent * event)
   if (wApplicationMenuHandleKeyPress(wwin, event) == True) {
     return;
   }
-  
+
   for (i = 0; i < WKBD_LAST; i++) {
     if (wKeyBindings[i].keycode == 0) {
       continue;
@@ -1487,71 +1488,77 @@ static void handleKeyPress(XEvent * event)
   switch (command)
     {
     case WKBD_DOCKHIDESHOW:
-      if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
-        if (scr->dock->mapped) {
-          wDockHideIcons(scr->dock);
+      {
+        if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
+          if (scr->dock->mapped) {
+            wDockHideIcons(scr->dock);
+          } else {
+            wDockShowIcons(scr->dock);
+          }
         } else {
-          wDockShowIcons(scr->dock);
+          XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
         }
-      } else {
-        XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
       }
       break;
     case WKBD_YARDHIDESHOW:
-      if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
-        if (scr->flags.icon_yard_mapped) {
-          wIconYardHideIcons(scr);
-        }
-        else {
-          wIconYardShowIcons(scr);
-        }
-      } else {
-        XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
-      }
-      break;
-    case WKBD_WINDOWLIST:
-      if (!CheckFullScreenWindowFocused(scr)) {
-        WMRect rect = wGetRectForHead(scr, wGetHeadForPointerLocation(scr));
-        OpenSwitchMenu(scr, rect.pos.x + rect.size.width / 2, rect.pos.y + rect.size.height / 2,
-                       True);
-      }
-      break;
-    case WKBD_WINDOWMENU:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin))
-        OpenWindowMenu(wwin, wwin->frame_x, wwin->frame_y + wwin->frame->top_width, True);
-      break;
-    case WKBD_MINIMIZEALL:
-      CloseWindowMenu(scr);
-      wHideAll(scr);
-      break;
-    case WKBD_MINIATURIZE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_miniaturizable)) {
-        CloseWindowMenu(scr);
-        if (wwin->protocols.MINIATURIZE_WINDOW) {
-          /* WMLogInfo("send WM_MINIATURIZE_WINDOW protocol message to client."); */
-          if (wwin->flags.is_gnustep) {
-            XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
+      {
+        if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
+          if (scr->flags.icon_yard_mapped) {
+            wIconYardHideIcons(scr);
           }
           else {
-            wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window,
-                                event->xbutton.time);
+            wIconYardShowIcons(scr);
+          }
+        } else {
+          XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
+        }
+      }
+      break;
+      
+    case WKBD_MINIMIZEALL:
+      {
+        CloseWindowMenu(scr);
+        wHideAll(scr);
+      }
+      break;
+    case WKBD_MINIATURIZE:
+      {
+        if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_miniaturizable)) {
+          CloseWindowMenu(scr);
+          if (wwin->protocols.MINIATURIZE_WINDOW) {
+            /* WMLogInfo("send WM_MINIATURIZE_WINDOW protocol message to client."); */
+            if (wwin->flags.is_gnustep) {
+              XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
+            } else {
+              wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window,
+                                  event->xbutton.time);
+            }
+          } else {
+            wIconifyWindow(wwin);
           }
         }
-        else {
-          wIconifyWindow(wwin);
+      }
+      break;
+    case WKBD_CLOSE:
+      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_closable)) {
+        CloseWindowMenu(scr);
+        if (wwin->protocols.DELETE_WINDOW) {
+          wClientSendProtocol(wwin, w_global.atom.wm.delete_window, event->xkey.time);
         }
       }
       break;
     case WKBD_HIDE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
-        WApplication *wapp = wApplicationOf(wwin->main_window);
-        CloseWindowMenu(scr);
-        if (wapp && !WFLAGP(wapp->main_wwin, no_appicon)) {
-          if (wwin->flags.is_gnustep) {
-            XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
-          }
-          else {
-            wApplicationHide(wapp);
+      {
+        if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
+          WApplication *wapp = wApplicationOf(wwin->main_window);
+          CloseWindowMenu(scr);
+          if (wapp && !WFLAGP(wapp->main_wwin, no_appicon)) {
+            if (wwin->flags.is_gnustep) {
+              XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
+            }
+            else {
+              wApplicationHide(wapp);
+            }
           }
         }
       }
@@ -1568,6 +1575,34 @@ static void handleKeyPress(XEvent * event)
         handleMaximize(wwin, MAX_VERTICAL | MAX_HORIZONTAL | MAX_KEYBOARD);
       }
       break;
+    case WKBD_MAXIMUS:
+      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
+        CloseWindowMenu(scr);
+        handleMaximize(wwin, MAX_MAXIMUS | MAX_KEYBOARD);
+      }
+      break;
+    case WKBD_SHADE:
+      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_shadeable)) {
+        if (wwin->flags.shaded) {
+          wUnshadeWindow(wwin);
+        } else {
+          wShadeWindow(wwin);
+        }
+      }
+      break;
+    case WKBD_RAISE:
+      if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
+        CloseWindowMenu(scr);
+        wRaiseFrame(wwin->frame->core);
+      }
+      break;
+    case WKBD_LOWER:
+      if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
+        CloseWindowMenu(scr);
+        wLowerFrame(wwin->frame->core);
+      }
+      break;
+
     case WKBD_VMAXIMIZE:
       if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
         CloseWindowMenu(scr);
@@ -1628,67 +1663,7 @@ static void handleKeyPress(XEvent * event)
         handleMaximize(wwin, MAX_RIGHTHALF | MAX_BOTTOMHALF | MAX_KEYBOARD);
       }
       break;
-    case WKBD_MAXIMUS:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
-        CloseWindowMenu(scr);
-        handleMaximize(wwin, MAX_MAXIMUS | MAX_KEYBOARD);
-      }
-      break;
-    case WKBD_OMNIPRESENT:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
-        CloseWindowMenu(scr);
-        wWindowSetOmnipresent(wwin, !wwin->flags.omnipresent);
-      }
-      break;
-    case WKBD_RAISE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
-        CloseWindowMenu(scr);
-
-        wRaiseFrame(wwin->frame->core);
-      }
-      break;
-    case WKBD_LOWER:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
-        CloseWindowMenu(scr);
-        wLowerFrame(wwin->frame->core);
-      }
-      break;
-    case WKBD_RAISELOWER:
-      /* raise or lower the window under the pointer, not the focused one */
-      wwin = windowUnderPointer(scr);
-      if (wwin) {
-        wRaiseLowerFrame(wwin->frame->core);
-      }
-      break;
-    case WKBD_SHADE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_shadeable)) {
-        if (wwin->flags.shaded) {
-          wUnshadeWindow(wwin);
-        } else {
-          wShadeWindow(wwin);
-        }
-      }
-      break;
-    case WKBD_MOVERESIZE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && (IS_RESIZABLE(wwin) || IS_MOVABLE(wwin))) {
-        CloseWindowMenu(scr);
-        wKeyboardMoveResizeWindow(wwin);
-      }
-      break;
-    case WKBD_CLOSE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_closable)) {
-        CloseWindowMenu(scr);
-        if (wwin->protocols.DELETE_WINDOW) {
-          wClientSendProtocol(wwin, w_global.atom.wm.delete_window, event->xkey.time);
-        }
-      }
-      break;
-    case WKBD_SELECT:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
-        wSelectWindow(wwin, !wwin->flags.selected);
-      }
-      break;
-
+      
     case WKBD_FOCUSNEXT:
       StartWindozeCycle(wwin, event, True, False);
       break;
@@ -1702,59 +1677,21 @@ static void handleKeyPress(XEvent * event)
       StartWindozeCycle(wwin, event, False, True);
       break;
 
-    case WKBD_WORKSPACE1 ... WKBD_WORKSPACE10:
-      widx = command - WKBD_WORKSPACE1;
-      i = (scr->current_desktop / 10) * 10 + widx;
-      if (wPreferences.ws_advance || i < scr->desktop_count)
-        wDesktopChange(scr, i, NULL);
-      break;
-
-    case WKBD_NEXTWORKSPACE:
+    case WKBD_NEXT_DESKTOP:
       wDesktopRelativeChange(scr, 1);
       break;
-    case WKBD_PREVWORKSPACE:
+    case WKBD_PREV_DESKTOP:
       wDesktopRelativeChange(scr, -1);
       break;
-    case WKBD_LASTWORKSPACE:
+    case WKBD_LAST_DESKTOP:
       wDesktopChange(scr, scr->last_desktop, NULL);
       break;
-
-    case WKBD_MOVE_WORKSPACE1 ... WKBD_MOVE_WORKSPACE10:
-      widx = command - WKBD_MOVE_WORKSPACE1;
-      i = (scr->current_desktop / 10) * 10 + widx;
-      if (wwin && (wPreferences.ws_advance || i < scr->desktop_count))
-        wWindowChangeDesktop(wwin, i);
-      break;
-    case WKBD_MOVE_NEXTWORKSPACE:
-      if (wwin)
-        wWindowChangeDesktopRelative(wwin, 1);
-      break;
-    case WKBD_MOVE_PREVWORKSPACE:
-      if (wwin)
-        wWindowChangeDesktopRelative(wwin, -1);
-      break;
-    case WKBD_MOVE_LASTWORKSPACE:
-      if (wwin)
-        wWindowChangeDesktop(wwin, scr->last_desktop);
-      break;
-
-    case WKBD_MOVE_NEXTWSLAYER:
-    case WKBD_MOVE_PREVWSLAYER:
+    case WKBD_DESKTOP_1 ... WKBD_DESKTOP_10:
       {
-        if (wwin) {
-          int row, column;
-
-          row = scr->current_desktop / 10;
-          column = scr->current_desktop % 10;
-
-          if (command == WKBD_MOVE_NEXTWSLAYER) {
-            if ((row + 1) * 10 < scr->desktop_count)
-              wWindowChangeDesktop(wwin, column + (row + 1) * 10);
-          } else {
-            if (row > 0)
-              wWindowChangeDesktop(wwin, column + (row - 1) * 10);
-          }
-        }
+        widx = command - WKBD_DESKTOP_1;
+        i = (scr->current_desktop / 10) * 10 + widx;
+        if (wPreferences.ws_advance || i < scr->desktop_count)
+          wDesktopChange(scr, i, NULL);
       }
       break;
 
@@ -1762,32 +1699,6 @@ static void handleKeyPress(XEvent * event)
       if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
         (void) wRelaunchWindow(wwin);
       }
-      break;
-
-    case WKBD_NEXTWSLAYER:
-    case WKBD_PREVWSLAYER:
-      {
-        int row, column;
-
-        row = scr->current_desktop / 10;
-        column = scr->current_desktop % 10;
-
-        if (command == WKBD_NEXTWSLAYER) {
-          if ((row + 1) * 10 < scr->desktop_count)
-            wDesktopChange(scr, column + (row + 1) * 10, NULL);
-        } else {
-          if (row > 0)
-            wDesktopChange(scr, column + (row - 1) * 10, NULL);
-        }
-      }
-      break;
-    case WKBD_CLIPRAISELOWER:
-      if (!wPreferences.flags.noclip)
-        wDockRaiseLower(scr->desktops[scr->current_desktop]->clip);
-      break;
-    case WKBD_DOCKRAISELOWER:
-      if (!wPreferences.flags.nodock)
-        wDockRaiseLower(scr->dock);
       break;
     }
 }

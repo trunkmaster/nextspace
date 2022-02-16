@@ -368,90 +368,60 @@ enum {
 #endif
 
 enum {
-      /* anywhere */
-      WKBD_WINDOWMENU,
-      WKBD_WINDOWLIST,
+  /* window */	//--> appmenu
+  WKBD_MINIATURIZE,	// Command + m
+  WKBD_MINIMIZEALL,	// Command + Shift + m
+  WKBD_CLOSE,		// Command + w
+  WKBD_HIDE,		// Command + h
+  WKBD_HIDE_OTHERS,	// Command + Shift + H
+  WKBD_MAXIMIZE,
+  WKBD_MAXIMUS,
+  WKBD_SHADE,
+  WKBD_RAISE,		// Command + UpArrow
+  WKBD_LOWER,		// Command + DownArrow
 
-      /* window */
-      WKBD_MINIATURIZE,
-      WKBD_MINIMIZEALL,
-      WKBD_HIDE,
-      WKBD_HIDE_OTHERS,
-      WKBD_MAXIMIZE,
-      WKBD_VMAXIMIZE,
-      WKBD_HMAXIMIZE,
-      WKBD_LHMAXIMIZE,
-      WKBD_RHMAXIMIZE,
-      WKBD_THMAXIMIZE,
-      WKBD_BHMAXIMIZE,
-      WKBD_LTCMAXIMIZE,
-      WKBD_RTCMAXIMIZE,
-      WKBD_LBCMAXIMIZE,
-      WKBD_RBCMAXIMIZE,
-      WKBD_MAXIMUS,
-      WKBD_SELECT,
-      WKBD_OMNIPRESENT,
-      WKBD_RAISE,
-      WKBD_LOWER,
-      WKBD_RAISELOWER,
-      WKBD_MOVERESIZE,
-      WKBD_SHADE,
-      WKBD_WORKSPACEMAP,
-      WKBD_FOCUSNEXT,
-      WKBD_FOCUSPREV,
-      WKBD_GROUPNEXT,
-      WKBD_GROUPPREV,
+  /* tiling? */
+  WKBD_VMAXIMIZE,
+  WKBD_HMAXIMIZE,
+  WKBD_LHMAXIMIZE,
+  WKBD_RHMAXIMIZE,
+  WKBD_THMAXIMIZE,
+  WKBD_BHMAXIMIZE,
+  WKBD_LTCMAXIMIZE,
+  WKBD_RTCMAXIMIZE,
+  WKBD_LBCMAXIMIZE,
+  WKBD_RBCMAXIMIZE,
 
-      /* window, menu */
-      WKBD_CLOSE,
+  /* Apps and windows navigation - anywhere */
+  WKBD_FOCUSNEXT,	// Command + `
+  WKBD_FOCUSPREV,	// Command + ~ (Shift + `)
+  WKBD_GROUPNEXT,	// Command + Tab
+  WKBD_GROUPPREV,	// Command + Shift + Tab
 
-      /* Dock and Icon Yard*/
-      WKBD_DOCKRAISELOWER,
-      WKBD_DOCKHIDESHOW,
-      WKBD_YARDHIDESHOW,
+  /* Desktop menu - anywhere */
+  /* Dock and Icon Yard */
+  WKBD_DOCKHIDESHOW,
+  WKBD_YARDHIDESHOW,
+  /* Desktops navigation */
+  WKBD_NEXT_DESKTOP,
+  WKBD_PREV_DESKTOP,
+  WKBD_LAST_DESKTOP,
+  WKBD_DESKTOP_1,
+  WKBD_DESKTOP_2,
+  WKBD_DESKTOP_3,
+  WKBD_DESKTOP_4,
+  WKBD_DESKTOP_5,
+  WKBD_DESKTOP_6,
+  WKBD_DESKTOP_7,
+  WKBD_DESKTOP_8,
+  WKBD_DESKTOP_9,
+  WKBD_DESKTOP_10,
 
-      /* Clip */
-      WKBD_CLIPRAISELOWER,
+  /* launch a new instance of the active window */
+  WKBD_RELAUNCH,
 
-      /* workspace */
-      WKBD_WORKSPACE1,
-      WKBD_WORKSPACE2,
-      WKBD_WORKSPACE3,
-      WKBD_WORKSPACE4,
-      WKBD_WORKSPACE5,
-      WKBD_WORKSPACE6,
-      WKBD_WORKSPACE7,
-      WKBD_WORKSPACE8,
-      WKBD_WORKSPACE9,
-      WKBD_WORKSPACE10,
-      WKBD_NEXTWORKSPACE,
-      WKBD_PREVWORKSPACE,
-      WKBD_LASTWORKSPACE,
-      WKBD_NEXTWSLAYER,
-      WKBD_PREVWSLAYER,
-
-      /* move to workspace */
-      WKBD_MOVE_WORKSPACE1,
-      WKBD_MOVE_WORKSPACE2,
-      WKBD_MOVE_WORKSPACE3,
-      WKBD_MOVE_WORKSPACE4,
-      WKBD_MOVE_WORKSPACE5,
-      WKBD_MOVE_WORKSPACE6,
-      WKBD_MOVE_WORKSPACE7,
-      WKBD_MOVE_WORKSPACE8,
-      WKBD_MOVE_WORKSPACE9,
-      WKBD_MOVE_WORKSPACE10,
-      WKBD_MOVE_NEXTWORKSPACE,
-      WKBD_MOVE_PREVWORKSPACE,
-      WKBD_MOVE_LASTWORKSPACE,
-      WKBD_MOVE_NEXTWSLAYER,
-      WKBD_MOVE_PREVWSLAYER,
-
-      /* launch a new instance of the active window */
-      WKBD_RELAUNCH,
-
-      /* keep this last */
-      WKBD_LAST
+  /* keep this last */
+  WKBD_LAST
 };
 
 typedef struct WShortKey {
