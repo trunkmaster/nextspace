@@ -490,9 +490,9 @@ WDefaultEntry optionList[] = {
   {"DockHideShowKey", "\"Super+Shift+D\"", (void *)WKBD_DOCKHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"IconYardHideShowKey", "\"Super+Shift+Y\"", (void *)WKBD_YARDHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL},
   /* Window Resizing */
-  {"MaximusKey", "\"Super+KP_5\"", (void *)WKBD_MAXIMUS, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"ShadeKey", "\"Super+KP_Subtract\"", (void *)WKBD_SHADE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"MaximizeKey", "\"Super+KP_Add\"", (void *)WKBD_MAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  /* {"MaximusKey", "\"Super+KP_5\"", (void *)WKBD_MAXIMUS, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"ShadeKey", "\"Super+KP_Subtract\"", (void *)WKBD_SHADE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"MaximizeKey", "\"Super+KP_Add\"", (void *)WKBD_MAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   {"VMaximizeKey", "\"Super+Up\"", (void *)WKBD_VMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"HMaximizeKey", "\"Super+Right\"", (void *)WKBD_HMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"LHMaximizeKey", "\"Super+KP_4\"", (void *)WKBD_LHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
@@ -504,14 +504,14 @@ WDefaultEntry optionList[] = {
   {"LBCMaximizeKey", "\"Super+KP_1\"", (void *)WKBD_LBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"RBCMaximizeKey", "\"Super+KP_3\"", (void *)WKBD_RBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
   /* Window Ordering */
-  {"CloseKey", "\"Alt+w\"", (void *)WKBD_CLOSE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"HideKey", "\"Alt+h\"", (void *)WKBD_HIDE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"HideOthersKey", "\"Alt+Shift+h\"", (void *)WKBD_HIDE_OTHERS, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"MiniaturizeKey", "\"Alt+m\"", (void *)WKBD_MINIATURIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"MinimizeAllKey", "\"Alt+Shift+m\"", (void *)WKBD_MINIMIZEALL, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  /* {"CloseKey", "\"Alt+w\"", (void *)WKBD_CLOSE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"HideKey", "\"Alt+h\"", (void *)WKBD_HIDE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"HideOthersKey", "\"Alt+Shift+h\"", (void *)WKBD_HIDE_OTHERS, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"MiniaturizeKey", "\"Alt+m\"", (void *)WKBD_MINIATURIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"MinimizeAllKey", "\"Alt+Shift+m\"", (void *)WKBD_MINIMIZEALL, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   /* Focus switch */
-  {"RaiseKey", "\"Alt+Up\"", (void *)WKBD_RAISE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"LowerKey", "\"Alt+Down\"", (void *)WKBD_LOWER, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  /* {"RaiseKey", "\"Alt+Up\"", (void *)WKBD_RAISE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"LowerKey", "\"Alt+Down\"", (void *)WKBD_LOWER, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   {"FocusNextKey", "\"Alt+Tab\"", (void *)WKBD_FOCUSNEXT, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"FocusPrevKey", "\"Alt+Shift+Tab\"", (void *)WKBD_FOCUSPREV, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"GroupNextKey", "\"Alt+grave\"", (void *)WKBD_GROUPNEXT, NULL, getKeybind, setKeyGrab, NULL, NULL},
@@ -520,16 +520,17 @@ WDefaultEntry optionList[] = {
   {"NextWorkspaceKey", "\"Control+Right\"", (void *)WKBD_NEXT_DESKTOP, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"PrevWorkspaceKey", "\"Control+Left\"", (void *)WKBD_PREV_DESKTOP, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"LastWorkspaceKey", "None", (void *)WKBD_LAST_DESKTOP, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"Workspace1Key", "None", (void *)WKBD_DESKTOP_1, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"Workspace2Key", "None", (void *)WKBD_DESKTOP_2, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"Workspace3Key", "None", (void *)WKBD_DESKTOP_3, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"Workspace4Key", "None", (void *)WKBD_DESKTOP_4, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"Workspace5Key", "None", (void *)WKBD_DESKTOP_5, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"Workspace6Key", "None", (void *)WKBD_DESKTOP_6, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"Workspace7Key", "None", (void *)WKBD_DESKTOP_7, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"Workspace8Key", "None", (void *)WKBD_DESKTOP_8, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"Workspace9Key", "None", (void *)WKBD_DESKTOP_9, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"Workspace10Key", "None", (void *)WKBD_DESKTOP_10, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"Desktop1Key", "\"Control+1\"", (void *)WKBD_DESKTOP_1, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"Desktop2Key", "\"Control+2\"", (void *)WKBD_DESKTOP_2, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"Desktop3Key", "\"Control+3\"", (void *)WKBD_DESKTOP_3, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"Desktop4Key", "\"Control+4\"", (void *)WKBD_DESKTOP_4, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"Desktop5Key", "\"Control+5\"", (void *)WKBD_DESKTOP_5, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"Desktop6Key", "\"Control+6\"", (void *)WKBD_DESKTOP_6, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"Desktop7Key", "\"Control+7\"", (void *)WKBD_DESKTOP_7, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"Desktop8Key", "\"Control+8\"", (void *)WKBD_DESKTOP_8, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"Desktop9Key", "\"Control+9\"", (void *)WKBD_DESKTOP_9, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"Desktop10Key", "\"Control+0\"", (void *)WKBD_DESKTOP_10, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  
   {"WindowRelaunchKey", "None", (void *)WKBD_RELAUNCH, NULL, getKeybind, setKeyGrab, NULL, NULL},
 
   /* --- Mouse cursors --- */
