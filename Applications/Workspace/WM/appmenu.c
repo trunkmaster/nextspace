@@ -831,7 +831,7 @@ Bool wApplicationMenuHandleKeyPress(WWindow *focused_window, XEvent *event)
       }
       XFlush(dpy);
       XSync(dpy, False);
-      usleep(150000);
+      usleep(100000);
       
       (*item->callback) (item->menu, item);
       
