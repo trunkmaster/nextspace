@@ -493,8 +493,10 @@ void wApplicationActivate(WApplication *wapp)
   if (wapp->menus_state && !wapp->app_menu->flags.restored) {
     wApplicationMenuRestoreFromState(wapp->app_menu, wapp->menus_state);
     wapp->app_menu->flags.restored = 1;
-  } else {
+  } else if (wapp->app_menu->flags.hidden) {
     wApplicationMenuShow(wapp->app_menu);
+  } else {
+    wMenuMap(wapp->app_menu);
   }
   
   if (!wapp->appState) {
