@@ -32,7 +32,9 @@ static void mainCallback(WMenu *menu, WMenuItem *entry)
   WApplication *wapp = (WApplication *)entry->clientdata;
   
   if (!strcmp(entry->text, "Hide")) {
-    wApplicationHide(wapp);
+    if (wapp && !WFLAGP(wapp->main_wwin, no_appicon)) {
+      wApplicationHide(wapp);
+    }
   } else if (!strcmp(entry->text, "Hide Others")) {
     wApplicationHideOthers(wapp->last_focused);
   } else if (!strcmp(entry->text, "Quit")) {
@@ -802,6 +804,11 @@ Bool wApplicationMenuHandleKeyPress(WWindow *focused_window, XEvent *event)
   WMenuItem *parent_item = NULL;
 
   WMLogInfo("App menu key press. Modifier: %x Key: %x", event->xkey.state, event->xkey.keycode);
+
+  /* Key presses without modifiers or modifiers-only is not menu shortcut */
+  if (!event->xkey.state) {
+    return False;
+  }
 
   if (event->xkey.state & wPreferences.modifier_mask) {
     WMLogInfo("Command+ shortcut was pressed.");
