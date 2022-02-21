@@ -53,7 +53,6 @@ typedef struct WMenuItem {
   } flags;
 } WMenuItem;
 
-
 typedef struct WMenu {
   struct WMenu *parent;
   struct WMenu *brother;
@@ -94,7 +93,6 @@ typedef struct WMenu {
     unsigned int brother:1;	       /* if this is a copy of the menu */
   } flags;
 } WMenu;
-
 
 void wMenuPaint(WMenu *menu);
 void wMenuDestroy(WMenu *menu, int recurse);

@@ -487,22 +487,22 @@ WDefaultEntry optionList[] = {
   /* --- Key bindings --- */
 
   /* Dock and Icon Yard */
-  {"DockHideShowKey", "\"Super+Shift+D\"", (void *)WKBD_DOCKHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"IconYardHideShowKey", "\"Super+Shift+Y\"", (void *)WKBD_YARDHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  /* {"DockHideShowKey", "\"Super+Shift+D\"", (void *)WKBD_DOCKHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"IconYardHideShowKey", "\"Super+Shift+Y\"", (void *)WKBD_YARDHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   /* Window Resizing */
   /* {"MaximusKey", "\"Super+KP_5\"", (void *)WKBD_MAXIMUS, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   /* {"ShadeKey", "\"Super+KP_Subtract\"", (void *)WKBD_SHADE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   /* {"MaximizeKey", "\"Super+KP_Add\"", (void *)WKBD_MAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  {"VMaximizeKey", "\"Super+Up\"", (void *)WKBD_VMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"HMaximizeKey", "\"Super+Right\"", (void *)WKBD_HMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"LHMaximizeKey", "\"Super+KP_4\"", (void *)WKBD_LHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"RHMaximizeKey", "\"Super+KP_6\"", (void *)WKBD_RHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"THMaximizeKey", "\"Super+KP_8\"", (void *)WKBD_THMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"BHMaximizeKey", "\"Super+KP_2\"", (void *)WKBD_BHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"LTCMaximizeKey", "\"Super+KP_7\"", (void *)WKBD_LTCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"RTCMaximizeKey", "\"Super+KP_9\"", (void *)WKBD_RTCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"LBCMaximizeKey", "\"Super+KP_1\"", (void *)WKBD_LBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"RBCMaximizeKey", "\"Super+KP_3\"", (void *)WKBD_RBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  /* {"VMaximizeKey", "\"Super+Up\"", (void *)WKBD_VMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"HMaximizeKey", "\"Super+Right\"", (void *)WKBD_HMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"LHMaximizeKey", "\"Super+KP_4\"", (void *)WKBD_LHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"RHMaximizeKey", "\"Super+KP_6\"", (void *)WKBD_RHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"THMaximizeKey", "\"Super+KP_8\"", (void *)WKBD_THMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"BHMaximizeKey", "\"Super+KP_2\"", (void *)WKBD_BHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"LTCMaximizeKey", "\"Super+KP_7\"", (void *)WKBD_LTCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"RTCMaximizeKey", "\"Super+KP_9\"", (void *)WKBD_RTCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"LBCMaximizeKey", "\"Super+KP_1\"", (void *)WKBD_LBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"RBCMaximizeKey", "\"Super+KP_3\"", (void *)WKBD_RBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   /* Window Ordering */
   /* {"CloseKey", "\"Alt+w\"", (void *)WKBD_CLOSE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   /* {"HideKey", "\"Alt+h\"", (void *)WKBD_HIDE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */

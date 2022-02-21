@@ -368,31 +368,21 @@ enum {
 #endif
 
 enum {
-  /* application */	//--> appmenu
-  //  WKBD_CLOSE,		// Command + w
-  //  WKBD_HIDE,		// Command + h
-  //  WKBD_HIDE_OTHERS,	// Command + Shift + H
-  
   /* window */		//--> appmenu
-  //  WKBD_MINIATURIZE,	// Command + m
-  //  WKBD_MINIMIZEALL,	// Command + Shift + m
-  //  WKBD_MAXIMIZE,
-  //  WKBD_MAXIMUS,
-  //  WKBD_SHADE,
   //  WKBD_RAISE,		// Command + UpArrow
   //  WKBD_LOWER,		// Command + DownArrow
 
   /* tiling? */
-  WKBD_VMAXIMIZE,
-  WKBD_HMAXIMIZE,
-  WKBD_LHMAXIMIZE,
-  WKBD_RHMAXIMIZE,
-  WKBD_THMAXIMIZE,
-  WKBD_BHMAXIMIZE,
-  WKBD_LTCMAXIMIZE,
-  WKBD_RTCMAXIMIZE,
-  WKBD_LBCMAXIMIZE,
-  WKBD_RBCMAXIMIZE,
+  /* WKBD_VMAXIMIZE, */
+  /* WKBD_HMAXIMIZE, */
+  /* WKBD_LHMAXIMIZE, */
+  /* WKBD_RHMAXIMIZE, */
+  /* WKBD_THMAXIMIZE, */
+  /* WKBD_BHMAXIMIZE, */
+  /* WKBD_LTCMAXIMIZE, */
+  /* WKBD_RTCMAXIMIZE, */
+  /* WKBD_LBCMAXIMIZE, */
+  /* WKBD_RBCMAXIMIZE, */
 
   /* Apps and windows navigation - anywhere */
   WKBD_FOCUSNEXT,	// Command + `
@@ -402,8 +392,8 @@ enum {
 
   /* Desktop menu - anywhere */
   /* Dock and Icon Yard */
-  WKBD_DOCKHIDESHOW,
-  WKBD_YARDHIDESHOW,
+  /* WKBD_DOCKHIDESHOW, */
+  /* WKBD_YARDHIDESHOW, */
   /* Desktops navigation */
   WKBD_NEXT_DESKTOP,
   WKBD_PREV_DESKTOP,

@@ -11,6 +11,8 @@
 #include "actions.h"
 #include "misc.h"
 #include "desktop.h"
+#include "dock.h"
+#include "iconyard.h"
 
 static CFStringRef WMenuPath = CFSTR("Path");
 static CFStringRef WMenuType = CFSTR("Type");
@@ -46,6 +48,8 @@ static void mainCallback(WMenu *menu, WMenuItem *entry)
 
 // "Windows" menu
 //-------------------------------------------------------------------------------------------------
+
+//---- "Windows" item actions ---
 #define MAX_WINDOWLIST_WIDTH  400
 #define ACTION_ADD            0
 #define ACTION_REMOVE         1
@@ -53,21 +57,42 @@ static void mainCallback(WMenu *menu, WMenuItem *entry)
 #define ACTION_CHANGE_DESKTOP 3
 #define ACTION_CHANGE_STATE   4
 
+#define ISMAPPED(w) ((w) && !(w)->flags.miniaturized && ((w)->flags.mapped || (w)->flags.shaded))
+#define ISFOCUSED(w) ((w) && (w)->flags.focused)
+
 static void _focusWindow(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin = (WWindow *)entry->clientdata;
   wWindowSingleFocus(wwin);
 }
 
-static void _windowsCallback(WMenu *menu, WMenuItem *entry)
+static void _miniaturizeWindow(WMenu *menu, WMenuItem *entry)
+{
+  WScreen *scr = menu->frame->screen_ptr;
+  WWindow *wwin = scr->focused_window;
+  Time event_time = entry->clientdata ? ((XEvent *)entry->clientdata)->xkey.time : CurrentTime;
+
+  if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_miniaturizable)) {
+    if (wwin->protocols.MINIATURIZE_WINDOW) {
+      wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window, event_time);
+    } else {
+      wIconifyWindow(wwin);
+    }
+  }
+
+  // Do we need this option?
+  /* WKBD_MINIMIZEALL: */
+  /*   wHideAll(scr); */
+  
+  // clean used event info so it could be passed again
+  entry->clientdata = NULL;
+}
+
+static void _shadeWindow(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin = menu->menu->screen_ptr->focused_window;
-
-  WMLogInfo("windowsCallback");
   
-  if (!strcmp(entry->text, "Miniaturize Window")) {
-    wIconifyWindow(wwin);
-  } else if (!strcmp(entry->text, "Shade Window")) {
+  if (!strcmp(entry->text, "Shade Window")) {
     wShadeWindow(wwin);
     wfree(entry->text);
     entry->text = wstrdup("Unshade Window");
@@ -75,15 +100,126 @@ static void _windowsCallback(WMenu *menu, WMenuItem *entry)
     wUnshadeWindow(wwin);
     wfree(entry->text);
     entry->text = wstrdup("Shade Window");
-  } else if (!strcmp(entry->text, "Close Window")) {
-    if (wwin->protocols.DELETE_WINDOW) {
-      wClientSendProtocol(wwin, w_global.atom.wm.delete_window, w_global.timestamp.last_event);
-    }
-  } else if (!strcmp(entry->text, "Zoom Window")) {
+  }
+}
+
+static void _zoomWindow(WMenu *menu, WMenuItem *entry)
+{
+  WWindow *wwin = menu->menu->screen_ptr->focused_window;
+
+  if (!strcmp(entry->text, "Zoom Window")) {
     wMaximizeWindow(wwin, MAX_MAXIMUS);
   } else if (!strcmp(entry->text, "Unzoom Window")) {
     wUnmaximizeWindow(wwin);
   }
+
+  // Other variants of maximization - do need them?
+  
+  /* WKBD_MAXIMIZE: */
+  /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
+  /*     handleMaximize(wwin, MAX_VERTICAL | MAX_HORIZONTAL | MAX_KEYBOARD); */
+  /*   } */
+  /* WKBD_VMAXIMIZE: */
+  /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
+  /*     handleMaximize(wwin, MAX_VERTICAL | MAX_KEYBOARD); */
+  /*   } */
+  /* WKBD_HMAXIMIZE: */
+  /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
+  /*     handleMaximize(wwin, MAX_HORIZONTAL | MAX_KEYBOARD); */
+  /*   } */
+  /* WKBD_LHMAXIMIZE: */
+  /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
+  /*     handleMaximize(wwin, MAX_VERTICAL | MAX_LEFTHALF | MAX_KEYBOARD); */
+  /*   } */
+  /* WKBD_RHMAXIMIZE: */
+  /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
+  /*     handleMaximize(wwin, MAX_VERTICAL | MAX_RIGHTHALF | MAX_KEYBOARD); */
+  /*   } */
+  /* WKBD_THMAXIMIZE: */
+  /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
+  /*     handleMaximize(wwin, MAX_HORIZONTAL | MAX_TOPHALF | MAX_KEYBOARD); */
+  /*   } */
+  /* WKBD_BHMAXIMIZE: */
+  /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
+  /*     handleMaximize(wwin, MAX_HORIZONTAL | MAX_BOTTOMHALF | MAX_KEYBOARD); */
+  /*   } */
+  /* WKBD_LTCMAXIMIZE: */
+  /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
+  /*     handleMaximize(wwin, MAX_LEFTHALF | MAX_TOPHALF | MAX_KEYBOARD); */
+  /*   } */
+  /* WKBD_RTCMAXIMIZE: */
+  /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
+  /*     handleMaximize(wwin, MAX_RIGHTHALF | MAX_TOPHALF | MAX_KEYBOARD); */
+  /*   } */
+  /* WKBD_LBCMAXIMIZE: */
+  /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
+  /*     handleMaximize(wwin, MAX_LEFTHALF | MAX_BOTTOMHALF | MAX_KEYBOARD); */
+  /*   } */
+  /* WKBD_RBCMAXIMIZE: */
+  /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
+  /*     handleMaximize(wwin, MAX_RIGHTHALF | MAX_BOTTOMHALF | MAX_KEYBOARD); */
+  /*   } */
+}
+  
+static void _closeWindow(WMenu *menu, WMenuItem *entry)
+{
+  WWindow *wwin = menu->frame->screen_ptr->focused_window;
+  Time event_time = entry->clientdata ? ((XEvent *)entry->clientdata)->xkey.time : CurrentTime;
+
+  if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_closable)) {
+    if (wwin->protocols.DELETE_WINDOW) {
+      wClientSendProtocol(wwin, w_global.atom.wm.delete_window, event_time);
+    }
+  }
+  
+  // clean used event info so it could be passed again
+  entry->clientdata = NULL;
+}
+
+//---- "Windows" item actions end ---
+
+static void _validateWindowsItems(WMenu *windows_menu, WWindow *wwin)
+{
+  WMenuItem *item;
+  WWindow *focused_win = wwin->screen->focused_window;
+  
+  /* Update menu entries according to focused window state */
+  if (focused_win->flags.shaded) {
+    item = wMenuItemWithTitle(windows_menu, "Shade Window");
+    if (item) {
+      wfree(item->text);
+      item->text = wstrdup("Unshade Window");
+    }
+  } else {
+    item = wMenuItemWithTitle(windows_menu, "Unshade Window");
+    if (item) {
+      wfree(item->text);
+      item->text = wstrdup("Shade Window");
+    }
+  }
+  if (focused_win->flags.maximized) {
+    item = wMenuItemWithTitle(windows_menu, "Zoom Window");
+    if (item) {
+      wfree(item->text);
+      item->text = wstrdup("Unzoom Window");
+    }
+  } else {
+    item = wMenuItemWithTitle(windows_menu, "Unzoom Window");
+    if (item) {
+      wfree(item->text);
+      item->text = wstrdup("Zoom Window");
+    }
+  }
+
+  /* Enable items applicable to focused window. Diable otherwise */
+  item = wMenuItemWithTitle(windows_menu, "Miniaturize Window");
+  wMenuItemSetEnabled(windows_menu, item, !WFLAGP(focused_win, no_miniaturizable) ? True : False);
+  item = wMenuItemWithTitle(windows_menu, "Shade Window");
+  wMenuItemSetEnabled(windows_menu, item, !WFLAGP(focused_win, no_titlebar) ? True : False);
+  item = wMenuItemWithTitle(windows_menu, "Zoom Window");
+  wMenuItemSetEnabled(windows_menu, item, IS_RESIZABLE(focused_win) ? True : False);
+  item = wMenuItemWithTitle(windows_menu, "Close Window");
+  wMenuItemSetEnabled(windows_menu, item, !WFLAGP(focused_win, no_closable) ? True : False);
 }
 
 static int _menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
@@ -222,35 +358,6 @@ static void _updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
     }
   }
 
-  /* Update menu entries according to focused window state */
-  WWindow *focused_win = wwin->screen->focused_window;
-  if (focused_win->flags.shaded) {
-    entry = wMenuItemWithTitle(windows_menu, "Shade Window");
-    if (entry) {
-      wfree(entry->text);
-      entry->text = wstrdup("Unshade Window");
-    }
-  } else {
-    entry = wMenuItemWithTitle(windows_menu, "Unshade Window");
-    if (entry) {
-      wfree(entry->text);
-      entry->text = wstrdup("Shade Window");
-    }
-  }
-  if (focused_win->flags.maximized) {
-    entry = wMenuItemWithTitle(windows_menu, "Zoom Window");
-    if (entry) {
-      wfree(entry->text);
-      entry->text = wstrdup("Unzoom Window");
-    }
-  } else {
-    entry = wMenuItemWithTitle(windows_menu, "Unzoom Window");
-    if (entry) {
-      wfree(entry->text);
-      entry->text = wstrdup("Zoom Window");
-    }
-  }
-  
   if (checkVisibility) {
     int tmp;
 
@@ -261,11 +368,11 @@ static void _updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
                 windows_menu->frame_y, False);
     }
   }
-  
+
   wMenuPaint(windows_menu);
 }
 
-static void windowObserver(CFNotificationCenterRef center,
+static void _windowObserver(CFNotificationCenterRef center,
                            void *menu,
                            CFNotificationName name,
                            const void *window,
@@ -299,6 +406,7 @@ static void windowObserver(CFNotificationCenterRef center,
       _updateWindowsMenu(windows_menu, wwin, ACTION_CHANGE_STATE);
     }
   }
+  _validateWindowsItems(windows_menu, wwin);
 }
 
 static void _updateDesktopsMenu(WMenu *menu);
@@ -324,38 +432,38 @@ static WMenu *_createWindowsMenu(WApplication *wapp)
   
   _menu = wMenuCreate(scr, _("Windows"), False);
   _menu->app = wapp;
-  tmp_item = wMenuItemInsert(_menu, 0, _("Arrange in Front"), _windowsCallback, NULL);
+  tmp_item = wMenuItemInsert(_menu, 0, _("Arrange in Front"), NULL, NULL);
   wMenuItemSetEnabled(_menu, tmp_item, False);
-  tmp_item = wMenuAddItem(_menu, _("Miniaturize Window"), _windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Miniaturize Window"), _miniaturizeWindow, NULL);
   tmp_item->rtext = wstrdup("m");
-  tmp_item = wMenuAddItem(_menu, _("Move Window To"), _windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Move Window To"), NULL, NULL);
   wMenuItemSetSubmenu(_menu, tmp_item, desktops_menu);
   
-  tmp_item = wMenuAddItem(_menu, _("Shade Window"), _windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Shade Window"), _shadeWindow, NULL);
   /* tmp_item = wMenuAddItem(_menu, _("Resize/Move Window"), windowsCallback, NULL); */
   /* tmp_item = wMenuAddItem(_menu, _("Select Window"), windowsCallback, NULL); */
-  tmp_item = wMenuAddItem(_menu, _("Zoom Window"), _windowsCallback, NULL);
-  tmp_item = wMenuAddItem(_menu, _("Close Window"), _windowsCallback, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Zoom Window"), _zoomWindow, NULL);
+  tmp_item = wMenuAddItem(_menu, _("Close Window"), _closeWindow, NULL);
   tmp_item->rtext = wstrdup("w");
 
   /* TODO: think about "Options" submenu */
 
-  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, _windowObserver,
                                   WMDidManageWindowNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, _windowObserver,
                                   WMDidUnmanageWindowNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, _windowObserver,
                                   WMDidChangeWindowStateNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, _windowObserver,
                                   WMDidChangeWindowFocusNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, _windowObserver,
                                   WMDidChangeWindowStackingNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, windowObserver,
+  CFNotificationCenterAddObserver(scr->notificationCenter, _menu, _windowObserver,
                                   WMDidChangeWindowNameNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
 
@@ -420,6 +528,31 @@ static void _updateDesktopsMenu(WMenu *menu)
 
   if (!menu->flags.realized) {
     wMenuRealize(menu);
+  }
+}
+
+// "Tools" menu - Dock and Icon Yard
+//-------------------------------------------------------------------------------------------------
+static void _hideDock(WMenu *menu, WMenuItem *entry)
+{
+  WScreen *scr = menu->frame->screen_ptr;
+  
+  if (scr->dock->mapped) {
+    wDockHideIcons(scr->dock);
+  } else {
+    wDockShowIcons(scr->dock);
+  }
+}
+
+static void _hideIconYard(WMenu *menu, WMenuItem *entry)
+{
+  WScreen *scr = menu->frame->screen_ptr;
+  
+  if (scr->flags.icon_yard_mapped) {
+    wIconYardHideIcons(scr);
+  }
+  else {
+    wIconYardShowIcons(scr);
   }
 }
 
@@ -795,8 +928,6 @@ static WMenuItem *_itemForShortcut(WMenu *menu, KeyCode keycode, int state)
   return NULL;
 }
 
-#include "core/wevent.h"
-
 Bool wApplicationMenuHandleKeyPress(WWindow *focused_window, XEvent *event)
 {
   WApplication *wapp = wApplicationForWindow(focused_window);
@@ -839,7 +970,10 @@ Bool wApplicationMenuHandleKeyPress(WWindow *focused_window, XEvent *event)
       XFlush(dpy);
       XSync(dpy, False);
       usleep(100000);
-      
+
+      if (item->clientdata == NULL) {
+        item->clientdata = event;
+      }
       (*item->callback) (item->menu, item);
       
       if (!item->menu->flags.mapped) {

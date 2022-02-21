@@ -1487,81 +1487,6 @@ static void handleKeyPress(XEvent * event)
 
   switch (command)
     {
-    /* case WKBD_MINIMIZEALL: */
-    /*   { */
-    /*     CloseWindowMenu(scr); */
-    /*     wHideAll(scr); */
-    /*   } */
-    /*   break; */
-    /* case WKBD_MINIATURIZE: */
-    /*   { */
-    /*     if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_miniaturizable)) { */
-    /*       CloseWindowMenu(scr); */
-    /*       if (wwin->protocols.MINIATURIZE_WINDOW) { */
-    /*         /\* WMLogInfo("send WM_MINIATURIZE_WINDOW protocol message to client."); *\/ */
-    /*         if (wwin->flags.is_gnustep) { */
-    /*           XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event); */
-    /*         } else { */
-    /*           wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window, */
-    /*                               event->xbutton.time); */
-    /*         } */
-    /*       } else { */
-    /*         wIconifyWindow(wwin); */
-    /*       } */
-    /*     } */
-    /*   } */
-    /*   break; */
-    /* case WKBD_CLOSE: */
-    /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_closable)) { */
-    /*     CloseWindowMenu(scr); */
-    /*     if (wwin->protocols.DELETE_WINDOW) { */
-    /*       wClientSendProtocol(wwin, w_global.atom.wm.delete_window, event->xkey.time); */
-    /*     } */
-    /*   } */
-    /*   break; */
-    /* case WKBD_HIDE: */
-    /*   { */
-    /*     if (ISMAPPED(wwin) && ISFOCUSED(wwin)) { */
-    /*       WApplication *wapp = wApplicationOf(wwin->main_window); */
-    /*       CloseWindowMenu(scr); */
-    /*       if (wapp && !WFLAGP(wapp->main_wwin, no_appicon)) { */
-    /*         if (wwin->flags.is_gnustep) { */
-    /*           XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event); */
-    /*         } */
-    /*         else { */
-    /*           wApplicationHide(wapp); */
-    /*         } */
-    /*       } */
-    /*     } */
-    /*   } */
-    /*   break; */
-    /* case WKBD_HIDE_OTHERS: */
-    /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin)) { */
-    /*     CloseWindowMenu(scr); */
-    /*     wApplicationHideOthers(wwin); */
-    /*   } */
-    /*   break; */
-    /* case WKBD_MAXIMIZE: */
-    /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
-    /*     CloseWindowMenu(scr); */
-    /*     handleMaximize(wwin, MAX_VERTICAL | MAX_HORIZONTAL | MAX_KEYBOARD); */
-    /*   } */
-    /*   break; */
-    /* case WKBD_MAXIMUS: */
-    /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) { */
-    /*     CloseWindowMenu(scr); */
-    /*     handleMaximize(wwin, MAX_MAXIMUS | MAX_KEYBOARD); */
-    /*   } */
-    /*   break; */
-    /* case WKBD_SHADE: */
-    /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin) && !WFLAGP(wwin, no_shadeable)) { */
-    /*     if (wwin->flags.shaded) { */
-    /*       wUnshadeWindow(wwin); */
-    /*     } else { */
-    /*       wShadeWindow(wwin); */
-    /*     } */
-    /*   } */
-    /*   break; */
     /* case WKBD_RAISE: */
     /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin)) { */
     /*     CloseWindowMenu(scr); */
@@ -1575,96 +1500,33 @@ static void handleKeyPress(XEvent * event)
     /*   } */
     /*   break; */
 
-    /* Tiling maybe? */
-    case WKBD_VMAXIMIZE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
-        CloseWindowMenu(scr);
-        handleMaximize(wwin, MAX_VERTICAL | MAX_KEYBOARD);
-      }
-      break;
-    case WKBD_HMAXIMIZE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
-        CloseWindowMenu(scr);
-        handleMaximize(wwin, MAX_HORIZONTAL | MAX_KEYBOARD);
-      }
-      break;
-    case WKBD_LHMAXIMIZE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
-        CloseWindowMenu(scr);
-        handleMaximize(wwin, MAX_VERTICAL | MAX_LEFTHALF | MAX_KEYBOARD);
-      }
-      break;
-    case WKBD_RHMAXIMIZE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
-        CloseWindowMenu(scr);
-        handleMaximize(wwin, MAX_VERTICAL | MAX_RIGHTHALF | MAX_KEYBOARD);
-      }
-      break;
-    case WKBD_THMAXIMIZE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
-        CloseWindowMenu(scr);
-        handleMaximize(wwin, MAX_HORIZONTAL | MAX_TOPHALF | MAX_KEYBOARD);
-      }
-      break;
-    case WKBD_BHMAXIMIZE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
-        CloseWindowMenu(scr);
-        handleMaximize(wwin, MAX_HORIZONTAL | MAX_BOTTOMHALF | MAX_KEYBOARD);
-      }
-      break;
-    case WKBD_LTCMAXIMIZE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
-        CloseWindowMenu(scr);
-        handleMaximize(wwin, MAX_LEFTHALF | MAX_TOPHALF | MAX_KEYBOARD);
-      }
-      break;
-    case WKBD_RTCMAXIMIZE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
-        CloseWindowMenu(scr);
-        handleMaximize(wwin, MAX_RIGHTHALF | MAX_TOPHALF | MAX_KEYBOARD);
-      }
-      break;
-    case WKBD_LBCMAXIMIZE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
-        CloseWindowMenu(scr);
-        handleMaximize(wwin, MAX_LEFTHALF | MAX_BOTTOMHALF | MAX_KEYBOARD);
-      }
-      break;
-    case WKBD_RBCMAXIMIZE:
-      if (ISMAPPED(wwin) && ISFOCUSED(wwin) && IS_RESIZABLE(wwin)) {
-        CloseWindowMenu(scr);
-        handleMaximize(wwin, MAX_RIGHTHALF | MAX_BOTTOMHALF | MAX_KEYBOARD);
-      }
-      break;
-      
       /* Dock and Icon Yard */
-    case WKBD_DOCKHIDESHOW:
-      {
-        if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
-          if (scr->dock->mapped) {
-            wDockHideIcons(scr->dock);
-          } else {
-            wDockShowIcons(scr->dock);
-          }
-        } else {
-          XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
-        }
-      }
-      break;
-    case WKBD_YARDHIDESHOW:
-      {
-        if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) {
-          if (scr->flags.icon_yard_mapped) {
-            wIconYardHideIcons(scr);
-          }
-          else {
-            wIconYardShowIcons(scr);
-          }
-        } else {
-          XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event);
-        }
-      }
-      break;
+    /* case WKBD_DOCKHIDESHOW: */
+    /*   if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) { */
+    /*     if (scr->dock->mapped) { */
+    /*       wDockHideIcons(scr->dock); */
+    /*     } else { */
+    /*       wDockShowIcons(scr->dock); */
+    /*     } */
+    /*     } else { */
+    /*       XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event); */
+    /*     } */
+    /*   } */
+    /*   break; */
+    /* case WKBD_YARDHIDESHOW: */
+    /*   { */
+    /*     if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) { */
+    /*       if (scr->flags.icon_yard_mapped) { */
+    /*         wIconYardHideIcons(scr); */
+    /*       } */
+    /*       else { */
+    /*         wIconYardShowIcons(scr); */
+    /*       } */
+    /*     } else { */
+    /*       XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event); */
+    /*     } */
+    /*   } */
+    /*   break; */
       
       /* Desktops navigation */
     case WKBD_FOCUSNEXT:
