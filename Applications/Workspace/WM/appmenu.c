@@ -577,7 +577,8 @@ WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
 
   menu = wMenuCreate(scr, CFStringGetCStringPtr(wapp->appName, kCFStringEncodingUTF8), True);
   menu->app = wapp;
-  
+
+  // Info
   info = wMenuCreate(scr, _("Info"), False);
   tmp_item = wMenuAddItem(info, _("Info Panel..."), nullCallback, NULL);
   wMenuItemSetEnabled(info, tmp_item, False);
@@ -586,16 +587,19 @@ WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
   info_item = wMenuAddItem(menu, _("Info"), NULL, NULL);
   wMenuItemSetSubmenu(menu, info_item, info);
 
+  // Windows
   windows = _createWindowsMenu(wapp);
   windows_item = wMenuAddItem(menu, _("Windows"), NULL, NULL);
   wMenuItemSetSubmenu(menu, windows_item, windows);
   
   tmp_item = wMenuAddItem(menu, _("Hide"), mainCallback, wapp);
-  tmp_item->rtext = wstrdup("h");
+  /* tmp_item->rtext = wstrdup("h"); */
+  wMenuItemSetShortcut(tmp_item, "Command+h");
   tmp_item = wMenuAddItem(menu, _("Hide Others"), mainCallback, wapp);
-  tmp_item->rtext = wstrdup("H");
+  /* tmp_item->rtext = wstrdup("H"); */
+  wMenuItemSetShortcut(tmp_item, "Command+H");
   tmp_item = wMenuAddItem(menu, _("Quit"), mainCallback, wapp);
-  tmp_item->rtext = wstrdup("q");
+  wMenuItemSetShortcut(tmp_item, "Command+q");
   
   return menu;
 }

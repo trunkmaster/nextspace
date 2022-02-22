@@ -36,14 +36,15 @@
 #define MENU_HEIGHT(m)	((m)->frame->core->height+2*(m)->frame->screen_ptr->frame_border_width)
 
 typedef struct WMenuItem {
-  struct WMenu *menu;                         /* menu this item belongs to */
+  struct WMenu *menu;                  /* menu this item belongs to */
+  struct WShortKey *shortcut;
   int index;                           /* index of item in menu */
   char *text;			       /* entry text */
   char *rtext;                         /* text to show in the right part */
   void (*callback)(struct WMenu *menu, struct WMenuItem *item);
   void (*free_cdata)(void *data);      /* proc to be used to free clientdata */
   void *clientdata;		       /* data to pass to callback */
-  int submenu_index;                         /* cascade menu index */
+  int submenu_index;                   /* cascade menu index */
   struct {
     unsigned int enabled:1;	       /* item is selectable */
     unsigned int selected:1;	       /* item is highlighted */
@@ -108,6 +109,8 @@ WMenuItem *wMenuItemInsert(WMenu *menu, int index, const char *text,
                             void *clientdata);
 #define wMenuAddItem(menu, text, callback, data) wMenuItemInsert(menu, -1, text, callback, data)
 void wMenuItemRemove(WMenu *menu, int index);
+void wMenuItemSetShortcut(WMenuItem *item, const char *shortcut);
+  
 void wMenuItemPaint(WMenu *menu, int item_index, int selected);
 void wMenuItemSetEnabled(WMenu *menu, WMenuItem *item, Bool enable);
 void wMenuItemSelect(WMenu *menu, int item_index);

@@ -39,7 +39,7 @@
 
 #include "WM.h"
 #include "xmodifier.h"
-
+#include "defaults.h"
 
 /************************************************************************/
 /*                            keymap handling                           */
@@ -103,18 +103,21 @@ static const char *index_to_name(int indice)
 
 int wXModifierFromKey(const char *key)
 {
-  if (strcasecmp(key, "SHIFT") == 0 && ShiftMask != 0)
+  if (strcasecmp(key, "Shift") == 0 && ShiftMask != 0) {
     return ShiftMask;
-  else if (strcasecmp(key, "CONTROL") == 0 && ControlMask != 0)
+  } else if (strcasecmp(key, "Control") == 0 && ControlMask != 0) {
     return ControlMask;
-  else if (strcasecmp(key, "ALT") == 0 && AltMask != 0)
+  } else if ((strcasecmp(key, "Alt") == 0 || strcasecmp(key, "Command") == 0) &&
+             AltMask != 0) {
     return AltMask;
-  else if (strcasecmp(key, "SUPER") == 0 && SuperMask != 0)
+  } else if ((strcasecmp(key, "Super") == 0 || strcasecmp(key, "Alternate") == 0) &&
+             SuperMask != 0) {
     return SuperMask;
-  else if (strcasecmp(key, "HYPER") == 0 && HyperMask != 0)
+  } else if (strcasecmp(key, "Hyper") == 0 && HyperMask != 0) {
     return HyperMask;
-  else
+  } else {
     return -1;
+  }
 }
 
 void wXModifierInitialize(void)

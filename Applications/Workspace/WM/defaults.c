@@ -93,8 +93,6 @@
 
 struct WPreferences wPreferences;
 
-#define MAX_SHORTCUT_LENGTH 32
-
 WShortKey wKeyBindings[WKBD_LAST];
 
 typedef struct _WDefaultEntry WDefaultEntry;
@@ -512,10 +510,10 @@ WDefaultEntry optionList[] = {
   /* Focus switch */
   /* {"RaiseKey", "\"Alt+Up\"", (void *)WKBD_RAISE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   /* {"LowerKey", "\"Alt+Down\"", (void *)WKBD_LOWER, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  {"FocusNextKey", "\"Alt+Tab\"", (void *)WKBD_FOCUSNEXT, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"FocusPrevKey", "\"Alt+Shift+Tab\"", (void *)WKBD_FOCUSPREV, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"GroupNextKey", "\"Alt+grave\"", (void *)WKBD_GROUPNEXT, NULL, getKeybind, setKeyGrab, NULL, NULL},
-  {"GroupPrevKey", "\"Alt+Shift+grave\"", (void *)WKBD_GROUPPREV, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"FocusNextKey", "\"Command+Tab\"", (void *)WKBD_FOCUSNEXT, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"FocusPrevKey", "\"Command+Shift+Tab\"", (void *)WKBD_FOCUSPREV, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"GroupNextKey", "\"Command+grave\"", (void *)WKBD_GROUPNEXT, NULL, getKeybind, setKeyGrab, NULL, NULL},
+  {"GroupPrevKey", "\"Command+Shift+grave\"", (void *)WKBD_GROUPPREV, NULL, getKeybind, setKeyGrab, NULL, NULL},
   /* Workspaces */
   {"NextWorkspaceKey", "\"Control+Right\"", (void *)WKBD_NEXT_DESKTOP, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"PrevWorkspaceKey", "\"Control+Left\"", (void *)WKBD_PREV_DESKTOP, NULL, getKeybind, setKeyGrab, NULL, NULL},

@@ -55,6 +55,7 @@
 #include "switchmenu.h"
 #include "moveres.h"
 #include "defaults.h"
+#include "xmodifier.h"
 
 #define MOD_MASK wPreferences.modifier_mask
 
@@ -307,6 +308,7 @@ WMenuItem *wMenuItemInsert(WMenu *menu, int index, const char *text,
   item->submenu_index = -1;
   item->clientdata = clientdata;
   item->callback = callback;
+  item->shortcut = NULL;
   if (index < 0 || index >= menu->items_count) {
     item->index = menu->items_count;
     menu->items[menu->items_count] = item;
@@ -338,15 +340,18 @@ void wMenuItemRemove(WMenu *menu, int index)
 
   /* destroy unshared data */
 
-  if (menu->items[index]->text)
+  if (menu->items[index]->text) {
     wfree(menu->items[index]->text);
-
-  if (menu->items[index]->rtext)
+  }
+  if (menu->items[index]->rtext) {
     wfree(menu->items[index]->rtext);
-
-  if (menu->items[index]->free_cdata && menu->items[index]->clientdata)
+  }
+  if (menu->items[index]->free_cdata && menu->items[index]->clientdata) {
     (*menu->items[index]->free_cdata) (menu->items[index]->clientdata);
-
+  }
+  if (menu->items[index]->shortcut) {
+    wfree(menu->items[index]->shortcut);
+  }
   wfree(menu->items[index]);
 
   for (i = index; i < menu->items_count - 1; i++) {
@@ -355,6 +360,59 @@ void wMenuItemRemove(WMenu *menu, int index)
   }
   menu->items_count--;
   menu->brother->items_count--;
+}
+
+// `shortcut_desc` should be in the format like: "Alt+h", "Control+Alt+h" etc.
+void wMenuItemSetShortcut(WMenuItem *item, const char *shortcut_desc)
+{
+  KeySym ksym;
+  char *k, *b;
+  char buf[MAX_SHORTCUT_LENGTH];
+
+  item->shortcut = wmalloc(sizeof(WShortKey));
+
+  wstrlcpy(buf, shortcut_desc, MAX_SHORTCUT_LENGTH);
+
+  b = (char *)buf;
+
+  /* get modifiers */
+  item->shortcut->modifier = 0;
+  while ((k = strchr(b, '+')) != NULL) {
+    int mod;
+    *k = 0;
+    mod = wXModifierFromKey(b);
+    if (mod < 0) {
+      WMLogWarning(_("Failed to get modifier for shortcut \"%s\""), shortcut_desc);
+      wfree(item->shortcut);
+      item->shortcut = NULL;
+      break;
+    }
+    item->shortcut->modifier |= mod;
+    b = k + 1;
+  }
+
+  /* get key */
+  if (item->shortcut) {
+    if (isupper(b[0])) {
+      item->shortcut->modifier |= wXModifierFromKey("Shift");
+    }
+    ksym = XStringToKeysym(b);
+
+    if (ksym == NoSymbol) {
+      WMLogWarning(_("Failed to get KeySym for shortcut \"%s\""), shortcut_desc);
+      wfree(item->shortcut);
+      item->shortcut = NULL;
+    } else {
+      item->shortcut->keycode = XKeysymToKeycode(dpy, ksym);
+      if (item->shortcut->keycode == 0) {
+        WMLogWarning(_("Failed to get Keycode for shortcut \"%s\""), shortcut_desc);
+        wfree(item->shortcut);
+        item->shortcut = NULL;
+      } else {
+        item->rtext = wstrdup(b);
+      }
+    }
+  }
 }
 
 void wMenuItemSetSubmenu(WMenu *menu, WMenuItem *item, WMenu *submenu)
@@ -838,7 +896,6 @@ void wMenuDestroy(WMenu *menu, int recurse)
     CFNotificationCenterRemoveObserver(menu->frame->screen_ptr->notificationCenter,
                                        menu, WMDidChangeMenuTitleAppearanceSettings, NULL);
   }
-
   /* remove any pending timers */
   if (menu->timer) {
     WMDeleteTimerHandler(menu->timer);
@@ -846,9 +903,9 @@ void wMenuDestroy(WMenu *menu, int recurse)
   menu->timer = NULL;
 
   /* call destroy handler */
-  if (menu->on_destroy)
+  if (menu->on_destroy) {
     (*menu->on_destroy) (menu);
-
+  }
   /* Destroy items if this menu own them. If this is the "brother" menu,
    * leave them alone as it is shared by them.
    */
@@ -862,6 +919,9 @@ void wMenuDestroy(WMenu *menu, int recurse)
       }
       if (menu->items[i]->free_cdata && menu->items[i]->clientdata) {
         (*menu->items[i]->free_cdata) (menu->items[i]->clientdata);
+      }
+      if (menu->items[i]->shortcut) {
+        wfree(menu->items[i]->shortcut);
       }
       wfree(menu->items[i]);
     }
@@ -877,23 +937,23 @@ void wMenuDestroy(WMenu *menu, int recurse)
       }
     }
 
-    if (menu->items)
+    if (menu->items) {
       wfree(menu->items);
-
+    }
   }
 
   FREE_PIXMAP(menu->menu_texture_data);
 
-  if (menu->submenus)
+  if (menu->submenus) {
     wfree(menu->submenus);
-
+  }
   wCoreDestroy(menu->menu);
   wFrameWindowDestroy(menu->frame);
 
   /* destroy copy of this menu */
-  if (!menu->flags.brother && menu->brother)
+  if (!menu->flags.brother && menu->brother) {
     wMenuDestroy(menu->brother, False);
-
+  }
   wfree(menu);
 }
 

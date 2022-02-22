@@ -417,6 +417,8 @@ enum {
   WKBD_LAST
 };
 
+#define MAX_SHORTCUT_LENGTH 32
+
 typedef struct WShortKey {
   unsigned int modifier;
   KeyCode keycode;
