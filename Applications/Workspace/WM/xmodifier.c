@@ -71,18 +71,8 @@
    "meta" key is a key whose keysym is Meta_L or Meta_R, and which generates
    one of the modifier bits Mod1-Mod5.
 
-   Unfortunately, many keyboards don't have Meta keys in their default
-   configuration.  So, if there are no Meta keys, but there are "Alt" keys,
-   emacs will interpret Alt as Meta.  If there are both Meta and Alt keys,
-   then the Meta keys mean "Meta", and the Alt keys mean "Alt" (it used to
-   mean "Symbol," but that just confused the hell out of way too many people).
-
    This works with the default configurations of the 19 keyboard-types I've
    checked.
-
-   Emacs detects keyboard configurations which violate the above rules, and
-   prints an error message on the standard-error-output.  (Perhaps it should
-   use a pop-up-window instead.)
 */
 
 static int HyperMask, SuperMask, AltMask;
@@ -111,17 +101,33 @@ static const char *index_to_name(int indice)
   }
 }
 
-static void x_reset_modifier_mapping(Display * display)
+int wXModifierFromKey(const char *key)
+{
+  if (strcasecmp(key, "SHIFT") == 0 && ShiftMask != 0)
+    return ShiftMask;
+  else if (strcasecmp(key, "CONTROL") == 0 && ControlMask != 0)
+    return ControlMask;
+  else if (strcasecmp(key, "ALT") == 0 && AltMask != 0)
+    return AltMask;
+  else if (strcasecmp(key, "SUPER") == 0 && SuperMask != 0)
+    return SuperMask;
+  else if (strcasecmp(key, "HYPER") == 0 && HyperMask != 0)
+    return HyperMask;
+  else
+    return -1;
+}
+
+void wXModifierInitialize(void)
 {
   int modifier_index, modifier_key, column, mkpm;
   int hyper_bit = 0;
   int super_bit = 0;
   int alt_bit = 0;
   int mode_bit = 0;
-  XModifierKeymap *x_modifier_keymap = XGetModifierMapping(display);
+  XModifierKeymap *x_modifier_keymap = XGetModifierMapping(dpy);
 
   mkpm = x_modifier_keymap->max_keypermod;
-  for (modifier_index = 0; modifier_index < 8; modifier_index++)
+  for (modifier_index = 0; modifier_index < 8; modifier_index++) {
     for (modifier_key = 0; modifier_key < mkpm; modifier_key++) {
       KeySym last_sym = 0;
 
@@ -139,9 +145,9 @@ static void x_reset_modifier_mapping(Display * display)
                        key_name, code, other_mod);                      \
         }
 
-#define check_modifier(key_name, mask) {                      \
-          if ((1 << modifier_index) != mask)                  \
-            modbarf(key_name, index_to_name(modifier_index)); \
+#define check_modifier(key_name, mask) {                        \
+          if ((1 << modifier_index) != mask)                    \
+            modbarf(key_name, index_to_name(modifier_index));   \
         }
 
 #define store_modifier(key_name, old_mod) {                             \
@@ -154,8 +160,6 @@ static void x_reset_modifier_mapping(Display * display)
             modbarf(key_name, "ModLock");                               \
           } else if (modifier_index == ControlMapIndex) {               \
             modbarf(key_name, "ModControl");                            \
-          } else if (sym == XK_Mode_switch) {                           \
-            mode_bit = modifier_index; /* Mode_switch is special, see below... */ \
           } else if (modifier_index == super_bit && *old_mod != super_bit) { \
             modwarn(key_name, super_bit, "Super");                      \
           } else if (modifier_index == hyper_bit && *old_mod != hyper_bit) { \
@@ -168,7 +172,7 @@ static void x_reset_modifier_mapping(Display * display)
         }
 
         code = x_modifier_keymap->modifiermap[modifier_index * mkpm + modifier_key];
-        sym = (code ? XkbKeycodeToKeysym(display, code, 0, column) : NoSymbol);
+        sym = (code ? XkbKeycodeToKeysym(dpy, code, 0, column) : NoSymbol);
 
         if (sym == last_sym)
           continue;
@@ -176,7 +180,8 @@ static void x_reset_modifier_mapping(Display * display)
 
         switch (sym) {
         case XK_Mode_switch:
-          store_modifier("Mode_switch", &mode_bit);
+          /* store_modifier("Mode_switch", &mode_bit); */
+          mode_bit = modifier_index;
           break;
         case XK_Super_L:
           store_modifier("Super_L", &super_bit);
@@ -223,25 +228,23 @@ static void x_reset_modifier_mapping(Display * display)
         }
       }
     }
+  }
 
   /* mode_bit overrides everything, since it's processed down inside of
-     XLookupString() instead of by us.  If Meta and Mode_switch both
-     generate the same modifier bit (which is an error), then we don't
-     interpret that bit as Meta, because we can't make XLookupString()
-     not interpret it as Mode_switch; and interpreting it as both would
-     be totally wrong. */
+     XLookupString() instead of by us. */
   if (mode_bit) {
     const char *warn = NULL;
 
-    if (mode_bit == hyper_bit)
+    if (mode_bit == hyper_bit) {
       warn = "Hyper", hyper_bit = 0;
-    else if (mode_bit == super_bit)
+    } else if (mode_bit == super_bit) {
       warn = "Super", super_bit = 0;
-    else if (mode_bit == alt_bit)
+    } else if (mode_bit == alt_bit) {
       warn = "Alt", alt_bit = 0;
+    }
     if (warn) {
       WMLogWarning("%s is being used for both Mode_switch and %s.",
-               index_to_name(mode_bit), warn);
+                   index_to_name(mode_bit), warn);
     }
   }
 
@@ -254,53 +257,4 @@ static void x_reset_modifier_mapping(Display * display)
 #undef modwarn
 #undef check_modifier
 #undef modbarf
-}
-
-const char *wXModifierToShortcutLabel(int mask)
-{
-  if (mask < 0)
-    return NULL;
-
-  if (mask == ShiftMask)
-    return "Sh+";
-  if (mask ==  ControlMask)
-    return "^";
-  if (mask ==  AltMask)
-    return "A+";
-  if (mask ==  Mod1Mask)
-    return "M1+";
-  if (mask ==  Mod2Mask)
-    return "M2+";
-  if (mask ==  Mod3Mask)
-    return "M3+";
-  if (mask ==  Mod4Mask)
-    return "M4+";
-  if (mask ==  Mod5Mask)
-    return "M5+";
-
-  WMLogWarning(_("Can't convert keymask 0x%04X to a shortcut label"), mask);
-  return NULL;
-}
-
-int wXModifierFromKey(const char *key)
-{
-  if (strcasecmp(key, "SHIFT") == 0 && ShiftMask != 0)
-    return ShiftMask;
-  else if (strcasecmp(key, "CONTROL") == 0 && ControlMask != 0)
-    return ControlMask;
-  else if (strcasecmp(key, "ALT") == 0 && AltMask != 0)
-    return AltMask;
-  else if (strcasecmp(key, "SUPER") == 0 && SuperMask != 0)
-    return SuperMask;
-  else if (strcasecmp(key, "HYPER") == 0 && HyperMask != 0)
-    return HyperMask;
-  else
-    return -1;
-}
-
-/* Wrapper so that we may fit the WM naming conventions, yet leave the
-   original XEmacs function name in place. */
-void wXModifierInitialize(void)
-{
-  x_reset_modifier_mapping(dpy);
 }

@@ -42,9 +42,6 @@ static inline void wSlideWindow(Window win, int from_x, int from_y, int to_x, in
 char *ShrinkString(WMFont *font, const char *string, int width);
 char *ExpandOptions(WScreen * scr, const char *cmdline);
 
-char *GetShortcutString(const char *text);
-char *GetShortcutKey(WShortKey key);
-
 char *EscapeWM_CLASS(const char *name, const char *class);
 char *wGetCommandForWindow(Window win);
 
