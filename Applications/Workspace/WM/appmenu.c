@@ -597,7 +597,7 @@ WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
   wMenuItemSetShortcut(tmp_item, "Command+h");
   tmp_item = wMenuAddItem(menu, _("Hide Others"), mainCallback, wapp);
   /* tmp_item->rtext = wstrdup("H"); */
-  wMenuItemSetShortcut(tmp_item, "Command+H");
+  wMenuItemSetShortcut(tmp_item, "Command+Shift+h");
   tmp_item = wMenuAddItem(menu, _("Quit"), mainCallback, wapp);
   wMenuItemSetShortcut(tmp_item, "Command+q");
   
@@ -900,12 +900,9 @@ void wApplicationMenuRestoreFromState(WMenu *menu, CFArrayRef state)
 
 // Menu state
 //--------------------------------------------------------------------------------------------------
-static WMenuItem *_itemForShortcut(WMenu *menu, KeyCode keycode, int state)
+static WMenuItem *_itemForShortcut(WMenu *menu, KeyCode keycode, unsigned int modifiers)
 {
   WMenuItem *item;
-  Bool is_uppercase = (state & ShiftMask);
-  KeySym item_keysym;
-  KeyCode item_keycode;
 
   WMLogInfo("Searching for shortcut in %s", menu->frame->title);
 
@@ -913,18 +910,16 @@ static WMenuItem *_itemForShortcut(WMenu *menu, KeyCode keycode, int state)
   for (int i = 0; i < menu->items_count; i++) {
     item = menu->items[i];
     if (item->submenu_index >= 0) {
-      item = _itemForShortcut(menu->submenus[item->submenu_index], keycode, state);
+      item = _itemForShortcut(menu->submenus[item->submenu_index], keycode, modifiers);
       if (item != NULL) {
         return item;
       }
-    } else if (item->rtext && strlen(item->rtext) == 1) {
-      item_keysym = XStringToKeysym(item->rtext);
-      item_keycode = XKeysymToKeycode(dpy, item_keysym);
-      if (item_keycode == keycode) {
-        if (!is_uppercase || (is_uppercase && isupper(item->rtext[0]))) {
-          WMLogInfo("Found uppercase menu item `%s` with index: %i order: %i", item->text, i, item->index);
-          return item;
-        }
+    } else if (item->shortcut) {
+      if (item->shortcut->keycode == keycode &&
+          item->shortcut->modifier == modifiers) {
+        WMLogInfo("Found menu item `%s` keycode: %i modifiers: %i",
+                  item->text, item->shortcut->keycode, item->shortcut->modifier);
+        return item;
       }
     }
   }
