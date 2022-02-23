@@ -676,6 +676,7 @@ void wMenuItemSelect(WMenu *menu, int item_index)
       /* unmap cascade */
       if (item->submenu_index >= 0 && menu->submenus) {
         if (!menu->submenus[item->submenu_index]->flags.tornoff) {
+          wMenuItemSelect(menu->submenus[item->submenu_index], -1);
           wMenuUnmap(menu->submenus[item->submenu_index]);
         }
       }
@@ -1827,7 +1828,7 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
                              submenu->brother->flags.mapped) {
                     /* selected with last click or tornoff submenu is visible */
                     wMenuItemSelect(mouse_menu, -1);
-                    wMenuUnmap(submenu);
+                    closeCascade(submenu);
                   }
                 } else if (!mouse_menu->flags.app_menu || mouse_menu->flags.brother) {
                   wMenuItemSelect(mouse_menu, -1);
