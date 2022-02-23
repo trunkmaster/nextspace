@@ -71,6 +71,7 @@
 #include "osdep.h"
 #include "iconyard.h"
 #include "application.h"
+#include "appmenu.h"
 
 #ifdef USE_MWM_HINTS
 # include "motif.h"
@@ -2619,14 +2620,15 @@ void wWindowSetKeyGrabs(WWindow * wwin)
              wwin->frame->core->window, True, GrabModeAsync, GrabModeAsync);
   }
 
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_L), 0, wwin->client_win, True,
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_L), AnyModifier, wwin->client_win, True,
            GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_R), 0, wwin->client_win, True,
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_R), AnyModifier, wwin->client_win, True,
            GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Alt_L), 0, wwin->client_win, True,
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Alt_L), AnyModifier, wwin->client_win, True,
            GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Alt_R), 0, wwin->client_win, True,
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Alt_R), AnyModifier, wwin->client_win, True,
            GrabModeAsync, GrabModeAsync);
+  /* wApplicationMenuSetKeyGrabs(wwin); */
 }
 
 void wWindowResetMouseGrabs(WWindow * wwin)
