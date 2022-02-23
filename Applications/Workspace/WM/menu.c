@@ -362,7 +362,8 @@ void wMenuItemRemove(WMenu *menu, int index)
   menu->brother->items_count--;
 }
 
-// `shortcut_desc` should be in the format like: "Alt+h", "Control+Alt+h" etc.
+/* `shortcut_desc` should be in the format like: "Alt+h", "Control+Alt+h" etc.
+   NOTE: "Alt+H" and "Alt+Shift+h" are equivalent. */
 void wMenuItemSetShortcut(WMenuItem *item, const char *shortcut_desc)
 {
   KeySym ksym;
@@ -409,6 +410,9 @@ void wMenuItemSetShortcut(WMenuItem *item, const char *shortcut_desc)
         wfree(item->shortcut);
         item->shortcut = NULL;
       } else {
+        if (item->shortcut->modifier & wXModifierFromKey("Shift")) {
+          b[0] = toupper(b[0]);
+        }
         item->rtext = wstrdup(b);
       }
     }
