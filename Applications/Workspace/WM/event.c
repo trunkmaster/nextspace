@@ -1417,14 +1417,8 @@ static void handleKeyPress(XEvent * event)
   /* ignore CapsLock */
   modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
 
-  /* if (wwin && wwin->client_win) { */
-  /*   WMLogInfo("handleKeyPress: %i state: %i mask: %i" */
-  /*             " modifiers: %i window:%lu", */
-  /*             event->xkey.keycode, event->xkey.state, MOD_MASK, */
-  /*             modifiers, wwin->client_win); */
-  /* } */
-  WMLogInfo("handleKeyPress: %i state: %i mask: %i modifiers: %i",
-            event->xkey.keycode, event->xkey.state, ALT_MOD_MASK, modifiers);
+  WMLogInfo("handleKeyPress: %i state: %i modifiers: %i",
+            event->xkey.keycode, event->xkey.state, modifiers);
 
   /* Handle Alternate button press to change miniaturize button image at titlebar */
   if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
