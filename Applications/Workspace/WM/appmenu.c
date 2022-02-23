@@ -435,7 +435,7 @@ static WMenu *_createWindowsMenu(WApplication *wapp)
   tmp_item = wMenuItemInsert(_menu, 0, _("Arrange in Front"), NULL, NULL);
   wMenuItemSetEnabled(_menu, tmp_item, False);
   tmp_item = wMenuAddItem(_menu, _("Miniaturize Window"), _miniaturizeWindow, NULL);
-  tmp_item->rtext = wstrdup("m");
+  wMenuItemSetShortcut(tmp_item, "Command+m");
   tmp_item = wMenuAddItem(_menu, _("Move Window To"), NULL, NULL);
   wMenuItemSetSubmenu(_menu, tmp_item, desktops_menu);
   
@@ -444,7 +444,7 @@ static WMenu *_createWindowsMenu(WApplication *wapp)
   /* tmp_item = wMenuAddItem(_menu, _("Select Window"), windowsCallback, NULL); */
   tmp_item = wMenuAddItem(_menu, _("Zoom Window"), _zoomWindow, NULL);
   tmp_item = wMenuAddItem(_menu, _("Close Window"), _closeWindow, NULL);
-  tmp_item->rtext = wstrdup("w");
+  wMenuItemSetShortcut(tmp_item, "Command+w");
 
   /* TODO: think about "Options" submenu */
 
@@ -940,7 +940,7 @@ Bool wApplicationMenuHandleKeyPress(WWindow *focused_window, XEvent *event)
     return False;
   }
 
-  if (event->xkey.state & wPreferences.modifier_mask) {
+  if (event->xkey.state & wPreferences.cmd_modifier_mask) {
     WMLogInfo("Command+ shortcut was pressed.");
   } else if (event->xkey.state & wPreferences.alt_modifier_mask) {
     WMLogInfo("Alternate+ shortcut was pressed - Not supported for application menu yet.");

@@ -334,8 +334,6 @@ WDefaultEntry staticOptionList[] = {
   {"ColormapSize", "4", NULL, &wPreferences.cmap_size, getInt, NULL, NULL, NULL},
   {"DisableDithering", "NO", NULL, &wPreferences.no_dithering, getBool, NULL, NULL, NULL},
   {"IconSize", "64", NULL, &wPreferences.icon_size, getInt, NULL, NULL, NULL},
-  {"ModifierKey", "Alt", NULL, &wPreferences.modifier_mask, getModMask, NULL, NULL, NULL},
-  {"AlternateModifierKey", "Super", NULL, &wPreferences.alt_modifier_mask, getAltModMask, NULL, NULL, NULL},
   {"TitlebarStyle", "old", seTitlebarStyles, &wPreferences.titlebar_style, getEnum, NULL, NULL, NULL},
   {"DisableDock", "NO", (void *)WM_DOCK, NULL, getBool, setIfDockPresent, NULL, NULL},
   {"DisableClip", "YES", (void *)WM_CLIP, NULL, getBool, setIfDockPresent, NULL, NULL},
@@ -484,32 +482,34 @@ WDefaultEntry optionList[] = {
 
   /* --- Key bindings --- */
 
+  {"CommandModifierKey", "Alt", NULL, &wPreferences.cmd_modifier_mask, getModMask, NULL, NULL, NULL},
+  {"AlternateModifierKey", "Super", NULL, &wPreferences.alt_modifier_mask, getAltModMask, NULL, NULL, NULL},
   /* Dock and Icon Yard */
-  /* {"DockHideShowKey", "\"Super+Shift+D\"", (void *)WKBD_DOCKHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"IconYardHideShowKey", "\"Super+Shift+Y\"", (void *)WKBD_YARDHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"DockHideShowKey", "\"Alternate+D\"", (void *)WKBD_DOCKHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"IconYardHideShowKey", "\"Alternate+Y\"", (void *)WKBD_YARDHIDESHOW, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   /* Window Resizing */
   /* {"MaximusKey", "\"Super+KP_5\"", (void *)WKBD_MAXIMUS, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"ShadeKey", "\"Super+KP_Subtract\"", (void *)WKBD_SHADE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"MaximizeKey", "\"Super+KP_Add\"", (void *)WKBD_MAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"VMaximizeKey", "\"Super+Up\"", (void *)WKBD_VMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"HMaximizeKey", "\"Super+Right\"", (void *)WKBD_HMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"LHMaximizeKey", "\"Super+KP_4\"", (void *)WKBD_LHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"RHMaximizeKey", "\"Super+KP_6\"", (void *)WKBD_RHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"THMaximizeKey", "\"Super+KP_8\"", (void *)WKBD_THMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"BHMaximizeKey", "\"Super+KP_2\"", (void *)WKBD_BHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"LTCMaximizeKey", "\"Super+KP_7\"", (void *)WKBD_LTCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"RTCMaximizeKey", "\"Super+KP_9\"", (void *)WKBD_RTCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"LBCMaximizeKey", "\"Super+KP_1\"", (void *)WKBD_LBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"RBCMaximizeKey", "\"Super+KP_3\"", (void *)WKBD_RBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"ShadeKey", "\"Alternate+KP_Subtract\"", (void *)WKBD_SHADE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"MaximizeKey", "\"Alternate+KP_Add\"", (void *)WKBD_MAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"VMaximizeKey", "\"Alternate+Up\"", (void *)WKBD_VMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"HMaximizeKey", "\"Alternate+Right\"", (void *)WKBD_HMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"LHMaximizeKey", "\"Alternate+KP_4\"", (void *)WKBD_LHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"RHMaximizeKey", "\"Alternate+KP_6\"", (void *)WKBD_RHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"THMaximizeKey", "\"Alternate+KP_8\"", (void *)WKBD_THMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"BHMaximizeKey", "\"Alternate+KP_2\"", (void *)WKBD_BHMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"LTCMaximizeKey", "\"Alternate+KP_7\"", (void *)WKBD_LTCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"RTCMaximizeKey", "\"Alternate+KP_9\"", (void *)WKBD_RTCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"LBCMaximizeKey", "\"Alternate+KP_1\"", (void *)WKBD_LBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"RBCMaximizeKey", "\"Alternate+KP_3\"", (void *)WKBD_RBCMAXIMIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   /* Window Ordering */
-  /* {"CloseKey", "\"Alt+w\"", (void *)WKBD_CLOSE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"HideKey", "\"Alt+h\"", (void *)WKBD_HIDE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"HideOthersKey", "\"Alt+Shift+h\"", (void *)WKBD_HIDE_OTHERS, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"MiniaturizeKey", "\"Alt+m\"", (void *)WKBD_MINIATURIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"MinimizeAllKey", "\"Alt+Shift+m\"", (void *)WKBD_MINIMIZEALL, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"CloseKey", "\"Command+w\"", (void *)WKBD_CLOSE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"HideKey", "\"Command+h\"", (void *)WKBD_HIDE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"HideOthersKey", "\"Command+H\"", (void *)WKBD_HIDE_OTHERS, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"MiniaturizeKey", "\"Command+m\"", (void *)WKBD_MINIATURIZE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"MinimizeAllKey", "\"Command+M\"", (void *)WKBD_MINIMIZEALL, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   /* Focus switch */
-  /* {"RaiseKey", "\"Alt+Up\"", (void *)WKBD_RAISE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
-  /* {"LowerKey", "\"Alt+Down\"", (void *)WKBD_LOWER, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"RaiseKey", "\"Command+Up\"", (void *)WKBD_RAISE, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
+  /* {"LowerKey", "\"Command+Down\"", (void *)WKBD_LOWER, NULL, getKeybind, setKeyGrab, NULL, NULL}, */
   {"FocusNextKey", "\"Command+Tab\"", (void *)WKBD_FOCUSNEXT, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"FocusPrevKey", "\"Command+Shift+Tab\"", (void *)WKBD_FOCUSPREV, NULL, getKeybind, setKeyGrab, NULL, NULL},
   {"GroupNextKey", "\"Command+grave\"", (void *)WKBD_GROUPNEXT, NULL, getKeybind, setKeyGrab, NULL, NULL},

@@ -57,8 +57,6 @@
 #include "defaults.h"
 #include "xmodifier.h"
 
-#define MOD_MASK wPreferences.modifier_mask
-
 /* do not divide main menu and submenu in different tiers, opposed to OpenStep */
 #undef SINGLE_MENULEVEL
 
@@ -1939,7 +1937,7 @@ static void menuTitleDoubleClick(WCoreWindow *sender, void *data, XEvent *event)
   /* Parameter not used, but tell the compiler that it is ok */
   (void) sender;
 
-  if (event->xbutton.state & MOD_MASK) {
+  if (event->xbutton.state & wPreferences.cmd_modifier_mask) {
     if (menu->flags.lowered) {
       lower = 0;
     } else {
@@ -1967,7 +1965,7 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   if (event->xbutton.button != Button1 && event->xbutton.button != Button2)
     return;
 
-  if (event->xbutton.state & MOD_MASK) {
+  if (event->xbutton.state & wPreferences.cmd_modifier_mask) {
     wLowerFrame(menu->frame->core);
     lower = 1;
   } else {

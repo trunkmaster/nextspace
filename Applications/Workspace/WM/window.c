@@ -77,9 +77,6 @@
 #endif
 #include "wmspec.h"
 
-#define MOD_MASK wPreferences.modifier_mask
-#define ALT_MOD_MASK wPreferences.alt_modifier_mask
-
 
 /***** Local Stuff *****/
 static WWindowState *windowState = NULL;
@@ -2646,7 +2643,7 @@ void wWindowResetMouseGrabs(WWindow * wwin)
 
   if (!WFLAGP(wwin, no_bind_mouse)) {
     /* grabs for Alternate+drag */
-    wHackedGrabButton(AnyButton, ALT_MOD_MASK, wwin->client_win,
+    wHackedGrabButton(AnyButton, wPreferences.alt_modifier_mask, wwin->client_win,
                       True, ButtonPressMask | ButtonReleaseMask,
                       GrabModeSync, GrabModeAsync, None, None);
 
@@ -2662,10 +2659,10 @@ void wWindowResetMouseGrabs(WWindow * wwin)
                         True, ButtonPressMask | ButtonReleaseMask,
                         GrabModeSync, GrabModeAsync, None, None);
 
-      wHackedGrabButton(Button4, ALT_MOD_MASK | ControlMask, wwin->client_win,
+      wHackedGrabButton(Button4, wPreferences.alt_modifier_mask | ControlMask, wwin->client_win,
                         True, ButtonPressMask | ButtonReleaseMask,
                         GrabModeSync, GrabModeAsync, None, None);
-      wHackedGrabButton(Button5, ALT_MOD_MASK | ControlMask, wwin->client_win,
+      wHackedGrabButton(Button5, wPreferences.alt_modifier_mask | ControlMask, wwin->client_win,
                         True, ButtonPressMask | ButtonReleaseMask,
                         GrabModeSync, GrabModeAsync, None, None);
     }
@@ -2915,7 +2912,7 @@ static void titlebarDblClick(WCoreWindow *sender, void *data, XEvent *event)
     }
   }
   else if (event->xbutton.button == Button3) {
-    if (event->xbutton.state & ALT_MOD_MASK)
+    if (event->xbutton.state & wPreferences.alt_modifier_mask)
       wApplicationHideOthers(wwin);
   }
   else if (event->xbutton.button == Button2) {
@@ -2971,7 +2968,7 @@ static void frameMouseDown(WObjDescriptor *desc, XEvent *event)
     }
   }
 
-  if (event->xbutton.state & ALT_MOD_MASK) {
+  if (event->xbutton.state & wPreferences.alt_modifier_mask) {
     /* move the window */
     if (XGrabPointer(dpy, wwin->client_win, False,
                      ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
@@ -3022,8 +3019,8 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   /*         wXModifierFromKey("MOD4")); */
 
   if (event->xbutton.button == Button1
-      && !(event->xbutton.state & ALT_MOD_MASK) // not Alternate
-      && !(event->xbutton.state & MOD_MASK) // not Command
+      && !(event->xbutton.state & wPreferences.alt_modifier_mask) // not Alternate
+      && !(event->xbutton.state & wPreferences.cmd_modifier_mask) // not Command
       && !WFLAGP(wwin, no_focusable)) { // focusable
     wSetFocusTo(wwin->screen, wwin);
   }
@@ -3031,7 +3028,7 @@ static void titlebarMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   // Handle Click, Shift + Click and Command + Click
   if (event->xbutton.button == Button1 || event->xbutton.button == Button2) {
     if (event->xbutton.button == Button1) {
-      if (event->xbutton.state & MOD_MASK) // Command + Click
+      if (event->xbutton.state & wPreferences.cmd_modifier_mask) // Command + Click
         wLowerFrame(wwin->frame->core);
       else
         wRaiseFrame(wwin->frame->core);
@@ -3078,7 +3075,7 @@ static void windowCloseClick(WCoreWindow *sender, void *data, XEvent *event)
     return;
 
   /* if control-click or modifier-click, kill the client */
-  if (event->xbutton.state & ControlMask || event->xbutton.state & ALT_MOD_MASK) {
+  if (event->xbutton.state & ControlMask || event->xbutton.state & wPreferences.alt_modifier_mask) {
     wClientKill(wwin);
   } else {
     if (wwin->protocols.DELETE_WINDOW && event->xbutton.state == 0) {
@@ -3130,7 +3127,7 @@ static void windowIconifyClick(WCoreWindow *sender, void *data, XEvent *event)
     } else {
       wIconifyWindow(wwin);
     }
-  } else if (event->xbutton.button == Button1 && event->xbutton.state & ALT_MOD_MASK) {
+  } else if (event->xbutton.button == Button1 && event->xbutton.state & wPreferences.alt_modifier_mask) {
     if (wwin->flags.maximized) {
       wUnmaximizeWindow(wwin);
     } else {

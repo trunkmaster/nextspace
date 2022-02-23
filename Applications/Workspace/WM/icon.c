@@ -74,7 +74,6 @@
 /* Icon cache path */
 #define CACHE_ICON_PATH "/Workspace/CachedPixmaps"
 
-#define MOD_MASK wPreferences.modifier_mask
 #define ICON_BORDER 3
 
 
@@ -780,7 +779,7 @@ static void set_dockapp_in_icon(WIcon *icon)
   /* Needed to move the icon clicking on the application part */
   if ((XGetWindowAttributes(dpy, icon->icon_win, &attr)) &&
       (attr.all_event_masks & ButtonPressMask))
-    wHackedGrabButton(Button1, MOD_MASK, icon->core->window, True,
+    wHackedGrabButton(Button1, wPreferences.cmd_modifier_mask, icon->core->window, True,
                       ButtonPressMask, GrabModeSync, GrabModeAsync,
                       None, wPreferences.cursor[WCUR_ARROW]);
 }
@@ -893,7 +892,7 @@ static void miniwindowMouseDown(WObjDescriptor *desc, XEvent *event)
   }
 
   if (event->xbutton.button == Button1) {
-    if (event->xbutton.state & MOD_MASK)
+    if (event->xbutton.state & wPreferences.cmd_modifier_mask)
       wLowerFrame(icon->core);
     else
       wRaiseFrame(icon->core);

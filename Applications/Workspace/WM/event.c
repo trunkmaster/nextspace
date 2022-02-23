@@ -858,7 +858,7 @@ static void handleButtonPress(XEvent * event)
   } else if (desc->parent_type == WCLASS_APPICON
              || desc->parent_type == WCLASS_MINIWINDOW
              || desc->parent_type == WCLASS_DOCK_ICON) {
-    if (event->xbutton.state & wPreferences.modifier_mask) {
+    if (event->xbutton.state & wPreferences.cmd_modifier_mask) {
       WAppIcon *appicon = wAppIconFor(event->xbutton.window);
       WAppIcon *appicon0 = scr->dock->icon_array[0];
       if ((desc->parent_type == WCLASS_DOCK_ICON) &&

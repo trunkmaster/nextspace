@@ -107,14 +107,17 @@ int wXModifierFromKey(const char *key)
     return ShiftMask;
   } else if (strcasecmp(key, "Control") == 0 && ControlMask != 0) {
     return ControlMask;
-  } else if ((strcasecmp(key, "Alt") == 0 || strcasecmp(key, "Command") == 0) &&
-             AltMask != 0) {
+  } else if ((strcasecmp(key, "Alt") == 0) && AltMask != 0) {
     return AltMask;
   } else if ((strcasecmp(key, "Super") == 0 || strcasecmp(key, "Alternate") == 0) &&
              SuperMask != 0) {
     return SuperMask;
   } else if (strcasecmp(key, "Hyper") == 0 && HyperMask != 0) {
     return HyperMask;
+  } else if (strcasecmp(key, "Command") == 0) {
+    return wPreferences.cmd_modifier_mask;
+  } else if (strcasecmp(key, "Alternate") == 0) {
+    return wPreferences.alt_modifier_mask;
   } else {
     return -1;
   }
