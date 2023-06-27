@@ -17,7 +17,7 @@ jobs:
           path: /root/nextspace
       - run:
           name: Install SUDO
-          command: yum -y install sudo
+          command: yum -y install sudo git
       - run:
           name: Install Libraries
           command: |
