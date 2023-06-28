@@ -30,7 +30,12 @@
 {
   if (panel == nil)
     {
-      [NSBundle loadNibNamed:@"Info" owner:self];
+      if (![NSBundle loadNibNamed:@"Info" owner:self])
+        {
+         NSLog (@"Failed to load Info.gorm");
+         return;
+        }
+       [panel center];
     }
   [panel makeKeyAndOrderFront:self];
   // [NSTimer scheduledTimerWithTimeInterval:2.0

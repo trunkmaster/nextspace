@@ -1,0 +1,36 @@
+{
+    Faces = (
+        {
+            Files = (
+                CourierPrime-Regular.ttf
+            );
+            Name = "Regular";
+            PostScriptName = "Courier Regular";
+        },
+        {
+            Files = (
+                CourierPrime-Bold.ttf
+            );
+            Name = "Bold";
+            PostScriptName = "Courier Bold";
+        },
+	{
+            Files = (
+                CourierPrime-Italic.ttf
+            );
+            Name = "Italic";
+            PostScriptName = "Courier Italic";
+        },
+	{
+            Files = (
+                CourierPrime-BoldItalic.ttf
+            );
+            Name = "BoldItalic";
+            PostScriptName = "Courier Italic Bold";
+        }
+    );
+    Description = "Courier Prime is a monospaced font designed specifically for screenplays. It was designed by Alan Dague-Greene for John August and released by Quote-Unquote Apps under the SIL Open Font License (OFL).";
+    FontCopyright = "Copyright 2015 The Courier Prime Project Authors (https://github.com/quoteunquoteapps/CourierPrime).";
+    Packager = "Andres Morales <armm77@icloud.com>";
+    Version = 1.00;
+}
