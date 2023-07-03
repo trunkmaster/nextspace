@@ -136,7 +136,7 @@ int main(int argc, const char **argv)
     exit(1);    
   }
 
-  fprintf(stderr,"=== Starting Workspace [%s]... ===\n", REVISION);
+  fprintf(stderr,"=== Starting Workspace ===\n");
   workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
 
   //--- Window Manager thread queue -------------------------------------
@@ -145,7 +145,7 @@ int main(int argc, const char **argv)
     
     // DISPATCH_QUEUE_CONCURRENT is mandatory for CFRunLoop run.
     wm_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_CONCURRENT);
-    fprintf(stderr, "=== Initializing Window Manager... ===\n");
+    fprintf(stderr, "=== Initializing Window Manager ===\n");
     dispatch_sync(wm_q, ^{
         WScreen *wScreen;
         
@@ -171,7 +171,7 @@ int main(int argc, const char **argv)
   }
   
   //--- Workspace (GNUstep) queue ---------------------------------------
-  fprintf(stderr, "=== Starting the Workspace... ===\n");
+  fprintf(stderr, "=== Workspace initialized! ===\n");
   dispatch_sync(workspace_q, ^{
       NSSetUncaughtExceptionHandler(WSUncaughtExceptionHandler);
       WSApplicationMain(argc, argv);

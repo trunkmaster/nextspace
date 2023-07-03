@@ -65,7 +65,7 @@
   MouseRightButtonAction = "OpenApplicationsMenu";
   MouseWheelAction = None;
   MouseWheelTiltAction = None;
-  MoveDisplay = titlebar;
+  MoveDisplay = None;
   NoWindowOverDock = YES;
   NoWindowOverIcons = YES;
   OpaqueMove = YES;
@@ -80,7 +80,7 @@
   );
   RaiseAppIconsWhenBouncing = NO;
   RaiseDelay = 0;
-  ResizeDisplay = titlebar;
+  ResizeDisplay = None;
   ResizeIncrement = 0;
   SaveSessionOnExit = NO;
   ScrollableMenus = NO;
@@ -90,7 +90,7 @@
   SnapEdgeDetect = 1;
   StickyIcons = YES;
   StrictWindozeCycle = YES;
-  Superfluous = YES;
+  Superfluous = NO;
   SwitchPanelOnlyOpen = NO;
   UseSaveUnders = NO;
   ViKeyMenus = NO;

@@ -1,0 +1,50 @@
+{
+    Faces = (
+        {
+            Files = (
+                Garamond-Condensed-Regular.ttf
+            );
+            Name = "Regular";
+            PostScriptName = "Garamond Condensed Regular";
+        },
+        {
+            Files = (
+                Garamond-Condensed-Bold.ttf
+            );
+            Name = "Bold";
+            PostScriptName = "Garamond Condensed Bold";
+        },
+        {
+            Files = (
+                Garamond-Condensed-Italic.ttf
+            );
+            Name = "Italic";
+            PostScriptName = "Garamond Condensed Italic";
+        },
+        {
+            Files = (
+                Garamond-Condensed-Light-Italic.ttf
+            );
+            Name = "LightItalic";
+            PostScriptName = "Garamond Condensed Light Italic";
+        },
+	{
+            Files = (
+                Garamond-Condensed-Light-Regular.ttf
+            );
+            Name = "LightRegular";
+            PostScriptName = "Garamond Condensed Light Regular";
+        },
+	{
+            Files = (
+                Garamond-Condensed.ttf
+            );
+            Name = "Normal";
+            PostScriptName = "Garamond Condensed Normal";
+        }
+    );
+    Description = "";
+    FontCopyright = "";
+    Packager = "Andres Morales <armm77@icloud.com>";
+    Version = 1.00;
+}

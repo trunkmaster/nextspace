@@ -659,9 +659,9 @@ void wStartUp(Bool defaultScreenOnly)
   WMHookEventHandler(DispatchEvent);
 
   /* initialize defaults stuff */
-  w_global.domain.wm = wDefaultsInitDomain("WM", true);
+  w_global.domain.wm = wDefaultsInitDomain("WMState", true);
   if (!w_global.domain.wm->dictionary) {
-    WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WM");
+    WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WMState");
   }
 
   /* read defaults that don't change until a restart and are screen independent */
@@ -679,6 +679,9 @@ void wStartUp(Bool defaultScreenOnly)
 
   /* init other domains */
   w_global.domain.window_attr = wDefaultsInitDomain("WMWindowAttributes", true);
+  if (!w_global.domain.window_attr->dictionary) {
+    WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WMWindowAttributes");
+  }
 
   wSetErrorHandler();
 

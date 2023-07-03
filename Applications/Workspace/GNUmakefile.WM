@@ -22,7 +22,7 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/core/wlabel.c \
 	$(WM_DIR)/core/wpixmap.c \
 	$(WM_DIR)/core/wscreen.c \
-        $(WM_DIR)/core/wuserdefaults.c \
+	$(WM_DIR)/core/wuserdefaults.c \
 	$(WM_DIR)/core/wview.c \
 	$(WM_DIR)/core/wwindow.c
 
