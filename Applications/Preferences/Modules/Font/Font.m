@@ -224,7 +224,7 @@ NSString *WWMDefaultsPath(void)
 {
   NSString	*fontKey;
   NSString	*fontSizeKey;
-  NSFont	*font;
+  NSFont	*font, *boldFont;
 
   fontKey = [fontCategories
               objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
@@ -238,13 +238,22 @@ NSString *WWMDefaultsPath(void)
   fontSizeKey = [NSString stringWithFormat:@"%@Size", fontKey];
   font = [NSFont fontWithName:getStringDefault(domain, fontKey)
                          size:getFloatDefault(domain, fontSizeKey)];
+  boldFont = [[NSFontManager sharedFontManager] convertFont:font
+                                                toHaveTrait:NSBoldFontMask];
 
+  //
   [fontNameTextField setFont:font];
   [fontNameTextField setStringValue:[NSString stringWithFormat: @"%@ %g point",
                                               [font displayName],
                                               [font pointSize]]];
 
+  //
   [fontExampleTextView setFont:font];
+  [fontExampleTextView setFont:boldFont
+                         range:NSMakeRange([normalExampleString length],
+                                           [boldExampleString length]+1)];
+
+  //
   [enableAntiAliasingButton setIntValue:getBoolDefault(domain, @"GSFontAntiAlias")];
 
   [view setNeedsDisplay:YES];
@@ -283,6 +292,11 @@ NSString *WWMDefaultsPath(void)
   [domain release];
   [image release];
   [fontCategories dealloc];
+
+  if (view) {
+    [normalExampleString release];
+    [boldExampleString release];
+  }
   
   [super dealloc];
 }
@@ -322,15 +336,16 @@ NSString *WWMDefaultsPath(void)
   exampleString = NSLocalizedStringFromTableInBundle(@"Example Text",
                                                      @"Localizable",
                                                      bundle, @"");
-  // normalExampleString = [[NSString alloc] initWithFormat:@"Normal:\n%@",
-  //                                         exampleString];
-  // boldExampleString = [[NSString alloc] initWithFormat:@"Bold:\n%@",
-  //                                       exampleString];
+  normalExampleString = [[NSString alloc] initWithFormat:@"Normal:\n%@",
+                                          exampleString];
+  boldExampleString = [[NSString alloc] initWithFormat:@"Bold:\n%@",
+                                        exampleString];
   
-  // [fontExampleTextView setText:[NSString stringWithFormat:@"%@\n%@",
-  //                                        normalExampleString,
-  //                                        boldExampleString]];
-  [fontExampleTextView setText:exampleString];
+  [fontExampleTextView setText:[NSString stringWithFormat:@"%@\n%@",
+                                         normalExampleString,
+                                         boldExampleString]];
+  // [fontExampleTextView
+  //     readRTFDFromFile:[bundle pathForResource:@"ExampleText" ofType:@"rtf"]];
 
   [self updateUI];
 }

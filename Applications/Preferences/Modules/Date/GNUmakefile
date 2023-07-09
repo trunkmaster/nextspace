@@ -1,30 +1,66 @@
 include $(GNUSTEP_MAKEFILES)/common.make
 
+#
+# Bundle
+#
+VERSION = 0.1
+PACKAGE_NAME = Date
 BUNDLE_NAME = Date
 BUNDLE_EXTENSION = .preferences
 
-BUNDLE_INSTALL_DIR = $(GNUSTEP_INSTALLATION_DIR)/Library/Preferences
+$(BUNDLE_NAME)_PRINCIPAL_CLASS = Date
+$(BUNDLE_NAME)_STANDARD_INSTALL = no
 
+#
+# Header files
+#
+$(BUNDLE_NAME)_HEADER = \
+	Date.h \
+	Calendar.h \
+	Clock.h \
+	TimeView.h
+
+#
+# Class files
+#
+$(BUNDLE_NAME)_OBJC_FILES = \
+	Date.m \
+	Calendar.m \
+	Clock.m \
+	TimeView.m
+
+#
+# Resource files
+#
+$(BUNDLE_NAME)_RESOURCE_FILES = \
+	Resources/Date.tiff \
+	Resources/days.tiff \
+	Resources/daysH.tiff \
+	Resources/world.tiff \
+	Resources/weeks.tiff \
+	Resources/left.tiff \
+	Resources/leftH.tiff \
+	Resources/right.tiff \
+	Resources/rightH.tiff \
+	Resources/ClockView.tiff \
+	Resources/clockbits.tiff \
+	Resources/bundle.registry
+
+#
+# Languages
+#
 $(BUNDLE_NAME)_LANGUAGES = \
 	English
 
+#
+# Interface GUI
+#
 $(BUNDLE_NAME)_LOCALIZED_RESOURCE_FILES= \
 	Date.gorm
 
-$(BUNDLE_NAME)_RESOURCE_FILES = \
-	$(wildcard Resources/*.tiff)
-
-$(BUNDLE_NAME)_OBJC_FILES= \
-	Date.m
-
-$(BUNDLE_NAME)_HEADERS= \
-	Date.h
-
-$(BUNDLE_NAME)_PRINCIPAL_CLASS= \
-	Date
-
+#
+# Makefiles
+#
 -include GNUmakefile.preamble
-
 include $(GNUSTEP_MAKEFILES)/bundle.make
-
 -include GNUmakefile.postamble

@@ -2,7 +2,7 @@
 %define BASE_VERSION	1_28_0
 %define GUI_VERSION	nextspace
 %define BACK_VERSION	nextspace
-%define GORM_VERSION	master
+%define GORM_VERSION	1_3_1
 %define PC_VERSION	master
 
 Name:           nextspace-gnustep
@@ -22,7 +22,7 @@ Source5:	%{GS_REPO}/libs-gui/archive/gnustep-gui-%{GUI_VERSION}.tar.gz
 Source6:	gnustep-gui-images.tar.gz
 Source7:	back-art.tar.gz
 Source8:	gpbs.service
-Source9:	gorm-master.tar.gz
+Source9:	%{GS_REPO}/apps-gorm/archive/gorm-%{GORM_VERSION}.tar.gz
 Source10:	projectcenter-master.tar.gz
 Source11:	projectcenter-images.tar.gz
 
@@ -177,7 +177,7 @@ cd ..
 # Build GORM
 export ADDITIONAL_OBJCFLAGS="-I%{buildroot}/Developer/Headers"
 export ADDITIONAL_LDFLAGS+="-L%{buildroot}/Library/Libraries -lgnustep-base -lgnustep-gui"
-cd apps-gorm-%{GORM_VERSION}
+cd apps-gorm-gorm-%{GORM_VERSION}
 make
 cd ..
 
@@ -209,7 +209,7 @@ cd ..
 
 # Install GORM
 export GNUSTEP_INSTALLATION_DOMAIN=NETWORK
-cd apps-gorm-%{GORM_VERSION}
+cd apps-gorm-gorm-%{GORM_VERSION}
 %{make_install}
 cd ..
 # Install ProjectCenter

@@ -2,5 +2,5 @@
   type = Preferences;
   mode = Display;
   class = DisplayPrefs;
-  priority = 3;
+  priority = 5;
 }

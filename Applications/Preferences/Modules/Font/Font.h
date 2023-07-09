@@ -46,8 +46,8 @@
 
   NSImage		 *image;
   NSString		 *exampleString;
-  // NSString		 *normalExampleString;
-  // NSString		 *boldExampleString;  
+  NSString		 *normalExampleString;
+  NSString		 *boldExampleString;  
 }
 
 - (IBAction)fontCategoryChanged:(id)sender;

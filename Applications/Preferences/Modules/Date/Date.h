@@ -3,6 +3,7 @@
 // Project: Preferences
 //
 // Copyright (C) 2014-2019 Sergii Stoian
+// Copyright (C) 2022-2023 Andres Morales
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
@@ -19,20 +20,25 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <AppKit/NSNibDeclarations.h>
-#import <AppKit/NSTextField.h>
-#import <AppKit/NSImageView.h>
+#import <AppKit/AppKit.h>
+#import <Preferences.h>
 
-#import <XSFoundation/XSPreferences.h>
-
-@interface Date: NSObject <XSPrefsModule>
+@interface Date : NSObject <PrefsModule>
 {
-//  IBOutlet NSTextField *passwordTextField;
-
-  IBOutlet NSWindow      *window;
-  IBOutlet id            view;
+   id window;
+   id view;
+   id timeZoneSelectorView;
+   id timeZoneRegionSelectorPopUpButton;
+   NSImage *image;
+   NSImage *handImage;
 }
 
-//- (IBAction) passwordChanged:(id)sender;
+- (void) changeHourTypeAction: (id) sender;
+- (void) increaseFieldAction: (id) sender;
+- (void) decreaseFieldAction: (id) sender;
+- (void) changeClockFaceAction: (id) sender;
+- (void) selectRegionAction: (id) sender;
+- (void) setTimeAction: (id) sender;
+- (void) timeManuallyChangedAction: (id) sender;
 
 @end

@@ -2,5 +2,5 @@
   type = Preferences;
   mode = Sound;
   class = Sound;
-  priority = 10;
+  priority = 7;
 }

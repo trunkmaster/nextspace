@@ -84,7 +84,6 @@ enum {
   NSPoint p;
 
   NSLog(@"WMPermissions: mode: %lo nochange: %lo", mode, nochange);
-  // NSLog(@"WMPermissions: mode: %i", mode);
   
   // user
   p = NSMakePoint(xslot*0.5 - 22, yslot * 0.5 + 8);

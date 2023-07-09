@@ -2,5 +2,5 @@
   type = Preferences;
   mode = Mouse;
   class = Mouse;
-  priority = 6;
+  priority = 4;
 }

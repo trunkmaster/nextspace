@@ -1,0 +1,6 @@
+﻿{
+  type = Preferences;
+  mode = Services;
+  class = Services;
+  priority = 10;
+}

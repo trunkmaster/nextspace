@@ -1,0 +1,62 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    Calendar = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+    Clock = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+    Date = {
+	Actions = (
+	    "changeHourTypeAction:",
+	    "increaseFieldAction:",
+	    "decreaseFieldAction:",
+	    "changeClockFaceAction:",
+	    "selectRegionAction:",
+	    "setTimeAction:",
+	    "timeManuallyChangedAction:"
+	);
+	Outlets = (
+	    window,
+	    view,
+	    timeZoneSelectorView,
+	    timeZoneRegionSelectorPopUpButton
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "changeClockFaceAction:",
+	    "changeHourTypeAction:",
+	    "decreaseFieldAction:",
+	    "increaseFieldAction:",
+	    "selectRegionAction:",
+	    "setTimeAction:",
+	    "timeManuallyChangedAction:"
+	);
+	Super = NSObject;
+    };
+    Time = {
+	Actions = (
+	);
+	Outlets = (
+	    timeZoneScrollView
+	);
+	Super = NSScrollView;
+    };
+    TimeView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+}

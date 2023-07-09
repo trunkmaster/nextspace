@@ -95,8 +95,8 @@ mv -v /usr/NextSpace/include/Block.h /usr/NextSpace/include/Block-libdispatch.h
 ln -sv /usr/NextSpace/include/Block-libobjc.h /usr/NextSpace/include/Block.h
 
 %postun devel
-rm -v /usr/NextSpace/include/Block.h
-mv -v /usr/NextSpace/include/Block-libdispatch.h /usr/NextSpace/include/Block.h
+mv  /usr/NextSpace/include/Block-libdispatch.h /usr/NextSpace/include/Block.h
+rm  /usr/NextSpace/include/Block.h
 
 %changelog
 * Thu Aug 27 2020 Sergii Stoian <stoyan255@gmail.com> - 2.1-0

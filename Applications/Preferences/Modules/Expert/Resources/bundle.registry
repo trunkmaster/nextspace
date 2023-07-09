@@ -2,5 +2,5 @@
   type = Preferences;
   mode = Expert;
   class = Expert;
-  priority = 10;
+  priority = 11;
 }

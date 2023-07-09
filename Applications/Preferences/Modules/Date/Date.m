@@ -3,6 +3,7 @@
 // Project: Preferences
 //
 // Copyright (C) 2014-2019 Sergii Stoian
+// Copyright (C) 2022-2023 Andres Morales
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
@@ -19,102 +20,97 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <math.h>
-
-#import <AppKit/NSPopUpButton.h>
-#import <AppKit/NSButton.h>
-#import <AppKit/NSTextField.h>
-#import <AppKit/NSTextView.h>
-#import <AppKit/NSFont.h>
-#import <AppKit/NSFontPanel.h>
-#import <AppKit/NSNibLoading.h>
-#import <AppKit/NSOpenPanel.h>
-
-#import <AppKit/NSApplication.h>
-
 #import "Date.h"
 
 @implementation Date
 
-static Date			*sharedInstance = nil;
-static id <XSPrefsController>	owner = nil;
-
-static NSBundle                 *bundle = nil;
-static NSUserDefaults           *defaults = nil;
-static NSMutableDictionary      *domain = nil;
-
-- (id) initWithOwner:(id <XSPrefsController>)anOwner
+- (id)init
 {
-  if (sharedInstance)
-    {
-      [self dealloc];
-    }
-  else
-    {
-      self = [super init];
-      owner = anOwner;
-      defaults = [NSUserDefaults standardUserDefaults];
-      domain = [[defaults persistentDomainForName: NSGlobalDomain] mutableCopy];
-      bundle = [NSBundle bundleForClass: [self class]];
-      
-      [owner registerPrefsModule: self];
-      
-      sharedInstance = self;
-    }
-  return sharedInstance;
-}
+  NSString *imagePath;
+  NSBundle *bundle;
 
-- (void)release
-{
-  [super release];
+  self = [super init];
+
+  bundle = [NSBundle bundleForClass:[self class]];
+  imagePath = [bundle pathForResource:@"Date" ofType:@"tiff"];
+  image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+
+  return self;
 }
 
 - (void)dealloc
 {
+  NSLog(@"Date -dealloc");
+  [image release];
+
+  if (view) {
+   [view release];
+  }
+
   [super dealloc];
 }
 
 - (void)awakeFromNib
 {
+  [view retain];
+  [window release];
 }
 
-- (void) showView:(id)sender;
+- (NSView *)view
 {
-  if (!view)
-    {
-      [NSBundle loadNibNamed:@"Date" owner:self];
-    }
-
-  [owner setCurrentModule:self];
-  [view setNeedsDisplay:YES];
-}
-
-- (NSView *) view
-{
+  if (view == nil) {
+      if (![NSBundle loadNibNamed:@"Date" owner:self]) {
+         NSLog (@"Date.preferences: Could not load NIB, aborting.");
+         return nil;
+      }
+  }
   return view;
 }
 
-- (NSString *) buttonCaption
+
+- (NSString *)buttonCaption
 {
-  return NSLocalizedStringFromTableInBundle(@"Time and Date Preferences", 
-					    @"Localizable", bundle, @"");
+  return @"Date & Time Preferences";
 }
 
-- (NSImage *) buttonImage
+- (NSImage *)buttonImage
 {
-  return [NSImage imageNamed: @"Time"];
+  return image;
 }
 
-- (SEL) buttonAction
+- (void) changeHourTypeAction: (id) sender
 {
-  return @selector(showView:);
-}
 
-//
-// Action methods
-//
-/*- (IBAction) passwordChanged: (id)sender
+};
+
+- (void) increaseFieldAction: (id) sender
 {
-}*/
+
+};
+
+- (void) decreaseFieldAction: (id) sender
+{
+
+};
+
+- (void) changeClockFaceAction: (id) sender
+{
+
+};
+
+- (void) selectRegionAction: (id) sender
+{
+
+};
+
+- (void) setTimeAction: (id) sender
+{
+
+};
+
+- (void) timeManuallyChangedAction: (id) sender
+{
+
+};
 
 @end

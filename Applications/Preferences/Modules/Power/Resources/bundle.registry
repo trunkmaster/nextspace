@@ -2,5 +2,5 @@
   type = Preferences;
   mode = Power;
   class = Power;
-  priority = 10;
+  priority = 12;
 }

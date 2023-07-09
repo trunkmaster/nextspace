@@ -347,7 +347,7 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
   CGFloat scaleWidth, scaleHeight;
   DisplayBox *dBox;
 
-  NSLog(@"Screen: update display box list.");
+  //NSLog(@"Screen: update display box list.");
 
   // Clear view and array
   for (dBox in displayBoxList)

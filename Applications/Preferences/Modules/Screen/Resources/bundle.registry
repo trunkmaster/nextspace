@@ -2,5 +2,5 @@
   type = Preferences;
   mode = Screen;
   class = Screen;
-  priority = 4;
+  priority = 6;
 }
