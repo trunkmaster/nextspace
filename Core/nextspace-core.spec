@@ -1,6 +1,6 @@
 %global debug_package %{nil}
 
-%define MAKE_VERSION    2_9_0
+%define MAKE_VERSION    2_9_1
 
 Name:		nextspace-core
 Version:	0.95
@@ -105,7 +105,10 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 /Users
 /root/Library
 /root/.config
+/root/.emacs.d
+/root/.emacs.nextspace
 /root/.gtkrc-2.0
+/root/.zshrc.nextspace
 /etc/ld.so.conf.d
 /etc/profile.d
 /etc/skel

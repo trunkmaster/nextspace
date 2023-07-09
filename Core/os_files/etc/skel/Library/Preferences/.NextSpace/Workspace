@@ -1,5 +1,6 @@
 {
     BrowserViewerColumnWidth = <*R150>;
+    OpenConsoleAtStart = NO;
     RootShelfContents = {
     };
     RootViewerShelfSize = <*R76>;

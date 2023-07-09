@@ -6,4 +6,5 @@
     RootViewerShelfSize = <*R76>;
     ShelfIconSlotWidth = <*R100>;
     ShelfIsResizable = <*I1>;
+    ShowWorkspaceInDock = YES;
 }
