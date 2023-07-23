@@ -249,6 +249,7 @@ static BOOL changingRTFFont = NO;
 - (void)ok:(id)sender
 {
   [self commitDisplayedValues];
+  [Preferences saveDefaults];
 }
 
 - (void)revertToDefault:(id)sender
@@ -317,6 +318,8 @@ static BOOL changingRTFFont = NO;
 		[NSFont setUserFont: [dict objectForKey: RichTextFont]];
 	if (![[dict objectForKey: PlainTextFont] isEqual: [NSFont userFixedPitchFontOfSize: 0.0]])
 		[NSFont setUserFixedPitchFont: [dict objectForKey: PlainTextFont]];
+
+        [defaults synchronize];
 }
 
 @end
