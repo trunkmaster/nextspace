@@ -105,7 +105,6 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 /Users
 /root/Library
 /root/.config
-/root/.emacs.d
 /root/.emacs.nextspace
 /root/.gtkrc-2.0
 /root/.zshrc.nextspace
