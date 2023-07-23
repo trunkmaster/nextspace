@@ -14,8 +14,8 @@
 	    window,
 	    panelImageView,
 	    fieldsImage,
-	    quitLabel,
-	    fieldsLabelImage
+	    fieldsLabelImage,
+	    hostnameField
 	);
 	Super = NSObject;
     };
