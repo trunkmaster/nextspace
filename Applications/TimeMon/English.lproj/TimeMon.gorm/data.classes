@@ -9,12 +9,6 @@
 	);
 	Super = NSObject;
     };
-    NSPanel = {
-	Actions = (
-	    "makeKeyAndOrderFront:"
-	);
-	Super = NSWindow;
-    };
     Percentages = {
 	Actions = (
 	    "togglePause:",
@@ -27,14 +21,21 @@
 	    lagText,
 	    factorText,
 	    pauseMenuCell,
-	    colorFields,
 	    readmeText,
 	    idleColor,
 	    iowaitColor,
-	    niceColor,
 	    systemColor,
-	    userColor
+	    niceColor,
+	    userColor,
+	    colorFields
 	);
 	Super = NSObject;
+    };
+    TimeMonColors = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSMatrix;
     };
 }
