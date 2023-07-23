@@ -3,7 +3,7 @@
  * Raster graphics library
  *
  * Copyright (c) 1997-2003 Alfredo K. Kojima
- * Copyright (c) 2014 Window Maker Team
+ * Copyright (c) 2014-2021 Window Maker Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -35,6 +35,7 @@
 #include "config.h"
 #include "wraster.h"
 #include "imgformat.h"
+#include "wr_i18n.h"
 
 
 typedef struct RCachedImage {
@@ -125,7 +126,7 @@ static void init_cache(void)
 	if (RImageCacheSize > 0) {
 		RImageCache = malloc(sizeof(RCachedImage) * RImageCacheSize);
 		if (RImageCache == NULL) {
-			printf("wrlib: out of memory for image cache\n");
+			fprintf(stderr, _("wrlib: out of memory for image cache\n"));
 			return;
 		}
 		memset(RImageCache, 0, sizeof(RCachedImage) * RImageCacheSize);
@@ -244,6 +245,11 @@ RImage *RLoadImage(RContext *context, const char *file, int index)
 		time_t oldest = time(NULL);
 		int oldest_idx = 0;
 		int done = 0;
+
+		if (stat(file, &st) != 0) {
+			/* If we can't get the info, at least use a valid time to reduce risk of problems */
+			st.st_mtime = oldest;
+		}
 
 		for (i = 0; i < RImageCacheSize; i++) {
 			if (!RImageCache[i].file) {

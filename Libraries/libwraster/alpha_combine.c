@@ -17,8 +17,10 @@
  *  Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
  *  MA 02110-1301, USA.
  */
+#include "config.h"
 
 #include "wraster.h"
+#include "wr_i18n.h"
 
 void RCombineAlpha(unsigned char *d, unsigned char *s, int s_has_alpha,
 		   int width, int height, int dwi, int swi, int opacity) {

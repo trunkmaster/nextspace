@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 project(libwraster
-  VERSION 5.0.0
+  VERSION 7.0.1
   LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 

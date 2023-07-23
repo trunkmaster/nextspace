@@ -29,6 +29,8 @@
 
 #include "config.h"
 #include "wraster.h"
+#include "wr_i18n.h"
+
 
 static int get_shifts(unsigned long mask)
 {
@@ -160,7 +162,7 @@ RImage *RCreateImageFromDrawable(RContext * context, Drawable drawable, Pixmap m
 	assert(drawable != None);
 
 	if (!XGetGeometry(context->dpy, drawable, &baz, &foo, &foo, &w, &h, &bar, &bar)) {
-		printf("wrlib: invalid window or pixmap passed to RCreateImageFromDrawable\n");
+		fprintf(stderr, _("wrlib: invalid window or pixmap passed to RCreateImageFromDrawable\n"));
 		return NULL;
 	}
 	pimg = XGetImage(context->dpy, drawable, 0, 0, w, h, AllPlanes, ZPixmap);

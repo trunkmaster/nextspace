@@ -34,6 +34,8 @@
 
 #include "wraster.h"
 #include "imgformat.h"
+#include "wr_i18n.h"
+
 
 /*
  * <setjmp.h> is used for the optional error recovery mechanism shown in
@@ -90,19 +92,13 @@ static noreturn void my_error_exit(j_common_ptr cinfo)
 	longjmp(myerr->setjmp_buffer, 1);
 }
 
-RImage *RLoadJPEG(const char *file_name)
+static RImage *do_read_jpeg_file(struct jpeg_decompress_struct *cinfo, const char *file_name)
 {
 	RImage *image = NULL;
-	struct jpeg_decompress_struct cinfo;
 	int i;
 	unsigned char *ptr;
 	JSAMPROW buffer[1], bptr;
 	FILE *file;
-	/* We use our private extension JPEG error handler.
-	 * Note that this struct must live as long as the main JPEG parameter
-	 * struct, to avoid dangling-pointer problems.
-	 */
-	struct my_error_mgr jerr;
 
 	file = fopen(file_name, "rb");
 	if (!file) {
@@ -110,68 +106,51 @@ RImage *RLoadJPEG(const char *file_name)
 		return NULL;
 	}
 
-	cinfo.err = jpeg_std_error(&jerr.pub);
-	jerr.pub.error_exit = my_error_exit;
-	/* Establish the setjmp return context for my_error_exit to use. */
-	if (setjmp(jerr.setjmp_buffer)) {
-		/* If we get here, the JPEG code has signaled an error.
-		 * We need to clean up the JPEG object, close the input file, and return.
-		 */
-		jpeg_destroy_decompress(&cinfo);
-		fclose(file);
-		return NULL;
-	}
+	jpeg_create_decompress(cinfo);
+	jpeg_stdio_src(cinfo, file);
+	jpeg_read_header(cinfo, TRUE);
 
-	jpeg_create_decompress(&cinfo);
-
-	jpeg_stdio_src(&cinfo, file);
-
-	jpeg_read_header(&cinfo, TRUE);
-
-	if (cinfo.image_width < 1 || cinfo.image_height < 1) {
+	if (cinfo->image_width < 1 || cinfo->image_height < 1) {
 		buffer[0] = NULL;	/* Initialize pointer to avoid spurious free in cleanup code */
 		RErrorCode = RERR_BADIMAGEFILE;
-		goto bye;
+		goto abort_and_release_resources;
 	}
 
-	buffer[0] = (JSAMPROW) malloc(cinfo.image_width * cinfo.num_components);
-
+	buffer[0] = (JSAMPROW) malloc(cinfo->image_width * cinfo->num_components);
 	if (!buffer[0]) {
 		RErrorCode = RERR_NOMEMORY;
-		goto bye;
+		goto abort_and_release_resources;
 	}
 
-	if (cinfo.jpeg_color_space == JCS_GRAYSCALE) {
-		cinfo.out_color_space = JCS_GRAYSCALE;
-	} else
-		cinfo.out_color_space = JCS_RGB;
-	cinfo.quantize_colors = FALSE;
-	cinfo.do_fancy_upsampling = FALSE;
-	cinfo.do_block_smoothing = FALSE;
-	jpeg_calc_output_dimensions(&cinfo);
+	if (cinfo->jpeg_color_space == JCS_GRAYSCALE)
+		cinfo->out_color_space = JCS_GRAYSCALE;
+	else
+		cinfo->out_color_space = JCS_RGB;
 
-	image = RCreateImage(cinfo.image_width, cinfo.image_height, False);
-
+	cinfo->quantize_colors = FALSE;
+	cinfo->do_fancy_upsampling = FALSE;
+	cinfo->do_block_smoothing = FALSE;
+	jpeg_calc_output_dimensions(cinfo);
+	image = RCreateImage(cinfo->image_width, cinfo->image_height, False);
 	if (!image) {
 		RErrorCode = RERR_NOMEMORY;
-		goto bye;
+		goto abort_and_release_resources;
 	}
-	jpeg_start_decompress(&cinfo);
 
+	jpeg_start_decompress(cinfo);
 	ptr = image->data;
-
-	if (cinfo.out_color_space == JCS_RGB) {
-		while (cinfo.output_scanline < cinfo.output_height) {
-			jpeg_read_scanlines(&cinfo, buffer, (JDIMENSION) 1);
+	if (cinfo->out_color_space == JCS_RGB) {
+		while (cinfo->output_scanline < cinfo->output_height) {
+			jpeg_read_scanlines(cinfo, buffer, (JDIMENSION) 1);
 			bptr = buffer[0];
-			memcpy(ptr, bptr, cinfo.image_width * 3);
-			ptr += cinfo.image_width * 3;
+			memcpy(ptr, bptr, cinfo->image_width * 3);
+			ptr += cinfo->image_width * 3;
 		}
 	} else {
-		while (cinfo.output_scanline < cinfo.output_height) {
-			jpeg_read_scanlines(&cinfo, buffer, (JDIMENSION) 1);
+		while (cinfo->output_scanline < cinfo->output_height) {
+			jpeg_read_scanlines(cinfo, buffer, (JDIMENSION) 1);
 			bptr = buffer[0];
-			for (i = 0; i < cinfo.image_width; i++) {
+			for (i = 0; i < cinfo->image_width; i++) {
 				*ptr++ = *bptr;
 				*ptr++ = *bptr;
 				*ptr++ = *bptr++;
@@ -179,15 +158,36 @@ RImage *RLoadJPEG(const char *file_name)
 		}
 	}
 
-	jpeg_finish_decompress(&cinfo);
+	jpeg_finish_decompress(cinfo);
 
- bye:
-	jpeg_destroy_decompress(&cinfo);
-
+ abort_and_release_resources:
+	jpeg_destroy_decompress(cinfo);
 	fclose(file);
-
 	if (buffer[0])
 		free(buffer[0]);
 
 	return image;
+}
+
+RImage *RLoadJPEG(const char *file_name)
+{
+	struct jpeg_decompress_struct cinfo;
+	/* We use our private extension JPEG error handler.
+	 * Note that this struct must live as long as the main
+	 * JPEG parameter struct, to avoid dangling-pointer problems.
+	 */
+	struct my_error_mgr jerr;
+
+	cinfo.err = jpeg_std_error(&jerr.pub);
+	jerr.pub.error_exit = my_error_exit;
+	/* Establish the setjmp return context for my_error_exit to use. */
+	if (setjmp(jerr.setjmp_buffer)) {
+		/*
+		 * If we get here, the JPEG code has signaled an error.
+		 * We need to clean up the JPEG object, close the input file, and return.
+		 */
+		jpeg_destroy_decompress(&cinfo);
+		return NULL;
+	}
+	return do_read_jpeg_file(&cinfo, file_name);
 }

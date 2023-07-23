@@ -41,7 +41,7 @@
 
 
 /* version of the header for the library */
-#define WRASTER_HEADER_VERSION	23
+#define WRASTER_HEADER_VERSION	25
 
 
 #include <X11/Xlib.h>
@@ -69,6 +69,29 @@
 #define __wrlib_deprecated(msg)
 #endif
 
+#if __GNUC__ >= 3
+/* Apparently introduced in GCC 3.0.x */
+/* Function returns newly allocated memory that does not alias any existing variable */
+#define __wrlib_nonalias         __attribute__ ((malloc))
+#else
+#define __wrlib_nonalias
+#endif
+
+#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)
+/* Apparently introduced in GCC 3.3.x */
+/* The argument at index #i must not be NULL */
+#define __wrlib_nonnull(...)     __attribute__ ((nonnull(__VA_ARGS__)))
+#else
+#define __wrlib_nonnull(argidx)
+#endif
+
+#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
+/* Apparently introduced in GCC 3.4.x */
+/* The return value of this function *must* be checked/used */
+#define __wrlib_useresult        __attribute__ ((warn_unused_result))
+#else
+#define __wrlib_useresult
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -323,174 +346,230 @@ void RShutdown(void);
  * supported formats, such as: TIFF, XPM, PNG, JPEG, PPM, GIF
  * Do not free the returned data.
  */
-char **RSupportedFileFormats(void);
+char **RSupportedFileFormats(void)
+        __wrlib_useresult;
 
-
-char *RGetImageFileFormat(const char *file);
+char *RGetImageFileFormat(const char *file)
+        __wrlib_useresult __wrlib_nonnull(1);
 
 /*
  * Xlib contexts
  */
 RContext *RCreateContext(Display *dpy, int screen_number,
-                         const RContextAttributes *attribs);
+                         const RContextAttributes *attribs)
+        __wrlib_useresult __wrlib_nonalias __wrlib_nonnull(1);
 
 void RDestroyContext(RContext *context);
 
-Bool RGetClosestXColor(RContext *context, const RColor *color, XColor *retColor);
+Bool RGetClosestXColor(RContext *context, const RColor *color, XColor *retColor)
+        __wrlib_nonnull(1, 2, 3);
 
 /*
  * RImage creation
  */
-RImage *RCreateImage(unsigned width, unsigned height, int alpha);
+RImage *RCreateImage(unsigned width, unsigned height, int alpha)
+        __wrlib_useresult __wrlib_nonalias;
 
-RImage *RCreateImageFromXImage(RContext *context, XImage *image, XImage *mask);
+RImage *RCreateImageFromXImage(RContext *context, XImage *image, XImage *mask)
+        __wrlib_useresult __wrlib_nonalias __wrlib_nonnull(1, 2);
 
 RImage *RCreateImageFromDrawable(RContext *context, Drawable drawable,
-                                 Pixmap mask);
+                                 Pixmap mask)
+        __wrlib_useresult __wrlib_nonalias __wrlib_nonnull(1);
 
-RImage *RLoadImage(RContext *context, const char *file, int index);
+RImage *RLoadImage(RContext *context, const char *file, int index)
+        __wrlib_useresult __wrlib_nonalias __wrlib_nonnull(1, 2);
 
 RImage* RRetainImage(RImage *image);
 
-void RReleaseImage(RImage *image);
+void RReleaseImage(RImage *image)
+        __wrlib_nonnull(1);
 
-RImage *RGetImageFromXPMData(RContext *context, char **xpmData);
+RImage *RGetImageFromXPMData(RContext *context, char **xpmData)
+        __wrlib_useresult __wrlib_nonalias __wrlib_nonnull(1, 2);
 
 /*
  * RImage storing
  */
-Bool RSaveImage(RImage *image, const char *filename, const char *format);
+Bool RSaveImage(RImage *image, const char *filename, const char *format)
+        __wrlib_nonnull(1, 2, 3);
+
+Bool RSaveTitledImage(RImage *image, const char *filename, const char *format, char *title)
+    __wrlib_nonnull(1, 2, 3);
 
 /*
  * Area manipulation
  */
-RImage *RCloneImage(RImage *image);
+RImage *RCloneImage(RImage *image)
+        __wrlib_useresult __wrlib_nonalias __wrlib_nonnull(1);
 
 RImage *RGetSubImage(RImage *image, int x, int y, unsigned width,
-                     unsigned height);
+                     unsigned height)
+        __wrlib_useresult __wrlib_nonalias __wrlib_nonnull(1);
 
-void RCombineImageWithColor(RImage *image, const RColor *color);
+void RCombineImageWithColor(RImage *image, const RColor *color)
+        __wrlib_nonnull(1, 2);
 
-void RCombineImages(RImage *image, RImage *src);
+void RCombineImages(RImage *image, RImage *src)
+        __wrlib_nonnull(1, 2);
 
 void RCombineArea(RImage *image, RImage *src, int sx, int sy, unsigned width,
-                  unsigned height, int dx, int dy);
+                  unsigned height, int dx, int dy)
+        __wrlib_nonnull(1, 2);
 
 void RCopyArea(RImage *image, RImage *src, int sx, int sy, unsigned width,
-               unsigned height, int dx, int dy);
+               unsigned height, int dx, int dy)
+        __wrlib_nonnull(1, 2);
 
-void RCombineImagesWithOpaqueness(RImage *image, RImage *src, int opaqueness);
+void RCombineImagesWithOpaqueness(RImage *image, RImage *src, int opaqueness)
+        __wrlib_nonnull(1, 2);
 
 void RCombineAreaWithOpaqueness(RImage *image, RImage *src, int sx, int sy,
                                 unsigned width, unsigned height, int dx, int dy,
-                                int opaqueness);
+                                int opaqueness)
+        __wrlib_nonnull(1, 2);
 
 void RCombineAlpha(unsigned char *d, unsigned char *s, int s_has_alpha,
-		   int width, int height, int dwi, int swi, int opacity);
+		   int width, int height, int dwi, int swi, int opacity)
+        __wrlib_nonnull(1, 2);
 
-RImage *RScaleImage(RImage *image, unsigned new_width, unsigned new_height);
+RImage *RScaleImage(RImage *image, unsigned new_width, unsigned new_height)
+        __wrlib_useresult __wrlib_nonalias;
 
 RImage *RSmoothScaleImage(RImage *src, unsigned new_width,
-                          unsigned new_height);
+                          unsigned new_height)
+        __wrlib_useresult __wrlib_nonalias __wrlib_nonnull(1);
 
-RImage *RRotateImage(RImage *image, float angle);
+RImage *RRotateImage(RImage *image, float angle)
+        __wrlib_useresult __wrlib_nonalias __wrlib_nonnull(1);
 
-RImage *RFlipImage(RImage *image, int mode);
+RImage *RFlipImage(RImage *image, int mode)
+        __wrlib_useresult __wrlib_nonalias;
 
-RImage *RMakeTiledImage(RImage *tile, unsigned width, unsigned height);
+RImage *RMakeTiledImage(RImage *tile, unsigned width, unsigned height)
+        __wrlib_useresult __wrlib_nonalias __wrlib_nonnull(1);
 
 RImage* RMakeCenteredImage(RImage *image, unsigned width, unsigned height,
-                           const RColor *color);
+                           const RColor *color)
+        __wrlib_useresult __wrlib_nonalias __wrlib_nonnull(1, 4);
 
 /*
  * Drawing
  */
-Bool RGetPixel(RImage *image, int x, int y, RColor *color);
+Bool RGetPixel(RImage *image, int x, int y, RColor *color)
+        __wrlib_nonnull(1, 4);
 
-void RPutPixel(RImage *image, int x, int y, const RColor *color);
+void RPutPixel(RImage *image, int x, int y, const RColor *color)
+        __wrlib_nonnull(1, 4);
 
-void ROperatePixel(RImage *image, RPixelOperation operation, int x, int y, const RColor *color);
+void ROperatePixel(RImage *image, RPixelOperation operation, int x, int y, const RColor *color)
+        __wrlib_nonnull(1, 5);
 
 void RPutPixels(RImage *image, const RPoint *points, int npoints, RCoordinatesMode mode,
-                const RColor *color);
+                const RColor *color)
+        __wrlib_nonnull(1, 2, 5);
 
 void ROperatePixels(RImage *image, RPixelOperation operation, const RPoint *points,
-                    int npoints, RCoordinatesMode mode, const RColor *color);
+                    int npoints, RCoordinatesMode mode, const RColor *color)
+        __wrlib_nonnull(1, 3, 6);
 
-int RDrawLine(RImage *image, int x0, int y0, int x1, int y1, const RColor *color);
+int RDrawLine(RImage *image, int x0, int y0, int x1, int y1, const RColor *color)
+        __wrlib_nonnull(1, 6);
 
 int ROperateLine(RImage *image, RPixelOperation operation, int x0, int y0, int x1, int y1,
-                 const RColor *color);
+                 const RColor *color)
+        __wrlib_nonnull(1, 7);
 
 void RDrawLines(RImage *image, const RPoint *points, int npoints, RCoordinatesMode mode,
-                const RColor *color);
+                const RColor *color)
+        __wrlib_nonnull(1, 2, 5);
 
 void ROperateLines(RImage *image, RPixelOperation operation, const RPoint *points, int npoints,
-                   RCoordinatesMode mode, const RColor *color);
+                   RCoordinatesMode mode, const RColor *color)
+        __wrlib_nonnull(1, 3, 6);
 
-void ROperateRectangle(RImage *image, RPixelOperation operation, int x0, int y0, int x1, int y1, const RColor *color);
+void ROperateRectangle(RImage *image, RPixelOperation operation, int x0, int y0, int x1, int y1, const RColor *color)
+        __wrlib_nonnull(1, 7);
 
-void RDrawSegments(RImage *image, const RSegment *segs, int nsegs, const RColor *color);
+void RDrawSegments(RImage *image, const RSegment *segs, int nsegs, const RColor *color)
+        __wrlib_nonnull(1, 2, 4);
 
 void ROperateSegments(RImage *image, RPixelOperation operation, const RSegment *segs, int nsegs,
-                      const RColor *color);
+                      const RColor *color)
+        __wrlib_nonnull(1, 3, 5);
 
 /*
  * Color convertion
  */
-void RRGBtoHSV(const RColor *color, RHSVColor *hsv);
-void RHSVtoRGB(const RHSVColor *hsv, RColor *rgb);
+void RRGBtoHSV(const RColor *color, RHSVColor *hsv)
+        __wrlib_nonnull(1, 2);
+void RHSVtoRGB(const RHSVColor *hsv, RColor *rgb)
+        __wrlib_nonnull(1, 2);
 
 /*
  * Painting
  */
-void RClearImage(RImage *image, const RColor *color);
+void RClearImage(RImage *image, const RColor *color)
+        __wrlib_nonnull(1, 2);
 
-void RLightImage(RImage *image, const RColor *color);
+void RLightImage(RImage *image, const RColor *color)
+        __wrlib_nonnull(1, 2);
 
-void RFillImage(RImage *image, const RColor *color);
+void RFillImage(RImage *image, const RColor *color)
+        __wrlib_nonnull(1, 2);
 
-void RBevelImage(RImage *image, int bevel_type);
+void RBevelImage(RImage *image, int bevel_type)
+        __wrlib_nonnull(1);
 
 RImage *RRenderGradient(unsigned width, unsigned height, const RColor *from,
-                        const RColor *to, RGradientStyle style);
+                        const RColor *to, RGradientStyle style)
+        __wrlib_nonalias __wrlib_useresult __wrlib_nonnull(3, 4);
 
 
 RImage *RRenderMultiGradient(unsigned width, unsigned height, RColor **colors,
-                             RGradientStyle style);
+                             RGradientStyle style)
+        __wrlib_nonalias __wrlib_useresult __wrlib_nonnull(3);
 
 
 RImage *RRenderInterwovenGradient(unsigned width, unsigned height,
                                   RColor colors1[2], int thickness1,
-                                  RColor colors2[2], int thickness2);
+                                  RColor colors2[2], int thickness2)
+        __wrlib_nonalias __wrlib_useresult;
 
 
 /*
  * Convertion into X Pixmaps
  */
-int RConvertImage(RContext *context, RImage *image, Pixmap *pixmap);
+int RConvertImage(RContext *context, RImage *image, Pixmap *pixmap)
+        __wrlib_nonnull(1, 2, 3);
 
 int RConvertImageMask(RContext *context, RImage *image, Pixmap *pixmap,
-                      Pixmap *mask, int threshold);
+                      Pixmap *mask, int threshold)
+        __wrlib_nonnull(1, 2, 3, 4);
 
 
 /*
  * misc. utilities
  */
 RXImage *RCreateXImage(RContext *context, int depth,
-                       unsigned width, unsigned height);
+                       unsigned width, unsigned height)
+        __wrlib_nonalias __wrlib_useresult __wrlib_nonnull(1);
 
 RXImage *RGetXImage(RContext *context, Drawable d, int x, int y,
-                    unsigned width, unsigned height);
+                    unsigned width, unsigned height)
+        __wrlib_nonalias __wrlib_useresult __wrlib_nonnull(1);
 
-void RDestroyXImage(RContext *context, RXImage *ximage);
+void RDestroyXImage(RContext *context, RXImage *ximage)
+        __wrlib_nonnull(1, 2);
 
 void RPutXImage(RContext *context, Drawable d, GC gc, RXImage *ximage,
                 int src_x, int src_y, int dest_x, int dest_y,
-                unsigned width, unsigned height);
+                unsigned width, unsigned height)
+        __wrlib_nonnull(1, 3);
 
 /* do not free the returned string! */
-const char *RMessageForError(int errorCode);
+const char *RMessageForError(int errorCode)
+        __wrlib_useresult;
 
 int RBlurImage(RImage *image);
 
@@ -507,5 +586,8 @@ extern int RErrorCode;
  * We undef them so users of the library may not misuse them
  */
 #undef __wrlib_deprecated
+#undef __wrlib_nonalias
+#undef __wrlib_nonnull
+#undef __wrlib_useresult
 
 #endif

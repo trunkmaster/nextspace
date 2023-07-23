@@ -1,4 +1,4 @@
-%define WRASTER_VERSION 5.0.0
+%define WRASTER_VERSION 7.0.1
 
 Name:           libwraster
 Version:        %{WRASTER_VERSION}
@@ -6,8 +6,8 @@ Release:        0%{?dist}
 Summary:        Raster graphics library.
 Group:          Libraries/NextSpace
 License:        GPLv3
-URL:		https://github.com/trunkmaster/nextspace
-Source0:	libwraster-%{WRASTER_VERSION}.tar.gz
+URL:            https://github.com/trunkmaster/nextspace
+Source0:        libwraster-%{WRASTER_VERSION}.tar.gz
 
 %if 0%{?el7}
 BuildRequires:	cmake3
@@ -23,19 +23,21 @@ BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libpng-devel
 BuildRequires:	libtiff-devel
+BuildRequires:	libwebp-devel
 BuildRequires:	libXpm-devel
 BuildRequires:	libXmu-devel
 BuildRequires:	libXext-devel
 BuildRequires:	libX11-devel
 
 Provides:	libwraster.so
-Provides:	libwraster.so.5
+Provides:	libwraster.so.7
 Provides:	libwraster.so.%{WRASTER_VERSION}
 
 Requires:	giflib >= 4.1.6
 Requires:	libjpeg-turbo >= 1.2.90
 Requires:	libpng >= 1.5.13
 Requires:	libtiff >= 4.0.3
+Requires:	libwebp >= 0.3.0
 Requires:	libXpm >= 3.5.12
 Requires:	libX11 >= 1.6.3
 Requires:	libXext >= 1.3.3
@@ -52,6 +54,7 @@ Requires:	giflib-devel
 Requires:	libjpeg-turbo-devel
 Requires:	libpng-devel
 Requires:	libtiff-devel
+Requires:	libwebp-devel
 Requires:	libXpm-devel
 Requires:	libXmu-devel
 Requires:	libXext-devel
@@ -101,5 +104,8 @@ export CMAKE=%{CMAKE}
 /usr/NextSpace/include
 
 %changelog
+* Sun Apr 2 2023 Andres Morales <armm77@icloud.com> 7.0.1
+- Version update of libwraster 7.0.1
+
 * Fri May 1 2020 Sergii Stoian <stoyan255@gmail.com> 5.0.0
 - Initial spec for CentOS 7.

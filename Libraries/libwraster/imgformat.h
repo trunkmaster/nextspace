@@ -83,8 +83,15 @@ void RReleaseMagick(void);
 /*
  * Function for Saving in a specific format
  */
-Bool RSaveXPM(RImage *image, const char *file);
+Bool RSaveXPM(RImage *image, const char *filename);
 
+#ifdef USE_PNG
+Bool RSavePNG(RImage *image, const char *filename, char *title);
+#endif
+
+#ifdef USE_JPEG
+Bool RSaveJPEG(RImage *image, const char *filename, char *title);
+#endif
 
 /*
  * Function to terminate properly

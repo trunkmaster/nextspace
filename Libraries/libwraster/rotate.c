@@ -30,6 +30,7 @@
 #include "config.h"
 #include "wraster.h"
 #include "rotate.h"
+#include "wr_i18n.h"
 
 
 static RImage *rotate_image_90(RImage *source);

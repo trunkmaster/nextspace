@@ -2,7 +2,7 @@
  *
  * Raster graphics library
  *
- * Copyright (c) 2014 Window Maker Team
+ * Copyright (c) 2014-2021 Window Maker Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -23,13 +23,43 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
 #include <webp/decode.h>
 
 #include "config.h"
 #include "wraster.h"
 #include "imgformat.h"
+#include "wr_i18n.h"
 
+
+/*
+ * webp_message_from_status
+ *
+ * return the text message from a VP8 status code
+ */
+static const char *webp_message_from_status(VP8StatusCode status)
+{
+	static const char *const known_message[] = {
+		/* Known codes as per libWebP 0.4.1 */
+		[VP8_STATUS_OUT_OF_MEMORY] = N_("out of memory"),
+		[VP8_STATUS_INVALID_PARAM] = N_("invalid parameter"),
+		[VP8_STATUS_BITSTREAM_ERROR] = N_("error in the bitstream"),
+		[VP8_STATUS_UNSUPPORTED_FEATURE] = N_("feature is not supported"),
+		[VP8_STATUS_SUSPENDED] = N_("operation suspended"),
+		[VP8_STATUS_USER_ABORT] = N_("aborted by user"),
+		[VP8_STATUS_NOT_ENOUGH_DATA] = N_("not enough data")
+	};
+	static char custom_message[128];
+
+	if (status >= 0 && status < sizeof(known_message) / sizeof(known_message[0]))
+		if (known_message[status] != NULL)
+			return known_message[status];
+
+	snprintf(custom_message, sizeof(custom_message),
+	         _("unknow status code %d"), status);
+	return custom_message;
+}
 
 RImage *RLoadWEBP(const char *file_name)
 {
@@ -39,6 +69,7 @@ RImage *RLoadWEBP(const char *file_name)
 	int raw_data_size;
 	int r;
 	uint8_t *raw_data;
+	VP8StatusCode status;
 	WebPBitstreamFeatures features;
 	uint8_t *ret = NULL;
 
@@ -71,7 +102,8 @@ RImage *RLoadWEBP(const char *file_name)
 	raw_data_size = ftell(file);
 
 	if (raw_data_size <= 0) {
-		fprintf(stderr, "wrlib: Failed to find the WEBP file size for \"%s\"\n", file_name);
+		fprintf(stderr, _("wrlib: could not get size of WebP file \"%s\", %s\n"),
+		        file_name, strerror(errno));
 		RErrorCode = RERR_BADIMAGEFILE;
 		fclose(file);
 		return NULL;
@@ -95,8 +127,10 @@ RImage *RLoadWEBP(const char *file_name)
 		return NULL;
 	}
 
-	if (WebPGetFeatures(raw_data, raw_data_size, &features) != VP8_STATUS_OK) {
-		fprintf(stderr, "wrlib: WebPGetFeatures has failed on \"%s\"\n", file_name);
+	status = WebPGetFeatures(raw_data, raw_data_size, &features);
+	if (status != VP8_STATUS_OK) {
+		fprintf(stderr, _("wrlib: could not get features from WebP file \"%s\", %s\n"),
+		        file_name, webp_message_from_status(status));
 		RErrorCode = RERR_BADIMAGEFILE;
 		free(raw_data);
 		return NULL;
@@ -127,7 +161,7 @@ RImage *RLoadWEBP(const char *file_name)
 	free(raw_data);
 
 	if (!ret) {
-		fprintf(stderr, "wrlib: Failed to decode WEBP from file \"%s\"\n", file_name);
+		fprintf(stderr, _("wrlib: failed to decode WebP from file \"%s\"\n"), file_name);
 		RErrorCode = RERR_BADIMAGEFILE;
 		RReleaseImage(image);
 		return NULL;

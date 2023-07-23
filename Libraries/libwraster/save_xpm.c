@@ -1,4 +1,4 @@
-/* nxpm.c - load "normalized" XPM image
+/* save_xpm.c - save "normalized" XPM image
  *
  * Raster graphics library
  *
@@ -29,6 +29,8 @@
 #include "config.h"
 #include "wraster.h"
 #include "imgformat.h"
+#include "wr_i18n.h"
+
 
 /*
  * Restricted support for XPM images.

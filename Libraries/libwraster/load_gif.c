@@ -29,6 +29,8 @@
 #include "config.h"
 #include "wraster.h"
 #include "imgformat.h"
+#include "wr_i18n.h"
+
 
 static int InterlacedOffset[] = { 0, 4, 2, 1 };
 static int InterlacedJumps[] = { 8, 8, 4, 2 };

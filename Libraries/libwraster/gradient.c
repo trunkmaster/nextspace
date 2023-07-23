@@ -29,6 +29,8 @@
 
 #include "config.h"
 #include "wraster.h"
+#include "wr_i18n.h"
+
 
 static RImage *renderHGradient(unsigned width, unsigned height, int r0, int g0, int b0, int rf, int gf, int bf);
 static RImage *renderVGradient(unsigned width, unsigned height, int r0, int g0, int b0, int rf, int gf, int bf);
@@ -159,14 +161,17 @@ static inline unsigned char *renderGradientWidth(unsigned char *ptr, unsigned wi
 		*ptr++ = r;
 		*ptr++ = g;
 		*ptr++ = b;
+		/* FALLTHRU */
 	case 2:
 		*ptr++ = r;
 		*ptr++ = g;
 		*ptr++ = b;
+		/* FALLTHRU */
 	case 1:
 		*ptr++ = r;
 		*ptr++ = g;
 		*ptr++ = b;
+		/* FALLTHRU */
 	}
 	return ptr;
 }

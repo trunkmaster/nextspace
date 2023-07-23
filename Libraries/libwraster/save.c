@@ -3,6 +3,7 @@
  * Raster graphics library
  *
  * Copyright (c) 1998-2003 Alfredo K. Kojima
+ * Copyright (c) 2013-2023 Window Maker Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,6 +21,8 @@
  *  MA 02110-1301, USA.
  */
 
+#include "config.h"
+
 #include <X11/Xlib.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -27,18 +30,38 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <time.h>
 
-#include "config.h"
 #include "wraster.h"
 #include "imgformat.h"
+#include "wr_i18n.h"
 
 
-Bool RSaveImage(RImage * image, const char *filename, const char *format)
+Bool RSaveImage(RImage *image, const char *filename, const char *format)
 {
-	if (strcmp(format, "XPM") != 0) {
-		RErrorCode = RERR_BADFORMAT;
-		return False;
-	}
-	return RSaveXPM(image, filename);
+    return RSaveTitledImage(image, filename, format, NULL);
+}
+
+Bool RSaveTitledImage(RImage *image, const char *filename, const char *format, char *title)
+{
+    if (strcmp(format, "XPM") != 0) {
+        RErrorCode = RERR_BADFORMAT;
+        return False;
+    }
+    return RSaveXPM(image, filename);
+#ifdef USE_PNG
+    if (strcasecmp(format, "PNG") == 0)
+        return RSavePNG(image, filename, title);
+#endif
+#ifdef USE_JPEG
+    if (strcasecmp(format, "JPG") == 0)
+        return RSaveJPEG(image, filename, title);
+
+    if (strcasecmp(format, "JPEG") == 0)
+        return RSaveJPEG(image, filename, title);
+#endif
+    if (strcasecmp(format, "XPM") == 0)
+        return RSaveXPM(image, filename);
+
+    RErrorCode = RERR_BADFORMAT;
+    return False;
 }

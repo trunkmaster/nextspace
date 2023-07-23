@@ -30,6 +30,8 @@
 #include "config.h"
 #include "wraster.h"
 #include "scale.h"
+#include "wr_i18n.h"
+
 
 /*
  *----------------------------------------------------------------------

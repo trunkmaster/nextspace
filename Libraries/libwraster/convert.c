@@ -36,6 +36,7 @@
 #include "wraster.h"
 #include "convert.h"
 #include "xutil.h"
+#include "wr_i18n.h"
 
 
 #define NFREE(n)  if (n) free(n)
@@ -777,6 +778,10 @@ static RXImage *image2GrayScale(RContext * ctx, RImage * image)
 			RDestroyXImage(ctx, ximg);
 			return NULL;
 		}
+
+		memset(gerr, 0, (image->width + 2) * sizeof(short));
+		memset(ngerr, 0, (image->width + 2) * sizeof(short));
+		
 		for (x = 0, y = 0; x < image->width; x++, y += channels) {
 			gerr[x] = (ptr[y] * 30 + ptr[y + 1] * 59 + ptr[y + 2] * 11) / 100;
 		}

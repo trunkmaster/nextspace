@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
 #include <assert.h>
 
@@ -37,6 +38,8 @@
 
 #include "wraster.h"
 #include "xutil.h"
+#include "wr_i18n.h"
+
 
 #ifdef USE_XSHM
 
@@ -109,17 +112,17 @@ RXImage *RCreateXImage(RContext * context, int depth, unsigned width, unsigned h
 		rximg->info.shmid = shmget(IPC_PRIVATE, rximg->image->bytes_per_line * height, IPC_CREAT | 0777);
 		if (rximg->info.shmid < 0) {
 			context->attribs->use_shared_memory = 0;
-			perror("wrlib: could not allocate shared memory segment");
+			fprintf(stderr, _("wrlib: could not allocate shared memory segment, %s: %s\n"), "shmget", strerror(errno));
 			XDestroyImage(rximg->image);
 			goto retry_without_shm;
 		}
 
 		rximg->info.shmaddr = shmat(rximg->info.shmid, 0, 0);
 		if (rximg->info.shmaddr == (void *)-1) {
+			fprintf(stderr, _("wrlib: could not allocate shared memory segment, %s: %s\n"), "shmat", strerror(errno));
 			context->attribs->use_shared_memory = 0;
 			if (shmctl(rximg->info.shmid, IPC_RMID, 0) < 0)
-				perror("wrlib: shmctl");
-			perror("wrlib: could not allocate shared memory");
+				fprintf(stderr, _("wrlib: error occured while aborting %s, %s\n"), "shmctl", strerror(errno));
 			XDestroyImage(rximg->image);
 			goto retry_without_shm;
 		}
@@ -138,11 +141,9 @@ RXImage *RCreateXImage(RContext * context, int depth, unsigned width, unsigned h
 			context->attribs->use_shared_memory = 0;
 			XDestroyImage(rximg->image);
 			if (shmdt(rximg->info.shmaddr) < 0)
-				perror("wrlib: shmdt");
+				fprintf(stderr, _("wrlib: error occured while aborting %s, %s\n"), "shmdt", strerror(errno));
 			if (shmctl(rximg->info.shmid, IPC_RMID, 0) < 0)
-				perror("wrlib: shmctl");
-			/*      printf("wrlib:error attaching shared memory segment to XImage\n");
-			 */
+				fprintf(stderr, _("wrlib: error occured while aborting %s, %s\n"), "shmctl", strerror(errno));
 			goto retry_without_shm;
 		}
 	}
@@ -164,9 +165,9 @@ void RDestroyXImage(RContext * context, RXImage * rximage)
 		XShmDetach(context->dpy, &rximage->info);
 		XDestroyImage(rximage->image);
 		if (shmdt(rximage->info.shmaddr) < 0)
-			perror("wrlib: shmdt");
+			fprintf(stderr, _("wrlib: error occured while releasing XImage, %s: %s\n"), "shmdt", strerror(errno));
 		if (shmctl(rximage->info.shmid, IPC_RMID, 0) < 0)
-			perror("wrlib: shmctl");
+			fprintf(stderr, _("wrlib: error occured while releasing XImage, %s: %s\n"), "shmctl", strerror(errno));
 	} else {
 		XDestroyImage(rximage->image);
 	}

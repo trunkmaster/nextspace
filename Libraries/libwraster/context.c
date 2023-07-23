@@ -23,7 +23,10 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+
+#ifdef HAVE_LIBXMU
 #include <X11/Xmu/StdCmap.h>
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,6 +38,7 @@
 #include "config.h"
 #include "wraster.h"
 #include "scale.h"
+#include "wr_i18n.h"
 
 
 #ifndef HAVE_FLOAT_MATHFUNC
@@ -136,6 +140,7 @@ static Bool allocateStandardPseudoColor(RContext * ctx, XStandardColormap * stdc
 
 static Bool setupStandardColormap(RContext * ctx, Atom property)
 {
+#ifdef HAVE_LIBXMU
 	if (!XmuLookupStandardColormap(ctx->dpy, ctx->screen_number,
 				       ctx->visual->visualid, ctx->depth, property, True, True)) {
 		RErrorCode = RERR_STDCMAPFAIL;
@@ -143,6 +148,12 @@ static Bool setupStandardColormap(RContext * ctx, Atom property)
 		return False;
 	}
 	return True;
+#else
+	(void) ctx;
+	(void) property;
+	RErrorCode = RERR_STDCMAPFAIL;
+	return False;
+#endif
 }
 
 static XColor *allocateColor(RContext *ctx, XColor *colors, int ncolors)
@@ -395,7 +406,8 @@ static Bool setupPseudoColorColormap(RContext * context)
 			}
 
 			if (theMap < 0) {
-				puts("wrlib: no std cmap found");
+				fprintf(stderr, _("wrlib: no standard colormap found for visual 0x%lX\n"),
+				        context->visual->visualid);
 			}
 
 			if (theMap >= 0 && allocateStandardPseudoColor(context, &maps[theMap])) {
@@ -442,7 +454,7 @@ static void gatherconfig(RContext * context, int screen_n)
 	if (ptr) {
 		float g1, g2, g3;
 		if (sscanf(ptr, "%f/%f/%f", &g1, &g2, &g3) != 3 || g1 <= 0.0F || g2 <= 0.0F || g3 <= 0.0F) {
-			printf("wrlib: invalid value(s) for gamma correction \"%s\"\n", ptr);
+			fprintf(stderr, _("wrlib: invalid value \"%s\" for %s\n"), ptr, "WRASTER_GAMMA");
 		} else {
 			context->attribs->flags |= RC_GammaCorrection;
 			context->attribs->rgamma = g1;
@@ -454,7 +466,7 @@ static void gatherconfig(RContext * context, int screen_n)
 	if (ptr) {
 		int i;
 		if (sscanf(ptr, "%d", &i) != 1 || i < 2 || i > 6) {
-			printf("wrlib: invalid value for color resolution \"%s\"\n", ptr);
+			fprintf(stderr, _("wrlib: invalid value \"%s\" for %s\n"), ptr, "WRASTER_COLOR_RESOLUTION");
 		} else {
 			context->attribs->flags |= RC_ColorsPerChannel;
 			context->attribs->colors_per_channel = i;

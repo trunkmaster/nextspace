@@ -5,7 +5,7 @@ GNUSTEP_INSTALLATION_DOMAIN = SYSTEM
 
 PACKAGE_NAME = libwraster
 CLIBRARY_NAME = libwraster
-VERSION = 5.0.0
+VERSION = 7.0.1
 
 libwraster_C_FILES =	\
 	raster.c 	\
@@ -23,6 +23,8 @@ libwraster_C_FILES =	\
 	rotate.c	\
 	flip.c		\
 	convolve.c	\
+	save_jpeg.c	\
+	save_png.c	\
 	save_xpm.c	\
 	xutil.c		\
 	load_ppm.c
@@ -53,7 +55,7 @@ libwraster_C_FILES += load_xpm.c
 #endif
 
 #if USE_WEBP
-#libwraster_C_FILES += load_webp.c
+libwraster_C_FILES += load_webp.c
 #endif
 
 #if USE_MAGICK
@@ -61,7 +63,7 @@ libwraster_C_FILES += load_xpm.c
 #endif
 
 #ADDITIONAL_CFLAGS = -D_XOPEN_SOURCE=600 -D_GNU_SOURCE -Wall -Wextra -Wno-sign-compare -Wno-deprecated -Wno-deprecated-declarations -MT -MD -MP
-ADDITIONAL_LDFLAGS = -lXpm -lpng -ljpeg -lgif -ltiff -lX11 -lXext -lXmu -lm
+ADDITIONAL_LDFLAGS = -lXpm -lpng -ljpeg -lgif -ltiff -lwebp -lX11 -lXext -lXmu -lm
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/clibrary.make

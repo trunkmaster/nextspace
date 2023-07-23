@@ -28,6 +28,8 @@
 
 #include "config.h"
 #include "wraster.h"
+#include "wr_i18n.h"
+
 
 char *WRasterLibVersion = "0.9";
 

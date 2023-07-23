@@ -26,23 +26,31 @@
 
 #include <tiff.h>
 #include <tiffio.h>
+#include <tiffvers.h>
 
 #include <config.h>
 #include "wraster.h"
 #include "imgformat.h"
+#include "wr_i18n.h"
+
 
 RImage *RLoadTIFF(const char *file, int index)
 {
 	RImage *image = NULL;
 	TIFF *tif;
-	int i;
+	int i, ch;
 	unsigned char *r, *g, *b, *a;
-	uint16 alpha, amode;
+#if TIFFLIB_VERSION < 20210416
+	uint16 alpha, amode, extrasamples;
+	uint16 *sampleinfo;
 	uint32 width, height;
 	uint32 *data, *ptr;
-	uint16 extrasamples;
-	uint16 *sampleinfo;
-	int ch;
+#else
+	uint16_t alpha, amode, extrasamples;;
+	uint16_t *sampleinfo;
+	uint32_t width, height;
+	uint32_t *data, *ptr;
+#endif
 
 	tif = TIFFOpen(file, "r");
 	if (!tif)
@@ -76,7 +84,11 @@ RImage *RLoadTIFF(const char *file, int index)
 	}
 
 	/* read data */
+#if TIFFLIB_VERSION < 20210416
 	ptr = data = (uint32 *) _TIFFmalloc(width * height * sizeof(uint32));
+#else
+	ptr = data = (uint32_t *) _TIFFmalloc(width * height * sizeof(uint32_t));
+#endif
 
 	if (!data) {
 		RErrorCode = RERR_NOMEMORY;
