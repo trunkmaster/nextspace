@@ -108,8 +108,8 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 /root/.emacs.nextspace
 /root/.gtkrc-2.0
 /root/.zshrc.nextspace
-/etc/ld.so.conf.d
-/etc/profile.d
+/etc/ld.so.conf.d/nextspace.conf
+/etc/profile.d/nextspace.sh
 /etc/skel
 /etc/tuned
 /etc/udev
@@ -121,8 +121,9 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 /usr/NextSpace/bin/gnustep-services
 /usr/NextSpace/bin/openapp
 /usr/share/icons/NextSpace
-/usr/share/plymouth/themes
-/etc/dracut.conf.d
+/usr/share/plymouth/themes/nextspace
+/usr/share/plymouth/themes/plymouth-preview
+/etc/dracut.conf.d/vboxvideo.conf
 
 %files devel
 /Developer

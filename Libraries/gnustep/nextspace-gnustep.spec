@@ -13,18 +13,21 @@ Summary:        GNUstep libraries.
 Group:          Libraries/NextSpace
 License:        GPLv3
 URL:		http://www.gnustep.org
-Source0:	%{GS_REPO}/libs-base/archive/base-%{BASE_VERSION}.tar.gz
-Source1:	gdomap.interfaces
-Source2:	gdomap.service
-Source3:	gdnc.service
-Source4:	gdnc-local.service
-Source5:	%{GS_REPO}/libs-gui/archive/gnustep-gui-%{GUI_VERSION}.tar.gz
-Source6:	gnustep-gui-images.tar.gz
-Source7:	back-art.tar.gz
-Source8:	gpbs.service
-Source9:	%{GS_REPO}/apps-gorm/archive/gorm-%{GORM_VERSION}.tar.gz
-Source10:	projectcenter-master.tar.gz
-Source11:	projectcenter-images.tar.gz
+Source0:        %{GS_REPO}/libs-base/archive/base-%{BASE_VERSION}.tar.gz
+Source1:        %{GS_REPO}/libs-gui/archive/gnustep-gui-%{GUI_VERSION}.tar.gz
+Source2:        back-art.tar.gz
+Source3:        %{GS_REPO}/apps-gorm/archive/gorm-%{GORM_VERSION}.tar.gz
+Source4:        projectcenter-master.tar.gz
+Source5:        projectcenter-images.tar.gz
+Source6:        gorm-images.tar.gz
+Source7:        gnustep-gui-images.tar.gz
+Source8:        gdomap.interfaces
+Source9:        gdomap.service
+Source10:       gdnc.service
+Source11:       gdnc-local.service
+Source12:       gpbs.service
+Patch0:         gorm.patch
+Patch1:         pc.patch
 
 # Build GNUstep libraries in one RPM package
 Provides:	gnustep-base-%{BASE_VERSION}
@@ -127,7 +130,13 @@ OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
 GNUstep Make installed with nextspace-core-devel package.
 
 %prep
-%setup -c -n nextspace-gnustep -a 5 -a 7 -a 9 -a 10
+%setup -c -n nextspace-gnustep -a 0 -a 1 -a 2 -a 3 -a 4
+cp %{_sourcedir}/gorm.patch %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
+cd %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
+%patch0 -p1
+cp %{_sourcedir}/pc.patch %{_builddir}/nextspace-gnustep/apps-projectcenter-%{PC_VERSION}/
+cd %{_builddir}/nextspace-gnustep/apps-projectcenter-%{PC_VERSION}/
+%patch1 -p1
 rm -rf %{buildroot}
 
 #
@@ -178,11 +187,13 @@ cd ..
 export ADDITIONAL_OBJCFLAGS="-I%{buildroot}/Developer/Headers"
 export ADDITIONAL_LDFLAGS+="-L%{buildroot}/Library/Libraries -lgnustep-base -lgnustep-gui"
 cd apps-gorm-gorm-%{GORM_VERSION}
+tar zxf %{_sourcedir}/gorm-images.tar.gz
 make
 cd ..
 
 # Build ProjectCenter
 cd apps-projectcenter-%{PC_VERSION}
+tar zxf %{_sourcedir}/projectcenter-images.tar.gz
 make
 cd ..
 
@@ -214,7 +225,6 @@ cd apps-gorm-gorm-%{GORM_VERSION}
 cd ..
 # Install ProjectCenter
 cd apps-projectcenter-%{PC_VERSION}
-tar zxf %{_sourcedir}/projectcenter-images.tar.gz
 %{make_install}
 cd ..
 

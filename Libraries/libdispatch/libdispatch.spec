@@ -86,8 +86,10 @@ rm %{buildroot}/usr/NextSpace/include/Block_private.h
 /usr/NextSpace/lib/*.so
 
 %files devel
-/usr/NextSpace/include/
-/usr/NextSpace/Documentation/
+/usr/NextSpace/include/Block.h
+/usr/NextSpace/include/dispatch
+/usr/NextSpace/include/os
+/usr/NextSpace/Documentation/man/man3/dispatch*
 
 %changelog
 * Wed Sep 22 2021 Sergii Stoian <stoyan255@gmail.com> - 5.4.2-1

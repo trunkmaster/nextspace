@@ -30,7 +30,7 @@ fi
 
 print_H2 "--- Prepare Workspace sources"
 cd ${REPO_DIR}/Applications/Workspace
-rm WM/src/wconfig.h && rm WM/configure && ./WM.configure
+#rm WM/src/wconfig.h && rm WM/configure && ./WM.configure
 
 print_H2 "--- Creating applications source tarball"
 cd ${REPO_DIR}/Applications && make dist

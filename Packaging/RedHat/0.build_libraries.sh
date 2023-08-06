@@ -17,16 +17,9 @@ if [ $? -eq 1 ];then
     exit 1
 fi
 
-# Build missed libraries for CentOS 8: libudisks2-devel and libart_lgpl
-if [ "$OS_NAME" == "CentOS Linux" ] && [ $OS_VERSION == "8" ];then
-    rpm -q libart_lgpl 2>&1 > /dev/null
-    if [ $? -eq 1 ]; then
-        `dirname $0`/custom/build_libart.sh
-    fi
-    rpm -q libudisks-devel 2>&1 > /dev/null
-    if [ $? -eq 1 ]; then
-        `dirname $0`/custom/build_udisks2.sh
-    fi
+if [ "$OS_NAME" == "Rocky Linux" ] || [ "$OS_NAME" == "AlmaLinux" ] && [ $OS_VERSION = "8.8" ];then
+    dnf -y install epel-release
+    dnf config-manager --set-enabled powertools
 fi
 
 REPO_DIR=$1
@@ -46,7 +39,7 @@ if [ $? -eq 1 ]; then
 fi
 
 # GNUstep Objective-C runtime
-if [ "$OS_NAME" == "CentOS Linux" ];then
+if [ "$OS_NAME" == "Rocky Linux" ] || [ "$OS_NAME" == "AlmaLinux" ];then
     `dirname $0`/build_libobjc2.sh $1
     if [ $? -eq 1 ]; then
         echo "Aborting..."

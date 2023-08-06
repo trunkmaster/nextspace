@@ -1,0 +1,108 @@
+diff -ruN a/GNUmakefile b/GNUmakefile
+--- a/GNUmakefile	2023-08-06 00:08:17.002555915 -0400
++++ b/GNUmakefile	2023-08-06 00:14:51.075810719 -0400
+@@ -45,6 +45,13 @@
+ Images/Clean.tiff \
+ Images/Debug.tiff \
+ Images/Files.tiff \
++Images/FileH.tiff \
++Images/FileHH.tiff \
++Images/FileC.tiff \
++Images/FileCH.tiff \
++Images/FileMH.tiff \
++Images/FileM.tiff \
++Images/FileMM.tiff \
+ Images/Find.tiff \
+ Images/Inspector.tiff \
+ Images/Install.tiff \
+diff -ruN a/Resources/Info-gnustep.plist b/Resources/Info-gnustep.plist
+--- a/Resources/Info-gnustep.plist	2023-08-06 00:08:17.017563132 -0400
++++ b/Resources/Info-gnustep.plist	2023-08-06 00:24:30.356428908 -0400
+@@ -29,6 +29,7 @@
+       NSName = GSPCProjectFileType;
+       NSRole = Editor;
+       NSUnixExtensions = ( project );
++      NSDOSExtensions = ( project );
+     },
+     {
+       NSDocumentClass = PCProjectDocument;
+@@ -37,6 +38,7 @@
+       NSName = GSPCProjectFileType;
+       NSRole = Editor;
+       NSUnixExtensions = ( pcproj );
++      NSDOSExtensions = ( pcproj );
+     },
+     {
+       NSDocumentClass = PCClassDocument;
+@@ -45,6 +47,7 @@
+       NSName = GSClassType;
+       NSRole = Editor;
+       NSUnixExtensions = ( m );
++      NSDOSExtensions = ( m );
+     },
+     {
+       NSDocumentClass = PCClassDocument;
+@@ -53,7 +56,8 @@
+       NSName = GSClassType;
+       NSRole = Editor;
+       NSUnixExtensions = ( mm );
+-    },    
++      NSDOSExtensions = ( mm ); 
++    },
+     {
+       NSDocumentClass = PCHeaderDocument;
+       NSHumanReadableName = "C or Objective C header file";
+@@ -61,14 +65,52 @@
+       NSName = GSPCHeaderType;
+       NSRole = Editor;
+       NSUnixExtensions = ( h );
++      NSDOSExtensions = ( h ); 
+     },
+     {
+       NSDocumentClass = PCCDocument;
+-      NSHumanReadableName = "C file";
++      NSHumanReadableName = "C or C++ file";
+       NSIcon = ProjectCenter.editor/Resources/FileC.tiff;
+       NSName = GSPCCType;
+       NSRole = Editor;
+       NSUnixExtensions = ( c, C, cp, cpp, c++ );
++      NSDOSExtensions = ( c, C, cp, cpp, c++ );
++    },
++    {
++      NSName = "C-C++";
++      NSHumanReadableName = "C or C++ file";
++      NSIcon = "FileC.tiff";
++      NSUnixExtensions = ( c, C, cp, cpp, c++ );
++      NSDOSExtensions = ( c, C, cp, cpp, c++ );
++      NSRole = Editor;
++      NSDocumentClass = PCCDocument;
++    },
++    {
++      NSName = "C-Header";
++      NSHumanReadableName = "C or Objective C header file";
++      NSIcon = "FileH.tiff";
++      NSUnixExtensions = ( h );
++      NSDOSExtensions = ( h );
++      NSRole = Editor;
++      NSDocumentClass = PCCDocument;
++    },
++    {
++      NSName = "ObjC";
++      NSHumanReadableName = "Objective C class file";
++      NSIcon = "FileM.tiff";
++      NSUnixExtensions = ( m );
++      NSDOSExtensions = ( m );
++      NSRole = Editor;
++      NSDocumentClass = PCCDocument;
++    },
++    {
++      NSName = "ObjC++";
++      NSHumanReadableName = "Objective C++ class file";
++      NSIcon = "FileMM.tiff";
++      NSUnixExtensions = ( mm );
++      NSDOSExtensions = ( mm );
++      NSRole = Editor;
++      NSDocumentClass = PCCDocument;
+     }
+   );
+   URL = "See http://www.gnustep.org/";

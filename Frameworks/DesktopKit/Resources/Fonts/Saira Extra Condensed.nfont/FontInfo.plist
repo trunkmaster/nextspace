@@ -1,0 +1,71 @@
+{
+    Faces = (
+        {
+            Files = (
+                SairaExtraCondensed-Regular.ttf
+            );
+            Name = "Regular";
+            PostScriptName = "SairaExtraCondensed Regular";
+        },
+	{
+            Files = (
+                SairaExtraCondensed-Black.ttf
+            );
+            Name = "Black";
+            PostScriptName = "SairaExtraCondensed Black";
+        },
+        {
+            Files = (
+                SairaExtraCondensed-Bold.ttf
+            );
+            Name = "Bold";
+            PostScriptName = "SairaExtraCondensed Bold";
+        },
+	{
+            Files = (
+                SairaExtraCondensed-ExtraBold.ttf
+            );
+            Name = "ExtraBold";
+            PostScriptName = "SairaExtraCondensed ExtraBold";
+        },
+	{
+            Files = (
+                SairaExtraCondensed-ExtraLight.ttf
+            );
+            Name = "ExtraLight";
+            PostScriptName = "SairaExtraCondensed ExtraLight";
+        },
+	{
+            Files = (
+                SairaExtraCondensed-Light.ttf
+            );
+            Name = "Light";
+            PostScriptName = "SairaExtraCondensed Light";
+        },
+	{
+            Files = (
+                SairaExtraCondensed-Medium.ttf
+            );
+            Name = "Medium";
+            PostScriptName = "SairaExtraCondensed Medium";
+        },
+	{
+            Files = (
+                SairaExtraCondensed-SemiBold.ttf
+            );
+            Name = "SemiBold";
+            PostScriptName = "SairaExtraCondensed Semi Bold";
+        },
+	{
+            Files = (
+                SairaExtraCondensed-Thin.ttf
+            );
+            Name = "Thin";
+            PostScriptName = "SairaExtraCondensed Thin";
+        }
+    );
+    Description = "Saira is a sans serif system. It features a huge range of weights and widths, ready for all kind of typographic challenges.";
+    FontCopyright = "Copyright 2016 The Saira Project Authors (omnibus.type@gmail.com), with reserved font name Saira.";
+    Packager = "Andres Morales <armm77@icloud.com>";
+    Version = 1.00;
+}

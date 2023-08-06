@@ -98,10 +98,12 @@ export CMAKE=%{CMAKE}
 # Files
 #
 %files
-/usr/NextSpace/lib/
+/usr/NextSpace/lib/libwraster.so
+/usr/NextSpace/lib/libwraster.so.7
+/usr/NextSpace/lib/libwraster.so.7.0.1
 
 %files devel
-/usr/NextSpace/include
+/usr/NextSpace/include/wraster.h
 
 %changelog
 * Sun Apr 2 2023 Andres Morales <armm77@icloud.com> 7.0.1

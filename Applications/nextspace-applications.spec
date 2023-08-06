@@ -115,7 +115,7 @@ export CMAKE=%{CMAKE}
 /usr/NextSpace
 
 %files devel
-/usr/NextSpace/include
+/usr/NextSpace/include/apps
 
 #
 # Package install

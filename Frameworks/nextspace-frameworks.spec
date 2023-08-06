@@ -114,7 +114,9 @@ cd ..
 /usr/NextSpace/Sounds
 
 %files devel
-/usr/NextSpace/include
+/usr/NextSpace/include/SystemKit
+/usr/NextSpace/include/DesktopKit
+/usr/NextSpace/include/SoundKit
 
 #
 # Package install
