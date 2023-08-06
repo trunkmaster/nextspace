@@ -39,12 +39,10 @@ if [ $? -eq 1 ]; then
 fi
 
 # GNUstep Objective-C runtime
-if [ "$OS_NAME" == "Rocky Linux" ] || [ "$OS_NAME" == "AlmaLinux" ];then
-    `dirname $0`/build_libobjc2.sh $1
-    if [ $? -eq 1 ]; then
-        echo "Aborting..."
-        exit 1
-    fi
+`dirname $0`/build_libobjc2.sh $1
+if [ $? -eq 1 ]; then
+    echo "Aborting..."
+    exit 1
 fi
 
 # NextSpace Core
