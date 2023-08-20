@@ -664,7 +664,7 @@ static NSDragOperation savedMask;
   if ([paths count] > 1)
     {
       [self setLabelString:
-              [NSString stringWithFormat:_(@"%d items"),[paths count]]];
+              [NSString stringWithFormat:_(@"%lu items"),[paths count]]];
     }
   else
     {

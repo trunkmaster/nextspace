@@ -211,7 +211,7 @@ NSString *WWMDefaultsPath(void)
   }
   
   // Convert font name into the FontConfig format.
-  value = [NSString stringWithFormat:@"%@:postscriptname=%@:pixelsize=%.0f:antialias=false",
+  value = [NSMutableString stringWithFormat:@"%@:postscriptname=%@:pixelsize=%.0f:antialias=false",
                     [font familyName], [font fontName], [font pointSize]];
   NSLog(@"[Font] set WM font %@ = `%@`", key, value);
 

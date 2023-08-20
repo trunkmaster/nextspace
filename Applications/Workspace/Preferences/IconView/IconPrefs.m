@@ -257,7 +257,7 @@ static inline NSRect IncrementedRect(NSRect r)
     {
       [icon setIconImage:[NSImage imageNamed:@"MultipleSelection"]];
       [icon setLabelString:[NSString stringWithFormat:
-                                       _(@"%d Elements"), [selection count]]];
+                                       _(@"%lu Elements"), [selection count]]];
     }
 }
 

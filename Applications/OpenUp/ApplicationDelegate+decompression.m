@@ -328,7 +328,7 @@
 	  NSString *viewName;
 	  NSMutableString *hackFile;
 
-	  hackFile=[NSString stringWithFormat:@"%@/.dir5_0.wmd",unarchiveDirectoryPath];
+	  hackFile=[NSMutableString stringWithFormat:@"%@/.dir5_0.wmd",unarchiveDirectoryPath];
 	  viewName=[[NSUserDefaults standardUserDefaults] stringForKey:@"RhapsodyDirViewName"];
 	  hackDictionary=[NSMutableDictionary dictionary];
 	  [hackDictionary setObject:unarchiveDirectoryPath forKey:@"RootNode"];
