@@ -370,9 +370,9 @@ static NSLock *raceLock = nil;
       if (!wmName) {
         NSLog(@"No application NSExecutable found.");
         NXTRunAlertPanel(_(@"Workspace"),
-                         _(@"Failed to start application \"%@\".\n"
-                           "Executable name is unknown (info doctionary is broken)."),
-                         nil, nil, nil, appName);
+                         _(@"Failed to start application.\n"
+                           "Executable name is unknown. It may be damaged or incomplete."),
+                         nil, nil, nil, nil);
         return NO;
       }
       launchPath = [self locateApplicationBinary:fullPath];

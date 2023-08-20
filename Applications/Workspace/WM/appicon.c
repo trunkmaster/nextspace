@@ -1138,8 +1138,8 @@ static Window _createIconForSliding(WScreen *scr, int x, int y, const char *imag
   int vmask = CWBackPixel | CWSaveUnder | CWOverrideRedirect | CWColormap | CWBorderPixel;
   XSetWindowAttributes attribs;
   Window image_win;
-  RImage *rimage;
-  Pixmap pixmap, mask;
+  RImage *rimage = NULL;
+  Pixmap pixmap = 0, mask = 0;
 
   // Window
   attribs.save_under = True;
@@ -1153,15 +1153,19 @@ static Window _createIconForSliding(WScreen *scr, int x, int y, const char *imag
                             scr->w_depth, CopyFromParent, scr->w_visual, vmask, &attribs);
 
   // Image
-  rimage = RLoadImage(scr->rcontext, image_path, 0);
-  RConvertImageMask(scr->rcontext, rimage, &pixmap, &mask, 158);
-  
+  if (image_path != NULL){
+    rimage = RLoadImage(scr->rcontext, image_path, 0);
+    RConvertImageMask(scr->rcontext, rimage, &pixmap, &mask, 158);
+    RReleaseImage(rimage);
+  } else {
+    WMLogInfo("[appicon.c] _createIconForSliding Could not create image, image_path = %s", image_path);
+  }
+
   XSetWindowBackgroundPixmap(dpy, image_win, pixmap);
   XShapeCombineMask(dpy, image_win, ShapeBounding, 0, 0, mask, ShapeSet);
   
   XFreePixmap(dpy, pixmap);
   XFreePixmap(dpy, mask);
-  RReleaseImage(rimage);
   
   XClearWindow(dpy, image_win);
   
