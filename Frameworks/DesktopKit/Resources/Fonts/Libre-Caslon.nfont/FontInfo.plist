@@ -1,0 +1,33 @@
+{
+    FontCopyright = "Copyright 2015 Google Inc. All Rights Reserved.";
+    Foundry = "Google";
+    Faces = (
+	{
+	    Files = (
+		LibreCaslonText-Regular.ttf
+	    );
+	    Name = Regular;
+	    PostScriptName = "LibreCaslonText-Regular";
+	    Weight = 400;
+	    RenderHints_hack = 0x010203;
+	},
+	{
+	    Files = (
+		LibreCaslonText-Bold.ttf
+	    );
+	    Name = Bold;
+	    PostScriptName = "LibreCaslonText-Bold";
+	    Weight = 700;
+	    RenderHints_hack = 0x010203;
+	},
+	{
+	    Files = (
+		LibreCaslonText-Italic.ttf
+	    );
+	    Name = Italic;
+	    PostScriptName = "LibreCaslonText-Italic";
+	    Weight = 400;
+	    RenderHints_hack = 0x010203;
+	},
+    );
+}
