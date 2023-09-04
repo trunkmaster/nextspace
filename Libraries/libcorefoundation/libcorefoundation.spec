@@ -161,7 +161,8 @@ ln -s ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
 #    rm /usr/NextSpace/include/CoreFoundation
 #fi
 
-#%postun
+%postun
+/bin/rm -rf /usr/NextSpace/Frameworks/CoreFoundation.framework
 
 %changelog
 * Tue Jan 18 2022 flatpak-session-helper

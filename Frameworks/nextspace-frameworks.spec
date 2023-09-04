@@ -133,6 +133,7 @@ cd ..
 #%preun
 
 %postun
+/bin/rm -rf /usr/NextSpace/Frameworks/DesktopKit.framework
 /bin/rm /etc/fonts/conf.d/25-nextspace-fonts.conf
 /sbin/ldconfig
 

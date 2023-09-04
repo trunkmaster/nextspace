@@ -1,7 +1,7 @@
 %define GS_REPO		https://github.com/gnustep
-%define BASE_VERSION	1_28_0
-%define GUI_VERSION	nextspace
-%define BACK_VERSION	nextspace
+%define BASE_VERSION	master
+%define GUI_VERSION	master
+%define BACK_VERSION	master
 %define GORM_VERSION	1_3_1
 %define PC_VERSION	master
 
@@ -13,11 +13,11 @@ Summary:        GNUstep libraries.
 Group:          Libraries/NextSpace
 License:        GPLv3
 URL:		http://www.gnustep.org
-Source0:        %{GS_REPO}/libs-base/archive/base-%{BASE_VERSION}.tar.gz
-Source1:        %{GS_REPO}/libs-gui/archive/gnustep-gui-%{GUI_VERSION}.tar.gz
-Source2:        back-art.tar.gz
+Source0:        libs-base-%{BASE_VERSION}.tar.gz
+Source1:        libs-gui-%{GUI_VERSION}.tar.gz
+Source2:        libs-back-%{BACK_VERSION}.tar.gz
 Source3:        %{GS_REPO}/apps-gorm/archive/gorm-%{GORM_VERSION}.tar.gz
-Source4:        projectcenter-master.tar.gz
+Source4:        projectcenter-%{PC_VERSION}.tar.gz
 Source5:        projectcenter-images.tar.gz
 Source6:        gorm-images.tar.gz
 Source7:        gnustep-gui-images.tar.gz
@@ -26,8 +26,10 @@ Source9:        gdomap.service
 Source10:       gdnc.service
 Source11:       gdnc-local.service
 Source12:       gpbs.service
-Patch0:         gorm.patch
-Patch1:         pc.patch
+Patch0:         libs-gui.patch
+Patch1:         libs-back.patch
+Patch2:         gorm.patch
+Patch3:         pc.patch
 
 # Build GNUstep libraries in one RPM package
 Provides:	gnustep-base-%{BASE_VERSION}
@@ -131,12 +133,18 @@ GNUstep Make installed with nextspace-core-devel package.
 
 %prep
 %setup -c -n nextspace-gnustep -a 0 -a 1 -a 2 -a 3 -a 4
+cp %{_sourcedir}/libs-gui.patch %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_VERSION}/
+cd %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_VERSION}/
+%patch0 -p1
+cp %{_sourcedir}/libs-back.patch %{_builddir}/nextspace-gnustep/libs-back-%{BACK_VERSION}/
+cd %{_builddir}/nextspace-gnustep/libs-back-%{BACK_VERSION}/
+%patch1 -p1
 cp %{_sourcedir}/gorm.patch %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
 cd %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
-%patch0 -p1
+%patch2 -p1
 cp %{_sourcedir}/pc.patch %{_builddir}/nextspace-gnustep/apps-projectcenter-%{PC_VERSION}/
 cd %{_builddir}/nextspace-gnustep/apps-projectcenter-%{PC_VERSION}/
-%patch1 -p1
+%patch3 -p1
 rm -rf %{buildroot}
 
 #
@@ -152,7 +160,7 @@ export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Foundation (relies on gnustep-make included in nextspace-core-devel)
-cd libs-base-base-%{BASE_VERSION}
+cd libs-base-%{BASE_VERSION}
 ./configure
 make
 %{make_install}
@@ -163,7 +171,7 @@ export ADDITIONAL_LIB_DIRS=" -L%{buildroot}/Library/Libraries"
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 
 # Application Kit
-cd libs-gui-gnustep-gui-%{GUI_VERSION}
+cd libs-gui-%{GUI_VERSION}
 sudo cp %{buildroot}/Developer/Makefiles/Additional/base.make /Developer/Makefiles/Additional/
 ./configure
 make
@@ -172,8 +180,7 @@ sudo rm /Developer/Makefiles/Additional/base.make
 cd ..
 
 # Build ART GUI backend
-#cd libs-back-gnustep-back-%{BACK_VERSION}
-cd back-art
+cd libs-back-%{BACK_VERSION}
 export ADDITIONAL_TOOL_LIBS="-lgnustep-gui -lgnustep-base"
 ./configure \
     --enable-server=x11 \
@@ -204,20 +211,18 @@ cd ..
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 export QA_SKIP_BUILD_ROOT=1
-
-cd libs-base-base-%{BASE_VERSION}
+# Install Base
+cd libs-base-%{BASE_VERSION}
 %{make_install}
 cd ..
-
-cd libs-gui-gnustep-gui-%{GUI_VERSION}
+# Install GUI
+cd libs-gui-%{GUI_VERSION}
 %{make_install}
 cd ..
-
-#cd libs-back-gnustep-back-%{BACK_VERSION}
-cd back-art
+# Install Back
+cd libs-back-%{BACK_VERSION}
 %{make_install} fonts=no
 cd ..
-
 # Install GORM
 export GNUSTEP_INSTALLATION_DOMAIN=NETWORK
 cd apps-gorm-gorm-%{GORM_VERSION}
@@ -255,6 +260,7 @@ cd ..
 # for %pre and %post $1 = 1 - installation, 2 - upgrade
 #%pre
 %post
+libs -p /sbin/ldconfig
 if [ $1 -eq 1 ]; then
     # post-installation
     systemctl enable /usr/NextSpace/lib/systemd/gdomap.service;
@@ -284,7 +290,8 @@ elif  [ $1 -eq 1 ]; then
     echo "This is an upgrade. Do nothing with GNUstep services.";
 fi
 
-#%postun
+%postun
+/bin/rm -rf /usr/NextSpace/Preferences/
 
 %changelog
 * Thu Apr 30 2020 Sergii Stoian <stoyan255@gmail.com> - 1_27_0_nextspace-1

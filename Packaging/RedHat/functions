@@ -46,7 +46,7 @@ prepare_environment()
                 rpm -q centos-release-scl-rh 2>&1 > /dev/null
                 if [ $? -eq 1 ]; then BUILD_TOOLS+=" centos-release-scl-rh"; fi
             fi
-            if [ $OS_VERSION == "8" ];then
+            if [ $OS_VERSION == "9" ];then
                 # Could be "CentOS Linux" or "CentOS Stream"
                 if [ "$OS_NAME" == "CentOS Stream" ]; then
                     yum config-manager --set-enabled powertools

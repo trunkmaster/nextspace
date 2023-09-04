@@ -1,0 +1,179 @@
+diff -ruN a/Source/x11/XGServerEvent.m b/Source/x11/XGServerEvent.m
+--- a/Source/x11/XGServerEvent.m	2023-08-06 14:24:24.123127480 -0400
++++ b/Source/x11/XGServerEvent.m	2023-08-11 16:54:39.029121337 -0400
+@@ -1273,6 +1273,12 @@
+                   nswin = GSWindowWithNumber(cWin->number);
+                 }
+             }
++          else if (xEvent.xfocus.mode != NotifyNormal)
++            {
++              /* Focus went to `None` or `PointerRoot`.
++                 Do not change window focus - window manager is in action */
++              break;
++            }
+           else
+             {
+               nswin = nil;
+@@ -1977,20 +1983,19 @@
+      events */
+   if ([NSApp isHidden])
+     {
+-      if (generic.wm & XGWM_WINDOWMAKER)
++      /* If window receives WM_TAKE_FOCUS and application is in hidden
++         state - it's time to unhide. There's no other method to
++         tell us to unhide. */
++      NSDebugLLog(@"Focus", @"WM take focus while in hidden state - unhiding.");
++      if (cWin->number == [[[NSApp mainMenu] window] windowNumber])
+         {
+-          /* If window receives WM_TAKE_FOCUS and application is in hidden
+-             state - it's time to unhide. There's no other method to
+-             tell us to unhide. */
+-          NSDebugLLog(@"Focus", @"WM take focus while hidden - unhiding.");
+-          [NSApp unhide: nil];
++          /* Give a hint to `-unhide` method where call was from when WM_TAKE_FOCUS
++             was received by main menu window. */
++          [NSApp unhide:self];
+         }
+       else
+         {
+-          /* This often occurs when hidding an app, since a bunch of
+-             windows get hidden at once, and the WM is searching for a
+-             window to take focus after each one gets hidden. */
+-          NSDebugLLog(@"Focus", @"WM take focus while hiding");
++          [NSApp unhide:nil];
+         }
+     }
+   else if (cWin->ignore_take_focus == YES)
+@@ -1998,6 +2003,13 @@
+       NSDebugLLog(@"Focus", @"Ignoring window focus request");
+       cWin->ignore_take_focus = NO;
+     }
++  else if ([[NSApp mainMenu] isTransient] != NO)
++    {
++      /* Do not grab focus from active application if right-click on our
++         application icon was performed. */
++      NSDebugLLog(@"Focus",
++                  @"Ignore transient application menu focus request.");
++    }
+   else if (cWin->number == key_num)
+     {
+       NSDebugLLog(@"Focus", @"Reasserting key window");
+diff -ruN a/Source/x11/XGServerWindow.m b/Source/x11/XGServerWindow.m
+--- a/Source/x11/XGServerWindow.m	2023-08-06 14:24:24.123127480 -0400
++++ b/Source/x11/XGServerWindow.m	2023-08-11 17:20:15.423277849 -0400
+@@ -858,7 +858,7 @@
+   /*
+    * Mark this as a GNUstep app with the current application name.
+    */
+-  classhint.res_name = "CheckWindowStyle";
++  classhint.res_name = generic.rootName;
+   classhint.res_class = "GNUstep";
+   XSetClassHint(dpy, window->ident, &classhint);
+ 
+@@ -912,6 +912,9 @@
+   // Use the globally active input mode
+   window->gen_hints.flags = InputHint;
+   window->gen_hints.input = False;
++  // All the windows of a GNUstep application belong to one group.
++  window->gen_hints.flags |= WindowGroupHint;
++  window->gen_hints.window_group = ROOT;
+ 
+   /*
+    * Prepare the protocols supported by the window.
+@@ -1595,6 +1598,24 @@
+       // FIXME: Need to set WM_CLIENT_MACHINE as well.
+     }
+ 
++  /* WindowMaker hack: We want to display our own app icon window in the
++   * icon window provided by WindowMaker. However, this only works when
++   * the icon window is the first window being mapped. For that reason,
++   * we create an empty icon window here before the code below eventually
++   * generates some temporary windows to determine the window frame offsets
++   * and reuse the icon window once the real app icon window is allocated.
++   */
++  if ((generic.wm & XGWM_WINDOWMAKER) == XGWM_WINDOWMAKER
++      && generic.flags.useWindowMakerIcons == 1)
++    {
++      NSDebugLLog(@"XGTrace", @"WindowMaker hack: Preparing app icon window");
++      _wmAppIcon =
++[self window: NSZeroRect : NSBackingStoreBuffered
++                    : NSIconWindowMask : defScreen];
++      [self orderwindow: NSWindowAbove : -1 : _wmAppIcon];
++      NSDebugLLog(@"XGTrace", @"WindowMaker hack: icon window = %d", _wmAppIcon);
++    }
++
+   /* We need to determine the offsets between the actual decorated window
+    * and the window we draw into.
+    */
+@@ -1621,14 +1642,12 @@
+        */
+       if ([defs boolForKey: @"GSIgnoreRootOffsets"] == YES)
+         {
+-          NSLog(@"Ignoring _GNUSTEP_FRAME_OFFSETS root window property.");
+           offsets = 0;
+         }
+       else
+         {
+-          offsets = (uint16_t *)PropGetCheckProperty(dpy, DefaultRootWindow(dpy),
+-                                                     generic._GNUSTEP_FRAME_OFFSETS_ATOM,
+-                                                     XA_CARDINAL, 16, 60, &count);
++          offsets = (uint16_t *)PropGetCheckProperty(dpy,
++            DefaultRootWindow(dpy), generic._GNUSTEP_FRAME_OFFSETS_ATOM, XA_CARDINAL, 16, 60, &count);
+         }
+ 
+       if (offsets == 0)
+@@ -1862,10 +1881,14 @@
+   RContext              *context;
+ 
+   NSDebugLLog(@"XGTrace", @"DPSwindow: %@ %d", NSStringFromRect(frame), (int)type);
+-  
+-  /* WindowMaker hack: Reuse the empty app icon allocated in _createWMAppiconHack
+-   * for the real app icon. */
+-  if ((style & NSIconWindowMask) == NSIconWindowMask && _wmAppIcon != -1)
++
++  /* WindowMaker hack: Reuse the empty app icon allocated in _setupRootWindow
++   * for the real app icon.
++   */
++  if ((generic.wm & XGWM_WINDOWMAKER) == XGWM_WINDOWMAKER
++      && generic.flags.useWindowMakerIcons == 1
++      && (style & NSIconWindowMask) == NSIconWindowMask
++      && _wmAppIcon != -1)
+     {
+       int win = _wmAppIcon;
+       NSDebugLLog(@"XGTrace",
+@@ -1873,7 +1896,6 @@
+       _wmAppIcon = -1;
+       return win;
+     }
+-  
+   root = [self _rootWindow];
+   context = [self screenRContext];
+ 
+@@ -2263,7 +2285,8 @@
+ 
+   if ((style & NSIconWindowMask) || (style & NSMiniWindowMask))
+     {
+-      style = NSBorderlessWindowMask;
++      *l = *r = *t = *b = 0.0;
++      return;
+     }
+ 
+   /* Next try to get the offset information that we have obtained from
+@@ -2284,7 +2307,7 @@
+       return;
+     }
+ 
+-  NSDebugLLog(@"Frame", @"styleoffsets ... guessing offsets\n");
++  NSLog(@"styleoffsets ... guessing offsets\n");
+   if ((generic.wm & XGWM_WINDOWMAKER) != 0)
+     {
+       *l = *r = *t = *b = 1.0;
+@@ -2821,7 +2844,7 @@
+   height = [rep pixelsHigh];
+   colors = [rep samplesPerPixel];
+ 
+-  if (rcontext->depth != 32)
++  if (rcontext->depth != 32 && rcontext->depth != 24)
+     {
+       NSLog(@"Unsupported context depth %d", rcontext->depth);
+       return 0;

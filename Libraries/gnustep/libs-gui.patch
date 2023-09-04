@@ -1,0 +1,171 @@
+diff -ruN a/Headers/Additions/GNUstepGUI/GSDisplayServer.h b/Headers/Additions/GNUstepGUI/GSDisplayServer.h
+--- a/Headers/Additions/GNUstepGUI/GSDisplayServer.h	2023-08-26 18:58:36.129010099 -0500
++++ b/Headers/Additions/GNUstepGUI/GSDisplayServer.h	2023-08-26 19:04:11.351775180 -0500
+@@ -117,6 +117,14 @@
+ /* Screen capture */ 
+ - (NSImage *) contentsOfScreen: (int)screen inRect: (NSRect)rect;
+ 
++/* Desktops (workspaces) */
++- (unsigned int) numberOfDesktops: (int)screen;
++- (NSArray *) namesOfDesktops: (int)screen;
++- (unsigned int) desktopNumberForScreen: (int)screen;
++- (void) setDesktopNumber: (unsigned int)workspace forScreen: (int)screen;
++- (unsigned int) desktopNumberForWindow: (int)win;
++- (void) setDesktopNumber: (unsigned int)workspace forWindow: (int)win;
++
+ @end
+ 
+ /* ----------------------------------------------------------------------- */
+diff -ruN a/Source/GSDisplayServer.m b/Source/GSDisplayServer.m
+--- a/Source/GSDisplayServer.m	2023-08-26 18:58:36.177016899 -0500
++++ b/Source/GSDisplayServer.m	2023-08-26 19:04:11.352775786 -0500
+@@ -508,6 +508,40 @@
+   return nil;
+ }
+ 
++- (unsigned int) numberOfDesktops: (int)screen
++{
++  [self subclassResponsibility: _cmd];
++  return 1;
++}
++
++- (NSArray *) namesOfDesktops: (int)screen
++{
++  [self subclassResponsibility: _cmd];
++  return nil;
++}
++
++- (unsigned int) desktopNumberForScreen: (int)screen
++{
++  [self subclassResponsibility: _cmd];
++  return 0;
++}
++
++- (void) setDesktopNumber: (unsigned int)workspace forScreen: (int)screen
++{
++  // Do nothing if not overridden by subclass
++}
++
++- (unsigned int) desktopNumberForWindow: (int)win
++{
++  [self subclassResponsibility: _cmd];
++  return 0;
++}
++
++- (void) setDesktopNumber: (unsigned int)workspace forWindow: (int)win
++{
++  // Do nothing if not overridden by subclass
++}
++
+ @end
+ 
+ /* ----------------------------------------------------------------------- */
+diff -ruN a/Source/NSColor.m b/Source/NSColor.m
+--- a/Source/NSColor.m	2023-08-26 18:58:36.189018599 -0500
++++ b/Source/NSColor.m	2023-08-27 08:04:03.747559482 -0500
+@@ -610,13 +610,16 @@
+ }
+ 
+ 
+-/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
+-  with white and alpha values set as NSBlack and 1.0 respectively.</p>
+-  <p>See Also : +colorWithCalibratedWhite:alpha:</p>
++/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
++  with red, green, blue and alpha values set as 0.0, 0.0, 0.0 and 1.0
++  respectively.</p><p>See Also : +colorWithCalibratedRed:gren:blue:alpha:</p>
+ */
+ + (NSColor*) blackColor
+ {
+-  return [self colorWithCalibratedWhite: NSBlack alpha: 1.0];
++  return [self colorWithCalibratedRed: 0.0
++                                green: 0.0
++                                 blue: 0.0
++                                alpha: 1.0];
+ }
+ 
+ 
+@@ -666,22 +669,28 @@
+ 			        alpha: 1.0];
+ }
+ 
+-/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
+-  with white and alpha values set as NSDarkGray and 1.0 respectively. </p>
+-  <p>See Also : +colorWithCalibratedWhite:alpha:</p>
++/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
++  with red, green, blue and alpha values set as 0.3, 0.3, 0.3 and 1.0
++  respectively.</p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
+ */
+ + (NSColor*) darkGrayColor
+ {
+-  return [self colorWithCalibratedWhite: NSDarkGray alpha: 1.0];
++  return [self colorWithCalibratedRed: 0.3
++                                green: 0.3
++                                 blue: 0.3
++                                alpha: 1.0];
+ }
+ 
+-/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
+-  with white and alpha values set as NSGray and 1.0 respectively. </p>
+-  <p>See Also: +colorWithCalibratedWhite:alpha:</p>
++/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
++  with red, green, blue and alpha values set as 0.5, 0.5, 0.5 and 1.0
++  respectively.</p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
+ */
+ + (NSColor*) grayColor
+ {
+-  return [self colorWithCalibratedWhite: NSGray alpha: 1.0];
++  return [self colorWithCalibratedRed: 0.5
++                                green: 0.5
++                                 blue: 0.5
++                                alpha: 1.0];
+ }
+ 
+ /**<p>Returns a NSColor in a  NSCalibratedRGBColorSpace space name.
+@@ -696,13 +705,16 @@
+ 			        alpha: 1.0];
+ }
+ 
+-/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
+-  with white and alpha values set as NSLightGray and 1.0 respectively </p>
+-  <p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
++/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
++  with red, green, blue and alpha values set as 0.6, 0.6, 0.6 and 1.0
++  respectively.</p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
+ */
+ + (NSColor*) lightGrayColor
+ {
+-  return [self colorWithCalibratedWhite: NSLightGray alpha: 1];
++  return [self colorWithCalibratedRed: 0.6
++                                green: 0.6
++                                 blue: 0.6
++                                alpha: 1.0];
+ }
+ 
+ /**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
+@@ -756,18 +768,21 @@
+ 			        alpha: 1.0];
+ }
+ 
+-/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
+-  with white and alpha values set as NSWhite and 1.0 respectively. </p>
+-  <p>See Also : +colorWithCalibratedWhite:alpha:</p>
++/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
++  with red, green, blue and alpha values set as 1.0, 1.0, 1.0 and 1.0
++  respectively.</p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
+ */
+ + (NSColor*) whiteColor
+ {
+-  return [self colorWithCalibratedWhite: NSWhite alpha: 1.0];
++  return [self colorWithCalibratedRed: 1.0
++                                green: 1.0
++                                 blue: 1.0
++                                alpha: 1.0];
+ }
+ 
+ 
+ /**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
+-  with red, green, blue and alpha values set as 1.0, 0.0, 0.0 and 1.0
++  with red, green, blue and alpha values set as 1.0, 1.0, 0.0 and 1.0
+   respectively.</p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+ */
+ + (NSColor*) yellowColor
