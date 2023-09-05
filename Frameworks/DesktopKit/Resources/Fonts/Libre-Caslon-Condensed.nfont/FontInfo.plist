@@ -1,0 +1,78 @@
+{
+    FontCopyright = "Copyright 2015 Google Inc. All Rights Reserved.";
+    Foundry = "Google";
+    Faces = (
+	{
+	    Files = (
+		LibreCaslonCondensed-Regular.ttf
+	    );
+	    Name = Regular;
+	    PostScriptName = "LibreCaslonCondensed-Regular";
+	    Weight = 400;
+	    RenderHints_hack = 0x010203;
+	},
+        {
+            Files = (
+                LibreCaslonCondensed-Medium.ttf
+            );
+            Name = Medium;
+            PostScriptName = "LibreCaslonCondensed-Medium";
+            Weight = 500;
+            RenderHints_hack = 0x010203;
+        },
+        {
+            Files = (
+                LibreCaslonCondensed-SemiBold.ttf
+            );
+            Name = SemiBold;
+            PostScriptName = "LibreCaslonCondensed-SemiBold";
+            Weight = 700;
+            RenderHints_hack = 0x010203;
+        },
+        {
+            Files = (
+                LibreCaslonCondensed-Bold.ttf
+            );
+            Name = Bold;
+            PostScriptName = "LibreCaslonCondensed-Bold";
+            Weight = 700;
+            RenderHints_hack = 0x010203;
+        },
+        {
+            Files = (
+                LibreCaslonCondensed-Italic.ttf
+            );
+            Name = Italic;
+            PostScriptName = "LibreCaslonCondensed-Italic";
+            Weight = 400;
+            RenderHints_hack = 0x010203;
+        },
+        {
+            Files = (
+                LibreCaslonCondensed-MediumItalic.ttf
+            );
+            Name = MediumItalic;
+            PostScriptName = "LibreCaslonCondensed-MediumItalic";
+            Weight = 500;
+            RenderHints_hack = 0x010203;
+        },
+        {
+            Files = (
+                LibreCaslonCondensed-SemiBoldItalic.ttf
+            );
+            Name = SemiBoldItalic;
+            PostScriptName = "LibreCaslonCondensed-SemiBoldItalic";
+            Weight = 700;
+            RenderHints_hack = 0x010203;
+        },
+        {
+            Files = (
+                LibreCaslonCondensed-BoldItalic.ttf
+            );
+            Name = BoldItalic;
+            PostScriptName = "LibreCaslonCondensed-BoldItalic";
+            Weight = 700;
+            RenderHints_hack = 0x010203;
+        },
+    );
+}

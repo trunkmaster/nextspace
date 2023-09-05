@@ -141,7 +141,8 @@ if [ $1 -eq 0 ]; then
    systemctl set-default multi-user.target
 fi
 
-#%postun
+%postun
+/bin/rm /usr/NextSpace/Preferences/Login
 
 %changelog
 * Fri Jan 15 2021  Sergii Stoian <stoyan255@gmail.com> - 0.91-0
