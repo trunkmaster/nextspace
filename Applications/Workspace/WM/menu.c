@@ -1828,7 +1828,6 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
                              submenu->brother->flags.mapped) {
                     /* selected with last click or tornoff submenu is visible */
                     wMenuItemSelect(mouse_menu, -1);
-                    closeCascade(submenu);
                   }
                 } else if (!mouse_menu->flags.app_menu || mouse_menu->flags.brother) {
                   wMenuItemSelect(mouse_menu, -1);
