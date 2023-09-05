@@ -368,10 +368,10 @@ static void _updateWindowsMenu(WMenu *windows_menu, WWindow *wwin, int action)
 }
 
 static void _windowObserver(CFNotificationCenterRef center,
-                           void *menu,
-                           CFNotificationName name,
-                           const void *window,
-                           CFDictionaryRef userInfo)
+                            void *menu,
+                            CFNotificationName name,
+                            const void *window,
+                            CFDictionaryRef userInfo)
 {
   WMenu *windows_menu = (WMenu *)menu;
   WWindow *wwin = (WWindow *)window;
@@ -407,10 +407,10 @@ static void _windowObserver(CFNotificationCenterRef center,
 static void _updateDesktopsMenu(WMenu *menu);
 
 static void _desktopsObserver(CFNotificationCenterRef center,
-                             void *menu,
-                             CFNotificationName name,
-                             const void *window,
-                             CFDictionaryRef userInfo)
+                              void *menu,
+                              CFNotificationName name,
+                              const void *window,
+                              CFDictionaryRef userInfo)
 {
   _updateDesktopsMenu(menu);
 }
@@ -471,8 +471,7 @@ static WMenu *_createWindowsMenu(WApplication *wapp)
   CFNotificationCenterAddObserver(scr->notificationCenter, desktops_menu, _desktopsObserver,
                                   WMDidDestroyDesktopNotification, NULL,
                                   CFNotificationSuspensionBehaviorDeliverImmediately);
-
-  
+ 
   return windows_menu;
 }
 
@@ -586,16 +585,16 @@ static WMenu *_createToolsMenu(WApplication *wapp)
   dock_menu = wMenuCreate(scr, _("Dock"), False);
   dock_menu->app = wapp;
   //
-  tmp_item = wMenuAddItem(dock_menu, _("Hide Dock"), _hideDock, NULL);
+  tmp_item = wMenuAddItem(dock_menu, _("Hide"), _hideDock, NULL);
   wMenuItemSetShortcut(tmp_item, "Alternate+D");
-  tmp_item = wMenuAddItem(dock_menu, _("Collapse Dock"), _collapseDock, NULL);
+  tmp_item = wMenuAddItem(dock_menu, _("Collapse"), _collapseDock, NULL);
   //
   tmp_item = wMenuAddItem(tools_menu, _("Dock"), NULL, NULL);
   wMenuItemSetSubmenu(tools_menu, tmp_item, dock_menu);
   
   iconyard_menu = wMenuCreate(scr, _("Icon Yard"), False);
   iconyard_menu->app = wapp;
-  tmp_item = wMenuAddItem(iconyard_menu, _("Hide Icon Yard"), _hideIconYard, NULL);
+  tmp_item = wMenuAddItem(iconyard_menu, _("Hide"), _hideIconYard, NULL);
   wMenuItemSetShortcut(tmp_item, "Alternate+Y");
   tmp_item = wMenuAddItem(tools_menu, _("Icon Yard"), NULL, NULL);
   wMenuItemSetSubmenu(tools_menu, tmp_item, iconyard_menu);
