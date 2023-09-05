@@ -747,6 +747,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                name:NSApplicationWillBecomeActiveNotification
              object:NSApp];
   }
+  [recycler updateIconImage];
 
   // OSEMediaManager
   // For future use
