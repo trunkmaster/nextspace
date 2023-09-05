@@ -118,10 +118,10 @@ static void shadeObserver(CFNotificationCenterRef center,
 }
 
 static void hideOthersObserver(CFNotificationCenterRef center,
-                            void *wobserver,     // wapp
-                            CFNotificationName name,
-                            const void *object,      // object - ignored
-                            CFDictionaryRef userInfo)
+                               void *wobserver,     // wapp
+                               CFNotificationName name,
+                               const void *object,      // object - ignored
+                               CFDictionaryRef userInfo)
 {
   CFNumberRef windowID = CFDictionaryGetValue(userInfo, CFSTR("WindowID"));
   /* WApplication *observer_wapp = (WApplication *)wobserver; */

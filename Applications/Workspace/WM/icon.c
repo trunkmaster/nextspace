@@ -377,22 +377,24 @@ void wIconChangeTitle(WIcon *icon, WWindow *wwin)
 
 RImage *wIconValidateIconSize(RImage *icon, int max_size)
 {
-  RImage *nimage;
+  RImage *scaled_image;
+  /* We should hold "ICON_BORDER" to include the icon border */
+  int max_icon_size = max_size - ICON_BORDER;
 
-  if (!icon)
+  if (!icon) {
     return NULL;
+  }
 
-  /* We should hold "ICON_BORDER" (~2) pixels to include the icon border */
-  if (((max_size + ICON_BORDER) < icon->width) ||
-      ((max_size + ICON_BORDER) < icon->height)) {
-    if (icon->width > icon->height)
-      nimage = RScaleImage(icon, max_size - ICON_BORDER,
-                           (icon->height * (max_size - ICON_BORDER) / icon->width));
-    else
-      nimage = RScaleImage(icon, (icon->width * (max_size - ICON_BORDER) / icon->height),
-                           max_size - ICON_BORDER);
+  if ((icon->width > (max_size + ICON_BORDER)) || (icon->height > (max_size + ICON_BORDER))) {
+    if (icon->width > icon->height) {
+      scaled_image = RScaleImage(icon, max_icon_size,
+                                 (icon->height * max_icon_size / icon->width));
+    } else {
+      scaled_image = RScaleImage(icon, (icon->width * max_icon_size / icon->height),
+                                 max_icon_size);
+    }
     RReleaseImage(icon);
-    icon = nimage;
+    icon = scaled_image;
   }
 
   return icon;

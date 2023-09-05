@@ -251,7 +251,7 @@ typedef enum {
 /* CF to NS notification conversion.
      1. Convert notification name (CFNotificationName -> NSString)
      2. Convert userInfo (CFDisctionaryRef -> NSDictionary)
-     3. Create and send NSNotification to WMNotificationCenter with
+     3. Create and send NSNotification to WMNotificationCenter
 
    Dispatching is performed in WMNotificationCenter's postNotificationName::: method call.
 */

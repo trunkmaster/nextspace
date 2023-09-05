@@ -432,13 +432,15 @@ RImage *get_rimage_from_file(WScreen *scr, const char *file_name, int max_size)
 {
   RImage *image = NULL;
 
-  if (!file_name)
+  if (!file_name) {
     return NULL;
+  }
 
   image = RLoadImage(scr->rcontext, file_name, 0);
-  if (!image)
+  if (!image) {
     WMLogWarning(_("error loading image file \"%s\": %s"), file_name,
              RMessageForError(RErrorCode));
+  }
 
   image = wIconValidateIconSize(image, max_size);
 
