@@ -399,10 +399,11 @@ void wAppIconPaint(WAppIcon *aicon)
   WApplication *wapp;
   WScreen *scr = aicon->icon->core->screen_ptr;
 
-  if (aicon->icon->owner)
+  if (aicon->icon->owner) {
     wapp = wApplicationOf(aicon->icon->owner->main_window);
-  else
+  } else {
     wapp = NULL;
+  }
 
   wIconPaint(aicon->icon);
 
@@ -419,15 +420,17 @@ void wAppIconPaint(WAppIcon *aicon)
     XCopyArea(dpy, scr->dock_dots->image,
               aicon->icon->core->window, scr->copy_gc, 0, 0, 7, scr->dock_dots->height, 0, 0);
   }
-#endif				/* HIDDENDOT */
+#endif	/* HIDDENDOT */
 
-  if (aicon->flags.omnipresent)
+  if (aicon->flags.omnipresent) {
     drawCorner(aicon->icon);
+  }
 
   XSetClipMask(dpy, scr->copy_gc, None);
-  if (aicon->flags.launching)
+  if (aicon->flags.launching && !aicon->flags.running) {
     XFillRectangle(dpy, aicon->icon->core->window, scr->stipple_gc,
                    0, 0, wPreferences.icon_size, wPreferences.icon_size);
+  }
 }
 
 /* Save the application icon, if it's a dockapp then use it with dock = True */

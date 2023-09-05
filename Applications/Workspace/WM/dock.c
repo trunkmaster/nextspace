@@ -795,7 +795,6 @@ static void launchDockedApplication(WAppIcon *btn, Bool withSelection)
       ((!withSelection && btn->command != NULL) || (withSelection && btn->paste_command != NULL))) {
     if (!btn->flags.forced_dock) {
       btn->flags.relaunching = btn->flags.running;
-      btn->flags.running = 1;
     }
     if (btn->wm_instance || btn->wm_class) {
       WWindowAttributes attr;
@@ -1737,7 +1736,7 @@ WDock *wDockRestoreState(WScreen *scr, CFDictionaryRef dock_state, int type)
 
   // Workspace Manager
   dock->icon_array[0]->flags.launching = 1;
-  dock->icon_array[0]->flags.running = 0;
+  dock->icon_array[0]->flags.running = 1; // to prevent highliting
   dock->icon_array[0]->flags.lock = 1;
 
  finish:
@@ -1774,9 +1773,8 @@ void wDockDoAutoLaunch(WDock *dock, int desktop)
 
   for (int i = 0; i < dock->max_icons; i++) {
     btn = dock->icon_array[i];
-    if (!btn || !btn->flags.auto_launch ||
-        !btn->command || btn->flags.running || btn->flags.launching ||
-        !strcmp(btn->wm_instance, "Workspace")) {
+    if (!btn || !btn->flags.auto_launch || !btn->command ||
+        btn->flags.running || btn->flags.launching) {
       continue;
     }
 
