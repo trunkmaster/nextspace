@@ -20,3 +20,6 @@
 /WM/ltmain.sh
 /WM/missing
 /WM/src/wconfig.h
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
