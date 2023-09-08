@@ -316,7 +316,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
               selection:[winInfo objectForKey:@"Selection"]
                  sender:self];
       }
-      [[fv window] orderFront:nil];
+      [[fv window] makeKeyAndOrderFront:nil];
       
       winViewInfo = [NSMutableDictionary dictionaryWithDictionary:winInfo];
       [winViewInfo setObject:[fv window] forKey:@"Window"];
@@ -352,7 +352,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     [fv displayPath:NSHomeDirectory() selection:nil sender:self];
     rootViewerWindow = [fv window];
     rootViewer = fv;
-    [[fv window] orderFront:nil];
+    [[fv window] makeKeyAndOrderFront:self];
   }
 
   // Restore state of windows
@@ -371,9 +371,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     if (showFinder != NO && [[finder window] isMiniaturized] == NO) {
       [finder setFileViewer:rootViewer];
       [finder activateWithString:@""];
-    }
-    else {
-      [rootViewerWindow makeKeyAndOrderFront:self];
     }
   }
 }
@@ -729,7 +726,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                name:NSApplicationWillBecomeActiveNotification
              object:NSApp];
   }
-  [recycler updateIconImage];
 
   // OSEMediaManager
   // For future use
@@ -769,7 +765,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   fprintf(stderr, "=== Workspace is ready. Welcome to the NeXT world! ===\n");
 
   // Start last session active not-docked applications
-  [self _startSavedApplications];  
+  [self _startSavedApplications];
 }
 
 - (void)activateApplication:(NSNotification *)aNotification
