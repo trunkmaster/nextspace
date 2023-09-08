@@ -180,12 +180,13 @@ static NSMutableArray *fileList = nil;
   XClassHint    classhint;
   NSFileManager *fileManager = [NSFileManager defaultManager];
   BOOL          isDir;
+  WAppIcon *workspace_dock_icon = dock->icon_array[0];
 
   self = [super init];
   
   _dockIcon = [RecyclerIcon recyclerAppIconForDock:dock];
  
-  if (_dockIcon == NULL) {
+  if (_dockIcon == NULL || dock == NULL) {
     NSLog(@"Recycler Dock icon creation failed!");
     return nil;
   }
@@ -193,6 +194,8 @@ static NSMutableArray *fileList = nil;
   classhint.res_name = "Recycler";
   classhint.res_class = "GNUstep";
   XSetClassHint(dpy, _dockIcon->icon->core->window, &classhint);
+  _dockIcon->icon->owner = workspace_dock_icon->icon->owner;
+  _dockIcon->main_window = workspace_dock_icon->main_window;
   
   _path = [NSHomeDirectory() stringByAppendingPathComponent:@".Recycler"];
   [_path retain];

@@ -754,31 +754,22 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [mediaAdaptor checkForRemovableMedia];
 
   // Recycler
-  {
-    WDock    *dock = wDefaultScreen()->dock;
-    WAppIcon *main_dock_icon = dock->icon_array[0];
-    WAppIcon *recycler_icon;
+  recycler = [[Recycler alloc] initWithDock:wDefaultScreen()->dock];
+  [[recycler appIcon] orderFrontRegardless];
 
-    recycler = [[Recycler alloc] initWithDock:dock];
-    recycler_icon = [recycler dockIcon];
-    if (recycler_icon) {
-      recycler_icon->icon->owner = main_dock_icon->icon->owner;
-      recycler_icon->main_window = main_dock_icon->main_window;
-      [[recycler appIcon] orderFrontRegardless];
-    }
-  }
-
-  // Dock
+  // Show Dock
   wDockShowIcons(wDefaultScreen()->dock);
 
   // Start docked applications with `AutoLaunch = Yes`
   wDockDoAutoLaunch(wDefaultScreen()->dock, 0);
 
-  [self _startSavedApplications];
-  
+  // WM startup completed
   wDefaultScreen()->flags.startup2 = 0;
 
   fprintf(stderr, "=== Workspace is ready. Welcome to the NeXT world! ===\n");
+
+  // Start last session active not-docked applications
+  [self _startSavedApplications];  
 }
 
 - (void)activateApplication:(NSNotification *)aNotification
