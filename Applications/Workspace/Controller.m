@@ -671,21 +671,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
                            name:CF_NOTIFICATION(WMDidChangeKeyboardLayoutNotification)
                          object:nil];
 
-  // Recycler
-  {
-    WDock    *dock = wDefaultScreen()->dock;
-    WAppIcon *main_dock_icon = dock->icon_array[0];
-    WAppIcon *recycler_icon;
-
-    recycler = [[Recycler alloc] initWithDock:dock];
-    recycler_icon = [recycler dockIcon];
-    if (recycler_icon) {
-      recycler_icon->icon->owner = main_dock_icon->icon->owner;
-      recycler_icon->main_window = main_dock_icon->main_window;
-      [[recycler appIcon] orderFrontRegardless];
-    }
-  }
-
   // Update Services
   // NSUpdateDynamicServices();
   
@@ -719,9 +704,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // ProcessManager must be ready to register automatically started applications.
   procManager = [ProcessManager shared];
 
-  // Start docked applications with `AutoLaunch = Yes`
-  wDockDoAutoLaunch(wDefaultScreen()->dock, 0);
-    
   // Init Workspace's tools
   mediaOperations = [[NSMutableDictionary alloc] init];
   // [self mediaManager];
@@ -770,7 +752,28 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
            object:mediaAdaptor];
 
   [mediaAdaptor checkForRemovableMedia];
-  
+
+  // Recycler
+  {
+    WDock    *dock = wDefaultScreen()->dock;
+    WAppIcon *main_dock_icon = dock->icon_array[0];
+    WAppIcon *recycler_icon;
+
+    recycler = [[Recycler alloc] initWithDock:dock];
+    recycler_icon = [recycler dockIcon];
+    if (recycler_icon) {
+      recycler_icon->icon->owner = main_dock_icon->icon->owner;
+      recycler_icon->main_window = main_dock_icon->main_window;
+      [[recycler appIcon] orderFrontRegardless];
+    }
+  }
+
+  // Dock
+  wDockShowIcons(wDefaultScreen()->dock);
+
+  // Start docked applications with `AutoLaunch = Yes`
+  wDockDoAutoLaunch(wDefaultScreen()->dock, 0);
+
   [self _startSavedApplications];
   
   wDefaultScreen()->flags.startup2 = 0;

@@ -147,22 +147,16 @@ int main(int argc, const char **argv)
     wm_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_CONCURRENT);
     fprintf(stderr, "=== Initializing Window Manager ===\n");
     dispatch_sync(wm_q, ^{
-        WScreen *wScreen;
-        
-        @autoreleasepool {
-          // Restore display layout
-          [[[OSEScreen new] autorelease] applySavedDisplayLayout];
-        }
+      @autoreleasepool {
+        // Restore display layout
+        [[[OSEScreen new] autorelease] applySavedDisplayLayout];
+      }
 
-        wInitialize(argc, (char **)argv);
-        wStartUp(True);
-        
-        wScreen = wDefaultScreen();
-        WSUpdateScreenInfo(wScreen);
+      wInitialize(argc, (char **)argv);
+      wStartUp(True);
 
-        // Dock
-        wDockShowIcons(wScreen->dock);
-      });
+      WSUpdateScreenInfo(wDefaultScreen());
+    });
     fprintf(stderr, "=== Window Manager initialized! ===\n");
     
     // Start WM run loop V0 to catch events while V1 is warming up.
