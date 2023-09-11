@@ -18,14 +18,16 @@ Source1:        libs-gui-%{GUI_VERSION}.tar.gz
 Source2:        libs-back-%{BACK_VERSION}.tar.gz
 Source3:        %{GS_REPO}/apps-gorm/archive/gorm-%{GORM_VERSION}.tar.gz
 Source4:        projectcenter-%{PC_VERSION}.tar.gz
-Source5:        projectcenter-images.tar.gz
-Source6:        gorm-images.tar.gz
-Source7:        gnustep-gui-images.tar.gz
-Source8:        gdomap.interfaces
-Source9:        gdomap.service
-Source10:       gdnc.service
-Source11:       gdnc-local.service
-Source12:       gpbs.service
+Source5:        gdomap.interfaces
+Source6:        gdomap.service
+Source7:        gdnc.service
+Source8:        gdnc-local.service
+Source9:        gpbs.service
+Source10:       projectcenter-images.tar.gz
+Source11:       gorm-images.tar.gz
+Source12:       gnustep-gui-images.tar.gz
+Source13:       gnustep-gui-panels.tar.gz
+
 Patch0:         libs-gui.patch
 Patch1:         libs-back.patch
 Patch2:         gorm.patch
@@ -172,6 +174,7 @@ export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 
 # Application Kit
 cd libs-gui-%{GUI_VERSION}
+tar xzf %{_sourcedir}/gnustep-gui-panels.tar.gz
 sudo cp %{buildroot}/Developer/Makefiles/Additional/base.make /Developer/Makefiles/Additional/
 ./configure
 make

@@ -1,6 +1,6 @@
 diff -ruN a/Headers/Additions/GNUstepGUI/GSDisplayServer.h b/Headers/Additions/GNUstepGUI/GSDisplayServer.h
---- a/Headers/Additions/GNUstepGUI/GSDisplayServer.h	2023-08-26 18:58:36.129010099 -0500
-+++ b/Headers/Additions/GNUstepGUI/GSDisplayServer.h	2023-08-26 19:04:11.351775180 -0500
+--- a/Headers/Additions/GNUstepGUI/GSDisplayServer.h	2023-08-11 17:41:12.000000000 -0500
++++ b/Headers/Additions/GNUstepGUI/GSDisplayServer.h	2023-08-13 16:02:20.976355602 -0500
 @@ -117,6 +117,14 @@
  /* Screen capture */ 
  - (NSImage *) contentsOfScreen: (int)screen inRect: (NSRect)rect;
@@ -17,8 +17,8 @@ diff -ruN a/Headers/Additions/GNUstepGUI/GSDisplayServer.h b/Headers/Additions/G
  
  /* ----------------------------------------------------------------------- */
 diff -ruN a/Source/GSDisplayServer.m b/Source/GSDisplayServer.m
---- a/Source/GSDisplayServer.m	2023-08-26 18:58:36.177016899 -0500
-+++ b/Source/GSDisplayServer.m	2023-08-26 19:04:11.352775786 -0500
+--- a/Source/GSDisplayServer.m	2023-08-11 17:41:12.000000000 -0500
++++ b/Source/GSDisplayServer.m	2023-08-13 16:09:39.177698019 -0500
 @@ -508,6 +508,40 @@
    return nil;
  }
@@ -61,9 +61,100 @@ diff -ruN a/Source/GSDisplayServer.m b/Source/GSDisplayServer.m
  
  /* ----------------------------------------------------------------------- */
 diff -ruN a/Source/NSColor.m b/Source/NSColor.m
---- a/Source/NSColor.m	2023-08-26 18:58:36.189018599 -0500
-+++ b/Source/NSColor.m	2023-08-27 08:04:03.747559482 -0500
-@@ -610,13 +610,16 @@
+--- a/Source/NSColor.m	2023-08-11 17:41:12.000000000 -0500
++++ b/Source/NSColor.m	2023-09-10 18:21:20.935427275 -0500
+@@ -356,9 +356,9 @@
+ 
+   color = [GSCalibratedRGBColor allocWithZone: NSDefaultMallocZone()];
+   color = [color initWithCalibratedHue: hue
+-		 saturation: saturation
+-		 brightness: brightness
+-		 alpha: alpha];
++                            saturation: saturation
++                            brightness: brightness
++                                 alpha: alpha];
+ 
+   return AUTORELEASE(color);
+ }
+@@ -387,9 +387,9 @@
+ 
+   color = [GSCalibratedRGBColor allocWithZone: NSDefaultMallocZone()];
+   color = [color initWithCalibratedRed: red
+-		 green: green
+-		 blue: blue
+-		 alpha: alpha];
++                                 green: green
++                                  blue: blue
++                                 alpha: alpha];
+   return AUTORELEASE(color);
+ }
+ 
+@@ -403,9 +403,9 @@
+ {
+   id color;
+ 
+-  color = [GSCalibratedWhiteColor allocWithZone: NSDefaultMallocZone()] ;
++  color = [GSCalibratedWhiteColor allocWithZone: NSDefaultMallocZone()];
+   color = [color initWithCalibratedWhite: white
+-		 alpha: alpha];
++                                   alpha: alpha];
+ 
+   return AUTORELEASE(color);
+ }
+@@ -433,9 +433,9 @@
+ {
+   id color;
+ 
+-  color = [GSNamedColor allocWithZone: NSDefaultMallocZone()] ;
++  color = [GSNamedColor allocWithZone: NSDefaultMallocZone()];
+   color = [color initWithCatalogName: listName
+-		 colorName: colorName];
++                           colorName: colorName];
+ 
+   return AUTORELEASE(color);
+ }
+@@ -454,10 +454,10 @@
+ 
+   color = [GSDeviceCMYKColor allocWithZone: NSDefaultMallocZone()];
+   color = [color initWithDeviceCyan: cyan
+-		 magenta: magenta
+-		 yellow: yellow
+-		 black: black
+-		 alpha: alpha];
++                            magenta: magenta
++                             yellow: yellow
++                              black: black
++                              alpha: alpha];
+ 
+   return AUTORELEASE(color);
+ }
+@@ -476,9 +476,9 @@
+ 
+   color = [GSDeviceRGBColor allocWithZone: NSDefaultMallocZone()];
+   color = [color initWithDeviceHue: hue
+-		 saturation: saturation
+-		 brightness: brightness
+-		 alpha: alpha];
++                        saturation: saturation
++                        brightness: brightness
++                             alpha: alpha];
+ 
+   return AUTORELEASE(color);
+ }
+@@ -496,9 +496,9 @@
+ 
+   color = [GSDeviceRGBColor allocWithZone: NSDefaultMallocZone()];
+   color = [color initWithDeviceRed: red
+-		 green: green
+-		 blue: blue
+-		 alpha: alpha];
++                             green: green
++                              blue: blue
++                             alpha: alpha];
+ 
+   return AUTORELEASE(color);
+ }
+@@ -610,38 +610,53 @@
  }
  
  
@@ -84,8 +175,63 @@ diff -ruN a/Source/NSColor.m b/Source/NSColor.m
  }
  
  
-@@ -666,22 +669,28 @@
- 			        alpha: 1.0];
+ /**<p>Returns an NSColor in a  NSCalibratedRGBColorSpace space name.
+-  with red, green, blue and alpha values set as 0.0, 0.0, 1.0 and 1.0
++  with red, green, blue and alpha values set as 0.34, 0.48, 0.55 and 1.0
+   respectively.</p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+ */
+ + (NSColor*) blueColor
+ {
+-  return [self colorWithCalibratedRed: 0.0
+-			        green: 0.0
+-				 blue: 1.0
+-			        alpha: 1.0];
++  return [self colorWithCalibratedRed: 0.34
++                                green: 0.48
++                                 blue: 0.55
++                                alpha: 1.0];
+ }
+ 
+ /**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
+-  with red, green, blue and alpha values set as 0.6, 0.4, 0.2 and 1.0
++  with red, green, blue and alpha values set as 0.33, 0.33, 0.47 and 1.0
++  respectively.</p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
++*/
+++ (NSColor*) purpleColor
++{
++  return [self colorWithCalibratedRed: 0.33
++                                green: 0.33
++                                 blue: 0.47
++                                alpha: 1.0];
++}
++
++/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
++  with red, green, blue and alpha values set as 0.8, 0.69, 0.54 and 1.0
+   respectively.</p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
+ */
+ + (NSColor*) brownColor
+ {
+-  return [self colorWithCalibratedRed: 0.6
+-			        green: 0.4
+-				 blue: 0.2
+-			        alpha: 1.0];
++  return [self colorWithCalibratedRed: 0.8
++                                green: 0.69
++                                 blue: 0.54
++                                alpha: 1.0];
+ }
+ 
+ /**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
+@@ -661,27 +676,33 @@
+ + (NSColor*) cyanColor
+ {
+   return [self colorWithCalibratedRed: 0.0
+-			        green: 1.0
+-				 blue: 1.0
+-			        alpha: 1.0];
++                                green: 1.0
++                                 blue: 1.0
++                                alpha: 1.0];
  }
  
 -/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
@@ -121,8 +267,16 @@ diff -ruN a/Source/NSColor.m b/Source/NSColor.m
  }
  
  /**<p>Returns a NSColor in a  NSCalibratedRGBColorSpace space name.
-@@ -696,13 +705,16 @@
- 			        alpha: 1.0];
+@@ -691,18 +712,21 @@
+ + (NSColor*) greenColor
+ {
+   return [self colorWithCalibratedRed: 0.0
+-			        green: 1.0
+-				 blue: 0.0
+-			        alpha: 1.0];
++                                green: 1.0
++                                 blue: 0.0
++                                alpha: 1.0];
  }
  
 -/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
@@ -142,8 +296,58 @@ diff -ruN a/Source/NSColor.m b/Source/NSColor.m
  }
  
  /**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
-@@ -756,18 +768,21 @@
- 			        alpha: 1.0];
+@@ -712,9 +736,9 @@
+ + (NSColor*) magentaColor
+ {
+   return [self colorWithCalibratedRed: 1.0
+-			        green: 0.0
+-				 blue: 1.0
+-			        alpha: 1.0];
++                                green: 0.0
++                                 blue: 1.0
++                                alpha: 1.0];
+ }
+ 
+ 
+@@ -725,25 +749,11 @@
+ + (NSColor*) orangeColor
+ {
+   return [self colorWithCalibratedRed: 1.0
+-			        green: 0.5
+-				 blue: 0.0
+-			        alpha: 1.0];
+-}
+-
+-
+-/**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
+-  with red, green, blue and alpha values set as 0.5, 0.0, 0.5 and 1.0
+-  respectively.</p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
+-*/
+-+ (NSColor*) purpleColor
+-{
+-  return [self colorWithCalibratedRed: 0.5
+-			        green: 0.0
+-				 blue: 0.5
+-			        alpha: 1.0];
++                                green: 0.5
++                                 blue: 0.0
++                                alpha: 1.0];
+ }
+ 
+-
+ /**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
+   with red, green, blue and alpha values set as 1.0, 0.0, 0.0 and 1.0
+   respectively </p><p>See Also: +colorWithCalibratedRed:green:blue:alpha:</p>
+@@ -751,18 +761,21 @@
+ + (NSColor*) redColor
+ {
+   return [self colorWithCalibratedRed: 1.0
+-			        green: 0.0
+-				 blue: 0.0
+-			        alpha: 1.0];
++                                green: 0.0
++                                 blue: 0.0
++                                alpha: 1.0];
  }
  
 -/**<p>Returns a NSColor in a NSCalibratedWhiteColorSpace space name.
@@ -163,9 +367,110 @@ diff -ruN a/Source/NSColor.m b/Source/NSColor.m
  }
  
  
- /**<p>Returns a NSColor in a NSCalibratedRGBColorSpace space name.
--  with red, green, blue and alpha values set as 1.0, 0.0, 0.0 and 1.0
-+  with red, green, blue and alpha values set as 1.0, 1.0, 0.0 and 1.0
-   respectively.</p><p>See Also : +colorWithCalibratedRed:green:blue:alpha:</p>
- */
+@@ -773,9 +786,9 @@
  + (NSColor*) yellowColor
+ {
+   return [self colorWithCalibratedRed: 1.0
+-			        green: 1.0
+-				 blue: 0.0
+-			        alpha: 1.0];
++                                green: 1.0
++                                 blue: 0.0
++                                alpha: 1.0];
+ }
+ 
+ + (NSColor *)systemBlueColor
+@@ -806,9 +819,9 @@
+ + (NSColor *)systemPinkColor
+ {
+   return [self colorWithCalibratedRed: 1.0
+-			        green: 0.8
+-				 blue: 0.8
+-			        alpha: 1.0];
++                                green: 0.8
++                                 blue: 0.8
++                                alpha: 1.0];
+ }
+ 
+ + (NSColor *)systemPurpleColor
+@@ -1116,9 +1129,9 @@
+  </p>
+  */
+ -(void) getRed: (CGFloat*)red
+-	  green: (CGFloat*)green
+-	   blue: (CGFloat*)blue
+-	  alpha: (CGFloat*)alpha
++         green: (CGFloat*)green
++          blue: (CGFloat*)blue
++         alpha: (CGFloat*)alpha
+ {
+   [NSException raise: NSInternalInconsistencyException
+ 	      format: @"Called getRed:green:blue:alpha: on non-RGB colour"];
+diff -ruN a/Source/NSDocument.m b/Source/NSDocument.m
+--- a/Source/NSDocument.m	2023-08-11 17:41:12.000000000 -0500
++++ b/Source/NSDocument.m	2023-09-10 15:10:34.009814627 -0500
+@@ -1138,8 +1138,8 @@
+ {
+   if (_save_panel_accessory == nil)
+     {
+-      NSRect accessoryFrame = NSMakeRect(0,0,380,70);
+-      NSRect spaFrame = NSMakeRect(115,14,150,22);
++      NSRect accessoryFrame = NSMakeRect(0,0,292,60);
++      NSRect spaFrame = NSMakeRect(63,6,150,22);
+ 
+       _save_panel_accessory = [[NSBox alloc] initWithFrame: accessoryFrame];
+       [(NSBox *)_save_panel_accessory setTitle: _(@"File Type")];
+diff -ruN a/Source/NSPrintPanel.m b/Source/NSPrintPanel.m
+--- a/Source/NSPrintPanel.m	2023-08-11 17:41:12.000000000 -0500
++++ b/Source/NSPrintPanel.m	2023-09-10 22:38:06.670388698 -0500
+@@ -116,7 +116,7 @@
+ //
+ - (id) init
+ {
+-  return [self initWithContentRect: NSMakeRect(300, 300, 420, 350)
++  return [self initWithContentRect: NSMakeRect(300, 300, 420, 300)
+ 			 styleMask: NSTitledWindowMask
+ 			   backing: NSBackingStoreBuffered
+ 			     defer: YES];
+@@ -343,9 +343,9 @@
+ 
+ - (NSBox *) _savePanelAccessory
+ {
+-  NSRect accessoryFrame = NSMakeRect(0,0,380,70);
+-  NSRect spaFrame = NSMakeRect(115,14,150,22);
+-  
++  NSRect accessoryFrame = NSMakeRect(0,0,292,60);
++  NSRect spaFrame = NSMakeRect(60,6,150,22);
++
+   NSBox *save_panel_accessory = [[[NSBox alloc] initWithFrame: accessoryFrame] autorelease];
+   [save_panel_accessory setTitle: _(@"File Type")];
+   [save_panel_accessory setAutoresizingMask: 
+diff -ruN a/Source/NSSavePanel.m b/Source/NSSavePanel.m
+--- a/Source/NSSavePanel.m	2023-08-11 17:41:12.000000000 -0500
++++ b/Source/NSSavePanel.m	2023-09-10 13:53:48.085481989 -0500
+@@ -235,7 +235,7 @@
+   [_browser setAction: @selector(_selectText:)];
+   [_browser setDoubleAction: @selector(_doubleClick:)];
+   [_browser setTarget: self];
+-  [_browser setMinColumnWidth: 140];
++  [_browser setMinColumnWidth: 120];
+   [_topView addSubview: _browser];
+   [_browser release];
+   
+@@ -246,7 +246,6 @@
+   [_browser setMenu: _showsHiddenFilesMenu];
+   [_showsHiddenFilesMenu release];
+ 
+-
+   r = NSMakeRect (8, 39, 291, 21);
+   _form = [NSForm new];
+   [_form addEntry: _(@"Name:")];
+@@ -377,7 +376,7 @@
+   [_topView addSubview: bar];
+   [bar release];
+ 
+-  [self setContentSize: NSMakeSize (384, 426)];
++  [self setContentSize: NSMakeSize (308, 317)];
+   [self setInitialFirstResponder: _form];
+   [super setTitle: @""];
+ 
