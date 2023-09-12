@@ -2258,7 +2258,9 @@ static int setStickyIcons(WScreen * scr, WDefaultEntry * entry, void *bar, void 
 
   if (scr->desktops) {
     wDesktopForceChange(scr, scr->current_desktop, NULL);
-    wArrangeIcons(scr, False);
+    if (wPreferences.auto_arrange_icons) {
+      wArrangeIcons(scr, False);
+    }
   }
   return 0;
 }
@@ -2859,7 +2861,9 @@ static int setIconPosition(WScreen *scr, WDefaultEntry *entry, void *bar, void *
   (void) foo;
 
   wScreenUpdateUsableArea(scr);
-  wArrangeIcons(scr, True);
+  if (wPreferences.auto_arrange_icons) {
+    wArrangeIcons(scr, True);
+  }
 
   return 0;
 }
