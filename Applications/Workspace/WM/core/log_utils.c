@@ -26,7 +26,7 @@ static void _syslogSendMessage(int prio, const char *prog_name, const char *msg)
     _syslogOpen(prog_name);
 
   //jump over the program name cause syslog is already displaying it
-  syslog(prio, "%s", msg + strlen(prog_name));
+  syslog(prio, "%s", msg);
 }
 
 void WMSyslogClose(void)
@@ -48,7 +48,6 @@ void WMLog(const char *func, const char *file, int line, int type, CFStringRef f
   user_msg = CFStringCreateWithFormatAndArguments(kCFAllocatorDefault, 0, fmt, args);
   message = CFStringCreateWithFormat(kCFAllocatorDefault, 0,
                                      CFSTR("[%s:%i] %@"), file, line, user_msg);
-  CFLog(kCFLogLevelError, message);
   
   va_end(args);
 
@@ -73,8 +72,10 @@ void WMLog(const char *func, const char *file, int line, int type, CFStringRef f
     }
 
     _syslogSendMessage(syslog_priority, "Workspace",
-                    CFStringGetCStringPtr(user_msg, kCFStringEncodingUTF8));
+                       CFStringGetCStringPtr(message, kCFStringEncodingUTF8));
   }
+#else
+  CFLog(kCFLogLevelError, message);
 #endif
   
   CFRelease(user_msg);
