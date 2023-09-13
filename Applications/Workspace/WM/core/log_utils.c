@@ -1,7 +1,7 @@
 
 #include <string.h>
 
-#include "WM.h"
+#include "../WM.h"
 #include "log_utils.h"
 
 /* ---[ logging ]-------------------------------------------------------------*/
@@ -44,12 +44,11 @@ void WMLog(const char *func, const char *file, int line, int type, CFStringRef f
   CFStringRef user_msg, message;
 
   va_start(args, fmt);
-  
   user_msg = CFStringCreateWithFormatAndArguments(kCFAllocatorDefault, 0, fmt, args);
-  message = CFStringCreateWithFormat(kCFAllocatorDefault, 0,
-                                     CFSTR("[%s:%i] %@"), file, line, user_msg);
-  
   va_end(args);
+
+  message = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("[%s:%i] %@"), file ? file : "",
+                                     line, user_msg);
 
 #ifdef HAVE_SYSLOG
   {

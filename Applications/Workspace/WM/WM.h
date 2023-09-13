@@ -30,9 +30,9 @@
 #include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFNotificationCenter.h>
 
-#include <core/wscreen.h>
-#include <core/util.h>
-#include <core/drawing.h>
+#include "core/wscreen.h"
+#include "core/util.h"
+#include "core/drawing.h"
 
 #include "config.h"
 

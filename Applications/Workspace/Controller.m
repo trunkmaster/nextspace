@@ -19,6 +19,7 @@
 //
 
 #import <sys/utsname.h>
+#include "core/log_utils.h"
 #import <string.h>
 #import <errno.h>
 
@@ -343,9 +344,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   if (rootViewerWindow == nil) {
     NXTDefaults *df = [NXTDefaults userDefaults];
 
-    NSLog(@"No saved root FileViewer window. Open default with viewer type: %@",
-          [df objectForKey:@"PreferredViewer"]);
-    
+    WMLogWarning("No saved root FileViewer window. Open default with viewer type: %@",
+                 [df objectForKey:@"PreferredViewer"]);
+
     fv = [self newViewerRootedAt:@"/"
                           viewer:[df objectForKey:@"PreferredViewer"]
                           isRoot:YES];

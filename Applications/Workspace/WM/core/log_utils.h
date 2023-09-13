@@ -29,7 +29,7 @@
 #include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFLogUtilities.h>
 
-#include "config.h"
+#include "../config.h"
 
 #ifdef HAVE_SYSLOG_H
 #include <syslog.h>

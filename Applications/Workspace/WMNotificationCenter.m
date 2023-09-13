@@ -48,6 +48,8 @@
 #include <CoreFoundation/CFDictionary.h>
 #include <CoreFoundation/CFNotificationCenter.h>
 
+#include <WM/core/log_utils.h>
+
 #import <Foundation/NSValue.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSArray.h>
@@ -240,7 +242,7 @@ typedef enum {
   // userInfo
   cfUserInfo = _convertNStoCFDictionary(info);
  
-  NSLog(@"WMNC: post CF notification: %@ - %@", name, info);
+  WMLogWarning("[WMNC] post CF notification: %@ - %@", cfName, cfUserInfo);
   
   CFNotificationCenterPostNotification(_coreFoundationCenter, cfName, self, cfUserInfo, TRUE);
 
@@ -267,7 +269,7 @@ static void _handleCFNotification(CFNotificationCenterRef center,
 
   // This is the mirrored notification sent by us
   if (object == _workspaceCenter) {
-    NSLog(@"_handleCFNotification: Received mirrored notification from CF. Ignoring...");
+    WMLogWarning("_handleCFNotification: Received mirrored notification from CF. Ignoring...");
     return;
   }
   
@@ -278,9 +280,10 @@ static void _handleCFNotification(CFNotificationCenterRef center,
   if (userInfo != NULL) {
     nsUserInfo = _convertCFtoNSDictionary(userInfo);
   }
-  
-  NSLog(@"[WMNC] _handleCFNotificaition: dispatching CF notification %@ - %@", nsName, nsUserInfo);
-  
+
+  WMLogWarning("[WMNC] _handleCFNotificaition: dispatching CF notification %@ - %@", name,
+               userInfo);
+
   [_workspaceCenter postNotificationName:nsName object:nsObject userInfo:nsUserInfo];
   
   [nsObject release];
@@ -297,11 +300,17 @@ static void _handleCFNotification(CFNotificationCenterRef center,
 - (void)_handleRemoteNotification:(NSNotification*)aNotification
 {
   NSString *name = [aNotification name];
-  
-  NSLog(@"WMNC: handle remote notification: %@ - %@", [aNotification name], [aNotification object]);
-  
+  id object = [aNotification object];
+  NSString *objectName = @"N/A";
+
+  if ([object isKindOfClass:[NSString class]]) {
+    objectName = object;
+  }
+
+  WMLogWarning("[WMNC] handle remote notification: %s - %s", [name cString], [objectName cString]);
+
   if ([name hasPrefix:@"WMShould"]) {
-    [self _postCFNotification:[aNotification name] userInfo:[aNotification userInfo]];
+    [self _postCFNotification:name userInfo:[aNotification userInfo]];
   } else {
     // NSWorkspaceWillLaunchApplicationNotification - by Controller+NSWorkspace
     // NSWorkspaceDidLaunchApplicationNotification - by AppKit
@@ -433,7 +442,7 @@ static void _handleCFNotification(CFNotificationCenterRef center,
                     userInfo:(NSDictionary*)info
 {
   if (!object) {
-    NSLog(@"[WMNC postNotification:::] can't post notification with nil object!!!");
+    WMLogWarning("[WMNC postNotification:::] can't post notification with nil object!!!");
     return;
   }
 
