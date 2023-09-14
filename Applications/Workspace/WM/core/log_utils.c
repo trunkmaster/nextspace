@@ -20,41 +20,15 @@ static void _syslogOpen(const char *prog_name)
   syslog_initialized = True;
 }
 
-static void _syslogSendMessage(int prio, const char *prog_name, const char *msg)
+static void _syslogSendMessage(int type, const char *prog_name, const char *msg)
 {
-  if (!syslog_initialized)
+  int syslog_priority;
+
+  if (!syslog_initialized) {
     _syslogOpen(prog_name);
-
-  //jump over the program name cause syslog is already displaying it
-  syslog(prio, "%s", msg);
-}
-
-void WMSyslogClose(void)
-{
-  if (syslog_initialized) {
-    closelog();
-    syslog_initialized = False;
   }
-}
-#endif
 
-void WMLog(const char *func, const char *file, int line, int type, CFStringRef fmt, ...)
-{
-  va_list args;
-  CFStringRef user_msg, message;
-
-  va_start(args, fmt);
-  user_msg = CFStringCreateWithFormatAndArguments(kCFAllocatorDefault, 0, fmt, args);
-  va_end(args);
-
-  message = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("[%s:%i] %@"), file ? file : "",
-                                     line, user_msg);
-
-#ifdef HAVE_SYSLOG
-  {
-    int syslog_priority;
-  
-    switch (type) {
+  switch (type) {
     case kCFLogLevelCritical:
       syslog_priority = LOG_CRIT;
       break;
@@ -68,15 +42,40 @@ void WMLog(const char *func, const char *file, int line, int type, CFStringRef f
     default:
       syslog_priority = LOG_INFO;
       break;
-    }
-
-    _syslogSendMessage(syslog_priority, "Workspace",
-                       CFStringGetCStringPtr(message, kCFStringEncodingUTF8));
   }
+
+  // jump over the program name cause syslog is already displaying it
+  syslog(syslog_priority, "%s", msg);
+}
+
+void WMSyslogClose(void)
+{
+  if (syslog_initialized) {
+    closelog();
+    syslog_initialized = False;
+  }
+}
+#endif
+
+void WMLog(const char *func, const char *file, int line, int type, CFStringRef fmt, ...)
+{
+  (void)func;  // temporary unused var - silence compiler warning
+  va_list args;
+  CFStringRef user_msg, message;
+
+  va_start(args, fmt);
+  user_msg = CFStringCreateWithFormatAndArguments(kCFAllocatorDefault, 0, fmt, args);
+  va_end(args);
+
+  message = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("[%s:%i] %@"), file ? file : "",
+                                     line, user_msg);
+
+#ifdef HAVE_SYSLOG
+  _syslogSendMessage(type, "Workspace", CFStringGetCStringPtr(message, kCFStringEncodingUTF8));
 #else
   CFLog(kCFLogLevelError, message);
 #endif
-  
+
   CFRelease(user_msg);
   CFRelease(message);
 }
