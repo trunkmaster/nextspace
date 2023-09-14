@@ -23,6 +23,8 @@
 #ifndef __WORKSPACE_WM_SESSION__
 #define __WORKSPACE_WM_SESSION__
 
+#include "screen.h"
+
 void wSessionSaveState(WScreen *scr);
 void wSessionClearState(WScreen *scr);
 void wSessionRestoreState(WScreen *scr);

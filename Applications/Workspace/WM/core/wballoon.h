@@ -27,6 +27,10 @@
 #ifndef __WORKSPACE_WM_WBALLOON__
 #define __WORKSPACE_WM_WBALLOON__
 
+#include "wscreen.h"
+#include "wfont.h"
+#include "drawing.h"
+
 struct WMBalloon *WMCreateBalloon(WMScreen *scr);
 
 void WMBalloonHandleEnterView(WMView *view);

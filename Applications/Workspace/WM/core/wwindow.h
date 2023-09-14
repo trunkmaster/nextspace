@@ -26,6 +26,9 @@
 #ifndef __WORKSPACE_WM_WWINDOW__
 #define __WORKSPACE_WM_WWINDOW__
 
+#include "widgets.h"
+#include "wview.h"
+
 /* self is set to the widget from where the callback is being called and
  * clientData to the data set to with WMSetClientData() */
 typedef void WMAction(WMWidget *self, void *clientData);

@@ -23,16 +23,18 @@
 #ifndef __WORKSPACE_WM_SWITCHPANEL__
 #define __WORKSPACE_WM_SWITCHPANEL__
 
+#include "screen.h"
+
 typedef struct SwitchPanel WSwitchPanel;
 
-WSwitchPanel *wInitSwitchPanel(WScreen *scr, WWindow *curwin, Bool class_only);
+WSwitchPanel *wInitSwitchPanel(WScreen *scr, struct WWindow *curwin, Bool class_only);
 
 void wSwitchPanelDestroy(WSwitchPanel *panel);
 
-WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimized, Bool class_only);
-WWindow *wSwitchPanelSelectFirst(WSwitchPanel *panel, int back);
+struct WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimized, Bool class_only);
+struct WWindow *wSwitchPanelSelectFirst(WSwitchPanel *panel, int back);
 
-WWindow *wSwitchPanelHandleEvent(WSwitchPanel *panel, XEvent *event);
+struct WWindow *wSwitchPanelHandleEvent(WSwitchPanel *panel, XEvent *event);
 
 Window wSwitchPanelGetWindow(WSwitchPanel *swpanel);
 

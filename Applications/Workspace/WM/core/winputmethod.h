@@ -26,6 +26,8 @@
 #ifndef __WORKSPACE_WM_WINPUTMETHOD__
 #define __WORKSPACE_WM_WINPUTMETHOD__
 
+#include "wscreen.h"
+
 void WMInitIM(WMScreen *scr);
 
 void WMCreateIC(WMView *view);

@@ -1,7 +1,7 @@
 
 #include <string.h>
 
-#include "../WM.h"
+#include <WM.h>
 #include "log_utils.h"
 
 /* ---[ logging ]-------------------------------------------------------------*/

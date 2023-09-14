@@ -24,6 +24,8 @@
 #ifndef __WORKSPACE_WM_CYCLING__
 #define __WORKSPACE_WM_CYCLING__
 
+#include "window.h"
+
 void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only);
 
 #endif /* __WORKSPACE_WM_CYCLING__ */

@@ -26,6 +26,7 @@
 #define __WORKSPACE_WM_STRINGUTILS__
 
 #include <sys/types.h>
+#include <string.h>
 
 char *wstrdup(const char *str);
 char *wstrndup(const char *str, size_t len);

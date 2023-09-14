@@ -26,6 +26,8 @@
 #ifndef __WORKSPACE_WM_WFRAME__
 #define __WORKSPACE_WM_WFRAME__
 
+#include "widgets.h"
+
 /* frame title positions */
 typedef enum {
   WTPNoTitle,

@@ -23,6 +23,8 @@
 #ifndef __WORKSPACE_WM_CLIENT__
 #define __WORKSPACE_WM_CLIENT__
 
+#include "window.h"
+
 void wClientSetState(WWindow *wwin, int state, Window icon_win);
 
 void wClientRestore(WWindow *wwin);

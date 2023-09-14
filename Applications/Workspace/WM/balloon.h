@@ -23,6 +23,8 @@
 #ifndef __WORKSPACE_WM_BALLOON__
 #define __WORKSPACE_WM_BALLOON__
 
+#include "screen.h"
+
 void wBalloonInitialize(WScreen *scr);
 
 void wBalloonEnteredObject(WScreen *scr, WObjDescriptor *object);

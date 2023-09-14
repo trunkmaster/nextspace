@@ -25,6 +25,8 @@
 #ifndef __WORKSPACE_WM_FILEUTILS__
 #define __WORKSPACE_WM_FILEUTILS__
 
+#include <CoreFoundation/CFBase.h>
+
 /* You have to free the returned string when you no longer need it */
 char *WMAbsolutePathForFile(const char *paths, const char *file);
 Boolean WMCreateDirectoriesAtPath(const char *path);

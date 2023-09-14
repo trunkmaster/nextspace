@@ -25,6 +25,10 @@
 #ifndef __WORKSPACE_WM_WSELECTION__
 #define __WORKSPACE_WM_WSELECTION__
 
+#include "wview.h"
+#include "wdata.h"
+#include "dragcommon.h"
+
 typedef void WMSelectionCallback(WMView *view, Atom selection, Atom target,
                                  Time timestamp, void *cdata, WMData *data);
 

@@ -26,7 +26,7 @@
 #ifndef __WORKSPACE_WM_WLABEL__
 #define __WORKSPACE_WM_WLABEL__
 
-#include "wfont.h"
+#include "widgets.h"
 
 typedef struct WMLabel {
 	WMClass widgetClass;

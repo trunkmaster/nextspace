@@ -23,6 +23,8 @@
 #ifndef __WORKSPACE_WM_STACKING__
 #define __WORKSPACE_WM_STACKING__
 
+#include "wcore.h"
+
 void wRaiseFrame(WCoreWindow *frame);
 void wLowerFrame(WCoreWindow *frame);
 void wRaiseLowerFrame(WCoreWindow *frame);

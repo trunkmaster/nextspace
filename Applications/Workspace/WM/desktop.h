@@ -23,6 +23,9 @@
 #ifndef __WORKSPACE_WM_WORKSPACE__
 #define __WORKSPACE_WM_WORKSPACE__
 
+#include "window.h"
+#include "wraster.h"
+
 #define MAX_DESKTOPNAME_WIDTH 64
 
 typedef struct WDesktop {

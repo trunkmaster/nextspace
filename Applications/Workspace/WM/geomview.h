@@ -22,8 +22,9 @@
 #ifndef __WORKSPACE_WM_GEOMVIEW__
 #define __WORKSPACE_WM_GEOMVIEW__
 
-typedef struct WMGeometryView WGeometryView;
+#include "wscreen.h"
 
+typedef struct WMGeometryView WGeometryView;
 
 WGeometryView *WCreateGeometryView(WMScreen *scr);
 

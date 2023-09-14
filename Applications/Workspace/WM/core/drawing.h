@@ -42,8 +42,7 @@ typedef struct {
     WMSize size;
 } WMRect;
 
-#include "wscreen.h"
-#include "wview.h"
+// #include "wscreen.h"
 #include "wfont.h"
 
 /* relief types */

@@ -23,6 +23,8 @@
 #ifndef __WORKSPACE_WM_XDND__
 #define __WORKSPACE_WM_XDND__
 
+#include <X11/Xlib.h>
+
 void wXDNDInitializeAtoms(void);
 Bool wXDNDProcessSelection(XEvent *event);
 Bool wXDNDProcessClientMessage(XClientMessageEvent *event);

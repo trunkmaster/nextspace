@@ -40,9 +40,12 @@
 #include "string_utils.h"
 
 #ifndef PATH_MAX
-#define PATH_MAX  1024
+#define PATH_MAX 1024
 #endif
 
+#ifdef HAVE_SECURE_GETENV
+#include <stdlib.h>
+#endif
 
 static char *_homeDirectory()
 {

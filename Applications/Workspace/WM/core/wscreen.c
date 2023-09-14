@@ -38,6 +38,7 @@
 #include "log_utils.h"
 
 #include "wscreen.h"
+#include "wview.h"
 
 #define STIPPLE_WIDTH 8
 #define STIPPLE_HEIGHT 8
@@ -181,7 +182,6 @@ WMScreen *WMCreateScreenWithRContext(Display *display, int screen, RContext *con
 
   if (!initialized) {
     initialized = 1;
-    assert(WMApplicationInitialized());
   }
 
   scrPtr = malloc(sizeof(WMScreen));

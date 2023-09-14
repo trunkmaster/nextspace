@@ -24,6 +24,8 @@
 #ifndef __WORKSPACE_WM_MOTIF__
 #define __WORKSPACE_WM_MOTIF__
 
+#include "window.h"
+
 void wMWMCheckClientHints(WWindow *wwin);
 
 #endif /* __WORKSPACE_WM_MOTIF__ */

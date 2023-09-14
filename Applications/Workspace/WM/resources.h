@@ -23,6 +23,11 @@
 #ifndef __WORKSPACE_WM_RESOURCES__
 #define __WORKSPACE_WM_RESOURCES__
 
+#include <X11/X.h>
+#include <X11/Xproto.h>
+
+#include "screen.h"
+
 int wGetColorForColormap(Colormap colormap, const char *color_name, XColor *color);
 int wGetColor(WScreen *scr, const char *color_name, XColor *color);
 void wFreeColor(WScreen *scr, unsigned long pixel);

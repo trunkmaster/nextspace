@@ -30,7 +30,6 @@
 #   undef _XOPEN_SOURCE
 #endif
 
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>

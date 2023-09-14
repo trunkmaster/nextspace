@@ -24,7 +24,9 @@
 #ifndef __WORKSPACE_WM_SWITCHMENU__
 #define __WORKSPACE_WM_SWITCHMENU__
 
-void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action);
+#include "screen.h"
+
+void UpdateSwitchMenu(WScreen *scr, struct WWindow *wwin, int action);
 void OpenSwitchMenu(WScreen *scr, int x, int y, int keyboard);
 void InitializeSwitchMenu(WScreen *scr);
 

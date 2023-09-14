@@ -28,6 +28,7 @@
 #include <wraster.h>
 
 #include "wscreen.h"
+#include "wview.h"
 #include "wpixmap.h"
 #include "wcolor.h"
 #include "drawing.h"

@@ -25,11 +25,14 @@
 #ifndef __WORKSPACE_WM_WDRAGSOURCE__
 #define __WORKSPACE_WM_WDRAGSOURCE__
 
+#include "wview.h"
+#include "wevent.h"
+
 void WMSetViewDragImage(WMView* view, WMPixmap *dragImage);
 
 void WMReleaseViewDragImage(WMView* view);
 
-void WMSetViewDragSourceProcs(WMView *view, WMDragSourceProcs *procs);
+void WMSetViewDragSourceProcs(WMView *view, struct WMDragSourceProcs *procs);
 
 Bool WMIsDraggingFromView(WMView *view);
 
@@ -41,7 +44,7 @@ void WMCreateDragHandler(WMView *view, WMEventProc *dragEventProc, void *clientD
 void WMDeleteDragHandler(WMView *view, WMEventProc *dragEventProc, void *clientData);
 
 /* set default drag handler for view */
-void WMSetViewDraggable(WMView *view, WMDragSourceProcs *procs, WMPixmap *dragImage);
+void WMSetViewDraggable(WMView *view, struct WMDragSourceProcs *procs, WMPixmap *dragImage);
 
 void WMUnsetViewDraggable(WMView *view);
 

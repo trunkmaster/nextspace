@@ -221,7 +221,7 @@ CFTypeRef _convertNStoCF(id value)
 
 static WMNotificationCenter *_workspaceCenter = nil;
 
-typedef enum {
+typedef enum NotificationSource {
   LocalNC,
   DistributedNC,
   CoreFoundationNC

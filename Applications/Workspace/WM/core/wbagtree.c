@@ -31,6 +31,7 @@
 #include "WMcore.h"
 #include "util.h"
 #include "wbagtree.h"
+#include "log_utils.h"
 
 int WBNotFound = INT_MIN;
     

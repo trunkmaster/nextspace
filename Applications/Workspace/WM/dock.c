@@ -711,8 +711,7 @@ static WAppIcon *mainIconCreate(WScreen *scr, int type, const char *name)
   default: /* to avoid a warning about btn and x_pos, basically */
     {
       CFMutableDictionaryRef icon_desc;
-      icon_desc = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                            &kCFTypeDictionaryKeyCallBacks,
+      icon_desc = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks,
                                             &kCFTypeDictionaryValueCallBacks);
       CFDictionarySetValue(icon_desc, CFSTR("Icon"), CFSTR(APP_ICON));
       CFDictionarySetValue(w_global.domain.window_attr->dictionary,

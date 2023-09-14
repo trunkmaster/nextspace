@@ -25,10 +25,12 @@
 #ifndef __WORKSPACE_WM_WDRAGDESTINATION__
 #define __WORKSPACE_WM_WDRAGDESTINATION__
 
+#include "wview.h"
+
 void WMRegisterViewForDraggedTypes(WMView *view, CFMutableArrayRef acceptedTypes);
 
 void WMUnregisterViewDraggedTypes(WMView *view);
 
-void WMSetViewDragDestinationProcs(WMView *view, WMDragDestinationProcs *procs);
+void WMSetViewDragDestinationProcs(WMView *view, struct WMDragDestinationProcs *procs);
 
 #endif /* __WORKSPACE_WM_WDRAGDESTINATION__ */

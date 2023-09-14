@@ -24,7 +24,9 @@
 #ifndef __WORKSPACE_WM_PROPERTIES__
 #define __WORKSPACE_WM_PROPERTIES__
 
+#include <X11/Xutil.h>
 #include "GNUstep.h"
+#include "window.h"
 
 unsigned char* PropGetCheckProperty(Window window, Atom hint, Atom type,
                                     int format, int count, int *retCount);

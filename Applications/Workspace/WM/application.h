@@ -25,6 +25,13 @@
 #define __WORKSPACE_WM_APPLICATION__
 
 #include <CoreFoundation/CFArray.h>
+#include <CoreFoundation/CFDictionary.h>
+#include <CoreFoundation/CFRunLoop.h>
+
+#include <X11/X.h>
+#include <X11/Xproto.h>
+
+#include "menu.h"
 
 /* for tracking single application instances */
 typedef struct WApplication {

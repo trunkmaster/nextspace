@@ -23,7 +23,9 @@
 #ifndef __WORKSPACE_WM_COLORMAP__
 #define __WORKSPACE_WM_COLORMAP__
 
-void wColormapInstallForWindow(WScreen *scr, WWindow *wwin);
+#include "screen.h"
+
+void wColormapInstallForWindow(WScreen *scr, struct WWindow *wwin);
 void wColormapAllowClientInstallation(WScreen * scr, Bool starting);
 
 #endif /* __WORKSPACE_WM_COLORMAP__ */

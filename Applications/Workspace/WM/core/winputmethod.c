@@ -31,6 +31,7 @@
 
 #include "WM.h"
 #include "wscreen.h"
+#include "wview.h"
 #include "winputmethod.h"
 #include "drawing.h"
 

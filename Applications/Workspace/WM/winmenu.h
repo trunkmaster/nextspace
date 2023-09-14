@@ -24,6 +24,8 @@
 #ifndef __WORKSPACE_WM_WINMENU__
 #define __WORKSPACE_WM_WINMENU__
 
+#include "window.h"
+
 void OpenWindowMenu(WWindow *wwin, int x, int y, int keyboard);
 void CloseWindowMenu(WScreen *scr);
 void DestroyWindowMenu(WScreen *scr);
