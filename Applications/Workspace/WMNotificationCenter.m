@@ -41,177 +41,22 @@
    User info dictionary may contain (NS or CF): Array, Dictionary, String, Number.
  */
 
-#include <CoreFoundation/CFBase.h>
-#include <CoreFoundation/CFNumber.h>
-#include <CoreFoundation/CFString.h>
-#include <CoreFoundation/CFArray.h>
-#include <CoreFoundation/CFDictionary.h>
+// #include <CoreFoundation/CFBase.h>
+// #include <CoreFoundation/CFNumber.h>
+// #include <CoreFoundation/CFString.h>
+// #include <CoreFoundation/CFArray.h>
+// #include <CoreFoundation/CFDictionary.h>
 #include <CoreFoundation/CFNotificationCenter.h>
 
 #include <WM/core/log_utils.h>
 
-#import <Foundation/NSValue.h>
-#import <Foundation/NSString.h>
-#import <Foundation/NSArray.h>
-#import <Foundation/NSDictionary.h>
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSException.h>
 #import <AppKit/NSWorkspace.h>
 #import <AppKit/NSApplication.h>
 
+#import "CoreFoundationBridge.h"
 #import "WMNotificationCenter.h"
-
-// Object conversion functions
-//-----------------------------------------------------------------------------
-static NSNumber *_convertCFtoNSNumber(CFNumberRef cfNumber);
-static NSString *_convertCFtoNSString(CFStringRef cfString);
-static NSArray *_convertCFtoNSArray(CFArrayRef cfArray);
-static NSDictionary *_convertCFtoNSDictionary(CFDictionaryRef cfDictionary);
-static id _convertCFtoNS(CFTypeRef value);
-
-NSNumber *_convertCFtoNSNumber(CFNumberRef cfNumber)
-{
-  int value;
-  CFNumberGetValue(cfNumber, CFNumberGetType(cfNumber), &value);
-  return [NSNumber numberWithInt:value];
-}
-NSString *_convertCFtoNSString(CFStringRef cfString)
-{
-  const char *stringPtr;
-  stringPtr = CFStringGetCStringPtr(cfString, CFStringGetSystemEncoding());
-  if (!stringPtr) {
-    return @"";
-  } else {
-    return [NSString stringWithCString:stringPtr];
-  }
-}
-NSArray *_convertCFtoNSArray(CFArrayRef cfArray)
-{
-  NSMutableArray *nsArray = [NSMutableArray new];
-  CFIndex cfCount = CFArrayGetCount(cfArray);
-
-  for (CFIndex i=0; i < cfCount; i++) {
-    [nsArray addObject:_convertCFtoNS(CFArrayGetValueAtIndex(cfArray, i))];
-  }
-  
-  return [nsArray autorelease];
-}
-NSDictionary *_convertCFtoNSDictionary(CFDictionaryRef cfDictionary)
-{
-  NSMutableDictionary *nsDictionary = nil;
-  const void *keys;
-  const void *values;
-
-  if (cfDictionary == NULL) {
-    return nil;
-  }
-  
-  nsDictionary = [NSMutableDictionary new];
-  CFDictionaryGetKeysAndValues(cfDictionary, &keys, &values);
-  for (int i = 0; i < CFDictionaryGetCount(cfDictionary); i++) {
-    [nsDictionary setObject:_convertCFtoNS(&values[i])
-                     forKey:_convertCFtoNSString(&keys[i])]; // always CFStringRef
-  }
-  
-  return nsDictionary;
-}
-id _convertCFtoNS(CFTypeRef value)
-{
-  CFTypeID valueType = CFGetTypeID(value);
-  id       returnValue = @"(null)";
-  
-  if (valueType == CFStringGetTypeID()) {
-    returnValue = _convertCFtoNSString(value);
-  }
-  else if (valueType == CFNumberGetTypeID()) {
-    returnValue = _convertCFtoNSNumber(value);
-  }
-  else if (valueType == CFArrayGetTypeID()) {
-    returnValue = _convertCFtoNSArray(value);
-  }
-  else if (valueType == CFDictionaryGetTypeID()) {
-    returnValue = _convertCFtoNSDictionary(value);
-  }
-
-  return returnValue;
-}
-
-static CFStringRef _convertNStoCFString(NSString *nsString);
-static CFNumberRef _convertNStoCFNumber(NSNumber *nsNumber);
-static CFArrayRef _convertNStoCFArray(NSArray *nsArray);
-static CFDictionaryRef _convertNStoCFDictionary(NSDictionary *dictionary);
-static CFTypeRef _convertNStoCF(id value);
-
-CFStringRef _convertNStoCFString(NSString *nsString)
-{
-  CFStringRef cfString;
-  cfString = CFStringCreateWithCString(kCFAllocatorDefault,
-                                       [nsString cString],
-                                       CFStringGetSystemEncoding());
-  return cfString;
-}
-CFNumberRef _convertNStoCFNumber(NSNumber *nsNumber)
-{
-  CFNumberRef cfNumber;
-  int number = [nsNumber intValue];
-  cfNumber = CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &number);
-  return cfNumber;
-}
-CFArrayRef _convertNStoCFArray(NSArray *nsArray)
-{
-  CFMutableArrayRef cfArray = CFArrayCreateMutable(kCFAllocatorDefault, [nsArray count], NULL);
-
-  for (id object in nsArray) {
-    CFArrayAppendValue(cfArray, _convertNStoCF(object));
-  }
-  
-  return cfArray;
-}
-CFDictionaryRef _convertNStoCFDictionary(NSDictionary *dictionary)
-{
-  CFMutableDictionaryRef cfDictionary;
-  CFDictionaryRef returnedDictionary;
-  CFStringRef keyCFString;
-  CFTypeRef valueCF;
-
-  cfDictionary = CFDictionaryCreateMutable(kCFAllocatorDefault,
-                                           [[dictionary allKeys] count],
-                                           &kCFTypeDictionaryKeyCallBacks,
-                                           &kCFTypeDictionaryValueCallBacks);
-  for (NSString *key in [dictionary allKeys]) {
-    keyCFString = _convertNStoCFString(key);
-    // NSLog(@"Converted key: %@", key);
-    valueCF = _convertNStoCF([dictionary objectForKey:key]);
-    // NSLog(@"Converted value: %@", [dictionary objectForKey:key]);
-    CFDictionaryAddValue(cfDictionary, keyCFString, valueCF);
-    CFRelease(keyCFString);
-    CFRelease(valueCF);
-  }
-  returnedDictionary = CFDictionaryCreateCopy(kCFAllocatorDefault, cfDictionary);
-  CFRelease(cfDictionary);
-  
-  return returnedDictionary;
-}
-
-CFTypeRef _convertNStoCF(id value)
-{
-  CFTypeRef returnValue = "(CoreFoundation NULL)";
-  
-  if ([value isKindOfClass:[NSString class]]) {
-    returnValue = _convertNStoCFString(value);
-  }
-  else if ([value isKindOfClass:[NSNumber class]]) {
-    returnValue = _convertNStoCFNumber(value);
-  }
-  else if ([value isKindOfClass:[NSArray class]]) {
-    returnValue = _convertNStoCFArray(value);
-  }
-  else if ([value isKindOfClass:[NSDictionary class]]) {
-    returnValue = _convertNStoCFDictionary(value);
-  }
-
-  return returnValue;
-}
 
 @implementation CFObject @end
 
@@ -238,9 +83,9 @@ typedef enum NotificationSource {
   CFDictionaryRef cfUserInfo;
 
   // name
-  cfName = _convertNStoCFString(name);
+  cfName = convertNStoCFString(name);
   // userInfo
-  cfUserInfo = _convertNStoCFDictionary(info);
+  cfUserInfo = convertNStoCFDictionary(info);
  
   WMLogWarning("[WMNC] post CF notification: %@ - %@", cfName, cfUserInfo);
   
@@ -273,12 +118,12 @@ static void _handleCFNotification(CFNotificationCenterRef center,
     return;
   }
   
-  nsName = _convertCFtoNSString(name);
+  nsName = convertCFtoNSString(name);
   nsObject = [CFObject new];
   nsObject.object = object;
   
   if (userInfo != NULL) {
-    nsUserInfo = _convertCFtoNSDictionary(userInfo);
+    nsUserInfo = convertCFtoNSDictionary(userInfo);
   }
 
   WMLogWarning("[WMNC] _handleCFNotificaition: dispatching CF notification %@ - %@", name,
@@ -307,7 +152,7 @@ static void _handleCFNotification(CFNotificationCenterRef center,
     objectName = object;
   }
 
-  WMLogWarning("[WMNC] handle remote notification: %s - %s", [name cString], [objectName cString]);
+  WMLogWarning("[WMNC] handle remote notification: %@ - %@", convertNStoCFString(name), convertNStoCFString(objectName));
 
   if ([name hasPrefix:@"WMShould"]) {
     [self _postCFNotification:name userInfo:[aNotification userInfo]];
@@ -397,7 +242,7 @@ static void _handleCFNotification(CFNotificationCenterRef center,
               object:nil];
   
   // Register handler-name in CFNotificationCenter
-  cfName = _convertNStoCFString(name);
+  cfName = convertNStoCFString(name);
   CFNotificationCenterAddObserver(_coreFoundationCenter,  // created in -init
                                   self,                   // observer
                                   _handleCFNotification,  // callback: CFNotificationCallback
