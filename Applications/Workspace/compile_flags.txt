@@ -42,3 +42,11 @@
 -I/usr/lib64/glib-2.0/include
 -I/usr/include/sysprof-4
 -I/usr/include/libxml2
+-DWITH_UPOWER
+-I/usr/include/libupower-glib
+-I/usr/include/glib-2.0 
+-I/usr/lib64/glib-2.0/include 
+-I/usr/include/sysprof-4 
+-I/usr/include/libmount 
+-I/usr/include/blkid
+
