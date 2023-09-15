@@ -19,14 +19,14 @@
 //
 
 #import <sys/utsname.h>
-#include "core/log_utils.h"
 #import <string.h>
 #import <errno.h>
 
 #import <X11/Xlib.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
-#import <core/string_utils.h>
+#include <core/log_utils.h>
+#include <core/string_utils.h>
 
 #import <DesktopKit/DesktopKit.h>
 #import <DesktopKit/NXTDefaults.h>
@@ -38,6 +38,7 @@
 #import <SystemKit/OSEPower.h>
 #import <SystemKit/OSEKeyboard.h>
 
+#include "CoreFoundationBridge.h"
 #import "Workspace+WM.h"
 
 #import "Application.h"
@@ -345,7 +346,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     NXTDefaults *df = [NXTDefaults userDefaults];
 
     WMLogWarning("No saved root FileViewer window. Open default with viewer type: %@",
-                 [df objectForKey:@"PreferredViewer"]);
+                 convertNStoCF([df objectForKey:@"PreferredViewer"]));
 
     fv = [self newViewerRootedAt:@"/"
                           viewer:[df objectForKey:@"PreferredViewer"]

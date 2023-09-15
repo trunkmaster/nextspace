@@ -23,7 +23,10 @@
 #include <signal.h>
 
 #import <DesktopKit/NXTAlert.h>
+#import <Foundation/NSString.h>
 #import <DesktopKit/NXTFileManager.h>
+
+#include "CoreFoundationBridge.h"
 
 #import "Controller.h"
 #import "WMNotificationCenter.h"
@@ -220,8 +223,9 @@ static BOOL _workspaceQuitting = NO;
   NSMutableOrderedSet *aPIDList, *newAppPID;
   BOOL skipLaunchedApp = NO;
 
-  NSLog(@"NSWorkspaceDidLaunchApplication: %@", [notif userInfo]);
-  
+  WMLogWarning("NSWorkspaceDidLaunchApplication: %@",
+               convertNStoCFString([[notif userInfo] objectForKey:@"NSApplicationName"]));
+
   newAppInfo = [self _normalizeApplicationInfo:[notif userInfo]];
   newAppName = [newAppInfo objectForKey:@"NSApplicationName"];
   newAppPID = [newAppInfo objectForKey:@"NSApplicationProcessIdentifier"];
