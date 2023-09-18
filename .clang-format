@@ -1,0 +1,9 @@
+{
+  BasedOnStyle: Google,
+  AllowShortIfStatementsOnASingleLine: Never,
+  AllowShortLoopsOnASingleLine: false,
+  AlwaysBreakBeforeMultilineStrings: false,
+  BreakBeforeBraces: WebKit,
+  ObjCSpaceAfterProperty: true,
+  ColumnLimit: 100,  
+}

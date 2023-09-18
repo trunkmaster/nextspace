@@ -30,8 +30,10 @@
    Notification names may have prefix:
      "NSApplication..." - from AppKit
      "NSWorkspace..." - from AppkKit or Workspace (Controller+NSWorkspace.m)
-     "WMShould..." - from GNUstep app to Workspace Manager
-     "WMDid..." - from Window Manager to Workspace Manager
+     "WMShould..." - from GNUstep app to Window Manager
+     "WMDid..." - from Window Manager to Window Manager
+   Basically, WMShould* and WMDid* notifications is a way to communicate between
+   AppKit applications and Window Manager (WMShould* - request, WMDid* - response).
 
    If notification was received from CoreFoundation:
      - userInfo objects are converted from CoreFoundation to Foundation;
@@ -41,16 +43,10 @@
    User info dictionary may contain (NS or CF): Array, Dictionary, String, Number.
  */
 
-// #include <CoreFoundation/CFBase.h>
-// #include <CoreFoundation/CFNumber.h>
-// #include <CoreFoundation/CFString.h>
-// #include <CoreFoundation/CFArray.h>
-// #include <CoreFoundation/CFDictionary.h>
 #include <CoreFoundation/CFNotificationCenter.h>
 
 #include <WM/core/log_utils.h>
 
-#import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSException.h>
 #import <AppKit/NSWorkspace.h>
 #import <AppKit/NSApplication.h>

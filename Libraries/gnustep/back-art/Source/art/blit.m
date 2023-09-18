@@ -46,45 +46,40 @@ TODO: (optional?) proper gamma handling?
 TODO: more cpp magic to reduce the amount of code?
 */
 
-
 /*
-Define the different blitting functions.
-Each blitter is defined once for each format
-using the different helper macros (or specially optimized functions in
-some cases).
+  Define the different blitting functions.
+  Each blitter is defined once for each format
+  using the different helper macros (or specially optimized functions in
+  some cases).
 */
 
-
-static void MPRE(blit_alpha_opaque) (unsigned char *adst,
-	const unsigned char *asrc,
-	unsigned char r, unsigned char g, unsigned char b, int num)
-{
+static void MPRE(blit_alpha_opaque)(unsigned char *adst,
+                                    const unsigned char *asrc, unsigned char r,
+                                    unsigned char g, unsigned char b, int num) {
   const unsigned char *src = asrc;
   BLEND_TYPE *dst = (BLEND_TYPE *)adst;
   int nr, ng, nb, a;
 
-  for (; num; num--, src++)
-    {
-      a = *src;
-      if (!a)
-	{
-	  BLEND_INC(dst)
-	  continue;
-	}
-
-      BLEND_READ(dst, nr, ng, nb)
-      nr = inv_gamma_table[nr];
-      ng = inv_gamma_table[ng];
-      nb = inv_gamma_table[nb];
-      nr = (r * a + nr * (255 - a) + 0xff) >> 8;
-      ng = (g * a + ng * (255 - a) + 0xff) >> 8;
-      nb = (b * a + nb * (255 - a) + 0xff) >> 8;
-      nr = gamma_table[nr];
-      ng = gamma_table[ng];
-      nb = gamma_table[nb];
-      BLEND_WRITE(dst, nr, ng, nb)
+  for (; num; num--, src++) {
+    a = *src;
+    if (!a) {
       BLEND_INC(dst)
+      continue;
     }
+
+    BLEND_READ(dst, nr, ng, nb)
+    nr = inv_gamma_table[nr];
+    ng = inv_gamma_table[ng];
+    nb = inv_gamma_table[nb];
+    nr = (r * a + nr * (255 - a) + 0xff) >> 8;
+    ng = (g * a + ng * (255 - a) + 0xff) >> 8;
+    nb = (b * a + nb * (255 - a) + 0xff) >> 8;
+    nr = gamma_table[nr];
+    ng = gamma_table[ng];
+    nb = gamma_table[nb];
+    BLEND_WRITE(dst, nr, ng, nb)
+    BLEND_INC(dst)
+  }
 }
 
 static void MPRE(blit_mono_opaque) (unsigned char *adst,

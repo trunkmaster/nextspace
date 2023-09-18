@@ -24,6 +24,10 @@
 #ifndef _X_DND_H
 #define _X_DND_H
 
+#include <X11/X.h>
+#include <X11/Xatom.h>
+#include <X11/Xlib.h>
+
 #define XDND_VERSION 2
 
 /* XdndEnter */

@@ -102,8 +102,7 @@ static void shadeObserver(CFNotificationCenterRef center,
     
     /* if (!wapp || wapp->main_window_desc != observer_wapp->main_window_desc) { */
     if (wapp != observer_wapp) {
-      WMLogInfo("WM wapp %s received foreing notification",
-                observer_wapp->main_wwin->wm_instance);
+      WMLogInfo("WM wapp %s received foreing notification", observer_wapp->main_wwin->wm_instance);
       return;
     }
     
@@ -360,7 +359,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
     CFNotificationCenterAddObserver(scr->notificationCenter, wapp, hideOthersObserver,
                                     WMShouldHideOthersNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-  
+
     // Notify Workspace's ProcessManager
     CFNotificationCenterPostNotification(scr->notificationCenter,
                                          WMDidCreateApplicationNotification,
@@ -437,8 +436,8 @@ void wApplicationDestroy(WApplication *wapp)
   scr = wapp->main_wwin->screen;
   
   // Notify Workspace's ProcessManager
-  CFNotificationCenterPostNotification(scr->notificationCenter,
-                                       WMDidDestroyApplicationNotification, wapp, NULL, TRUE);
+  CFNotificationCenterPostNotification(scr->notificationCenter, WMDidDestroyApplicationNotification,
+                                       wapp, NULL, TRUE);
 
   if (wapp == scr->wapp_list) {
     if (wapp->next)
@@ -567,7 +566,7 @@ static void hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin)
                                                             &kCFTypeDictionaryKeyCallBacks,
                                                             &kCFTypeDictionaryValueCallBacks);
     CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
-    CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+    CFNotificationCenterPostNotification(wwin->screen->notificationCenter,
                                          WMDidChangeWindowStateNotification, wwin, info, TRUE);
     CFRelease(info);
     return;
@@ -585,7 +584,7 @@ static void hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin)
                                                           &kCFTypeDictionaryKeyCallBacks,
                                                           &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
-  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+  CFNotificationCenterPostNotification(wwin->screen->notificationCenter,
                                        WMDidChangeWindowStateNotification, wwin, info, TRUE);
   CFRelease(info);
 }
@@ -739,9 +738,9 @@ void wApplicationForceQuit(WApplication *wapp)
   shortname = basename(wapp->app_icon->wm_instance);
   fPtr = wapp->main_wwin->fake_group;
 
-  buffer = wstrconcat(wapp->app_icon ? shortname : NULL,
-                      _(" will be forcibly closed.\n"
-                        "Any unsaved changes will be lost.\n" "Please confirm."));
+  buffer = wstrconcat(wapp->app_icon ? shortname : NULL, _(" will be forcibly closed.\n"
+                                                           "Any unsaved changes will be lost.\n"
+                                                           "Please confirm."));
 
   wretain(wapp->main_wwin);
   dispatch_async(workspace_q, ^{

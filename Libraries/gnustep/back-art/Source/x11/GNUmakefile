@@ -42,7 +42,8 @@ XGServer.m \
 XGServerEvent.m \
 XGServerWindow.m \
 XGDragView.m \
-XIMInputServer.m \
+XGInputServer.m \
+XGScreenContext.m \
 XWindowBuffer.m\
 XGGLFormat.m\
 XGGLContext.m

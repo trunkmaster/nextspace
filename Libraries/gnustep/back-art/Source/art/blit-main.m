@@ -35,13 +35,11 @@ First attempt at gamma correction. Only used in text rendering (blit_*),
 but that's where it's needed the most. The gamma adjustment is a large
 hack, but the results are good.
 */
-static unsigned char gamma_table[256],inv_gamma_table[256];
-
+static unsigned char gamma_table[256], inv_gamma_table[256];
 
 #define NPRE(r, pre) pre##_##r
 #define M2PRE(a, b) NPRE(a, b)
 #define MPRE(r) M2PRE(r, FORMAT_INSTANCE)
-
 
 /*
 For each supported pixel format we define a bunch of macros and include
@@ -306,7 +304,6 @@ ourself.
 
 /* end of pixel formats */
 
-
 static draw_info_t draw_infos[DI_NUM] = {
 
 #define C(x) \
@@ -352,30 +349,26 @@ static draw_info_t draw_infos[DI_NUM] = {
   NPRE(dissolve_ao,x), \
   NPRE(dissolve_oo,x),
 
-/* TODO: try to implement fallback versions? possible? */
-{DI_FALLBACK       ,0, 0,0,-1,/*C(fallback)*/},
+    /* TODO: try to implement fallback versions? possible? */
+    {DI_FALLBACK, 0, 0, 0, -1, /*C(fallback)*/},
 
-{DI_16_B5_G5_R5_A1 ,2,15,0,-1,C(b5g5r5a1)},
-{DI_16_B5_G6_R5    ,2,16,0,-1,C(b5g6r5)},
-{DI_24_RGB         ,3,24,0,-1,C(rgb)},
-{DI_24_BGR         ,3,24,0,-1,C(bgr)},
-/* ARTContext.m assumes that only 32-bit modes have inline alpha. this
-might eventually need to be fixed */
-{DI_32_RGBA        ,4,24,1, 3,C(rgba)},
-{DI_32_BGRA        ,4,24,1, 3,C(bgra)},
-{DI_32_ARGB        ,4,24,1, 0,C(argb)},
-{DI_32_ABGR        ,4,24,1, 0,C(abgr)},
+    {DI_16_B5_G5_R5_A1, 2, 15, 0, -1, C(b5g5r5a1)},
+    {DI_16_B5_G6_R5, 2, 16, 0, -1, C(b5g6r5)},
+    {DI_24_RGB, 3, 24, 0, -1, C(rgb)},
+    {DI_24_BGR, 3, 24, 0, -1, C(bgr)},
+    /* ARTContext.m assumes that only 32-bit modes have inline alpha. this
+       might eventually need to be fixed */
+    {DI_32_RGBA, 4, 24, 1, 3, C(rgba)},
+    {DI_32_BGRA, 4, 24, 1, 3, C(bgra)},
+    {DI_32_ARGB, 4, 24, 1, 0, C(argb)},
+    {DI_32_ABGR, 4, 24, 1, 0, C(abgr)},
 };
 
-
-
-static int byte_ofs_of_mask(unsigned int m)
-{
-  union
-    {
-      unsigned char b[4];
-      unsigned int m;
-    } tmp;
+static int byte_ofs_of_mask(unsigned int m) {
+  union {
+    unsigned char b[4];
+    unsigned int m;
+  } tmp;
 
   tmp.m = m;
   if (tmp.b[0] == 0xff && !tmp.b[1] && !tmp.b[2] && !tmp.b[3])
@@ -390,88 +383,75 @@ static int byte_ofs_of_mask(unsigned int m)
     return -1;
 }
 
-void artcontext_setup_draw_info(draw_info_t *di,
-	unsigned int red_mask, unsigned int green_mask, unsigned int blue_mask,
-	int bpp)
-{
+void artcontext_setup_draw_info(draw_info_t *di, unsigned int red_mask,
+                                unsigned int green_mask, unsigned int blue_mask,
+                                int bpp) {
   int t = DI_FALLBACK;
 
   NSDebugLLog(@"back-art", @"%s masks=(%08x %08x %08x) bpp=%i",
-    __PRETTY_FUNCTION__, red_mask, green_mask, blue_mask, bpp);
+              __PRETTY_FUNCTION__, red_mask, green_mask, blue_mask, bpp);
 
   if (bpp == 16 && red_mask == 0xf800 && green_mask == 0x7e0 &&
-      blue_mask == 0x1f)
-    {
-      t = DI_16_B5_G6_R5;
-    }
-  else if (bpp == 16 &&  red_mask == 0x7c00 && green_mask == 0x3e0 &&
-	   blue_mask == 0x1f)
-    {
-      t = DI_16_B5_G5_R5_A1;
-    }
-  else if (bpp == 24 || bpp == 32)
-    {
-      int r, g, b;
+      blue_mask == 0x1f) {
+    t = DI_16_B5_G6_R5;
+  } else if (bpp == 16 && red_mask == 0x7c00 && green_mask == 0x3e0 &&
+             blue_mask == 0x1f) {
+    t = DI_16_B5_G5_R5_A1;
+  } else if (bpp == 24 || bpp == 32) {
+    int r, g, b;
 
-      r = byte_ofs_of_mask(red_mask);
-      g = byte_ofs_of_mask(green_mask);
-      b = byte_ofs_of_mask(blue_mask);
+    r = byte_ofs_of_mask(red_mask);
+    g = byte_ofs_of_mask(green_mask);
+    b = byte_ofs_of_mask(blue_mask);
 
-      if (bpp == 24)
-        {
-          if (r == 0 && g == 1 && b == 2)
-            t = DI_24_RGB;
-          else if (r == 2 && g == 1 && b == 0)
-            t = DI_24_BGR;
-        }
-      else if (bpp == 32)
-        {
-          if (r == 0 && g == 1 && b == 2)
-            t = DI_32_RGBA;
-          else if (r == 2 && g == 1 && b == 0)
-            t = DI_32_BGRA;
-          else if (r == 1 && g == 2 && b == 3)
-            t = DI_32_ARGB;
-          else if (r == 3 && g == 2 && b == 1)
-            t = DI_32_ABGR;
-        }
+    if (bpp == 24) {
+      if (r == 0 && g == 1 && b == 2)
+        t = DI_24_RGB;
+      else if (r == 2 && g == 1 && b == 0)
+        t = DI_24_BGR;
+    } else if (bpp == 32) {
+      if (r == 0 && g == 1 && b == 2)
+        t = DI_32_RGBA;
+      else if (r == 2 && g == 1 && b == 0)
+        t = DI_32_BGRA;
+      else if (r == 1 && g == 2 && b == 3)
+        t = DI_32_ARGB;
+      else if (r == 3 && g == 2 && b == 1)
+        t = DI_32_ABGR;
     }
+  }
 
   NSDebugLLog(@"back-art", @"got t=%i", t);
 
   *di = draw_infos[t];
   if (!di->render_run_alpha)
     *di = draw_infos[DI_FALLBACK];
-  if (di->how == DI_FALLBACK)
-    {
-      NSLog(@"gnustep-back(art): Unrecognized color masks: %08x:%08x:%08x %i",
-	    red_mask, green_mask, blue_mask, bpp);
-      NSLog(@"Please report this along with details on your pixel format "
-	    @"(ie. the four numbers above) to bug-gnustep@gnu.org."
-	    @"Better: implement it and send a patch.)");
-      exit(1);
-    }
+  if (di->how == DI_FALLBACK) {
+    NSLog(@"gnustep-back(art): Unrecognized color masks: %08x:%08x:%08x %i",
+          red_mask, green_mask, blue_mask, bpp);
+    NSLog(@"Please report this along with details on your pixel format "
+          @"(ie. the four numbers above) to bug-gnustep@gnu.org."
+          @"Better: implement it and send a patch.)");
+    exit(1);
+  }
 }
 
 void artcontext_setup_gamma(float gamma)
 {
   int i;
-  
+
   if (!gamma)
     gamma = 1.4;
 
-  NSDebugLLog(@"back-art",@"gamma=%g",gamma);
+  NSDebugLLog(@"back-art", @"gamma=%g", gamma);
 
   gamma = 1.0 / gamma;
-  
-  for (i = 0; i < 256; i++)
-    {
-      gamma_table[i] = pow(i / 255.0, gamma) * 255 + .5;
-      inv_gamma_table[i] = pow(i / 255.0, 1.0 / gamma) * 255 + .5;
-    }
+
+  for (i = 0; i < 256; i++) {
+    gamma_table[i] = pow(i / 255.0, gamma) * 255 + .5;
+    inv_gamma_table[i] = pow(i / 255.0, 1.0 / gamma) * 255 + .5;
+  }
 }
-
-
 
 /*
 

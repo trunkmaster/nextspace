@@ -36,6 +36,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include "x11/XGGeneric.h"
+
 #ifdef HAVE_X11_EXTENSIONS_SYNC_H
 #include <X11/extensions/sync.h>
 #endif
@@ -61,35 +62,39 @@ typedef struct MonitorDevice {
 
 @interface XGServer : GSDisplayServer
 {
-  Display           *dpy;
-  int               defScreen;
-  NSSize            xScreenSize;
-  NSMapTable        *screenList;
-  Window	    grabWindow;
-  struct XGGeneric  generic;
-  id                inputServer;
-  int               randrEventBase;
-  int               randrErrorBase;
-  MonitorDevice     *monitors;
-  unsigned          monitorsCount;
+  Display *dpy;
+  int defScreen;
+  NSSize xScreenSize;
+  NSMapTable *screenList;
+  Window grabWindow;
+  struct XGGeneric generic;
+  id inputServer;
+  int randrEventBase;
+  int randrErrorBase;
+  MonitorDevice *monitors;
+  unsigned monitorsCount;
 }
 
-+ (Display *) xDisplay;
-- (Display *) xDisplay;
-- (Window) xDisplayRootWindow;
-- (Window) xAppRootWindow;
-- (NSSize) xScreenSize;
++ (Display *)xDisplay;
+- (Display *)xDisplay;
+- (Window)xDisplayRootWindow;
+- (Window)xAppRootWindow;
+- (NSSize)xScreenSize;
 
-- (void *) screenRContext;
-- (Visual *) screenVisual;
-- (int) screenDepth;
-- (XGDrawMechanism) screenDrawMechanism;
+- (void *)screenRContext;
+- (Visual *)screenVisual;
+- (int)screenDepth;
+- (XGDrawMechanism)screenDrawMechanism;
 
-- (void) getForScreen: (int)screen_number pixelFormat: (int *)bpp_number 
-                masks: (int *)red_mask : (int *)green_mask : (int *)blue_mask;
-- (XColor) xColorFromColor: (XColor)color;
+- (void)getForScreen:(int)screen_number
+         pixelFormat:(int *)bpp_number
+               masks:(int *)red_mask
+                    :(int *)green_mask
+                    :(int *)blue_mask;
+- (XColor)xColorFromColor:(XColor)color;
 
-+ (void) waitAllContexts;
++ (void)waitAllContexts;
+
 @end
 
 /*
@@ -97,36 +102,36 @@ typedef struct MonitorDevice {
  * Waits for up to 1 second for event.
  */
 @interface XGServer (XSync)
-- (BOOL) xSyncMap: (void*)window;
+- (BOOL)xSyncMap:(void *)window;
 @end
 
 @interface XGServer (XGGeneric)
-- (NSRect) _OSFrameToXFrame: (NSRect)o for: (void*)window;
-- (NSRect) _OSFrameToXHints: (NSRect)o for: (void*)window;
-- (NSRect) _XFrameToOSFrame: (NSRect)x for: (void*)window;
-- (NSRect) _XFrameToXHints: (NSRect)o for: (void*)window;
+- (NSRect)_OSFrameToXFrame:(NSRect)o for:(void*)window;
+- (NSRect)_OSFrameToXHints:(NSRect)o for:(void*)window;
+- (NSRect)_XFrameToOSFrame:(NSRect)x for:(void*)window;
+- (NSRect)_XFrameToXHints:(NSRect)o for:(void*)window;
 
-- (NSString *) windowManagerName;
+- (NSString *)windowManagerName;
 @end
 
-// Public interface for the input methods.  
+// Public interface for the input methods.
 @interface XGServer (InputMethod)
-- (NSString *) inputMethodStyle;
-- (NSString *) fontSize: (int *)size;
-- (BOOL) clientWindowRect: (NSRect *)rect;
+- (NSString *)inputMethodStyle;
+- (NSString *)fontSize:(int *)size;
+- (BOOL)clientWindowRect:(NSRect *)rect;
 
-- (BOOL) statusArea: (NSRect *)rect;
-- (BOOL) preeditArea: (NSRect *)rect;
-- (BOOL) preeditSpot: (NSPoint *)p;
+- (BOOL)statusArea:(NSRect *)rect;
+- (BOOL)preeditArea:(NSRect *)rect;
+- (BOOL)preeditSpot:(NSPoint *)p;
 
-- (BOOL) setStatusArea: (NSRect *)rect;
-- (BOOL) setPreeditArea: (NSRect *)rect;
-- (BOOL) setPreeditSpot: (NSPoint *)p;
+- (BOOL)setStatusArea:(NSRect *)rect;
+- (BOOL)setPreeditArea:(NSRect *)rect;
+- (BOOL)setPreeditSpot:(NSPoint *)p;
 @end
 
 @interface XGServer (TimeKeeping)
-- (void) setLastTime: (Time)last;
-- (Time) lastTime;
+- (void)setLastTime:(Time)last;
+- (Time)lastTime;
 @end
 
 #endif /* _XGServer_h_INCLUDE */

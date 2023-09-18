@@ -27,6 +27,7 @@
 // Common part
 //-----------------------------------------------------------------------------
 #include <dispatch/dispatch.h>
+#include <CoreFoundation/CFRunLoop.h>
 extern dispatch_queue_t workspace_q;
 extern CFRunLoopRef wm_runloop;
 
@@ -62,6 +63,7 @@ extern WorkspaceExitCode ws_quit_code;
 #undef _
 #define _(X) [GS_LOCALISATION_BUNDLE localizedStringForKey:(X) value:@"" table:nil]
 
+@class NSImage;
 NSImage *WSImageForRasterImage(RImage *r_image);
 
 #endif //__OBJC__

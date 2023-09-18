@@ -25,87 +25,73 @@
 #ifndef blit_h
 #define blit_h
 
-
 /** Information about how we draw stuff **/
 
-
-typedef struct render_run_s
-{
+typedef struct render_run_s {
   unsigned char r, g, b, a;
   unsigned char *dst, *dsta;
 } render_run_t;
 
-
-typedef struct
-{
+typedef struct {
   unsigned char *dst, *dsta;
   unsigned char *src, *srca;
   unsigned char fraction; /* for dissolving */
 } composite_run_t;
 
-
-typedef struct draw_info_s
-{
-  int how;
-#define DI_FALLBACK              0
-
+#define DI_FALLBACK 0
 /* counting from lsb */
-#define DI_16_B5_G5_R5_A1        1
-#define DI_16_B5_G6_R5           2
+#define DI_16_B5_G5_R5_A1 1
+#define DI_16_B5_G6_R5 2
+#define DI_24_RGB 3
+#define DI_24_BGR 4
+#define DI_32_RGBA 5
+#define DI_32_BGRA 6
+#define DI_32_ARGB 7
+#define DI_32_ABGR 8
 
-#define DI_24_RGB                3
-#define DI_24_BGR                4
-#define DI_32_RGBA               5
-#define DI_32_BGRA               6
-#define DI_32_ARGB               7
-#define DI_32_ABGR               8
+#define DI_NUM 9
 
-#define DI_NUM                   9
-
+typedef struct draw_info_s {
+  int how;
   int bytes_per_pixel;
   int drawing_depth;
   int inline_alpha, inline_alpha_ofs;
-
 
   void (*render_run_alpha)(render_run_t *ri, int num);
   void (*render_run_opaque)(render_run_t *ri, int num);
   void (*render_run_alpha_a)(render_run_t *ri, int num);
   void (*render_run_opaque_a)(render_run_t *ri, int num);
 
-  void (*render_blit_alpha_opaque)(unsigned char *dst,
-				   const unsigned char *src,
-				   unsigned char r, unsigned char g,
-				   unsigned char b, int num);
-  void (*render_blit_mono_opaque)(unsigned char *dst,
-				  const unsigned char *src, int src_ofs,
-				  unsigned char r, unsigned char g,
-				  unsigned char b, int num);
+  void (*render_blit_alpha_opaque)(unsigned char *dst, const unsigned char *src,
+                                   unsigned char r, unsigned char g,
+                                   unsigned char b, int num);
+  void (*render_blit_mono_opaque)(unsigned char *dst, const unsigned char *src,
+                                  int src_ofs, unsigned char r, unsigned char g,
+                                  unsigned char b, int num);
 
   void (*render_blit_alpha)(unsigned char *dst, const unsigned char *src,
-			    unsigned char r, unsigned char g, unsigned char b,
-			    unsigned char alpha, int num);
-  void (*render_blit_mono)(unsigned char *dst,
-			   const unsigned char *src, int src_ofs,
-			   unsigned char r, unsigned char g, unsigned char b,
-			   unsigned char alpha, int num);
+                            unsigned char r, unsigned char g, unsigned char b,
+                            unsigned char alpha, int num);
+  void (*render_blit_mono)(unsigned char *dst, const unsigned char *src,
+                           int src_ofs, unsigned char r, unsigned char g,
+                           unsigned char b, unsigned char alpha, int num);
 
-  void (*render_blit_alpha_a)(unsigned char *dst, unsigned char *dsta, const unsigned char *src,
-			      unsigned char r, unsigned char g, unsigned char b,
-			      unsigned char alpha, int num);
+  void (*render_blit_alpha_a)(unsigned char *dst, unsigned char *dsta,
+                              const unsigned char *src, unsigned char r,
+                              unsigned char g, unsigned char b,
+                              unsigned char alpha, int num);
   void (*render_blit_mono_a)(unsigned char *dst, unsigned char *dsta,
-			     const unsigned char *src, int src_ofs,
-			     unsigned char r, unsigned char g, unsigned char b,
-			     unsigned char alpha, int num);
+                             const unsigned char *src, int src_ofs,
+                             unsigned char r, unsigned char g, unsigned char b,
+                             unsigned char alpha, int num);
 
   void (*render_blit_subpixel)(unsigned char *dst, const unsigned char *src,
-	unsigned char r, unsigned char g, unsigned char b, unsigned char a,
-	int num);
-
+                               unsigned char r, unsigned char g,
+                               unsigned char b, unsigned char a, int num);
 
   /* dst should be a 32bpp RGBA buffer. */
   void (*read_pixels_o)(composite_run_t *c, int num);
   void (*read_pixels_a)(composite_run_t *c, int num);
-
 
   void (*composite_sover_aa)(composite_run_t *c, int num);
   void (*composite_sover_ao)(composite_run_t *c, int num);
@@ -157,10 +143,9 @@ typedef struct draw_info_s
 #define RENDER_BLIT_ALPHA_A DI.render_blit_alpha_a
 #define RENDER_BLIT_MONO_A DI.render_blit_mono_a
 
-void artcontext_setup_draw_info(draw_info_t *di,
-	unsigned int red_mask, unsigned int green_mask, unsigned int blue_mask,
-	int bpp);
+void artcontext_setup_draw_info(draw_info_t *di, unsigned int red_mask,
+                                unsigned int green_mask, unsigned int blue_mask,
+                                int bpp);
 void artcontext_setup_gamma(float gamma);
 
 #endif
-

@@ -31,49 +31,45 @@
 #include <x11/XGServerWindow.h>
 
 @protocol XInputFiltering
-- (BOOL) filterEvent: (XEvent *)event;
-- (NSString *) lookupStringForEvent: (XKeyEvent *)event 
-			     window: (gswindow_device_t *)window
-                             keysym: (KeySym *)keysymptr;
+- (BOOL)filterEvent:(XEvent *)event;
+- (NSString *)lookupStringForEvent:(XKeyEvent *)event
+                            window:(gswindow_device_t *)window
+                            keysym:(KeySym *)keysymptr;
 @end
 
-
-@interface XIMInputServer: NSInputServer <XInputFiltering>
+@interface XGInputServer: NSInputServer <XInputFiltering>
 {
-  id        delegate;
+  id delegate;
   NSString *server_name;
-  XIM       xim;
-  XIMStyle  xim_style;
+  XIM xim;
+  XIMStyle xim_style;
 
-  /* Track the XIC:s and destroy them explicitly to work around an XFree86
-  bug:
-  http://www.xfree86.org/pipermail/xpert/2002-June/018370.html
-  */
-  XIC      *xics;
-  int       num_xics;
+  /* Track the XIC:s and destroy them explicitly to work around an XFree86 bug:
+     http://www.xfree86.org/pipermail/xpert/2002-June/018370.html
+   */
+  XIC *xics;
+  int num_xics;
 }
 
-- (id) initWithDelegate: (id)aDelegate
-		display: (Display *)dpy
-		   name: (NSString *)name;
-- (void) ximFocusICWindow: (gswindow_device_t *)windev;
-- (void) ximCloseIC: (XIC)xic;
+- (id)initWithDelegate:(id)aDelegate display:(Display *)dpy name:(NSString *)name;
+- (void)ximFocusICWindow:(gswindow_device_t *)windev;
+- (void)ximCloseIC:(XIC)xic;
 
 @end
 
 // Public interface for the input methods
-@interface XIMInputServer (InputMethod)
-- (NSString *) inputMethodStyle;
-- (NSString *) fontSize: (int *)size;
-- (BOOL) clientWindowRect: (NSRect *)rect;
+@interface XGInputServer (InputMethod)
+- (NSString *)inputMethodStyle;
+- (NSString *)fontSize:(int *)size;
+- (BOOL)clientWindowRect:(NSRect *)rect;
 
-- (BOOL) statusArea: (NSRect *)rect;
-- (BOOL) preeditArea: (NSRect *)rect;
-- (BOOL) preeditSpot: (NSPoint *)p;
+- (BOOL)statusArea:(NSRect *)rect;
+- (BOOL)preeditArea:(NSRect *)rect;
+- (BOOL)preeditSpot:(NSPoint *)p;
 
-- (BOOL) setStatusArea: (NSRect *)rect;
-- (BOOL) setPreeditArea: (NSRect *)rect;
-- (BOOL) setPreeditSpot: (NSPoint *)p;
-@end // XIMInputServer (InputMethod)
+- (BOOL)setStatusArea:(NSRect *)rect;
+- (BOOL)setPreeditArea:(NSRect *)rect;
+- (BOOL)setPreeditSpot:(NSPoint *)p;
+@end  // XIMInputServer (InputMethod)
 
 #endif
