@@ -24,8 +24,6 @@
    Free Software Foundation, 51 Franklin Street, Fifth Floor,
 */
 
-#include "config.h"
-
 #include <AppKit/AppKitExceptions.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSGraphics.h>
@@ -45,34 +43,27 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
 
-#include "x11/XGDragView.h"
-#include "x11/XGGeneric.h"
-#include "x11/XGInputServer.h"
-#include "x11/XGServerWindow.h"
-#include "x11/xdnd.h"
+#include "config.h"
 
-#ifdef HAVE_WRASTER_H
-#include "wraster.h"
-#ifdef XSHM
-#include <X11/extensions/XShm.h>
-#endif
-#else
-#include "x11/wraster.h"
-#endif
-#ifdef HAVE_XRANDR
-#include <X11/extensions/Xrandr.h>
-#endif
+#include <wraster.h>
 
 #include <X11/Xproto.h>
 #include <X11/keysym.h>
 #include "math.h"
 
-#if LIB_FOUNDATION_LIBRARY
-#include <Foundation/NSPosixFileDescriptor.h>
-#elif defined(NeXT_PDO)
-#include <Foundation/NSFileHandle.h>
-#include <Foundation/NSNotification.h>
+#ifdef XSHM
+#include <X11/extensions/XShm.h>
 #endif
+
+#ifdef HAVE_XRANDR
+#include <X11/extensions/Xrandr.h>
+#endif
+
+#import "XGDragView.h"
+#import "XGGeneric.h"
+#import "XGInputServer.h"
+#import "XGServerWindow.h"
+#include "xdnd.h"
 
 #define cWin ((gswindow_device_t *)generic.cachedWindow)
 
@@ -85,9 +76,9 @@ static char _command_pressed = 0;
 static char _alt_pressed = 0;
 static char _help_pressed = 0;
 /*
-Keys used for the modifiers (you may set them with user preferences).
-Note that the first and second key sym for a modifier must be different.
-Otherwise, the _*_pressed tracking will be confused.
+  Keys used for the modifiers (you may set them with user preferences).
+  Note that the first and second key sym for a modifier must be different.
+  Otherwise, the _*_pressed tracking will be confused.
 */
 static KeySym _control_keysyms[2];
 static KeySym _command_keysyms[2];
@@ -165,11 +156,6 @@ static int check_modifier(XEvent *xEvent, KeySym key_sym)
   return 0;
 }
 
-@interface XGServer (WindowOps)
-- (void)styleoffsets:(float *)l :(float *)r :(float *)t :(float *)b :(unsigned int)style :(Window)win;
-- (NSRect)_XWinRectToOSWinRect:(NSRect)r for:(void*)windowNumber;
-@end
-
 @implementation XGServer (EventOps)
 
 - (int)XGErrorHandler:(Display *)display :(XErrorEvent *)err
@@ -218,59 +204,16 @@ static int check_modifier(XEvent *xEvent, KeySym key_sym)
   int xEventQueueFd = XConnectionNumber(dpy);
   NSRunLoop *currentRunLoop = [NSRunLoop currentRunLoop];
 
-#if defined(LIB_FOUNDATION_LIBRARY)
-  {
-    id fileDescriptor =
-        [[[NSPosixFileDescriptor alloc] initWithFileDescriptor:xEventQueueFd] autorelease];
-
-    // Invoke limitDateForMode: to setup the current
-    // mode of the run loop (the doc says that this
-    // method and acceptInputForMode: beforeDate: are
-    // the only ones that setup the current mode).
-
-    [currentRunLoop limitDateForMode:mode];
-
-    [fileDescriptor setDelegate:self];
-    [fileDescriptor monitorFileActivity:NSPosixReadableActivity];
-  }
-#elif defined(NeXT_PDO)
-  {
-    id fileDescriptor = [[[NSFileHandle alloc] initWithFileDescriptor:xEventQueueFd] autorelease];
-
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(activityOnFileHandle:)
-                                                 name:NSFileHandleDataAvailableNotification
-                                               object:fileDescriptor];
-    [fileDescriptor waitForDataInBackgroundAndNotifyForModes:[NSArray arrayWithObject:mode]];
-  }
-#else
   [currentRunLoop addEvent:(void *)(gsaddr)xEventQueueFd
                       type:ET_RDESC
                    watcher:(id<RunLoopEvents>)self
                    forMode:mode];
-#endif
+
   if (procSel == 0) {
     procSel = @selector(processEvent:);
     procEvent = (void (*)(id, SEL, XEvent *))[self methodForSelector:procSel];
   }
 }
-
-#if LIB_FOUNDATION_LIBRARY
-- (void)activity:(NSPosixFileActivities)activity
-    posixFileDescriptor:(NSPosixFileDescriptor *)fileDescriptor
-{
-  [self receivedEvent:0 type:0 extra:0 forMode:nil];
-}
-#elif defined(NeXT_PDO)
-- (void)activityOnFileHandle:(NSNotification *)notification
-{
-  id fileDescriptor = [notification object];
-  id runLoopMode = [[NSRunLoop currentRunLoop] currentMode];
-
-  [fileDescriptor waitForDataInBackgroundAndNotifyForModes:[NSArray arrayWithObject:runLoopMode]];
-  [self receivedEvent:0 type:0 extra:0 forMode:nil];
-}
-#endif
 
 - (BOOL)runLoopShouldBlock:(BOOL *)trigger
 {
@@ -305,7 +248,7 @@ static int check_modifier(XEvent *xEvent, KeySym key_sym)
 
 /*
  */
-- (NSPoint) _XPointToOSPoint: (NSPoint)x for: (void*)window
+- (NSPoint)_XPointToOSPoint:(NSPoint)x for:(void*)window
 {
   gswindow_device_t *win = (gswindow_device_t *)window;
   unsigned int style = win->win_attrs.window_style;
@@ -1741,20 +1684,14 @@ static KeySym key_sym_from_defaults(Display *display, NSUserDefaults *defaults,
   KeySym key_sym;
 
   keyDefaultName = [defaults stringForKey:keyDefaultKey];
-  if (keyDefaultName == nil)
+  if (keyDefaultName == nil) {
     return fallback;
+  }
 
   key_sym = XStringToKeysym([keyDefaultName cString]);
-#if 0
-  if (key_sym == NoSymbol && [keyDefaultName intValue] > 0)
-    {
-      key_sym = [keyDefaultName intValue];
-    }
-#endif
   if (key_sym == NoSymbol) {
     // This is not necessarily an error.
-    // If you want on purpose to disable a key,
-    // set its default to 'NoSymbol'.
+    // If you want on purpose to disable a key, set its default to 'NoSymbol'.
     NSLog(@"KeySym %@ not found; disabling %@", keyDefaultName, keyDefaultKey);
   }
 
@@ -1776,37 +1713,37 @@ static void initialize_keyboard(void)
   _control_keysyms[1] =
       key_sym_from_defaults(display, defaults, @"GSSecondControlKey", XK_Control_R);
 
-  if (_control_keysyms[0] == _control_keysyms[1])
+  if (_control_keysyms[0] == _control_keysyms[1]) {
     _control_keysyms[1] = NoSymbol;
-
+  }
   // Initialize Command
   _command_keysyms[0] = key_sym_from_defaults(display, defaults, @"GSFirstCommandKey", XK_Alt_L);
 
   _command_keysyms[1] = key_sym_from_defaults(display, defaults, @"GSSecondCommandKey", NoSymbol);
 
-  if (_command_keysyms[0] == _command_keysyms[1])
+  if (_command_keysyms[0] == _command_keysyms[1]) {
     _command_keysyms[1] = NoSymbol;
-
+  }
   // Initialize Alt
   _alt_keysyms[0] = key_sym_from_defaults(display, defaults, @"GSFirstAlternateKey", XK_Alt_R);
-  if (XKeysymToKeycode(display, _alt_keysyms[0]) == 0)
+  if (XKeysymToKeycode(display, _alt_keysyms[0]) == 0) {
     _alt_keysyms[0] = XK_Mode_switch;
-
+  }
   _alt_keysyms[1] = key_sym_from_defaults(display, defaults, @"GSSecondAlternateKey", NoSymbol);
 
-  if (_alt_keysyms[0] == _alt_keysyms[1])
+  if (_alt_keysyms[0] == _alt_keysyms[1]) {
     _alt_keysyms[1] = NoSymbol;
-
+  }
   // Initialize Help
   _help_keysyms[0] = key_sym_from_defaults(display, defaults, @"GSFirstHelpKey", XK_Help);
-  if (XKeysymToKeycode(display, _help_keysyms[0]) == 0)
+  if (XKeysymToKeycode(display, _help_keysyms[0]) == 0) {
     _help_keysyms[0] = NoSymbol;
-
+  }
   _help_keysyms[1] = key_sym_from_defaults(display, defaults, @"GSSecondHelpKey", XK_Super_L);
 
-  if (_help_keysyms[0] == _help_keysyms[1])
+  if (_help_keysyms[0] == _help_keysyms[1]) {
     _help_keysyms[1] = NoSymbol;
-
+  }
   set_up_num_lock();
   _mod_ignore_shift = ![defaults boolForKey:@"GSModifiersAreNotKeys"];
 
@@ -2308,12 +2245,6 @@ static unsigned int process_modifier_flags(unsigned int state)
 - (NSDate *)timedOutEvent:(void *)data type:(RunLoopEventType)type forMode:(NSString *)mode
 {
   return nil;
-}
-
-/* Drag and Drop */
-- (id<NSDraggingInfo>)dragInfo
-{
-  return [XGDragView sharedDragView];
 }
 
 @end

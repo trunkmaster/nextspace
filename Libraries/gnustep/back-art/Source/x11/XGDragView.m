@@ -419,6 +419,11 @@ static XGDragView *sharedDragView = nil;
   return did_change;
 }
 
+- (id<NSDraggingInfo>)dragInfo
+{
+  return [XGDragView sharedDragView];
+}
+
 @end
 
 @implementation XGRawWindow

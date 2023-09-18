@@ -40,8 +40,14 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
+
+#include <wraster.h>
+
 #include "config.h"
 
+#import "XGInputServer.h"
+#import "XGServerWindow.h"
+#import "XGServer.h"
 #import "XGScreenContext.h"
 
 #include <signal.h>
@@ -55,14 +61,6 @@ static void terminate(int sig)
   }
 }
 
-#ifdef HAVE_WRASTER_H
-#include <wraster.h>
-#else
-#include "x11/wraster.h"
-#endif
-
-#include "x11/XGInputServer.h"
-#include "x11/XGServer.h"
 #ifdef HAVE_GLX
 #include "x11/XGOpenGL.h"
 #endif
@@ -117,11 +115,7 @@ static NSString *_parse_display_name(NSString *name, int *dn, int *sn)
   return host;
 }
 
-@interface XGServer (Window)
-- (void)_setupRootWindow;
-@end
-
-@interface XGServer (Private)
+@interface XGServer (EventOps)
 - (void)setupRunLoopInputSourcesForMode:(NSString *)mode;
 @end
 
