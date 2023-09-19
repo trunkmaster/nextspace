@@ -131,7 +131,7 @@
   [(ARTGState *)gstate GSSetDevice:device:x:y];
 }
 
-- (void)GSCurrentDevice:(void **)device:(int *)x:(int *)y {
+- (void)GSCurrentDevice:(void **)device :(int *)x :(int *)y {
   [(ARTGState *)gstate GSCurrentDevice:device:x:y];
 }
 @end

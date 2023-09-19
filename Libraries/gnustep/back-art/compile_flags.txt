@@ -34,3 +34,9 @@
 -I/Users/me/Library/Headers
 -I/Developer/Headers
 -I/usr/NextSpace/include
+-I/usr/include/libart-2.0
+-I/usr/include/freetype2
+-I/usr/include/libpng16
+-I/usr/include/harfbuzz
+-I/usr/include/glib-2.0
+-I/usr/include/sysprof-4
