@@ -1,0 +1,1 @@
+./configure --enable-server=x11 --enable-graphics=art --with-name=art
