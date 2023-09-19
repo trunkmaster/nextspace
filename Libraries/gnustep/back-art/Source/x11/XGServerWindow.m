@@ -47,11 +47,7 @@
 #include <unistd.h>
 #endif
 
-#ifdef HAVE_WRASTER_H
 #include "wraster.h"
-#else
-#include "x11/wraster.h"
-#endif
 
 // For X_HAVE_UTF8_STRING
 #include <X11/Xlib.h>
@@ -115,7 +111,7 @@ static NSBitmapImageRep *getStandardBitmap(NSImage *image)
   /*
     We should rather convert the image to a bitmap representation here via
     the following code, but this is currently not supported by the libart
-  backend
+    backend
 
   {
     NSSize size = [image size];
@@ -406,12 +402,6 @@ BOOL AtomPresentAndPointsToItself(Display *dpy, Atom atom, Atom type)
 
   return result;
 }
-
-@interface XGServer (WindowOps)
-- (gswindow_device_t *)_rootWindow;
-- (void)styleoffsets:(float *)l :(float *)r :(float *)t :(float *)b :(unsigned int)style :(Window)win;
-- (void)_setSupportedWMProtocols:(gswindow_device_t *)window;
-@end
 
 @implementation XGServer (WindowOps)
 
