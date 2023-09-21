@@ -41,6 +41,24 @@
    - Media management.
  */
 
+/* Methods called by NSWorkspace:
+   - openFile: withApplication: andDeactivate:
+     - openFile:
+     - openFile: fromImage: at: inView:
+     - openFile: withApplication:
+   - openTempFile:
+
+   - performFileOperation: source: destination:
+
+   - selectFile: inFileViewerRootedAtPath:
+
+   - launchApplication: showIcon: autolaunch:
+   - activeApplication
+   - launchedApplications
+
+   - extendPowerOffBy:
+*/
+
 //-----------------------------------------------------------------------------
 // NSWorkspace
 //
@@ -101,39 +119,41 @@
     the default application for its type; returns YES if file was successfully
     opened and NO otherwise.
     In current implementation calls openFile:withApplication:*/
-- (BOOL)openFile:(NSString*)fullPath;
+// --- [NSWorkspace _workspaceApplication]
+- (BOOL)openFile:(NSString *)fullPath;
 
 /** Instructs Workspace Manager to open the file specified by fullPath using
     the default application for its type. To provide animation prior to the
     open, anImage should contain the file's icon, and its image should be
     displayed at point, using aView's coordinates. Returns YES if file was
     successfully opened and NO otherwise.*/
+// --- [NSWorkspace _workspaceApplication]
 // TODO
-- (BOOL)openFile:(NSString*)fullPath
-       fromImage:(NSImage*)anImage
+- (BOOL)openFile:(NSString *)fullPath
+       fromImage:(NSImage *)anImage
               at:(NSPoint)point
-          inView:(NSView*)aView;
+          inView:(NSView *)aView;
 
 /** Instructs Workspace Manager to open the file specified by fullPath using
     the appName application; returns YES if file was successfully opened and NO
     otherwise.*/
 // TODO
-- (BOOL)openFile:(NSString*)fullPath
- withApplication:(NSString*)appName;
+// --- [NSWorkspace _workspaceApplication]
+- (BOOL)openFile:(NSString *)fullPath withApplication:(NSString *)appName;
 
 /** Instructs Workspace Manager to open the file specified by fullPath using
     the appName application where flag indicates if sending application should
     be deactivated before the request is sent; returns YES if file was
     successfully opened and NO otherwise.*/
 // TODO
-- (BOOL)openFile:(NSString*)fullPath
- withApplication:(NSString*)appName
-   andDeactivate:(BOOL)flag;
+// [NSWorkspace _workspaceApplication]
+- (BOOL)openFile:(NSString *)fullPath withApplication:(NSString *)appName andDeactivate:(BOOL)flag;
 
 /** Instructs Workspace Manager to open the temporary file specified by
     fullPath using the default application for its type; returns YES if file
     was successfully opened and NO otherwise.*/
 // TODO
+// [NSWorkspace _workspaceApplication]
 - (BOOL)openTempFile:(NSString*)fullPath;
 
 //-----------------------------------------------------------------------------
@@ -157,6 +177,7 @@ APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
     needed using tag as an identifier for asynchronous operations; returns YES
     if operation succeeded and NO otherwise.*/
 // TODO
+// [NSWorkspace _workspaceApplication]
 // - (BOOL)performFileOperation:(NSString*)operation
 //                       source:(NSString*)source
 //                  destination:(NSString*)destination
@@ -167,6 +188,7 @@ APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
     opening a new file viewer if a path is specified by rootFullpath; returns
     YES if file was successfully selected and NO otherwise.*/
 // TODO
+// [NSWorkspace _workspaceApplication]
 // - (BOOL)       selectFile:(NSString*)fullPath
 //  inFileViewerRootedAtPath:(NSString*)rootFullpath;
 
@@ -291,6 +313,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 /** Instructs Workspace Manager to launch the application appName and returns
     YES if application was successfully launched and NO otherwise.*/
 // TODO
+// --- [NSWorkspace _workspaceApplication]
 - (BOOL)launchApplication:(NSString *)appName;
 
 /** Instructs Workspace Manager to launch the application appName displaying
@@ -329,6 +352,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
  * </p>
  */
 // CHECK
+// [NSWorkspace _workspaceApplication]
 - (BOOL)launchApplication:(NSString *)appName
                  showIcon:(BOOL)showIcon
                autolaunch:(BOOL)autolaunch;
@@ -401,6 +425,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 /** Requests more time before the power goes off or the user logs out; returns
     the granted number of additional milliseconds.*/
 // TODO
+// [NSWorkspace _workspaceApplication]
 // - (int)extendPowerOffBy:(int)requested;
 
 @end
