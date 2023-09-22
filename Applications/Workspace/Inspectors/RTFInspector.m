@@ -58,11 +58,10 @@ static inline NSUInteger numberOfLinesInString(NSString *string)
   [fileInfoText setAlignment:NSLeftTextAlignment];
   [fileInfoText setFont:[NSFont toolTipsFontOfSize:0.0]];
   [fileInfoText setBackgroundColor:[NSColor whiteColor]];
-  selTextAttrs = [NSDictionary
-                   dictionaryWithObjectsAndKeys:
-                     [NSColor lightGrayColor], NSBackgroundColorAttributeName,
-                     [NSColor blackColor], NSForegroundColorAttributeName,
-                     nil];
+  selTextAttrs = @{
+    NSBackgroundColorAttributeName : [NSColor lightGrayColor],
+    NSForegroundColorAttributeName : [NSColor blackColor]
+  };
   [fileInfoText setSelectedTextAttributes:selTextAttrs];
 
   [[fileInfoText enclosingScrollView] setBorderType:NSBezelBorder];

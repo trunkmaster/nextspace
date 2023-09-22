@@ -82,11 +82,10 @@ NSUInteger numberOfLinesInString(NSString *string)
   [fileInfoText setFont:[NSFont systemFontOfSize:0.0]];
   [fileInfoText setBackgroundColor:[NSColor controlBackgroundColor]];
 
-  selTextAttrs = [NSDictionary
-                   dictionaryWithObjectsAndKeys:
-                     [NSColor whiteColor], NSBackgroundColorAttributeName,
-                     [NSColor blackColor], NSForegroundColorAttributeName,
-                     nil];
+  selTextAttrs = @{
+    NSBackgroundColorAttributeName : [NSColor whiteColor],
+    NSForegroundColorAttributeName : [NSColor blackColor]
+  };
   [fileInfoText setSelectedTextAttributes:selTextAttrs];
   
   [[fileInfoText enclosingScrollView] setBorderType:NSNoBorder];
@@ -105,11 +104,10 @@ NSUInteger numberOfLinesInString(NSString *string)
   [fileInfoText setAlignment:NSLeftTextAlignment];
   [fileInfoText setFont:[NSFont toolTipsFontOfSize:0.0]];
   [fileInfoText setBackgroundColor:[NSColor whiteColor]];
-  selTextAttrs = [NSDictionary
-                   dictionaryWithObjectsAndKeys:
-                     [NSColor lightGrayColor], NSBackgroundColorAttributeName,
-                     [NSColor blackColor], NSForegroundColorAttributeName,
-                     nil];
+  selTextAttrs = @{
+    NSBackgroundColorAttributeName : [NSColor lightGrayColor],
+    NSForegroundColorAttributeName : [NSColor blackColor]
+  };
   [fileInfoText setSelectedTextAttributes:selTextAttrs];
 
   [[fileInfoText enclosingScrollView] setBorderType:NSBezelBorder];

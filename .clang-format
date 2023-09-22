@@ -1,9 +1,23 @@
-{
-  BasedOnStyle: Google,
-  AllowShortIfStatementsOnASingleLine: Never,
-  AllowShortLoopsOnASingleLine: false,
-  AlwaysBreakBeforeMultilineStrings: false,
-  BreakBeforeBraces: WebKit,
-  ObjCSpaceAfterProperty: true,
-  ColumnLimit: 100,  
-}
+BasedOnStyle: Google
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakBeforeMultilineStrings: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterEnum: false
+  AfterFunction: true
+  AfterObjCDeclaration: true
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeWhile: false
+  IndentBraces: false
+ObjCSpaceAfterProperty: true
+ObjCSpaceBeforeProtocolList: false
+AllowAllArgumentsOnNextLine: false
+PointerAlignment: Right
+ColumnLimit: 100

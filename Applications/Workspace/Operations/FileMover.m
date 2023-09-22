@@ -128,9 +128,7 @@ static inline void ReportGarbage(NSString *garbage)
   ASSIGN(problemSolutionDesc, 
          _(@"You can create new link, skip this link, "
            @"copy the original, or stop the entire opertaion"));
-  ASSIGN(solutions,
-         ([NSArray arrayWithObjects:_(@"Copy"), _(@"Skip"), _(@"New Link"),
-                   nil]));
+  ASSIGN(solutions, (@[ _(@"Copy"), _(@"Skip"), _(@"New Link") ]));
 
   [self setState:OperationAlert];
 }
@@ -144,7 +142,7 @@ static inline void ReportGarbage(NSString *garbage)
                                  target, currFile]));
   ASSIGN(problemSolutionDesc, 
          _(@"You can skip this file to proceed with operation."));
-  ASSIGN(solutions, [NSArray arrayWithObject:_(@"Skip")]);
+  ASSIGN(solutions, @[ _(@"Skip") ]);
 
   [self setState:OperationAlert];
 }
@@ -159,8 +157,7 @@ static inline void ReportGarbage(NSString *garbage)
   ASSIGN(problemSolutionDesc, 
          _(@"You can skip this file to proceed with operation"
            @" or ovewrite existig file with the new one"));
-  ASSIGN(solutions, ([NSArray arrayWithObjects:
-                                _(@"Overwrite"), _(@"Skip"), nil]));
+  ASSIGN(solutions, (@[ _(@"Overwrite"), _(@"Skip") ]));
 
   [self setState:OperationAlert];
 }
@@ -191,8 +188,7 @@ static inline void ReportGarbage(NSString *garbage)
   ASSIGN(problemSolutionDesc, 
          _(@"You can skip this file, make new link, "
            @"or stop the entire operation"));
-  ASSIGN(solutions, ([NSArray arrayWithObjects:
-                                _(@"Skip"), _(@"New Link"), nil]));
+  ASSIGN(solutions, (@[ _(@"Skip"), _(@"New Link") ]));
 
   [self setState:OperationAlert];
 }
@@ -413,14 +409,11 @@ static inline void ReportGarbage(NSString *garbage)
   isSizing = YES;
 
   sizerTask = [NSTask new];
-  [sizerTask setLaunchPath:
-               [[NSBundle mainBundle] pathForResource:@"Sizer" ofType:@"tool"]];
-  [sizerTask setArguments:[NSArray arrayWithObjects:
-                                     @"-Operation", [self typeString],
-                                   @"-Source", source,
-                                   @"-Destination", target,
-                                   @"-Files", [files description],
-                                   nil]];
+  [sizerTask setLaunchPath:[[NSBundle mainBundle] pathForResource:@"Sizer" ofType:@"tool"]];
+  [sizerTask setArguments:@[
+    @"-Operation", [self typeString], @"-Source", source, @"-Destination", target, @"-Files",
+    [files description]
+  ]];
 
   readPipe = [NSPipe new];
   writePipe = [NSPipe new];
@@ -432,9 +425,9 @@ static inline void ReportGarbage(NSString *garbage)
              name:NSTaskDidTerminateNotification
            object:sizerTask];
   [nc addObserver:self
-	 selector:@selector(readInput:)
-	     name:NSFileHandleDataAvailableNotification
-	   object:[readPipe fileHandleForReading]];
+         selector:@selector(readInput:)
+             name:NSFileHandleDataAvailableNotification
+           object:[readPipe fileHandleForReading]];
 
   [[readPipe fileHandleForReading] waitForDataInBackgroundAndNotify];
 
@@ -453,11 +446,9 @@ static inline void ReportGarbage(NSString *garbage)
   
   fileMoverTask = [NSTask new];
   [fileMoverTask setLaunchPath:fileMoverPath];
-  [fileMoverTask setArguments:[NSArray arrayWithObjects:
-                                       @"-Operation", [self typeString],
-                                       @"-Source", source,
-                                       @"-Destination", target,
-                                       nil]];
+  [fileMoverTask setArguments:@[
+    @"-Operation", [self typeString], @"-Source", source, @"-Destination", target
+  ]];
   // Transfer '-Files' argument as environment variable to omit parameter
   // length limit
   if (files)

@@ -138,8 +138,7 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (id)initWithFrame:(NSRect)frame
 {
   self = [super initWithFrame: frame];
-  [self registerForDraggedTypes: [NSArray arrayWithObjects:
-    NSFilenamesPboardType, nil]];
+  [self registerForDraggedTypes: @[NSFilenamesPboardType]];
   return self;
 }
 

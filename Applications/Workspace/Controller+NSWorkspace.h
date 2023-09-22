@@ -127,8 +127,6 @@
     open, anImage should contain the file's icon, and its image should be
     displayed at point, using aView's coordinates. Returns YES if file was
     successfully opened and NO otherwise.*/
-// --- [NSWorkspace _workspaceApplication]
-// TODO
 - (BOOL)openFile:(NSString *)fullPath
        fromImage:(NSImage *)anImage
               at:(NSPoint)point
@@ -137,7 +135,6 @@
 /** Instructs Workspace Manager to open the file specified by fullPath using
     the appName application; returns YES if file was successfully opened and NO
     otherwise.*/
-// TODO
 // --- [NSWorkspace _workspaceApplication]
 - (BOOL)openFile:(NSString *)fullPath withApplication:(NSString *)appName;
 
@@ -145,14 +142,12 @@
     the appName application where flag indicates if sending application should
     be deactivated before the request is sent; returns YES if file was
     successfully opened and NO otherwise.*/
-// TODO
 // [NSWorkspace _workspaceApplication]
 - (BOOL)openFile:(NSString *)fullPath withApplication:(NSString *)appName andDeactivate:(BOOL)flag;
 
 /** Instructs Workspace Manager to open the temporary file specified by
     fullPath using the default application for its type; returns YES if file
     was successfully opened and NO otherwise.*/
-// TODO
 // [NSWorkspace _workspaceApplication]
 - (BOOL)openTempFile:(NSString*)fullPath;
 

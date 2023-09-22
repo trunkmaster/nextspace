@@ -28,9 +28,7 @@ NSString *WMSizerGotNumbersNotification = @"WMSizerGotNumbersNotification";
 
 static inline void ReportGarbage(NSString *garbage)
 {
-  NSDebugLLog(@"Sizer",
-              @"Got garbage \"%@\" from Sizer.tool. Ignoring...",
-              garbage);
+  NSDebugLLog(@"Sizer", @"Got garbage \"%@\" from Sizer.tool. Ignoring...", garbage);
 }
 
 //=============================================================================
@@ -60,14 +58,11 @@ static inline void ReportGarbage(NSString *garbage)
 
   // Create task for tool
   task = [NSTask new];
-  [task setLaunchPath:
-          [[NSBundle mainBundle] pathForResource:@"Sizer" ofType:@"tool"]];
-  [task setArguments:[NSArray arrayWithObjects:
-                              @"-Operation", [self typeString],
-                              @"-Source", currSourceDir,
-                              @"-Destination", currTargetDir,
-                              @"-Files", [fileList description],
-                              nil]];
+  [task setLaunchPath:[[NSBundle mainBundle] pathForResource:@"Sizer" ofType:@"tool"]];
+  [task setArguments:@[
+    @"-Operation", [self typeString], @"-Source", currSourceDir, @"-Destination", currTargetDir,
+    @"-Files", [fileList description]
+  ]];
 
   readPipe = [NSPipe new];
   writePipe = [NSPipe new];
@@ -79,9 +74,9 @@ static inline void ReportGarbage(NSString *garbage)
              name:NSTaskDidTerminateNotification
            object:task];
   [nc addObserver:self
-	 selector:@selector(readInput:)
-	     name:NSFileHandleDataAvailableNotification
-	   object:[readPipe fileHandleForReading]];
+         selector:@selector(readInput:)
+             name:NSFileHandleDataAvailableNotification
+           object:[readPipe fileHandleForReading]];
 
   [[readPipe fileHandleForReading] waitForDataInBackgroundAndNotify];
 
@@ -145,19 +140,17 @@ static inline void ReportGarbage(NSString *garbage)
     }
   else
     {
-      NSNumber     *fCount, *bSize;
-      NSDictionary *uInfo;
+      NSNumber     *fileCount, *batchSize;
+      NSDictionary *userInfo;
       
-      fCount = [NSNumber numberWithUnsignedLongLong:numberOfFiles];
-      bSize = [NSNumber numberWithUnsignedLongLong:totalBatchSize];
-      uInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              fCount, @"FileCount",
-                            bSize, @"Size", nil];
+      fileCount = [NSNumber numberWithUnsignedLongLong:numberOfFiles];
+      batchSize = [NSNumber numberWithUnsignedLongLong:totalBatchSize];
+      userInfo = @{@"FileCount": fileCount, @"Size": batchSize};
       
       [[NSNotificationCenter defaultCenter]
                       postNotificationName:WMSizerGotNumbersNotification
                                     object:self
-                                  userInfo:uInfo];
+                                  userInfo:userInfo];
     }
 }
 
