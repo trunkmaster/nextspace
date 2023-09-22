@@ -3429,8 +3429,7 @@ void swapColors(unsigned char *image_data, NSBitmapImageRep *rep) {
   }
 
   num = (unsigned int *)PropGetCheckProperty(
-      dpy, window->ident, generic._NET_WM_WINDOW_OPACITY_ATOM, XA_CARDINAL, 32,
-      1, &c);
+      dpy, window->ident, generic._NET_WM_WINDOW_OPACITY_ATOM, XA_CARDINAL, 32, 1, &c);
 
   if (num) {
     if (*num)

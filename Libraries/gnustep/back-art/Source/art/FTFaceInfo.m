@@ -27,16 +27,16 @@
 
 @implementation FTFaceInfo
 
-- (NSString *) description
+- (NSString *)description
 {
-  return [NSString stringWithFormat: @"<FTFaceInfo %p: '%@' %@ %i %i>",
-    self, displayName, files, weight, traits];
+  return [NSString
+      stringWithFormat:@"<FTFaceInfo %p: '%@' %@ %i %i>", self, displayName, files, weight, traits];
 }
 
 /* FTFaceInfo:s should never be deallocated */
-- (void) dealloc
+- (void)dealloc
 {
-  NSLog(@"Warning: -dealloc called on %@",self);
+  NSLog(@"Warning: -dealloc called on %@", self);
   GSNOSUPERDEALLOC;
 }
 

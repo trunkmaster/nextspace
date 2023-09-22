@@ -43,6 +43,7 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
 
+#include "Foundation/NSDate.h"
 #include "config.h"
 
 #include <wraster.h>
@@ -1315,7 +1316,7 @@ static int check_modifier(XEvent *xEvent, KeySym key_sym)
                   e = [NSEvent otherEventWithType:NSAppKitDefined
                                          location:eventLocation
                                     modifierFlags:0
-                                        timestamp:xEvent.xproperty.time / 1000
+                                        timestamp:(NSTimeInterval)xEvent.xproperty.time / 1000
                                      windowNumber:cWin->number
                                           context:gcontext
                                           subtype:GSAppKitWindowMiniaturize
@@ -1335,7 +1336,7 @@ static int check_modifier(XEvent *xEvent, KeySym key_sym)
                   e = [NSEvent otherEventWithType:NSAppKitDefined
                                          location:eventLocation
                                     modifierFlags:0
-                                        timestamp:xEvent.xproperty.time / 1000
+                                        timestamp:(NSTimeInterval)xEvent.xproperty.time / 1000
                                      windowNumber:cWin->number
                                           context:gcontext
                                           subtype:GSAppKitWindowDeminiaturize
