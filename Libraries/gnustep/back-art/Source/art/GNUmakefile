@@ -36,15 +36,15 @@ SUBPROJECT_NAME=art
 art_OBJC_FILES = \
   ARTContext.m \
   ARTGState.m \
+  ARTGState+image.m \
+  ARTGState+composite.m \
+  ARTGState+path.m \
+  ARTGState+shfill.m \
+  ARTGState+ReadRect.m \
   blit-main.m \
-  ftfont.m \
+  FTFontInfo.m \
 	FTFontEnumerator.m \
-	FTFaceInfo.m \
-  image.m \
-  composite.m \
-  path.m \
-  shfill.m \
-  ReadRect.m
+	FTFaceInfo.m
 
 -include GNUmakefile.preamble
 

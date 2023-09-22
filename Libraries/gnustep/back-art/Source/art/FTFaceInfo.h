@@ -17,8 +17,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
@@ -32,7 +32,7 @@
 
 @interface FTFaceInfo : NSObject
 {
-@public
+ @public
   NSString *familyName;
 
   /* the following two are localized */
@@ -40,24 +40,23 @@
   NSString *displayName;
 
   NSArray *files;
-  struct
-  {
+  struct {
     int pixel_size;
     NSArray *files;
-  } *sizes;
+  } * sizes;
   int num_sizes;
 
   int weight;
   unsigned int traits;
 
   /*
-  hinting hints
-    0: 1 to use the auto-hinter
-    1: 1 to use hinting
-  byte 0 and 1 contain hinting hints for un-antialiased and antialiased
-  rendering, respectively.
+    hinting hints
+      0: 1 to use the auto-hinter
+      1: 1 to use hinting
+    byte 0 and 1 contain hinting hints for un-antialiased and antialiased
+    rendering, respectively.
 
-   16: 0=un-antialiased by default, 1=antialiased by default
+    16: 0=un-antialiased by default, 1=antialiased by default
   */
   unsigned int render_hints_hack;
 }
