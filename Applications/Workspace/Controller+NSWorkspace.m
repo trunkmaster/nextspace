@@ -36,6 +36,7 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
+#include "Foundation/NSObjCRuntime.h"
 #import <Foundation/Foundation.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
@@ -43,6 +44,7 @@
 #import <DesktopKit/NXTDefaults.h>
 #import <DesktopKit/NXTFileManager.h>
 
+#import "Viewers/FileViewer.h"
 #import "Controller+NSWorkspace.h"
 #import "WMNotificationCenter.h"
 #import "Workspace+WM.h"
@@ -429,13 +431,42 @@ static NSLock *raceLock = nil;
 //   return NO;
 // }
 
-// FIXME: TODO
-// - (BOOL)       selectFile:(NSString*)fullPath
-//  inFileViewerRootedAtPath:(NSString*)rootFullpath
-// {
-//   // TODO
-//   return NO;
-// }
+// From OpenUp:
+// [[NSWorkspace sharedWorkspace] selectFile:archivePath
+//                  inFileViewerRootedAtPath:[archivePath stringByDeletingLastPathComponent]];
+- (BOOL)selectFile:(NSString *)fullPath inFileViewerRootedAtPath:(NSString *)rootFullpath
+{
+  FileViewer *fv;
+
+  if (!fullPath || fullPath.length == 0) {
+    return NO;
+  }
+
+  if (rootFullpath && rootFullpath.length > 0) {
+    fv = [self newViewerRootedAt:rootFullpath
+                          viewer:[[NXTDefaults userDefaults] objectForKey:@"PreferredViewer"]
+                          isRoot:NO];
+    if (fv) {
+      if ([rootFullpath isEqualToString:fullPath]) {
+        [fv displayPath:@"/" selection:nil sender:self];
+      } else {
+        [fv displayPath:@"/" selection:@[ fullPath.lastPathComponent ] sender:self];
+      }
+    }
+  } else {
+    fv = [self rootViewer];
+    [fv displayPath:fullPath.stringByDeletingLastPathComponent
+          selection:@[ fullPath.lastPathComponent ]
+             sender:self];
+  }
+
+  if (fv) {
+    [[fv window] orderFront:self];
+    return YES;
+  }
+  
+  return NO;
+}
 
 - (NSString *)fullPathForApplication:(NSString *)appName
 {

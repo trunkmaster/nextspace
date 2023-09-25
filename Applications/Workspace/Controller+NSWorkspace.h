@@ -182,10 +182,8 @@ APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
 /** Instructs Workspace Manager to select the file specified by fullPath
     opening a new file viewer if a path is specified by rootFullpath; returns
     YES if file was successfully selected and NO otherwise.*/
-// TODO
 // [NSWorkspace _workspaceApplication]
-// - (BOOL)       selectFile:(NSString*)fullPath
-//  inFileViewerRootedAtPath:(NSString*)rootFullpath;
+- (BOOL)selectFile:(NSString *)fullPath inFileViewerRootedAtPath:(NSString *)rootFullpath;
 
 //-----------------------------------------------------------------------------
 //--- Requesting Information about Files
