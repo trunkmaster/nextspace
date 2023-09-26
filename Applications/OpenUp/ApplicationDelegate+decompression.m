@@ -5,27 +5,30 @@
  Copyright:  Copyright 1997 by Scott Anguish, all rights reserved.
 */
 
-#include "AppKit/NSWorkspace.h"
-#include "ApplicationDelegate.h"
+#import <AppKit/NSWorkspace.h>
+#import <DesktopKit/NXTOpenPanel.h>
 
-#include "NSArray+utils.h"
-#include "NSColor+utils.h"
-#include "NSFileManager+unique.h"
-#include "NSString+utils.h"
-#include "NSTask+utils.h"
+#import "ApplicationDelegate.h"
+#import "NSArray+utils.h"
+#import "NSColor+utils.h"
+#import "NSFileManager+unique.h"
+#import "NSString+utils.h"
+#import "NSTask+utils.h"
 
 @implementation ApplicationDelegate (decompression)
 
 - (void)openArchive:(id)sender
 {
   int result, i, numberOfFiles;
-  NSArray *theArray;
-  NSOpenPanel *sharedOpenPanel = [NSOpenPanel openPanel];
+  // NSArray *theArray;
+  NXTOpenPanel *sharedOpenPanel = [NXTOpenPanel openPanel];
   NSArray *filesToOpen;
 
   [sharedOpenPanel setAllowsMultipleSelection:YES];
-  theArray = [self allSupportedFileExtensions];
-  result = [sharedOpenPanel runModalForDirectory:NSHomeDirectory() file:nil types:theArray];
+  [sharedOpenPanel setCanChooseFiles:YES];
+  result = [sharedOpenPanel runModalForDirectory:NSHomeDirectory()
+                                            file:nil
+                                           types:[self allSupportedFileExtensions]];
   if (result == NSOKButton) {
     filesToOpen = [sharedOpenPanel filenames];
     numberOfFiles = [filesToOpen count];
