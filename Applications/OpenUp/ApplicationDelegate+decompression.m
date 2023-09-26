@@ -5,6 +5,7 @@
  Copyright:  Copyright 1997 by Scott Anguish, all rights reserved.
 */
 
+#include "AppKit/NSWorkspace.h"
 #include "ApplicationDelegate.h"
 #include "NSFileManager+unique.h"
 #include "NSString+utils.h"
@@ -188,29 +189,26 @@
   NSLog(@"RUN: %@ %@", shellPath, shellArgs);
 
   applicationWrapperPath = [[NSBundle mainBundle] bundlePath];
-  applicationResourcesWrapperPath = [[NSBundle mainBundle] resourcePath] ;
+  applicationResourcesWrapperPath = [[NSBundle mainBundle] resourcePath];
 
-  fileExtension = 
-    [self fileExtensionIn:[fileConfig objectForKey:@"file_extension"] 
-	   matchingString:archivePath];
+  fileExtension = [self fileExtensionIn:[fileConfig objectForKey:@"file_extension"]
+                         matchingString:archivePath];
   archiveFilenameWithoutPath = [archivePath lastPathComponent];
 
-  archiveFilenameWithoutFileExtension = 
-    [archivePath stringByDeletingSuffix:fileExtension];
-  archiveFilenameWithoutPathWithoutFileExtension = 
-    [archiveFilenameWithoutPath stringByDeletingSuffix:fileExtension];
+  archiveFilenameWithoutFileExtension = [archivePath stringByDeletingSuffix:fileExtension];
+  archiveFilenameWithoutPathWithoutFileExtension =
+      [archiveFilenameWithoutPath stringByDeletingSuffix:fileExtension];
 
-  archiveFilenameWithoutFileExtensionNoDots = 
-    [archiveFilenameWithoutPathWithoutFileExtension stringByReplacing:@"."
-								 with:@"_"];
+  archiveFilenameWithoutFileExtensionNoDots =
+      [archiveFilenameWithoutPathWithoutFileExtension stringByReplacing:@"." with:@"_"];
 
-  basenameForUnarchiveDirectory = 
-    [NSString stringWithFormat:@"O_%@_%%@",archiveFilenameWithoutFileExtensionNoDots];
+  basenameForUnarchiveDirectory =
+      [NSString stringWithFormat:@"O_%@_%%@", archiveFilenameWithoutFileExtensionNoDots];
 
-  unarchiveDirectoryPath = [[NSFileManager defaultManager] 
-    createUniqueDirectoryAtPath:appWorkingDirectory
-	       withBaseFilename:basenameForUnarchiveDirectory
-		     attributes:nil];
+  unarchiveDirectoryPath =
+      [[NSFileManager defaultManager] createUniqueDirectoryAtPath:appWorkingDirectory
+                                                 withBaseFilename:basenameForUnarchiveDirectory
+                                                       attributes:nil];
 
   // If we can't create a new directory in the working directory, we
   // punt.
@@ -337,8 +335,8 @@
 	  [hackDictionary writeToFile:hackFile atomically:NO];
 	}
       NSLog(@"File was decompressed. Call for workspace.");
-      [[NSWorkspace sharedWorkspace] openFile:unarchiveDirectoryPath
-			      withApplication:@"Workspace"];
+      [[NSWorkspace sharedWorkspace] selectFile:unarchiveDirectoryPath
+                       inFileViewerRootedAtPath:unarchiveDirectoryPath];
     }
 
   return;
