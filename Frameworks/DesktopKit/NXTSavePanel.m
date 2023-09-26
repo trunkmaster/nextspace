@@ -209,6 +209,7 @@ static NXTSavePanel *_savePanel = nil;
       [v mouseDown:theEvent];
       [_browser resignFirstResponder];
       [_form becomeFirstResponder];
+      [self _selectTextInColumn:[_browser selectedColumn]];
       return;
     }
   }
@@ -219,12 +220,15 @@ static NXTSavePanel *_savePanel = nil;
     NSInteger selectedRow, cellsCount;
 
     if ([chars isEqualToString:@"\e"]) {
+      [self _selectTextInColumn:[_browser selectedColumn]];
       [[_form cellAtIndex:0] setStringValue:[_browser path]];
+      [_form selectTextAtIndex:0];
       return;
     }
     else if ([chars isEqualToString:@"\r"] && [_okButton isEnabled] == NO) {
       [[_form cellAtIndex:0] setStringValue:@""];
       [_browser setPath:[_browser path]];
+      [self _selectTextInColumn:[_browser selectedColumn]];
       [self _saveDefaultDirectory:[_browser path]];
       return;
     }
@@ -422,7 +426,7 @@ static NXTSavePanel *_savePanel = nil;
   NSBrowserCell *selectedCell;
   BOOL           isLeaf;
 
-  // NSLog(@"_selectTextInColumn:%d", column);
+  NSLog(@"NXTSavePanel: _selectTextInColumn:%d", column);
 
   if (column == -1)
     return;
