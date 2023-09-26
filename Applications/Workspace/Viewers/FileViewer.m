@@ -1207,7 +1207,7 @@
 //=============================================================================
 // Window
 //=============================================================================
-- (void)windowDidBecomeMain:(NSNotification *)notif
+- (void)_updateFocusInWindow
 {
   Inspector *inspector = [(Controller *)[NSApp delegate] inspectorPanel];
   
@@ -1215,6 +1215,16 @@
     [inspector revert:self];
   }
   [window makeFirstResponder:[viewer keyView]];
+}
+
+- (void)windowDidBecomeMain:(NSNotification *)notif
+{
+  [self _updateFocusInWindow];
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)aNotification
+{
+  [self _updateFocusInWindow];
 }
 
 - (void)windowWillClose:(NSNotification *)notif
