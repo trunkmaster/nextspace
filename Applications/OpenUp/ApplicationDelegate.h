@@ -7,28 +7,25 @@
 
 #include <AppKit/AppKit.h>
 
-@interface ApplicationDelegate : NSObject
-{
-    NSString *appWorkingDirectory;
-    NSArray *fileTypeConfigArray;
-    NSDictionary *servicesDictionary;
-    
-    id errorWindow;
-    id errorTextView;
-    id errorTextField;
-    id preferencesWindow;
-    id preferencesDeleteFilesCheckbox;
+@interface ApplicationDelegate : NSObject {
+  NSString *appWorkingDirectory;
+  NSArray *fileTypeConfigArray;
+  NSDictionary *servicesDictionary;
 
+  id errorWindow;
+  id errorTextView;
+  id errorTextField;
+  id preferencesWindow;
+  id preferencesDeleteFilesCheckbox;
 
-    id infoPanel;
-    id infoPanelTextField;
+  id infoPanel;
+  id infoPanelTextField;
 
-    id debugWindow;
-    id debugTextView;
-    NSArray *infoPanelSupportedTypes;
-    id infoTableView;
+  id debugWindow;
+  id debugTextView;
+  NSArray *infoPanelSupportedTypes;
+  id infoTableView;
 }
-
 
 - (BOOL)applicationShouldTerminate:(NSApplication *)app;
 - (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename;
@@ -44,14 +41,15 @@
 - (NSDictionary *)wrappedProgramsUsingConfiguration:(NSDictionary *)fileConfig;
 @end
 
-@interface ApplicationDelegate(compression)
+@interface ApplicationDelegate (compression)
 - (void)compressFiles:(NSPasteboard *)pboard userData:(NSString *)data error:(NSString **)error;
 - (BOOL)compressFiles:(NSArray *)files withFileExtension:(NSString *)extension;
-- (void)compressFiles:(NSArray *)files intoArchive:(NSString *)archivePath usingConfig:(NSDictionary *)fileConfig;
+- (void)compressFiles:(NSArray *)files
+          intoArchive:(NSString *)archivePath
+          usingConfig:(NSDictionary *)fileConfig;
 @end
 
-
-@interface ApplicationDelegate(decompression)
+@interface ApplicationDelegate (decompression)
 - (void)openArchive:(id)sender;
 - (NSArray *)allSupportedFileExtensions;
 - (NSString *)fileExtensionIn:extensions matchingString:(NSString *)theString;
@@ -59,11 +57,7 @@
 - (void)decompressFile:(NSString *)archivePath;
 @end
 
-
-
-@interface ApplicationDelegate(infopanel)
+@interface ApplicationDelegate (infopanel)
 - (NSArray *)infoAboutSupportedFileExtensions;
 - showInfoPanel:sender;
 @end
-
-

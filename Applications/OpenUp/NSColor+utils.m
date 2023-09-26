@@ -7,11 +7,14 @@
 
 #include "NSColor+utils.h"
 
-@implementation NSColor(utils)
+@implementation NSColor (utils)
 
-+ (NSColor *)tanTextBackgroundColor;
++ (NSColor *)tanTextBackgroundColor
 {
-    return [NSColor colorWithDeviceRed:(221.0/255.0) green:(187.0/255.0) blue:(136.0/255.0) alpha:1.0];
+  return [NSColor colorWithDeviceRed:(221.0 / 255.0)
+                               green:(187.0 / 255.0)
+                                blue:(136.0 / 255.0)
+                               alpha:1.0];
 }
 
 @end

@@ -7,8 +7,12 @@
 
 #include <AppKit/AppKit.h>
 
-@interface NSFileManager(unique)
-- (NSString *)createUniqueDirectoryAtPath:(NSString *)path withBaseFilename:(NSString *)baseName attributes:(NSDictionary *)attributes;
-- (NSString *)createUniqueDirectoryAtPath:(NSString *)path withBaseFilename:(NSString *)baseName attributes:(NSDictionary *)attributes maximumRetries:(int)maximumRetries;
-
+@interface NSFileManager (unique)
+- (NSString *)createUniqueDirectoryAtPath:(NSString *)path
+                         withBaseFilename:(NSString *)baseName
+                               attributes:(NSDictionary *)attributes;
+- (NSString *)createUniqueDirectoryAtPath:(NSString *)path
+                         withBaseFilename:(NSString *)baseName
+                               attributes:(NSDictionary *)attributes
+                           maximumRetries:(int)maximumRetries;
 @end

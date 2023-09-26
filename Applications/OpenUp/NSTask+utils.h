@@ -7,10 +7,8 @@
 
 #include <AppKit/AppKit.h>
 
-@interface NSTask(utils)
+@interface NSTask (utils)
 + (NSDictionary *)performTask:(NSString *)command
                   inDirectory:(NSString *)directory
                      withArgs:(NSArray *)values;
-
-
 @end

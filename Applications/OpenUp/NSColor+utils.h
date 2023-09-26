@@ -7,7 +7,6 @@
 
 #include <AppKit/AppKit.h>
 
-@interface NSColor(utils)
+@interface NSColor (utils)
 + (NSColor *)tanTextBackgroundColor;
-
 @end

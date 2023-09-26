@@ -6,15 +6,16 @@
 */
 
 #include "ApplicationDelegate.h"
-#include "NSFileManager+unique.h"
-#include "NSString+utils.h"
+#include "Foundation/NSObjCRuntime.h"
 #include "NSArray+utils.h"
 #include "NSColor+utils.h"
+#include "NSFileManager+unique.h"
+#include "NSString+utils.h"
 
 @implementation ApplicationDelegate
 
 // - (BOOL)applicationShouldTerminate:(NSApplication *)app;
-// 
+//
 // The app is about to terminate, so we'll cleanup after ourselves,
 // removing temporary files as required.
 
@@ -25,57 +26,50 @@
 
   // If there are no files in the /tmp directory, we will just go
   // ahead and delete the temporary directory
-  tempFilesExist = ([[[NSFileManager defaultManager]
-		    directoryContentsAtPath:appWorkingDirectory] count] != 0);
+  tempFilesExist =
+      ([[[NSFileManager defaultManager] directoryContentsAtPath:appWorkingDirectory] count] != 0);
 
   // We read this default to determine if we should bother to ask,
   // or just go a head and delete the files
-  deleteTempFilesOnQuit=[[NSUserDefaults standardUserDefaults]
-    boolForKey:@"DeleteTempFilesOnQuit"];
+  deleteTempFilesOnQuit =
+      [[NSUserDefaults standardUserDefaults] boolForKey:@"DeleteTempFilesOnQuit"];
 
   // If there are temp files and we are supposed to ask instead
   // of just deleting the directory
-  if (tempFilesExist && !deleteTempFilesOnQuit)
-    {
-      int result;
-      result = NSRunAlertPanel(@"OpenUp",
-			       NSLocalizedString(@"TempDirectoryDeleteWarning",@"Delete temporary files in %@"),
-			       NSLocalizedString(@"TempDirectoryDeleteYesButton",@"Yes"),
-			       NSLocalizedString(@"TempDirectoryDeleteNoButton",@"No"),
-			       NSLocalizedString(@"TempDirectoryDeleteCancelButton",@"Cancel"),
-			       appWorkingDirectory);
+  if (tempFilesExist && !deleteTempFilesOnQuit) {
+    int result;
+    result = NSRunAlertPanel(
+        @"OpenUp",
+        NSLocalizedString(@"TempDirectoryDeleteWarning", @"Delete temporary files in %@"),
+        NSLocalizedString(@"TempDirectoryDeleteYesButton", @"Yes"),
+        NSLocalizedString(@"TempDirectoryDeleteNoButton", @"No"),
+        NSLocalizedString(@"TempDirectoryDeleteCancelButton", @"Cancel"), appWorkingDirectory);
 
-      if (result == NSAlertDefaultReturn)
-	{
-	  // the user has selected to remove all the files so, we
-	  // delete the temporary directory and return YES so that
-	  // the app will quit
-	  [[NSFileManager defaultManager]
-	    removeFileAtPath:appWorkingDirectory handler:nil];
-	  return YES;
-	}
-      if (result == NSAlertAlternateReturn)
-	// the user has selected to retain the temp files
-	// so we do nothing and return YES so that the app will quit
-	return YES;
-      if (result == NSAlertOtherReturn)
-	// the user has clicked cancel
-	// return NO so that the app will not quit
-	return NO;
+    if (result == NSAlertDefaultReturn) {
+      // the user has selected to remove all the files so, we
+      // delete the temporary directory and return YES so that
+      // the app will quit
+      [[NSFileManager defaultManager] removeFileAtPath:appWorkingDirectory handler:nil];
+      return YES;
     }
-  else
-    {
-      // Either there are no files in our temporary directory,
-      // or the user has elected to delete the temp files by
-      // default either way, we delete our temporary directory
-      // and fall through
-      [[NSFileManager defaultManager]
-	removeFileAtPath:appWorkingDirectory handler:nil];
-    }
+    if (result == NSAlertAlternateReturn)
+      // the user has selected to retain the temp files
+      // so we do nothing and return YES so that the app will quit
+      return YES;
+    if (result == NSAlertOtherReturn)
+      // the user has clicked cancel
+      // return NO so that the app will not quit
+      return NO;
+  } else {
+    // Either there are no files in our temporary directory,
+    // or the user has elected to delete the temp files by
+    // default either way, we delete our temporary directory
+    // and fall through
+    [[NSFileManager defaultManager] removeFileAtPath:appWorkingDirectory handler:nil];
+  }
 
   return YES;
 }
-
 
 // - (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename;
 // - (BOOL)application:(NSApplication *)sender openTempFile:(NSString *)filename;
@@ -83,25 +77,23 @@
 // These methods are called when a file is double clicked on in the
 // Workspace to open OpenUp.
 
-- (BOOL)application:(NSApplication *)sender
-           openFile:(NSString *)filename;
+- (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename;
 {
   // simply forward to the decompressFile: method the filename
   // that we were passed to open
+  NSLog(@"openFile: %@", filename);
 
   [self decompressFile:filename];
   return YES;
 }
 
-- (BOOL)application:(NSApplication *)sender
-       openTempFile:(NSString *)filename;
+- (BOOL)application:(NSApplication *)sender openTempFile:(NSString *)filename;
 {
   // simply forward to the decompressFile: method the filename
   // that we were passed to open
 
   return [self application:sender openFile:filename];
 }
-
 
 // - (void)initializationFailure:(NSString *)value;
 //
@@ -114,11 +106,8 @@
 
 - (void)initializationFailure:(NSString *)value;
 {
-  int result;
-  result = NSRunAlertPanel(@"OpenUp",
-			   value,
-			   NSLocalizedString(@"InitializationFailureButton",@"OK"),
-			   NULL,NULL);
+  NSRunAlertPanel(@"OpenUp", value, NSLocalizedString(@"InitializationFailureButton", @"OK"), NULL,
+                  NULL);
 
   [[NSApplication sharedApplication] terminate:self];
 }
@@ -135,7 +124,7 @@
   NSString *baseFilename;
   NSString *thePath;
   NSString *tempFilesDefaultValue;
-  NSString *errorString=nil;
+  NSString *errorString = nil;
 
   // read the user defaults
   [self setupUserDefaults];
@@ -143,39 +132,33 @@
   // read the configuration plist which gives us the launchPath
   // and arguments to use for the decompression of various filetypes,
   // as well as the file types to match
-  // 
+  //
   // the configuration is stored in the application's wrapper and
   // then retain the dictionary and array for further use
-  thePath = [[NSBundle mainBundle] pathForResource:@"filesConfig" 
-					    ofType:@"plist"];
+  thePath = [[NSBundle mainBundle] pathForResource:@"filesConfig" ofType:@"plist"];
   fileTypeConfigArray = [[NSArray arrayWithContentsOfFile:thePath] retain];
-  if (!fileTypeConfigArray)
-    {
-      errorString = [NSString stringWithFormat:
-	NSLocalizedString(@"ErrorLoadingFilesConfig",
-			  @"Error Loading Files Config")];
-    }
+  if (!fileTypeConfigArray) {
+    errorString = [NSString stringWithString:NSLocalizedString(@"ErrorLoadingFilesConfig",
+                                                               @"Error Loading Files Config")];
+  }
 
-  thePath = [[NSBundle mainBundle] pathForResource:@"servicesConfig"
-					    ofType:@"plist"];
+  thePath = [[NSBundle mainBundle] pathForResource:@"servicesConfig" ofType:@"plist"];
   servicesDictionary = [[NSDictionary dictionaryWithContentsOfFile:thePath] retain];
-  if (!servicesDictionary)
-    {
-      errorString = [NSString stringWithFormat:
-	NSLocalizedString(@"ErrorLoadingServicesConfig",
-			  @"Error Loading Services Config")];
-    }
+  if (!servicesDictionary) {
+    errorString = [NSString stringWithString:NSLocalizedString(@"ErrorLoadingServicesConfig",
+                                                               @"Error Loading Services Config")];
+  }
 
   // the baseFilename will be used by our Category on NSFileManager
   // to create a unique directory with a more friendly name than
   // we could get using the conventional [NSProcessInfo
   // globallyUniqueString] Its important that it contain a %@
   // somewhere in its name
-  // 
+  //
   // if we can create the directory, then we'll setup the
   // appWorkdingDirectory and retain the path otherwise, we should
   // quit
-  // 
+  //
   // actually in the otherwise case we should determine the problem
   // and inform the user.  Its interesting to note that we can't
   // just put up an NSRunAlertPanel at this point, since the
@@ -183,26 +166,25 @@
   // object a performSelector:withObject:afterDelay:  so that the
   // NSRunAlertPanel is delayed until the runloop has already
   // started.
-  if (!errorString)
-    {
-      NSString *tempPath=nil;
+  if (!errorString) {
+    NSString *tempPath = nil;
 
-      baseFilename = [NSString stringWithFormat:@"%@_%%@",
-		   [[NSProcessInfo processInfo] processName]];
-      tempFilesDefaultValue = [[NSUserDefaults standardUserDefaults] 
-	stringForKey:@"TempFilesDirectory"];
-      tempPath = [[NSFileManager defaultManager] 
-	createUniqueDirectoryAtPath:tempFilesDefaultValue
-		   withBaseFilename:baseFilename
-			 attributes:nil];
-      if (tempPath)
-	appWorkingDirectory = [tempPath retain];
-      else
-	errorString = [NSString stringWithFormat:NSLocalizedString(@"InitializationFailure", @"Failed to Create Directory in %@"),tempFilesDefaultValue];
-    }
+    baseFilename = [NSString stringWithFormat:@"%@_%%@", [[NSProcessInfo processInfo] processName]];
+    tempFilesDefaultValue =
+        [[NSUserDefaults standardUserDefaults] stringForKey:@"TempFilesDirectory"];
+    tempPath = [[NSFileManager defaultManager] createUniqueDirectoryAtPath:tempFilesDefaultValue
+                                                          withBaseFilename:baseFilename
+                                                                attributes:nil];
+    if (tempPath)
+      appWorkingDirectory = [tempPath retain];
+    else
+      errorString =
+          [NSString stringWithFormat:NSLocalizedString(@"InitializationFailure",
+                                                       @"Failed to Create Directory in %@"),
+                                     tempFilesDefaultValue];
+  }
   if (errorString)
-    [self performSelector:@selector(initializationFailure:) 
-	       withObject:errorString afterDelay:0];
+    [self performSelector:@selector(initializationFailure:) withObject:errorString afterDelay:0];
 
   // lets set up some other UI bits now too
   //
@@ -219,7 +201,7 @@
 // to notify and register a request for notification on
 // windowDidBecomeMain:
 
--(void)applicationDidFinishLaunching:(NSNotification *)aNotification;
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
 {
   [NSApp setServicesProvider:self];
 }
@@ -234,9 +216,9 @@
 - (void)setupUserDefaults;
 {
   NSUserDefaults *defaults;
-  NSDictionary   *defaultsPlist;
-  NSEnumerator   *overDefaults;
-  id             eachDefault;
+  NSDictionary *defaultsPlist;
+  NSEnumerator *overDefaults;
+  id eachDefault;
 
   // this isn't required, but saves us a few method calls
   defaults = [NSUserDefaults standardUserDefaults];
@@ -244,33 +226,29 @@
   // load the defaults.plist from the app wrapper.  This makes it
   // easy to add new defaults just using a text editor instead of
   // hard-coding them into the application
-  defaultsPlist = [NSDictionary dictionaryWithContentsOfFile:
-		      [[NSBundle mainBundle] pathForResource:@"defaults"
-						      ofType:@"plist"]];
+  defaultsPlist =
+      [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"defaults"
+                                                                                 ofType:@"plist"]];
 
   // enumerate over all the keys in the dictionary
   overDefaults = [[defaultsPlist allKeys] objectEnumerator];
-  while ( (eachDefault = [overDefaults nextObject]) )
-    {
-      // for each key in the dictionary
-      // check if there is a value already registered for it
-      // and if there isn't, then register the value that was in the file
-      if (![defaults stringForKey:eachDefault])
-	      [defaults setObject:[defaultsPlist objectForKey:eachDefault]
-			   forKey:eachDefault];
-    }
+  while ((eachDefault = [overDefaults nextObject])) {
+    // for each key in the dictionary
+    // check if there is a value already registered for it
+    // and if there isn't, then register the value that was in the file
+    if (![defaults stringForKey:eachDefault])
+      [defaults setObject:[defaultsPlist objectForKey:eachDefault] forKey:eachDefault];
+  }
 
   // force the defaults to save to the disk
   [defaults synchronize];
-  [preferencesDeleteFilesCheckbox 
-    setIntValue:[[NSUserDefaults standardUserDefaults] 
-     boolForKey:@"DeleteTempFilesOnQuit"]];
+  [preferencesDeleteFilesCheckbox
+      setIntValue:[[NSUserDefaults standardUserDefaults] boolForKey:@"DeleteTempFilesOnQuit"]];
 }
-
 
 // - (void)dealloc;
 //
-// release the objects that we have explicitly retained, 
+// release the objects that we have explicitly retained,
 // and then call [super dealloc]
 
 - (void)dealloc;
@@ -293,7 +271,8 @@
   // This is called every time you click on the check box, its
   // connection is made in Interface Builder the defaults are
   // saved periodically to disk, but we'll force it in this case.
-  [[NSUserDefaults standardUserDefaults] setBool:([sender intValue] == 1) forKey:@"DeleteTempFilesOnQuit"];
+  [[NSUserDefaults standardUserDefaults] setBool:([sender intValue] == 1)
+                                          forKey:@"DeleteTempFilesOnQuit"];
   [[NSUserDefaults standardUserDefaults] synchronize];
 
   return self;
@@ -314,38 +293,38 @@
   if ([fileConfig objectForKey:@"shell_args"])
     return [fileConfig objectForKey:@"shell_args"];
 
-  return [NSArray arrayWithObject:[[NSUserDefaults standardUserDefaults] stringForKey:@"DefaultShellArgs"]];
+  return [NSArray
+      arrayWithObject:[[NSUserDefaults standardUserDefaults] stringForKey:@"DefaultShellArgs"]];
 }
 
 - (NSDictionary *)wrappedProgramsUsingConfiguration:(NSDictionary *)fileConfig;
 {
-  NSMutableArray *outKeys,*outValues;
+  NSMutableArray *outKeys, *outValues;
   NSArray *keys;
   NSMutableDictionary *outDict;
   NSEnumerator *keysEnumerator;
   NSString *eachKey;
 
-  keys=[fileConfig objectForKey:@"wrapped_programs"];
-  outKeys=[NSMutableArray array];
-  outValues=[NSMutableArray array];
+  keys = [fileConfig objectForKey:@"wrapped_programs"];
+  outKeys = [NSMutableArray array];
+  outValues = [NSMutableArray array];
 
-  keysEnumerator=[keys objectEnumerator];
-  while ((eachKey = [keysEnumerator nextObject]))
-    {
-      NSString *pathToProg;
-      NSString *theKey;
+  keysEnumerator = [keys objectEnumerator];
+  while ((eachKey = [keysEnumerator nextObject])) {
+    NSString *pathToProg;
+    NSString *theKey;
 
-      theKey=[NSString stringWithFormat:@"%%%%WRAPPED_PROGRAM_%@%%%%",[eachKey uppercaseString]];
-      pathToProg=[[NSBundle mainBundle] pathForResource:eachKey ofType:@""];
+    theKey = [NSString stringWithFormat:@"%%%%WRAPPED_PROGRAM_%@%%%%", [eachKey uppercaseString]];
+    pathToProg = [[NSBundle mainBundle] pathForResource:eachKey ofType:@""];
 
-      [outKeys addObject:theKey];
+    [outKeys addObject:theKey];
 
-      if (pathToProg)
-	[outValues addObject:pathToProg];
-      else
-	[outValues addObject:eachKey];
-    }
-  outDict=[NSMutableDictionary dictionary];
+    if (pathToProg)
+      [outValues addObject:pathToProg];
+    else
+      [outValues addObject:eachKey];
+  }
+  outDict = [NSMutableDictionary dictionary];
   [outDict setObject:outKeys forKey:@"keys"];
   [outDict setObject:outValues forKey:@"values"];
 
@@ -353,29 +332,3 @@
 }
 
 @end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
