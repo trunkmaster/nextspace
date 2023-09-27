@@ -36,6 +36,7 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
+#include "log_utils.h"
 #include "Foundation/NSTimer.h"
 #include "Foundation/NSRunLoop.h"
 #include "AppKit/NSApplication.h"
@@ -230,9 +231,13 @@ static NSString *_rootPath = @"/";
     return [self openFile:fullPath fromImage:nil at:NSZeroPoint inView:nil];
   }
 
+  if (flag != NO) {
+    [NSApp deactivate];
+  }
+
   app = [self _connectApplication:appName];
   if (app == nil) {
-    return [self _launchApplication:appName arguments:@[@"-GSFilePath", fullPath]];
+    return [self _launchApplication:appName arguments:@[ @"-GSFilePath", fullPath, @"-autolaunch", @"YES" ]];
   } else {
     @try {
       if (flag == NO) {
@@ -247,10 +252,7 @@ static NSString *_rootPath = @"/";
       return NO;
     }
   }
-  if (flag) {
-    [NSApp deactivate];
-    [app activateIgnoringOtherApps:YES];
-  }
+  
   return YES;
 }
 
@@ -466,16 +468,16 @@ static NSLock *raceLock = nil;
 
   // Make room for calling application to appear if it was just started
   if (fv) {
-    NSTimer *timer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:1.0]
-                                              interval:0
-                                               repeats:NO
-                                                 block:^(NSTimer *timer) {
-                                                   NSLog(@"Block NSTimer fired!");
-                                                   [[fv window] makeKeyAndOrderFront:self];
-                                                   [timer invalidate];
-                                                   [timer release];
-                                                 }];
-    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+    // NSTimer *timer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:1.0]
+    //                                           interval:0
+    //                                            repeats:NO
+    //                                              block:^(NSTimer *timer) {
+    //                                                [[fv window] makeKeyAndOrderFront:self];
+    //                                                [timer invalidate];
+    //                                                [timer release];
+    //                                              }];
+    // [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+    [[fv window] makeKeyAndOrderFront:self];
     return YES;
   }
   
