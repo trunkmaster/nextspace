@@ -155,11 +155,15 @@
       return nil;
     }
   }
-  
+
   [titleField setStringValue:titleText];
+  [titleField setRefusesFirstResponder:YES];
+
   [icon setImage:[NSApp applicationIconImage]];
-  
+  [icon setRefusesFirstResponder:YES];
+
   [defaultButton setTitle:defaultText];
+  [defaultButton setRefusesFirstResponder:YES];
   buttons = [[NSMutableArray alloc] initWithObjects:defaultButton,nil];
 
   if (alternateText == nil || [alternateText isEqualToString:@""]) {
@@ -176,6 +180,21 @@
   else {
     [otherButton setTitle:otherText];
     [buttons addObject:otherButton];
+  }
+
+  if (buttons.count > 1) {
+    [panel makeFirstResponder:buttons[buttons.count-1]];
+  }
+
+  // Setup buttons focus ring
+  NSButton *button;
+  for (int i = 0; i < buttons.count; i++) {
+    button = buttons[i];
+    if (i + 1 == buttons.count) {  // last button
+      [button setNextKeyView:buttons[0]];
+    } else {
+      [button setNextKeyView:buttons[i + 1]];
+    }
   }
 
   [messageView setText:messageText];
