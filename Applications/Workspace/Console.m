@@ -60,6 +60,7 @@
 - (void)awakeFromNib
 {
   [text setFont:[NSFont userFixedPitchFontOfSize:0]];
+  [text turnOffLigatures:self];
   [text setString:savedString];
   DESTROY(savedString);
 
