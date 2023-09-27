@@ -148,14 +148,22 @@ static void _handleCFNotification(CFNotificationCenterRef center,
     objectName = object;
   }
 
-  WMLogWarning("[WMNC] handle remote notification: %@ - %@", convertNStoCFString(name), convertNStoCFString(objectName));
+  if ([name isEqualToString:@"NSApplicationDidResignActiveNotification"] ||
+      [name isEqualToString:@"NSApplicationDidBecomeActiveNotification"]) {
+    NSString *appName = [aNotification userInfo][@"NSApplicationName"];
+    WMLogWarning("[WMNC] %s - %s", [aNotification name].cString, appName.cString);
+  } else {
+    WMLogWarning("[WMNC] handle remote notification: %@ - %@", convertNStoCFString(name),
+                 convertNStoCFString(objectName));
+  }
 
   if ([name hasPrefix:@"WMShould"]) {
     [self _postCFNotification:name userInfo:[aNotification userInfo]];
   } else {
-    // NSWorkspaceWillLaunchApplicationNotification - by Controller+NSWorkspace
-    // NSWorkspaceDidLaunchApplicationNotification - by AppKit
-    // NSWorkspaceDidTerminateApplicationNotification - by AppKit or Controller+NSWorkspace
+    // Examples:
+    //   NSWorkspaceWillLaunchApplicationNotification - by Controller+NSWorkspace
+    //   NSWorkspaceDidLaunchApplicationNotification - by AppKit
+    //   NSWorkspaceDidTerminateApplicationNotification - by AppKit or Controller+NSWorkspace
     [super postNotification:aNotification];
   }
 }
