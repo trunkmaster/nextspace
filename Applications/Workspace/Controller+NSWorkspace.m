@@ -466,17 +466,7 @@ static NSLock *raceLock = nil;
              sender:self];
   }
 
-  // Make room for calling application to appear if it was just started
   if (fv) {
-    // NSTimer *timer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:1.0]
-    //                                           interval:0
-    //                                            repeats:NO
-    //                                              block:^(NSTimer *timer) {
-    //                                                [[fv window] makeKeyAndOrderFront:self];
-    //                                                [timer invalidate];
-    //                                                [timer release];
-    //                                              }];
-    // [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
     [[fv window] makeKeyAndOrderFront:self];
     return YES;
   }
