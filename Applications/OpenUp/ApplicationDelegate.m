@@ -5,6 +5,8 @@
  Copyright:  Copyright 1997 by Scott Anguish, all rights reserved.
 */
 
+#import <DesktopKit/NXTAlert.h>
+
 #include "ApplicationDelegate.h"
 #include "Foundation/NSObjCRuntime.h"
 #include "NSArray+utils.h"
@@ -38,7 +40,7 @@
   // of just deleting the directory
   if (tempFilesExist && !deleteTempFilesOnQuit) {
     int result;
-    result = NSRunAlertPanel(
+    result = NXTRunAlertPanel(
         @"OpenUp",
         NSLocalizedString(@"TempDirectoryDeleteWarning", @"Delete temporary files in %@"),
         NSLocalizedString(@"TempDirectoryDeleteYesButton", @"Yes"),
@@ -106,7 +108,7 @@
 
 - (void)initializationFailure:(NSString *)value;
 {
-  NSRunAlertPanel(@"OpenUp", value, NSLocalizedString(@"InitializationFailureButton", @"OK"), NULL,
+  NXTRunAlertPanel(@"OpenUp", value, NSLocalizedString(@"InitializationFailureButton", @"OK"), NULL,
                   NULL);
 
   [[NSApplication sharedApplication] terminate:self];

@@ -6,6 +6,7 @@
 */
 
 #import <AppKit/NSWorkspace.h>
+#import <DesktopKit/NXTAlert.h>
 #import <DesktopKit/NXTOpenPanel.h>
 
 #import "ApplicationDelegate.h"
@@ -202,7 +203,7 @@
   // If we can't create a new directory in the working directory, we
   // punt.
   if (!unarchiveDirectoryPath) {
-    NSRunAlertPanel(@"OpenUp",
+    NXTRunAlertPanel(@"OpenUp",
                     NSLocalizedString(@"DecompressionFailedTempDirectoryFailed",
                                       @"Unable to create temp directory in %@"),
                     NSLocalizedString(@"DecompressionFailedOK", @"OK"), NULL, NULL,
