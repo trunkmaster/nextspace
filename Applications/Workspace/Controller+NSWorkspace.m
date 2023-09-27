@@ -36,6 +36,9 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
+#include "Foundation/NSTimer.h"
+#include "Foundation/NSRunLoop.h"
+#include "AppKit/NSApplication.h"
 #include "Foundation/NSObjCRuntime.h"
 #import <Foundation/Foundation.h>
 #import <GNUstepGUI/GSDisplayServer.h>
@@ -246,6 +249,7 @@ static NSString *_rootPath = @"/";
   }
   if (flag) {
     [NSApp deactivate];
+    [app activateIgnoringOtherApps:YES];
   }
   return YES;
 }
@@ -460,8 +464,18 @@ static NSLock *raceLock = nil;
              sender:self];
   }
 
+  // Make room for calling application to appear if it was just started
   if (fv) {
-    [[fv window] orderFront:self];
+    NSTimer *timer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:1.0]
+                                              interval:0
+                                               repeats:NO
+                                                 block:^(NSTimer *timer) {
+                                                   NSLog(@"Block NSTimer fired!");
+                                                   [[fv window] makeKeyAndOrderFront:self];
+                                                   [timer invalidate];
+                                                   [timer release];
+                                                 }];
+    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
     return YES;
   }
   
