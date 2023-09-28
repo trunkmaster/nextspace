@@ -797,7 +797,7 @@
     [pathView syncEmptyColumns];
   }
 
-  [viewer becomeFirstResponder];
+  [self _updateFocusInWindow];
 
   // Window
   [window setMiniwindowImage:[[NSApp delegate] iconForFile:fullPath]];
@@ -1215,11 +1215,6 @@
     [inspector revert:self];
   }
   [window makeFirstResponder:[viewer keyView]];
-}
-
-- (void)windowDidBecomeMain:(NSNotification *)notif
-{
-  [self _updateFocusInWindow];
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
