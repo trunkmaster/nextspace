@@ -17,7 +17,8 @@ BraceWrapping:
   BeforeWhile: false
   IndentBraces: false
 ObjCSpaceAfterProperty: true
-ObjCSpaceBeforeProtocolList: false
+ObjCSpaceBeforeProtocolList: true
 AllowAllArgumentsOnNextLine: false
 PointerAlignment: Right
 ColumnLimit: 100
+SortIncludes: Never
