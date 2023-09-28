@@ -32,8 +32,8 @@ extern dispatch_queue_t workspace_q;
 extern CFRunLoopRef wm_runloop;
 
 typedef enum WorkspaceExitCode {
-  WSLogoutOnQuit   = 0,  // normal application quit
-  WSPowerOffOnQuit = 129 // ShutdownExitCode in Login/Controller.h
+  WSLogoutOnQuit = 0,     // normal application quit
+  WSPowerOffOnQuit = 129  // ShutdownExitCode in Login/Controller.h
 } WorkspaceExitCode;
 extern WorkspaceExitCode ws_quit_code;
 
@@ -66,7 +66,7 @@ extern WorkspaceExitCode ws_quit_code;
 @class NSImage;
 NSImage *WSImageForRasterImage(RImage *r_image);
 
-#endif //__OBJC__
+#endif  //__OBJC__
 
 //-----------------------------------------------------------------------------
 // Visible in Window Manager and Workspace
@@ -74,7 +74,7 @@ NSImage *WSImageForRasterImage(RImage *r_image);
 //-----------------------------------------------------------------------------
 
 char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
-  
+
 // --- XRandR
 void WSUpdateScreenInfo(WScreen *scr);
 void WSUpdateScreenParameters(void);
@@ -84,10 +84,8 @@ void WSActivateApplication(WScreen *scr, char *app_name);
 void WSActivateWorkspaceApp(WScreen *scr);
 
 // -- Alerts, messages and sounds
-int WSRunAlertPanel(char *title, char *message,
-                     char *defaultButton,
-                     char *alternateButton,
-                     char *otherButton);
+int WSRunAlertPanel(char *title, char *message, char *defaultButton, char *alternateButton,
+                    char *otherButton);
 void WSRingBell(WWindow *wwin);
 void WSMessage(char *fmt, ...);
 // #define WMLogInfo(fmt, args...) WSMessage(fmt, ## args)

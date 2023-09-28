@@ -43,33 +43,27 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)_setupArrows
 {
-  NSRect     frame;
-  NSSize     s = [[leftArr superview] frame].size;
-  float      width;
+  NSRect frame;
+  NSSize s = [[leftArr superview] frame].size;
+  float width;
   NXTDefaults *df = [NXTDefaults userDefaults];
 
-  if ([df objectForKey:ShelfIconSlotWidth])
-    {
-      width = [df floatForKey:ShelfIconSlotWidth];
-    }
-  else
-    {
-      width = SHELF_LABEL_WIDTH;
-    }
+  if ([df objectForKey:ShelfIconSlotWidth]) {
+    width = [df floatForKey:ShelfIconSlotWidth];
+  } else {
+    width = SHELF_LABEL_WIDTH;
+  }
 
-  if (width == SHELF_LABEL_WIDTH)
-    {
-      [button setEnabled:NO];
-    }
-  else
-    {
-      [button setEnabled:YES];
-    }
+  if (width == SHELF_LABEL_WIDTH) {
+    [button setEnabled:NO];
+  } else {
+    [button setEnabled:YES];
+  }
 
   frame = [leftArr frame];
   frame.origin.x = s.width / 2 - width / 2 - frame.size.width;
   [leftArr setFrame:frame];
-  
+
   frame = [rightArr frame];
   frame.origin.x = s.width / 2 + width / 2;
   [rightArr setFrame:frame];
@@ -132,72 +126,65 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (NSView *)view
 {
-  if (box == nil)
-    {
-      [NSBundle loadNibNamed:@"ShelfPrefs" owner:self];
-    }
+  if (box == nil) {
+    [NSBundle loadNibNamed:@"ShelfPrefs" owner:self];
+  }
 
   return box;
 }
 
 // --- NXTSizer delegate
 
-- (BOOL) arrowView:(NXTSizer *)sender
- shouldMoveByDelta:(float)delta
+- (BOOL)arrowView:(NXTSizer *)sender shouldMoveByDelta:(float)delta
 {
-  NSView   *superview = [sender superview];
-  NSSize   s = [superview frame].size;
-  NSRect   arrowFrame;
-  NSRect   textFrame = [iconLabel frame];
-  float    diff;
+  NSView *superview = [sender superview];
+  NSSize s = [superview frame].size;
+  NSRect arrowFrame;
+  NSRect textFrame = [iconLabel frame];
+  float diff;
   unsigned newWidth;
 
-  if (sender == rightArr)
-    {
-      arrowFrame = [rightArr frame];
+  if (sender == rightArr) {
+    arrowFrame = [rightArr frame];
 
-      diff = (arrowFrame.origin.x + delta) - s.width / 2;
+    diff = (arrowFrame.origin.x + delta) - s.width / 2;
 
-      if (diff <= SHELF_MIN_LABEL_WIDTH || diff >= SHELF_MAX_LABEL_WIDTH)
-        return NO;
+    if (diff <= SHELF_MIN_LABEL_WIDTH || diff >= SHELF_MAX_LABEL_WIDTH)
+      return NO;
 
-      textFrame.origin.x = textFrame.origin.x - delta;
+    textFrame.origin.x = textFrame.origin.x - delta;
 
-      arrowFrame = [leftArr frame];
-      [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
-      arrowFrame.origin.x = s.width / 2 - diff - arrowFrame.size.width;
-      [leftArr setFrame:arrowFrame];
-      [leftArr setNeedsDisplay:YES];
-      [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
-    }
-  else
-    {
-      arrowFrame = [leftArr frame];
+    arrowFrame = [leftArr frame];
+    [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
+    arrowFrame.origin.x = s.width / 2 - diff - arrowFrame.size.width;
+    [leftArr setFrame:arrowFrame];
+    [leftArr setNeedsDisplay:YES];
+    [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
+  } else {
+    arrowFrame = [leftArr frame];
 
-      diff = s.width / 2 - (arrowFrame.origin.x + delta +
-                            arrowFrame.size.width);
+    diff = s.width / 2 - (arrowFrame.origin.x + delta + arrowFrame.size.width);
 
-      if (diff <= SHELF_MIN_LABEL_WIDTH || diff >= SHELF_MAX_LABEL_WIDTH)
-        return NO;
+    if (diff <= SHELF_MIN_LABEL_WIDTH || diff >= SHELF_MAX_LABEL_WIDTH)
+      return NO;
 
-      textFrame.origin.x = textFrame.origin.x + delta;
-      
-      arrowFrame = [rightArr frame];
-      [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
-      arrowFrame.origin.x = s.width / 2 + diff;
-      [rightArr setFrame:arrowFrame];
-      [rightArr setNeedsDisplay:YES];
-      [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
-    }
+    textFrame.origin.x = textFrame.origin.x + delta;
+
+    arrowFrame = [rightArr frame];
+    [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
+    arrowFrame.origin.x = s.width / 2 + diff;
+    [rightArr setFrame:arrowFrame];
+    [rightArr setNeedsDisplay:YES];
+    [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
+  }
 
   newWidth = diff * 2;
 
   textFrame.size.width = newWidth;
   [iconLabel setFrame:textFrame];
 
-  [iconLabel setStringValue:NXTShortenString(@"Workspace.app",
-                                            newWidth-4, [iconLabel font],
-                                            NXSymbolElement, NXTDotsAtRight)];
+  [iconLabel setStringValue:NXTShortenString(@"Workspace.app", newWidth - 4, [iconLabel font],
+                                             NXSymbolElement, NXTDotsAtRight)];
   if (newWidth == SHELF_LABEL_WIDTH)
     [button setEnabled:NO];
   else
@@ -208,37 +195,32 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)arrowViewStoppedMoving:(NXTSizer *)sender
 {
-  [[NXTDefaults userDefaults] setFloat:[iconLabel frame].size.width
-                               forKey:ShelfIconSlotWidth];
-  
-  [[NSNotificationCenter defaultCenter]
-          postNotificationName:ShelfIconSlotWidthDidChangeNotification
-                        object:self];
+  [[NXTDefaults userDefaults] setFloat:[iconLabel frame].size.width forKey:ShelfIconSlotWidth];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:ShelfIconSlotWidthDidChangeNotification
+                                                      object:self];
 }
 
 // --- Buttons
 
 - (void)setResizable:sender
 {
-  [[NXTDefaults userDefaults] setInteger:[sender state]
-                                 forKey:ShelfIsResizable];
+  [[NXTDefaults userDefaults] setInteger:[sender state] forKey:ShelfIsResizable];
   [[NSNotificationCenter defaultCenter]
-          postNotificationName:ShelfResizableStateDidChangeNotification
-                        object:self];
+      postNotificationName:ShelfResizableStateDidChangeNotification
+                    object:self];
 }
 
 - (void)revert:sender
 {
   if ([sender isEqualTo:button] == NO)
     return;
-  
-  [[NXTDefaults userDefaults] setFloat:SHELF_LABEL_WIDTH
-                               forKey:ShelfIconSlotWidth];
+
+  [[NXTDefaults userDefaults] setFloat:SHELF_LABEL_WIDTH forKey:ShelfIconSlotWidth];
   [self _setupArrows];
-  
-  [[NSNotificationCenter defaultCenter]
-          postNotificationName:ShelfIconSlotWidthDidChangeNotification
-                        object:self];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:ShelfIconSlotWidthDidChangeNotification
+                                                      object:self];
 }
 
 @end

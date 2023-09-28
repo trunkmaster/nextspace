@@ -46,29 +46,27 @@
 #include "switchmenu.h"
 
 /* Maximum width of window title in window list */
-#define MAX_WINDOWLIST_WIDTH	400
+#define MAX_WINDOWLIST_WIDTH 400
 
 /* switchmenu actions */
-#define ACTION_ADD		0
-#define ACTION_REMOVE		1
-#define ACTION_CHANGE		2
-#define ACTION_CHANGE_DESKTOP	3
-#define ACTION_CHANGE_STATE	4
+#define ACTION_ADD 0
+#define ACTION_REMOVE 1
+#define ACTION_CHANGE 2
+#define ACTION_CHANGE_DESKTOP 3
+#define ACTION_CHANGE_STATE 4
 
-#define IS_GNUSTEP_MENU(w) ((w)->wm_gnustep_attr &&                     \
-                            ((w)->wm_gnustep_attr->flags & GSWindowLevelAttr) && \
-                            ((w)->wm_gnustep_attr->window_level == NSMainMenuWindowLevel || \
-                             (w)->wm_gnustep_attr->window_level == NSSubmenuWindowLevel || \
-                             (w)->wm_gnustep_attr->window_level == NSPopUpMenuWindowLevel))
+#define IS_GNUSTEP_MENU(w)                                                      \
+  ((w)->wm_gnustep_attr && ((w)->wm_gnustep_attr->flags & GSWindowLevelAttr) && \
+   ((w)->wm_gnustep_attr->window_level == NSMainMenuWindowLevel ||              \
+    (w)->wm_gnustep_attr->window_level == NSSubmenuWindowLevel ||               \
+    (w)->wm_gnustep_attr->window_level == NSPopUpMenuWindowLevel))
 
 static int initialized = 0;
 
-static void windowObserver(CFNotificationCenterRef center,  void *observer,
-                           CFNotificationName name, const void *window,
-                           CFDictionaryRef userInfo);
-static void desktopObserver(CFNotificationCenterRef center, void *observer,
-                            CFNotificationName name, const void *screen,
-                            CFDictionaryRef userInfo);
+static void windowObserver(CFNotificationCenterRef center, void *observer, CFNotificationName name,
+                           const void *window, CFDictionaryRef userInfo);
+static void desktopObserver(CFNotificationCenterRef center, void *observer, CFNotificationName name,
+                            const void *screen, CFDictionaryRef userInfo);
 
 /*
  * FocusWindow
@@ -85,7 +83,7 @@ static void focusWindow(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin;
 
-  wwin = (WWindow *) entry->clientdata;
+  wwin = (WWindow *)entry->clientdata;
   wWindowSingleFocus(wwin);
 }
 
@@ -104,7 +102,7 @@ void InitializeSwitchMenu(WScreen *scr)
       UpdateSwitchMenu(scr, wwin, ACTION_ADD);
       wwin = wwin->prev;
     }
-    
+
     /* windows */
     CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, windowObserver,
                                     WMDidManageWindowNotification, NULL,
@@ -134,12 +132,12 @@ void InitializeSwitchMenu(WScreen *scr)
     CFNotificationCenterAddObserver(scr->notificationCenter, switchmenu, desktopObserver,
                                     WMDidChangeDesktopNameNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    
+
     initialized = 1;
   }
 }
 
-/* 
+/*
    Open switch menu
 */
 void OpenSwitchMenu(WScreen *scr, int x, int y, int keyboard)
@@ -178,20 +176,19 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
   if (menu->items_count <= old_pos)
     return -1;
 
-#define WS(i)  ((WWindow*)menu->items[i]->clientdata)->frame->desktop
+#define WS(i) ((WWindow *)menu->items[i]->clientdata)->frame->desktop
   if (old_pos >= 0) {
-    if (WS(old_pos) >= wwin->frame->desktop
-        && (old_pos == 0 || WS(old_pos - 1) <= wwin->frame->desktop)) {
+    if (WS(old_pos) >= wwin->frame->desktop &&
+        (old_pos == 0 || WS(old_pos - 1) <= wwin->frame->desktop)) {
       return old_pos;
     }
   }
 #undef WS
 
   for (idx = 0; idx < menu->items_count; idx++) {
-    WWindow *tw = (WWindow *) menu->items[idx]->clientdata;
+    WWindow *tw = (WWindow *)menu->items[idx]->clientdata;
 
-    if (!IS_OMNIPRESENT(tw)
-        && tw->frame->desktop > wwin->frame->desktop) {
+    if (!IS_OMNIPRESENT(tw) && tw->frame->desktop > wwin->frame->desktop) {
       break;
     }
   }
@@ -199,7 +196,7 @@ static int menuIndexForWindow(WMenu *menu, WWindow *wwin, int old_pos)
   return idx;
 }
 
-/* 
+/*
    Update switch menu
 */
 void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
@@ -276,82 +273,81 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
       /* this is the entry that was changed */
       if (entry->clientdata == wwin) {
         switch (action) {
-        case ACTION_REMOVE:
-          wMenuItemRemove(switchmenu, i);
-          wMenuRealize(switchmenu);
-          checkVisibility = 1;
-          break;
-
-        case ACTION_CHANGE:
-          if (entry->text)
-            wfree(entry->text);
-
-          if (wwin->frame->title)
-            snprintf(title, MAX_MENU_TEXT_LENGTH, "%s", wwin->frame->title);
-          else
-            snprintf(title, MAX_MENU_TEXT_LENGTH, "%s", DEF_WINDOW_TITLE);
-
-          t = ShrinkString(scr->menu_item_font, title, MAX_WINDOWLIST_WIDTH);
-          entry->text = t;
-
-          wMenuRealize(switchmenu);
-          checkVisibility = 1;
-          break;
-
-        case ACTION_CHANGE_DESKTOP:
-          if (entry->rtext) {
-            int idx = -1;
-            char *t, *rt;
-            int it, ion;
-
-            if (IS_OMNIPRESENT(wwin)) {
-              snprintf(entry->rtext, MAX_DESKTOPNAME_WIDTH, "[*]");
-            } else {
-              snprintf(entry->rtext, MAX_DESKTOPNAME_WIDTH,
-                       "[%s]",
-                       scr->desktops[wwin->frame->desktop]->name);
-            }
-
-            rt = entry->rtext;
-            entry->rtext = NULL;
-            t = entry->text;
-            entry->text = NULL;
-
-            it = entry->flags.indicator_type;
-            ion = entry->flags.indicator_on;
-
-            if (!IS_OMNIPRESENT(wwin) && idx < 0) {
-              idx = menuIndexForWindow(switchmenu, wwin, i);
-            }
-
+          case ACTION_REMOVE:
             wMenuItemRemove(switchmenu, i);
+            wMenuRealize(switchmenu);
+            checkVisibility = 1;
+            break;
 
-            entry = wMenuItemInsert(switchmenu, idx, t, focusWindow, wwin);
-            wfree(t);
-            entry->rtext = rt;
-            entry->flags.indicator = 1;
-            entry->flags.indicator_type = it;
-            entry->flags.indicator_on = ion;
-          }
-          wMenuRealize(switchmenu);
-          checkVisibility = 1;
-          break;
+          case ACTION_CHANGE:
+            if (entry->text)
+              wfree(entry->text);
 
-        case ACTION_CHANGE_STATE:
-          if (wwin->flags.hidden) {
-            entry->flags.indicator_type = MI_HIDDEN;
-            entry->flags.indicator_on = 1;
-          } else if (wwin->flags.miniaturized) {
-            entry->flags.indicator_type = MI_MINIWINDOW;
-            entry->flags.indicator_on = 1;
-          } else if (wwin->flags.shaded && !wwin->flags.focused) {
-            entry->flags.indicator_type = MI_SHADED;
-            entry->flags.indicator_on = 1;
-          } else {
-            entry->flags.indicator_on = wwin->flags.focused;
-            entry->flags.indicator_type = MI_DIAMOND;
-          }
-          break;
+            if (wwin->frame->title)
+              snprintf(title, MAX_MENU_TEXT_LENGTH, "%s", wwin->frame->title);
+            else
+              snprintf(title, MAX_MENU_TEXT_LENGTH, "%s", DEF_WINDOW_TITLE);
+
+            t = ShrinkString(scr->menu_item_font, title, MAX_WINDOWLIST_WIDTH);
+            entry->text = t;
+
+            wMenuRealize(switchmenu);
+            checkVisibility = 1;
+            break;
+
+          case ACTION_CHANGE_DESKTOP:
+            if (entry->rtext) {
+              int idx = -1;
+              char *t, *rt;
+              int it, ion;
+
+              if (IS_OMNIPRESENT(wwin)) {
+                snprintf(entry->rtext, MAX_DESKTOPNAME_WIDTH, "[*]");
+              } else {
+                snprintf(entry->rtext, MAX_DESKTOPNAME_WIDTH, "[%s]",
+                         scr->desktops[wwin->frame->desktop]->name);
+              }
+
+              rt = entry->rtext;
+              entry->rtext = NULL;
+              t = entry->text;
+              entry->text = NULL;
+
+              it = entry->flags.indicator_type;
+              ion = entry->flags.indicator_on;
+
+              if (!IS_OMNIPRESENT(wwin) && idx < 0) {
+                idx = menuIndexForWindow(switchmenu, wwin, i);
+              }
+
+              wMenuItemRemove(switchmenu, i);
+
+              entry = wMenuItemInsert(switchmenu, idx, t, focusWindow, wwin);
+              wfree(t);
+              entry->rtext = rt;
+              entry->flags.indicator = 1;
+              entry->flags.indicator_type = it;
+              entry->flags.indicator_on = ion;
+            }
+            wMenuRealize(switchmenu);
+            checkVisibility = 1;
+            break;
+
+          case ACTION_CHANGE_STATE:
+            if (wwin->flags.hidden) {
+              entry->flags.indicator_type = MI_HIDDEN;
+              entry->flags.indicator_on = 1;
+            } else if (wwin->flags.miniaturized) {
+              entry->flags.indicator_type = MI_MINIWINDOW;
+              entry->flags.indicator_on = 1;
+            } else if (wwin->flags.shaded && !wwin->flags.focused) {
+              entry->flags.indicator_type = MI_SHADED;
+              entry->flags.indicator_on = 1;
+            } else {
+              entry->flags.indicator_on = wwin->flags.focused;
+              entry->flags.indicator_type = MI_DIAMOND;
+            }
+            break;
         }
         break;
       }
@@ -363,8 +359,7 @@ void UpdateSwitchMenu(WScreen *scr, WWindow *wwin, int action)
     tmp = switchmenu->frame->top_width + 5;
     /* if menu got unreachable, bring it to a visible place */
     if (switchmenu->frame_x < tmp - (int)switchmenu->frame->core->width) {
-      wMenuMove(switchmenu, tmp - (int)switchmenu->frame->core->width,
-                switchmenu->frame_y, False);
+      wMenuMove(switchmenu, tmp - (int)switchmenu->frame->core->width, switchmenu->frame_y, False);
     }
   }
   wMenuPaint(switchmenu);
@@ -379,7 +374,7 @@ static void UpdateSwitchMenuDesktop(WScreen *scr, int desktop)
     return;
 
   for (int i = 0; i < menu->items_count; i++) {
-    wwin = (WWindow *) menu->items[i]->clientdata;
+    wwin = (WWindow *)menu->items[i]->clientdata;
 
     if (wwin->frame->desktop == desktop && !IS_OMNIPRESENT(wwin)) {
       if (IS_OMNIPRESENT(wwin))
@@ -394,62 +389,48 @@ static void UpdateSwitchMenuDesktop(WScreen *scr, int desktop)
     wMenuRealize(menu);
 }
 
-/* 
-   Notifications 
+/*
+   Notifications
 */
-static void windowObserver(CFNotificationCenterRef center,
-                           void *observer,
-                           CFNotificationName name,
-                           const void *window,
-                           CFDictionaryRef userInfo)
+static void windowObserver(CFNotificationCenterRef center, void *observer, CFNotificationName name,
+                           const void *window, CFDictionaryRef userInfo)
 {
   WWindow *wwin = (WWindow *)window;
-    
+
   if (!wwin)
     return;
-  
+
   if (CFStringCompare(name, WMDidManageWindowNotification, 0) == 0) {
     UpdateSwitchMenu(wwin->screen, wwin, ACTION_ADD);
-  }
-  else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0) {
+  } else if (CFStringCompare(name, WMDidUnmanageWindowNotification, 0) == 0) {
     UpdateSwitchMenu(wwin->screen, wwin, ACTION_REMOVE);
-  }
-  else if (CFStringCompare(name, WMDidChangeWindowDesktopNotification, 0) == 0) {
+  } else if (CFStringCompare(name, WMDidChangeWindowDesktopNotification, 0) == 0) {
     UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_DESKTOP);
-  }
-  else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0) {
+  } else if (CFStringCompare(name, WMDidChangeWindowFocusNotification, 0) == 0) {
     UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_STATE);
-  }
-  else if (CFStringCompare(name, WMDidChangeWindowNameNotification, 0) == 0) {
+  } else if (CFStringCompare(name, WMDidChangeWindowNameNotification, 0) == 0) {
     UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE);
-  }
-  else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
+  } else if (CFStringCompare(name, WMDidChangeWindowStateNotification, 0) == 0) {
     CFStringRef wstate = (CFStringRef)wGetNotificationInfoValue(userInfo, CFSTR("state"));
     if (CFStringCompare(wstate, CFSTR("omnipresent"), 0) == 0) {
       UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_DESKTOP);
-    }
-    else {
+    } else {
       UpdateSwitchMenu(wwin->screen, wwin, ACTION_CHANGE_STATE);
     }
   }
 }
 
-static void desktopObserver(CFNotificationCenterRef center,
-                              void *observer,
-                              CFNotificationName name,
-                              const void *screen,
-                              CFDictionaryRef userInfo)
+static void desktopObserver(CFNotificationCenterRef center, void *observer, CFNotificationName name,
+                            const void *screen, CFDictionaryRef userInfo)
 {
   WScreen *scr = (WScreen *)screen;
   CFNumberRef ws = (CFNumberRef)wGetNotificationInfoValue(userInfo, CFSTR("desktop"));
   int desktop;
-  
+
   CFNumberGetValue(ws, kCFNumberShortType, &desktop);
 
   if (CFStringCompare(name, WMDidChangeDesktopNameNotification, 0) == 0) {
     UpdateSwitchMenuDesktop(scr, desktop);
-  }
-  else if (CFStringCompare(name, WMDidChangeDesktopNotification, 0) == 0) {
-    
+  } else if (CFStringCompare(name, WMDidChangeDesktopNotification, 0) == 0) {
   }
 }

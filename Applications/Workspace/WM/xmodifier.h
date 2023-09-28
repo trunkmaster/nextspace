@@ -21,6 +21,6 @@
 #define __WORKSPACE_WM_XMODIFIER__
 
 void wXModifierInitialize(void);
-int  wXModifierFromKey(const char *key);
+int wXModifierFromKey(const char *key);
 
 #endif /* __WORKSPACE_WM_XMODIFIER__ */

@@ -37,32 +37,29 @@
 {
   NXTBundle *ld = [NXTBundle shared];
 
-  ASSIGN(viewerBundles,
-         [ld loadBundlesOfType:@"viewer"
-                      protocol:@protocol(Viewer)
-                   inDirectory:[[NSBundle mainBundle] bundlePath]]);
+  ASSIGN(viewerBundles, [ld loadBundlesOfType:@"viewer"
+                                     protocol:@protocol(Viewer)
+                                  inDirectory:[[NSBundle mainBundle] bundlePath]]);
 }
 
 - (void)loadPreferences
 {
-  NSArray             *bundles;
-  NSBundle            *bndl;
-  NSEnumerator        *e;
+  NSArray *bundles;
+  NSBundle *bndl;
+  NSEnumerator *e;
   NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 
-  bundles = [[NXTBundle shared]
-              loadBundlesOfType:@"wsprefs"
-                       protocol:@protocol(PrefsModule)
-                    inDirectory:[[NSBundle mainBundle] bundlePath]];
+  bundles = [[NXTBundle shared] loadBundlesOfType:@"wsprefs"
+                                         protocol:@protocol(PrefsModule)
+                                      inDirectory:[[NSBundle mainBundle] bundlePath]];
 
   e = [bundles objectEnumerator];
-  while ((bndl = [e nextObject]) != nil)
-    {
-      id <PrefsModule> module;
+  while ((bndl = [e nextObject]) != nil) {
+    id<PrefsModule> module;
 
-      module = [[[bndl principalClass] new] autorelease];
-      [dict setObject:module forKey:[module moduleName]];
-    }
+    module = [[[bndl principalClass] new] autorelease];
+    [dict setObject:module forKey:[module moduleName]];
+  }
 
   preferences = [dict copy];
 }
@@ -71,7 +68,7 @@
 
 @implementation ModuleLoader
 
-static ModuleLoader * shared = nil;
+static ModuleLoader *shared = nil;
 
 + shared
 {
@@ -81,7 +78,7 @@ static ModuleLoader * shared = nil;
   return shared;
 }
 
-- (void) dealloc
+- (void)dealloc
 {
   NSDebugLLog(@"ModuleLoader", @"ModuleLoader: dealloc");
 
@@ -91,9 +88,9 @@ static ModuleLoader * shared = nil;
   [super dealloc];
 }
 
-- (id <Viewer>)viewerForType:(NSString *)viewerType
+- (id<Viewer>)viewerForType:(NSString *)viewerType
 {
-  Class      viewerClass;
+  Class viewerClass;
   id<Viewer> viewer;
 
   if (viewerBundles == nil) {
@@ -111,46 +108,40 @@ static ModuleLoader * shared = nil;
   return [viewer autorelease];
 }
 
-- (id <Viewer>)preferredViewer
+- (id<Viewer>)preferredViewer
 {
-  NXTDefaults  *df = [NXTDefaults userDefaults];
-  NSString    *preferredViewerType;
-  id <Viewer> viewer;
+  NXTDefaults *df = [NXTDefaults userDefaults];
+  NSString *preferredViewerType;
+  id<Viewer> viewer;
 
-  if (viewerBundles == nil)
-    {
-      [self loadViewers];
-    }
+  if (viewerBundles == nil) {
+    [self loadViewers];
+  }
 
   NSLog(@"Loaded viewers: %lu", [viewerBundles count]);
 
-  if ([viewerBundles count] == 0)
-    {
-      return nil;
-    }
+  if ([viewerBundles count] == 0) {
+    return nil;
+  }
 
-  preferredViewerType = [df objectForKey: @"PreferredViewer"];
+  preferredViewerType = [df objectForKey:@"PreferredViewer"];
   viewer = [self viewerForType:preferredViewerType];
-  if (preferredViewerType != nil && viewer != nil)
-    {
-      return viewer;
-    }
-  else
-    {
-      // no preferred viewer or preferred viewer not available - return
-      // the first one available
-      return [[[[viewerBundles objectAtIndex: 0] 
-                 principalClass] new] autorelease];
-    }
+  if (preferredViewerType != nil && viewer != nil) {
+    return viewer;
+  } else {
+    // no preferred viewer or preferred viewer not available - return
+    // the first one available
+    return [[[[viewerBundles objectAtIndex:0] principalClass] new] autorelease];
+  }
 
   return nil;
 }
 
 - (NSDictionary *)menuViewerInfo
 {
-  NSMutableDictionary * dict;
-  NSEnumerator * e;
-  NSBundle * bndl;
+  NSMutableDictionary *dict;
+  NSEnumerator *e;
+  NSBundle *bndl;
 
   if (viewerBundles == nil) {
     [self loadViewers];
@@ -158,13 +149,11 @@ static ModuleLoader * shared = nil;
 
   dict = [NSMutableDictionary dictionary];
   e = [viewerBundles objectEnumerator];
-  while ((bndl = [e nextObject]) != nil)
-    {
-      Class cls = [bndl principalClass];
+  while ((bndl = [e nextObject]) != nil) {
+    Class cls = [bndl principalClass];
 
-      [dict setObject: [cls viewerShortcut]
-               forKey: [cls viewerType]];
-    }
+    [dict setObject:[cls viewerShortcut] forKey:[cls viewerType]];
+  }
 
   return [dict copy];
 }

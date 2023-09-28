@@ -60,20 +60,18 @@ static void postWorkspaceNotification(WWindow *wwin, CFStringRef name)
   CFMutableDictionaryRef info;
   CFNumberRef windowID;
   CFStringRef appName;
-  
+
   if (wwin->screen->notificationCenter) {
-    info = CFDictionaryCreateMutable(kCFAllocatorDefault, 2,
-                                     &kCFTypeDictionaryKeyCallBacks,
+    info = CFDictionaryCreateMutable(kCFAllocatorDefault, 2, &kCFTypeDictionaryKeyCallBacks,
                                      &kCFTypeDictionaryValueCallBacks);
     windowID = CFNumberCreate(kCFAllocatorDefault, kCFNumberLongType, &wwin->client_win);
     CFDictionaryAddValue(info, CFSTR("WindowID"), windowID);
-    appName = CFStringCreateWithCString(kCFAllocatorDefault, wwin->wm_class,
-                                        CFStringGetSystemEncoding());
+    appName =
+        CFStringCreateWithCString(kCFAllocatorDefault, wwin->wm_class, CFStringGetSystemEncoding());
     CFDictionaryAddValue(info, CFSTR("ApplicationName"), appName);
 
     CFNotificationCenterPostNotification(wwin->screen->notificationCenter, name,
-                                         CFSTR("GSWorkspaceNotification"),
-                                         info, TRUE);
+                                         CFSTR("GSWorkspaceNotification"), info, TRUE);
     CFRelease(windowID);
     CFRelease(appName);
     CFRelease(info);
@@ -81,9 +79,9 @@ static void postWorkspaceNotification(WWindow *wwin, CFStringRef name)
 }
 
 static void shadeObserver(CFNotificationCenterRef center,
-                          void *wobserver,     // wapp
+                          void *wobserver,  // wapp
                           CFNotificationName name,
-                          const void *object,      // object - ignored
+                          const void *object,  // object - ignored
                           CFDictionaryRef userInfo)
 {
   CFNumberRef windowID = CFDictionaryGetValue(userInfo, CFSTR("WindowID"));
@@ -99,13 +97,13 @@ static void shadeObserver(CFNotificationCenterRef center,
     CFNumberGetValue(windowID, kCFNumberLongType, &window);
     wwin = wWindowFor(window);
     wapp = wApplicationOf(wwin->main_window);
-    
+
     /* if (!wapp || wapp->main_window_desc != observer_wapp->main_window_desc) { */
     if (wapp != observer_wapp) {
       WMLogInfo("WM wapp %s received foreing notification", observer_wapp->main_wwin->wm_instance);
       return;
     }
-    
+
     WMLogInfo("WM will shade window %lu for application %s.", window, wwin->wm_instance);
     if (wwin->flags.shaded == 1) {
       wUnshadeWindow(wwin);
@@ -117,9 +115,9 @@ static void shadeObserver(CFNotificationCenterRef center,
 }
 
 static void hideOthersObserver(CFNotificationCenterRef center,
-                               void *wobserver,     // wapp
+                               void *wobserver,  // wapp
                                CFNotificationName name,
-                               const void *object,      // object - ignored
+                               const void *object,  // object - ignored
                                CFDictionaryRef userInfo)
 {
   CFNumberRef windowID = CFDictionaryGetValue(userInfo, CFSTR("WindowID"));
@@ -137,8 +135,7 @@ static void hideOthersObserver(CFNotificationCenterRef center,
   }
 }
 
-
-static WWindow *makeMainWindow(WScreen * scr, Window window)
+static WWindow *makeMainWindow(WScreen *scr, Window window)
 {
   WWindow *wwin;
   XWindowAttributes attr;
@@ -162,14 +159,14 @@ static WWindow *makeMainWindow(WScreen * scr, Window window)
   XSelectInput(dpy, window, attr.your_event_mask | PropertyChangeMask | StructureNotifyMask);
   return wwin;
 }
- 
+
 WApplication *wApplicationOf(Window window)
 {
   WApplication *wapp;
 
   if (window == None)
     return NULL;
-  if (XFindContext(dpy, window, w_global.context.app_win, (XPointer *) & wapp) != XCSUCCESS)
+  if (XFindContext(dpy, window, w_global.context.app_win, (XPointer *)&wapp) != XCSUCCESS)
     return NULL;
   return wapp;
 }
@@ -190,7 +187,7 @@ static BOOL _isWindowAlreadyRegistered(WApplication *wapp, WWindow *wwin)
     if (w == wwin)
       return True;
   }
-  
+
   return False;
 }
 
@@ -200,12 +197,12 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
 
   if (!wapp)
     return;
-  
-  WMLogInfo("ADD window: %lu level:%i name: %s refcount=%i",
-           wwin->client_win, window_level, wwin->wm_instance, wapp->refcount);
-  
-  if (wapp->app_icon && wapp->app_icon->flags.docked &&
-      wapp->app_icon->flags.relaunching && wapp->main_wwin->fake_group) {
+
+  WMLogInfo("ADD window: %lu level:%i name: %s refcount=%i", wwin->client_win, window_level,
+            wwin->wm_instance, wapp->refcount);
+
+  if (wapp->app_icon && wapp->app_icon->flags.docked && wapp->app_icon->flags.relaunching &&
+      wapp->main_wwin->fake_group) {
     wDockFinishLaunch(wapp->app_icon);
   }
 
@@ -214,7 +211,7 @@ void wApplicationAddWindow(WApplication *wapp, WWindow *wwin)
 
   if (window_level == NSMainMenuWindowLevel)
     wapp->gsmenu_wwin = wwin;
-  
+
   /* Do not add short-living objects to window list: tooltips, submenus, popups, etc. */
   if (window_level != NSNormalWindowLevel && window_level != NSFloatingWindowLevel)
     return;
@@ -234,9 +231,9 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
 
   window_count = CFArrayGetCount(wapp->windows);
 
-  WMLogInfo("REMOVE window: %lu name: %s WApplication refcount=%i",
-           wwin->client_win, wwin->wm_instance, wapp->refcount);
-  
+  WMLogInfo("REMOVE window: %lu name: %s WApplication refcount=%i", wwin->client_win,
+            wwin->wm_instance, wapp->refcount);
+
   for (int i = 0; i < window_count; i++) {
     awin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, i);
     if (awin == wwin) {
@@ -249,7 +246,7 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
   }
 }
 
-WApplication *wApplicationCreate(WWindow * wwin)
+WApplication *wApplicationCreate(WWindow *wwin)
 {
   WScreen *scr = wwin->screen;
   Window main_window = wwin->main_window;
@@ -274,8 +271,8 @@ WApplication *wApplicationCreate(WWindow * wwin)
     return wapp;
   }
 
-  WMLogInfo("CREATE for window: %lu level:%i name: %s",
-           wwin->client_win, WINDOW_LEVEL(wwin), wwin->wm_instance);
+  WMLogInfo("CREATE for window: %lu level:%i name: %s", wwin->client_win, WINDOW_LEVEL(wwin),
+            wwin->wm_instance);
 
   wapp = wmalloc(sizeof(WApplication));
 
@@ -287,16 +284,17 @@ WApplication *wApplicationCreate(WWindow * wwin)
   wapp->gsmenu_wwin = NULL;
   wapp->flags.is_gnustep = wwin->flags.is_gnustep;
   if (wwin->flags.is_gnustep) {
-    wapp->appName = CFStringCreateWithCString(kCFAllocatorDefault, wwin->wm_instance,
-                                              kCFStringEncodingUTF8);
+    wapp->appName =
+        CFStringCreateWithCString(kCFAllocatorDefault, wwin->wm_instance, kCFStringEncodingUTF8);
   } else {
-    wapp->appName = CFStringCreateWithCString(kCFAllocatorDefault, wwin->wm_class,
-                                              kCFStringEncodingUTF8);
+    wapp->appName =
+        CFStringCreateWithCString(kCFAllocatorDefault, wwin->wm_class, kCFStringEncodingUTF8);
   }
-  /* wapp->app_name = wwin->flags.is_gnustep ? wstrdup(wwin->wm_instance) : wstrdup(wwin->wm_class); */
+  /* wapp->app_name = wwin->flags.is_gnustep ? wstrdup(wwin->wm_instance) : wstrdup(wwin->wm_class);
+   */
 
   wApplicationAddWindow(wapp, wwin);
-  
+
   wapp->last_desktop = wwin->screen->current_desktop;
 
   wapp->main_window = main_window;
@@ -318,7 +316,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
   wapp->flags.emulated = WFLAGP(wapp->main_wwin, emulate_appicon);
 
   /* application descriptor */
-  XSaveContext(dpy, main_window, w_global.context.app_win, (XPointer) wapp);
+  XSaveContext(dpy, main_window, w_global.context.app_win, (XPointer)wapp);
 
   create_appicon_for_application(wapp, wwin);
 
@@ -328,7 +326,8 @@ WApplication *wApplicationCreate(WWindow * wwin)
     wapp->appState = (CFMutableDictionaryRef)WMUserDefaultsRead(wapp->appName, false);
     if (wapp->appState) {
       CFRetain(wapp->appState);
-      wapp->menus_state = (CFMutableArrayRef)CFDictionaryGetValue(wapp->appState, CFSTR("MenusState"));
+      wapp->menus_state =
+          (CFMutableArrayRef)CFDictionaryGetValue(wapp->appState, CFSTR("MenusState"));
     }
   }
 
@@ -336,8 +335,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
     scr->wapp_list = wapp;
     wapp->prev = NULL;
     wapp->next = NULL;
-  }
-  else {
+  } else {
     WApplication *wa = scr->wapp_list;
     while (wa->next)
       wa = wa->next;
@@ -347,11 +345,10 @@ WApplication *wApplicationCreate(WWindow * wwin)
     wApplicationMakeFirst(wapp);
   }
 
-  WMLogInfo("WApplication `%s` was created! Prev `%s` Next `%s`",
-           wwin->wm_instance,
-           wapp->prev ? wapp->prev->main_wwin->wm_instance : "NULL",
-           wapp->next ? wapp->next->main_wwin->wm_instance : "NULL");
-        
+  WMLogInfo("WApplication `%s` was created! Prev `%s` Next `%s`", wwin->wm_instance,
+            wapp->prev ? wapp->prev->main_wwin->wm_instance : "NULL",
+            wapp->next ? wapp->next->main_wwin->wm_instance : "NULL");
+
   if (scr->notificationCenter) {
     CFNotificationCenterAddObserver(scr->notificationCenter, wapp, shadeObserver,
                                     WMShouldShadeWindowNotification, NULL,
@@ -362,8 +359,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
 
     // Notify Workspace's ProcessManager
     CFNotificationCenterPostNotification(scr->notificationCenter,
-                                         WMDidCreateApplicationNotification,
-                                         wapp, NULL, TRUE);
+                                         WMDidCreateApplicationNotification, wapp, NULL, TRUE);
   }
 
   return wapp;
@@ -372,7 +368,7 @@ WApplication *wApplicationCreate(WWindow * wwin)
 WApplication *wApplicationWithName(WScreen *scr, char *app_name)
 {
   WApplication *app = scr ? scr->wapp_list : wDefaultScreen()->wapp_list;
-  
+
   while (app) {
     if (!strcmp(app->main_wwin->wm_instance, app_name))
       return app;
@@ -390,9 +386,8 @@ void wApplicationDestroy(WApplication *wapp)
   if (!wapp)
     return;
 
-  WMLogInfo("DESTROY main window:%lu name:%s windows #:%li refcount:%i",
-           wapp->main_window, wapp->app_icon->wm_instance,
-           CFArrayGetCount(wapp->windows), wapp->refcount);
+  WMLogInfo("DESTROY main window:%lu name:%s windows #:%li refcount:%i", wapp->main_window,
+            wapp->app_icon->wm_instance, CFArrayGetCount(wapp->windows), wapp->refcount);
 
   wapp->refcount--;
   if (wapp->refcount > 0)
@@ -415,7 +410,7 @@ void wApplicationDestroy(WApplication *wapp)
     /* save app state */
     CFDictionaryAddValue(wapp->appState, CFSTR("MenusState"), wapp->menus_state);
     WMUserDefaultsWrite(wapp->appState, wapp->appName);
-    CFRelease(wapp->menus_state);    
+    CFRelease(wapp->menus_state);
   }
   if (!wapp->flags.is_gnustep) {
     CFRelease(wapp->appState);
@@ -434,7 +429,7 @@ void wApplicationDestroy(WApplication *wapp)
   }
 
   scr = wapp->main_wwin->screen;
-  
+
   // Notify Workspace's ProcessManager
   CFNotificationCenterPostNotification(scr->notificationCenter, WMDidDestroyApplicationNotification,
                                        wapp, NULL, TRUE);
@@ -451,7 +446,7 @@ void wApplicationDestroy(WApplication *wapp)
   }
 
   XDeleteContext(dpy, wapp->main_window, w_global.context.app_win);
-  
+
   /* Remove application icon */
   removeAppIconFor(wapp);
 
@@ -461,7 +456,7 @@ void wApplicationDestroy(WApplication *wapp)
   if (wwin) {
     /* undelete client window context that was deleted in wWindowDestroy */
     XSaveContext(dpy, wwin->client_win, w_global.context.client_win,
-                 (XPointer) & wwin->client_descriptor);
+                 (XPointer)&wwin->client_descriptor);
   }
 
   wfree(wapp);
@@ -474,17 +469,16 @@ void wApplicationActivate(WApplication *wapp)
   WScreen *scr = wapp->main_wwin->screen;
 
   WMLogInfo("wApplicationActivate %s current WS:%i last WS:%i app WS:%i",
-           wapp->main_wwin->wm_instance,
-           scr->current_desktop, scr->last_desktop,
-           wapp->last_desktop);
-  
-  if (wapp->last_desktop != scr->current_desktop &&
-      scr->last_desktop == scr->current_desktop) {
-    wDesktopChange(scr, wapp->last_desktop, wapp->flags.is_gnustep ? wapp->gsmenu_wwin : wapp->last_focused);
+            wapp->main_wwin->wm_instance, scr->current_desktop, scr->last_desktop,
+            wapp->last_desktop);
+
+  if (wapp->last_desktop != scr->current_desktop && scr->last_desktop == scr->current_desktop) {
+    wDesktopChange(scr, wapp->last_desktop,
+                   wapp->flags.is_gnustep ? wapp->gsmenu_wwin : wapp->last_focused);
   }
-  
+
   wApplicationMakeFirst(wapp);
-  
+
   if (wapp->flags.is_gnustep || wapp->app_menu->flags.mapped) {
     return;
   }
@@ -497,11 +491,10 @@ void wApplicationActivate(WApplication *wapp)
   } else {
     wMenuMap(wapp->app_menu);
   }
-  
+
   if (!wapp->appState) {
-    wapp->appState = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                               &kCFTypeDictionaryKeyCallBacks,
-                                               &kCFTypeDictionaryValueCallBacks);
+    wapp->appState = CFDictionaryCreateMutable(
+        kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   }
 }
 
@@ -521,7 +514,7 @@ void wApplicationMakeFirst(WApplication *wapp)
   WScreen *scr = wapp->main_wwin->screen;
   WApplication *first_wapp;
   /* WApplication *app; */
-  
+
   if (!scr->wapp_list || !scr->wapp_list->next || wapp == scr->wapp_list)
     return;
 
@@ -531,14 +524,14 @@ void wApplicationMakeFirst(WApplication *wapp)
     wapp->prev->next = wapp->next;
   if (wapp->next)
     wapp->next->prev = wapp->prev;
-  
+
   // place `wapp` to the first place in wapp_list
   first_wapp = scr->wapp_list;
   first_wapp->prev = wapp;
-  
+
   wapp->prev = NULL;
   wapp->next = first_wapp;
-  
+
   scr->wapp_list = wapp;
 }
 
@@ -562,9 +555,8 @@ static void hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin)
     }
     wwin->flags.hidden = 1;
 
-    CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                            &kCFTypeDictionaryKeyCallBacks,
-                                                            &kCFTypeDictionaryValueCallBacks);
+    CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+        kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
     CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
     CFNotificationCenterPostNotification(wwin->screen->notificationCenter,
                                          WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -580,9 +572,8 @@ static void hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin)
 
   wwin->flags.skip_next_animation = 0;
 
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                          &kCFTypeDictionaryKeyCallBacks,
-                                                          &kCFTypeDictionaryValueCallBacks);
+  CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
   CFNotificationCenterPostNotification(wwin->screen->notificationCenter,
                                        WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -616,8 +607,8 @@ void wApplicationHide(WApplication *wapp)
   } else {
     wapp->last_focused = NULL;
   }
-  
-  /* Special treatment of Workspace: set focus to main menu prior to any window 
+
+  /* Special treatment of Workspace: set focus to main menu prior to any window
      hiding to prevent searching for next focused window. Workspace's main menu
      will not be unmapped on hiding. */
   if (wapp->gsmenu_wwin && !strcmp(wapp->gsmenu_wwin->wm_instance, "Workspace")) {
@@ -677,17 +668,13 @@ void wApplicationHideOthers(WWindow *awin)
 
   while (wwin) {
     tapp = wApplicationOf(wwin->main_window);
-    if (wwin != awin && tapp != wapp &&
-        wwin->frame->desktop == awin->screen->current_desktop &&
-        !(wwin->flags.miniaturized || wwin->flags.hidden) &&
-        !wwin->flags.internal_window &&
+    if (wwin != awin && tapp != wapp && wwin->frame->desktop == awin->screen->current_desktop &&
+        !(wwin->flags.miniaturized || wwin->flags.hidden) && !wwin->flags.internal_window &&
         !WFLAGP(wwin, no_hide_others)) {
-
       if (tapp != wapp && wwin->protocols.HIDE_APP) {
         /* WMLogInfo("send WM_HIDE_APP protocol message to client."); */
         wClientSendProtocol(wwin, w_global.atom.gnustep.wm_hide_app, CurrentTime);
-      }
-      else if (wwin->main_window == None || WFLAGP(wwin, no_appicon)) {
+      } else if (wwin->main_window == None || WFLAGP(wwin, no_appicon)) {
         if (!WFLAGP(wwin, no_miniaturizable)) {
           wwin->flags.skip_next_animation = 1;
           wIconifyWindow(wwin);
@@ -717,7 +704,7 @@ void wApplicationQuit(WApplication *wapp, Bool force)
       wClientSendProtocol(wwin, w_global.atom.wm.delete_window, w_global.timestamp.last_event);
     }
   }
-  
+
   CFRelease(windows);
 }
 
@@ -744,27 +731,25 @@ void wApplicationForceQuit(WApplication *wapp)
 
   wretain(wapp->main_wwin);
   dispatch_async(workspace_q, ^{
-      if (wPreferences.dont_confirm_kill
-          || WSRunAlertPanel(_("Kill Application"),
-                             buffer, _("Keep Running"), _("Kill"), NULL) == NSAlertAlternateReturn) {
-        if (fPtr != NULL) {
-          WWindow *wwin, *twin;
+    if (wPreferences.dont_confirm_kill ||
+        WSRunAlertPanel(_("Kill Application"), buffer, _("Keep Running"), _("Kill"), NULL) ==
+            NSAlertAlternateReturn) {
+      if (fPtr != NULL) {
+        WWindow *wwin, *twin;
 
-          wwin = wapp->main_wwin->screen->focused_window;
-          while (wwin) {
-            twin = wwin->prev;
-            if (wwin->fake_group == fPtr)
-              wClientKill(wwin);
-            wwin = twin;
-          }
-        } else if (!wapp->main_wwin->flags.destroyed) {
-          wClientKill(wapp->main_wwin);
+        wwin = wapp->main_wwin->screen->focused_window;
+        while (wwin) {
+          twin = wwin->prev;
+          if (wwin->fake_group == fPtr)
+            wClientKill(wwin);
+          wwin = twin;
         }
+      } else if (!wapp->main_wwin->flags.destroyed) {
+        wClientKill(wapp->main_wwin);
       }
-      wrelease(wapp->main_wwin);
-      wfree(buffer);
-      WCHANGE_STATE(WSTATE_NORMAL);
-    });
+    }
+    wrelease(wapp->main_wwin);
+    wfree(buffer);
+    WCHANGE_STATE(WSTATE_NORMAL);
+  });
 }
-
-

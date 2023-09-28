@@ -30,7 +30,6 @@ WGeometryView *WCreateGeometryView(WMScreen *scr);
 
 void WSetGeometryViewShownPosition(WGeometryView *gview, int x, int y);
 
-void WSetGeometryViewShownSize(WGeometryView *gview,
-                               unsigned width, unsigned height);
+void WSetGeometryViewShownSize(WGeometryView *gview, unsigned width, unsigned height);
 
 #endif /* __WORKSPACE_WM_GEOMVIEW__ */

@@ -40,22 +40,19 @@
 #include "stacking.h"
 #include "desktop.h"
 
-
 static void __notifyStackChange(WCoreWindow *frame, char *detail)
 {
   WWindow *wwin = wWindowFor(frame->window);
   CFMutableDictionaryRef info;
   CFStringRef dString;
-  
-  info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                   &kCFTypeDictionaryKeyCallBacks,
+
+  info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks,
                                    &kCFTypeDictionaryValueCallBacks);
   dString = CFStringCreateWithCString(kCFAllocatorDefault, detail, kCFStringEncodingUTF8);
   CFDictionaryAddValue(info, CFSTR("detail"), dString);
-  
+
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                       WMDidChangeWindowStackingNotification,
-                                       wwin, info, TRUE);
+                                       WMDidChangeWindowStackingNotification, wwin, info, TRUE);
   CFRelease(dString);
   CFRelease(info);
 }
@@ -73,7 +70,7 @@ static void __notifyStackChange(WCoreWindow *frame, char *detail)
  *
  *----------------------------------------------------------------------
  */
-void RemakeStackList(WScreen * scr)
+void RemakeStackList(WScreen *scr)
 {
   Window *windows;
   unsigned int nwindows;
@@ -92,8 +89,7 @@ void RemakeStackList(WScreen * scr)
     /* verify list integrity */
     c = 0;
     for (i = 0; i < nwindows; i++) {
-      if (XFindContext(dpy, windows[i], w_global.context.stack, (XPointer *) & frame)
-          == XCNOENT) {
+      if (XFindContext(dpy, windows[i], w_global.context.stack, (XPointer *)&frame) == XCNOENT) {
         continue;
       }
       if (!frame)
@@ -125,7 +121,7 @@ void RemakeStackList(WScreen * scr)
  * 	Windows may be restacked.
  *----------------------------------------------------------------------
  */
-void CommitStacking(WScreen * scr)
+void CommitStacking(WScreen *scr)
 {
   WCoreWindow *tmp;
   int nwindows, i;
@@ -136,7 +132,8 @@ void CommitStacking(WScreen * scr)
   windows = wmalloc(sizeof(Window) * nwindows);
 
   i = 0;
-  WM_ETARETI_BAG(scr->stacking_list, tmp, iter) {
+  WM_ETARETI_BAG(scr->stacking_list, tmp, iter)
+  {
     while (tmp) {
       windows[i++] = tmp->window;
       tmp = tmp->stacking->under;
@@ -145,8 +142,7 @@ void CommitStacking(WScreen * scr)
   XRestackWindows(dpy, windows, i);
   wfree(windows);
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                       WMDidResetWindowStackingNotification,
-                                       scr, NULL, TRUE);
+                                       WMDidResetWindowStackingNotification, scr, NULL, TRUE);
 }
 
 /*
@@ -161,7 +157,7 @@ void CommitStacking(WScreen * scr)
  * 	Changes the stacking order of frame.
  *----------------------------------------------------------------------
  */
-static void moveFrameToUnder(WCoreWindow * under, WCoreWindow * frame)
+static void moveFrameToUnder(WCoreWindow *under, WCoreWindow *frame)
 {
   Window wins[2];
 
@@ -180,7 +176,7 @@ static void moveFrameToUnder(WCoreWindow * under, WCoreWindow * frame)
  * 	Windows may be restacked.
  *----------------------------------------------------------------------
  */
-void CommitStackingForWindow(WCoreWindow * frame)
+void CommitStackingForWindow(WCoreWindow *frame)
 {
   int level = frame->stacking->window_level;
   WScreen *scr = frame->screen_ptr;
@@ -223,7 +219,7 @@ void CommitStackingForWindow(WCoreWindow * frame)
  *
  *----------------------------------------------------------------------
  */
-void wRaiseFrame(WCoreWindow * frame)
+void wRaiseFrame(WCoreWindow *frame)
 {
   WCoreWindow *wlist = frame;
   int level = frame->stacking->window_level;
@@ -249,7 +245,7 @@ void wRaiseFrame(WCoreWindow * frame)
 
   /* raise transients under us from bottom to top
    * so that the order is kept */
- again:
+again:
   wlist = frame->stacking->under;
   while (wlist && wlist->stacking->under)
     wlist = wlist->stacking->under;
@@ -290,23 +286,20 @@ void wRaiseFrame(WCoreWindow * frame)
   __notifyStackChange(frame, "raise");
 }
 
-void wRaiseLowerFrame(WCoreWindow * frame)
+void wRaiseLowerFrame(WCoreWindow *frame)
 {
-  if (!frame->stacking->above
-      || (frame->stacking->window_level != frame->stacking->above->stacking->window_level)) {
-
+  if (!frame->stacking->above ||
+      (frame->stacking->window_level != frame->stacking->above->stacking->window_level)) {
     wLowerFrame(frame);
   } else {
     WCoreWindow *scan = frame->stacking->above;
-    WWindow *frame_wwin = (WWindow *) frame->descriptor.parent;
+    WWindow *frame_wwin = (WWindow *)frame->descriptor.parent;
 
     while (scan) {
-
       if (scan->descriptor.parent_type == WCLASS_WINDOW) {
-        WWindow *scan_wwin = (WWindow *) scan->descriptor.parent;
+        WWindow *scan_wwin = (WWindow *)scan->descriptor.parent;
 
-        if (wWindowObscuresWindow(scan_wwin, frame_wwin)
-            && scan_wwin->flags.mapped) {
+        if (wWindowObscuresWindow(scan_wwin, frame_wwin) && scan_wwin->flags.mapped) {
           break;
         }
       }
@@ -321,7 +314,7 @@ void wRaiseLowerFrame(WCoreWindow * frame)
   }
 }
 
-void wLowerFrame(WCoreWindow * frame)
+void wLowerFrame(WCoreWindow *frame)
 {
   WScreen *scr = frame->screen_ptr;
   WCoreWindow *wlist = frame;
@@ -413,7 +406,7 @@ void wLowerFrame(WCoreWindow * frame)
  * 	The frame is added to it's screen's window list.
  *----------------------------------------------------------------------
  */
-void AddToStackList(WCoreWindow * frame)
+void AddToStackList(WCoreWindow *frame)
 {
   WCoreWindow *curtop, *wlist;
   int index = frame->stacking->window_level;
@@ -421,7 +414,7 @@ void AddToStackList(WCoreWindow * frame)
   WCoreWindow *trans = NULL;
 
   frame->screen_ptr->window_count++;
-  XSaveContext(dpy, frame->window, w_global.context.stack, (XPointer) frame);
+  XSaveContext(dpy, frame->window, w_global.context.stack, (XPointer)frame);
   curtop = WMGetFromBag(scr->stacking_list, index);
 
   /* first window in this level */
@@ -475,7 +468,7 @@ void AddToStackList(WCoreWindow * frame)
  *      Window level for frame may be changed.
  *----------------------------------------------------------------------
  */
-void MoveInStackListAbove(WCoreWindow * next, WCoreWindow * frame)
+void MoveInStackListAbove(WCoreWindow *next, WCoreWindow *frame)
 {
   WCoreWindow *tmpw;
   WScreen *scr = frame->screen_ptr;
@@ -509,9 +502,8 @@ void MoveInStackListAbove(WCoreWindow * next, WCoreWindow * frame)
     WCoreWindow *above = NULL;
     WMBagIterator iter;
 
-    for (above = WMBagIteratorAtIndex(scr->stacking_list, index + 1, &iter);
-         above != NULL; above = WMBagNext(scr->stacking_list, &iter)) {
-
+    for (above = WMBagIteratorAtIndex(scr->stacking_list, index + 1, &iter); above != NULL;
+         above = WMBagNext(scr->stacking_list, &iter)) {
       /* can't optimize */
       while (above->stacking->under)
         above = above->stacking->under;
@@ -527,8 +519,7 @@ void MoveInStackListAbove(WCoreWindow * next, WCoreWindow * frame)
   }
 
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                       WMDidResetWindowStackingNotification,
-                                       scr, NULL, TRUE);
+                                       WMDidResetWindowStackingNotification, scr, NULL, TRUE);
 }
 
 /*
@@ -544,7 +535,7 @@ void MoveInStackListAbove(WCoreWindow * next, WCoreWindow * frame)
  *      Window level for frame may be changed.
  *----------------------------------------------------------------------
  */
-void MoveInStackListUnder(WCoreWindow * prev, WCoreWindow * frame)
+void MoveInStackListUnder(WCoreWindow *prev, WCoreWindow *frame)
 {
   WCoreWindow *tmpw;
   int index;
@@ -573,11 +564,10 @@ void MoveInStackListUnder(WCoreWindow * prev, WCoreWindow * frame)
   moveFrameToUnder(prev, frame);
 
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                       WMDidResetWindowStackingNotification,
-                                       scr, NULL, TRUE);
+                                       WMDidResetWindowStackingNotification, scr, NULL, TRUE);
 }
 
-void RemoveFromStackList(WCoreWindow * frame)
+void RemoveFromStackList(WCoreWindow *frame)
 {
   int index = frame->stacking->window_level;
 
@@ -590,17 +580,17 @@ void RemoveFromStackList(WCoreWindow * frame)
     frame->stacking->under->stacking->above = frame->stacking->above;
   if (frame->stacking->above)
     frame->stacking->above->stacking->under = frame->stacking->under;
-  else			/* this was the first window on the list */
+  else /* this was the first window on the list */
     WMSetInBag(frame->screen_ptr->stacking_list, index, frame->stacking->under);
 
   frame->screen_ptr->window_count--;
 
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
-                                       WMDidResetWindowStackingNotification,
-                                       frame->screen_ptr, NULL, TRUE);
+                                       WMDidResetWindowStackingNotification, frame->screen_ptr,
+                                       NULL, TRUE);
 }
 
-void ChangeStackingLevel(WCoreWindow * frame, int new_level)
+void ChangeStackingLevel(WCoreWindow *frame, int new_level)
 {
   int old_level;
 

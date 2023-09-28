@@ -26,9 +26,7 @@
 
 static inline void ReportGarbage(NSString *garbage)
 {
-  NSDebugLLog(@"FileMover",
-              @"Got garbage \"%@\" from FileMover subprocess. Ignoring...",
-              garbage);
+  NSDebugLLog(@"FileMover", @"Got garbage \"%@\" from FileMover subprocess. Ignoring...", garbage);
 }
 
 //=============================================================================
@@ -56,10 +54,8 @@ static inline void ReportGarbage(NSString *garbage)
   problem = ReadError;
 
   ASSIGN(problemDesc,
-         ([NSString stringWithFormat:_(@"%@/%@ is not readable"),
-                    currSourceDir, currFile]));
-  ASSIGN(problemSolutionDesc, 
-         _(@"You can skip this file to proceed with operation."));
+         ([NSString stringWithFormat:_(@"%@/%@ is not readable"), currSourceDir, currFile]));
+  ASSIGN(problemSolutionDesc, _(@"You can skip this file to proceed with operation."));
   ASSIGN(solutions, [NSArray arrayWithObject:_(@"Skip")]);
 
   // 1. Upon receiving notification:
@@ -80,11 +76,8 @@ static inline void ReportGarbage(NSString *garbage)
 {
   problem = WriteError;
 
-  ASSIGN(problemDesc,
-         ([NSString stringWithFormat:_(@"%@/%@ is not writable"),
-                    target, currFile]));
-  ASSIGN(problemSolutionDesc, 
-         _(@"You can skip this file to proceed with operation."));
+  ASSIGN(problemDesc, ([NSString stringWithFormat:_(@"%@/%@ is not writable"), target, currFile]));
+  ASSIGN(problemSolutionDesc, _(@"You can skip this file to proceed with operation."));
   ASSIGN(solutions, [NSArray arrayWithObject:_(@"Skip")]);
 
   [self setState:OperationAlert];
@@ -95,10 +88,8 @@ static inline void ReportGarbage(NSString *garbage)
   problem = DeleteError;
 
   ASSIGN(problemDesc,
-         ([NSString stringWithFormat:_(@"%@/%@ is not deletable"),
-                    currSourceDir, currFile]));
-  ASSIGN(problemSolutionDesc, 
-         _(@"You can skip this file to proceed with operation."));
+         ([NSString stringWithFormat:_(@"%@/%@ is not deletable"), currSourceDir, currFile]));
+  ASSIGN(problemSolutionDesc, _(@"You can skip this file to proceed with operation."));
   ASSIGN(solutions, [NSArray arrayWithObject:_(@"Skip")]);
 
   [self setState:OperationAlert];
@@ -109,10 +100,8 @@ static inline void ReportGarbage(NSString *garbage)
   problem = MoveError;
 
   ASSIGN(problemDesc,
-         ([NSString stringWithFormat:_(@"%@/%@ is not moveable"),
-                    currSourceDir, currFile]));
-  ASSIGN(problemSolutionDesc, 
-         _(@"You can skip this file to proceed with operation."));
+         ([NSString stringWithFormat:_(@"%@/%@ is not moveable"), currSourceDir, currFile]));
+  ASSIGN(problemSolutionDesc, _(@"You can skip this file to proceed with operation."));
   ASSIGN(solutions, [NSArray arrayWithObject:_(@"Skip")]);
 
   [self setState:OperationAlert];
@@ -123,11 +112,9 @@ static inline void ReportGarbage(NSString *garbage)
   problem = SymlinkEncountered;
 
   ASSIGN(problemDesc,
-         ([NSString stringWithFormat:_(@"%@/%@ is a symbolic link"),
-                    currSourceDir, currFile]));
-  ASSIGN(problemSolutionDesc, 
-         _(@"You can create new link, skip this link, "
-           @"copy the original, or stop the entire opertaion"));
+         ([NSString stringWithFormat:_(@"%@/%@ is a symbolic link"), currSourceDir, currFile]));
+  ASSIGN(problemSolutionDesc, _(@"You can create new link, skip this link, "
+                                @"copy the original, or stop the entire opertaion"));
   ASSIGN(solutions, (@[ _(@"Copy"), _(@"Skip"), _(@"New Link") ]));
 
   [self setState:OperationAlert];
@@ -137,11 +124,9 @@ static inline void ReportGarbage(NSString *garbage)
 {
   problem = AttributesUnchangeable;
 
-  ASSIGN(problemDesc, ([NSString stringWithFormat:
-                                   _(@"Attributes of %@/%@ is not changeable"),
-                                 target, currFile]));
-  ASSIGN(problemSolutionDesc, 
-         _(@"You can skip this file to proceed with operation."));
+  ASSIGN(problemDesc, ([NSString stringWithFormat:_(@"Attributes of %@/%@ is not changeable"),
+                                                  target, currFile]));
+  ASSIGN(problemSolutionDesc, _(@"You can skip this file to proceed with operation."));
   ASSIGN(solutions, @[ _(@"Skip") ]);
 
   [self setState:OperationAlert];
@@ -151,12 +136,9 @@ static inline void ReportGarbage(NSString *garbage)
 {
   problem = FileExists;
 
-  ASSIGN(problemDesc,
-         ([NSString stringWithFormat:_(@"%@/%@ already exists"),
-                    target, currFile]));
-  ASSIGN(problemSolutionDesc, 
-         _(@"You can skip this file to proceed with operation"
-           @" or ovewrite existig file with the new one"));
+  ASSIGN(problemDesc, ([NSString stringWithFormat:_(@"%@/%@ already exists"), target, currFile]));
+  ASSIGN(problemSolutionDesc, _(@"You can skip this file to proceed with operation"
+                                @" or ovewrite existig file with the new one"));
   ASSIGN(solutions, (@[ _(@"Overwrite"), _(@"Skip") ]));
 
   [self setState:OperationAlert];
@@ -166,12 +148,9 @@ static inline void ReportGarbage(NSString *garbage)
 {
   problem = UnknownFile;
 
-  ASSIGN(problemDesc,
-         ([NSString stringWithFormat:
-                      _(@"File %@/%@ doesn't exist or not unsupported"),
-                    currSourceDir, currFile]));
-  ASSIGN(problemSolutionDesc, 
-         _(@"You can skip this file, or stop the entire operation"));
+  ASSIGN(problemDesc, ([NSString stringWithFormat:_(@"File %@/%@ doesn't exist or not unsupported"),
+                                                  currSourceDir, currFile]));
+  ASSIGN(problemSolutionDesc, _(@"You can skip this file, or stop the entire operation"));
   ASSIGN(solutions, [NSArray arrayWithObject:_(@"Skip")]);
 
   [self setState:OperationAlert];
@@ -182,12 +161,10 @@ static inline void ReportGarbage(NSString *garbage)
   problem = SymlinkTargetNotExist;
 
   ASSIGN(problemDesc,
-         ([NSString stringWithFormat:
-                      _(@"Symlink %@/%@ points to file wich doesn't exist"),
-                    currSourceDir, currFile]));
-  ASSIGN(problemSolutionDesc, 
-         _(@"You can skip this file, make new link, "
-           @"or stop the entire operation"));
+         ([NSString stringWithFormat:_(@"Symlink %@/%@ points to file wich doesn't exist"),
+                                     currSourceDir, currFile]));
+  ASSIGN(problemSolutionDesc, _(@"You can skip this file, make new link, "
+                                @"or stop the entire operation"));
   ASSIGN(solutions, (@[ _(@"Skip"), _(@"New Link") ]));
 
   [self setState:OperationAlert];
@@ -197,167 +174,135 @@ static inline void ReportGarbage(NSString *garbage)
 
 @implementation FileMover (Alert)
 
-- (void)postSolution:(int)solution
-   applyToSubsequent:(BOOL)subseq
+- (void)postSolution:(int)solution applyToSubsequent:(BOOL)subseq
 {
-  if (solution == -1) // Stop
-    {
-      [[writePipe fileHandleForWriting]
-	writeData:[@"t\n" dataUsingEncoding:NSASCIIStringEncoding]];
-      
-      [[writePipe fileHandleForWriting] synchronizeFile];
-      
-      problem = NoProblem;
-      
-      [self setState:OperationStopping];
-      return;
-    }
+  if (solution == -1)  // Stop
+  {
+    [[writePipe fileHandleForWriting] writeData:[@"t\n" dataUsingEncoding:NSASCIIStringEncoding]];
 
-  switch (problem)
-    {
+    [[writePipe fileHandleForWriting] synchronizeFile];
+
+    problem = NoProblem;
+
+    [self setState:OperationStopping];
+    return;
+  }
+
+  switch (problem) {
     case ReadError:
     case WriteError:
-    case MoveError: 
+    case MoveError:
     case DeleteError:
     case UnknownFile:
       // Skip file
-      if (subseq)
-	{
-	  [[writePipe fileHandleForWriting] 
-	    writeData:[@"S\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	}
-      else
-	{
-	  [[writePipe fileHandleForWriting]
-	    writeData:[@"s\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	}
+      if (subseq) {
+        [[writePipe fileHandleForWriting]
+            writeData:[@"S\n" dataUsingEncoding:NSASCIIStringEncoding]];
+      } else {
+        [[writePipe fileHandleForWriting]
+            writeData:[@"s\n" dataUsingEncoding:NSASCIIStringEncoding]];
+      }
       break;
     case SymlinkEncountered:
       // TODO: There should be 2 actions:
       // Copy - "copy the original" now it's equal to Follow
       // New Link - "make new link" now it's equal to Copy and Relink
-      switch (solution)
-	{
-	case 0: // "Copy" - copy the original
-	  if (subseq)
-	    {
-	      [[writePipe fileHandleForWriting] 
-	        writeData:[@"C\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	    }
-	  else
-	    {
-	      [[writePipe fileHandleForWriting]
-	        writeData: [@"c\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	    }
-	  break;
-	case 1: // Skip
-	  if (subseq)
-	    {
-	      [[writePipe fileHandleForWriting]
-	        writeData: [@"S\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	    }
-	  else
-	    {
-	      [[writePipe fileHandleForWriting]
-	        writeData:[@"s\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	    }
-	  break;
-	case 2: // "New Link"
-	  if (subseq)
-	    {
-	      [[writePipe fileHandleForWriting] 
-	        writeData:[@"N\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	    }
-	  else
-	    {
-	      [[writePipe fileHandleForWriting]
-	        writeData: [@"n\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	    }
-	  break;
-	}
+      switch (solution) {
+        case 0:  // "Copy" - copy the original
+          if (subseq) {
+            [[writePipe fileHandleForWriting]
+                writeData:[@"C\n" dataUsingEncoding:NSASCIIStringEncoding]];
+          } else {
+            [[writePipe fileHandleForWriting]
+                writeData:[@"c\n" dataUsingEncoding:NSASCIIStringEncoding]];
+          }
+          break;
+        case 1:  // Skip
+          if (subseq) {
+            [[writePipe fileHandleForWriting]
+                writeData:[@"S\n" dataUsingEncoding:NSASCIIStringEncoding]];
+          } else {
+            [[writePipe fileHandleForWriting]
+                writeData:[@"s\n" dataUsingEncoding:NSASCIIStringEncoding]];
+          }
+          break;
+        case 2:  // "New Link"
+          if (subseq) {
+            [[writePipe fileHandleForWriting]
+                writeData:[@"N\n" dataUsingEncoding:NSASCIIStringEncoding]];
+          } else {
+            [[writePipe fileHandleForWriting]
+                writeData:[@"n\n" dataUsingEncoding:NSASCIIStringEncoding]];
+          }
+          break;
+      }
       break;
     case SymlinkTargetNotExist:
-      switch (solution)
-	{
-	case 0: // Skip
-          if (subseq)
-            {
-              NSLog(@"SymlinkTargetNotExist: SKIP");
-              [[writePipe fileHandleForWriting] 
+      switch (solution) {
+        case 0:  // Skip
+          if (subseq) {
+            NSLog(@"SymlinkTargetNotExist: SKIP");
+            [[writePipe fileHandleForWriting]
                 writeData:[@"S\n" dataUsingEncoding:NSASCIIStringEncoding]];
-            }
-          else
-            {
-              NSLog(@"SymlinkTargetNotExist: skip");
-              [[writePipe fileHandleForWriting]
+          } else {
+            NSLog(@"SymlinkTargetNotExist: skip");
+            [[writePipe fileHandleForWriting]
                 writeData:[@"s\n" dataUsingEncoding:NSASCIIStringEncoding]];
-            }
+          }
           break;
-	case 1: // "New Link" - copy link file
-	  if (subseq)
-	    {
-              NSLog(@"SymlinkTargetNotExist: NEWLINK");
-	      [[writePipe fileHandleForWriting] 
-	        writeData:[@"N\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	    }
-	  else
-	    {
-              NSLog(@"SymlinkTargetNotExist: newlink");
-	      [[writePipe fileHandleForWriting]
-	        writeData: [@"n\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	    }
-	  break;
-        }
+        case 1:  // "New Link" - copy link file
+          if (subseq) {
+            NSLog(@"SymlinkTargetNotExist: NEWLINK");
+            [[writePipe fileHandleForWriting]
+                writeData:[@"N\n" dataUsingEncoding:NSASCIIStringEncoding]];
+          } else {
+            NSLog(@"SymlinkTargetNotExist: newlink");
+            [[writePipe fileHandleForWriting]
+                writeData:[@"n\n" dataUsingEncoding:NSASCIIStringEncoding]];
+          }
+          break;
+      }
       break;
-    case AttributesUnchangeable: // Ignore
-      if (subseq)
-	{
-	  [[writePipe fileHandleForWriting]
-	    writeData:[@"I\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	}
-      else
-	{
-	  [[writePipe fileHandleForWriting]
-	    writeData:[@"i\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	}
+    case AttributesUnchangeable:  // Ignore
+      if (subseq) {
+        [[writePipe fileHandleForWriting]
+            writeData:[@"I\n" dataUsingEncoding:NSASCIIStringEncoding]];
+      } else {
+        [[writePipe fileHandleForWriting]
+            writeData:[@"i\n" dataUsingEncoding:NSASCIIStringEncoding]];
+      }
       break;
     case FileExists:
-      switch (solution)
-	{
-	case 0: // Overwrite
-	  if (subseq)
-	    {
-	      [[writePipe fileHandleForWriting]
-		writeData:[@"O\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	    }
-	  else
-	    {
-	      [[writePipe fileHandleForWriting]
-		writeData:[@"o\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	    }
-	  break;
-	case 1: // Skip
-	  if (subseq)
-	    {
-	      [[writePipe fileHandleForWriting]
-		writeData:[@"S\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	    }
-	  else
+      switch (solution) {
+        case 0:  // Overwrite
+          if (subseq) {
+            [[writePipe fileHandleForWriting]
+                writeData:[@"O\n" dataUsingEncoding:NSASCIIStringEncoding]];
+          } else {
+            [[writePipe fileHandleForWriting]
+                writeData:[@"o\n" dataUsingEncoding:NSASCIIStringEncoding]];
+          }
+          break;
+        case 1:  // Skip
+          if (subseq) {
+            [[writePipe fileHandleForWriting]
+                writeData:[@"S\n" dataUsingEncoding:NSASCIIStringEncoding]];
+          } else
 
-	    {
-	      [[writePipe fileHandleForWriting]
-		writeData:[@"s\n" dataUsingEncoding:NSASCIIStringEncoding]];
-	    }
-	  break;
-	}
+          {
+            [[writePipe fileHandleForWriting]
+                writeData:[@"s\n" dataUsingEncoding:NSASCIIStringEncoding]];
+          }
+          break;
+      }
       break;
     case NoProblem:
       [NSException raise:NSInternalInconsistencyException
-      		  format:@"Posted a problem solution when "
-                   @"the file operation thought that there "
-                   @"was none"];
+                  format:@"Posted a problem solution when "
+                         @"the file operation thought that there "
+                         @"was none"];
       break;
-    }
+  }
 
   [[writePipe fileHandleForWriting] synchronizeFile];
 
@@ -367,7 +312,6 @@ static inline void ReportGarbage(NSString *garbage)
 }
 
 @end
-
 
 //=============================================================================
 // Main part of class
@@ -437,13 +381,12 @@ static inline void ReportGarbage(NSString *garbage)
 - (void)startFileMover
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  NSString *fileMoverPath = [[NSBundle mainBundle] pathForResource:@"FileMover"
-                                                            ofType:@"tool"];
+  NSString *fileMoverPath = [[NSBundle mainBundle] pathForResource:@"FileMover" ofType:@"tool"];
   // Restore runtime ivars to default state
   ASSIGN(currSourceDir, source);
   ASSIGN(currTargetDir, target);
   ASSIGN(currFile, [files objectAtIndex:0]);
-  
+
   fileMoverTask = [NSTask new];
   [fileMoverTask setLaunchPath:fileMoverPath];
   [fileMoverTask setArguments:@[
@@ -451,14 +394,13 @@ static inline void ReportGarbage(NSString *garbage)
   ]];
   // Transfer '-Files' argument as environment variable to omit parameter
   // length limit
-  if (files)
-    {
-      NSProcessInfo *procInfo = [NSProcessInfo processInfo];
-      NSMutableDictionary *env = [[procInfo environment] mutableCopy];
-      [env setObject:files forKey:@"Files"];
-      [fileMoverTask setEnvironment:env];
-      [env release];
-    }
+  if (files) {
+    NSProcessInfo *procInfo = [NSProcessInfo processInfo];
+    NSMutableDictionary *env = [[procInfo environment] mutableCopy];
+    [env setObject:files forKey:@"Files"];
+    [fileMoverTask setEnvironment:env];
+    [env release];
+  }
 
   readPipe = [NSPipe new];
   writePipe = [NSPipe new];
@@ -481,11 +423,10 @@ static inline void ReportGarbage(NSString *garbage)
 
 - (BGProcess *)userInterface
 {
-  if (processUI == nil)
-    {
-      processUI = [[FileMoverUI alloc] initWithOperation:self];
-    }
-  
+  if (processUI == nil) {
+    processUI = [[FileMoverUI alloc] initWithOperation:self];
+  }
+
   return processUI;
 }
 
@@ -509,43 +450,34 @@ static inline void ReportGarbage(NSString *garbage)
 - (void)pause:(id)sender
 {
   NSTask *task = (isSizing ? sizerTask : fileMoverTask);
-  
-  if (!isSuspended)
-    {
-      if ([task suspend])
-        {
-          isSuspended = YES;
-          [self setState:OperationPaused];
-        }
+
+  if (!isSuspended) {
+    if ([task suspend]) {
+      isSuspended = YES;
+      [self setState:OperationPaused];
     }
-  else
-    {
-      if ([task resume])
-        {
-          isSuspended = NO;
-          [self setState:OperationRunning];
-        }
+  } else {
+    if ([task resume]) {
+      isSuspended = NO;
+      [self setState:OperationRunning];
     }
+  }
 }
 
 - (void)stop:(id)sender
 {
   NSTask *task = (isSizing ? sizerTask : fileMoverTask);
-  
-  if (isSuspended)
-    {
-      [self pause:nil];
-    }
-  
-  if (state == OperationAlert)
-    {
-      [self postSolution:-1 applyToSubsequent:YES];
-    }
-  else
-    {
-      [self setState:OperationStopping];
-      [task interrupt];
-    }
+
+  if (isSuspended) {
+    [self pause:nil];
+  }
+
+  if (state == OperationAlert) {
+    [self postSolution:-1 applyToSubsequent:YES];
+  } else {
+    [self setState:OperationStopping];
+    [task interrupt];
+  }
 }
 
 //
@@ -559,14 +491,11 @@ static inline void ReportGarbage(NSString *garbage)
 
 - (float)progressValue
 {
-  if (totalBatchSize == 0)
-    {
-      return (float) numberOfFilesDone / numberOfFiles;
-    }
-  else
-    {
-      return (float) doneBatchSize / totalBatchSize;
-    }
+  if (totalBatchSize == 0) {
+    return (float)numberOfFilesDone / numberOfFiles;
+  } else {
+    return (float)doneBatchSize / totalBatchSize;
+  }
 }
 
 //
@@ -574,286 +503,246 @@ static inline void ReportGarbage(NSString *garbage)
 //
 - (void)readInput:(NSNotification *)notif
 {
-  NSTask         *task = (isSizing ? sizerTask : fileMoverTask);
-  NSString       *input;
+  NSTask *task = (isSizing ? sizerTask : fileMoverTask);
+  NSString *input;
   NSMutableArray *lines;
-  NSEnumerator   *e;
-  NSString       *line;
-  NSData         *data = nil;
+  NSEnumerator *e;
+  NSString *line;
+  NSData *data = nil;
 
-  //NSLog(@"==== [FileOperation readInput]");
+  // NSLog(@"==== [FileOperation readInput]");
 
   // === LOCK
-  while (inputLock && [inputLock tryLock] == NO)
-    {
-      NSDebugLLog(@"FileMover",
-                  @"[FileMover readInput] LOCK FAILED! Waiting...");
-      [[NSRunLoop currentRunLoop] 
-        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
-    }
+  while (inputLock && [inputLock tryLock] == NO) {
+    NSDebugLLog(@"FileMover", @"[FileMover readInput] LOCK FAILED! Waiting...");
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+  }
   // ===
 
   NS_DURING
-    {
-      if (task != nil && ![task isRunning] && notif == nil)
-        {
-          // Grab data left in input from '-terminate'd NSTask
-          NSDebugLLog(@"FileMover", @"==== [FileMover readInput] last read");
-          data = [[readPipe fileHandleForReading] readDataToEndOfFile];
-        }
-      else
-        {
-          data = [[readPipe fileHandleForReading] availableData];
-        }
+  {
+    if (task != nil && ![task isRunning] && notif == nil) {
+      // Grab data left in input from '-terminate'd NSTask
+      NSDebugLLog(@"FileMover", @"==== [FileMover readInput] last read");
+      data = [[readPipe fileHandleForReading] readDataToEndOfFile];
+    } else {
+      data = [[readPipe fileHandleForReading] availableData];
     }
+  }
   NS_HANDLER
-    {
-      NSDebugLLog(@"FileMover", @"==== [FileMover readInput] EXCEPTION");
-      [inputLock unlock];
-      return;
-    }
+  {
+    NSDebugLLog(@"FileMover", @"==== [FileMover readInput] EXCEPTION");
+    [inputLock unlock];
+    return;
+  }
   NS_ENDHANDLER
 
   // NSUTF8StringEncoding is important in case of non ASCII file names
-  input = [[[NSString alloc] initWithData:data
-                                 encoding:NSUTF8StringEncoding] autorelease];
-  
-  if (input == nil)
-    {
-      NSDebugLLog(@"FileMover", @"==== [FileMover readInput] NIL");
-      [inputLock unlock];
-      [[readPipe fileHandleForReading] waitForDataInBackgroundAndNotify];
-      return;
-    }
+  input = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+
+  if (input == nil) {
+    NSDebugLLog(@"FileMover", @"==== [FileMover readInput] NIL");
+    [inputLock unlock];
+    [[readPipe fileHandleForReading] waitForDataInBackgroundAndNotify];
+    return;
+  }
 
   //  lines = [input componentsSeparatedByString:@"\n"];
-  lines = [NSMutableArray 
-            arrayWithArray:[input componentsSeparatedByString:@"\n"]];
+  lines = [NSMutableArray arrayWithArray:[input componentsSeparatedByString:@"\n"]];
 
-  // Assemble remembered truncated line with newly received 
+  // Assemble remembered truncated line with newly received
   // input's first line
-  if (truncatedLine != nil && [truncatedLine length] > 0)
-    {
-      truncatedLine = 
-        [truncatedLine stringByAppendingString:[lines objectAtIndex:0]];
-      [lines replaceObjectAtIndex:0 withObject:[truncatedLine copy]];
-      //NSLog(@"LINE ASSEMBLED: %@", truncatedLine);
-      ASSIGN(truncatedLine, @"");
-    }
+  if (truncatedLine != nil && [truncatedLine length] > 0) {
+    truncatedLine = [truncatedLine stringByAppendingString:[lines objectAtIndex:0]];
+    [lines replaceObjectAtIndex:0 withObject:[truncatedLine copy]];
+    // NSLog(@"LINE ASSEMBLED: %@", truncatedLine);
+    ASSIGN(truncatedLine, @"");
+  }
 
-  // Check if input is truncated. It means that last line is not fully 
+  // Check if input is truncated. It means that last line is not fully
   // transmitted from FileOperation tool.
-  if (input != nil && 
-      [input length] > 1 &&
-      [input characterAtIndex:[input length]-1] != '\n')
-    {
-      ASSIGN(truncatedLine, [lines objectAtIndex:[lines count]-1]);
-      //NSLog(@"GOT TRUNCATED LINE: %@", truncatedLine);
-    }
+  if (input != nil && [input length] > 1 && [input characterAtIndex:[input length] - 1] != '\n') {
+    ASSIGN(truncatedLine, [lines objectAtIndex:[lines count] - 1]);
+    // NSLog(@"GOT TRUNCATED LINE: %@", truncatedLine);
+  }
 
   // NSLog(@"%@", input);
 
   e = [lines objectEnumerator];
-  while ((line = [e nextObject]) != nil)
-    {
-      NSArray *args = nil;
-      char    msgType = ' ';
+  while ((line = [e nextObject]) != nil) {
+    NSArray *args = nil;
+    char msgType = ' ';
 
-      // skip over empty lines
-      if ([line length] < 1)
-        { 
-          //NSLog(@"skipping empty line");
-          //ReportGarbage(line);
+    // skip over empty lines
+    if ([line length] < 1) {
+      // NSLog(@"skipping empty line");
+      // ReportGarbage(line);
+      continue;
+    }
+
+    args = [line componentsSeparatedByString:@"\t"];
+    msgType = [[args objectAtIndex:0] characterAtIndex:0];
+    // NSLog(@"ARGS: %@", args);
+
+    switch (msgType) {
+      case '0':
+        if ([args count] < 2) {
+          NSDebugLLog(@"FileMover", @"0: not enought args: %@", args);
+          continue;
+        }
+        ASSIGN(message, [args objectAtIndex:1]);
+        ASSIGN(currFile, @"");
+        ASSIGN(currSourceDir, @"");
+        ASSIGN(currTargetDir, @"");
+        numberOfFilesDone = 0.0;
+        doneBatchSize = 0.0;
+
+        [self updateProcessView:NO];
+        break;
+      case '1':
+        if ([args count] < 2) {
+          NSDebugLLog(@"FileMover", @"0: not enought args: %@", args);
+          continue;
+        }
+        ASSIGN(message, [args objectAtIndex:1]);
+        ASSIGN(currFile, @"");
+        ASSIGN(currSourceDir, @"");
+        ASSIGN(currTargetDir, @"");
+        numberOfFilesDone = 0.0;
+        doneBatchSize = 0.0;
+
+        [self updateProcessView:NO];
+        break;
+        // F\t<message>\t<currFile>\t<source dir>\t<target dir>
+      case 'F': {
+        // NSLog(@"%@", input);
+        if ([args count] < 5) {
+          NSDebugLLog(@"FileMover", @"F: not enought args: %@", args);
+          continue;
+        }
+        ASSIGN(message, [args objectAtIndex:1]);
+        ASSIGN(currFile, [args objectAtIndex:2]);
+        ASSIGN(currSourceDir, [args objectAtIndex:3]);
+        ASSIGN(currTargetDir, [args objectAtIndex:4]);
+
+        if (numberOfFiles > 0) {
+          numberOfFilesDone++;
+          // NSLog(@"numberOfFilesDone: %llu (%llu)",
+          //       numberOfFilesDone, numberOfFiles);
+        }
+        if (!isSizing && [currFile isEqualToString:@""]) {
+          [self setState:OperationCompleted];
+        }
+        [self updateProcessView:NO];
+      } break;
+      case 'B': {
+        unsigned long long advance;
+        NSString *arg;
+
+        if ([args count] < 2) {
+          NSDebugLLog(@"FileMover", @"B: not enought args: %@", args);
           continue;
         }
 
-      args = [line componentsSeparatedByString:@"\t"];
-      msgType = [[args objectAtIndex:0] characterAtIndex:0];
-      //NSLog(@"ARGS: %@", args);
-
-      switch (msgType) 
-        {
-        case '0':
-          if ([args count] < 2)
-            {
-              NSDebugLLog(@"FileMover", @"0: not enought args: %@", args);
-              continue;
-            }
-          ASSIGN(message, [args objectAtIndex:1]);
-          ASSIGN(currFile, @"");
-          ASSIGN(currSourceDir, @"");
-          ASSIGN(currTargetDir, @"");
-          numberOfFilesDone = 0.0;          
-          doneBatchSize = 0.0;
-          
-          [self updateProcessView:NO];
-          break;
-        case '1':
-          if ([args count] < 2)
-            {
-              NSDebugLLog(@"FileMover", @"0: not enought args: %@", args);
-              continue;
-            }
-          ASSIGN(message, [args objectAtIndex:1]);
-          ASSIGN(currFile, @"");
-          ASSIGN(currSourceDir, @"");
-          ASSIGN(currTargetDir, @"");
-          numberOfFilesDone = 0.0;          
-          doneBatchSize = 0.0;
-          
-          [self updateProcessView:NO];
-          break;
-          // F\t<message>\t<currFile>\t<source dir>\t<target dir>
-        case 'F':
-          {
-            // NSLog(@"%@", input);
-            if ([args count] < 5)
-              {
-                NSDebugLLog(@"FileMover", @"F: not enought args: %@", args);
-                continue;
-              }
-            ASSIGN(message, [args objectAtIndex:1]);
-            ASSIGN(currFile, [args objectAtIndex:2]);
-            ASSIGN(currSourceDir, [args objectAtIndex:3]);
-            ASSIGN(currTargetDir, [args objectAtIndex:4]);
-
-            if (numberOfFiles > 0)
-              {
-                numberOfFilesDone++;
-                //NSLog(@"numberOfFilesDone: %llu (%llu)", 
-                //      numberOfFilesDone, numberOfFiles);
-              }
-            if (!isSizing && [currFile isEqualToString:@""])
-              {
-                [self setState:OperationCompleted];
-              }
-            [self updateProcessView:NO];
-          }
-          break;
-        case 'B':
-          {
-            unsigned long long advance;
-            NSString *arg;
-
-            if ([args count] < 2)
-              {
-                NSDebugLLog(@"FileMover", @"B: not enought args: %@", args);
-                continue;
-              }
-
-            arg = [args objectAtIndex:1];
-            if (sscanf([arg cString], "%llu", &advance) != 1) 
-              {
-                ReportGarbage(line);
-                break;
-              }
-            doneBatchSize += advance;
-
-            // NSLog(@"doneBatchSize: %llu (%llu)",
-            //       doneBatchSize, totalBatchSize);
-            [self updateProcessView:NO];
-          }
-          break;
-        case 'Q':
-          // Catch and update file count and batch size.
-          // Number of files: "Q\tF\t%u\t+"   <----(Queued Files)
-          //      Batch size: "Q\tS\t%llu\t+" <----(Queued Size)
-          // If field #4 contains '+' it is an update to the totals.
-          {
-            char     qType = ' ';
-            BOOL     isIncrement = NO;
-            NSString *digits;
-            unsigned long long files_count;
-            unsigned long long batch_size;
- 
-            if ([args count] < 3)
-              continue;
-
-            qType = [[args objectAtIndex:1] characterAtIndex:0];
-            digits = [args objectAtIndex:2];
-            if ([args count] > 3 &&
-                [[args objectAtIndex:3] characterAtIndex:0] == '+')
-              {
-                isIncrement = YES;
-              }
-
-            if (qType == 'F') // Queued file count
-              {
-                if (sscanf([digits cString], "%llu", &files_count) != 1)
-                  {
-                    ReportGarbage(line);
-                    continue;
-                  }
-                
-                if (isIncrement)
-                  {
-                    numberOfFiles += files_count;
-                  }
-                else
-                  {
-                    numberOfFiles = files_count;
-                  }
-                continue;
-              }
-            else if (qType == 'S') // Queued batch file size
-              {
-                if (sscanf([digits cString], "%llu", &batch_size) != 1)
-                  {
-                    ReportGarbage(line);
-                    continue;
-                  }
-                
-                if (isIncrement)
-                  {
-                    totalBatchSize += batch_size;
-                  }
-                else
-                  {
-                    totalBatchSize = batch_size;
-                  }
-                continue;
-              }
-          }
-          break;
-        case 'R':
-          [self reportReadError];
-          break;
-        case 'W':
-          [self reportWriteError];
-          break;
-        case 'M':
-          [self reportMoveError];
-          break;
-        case 'S':
-          [self reportSymlink];
-          break;
-        case 'D':
-          [self reportDeleteError];
-          break;
-        case 'A':
-          [self reportAttributesUnchangeable];
-          break;
-        case 'E':
-          [self reportFileExists];
-          break;
-        case 'U':
-          [self reportUnknownFile];
-          break;
-        case 'T':
-          [self reportSymlinkTargetNotExist];
-          break;
-        default:
+        arg = [args objectAtIndex:1];
+        if (sscanf([arg cString], "%llu", &advance) != 1) {
           ReportGarbage(line);
           break;
         }
-    }
+        doneBatchSize += advance;
 
-  if (task != nil && [task isRunning])
-    {
-      [[readPipe fileHandleForReading] waitForDataInBackgroundAndNotify];
-    }
+        // NSLog(@"doneBatchSize: %llu (%llu)",
+        //       doneBatchSize, totalBatchSize);
+        [self updateProcessView:NO];
+      } break;
+      case 'Q':
+        // Catch and update file count and batch size.
+        // Number of files: "Q\tF\t%u\t+"   <----(Queued Files)
+        //      Batch size: "Q\tS\t%llu\t+" <----(Queued Size)
+        // If field #4 contains '+' it is an update to the totals.
+        {
+          char qType = ' ';
+          BOOL isIncrement = NO;
+          NSString *digits;
+          unsigned long long files_count;
+          unsigned long long batch_size;
 
-  //NSLog(@"==== [FileOperation readInput] END");
+          if ([args count] < 3)
+            continue;
+
+          qType = [[args objectAtIndex:1] characterAtIndex:0];
+          digits = [args objectAtIndex:2];
+          if ([args count] > 3 && [[args objectAtIndex:3] characterAtIndex:0] == '+') {
+            isIncrement = YES;
+          }
+
+          if (qType == 'F')  // Queued file count
+          {
+            if (sscanf([digits cString], "%llu", &files_count) != 1) {
+              ReportGarbage(line);
+              continue;
+            }
+
+            if (isIncrement) {
+              numberOfFiles += files_count;
+            } else {
+              numberOfFiles = files_count;
+            }
+            continue;
+          } else if (qType == 'S')  // Queued batch file size
+          {
+            if (sscanf([digits cString], "%llu", &batch_size) != 1) {
+              ReportGarbage(line);
+              continue;
+            }
+
+            if (isIncrement) {
+              totalBatchSize += batch_size;
+            } else {
+              totalBatchSize = batch_size;
+            }
+            continue;
+          }
+        }
+        break;
+      case 'R':
+        [self reportReadError];
+        break;
+      case 'W':
+        [self reportWriteError];
+        break;
+      case 'M':
+        [self reportMoveError];
+        break;
+      case 'S':
+        [self reportSymlink];
+        break;
+      case 'D':
+        [self reportDeleteError];
+        break;
+      case 'A':
+        [self reportAttributesUnchangeable];
+        break;
+      case 'E':
+        [self reportFileExists];
+        break;
+      case 'U':
+        [self reportUnknownFile];
+        break;
+      case 'T':
+        [self reportSymlinkTargetNotExist];
+        break;
+      default:
+        ReportGarbage(line);
+        break;
+    }
+  }
+
+  if (task != nil && [task isRunning]) {
+    [[readPipe fileHandleForReading] waitForDataInBackgroundAndNotify];
+  }
+
+  // NSLog(@"==== [FileOperation readInput] END");
 
   // === UNLOCK
   [inputLock unlock];
@@ -862,45 +751,38 @@ static inline void ReportGarbage(NSString *garbage)
 - (void)destroyOperation
 {
   // Notify ProcessManager
-  [[NSNotificationCenter defaultCenter]
-        postNotificationName:WMOperationWillDestroyNotification
-                      object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:WMOperationWillDestroyNotification
+                                                      object:self];
 }
 
 - (void)sizerTaskTerminated
 {
   NSDebugLLog(@"FileMover", @"FileMover: Sizer task terminated");
-  
-  if (state != OperationStopped)
-    {
-      [self readInput:nil];
-      [[NSNotificationCenter defaultCenter] removeObserver:self];
-      isSizing = NO;
-      [self startFileMover];
-    }
-  else
-    {
-      [NSTimer scheduledTimerWithTimeInterval:1.0
-                                       target:self
-                                     selector:@selector(destroyOperation)
-                                     userInfo:nil
-                                      repeats:NO];
-    }
+
+  if (state != OperationStopped) {
+    [self readInput:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    isSizing = NO;
+    [self startFileMover];
+  } else {
+    [NSTimer scheduledTimerWithTimeInterval:1.0
+                                     target:self
+                                   selector:@selector(destroyOperation)
+                                   userInfo:nil
+                                    repeats:NO];
+  }
 }
 
 - (void)taskTerminated
 {
   NSDebugLLog(@"FileMover", @"FileMover: FileMover task terminated");
 
-  if (state != OperationStopping)
-    {
-      [self readInput:nil];
-      [self setState:OperationCompleted];
-    }
-  else
-    {
-      [self setState:OperationStopped];
-    }
+  if (state != OperationStopping) {
+    [self readInput:nil];
+    [self setState:OperationCompleted];
+  } else {
+    [self setState:OperationStopped];
+  }
 
   [NSTimer scheduledTimerWithTimeInterval:1.0
                                    target:self

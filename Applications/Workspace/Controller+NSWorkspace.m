@@ -237,7 +237,8 @@ static NSString *_rootPath = @"/";
 
   app = [self _connectApplication:appName];
   if (app == nil) {
-    return [self _launchApplication:appName arguments:@[ @"-GSFilePath", fullPath, @"-autolaunch", @"YES" ]];
+    return [self _launchApplication:appName
+                          arguments:@[ @"-GSFilePath", fullPath, @"-autolaunch", @"YES" ]];
   } else {
     @try {
       if (flag == NO) {
@@ -252,7 +253,7 @@ static NSString *_rootPath = @"/";
       return NO;
     }
   }
-  
+
   return YES;
 }
 
@@ -470,7 +471,7 @@ static NSLock *raceLock = nil;
     [[fv window] makeKeyAndOrderFront:self];
     return YES;
   }
-  
+
   return NO;
 }
 

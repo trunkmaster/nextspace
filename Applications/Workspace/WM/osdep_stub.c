@@ -24,7 +24,6 @@ Bool GetCommandForPid(int pid, char ***argv, int *argc)
       WMLogWarning(_("%s is not implemented on this platform; "), __FUNCTION__);
       notified = 1;
     }
-
   }
 
   *argv = NULL;

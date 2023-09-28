@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2006-2014 Sergii Stoian
 // Copyright (C) 2005 Saso Kiselkov
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -23,49 +23,45 @@
 #import "Delete.h"
 #import "../Communicator.h"
 
-void DeleteOperation(NSString * dir, NSArray * files)
+void DeleteOperation(NSString *dir, NSArray *files)
 {
-  Deleter       *d = [Deleter new];
-  NSEnumerator  *e;
-  NSString      *filename;
+  Deleter *d = [Deleter new];
+  NSEnumerator *e;
+  NSString *filename;
   NSFileManager *fm = [NSFileManager defaultManager];
-  Communicator  *comm = [Communicator shared];
+  Communicator *comm = [Communicator shared];
 
   e = [files objectEnumerator];
-  while (((filename = [e nextObject]) != nil) && !isStopped)
-    {
-      [comm showProcessingFilename:filename
-                      sourcePrefix:dir
-                      targetPrefix:nil
-                     bytesAdvanced:0
-                     operationType:DeleteOp];
-      
-      [fm removeFileAtPath:[dir stringByAppendingPathComponent:filename]
-                   handler:d];
-    }
-  
+  while (((filename = [e nextObject]) != nil) && !isStopped) {
+    [comm showProcessingFilename:filename
+                    sourcePrefix:dir
+                    targetPrefix:nil
+                   bytesAdvanced:0
+                   operationType:DeleteOp];
+
+    [fm removeFileAtPath:[dir stringByAppendingPathComponent:filename] handler:d];
+  }
+
   DESTROY(d);
 }
 
 @implementation Deleter
 
-- (BOOL)      fileManager:(NSFileManager*)fileManager
-  shouldProceedAfterError:(NSDictionary*)errorDictionary
+- (BOOL)fileManager:(NSFileManager *)fileManager
+    shouldProceedAfterError:(NSDictionary *)errorDictionary
 {
   [[Communicator shared] howToHandleProblem:DeleteError];
 
   return YES;
 }
 
-- (void)fileManager:(NSFileManager*)fileManager
-    willProcessPath:(NSString*)path
+- (void)fileManager:(NSFileManager *)fileManager willProcessPath:(NSString *)path
 {
-  [[Communicator shared] 
-    showProcessingFilename:[path lastPathComponent]
-	      sourcePrefix:[path stringByDeletingLastPathComponent]
-	      targetPrefix:nil
-	     bytesAdvanced:0
-             operationType:DeleteOp];
+  [[Communicator shared] showProcessingFilename:[path lastPathComponent]
+                                   sourcePrefix:[path stringByDeletingLastPathComponent]
+                                   targetPrefix:nil
+                                  bytesAdvanced:0
+                                  operationType:DeleteOp];
 }
 
 @end

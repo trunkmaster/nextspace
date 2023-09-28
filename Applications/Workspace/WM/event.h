@@ -33,7 +33,7 @@
 #include <stdnoreturn.h>
 #endif
 
-typedef void (WDeathHandler)(pid_t pid, unsigned int status, void *cdata);
+typedef void(WDeathHandler)(pid_t pid, unsigned int status, void *cdata);
 
 void WMRunLoop_V0(void);
 void WMRunLoop_V1(void);

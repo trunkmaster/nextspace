@@ -38,7 +38,7 @@ CFRunLoopRef wm_runloop = NULL;
 static BOOL _isWindowServerReady(void)
 {
   Display *xdpy = XOpenDisplay(NULL);
-  BOOL    ready = (xdpy == NULL ? NO : YES);
+  BOOL ready = (xdpy == NULL ? NO : YES);
 
   if (ready) {
     XCloseDisplay(xdpy);
@@ -56,9 +56,9 @@ static int _wmRunningErrorHandler(Display *dpy, XErrorEvent *error)
 
 static BOOL _isWindowManagerRunning(void)
 {
-  Display       *xDisplay = NULL;
-  int           xScreen = -1;
-  long          event_mask;
+  Display *xDisplay = NULL;
+  int xScreen = -1;
+  long event_mask;
   XErrorHandler oldHandler;
 
   oldHandler = XSetErrorHandler((XErrorHandler)_wmRunningErrorHandler);
@@ -74,8 +74,7 @@ static BOOL _isWindowManagerRunning(void)
   if (CantManageScreen) {
     XCloseDisplay(xDisplay);
     return YES;
-  }
-  else {
+  } else {
     event_mask &= ~(SubstructureRedirectMask);
     XSelectInput(xDisplay, RootWindow(xDisplay, xScreen), event_mask);
     XSync(xDisplay, False);
@@ -95,9 +94,9 @@ void WSUncaughtExceptionHandler(NSException *e)
 
 int WSApplicationMain(int argc, const char **argv)
 {
-  NSDictionary	*infoDict;
-  NSString	*mainModelFile;
-  
+  NSDictionary *infoDict;
+  NSString *mainModelFile;
+
   CREATE_AUTORELEASE_POOL(pool);
 
   infoDict = [[NSBundle mainBundle] infoDictionary];
@@ -105,7 +104,7 @@ int WSApplicationMain(int argc, const char **argv)
   [WSApplication sharedApplication];
 
   mainModelFile = [infoDict objectForKey:@"NSMainNibFile"];
-  if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO) {
+  if (mainModelFile != nil && [mainModelFile isEqual:@""] == NO) {
     if ([NSBundle loadNibNamed:mainModelFile owner:NSApp] == NO) {
       NSLog(_(@"Cannot load the main model file '%@'"), mainModelFile);
     }
@@ -131,18 +130,17 @@ int main(int argc, const char **argv)
   }
 
   if (_isWindowManagerRunning() == YES) {
-    fprintf(stderr,
-            "[Workspace] Error: other window manager already running. Quitting...\n");
-    exit(1);    
+    fprintf(stderr, "[Workspace] Error: other window manager already running. Quitting...\n");
+    exit(1);
   }
 
-  fprintf(stderr,"=== Starting Workspace ===\n");
+  fprintf(stderr, "=== Starting Workspace ===\n");
   workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
 
   //--- Window Manager thread queue -------------------------------------
   {
     dispatch_queue_t wm_q;
-    
+
     // DISPATCH_QUEUE_CONCURRENT is mandatory for CFRunLoop run.
     wm_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_CONCURRENT);
     fprintf(stderr, "=== Initializing Window Manager ===\n");
@@ -158,22 +156,26 @@ int main(int argc, const char **argv)
       WSUpdateScreenInfo(wDefaultScreen());
     });
     fprintf(stderr, "=== Window Manager initialized! ===\n");
-    
+
     // Start WM run loop V0 to catch events while V1 is warming up.
-    dispatch_async(wm_q, ^{ WMRunLoop_V0(); });
-    dispatch_async(wm_q, ^{ WMRunLoop_V1(); });
+    dispatch_async(wm_q, ^{
+      WMRunLoop_V0();
+    });
+    dispatch_async(wm_q, ^{
+      WMRunLoop_V1();
+    });
   }
-  
+
   //--- Workspace (GNUstep) queue ---------------------------------------
   fprintf(stderr, "=== Workspace initialized! ===\n");
   dispatch_sync(workspace_q, ^{
-      NSSetUncaughtExceptionHandler(WSUncaughtExceptionHandler);
-      WSApplicationMain(argc, argv);
-    });
+    NSSetUncaughtExceptionHandler(WSUncaughtExceptionHandler);
+    WSApplicationMain(argc, argv);
+  });
   fprintf(stderr, "=== Workspace finished with exit code: %i ===\n", ws_quit_code);
-  
+
   wShutdown(WMExitMode);
   fprintf(stderr, "=== Window Manager execution has been stopped ===\n");
-  
+
   return ws_quit_code;
 }

@@ -108,7 +108,8 @@ CFStringRef WMDidChangeWindowAppearanceSettings = CFSTR("WMDidChangeWindowAppear
 CFStringRef WMDidChangeIconAppearanceSettings = CFSTR("WMDidChangeIconAppearanceSettings");
 CFStringRef WMDidChangeIconTileSettings = CFSTR("WMDidChangeIconTileSettings");
 CFStringRef WMDidChangeMenuAppearanceSettings = CFSTR("WMDidChangeMenuAppearanceSettings");
-CFStringRef WMDidChangeMenuTitleAppearanceSettings = CFSTR("WMDidChangeMenuTitleAppearanceSettings");
+CFStringRef WMDidChangeMenuTitleAppearanceSettings =
+    CFSTR("WMDidChangeMenuTitleAppearanceSettings");
 
 CFStringRef WMDidChangeKeyboardLayoutNotification = CFSTR("WMDidChangeKeyboardLayoutNotification");
 CFStringRef WMDidChangeDockContentNotification = CFSTR("WMDidChangeDockContentNotification");
@@ -118,7 +119,8 @@ CFStringRef WMDidChangeDockContentNotification = CFSTR("WMDidChangeDockContentNo
 CFStringRef WMShouldHideOthersNotification = CFSTR("WMShouldHideOthersNotification");
 CFStringRef WMDidHideOthersNotification = CFSTR("WMDidHideOthersNotification");
 // Quit or Force Quit
-CFStringRef WMShouldTerminateApplicationNotification = CFSTR("WMShouldTerminateApplicationNotification");
+CFStringRef WMShouldTerminateApplicationNotification =
+    CFSTR("WMShouldTerminateApplicationNotification");
 CFStringRef WMDidTerminateApplicationNotification = CFSTR("WMDidTerminateApplicationNotification");
 // Windows -> Zoom Window
 CFStringRef WMShouldZoomWindowNotification = CFSTR("WMShouldZoomWindowNotification");
@@ -139,41 +141,37 @@ CFStringRef WMDidMinmizeWindowNotification = CFSTR("WMDidMinmizeWindowNotificati
 CFStringRef WMShouldCloseWindowNotification = CFSTR("WMShouldCloseWindowNotification");
 CFStringRef WMDidCloseWindowNotification = CFSTR("WMDidCloseWindowNotification");
 
-
 /***** Local *****/
 static WScreen **wScreen = NULL;
 static unsigned int _NumLockMask = 0;
 static unsigned int _ScrollLockMask = 0;
 
-WScreen *wDefaultScreen(void)
-{
-  return wScreen[0];
-}
+WScreen *wDefaultScreen(void) { return wScreen[0]; }
 
 /*--- Xlib errors -------------------------------------------------------------*/
 
-static int _catchXError(Display * dpy, XErrorEvent * error)
+static int _catchXError(Display *dpy, XErrorEvent *error)
 {
   char buffer[MAXLINE];
 
   /* ignore some errors */
-  if (error->resourceid != None
-      && ((error->error_code == BadDrawable && error->request_code == X_GetGeometry)
-          || (error->error_code == BadMatch && (error->request_code == X_SetInputFocus))
-          || (error->error_code == BadWindow)
-          /*
-            && (error->request_code == X_GetWindowAttributes
-            || error->request_code == X_SetInputFocus
-            || error->request_code == X_ChangeWindowAttributes
-            || error->request_code == X_GetProperty
-            || error->request_code == X_ChangeProperty
-            || error->request_code == X_QueryTree
-            || error->request_code == X_GrabButton
-            || error->request_code == X_UngrabButton
-            || error->request_code == X_SendEvent
-            || error->request_code == X_ConfigureWindow))
-          */
-          || (error->request_code == X_InstallColormap))) {
+  if (error->resourceid != None &&
+      ((error->error_code == BadDrawable && error->request_code == X_GetGeometry) ||
+       (error->error_code == BadMatch && (error->request_code == X_SetInputFocus)) ||
+       (error->error_code == BadWindow)
+       /*
+         && (error->request_code == X_GetWindowAttributes
+         || error->request_code == X_SetInputFocus
+         || error->request_code == X_ChangeWindowAttributes
+         || error->request_code == X_GetProperty
+         || error->request_code == X_ChangeProperty
+         || error->request_code == X_QueryTree
+         || error->request_code == X_GrabButton
+         || error->request_code == X_UngrabButton
+         || error->request_code == X_SendEvent
+         || error->request_code == X_ConfigureWindow))
+       */
+       || (error->request_code == X_InstallColormap))) {
     return 0;
   }
   FormatXError(dpy, error, buffer, MAXLINE);
@@ -181,27 +179,25 @@ static int _catchXError(Display * dpy, XErrorEvent * error)
   return -1;
 }
 
-void wSetErrorHandler(void)
-{
-  XSetErrorHandler((XErrorHandler)_catchXError);
-}
+void wSetErrorHandler(void) { XSetErrorHandler((XErrorHandler)_catchXError); }
 
 /*--- Signals -----------------------------------------------------------------*/
 
 /* for SunOS */
 #ifndef SA_RESTART
-# define SA_RESTART 0
+#define SA_RESTART 0
 #endif
 
 /* Just in case, for weirdo systems */
 #ifndef SA_NODEFER
-# define SA_NODEFER 0
+#define SA_NODEFER 0
 #endif
 
 /* call only inside signal handlers, with signals blocked */
-#define SIG_WCHANGE_STATE(nstate) {             \
-    w_global.program.signal_state = (nstate);	\
-    w_global.program.state = (nstate);		\
+#define SIG_WCHANGE_STATE(nstate)             \
+  {                                           \
+    w_global.program.signal_state = (nstate); \
+    w_global.program.state = (nstate);        \
   }
 
 /* User generated exit signal handler. */
@@ -224,14 +220,14 @@ static RETSIGTYPE _handleExitSig(int sig)
   }
 
   sigprocmask(SIG_UNBLOCK, &sigs, NULL);
-  DispatchEvent(NULL);	/* Dispatch events imediately. */
+  DispatchEvent(NULL); /* Dispatch events imediately. */
 }
 
 /* Dummy signal handler */
 static void _dummyHandler(int sig)
 {
   /* Parameter is not used, but tell the compiler that it is ok */
-  (void) sig;
+  (void)sig;
 }
 
 /* General signal handler. Exits the program gently. */
@@ -261,7 +257,7 @@ static RETSIGTYPE _buryChild(int foo)
   sigset_t sigs;
 
   /* Parameter not used, but tell the compiler that it is ok */
-  (void) foo;
+  (void)foo;
 
   sigfillset(&sigs);
   /* Block signals so that NotifyDeadProcess() doesn't get fux0red */
@@ -286,7 +282,7 @@ static RETSIGTYPE _buryChild(int foo)
 static void _setupSignalHandling(void)
 {
   struct sigaction sig_action;
-  
+
   /* emergency exit... */
   sig_action.sa_handler = _handleSig;
   sigemptyset(&sig_action.sa_mask);
@@ -299,11 +295,11 @@ static void _setupSignalHandling(void)
   /* Here we set SA_RESTART for safety, because SIGUSR1 may not be handled
    * immediately. -Dan */
   sig_action.sa_flags = SA_RESTART;
-  sigaction(SIGTERM, &sig_action, NULL);      // Logout panel - OK
-  sigaction(SIGINT, &sig_action, NULL);       // Logout panel - OK
-  /* sigaction(SIGHUP, &sig_action, NULL); */ // managed by Desktop
-  /* sigaction(SIGUSR1, &sig_action, NULL);*/ // managed by Desktop
-  sigaction(SIGUSR2, &sig_action, NULL);      // WindowMaker reread defaults - OK
+  sigaction(SIGTERM, &sig_action, NULL);       // Logout panel - OK
+  sigaction(SIGINT, &sig_action, NULL);        // Logout panel - OK
+  /* sigaction(SIGHUP, &sig_action, NULL); */  // managed by Desktop
+  /* sigaction(SIGUSR1, &sig_action, NULL);*/  // managed by Desktop
+  sigaction(SIGUSR2, &sig_action, NULL);       // WindowMaker reread defaults - OK
 
   /* ignore dead pipe */
   /* Because POSIX mandates that only signal with handlers are reset
@@ -333,7 +329,7 @@ static void _setupSignalHandling(void)
 
   // Unmanage signals which are managed by GNUstep part of Desktop
   signal(SIGHUP, SIG_IGN);   // NEXTSPACE
-  signal(SIGUSR1, SIG_IGN);  // NEXTSPACE  
+  signal(SIGUSR1, SIG_IGN);  // NEXTSPACE
 }
 
 /*--- Keyboard ----------------------------------------------------------------*/
@@ -343,10 +339,8 @@ static void _getOffendingModifiers(void)
   int i;
   XModifierKeymap *modmap;
   KeyCode nlock, slock;
-  static int mask_table[8] = {
-    ShiftMask, LockMask, ControlMask, Mod1Mask,
-    Mod2Mask, Mod3Mask, Mod4Mask, Mod5Mask
-  };
+  static int mask_table[8] = {ShiftMask, LockMask, ControlMask, Mod1Mask,
+                              Mod2Mask,  Mod3Mask, Mod4Mask,    Mod5Mask};
 
   nlock = XKeysymToKeycode(dpy, XK_Num_Lock);
   slock = XKeysymToKeycode(dpy, XK_Scroll_Lock);
@@ -382,68 +376,61 @@ void wHackedGrabKey(int keycode, unsigned int modifiers, Window grab_window, Boo
    * in the server?
    */
   if (_NumLockMask)
-    XGrabKey(dpy, keycode, modifiers | _NumLockMask,
-             grab_window, owner_events, pointer_mode, keyboard_mode);
+    XGrabKey(dpy, keycode, modifiers | _NumLockMask, grab_window, owner_events, pointer_mode,
+             keyboard_mode);
   if (_ScrollLockMask)
-    XGrabKey(dpy, keycode, modifiers | _ScrollLockMask,
-             grab_window, owner_events, pointer_mode, keyboard_mode);
+    XGrabKey(dpy, keycode, modifiers | _ScrollLockMask, grab_window, owner_events, pointer_mode,
+             keyboard_mode);
   if (_NumLockMask && _ScrollLockMask)
-    XGrabKey(dpy, keycode, modifiers | _NumLockMask | _ScrollLockMask,
-             grab_window, owner_events, pointer_mode, keyboard_mode);
+    XGrabKey(dpy, keycode, modifiers | _NumLockMask | _ScrollLockMask, grab_window, owner_events,
+             pointer_mode, keyboard_mode);
   if (_NumLockMask)
-    XGrabKey(dpy, keycode, modifiers | _NumLockMask | LockMask,
-             grab_window, owner_events, pointer_mode, keyboard_mode);
+    XGrabKey(dpy, keycode, modifiers | _NumLockMask | LockMask, grab_window, owner_events,
+             pointer_mode, keyboard_mode);
   if (_ScrollLockMask)
-    XGrabKey(dpy, keycode, modifiers | _ScrollLockMask | LockMask,
-             grab_window, owner_events, pointer_mode, keyboard_mode);
+    XGrabKey(dpy, keycode, modifiers | _ScrollLockMask | LockMask, grab_window, owner_events,
+             pointer_mode, keyboard_mode);
   if (_NumLockMask && _ScrollLockMask)
-    XGrabKey(dpy, keycode, modifiers | _NumLockMask | _ScrollLockMask | LockMask,
-             grab_window, owner_events, pointer_mode, keyboard_mode);
+    XGrabKey(dpy, keycode, modifiers | _NumLockMask | _ScrollLockMask | LockMask, grab_window,
+             owner_events, pointer_mode, keyboard_mode);
   /* phew, I guess that's all, right? */
 }
 #endif
 
-void wHackedGrabButton(unsigned int button, unsigned int modifiers,
-                       Window grab_window, Bool owner_events,
-                       unsigned int event_mask, int pointer_mode, int keyboard_mode,
-                       Window confine_to, Cursor cursor)
+void wHackedGrabButton(unsigned int button, unsigned int modifiers, Window grab_window,
+                       Bool owner_events, unsigned int event_mask, int pointer_mode,
+                       int keyboard_mode, Window confine_to, Cursor cursor)
 {
-  XGrabButton(dpy, button, modifiers, grab_window, owner_events,
-              event_mask, pointer_mode, keyboard_mode, confine_to, cursor);
+  XGrabButton(dpy, button, modifiers, grab_window, owner_events, event_mask, pointer_mode,
+              keyboard_mode, confine_to, cursor);
 
   if (modifiers == AnyModifier)
     return;
 
-  XGrabButton(dpy, button, modifiers | LockMask, grab_window, owner_events,
-              event_mask, pointer_mode, keyboard_mode, confine_to, cursor);
+  XGrabButton(dpy, button, modifiers | LockMask, grab_window, owner_events, event_mask,
+              pointer_mode, keyboard_mode, confine_to, cursor);
 
 #ifdef NUMLOCK_HACK
   /* same as above, but for mouse buttons */
   if (_NumLockMask)
-    XGrabButton(dpy, button, modifiers | _NumLockMask,
-                grab_window, owner_events, event_mask, pointer_mode,
-                keyboard_mode, confine_to, cursor);
+    XGrabButton(dpy, button, modifiers | _NumLockMask, grab_window, owner_events, event_mask,
+                pointer_mode, keyboard_mode, confine_to, cursor);
   if (_ScrollLockMask)
-    XGrabButton(dpy, button, modifiers | _ScrollLockMask,
-                grab_window, owner_events, event_mask, pointer_mode,
-                keyboard_mode, confine_to, cursor);
+    XGrabButton(dpy, button, modifiers | _ScrollLockMask, grab_window, owner_events, event_mask,
+                pointer_mode, keyboard_mode, confine_to, cursor);
   if (_NumLockMask && _ScrollLockMask)
-    XGrabButton(dpy, button, modifiers | _ScrollLockMask | _NumLockMask,
-                grab_window, owner_events, event_mask, pointer_mode,
-                keyboard_mode, confine_to, cursor);
+    XGrabButton(dpy, button, modifiers | _ScrollLockMask | _NumLockMask, grab_window, owner_events,
+                event_mask, pointer_mode, keyboard_mode, confine_to, cursor);
   if (_NumLockMask)
-    XGrabButton(dpy, button, modifiers | _NumLockMask | LockMask,
-                grab_window, owner_events, event_mask, pointer_mode,
-                keyboard_mode, confine_to, cursor);
+    XGrabButton(dpy, button, modifiers | _NumLockMask | LockMask, grab_window, owner_events,
+                event_mask, pointer_mode, keyboard_mode, confine_to, cursor);
   if (_ScrollLockMask)
-    XGrabButton(dpy, button, modifiers | _ScrollLockMask | LockMask,
-                grab_window, owner_events, event_mask, pointer_mode,
-                keyboard_mode, confine_to, cursor);
+    XGrabButton(dpy, button, modifiers | _ScrollLockMask | LockMask, grab_window, owner_events,
+                event_mask, pointer_mode, keyboard_mode, confine_to, cursor);
   if (_NumLockMask && _ScrollLockMask)
-    XGrabButton(dpy, button, modifiers | _ScrollLockMask | _NumLockMask | LockMask,
-                grab_window, owner_events, event_mask, pointer_mode,
-                keyboard_mode, confine_to, cursor);
-#endif				/* NUMLOCK_HACK */
+    XGrabButton(dpy, button, modifiers | _ScrollLockMask | _NumLockMask | LockMask, grab_window,
+                owner_events, event_mask, pointer_mode, keyboard_mode, confine_to, cursor);
+#endif /* NUMLOCK_HACK */
 }
 
 /*--- Init and startup --------------------------------------------------------*/
@@ -470,7 +457,8 @@ static void _initializeAtoms(void)
   w_global.atom.wmaker.icon_tile = XInternAtom(dpy, "_WINDOWMAKER_ICON_TILE", False);
 
   w_global.atom.gnustep.wm_attr = XInternAtom(dpy, "_GNUSTEP_WM_ATTR", False);
-  w_global.atom.gnustep.wm_miniaturize_window = XInternAtom(dpy, "_GNUSTEP_WM_MINIATURIZE_WINDOW", False);
+  w_global.atom.gnustep.wm_miniaturize_window =
+      XInternAtom(dpy, "_GNUSTEP_WM_MINIATURIZE_WINDOW", False);
   w_global.atom.gnustep.wm_hide_app = XInternAtom(dpy, "_GNUSTEP_WM_HIDE_APP", False);
   w_global.atom.gnustep.titlebar_state = XInternAtom(dpy, "_GNUSTEP_TITLEBAR_STATE", False);
 
@@ -488,7 +476,7 @@ static void _initializeCursors(void)
   Pixmap cur = XCreatePixmap(dpy, DefaultRootWindow(dpy), 16, 16, 1);
   GC gc = XCreateGC(dpy, cur, 0, NULL);
   XColor black;
-  
+
   memset(&black, 0, sizeof(XColor));
   XSetForeground(dpy, gc, 0);
   XFillRectangle(dpy, cur, gc, 0, 0, 16, 16);
@@ -524,7 +512,7 @@ static Bool _isWindowInList(Window window, Window *list, int count)
 
 /*
  * Manages all windows in the screen.
- * Called when the wm is being started. No events can be processed while the windows 
+ * Called when the wm is being started. No events can be processed while the windows
  * are being reparented/managed.
  */
 static void _manageAllWindows(WScreen *scr)
@@ -537,7 +525,7 @@ static void _manageAllWindows(WScreen *scr)
 
   // Startup 1 begins
   scr->flags.startup = 1;
-  
+
   XGrabServer(dpy);
   XQueryTree(dpy, scr->root_win, &root, &parent, &children, &nchildren);
 
@@ -576,11 +564,9 @@ static void _manageAllWindows(WScreen *scr)
         wwin->flags.shaded = 0;
         wShadeWindow(wwin);
       }
-      if (wwin->flags.miniaturized
-          && (wwin->transient_for == None
-              || wwin->transient_for == scr->root_win
-              || !_isWindowInList(wwin->transient_for, children, nchildren))) {
-
+      if (wwin->flags.miniaturized &&
+          (wwin->transient_for == None || wwin->transient_for == scr->root_win ||
+           !_isWindowInList(wwin->transient_for, children, nchildren))) {
         wwin->flags.skip_next_animation = 1;
         wwin->flags.miniaturized = 0;
         wIconifyWindow(wwin);
@@ -620,7 +606,7 @@ static void _manageAllWindows(WScreen *scr)
     WMNextEvent(dpy, &ev);
     WMHandleEvent(&ev);
   }
-  
+
   // Startup 2 finishes in Controller-applicationsDidFinishLaunching
   /* scr->flags.startup2 = 0; */
 }
@@ -637,7 +623,7 @@ void wStartUp(Bool defaultScreenOnly)
   /* Ignore CapsLock in modifiers */
   w_global.shortcut.modifiers_mask = 0xff & ~LockMask;
   _getOffendingModifiers();
-  
+
   /* Ignore NumLock and ScrollLock too */
   w_global.shortcut.modifiers_mask &= ~(_NumLockMask | _ScrollLockMask);
 
@@ -654,7 +640,7 @@ void wStartUp(Bool defaultScreenOnly)
   _initializeCursors();
 
   _setupSignalHandling();
-  
+
   /* set hook for out event dispatcher in WINGs event dispatcher */
   WMHookEventHandler(DispatchEvent);
 
@@ -673,7 +659,7 @@ void wStartUp(Bool defaultScreenOnly)
   /* check sanity of some values */
   if (wPreferences.icon_size < 64) {
     WMLogWarning(_("Icon size is configured to %i, but it's too small. Using 64 instead"),
-             wPreferences.icon_size);
+                 wPreferences.icon_size);
     wPreferences.icon_size = 64;
   }
 
@@ -690,8 +676,8 @@ void wStartUp(Bool defaultScreenOnly)
   w_global.xext.shape.supported = XShapeQueryExtension(dpy, &w_global.xext.shape.event_base, &j);
 #endif
 #ifdef USE_XKB
-  w_global.xext.xkb.supported = XkbQueryExtension(dpy, NULL, &w_global.xext.xkb.event_base,
-                                                  NULL, NULL, NULL);
+  w_global.xext.xkb.supported =
+      XkbQueryExtension(dpy, NULL, &w_global.xext.xkb.event_base, NULL, NULL, NULL);
   if (!w_global.xext.xkb.supported) {
     WMLogWarning(_("XKB is not supported."));
   }
@@ -707,14 +693,14 @@ void wStartUp(Bool defaultScreenOnly)
       }
     }
   }
-  
+
   /* manage the screen */
   max = defaultScreenOnly ? 1 : ScreenCount(dpy);
   wScreen = wmalloc(sizeof(WScreen *) * max);
   wScreen[0] = wScreenInit(DefaultScreen(dpy));
-  
+
   scr = wScreen[0];
-    
+
   /* Center for notifications inside WM. */
   scr->notificationCenter = CFNotificationCenterGetLocalCenter();
 
@@ -730,12 +716,12 @@ void wStartUp(Bool defaultScreenOnly)
   if (!wPreferences.flags.nodock && wScreen[0]->dock) {
     wScreen[0]->last_dock = wScreen[0]->dock;
   }
-  
+
   _manageAllWindows(scr);
 
   scr->last_desktop = 0;
   wDesktopForceChange(scr, 0, NULL);
-  
+
   if (!wPreferences.flags.noclip) {
     wDockShowIcons(scr->desktops[scr->current_desktop]->clip);
   }
@@ -746,14 +732,13 @@ void wStartUp(Bool defaultScreenOnly)
   /* If we're not restarting, restore session */
   if (!wPreferences.flags.norestore) {
     int lastDesktop = wNETWMGetCurrentDesktopFromHint(scr);
-    
+
     wSessionRestoreState(scr);
 
     /* go to desktop where we were before restart */
     if (lastDesktop >= 0) {
       wDesktopForceChange(scr, lastDesktop, NULL);
-    }
-    else {
+    } else {
       wSessionRestoreLastDesktop(scr);
     }
   }
@@ -787,8 +772,7 @@ void wInitialize(int argc, char **argv)
 
   if (w_global.locale) {
     setenv("LANG", w_global.locale, 1);
-  }
-  else {
+  } else {
     w_global.locale = getenv("LC_ALL");
     if (!w_global.locale) {
       w_global.locale = getenv("LANG");
@@ -800,10 +784,9 @@ void wInitialize(int argc, char **argv)
   if (!w_global.locale || strcmp(w_global.locale, "C") == 0 ||
       strcmp(w_global.locale, "POSIX") == 0) {
     w_global.locale = NULL;
-  }
-  else {
+  } else {
     char *ptr;
-    
+
     w_global.locale = wstrdup(w_global.locale);
     ptr = strchr(w_global.locale, '.');
     if (ptr)

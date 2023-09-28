@@ -41,4 +41,5 @@
 @property (readwrite) const void *object;
 @end
 
-#define CF_NOTIFICATION(X) ([NSString stringWithCString:CFStringGetCStringPtr((X), CFStringGetSystemEncoding())])
+#define CF_NOTIFICATION(X) \
+  ([NSString stringWithCString:CFStringGetCStringPtr((X), CFStringGetSystemEncoding())])

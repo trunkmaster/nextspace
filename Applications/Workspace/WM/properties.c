@@ -36,16 +36,15 @@
 #include "GNUstep.h"
 #include "properties.h"
 
-
-int PropGetNormalHints(Window window, XSizeHints * size_hints, int *pre_iccm)
+int PropGetNormalHints(Window window, XSizeHints *size_hints, int *pre_iccm)
 {
   long supplied_hints;
 
   if (!XGetWMNormalHints(dpy, window, size_hints, &supplied_hints)) {
     return False;
   }
-  if (supplied_hints == (USPosition | USSize | PPosition | PSize | PMinSize | PMaxSize
-                         | PResizeInc | PAspect)) {
+  if (supplied_hints ==
+      (USPosition | USSize | PPosition | PSize | PMinSize | PMaxSize | PResizeInc | PAspect)) {
     *pre_iccm = 1;
   } else {
     *pre_iccm = 0;
@@ -74,7 +73,7 @@ int PropGetWMClass(Window window, char **wm_class, char **wm_instance)
   return True;
 }
 
-void PropGetProtocols(Window window, WProtocols * prots)
+void PropGetProtocols(Window window, WProtocols *prots)
 {
   Atom *protocols;
   int count, i;
@@ -98,7 +97,8 @@ void PropGetProtocols(Window window, WProtocols * prots)
   XFree(protocols);
 }
 
-unsigned char *PropGetCheckProperty(Window window, Atom hint, Atom type, int format, int count, int *retCount)
+unsigned char *PropGetCheckProperty(Window window, Atom hint, Atom type, int format, int count,
+                                    int *retCount)
 {
   Atom type_ret;
   int fmt_ret;
@@ -112,14 +112,13 @@ unsigned char *PropGetCheckProperty(Window window, Atom hint, Atom type, int for
   else
     tmp = count;
 
-  if (XGetWindowProperty(dpy, window, hint, 0, tmp, False, type,
-                         &type_ret, &fmt_ret, &nitems_ret, &bytes_after_ret,
-                         (unsigned char **)&data) != Success || !data)
+  if (XGetWindowProperty(dpy, window, hint, 0, tmp, False, type, &type_ret, &fmt_ret, &nitems_ret,
+                         &bytes_after_ret, (unsigned char **)&data) != Success ||
+      !data)
     return NULL;
 
-  if ((type != AnyPropertyType && type != type_ret)
-      || (count > 0 && nitems_ret != count)
-      || (format != 0 && format != fmt_ret)) {
+  if ((type != AnyPropertyType && type != type_ret) || (count > 0 && nitems_ret != count) ||
+      (format != 0 && format != fmt_ret)) {
     XFree(data);
     return NULL;
   }
@@ -130,7 +129,7 @@ unsigned char *PropGetCheckProperty(Window window, Atom hint, Atom type, int for
   return data;
 }
 
-int PropGetGNUstepWMAttr(Window window, GNUstepWMAttributes ** attr)
+int PropGetGNUstepWMAttr(Window window, GNUstepWMAttributes **attr)
 {
   unsigned long *data;
 
@@ -169,11 +168,11 @@ void PropSetWMakerProtocols(Window root)
   protocols[count++] = w_global.atom.wmaker.wm_function;
   protocols[count++] = w_global.atom.wmaker.noticeboard;
 
-  XChangeProperty(dpy, root, w_global.atom.wmaker.wm_protocols, XA_ATOM,
-                  32, PropModeReplace, (unsigned char *)protocols, count);
+  XChangeProperty(dpy, root, w_global.atom.wmaker.wm_protocols, XA_ATOM, 32, PropModeReplace,
+                  (unsigned char *)protocols, count);
 }
 
-void PropSetIconTileHint(WScreen * scr, RImage * image)
+void PropSetIconTileHint(WScreen *scr, RImage *image)
 {
   static Atom imageAtom = 0;
   unsigned char *tmp;
@@ -217,10 +216,9 @@ void PropSetIconTileHint(WScreen * scr, RImage * image)
     }
   }
 
-  XChangeProperty(dpy, scr->info_window, w_global.atom.wmaker.icon_tile,
-                  imageAtom, 8, PropModeReplace, tmp, image->width * image->height * 4 + 4);
+  XChangeProperty(dpy, scr->info_window, w_global.atom.wmaker.icon_tile, imageAtom, 8,
+                  PropModeReplace, tmp, image->width * image->height * 4 + 4);
   wfree(tmp);
-
 }
 
 Window PropGetClientLeader(Window window)
@@ -228,12 +226,13 @@ Window PropGetClientLeader(Window window)
   Window *win;
   Window leader;
 
-  win = (Window *) PropGetCheckProperty(window, w_global.atom.wm.client_leader, XA_WINDOW, 32, 1, NULL);
+  win = (Window *)PropGetCheckProperty(window, w_global.atom.wm.client_leader, XA_WINDOW, 32, 1,
+                                       NULL);
 
   if (!win)
     return None;
 
-  leader = (Window) * win;
+  leader = (Window)*win;
   XFree(win);
 
   return leader;
@@ -244,8 +243,8 @@ int PropGetWindowState(Window window)
   long *data;
   long state;
 
-  data = (long *)PropGetCheckProperty(window, w_global.atom.wm.state,
-                                      w_global.atom.wm.state, 32, 1, NULL);
+  data = (long *)PropGetCheckProperty(window, w_global.atom.wm.state, w_global.atom.wm.state, 32, 1,
+                                      NULL);
 
   if (!data)
     return -1;

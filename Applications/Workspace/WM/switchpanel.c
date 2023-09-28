@@ -81,10 +81,10 @@ struct SwitchPanel {
 #define ICON_SIZE 48
 #define ICON_TILE_SIZE 64
 #define LABEL_HEIGHT 25
-#define SCREEN_BORDER_SPACING 2*20
+#define SCREEN_BORDER_SPACING 2 * 20
 
-#define ICON_SELECTED (1<<1)
-#define ICON_DIM (1<<2)
+#define ICON_SELECTED (1 << 1)
+#define ICON_DIM (1 << 2)
 
 static int canReceiveFocus(WWindow *wwin)
 {
@@ -115,8 +115,7 @@ static Bool sameWindowClass(WWindow *wwin, WWindow *curwin)
   if ((curwin->flags.is_gnustep || !strcmp(curwin->wm_class, "GNUstep")) &&
       strcmp(wwin->wm_instance, curwin->wm_instance)) {
     return False;
-  }
-  else if (strcmp(wwin->wm_class, curwin->wm_class)) {
+  } else if (strcmp(wwin->wm_class, curwin->wm_class)) {
     return False;
   }
 
@@ -136,7 +135,7 @@ static void changeImage(WSwitchPanel *panel, int idecks, int selected, Bool dim,
 
   icon = (WMFrame *)CFArrayGetValueAtIndex(panel->icons, idecks);
   image = (RImage *)CFArrayGetValueAtIndex(panel->images, idecks);
-  flags = (int) (uintptr_t) CFArrayGetValueAtIndex(panel->flags, idecks);
+  flags = (int)(uintptr_t)CFArrayGetValueAtIndex(panel->flags, idecks);
 
   if (selected)
     desired |= ICON_SELECTED;
@@ -166,8 +165,7 @@ static void changeImage(WSwitchPanel *panel, int idecks, int selected, Bool dim,
     pos = WMGetViewPosition(WMWidgetView(icon));
     back = panel->tileTmp;
     if (panel->bg) {
-      RCopyArea(back, panel->bg,
-                BORDER_SPACE + pos.x - panel->firstVisible * ICON_TILE_SIZE,
+      RCopyArea(back, panel->bg, BORDER_SPACE + pos.x - panel->firstVisible * ICON_TILE_SIZE,
                 BORDER_SPACE + pos.y, back->width, back->height, 0, 0);
     } else {
       RColor color;
@@ -181,8 +179,8 @@ static void changeImage(WSwitchPanel *panel, int idecks, int selected, Bool dim,
 
     if (selected) {
       tile = panel->tile;
-      RCombineArea(back, tile, 0, 0, tile->width, tile->height,
-                   (back->width - tile->width) / 2, (back->height - tile->height) / 2);
+      RCombineArea(back, tile, 0, 0, tile->width, tile->height, (back->width - tile->width) / 2,
+                   (back->height - tile->height) / 2);
     }
 
     RCombineAreaWithOpaqueness(back, image, 0, 0, image->width, image->height,
@@ -247,7 +245,7 @@ static void scrollIcons(WSwitchPanel *panel, int delta)
   for (i = panel->firstVisible; i < panel->firstVisible + panel->visibleCount; i++) {
     if (i == panel->current)
       continue;
-    dim = ((int) (uintptr_t) CFArrayGetValueAtIndex(panel->flags, i) & ICON_DIM);
+    dim = ((int)(uintptr_t)CFArrayGetValueAtIndex(panel->flags, i) & ICON_DIM);
     changeImage(panel, i, 0, dim, True);
   }
 }
@@ -274,9 +272,9 @@ static RImage *assemblePuzzleImage(RImage **images, int width, int height)
   if (!img)
     return NULL;
 
-  color.red   =   0;
-  color.green =   0;
-  color.blue  =   0;
+  color.red = 0;
+  color.green = 0;
+  color.blue = 0;
   color.alpha = 255;
   RFillImage(img, &color);
 
@@ -308,9 +306,10 @@ static RImage *assemblePuzzleImage(RImage **images, int width, int height)
   /* corners */
   RCopyArea(img, images[0], 0, 0, images[0]->width, images[0]->height, 0, 0);
   RCopyArea(img, images[2], 0, 0, images[2]->width, images[2]->height, width - images[2]->width, 0);
-  RCopyArea(img, images[6], 0, 0, images[6]->width, images[6]->height, 0, height - images[6]->height);
-  RCopyArea(img, images[8], 0, 0, images[8]->width, images[8]->height,
-            width - images[8]->width, height - images[8]->height);
+  RCopyArea(img, images[6], 0, 0, images[6]->width, images[6]->height, 0,
+            height - images[6]->height);
+  RCopyArea(img, images[8], 0, 0, images[8]->width, images[8]->height, width - images[8]->width,
+            height - images[8]->height);
 
   return img;
 }
@@ -352,8 +351,8 @@ static void drawTitle(WSwitchPanel *panel, int idecks, const char *title)
       } else {
         int w = WMWidthOfString(panel->font, ntitle, strlen(ntitle));
 
-        x = BORDER_SPACE + (idecks - panel->firstVisible) * ICON_TILE_SIZE +
-          ICON_TILE_SIZE / 2 - w / 2;
+        x = BORDER_SPACE + (idecks - panel->firstVisible) * ICON_TILE_SIZE + ICON_TILE_SIZE / 2 -
+            w / 2;
         if (x < BORDER_SPACE)
           x = BORDER_SPACE;
         else if (x + w > width - BORDER_SPACE)
@@ -363,12 +362,10 @@ static void drawTitle(WSwitchPanel *panel, int idecks, const char *title)
 
     XClearWindow(dpy, WMWidgetXID(panel->win));
     if (ntitle)
-      WMDrawString(panel->scr->wmscreen,
-                   WMWidgetXID(panel->win),
-                   panel->white, panel->font,
-                   x,
-                   WMWidgetHeight(panel->win) - BORDER_SPACE - LABEL_HEIGHT +
-                   WMFontHeight(panel->font) / 2, ntitle, strlen(ntitle));
+      WMDrawString(
+          panel->scr->wmscreen, WMWidgetXID(panel->win), panel->white, panel->font, x,
+          WMWidgetHeight(panel->win) - BORDER_SPACE - LABEL_HEIGHT + WMFontHeight(panel->font) / 2,
+          ntitle, strlen(ntitle));
   } else {
     if (ntitle)
       WMSetLabelText(panel->label, ntitle);
@@ -385,7 +382,7 @@ static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped,
 
   /* WApplications */
   if (class_only == False) {
-    WMLogInfo ("window list array creation BEGIN");
+    WMLogInfo("window list array creation BEGIN");
     WApplication *wapp = scr->wapp_list;
     while (wapp) {
       WWindow *w = NULL;
@@ -393,15 +390,12 @@ static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped,
       if (wapp->flags.is_gnustep) {
         if (wapp->gsmenu_wwin) {
           w = wapp->gsmenu_wwin;
-          WMLogInfo("\t%s (menu: %lu)",  w->wm_instance, w->client_win);
-        }
-        else {
+          WMLogInfo("\t%s (menu: %lu)", w->wm_instance, w->client_win);
+        } else {
           w = wapp->main_wwin;
-          WMLogInfo("\t%s (main window: %lu)",
-                   w->wm_instance, w->client_win);
+          WMLogInfo("\t%s (main window: %lu)", w->wm_instance, w->client_win);
         }
-      }
-      else if (CFArrayGetCount(wapp->windows) > 0) {
+      } else if (CFArrayGetCount(wapp->windows) > 0) {
         if (wapp->last_focused)
           w = wapp->last_focused;
         else
@@ -411,13 +405,12 @@ static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped,
 
       if (w)
         CFArrayAppendValue(windows, w);
-      
+
       WMLogInfo("\tWindow count:%li", CFArrayGetCount(wapp->windows));
       wapp = wapp->next;
     }
     WMLogInfo("window list array creation END");
-  }
-  else {
+  } else {
     /* Mapped windows */
     while (wwin) {
       if ((canReceiveFocus(wwin) != 0) &&
@@ -442,7 +435,7 @@ static CFMutableArrayRef makeWindowFlagsArray(int count)
   int i;
 
   for (i = 0; i < count; i++)
-    CFArrayAppendValue(flags, (void *) 0);
+    CFArrayAppendValue(flags, (void *)0);
 
   return flags;
 }
@@ -644,7 +637,8 @@ void wSwitchPanelDestroy(WSwitchPanel *panel)
   wfree(panel);
 }
 
-WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimized, Bool class_only)
+WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimized,
+                                Bool class_only)
 {
   WWindow *wwin, *curwin, *tmpwin;
   int count = CFArrayGetCount(panel->windows);
@@ -658,8 +652,8 @@ WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimi
   if (!wPreferences.cycle_ignore_minimized)
     ignore_minimized = False;
 
-  if (ignore_minimized &&
-      canReceiveFocus((WWindow *)CFArrayGetValueAtIndex(panel->windows, (count + panel->current) % count)) < 0)
+  if (ignore_minimized && canReceiveFocus((WWindow *)CFArrayGetValueAtIndex(
+                              panel->windows, (count + panel->current) % count)) < 0)
     ignore_minimized = False;
 
   curwin = (WWindow *)CFArrayGetValueAtIndex(panel->windows, orig);
@@ -691,7 +685,6 @@ WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimi
         dim = True;
       changeImage(panel, i, 0, True, False);
     }
-
   }
 
   if (panel->current < panel->firstVisible)
@@ -702,11 +695,9 @@ WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimi
   if (panel->win) {
     if (class_only) {
       drawTitle(panel, panel->current, wwin->frame->title);
-    }
-    else if (wwin->flags.is_gnustep || !strcmp(wwin->wm_class, "GNUstep")) {
+    } else if (wwin->flags.is_gnustep || !strcmp(wwin->wm_class, "GNUstep")) {
       drawTitle(panel, panel->current, wwin->wm_instance);
-    }
-    else {
+    } else {
       drawTitle(panel, panel->current, wwin->wm_class);
     }
     if (panel->current != orig)
@@ -742,7 +733,8 @@ WWindow *wSwitchPanelSelectFirst(WSwitchPanel *panel, int back)
     title = wwin->wm_instance;
 
   if (panel->win) {
-    /* for (WMArrayFirst(panel->windows, &(i)); (i) != WANotFound; WMArrayNext(panel->windows, &(i))) */
+    /* for (WMArrayFirst(panel->windows, &(i)); (i) != WANotFound; WMArrayNext(panel->windows,
+     * &(i))) */
     for (i = 0; i < count; i++)
       changeImage(panel, i, i == panel->current, False, False);
 

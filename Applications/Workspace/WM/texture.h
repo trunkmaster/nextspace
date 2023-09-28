@@ -27,42 +27,40 @@
 #include "wcore.h"
 
 /* texture relief */
-#define WREL_RAISED	0
-#define WREL_SUNKEN	1
-#define WREL_FLAT	2
-#define WREL_ICON	4
-#define WREL_MENUENTRY	6
+#define WREL_RAISED 0
+#define WREL_SUNKEN 1
+#define WREL_FLAT 2
+#define WREL_ICON 4
+#define WREL_MENUENTRY 6
 
 /* texture types */
-#define WREL_BORDER_MASK	1
+#define WREL_BORDER_MASK 1
 
-#define WTEX_SOLID 	((1<<1)|WREL_BORDER_MASK)
-#define WTEX_HGRADIENT	((1<<2)|WREL_BORDER_MASK)
-#define WTEX_VGRADIENT	((1<<3)|WREL_BORDER_MASK)
-#define WTEX_DGRADIENT	((1<<4)|WREL_BORDER_MASK)
-#define WTEX_MHGRADIENT	((1<<5)|WREL_BORDER_MASK)
-#define WTEX_MVGRADIENT	((1<<6)|WREL_BORDER_MASK)
-#define WTEX_MDGRADIENT	((1<<7)|WREL_BORDER_MASK)
-#define WTEX_IGRADIENT	((1<<8)|WREL_BORDER_MASK)
-#define WTEX_PIXMAP	(1<<10)
-#define WTEX_THGRADIENT	((1<<11)|WREL_BORDER_MASK)
-#define WTEX_TVGRADIENT	((1<<12)|WREL_BORDER_MASK)
-#define WTEX_TDGRADIENT	((1<<13)|WREL_BORDER_MASK)
-#define WTEX_FUNCTION	((1<<14)|WREL_BORDER_MASK)
+#define WTEX_SOLID      ((1 << 1) | WREL_BORDER_MASK)
+#define WTEX_HGRADIENT  ((1 << 2) | WREL_BORDER_MASK)
+#define WTEX_VGRADIENT  ((1 << 3) | WREL_BORDER_MASK)
+#define WTEX_DGRADIENT  ((1 << 4) | WREL_BORDER_MASK)
+#define WTEX_MHGRADIENT ((1 << 5) | WREL_BORDER_MASK)
+#define WTEX_MVGRADIENT ((1 << 6) | WREL_BORDER_MASK)
+#define WTEX_MDGRADIENT ((1 << 7) | WREL_BORDER_MASK)
+#define WTEX_IGRADIENT  ((1 << 8) | WREL_BORDER_MASK)
+#define WTEX_PIXMAP     (1 << 10)
+#define WTEX_THGRADIENT ((1 << 11) | WREL_BORDER_MASK)
+#define WTEX_TVGRADIENT ((1 << 12) | WREL_BORDER_MASK)
+#define WTEX_TDGRADIENT ((1 << 13) | WREL_BORDER_MASK)
+#define WTEX_FUNCTION   ((1 << 14) | WREL_BORDER_MASK)
 
 /* pixmap subtypes */
-#define WTP_TILE	2
-#define WTP_SCALE	4
-#define WTP_CENTER	6
-
+#define WTP_TILE 2
+#define WTP_SCALE 4
+#define WTP_CENTER 6
 
 typedef struct {
-  short type;			       /* type of texture */
-  char subtype;		       /* subtype of the texture */
-  XColor color;		       /* default background color */
-  GC gc;			       /* gc for the background color */
+  short type;   /* type of texture */
+  char subtype; /* subtype of the texture */
+  XColor color; /* default background color */
+  GC gc;        /* gc for the background color */
 } WTexAny;
-
 
 typedef struct WTexSolid {
   short type;
@@ -138,7 +136,7 @@ typedef struct WTexFunction {
   GC normal_gc;
 
   void *handle;
-  RImage *(*render) (int, char**, int, int, int);
+  RImage *(*render)(int, char **, int, int, int);
   int argc;
   char **argv;
 } WTexFunction;
@@ -154,27 +152,24 @@ typedef union WTexture {
   WTexFunction function;
 } WTexture;
 
+WTexSolid *wTextureMakeSolid(WScreen *, XColor *);
+WTexGradient *wTextureMakeGradient(WScreen *, int, const RColor *, const RColor *);
+WTexMGradient *wTextureMakeMGradient(WScreen *, int, RColor **);
+WTexTGradient *wTextureMakeTGradient(WScreen *, int, const RColor *, const RColor *, const char *,
+                                     int);
+WTexIGradient *wTextureMakeIGradient(WScreen *, int, const RColor[], int, const RColor[]);
+WTexPixmap *wTextureMakePixmap(WScreen *scr, int style, const char *pixmap_file, XColor *color);
+void wTextureDestroy(WScreen *, WTexture *);
+void wTexturePaint(WTexture *, Pixmap *, WCoreWindow *, int, int);
+void wTextureRender(WScreen *, WTexture *, Pixmap *, int, int, int);
+struct RImage *wTextureRenderImage(WTexture *, int, int, int);
 
-WTexSolid *wTextureMakeSolid(WScreen*, XColor*);
-WTexGradient *wTextureMakeGradient(WScreen*, int, const RColor*, const RColor*);
-WTexMGradient *wTextureMakeMGradient(WScreen*, int, RColor**);
-WTexTGradient *wTextureMakeTGradient(WScreen*, int, const RColor*, const RColor*, const char *, int);
-WTexIGradient *wTextureMakeIGradient(WScreen*, int, const RColor[], int, const RColor[]);
-WTexPixmap *wTextureMakePixmap(WScreen *scr, int style, const char *pixmap_file,
-                               XColor *color);
-void wTextureDestroy(WScreen*, WTexture*);
-void wTexturePaint(WTexture *, Pixmap *, WCoreWindow*, int, int);
-void wTextureRender(WScreen*, WTexture*, Pixmap*, int, int, int);
-struct RImage *wTextureRenderImage(WTexture*, int, int, int);
+void wTexturePaintTitlebar(struct WWindow *wwin, WTexture *texture, Pixmap *tdata, int repaint);
 
+#define FREE_PIXMAP(p) \
+  if ((p) != None)     \
+  XFreePixmap(dpy, (p)), (p) = None
 
-void wTexturePaintTitlebar(struct WWindow *wwin, WTexture *texture, Pixmap *tdata,
-                           int repaint);
-
-
-#define FREE_PIXMAP(p) if ((p)!=None) XFreePixmap(dpy, (p)), (p)=None
-
-void wDrawBevel(Drawable d, unsigned width, unsigned height,
-                WTexSolid *texture, int relief);
+void wDrawBevel(Drawable d, unsigned width, unsigned height, WTexSolid *texture, int relief);
 
 #endif /* __WORKSPACE_WM_TEXTURE__ */

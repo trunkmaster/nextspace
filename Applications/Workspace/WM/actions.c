@@ -57,7 +57,7 @@
 #include "actions.h"
 
 static void find_Maximus_geometry(WWindow *wwin, WArea usableArea, int *new_x, int *new_y,
-				  unsigned int *new_width, unsigned int *new_height);
+                                  unsigned int *new_width, unsigned int *new_height);
 
 /******* Local Variables *******/
 static int compareTimes(Time t1, Time t2)
@@ -76,13 +76,13 @@ WWindow *wNextWindowToFocus(WWindow *wwin)
   WScreen *scr = wwin->screen;
   WWindow *tmp, *list_win = NULL, *focusable_win = NULL, *menu_win = NULL;
   WApplication *wapp, *menu_app;
-  
+
   /* if window was a transient, focus the owner window */
   tmp = wWindowFor(wwin->transient_for);
   if (tmp && (!tmp->flags.mapped || WFLAGP(tmp, no_focusable))) {
     tmp = NULL;
   }
-  
+
   /* search for the window of the same application, main menu of next application,
      window in focus list or andy focusable window */
   if (!tmp) {
@@ -94,18 +94,19 @@ WWindow *wNextWindowToFocus(WWindow *wwin)
         menu_app = wApplicationOf(tmp->main_window);
         if (menu_app && wapp && (menu_app == wapp || menu_app == wapp->next) && !menu_win)
           menu_win = tmp;
-      }
-      else if (!(tmp->flags.hidden || tmp->flags.miniaturized)
-               && (tmp->flags.mapped || tmp->flags.shaded || !ON_CURRENT_WS(tmp))) {
+      } else if (!(tmp->flags.hidden || tmp->flags.miniaturized) &&
+                 (tmp->flags.mapped || tmp->flags.shaded || !ON_CURRENT_WS(tmp))) {
         // visible or on other workspace
         if (!WFLAGP(tmp, no_focusable)) {
           // focusable
-          if (!focusable_win) focusable_win = tmp;
+          if (!focusable_win)
+            focusable_win = tmp;
           if (!WFLAGP(tmp, skip_window_list)) {
             // in window list
-            if (!list_win) list_win = tmp;
-            if ((wwin->flags.is_gnustep && !strcmp(wwin->wm_instance, tmp->wm_instance))
-                || (!wwin->flags.is_gnustep && !strcmp(wwin->wm_class, tmp->wm_class))) {
+            if (!list_win)
+              list_win = tmp;
+            if ((wwin->flags.is_gnustep && !strcmp(wwin->wm_instance, tmp->wm_instance)) ||
+                (!wwin->flags.is_gnustep && !strcmp(wwin->wm_class, tmp->wm_class))) {
               break;
             }
           }
@@ -158,24 +159,23 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     /* Do not focus popups. */
     if (WINDOW_LEVEL(wwin) == NSPopUpMenuWindowLevel)
       return;
-  
+
     if (wwin->flags.is_gnustep) {
       /* Shaded focused GNUstep window should set focus to main menu */
       if (wwin->flags.shaded) {
         WApplication *wapp = wApplicationOf(wwin->main_window);
 
-        WMLogInfo("wSetFocusTo: Request to focus shaded GNUstep window (%lu).",
-                 wwin->client_win);
-        if (!wwin->flags.focused) { // not focused - set it
+        WMLogInfo("wSetFocusTo: Request to focus shaded GNUstep window (%lu).", wwin->client_win);
+        if (!wwin->flags.focused) {  // not focused - set it
           WMLogInfo("           : Send WM_TAKE_FOCUS to shaded GNUstep window %lu.",
-                   wwin->client_win);
+                    wwin->client_win);
           wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
           XFlush(dpy);
           XSync(dpy, False);
         }
         if (wapp && !wapp->gsmenu_wwin->flags.focused) {
           WMLogInfo("           : Transfer focus to main menu (%lu).",
-                   wapp->gsmenu_wwin->client_win);
+                    wapp->gsmenu_wwin->client_win);
           wSetFocusTo(scr, wapp->gsmenu_wwin);
         }
         return;
@@ -221,30 +221,27 @@ void wSetFocusTo(WScreen *scr, WWindow *wwin)
     }
     /* set input focus */
     switch (wwin->focus_mode) {
-    case WFM_NO_INPUT: // !wm_hints->input, !WM_TAKE_FOCUS
-      WMLogInfo("        wSetFocusTo: %lu focus mode == NO_INPUT. Do nothing", wwin->client_win);
-      return;
-    case WFM_PASSIVE: // wm_hints->input, !WM_TAKE_FOCUS
+      case WFM_NO_INPUT:  // !wm_hints->input, !WM_TAKE_FOCUS
+        WMLogInfo("        wSetFocusTo: %lu focus mode == NO_INPUT. Do nothing", wwin->client_win);
+        return;
+      case WFM_PASSIVE:  // wm_hints->input, !WM_TAKE_FOCUS
       {
         WMLogInfo("        wSetFocusTo: %lu focus mode == PASSIVE.", wwin->client_win);
         XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
         focus_succeeded = True;
-      }
-      break;
-    case WFM_LOCALLY_ACTIVE: // wm_hints->input, WM_TAKE_FOCUS
+      } break;
+      case WFM_LOCALLY_ACTIVE:  // wm_hints->input, WM_TAKE_FOCUS
       {
         WMLogInfo("        wSetFocusTo: %lu focus mode == LOCALLY_ACTIVE.", wwin->client_win);
         XSetInputFocus(dpy, wwin->client_win, RevertToParent, CurrentTime);
         focus_succeeded = True;
-      }
-      break;
-    case WFM_GLOBALLY_ACTIVE: // !wm_hints->input, WM_TAKE_FOCUS
+      } break;
+      case WFM_GLOBALLY_ACTIVE:  // !wm_hints->input, WM_TAKE_FOCUS
       {
         WMLogInfo("        wSetFocusTo: %lu focus mode == GLOBALLY_ACTIVE.", wwin->client_win);
         wClientSendProtocol(wwin, w_global.atom.wm.take_focus, timestamp);
         focus_succeeded = True;
-      }
-      break;
+      } break;
     }
   } else {
     // Non-GNUstep, not mapped (shaded, iconified)
@@ -289,7 +286,7 @@ void wShadeWindow(WWindow *wwin)
   if (wwin->flags.shaded)
     return;
 
-  /* XLowerWindow(dpy, wwin->client_win); */
+    /* XLowerWindow(dpy, wwin->client_win); */
 #ifdef USE_ANIMATIONS
   wAnimateShade(wwin, SHADE);
 #endif
@@ -313,10 +310,9 @@ void wShadeWindow(WWindow *wwin)
   if (wwin->flags.focused) {
     wSetFocusTo(wwin->screen, wwin);
   }
-  
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                          &kCFTypeDictionaryKeyCallBacks,
-                                                          &kCFTypeDictionaryValueCallBacks);
+
+  CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("shade"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -342,7 +338,7 @@ void wUnshadeWindow(WWindow *wwin)
 #ifdef USE_ANIMATIONS
   wAnimateShade(wwin, UNSHADE);
 #endif
-  
+
   wwin->flags.skip_next_animation = 0;
   wFrameWindowResize(wwin->frame, wwin->frame->core->width,
                      wwin->frame->top_width + wwin->client.height + wwin->frame->bottom_width);
@@ -351,7 +347,7 @@ void wUnshadeWindow(WWindow *wwin)
   wWindowSynthConfigureNotify(wwin);
 
   wClientSetState(wwin, NormalState, None);
-  
+
   /* if the window is focused, set the focus again as it was disabled during
    * shading */
   /* if (wwin->flags.focused || wwin == wApplicationOf(wwin->main_window)->last_focused) { */
@@ -359,9 +355,8 @@ void wUnshadeWindow(WWindow *wwin)
     wSetFocusTo(wwin->screen, wwin);
   }
 
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                          &kCFTypeDictionaryKeyCallBacks,
-                                                          &kCFTypeDictionaryValueCallBacks);
+  CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("shade"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -393,12 +388,14 @@ static void _getWindowGeometry(WWindow *wwin, int *x, int *y, int *w, int *h)
   int old_head;
   Bool same_head;
 
-  old_geom_rect = WMMakeRect(wwin->old_geometry.x, wwin->old_geometry.y,
-                             wwin->old_geometry.width, wwin->old_geometry.height);
+  old_geom_rect = WMMakeRect(wwin->old_geometry.x, wwin->old_geometry.y, wwin->old_geometry.width,
+                             wwin->old_geometry.height);
   old_head = wGetHeadForRect(wwin->screen, old_geom_rect);
   same_head = (wGetHeadForWindow(wwin) == old_head);
-  *x = ((wwin->old_geometry.x || wwin->old_geometry.width) && same_head) ? wwin->old_geometry.x : wwin->frame_x;
-  *y = ((wwin->old_geometry.y || wwin->old_geometry.height) && same_head) ? wwin->old_geometry.y : wwin->frame_y;
+  *x = ((wwin->old_geometry.x || wwin->old_geometry.width) && same_head) ? wwin->old_geometry.x
+                                                                         : wwin->frame_x;
+  *y = ((wwin->old_geometry.y || wwin->old_geometry.height) && same_head) ? wwin->old_geometry.y
+                                                                          : wwin->frame_y;
   *w = wwin->old_geometry.width ? wwin->old_geometry.width : wwin->client.width;
   *h = wwin->old_geometry.height ? wwin->old_geometry.height : wwin->client.height;
 }
@@ -413,8 +410,7 @@ void wUpdateSavedWindowGeometry(WWindow *wwin)
 
   /* NOT if we are fully maximized */
   if ((wwin->flags.maximized & MAX_MAXIMUS) ||
-      ((wwin->flags.maximized & MAX_HORIZONTAL) &&
-       (wwin->flags.maximized & MAX_VERTICAL)))
+      ((wwin->flags.maximized & MAX_HORIZONTAL) && (wwin->flags.maximized & MAX_VERTICAL)))
     return;
 
   /* save the co-ordinate in the axis in which we AREN'T maximized */
@@ -473,17 +469,15 @@ void wMaximizeWindow(WWindow *wwin, int directions)
     usableArea = wGetUsableAreaForHead(scr, head, &totalArea, True);
   }
 
-
   /* Only save directions, not kbd or xinerama hints */
-  directions &= (MAX_HORIZONTAL | MAX_VERTICAL
-                 | MAX_LEFTHALF | MAX_RIGHTHALF | MAX_TOPHALF | MAX_BOTTOMHALF
-                 | MAX_MAXIMUS);
+  directions &= (MAX_HORIZONTAL | MAX_VERTICAL | MAX_LEFTHALF | MAX_RIGHTHALF | MAX_TOPHALF |
+                 MAX_BOTTOMHALF | MAX_MAXIMUS);
 
   if (WFLAGP(wwin, full_maximize)) {
     usableArea = totalArea;
   }
-  half_scr_width = (usableArea.x2 - usableArea.x1)/2;
-  half_scr_height = (usableArea.y2 - usableArea.y1)/2;
+  half_scr_width = (usableArea.x2 - usableArea.x1) / 2;
+  half_scr_height = (usableArea.y2 - usableArea.y1) / 2;
 
   if (wwin->flags.shaded) {
     wwin->flags.skip_next_animation = 1;
@@ -491,8 +485,8 @@ void wMaximizeWindow(WWindow *wwin, int directions)
   }
 
   if (directions & MAX_MAXIMUS) {
-    find_Maximus_geometry(wwin, usableArea, &maximus_x, &maximus_y,
-                          &maximus_width, &maximus_height);
+    find_Maximus_geometry(wwin, usableArea, &maximus_x, &maximus_y, &maximus_width,
+                          &maximus_height);
     new_width = maximus_width - adj_size;
     new_height = maximus_height - adj_size;
     new_x = maximus_x;
@@ -511,7 +505,8 @@ void wMaximizeWindow(WWindow *wwin, int directions)
       new_x = (wwin->old_geometry.x) ? wwin->old_geometry.x : wwin->frame_x;
     }
     if (!(directions & (MAX_VERTICAL | MAX_TOPHALF | MAX_BOTTOMHALF | MAX_MAXIMUS))) {
-      new_height = (wwin->old_geometry.height) ? wwin->old_geometry.height : wwin->frame->core->height;
+      new_height =
+          (wwin->old_geometry.height) ? wwin->old_geometry.height : wwin->frame->core->height;
       new_y = (wwin->old_geometry.y) ? wwin->old_geometry.y : wwin->frame_y;
     }
 
@@ -519,8 +514,7 @@ void wMaximizeWindow(WWindow *wwin, int directions)
     if (directions & MAX_LEFTHALF) {
       new_width = half_scr_width - adj_size;
       new_x = usableArea.x1;
-    }
-    else if (directions & MAX_RIGHTHALF) {
+    } else if (directions & MAX_RIGHTHALF) {
       new_width = half_scr_width - adj_size;
       new_x = usableArea.x1 + half_scr_width;
     }
@@ -528,8 +522,7 @@ void wMaximizeWindow(WWindow *wwin, int directions)
     if (directions & MAX_TOPHALF) {
       new_height = half_scr_height - adj_size;
       new_y = usableArea.y1;
-    }
-    else if (directions & MAX_BOTTOMHALF) {
+    } else if (directions & MAX_BOTTOMHALF) {
       new_height = half_scr_height - adj_size;
       new_y = usableArea.y1 + half_scr_height;
     }
@@ -548,8 +541,8 @@ void wMaximizeWindow(WWindow *wwin, int directions)
     }
   }
 
-  if (!WFLAGP(wwin, full_maximize)
-      && !(directions == MAX_MAXIMUS || directions == MAX_HORIZONTAL)) {
+  if (!WFLAGP(wwin, full_maximize) &&
+      !(directions == MAX_MAXIMUS || directions == MAX_HORIZONTAL)) {
     new_height -= wwin->frame->top_width + wwin->frame->bottom_width;
   }
 
@@ -559,15 +552,14 @@ void wMaximizeWindow(WWindow *wwin, int directions)
     wwin->flags.maximized = MAX_MAXIMUS;
   }
   wWindowConstrainSize(wwin, &new_width, &new_height);
-  wWindowCropSize(wwin, usableArea.x2 - usableArea.x1,
-                  usableArea.y2 - usableArea.y1, &new_width, &new_height);
+  wWindowCropSize(wwin, usableArea.x2 - usableArea.x1, usableArea.y2 - usableArea.y1, &new_width,
+                  &new_height);
 
   wWindowConfigure(wwin, new_x, new_y, new_width, new_height);
   wWindowSynthConfigureNotify(wwin);
 
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                          &kCFTypeDictionaryKeyCallBacks,
-                                                          &kCFTypeDictionaryValueCallBacks);
+  CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("maximize"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -579,9 +571,8 @@ void wMaximizeWindow(WWindow *wwin, int directions)
 void handleMaximize(WWindow *wwin, int directions)
 {
   int current = wwin->flags.maximized;
-  int requested = directions & (MAX_HORIZONTAL | MAX_VERTICAL
-                                | MAX_LEFTHALF | MAX_RIGHTHALF | MAX_TOPHALF | MAX_BOTTOMHALF
-                                | MAX_MAXIMUS);
+  int requested = directions & (MAX_HORIZONTAL | MAX_VERTICAL | MAX_LEFTHALF | MAX_RIGHTHALF |
+                                MAX_TOPHALF | MAX_BOTTOMHALF | MAX_MAXIMUS);
   int effective = requested ^ current;
   int flags = directions & ~requested;
 
@@ -589,37 +580,29 @@ void handleMaximize(WWindow *wwin, int directions)
     /* allow wMaximizeWindow to restore the Maximusized size */
     if ((wwin->flags.old_maximized & MAX_MAXIMUS) && !(requested & MAX_MAXIMUS)) {
       wMaximizeWindow(wwin, MAX_MAXIMUS | flags);
-    }
-    else {
+    } else {
       wUnmaximizeWindow(wwin);
     }
     /* these alone mean vertical|horizontal toggle */
-  }
-  else if ((effective == MAX_LEFTHALF) ||
-           (effective == MAX_RIGHTHALF) ||
-           (effective == MAX_TOPHALF) ||
-           (effective == MAX_BOTTOMHALF)) {
+  } else if ((effective == MAX_LEFTHALF) || (effective == MAX_RIGHTHALF) ||
+             (effective == MAX_TOPHALF) || (effective == MAX_BOTTOMHALF)) {
     wUnmaximizeWindow(wwin);
-  }
-  else {
+  } else {
     if ((requested == (MAX_HORIZONTAL | MAX_VERTICAL)) || (requested == MAX_MAXIMUS))
       effective = requested;
     else {
       if (requested & MAX_LEFTHALF) {
         if (!(requested & (MAX_TOPHALF | MAX_BOTTOMHALF))) {
           effective |= MAX_VERTICAL;
-        }
-        else {
+        } else {
           effective |= requested & (MAX_TOPHALF | MAX_BOTTOMHALF);
         }
         effective |= MAX_LEFTHALF;
         effective &= ~(MAX_HORIZONTAL | MAX_RIGHTHALF);
-      }
-      else if (requested & MAX_RIGHTHALF) {
+      } else if (requested & MAX_RIGHTHALF) {
         if (!(requested & (MAX_TOPHALF | MAX_BOTTOMHALF))) {
           effective |= MAX_VERTICAL;
-        }
-        else {
+        } else {
           effective |= requested & (MAX_TOPHALF | MAX_BOTTOMHALF);
         }
         effective |= MAX_RIGHTHALF;
@@ -628,18 +611,15 @@ void handleMaximize(WWindow *wwin, int directions)
       if (requested & MAX_TOPHALF) {
         if (!(requested & (MAX_LEFTHALF | MAX_RIGHTHALF))) {
           effective |= MAX_HORIZONTAL;
-        }
-        else {
+        } else {
           effective |= requested & (MAX_LEFTHALF | MAX_RIGHTHALF);
         }
         effective |= MAX_TOPHALF;
         effective &= ~(MAX_VERTICAL | MAX_BOTTOMHALF);
-      }
-      else if (requested & MAX_BOTTOMHALF) {
+      } else if (requested & MAX_BOTTOMHALF) {
         if (!(requested & (MAX_LEFTHALF | MAX_RIGHTHALF))) {
           effective |= MAX_HORIZONTAL;
-        }
-        else {
+        } else {
           effective |= requested & (MAX_LEFTHALF | MAX_RIGHTHALF);
         }
         effective |= MAX_BOTTOMHALF;
@@ -684,7 +664,7 @@ static void set_window_coords(WWindow *wwin, win_coords *obs)
  * The windows obstructing the maximization of 'orig' are denoted 'obs'.
  */
 static void find_Maximus_geometry(WWindow *wwin, WArea usableArea, int *new_x, int *new_y,
-				  unsigned int *new_width, unsigned int *new_height)
+                                  unsigned int *new_width, unsigned int *new_height)
 {
   WWindow *tmp;
   short int tbar_height_0 = 0, rbar_height_0 = 0, bd_width_0 = 0;
@@ -703,10 +683,10 @@ static void find_Maximus_geometry(WWindow *wwin, WArea usableArea, int *new_x, i
     set_window_coords(wwin, &orig);
 
   /* Try to fully maximize first, then readjust later */
-  new.left    = usableArea.x1;
-  new.right   = usableArea.x2;
-  new.top     = usableArea.y1;
-  new.bottom  = usableArea.y2;
+  new.left = usableArea.x1;
+  new.right = usableArea.x2;
+  new.top = usableArea.y1;
+  new.bottom = usableArea.y2;
 
   if (HAS_TITLEBAR(wwin))
     tbar_height_0 = TITLEBAR_HEIGHT;
@@ -722,8 +702,8 @@ static void find_Maximus_geometry(WWindow *wwin, WArea usableArea, int *new_x, i
   /* The focused window is always the last in the list */
   while (tmp->prev) {
     /* ignore windows in other workspaces etc */
-    if (tmp->prev->frame->desktop != wwin->screen->current_desktop
-        || tmp->prev->flags.miniaturized || tmp->prev->flags.hidden) {
+    if (tmp->prev->frame->desktop != wwin->screen->current_desktop ||
+        tmp->prev->flags.miniaturized || tmp->prev->flags.hidden) {
       tmp = tmp->prev;
       continue;
     }
@@ -749,8 +729,8 @@ static void find_Maximus_geometry(WWindow *wwin, WArea usableArea, int *new_x, i
 
   tmp = wwin;
   while (tmp->prev) {
-    if (tmp->prev->frame->desktop != wwin->screen->current_desktop
-        || tmp->prev->flags.miniaturized || tmp->prev->flags.hidden) {
+    if (tmp->prev->frame->desktop != wwin->screen->current_desktop ||
+        tmp->prev->flags.miniaturized || tmp->prev->flags.hidden) {
       tmp = tmp->prev;
       continue;
     }
@@ -812,9 +792,8 @@ void wUnmaximizeWindow(WWindow *wwin)
   wWindowConfigure(wwin, x, y, w, h);
   wWindowSynthConfigureNotify(wwin);
 
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                          &kCFTypeDictionaryKeyCallBacks,
-                                                          &kCFTypeDictionaryValueCallBacks);
+  CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("maximize"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -848,9 +827,8 @@ void wFullscreenWindow(WWindow *wwin)
   wwin->screen->bfs_focused_window = wwin->screen->focused_window;
   wSetFocusTo(wwin->screen, wwin);
 
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                          &kCFTypeDictionaryKeyCallBacks,
-                                                          &kCFTypeDictionaryValueCallBacks);
+  CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("fullscreen"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -869,8 +847,8 @@ void wUnfullscreenWindow(WWindow *wwin)
   else if (WFLAGP(wwin, floating))
     ChangeStackingLevel(wwin->frame->core, NSFloatingWindowLevel);
 
-  wWindowConfigure(wwin, wwin->bfs_geometry.x, wwin->bfs_geometry.y,
-                   wwin->bfs_geometry.width, wwin->bfs_geometry.height);
+  wWindowConfigure(wwin, wwin->bfs_geometry.x, wwin->bfs_geometry.y, wwin->bfs_geometry.width,
+                   wwin->bfs_geometry.height);
 
   wWindowConfigureBorders(wwin);
   /*
@@ -878,9 +856,8 @@ void wUnfullscreenWindow(WWindow *wwin)
   wFrameWindowPaint(wwin->frame);
   */
 
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                          &kCFTypeDictionaryKeyCallBacks,
-                                                          &kCFTypeDictionaryValueCallBacks);
+  CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("fullscreen"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -908,8 +885,8 @@ static void unmapTransientsFor(WWindow *wwin)
   tmp = wwin->screen->focused_window;
   while (tmp) {
     /* unmap the transients for this transient */
-    if (tmp != wwin && tmp->transient_for == wwin->client_win
-        && (tmp->flags.mapped || wwin->screen->flags.startup || tmp->flags.shaded)) {
+    if (tmp != wwin && tmp->transient_for == wwin->client_win &&
+        (tmp->flags.mapped || wwin->screen->flags.startup || tmp->flags.shaded)) {
       unmapTransientsFor(tmp);
       tmp->flags.miniaturized = 1;
       if (!tmp->flags.shaded)
@@ -921,9 +898,8 @@ static void unmapTransientsFor(WWindow *wwin)
       */
       wClientSetState(tmp, IconicState, None);
 
-      CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                              &kCFTypeDictionaryKeyCallBacks,
-                                                              &kCFTypeDictionaryValueCallBacks);
+      CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+          kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
       CFDictionaryAddValue(info, CFSTR("state"), CFSTR("iconify-transient"));
       CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                            WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -940,8 +916,8 @@ static void mapTransientsFor(WWindow *wwin)
   tmp = wwin->screen->focused_window;
   while (tmp) {
     /* recursively map the transients for this transient */
-    if (tmp != wwin && tmp->transient_for == wwin->client_win && /*!tmp->flags.mapped */ tmp->flags.miniaturized
-        && tmp->icon == NULL) {
+    if (tmp != wwin && tmp->transient_for == wwin->client_win &&
+        /*!tmp->flags.mapped */ tmp->flags.miniaturized && tmp->icon == NULL) {
       mapTransientsFor(tmp);
       tmp->flags.miniaturized = 0;
       if (!tmp->flags.shaded)
@@ -954,9 +930,8 @@ static void mapTransientsFor(WWindow *wwin)
       */
       wClientSetState(tmp, NormalState, None);
 
-      CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                              &kCFTypeDictionaryKeyCallBacks,
-                                                              &kCFTypeDictionaryValueCallBacks);
+      CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+          kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
       CFDictionaryAddValue(info, CFSTR("state"), CFSTR("iconify-transient"));
       CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                            WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -982,7 +957,7 @@ static WWindow *recursiveTransientFor(WWindow *wwin)
   }
   if (i == 0 && wwin) {
     WMLogWarning(_("window \"%s\" has a severely broken WM_TRANSIENT_FOR hint"),
-             wwin->frame->title);
+                 wwin->frame->title);
     return NULL;
   }
 
@@ -1012,9 +987,8 @@ void wIconifyWindow(WWindow *wwin)
   /* if the window is in another workspace, simplify process */
   if (present) {
     /* icon creation may take a while */
-    XGrabPointer(dpy, wwin->screen->root_win, False,
-                 ButtonMotionMask | ButtonReleaseMask, GrabModeAsync,
-                 GrabModeAsync, None, None, CurrentTime);
+    XGrabPointer(dpy, wwin->screen->root_win, False, ButtonMotionMask | ButtonReleaseMask,
+                 GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
   }
 
   if (!wPreferences.disable_miniwindows && !wwin->flags.net_handle_icon) {
@@ -1091,17 +1065,17 @@ void wIconifyWindow(WWindow *wwin)
     flushExpose();
 #ifdef USE_ANIMATIONS
     if (wGetAnimationGeometry(wwin, &ix, &iy, &iw, &ih))
-      wAnimateResize(wwin->screen, wwin->frame_x, wwin->frame_y,
-                    wwin->frame->core->width, wwin->frame->core->height, ix, iy, iw, ih);
+      wAnimateResize(wwin->screen, wwin->frame_x, wwin->frame_y, wwin->frame->core->width,
+                     wwin->frame->core->height, ix, iy, iw, ih);
 #endif
   }
 
   wwin->flags.skip_next_animation = 0;
 
   if (!wPreferences.disable_miniwindows && !wwin->flags.net_handle_icon) {
-    if ((wwin->screen->current_desktop == wwin->frame->desktop ||
-         IS_OMNIPRESENT(wwin) || wPreferences.sticky_icons)
-        && wwin->screen->flags.icon_yard_mapped) {
+    if ((wwin->screen->current_desktop == wwin->frame->desktop || IS_OMNIPRESENT(wwin) ||
+         wPreferences.sticky_icons) &&
+        wwin->screen->flags.icon_yard_mapped) {
       XMapWindow(dpy, wwin->icon->core->window);
       wwin->icon->mapped = 1;
     }
@@ -1136,13 +1110,11 @@ void wIconifyWindow(WWindow *wwin)
   /* maybe we want to do this regardless of net_handle_icon
    * it seems to me we might break behaviour this way.
    */
-  if (wwin->flags.selected && !wPreferences.disable_miniwindows
-      && !wwin->flags.net_handle_icon)
+  if (wwin->flags.selected && !wPreferences.disable_miniwindows && !wwin->flags.net_handle_icon)
     wIconSelect(wwin->icon);
 
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                          &kCFTypeDictionaryKeyCallBacks,
-                                                          &kCFTypeDictionaryValueCallBacks);
+  CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("iconify"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -1158,8 +1130,8 @@ void wDeiconifyWindow(WWindow *wwin)
   w_global.ignore_desktop_change = True;
 
   /* we're hiding for show_desktop */
-  int netwm_hidden = wwin->flags.net_show_desktop &&
-    wwin->frame->desktop != wwin->screen->current_desktop;
+  int netwm_hidden =
+      wwin->flags.net_show_desktop && wwin->frame->desktop != wwin->screen->current_desktop;
 
   if (!netwm_hidden)
     wWindowChangeDesktop(wwin, wwin->screen->current_desktop);
@@ -1190,8 +1162,7 @@ void wDeiconifyWindow(WWindow *wwin)
     /* maybe we want to do this regardless of net_handle_icon
      * it seems to me we might break behaviour this way.
      */
-    if (!wPreferences.disable_miniwindows && !wwin->flags.net_handle_icon
-        && wwin->icon != NULL) {
+    if (!wPreferences.disable_miniwindows && !wwin->flags.net_handle_icon && wwin->icon != NULL) {
       if (wwin->icon->selected)
         wIconSelect(wwin->icon);
 
@@ -1204,9 +1175,8 @@ void wDeiconifyWindow(WWindow *wwin)
 #ifdef USE_ANIMATIONS
     int ix, iy, iw, ih;
     if (wGetAnimationGeometry(wwin, &ix, &iy, &iw, &ih))
-      wAnimateResize(wwin->screen, ix, iy, iw, ih,
-                    wwin->frame_x, wwin->frame_y,
-                    wwin->frame->core->width, wwin->frame->core->height);
+      wAnimateResize(wwin->screen, ix, iy, iw, ih, wwin->frame_x, wwin->frame_y,
+                     wwin->frame->core->width, wwin->frame->core->height);
 #endif
     wwin->flags.skip_next_animation = 0;
     XGrabServer(dpy);
@@ -1221,8 +1191,7 @@ void wDeiconifyWindow(WWindow *wwin)
     mapTransientsFor(wwin);
   }
 
-  if (!wPreferences.disable_miniwindows && wwin->icon != NULL
-      && !wwin->flags.net_handle_icon) {
+  if (!wPreferences.disable_miniwindows && wwin->icon != NULL && !wwin->flags.net_handle_icon) {
     RemoveFromStackList(wwin->icon->core);
     wSetFocusTo(wwin->screen, wwin);
     wIconDestroy(wwin->icon);
@@ -1253,9 +1222,8 @@ void wDeiconifyWindow(WWindow *wwin)
   if (wPreferences.auto_arrange_icons)
     wArrangeIcons(wwin->screen, True);
 
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                          &kCFTypeDictionaryKeyCallBacks,
-                                                          &kCFTypeDictionaryValueCallBacks);
+  CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("iconify"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -1285,7 +1253,7 @@ void wHideAll(WScreen *scr)
 
   if (menu != NULL) {
     for (i = 0; i < menu->items_count; i++) {
-      windows[wcount] = (WWindow *) menu->items[i]->clientdata;
+      windows[wcount] = (WWindow *)menu->items[i]->clientdata;
       wcount++;
       windows = wrealloc(windows, sizeof(WWindow *) * (wcount + 1));
     }
@@ -1297,22 +1265,18 @@ void wHideAll(WScreen *scr)
       wcount++;
       windows = wrealloc(windows, sizeof(WWindow *) * (wcount + 1));
       wwin = wwin->prev;
-
     }
   }
 
   for (i = 0; i < wcount; i++) {
     wwin = windows[i];
-    if (wwin->frame->desktop == scr->current_desktop
-        && !(wwin->flags.miniaturized || wwin->flags.hidden)
-        && !wwin->flags.internal_window
-        && !WFLAGP(wwin, no_miniaturizable)
-        ) {
+    if (wwin->frame->desktop == scr->current_desktop &&
+        !(wwin->flags.miniaturized || wwin->flags.hidden) && !wwin->flags.internal_window &&
+        !WFLAGP(wwin, no_miniaturizable)) {
       wwin->flags.skip_next_animation = 1;
       if (wwin->protocols.MINIATURIZE_WINDOW) {
         wClientSendProtocol(wwin, w_global.atom.gnustep.wm_miniaturize_window, CurrentTime);
-      }
-      else {
+      } else {
         wIconifyWindow(wwin);
       }
     }
@@ -1331,10 +1295,9 @@ static void unhideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int
 
 #ifdef USE_ANIMATIONS
   if (!wwin->screen->flags.startup && !wPreferences.no_animations && animate) {
-    wAnimateResize(wwin->screen, icon_x, icon_y,
-                  icon->core->width, icon->core->height,
-                  wwin->frame_x, wwin->frame_y,
-                  wwin->frame->core->width, wwin->frame->core->height);
+    wAnimateResize(wwin->screen, icon_x, icon_y, icon->core->width, icon->core->height,
+                   wwin->frame_x, wwin->frame_y, wwin->frame->core->width,
+                   wwin->frame->core->height);
   }
 #endif
   wwin->flags.skip_next_animation = 0;
@@ -1346,9 +1309,8 @@ static void unhideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin, int
     wRaiseFrame(wwin->frame->core);
   }
 
-  CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                          &kCFTypeDictionaryKeyCallBacks,
-                                                          &kCFTypeDictionaryValueCallBacks);
+  CFMutableDictionaryRef info = CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
   CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                        WMDidChangeWindowStateNotification, wwin, info, TRUE);
@@ -1388,7 +1350,8 @@ void wUnhideApplication(WApplication *wapp, Bool miniwindows, Bool bringToCurren
 
       if (wlist->flags.miniaturized) {
         if ((bringToCurrentWS || wPreferences.sticky_icons ||
-             wlist->frame->desktop == scr->current_desktop) && wlist->icon) {
+             wlist->frame->desktop == scr->current_desktop) &&
+            wlist->icon) {
           if (!wlist->icon->mapped) {
             int x, y;
 
@@ -1407,10 +1370,10 @@ void wUnhideApplication(WApplication *wapp, Bool miniwindows, Bool bringToCurren
         wlist->flags.hidden = 0;
         if (miniwindows && wlist->frame->desktop == scr->current_desktop)
           wDeiconifyWindow(wlist);
-        
-        CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                                &kCFTypeDictionaryKeyCallBacks,
-                                                                &kCFTypeDictionaryValueCallBacks);
+
+        CFMutableDictionaryRef info =
+            CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks,
+                                      &kCFTypeDictionaryValueCallBacks);
         CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
         CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                              WMDidChangeWindowStateNotification, wlist, info, TRUE);
@@ -1425,17 +1388,17 @@ void wUnhideApplication(WApplication *wapp, Bool miniwindows, Bool bringToCurren
           if (miniwindows)
             wUnshadeWindow(wlist);
         }
-        
-        CFMutableDictionaryRef info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                                &kCFTypeDictionaryKeyCallBacks,
-                                                                &kCFTypeDictionaryValueCallBacks);
+
+        CFMutableDictionaryRef info =
+            CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks,
+                                      &kCFTypeDictionaryValueCallBacks);
         CFDictionaryAddValue(info, CFSTR("state"), CFSTR("hide"));
         CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
                                              WMDidChangeWindowStateNotification, wlist, info, TRUE);
         CFRelease(info);
       } else if (wlist->flags.hidden) {
-        unhideWindow(wapp->app_icon->icon, wapp->app_icon->x_pos,
-                     wapp->app_icon->y_pos, wlist, animate, bringToCurrentWS);
+        unhideWindow(wapp->app_icon->icon, wapp->app_icon->x_pos, wapp->app_icon->y_pos, wlist,
+                     animate, bringToCurrentWS);
         animate = False;
       } else {
         if (bringToCurrentWS && wlist->frame->desktop != scr->current_desktop)
@@ -1546,9 +1509,8 @@ void wSelectWindow(WWindow *wwin, Bool flag)
 
     if (scr->selected_windows) {
       CFIndex idx;
-      idx = CFArrayGetFirstIndexOfValue(scr->selected_windows,
-                                        CFRangeMake(0, CFArrayGetCount(scr->selected_windows)),
-                                        wwin);
+      idx = CFArrayGetFirstIndexOfValue(
+          scr->selected_windows, CFRangeMake(0, CFArrayGetCount(scr->selected_windows)), wwin);
       if (idx != kCFNotFound) {
         CFArrayRemoveValueAtIndex(scr->selected_windows, idx);
       }
@@ -1559,7 +1521,7 @@ void wSelectWindow(WWindow *wwin, Bool flag)
 void wMakeWindowVisible(WWindow *wwin)
 {
   Bool other_workspace = false;
-  
+
   if (wwin->frame->desktop != wwin->screen->current_desktop) {
     wDesktopChange(wwin->screen, wwin->frame->desktop, wwin);
     other_workspace = true;
@@ -1578,11 +1540,10 @@ void wMakeWindowVisible(WWindow *wwin)
       wUnhideApplication(app, False, False);
     }
   }
-  
+
   if (wwin->flags.miniaturized) {
     wDeiconifyWindow(wwin);
-  }
-  else if (!other_workspace) {
+  } else if (!other_workspace) {
     if (!WFLAGP(wwin, no_focusable))
       wSetFocusTo(wwin->screen, wwin);
     wRaiseFrame(wwin->frame->core);

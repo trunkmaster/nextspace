@@ -3,7 +3,7 @@
 // Project: Workspace
 //
 // Copyright (C) 2015 Sergii Stoian
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -32,41 +32,34 @@ static unsigned long filecount = 0;
                          communicator:(Communicator *)comm
 {
   NSFileManager *fm = [NSFileManager defaultManager];
-  NSArray       *dirContents = [fm directoryContentsAtPath:dir];
-  NSString     *path = nil;
+  NSArray *dirContents = [fm directoryContentsAtPath:dir];
+  NSString *path = nil;
   NSDictionary *fattrs = nil;
 
-  for (NSString *file in dirContents)
-    {
-      path = [dir stringByAppendingPathComponent:file];
-      fattrs = [fm fileAttributesAtPath:path traverseLink:NO];
+  for (NSString *file in dirContents) {
+    path = [dir stringByAppendingPathComponent:file];
+    fattrs = [fm fileAttributesAtPath:path traverseLink:NO];
 
-      [comm showProcessingFilename:[path lastPathComponent]
-                      sourcePrefix:[path stringByDeletingLastPathComponent]
-                      targetPrefix:nil
-                     bytesAdvanced:0
-                     operationType:SizingOp];
+    [comm showProcessingFilename:[path lastPathComponent]
+                    sourcePrefix:[path stringByDeletingLastPathComponent]
+                    targetPrefix:nil
+                   bytesAdvanced:0
+                   operationType:SizingOp];
 
-      if ([[fattrs fileType] isEqualToString:NSFileTypeDirectory])
-        {
-          // Recursion
-          [self calculateBatchSizeInDirectory:path
-                                operationType:opType
-                                 communicator:comm];
-        }
-      else
-        {
-          if (opType != DeleteOp)
-            {
-              batchSize += [fattrs fileSize];
-            }
-          filecount++;
-        }
+    if ([[fattrs fileType] isEqualToString:NSFileTypeDirectory]) {
+      // Recursion
+      [self calculateBatchSizeInDirectory:path operationType:opType communicator:comm];
+    } else {
+      if (opType != DeleteOp) {
+        batchSize += [fattrs fileSize];
+      }
       filecount++;
-      
-      if (isStopped == YES)
-        return;
     }
+    filecount++;
+
+    if (isStopped == YES)
+      return;
+  }
 }
 
 // Should update with printf:
@@ -84,72 +77,53 @@ static unsigned long filecount = 0;
   isStopped = NO;
 
   // if (opType == LinkOp || opType == MoveOp)
-  if (opType == LinkOp)
-    {
-      if (isIncrement)
-        {
-          printf("Q\tF\t%lu\t+\n", [filenames count]);
+  if (opType == LinkOp) {
+    if (isIncrement) {
+      printf("Q\tF\t%lu\t+\n", [filenames count]);
+    } else {
+      printf("Q\tF\t%lu\n", [filenames count]);
+    }
+    fflush(stdout);
+    return;
+  }
+
+  if (!filenames) {  // Process all FS heirarchy starting from -Source directory
+    [self calculateBatchSizeInDirectory:sourceDir operationType:opType communicator:comm];
+  } else {  // Process objects specified in -Files located in -Source
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSString *path = nil;
+    NSDictionary *fattrs = nil;
+
+    for (NSString *file in filenames) {
+      path = [sourceDir stringByAppendingPathComponent:file];
+      fattrs = [fm fileAttributesAtPath:path traverseLink:NO];
+
+      [comm showProcessingFilename:[file lastPathComponent]
+                      sourcePrefix:sourceDir
+                      targetPrefix:nil
+                     bytesAdvanced:0
+                     operationType:SizingOp];
+
+      if ([[fattrs fileType] isEqualToString:NSFileTypeDirectory]) {  // recursive
+        [self calculateBatchSizeInDirectory:path operationType:opType communicator:comm];
+      } else {
+        if (opType != DeleteOp) {
+          batchSize += [fattrs fileSize];
         }
-      else
-        {
-          printf("Q\tF\t%lu\n", [filenames count]);
-        }
-      fflush(stdout);
-      return;
+        filecount++;
+      }
+      if (isStopped == YES)
+        return;
     }
+  }
 
-  if (!filenames)
-    { // Process all FS heirarchy starting from -Source directory
-      [self calculateBatchSizeInDirectory:sourceDir
-                            operationType:opType
-                             communicator:comm];
-    }
-  else
-    { // Process objects specified in -Files located in -Source
-      NSFileManager *fm = [NSFileManager defaultManager];
-      NSString      *path = nil;
-      NSDictionary  *fattrs = nil;
-
-      for (NSString *file in filenames)
-        {
-          path = [sourceDir stringByAppendingPathComponent:file];
-          fattrs = [fm fileAttributesAtPath:path traverseLink:NO];
-
-          [comm showProcessingFilename:[file lastPathComponent]
-                          sourcePrefix:sourceDir
-                          targetPrefix:nil
-                         bytesAdvanced:0
-                         operationType:SizingOp];
-
-          if ([[fattrs fileType] isEqualToString:NSFileTypeDirectory])
-            { // recursive
-              [self calculateBatchSizeInDirectory:path
-                                    operationType:opType
-                                     communicator:comm];
-            }
-          else
-            {
-              if (opType != DeleteOp)
-                {
-                  batchSize += [fattrs fileSize];
-                }
-              filecount++;
-            }
-          if (isStopped == YES)
-            return;
-        }
-    }
-
-  if (isIncrement)
-    {
-      printf("Q\tF\t%lu\t+\n", filecount);
-      printf("Q\tS\t%llu\t+\n", batchSize);
-    }
-  else
-    {
-      printf("Q\tF\t%lu\n", filecount);
-      printf("Q\tS\t%llu\n", batchSize);
-    }
+  if (isIncrement) {
+    printf("Q\tF\t%lu\t+\n", filecount);
+    printf("Q\tS\t%llu\t+\n", batchSize);
+  } else {
+    printf("Q\tF\t%lu\n", filecount);
+    printf("Q\tS\t%llu\n", batchSize);
+  }
   fflush(stdout);
 }
 

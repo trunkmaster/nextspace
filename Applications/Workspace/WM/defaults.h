@@ -29,12 +29,12 @@
 #include "window.h"
 
 typedef struct WDDomain {
-  CFStringRef            name;
+  CFStringRef name;
   CFMutableDictionaryRef dictionary;
-  CFURLRef               path;
-  CFAbsoluteTime         timestamp;
+  CFURLRef path;
+  CFAbsoluteTime timestamp;
 #ifdef HAVE_INOTIFY
-  int                    inotify_watch;
+  int inotify_watch;
 #endif
 } WDDomain;
 
@@ -66,32 +66,32 @@ typedef enum {
 } w_cursor;
 
 extern struct WPreferences {
-  char *image_paths;                 /* : separated list of paths to find images */
-  char *logger_shell;                /* shell to log child stdi/o */
-  RImage *button_images;             /* titlebar button images */
+  char *image_paths;                /* : separated list of paths to find images */
+  char *logger_shell;               /* shell to log child stdi/o */
+  RImage *button_images;            /* titlebar button images */
   char smooth_workspace_back;
-  signed char size_display;          /* display type for resize geometry */
-  signed char move_display;          /* display type for move geometry */
-  signed char window_placement;      /* window placement mode */
-  signed char colormap_mode;         /* colormap focus mode */
+  signed char size_display;         /* display type for resize geometry */
+  signed char move_display;         /* display type for move geometry */
+  signed char window_placement;     /* window placement mode */
+  signed char colormap_mode;        /* colormap focus mode */
 
-  char opaque_move;                  /* update window position during move */
-  char opaque_resize;                /* update window position during resize */
-  char opaque_move_resize_keyboard;  /* update window position during move,resize with keyboard */
-  char scrollable_menus;             /* let them be scrolled */
-  char vi_key_menus;                 /* use h/j/k/l to select */
-  char align_menus;                  /* align menu with their parents */
-  char use_saveunders;               /* turn on SaveUnders for menus, icons etc. */
+  char opaque_move;                 /* update window position during move */
+  char opaque_resize;               /* update window position during resize */
+  char opaque_move_resize_keyboard; /* update window position during move,resize with keyboard */
+  char scrollable_menus;            /* let them be scrolled */
+  char vi_key_menus;                /* use h/j/k/l to select */
+  char align_menus;                 /* align menu with their parents */
+  char use_saveunders;              /* turn on SaveUnders for menus, icons etc. */
   char no_window_over_dock;
   char no_window_over_icons;
-  WMPoint window_place_origin;        /* Offset for windows placed on screen */
+  WMPoint window_place_origin;      /* Offset for windows placed on screen */
 
-  char constrain_window_size;        /* don't let windows get bigger than screen */
-  char windows_cycling;              /* windoze cycling */
-  char circ_raise;                   /* raise window after Alt-tabbing */
+  char constrain_window_size;       /* don't let windows get bigger than screen */
+  char windows_cycling;             /* windoze cycling */
+  char circ_raise;                  /* raise window after Alt-tabbing */
   char ignore_focus_click;
-  char open_transients_with_parent;  /* open transient window in same workspace as parent */
-  signed char title_justification;   /* titlebar text alignment */
+  char open_transients_with_parent; /* open transient window in same workspace as parent */
+  signed char title_justification;  /* titlebar text alignment */
   int window_title_clearance;
   int window_title_min_height;
   int window_title_max_height;
@@ -100,62 +100,62 @@ extern struct WPreferences {
   int menu_title_max_height;
   int menu_text_clearance;
   char multi_byte_text;
-  char no_dithering;                 /* use dithering or not */
-  char no_animations;                /* enable/disable animations */
-  char no_autowrap;                  /* wrap workspace when window is moved to the edge */
-  char window_snapping;              /* enable window snapping */
-  int snap_edge_detect;              /* how far from edge to begin snap */
-  int snap_corner_detect;            /* how far from corner to begin snap */
-  char drag_maximized_window;        /* behavior when a maximized window is dragged */
+  char no_dithering;                /* use dithering or not */
+  char no_animations;               /* enable/disable animations */
+  char no_autowrap;                 /* wrap workspace when window is moved to the edge */
+  char window_snapping;             /* enable window snapping */
+  int snap_edge_detect;             /* how far from edge to begin snap */
+  int snap_corner_detect;           /* how far from corner to begin snap */
+  char drag_maximized_window;       /* behavior when a maximized window is dragged */
 
-  char auto_arrange_icons;           /* automagically arrange icons */
-  char icon_box_position;            /* position to place icons */
-  signed char iconification_style;   /* position to place icons */
-  char disable_root_mouse;           /* disable button events in root window */
-  char auto_focus;                   /* focus window when it's mapped */
-  char *icon_back_file;              /* background image for icons */
+  char auto_arrange_icons;          /* automagically arrange icons */
+  char icon_box_position;           /* position to place icons */
+  signed char iconification_style;  /* position to place icons */
+  char disable_root_mouse;          /* disable button events in root window */
+  char auto_focus;                  /* focus window when it's mapped */
+  char *icon_back_file;             /* background image for icons */
 
-  WMPoint *root_menu_pos;             /* initial position of the root menu*/
+  WMPoint *root_menu_pos;           /* initial position of the root menu*/
   WMPoint *app_menu_pos;
   WMPoint *win_menu_pos;
 
-  signed char icon_yard;             /* aka iconbox */
+  signed char icon_yard;            /* aka iconbox */
 
-  int raise_delay;                   /* delay for autoraise. 0 is disabled */
-  int cmap_size;                     /* size of dithering colormap in colors per channel */
+  int raise_delay;                  /* delay for autoraise. 0 is disabled */
+  int cmap_size;                    /* size of dithering colormap in colors per channel */
 
-  int icon_size;                     /* size of the icon */
-  signed char menu_style;            /* menu decoration style */
+  int icon_size;                    /* size of the icon */
+  signed char menu_style;           /* menu decoration style */
   signed char workspace_name_display_position;
-  unsigned int cmd_modifier_mask;    /* mask to use as Command keyboard modifier */
-  unsigned int alt_modifier_mask;    /* mask to use as Alternate keyboard modifier */
-  char *modifier_labels[7];          /* Names of the modifiers */
+  unsigned int cmd_modifier_mask;   /* mask to use as Command keyboard modifier */
+  unsigned int alt_modifier_mask;   /* mask to use as Alternate keyboard modifier */
+  char *modifier_labels[7];         /* Names of the modifiers */
 
-  unsigned int supports_tiff;        /* Use tiff files */
+  unsigned int supports_tiff;       /* Use tiff files */
 
-  char ws_advance;                   /* Create new workspace and advance */
-  char ws_cycle;                     /* Cycle existing workspaces */
-  char save_session_on_exit;         /* automatically save session on exit */
-  char sticky_icons;                 /* If miniwindows will be onmipresent */
-  char dont_confirm_kill;            /* do not confirm Kill application */
+  char ws_advance;                  /* Create new workspace and advance */
+  char ws_cycle;                    /* Cycle existing workspaces */
+  char save_session_on_exit;        /* automatically save session on exit */
+  char sticky_icons;                /* If miniwindows will be onmipresent */
+  char dont_confirm_kill;           /* do not confirm Kill application */
   char disable_miniwindows;
   char enable_workspace_pager;
   char ignore_gtk_decoration_hints;
 
-  char dont_blink;                   /* do not blink icon selection */
+  char dont_blink; /* do not blink icon selection */
 
   /* Appearance options */
-  char titlebar_style;               /* Use newstyle buttons */
-  char superfluous;                  /* Use superfluous things */
+  char titlebar_style; /* Use newstyle buttons */
+  char superfluous;    /* Use superfluous things */
 
   /* root window mouse bindings */
-  signed char mouse_button1;         /* action for left mouse button */
-  signed char mouse_button2;         /* action for middle mouse button */
-  signed char mouse_button3;         /* action for right mouse button */
-  signed char mouse_button8;         /* action for 4th button aka backward mouse button */
-  signed char mouse_button9;         /* action for 5th button aka forward mouse button */
-  signed char mouse_wheel_scroll;    /* action for mouse wheel scroll */
-  signed char mouse_wheel_tilt;      /* action for mouse wheel tilt */
+  signed char mouse_button1;      /* action for left mouse button */
+  signed char mouse_button2;      /* action for middle mouse button */
+  signed char mouse_button3;      /* action for right mouse button */
+  signed char mouse_button8;      /* action for 4th button aka backward mouse button */
+  signed char mouse_button9;      /* action for 5th button aka forward mouse button */
+  signed char mouse_wheel_scroll; /* action for mouse wheel scroll */
+  signed char mouse_wheel_tilt;   /* action for mouse wheel tilt */
 
   /* balloon text */
   char window_balloon;
@@ -165,13 +165,13 @@ extern struct WPreferences {
   char help_balloon;
 
   /* some constants */
-  int dblclick_time;                 /* double click delay time in ms */
+  int dblclick_time; /* double click delay time in ms */
 
   /* animate menus */
-  signed char menu_scroll_speed;     /* how fast menus are scrolled */
+  signed char menu_scroll_speed; /* how fast menus are scrolled */
 
   /* animate icon sliding */
-  signed char icon_slide_speed;      /* icon slide animation speed */
+  signed char icon_slide_speed; /* icon slide animation speed */
 
   /* shading animation */
   signed char shade_speed;
@@ -196,10 +196,10 @@ extern struct WPreferences {
   int minipreview_size;               /* Size of Mini-Previews in pixels */
 
   /* All delays here are in ms. 0 means instant auto-action. */
-  int clip_auto_raise_delay;          /* Delay after which the clip will be raised when entered */
-  int clip_auto_lower_delay;          /* Delay after which the clip will be lowered when leaved */
-  int clip_auto_expand_delay;         /* Delay after which the clip will expand when entered */
-  int clip_auto_collapse_delay;       /* Delay after which the clip will collapse when leaved */
+  int clip_auto_raise_delay;    /* Delay after which the clip will be raised when entered */
+  int clip_auto_lower_delay;    /* Delay after which the clip will be lowered when leaved */
+  int clip_auto_expand_delay;   /* Delay after which the clip will expand when entered */
+  int clip_auto_collapse_delay; /* Delay after which the clip will collapse when leaved */
 
   RImage *swtileImage;
   RImage *swbackImage[9];
@@ -210,18 +210,19 @@ extern struct WPreferences {
 
   struct {
 #ifdef USE_ICCCM_WMREPLACE
-    unsigned int replace:1;               /* replace existing window manager */
+    unsigned int replace : 1; /* replace existing window manager */
 #endif
-    unsigned int nodock:1;                /* don't display the dock */
-    unsigned int noclip:1;                /* don't display the clip */
-    unsigned int clip_merged_in_dock:1;   /* disable clip, switch workspaces with dock */
-    unsigned int nodrawer:1;              /* don't use drawers */
-    unsigned int wrap_appicons_in_dock:1; /* Whether to wrap appicons when Dock is moved up and down */
-    unsigned int noupdates:1;             /* don't require ~/GNUstep (-static) */
-    unsigned int noautolaunch:1;          /* don't autolaunch apps */
-    unsigned int norestore:1;             /* don't restore session */
-    unsigned int restarting:2;
-  } flags;                                      /* internal flags */
+    unsigned int nodock : 1;                /* don't display the dock */
+    unsigned int noclip : 1;                /* don't display the clip */
+    unsigned int clip_merged_in_dock : 1;   /* disable clip, switch workspaces with dock */
+    unsigned int nodrawer : 1;              /* don't use drawers */
+    unsigned int wrap_appicons_in_dock : 1; /* Whether to wrap appicons when Dock is
+                                               moved up and down */
+    unsigned int noupdates : 1;             /* don't require ~/GNUstep (-static) */
+    unsigned int noautolaunch : 1;          /* don't autolaunch apps */
+    unsigned int norestore : 1;             /* don't restore session */
+    unsigned int restarting : 2;
+  } flags;                                  /* internal flags */
 
   /* Map table between w_cursor and actual X id */
   Cursor cursor[WCUR_LAST];
@@ -231,122 +232,117 @@ extern struct WPreferences {
 WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges);
 void wDefaultsReadStatic(CFMutableDictionaryRef dict);
 void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNotify);
-void wDefaultsUpdateDomainsIfNeeded(void* arg);
+void wDefaultsUpdateDomainsIfNeeded(void *arg);
 
 #ifdef HAVE_INOTIFY
 void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shouldTrack);
 #endif
 
 /* Default images path */
-#define DEF_IMAGE_PATHS                                 \
+#define DEF_IMAGE_PATHS \
   "(\"~/Library/Images/\",                              \
     \"/Library/Images/\",                               \
     \"/usr/NextSpace/Images/\",                         \
     \"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
 /* default fonts */
-#define DEF_TITLE_FONT			"\"Helvetica:bold:pixelsize=12\""
-#define DEF_MENU_TITLE_FONT		"\"Helvetica:bold:pixelsize=12\""
-#define DEF_MENU_ENTRY_FONT		"\"Helvetica:pixelsize=12\""
-#define DEF_ICON_TITLE_FONT		"\"Helvetica:pixelsize=9\""
-#define DEF_CLIP_TITLE_FONT		"\"Helvetica:pixelsize=10\""
-#define DEF_INFO_TEXT_FONT		"\"Helvetica:pixelsize=12\""
-#define DEF_WORKSPACE_NAME_FONT		"\"Helvetica:pixelsize=24\""
-#define DEF_WINDOW_TITLE_EXTEND_SPACE	"0"
-#define DEF_MENU_TITLE_EXTEND_SPACE	"0"
-#define DEF_MENU_TEXT_EXTEND_SPACE	"0"
+#define DEF_TITLE_FONT "\"Helvetica:bold:pixelsize=12\""
+#define DEF_MENU_TITLE_FONT "\"Helvetica:bold:pixelsize=12\""
+#define DEF_MENU_ENTRY_FONT "\"Helvetica:pixelsize=12\""
+#define DEF_ICON_TITLE_FONT "\"Helvetica:pixelsize=9\""
+#define DEF_CLIP_TITLE_FONT "\"Helvetica:pixelsize=10\""
+#define DEF_INFO_TEXT_FONT "\"Helvetica:pixelsize=12\""
+#define DEF_WORKSPACE_NAME_FONT "\"Helvetica:pixelsize=24\""
+#define DEF_WINDOW_TITLE_EXTEND_SPACE "0"
+#define DEF_MENU_TITLE_EXTEND_SPACE "0"
+#define DEF_MENU_TEXT_EXTEND_SPACE "0"
 
 #ifndef HAVE_INOTIFY
 /* Check defaults database for changes every this many milliseconds */
-#define DEFAULTS_CHECK_INTERVAL	3000
+#define DEFAULTS_CHECK_INTERVAL 3000
 #endif
 
 /* window placement mode */
-#define WPM_MANUAL	0
-#define WPM_CASCADE	1
-#define WPM_SMART	2
-#define WPM_RANDOM	3
-#define WPM_AUTO        4
-#define WPM_CENTER      5
+#define WPM_MANUAL 0
+#define WPM_CASCADE 1
+#define WPM_SMART 2
+#define WPM_RANDOM 3
+#define WPM_AUTO 4
+#define WPM_CENTER 5
 
 /* text justification */
-#define WTJ_CENTER	0
-#define WTJ_LEFT	1
-#define WTJ_RIGHT	2
+#define WTJ_CENTER 0
+#define WTJ_LEFT 1
+#define WTJ_RIGHT 2
 
 /* iconification styles */
-#define WIS_ZOOM        0
-#define WIS_TWIST       1
-#define WIS_FLIP        2
-#define WIS_NONE        3
-#define WIS_RANDOM	4 /* secret */
+#define WIS_ZOOM 0
+#define WIS_TWIST 1
+#define WIS_FLIP 2
+#define WIS_NONE 3
+#define WIS_RANDOM 4 /* secret */
 
 /* speeds */
 #define SPEED_ULTRAFAST 0
-#define SPEED_FAST	1
-#define SPEED_MEDIUM	2
-#define SPEED_SLOW	3
+#define SPEED_FAST 1
+#define SPEED_MEDIUM 2
+#define SPEED_SLOW 3
 #define SPEED_ULTRASLOW 4
 
 /* workspace actions */
-#define WA_NONE                 0
-#define WA_SELECT_WINDOWS       1
-#define WA_OPEN_APPMENU         2
-#define WA_OPEN_WINLISTMENU     3
-#define WA_SWITCH_WORKSPACES    4
-#define WA_MOVE_PREVWORKSPACE   5
-#define WA_MOVE_NEXTWORKSPACE   6
-#define WA_SWITCH_WINDOWS       7
-#define WA_MOVE_PREVWINDOW      8
-#define WA_MOVE_NEXTWINDOW      9
+#define WA_NONE 0
+#define WA_SELECT_WINDOWS 1
+#define WA_OPEN_APPMENU 2
+#define WA_OPEN_WINLISTMENU 3
+#define WA_SWITCH_WORKSPACES 4
+#define WA_MOVE_PREVWORKSPACE 5
+#define WA_MOVE_NEXTWORKSPACE 6
+#define WA_SWITCH_WINDOWS 7
+#define WA_MOVE_PREVWINDOW 8
+#define WA_MOVE_NEXTWINDOW 9
 
 /* workspace display position */
-#define WD_NONE		0
-#define WD_CENTER	1
-#define WD_TOP		2
-#define WD_BOTTOM	3
-#define WD_TOPLEFT	4
-#define WD_TOPRIGHT	5
-#define WD_BOTTOMLEFT	6
-#define WD_BOTTOMRIGHT	7
+#define WD_NONE 0
+#define WD_CENTER 1
+#define WD_TOP 2
+#define WD_BOTTOM 3
+#define WD_TOPLEFT 4
+#define WD_TOPRIGHT 5
+#define WD_BOTTOMLEFT 6
+#define WD_BOTTOMRIGHT 7
 
 /* workspace border position */
-#define	WB_NONE		0
-#define	WB_LEFTRIGHT	1
-#define	WB_TOPBOTTOM	2
-#define WB_ALLDIRS      (WB_LEFTRIGHT|WB_TOPBOTTOM)
+#define WB_NONE 0
+#define WB_LEFTRIGHT 1
+#define WB_TOPBOTTOM 2
+#define WB_ALLDIRS (WB_LEFTRIGHT | WB_TOPBOTTOM)
 
 /* menu styles */
-#define MS_NORMAL		0
-#define MS_SINGLE_TEXTURE	1
-#define MS_FLAT			2
+#define MS_NORMAL 0
+#define MS_SINGLE_TEXTURE 1
+#define MS_FLAT 2
 
 /* titlebar style */
-#define TS_NEW		0
-#define TS_OLD		1
+#define TS_NEW 0
+#define TS_OLD 1
 
 /* colormap change mode */
-#define WCM_CLICK	0
-#define WCM_POINTER	1
+#define WCM_CLICK 0
+#define WCM_POINTER 1
 
 /* clip title colors */
-#define CLIP_NORMAL	0
-#define CLIP_COLLAPSED	1
+#define CLIP_NORMAL 0
+#define CLIP_COLLAPSED 1
 
 /* icon yard position */
-#define	IY_VERT		1
-#define	IY_HORIZ	0
-#define	IY_TOP		2
-#define	IY_BOTTOM	0
-#define	IY_RIGHT	4
-#define	IY_LEFT		0
+#define IY_VERT 1
+#define IY_HORIZ 0
+#define IY_TOP 2
+#define IY_BOTTOM 0
+#define IY_RIGHT 4
+#define IY_LEFT 0
 
 /* drag maximized window behaviors */
-enum {
-  DRAGMAX_MOVE,
-  DRAGMAX_RESTORE,
-  DRAGMAX_UNMAXIMIZE,
-  DRAGMAX_NOMOVE
-};
+enum { DRAGMAX_MOVE, DRAGMAX_RESTORE, DRAGMAX_UNMAXIMIZE, DRAGMAX_NOMOVE };
 
 /* --- Key bindings --- */
 
@@ -368,7 +364,7 @@ enum {
 #endif
 
 enum {
-  /* window */		//--> appmenu
+  /* window */  //--> appmenu
   //  WKBD_RAISE,		// Command + UpArrow
   //  WKBD_LOWER,		// Command + DownArrow
 
@@ -385,10 +381,10 @@ enum {
   /* WKBD_RBCMAXIMIZE, */
 
   /* Apps and windows navigation - anywhere */
-  WKBD_FOCUSNEXT,	// Command + `
-  WKBD_FOCUSPREV,	// Command + ~ (Shift + `)
-  WKBD_GROUPNEXT,	// Command + Tab
-  WKBD_GROUPPREV,	// Command + Shift + Tab
+  WKBD_FOCUSNEXT,  // Command + `
+  WKBD_FOCUSPREV,  // Command + ~ (Shift + `)
+  WKBD_GROUPNEXT,  // Command + Tab
+  WKBD_GROUPPREV,  // Command + Shift + Tab
 
   /* Desktop menu - anywhere */
   /* Dock and Icon Yard */
@@ -398,7 +394,7 @@ enum {
   WKBD_NEXT_DESKTOP,
   WKBD_PREV_DESKTOP,
   WKBD_LAST_DESKTOP,
-  
+
   WKBD_DESKTOP_1,
   WKBD_DESKTOP_2,
   WKBD_DESKTOP_3,

@@ -35,56 +35,50 @@
 NSInteger WMDockAppsCount(void)
 {
   WScreen *scr = wDefaultScreen();
-  WDock   *dock = scr->dock;
+  WDock *dock = scr->dock;
 
   if (!dock)
     return 0;
   else
     return dock->max_icons;
-    // return dock->icon_count;
+  // return dock->icon_count;
 }
 NSString *WMDockAppName(int position)
 {
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
 
   if (appicon) {
-    return [NSString stringWithFormat:@"%s.%s",
-                     appicon->wm_instance, appicon->wm_class];
-  }
-  else {
+    return [NSString stringWithFormat:@"%s.%s", appicon->wm_instance, appicon->wm_class];
+  } else {
     return @".NoApplication";
   }
 }
 NSImage *WMDockAppImage(int position)
 {
-  WAppIcon     *btn = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
-  NSString     *iconPath;
-  NSString     *appName;
+  WAppIcon *btn = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
+  NSString *iconPath;
+  NSString *appName;
   NSDictionary *appDesc;
-  NSImage      *icon = nil;
+  NSImage *icon = nil;
 
   if (btn) {
     // NSLog(@"W+W: icon image file: %s", btn->icon->file);
-    if (btn->icon->file) { // Docked and not running application
+    if (btn->icon->file) {  // Docked and not running application
       iconPath = [NSString stringWithCString:btn->icon->file];
       icon = [[NSImage alloc] initWithContentsOfFile:iconPath];
       [icon autorelease];
-    }
-    else {
+    } else {
       if (!strcmp(btn->wm_class, "GNUstep")) {
         appName = [NSString stringWithCString:btn->wm_instance];
-      }
-      else {
+      } else {
         appName = [NSString stringWithCString:btn->wm_class];
       }
-          
+
       appDesc = [[ProcessManager shared] _applicationWithName:appName];
-          
+
       if (!strcmp(btn->wm_class, "GNUstep")) {
-        icon = [[NSApp delegate]
-                       iconForFile:[appDesc objectForKey:@"NSApplicationPath"]];
-      }
-      else {
+        icon = [[NSApp delegate] iconForFile:[appDesc objectForKey:@"NSApplicationPath"]];
+      } else {
         icon = [appDesc objectForKey:@"NSApplicationIcon"];
       }
     }
@@ -92,20 +86,20 @@ NSImage *WMDockAppImage(int position)
       icon = [NSImage imageNamed:@"NXUnknownApplication"];
     }
   }
-  
+
   return icon;
 }
 // void WMSetDockAppImage(NSString *path, int position, BOOL save) {...} -> Workspace+WM
 void WMSetDockAppImage(NSString *path, int position, BOOL save)
 {
   WAppIcon *btn;
-  RImage   *rimage;
+  RImage *rimage;
 
   btn = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
   if (!btn) {
     return;
   }
-  
+
   if (btn->icon->file) {
     wfree(btn->icon->file);
   }
@@ -115,13 +109,13 @@ void WMSetDockAppImage(NSString *path, int position, BOOL save)
   if (!rimage) {
     return;
   }
-  
+
   if (btn->icon->file_image) {
     RReleaseImage(btn->icon->file_image);
     btn->icon->file_image = NULL;
   }
   btn->icon->file_image = RRetainImage(rimage);
-  
+
   // Write to WM's 'WMWindowAttributes' file
   if (save == YES) {
     CFMutableDictionaryRef winAttrs, appAttrs;
@@ -129,16 +123,15 @@ void WMSetDockAppImage(NSString *path, int position, BOOL save)
 
     winAttrs = w_global.domain.window_attr->dictionary;
 
-    appKey = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s.%s"),
-                                      btn->wm_instance, btn->wm_class);
+    appKey = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s.%s"), btn->wm_instance,
+                                      btn->wm_class);
     appAttrs = (CFMutableDictionaryRef)CFDictionaryGetValue(winAttrs, appKey);
     if (!appAttrs) {
-      appAttrs = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                           &kCFTypeDictionaryKeyCallBacks,
+      appAttrs = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks,
                                            &kCFTypeDictionaryValueCallBacks);
     }
-    iconFile = CFStringCreateWithCString(kCFAllocatorDefault, btn->icon->file,
-                                         kCFStringEncodingUTF8);
+    iconFile =
+        CFStringCreateWithCString(kCFAllocatorDefault, btn->icon->file, kCFStringEncodingUTF8);
     CFDictionarySetValue(appAttrs, CFSTR("Icon"), iconFile);
     CFRelease(iconFile);
     CFDictionarySetValue(appAttrs, CFSTR("AlwaysUserIcon"), CFSTR("YES"));
@@ -147,31 +140,30 @@ void WMSetDockAppImage(NSString *path, int position, BOOL save)
       CFDictionarySetValue(winAttrs, CFSTR("Logo.WMDock"), appAttrs);
       CFDictionarySetValue(winAttrs, CFSTR("Logo.WMPanel"), appAttrs);
     }
-  
+
     CFDictionarySetValue(winAttrs, appKey, appAttrs);
     CFRelease(appKey);
     CFRelease(appAttrs);
     WMUserDefaultsWrite(winAttrs, CFSTR("WMWindowAttributes"));
   }
-  
+
   wIconUpdate(btn->icon);
 }
 // BOOL WMIsDockAppAutolaunch(int position) {...} -> Workspace+WM
 BOOL WMIsDockAppAutolaunch(int position)
 {
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
-    
+
   if (!appicon || appicon->flags.auto_launch == 0) {
     return NO;
-  }
-  else {
+  } else {
     return YES;
   }
 }
 void WMSetDockAppAutolaunch(int position, BOOL autolaunch)
 {
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
-    
+
   if (appicon) {
     appicon->flags.auto_launch = (autolaunch == YES) ? 1 : 0;
     wScreenSaveState(wDefaultScreen());
@@ -180,18 +172,17 @@ void WMSetDockAppAutolaunch(int position, BOOL autolaunch)
 BOOL WMIsDockAppLocked(int position)
 {
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
-    
+
   if (!appicon || appicon->flags.lock == 0) {
     return NO;
-  }
-  else {
+  } else {
     return YES;
   }
 }
 void WMSetDockAppLocked(int position, BOOL lock)
 {
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
-    
+
   if (appicon) {
     appicon->flags.lock = (lock == YES) ? 1 : 0;
     wScreenSaveState(wDefaultScreen());
@@ -203,15 +194,14 @@ NSString *WMDockAppCommand(int position)
 
   if (appicon) {
     return [NSString stringWithCString:appicon->command];
-  }
-  else {
+  } else {
     return nil;
   }
 }
 void WMSetDockAppCommand(int position, const char *command)
 {
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
-  
+
   if (appicon) {
     wfree(appicon->command);
     appicon->command = wstrdup(command);
@@ -224,15 +214,14 @@ NSString *WMDockAppPasteCommand(int position)
 
   if (appicon) {
     return [NSString stringWithCString:appicon->paste_command];
-  }
-  else {
+  } else {
     return nil;
   }
 }
 void WMSetDockAppPasteCommand(int position, const char *command)
 {
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
-  
+
   if (appicon) {
     wfree(appicon->paste_command);
     appicon->paste_command = wstrdup(command);
@@ -245,15 +234,14 @@ NSString *WMDockAppDndCommand(int position)
 
   if (appicon) {
     return [NSString stringWithCString:appicon->dnd_command];
-  }
-  else {
+  } else {
     return nil;
   }
 }
 void WMSetDockAppDndCommand(int position, const char *command)
 {
   WAppIcon *appicon = wDockAppiconAtSlot(wDefaultScreen()->dock, position);
-  
+
   if (appicon) {
     wfree(appicon->dnd_command);
     appicon->dnd_command = wstrdup(command);
@@ -328,10 +316,9 @@ void WMSetDockAppDndCommand(int position, const char *command)
 
 - (NSView *)view
 {
-  if (box == nil)
-    {
-      [NSBundle loadNibNamed:@"DockPrefs" owner:self];
-    }
+  if (box == nil) {
+    [NSBundle loadNibNamed:@"DockPrefs" owner:self];
+  }
 
   return box;
 }
@@ -342,84 +329,70 @@ void WMSetDockAppDndCommand(int position, const char *command)
 - (int)numberOfRowsInTableView:(NSTableView *)tv
 {
   WScreen *scr = wDefaultScreen();
-  WDock   *dock = scr->dock;
+  WDock *dock = scr->dock;
 
   if (!dock) {
     return 0;
-  }
-  else {
+  } else {
     return dock->max_icons;
     // return dock->icon_count;
   }
 }
 
-- (id)           tableView:(NSTableView *)tv
- objectValueForTableColumn:(NSTableColumn *)tc
-                       row:(int)row
+- (id)tableView:(NSTableView *)tv objectValueForTableColumn:(NSTableColumn *)tc row:(int)row
 {
   NSString *appName = WMDockAppName(row);
 
-  
-  if (tc == [appList tableColumnWithIdentifier:@"autostart"])
-    {
-      if (WMIsDockAppAutolaunch(row))
-        return [NSImage imageNamed:@"CheckMark"];
-      else
-        return nil;
+  if (tc == [appList tableColumnWithIdentifier:@"autostart"]) {
+    if (WMIsDockAppAutolaunch(row))
+      return [NSImage imageNamed:@"CheckMark"];
+    else
+      return nil;
+  } else {
+    if ([[appName pathExtension] isEqualToString:@"GNUstep"])
+      appName = [appName stringByDeletingPathExtension];
+    else
+      appName = [appName pathExtension];
+
+    if ([appName isEqualToString:@"Workspace"] || [appName isEqualToString:@"Recycler"]) {
+      [[tc dataCellForRow:row] setEnabled:NO];
+    } else {
+      [[tc dataCellForRow:row] setEnabled:YES];
     }
-  else
-    {
-      if ([[appName pathExtension] isEqualToString:@"GNUstep"])
-        appName = [appName stringByDeletingPathExtension];
-      else
-        appName = [appName pathExtension];
-      
-      if ([appName isEqualToString:@"Workspace"] ||
-          [appName isEqualToString:@"Recycler"])
-        {
-          [[tc dataCellForRow:row] setEnabled:NO];
-        }
-      else
-        {
-          [[tc dataCellForRow:row] setEnabled:YES];
-        }
-      
-      return appName;
-    }
+
+    return appName;
+  }
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-  NSTableView  *tv = [aNotification object];
-  NSInteger    selRow = [tv selectedRow];
-  NSString     *appName = WMDockAppName(selRow);
+  NSTableView *tv = [aNotification object];
+  NSInteger selRow = [tv selectedRow];
+  NSString *appName = WMDockAppName(selRow);
 
   if ([[appName pathExtension] isEqualToString:@"GNUstep"])
     appName = [appName stringByDeletingPathExtension];
   else
     appName = [appName pathExtension];
-  
+
   [nameField setStringValue:appName];
   [autostartBtn setEnabled:YES];
- 
+
   if ([appName isEqualToString:@"Workspace"]) {
     [iconBtn setImage:[NSApp applicationIconImage]];
     [pathField setStringValue:@""];
-  }
-  else {
+  } else {
     [iconBtn setImage:WMDockAppImage(selRow)];
     [pathField setStringValue:WMDockAppCommand(selRow)];
   }
-  [autostartBtn
-      setState:WMIsDockAppAutolaunch(selRow) ? NSOnState : NSOffState];
-  
+  [autostartBtn setState:WMIsDockAppAutolaunch(selRow) ? NSOnState : NSOffState];
+
   if ([appPanel isVisible]) {
     [self appSettingsPanelUpdate];
   }
 }
 
-- (BOOL)tableView:(NSTableView *)tv
-  shouldSelectRow:(NSInteger)row
+- (BOOL)tableView:(NSTableView *)tv shouldSelectRow:(NSInteger)row
 {
   NSString *value = WMDockAppName(row);
 
@@ -433,7 +406,7 @@ void WMSetDockAppDndCommand(int position, const char *command)
 - (void)appListDoubleClicked:(id)sender
 {
   WMSetDockAppAutolaunch([appList selectedRow], ![autostartBtn state]);
-  
+
   [autostartBtn setState:![autostartBtn state]];
   [appList reloadData];
 }
@@ -449,10 +422,10 @@ void WMSetDockAppDndCommand(int position, const char *command)
 - (void)revert:sender
 {
   NSInteger selRow = [appList selectedRow];
-  
+
   [appList reloadData];
 
-  if (selRow > [appList numberOfRows]-1)
+  if (selRow > [appList numberOfRows] - 1)
     [appList selectRow:0 byExtendingSelection:NO];
   else
     [appList selectRow:selRow byExtendingSelection:NO];
@@ -465,50 +438,45 @@ void WMSetDockAppDndCommand(int position, const char *command)
 - (void)appSettingsPanelUpdate
 {
   NSInteger selRow = [appList selectedRow];
-  NSString  *appName = WMDockAppName(selRow);
+  NSString *appName = WMDockAppName(selRow);
 
   [appNameField setStringValue:appName];
   [appIconView setImage:WMDockAppImage(selRow)];
   [appCommandField setStringValue:WMDockAppCommand(selRow)];
   [appLockedBtn setState:WMIsDockAppLocked(selRow)];
-  
-  if ([appName isEqualToString:@"Workspace.GNUstep"] ||
-      [appName isEqualToString:@"Recycler.GNUstep"])
-    {
-      [appCommandField setEnabled:NO];
-      [appCommandField setStringValue:@"NEXTSPACE internal"];
-      [appLockedBtn setEnabled:NO];
-    }
 
-  if ([[appName pathExtension] isEqualToString:@"GNUstep"])
-    {
-      [appMiddleClickField setEnabled:NO];
-      [appDndCommandField setEnabled:NO];
-      [appMiddleClickField setStringValue:@""];
-      [appDndCommandField setStringValue:@""];
-    }
-  else
-    {
-      [appLockedBtn setEnabled:YES];
-      [appCommandField setEnabled:YES];
-      [appMiddleClickField setEnabled:YES];
-      [appDndCommandField setEnabled:YES];
-      [appMiddleClickField setStringValue:WMDockAppPasteCommand(selRow)];
-      [appDndCommandField setStringValue:WMDockAppDndCommand(selRow)];
-    }  
+  if ([appName isEqualToString:@"Workspace.GNUstep"] ||
+      [appName isEqualToString:@"Recycler.GNUstep"]) {
+    [appCommandField setEnabled:NO];
+    [appCommandField setStringValue:@"NEXTSPACE internal"];
+    [appLockedBtn setEnabled:NO];
+  }
+
+  if ([[appName pathExtension] isEqualToString:@"GNUstep"]) {
+    [appMiddleClickField setEnabled:NO];
+    [appDndCommandField setEnabled:NO];
+    [appMiddleClickField setStringValue:@""];
+    [appDndCommandField setStringValue:@""];
+  } else {
+    [appLockedBtn setEnabled:YES];
+    [appCommandField setEnabled:YES];
+    [appMiddleClickField setEnabled:YES];
+    [appDndCommandField setEnabled:YES];
+    [appMiddleClickField setStringValue:WMDockAppPasteCommand(selRow)];
+    [appDndCommandField setStringValue:WMDockAppDndCommand(selRow)];
+  }
 }
 
 - (void)showAppSettingsPanel:(id)sender
 {
-  NSString  *appName = WMDockAppName([appList selectedRow]);
+  NSString *appName = WMDockAppName([appList selectedRow]);
 
-  if (!appName ||
-      [appName isEqualToString:@"Workspace.GNUstep"] ||
+  if (!appName || [appName isEqualToString:@"Workspace.GNUstep"] ||
       [appName isEqualToString:@"Recycler.GNUstep"])
     return;
-  
+
   [self appSettingsPanelUpdate];
-  
+
   // [appPanel makeKeyAndOrderFront:[iconBtn window]];
   [appPanel orderFront:[iconBtn window]];
   [appPanel makeFirstResponder:appCommandField];
@@ -516,14 +484,14 @@ void WMSetDockAppDndCommand(int position, const char *command)
 
 - (void)setAppIcon:(id)sender
 {
-  NSInteger      selRow = [appList selectedRow];
-  NSInteger      result;
-  NSOpenPanel    *openPanel;
+  NSInteger selRow = [appList selectedRow];
+  NSInteger result;
+  NSOpenPanel *openPanel;
   NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
 
   openPanel = [NSOpenPanel openPanel];
   [openPanel setAllowsMultipleSelection:NO];
-  
+
   result = [openPanel runModalForDirectory:[defs objectForKey:@"OpenDir"]
                                       file:nil
                                      types:[NSImage imageFileTypes]];
@@ -532,7 +500,7 @@ void WMSetDockAppDndCommand(int position, const char *command)
     WMSetDockAppImage([[openPanel filenames] lastObject], selRow, YES);
     [appIconView setImage:WMDockAppImage(selRow)];
     [iconBtn setImage:WMDockAppImage(selRow)];
-  }  
+  }
 }
 
 - (void)setAppLocked:(id)sender
@@ -542,20 +510,17 @@ void WMSetDockAppDndCommand(int position, const char *command)
 
 - (void)setAppCommand:(id)sender
 {
-  WMSetDockAppCommand([appList selectedRow],
-                       [[sender stringValue] cString]);
+  WMSetDockAppCommand([appList selectedRow], [[sender stringValue] cString]);
 }
 
 - (void)setAppPasteCommand:(id)sender
 {
-  WMSetDockAppPasteCommand([appList selectedRow],
-                            [[sender stringValue] cString]);
+  WMSetDockAppPasteCommand([appList selectedRow], [[sender stringValue] cString]);
 }
 
 - (void)setAppDndCommand:(id)sender
 {
-  WMSetDockAppDndCommand([appList selectedRow],
-                          [[sender stringValue] cString]);
+  WMSetDockAppDndCommand([appList selectedRow], [[sender stringValue] cString]);
 }
 
 // NSWindow delegate method

@@ -41,9 +41,9 @@
   id directSwitchKey;
   id showInDockBtn;
 
-  NSUInteger     desktopsCount;
+  NSUInteger desktopsCount;
   NSMutableArray *desktopReps;
-  NSButton       *selectedDesktopRep;
+  NSButton *selectedDesktopRep;
   NSMutableArray *wmStateDesktops;
 }
 

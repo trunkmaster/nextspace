@@ -29,12 +29,12 @@
 
 static inline NSRect IncrementedRect(NSRect r)
 {
-        r.origin.x--;
-        r.origin.y--;
-        r.size.width += 2;
-        r.size.height += 2;
+  r.origin.x--;
+  r.origin.y--;
+  r.size.width += 2;
+  r.size.height += 2;
 
-        return r;
+  return r;
 }
 
 @interface IconPrefs (Private)
@@ -47,33 +47,27 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)setupArrows
 {
-  NSRect     frame;
-  NSSize     s = [[leftArr superview] frame].size;
-  float      width;
+  NSRect frame;
+  NSSize s = [[leftArr superview] frame].size;
+  float width;
   NXTDefaults *df = [NXTDefaults userDefaults];
 
-  if ([df objectForKey:@"IconSlotWidth"])
-    {
-      width = [df floatForKey:@"IconSlotWidth"];
-    }
-  else
-    {
-      width = DEFAULT_LABEL_WIDTH;
-    }
+  if ([df objectForKey:@"IconSlotWidth"]) {
+    width = [df floatForKey:@"IconSlotWidth"];
+  } else {
+    width = DEFAULT_LABEL_WIDTH;
+  }
 
-  if (width == DEFAULT_LABEL_WIDTH)
-    {
-      [button setEnabled:NO];
-    }
-  else
-    {
-      [button setEnabled:YES];
-    }
+  if (width == DEFAULT_LABEL_WIDTH) {
+    [button setEnabled:NO];
+  } else {
+    [button setEnabled:YES];
+  }
 
   frame = [leftArr frame];
   frame.origin.x = s.width / 2 - width / 2 - frame.size.width;
   [leftArr setFrame:frame];
-  
+
   frame = [rightArr frame];
   frame.origin.x = s.width / 2 + width / 2;
   [rightArr setFrame:frame];
@@ -119,11 +113,10 @@ static inline NSRect IncrementedRect(NSRect r)
 
   [self setupArrows];
 
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(changedSelection:)
-	   name:@"FileViewerDidChangeSelectionNotification"
-	 object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(changedSelection:)
+                                               name:@"FileViewerDidChangeSelectionNotification"
+                                             object:nil];
 }
 
 - (NSString *)moduleName
@@ -133,70 +126,63 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (NSView *)view
 {
-  if (box == nil)
-    {
-      [NSBundle loadNibNamed:@"IconPrefs" owner:self];
-    }
+  if (box == nil) {
+    [NSBundle loadNibNamed:@"IconPrefs" owner:self];
+  }
 
   return box;
 }
 
-- (BOOL) arrowView:(NXTSizer *)sender
- shouldMoveByDelta:(float)delta
+- (BOOL)arrowView:(NXTSizer *)sender shouldMoveByDelta:(float)delta
 {
-  NSView   *superview = [sender superview];
-  NSSize   s = [superview frame].size;
-  NSRect   arrowFrame;
-  NSRect   textFrame = [iconLabel frame];
-  float    diff;
+  NSView *superview = [sender superview];
+  NSSize s = [superview frame].size;
+  NSRect arrowFrame;
+  NSRect textFrame = [iconLabel frame];
+  float diff;
   unsigned newWidth;
 
-  if (sender == rightArr)
-    {
-      arrowFrame = [rightArr frame];
+  if (sender == rightArr) {
+    arrowFrame = [rightArr frame];
 
-      diff = (arrowFrame.origin.x + delta) - s.width / 2;
+    diff = (arrowFrame.origin.x + delta) - s.width / 2;
 
-      if (diff <= 40 || diff >= 100)
-        return NO;
+    if (diff <= 40 || diff >= 100)
+      return NO;
 
-      textFrame.origin.x = textFrame.origin.x - delta;
+    textFrame.origin.x = textFrame.origin.x - delta;
 
-      arrowFrame = [leftArr frame];
-      [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
-      arrowFrame.origin.x = s.width / 2 - diff - arrowFrame.size.width;
-      [leftArr setFrame:arrowFrame];
-      [leftArr setNeedsDisplay:YES];
-      [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
-    }
-  else
-    {
-      arrowFrame = [leftArr frame];
+    arrowFrame = [leftArr frame];
+    [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
+    arrowFrame.origin.x = s.width / 2 - diff - arrowFrame.size.width;
+    [leftArr setFrame:arrowFrame];
+    [leftArr setNeedsDisplay:YES];
+    [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
+  } else {
+    arrowFrame = [leftArr frame];
 
-      diff = s.width / 2 - (arrowFrame.origin.x + delta +
-                            arrowFrame.size.width);
+    diff = s.width / 2 - (arrowFrame.origin.x + delta + arrowFrame.size.width);
 
-      if (diff <= 40 || diff >= 100)
-        return NO;
+    if (diff <= 40 || diff >= 100)
+      return NO;
 
-      textFrame.origin.x = textFrame.origin.x + delta;
-      
-      arrowFrame = [rightArr frame];
-      [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
-      arrowFrame.origin.x = s.width / 2 + diff;
-      [rightArr setFrame:arrowFrame];
-      [rightArr setNeedsDisplay:YES];
-      [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
-    }
+    textFrame.origin.x = textFrame.origin.x + delta;
+
+    arrowFrame = [rightArr frame];
+    [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
+    arrowFrame.origin.x = s.width / 2 + diff;
+    [rightArr setFrame:arrowFrame];
+    [rightArr setNeedsDisplay:YES];
+    [superview setNeedsDisplayInRect:IncrementedRect(arrowFrame)];
+  }
 
   newWidth = diff * 2;
 
   textFrame.size.width = newWidth;
   [iconLabel setFrame:textFrame];
 
-  [iconLabel setStringValue:NXTShortenString(@"Workspace.app",
-                                            newWidth-4, [iconLabel font],
-                                            NXSymbolElement, NXTDotsAtRight)];
+  [iconLabel setStringValue:NXTShortenString(@"Workspace.app", newWidth - 4, [iconLabel font],
+                                             NXSymbolElement, NXTDotsAtRight)];
   if (newWidth == DEFAULT_LABEL_WIDTH)
     [button setEnabled:NO];
   else
@@ -207,58 +193,45 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)arrowViewStoppedMoving:(NXTSizer *)sender
 {
-  [[NXTDefaults userDefaults] setFloat:[iconLabel frame].size.width
-                               forKey:@"IconSlotWidth"];
-  
-  [[NSNotificationCenter defaultCenter]
-          postNotificationName:@"IconSlotWidthDidChangeNotification"
-                        object:self];
+  [[NXTDefaults userDefaults] setFloat:[iconLabel frame].size.width forKey:@"IconSlotWidth"];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"IconSlotWidthDidChangeNotification"
+                                                      object:self];
 }
 
 - (void)revert:sender
 {
-  [[NXTDefaults userDefaults] setFloat:DEFAULT_LABEL_WIDTH
-                               forKey:@"IconSlotWidth"];
+  [[NXTDefaults userDefaults] setFloat:DEFAULT_LABEL_WIDTH forKey:@"IconSlotWidth"];
   [self setupArrows];
-  
-  [[NSNotificationCenter defaultCenter]
-          postNotificationName:@"IconSlotWidthDidChangeNotification"
-                        object:self];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"IconSlotWidthDidChangeNotification"
+                                                      object:self];
 }
 
 - (void)changedSelection:(NSNotification *)notif
 {
-  NSString    *path;
-  NSArray     *selection;
+  NSString *path;
+  NSArray *selection;
   NSWorkspace *ws = [NSWorkspace sharedWorkspace];
 
   path = [[notif userInfo] objectForKey:@"Path"];
   selection = [[notif userInfo] objectForKey:@"Selection"];
 
-  if ([selection count] == 0)
-    {
-      [icon setIconImage:[ws iconForFile:path]];
-      if ([path isEqualToString: @"/"])
-        {
-          [icon setLabelString:[[NSHost currentHost] name]];
-        }
-      else
-        {
-          [icon setLabelString:[path lastPathComponent]];
-        }
-    }
-  else if ([selection count] == 1)
-    {
-      path = [path stringByAppendingPathComponent:[selection objectAtIndex:0]];
-      [icon setIconImage:[ws iconForFile:path]];
+  if ([selection count] == 0) {
+    [icon setIconImage:[ws iconForFile:path]];
+    if ([path isEqualToString:@"/"]) {
+      [icon setLabelString:[[NSHost currentHost] name]];
+    } else {
       [icon setLabelString:[path lastPathComponent]];
     }
-  else
-    {
-      [icon setIconImage:[NSImage imageNamed:@"MultipleSelection"]];
-      [icon setLabelString:[NSString stringWithFormat:
-                                       _(@"%lu Elements"), [selection count]]];
-    }
+  } else if ([selection count] == 1) {
+    path = [path stringByAppendingPathComponent:[selection objectAtIndex:0]];
+    [icon setIconImage:[ws iconForFile:path]];
+    [icon setLabelString:[path lastPathComponent]];
+  } else {
+    [icon setIconImage:[NSImage imageNamed:@"MultipleSelection"]];
+    [icon setLabelString:[NSString stringWithFormat:_(@"%lu Elements"), [selection count]]];
+  }
 }
 
 @end

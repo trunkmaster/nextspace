@@ -62,9 +62,9 @@ Bool GetCommandForPid(int pid, char ***argv, int *argc)
   memcpy(argc, args, sizeof(*argc));
   idx = sizeof(*argc);
 
-  while (args[idx++] != '\0')		/* skip execname */
+  while (args[idx++] != '\0') /* skip execname */
     ;
-  while (args[idx] == '\0')		/* padding too */
+  while (args[idx] == '\0') /* padding too */
     idx++;
   /* args[idx] is at at begininng of args now */
 

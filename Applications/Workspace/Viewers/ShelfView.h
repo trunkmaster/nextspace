@@ -8,7 +8,7 @@
 //
 // Copyright (C) 2005 Saso Kiselkov
 // Copyright (C) 2015-2019 Sergii Stoian
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -37,7 +37,7 @@
     manager. It is an icon view that contains icons associated with
     various meta-information in order to represent also data other than
     file system paths.
- 
+
     A shelf provides methods to save it's contents (the meta-information
     of each icon) to a dictionary and again re-construct it's contents from
     such information. A shelf remembers the icon slots in which the icons
@@ -49,14 +49,14 @@
 
   // Dragging
   NXTIconView *draggedSource;
-  NSArray    *draggedPaths;
-  PathIcon   *draggedIcon;
+  NSArray *draggedPaths;
+  PathIcon *draggedIcon;
   NXTIconSlot lastSlotDragEntered;
   NXTIconSlot lastSlotDragExited;
-  NSPoint    dragPoint;
+  NSPoint dragPoint;
   NSUInteger draggedMask;
 
-  BOOL       isRootIconDragged;
+  BOOL isRootIconDragged;
 }
 
 - initWithFrame:(NSRect)r owner:(FileViewer *)fileViewer;
@@ -84,22 +84,20 @@
     user info. This method is used during dragging as well as
     reconstruction of the shelf's contents from a stored dictionary
     representation. */
-- (PathIcon *)shelf:(ShelfView *)aShelf
- createIconForPaths:(NSArray *)paths;
+- (PathIcon *)shelf:(ShelfView *)aShelf createIconForPaths:(NSArray *)paths;
 
 @end
 
- /// Methods for handling icon drag-ins on shelves.
+/// Methods for handling icon drag-ins on shelves.
 @protocol ShelfViewDragging
 
- /** When a drag-in occurs on the shelf, the shelf asks its delegate
-     for the user-info to be associated with the dragged-in icon. If the
-     drag is not valid, the delegate should simply return nil. */
-- (NSArray *)shelf:(ShelfView *)aShelf
-      pathsForDrag:(id <NSDraggingInfo>)draggingInfo;
+/** When a drag-in occurs on the shelf, the shelf asks its delegate
+    for the user-info to be associated with the dragged-in icon. If the
+    drag is not valid, the delegate should simply return nil. */
+- (NSArray *)shelf:(ShelfView *)aShelf pathsForDrag:(id<NSDraggingInfo>)draggingInfo;
 
-- (void) shelf:(ShelfView *)aShelf
- didAcceptIcon:(PathIcon *)anIcon
-        inDrag:(id <NSDraggingInfo>)draggingInfo;
+- (void)shelf:(ShelfView *)aShelf
+    didAcceptIcon:(PathIcon *)anIcon
+           inDrag:(id<NSDraggingInfo>)draggingInfo;
 
 @end

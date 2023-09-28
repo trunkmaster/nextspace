@@ -40,11 +40,10 @@
 #include "window.h"
 #include "misc.h"
 
+static void bevelImage(RImage *image, int relief);
+static RImage *get_texture_image(WScreen *scr, const char *pixmap_file);
 
-static void bevelImage(RImage * image, int relief);
-static RImage * get_texture_image(WScreen *scr, const char *pixmap_file);
-
-WTexSolid *wTextureMakeSolid(WScreen * scr, XColor * color)
+WTexSolid *wTextureMakeSolid(WScreen *scr, XColor *color)
 {
   WTexSolid *texture;
   int gcm;
@@ -114,16 +113,16 @@ WTexSolid *wTextureMakeSolid(WScreen * scr, XColor * color)
   return texture;
 }
 
-static int dummyErrorHandler(Display * foo, XErrorEvent * bar)
+static int dummyErrorHandler(Display *foo, XErrorEvent *bar)
 {
   /* Parameter not used, but tell the compiler that it is ok */
-  (void) foo;
-  (void) bar;
+  (void)foo;
+  (void)bar;
 
   return 0;
 }
 
-void wTextureDestroy(WScreen * scr, WTexture * texture)
+void wTextureDestroy(WScreen *scr, WTexture *texture)
 {
   int i;
   int count = 0;
@@ -132,38 +131,38 @@ void wTextureDestroy(WScreen * scr, WTexture * texture)
   /*
    * some stupid servers don't like white or black being freed...
    */
-#define CANFREE(c) (c!=scr->black_pixel && c!=scr->white_pixel && c!=0)
+#define CANFREE(c) (c != scr->black_pixel && c != scr->white_pixel && c != 0)
   switch (texture->any.type) {
-  case WTEX_SOLID:
-    XFreeGC(dpy, texture->solid.light_gc);
-    XFreeGC(dpy, texture->solid.dark_gc);
-    XFreeGC(dpy, texture->solid.dim_gc);
-    if (CANFREE(texture->solid.light.pixel))
-      colors[count++] = texture->solid.light.pixel;
-    if (CANFREE(texture->solid.dim.pixel))
-      colors[count++] = texture->solid.dim.pixel;
-    if (CANFREE(texture->solid.dark.pixel))
-      colors[count++] = texture->solid.dark.pixel;
-    break;
+    case WTEX_SOLID:
+      XFreeGC(dpy, texture->solid.light_gc);
+      XFreeGC(dpy, texture->solid.dark_gc);
+      XFreeGC(dpy, texture->solid.dim_gc);
+      if (CANFREE(texture->solid.light.pixel))
+        colors[count++] = texture->solid.light.pixel;
+      if (CANFREE(texture->solid.dim.pixel))
+        colors[count++] = texture->solid.dim.pixel;
+      if (CANFREE(texture->solid.dark.pixel))
+        colors[count++] = texture->solid.dark.pixel;
+      break;
 
-  case WTEX_PIXMAP:
-    RReleaseImage(texture->pixmap.pixmap);
-    break;
+    case WTEX_PIXMAP:
+      RReleaseImage(texture->pixmap.pixmap);
+      break;
 
-  case WTEX_MHGRADIENT:
-  case WTEX_MVGRADIENT:
-  case WTEX_MDGRADIENT:
-    for (i = 0; texture->mgradient.colors[i] != NULL; i++) {
-      wfree(texture->mgradient.colors[i]);
-    }
-    wfree(texture->mgradient.colors);
-    break;
+    case WTEX_MHGRADIENT:
+    case WTEX_MVGRADIENT:
+    case WTEX_MDGRADIENT:
+      for (i = 0; texture->mgradient.colors[i] != NULL; i++) {
+        wfree(texture->mgradient.colors[i]);
+      }
+      wfree(texture->mgradient.colors);
+      break;
 
-  case WTEX_THGRADIENT:
-  case WTEX_TVGRADIENT:
-  case WTEX_TDGRADIENT:
-    RReleaseImage(texture->tgradient.pixmap);
-    break;
+    case WTEX_THGRADIENT:
+    case WTEX_TVGRADIENT:
+    case WTEX_TDGRADIENT:
+      RReleaseImage(texture->tgradient.pixmap);
+      break;
   }
 
   if (CANFREE(texture->any.color.pixel))
@@ -203,13 +202,14 @@ WTexGradient *wTextureMakeGradient(WScreen *scr, int style, const RColor *from, 
   XAllocColor(dpy, scr->w_colormap, &texture->normal);
   gcv.background = gcv.foreground = texture->normal.pixel;
   gcv.graphics_exposures = False;
-  texture->normal_gc = XCreateGC(dpy, scr->w_win, GCForeground | GCBackground | GCGraphicsExposures, &gcv);
+  texture->normal_gc =
+      XCreateGC(dpy, scr->w_win, GCForeground | GCBackground | GCGraphicsExposures, &gcv);
 
   return texture;
 }
 
 WTexIGradient *wTextureMakeIGradient(WScreen *scr, int thickness1, const RColor colors1[2],
-				     int thickness2, const RColor colors2[2])
+                                     int thickness2, const RColor colors2[2])
 {
   WTexIGradient *texture;
   XGCValues gcv;
@@ -235,12 +235,13 @@ WTexIGradient *wTextureMakeIGradient(WScreen *scr, int thickness1, const RColor 
   XAllocColor(dpy, scr->w_colormap, &texture->normal);
   gcv.background = gcv.foreground = texture->normal.pixel;
   gcv.graphics_exposures = False;
-  texture->normal_gc = XCreateGC(dpy, scr->w_win, GCForeground | GCBackground | GCGraphicsExposures, &gcv);
+  texture->normal_gc =
+      XCreateGC(dpy, scr->w_win, GCForeground | GCBackground | GCGraphicsExposures, &gcv);
 
   return texture;
 }
 
-WTexMGradient *wTextureMakeMGradient(WScreen * scr, int style, RColor ** colors)
+WTexMGradient *wTextureMakeMGradient(WScreen *scr, int style, RColor **colors)
 {
   WTexMGradient *texture;
   XGCValues gcv;
@@ -263,7 +264,8 @@ WTexMGradient *wTextureMakeMGradient(WScreen * scr, int style, RColor ** colors)
   XAllocColor(dpy, scr->w_colormap, &texture->normal);
   gcv.background = gcv.foreground = texture->normal.pixel;
   gcv.graphics_exposures = False;
-  texture->normal_gc = XCreateGC(dpy, scr->w_win, GCForeground | GCBackground | GCGraphicsExposures, &gcv);
+  texture->normal_gc =
+      XCreateGC(dpy, scr->w_win, GCForeground | GCBackground | GCGraphicsExposures, &gcv);
 
   return texture;
 }
@@ -287,7 +289,8 @@ WTexPixmap *wTextureMakePixmap(WScreen *scr, int style, const char *pixmap_file,
   XAllocColor(dpy, scr->w_colormap, &texture->normal);
   gcv.background = gcv.foreground = texture->normal.pixel;
   gcv.graphics_exposures = False;
-  texture->normal_gc = XCreateGC(dpy, scr->w_win, GCForeground | GCBackground | GCGraphicsExposures, &gcv);
+  texture->normal_gc =
+      XCreateGC(dpy, scr->w_win, GCForeground | GCBackground | GCGraphicsExposures, &gcv);
 
   texture->pixmap = image;
 
@@ -295,7 +298,7 @@ WTexPixmap *wTextureMakePixmap(WScreen *scr, int style, const char *pixmap_file,
 }
 
 WTexTGradient *wTextureMakeTGradient(WScreen *scr, int style, const RColor *from, const RColor *to,
-				     const char *pixmap_file, int opacity)
+                                     const char *pixmap_file, int opacity)
 {
   WTexTGradient *texture;
   XGCValues gcv;
@@ -320,14 +323,15 @@ WTexTGradient *wTextureMakeTGradient(WScreen *scr, int style, const RColor *from
   XAllocColor(dpy, scr->w_colormap, &texture->normal);
   gcv.background = gcv.foreground = texture->normal.pixel;
   gcv.graphics_exposures = False;
-  texture->normal_gc = XCreateGC(dpy, scr->w_win, GCForeground | GCBackground | GCGraphicsExposures, &gcv);
+  texture->normal_gc =
+      XCreateGC(dpy, scr->w_win, GCForeground | GCBackground | GCGraphicsExposures, &gcv);
 
   texture->pixmap = image;
 
   return texture;
 }
 
-static RImage * get_texture_image(WScreen *scr, const char *pixmap_file)
+static RImage *get_texture_image(WScreen *scr, const char *pixmap_file)
 {
   char *file;
   RImage *image;
@@ -348,7 +352,7 @@ static RImage * get_texture_image(WScreen *scr, const char *pixmap_file)
   return image;
 }
 
-RImage *wTextureRenderImage(WTexture * texture, int width, int height, int relief)
+RImage *wTextureRenderImage(WTexture *texture, int width, int height, int relief)
 {
   RImage *image = NULL;
   RColor color1;
@@ -356,88 +360,86 @@ RImage *wTextureRenderImage(WTexture * texture, int width, int height, int relie
   int subtype;
 
   switch (texture->any.type) {
-  case WTEX_SOLID:
-    image = RCreateImage(width, height, False);
+    case WTEX_SOLID:
+      image = RCreateImage(width, height, False);
 
-    color1.red = texture->solid.normal.red >> 8;
-    color1.green = texture->solid.normal.green >> 8;
-    color1.blue = texture->solid.normal.blue >> 8;
-    color1.alpha = 255;
-
-    RClearImage(image, &color1);
-    break;
-
-  case WTEX_PIXMAP:
-    if (texture->pixmap.subtype == WTP_TILE) {
-      image = RMakeTiledImage(texture->pixmap.pixmap, width, height);
-    } else if (texture->pixmap.subtype == WTP_CENTER) {
-      color1.red = texture->pixmap.normal.red >> 8;
-      color1.green = texture->pixmap.normal.green >> 8;
-      color1.blue = texture->pixmap.normal.blue >> 8;
+      color1.red = texture->solid.normal.red >> 8;
+      color1.green = texture->solid.normal.green >> 8;
+      color1.blue = texture->solid.normal.blue >> 8;
       color1.alpha = 255;
-      image = RMakeCenteredImage(texture->pixmap.pixmap, width, height, &color1);
-    } else {
-      image = RScaleImage(texture->pixmap.pixmap, width, height);
-    }
-    break;
 
-  case WTEX_IGRADIENT:
-    image = RRenderInterwovenGradient(width, height,
-                                      texture->igradient.colors1,
-                                      texture->igradient.thickness1,
-                                      texture->igradient.colors2, texture->igradient.thickness2);
-    break;
+      RClearImage(image, &color1);
+      break;
 
-  case WTEX_HGRADIENT:
-    subtype = RGRD_HORIZONTAL;
-    goto render_gradient;
+    case WTEX_PIXMAP:
+      if (texture->pixmap.subtype == WTP_TILE) {
+        image = RMakeTiledImage(texture->pixmap.pixmap, width, height);
+      } else if (texture->pixmap.subtype == WTP_CENTER) {
+        color1.red = texture->pixmap.normal.red >> 8;
+        color1.green = texture->pixmap.normal.green >> 8;
+        color1.blue = texture->pixmap.normal.blue >> 8;
+        color1.alpha = 255;
+        image = RMakeCenteredImage(texture->pixmap.pixmap, width, height, &color1);
+      } else {
+        image = RScaleImage(texture->pixmap.pixmap, width, height);
+      }
+      break;
 
-  case WTEX_VGRADIENT:
-    subtype = RGRD_VERTICAL;
-    goto render_gradient;
+    case WTEX_IGRADIENT:
+      image = RRenderInterwovenGradient(width, height, texture->igradient.colors1,
+                                        texture->igradient.thickness1, texture->igradient.colors2,
+                                        texture->igradient.thickness2);
+      break;
 
-  case WTEX_DGRADIENT:
-    subtype = RGRD_DIAGONAL;
-  render_gradient:
+    case WTEX_HGRADIENT:
+      subtype = RGRD_HORIZONTAL;
+      goto render_gradient;
 
-    image = RRenderGradient(width, height, &texture->gradient.color1,
-                            &texture->gradient.color2, subtype);
-    break;
+    case WTEX_VGRADIENT:
+      subtype = RGRD_VERTICAL;
+      goto render_gradient;
 
-  case WTEX_MHGRADIENT:
-    subtype = RGRD_HORIZONTAL;
-    goto render_mgradient;
+    case WTEX_DGRADIENT:
+      subtype = RGRD_DIAGONAL;
+    render_gradient:
 
-  case WTEX_MVGRADIENT:
-    subtype = RGRD_VERTICAL;
-    goto render_mgradient;
+      image = RRenderGradient(width, height, &texture->gradient.color1, &texture->gradient.color2,
+                              subtype);
+      break;
 
-  case WTEX_MDGRADIENT:
-    subtype = RGRD_DIAGONAL;
-  render_mgradient:
-    image = RRenderMultiGradient(width, height, &(texture->mgradient.colors[1]), subtype);
-    break;
+    case WTEX_MHGRADIENT:
+      subtype = RGRD_HORIZONTAL;
+      goto render_mgradient;
 
-  case WTEX_THGRADIENT:
-    subtype = RGRD_HORIZONTAL;
-    goto render_tgradient;
+    case WTEX_MVGRADIENT:
+      subtype = RGRD_VERTICAL;
+      goto render_mgradient;
 
-  case WTEX_TVGRADIENT:
-    subtype = RGRD_VERTICAL;
-    goto render_tgradient;
+    case WTEX_MDGRADIENT:
+      subtype = RGRD_DIAGONAL;
+    render_mgradient:
+      image = RRenderMultiGradient(width, height, &(texture->mgradient.colors[1]), subtype);
+      break;
 
-  case WTEX_TDGRADIENT:
-    subtype = RGRD_DIAGONAL;
-  render_tgradient:
-    {
+    case WTEX_THGRADIENT:
+      subtype = RGRD_HORIZONTAL;
+      goto render_tgradient;
+
+    case WTEX_TVGRADIENT:
+      subtype = RGRD_VERTICAL;
+      goto render_tgradient;
+
+    case WTEX_TDGRADIENT:
+      subtype = RGRD_DIAGONAL;
+    render_tgradient : {
       RImage *grad;
 
       image = RMakeTiledImage(texture->tgradient.pixmap, width, height);
       if (!image)
         break;
 
-      grad = RRenderGradient(width, height, &texture->tgradient.color1,
-                             &texture->tgradient.color2, subtype);
+      grad = RRenderGradient(width, height, &texture->tgradient.color1, &texture->tgradient.color2,
+                             subtype);
       if (!grad) {
         RReleaseImage(image);
         image = NULL;
@@ -446,12 +448,11 @@ RImage *wTextureRenderImage(WTexture * texture, int width, int height, int relie
 
       RCombineImagesWithOpaqueness(image, grad, texture->tgradient.opacity);
       RReleaseImage(grad);
-    }
-    break;
-  default:
-    puts("ERROR in wTextureRenderImage()");
-    image = NULL;
-    break;
+    } break;
+    default:
+      puts("ERROR in wTextureRenderImage()");
+      image = NULL;
+      break;
   }
 
   if (!image) {
@@ -475,28 +476,28 @@ RImage *wTextureRenderImage(WTexture * texture, int width, int height, int relie
   /* render bevel */
 
   switch (relief) {
-  case WREL_ICON:
-    d = RBEV_RAISED3;
-    break;
+    case WREL_ICON:
+      d = RBEV_RAISED3;
+      break;
 
-  case WREL_RAISED:
-    d = RBEV_RAISED2;
-    break;
+    case WREL_RAISED:
+      d = RBEV_RAISED2;
+      break;
 
-  case WREL_SUNKEN:
-    d = RBEV_SUNKEN;
-    break;
+    case WREL_SUNKEN:
+      d = RBEV_SUNKEN;
+      break;
 
-  case WREL_FLAT:
-    d = 0;
-    break;
+    case WREL_FLAT:
+      d = 0;
+      break;
 
-  case WREL_MENUENTRY:
-    d = -WREL_MENUENTRY;
-    break;
+    case WREL_MENUENTRY:
+      d = -WREL_MENUENTRY;
+      break;
 
-  default:
-    d = 0;
+    default:
+      d = 0;
   }
 
   if (d > 0) {
@@ -508,34 +509,33 @@ RImage *wTextureRenderImage(WTexture * texture, int width, int height, int relie
   return image;
 }
 
-static void bevelImage(RImage * image, int relief)
+static void bevelImage(RImage *image, int relief)
 {
   int width = image->width;
   int height = image->height;
   RColor color;
 
   switch (relief) {
-  case WREL_MENUENTRY:
-    color.red = color.green = color.blue = 80;
-    color.alpha = 0;
-    /**/ ROperateLine(image, RAddOperation, 1, 0, width - 2, 0, &color);
-    /**/ ROperateLine(image, RAddOperation, 0, 0, 0, height - 1, &color);
+    case WREL_MENUENTRY:
+      color.red = color.green = color.blue = 80;
+      color.alpha = 0;
+      /**/ ROperateLine(image, RAddOperation, 1, 0, width - 2, 0, &color);
+      /**/ ROperateLine(image, RAddOperation, 0, 0, 0, height - 1, &color);
 
-    color.red = color.green = color.blue = 40;
-    color.alpha = 0;
-    ROperateLine(image, RSubtractOperation, width - 1, 0, width - 1, height - 1, &color);
+      color.red = color.green = color.blue = 40;
+      color.alpha = 0;
+      ROperateLine(image, RSubtractOperation, width - 1, 0, width - 1, height - 1, &color);
 
-    /**/ ROperateLine(image, RSubtractOperation, 1, height - 2, width - 2, height - 2, &color);
+      /**/ ROperateLine(image, RSubtractOperation, 1, height - 2, width - 2, height - 2, &color);
 
-    color.red = color.green = color.blue = 0;
-    color.alpha = 255;
-    RDrawLine(image, 0, height - 1, width - 1, height - 1, &color);
-    /**/ break;
-
+      color.red = color.green = color.blue = 0;
+      color.alpha = 255;
+      RDrawLine(image, 0, height - 1, width - 1, height - 1, &color);
+      /**/ break;
   }
 }
 
-void wDrawBevel(Drawable d, unsigned width, unsigned height, WTexSolid * texture, int relief)
+void wDrawBevel(Drawable d, unsigned width, unsigned height, WTexSolid *texture, int relief)
 {
   GC light, dim, dark;
   XSegment segs[4];
@@ -547,41 +547,41 @@ void wDrawBevel(Drawable d, unsigned width, unsigned height, WTexSolid * texture
   dim = texture->dim_gc;
   dark = texture->dark_gc;
   switch (relief) {
-  case WREL_MENUENTRY:
-  case WREL_RAISED:
-  case WREL_ICON:
-    segs[0].x1 = 1;
-    segs[0].x2 = width - 2;
-    segs[0].y2 = segs[0].y1 = height - 2;
-    segs[1].x1 = width - 2;
-    segs[1].y1 = 1;
-    segs[1].x2 = width - 2;
-    segs[1].y2 = height - 2;
-    XDrawSegments(dpy, d, dim, segs, 2);
-
-    segs[0].x1 = 0;
-    segs[0].x2 = width - 1;
-    segs[0].y2 = segs[0].y1 = height - 1;
-    segs[1].x1 = segs[1].x2 = width - 1;
-    segs[1].y1 = 0;
-    segs[1].y2 = height - 1;
-    XDrawSegments(dpy, d, dark, segs, 2);
-
-    segs[0].x1 = segs[0].y1 = segs[0].y2 = 0;
-    segs[0].x2 = width - 2;
-    segs[1].x1 = segs[1].y1 = 0;
-    segs[1].x2 = 0;
-    segs[1].y2 = height - 2;
-    XDrawSegments(dpy, d, light, segs, 2);
-
-    if (relief == WREL_ICON) {
-      segs[0].x1 = segs[0].y1 = segs[0].y2 = 1;
+    case WREL_MENUENTRY:
+    case WREL_RAISED:
+    case WREL_ICON:
+      segs[0].x1 = 1;
       segs[0].x2 = width - 2;
-      segs[1].x1 = segs[1].y1 = 1;
-      segs[1].x2 = 1;
+      segs[0].y2 = segs[0].y1 = height - 2;
+      segs[1].x1 = width - 2;
+      segs[1].y1 = 1;
+      segs[1].x2 = width - 2;
+      segs[1].y2 = height - 2;
+      XDrawSegments(dpy, d, dim, segs, 2);
+
+      segs[0].x1 = 0;
+      segs[0].x2 = width - 1;
+      segs[0].y2 = segs[0].y1 = height - 1;
+      segs[1].x1 = segs[1].x2 = width - 1;
+      segs[1].y1 = 0;
+      segs[1].y2 = height - 1;
+      XDrawSegments(dpy, d, dark, segs, 2);
+
+      segs[0].x1 = segs[0].y1 = segs[0].y2 = 0;
+      segs[0].x2 = width - 2;
+      segs[1].x1 = segs[1].y1 = 0;
+      segs[1].x2 = 0;
       segs[1].y2 = height - 2;
       XDrawSegments(dpy, d, light, segs, 2);
-    }
-    break;
+
+      if (relief == WREL_ICON) {
+        segs[0].x1 = segs[0].y1 = segs[0].y2 = 1;
+        segs[0].x2 = width - 2;
+        segs[1].x1 = segs[1].y1 = 1;
+        segs[1].x2 = 1;
+        segs[1].y2 = height - 2;
+        XDrawSegments(dpy, d, light, segs, 2);
+      }
+      break;
   }
 }

@@ -20,7 +20,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 #ifndef __WORKSPACE_WM_PROPERTIES__
 #define __WORKSPACE_WM_PROPERTIES__
 
@@ -28,8 +27,8 @@
 #include "GNUstep.h"
 #include "window.h"
 
-unsigned char* PropGetCheckProperty(Window window, Atom hint, Atom type,
-                                    int format, int count, int *retCount);
+unsigned char *PropGetCheckProperty(Window window, Atom hint, Atom type, int format, int count,
+                                    int *retCount);
 
 int PropGetWindowState(Window window);
 

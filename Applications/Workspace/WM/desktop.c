@@ -79,15 +79,15 @@ static void _postNotification(CFStringRef name, int workspace_number, void *obje
 {
   CFMutableDictionaryRef info;
   CFNumberRef workspace;
-  
-  info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                   &kCFTypeDictionaryKeyCallBacks,
+
+  info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks,
                                    &kCFTypeDictionaryValueCallBacks);
   workspace = CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType, &workspace_number);
   CFDictionaryAddValue(info, CFSTR("workspace"), workspace);
-  
-  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(), name, object, info, TRUE);
-  
+
+  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(), name, object, info,
+                                       TRUE);
+
   CFRelease(workspace);
   CFRelease(info);
 }
@@ -99,13 +99,13 @@ typedef struct WorkspaceNameData {
   time_t timeout;
 } WorkspaceNameData;
 
-static void _hideWorkspaceName(CFRunLoopTimerRef timer, void *data) // (void *data)
+static void _hideWorkspaceName(CFRunLoopTimerRef timer, void *data)  // (void *data)
 {
-  WScreen *scr = (WScreen *) data;
+  WScreen *scr = (WScreen *)data;
 
   WMLogInfo("_hideWorkspaceName: %i (%s)", scr->workspace_name_data->count,
-           dispatch_queue_get_label(dispatch_get_current_queue()));
-  
+            dispatch_queue_get_label(dispatch_get_current_queue()));
+
   if (!scr->workspace_name_data || scr->workspace_name_data->count == 0
       /*|| time(NULL) > scr->workspace_name_data->timeout*/) {
     XUnmapWindow(dpy, scr->workspace_name);
@@ -125,7 +125,7 @@ static void _hideWorkspaceName(CFRunLoopTimerRef timer, void *data) // (void *da
 
     /* scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_FADE_DELAY, 0, */
     /*                                               _hideWorkspaceName, scr); */
-    
+
     RCombineImagesWithOpaqueness(img, scr->workspace_name_data->text,
                                  scr->workspace_name_data->count * 255 / 10);
 
@@ -187,56 +187,55 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
   if (scr->xrandr_info.count) {
     xx = rect.pos.x + (scr->xrandr_info.screens[head].size.width - (w + 4)) / 2;
     yy = rect.pos.y + (scr->xrandr_info.screens[head].size.height - (h + 4)) / 2;
-  }
-  else {
+  } else {
     xx = (scr->width - (w + 4)) / 2;
     yy = (scr->height - (h + 4)) / 2;
   }
 #endif
 
   switch (wPreferences.workspace_name_display_position) {
-  case WD_TOP:
+    case WD_TOP:
 #ifdef USE_XRANDR
-    px = xx;
+      px = xx;
 #else
-    px = (scr->scr_width - (w + 4)) / 2;
+      px = (scr->scr_width - (w + 4)) / 2;
 #endif
-    py = WORKSPACE_NAME_DISPLAY_PADDING;
-    break;
-  case WD_BOTTOM:
+      py = WORKSPACE_NAME_DISPLAY_PADDING;
+      break;
+    case WD_BOTTOM:
 #ifdef USE_XRANDR
-    px = xx;
+      px = xx;
 #else
-    px = (scr->scr_width - (w + 4)) / 2;
+      px = (scr->scr_width - (w + 4)) / 2;
 #endif
-    py = scr->height - (h + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
-    break;
-  case WD_TOPLEFT:
-    px = WORKSPACE_NAME_DISPLAY_PADDING;
-    py = WORKSPACE_NAME_DISPLAY_PADDING;
-    break;
-  case WD_TOPRIGHT:
-    px = scr->width - (w + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
-    py = WORKSPACE_NAME_DISPLAY_PADDING;
-    break;
-  case WD_BOTTOMLEFT:
-    px = WORKSPACE_NAME_DISPLAY_PADDING;
-    py = scr->height - (h + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
-    break;
-  case WD_BOTTOMRIGHT:
-    px = scr->width - (w + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
-    py = scr->height - (h + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
-    break;
-  case WD_CENTER:
-  default:
+      py = scr->height - (h + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
+      break;
+    case WD_TOPLEFT:
+      px = WORKSPACE_NAME_DISPLAY_PADDING;
+      py = WORKSPACE_NAME_DISPLAY_PADDING;
+      break;
+    case WD_TOPRIGHT:
+      px = scr->width - (w + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
+      py = WORKSPACE_NAME_DISPLAY_PADDING;
+      break;
+    case WD_BOTTOMLEFT:
+      px = WORKSPACE_NAME_DISPLAY_PADDING;
+      py = scr->height - (h + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
+      break;
+    case WD_BOTTOMRIGHT:
+      px = scr->width - (w + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
+      py = scr->height - (h + 4 + WORKSPACE_NAME_DISPLAY_PADDING);
+      break;
+    case WD_CENTER:
+    default:
 #ifdef USE_XRANDR
-    px = xx;
-    py = yy;
+      px = xx;
+      py = yy;
 #else
-    px = (scr->scr_width - (w + 4)) / 2;
-    py = (scr->scr_height - (h + 4)) / 2;
+      px = (scr->scr_width - (w + 4)) / 2;
+      py = (scr->scr_height - (h + 4)) / 2;
 #endif
-    break;
+      break;
   }
   XResizeWindow(dpy, scr->workspace_name, w + 4, h + 4);
   XMoveWindow(dpy, scr->workspace_name, px, py);
@@ -301,18 +300,18 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
   data->count = 10;
 
   /* set a timeout for the effect */
-  data->timeout = time(NULL) + 2 + (WORKSPACE_NAME_DELAY + WORKSPACE_NAME_FADE_DELAY * data->count) / 1000;
+  data->timeout =
+      time(NULL) + 2 + (WORKSPACE_NAME_DELAY + WORKSPACE_NAME_FADE_DELAY * data->count) / 1000;
 
   scr->workspace_name_data = data;
 
-  scr->workspace_name_timer = WMAddTimerHandler(WORKSPACE_NAME_DELAY,
-                                                WORKSPACE_NAME_DELAY,
-                                                _hideWorkspaceName, scr);
+  scr->workspace_name_timer =
+      WMAddTimerHandler(WORKSPACE_NAME_DELAY, WORKSPACE_NAME_DELAY, _hideWorkspaceName, scr);
   WMLogInfo("Timer created in %s", dispatch_queue_get_label(dispatch_get_current_queue()));
-  
+
   return;
 
- erro:
+erro:
   if (scr->workspace_name_timer) {
     WMDeleteTimerHandler(scr->workspace_name_timer);
   }
@@ -326,7 +325,7 @@ static void _showWorkspaceName(WScreen *scr, int workspace)
   scr->workspace_name_data = NULL;
 }
 
-/* 
+/*
    Public namespace
 */
 void wDesktopMake(WScreen *scr, int count)
@@ -411,7 +410,7 @@ Bool wDesktopDelete(WScreen *scr, int workspace)
   list = wmalloc(sizeof(WDesktop *) * (scr->desktop_count - 1));
   j = 0;
   for (i = 0; i < scr->desktop_count; i++) {
-    if (i != workspace-1) {
+    if (i != workspace - 1) {
       list[j++] = scr->desktops[i];
     } else {
       if (scr->desktops[i]->name)
@@ -426,9 +425,9 @@ Bool wDesktopDelete(WScreen *scr, int workspace)
   scr->desktop_count--;
 
   wNETWMUpdateDesktop(scr);
-  
+
   _postNotification(WMDidDestroyDesktopNotification, (scr->desktop_count - 1), scr);
-  
+
   if (scr->current_desktop >= scr->desktop_count)
     wDesktopChange(scr, scr->desktop_count - 1, NULL);
   if (scr->last_desktop >= scr->desktop_count)
@@ -446,7 +445,7 @@ void wDesktopChange(WScreen *scr, int workspace, WWindow *focus_win)
     wDesktopForceChange(scr, workspace, focus_win);
 }
 
-void wDesktopRelativeChange(WScreen * scr, int amount)
+void wDesktopRelativeChange(WScreen *scr, int amount)
 {
   int w;
 
@@ -479,30 +478,28 @@ void wDesktopRelativeChange(WScreen * scr, int amount)
 void wDesktopSaveFocusedWindow(WScreen *scr, int workspace, WWindow *wwin)
 {
   WWindow *saved_wwin;
-    
+
   if (scr->desktops[workspace]->focused_window) {
     wrelease(scr->desktops[workspace]->focused_window);
   }
 
   if (wwin) {
-    WMLogInfo("save focused window: %lu, %s.%s (%i x %i) to workspace %i\n",
-             wwin->client_win, wwin->wm_instance, wwin->wm_class,
-             wwin->old_geometry.width, wwin->old_geometry.height,
-             workspace);
-  
+    WMLogInfo("save focused window: %lu, %s.%s (%i x %i) to workspace %i\n", wwin->client_win,
+              wwin->wm_instance, wwin->wm_class, wwin->old_geometry.width,
+              wwin->old_geometry.height, workspace);
+
     saved_wwin = wWindowCreate();
     saved_wwin->wm_class = wstrdup(wwin->wm_class);
     saved_wwin->wm_instance = wstrdup(wwin->wm_instance);
     saved_wwin->client_win = wwin->client_win;
-    
+
     scr->desktops[workspace]->focused_window = saved_wwin;
-  }
-  else {
+  } else {
     scr->desktops[workspace]->focused_window = NULL;
   }
 }
 
-void wDesktopForceChange(WScreen * scr, int workspace, WWindow *focus_win)
+void wDesktopForceChange(WScreen *scr, int workspace, WWindow *focus_win)
 {
   WWindow *tmp, *foc = NULL;
 
@@ -513,11 +510,9 @@ void wDesktopForceChange(WScreen * scr, int workspace, WWindow *focus_win)
     wDesktopMake(scr, workspace - scr->desktop_count + 1);
 
   /* save focused window to the workspace before switch */
-  if (scr->focused_window
-      && scr->focused_window->frame->desktop == scr->current_desktop) {
+  if (scr->focused_window && scr->focused_window->frame->desktop == scr->current_desktop) {
     wDesktopSaveFocusedWindow(scr, scr->current_desktop, scr->focused_window);
-  }
-  else {
+  } else {
     wDesktopSaveFocusedWindow(scr, scr->current_desktop, NULL);
   }
 
@@ -538,7 +533,7 @@ void wDesktopForceChange(WScreen * scr, int workspace, WWindow *focus_win)
     toMapSize = 16;
     toMapCount = 0;
     toMap = wmalloc(toMapSize * sizeof(WWindow *));
-    
+
     while (tmp) {
       if (tmp->frame->desktop != workspace && !tmp->flags.selected) /* Unmap */ {
         /* manage unmap list */
@@ -546,14 +541,13 @@ void wDesktopForceChange(WScreen * scr, int workspace, WWindow *focus_win)
           toUnmapSize *= 2;
           toUnmap = wrealloc(toUnmap, toUnmapSize * sizeof(WWindow *));
         }
-        
+
         /* unmap windows not on this workspace */
         if (!IS_OMNIPRESENT(tmp)) {
           if ((tmp->flags.mapped || tmp->flags.shaded) && !tmp->flags.changing_workspace) {
             toUnmap[toUnmapCount++] = tmp;
           }
-        }
-        else { // OMNIPRESENT
+        } else {  // OMNIPRESENT
           /* update current workspace of omnipresent windows */
           WApplication *wapp = wApplicationOf(tmp->main_window);
           tmp->frame->desktop = workspace;
@@ -562,35 +556,33 @@ void wDesktopForceChange(WScreen * scr, int workspace, WWindow *focus_win)
           }
         }
         /* unmap miniwindows not on this workspace */
-        if (!wPreferences.sticky_icons && tmp->flags.miniaturized &&
-            tmp->icon && !IS_OMNIPRESENT(tmp)) {
+        if (!wPreferences.sticky_icons && tmp->flags.miniaturized && tmp->icon &&
+            !IS_OMNIPRESENT(tmp)) {
           XUnmapWindow(dpy, tmp->icon->core->window);
           tmp->icon->mapped = 0;
         }
-      }
-      else /* Map */ {
+      } else /* Map */ {
         /* manage map list */
         if (toMapCount == toMapSize) {
           toMapSize *= 2;
           toMap = wrealloc(toMap, toMapSize * sizeof(WWindow *));
         }
-        
+
         /* change selected windows' workspace */
         if (tmp->flags.selected) {
           wWindowChangeDesktop(tmp, workspace);
           if (!tmp->flags.miniaturized && !foc) {
             foc = tmp;
           }
-        }
-        else {
+        } else {
           if (!tmp->flags.hidden) {
             if (!(tmp->flags.mapped || tmp->flags.miniaturized)) {
               /* remap windows that are on this workspace */
               toMap[toMapCount++] = tmp;
             }
             /* Also map miniwindow if not omnipresent */
-            if (!wPreferences.sticky_icons &&
-                tmp->flags.miniaturized && !IS_OMNIPRESENT(tmp) && tmp->icon) {
+            if (!wPreferences.sticky_icons && tmp->flags.miniaturized && !IS_OMNIPRESENT(tmp) &&
+                tmp->icon) {
               tmp->icon->mapped = 1;
               XMapWindow(dpy, tmp->icon->core->window);
             }
@@ -607,7 +599,7 @@ void wDesktopForceChange(WScreen * scr, int workspace, WWindow *focus_win)
     while (toMapCount > 0) {
       wWindowMap(toMap[--toMapCount]);
     }
-    
+
     /* Gobble up events unleashed by our mapping & unmapping.
      * These may trigger various grab-initiated focus &
      * crossing events. However, we don't care about them,
@@ -626,11 +618,9 @@ void wDesktopForceChange(WScreen * scr, int workspace, WWindow *focus_win)
     if (!foc) {
       foc = scr->desktops[workspace]->focused_window;
       WMLogInfo("SAVED focused window for WS-%d: %lu, %s.%s\n", workspace,
-               foc ? foc->client_win : 0,
-               foc ? foc->wm_instance : "-",
-               foc ? foc->wm_class : "-");
+                foc ? foc->client_win : 0, foc ? foc->wm_instance : "-", foc ? foc->wm_class : "-");
     }
-    
+
     /*
      * Check that the window we want to focus still exists, because the application owning it
      * could decide to unmap/destroy it in response to unmap any of its other window following
@@ -654,15 +644,14 @@ void wDesktopForceChange(WScreen * scr, int workspace, WWindow *focus_win)
 
     if (foc) {
       /* Mapped window found earlier. */
-      WMLogInfo("NEW focused window after CHECK: %lu, %s.%s (%i x %i)\n",
-               foc->client_win, foc->wm_instance, foc->wm_class,
-               foc->old_geometry.width, foc->old_geometry.height);
+      WMLogInfo("NEW focused window after CHECK: %lu, %s.%s (%i x %i)\n", foc->client_win,
+                foc->wm_instance, foc->wm_class, foc->old_geometry.width, foc->old_geometry.height);
       if (foc->flags.hidden) {
         foc = NULL;
       }
     }
     wSetFocusTo(scr, foc);
-      
+
     wfree(toUnmap);
     wfree(toMap);
   }
@@ -725,14 +714,13 @@ void wDesktopSaveState(WScreen *scr)
 
   parr = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
   for (i = 0; i < scr->desktop_count; i++) {
-    wks_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                          &kCFTypeDictionaryKeyCallBacks,
+    wks_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks,
                                           &kCFTypeDictionaryValueCallBacks);
     pstr = CFStringCreateWithCString(kCFAllocatorDefault, scr->desktops[i]->name,
                                      kCFStringEncodingUTF8);
     CFDictionarySetValue(wks_state, dName, pstr);
     CFRelease(pstr);
-    
+
     CFArrayAppendValue(parr, wks_state);
     CFRelease(wks_state);
   }

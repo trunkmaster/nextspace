@@ -6,7 +6,7 @@
 //
 // Copyright (C) 2015 Sergii Stoian
 // Copyright (C) 2005 Saso Kiselkov
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -46,32 +46,28 @@ void SignalHandler(int sig)
 {
   // if (sig == SIGTERM)
   //   fprintf(stderr, "FileOperation.tool: received TERMINATE signal\n");
-  if (sig == SIGINT)
-    {
-      fprintf(stderr, "FileMover.tool: received INTERRUPT signal\n");
-      StopOperation();
-    }
+  if (sig == SIGINT) {
+    fprintf(stderr, "FileMover.tool: received INTERRUPT signal\n");
+    StopOperation();
+  }
 }
 
-void StopOperation()
-{
-  isStopped = YES;
-}
+void StopOperation() { isStopped = YES; }
 
 int main(int argc, const char **argv)
 {
-  NSString       *op;
-  NSString       *source;
-  NSString       *dest;
-  NSArray        *files;
+  NSString *op;
+  NSString *source;
+  NSString *dest;
+  NSArray *files;
   NSUserDefaults *df;
-  BOOL           argsOK = YES;
+  BOOL argsOK = YES;
 
   CREATE_AUTORELEASE_POOL(pool);
 
   // Signals
   signal(SIGINT, SignalHandler);
-  //signal(SIGTERM, SignalHandler);
+  // signal(SIGTERM, SignalHandler);
 
   // Get args
   df = [NSUserDefaults standardUserDefaults];
@@ -79,75 +75,53 @@ int main(int argc, const char **argv)
   source = [df objectForKey:@"Source"];
   dest = [df objectForKey:@"Destination"];
   // files = [df objectForKey:@"Files"];
-  files = [[[[NSProcessInfo processInfo] environment] objectForKey:@"Files"]
-            propertyList];
+  files = [[[[NSProcessInfo processInfo] environment] objectForKey:@"Files"] propertyList];
 
   // NSLog(@"FileMover.tool: files: %@", files);
   // NSLog(@"FileMover.tool: files count: %lu", [files count]);
 
   // Check args
-  if (op == nil || ![op isKindOfClass:[NSString class]])
-    {
-      printf("FileMover.tool: unknown operation type (-Operation)!\n");
+  if (op == nil || ![op isKindOfClass:[NSString class]]) {
+    printf("FileMover.tool: unknown operation type (-Operation)!\n");
+    argsOK = NO;
+  } else if (source == nil || ![source isKindOfClass:[NSString class]]) {
+    printf("FileMover.tool: incorrect source path (-Source)!\n");
+    argsOK = NO;
+  } else if (![op isEqualToString:@"Delete"] && ![op isEqualToString:@"Duplicate"]) {
+    if (dest == nil || ![dest isKindOfClass:[NSString class]]) {
+      printf("FileMover.tool: incorrect destination path (-Destination)!\n");
+      argsOK = NO;
+    } else if (files == nil || ![files isKindOfClass:[NSArray class]]) {
+      printf("FileMover.tool: incorect file list (-Files)!\n");
       argsOK = NO;
     }
-  else if (source == nil || ![source isKindOfClass:[NSString class]])
-    {
-      printf("FileMover.tool: incorrect source path (-Source)!\n");
-      argsOK = NO;
-    }
-  else if (![op isEqualToString:@"Delete"] &&
-           ![op isEqualToString:@"Duplicate"])
-    {
-      if (dest == nil || ![dest isKindOfClass:[NSString class]])
-        {
-          printf("FileMover.tool: incorrect destination path (-Destination)!\n");
-          argsOK = NO;
-        }
-      else if (files == nil || ![files isKindOfClass:[NSArray class]])
-        {
-          printf("FileMover.tool: incorect file list (-Files)!\n");
-          argsOK = NO;
-        }
-    }
-  
-  if (argsOK == NO)
-    {
-      PrintHelp();
-      return 1;
-    }
+  }
+
+  if (argsOK == NO) {
+    PrintHelp();
+    return 1;
+  }
 
   isStopped = NO;
 
-  if ([op isEqualToString:@"Copy"])
-    {
-      CopyOperation(source, files, dest, CopyOp);
-    }
-  else if ([op isEqualToString:@"Move"])
-    {
-      MoveOperation(source, files, dest);
-    }
-  else if ([op isEqualToString:@"Link"])
-    {
-      LinkOperation(source, files, dest);
-    }
-  else if ([op isEqualToString:@"Duplicate"])
-    {
-      DuplicateOperation(source, files); // located in Copy.m
-    }
-  else if ([op isEqualToString:@"Delete"])
-    {
-      DeleteOperation(source, files);
-    }
-  else
-    {
-      printf("FileMover.tool: unknown operation type!\n");
-      PrintHelp();
-      return 1;
-    }
+  if ([op isEqualToString:@"Copy"]) {
+    CopyOperation(source, files, dest, CopyOp);
+  } else if ([op isEqualToString:@"Move"]) {
+    MoveOperation(source, files, dest);
+  } else if ([op isEqualToString:@"Link"]) {
+    LinkOperation(source, files, dest);
+  } else if ([op isEqualToString:@"Duplicate"]) {
+    DuplicateOperation(source, files);  // located in Copy.m
+  } else if ([op isEqualToString:@"Delete"]) {
+    DeleteOperation(source, files);
+  } else {
+    printf("FileMover.tool: unknown operation type!\n");
+    PrintHelp();
+    return 1;
+  }
 
   [[Communicator shared] finishOperation:op stopped:isStopped];
-  
+
   // NSLog(@"time: %f sec", [[NSDate date] timeIntervalSinceDate:start]);
   DESTROY(pool);
 

@@ -60,13 +60,13 @@ enum {
 };
 /* typedef NSUInteger NSWindowStyleMask; */
 enum {
-  NSBorderlessWindowMask = 0,		// 0
-  NSTitledWindowMask = 1,		// 1
-  NSClosableWindowMask = 2,		// 1 << 1
-  NSMiniaturizableWindowMask = 4,	// 1 << 2
-  NSResizableWindowMask = 8,		// 1 << 3
-  NSIconWindowMask = 64,		// 1 << 6
-  NSMiniWindowMask = 128		// 1 << 7
+  NSBorderlessWindowMask = 0,      // 0
+  NSTitledWindowMask = 1,          // 1
+  NSClosableWindowMask = 2,        // 1 << 1
+  NSMiniaturizableWindowMask = 4,  // 1 << 2
+  NSResizableWindowMask = 8,       // 1 << 3
+  NSIconWindowMask = 64,           // 1 << 6
+  NSMiniWindowMask = 128           // 1 << 7
 };
 /* alert panel return values */
 enum {
@@ -83,29 +83,29 @@ enum {
 
 typedef struct {
   CARD32 flags;
-  CARD32 window_style;		/* NS*WindowMask */
-  CARD32 window_level;		/* NS*WindowLevel */
+  CARD32 window_style;          /* NS*WindowMask */
+  CARD32 window_level;          /* NS*WindowLevel */
   CARD32 reserved;
-  Pixmap miniaturize_pixmap;	/* pixmap for miniaturize button */
-  Pixmap close_pixmap;		/* pixmap for close button */
-  Pixmap miniaturize_mask;	/* miniaturize pixmap mask */
-  Pixmap close_mask;		/* close pixmap mask */
+  Pixmap miniaturize_pixmap;    /* pixmap for miniaturize button */
+  Pixmap close_pixmap;          /* pixmap for close button */
+  Pixmap miniaturize_mask;      /* miniaturize pixmap mask */
+  Pixmap close_mask;            /* close pixmap mask */
   CARD32 extra_flags;
 } GNUstepWMAttributes;
 
-#define GSWindowStyleAttr	(1<<0)
-#define GSWindowLevelAttr	(1<<1)
-#define GSMiniaturizePixmapAttr	(1<<3)
-#define GSClosePixmapAttr	(1<<4)
-#define GSMiniaturizeMaskAttr	(1<<5)
-#define GSCloseMaskAttr		(1<<6)
-#define GSExtraFlagsAttr	(1<<7)
+#define GSWindowStyleAttr       (1 << 0)
+#define GSWindowLevelAttr       (1 << 1)
+#define GSMiniaturizePixmapAttr (1 << 3)
+#define GSClosePixmapAttr       (1 << 4)
+#define GSMiniaturizeMaskAttr   (1 << 5)
+#define GSCloseMaskAttr         (1 << 6)
+#define GSExtraFlagsAttr        (1 << 7)
 
 /* extra flags */
-#define GSDocumentEditedFlag	(1<<0)
+#define GSDocumentEditedFlag (1 << 0)
 /* #define GSWindowWillResizeNotificationsFlag     (1<<1) */ /* unused */
 /* #define GSWindowWillMoveNotificationsFlag       (1<<2) */ /* unused */
-#define GSNoApplicationIconFlag	(1<<5)
+#define GSNoApplicationIconFlag (1 << 5)
 
 #define WMFHideOtherApplications 10
 #define WMFHideApplication       12

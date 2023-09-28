@@ -52,8 +52,8 @@
 - (void)deselectText
 {
   NSString *fieldString = [self stringValue];
-  NSText   *fieldEditor = [_window fieldEditor:NO forObject:self];
-  
+  NSText *fieldEditor = [_window fieldEditor:NO forObject:self];
+
   [fieldEditor setSelectedRange:NSMakeRange([fieldString length], 0)];
 }
 @end
@@ -109,7 +109,7 @@
       searchContents:(BOOL)isContent
 {
   [super init];
-  
+
   if (self != nil) {
     finder = owner;
     searchPaths = [[NSArray alloc] initWithArray:paths];
@@ -124,10 +124,8 @@
 - (BOOL)isTextMatched:(NSString *)text
 {
   NSUInteger matches;
-  
-  matches = [expression numberOfMatchesInString:text
-                                        options:0
-                                          range:NSMakeRange(0, [text length])];
+
+  matches = [expression numberOfMatchesInString:text options:0 range:NSMakeRange(0, [text length])];
   if (matches > 0) {
     return YES;
   }
@@ -137,19 +135,18 @@
 
 - (BOOL)isFileMatched:(NSString *)filePath
 {
-  BOOL         isMatched = NO;
+  BOOL isMatched = NO;
   NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:filePath];
-  NSData       *dataChunk;
-  NSString     *text;
+  NSData *dataChunk;
+  NSString *text;
   // NSUInteger   patternLength = [[expression pattern] length];
-  NSUInteger   offset;
+  NSUInteger offset;
 
   // NSLog(@"Search for contents in file:%@", filePath);
 
-  dataChunk = [handle readDataOfLength:1024*1024];
+  dataChunk = [handle readDataOfLength:1024 * 1024];
   while ([dataChunk length] > 0) {
-    text = [[NSString alloc] initWithData:dataChunk
-                                 encoding:NSUTF8StringEncoding];
+    text = [[NSString alloc] initWithData:dataChunk encoding:NSUTF8StringEncoding];
     [text autorelease];
     if ([self isTextMatched:text]) {
       isMatched = YES;
@@ -160,8 +157,8 @@
     // offset = [handle offsetInFile];
     // if (offset )
     // [handle seekToFileOffset:offset-patternLength];
-    
-    dataChunk = [handle readDataOfLength:1024*1024];
+
+    dataChunk = [handle readDataOfLength:1024 * 1024];
   }
 
   [handle closeFile];
@@ -171,19 +168,17 @@
 - (void)findInDirectory:(NSString *)dirPath
 {
   NXTFileManager *fm = [NXTFileManager defaultManager];
-  BOOL           isDir;
-  NSArray        *dirContents;
-  NSString       *itemPath;
-  NSDictionary   *attrs;
-  NSString       *itemFormat;
+  BOOL isDir;
+  NSArray *dirContents;
+  NSString *itemPath;
+  NSDictionary *attrs;
+  NSString *itemFormat;
 
   // NSLog(@"Processing directory %@...", dirPath);
 
-  dirContents = [fm directoryContentsAtPath:dirPath
-                                    forPath:nil
-                                 showHidden:[fm isShowHiddenFiles]];
+  dirContents = [fm directoryContentsAtPath:dirPath forPath:nil showHidden:[fm isShowHiddenFiles]];
   itemFormat = ([dirPath isEqualToString:@"/"] == NO) ? @"%@/%@" : @"%@%@";
-  
+
   for (NSString *item in dirContents) {
     if ([self isCancelled]) {
       break;
@@ -195,8 +190,7 @@
     if ([[attrs fileType] isEqualToString:NSFileTypeSymbolicLink] == NO) {
       if ([[attrs fileType] isEqualToString:NSFileTypeDirectory] != NO) {
         [self findInDirectory:itemPath];
-      }
-      else if (isContentSearch != NO) {
+      } else if (isContentSearch != NO) {
         if ([self isFileMatched:itemPath]) {
           [finder performSelectorOnMainThread:@selector(addResult:)
                                    withObject:itemPath
@@ -215,10 +209,10 @@
 - (void)main
 {
   NSLog(@"[Finder] will search contents: %@", isContentSearch ? @"Yes" : @"No");
-  
+
   for (NSString *path in searchPaths) {
     [self findInDirectory:path];
-  }  
+  }
 }
 
 - (BOOL)isReady
@@ -230,11 +224,10 @@
 
 @implementation Finder (Worker)
 
-- (void)runWorkerWithPaths:(NSArray *)searchPaths
-                expression:(NSRegularExpression *)regexp
+- (void)runWorkerWithPaths:(NSArray *)searchPaths expression:(NSRegularExpression *)regexp
 {
   NSOperation *worker;
-  
+
   if (operationQ == nil) {
     operationQ = [[NSOperationQueue alloc] init];
   }
@@ -243,10 +236,7 @@
                                         paths:searchPaths
                                    expression:regexp
                                searchContents:[[findScopeButton selectedItem] tag]];
-  [worker addObserver:self
-           forKeyPath:@"isFinished"
-              options:0
-              context:self];
+  [worker addObserver:self forKeyPath:@"isFinished" options:0 context:self];
   [operationQ addOperation:worker];
   [worker release];
 }
@@ -257,9 +247,7 @@
                        context:(void *)context
 {
   NSLog(@"Finder operation was finished.");
-  [self performSelectorOnMainThread:@selector(finishFind)
-                         withObject:nil
-                      waitUntilDone:YES];
+  [self performSelectorOnMainThread:@selector(finishFind) withObject:nil waitUntilDone:YES];
 }
 
 @end
@@ -283,23 +271,22 @@
   [resultIcon release];
   [findButtonImage release];
   [window release];
-  
+
   [super dealloc];
 }
 
 - (id)initWithFileViewer:(FileViewer *)fv
 {
   NXTDefaults *df = [NXTDefaults userDefaults];
-  NSSize     slotSize;
-    
+  NSSize slotSize;
+
   if ((self = [super init]) == nil) {
     return nil;
   }
 
   if ([df objectForKey:ShelfIconSlotWidth]) {
     slotSize = NSMakeSize([df floatForKey:ShelfIconSlotWidth], 76);
-  }
-  else {
+  } else {
     slotSize = NSMakeSize(76, 76);
   }
   [NXTIconView setDefaultSlotSize:slotSize];
@@ -307,7 +294,7 @@
 
   fileViewer = fv;
   resultIndex = -1;
-  variantList = [[NSMutableArray alloc] init]; 
+  variantList = [[NSMutableArray alloc] init];
 
   return self;
 }
@@ -355,7 +342,7 @@
   [resultIcon setIconSize:NSMakeSize(66, 55)];
   [resultIcon setEditable:NO];
   [resultIcon setSelected:YES];
-  [resultIcon setPaths:@[@"me"]];
+  [resultIcon setPaths:@[ @"me" ]];
   [resultIcon setSelectable:YES];
   [resultIcon setDoubleClickPassesClick:NO];
   [resultIcon setTarget:self];
@@ -370,16 +357,15 @@
 
   if ([searchString length] > 0) {
     [findField setStringValue:searchString];
-  }
-  else {
+  } else {
     [findField setStringValue:@""];
   }
-  
+
   [window makeFirstResponder:findField];
-  
+
   if (![searchString isEqualToString:@""]) {
-    [[window fieldEditor:NO forObject:findField]
-      setSelectedRange:NSMakeRange([searchString length], 0)];
+    [[window fieldEditor:NO
+               forObject:findField] setSelectedRange:NSMakeRange([searchString length], 0)];
   }
   if ([window isVisible] == NO) {
     [window center];
@@ -399,7 +385,7 @@
   [df setObject:[shelf storableRepresentation] forKey:@"FinderShelfContents"];
   [df setObject:[self storableShelfSelection] forKey:@"FinderShelfSelection"];
   [df synchronize];
-  
+
   [variantList removeAllObjects];
 }
 
@@ -421,25 +407,23 @@
 
 - (void)performFind:(id)sender
 {
-  NSError             *error = NULL;
+  NSError *error = NULL;
   NSRegularExpression *regex;
-  NSMutableArray      *searchPaths;
-  NSString            *enteredText;
+  NSMutableArray *searchPaths;
+  NSString *enteredText;
 
   if ([operationQ operationCount] > 0) {
     NSLog(@"[Finder] stopping search operation.");
     [operationQ cancelAllOperations];
-  }
-  else {
+  } else {
     enteredText = [findField stringValue];
-    if ([enteredText isEqualToString:@""] ||
-        [enteredText characterAtIndex:0] == ' ') {
+    if ([enteredText isEqualToString:@""] || [enteredText characterAtIndex:0] == ' ') {
       [self finishFind];
       return;
     }
 
     [self reset];
-    
+
     [findButton setImagePosition:NSImageOnly];
     [findButton setImage:[findButton alternateImage]];
     [statusField setStringValue:@"Searching..."];
@@ -449,11 +433,10 @@
     for (PathIcon *icon in [shelf selectedIcons]) {
       [searchPaths addObjectsFromArray:[icon paths]];
     }
-  
-    regex = [NSRegularExpression
-              regularExpressionWithPattern:enteredText
-                                   options:NSRegularExpressionCaseInsensitive
-                                     error:&error];
+
+    regex = [NSRegularExpression regularExpressionWithPattern:enteredText
+                                                      options:NSRegularExpressionCaseInsensitive
+                                                        error:&error];
 
     [self runWorkerWithPaths:searchPaths expression:regex];
   }
@@ -462,15 +445,13 @@
 - (void)addResult:(NSString *)resultString
 {
   [variantList addObject:resultString];
-  [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
-                                         [variantList count]]];
+  [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found", [variantList count]]];
   if ([variantList count] == 1) {
     [resultList reloadColumn:0];
-  }
-  else {
+  } else {
     NSBrowserCell *cell;
-    NSMatrix      *matrix = [resultList matrixInColumn:0];
-    
+    NSMatrix *matrix = [resultList matrixInColumn:0];
+
     [matrix addRow];
     cell = [matrix cellAtRow:[matrix numberOfRows] - 1 column:0];
     [cell setLeaf:YES];
@@ -486,80 +467,72 @@
   [findButton setImagePosition:NSImageAbove];
   [findButton setImage:findButtonImage];
   [findButton setState:NSOnState];
-  [statusField setStringValue:@""];  
+  [statusField setStringValue:@""];
 }
 
 // --- Completion
 
 - (void)makeCompletion
 {
-  NSString       *enteredText = [findField stringValue];
+  NSString *enteredText = [findField stringValue];
   NXTFileManager *fm = [NXTFileManager defaultManager];
-  NSString       *variant;
+  NSString *variant;
 
   [variantList removeAllObjects];
-  
+
   if ([enteredText length] == 0) {
     NSSet *selectedIcons = [shelf selectedIcons];
-    
+
     if ([selectedIcons count] > 1) {
       for (PathIcon *icon in selectedIcons) {
         [variantList addObjectsFromArray:[icon paths]];
       }
-    }
-    else {
+    } else {
       enteredText = [[[selectedIcons anyObject] paths] objectAtIndex:0];
-      [variantList addObjectsFromArray:[fm completionForPath:enteredText
-                                                  isAbsolute:NO]];
+      [variantList addObjectsFromArray:[fm completionForPath:enteredText isAbsolute:NO]];
       [findField setStringValue:enteredText];
     }
-  }
-  else {
-    [variantList addObjectsFromArray:[fm completionForPath:enteredText
-                                                isAbsolute:NO]];
+  } else {
+    [variantList addObjectsFromArray:[fm completionForPath:enteredText isAbsolute:NO]];
   }
 
-  [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found",
-                                         [variantList count]]];
-  
+  [resultsFound setStringValue:[NSString stringWithFormat:@"%lu found", [variantList count]]];
+
   if ([variantList count] > 0) {
     NSString *path = [findField stringValue];
     NSString *newPath;
-    NSRange  subRange;
-    
+    NSRange subRange;
+
     // Append '/' to dir name or shrink enetered path to existing dir
-    if ([path length] > 0 && [path characterAtIndex:[path length]-1] != '/') {
+    if ([path length] > 0 && [path characterAtIndex:[path length] - 1] != '/') {
       if ([fm directoryExistsAtPath:[fm absolutePathForPath:path]] != NO) {
         path = [path stringByAppendingString:@"/"];
       }
     }
-    
+
     // Set field value to first variant
     if ([variantList count] == 1) {
       variant = [variantList objectAtIndex:0];
-      newPath = [[path stringByDeletingLastPathComponent]
-                  stringByAppendingPathComponent:variant];
-      
+      newPath = [[path stringByDeletingLastPathComponent] stringByAppendingPathComponent:variant];
+
       if ([fm directoryExistsAtPath:[fm absolutePathForPath:newPath]] != NO) {
         newPath = [newPath stringByAppendingString:@"/"];
       }
-      
+
       [findField setStringValue:newPath];
       [findField deselectText];
-      
+
       // subRange = [newPath rangeOfString:path];
       // subRange.location = subRange.location + subRange.length;
       // subRange.length = [newPath length] - subRange.location;
       // [[window fieldEditor:NO forObject:findField] setSelectedRange:subRange];
       [self refreshResultsList:NO];
-    }
-    else {
+    } else {
       [findField setStringValue:path];
       [findField deselectText];
       [self refreshResultsList:YES];
     }
-  }
-  else {
+  } else {
     [self refreshResultsList:YES];
   }
 }
@@ -569,9 +542,9 @@
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
   NSTextField *field = [aNotification object];
-  NSString    *text;
+  NSString *text;
 
-  if (field != findField ||![field isKindOfClass:[NSTextField class]]) {
+  if (field != findField || ![field isKindOfClass:[NSTextField class]]) {
     return;
   }
 
@@ -579,12 +552,11 @@
     [self reset];
     [self restoreShelfSelection];
   }
-  
+
   text = [field stringValue];
-  if ([text length] > 0 && [text characterAtIndex:[text length]-1] == '/') {
+  if ([text length] > 0 && [text characterAtIndex:[text length] - 1] == '/') {
     [self makeCompletion];
-  }
-  else {
+  } else {
     [variantList removeAllObjects];
     [resultList reloadColumn:0];
   }
@@ -594,67 +566,62 @@
 {
   unichar c = [[theEvent characters] characterAtIndex:0];
 
-  switch(c) {
-  case NSTabCharacter:
-    if (resultIndex >= 0 && resultIndex >= [variantList count]-1) {
-      [resultList reloadColumn:0];
-      resultIndex = -1;
-      [resultIcon removeFromSuperview];
-      [self restoreShelfSelection];
-      [window makeFirstResponder:findField];
-      [findField deselectText];
-    }
-    else if ([variantList count] > 0){
-      resultIndex++;
-      [resultList selectRow:resultIndex inColumn:0];
-      [self listItemClicked:resultList];
-    }
-    break;
-  case NSBackTabCharacter:
-    if (resultIndex > 0) {
-      resultIndex--;
-      [resultList selectRow:resultIndex inColumn:0];
-      [self listItemClicked:resultList];
-    }
-    else {
-      [resultList reloadColumn:0];
-      resultIndex = -1;
-      [resultIcon removeFromSuperview];
-      [self restoreShelfSelection];
-      [window makeFirstResponder:findField];
-      [findField deselectText];
-    }
-    break;
-  case 27: // Escape
-    if ([operationQ operationCount] > 0) {
+  switch (c) {
+    case NSTabCharacter:
+      if (resultIndex >= 0 && resultIndex >= [variantList count] - 1) {
+        [resultList reloadColumn:0];
+        resultIndex = -1;
+        [resultIcon removeFromSuperview];
+        [self restoreShelfSelection];
+        [window makeFirstResponder:findField];
+        [findField deselectText];
+      } else if ([variantList count] > 0) {
+        resultIndex++;
+        [resultList selectRow:resultIndex inColumn:0];
+        [self listItemClicked:resultList];
+      }
       break;
-    }
-    [self makeCompletion];
-    if ([resultIcon superview]) {
-      resultIndex = -1;
-      [resultIcon removeFromSuperview];
-      [self restoreShelfSelection];
-      [window makeFirstResponder:findField];
-      [findField deselectText];
-    }
-    break;
-  case NSCarriageReturnCharacter:
-  case NSEnterCharacter:
-    {
+    case NSBackTabCharacter:
+      if (resultIndex > 0) {
+        resultIndex--;
+        [resultList selectRow:resultIndex inColumn:0];
+        [self listItemClicked:resultList];
+      } else {
+        [resultList reloadColumn:0];
+        resultIndex = -1;
+        [resultIcon removeFromSuperview];
+        [self restoreShelfSelection];
+        [window makeFirstResponder:findField];
+        [findField deselectText];
+      }
+      break;
+    case 27:  // Escape
+      if ([operationQ operationCount] > 0) {
+        break;
+      }
+      [self makeCompletion];
+      if ([resultIcon superview]) {
+        resultIndex = -1;
+        [resultIcon removeFromSuperview];
+        [self restoreShelfSelection];
+        [window makeFirstResponder:findField];
+        [findField deselectText];
+      }
+      break;
+    case NSCarriageReturnCharacter:
+    case NSEnterCharacter: {
       NSString *enteredText = [findField stringValue];
-      if ([enteredText characterAtIndex:0] == '/' ||
-          [enteredText characterAtIndex:0] == '~' ) {
+      if ([enteredText characterAtIndex:0] == '/' || [enteredText characterAtIndex:0] == '~') {
         [fileViewer displayPath:[enteredText stringByExpandingTildeInPath]
                       selection:nil
                          sender:self];
-        [self deactivate]; 
-      }
-      else {
+        [self deactivate];
+      } else {
         [findButton performClick:self];
-      }        
-   }
-  default:
-    break;
+      }
+    }
+    default:
+      break;
   }
 }
 
@@ -672,23 +639,22 @@
 - (void)restoreShelf
 {
   NSDictionary *aDict;
-  NSArray      *shelfSelection;
-  PathIcon     *icon;
+  NSArray *shelfSelection;
+  PathIcon *icon;
 
   aDict = [[NXTDefaults userDefaults] objectForKey:@"FinderShelfContents"];
   if (!aDict || ![aDict isKindOfClass:[NSDictionary class]]) {
     // Home
-    icon = [shelf createIconForPaths:@[NSHomeDirectory()]];
+    icon = [shelf createIconForPaths:@[ NSHomeDirectory() ]];
     if (icon) {
       [icon setDelegate:self];
       [icon setEditable:NO];
-      [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
+      [icon registerForDraggedTypes:@[ NSFilenamesPboardType ]];
       [[icon label] setNextKeyView:findField];
-      [shelf putIcon:icon intoSlot:NXTMakeIconSlot(0,0)];
+      [shelf putIcon:icon intoSlot:NXTMakeIconSlot(0, 0)];
       [shelf selectIcons:[NSSet setWithObject:icon]];
     }
-  }
-  else {
+  } else {
     [shelf reconstructFromRepresentation:aDict];
     for (NXTIcon *icon in [shelf icons]) {
       [[icon label] setNextKeyView:findField];
@@ -702,15 +668,14 @@
 - (NSArray *)storableShelfSelection
 {
   NSMutableArray *selectedSlots = [[NSMutableArray alloc] init];
-  NXTIconSlot     slot;
-  
+  NXTIconSlot slot;
+
   for (PathIcon *icon in [shelf selectedIcons]) {
     if ([icon isKindOfClass:[NSNull class]]) {
       continue;
     }
     slot = [shelf slotForIcon:icon];
-    [selectedSlots addObject:@[[NSNumber numberWithInt:slot.x],
-                               [NSNumber numberWithInt:slot.y]]];
+    [selectedSlots addObject:@[ [NSNumber numberWithInt:slot.x], [NSNumber numberWithInt:slot.y] ]];
   }
 
   return [selectedSlots autorelease];
@@ -718,17 +683,17 @@
 
 - (void)reconstructShelfSelection:(NSArray *)selectedSlots
 {
-  NXTIconSlot   slot;
+  NXTIconSlot slot;
   NSMutableSet *selection = [[NSMutableSet alloc] init];
 
   for (NSArray *slotRep in selectedSlots) {
-    slot = NXTMakeIconSlot([[slotRep objectAtIndex:0] intValue],
-                          [[slotRep objectAtIndex:1] intValue]);
+    slot =
+        NXTMakeIconSlot([[slotRep objectAtIndex:0] intValue], [[slotRep objectAtIndex:1] intValue]);
     [selection addObject:[shelf iconInSlot:slot]];
   }
 
   if (!selectedSlots || [selectedSlots count] == 0) {
-    [selection addObject:[shelf iconInSlot:NXTMakeIconSlot(0,0)]];
+    [selection addObject:[shelf iconInSlot:NXTMakeIconSlot(0, 0)]];
   }
   [shelf selectIcons:selection];
   [selection release];
@@ -739,7 +704,7 @@
 - (void)resignShelfSelection
 {
   NSSet *selectedIcons = [shelf selectedIcons];
-  
+
   ASSIGN(savedSelection, [NSSet setWithSet:selectedIcons]);
 
   for (PathIcon *icon in selectedIcons) {
@@ -763,17 +728,16 @@
 
 @end
 
-
 //-----------------------------------------------------------------------------
 // --- Results browser
 //-----------------------------------------------------------------------------
 @implementation Finder (Results)
-- (void)     browser:(NSBrowser *)sender
- createRowsForColumn:(NSInteger)column
-            inMatrix:(NSMatrix *)matrix
+- (void)browser:(NSBrowser *)sender
+    createRowsForColumn:(NSInteger)column
+               inMatrix:(NSMatrix *)matrix
 {
   NSBrowserCell *cell;
-  
+
   if (sender != resultList)
     return;
 
@@ -788,8 +752,8 @@
 
 - (void)listItemClicked:(id)sender
 {
-  NSString       *item, *path;
-  NSSet          *shelfIcons;
+  NSString *item, *path;
+  NSSet *shelfIcons;
   NXTFileManager *fm = [NXTFileManager defaultManager];
 
   if (sender != resultList)
@@ -805,13 +769,13 @@
 
   shelfIcons = [shelf selectedIcons];
   path = [fm absolutePathForPath:[findField stringValue]];
-  
+
   // NSLog(@"Absolute Path: %@", path);
   // Check if enetered text is existing directory
   if (path && ([fm directoryExistsAtPath:path] == NO)) {
     path = [path stringByDeletingLastPathComponent];
   }
-  
+
   // NSLog(@"Field: %@ Path: %@", [findField stringValue], path);
   // Clicked item is not absolute path
   if ([fm absolutePathForPath:item] == nil) {
@@ -819,20 +783,18 @@
     if (path == nil || [path isEqualToString:@""]) {
       path = [[[shelfIcons anyObject] paths] objectAtIndex:0];
       path = [path stringByAppendingPathComponent:item];
-    }
-    else {
+    } else {
       path = [path stringByAppendingPathComponent:item];
     }
-  }
-  else {
+  } else {
     path = item;
   }
-  
+
   // NSLog(@"[Finder] + result list clicked:%@", path);
   [resultIcon setIconImage:[[NSApp delegate] iconForFile:path]];
-  [resultIcon setPaths:@[path]];
+  [resultIcon setPaths:@[ path ]];
   if (![resultIcon superview]) {
-    [resultIcon putIntoView:iconPlace atPoint:NSMakePoint(33,48)];
+    [resultIcon putIntoView:iconPlace atPoint:NSMakePoint(33, 48)];
     if ([shelfIcons count] > 0) {
       [self resignShelfSelection];
     }
@@ -842,20 +804,18 @@
 - (void)refreshResultsList:(BOOL)showSingle
 {
   NSUInteger variantsCount = [variantList count];
-  
+
   if (variantsCount == 1) {
     if (showSingle != NO) {
       [resultList reloadColumn:0];
-    }
-    else {
-      NSMatrix  *mtrx = [resultList matrixInColumn:0];
+    } else {
+      NSMatrix *mtrx = [resultList matrixInColumn:0];
       NSInteger i, nRows = [mtrx numberOfRows];
-      for (i = 0;i < nRows; i++) {
+      for (i = 0; i < nRows; i++) {
         [mtrx removeRow:0];
       }
     }
-  }
-  else {
+  } else {
     [resultList reloadColumn:0];
     resultIndex = -1;
   }

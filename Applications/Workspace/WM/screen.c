@@ -68,14 +68,14 @@
 #include "iconyard.h"
 
 /* Window titlebar text alignment */
-#define WTB_LEFT	0
-#define WTB_RIGHT	1
+#define WTB_LEFT 0
+#define WTB_RIGHT 1
 
 /* Window titlebar state */
-#define WTB_FOCUSED	0
-#define WTB_UNFOCUSED	2
-#define WTB_PFOCUSED	4
-#define WTB_MENU 	6
+#define WTB_FOCUSED 0
+#define WTB_UNFOCUSED 2
+#define WTB_PFOCUSED 4
+#define WTB_MENU 6
 
 /* Default style */
 #define DEF_FRAME_COLOR "white"
@@ -83,10 +83,10 @@
 /* Line width of the move/resize frame */
 #define DEF_FRAME_THICKNESS 1
 
-#define EVENT_MASK (LeaveWindowMask|EnterWindowMask|PropertyChangeMask  \
-                    |SubstructureNotifyMask|PointerMotionMask           \
-                    |SubstructureRedirectMask|ButtonPressMask|ButtonReleaseMask \
-                    |KeyPressMask|KeyReleaseMask)
+#define EVENT_MASK                                                                      \
+  (LeaveWindowMask | EnterWindowMask | PropertyChangeMask | SubstructureNotifyMask |    \
+   PointerMotionMask | SubstructureRedirectMask | ButtonPressMask | ButtonReleaseMask | \
+   KeyPressMask | KeyReleaseMask)
 
 #ifdef USE_ICCCM_WMREPLACE
 #define REPLACE_WM_TIMEOUT 15
@@ -94,7 +94,7 @@
 
 #define STIPPLE_WIDTH 2
 #define STIPPLE_HEIGHT 2
-static char STIPPLE_DATA[] = { 0x02, 0x01 };
+static char STIPPLE_DATA[] = {0x02, 0x01};
 
 static int CantManageScreen = 0;
 
@@ -104,135 +104,98 @@ static int CantManageScreen = 0;
 
 /* diamond mark */
 #define MENU_RADIO_INDICATOR_XBM_SIZE 9
-static unsigned char MENU_RADIO_INDICATOR_XBM_DATA[] = {
-    0x10, 0x00, 0x38, 0x00, 0x7c, 0x00, 0xee, 0x00, 0xc7, 0x01, 0xee, 0x00,
-    0x7c, 0x00, 0x38, 0x00, 0x10, 0x00};
+static unsigned char MENU_RADIO_INDICATOR_XBM_DATA[] = {0x10, 0x00, 0x38, 0x00, 0x7c, 0x00,
+                                                        0xee, 0x00, 0xc7, 0x01, 0xee, 0x00,
+                                                        0x7c, 0x00, 0x38, 0x00, 0x10, 0x00};
 
 /* check mark */
 #define MENU_CHECK_INDICATOR_XBM_SIZE 9
-static unsigned char MENU_CHECK_INDICATOR_XBM_DATA[] = {
-    0x00, 0x01, 0x83, 0x01, 0xc3, 0x00, 0x63, 0x00, 0x33, 0x00, 0x1b, 0x00,
-    0x0f, 0x00, 0x07, 0x00, 0x03, 0x00};
+static unsigned char MENU_CHECK_INDICATOR_XBM_DATA[] = {0x00, 0x01, 0x83, 0x01, 0xc3, 0x00,
+                                                        0x63, 0x00, 0x33, 0x00, 0x1b, 0x00,
+                                                        0x0f, 0x00, 0x07, 0x00, 0x03, 0x00};
 
 #define MENU_MINI_INDICATOR_XBM_SIZE 9
-static unsigned char MENU_MINI_INDICATOR_XBM_DATA[] = {
-    0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-    0x01, 0x01, 0x01, 0x01, 0xff, 0x01};
+static unsigned char MENU_MINI_INDICATOR_XBM_DATA[] = {0xff, 0x01, 0xff, 0x01, 0xff, 0x01,
+                                                       0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
+                                                       0x01, 0x01, 0x01, 0x01, 0xff, 0x01};
 
 #define MENU_HIDE_INDICATOR_XBM_SIZE 9
-static unsigned char MENU_HIDE_INDICATOR_XBM_DATA[] = {
-    0x99, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x00,
-    0x00, 0x00, 0x00, 0x01, 0x33, 0x01};
+static unsigned char MENU_HIDE_INDICATOR_XBM_DATA[] = {0x99, 0x01, 0x01, 0x00, 0x00, 0x00,
+                                                       0x00, 0x01, 0x01, 0x01, 0x01, 0x00,
+                                                       0x00, 0x00, 0x00, 0x01, 0x33, 0x01};
 
 #define MENU_SHADE_INDICATOR_XBM_SIZE 9
-static unsigned char MENU_SHADE_INDICATOR_XBM_DATA[] = {
-    0xff, 0x01, 0xff, 0x01, 0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+static unsigned char MENU_SHADE_INDICATOR_XBM_DATA[] = {0xff, 0x01, 0xff, 0x01, 0xff, 0x01,
+                                                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                                                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 /* button pixmaps */
-static char *PRED_CLOSE_XPM[] = {
-"20 10 5 1",
-" 	c None",
-".	c #000000",
-"+	c #555555",
-"@	c #AAAAAA",
-"#	c #FFFFFF",
-".+      +.+@######@+",
-"+.+    +.+@+@####@+@",
-" +.+  +.+ #@+@##@+@#",
-"  +.++.+  ##@+@@+@##",
-"   +..+   ###@++@###",
-"   +..+   ###@++@###",
-"  +.++.+  ##@+@@+@##",
-" +.+  +.+ #@+@##@+@#",
-"+.+    +.+@+@####@+@",
-".+      +.+@######@+"};
+static char *PRED_CLOSE_XPM[] = {"20 10 5 1",
+                                 " 	c None",
+                                 ".	c #000000",
+                                 "+	c #555555",
+                                 "@	c #AAAAAA",
+                                 "#	c #FFFFFF",
+                                 ".+      +.+@######@+",
+                                 "+.+    +.+@+@####@+@",
+                                 " +.+  +.+ #@+@##@+@#",
+                                 "  +.++.+  ##@+@@+@##",
+                                 "   +..+   ###@++@###",
+                                 "   +..+   ###@++@###",
+                                 "  +.++.+  ##@+@@+@##",
+                                 " +.+  +.+ #@+@##@+@#",
+                                 "+.+    +.+@+@####@+@",
+                                 ".+      +.+@######@+"};
 
-static char *PRED_BROKEN_CLOSE_XPM[] = {
-"20 10 5 1",
-" 	c None",
-".	c #000000",
-"+	c #555555",
-"@	c #AAAAAA",
-"#	c #FFFFFF",
-".+      +.+@######@+",
-"+.+    +.+@+@####@+@",
-" +.    .+ #@+####+@#",
-"          ##########",
-"          ##########",
-"          ##########",
-"          ##########",
-" +.    .+ #@+####+@#",
-"+.+    +.+@+@####@+@",
-".+      +.+@######@+"};
+static char *PRED_BROKEN_CLOSE_XPM[] = {"20 10 5 1",
+                                        " 	c None",
+                                        ".	c #000000",
+                                        "+	c #555555",
+                                        "@	c #AAAAAA",
+                                        "#	c #FFFFFF",
+                                        ".+      +.+@######@+",
+                                        "+.+    +.+@+@####@+@",
+                                        " +.    .+ #@+####+@#",
+                                        "          ##########",
+                                        "          ##########",
+                                        "          ##########",
+                                        "          ##########",
+                                        " +.    .+ #@+####+@#",
+                                        "+.+    +.+@+@####@+@",
+                                        ".+      +.+@######@+"};
 
 static char *PRED_KILL_XPM[] = {
-"10 10 3 1",
-" 	c None",
-".	c #800000",
-"+	c #C22727",
-".+      +.",
-"+.+    +.+",
-" +.+  +.+ ",
-"  +.++.+  ",
-"   +..+   ",
-"   +..+   ",
-"  +.++.+  ",
-" +.+  +.+ ",
-"+.+    +.+",
-".+      +."};
+    "10 10 3 1",  " 	c None", ".	c #800000", "+	c #C22727", ".+      +.",
+    "+.+    +.+", " +.+  +.+ ",    "  +.++.+  ",       "   +..+   ",       "   +..+   ",
+    "  +.++.+  ", " +.+  +.+ ",    "+.+    +.+",       ".+      +."};
 
-static char *PRED_ICONIFY_XPM[] = {
-"20 10 4 1",
-" 	g None",
-".	g #000000",
-"+	g #555555",
-"@	g #FFFFFF",
-"..........++++++++++",
-"..........++++++++++",
-"..........++++++++++",
-".        .+@@@@@@@@+",
-".        .+@@@@@@@@+",
-".        .+@@@@@@@@+",
-".        .+@@@@@@@@+",
-".        .+@@@@@@@@+",
-".        .+@@@@@@@@+",
-"..........++++++++++"};
+static char *PRED_ICONIFY_XPM[] = {"20 10 4 1",
+                                   " 	g None",
+                                   ".	g #000000",
+                                   "+	g #555555",
+                                   "@	g #FFFFFF",
+                                   "..........++++++++++",
+                                   "..........++++++++++",
+                                   "..........++++++++++",
+                                   ".        .+@@@@@@@@+",
+                                   ".        .+@@@@@@@@+",
+                                   ".        .+@@@@@@@@+",
+                                   ".        .+@@@@@@@@+",
+                                   ".        .+@@@@@@@@+",
+                                   ".        .+@@@@@@@@+",
+                                   "..........++++++++++"};
 
 static char *PRED_MAXIMIZE_XPM[] = {
-"10 10 3 1",
-" 	c None",
-".	c #555555",
-"+	c #000000",
-"      .+++",
-"       .++",
-"      .+.+",
-"     .+. .",
-"    .+.   ",
-"   .+.    ",
-". .+.     ",
-"+.+.      ",
-"++.       ",
-"+++.      "};
+    "10 10 3 1",  " 	c None", ".	c #555555", "+	c #000000", "      .+++",
+    "       .++", "      .+.+",    "     .+. .",       "    .+.   ",       "   .+.    ",
+    ". .+.     ", "+.+.      ",    "++.       ",       "+++.      "};
 
 static char *PRED_RESTORE_XPM[] = {
-"10 10 3 1",
-" 	c None",
-".	c #000000",
-"+	c #555555",
-".+ +  + +.",
-"+.+.  .+.+",
-" +..  ..+ ",
-"+...  ...+",
-"          ",
-"          ",
-"+...  ...+",
-" +..  ..+ ",
-"+.+.  .+.+",
-".+ +  + +."};
+    "10 10 3 1",  " 	c None", ".	c #000000", "+	c #555555", ".+ +  + +.",
+    "+.+.  .+.+", " +..  ..+ ",    "+...  ...+",       "          ",       "          ",
+    "+...  ...+", " +..  ..+ ",    "+.+.  .+.+",       ".+ +  + +."};
 
-
-/* static CFTypeRef dApplications = CFSTR("Applications"); */ // session.h
+/* static CFTypeRef dApplications = CFSTR("Applications"); */  // session.h
 /* static CFTypeRef dWorkspace = CFSTR("Workspace"); */
 static CFTypeRef dDock = CFSTR("Dock");
 static CFTypeRef dClip = CFSTR("Clip");
@@ -265,12 +228,13 @@ static Bool replace_existing_wm(WScreen *scr)
   /* Try to acquire the atom named WM_S<screen> */
   ret = snprintf(atomName, sizeof(atomName), "WM_S%d", scr->screen);
   if (ret < 0 || ret == sizeof(atomName)) {
-    WMLogError("out of memory trying to allocate window manager selection atom for screen %d", scr->screen);
+    WMLogError("out of memory trying to allocate window manager selection atom for screen %d",
+               scr->screen);
     return False;
   }
 
   scr->sn_atom = XInternAtom(dpy, atomName, False);
-  if (! scr->sn_atom)
+  if (!scr->sn_atom)
     return False;
 
   /* Check if an existing window manager owns the selection */
@@ -330,13 +294,13 @@ static Bool replace_existing_wm(WScreen *scr)
   event.type = ClientMessage;
   event.message_type = scr->sn_atom;
   event.format = 32;
-  event.data.l[0] = (long) current_time;
-  event.data.l[1] = (long) scr->sn_atom;
-  event.data.l[2] = (long) scr->info_window;
-  event.data.l[3] = (long) 0L;
-  event.data.l[4] = (long) 0L;
+  event.data.l[0] = (long)current_time;
+  event.data.l[1] = (long)scr->sn_atom;
+  event.data.l[2] = (long)scr->info_window;
+  event.data.l[3] = (long)0L;
+  event.data.l[4] = (long)0L;
   event.window = scr->root_win;
-  XSendEvent(dpy, scr->root_win, False, StructureNotifyMask, (XEvent *) &event);
+  XSendEvent(dpy, scr->root_win, False, StructureNotifyMask, (XEvent *)&event);
 #endif
 
   return True;
@@ -356,11 +320,11 @@ static Bool replace_existing_wm(WScreen *scr)
  * 	CantManageScreen is set to 1;
  *----------------------------------------------------------------------
  */
-static int alreadyRunningError(Display * dpy, XErrorEvent * error)
+static int alreadyRunningError(Display *dpy, XErrorEvent *error)
 {
   /* Parameter not used, but tell the compiler that it is ok */
-  (void) dpy;
-  (void) error;
+  (void)dpy;
+  (void)error;
 
   CantManageScreen = 1;
   return -1;
@@ -381,7 +345,7 @@ static int alreadyRunningError(Display * dpy, XErrorEvent * error)
  * not be freed by anybody.
  *----------------------------------------------------------------------
  */
-static void allocButtonPixmaps(WScreen * scr)
+static void allocButtonPixmaps(WScreen *scr)
 {
   WPixmap *pix;
 
@@ -423,7 +387,7 @@ static void allocButtonPixmaps(WScreen * scr)
   scr->b_pixmaps[WBUT_KILL] = pix;
 }
 
-static void draw_dot(WScreen * scr, Drawable d, int x, int y, GC gc)
+static void draw_dot(WScreen *scr, Drawable d, int x, int y, GC gc)
 {
   XSetForeground(dpy, gc, scr->black_pixel);
   XDrawLine(dpy, d, gc, x, y, x + 1, y);
@@ -433,7 +397,7 @@ static void draw_dot(WScreen * scr, Drawable d, int x, int y, GC gc)
   XDrawPoint(dpy, d, gc, x + 1, y + 1);
 }
 
-static WPixmap *make3Dots(WScreen * scr)
+static WPixmap *make3Dots(WScreen *scr)
 {
   WPixmap *wpix;
   GC gc2, gc;
@@ -441,7 +405,8 @@ static WPixmap *make3Dots(WScreen * scr)
   Pixmap pix, mask;
 
   gc = scr->copy_gc;
-  pix = XCreatePixmap(dpy, scr->w_win, wPreferences.icon_size, wPreferences.icon_size, scr->w_depth);
+  pix =
+      XCreatePixmap(dpy, scr->w_win, wPreferences.icon_size, wPreferences.icon_size, scr->w_depth);
   XSetForeground(dpy, gc, scr->black_pixel);
   XFillRectangle(dpy, pix, gc, 0, 0, wPreferences.icon_size, wPreferences.icon_size);
   XSetForeground(dpy, gc, scr->white_pixel);
@@ -467,13 +432,14 @@ static WPixmap *make3Dots(WScreen * scr)
   return wpix;
 }
 
-static void allocGCs(WScreen * scr)
+static void allocGCs(WScreen *scr)
 {
   XGCValues gcv;
   XColor color;
   int gcm;
 
-  scr->stipple_bitmap = XCreateBitmapFromData(dpy, scr->w_win, STIPPLE_DATA, STIPPLE_WIDTH, STIPPLE_HEIGHT);
+  scr->stipple_bitmap =
+      XCreateBitmapFromData(dpy, scr->w_win, STIPPLE_DATA, STIPPLE_WIDTH, STIPPLE_HEIGHT);
 
   gcv.stipple = scr->stipple_bitmap;
   gcv.foreground = scr->white_pixel;
@@ -523,8 +489,10 @@ static void allocGCs(WScreen * scr)
   gcv.line_width = DEF_FRAME_THICKNESS;
   gcv.subwindow_mode = IncludeInferiors;
   gcv.graphics_exposures = False;
-  scr->frame_gc = XCreateGC(dpy, scr->root_win, GCForeground | GCGraphicsExposures
-                            | GCFunction | GCSubwindowMode | GCLineWidth | GCPlaneMask, &gcv);
+  scr->frame_gc = XCreateGC(
+      dpy, scr->root_win,
+      GCForeground | GCGraphicsExposures | GCFunction | GCSubwindowMode | GCLineWidth | GCPlaneMask,
+      &gcv);
 
   /* line GC */
   gcv.foreground = color.pixel;
@@ -539,7 +507,8 @@ static void allocGCs(WScreen * scr)
   gcv.line_width = 1;
   gcv.cap_style = CapRound;
   gcv.graphics_exposures = False;
-  gcm = GCForeground | GCFunction | GCSubwindowMode | GCLineWidth | GCCapStyle | GCGraphicsExposures;
+  gcm =
+      GCForeground | GCFunction | GCSubwindowMode | GCLineWidth | GCCapStyle | GCGraphicsExposures;
   scr->line_gc = XCreateGC(dpy, scr->root_win, gcm, &gcv);
 
   scr->line_pixel = gcv.foreground;
@@ -548,7 +517,8 @@ static void allocGCs(WScreen * scr)
   gcv.foreground = scr->white_pixel;
   gcv.background = scr->black_pixel;
   gcv.graphics_exposures = False;
-  scr->copy_gc = XCreateGC(dpy, scr->w_win, GCForeground | GCBackground | GCGraphicsExposures, &gcv);
+  scr->copy_gc =
+      XCreateGC(dpy, scr->w_win, GCForeground | GCBackground | GCGraphicsExposures, &gcv);
 
   /* misc drawing GC */
   gcv.graphics_exposures = False;
@@ -561,47 +531,45 @@ static void allocGCs(WScreen * scr)
   scr->mono_gc = XCreateGC(dpy, scr->stipple_bitmap, gcm, &gcv);
 }
 
-static void createPixmaps(WScreen * scr)
+static void createPixmaps(WScreen *scr)
 {
   WPixmap *pix;
 
   /* load pixmaps */
-  pix = wPixmapCreateFromXBMData(scr, (char *)MENU_RADIO_INDICATOR_XBM_DATA,
-                                 (char *)MENU_RADIO_INDICATOR_XBM_DATA,
-                                 MENU_RADIO_INDICATOR_XBM_SIZE,
-                                 MENU_RADIO_INDICATOR_XBM_SIZE, scr->black_pixel, scr->white_pixel);
+  pix =
+      wPixmapCreateFromXBMData(scr, (char *)MENU_RADIO_INDICATOR_XBM_DATA,
+                               (char *)MENU_RADIO_INDICATOR_XBM_DATA, MENU_RADIO_INDICATOR_XBM_SIZE,
+                               MENU_RADIO_INDICATOR_XBM_SIZE, scr->black_pixel, scr->white_pixel);
   if (pix != NULL)
     pix->shared = 1;
   scr->menu_radio_indicator = pix;
 
-  pix = wPixmapCreateFromXBMData(scr, (char *)MENU_CHECK_INDICATOR_XBM_DATA,
-                                 (char *)MENU_CHECK_INDICATOR_XBM_DATA,
-                                 MENU_CHECK_INDICATOR_XBM_SIZE,
-                                 MENU_CHECK_INDICATOR_XBM_SIZE, scr->black_pixel, scr->white_pixel);
+  pix =
+      wPixmapCreateFromXBMData(scr, (char *)MENU_CHECK_INDICATOR_XBM_DATA,
+                               (char *)MENU_CHECK_INDICATOR_XBM_DATA, MENU_CHECK_INDICATOR_XBM_SIZE,
+                               MENU_CHECK_INDICATOR_XBM_SIZE, scr->black_pixel, scr->white_pixel);
   if (pix != NULL)
     pix->shared = 1;
   scr->menu_check_indicator = pix;
 
   pix = wPixmapCreateFromXBMData(scr, (char *)MENU_MINI_INDICATOR_XBM_DATA,
-                                 (char *)MENU_MINI_INDICATOR_XBM_DATA,
-                                 MENU_MINI_INDICATOR_XBM_SIZE,
+                                 (char *)MENU_MINI_INDICATOR_XBM_DATA, MENU_MINI_INDICATOR_XBM_SIZE,
                                  MENU_MINI_INDICATOR_XBM_SIZE, scr->black_pixel, scr->white_pixel);
   if (pix != NULL)
     pix->shared = 1;
   scr->menu_mini_indicator = pix;
 
   pix = wPixmapCreateFromXBMData(scr, (char *)MENU_HIDE_INDICATOR_XBM_DATA,
-                                 (char *)MENU_HIDE_INDICATOR_XBM_DATA,
-                                 MENU_HIDE_INDICATOR_XBM_SIZE,
+                                 (char *)MENU_HIDE_INDICATOR_XBM_DATA, MENU_HIDE_INDICATOR_XBM_SIZE,
                                  MENU_HIDE_INDICATOR_XBM_SIZE, scr->black_pixel, scr->white_pixel);
   if (pix != NULL)
     pix->shared = 1;
   scr->menu_hide_indicator = pix;
 
-  pix = wPixmapCreateFromXBMData(scr, (char *)MENU_SHADE_INDICATOR_XBM_DATA,
-                                 (char *)MENU_SHADE_INDICATOR_XBM_DATA,
-                                 MENU_SHADE_INDICATOR_XBM_SIZE,
-                                 MENU_SHADE_INDICATOR_XBM_SIZE, scr->black_pixel, scr->white_pixel);
+  pix =
+      wPixmapCreateFromXBMData(scr, (char *)MENU_SHADE_INDICATOR_XBM_DATA,
+                               (char *)MENU_SHADE_INDICATOR_XBM_DATA, MENU_SHADE_INDICATOR_XBM_SIZE,
+                               MENU_SHADE_INDICATOR_XBM_SIZE, scr->black_pixel, scr->white_pixel);
   if (pix != NULL)
     pix->shared = 1;
   scr->menu_shade_indicator = pix;
@@ -627,7 +595,7 @@ static void createPixmaps(WScreen * scr)
  *      window background.
  *----------------------------------------------------------------------
  */
-static void createInternalWindows(WScreen * scr)
+static void createInternalWindows(WScreen *scr)
 {
   int vmask;
   XSetWindowAttributes attribs;
@@ -636,8 +604,8 @@ static void createInternalWindows(WScreen * scr)
   vmask = CWEventMask | CWOverrideRedirect;
   attribs.event_mask = KeyPressMask | FocusChangeMask;
   attribs.override_redirect = True;
-  scr->no_focus_win = XCreateWindow(dpy, scr->root_win, -10, -10, 4, 4, 0, 0,
-                                    InputOnly, CopyFromParent, vmask, &attribs);
+  scr->no_focus_win = XCreateWindow(dpy, scr->root_win, -10, -10, 4, 4, 0, 0, InputOnly,
+                                    CopyFromParent, vmask, &attribs);
   XSelectInput(dpy, scr->no_focus_win, KeyPressMask | KeyReleaseMask);
   XMapWindow(dpy, scr->no_focus_win);
 
@@ -654,8 +622,8 @@ static void createInternalWindows(WScreen * scr)
   vmask |= CWColormap;
   attribs.colormap = scr->w_colormap;
   scr->dock_shadow =
-    XCreateWindow(dpy, scr->root_win, 0, 0, wPreferences.icon_size,
-                  wPreferences.icon_size, 0, scr->w_depth, CopyFromParent, scr->w_visual, vmask, &attribs);
+      XCreateWindow(dpy, scr->root_win, 0, 0, wPreferences.icon_size, wPreferences.icon_size, 0,
+                    scr->w_depth, CopyFromParent, scr->w_visual, vmask, &attribs);
 
   /* workspace name */
   vmask = CWBackPixel | CWSaveUnder | CWOverrideRedirect | CWColormap | CWBorderPixel;
@@ -663,10 +631,9 @@ static void createInternalWindows(WScreen * scr)
   attribs.override_redirect = True;
   attribs.colormap = scr->w_colormap;
   attribs.background_pixel = scr->icon_back_texture->normal.pixel;
-  attribs.border_pixel = 0;	/* do not care */
-  scr->workspace_name =
-    XCreateWindow(dpy, scr->root_win, 0, 0, 10, 10, 0, scr->w_depth,
-                  CopyFromParent, scr->w_visual, vmask, &attribs);
+  attribs.border_pixel = 0; /* do not care */
+  scr->workspace_name = XCreateWindow(dpy, scr->root_win, 0, 0, 10, 10, 0, scr->w_depth,
+                                      CopyFromParent, scr->w_visual, vmask, &attribs);
 }
 
 /*
@@ -680,7 +647,7 @@ static void createInternalWindows(WScreen * scr)
  * 	The WScreen descriptor for the screen.
  *
  * Side effects:
- * 	Many resources are allocated and the IconSize property is set on the 
+ * 	Many resources are allocated and the IconSize property is set on the
  *      root window.
  *	The program can be aborted if some fatal error occurs.
  *
@@ -711,8 +678,8 @@ WScreen *wScreenInit(int screen_number)
 
   wInitXrandr(scr);
 
-  scr->usableArea = (WArea *) wmalloc(sizeof(WArea) * wScreenHeads(scr));
-  scr->totalUsableArea = (WArea *) wmalloc(sizeof(WArea) * wScreenHeads(scr));
+  scr->usableArea = (WArea *)wmalloc(sizeof(WArea) * wScreenHeads(scr));
+  scr->totalUsableArea = (WArea *)wmalloc(sizeof(WArea) * wScreenHeads(scr));
 
   for (i = 0; i < wScreenHeads(scr); ++i) {
     WMRect rect = wGetRectForHead(scr, i);
@@ -742,10 +709,10 @@ WScreen *wScreenInit(int screen_number)
     unsigned int auto_ctrls, auto_values;
     /* unsigned long int mask = (XkbStateNotifyMask | XkbBellNotifyMask); */
     /* XkbSelectEvents(dpy, XkbUseCoreKbd, mask, mask); */
-    XkbSelectEventDetails(dpy, XkbUseCoreKbd, XkbStateNotify,
-                          XkbAllStateComponentsMask, XkbGroupStateMask);
-    XkbSelectEventDetails (dpy, XkbUseCoreKbd, XkbBellNotify,
-                           XkbAllBellEventsMask, XkbAllBellEventsMask);
+    XkbSelectEventDetails(dpy, XkbUseCoreKbd, XkbStateNotify, XkbAllStateComponentsMask,
+                          XkbGroupStateMask);
+    XkbSelectEventDetails(dpy, XkbUseCoreKbd, XkbBellNotify, XkbAllBellEventsMask,
+                          XkbAllBellEventsMask);
     auto_ctrls = auto_values = XkbAudibleBellMask;
     XkbSetAutoResetControls(dpy, XkbAudibleBellMask, &auto_ctrls, &auto_values);
     XkbChangeEnabledControls(dpy, XkbUseCoreKbd, XkbAudibleBellMask, 0);
@@ -790,8 +757,8 @@ WScreen *wScreenInit(int screen_number)
     scr->rcontext = RCreateContext(dpy, screen_number, &rattr);
   }
   if (scr->rcontext == NULL) {
-    WMLogCritical(_("can't create Context on screen %d, %s"),
-           screen_number, RMessageForError(RErrorCode));
+    WMLogCritical(_("can't create Context on screen %d, %s"), screen_number,
+                  RMessageForError(RErrorCode));
     goto abort_no_context;
   }
 
@@ -820,8 +787,8 @@ WScreen *wScreenInit(int screen_number)
   scr->gray = WMGrayColor(scr->wmscreen);
   scr->darkGray = WMDarkGrayColor(scr->wmscreen);
 
-  scr->black_pixel = WMColorPixel(scr->black);	/*scr->rcontext->black; */
-  scr->white_pixel = WMColorPixel(scr->white);	/*scr->rcontext->white; */
+  scr->black_pixel = WMColorPixel(scr->black); /*scr->rcontext->black; */
+  scr->white_pixel = WMColorPixel(scr->white); /*scr->rcontext->white; */
   scr->light_pixel = WMColorPixel(scr->gray);
   scr->dark_pixel = WMColorPixel(scr->darkGray);
 
@@ -865,10 +832,10 @@ WScreen *wScreenInit(int screen_number)
   PropSetWMakerProtocols(scr->root_win);
 
   /* setup our noticeboard */
-  XChangeProperty(dpy, scr->info_window, w_global.atom.wmaker.noticeboard,
-                  XA_WINDOW, 32, PropModeReplace, (unsigned char *)&scr->info_window, 1);
-  XChangeProperty(dpy, scr->root_win, w_global.atom.wmaker.noticeboard,
-                  XA_WINDOW, 32, PropModeReplace, (unsigned char *)&scr->info_window, 1);
+  XChangeProperty(dpy, scr->info_window, w_global.atom.wmaker.noticeboard, XA_WINDOW, 32,
+                  PropModeReplace, (unsigned char *)&scr->info_window, 1);
+  XChangeProperty(dpy, scr->root_win, w_global.atom.wmaker.noticeboard, XA_WINDOW, 32,
+                  PropModeReplace, (unsigned char *)&scr->info_window, 1);
 
 #ifdef BALLOON_TEXT
   /* initialize balloon text stuff */
@@ -945,7 +912,7 @@ void wScreenUpdateUsableArea(WScreen *scr)
     }
 
     tmp_area = (scr->totalUsableArea[i].x2 - scr->totalUsableArea[i].x1) *
-      (scr->totalUsableArea[i].y2 - scr->totalUsableArea[i].y1);
+               (scr->totalUsableArea[i].y2 - scr->totalUsableArea[i].y1);
 
     if (tmp_area > best_area) {
       best_area = tmp_area;
@@ -968,7 +935,7 @@ void wScreenUpdateUsableArea(WScreen *scr)
     wArrangeIcons(scr, True);
 }
 
-void wScreenRestoreState(WScreen * scr)
+void wScreenRestoreState(WScreen *scr)
 {
   CFDictionaryRef state;
 
@@ -977,9 +944,8 @@ void wScreenRestoreState(WScreen * scr)
     CFMutableDictionaryRef dock_state;
     CFMutableArrayRef dock_apps_state;
     CFMutableDictionaryRef app_state;
-    
-    app_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                          &kCFTypeDictionaryKeyCallBacks,
+
+    app_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
                                           &kCFTypeDictionaryValueCallBacks);
     CFDictionarySetValue(app_state, CFSTR("AutoLaunch"), CFSTR("Yes"));
     CFDictionarySetValue(app_state, CFSTR("BuggyApplication"), CFSTR("No"));
@@ -992,16 +958,14 @@ void wScreenRestoreState(WScreen * scr)
     dock_apps_state = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
     CFArrayAppendValue(dock_apps_state, app_state);
     CFRelease(app_state);
-    
-    dock_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                           &kCFTypeDictionaryKeyCallBacks,
+
+    dock_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
                                            &kCFTypeDictionaryValueCallBacks);
     CFDictionarySetValue(dock_state, CFSTR("Applications"), dock_apps_state);
     CFRelease(dock_apps_state);
-    
-    scr->session_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                                   &kCFTypeDictionaryKeyCallBacks,
-                                                   &kCFTypeDictionaryValueCallBacks);
+
+    scr->session_state = CFDictionaryCreateMutable(
+        kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
     CFDictionarySetValue(scr->session_state, dDock, dock_state);
     CFRelease(dock_state);
   }
@@ -1015,7 +979,7 @@ void wScreenRestoreState(WScreen * scr)
     state = CFDictionaryGetValue(scr->session_state, dClip);
     scr->clip_icon = wClipRestoreState(scr, state);
   }
-	
+
   if (!wPreferences.flags.nodrawer) {
     if (!scr->dock->on_right_side) {
       /* Drawer tile was created early in wScreenInit() -> wReadDefaults(). At
@@ -1058,7 +1022,7 @@ void wScreenSaveState(WScreen *scr)
       CFDictionarySetValue(scr->session_state, dDock, foo);
     }
   }
-  
+
   wDesktopSaveState(scr);
 
   /* if (!wPreferences.flags.nodrawer) { */
@@ -1075,7 +1039,7 @@ void wScreenSaveState(WScreen *scr)
   WMUserDefaultsWrite(scr->session_state, CFSTR("WMState"));
 }
 
-int wScreenBringInside(WScreen * scr, int *x, int *y, int width, int height)
+int wScreenBringInside(WScreen *scr, int *x, int *y, int width, int height)
 {
   int moved = 0;
   int tol_w, tol_h;
@@ -1100,7 +1064,7 @@ int wScreenBringInside(WScreen * scr, int *x, int *y, int width, int height)
   sx2 = sx1 + rect.size.width;
   sy2 = sy1 + rect.size.height;
 
-#if 0				/* NOTE: gives funky group movement */
+#if 0 /* NOTE: gives funky group movement */
   if (flags & XFLAG_MULTIPLE) {
     /*
      * since we span multiple heads, pull window totaly inside
@@ -1142,7 +1106,7 @@ int wScreenBringInside(WScreen * scr, int *x, int *y, int width, int height)
   return moved;
 }
 
-int wScreenKeepInside(WScreen * scr, int *x, int *y, int width, int height)
+int wScreenKeepInside(WScreen *scr, int *x, int *y, int width, int height)
 {
   int moved = 0;
   int sx1, sy1, sx2, sy2;

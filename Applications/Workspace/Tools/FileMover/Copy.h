@@ -6,7 +6,7 @@
 //
 // Copyright (C) 2006-2014 Sergii Stoian
 // Copyright (C) 2005 Saso Kiselkov
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -25,23 +25,13 @@
 #import <Foundation/Foundation.h>
 #import "../Communicator.h"
 
-BOOL CopyOperation(NSString *sourceDir,
-                   NSArray *files,
-                   NSString *destDir,
-                   OperationType opType);
+BOOL CopyOperation(NSString *sourceDir, NSArray *files, NSString *destDir, OperationType opType);
 
-BOOL CopyFile(NSString *filename,
-              NSString *sourcePrefix,
-              NSString *targetPrefix,
-              BOOL traverseLink,
+BOOL CopyFile(NSString *filename, NSString *sourcePrefix, NSString *targetPrefix, BOOL traverseLink,
               OperationType opType);
 
 void DuplicateOperation(NSString *sourceDir, NSArray *files);
 
-BOOL DuplicateSymbolicLink(NSString *sourceFile,
-                           NSString *targetFile,
-                           NSDictionary *fattrs);
-  
-BOOL DuplicateFile(NSString *filename,
-                   NSString *sourcePrefix,
-                   BOOL     traverseLink);
+BOOL DuplicateSymbolicLink(NSString *sourceFile, NSString *targetFile, NSDictionary *fattrs);
+
+BOOL DuplicateFile(NSString *filename, NSString *sourcePrefix, BOOL traverseLink);

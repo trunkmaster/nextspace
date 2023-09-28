@@ -6,7 +6,7 @@
 //
 // Copyright (C) 2006-2014 Sergii Stoian
 // Copyright (C) 2005 Saso Kiselkov
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -68,7 +68,7 @@ typedef enum {
 // "D<message>\n" - Delete error
 // "M<message>\n" - Move error
 // "S<message>\n" - Symlink encountered
-//     Cc - Copy the orignial 
+//     Cc - Copy the orignial
 //     Nn - New Link
 //     Ss - Skip
 // "T<message>\n" - symlink's Taget doesn't exist
@@ -89,7 +89,7 @@ typedef enum {
   ProblemSolution defaultUnknownFileAction;
 
   OperationType lastOpType;
-  
+
   NSString *sentFilename;
   NSString *currentFilename;
   NSString *currentSourcePrefix;
@@ -106,12 +106,10 @@ typedef enum {
                  bytesAdvanced:(unsigned long long)progress
                  operationType:(OperationType)opType;
 
-- (void)finishOperation:(NSString *)opName
-                stopped:(BOOL)isStopped;
-  
+- (void)finishOperation:(NSString *)opName stopped:(BOOL)isStopped;
+
 - (ProblemSolution)howToHandleProblem:(ProblemType)p;
 
-- (ProblemSolution)howToHandleProblem:(ProblemType)p
-                             argument:(NSString *)message;
+- (ProblemSolution)howToHandleProblem:(ProblemType)p argument:(NSString *)message;
 
 @end

@@ -53,10 +53,10 @@ typedef enum {
 
   // Inital ivars
   OperationState state;
-  OperationType  type;
-  NSString       *source;
-  NSString       *target;
-  NSArray        *files;
+  OperationType type;
+  NSString *source;
+  NSString *target;
+  NSArray *files;
 
   // Current state ivars (used to show progress and update of FileViewer)
   NSString *message;
@@ -66,9 +66,9 @@ typedef enum {
 
   // Alert
   OperationProblem problem;
-  NSString         *problemDesc;
-  NSString         *problemSolutionDesc;
-  NSArray          *solutions;
+  NSString *problemDesc;
+  NSString *problemSolutionDesc;
+  NSArray *solutions;
 }
 
 - (id)initWithOperationType:(OperationType)opType
@@ -91,7 +91,7 @@ typedef enum {
 - (NSString *)stateString;
 
 - (void)stop:(id)sender;
-- (BOOL)canBeStopped;     // If NO 'Stop' button will be disabled.
+- (BOOL)canBeStopped;  // If NO 'Stop' button will be disabled.
 
 // Operated objects info
 - (NSString *)source;
@@ -99,10 +99,10 @@ typedef enum {
 - (NSArray *)files;
 
 - (NSString *)titleString;
-- (NSString *)currentSourceDirectory; // From:
-- (NSString *)currentTargetDirectory; // To:
-- (NSString *)currentMessage;         // Copying file <currentFile>... 
-- (NSString *)currentFile;            // <currentFile>
+- (NSString *)currentSourceDirectory;  // From:
+- (NSString *)currentTargetDirectory;  // To:
+- (NSString *)currentMessage;          // Copying file <currentFile>...
+- (NSString *)currentFile;             // <currentFile>
 
 - (BOOL)isProgressSupported;
 - (float)progressValue;

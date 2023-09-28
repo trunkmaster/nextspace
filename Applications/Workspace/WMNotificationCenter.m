@@ -54,7 +54,8 @@
 #import "CoreFoundationBridge.h"
 #import "WMNotificationCenter.h"
 
-@implementation CFObject @end
+@implementation CFObject
+@end
 
 //-----------------------------------------------------------------------------
 // Workspace notification center
@@ -62,18 +63,13 @@
 
 static WMNotificationCenter *_workspaceCenter = nil;
 
-typedef enum NotificationSource {
-  LocalNC,
-  DistributedNC,
-  CoreFoundationNC
-} NotificationSource;
+typedef enum NotificationSource { LocalNC, DistributedNC, CoreFoundationNC } NotificationSource;
 
 @implementation WMNotificationCenter (Private)
 
 // CoreFoundation notifications
 //-------------------------------------------------------------------------------------------------
-- (void)_postCFNotification:(NSString *)name
-                   userInfo:(NSDictionary *)info
+- (void)_postCFNotification:(NSString *)name userInfo:(NSDictionary *)info
 {
   CFStringRef cfName;
   CFDictionaryRef cfUserInfo;
@@ -82,9 +78,9 @@ typedef enum NotificationSource {
   cfName = convertNStoCFString(name);
   // userInfo
   cfUserInfo = convertNStoCFDictionary(info);
- 
+
   WMLogWarning("[WMNC] post CF notification: %@ - %@", cfName, cfUserInfo);
-  
+
   CFNotificationCenterPostNotification(_coreFoundationCenter, cfName, self, cfUserInfo, TRUE);
 
   CFRelease(cfName);
@@ -98,11 +94,9 @@ typedef enum NotificationSource {
 
    Dispatching is performed in WMNotificationCenter's postNotificationName::: method call.
 */
-static void _handleCFNotification(CFNotificationCenterRef center,
-                                   void *observer,
-                                   CFNotificationName name,
-                                   const void *object,
-                                   CFDictionaryRef userInfo)
+static void _handleCFNotification(CFNotificationCenterRef center, void *observer,
+                                  CFNotificationName name, const void *object,
+                                  CFDictionaryRef userInfo)
 {
   CFObject *nsObject;
   NSString *nsName;
@@ -113,11 +107,11 @@ static void _handleCFNotification(CFNotificationCenterRef center,
     WMLogWarning("_handleCFNotification: Received mirrored notification from CF. Ignoring...");
     return;
   }
-  
+
   nsName = convertCFtoNSString(name);
   nsObject = [CFObject new];
   nsObject.object = object;
-  
+
   if (userInfo != NULL) {
     nsUserInfo = convertCFtoNSDictionary(userInfo);
   }
@@ -126,7 +120,7 @@ static void _handleCFNotification(CFNotificationCenterRef center,
                userInfo);
 
   [_workspaceCenter postNotificationName:nsName object:nsObject userInfo:nsUserInfo];
-  
+
   [nsObject release];
   [nsUserInfo release];
 }
@@ -138,7 +132,7 @@ static void _handleCFNotification(CFNotificationCenterRef center,
   application. Object always has value @"GSWorkspaceNotification" because we
   observe notifications to that object only.
  */
-- (void)_handleRemoteNotification:(NSNotification*)aNotification
+- (void)_handleRemoteNotification:(NSNotification *)aNotification
 {
   NSString *name = [aNotification name];
   id object = [aNotification object];
@@ -170,7 +164,7 @@ static void _handleCFNotification(CFNotificationCenterRef center,
 
 @end
 
-@implementation	WMNotificationCenter
+@implementation WMNotificationCenter
 
 + (instancetype)defaultCenter
 {
@@ -187,33 +181,33 @@ static void _handleCFNotification(CFNotificationCenterRef center,
   CFRelease(_coreFoundationCenter);
   [_remoteCenter removeObserver:self];
   [_remoteCenter release];
-  
+
   [super dealloc];
 }
 
 - (id)init
 {
   self = [super init];
-  
+
   if (self != nil) {
     _workspaceCenter = self;
-    
+
     _remoteCenter = [[NSDistributedNotificationCenter defaultCenter] retain];
     @try {
       [_remoteCenter addObserver:self
                         selector:@selector(_handleRemoteNotification:)
                             name:nil
                           object:@"GSWorkspaceNotification"];
-    }
-    @catch (NSException *e) {
+    } @catch (NSException *e) {
       NSLog(@"Workspace Manager caught exception while connecting to"
-            " Distributed Notification Center %@: %@", [e name], [e reason]);
+             " Distributed Notification Center %@: %@",
+            [e name], [e reason]);
     }
 
     _coreFoundationCenter = CFNotificationCenterGetLocalCenter();
     CFRetain(_coreFoundationCenter);
   }
-  
+
   return self;
 }
 
@@ -226,10 +220,7 @@ static void _handleCFNotification(CFNotificationCenterRef center,
    In CF callback _handleCFNotification() notification will be forwarded to
    NSNotificationCenter with name specified in `name` parameter.
    `selector` of the caller must be registered in NSNotificationCenter to be called. */
-- (void)addObserver:(id)observer
-           selector:(SEL)selector
-               name:(NSString *)name
-             object:(id)object
+- (void)addObserver:(id)observer selector:(SEL)selector name:(NSString *)name object:(id)object
 {
   CFStringRef cfName;
 
@@ -240,11 +231,8 @@ static void _handleCFNotification(CFNotificationCenterRef center,
   /* Register observer-name in NSNotificationCenter.
      There's no need to register in NSDistributedNotificationCenter because
      notifications which are sent to it will be forwarded to NSNotificationCenter. */
-  [super addObserver:observer
-            selector:selector
-                name:name
-              object:nil];
-  
+  [super addObserver:observer selector:selector name:name object:nil];
+
   // Register handler-name in CFNotificationCenter
   cfName = convertNStoCFString(name);
   CFNotificationCenterAddObserver(_coreFoundationCenter,  // created in -init
@@ -271,24 +259,19 @@ static void _handleCFNotification(CFNotificationCenterRef center,
 //
 // The methods below dispatch notifications to NSNotificationCenter and CFNotificationCenter.
 //-------------------------------------------------------------------------------------------------
-- (void)postNotification:(NSNotification*)aNotification
+- (void)postNotification:(NSNotification *)aNotification
 {
   [self postNotificationName:[aNotification name]
                       object:[aNotification object]
                     userInfo:[aNotification userInfo]];
 }
 
-- (void)postNotificationName:(NSString*)name 
-                      object:(id)object
+- (void)postNotificationName:(NSString *)name object:(id)object
 {
-  [self postNotificationName:name
-                      object:object
-                    userInfo:nil];
+  [self postNotificationName:name object:object userInfo:nil];
 }
 
-- (void)postNotificationName:(NSString*)name
-                      object:(id)object
-                    userInfo:(NSDictionary*)info
+- (void)postNotificationName:(NSString *)name object:(id)object userInfo:(NSDictionary *)info
 {
   if (!object) {
     WMLogWarning("[WMNC postNotification:::] can't post notification with nil object!!!");

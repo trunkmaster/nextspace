@@ -56,7 +56,7 @@
  * TODO: change to XQueryTree()
  *----------------------------------------------------------------------
  */
-static void _wipeDesktop(WScreen * scr)
+static void _wipeDesktop(WScreen *scr)
 {
   WWindow *wwin;
 
@@ -65,8 +65,7 @@ static void _wipeDesktop(WScreen * scr)
     // Do not kill Workspace menu
     if (WINDOW_LEVEL(wwin) != NSMainMenuWindowLevel) {
       if (wwin->protocols.DELETE_WINDOW) {
-        wClientSendProtocol(wwin, w_global.atom.wm.delete_window,
-                            w_global.timestamp.last_event);
+        wClientSendProtocol(wwin, w_global.atom.wm.delete_window, w_global.timestamp.last_event);
       } else {
         wClientKill(wwin);
       }
@@ -103,33 +102,33 @@ void wShutdown(WMShutdownMode mode)
   }
 
   switch (mode) {
-  case WMExitMode:
-    CFRelease(scr->notificationCenter);
-    scr->notificationCenter = NULL;
-  
-    // Stop events processing inside Window Decorator
-    CFRunLoopStop(wm_runloop);
-    WCHANGE_STATE(WSTATE_EXITING);
+    case WMExitMode:
+      CFRelease(scr->notificationCenter);
+      scr->notificationCenter = NULL;
 
-    wScreenSaveState(scr);
-    wNETWMCleanup(scr);		/* Delete _NET_* Atoms */
-    PropCleanUp(scr->root_win);	/* WM specific properties */
-    RShutdown(); 		/* wraster clean exit */
+      // Stop events processing inside Window Decorator
+      CFRunLoopStop(wm_runloop);
+      WCHANGE_STATE(WSTATE_EXITING);
+
+      wScreenSaveState(scr);
+      wNETWMCleanup(scr);         /* Delete _NET_* Atoms */
+      PropCleanUp(scr->root_win); /* WM specific properties */
+      RShutdown();                /* wraster clean exit */
 #if HAVE_SYSLOG_H
-    WMSyslogClose();
+      WMSyslogClose();
 #endif
-    _wipeDesktop(scr);
-    CFRelease(scr->launching_icons);
-    break;
+      _wipeDesktop(scr);
+      CFRelease(scr->launching_icons);
+      break;
 
-  case WMRestartMode:
-    wScreenSaveState(scr);
-    wRestoreDesktop(scr);
-    break;
+    case WMRestartMode:
+      wScreenSaveState(scr);
+      wRestoreDesktop(scr);
+      break;
   }
 }
 
-static void _restoreWindows(WMBag * bag, WMBagIterator iter)
+static void _restoreWindows(WMBag *bag, WMBagIterator iter)
 {
   WCoreWindow *next;
   WCoreWindow *core;
@@ -177,7 +176,7 @@ static void _restoreWindows(WMBag * bag, WMBagIterator iter)
  *
  *----------------------------------------------------------------------
  */
-void wRestoreDesktop(WScreen * scr)
+void wRestoreDesktop(WScreen *scr)
 {
   XGrabServer(dpy);
 

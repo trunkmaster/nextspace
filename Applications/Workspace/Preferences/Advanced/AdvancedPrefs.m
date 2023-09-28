@@ -37,7 +37,7 @@
   [box retain];
   [box removeFromSuperview];
   DESTROY(bogusWindow);
-	
+
   [slideOnBadFop setRefusesFirstResponder:YES];
   [slideFromShelf setRefusesFirstResponder:YES];
   [slideWhenOpening setRefusesFirstResponder:YES];
@@ -79,20 +79,18 @@
 
 - (void)setSlidesWhenChangingPath:(id)sender
 {
-  [[NXTDefaults userDefaults] setBool:![slideFromShelf state]
-                              forKey:@"DontSlideIconsFromShelf"];
+  [[NXTDefaults userDefaults] setBool:![slideFromShelf state] forKey:@"DontSlideIconsFromShelf"];
 }
 
 - (void)setSlidesBackOnBadOperation:(id)sender
 {
-  [[NXTDefaults userDefaults] setBool:![slideOnBadFop state]
-                              forKey:@"DontSlideIconBackOnBadFop"];
+  [[NXTDefaults userDefaults] setBool:![slideOnBadFop state] forKey:@"DontSlideIconBackOnBadFop"];
 }
 
 - (void)setSlidesWhenOpeningFile:(id)sender
 {
   [[NXTDefaults userDefaults] setBool:![slideWhenOpening state]
-                              forKey:@"DontSlideIconsWhenOpening"];
+                               forKey:@"DontSlideIconsWhenOpening"];
 }
 
 @end

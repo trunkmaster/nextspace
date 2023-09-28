@@ -29,16 +29,17 @@
 #define BROWSER_MAX_COLUMN_WIDTH 226
 
 NSString *BrowserViewerColumnWidth = @"BrowserViewerColumnWidth";
-NSString *BrowserViewerColumnWidthDidChangeNotification = @"BrowserViewerColumnWidthDidChangeNotification";
+NSString *BrowserViewerColumnWidthDidChangeNotification =
+    @"BrowserViewerColumnWidthDidChangeNotification";
 
 @interface BrowserPrefs : NSObject <PrefsModule>
 {
-  id    bogusWindow;
-  id    button;
-  id    rightArr;
-  id    browser;
+  id bogusWindow;
+  id button;
+  id rightArr;
+  id browser;
   NSBox *box;
-  NSBox	*box2;
+  NSBox *box2;
 }
 
 - (void)revert:sender;

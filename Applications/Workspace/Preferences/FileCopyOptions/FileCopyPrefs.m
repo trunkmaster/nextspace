@@ -37,7 +37,7 @@
 
 - (void)awakeFromNib
 {
-  NSString  *action;
+  NSString *action;
   NSInteger tag = 0;
 
   // get the box and destroy the bogus window
@@ -47,31 +47,23 @@
 
   // initialize button matrix state
   action = [[NXTDefaults userDefaults] objectForKey:@"DefaultSymlinkAction"];
-  if ([action isEqualToString:@"ask"])
-    {
-      tag = 0;
-    }
-  else if ([action isEqualToString:@"NEWLINK"])
-    {
-      tag = 1;
-    }
-  else if ([action isEqualToString:@"COPY"])
-    {
-      tag = 2;
-    }
-  else if ([action isEqualToString:@"SKIP"])
-    {
-      tag = 3;
-    }
+  if ([action isEqualToString:@"ask"]) {
+    tag = 0;
+  } else if ([action isEqualToString:@"NEWLINK"]) {
+    tag = 1;
+  } else if ([action isEqualToString:@"COPY"]) {
+    tag = 2;
+  } else if ([action isEqualToString:@"SKIP"]) {
+    tag = 3;
+  }
 
   [buttonMatrix selectCellWithTag:tag];
-  
+
   NSEnumerator *e = [[buttonMatrix cells] objectEnumerator];
-  NSButton     *b;
-  while (b = [e nextObject])
-    {
-      [b setRefusesFirstResponder:YES];
-    }
+  NSButton *b;
+  while (b = [e nextObject]) {
+    [b setRefusesFirstResponder:YES];
+  }
 }
 
 // --- PrefsModule protocol
@@ -83,10 +75,9 @@
 
 - (NSView *)view
 {
-  if (box == nil)
-    {
-      [NSBundle loadNibNamed:@"FileCopyPrefs" owner:self];
-    }
+  if (box == nil) {
+    [NSBundle loadNibNamed:@"FileCopyPrefs" owner:self];
+  }
 
   return box;
 }
@@ -101,10 +92,9 @@
 - (void)setSymlinkAction:(id)sender
 {
   NSInteger tag = [[sender selectedCell] tag];
-  NSString  *action;
+  NSString *action;
 
-  switch (tag)
-    {
+  switch (tag) {
     case 0:  // ask
       action = @"ask";
       break;
@@ -117,12 +107,12 @@
     case 3:  // skip the link
       action = @"SKIP";
       break;
-    default: // ask
+    default:  // ask
       action = @"ask";
-    }
-  
+  }
+
   [[NXTDefaults userDefaults] setObject:action forKey:@"DefaultSymlinkAction"];
-  
+
   // Don't send notification. FileOperation always read setting from defaults.
 }
 

@@ -39,18 +39,17 @@
 - initWithOperation:(BGOperation *)op
 {
   self = [super init];
-  
-  ASSIGN(operation,op);
-  
+
+  ASSIGN(operation, op);
+
   [NSBundle loadNibNamed:@"FileMoverUI" owner:self];
-  
-  ASSIGN(lastViewUpdateDate,[NSDate date]);
-  
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(operationDidChangeState:)
-           name:WMOperationDidChangeStateNotification
-         object:operation];
+
+  ASSIGN(lastViewUpdateDate, [NSDate date]);
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(operationDidChangeState:)
+                                               name:WMOperationDidChangeStateNotification
+                                             object:operation];
 
   return self;
 }
@@ -60,17 +59,14 @@
   [super awakeFromNib];
 
   NSLog(@"FileMoverUI: awakeFromNib: %@", [operation source]);
-  
+
   [fromField setStringValue:[operation source]];
-  if ([operation type] == DeleteOperation)
-    {
-      [fromLabel setStringValue:@"In:"];
-    }
-  else
-    {
-      [toField setStringValue:[operation currentTargetDirectory]];
-    }
-  
+  if ([operation type] == DeleteOperation) {
+    [fromLabel setStringValue:@"In:"];
+  } else {
+    [toField setStringValue:[operation currentTargetDirectory]];
+  }
+
   // Hide labels at startup. -updateOperationView later will show
   // appropriate ones.
   [fromLabel setTextColor:[NSColor windowBackgroundColor]];
@@ -95,15 +91,13 @@
 
 - (id)processView
 {
-  if ([operation state] == OperationAlert)
-    {
-      return [super processView];
-    }
-  
-  if (!processBox)
-    {
-      [NSBundle loadNibNamed:@"FileMoverUI" owner:self];
-    }
+  if ([operation state] == OperationAlert) {
+    return [super processView];
+  }
+
+  if (!processBox) {
+    [NSBundle loadNibNamed:@"FileMoverUI" owner:self];
+  }
   return processBox;
 }
 
@@ -114,19 +108,17 @@
                  progress:(float)progress
 {
   // === LOCK
-  while (guiLock && ([guiLock tryLock] == NO))
-    {
-      NSLog(@"[FileMoverUI updateProcessView] LOCK FAILED! Waiting...");
-      [[NSRunLoop currentRunLoop] 
-        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
-    }
+  while (guiLock && ([guiLock tryLock] == NO)) {
+    NSLog(@"[FileMoverUI updateProcessView] LOCK FAILED! Waiting...");
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+  }
   // ===
 
-  //NSLog(@"==== [FileOperation updateOperationView]");
+  // NSLog(@"==== [FileOperation updateOperationView]");
 
   // NSDate *now;
   // Do not update view faster than AppKit can update
-  // now = [NSDate date]; 
+  // now = [NSDate date];
   // if (lastViewUpdateDate == nil ||
   //     [now timeIntervalSinceDate:lastViewUpdateDate] < 0.1)
   //   {
@@ -134,49 +126,35 @@
   //     return;
   //   }
 
-  if (![message isEqualToString:@""])
-    {
-      [currentField
-            setStringValue:NXTShortenString(message,
-                                           [currentField bounds].size.width-3,
-                                           [currentField font],
-                                           NXSymbolElement, NXTDotsAtRight)];
-    }
+  if (![message isEqualToString:@""]) {
+    [currentField
+        setStringValue:NXTShortenString(message, [currentField bounds].size.width - 3,
+                                        [currentField font], NXSymbolElement, NXTDotsAtRight)];
+  }
   // From:, In: field
-  if ([currSourceDir isEqualToString:@""])
-    {
-      [fromLabel setTextColor:[NSColor windowBackgroundColor]];
-    }
-  else
-    {
-      [fromLabel setTextColor:[NSColor controlTextColor]];
-    }
-  [fromField setStringValue:NXTShortenString(currSourceDir,
-                                            [fromField bounds].size.width-3,
-                                            [fromField font], 
-                                            NXPathElement, NXTDotsAtCenter)];
+  if ([currSourceDir isEqualToString:@""]) {
+    [fromLabel setTextColor:[NSColor windowBackgroundColor]];
+  } else {
+    [fromLabel setTextColor:[NSColor controlTextColor]];
+  }
+  [fromField setStringValue:NXTShortenString(currSourceDir, [fromField bounds].size.width - 3,
+                                             [fromField font], NXPathElement, NXTDotsAtCenter)];
   // To: field
-  if ([currTargetDir isEqualToString:@""])
-    {
-      [toLabel setTextColor:[NSColor windowBackgroundColor]];
-    }
-  else
-    {
-      [toLabel setTextColor:[NSColor controlTextColor]];
-    }
-  [toField setStringValue:NXTShortenString(currTargetDir,
-                                          [toField bounds].size.width-3,
-                                          [toField font], 
-                                          NXPathElement, NXTDotsAtCenter)];
+  if ([currTargetDir isEqualToString:@""]) {
+    [toLabel setTextColor:[NSColor windowBackgroundColor]];
+  } else {
+    [toLabel setTextColor:[NSColor controlTextColor]];
+  }
+  [toField setStringValue:NXTShortenString(currTargetDir, [toField bounds].size.width - 3,
+                                           [toField font], NXPathElement, NXTDotsAtCenter)];
 
-  if (progress > 0.0)
-    {
-      [progressBar setRatio:progress];
-    }
-      
+  if (progress > 0.0) {
+    [progressBar setRatio:progress];
+  }
+
   // ASSIGN(lastViewUpdateDate, now);
 
-  //NSLog(@"==== [FileOperation updateOperationView] END");
+  // NSLog(@"==== [FileOperation updateOperationView] END");
 
   // === LOCK
   [guiLock unlock];
@@ -201,13 +179,12 @@
 - (void)operationDidChangeState:(NSNotification *)notif
 {
   NSString *currMessage = @"";
-  BOOL     stopOn = YES;
-  BOOL     pauseOn = YES;
+  BOOL stopOn = YES;
+  BOOL pauseOn = YES;
 
   operationState = [operation state];
-  
-  switch (operationState)
-    {
+
+  switch (operationState) {
     case OperationPrepare:
       currMessage = @"File Operation preparing...";
       stopOn = NO;
@@ -235,19 +212,18 @@
       break;
     case OperationAlert:
       break;
-    }
+  }
 
   [stopButton setEnabled:stopOn];
   [pauseButton setEnabled:pauseOn];
-  
-  if (![currMessage isEqualToString:@""])
-    {
-      [self updateWithMessage:currMessage
-                         file:@""
-                       source:@""
-                       target:@""
-                     progress:[operation progressValue]];
-    }
+
+  if (![currMessage isEqualToString:@""]) {
+    [self updateWithMessage:currMessage
+                       file:@""
+                     source:@""
+                     target:@""
+                   progress:[operation progressValue]];
+  }
 }
 
 //
@@ -260,8 +236,7 @@
 - (void)alertButtonClicked:(id)sender
 {
   NSLog(@"FileMoverUI: alertButtonClicked!");
-  [(FileMover *)operation postSolution:[sender tag]
-                     applyToSubsequent:[alertRepeatButton state]];
+  [(FileMover *)operation postSolution:[sender tag] applyToSubsequent:[alertRepeatButton state]];
 }
 
 @end

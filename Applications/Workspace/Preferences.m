@@ -31,14 +31,13 @@ NSString *ShelfResizableStateDidChangeNotification = @"ShelfResizableStateDidCha
 
 @implementation Preferences
 
-static Preferences * shared = nil;
+static Preferences *shared = nil;
 
 + shared
 {
-  if (shared == nil)
-    {
-      shared = [self new];
-    }
+  if (shared == nil) {
+    shared = [self new];
+  }
   return shared;
 }
 
@@ -69,15 +68,14 @@ static Preferences * shared = nil;
 - (void)loadModules
 {
   NSDictionary *mRegistry;
-  NSArray      *modules;
-  NSString     *title;
+  NSArray *modules;
+  NSString *title;
 
-  mRegistry = [[NXTBundle shared]
-                registerBundlesOfType:@"wsprefs"
-                               atPath:[[NSBundle mainBundle] bundlePath]];
+  mRegistry = [[NXTBundle shared] registerBundlesOfType:@"wsprefs"
+                                                 atPath:[[NSBundle mainBundle] bundlePath]];
   modules = [[NXTBundle shared] loadRegisteredBundles:mRegistry
-                                                type:@"WSPreferences"
-                                            protocol:@protocol(PrefsModule)];
+                                                 type:@"WSPreferences"
+                                             protocol:@protocol(PrefsModule)];
   for (id<PrefsModule> b in modules) {
     title = [b moduleName];
     [popup addItemWithTitle:title];
@@ -96,7 +94,7 @@ static Preferences * shared = nil;
 
 - (void)switchModule:(id)sender
 {
-  id <PrefsModule> module;
+  id<PrefsModule> module;
 
   module = [[sender selectedItem] representedObject];
   [(NSBox *)box setContentView:[module view]];

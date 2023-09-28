@@ -32,14 +32,14 @@
   unsigned long long doneBatchSize;
 
   // NSTask and operation management
-  BOOL     isSuspended;
-  BOOL     isSizing;
-  NSTask   *sizerTask;
-  NSTask   *fileMoverTask;
-  NSPipe   *readPipe;
-  NSPipe   *writePipe;
-  
-  NSLock   *inputLock;
+  BOOL isSuspended;
+  BOOL isSizing;
+  NSTask *sizerTask;
+  NSTask *fileMoverTask;
+  NSPipe *readPipe;
+  NSPipe *writePipe;
+
+  NSLock *inputLock;
   NSString *truncatedLine;
 }
 
@@ -54,7 +54,6 @@
 @interface FileMover (Alert)
 
 // passing -1 in `solutionProblem' means 'stop operation'
-- (void)postSolution:(int)solutionIndex
-   applyToSubsequent:(BOOL)subseq;
+- (void)postSolution:(int)solutionIndex applyToSubsequent:(BOOL)subseq;
 
 @end

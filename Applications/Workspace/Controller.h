@@ -55,50 +55,48 @@
   id machineType, cpuType, cpuClock, memory;
   id baseVersion, guiVersion;
 
-  OSEPower  *systemPower;
-  
-  FileViewer           *rootViewer;
-  NSMutableArray       *fileViewers;
+  OSEPower *systemPower;
+
+  FileViewer *rootViewer;
+  NSMutableArray *fileViewers;
   OSEFileSystemMonitor *fileSystemMonitor;
-  OSEMediaManager      *mediaManager;
-  id<MediaManager>     mediaAdaptor;
-  Inspector            *inspector;
-  Console              *console;
-  ProcessManager       *procManager;
-  Processes            *procPanel;
-  NSMutableDictionary  *mediaOperations;
-  Launcher             *launcher;
-  Finder               *finder;
-  Preferences          *preferences;
- 
+  OSEMediaManager *mediaManager;
+  id<MediaManager> mediaAdaptor;
+  Inspector *inspector;
+  Console *console;
+  ProcessManager *procManager;
+  Processes *procPanel;
+  NSMutableDictionary *mediaOperations;
+  Launcher *launcher;
+  Finder *finder;
+  Preferences *preferences;
+
   BOOL dontOpenRootViewer;
 
-  NXTIconBadge		*workspaceBadge;
-  NXTIconBadge		*keyboardBadge;
-  Recycler		*recycler;
+  NXTIconBadge *workspaceBadge;
+  NXTIconBadge *keyboardBadge;
+  Recycler *recycler;
 
-  NXTSound              *bellSound;
-  
+  NXTSound *bellSound;
+
   // NSWorkspace category ivars
-  NSMutableDictionary	*_iconMap;
-  NSMutableDictionary	*_launched;
-  NSArray               *_wrappers;
-  NSNotificationCenter	*_workspaceCenter;
-  BOOL			_fileSystemChanged;
-  BOOL			_userDefaultsChanged;
+  NSMutableDictionary *_iconMap;
+  NSMutableDictionary *_launched;
+  NSArray *_wrappers;
+  NSNotificationCenter *_workspaceCenter;
+  BOOL _fileSystemChanged;
+  BOOL _userDefaultsChanged;
   // ~/Library/Services/.GNUstepAppList
-  NSString		*_appListPath;
-  NSDictionary		*_applications;
+  NSString *_appListPath;
+  NSDictionary *_applications;
   // ~/Library/Services/.GNUstepExtPrefs
-  NSString		*_extPrefPath;
-  NSDictionary		*_extPreferences;
+  NSString *_extPrefPath;
+  NSDictionary *_extPreferences;
 }
 
 @property (readonly) BOOL isQuitting;
 
-- (FileViewer *)newViewerRootedAt:(NSString *)path
-                           viewer:(NSString *)viewerType
-                           isRoot:(BOOL)root;
+- (FileViewer *)newViewerRootedAt:(NSString *)path viewer:(NSString *)viewerType isRoot:(BOOL)root;
 - (FileViewer *)openNewViewerIfNotExistRootedAt:(NSString *)path;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif;

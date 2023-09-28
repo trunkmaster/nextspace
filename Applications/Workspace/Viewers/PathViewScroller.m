@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2005 Saso Kiselkov
 // Copyright (C) 2015-2019 Sergii Stoian
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -32,24 +32,21 @@
 {
   [super trackKnob:ev];
 
-  if ([delegate respondsToSelector:@selector(constrainScroller:)])
-    {
-      [delegate constrainScroller:self];
-    }
-  if ([delegate respondsToSelector:@selector(trackScroller:)])
-    {
-      [delegate trackScroller:self];
-    }
+  if ([delegate respondsToSelector:@selector(constrainScroller:)]) {
+    [delegate constrainScroller:self];
+  }
+  if ([delegate respondsToSelector:@selector(trackScroller:)]) {
+    [delegate trackScroller:self];
+  }
 }
 
 - (void)trackScrollButtons:(NSEvent *)ev
 {
   [super trackScrollButtons:ev];
 
-  if ([delegate respondsToSelector:@selector(trackScroller:)])
-    {
-      [delegate trackScroller:self];
-    }
+  if ([delegate respondsToSelector:@selector(trackScroller:)]) {
+    [delegate trackScroller:self];
+  }
 }
 
 - (void)setDelegate:aDelegate

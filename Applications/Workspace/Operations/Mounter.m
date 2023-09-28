@@ -26,9 +26,9 @@
 
 - (id)initWithInfo:(NSDictionary *)userInfo
 {
-  NSString      *opName = [userInfo objectForKey:@"Operation"];
+  NSString *opName = [userInfo objectForKey:@"Operation"];
   OperationType op = EjectOperation;
-  NSString      *s;
+  NSString *s;
 
   if ([opName isEqualToString:@"Mount"])
     op = MountOperation;
@@ -42,7 +42,7 @@
                               manager:nil];
 
   [self setState:OperationRunning];
-  
+
   return self;
 }
 
@@ -50,22 +50,16 @@
 {
   [super userInterface];
 
-  if (processUI &&
-      (state == OperationPrepare || state == OperationRunning))
-    {
-      if (type == MountOperation)
-        message = [NSString stringWithFormat:@"Mounting %@", source];
-      else if (type == UnmountOperation)
-        message = [NSString stringWithFormat:@"Unmounting %@", source];
-      else if (type == EjectOperation)
-        message = [NSString stringWithFormat:@"Ejecting %@", source];
-      
-      [processUI updateWithMessage:message
-                              file:nil
-                            source:source
-                            target:nil
-                          progress:0.0];
-    }
+  if (processUI && (state == OperationPrepare || state == OperationRunning)) {
+    if (type == MountOperation)
+      message = [NSString stringWithFormat:@"Mounting %@", source];
+    else if (type == UnmountOperation)
+      message = [NSString stringWithFormat:@"Unmounting %@", source];
+    else if (type == EjectOperation)
+      message = [NSString stringWithFormat:@"Ejecting %@", source];
+
+    [processUI updateWithMessage:message file:nil source:source target:nil progress:0.0];
+  }
 
   return processUI;
 }
@@ -90,60 +84,48 @@
 {
   NSDictionary *info = nil;
 
-  if (object && [object isKindOfClass:[NSTimer class]])
-    {
-      info = [object userInfo];
-    }
-  else
-    {
-      info = object;
-    }
+  if (object && [object isKindOfClass:[NSTimer class]]) {
+    info = [object userInfo];
+  } else {
+    info = object;
+  }
 
   // Notify ProcessManager
-  [[NSNotificationCenter defaultCenter]
-        postNotificationName:WMOperationWillDestroyNotification
-                      object:self];
-  
+  [[NSNotificationCenter defaultCenter] postNotificationName:WMOperationWillDestroyNotification
+                                                      object:self];
+
   if (info)
     if (([[info objectForKey:@"Operation"] isEqualToString:@"Eject"] ||
          [[info objectForKey:@"Success"] isEqualToString:@"false"]) &&
-        ![[info objectForKey:@"Message"] isEqualToString:@""])
-      {
-        [NSApp activateIgnoringOtherApps:YES];
-        NXTRunAlertPanel([info objectForKey:@"Title"],
-                         [info objectForKey:@"Message"],
-                         nil, nil, nil);
-      }
+        ![[info objectForKey:@"Message"] isEqualToString:@""]) {
+      [NSApp activateIgnoringOtherApps:YES];
+      NXTRunAlertPanel([info objectForKey:@"Title"], [info objectForKey:@"Message"], nil, nil, nil);
+    }
 }
 
 - (void)finishOperation:(NSDictionary *)userInfo
 {
   [self setState:OperationCompleted];
-  
-  if (processUI)
-    {
-      [processUI updateWithMessage:[userInfo objectForKey:@"Message"]
-                              file:nil
-                            source:source
-                            target:nil
-                          progress:0.0];
-    }
 
-  if (userInfo &&
-      [[userInfo objectForKey:@"Operation"] isEqualToString:@"Eject"])
-    {
-      // NSLog(@"Mounter: Eject [%@]", userInfo);
-      [NSTimer scheduledTimerWithTimeInterval:1.0
-                                       target:self
-                                     selector:@selector(destroyOperation:)
-                                     userInfo:userInfo
-                                      repeats:NO];
-    }
-  else
-    {
-      // NSLog(@"Mounter: userInfo is empty or operation is not Eject [%@]", userInfo);
-      [self destroyOperation:nil];
-    }
+  if (processUI) {
+    [processUI updateWithMessage:[userInfo objectForKey:@"Message"]
+                            file:nil
+                          source:source
+                          target:nil
+                        progress:0.0];
+  }
+
+  if (userInfo && [[userInfo objectForKey:@"Operation"] isEqualToString:@"Eject"]) {
+    // NSLog(@"Mounter: Eject [%@]", userInfo);
+    [NSTimer scheduledTimerWithTimeInterval:1.0
+                                     target:self
+                                   selector:@selector(destroyOperation:)
+                                   userInfo:userInfo
+                                    repeats:NO];
+  } else {
+    // NSLog(@"Mounter: userInfo is empty or operation is not Eject [%@]", userInfo);
+    [self destroyOperation:nil];
+  }
 }
 
 @end

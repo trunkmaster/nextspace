@@ -23,7 +23,7 @@
 #include "WM.h"
 
 #ifdef USE_XRANDR
-#  include <X11/extensions/Xrandr.h>
+#include <X11/extensions/Xrandr.h>
 #endif
 
 #include <core/WMcore.h>
@@ -43,19 +43,18 @@ void wInitXrandr(WScreen *scr)
 {
   WXrandrInfo *info = &scr->xrandr_info;
   int major_version, minor_version;
-  
+
   info->primary_head = 0;
   info->screens = NULL;
   info->count = 0;
-  
+
 #ifdef USE_XRANDR
   if (XRRQueryExtension(dpy, &info->event_base, &info->error_base) == True) {
     XRRQueryVersion(dpy, &major_version, &minor_version);
-    WMLogInfo("[xrandr.c] Use XRandR %i.%i, event base:%i, error base:%i\n",
-             major_version, minor_version, info->event_base, info->error_base);
+    WMLogInfo("[xrandr.c] Use XRandR %i.%i, event base:%i, error base:%i\n", major_version,
+              minor_version, info->event_base, info->error_base);
     wUpdateXrandrInfo(scr);
-  }
-  else {
+  } else {
     WMLogInfo("[xrandr.c] no XRandR extension available.\n");
   }
 #endif
@@ -64,13 +63,13 @@ void wInitXrandr(WScreen *scr)
 void wUpdateXrandrInfo(WScreen *scr)
 {
 #ifdef USE_XRANDR
-  WXrandrInfo        *info = &scr->xrandr_info;
+  WXrandrInfo *info = &scr->xrandr_info;
   XRRScreenResources *screen_res = XRRGetScreenResources(dpy, scr->root_win);
-  RROutput           primary_output;
-  XRROutputInfo      *output_info;
-  XRRCrtcInfo        *crtc_info;
-  int                i;
-  
+  RROutput primary_output;
+  XRROutputInfo *output_info;
+  XRRCrtcInfo *crtc_info;
+  int i;
+
   if (screen_res != NULL) {
     if (info->screens == NULL) {
       info->screens = wmalloc(sizeof(WMRect) * (screen_res->noutput + 1));
@@ -84,12 +83,12 @@ void wUpdateXrandrInfo(WScreen *scr)
         }
         if (output_info->crtc) {
           crtc_info = XRRGetCrtcInfo(dpy, screen_res, output_info->crtc);
-          
+
           info->screens[i].pos.x = crtc_info->x;
           info->screens[i].pos.y = crtc_info->y;
           info->screens[i].size.width = crtc_info->width;
           info->screens[i].size.height = crtc_info->height;
-          
+
           XRRFreeCrtcInfo(crtc_info);
         }
         XRRFreeOutputInfo(output_info);
@@ -136,11 +135,9 @@ int wGetRectPlacementInfo(WScreen *scr, WMRect rect, int *flags)
   for (i = 0; i < wScreenHeads(scr); i++) {
     unsigned long a;
 
-    a = calcIntersectionArea(rx, ry, rw, rh,
-                             scr->xrandr_info.screens[i].pos.x,
-                             scr->xrandr_info.screens[i].pos.y,
-                             scr->xrandr_info.screens[i].size.width,
-                             scr->xrandr_info.screens[i].size.height);
+    a = calcIntersectionArea(
+        rx, ry, rw, rh, scr->xrandr_info.screens[i].pos.x, scr->xrandr_info.screens[i].pos.y,
+        scr->xrandr_info.screens[i].size.width, scr->xrandr_info.screens[i].size.height);
 
     totalArea += a;
     if (a > area) {
@@ -180,11 +177,9 @@ int wGetHeadForRect(WScreen *scr, WMRect rect)
   for (i = 0; i < wScreenHeads(scr); i++) {
     unsigned long a;
 
-    a = calcIntersectionArea(rx, ry, rw, rh,
-                             scr->xrandr_info.screens[i].pos.x,
-                             scr->xrandr_info.screens[i].pos.y,
-                             scr->xrandr_info.screens[i].size.width,
-                             scr->xrandr_info.screens[i].size.height);
+    a = calcIntersectionArea(
+        rx, ry, rw, rh, scr->xrandr_info.screens[i].pos.x, scr->xrandr_info.screens[i].pos.y,
+        scr->xrandr_info.screens[i].size.width, scr->xrandr_info.screens[i].size.height);
 
     if (a > area) {
       area = a;
@@ -201,7 +196,7 @@ int wGetHeadForRect(WScreen *scr, WMRect rect)
   return best;
 }
 
-Bool wWindowTouchesHead(WWindow * wwin, int head)
+Bool wWindowTouchesHead(WWindow *wwin, int head)
 {
   WScreen *scr;
   WMRect rect;
@@ -212,15 +207,14 @@ Bool wWindowTouchesHead(WWindow * wwin, int head)
 
   scr = wwin->screen;
   rect = wGetRectForHead(scr, head);
-  a = calcIntersectionArea(wwin->frame_x, wwin->frame_y,
-                           wwin->frame->core->width,
-                           wwin->frame->core->height,
-                           rect.pos.x, rect.pos.y, rect.size.width, rect.size.height);
+  a = calcIntersectionArea(wwin->frame_x, wwin->frame_y, wwin->frame->core->width,
+                           wwin->frame->core->height, rect.pos.x, rect.pos.y, rect.size.width,
+                           rect.size.height);
 
   return (a != 0);
 }
 
-Bool wAppIconTouchesHead(WAppIcon * aicon, int head)
+Bool wAppIconTouchesHead(WAppIcon *aicon, int head)
 {
   WScreen *scr;
   WMRect rect;
@@ -231,15 +225,14 @@ Bool wAppIconTouchesHead(WAppIcon * aicon, int head)
 
   scr = aicon->icon->core->screen_ptr;
   rect = wGetRectForHead(scr, head);
-  a = calcIntersectionArea(aicon->x_pos, aicon->y_pos,
-                           aicon->icon->core->width,
-                           aicon->icon->core->height,
-                           rect.pos.x, rect.pos.y, rect.size.width, rect.size.height);
+  a = calcIntersectionArea(aicon->x_pos, aicon->y_pos, aicon->icon->core->width,
+                           aicon->icon->core->height, rect.pos.x, rect.pos.y, rect.size.width,
+                           rect.size.height);
 
   return (a != 0);
 }
 
-int wGetHeadForWindow(WWindow * wwin)
+int wGetHeadForWindow(WWindow *wwin)
 {
   WMRect rect;
 
@@ -254,7 +247,7 @@ int wGetHeadForWindow(WWindow * wwin)
   return wGetHeadForRect(wwin->screen, rect);
 }
 
-int wGetHeadForPoint(WScreen * scr, WMPoint point)
+int wGetHeadForPoint(WScreen *scr, WMPoint point)
 {
   int i;
 
@@ -268,7 +261,7 @@ int wGetHeadForPoint(WScreen * scr, WMPoint point)
   return scr->xrandr_info.primary_head;
 }
 
-int wGetHeadForPointerLocation(WScreen * scr)
+int wGetHeadForPointerLocation(WScreen *scr)
 {
   WMPoint point;
   Window bla;
@@ -278,8 +271,7 @@ int wGetHeadForPointerLocation(WScreen * scr)
   if (!scr->xrandr_info.count)
     return scr->xrandr_info.primary_head;
 
-  if (!XQueryPointer(dpy, scr->root_win, &bla, &bla, &point.x, &point.y,
-                     &ble, &ble, &blo)) {
+  if (!XQueryPointer(dpy, scr->root_win, &bla, &bla, &point.x, &point.y, &ble, &ble, &blo)) {
     return scr->xrandr_info.primary_head;
   }
 
@@ -307,7 +299,7 @@ WMRect wGetRectForHead(WScreen *scr, int head)
 }
 
 // FIXME: what does `noicon` mean? "Don't cover icons"? "Don't take into account icons?"
-WArea wGetUsableAreaForHead(WScreen * scr, int head, WArea * totalAreaPtr, Bool noicons)
+WArea wGetUsableAreaForHead(WScreen *scr, int head, WArea *totalAreaPtr, Bool noicons)
 {
   WArea totalArea, usableArea;
   WMRect rect = wGetRectForHead(scr, head);
@@ -327,8 +319,8 @@ WArea wGetUsableAreaForHead(WScreen * scr, int head, WArea * totalAreaPtr, Bool 
 
   if (noicons) {
     /* check if user wants dock covered */
-    if (scr->dock && scr->dock->mapped && wPreferences.no_window_over_dock
-        && wAppIconTouchesHead(scr->dock->icon_array[0], head)) {
+    if (scr->dock && scr->dock->mapped && wPreferences.no_window_over_dock &&
+        wAppIconTouchesHead(scr->dock->icon_array[0], head)) {
       int offset = wPreferences.icon_size + DOCK_EXTRA_SPACE;
 
       if (scr->dock->on_right_side)
@@ -347,9 +339,8 @@ WArea wGetUsableAreaForHead(WScreen * scr, int head, WArea * totalAreaPtr, Bool 
     }
 
     /* check if icons are on the same side as dock, and adjust if not done already */
-    if (scr->dock && wPreferences.no_window_over_icons
-        && !wPreferences.no_window_over_dock
-        && (wPreferences.icon_yard & IY_VERT)) {
+    if (scr->dock && wPreferences.no_window_over_icons && !wPreferences.no_window_over_dock &&
+        (wPreferences.icon_yard & IY_VERT)) {
       int offset = wPreferences.icon_size + DOCK_EXTRA_SPACE;
 
       if (scr->dock->on_right_side && (wPreferences.icon_yard & IY_RIGHT))
@@ -363,7 +354,7 @@ WArea wGetUsableAreaForHead(WScreen * scr, int head, WArea * totalAreaPtr, Bool 
   return usableArea;
 }
 
-WMPoint wGetPointToCenterRectInHead(WScreen * scr, int head, int width, int height)
+WMPoint wGetPointToCenterRectInHead(WScreen *scr, int head, int width, int height)
 {
   WMPoint p;
   WMRect rect = wGetRectForHead(scr, head);

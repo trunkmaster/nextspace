@@ -116,12 +116,9 @@ static int getBool(CFTypeRef value)
   if (val == NULL)
     return 0;
 
-  if ((val[1] == '\0' && (val[0] == 'y' || val[0] == 'Y'))
-      || strcasecmp(val, "YES") == 0) {
-
+  if ((val[1] == '\0' && (val[0] == 'y' || val[0] == 'Y')) || strcasecmp(val, "YES") == 0) {
     return 1;
-  } else if ((val[1] == '\0' && (val[0] == 'n' || val[0] == 'N'))
-             || strcasecmp(val, "NO") == 0) {
+  } else if ((val[1] == '\0' && (val[0] == 'n' || val[0] == 'N')) || strcasecmp(val, "NO") == 0) {
     return 0;
   } else {
     int i;
@@ -149,7 +146,7 @@ static unsigned getInt(CFTypeRef value)
   if (sscanf(val, "%u", &n) != 1) {
     return 0;
   }
-  
+
   return n;
 }
 
@@ -177,29 +174,25 @@ static CFTypeRef makeWindowState(WWindow *wwin, WApplication *wapp)
   if (PropGetWMClass(win, &class, &instance)) {
     if (class && instance) {
       name = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s.%s"), instance, class);
-    }
-    else if (instance) {
+    } else if (instance) {
       name = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s"), instance);
-    }
-    else if (class) {
+    } else if (class) {
       name = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s"), class);
-    }
-    else {
+    } else {
       name = CFStringCreateWithCString(kCFAllocatorDefault, ".", kCFStringEncodingUTF8);
     }
-    
+
     cmd = CFStringCreateWithCString(kCFAllocatorDefault, command, kCFStringEncodingUTF8);
-    workspace = CFStringCreateWithCString(kCFAllocatorDefault,
-                                          scr->desktops[wwin->frame->desktop]->name,
-                                          kCFStringEncodingUTF8);
+    workspace = CFStringCreateWithCString(
+        kCFAllocatorDefault, scr->desktops[wwin->frame->desktop]->name, kCFStringEncodingUTF8);
 
     shaded = wwin->flags.shaded ? sYes : sNo;
     miniaturized = wwin->flags.miniaturized ? sYes : sNo;
     hidden = wwin->flags.hidden ? sYes : sNo;
-    geometry = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%ix%i+%i+%i"),
-                                        wwin->client.width, wwin->client.height,
-                                        wwin->frame_x, wwin->frame_y);
-    
+    geometry =
+        CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%ix%i+%i+%i"), wwin->client.width,
+                                 wwin->client.height, wwin->frame_x, wwin->frame_y);
+
     for (mask = 0, i = 0; i < MAX_WINDOW_SHORTCUTS; i++) {
       if (scr->shortcutWindows[i] != NULL &&
           CFArrayGetFirstIndexOfValue(scr->shortcutWindows[i],
@@ -210,8 +203,7 @@ static CFTypeRef makeWindowState(WWindow *wwin, WApplication *wapp)
 
     shortcut = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s"), mask);
 
-    win_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                          &kCFTypeDictionaryKeyCallBacks,
+    win_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
                                           &kCFTypeDictionaryValueCallBacks);
     CFDictionaryAddValue(win_state, sName, name);
     CFDictionaryAddValue(win_state, sCommand, cmd);
@@ -255,8 +247,7 @@ static CFTypeRef makeWindowState(WWindow *wwin, WApplication *wapp)
       CFDictionaryAddValue(win_state, sDock, dock);
       CFRelease(dock);
     }
-  }
-  else {
+  } else {
     win_state = NULL;
   }
 
@@ -270,7 +261,7 @@ static CFTypeRef makeWindowState(WWindow *wwin, WApplication *wapp)
   return win_state;
 }
 
-void wSessionSaveState(WScreen * scr)
+void wSessionSaveState(WScreen *scr)
 {
   WWindow *wwin = scr->focused_window;
   CFTypeRef win_info;
@@ -279,9 +270,8 @@ void wSessionSaveState(WScreen * scr)
   CFMutableArrayRef wapp_list;
 
   if (!scr->session_state) {
-    scr->session_state = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                                   &kCFTypeDictionaryKeyCallBacks,
-                                                   &kCFTypeDictionaryValueCallBacks);
+    scr->session_state = CFDictionaryCreateMutable(
+        kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
     if (!scr->session_state) {
       return;
     }
@@ -294,10 +284,10 @@ void wSessionSaveState(WScreen * scr)
     WApplication *wapp = wApplicationOf(wwin->main_window);
     Window appId = wwin->orig_main_window;
 
-    if ((wwin->transient_for == None || wwin->transient_for == wwin->screen->root_win)
-        && (CFArrayGetFirstIndexOfValue(wapp_list, CFRangeMake(9,0), (void *)appId) == kCFNotFound
-            || WFLAGP(wwin, shared_appicon))
-        && !WFLAGP(wwin, dont_save_session)) {
+    if ((wwin->transient_for == None || wwin->transient_for == wwin->screen->root_win) &&
+        (CFArrayGetFirstIndexOfValue(wapp_list, CFRangeMake(9, 0), (void *)appId) == kCFNotFound ||
+         WFLAGP(wwin, shared_appicon)) &&
+        !WFLAGP(wwin, dont_save_session)) {
       /* A entry for this application was not yet saved. Save one. */
       win_info = makeWindowState(wwin, wapp);
       if (win_info != NULL) {
@@ -317,8 +307,7 @@ void wSessionSaveState(WScreen * scr)
   CFDictionarySetValue(scr->session_state, sApplications, list);
   CFRelease(list);
 
-  wks = CFStringCreateWithCString(kCFAllocatorDefault,
-                                  scr->desktops[scr->current_desktop]->name,
+  wks = CFStringCreateWithCString(kCFAllocatorDefault, scr->desktops[scr->current_desktop]->name,
                                   kCFStringEncodingUTF8);
   CFDictionarySetValue(scr->session_state, sWorkspace, wks);
   CFRelease(wks);
@@ -326,7 +315,7 @@ void wSessionSaveState(WScreen * scr)
   CFRelease(wapp_list);
 }
 
-void wSessionClearState(WScreen * scr)
+void wSessionClearState(WScreen *scr)
 {
   if (!scr->session_state)
     return;
@@ -415,9 +404,9 @@ static WSavedState *getWindowState(WScreen *scr, CFDictionaryRef win_state)
 
   value = CFDictionaryGetValue(win_state, sGeometry);
   if (value && (CFGetTypeID(value) == CFStringGetTypeID())) {
-    if (!(sscanf(CFStringGetCStringPtr(value, kCFStringEncodingUTF8), "%ix%i+%i+%i",
-                 &state->w, &state->h, &state->x, &state->y) == 4
-          && (state->w > 0 && state->h > 0))) {
+    if (!(sscanf(CFStringGetCStringPtr(value, kCFStringEncodingUTF8), "%ix%i+%i+%i", &state->w,
+                 &state->h, &state->x, &state->y) == 4 &&
+          (state->w > 0 && state->h > 0))) {
       state->w = 0;
       state->h = 0;
     }
@@ -470,8 +459,8 @@ void wSessionRestoreState(WScreen *scr)
     win_info = CFArrayGetValueAtIndex(apps, i);
 
     cmd = CFDictionaryGetValue(win_info, sCommand);
-    if (!cmd || (CFGetTypeID(cmd) != CFStringGetTypeID())
-        || !(command = CFStringGetCStringPtr(cmd, kCFStringEncodingUTF8))) {
+    if (!cmd || (CFGetTypeID(cmd) != CFStringGetTypeID()) ||
+        !(command = CFStringGetCStringPtr(cmd, kCFStringEncodingUTF8))) {
       continue;
     }
 
@@ -487,8 +476,8 @@ void wSessionRestoreState(WScreen *scr)
 
     dock = NULL;
     value = CFDictionaryGetValue(win_info, sDock);
-    if (value && (CFGetTypeID(value) == CFStringGetTypeID())
-        && (command = CFStringGetCStringPtr(value, kCFStringEncodingUTF8)) != NULL) {
+    if (value && (CFGetTypeID(value) == CFStringGetTypeID()) &&
+        (command = CFStringGetCStringPtr(value, kCFStringEncodingUTF8)) != NULL) {
       if (sscanf(tmp, "%i", &n) != 1) {
         if (!strcasecmp(tmp, "DOCK"))
           dock = scr->dock;
@@ -502,7 +491,7 @@ void wSessionRestoreState(WScreen *scr)
             }
           }
         }
-        if (dock == NULL) {// Try the drawers
+        if (dock == NULL) {  // Try the drawers
           WDrawerChain *dc;
           for (dc = scr->drawers; dc != NULL; dc = dc->next) {
             if (strcmp(dc->adrawer->icon_array[0]->wm_instance, tmp) == 0) {
@@ -524,10 +513,8 @@ void wSessionRestoreState(WScreen *scr)
     if (dock != NULL) {
       for (j = 0; j < dock->max_icons; j++) {
         btn = dock->icon_array[j];
-        if (btn && is_same(instance, btn->wm_instance) &&
-            is_same(class, btn->wm_class) &&
-            is_same(command, btn->command) &&
-            !btn->flags.launching) {
+        if (btn && is_same(instance, btn->wm_instance) && is_same(class, btn->wm_class) &&
+            is_same(command, btn->command) && !btn->flags.launching) {
           found = 1;
           break;
         }
@@ -549,7 +536,7 @@ void wSessionRestoreState(WScreen *scr)
   }
 }
 
-void wSessionRestoreLastDesktop(WScreen * scr)
+void wSessionRestoreLastDesktop(WScreen *scr)
 {
   CFStringRef wks;
   int w;

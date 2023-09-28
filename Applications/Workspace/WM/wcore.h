@@ -29,29 +29,26 @@ typedef struct WStacking {
   struct _WCoreWindow *above;
   struct _WCoreWindow *under;
   short window_level;
-  struct _WCoreWindow *child_of;	/* owner for transient window */
+  struct _WCoreWindow *child_of; /* owner for transient window */
 } WStacking;
 
 typedef struct _WCoreWindow {
   Window window;
-  int width;			/* size of the window */
+  int width; /* size of the window */
   int height;
-  WScreen *screen_ptr;		/* ptr to screen of the window */
+  WScreen *screen_ptr; /* ptr to screen of the window */
 
   WObjDescriptor descriptor;
-  WStacking *stacking;		/* window stacking information */
+  WStacking *stacking; /* window stacking information */
 } WCoreWindow;
 
-WCoreWindow *wCoreCreateTopLevel(WScreen *screen, int x, int y, int width,
-				 int height, int bwidth,
-				 int depth, Visual *visual, Colormap colormap,
-				 WMPixel border_pixel);
+WCoreWindow *wCoreCreateTopLevel(WScreen *screen, int x, int y, int width, int height, int bwidth,
+                                 int depth, Visual *visual, Colormap colormap,
+                                 WMPixel border_pixel);
 
-WCoreWindow *wCoreCreate(WCoreWindow *parent, int x, int y,
-			 int width, int height);
+WCoreWindow *wCoreCreate(WCoreWindow *parent, int x, int y, int width, int height);
 
 void wCoreDestroy(WCoreWindow *core);
-void wCoreConfigure(WCoreWindow *core, int req_x, int req_y,
-		    int req_w, int req_h);
+void wCoreConfigure(WCoreWindow *core, int req_x, int req_y, int req_w, int req_h);
 
 #endif /* __WORKSPACE_WM_CORE__ */

@@ -56,7 +56,7 @@ int wGetColor(WScreen *scr, const char *color_name, XColor *color)
   return wGetColorForColormap(scr->w_colormap, color_name, color);
 }
 
-void wFreeColor(WScreen * scr, unsigned long pixel)
+void wFreeColor(WScreen *scr, unsigned long pixel)
 {
   if (pixel != scr->white_pixel && pixel != scr->black_pixel) {
     unsigned long colors[1];

@@ -62,12 +62,12 @@ static BOOL _workspaceQuitting = NO;
   NSLog(@"ProcessManager: dealloc");
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
- 
+
   RELEASE(applications);
   RELEASE(operations);
 
   TEST_RELEASE(backInfoLabelCopies);
-  
+
   shared = nil;
 
   [super dealloc];
@@ -81,14 +81,14 @@ static BOOL _workspaceQuitting = NO;
     NSNotificationCenter *workspaceCenter = [WMNotificationCenter defaultCenter];
     NSNotificationCenter *localCenter = [NSNotificationCenter defaultCenter];
     NSDictionary *_appInfo;
-    
-    applications = [[NSMutableArray alloc]
-                     initWithArray:[[NSWorkspace sharedWorkspace] launchedApplications]];
+
+    applications =
+        [[NSMutableArray alloc] initWithArray:[[NSWorkspace sharedWorkspace] launchedApplications]];
     for (int i = 0; i < [applications count]; i++) {
       _appInfo = [self _normalizeApplicationInfo:[applications objectAtIndex:i]];
       [applications replaceObjectAtIndex:i withObject:_appInfo];
     }
-  
+
     operations = [[NSMutableArray alloc] init];
 
     //  Applications - AppKit notifications
@@ -120,7 +120,7 @@ static BOOL _workspaceQuitting = NO;
                     selector:@selector(operationDidChangeState:)
                         name:WMOperationDidChangeStateNotification
                       object:nil];
-    // [[NSNotificationCenter defaultCenter] 
+    // [[NSNotificationCenter defaultCenter]
     //   addObserver:self
     //      selector:@selector(operationProcessingFile:)
     //          name:WMOperationProcessingFileNotification
@@ -144,7 +144,7 @@ static BOOL _workspaceQuitting = NO;
                             name:CF_NOTIFICATION(WMDidUnmanageWindowNotification)
                           object:nil];
   }
-  
+
   return self;
 }
 
@@ -159,7 +159,6 @@ static BOOL _workspaceQuitting = NO;
 }
 
 @end
-
 
 @implementation ProcessManager (Applications)
 
@@ -182,7 +181,7 @@ static BOOL _workspaceQuitting = NO;
   } else {
     appPID = [NSString stringWithFormat:@"%i", [nsapi intValue]];
   }
-  
+
   [_appInfo setObject:[NSMutableOrderedSet orderedSetWithObject:appPID]
                forKey:@"NSApplicationProcessIdentifier"];
 
@@ -193,14 +192,14 @@ static BOOL _workspaceQuitting = NO;
 {
   NSDictionary *entry;
   NSString *eAppName;
-  
+
   for (entry in applications) {
     eAppName = [entry objectForKey:@"NSApplicationName"];
     if ([eAppName isEqualToString:appName]) {
       return entry;
     }
   }
-  
+
   return nil;
 }
 
@@ -235,7 +234,7 @@ static BOOL _workspaceQuitting = NO;
   for (aInfo in applications) {
     aName = [aInfo objectForKey:@"NSApplicationName"];
     aPIDList = [aInfo objectForKey:@"NSApplicationProcessIdentifier"];
-    
+
     if ([aName isEqualToString:newAppName]) {
       skipLaunchedApp = YES;
       if ([aPIDList containsObject:@""] == NO &&
@@ -249,7 +248,7 @@ static BOOL _workspaceQuitting = NO;
   if (skipLaunchedApp == NO) {
     [applications addObject:newAppInfo];
   }
-  
+
   if ([[NSApp delegate] processesPanel]) {
     [[[NSApp delegate] processesPanel] updateAppList];
   }
@@ -265,7 +264,7 @@ static BOOL _workspaceQuitting = NO;
     return;
   }
   appName = [[notif userInfo] objectForKey:@"NSApplicationName"];
-  
+
   if ((appInfo = [self _applicationWithName:appName])) {
     [applications removeObject:appInfo];
     if ([[NSApp delegate] processesPanel]) {
@@ -289,12 +288,12 @@ static BOOL _workspaceQuitting = NO;
   // Application removal from list will be processed inside this method
   _workspaceQuitting = YES;
 
-//  NSLog(@"Launched applications: %@", apps);
+  //  NSLog(@"Launched applications: %@", apps);
   for (NSDictionary *_appDict in _appsCopy) {
     if ([[_appDict objectForKey:@"IsXWindowApplication"] isEqualToString:@"YES"]) {
       NSSet *pidList;
       pidList = [_appDict objectForKey:@"NSApplicationProcessIdentifier"];
-          
+
       for (NSString *pidString in pidList) {
         // If PID is '-1' let window manager kill that app.
         if ([pidString isEqualToString:@"-1"] == NO) {
@@ -302,31 +301,28 @@ static BOOL _workspaceQuitting = NO;
         }
       }
       [applications removeObject:_appDict];
-      continue; // go to 'while' statement
-    }
-    else {
+      continue;  // go to 'while' statement
+    } else {
       _appName = [_appDict objectForKey:@"NSApplicationName"];
       if ([_appName isEqualToString:@"Workspace"] || [_appName isEqualToString:@"Login"]) {
         // don't remove from app list - system apps
-        continue; // go to 'while' statement
+        continue;  // go to 'while' statement
       }
       NSLog(@"Terminating - %@", _appName);
       _app = [NSConnection rootProxyForConnectionWithRegisteredName:_appName host:@""];
       if (_app == nil) {
-        NSLog(@"Connection to %@ failed. Removing from list of known applications",
-              _appName);
+        NSLog(@"Connection to %@ failed. Removing from list of known applications", _appName);
         [applications removeObject:_appDict];
-        continue; // go to 'while' statement
+        continue;  // go to 'while' statement
       }
-          
+
       @try {
         [_app terminate:nil];
-      }
-      @catch (NSException *e) {
+      } @catch (NSException *e) {
         // application terminated -- remove app from launched apps list
         [applications removeObject:_appDict];
         [[_app connectionForProxy] invalidate];
-        continue; // go to 'while' statement
+        continue;  // go to 'while' statement
       }
     }
 
@@ -366,7 +362,7 @@ static BOOL _workspaceQuitting = NO;
     app_command = wGetCommandForWindow(wwin->client_win);
     if (app_command) {
       appPath = [[NXTFileManager defaultManager]
-                  absolutePathForCommand:[NSString stringWithCString:app_command]];
+          absolutePathForCommand:[NSString stringWithCString:app_command]];
     }
   }
   // NSApplicationName = NSString*
@@ -375,8 +371,7 @@ static BOOL _workspaceQuitting = NO;
   if (appPath) {
     [appInfo setObject:appPath forKey:@"NSApplicationPath"];
   } else if (app_command) {
-    [appInfo setObject:[NSString stringWithCString:app_command]
-                forKey:@"NSApplicationPath"];
+    [appInfo setObject:[NSString stringWithCString:app_command] forKey:@"NSApplicationPath"];
   } else {
     [appInfo setObject:@"--" forKey:@"NSApplicationPath"];
   }
@@ -385,22 +380,20 @@ static BOOL _workspaceQuitting = NO;
   if ((app_pid = wNETWMGetPidForWindow(wwin->client_win)) > 0) {
     [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
                 forKey:@"NSApplicationProcessIdentifier"];
-  }
-  else if ((app_pid = wNETWMGetPidForWindow(wwin->main_window)) > 0) {
+  } else if ((app_pid = wNETWMGetPidForWindow(wwin->main_window)) > 0) {
     [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
                 forKey:@"NSApplicationProcessIdentifier"];
-  }
-  else {
+  } else {
     [appInfo setObject:@"-1" forKey:@"NSApplicationProcessIdentifier"];
   }
 
   return (NSDictionary *)appInfo;
 }
 
-- (NSDictionary *)_applicationInfoForApp:(WApplication *)wapp window:( WWindow *)wwin
+- (NSDictionary *)_applicationInfoForApp:(WApplication *)wapp window:(WWindow *)wwin
 {
   NSMutableDictionary *appInfo = [[self _applicationInfoForWindow:wwin] mutableCopy];
-  
+
   // Get icon image from windowmaker app structure(WApplication)
   // NSApplicationIcon=NSImage*
   // NSLog(@"%@ icon filename: %s", xAppName, wapp->app_icon->icon->file);
@@ -419,7 +412,7 @@ static BOOL _workspaceQuitting = NO;
   if (!appInfo) {
     return nil;
   }
-  
+
   return [appInfo objectForKey:@"NSApplicationProcessIdentifier"];
 }
 
@@ -436,8 +429,7 @@ static BOOL _workspaceQuitting = NO;
     return;
   }
 
-  appIcon = wLaunchingAppIconForInstance(wapp->main_wwin->screen,
-                                         wapp->main_wwin->wm_instance,
+  appIcon = wLaunchingAppIconForInstance(wapp->main_wwin->screen, wapp->main_wwin->wm_instance,
                                          wapp->main_wwin->wm_class);
   if (appIcon) {
     wLaunchingAppIconFinish(wapp->main_wwin->screen, appIcon);
@@ -448,7 +440,7 @@ static BOOL _workspaceQuitting = NO;
   if (!strcmp(wapp->main_wwin->wm_class, "GNUstep")) {
     return;
   }
-    
+
   wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
   appInfo = [self _applicationInfoForApp:wapp window:wwin];
   NSDebugLLog(@"WM", @"ProcessManager-applicationDidCreate: %@", appInfo);
@@ -473,7 +465,7 @@ static BOOL _workspaceQuitting = NO;
   if (_workspaceQuitting != NO || !wapp) {
     return;
   }
-  
+
   appInfo = [self _applicationInfoForApp:wapp window:wapp->main_wwin];
   localNotif = [NSNotification notificationWithName:NSWorkspaceDidTerminateApplicationNotification
                                              object:nil
@@ -487,11 +479,11 @@ static BOOL _workspaceQuitting = NO;
   WWindow *wwin = (WWindow *)[(CFObject *)[notif object] object];
   NSDictionary *appInfo;
   NSMutableOrderedSet *pidList;
-  
-  if (_workspaceQuitting != NO || !wwin || !strcmp(wwin->wm_class,"GNUstep")) {
+
+  if (_workspaceQuitting != NO || !wwin || !strcmp(wwin->wm_class, "GNUstep")) {
     return;
   }
-  
+
   appInfo = [self _applicationInfoForWindow:wwin];
   NSLog(@"TODO: appInfo - %@", appInfo);
   if (!appInfo) {
@@ -519,8 +511,8 @@ static BOOL _workspaceQuitting = NO;
   NSMutableOrderedSet *appPIDList;
   NSArray *_appPIDList;
   int pid;
-  
-  if (_workspaceQuitting != NO || !wwin || !strcmp(wwin->wm_class,"GNUstep")) {
+
+  if (_workspaceQuitting != NO || !wwin || !strcmp(wwin->wm_class, "GNUstep")) {
     return;
   }
 
@@ -533,12 +525,12 @@ static BOOL _workspaceQuitting = NO;
   _appPIDList = [appPIDList array];
   for (NSString *pidString in _appPIDList) {
     pid = [pidString integerValue];
-    if ((kill(pid, 0) == -1) && (errno == ESRCH)) { // process doesn't exist
+    if ((kill(pid, 0) == -1) && (errno == ESRCH)) {  // process doesn't exist
       [appPIDList removeObject:pidString];
     }
   }
   [_appPIDList release];
-  
+
   if ([[NSApp delegate] processesPanel]) {
     [[[NSApp delegate] processesPanel] updateAppList];
   }
@@ -559,94 +551,73 @@ static BOOL _workspaceQuitting = NO;
                       target:(NSString *)dest
                        files:(NSArray *)files
 {
-  BGOperation	*newOperation = nil;
-  NSString	*message = nil;
-  NSString	*format;
-  NSString	*object;
-   
-  
-  switch (opType)
-    {
+  BGOperation *newOperation = nil;
+  NSString *message = nil;
+  NSString *format;
+  NSString *object;
+
+  switch (opType) {
     case CopyOperation:
-    case LinkOperation:
-      {
-        newOperation = [[FileMover alloc] initWithOperationType:opType
-                                                      sourceDir:src
-                                                      targetDir:dest
-                                                          files:files
-                                                        manager:self];
+    case LinkOperation: {
+      newOperation = [[FileMover alloc] initWithOperationType:opType
+                                                    sourceDir:src
+                                                    targetDir:dest
+                                                        files:files
+                                                      manager:self];
+    } break;
+    case MoveOperation: {
+      if ([dest isEqualToString:[[[NSApp delegate] recycler] path]]) {
+        if ([files count] > 1) {
+          message = @"Do you really want to recycle selected files?";
+        } else {
+          if (files && [files count] > 0)
+            object = [files lastObject];
+          else
+            object = src;
+          format = @"Do you really want to recycle \n%@?";
+          message = [NSString stringWithFormat:format, object];
+        }
+        if (NXTRunAlertPanel(_(@"Workspace"), message, _(@"Recycle"), _(@"Cancel"), nil) !=
+            NSAlertDefaultReturn) {
+          return nil;
+        }
       }
-      break;
-    case MoveOperation:
-      {
-        if ([dest isEqualToString:[[[NSApp delegate] recycler] path]])
-          {
-            if ([files count] > 1)
-              {
-                message = @"Do you really want to recycle selected files?";
-              }
-            else
-              {
-                if (files && [files count] > 0)
-                  object = [files lastObject];
-                else
-                  object = src;
-                format = @"Do you really want to recycle \n%@?";
-                message = [NSString stringWithFormat:format, object];
-              }
-            if (NXTRunAlertPanel(_(@"Workspace"), message,
-                                _(@"Recycle"), _(@"Cancel"), nil) 
-                != NSAlertDefaultReturn)
-              {
-                return nil;
-              }
-          }
 
-        newOperation = [[FileMover alloc] initWithOperationType:MoveOperation
-                                                      sourceDir:src
-                                                      targetDir:dest
-                                                          files:files
-                                                        manager:self];
-      }
-      break;
-    case DeleteOperation:
-      {
-        if ([src isEqualToString:[[[NSApp delegate] recycler] path]])
-          {
-            message = @"Do you really want to destroy items in Recycler?";
-          }
-        else if (files && [files count] > 1)
-          {
-            format = @"Do you really want to destroy selected files in \n%@?";
-            message = [NSString stringWithFormat:format, src];
-          }
+      newOperation = [[FileMover alloc] initWithOperationType:MoveOperation
+                                                    sourceDir:src
+                                                    targetDir:dest
+                                                        files:files
+                                                      manager:self];
+    } break;
+    case DeleteOperation: {
+      if ([src isEqualToString:[[[NSApp delegate] recycler] path]]) {
+        message = @"Do you really want to destroy items in Recycler?";
+      } else if (files && [files count] > 1) {
+        format = @"Do you really want to destroy selected files in \n%@?";
+        message = [NSString stringWithFormat:format, src];
+      } else {
+        if (files && [files count] > 0)
+          object = [files lastObject];
         else
-          {
-            if (files && [files count] > 0)
-              object = [files lastObject];
-            else
-              object = src;
-            format = @"Do you really want to destroy \n%@?";
-            message = [NSString stringWithFormat:format, object];
-          }
-        
-        if (NXTRunAlertPanel(_(@"Workspace"),message,
-                            _(@"Destroy"), _(@"Cancel"), nil) 
-            != NSAlertDefaultReturn)
-          {
-            return nil;
-          }
-
-        newOperation = [[FileMover alloc] initWithOperationType:DeleteOperation
-                                                      sourceDir:src
-                                                      targetDir:dest
-                                                          files:files
-                                                        manager:self];
+          object = src;
+        format = @"Do you really want to destroy \n%@?";
+        message = [NSString stringWithFormat:format, object];
       }
-      break;
+
+      if (NXTRunAlertPanel(_(@"Workspace"), message, _(@"Destroy"), _(@"Cancel"), nil) !=
+          NSAlertDefaultReturn) {
+        return nil;
+      }
+
+      newOperation = [[FileMover alloc] initWithOperationType:DeleteOperation
+                                                    sourceDir:src
+                                                    targetDir:dest
+                                                        files:files
+                                                      manager:self];
+    } break;
     default:
       NSLog(@"ProcessManager: requested operation is not supported!");
-    }
+  }
   // newOperation will be registered upon receiving
   // WMOperationDidCreateNotification
 
@@ -656,37 +627,34 @@ static BOOL _workspaceQuitting = NO;
 - (void)operationDidCreate:(NSNotification *)notif
 {
   [operations addObject:[notif object]];
-  
-  if ([[NSApp delegate] processesPanel])
-    {
-      [[[NSApp delegate] processesPanel] updateBGProcessList];
-    }
-  
+
+  if ([[NSApp delegate] processesPanel]) {
+    [[[NSApp delegate] processesPanel] updateBGProcessList];
+  }
+
   [self updateBackInfoLabel];
 }
 
 - (void)operationWillDestroy:(NSNotification *)notif
 {
   [operations removeObject:[notif object]];
-  
-  if ([[NSApp delegate] processesPanel])
-    {
-      [[[NSApp delegate] processesPanel] updateBGProcessList];
-    }
-  
+
+  if ([[NSApp delegate] processesPanel]) {
+    [[[NSApp delegate] processesPanel] updateBGProcessList];
+  }
+
   [self updateBackInfoLabel];
 }
 
 - (void)operationDidChangeState:(NSNotification *)notif
 {
   BGOperation *op = [notif object];
-  
-  if (![[NSApp delegate] processesPanel] && [op state] == OperationAlert)
-    {
-      // 'Processes' missed the notification so show operation view directly
-      [[NSApp delegate] showProcesses:self];
-      [[[NSApp delegate] processesPanel] setView:op];
-    }
+
+  if (![[NSApp delegate] processesPanel] && [op state] == OperationAlert) {
+    // 'Processes' missed the notification so show operation view directly
+    [[NSApp delegate] showProcesses:self];
+    [[[NSApp delegate] processesPanel] setView:op];
+  }
 
   [self updateBackInfoLabel];
 }
@@ -695,8 +663,8 @@ static BOOL _workspaceQuitting = NO;
 - (BOOL)terminateAllBGOperations
 {
   NSEnumerator *e;
-  BGOperation  *bgOp;
-  BOOL         success = NO;
+  BGOperation *bgOp;
+  BOOL success = NO;
 
   // No running background processes
   if ([operations count] <= 0) {
@@ -706,13 +674,11 @@ static BOOL _workspaceQuitting = NO;
   switch (NXTRunAlertPanel(@"Log Out",
                            @"You have background file operations running.\n"
                            @"Do you want to stop all operations and quit?",
-                           @"Cancel", @"Review operations", @"Stop and quit", 
-                           nil))
-    {
-    case NSAlertDefaultReturn: // Cancel
+                           @"Cancel", @"Review operations", @"Stop and quit", nil)) {
+    case NSAlertDefaultReturn:  // Cancel
       NSLog(@"Workspace quit: cancel terminating running background operations.");
       break;
-    case NSAlertAlternateReturn: // Review operations
+    case NSAlertAlternateReturn:  // Review operations
       [[[NSApp delegate] processesPanel] showOperation:[operations objectAtIndex:0]];
       break;
     default:
@@ -723,7 +689,7 @@ static BOOL _workspaceQuitting = NO;
       }
       success = YES;
       break;
-    }
+  }
 
   // Wait for operations to terminate
   while ([operations count] > 0 && success != NO) {
@@ -742,15 +708,14 @@ static BOOL _workspaceQuitting = NO;
 {
   NSTextField *label;
 
-  if (!backInfoLabelCopies)
-    {
-      backInfoLabelCopies = [[NSMutableArray alloc] initWithCapacity:1];
-    }
+  if (!backInfoLabelCopies) {
+    backInfoLabelCopies = [[NSMutableArray alloc] initWithCapacity:1];
+  }
 
   // NSLog(@"[Processes] backInfoLabel: labels befor create new: %lu",
   //       [backInfoLabelCopies count]);
 
-  label = [[NSTextField alloc] initWithFrame:NSMakeRect(0,0,180,12)];
+  label = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 180, 12)];
   [label setTextColor:[NSColor darkGrayColor]];
   [label setDrawsBackground:NO];
   [label setFont:[NSFont systemFontOfSize:[NSFont smallSystemFontSize]]];
@@ -766,16 +731,14 @@ static BOOL _workspaceQuitting = NO;
 
 - (void)releaseBackInfoLabel:(id)label
 {
-  if (backInfoLabelCopies)
-    {
-      [backInfoLabelCopies removeObject:label];
-    }
+  if (backInfoLabelCopies) {
+    [backInfoLabelCopies removeObject:label];
+  }
 }
 
 - (NSString *)_typeMessageForOperation:(BGOperation *)op
 {
-  switch ([op type])
-    {
+  switch ([op type]) {
     case CopyOperation:
       return @"Copying...";
     case DuplicateOperation:
@@ -798,7 +761,7 @@ static BOOL _workspaceQuitting = NO;
       return @"Sizing...";
     case PermissionOperation:
       return @"Changing permissions...";
-    }
+  }
 
   return @"Performing background operation...";
 }
@@ -806,34 +769,24 @@ static BOOL _workspaceQuitting = NO;
 - (void)updateBackInfoLabel
 {
   NSString *labelText;
-  NSColor  *labelColor = [NSColor darkGrayColor];
+  NSColor *labelColor = [NSColor darkGrayColor];
 
-  if ([operations count] == 0)
-    {
-      labelText = @"";
-    }
-  else if ([operations count] == 1)
-    {
-      labelText = [self _typeMessageForOperation:[operations objectAtIndex:0]];
-    }
-  else
-    {
-      labelText = [NSString stringWithFormat:@"%lu background processes",
-                            [operations count]];
-    }
+  if ([operations count] == 0) {
+    labelText = @"";
+  } else if ([operations count] == 1) {
+    labelText = [self _typeMessageForOperation:[operations objectAtIndex:0]];
+  } else {
+    labelText = [NSString stringWithFormat:@"%lu background processes", [operations count]];
+  }
 
-  for (BGOperation *op in operations)
-    {
-      if ([op state] == OperationAlert)
-        {
-          labelColor = [NSColor whiteColor];
-        }
+  for (BGOperation *op in operations) {
+    if ([op state] == OperationAlert) {
+      labelColor = [NSColor whiteColor];
     }
-  
-  [backInfoLabelCopies makeObjectsPerformSelector:@selector(setStringValue:)
-				       withObject:labelText];
-  [backInfoLabelCopies makeObjectsPerformSelector:@selector(setTextColor:)
-				       withObject:labelColor];
+  }
+
+  [backInfoLabelCopies makeObjectsPerformSelector:@selector(setStringValue:) withObject:labelText];
+  [backInfoLabelCopies makeObjectsPerformSelector:@selector(setTextColor:) withObject:labelColor];
 }
 
 @end

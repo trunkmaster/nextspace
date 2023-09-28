@@ -52,13 +52,13 @@ struct WMGeometryView {
     } size;
   } data;
 
-  unsigned showPosition:1;
+  unsigned showPosition : 1;
 };
 
-static void handleEvents(XEvent * event, void *clientData);
-static void paint(WGeometryView * gview);
+static void handleEvents(XEvent *event, void *clientData);
+static void paint(WGeometryView *gview);
 
-WGeometryView *WCreateGeometryView(WMScreen * scr)
+WGeometryView *WCreateGeometryView(WMScreen *scr)
 {
   WGeometryView *gview;
   char buffer[64];
@@ -109,7 +109,7 @@ WGeometryView *WCreateGeometryView(WMScreen * scr)
   return gview;
 }
 
-void WSetGeometryViewShownPosition(WGeometryView * gview, int x, int y)
+void WSetGeometryViewShownPosition(WGeometryView *gview, int x, int y)
 {
   gview->showPosition = 1;
   gview->data.pos.x = x;
@@ -118,7 +118,7 @@ void WSetGeometryViewShownPosition(WGeometryView * gview, int x, int y)
   paint(gview);
 }
 
-void WSetGeometryViewShownSize(WGeometryView * gview, unsigned width, unsigned height)
+void WSetGeometryViewShownSize(WGeometryView *gview, unsigned width, unsigned height)
 {
   gview->showPosition = 0;
   gview->data.size.width = width;
@@ -127,35 +127,33 @@ void WSetGeometryViewShownSize(WGeometryView * gview, unsigned width, unsigned h
   paint(gview);
 }
 
-static void paint(WGeometryView * gview)
+static void paint(WGeometryView *gview)
 {
   char buffer[64];
 
   if (gview->showPosition) {
     snprintf(buffer, sizeof(buffer), "%+5i , %+5i    ", gview->data.pos.x, gview->data.pos.y);
   } else {
-    snprintf(buffer, sizeof(buffer), "%+5i x %+5i    ",
-             gview->data.size.width, gview->data.size.height);
+    snprintf(buffer, sizeof(buffer), "%+5i x %+5i    ", gview->data.size.width,
+             gview->data.size.height);
   }
 
-  WMDrawImageString(WMViewScreen(gview->view),
-                    WMViewDrawable(gview->view),
-                    gview->color, gview->bgColor, gview->font,
-                    (WMViewWidth(gview->view) - gview->textSize.width) / 2,
-                    (WMViewHeight(gview->view) - gview->textSize.height) / 2, buffer, strlen(buffer));
+  WMDrawImageString(
+      WMViewScreen(gview->view), WMViewDrawable(gview->view), gview->color, gview->bgColor,
+      gview->font, (WMViewWidth(gview->view) - gview->textSize.width) / 2,
+      (WMViewHeight(gview->view) - gview->textSize.height) / 2, buffer, strlen(buffer));
 
-  WMDrawRelief(WMViewScreen(gview->view), WMViewDrawable(gview->view),
-               0, 0, WMViewWidth(gview->view), WMViewHeight(gview->view), WRSimple);
+  WMDrawRelief(WMViewScreen(gview->view), WMViewDrawable(gview->view), 0, 0,
+               WMViewWidth(gview->view), WMViewHeight(gview->view), WRSimple);
 }
 
-static void handleEvents(XEvent * event, void *clientData)
+static void handleEvents(XEvent *event, void *clientData)
 {
-  WGeometryView *gview = (WGeometryView *) clientData;
+  WGeometryView *gview = (WGeometryView *)clientData;
 
   switch (event->type) {
-  case Expose:
-    paint(gview);
-    break;
-
+    case Expose:
+      paint(gview);
+      break;
   }
 }

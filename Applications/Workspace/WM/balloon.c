@@ -1,5 +1,5 @@
 /*
- *  Desktop window manager
+ *  Workspace window manager
  *  Copyright (c) 2015-2021 Sergii Stoian
  *
  *  Window Maker window manager
@@ -74,10 +74,10 @@ typedef struct _WBalloon {
   char ignoreTimer;
 } WBalloon;
 
-#define TOP	0
-#define BOTTOM	1
-#define LEFT	0
-#define RIGHT	2
+#define TOP 0
+#define BOTTOM 1
+#define LEFT 0
+#define RIGHT 2
 
 /* delays in ms before balloon is shown */
 #define BALLOON_DELAY 1000
@@ -122,8 +122,8 @@ static int getMaxStringWidth(WMFont *font, const char *text)
   return w;
 }
 
-static void drawMultiLineString(WMScreen *scr, Pixmap pixmap, WMColor *color,
-                                WMFont *font, int x, int y, const char *text, int len)
+static void drawMultiLineString(WMScreen *scr, Pixmap pixmap, WMColor *color, WMFont *font, int x,
+                                int y, const char *text, int len)
 {
   const char *p = text;
   const char *pb = p;
@@ -149,7 +149,8 @@ static void drawMultiLineString(WMScreen *scr, Pixmap pixmap, WMColor *color,
 
 #define SPACE 12
 
-static void drawBalloon(WScreen *scr, Pixmap bitmap, Pixmap pix, int x, int y, int w, int h, int side)
+static void drawBalloon(WScreen *scr, Pixmap bitmap, Pixmap pix, int x, int y, int w, int h,
+                        int side)
 {
   GC bgc = scr->balloon->monoGC;
   GC gc = scr->draw_gc;
@@ -329,7 +330,7 @@ static void showText(WScreen *scr, int x, int y, int h, int w, const char *text)
 
   scr->balloon->mapped = 1;
 }
-#else				/* !SHAPED_BALLOON */
+#else  /* !SHAPED_BALLOON */
 
 static void showText(WScreen *scr, int x, int y, int h, int w, const char *text)
 {
@@ -366,7 +367,8 @@ static void showText(WScreen *scr, int x, int y, int h, int w, const char *text)
   pixmap = XCreatePixmap(dpy, scr->root_win, width, height, scr->w_depth);
   XFillRectangle(dpy, pixmap, scr->draw_gc, 0, 0, width, height);
 
-  drawMultiLineString(scr->wmscreen, pixmap, scr->window_title_color[0], font, 4, 2, text, strlen(text));
+  drawMultiLineString(scr->wmscreen, pixmap, scr->window_title_color[0], font, 4, 2, text,
+                      strlen(text));
 
   XResizeWindow(dpy, scr->balloon->window, width, height);
   XMoveWindow(dpy, scr->balloon->window, x, y);
@@ -379,7 +381,7 @@ static void showText(WScreen *scr, int x, int y, int h, int w, const char *text)
 
   scr->balloon->mapped = 1;
 }
-#endif				/* !SHAPED_BALLOON */
+#endif /* !SHAPED_BALLOON */
 
 static void show_minipreview(WScreen *scr, int x, int y, const char *title, Pixmap mini_preview)
 {
@@ -392,7 +394,7 @@ static void show_minipreview(WScreen *scr, int x, int y, const char *title, Pixm
   if (scr->balloon->contents)
     XFreePixmap(dpy, scr->balloon->contents);
 
-  width  = wPreferences.minipreview_size;
+  width = wPreferences.minipreview_size;
   height = wPreferences.minipreview_size;
 
   if (wPreferences.miniwin_title_balloon) {
@@ -426,15 +428,15 @@ static void show_minipreview(WScreen *scr, int x, int y, const char *title, Pixm
   XFillRectangle(dpy, pixmap, scr->draw_gc, 0, 0, width, height);
 
   if (shortenTitle != NULL) {
-    drawMultiLineString(scr->wmscreen, pixmap, scr->window_title_color[0], font,
-                        MINIPREVIEW_BORDER, MINIPREVIEW_BORDER, shortenTitle, strlen(shortenTitle));
+    drawMultiLineString(scr->wmscreen, pixmap, scr->window_title_color[0], font, MINIPREVIEW_BORDER,
+                        MINIPREVIEW_BORDER, shortenTitle, strlen(shortenTitle));
     wfree(shortenTitle);
   }
 
-  XCopyArea(dpy, mini_preview, pixmap, scr->draw_gc,
-            0, 0, (wPreferences.minipreview_size - 1 - MINIPREVIEW_BORDER * 2),
+  XCopyArea(dpy, mini_preview, pixmap, scr->draw_gc, 0, 0,
             (wPreferences.minipreview_size - 1 - MINIPREVIEW_BORDER * 2),
-            MINIPREVIEW_BORDER, MINIPREVIEW_BORDER + titleHeight);
+            (wPreferences.minipreview_size - 1 - MINIPREVIEW_BORDER * 2), MINIPREVIEW_BORDER,
+            MINIPREVIEW_BORDER + titleHeight);
 
 #ifdef SHAPED_BALLOON
   XShapeCombineMask(dpy, scr->balloon->window, ShapeBounding, 0, 0, None, ShapeSet);
@@ -447,13 +449,12 @@ static void show_minipreview(WScreen *scr, int x, int y, const char *title, Pixm
   XClearWindow(dpy, scr->balloon->window);
   XMapRaised(dpy, scr->balloon->window);
 
-
   scr->balloon->contents = pixmap;
 
   scr->balloon->mapped = 1;
 }
 
-static void showBalloon(CFRunLoopTimerRef timer, void *data) // (WScreen *scr)
+static void showBalloon(CFRunLoopTimerRef timer, void *data)  // (WScreen *scr)
 {
   int x, y;
   Window foow;
@@ -480,7 +481,7 @@ static void showBalloon(CFRunLoopTimerRef timer, void *data) // (WScreen *scr)
 
 static void frameBalloon(WObjDescriptor *object)
 {
-  WFrameWindow *fwin = (WFrameWindow *) object->parent;
+  WFrameWindow *fwin = (WFrameWindow *)object->parent;
   WScreen *scr = fwin->core->screen_ptr;
 
   if (fwin->titlebar != object->self || !fwin->flags.is_client_window_frame) {
@@ -494,7 +495,8 @@ static void frameBalloon(WObjDescriptor *object)
     scr->balloon->timer = WMAddTimerHandler(BALLOON_DELAY, 0, showBalloon, scr);
     /* CFRunLoopTimerContext ctx = {0, scr, NULL, NULL, 0}; */
     /* scr->balloon->timer =  CFRunLoopTimerCreate(kCFAllocatorDefault, */
-    /*                                             CFAbsoluteTimeGetCurrent() + BALLOON_DELAY/1000, */
+    /*                                             CFAbsoluteTimeGetCurrent() + BALLOON_DELAY/1000,
+     */
     /*                                             0, 0, 0, showBalloon, &ctx); */
     /* CFRunLoopAddTimer(CFRunLoopGetCurrent(), scr->balloon->timer, kCFRunLoopDefaultMode); */
     /* CFRelease(scr->balloon->timer); */
@@ -503,7 +505,7 @@ static void frameBalloon(WObjDescriptor *object)
 
 static void miniwindowBalloon(WObjDescriptor *object)
 {
-  WIcon *icon = (WIcon *) object->parent;
+  WIcon *icon = (WIcon *)object->parent;
   WScreen *scr = icon->core->screen_ptr;
 
   if (!icon->icon_name) {
@@ -515,15 +517,16 @@ static void miniwindowBalloon(WObjDescriptor *object)
   scr->balloon->mini_preview = icon->mini_preview;
   scr->balloon->objectWindow = icon->core->window;
 
-  if ((scr->balloon->prevType == object->parent_type || scr->balloon->prevType == WCLASS_APPICON)
-      && scr->balloon->ignoreTimer) {
+  if ((scr->balloon->prevType == object->parent_type || scr->balloon->prevType == WCLASS_APPICON) &&
+      scr->balloon->ignoreTimer) {
     XUnmapWindow(dpy, scr->balloon->window);
     showBalloon(NULL, scr);
   } else {
     scr->balloon->timer = WMAddTimerHandler(BALLOON_DELAY, 0, showBalloon, scr);
     /* CFRunLoopTimerContext ctx = {0, scr, NULL, NULL, 0}; */
     /* scr->balloon->timer =  CFRunLoopTimerCreate(kCFAllocatorDefault, */
-    /*                                             CFAbsoluteTimeGetCurrent() + BALLOON_DELAY/1000, */
+    /*                                             CFAbsoluteTimeGetCurrent() + BALLOON_DELAY/1000,
+     */
     /*                                             0, 0, 0, showBalloon, &ctx); */
     /* CFRunLoopAddTimer(CFRunLoopGetCurrent(), scr->balloon->timer, kCFRunLoopDefaultMode); */
     /* CFRelease(scr->balloon->timer); */
@@ -532,7 +535,7 @@ static void miniwindowBalloon(WObjDescriptor *object)
 
 static void appiconBalloon(WObjDescriptor *object)
 {
-  WAppIcon *aicon = (WAppIcon *) object->parent;
+  WAppIcon *aicon = (WAppIcon *)object->parent;
   WScreen *scr = aicon->icon->core->screen_ptr;
   char *tmp;
 
@@ -595,8 +598,9 @@ static void appiconBalloon(WObjDescriptor *object)
   scr->balloon->h = aicon->icon->core->height - 2;
 
   scr->balloon->objectWindow = aicon->icon->core->window;
-  if ((scr->balloon->prevType == object->parent_type || scr->balloon->prevType == WCLASS_MINIWINDOW)
-      && scr->balloon->ignoreTimer) {
+  if ((scr->balloon->prevType == object->parent_type ||
+       scr->balloon->prevType == WCLASS_MINIWINDOW) &&
+      scr->balloon->ignoreTimer) {
     XUnmapWindow(dpy, scr->balloon->window);
     showBalloon(NULL, scr);
   } else {
@@ -619,10 +623,10 @@ void wBalloonInitialize(WScreen *scr)
   attribs.override_redirect = True;
   attribs.colormap = scr->w_colormap;
   attribs.background_pixel = scr->icon_back_texture->normal.pixel;
-  attribs.border_pixel = 0;	/* do not care */
+  attribs.border_pixel = 0; /* do not care */
 
-  bal->window = XCreateWindow(dpy, scr->root_win, 1, 1, 10, 10, 1,
-                              scr->w_depth, CopyFromParent, scr->w_visual, vmask, &attribs);
+  bal->window = XCreateWindow(dpy, scr->root_win, 1, 1, 10, 10, 1, scr->w_depth, CopyFromParent,
+                              scr->w_visual, vmask, &attribs);
 #if 0
   /* select EnterNotify to so that the balloon will be unmapped
    * when the pointer is moved over it */
@@ -653,25 +657,25 @@ void wBalloonEnteredObject(WScreen *scr, WObjDescriptor *object)
   }
 
   switch (object->parent_type) {
-  case WCLASS_FRAME:
-    if (wPreferences.window_balloon)
-      frameBalloon(object);
-    break;
-  case WCLASS_DOCK_ICON:
-    if (wPreferences.appicon_balloon)
-      appiconBalloon(object);
-    break;
-  case WCLASS_MINIWINDOW:
-    if (wPreferences.miniwin_title_balloon || wPreferences.miniwin_preview_balloon)
-      miniwindowBalloon(object);
-    break;
-  case WCLASS_APPICON:
-    if (wPreferences.appicon_balloon)
-      appiconBalloon(object);
-    break;
-  default:
-    wBalloonHide(scr);
-    break;
+    case WCLASS_FRAME:
+      if (wPreferences.window_balloon)
+        frameBalloon(object);
+      break;
+    case WCLASS_DOCK_ICON:
+      if (wPreferences.appicon_balloon)
+        appiconBalloon(object);
+      break;
+    case WCLASS_MINIWINDOW:
+      if (wPreferences.miniwin_title_balloon || wPreferences.miniwin_preview_balloon)
+        miniwindowBalloon(object);
+      break;
+    case WCLASS_APPICON:
+      if (wPreferences.appicon_balloon)
+        appiconBalloon(object);
+      break;
+    default:
+      wBalloonHide(scr);
+      break;
   }
   scr->balloon->prevType = object->parent_type;
 }

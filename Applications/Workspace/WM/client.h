@@ -34,10 +34,8 @@ void wClientSendProtocol(WWindow *wwin, Atom protocol, Time time);
 void wClientKill(WWindow *wwin);
 void wClientCheckProperty(WWindow *wwin, XPropertyEvent *event);
 
-
-void wClientGetNormalHints(WWindow *wwin, XWindowAttributes *wattribs,
-                           Bool geometry, int *x, int *y, unsigned *width,
-                           unsigned *height);
+void wClientGetNormalHints(WWindow *wwin, XWindowAttributes *wattribs, Bool geometry, int *x,
+                           int *y, unsigned *width, unsigned *height);
 void GetColormapWindows(WWindow *wwin);
 
 #endif /* __WORKSPACE_WM_CLIENT__ */

@@ -48,7 +48,6 @@
 #include "misc.h"
 #include "iconyard.h"
 
-
 /*
  *--------------------------------------------------------------------
  * wClientRestore--
@@ -56,7 +55,7 @@
  *
  *--------------------------------------------------------------------
  */
-void wClientRestore(WWindow * wwin)
+void wClientRestore(WWindow *wwin)
 {
 #if 0
   int gx, gy;
@@ -90,7 +89,7 @@ void wClientRestore(WWindow * wwin)
  * WWindow.state variable.
  *----------------------------------------------------------------------
  */
-void wClientSetState(WWindow * wwin, int state, Window icon_win)
+void wClientSetState(WWindow *wwin, int state, Window icon_win)
 {
   long data[2];
 
@@ -99,56 +98,55 @@ void wClientSetState(WWindow * wwin, int state, Window icon_win)
   data[0] = (unsigned long)state;
   data[1] = (unsigned long)icon_win;
 
-  XChangeProperty(dpy, wwin->client_win, w_global.atom.wm.state,
-                  w_global.atom.wm.state, 32, PropModeReplace,
-                  (unsigned char *)data, 2);
+  XChangeProperty(dpy, wwin->client_win, w_global.atom.wm.state, w_global.atom.wm.state, 32,
+                  PropModeReplace, (unsigned char *)data, 2);
 }
 
-void wClientGetGravityOffsets(WWindow * wwin, int *ofs_x, int *ofs_y)
+void wClientGetGravityOffsets(WWindow *wwin, int *ofs_x, int *ofs_y)
 {
   switch (wwin->normal_hints->win_gravity) {
-  case ForgetGravity:
-  case CenterGravity:
-  case StaticGravity:
-    *ofs_x = 0;
-    *ofs_y = 0;
-    break;
-  case NorthWestGravity:
-    *ofs_x = -1;
-    *ofs_y = -1;
-    break;
-  case NorthGravity:
-    *ofs_x = 0;
-    *ofs_y = -1;
-    break;
-  case NorthEastGravity:
-    *ofs_x = 1;
-    *ofs_y = -1;
-    break;
-  case WestGravity:
-    *ofs_x = -1;
-    *ofs_y = 0;
-    break;
-  case EastGravity:
-    *ofs_x = 1;
-    *ofs_y = 0;
-    break;
-  case SouthWestGravity:
-    *ofs_x = -1;
-    *ofs_y = 1;
-    break;
-  case SouthGravity:
-    *ofs_x = 0;
-    *ofs_y = 1;
-    break;
-  case SouthEastGravity:
-    *ofs_x = 1;
-    *ofs_y = 1;
-    break;
+    case ForgetGravity:
+    case CenterGravity:
+    case StaticGravity:
+      *ofs_x = 0;
+      *ofs_y = 0;
+      break;
+    case NorthWestGravity:
+      *ofs_x = -1;
+      *ofs_y = -1;
+      break;
+    case NorthGravity:
+      *ofs_x = 0;
+      *ofs_y = -1;
+      break;
+    case NorthEastGravity:
+      *ofs_x = 1;
+      *ofs_y = -1;
+      break;
+    case WestGravity:
+      *ofs_x = -1;
+      *ofs_y = 0;
+      break;
+    case EastGravity:
+      *ofs_x = 1;
+      *ofs_y = 0;
+      break;
+    case SouthWestGravity:
+      *ofs_x = -1;
+      *ofs_y = 1;
+      break;
+    case SouthGravity:
+      *ofs_x = 0;
+      *ofs_y = 1;
+      break;
+    case SouthEastGravity:
+      *ofs_x = 1;
+      *ofs_y = 1;
+      break;
   }
 }
 
-void wClientConfigure(WWindow * wwin, XConfigureRequestEvent * xcre)
+void wClientConfigure(WWindow *wwin, XConfigureRequestEvent *xcre)
 {
   XWindowChanges xwc;
   int nx, ny, nwidth, nheight;
@@ -160,17 +158,17 @@ void wClientConfigure(WWindow * wwin, XConfigureRequestEvent * xcre)
 
   /* configure a window that was not mapped by us */
   if (wwin == NULL) {
-
     // 0 value results "BadMatch (invalid parameter attributes)" error
     if (!xcre->width || !xcre->height) {
-      fprintf(stderr,"[WM] !WARNING! X ConfigureRequest received with incorrect geometry.\n"
+      fprintf(stderr,
+              "[WM] !WARNING! X ConfigureRequest received with incorrect geometry.\n"
               "\tWindow: %lu\n"
               "\tWidth: %i\n"
               "\tHeight: %i\n",
               xcre->window, xcre->width, xcre->height);
       return;
     }
-    
+
     xwc.x = xcre->x;
     xwc.y = xcre->y;
     xwc.width = xcre->width;
@@ -188,8 +186,8 @@ void wClientConfigure(WWindow * wwin, XConfigureRequestEvent * xcre)
     int b_shaped;
 
     XShapeSelectInput(dpy, wwin->client_win, ShapeNotifyMask);
-    XShapeQueryExtents(dpy, wwin->client_win, &b_shaped, &junk, &junk,
-                       &ujunk, &ujunk, &junk, &junk, &junk, &ujunk, &ujunk);
+    XShapeQueryExtents(dpy, wwin->client_win, &b_shaped, &junk, &junk, &ujunk, &ujunk, &junk, &junk,
+                       &junk, &ujunk, &ujunk);
     wwin->flags.shaped = b_shaped;
   }
 #endif
@@ -198,16 +196,17 @@ void wClientConfigure(WWindow * wwin, XConfigureRequestEvent * xcre)
     WWindow *sibling;
 
     if ((xcre->value_mask & CWSibling) &&
-        (XFindContext(dpy, xcre->above, w_global.context.client_win, (XPointer *) & desc) == XCSUCCESS)
-        && (desc->parent_type == WCLASS_WINDOW)) {
+        (XFindContext(dpy, xcre->above, w_global.context.client_win, (XPointer *)&desc) ==
+         XCSUCCESS) &&
+        (desc->parent_type == WCLASS_WINDOW)) {
       sibling = desc->parent;
       xwc.sibling = sibling->frame->core->window;
     } else {
       xwc.sibling = xcre->above;
     }
     xwc.stack_mode = xcre->detail;
-    XConfigureWindow(dpy, wwin->frame->core->window,
-                     xcre->value_mask & (CWSibling | CWStackMode), &xwc);
+    XConfigureWindow(dpy, wwin->frame->core->window, xcre->value_mask & (CWSibling | CWStackMode),
+                     &xwc);
     /* fix stacking order */
     RemakeStackList(wwin->screen);
   }
@@ -267,7 +266,7 @@ void wClientConfigure(WWindow * wwin, XConfigureRequestEvent * xcre)
   }
 }
 
-void wClientSendProtocol(WWindow * wwin, Atom protocol, Time time)
+void wClientSendProtocol(WWindow *wwin, Atom protocol, Time time)
 {
   XEvent event;
 
@@ -284,7 +283,7 @@ void wClientSendProtocol(WWindow * wwin, Atom protocol, Time time)
   XSync(dpy, False);
 }
 
-void wClientKill(WWindow * wwin)
+void wClientKill(WWindow *wwin)
 {
   XKillClient(dpy, wwin->client_win);
 
@@ -304,7 +303,7 @@ void wClientKill(WWindow * wwin)
  * TODO: _GNUSTEP_WM_ATTR
  *----------------------------------------------------------------------
  */
-void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
+void wClientCheckProperty(WWindow *wwin, XPropertyEvent *event)
 {
   XWindowAttributes attribs;
   XWMHints *new_hints;
@@ -312,201 +311,198 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
   char *tmp = NULL;
 
   switch (event->atom) {
-  case XA_WM_NAME:
-    if (!wwin->flags.net_has_title) {
-      /* window title was changed */
-      if (!wGetWindowName(dpy, wwin->client_win, &tmp)) {
-        wWindowUpdateName(wwin, NULL);
+    case XA_WM_NAME:
+      if (!wwin->flags.net_has_title) {
+        /* window title was changed */
+        if (!wGetWindowName(dpy, wwin->client_win, &tmp)) {
+          wWindowUpdateName(wwin, NULL);
+        } else {
+          wWindowUpdateName(wwin, tmp);
+        }
+        if (tmp)
+          XFree(tmp);
+      }
+      break;
+
+    case XA_WM_ICON_NAME:
+      /* Title has changed, update the icon title */
+      if (wwin->icon) {
+        wIconChangeTitle(wwin->icon, wwin);
+        wIconPaint(wwin->icon);
+      }
+      break;
+
+    case XA_WM_COMMAND:
+      if (wwin->main_window != None) {
+        WApplication *wapp = wApplicationOf(wwin->main_window);
+        char *command;
+
+        if (!wapp || !wapp->app_icon || wapp->app_icon->flags.docked)
+          break;
+
+        command = wGetCommandForWindow(wwin->main_window);
+        if (command) {
+          if (wapp->app_icon->command)
+            wfree(wapp->app_icon->command);
+          wapp->app_icon->command = command;
+        }
+      }
+      break;
+
+    case XA_WM_HINTS:
+      /* WM_HINTS */
+
+      new_hints = XGetWMHints(dpy, wwin->client_win);
+
+      /* group leader update
+       *
+       * This means that the window is setting the leader after
+       * it was mapped, changing leaders or removing the leader.
+       *
+       * Valid state transitions are:
+       *
+       *          _1            __2
+       *         / \           /  \
+       *         v |           v  |
+       *         (GC)         (GC')
+       *        /  ^          /   ^
+       *       3|  |4        5|   |6
+       *        |  |          |   |
+       *        v  /          v   /
+       *        (G'C)        (G'C')
+       *
+       * Where G is the window_group hint, C is CLIENT_LEADER property
+       * and ' indicates the hint is unset.
+       *
+       * 1,2 - change group leader to new value of window_group
+       * 3 - change leader to value of CLIENT_LEADER
+       * 4 - change leader to value of window_group
+       * 5 - destroy application
+       * 6 - create application
+       */
+      if (new_hints && (new_hints->flags & WindowGroupHint) && new_hints->window_group != None) {
+        g2 = 1;
       } else {
-        wWindowUpdateName(wwin, tmp);
+        g2 = 0;
       }
-      if (tmp)
-        XFree(tmp);
-    }
-    break;
-
-  case XA_WM_ICON_NAME:
-    /* Title has changed, update the icon title */
-    if (wwin->icon) {
-      wIconChangeTitle(wwin->icon, wwin);
-      wIconPaint(wwin->icon);
-    }
-    break;
-
-  case XA_WM_COMMAND:
-    if (wwin->main_window != None) {
-      WApplication *wapp = wApplicationOf(wwin->main_window);
-      char *command;
-
-      if (!wapp || !wapp->app_icon || wapp->app_icon->flags.docked)
-        break;
-
-      command = wGetCommandForWindow(wwin->main_window);
-      if (command) {
-        if (wapp->app_icon->command)
-          wfree(wapp->app_icon->command);
-        wapp->app_icon->command = command;
-      }
-    }
-    break;
-
-  case XA_WM_HINTS:
-    /* WM_HINTS */
-
-    new_hints = XGetWMHints(dpy, wwin->client_win);
-
-    /* group leader update
-     *
-     * This means that the window is setting the leader after
-     * it was mapped, changing leaders or removing the leader.
-     *
-     * Valid state transitions are:
-     *
-     *          _1            __2
-     *         / \           /  \
-     *         v |           v  |
-     *         (GC)         (GC')
-     *        /  ^          /   ^
-     *       3|  |4        5|   |6
-     *        |  |          |   |
-     *        v  /          v   /
-     *        (G'C)        (G'C')
-     *
-     * Where G is the window_group hint, C is CLIENT_LEADER property
-     * and ' indicates the hint is unset.
-     *
-     * 1,2 - change group leader to new value of window_group
-     * 3 - change leader to value of CLIENT_LEADER
-     * 4 - change leader to value of window_group
-     * 5 - destroy application
-     * 6 - create application
-     */
-    if (new_hints && (new_hints->flags & WindowGroupHint)
-        && new_hints->window_group != None) {
-      g2 = 1;
-    } else {
-      g2 = 0;
-    }
-    if (wwin->wm_hints && (wwin->wm_hints->flags & WindowGroupHint)
-        && wwin->wm_hints->window_group != None) {
-      g1 = 1;
-    } else {
-      g1 = 0;
-    }
-
-    if (wwin->client_leader) {
-      if (g1 && g2 && wwin->wm_hints->window_group != new_hints->window_group) {
-        i = 1;
-      } else if (g1 && !g2) {
-        i = 3;
-      } else if (!g1 && g2) {
-        i = 4;
+      if (wwin->wm_hints && (wwin->wm_hints->flags & WindowGroupHint) &&
+          wwin->wm_hints->window_group != None) {
+        g1 = 1;
       } else {
-        i = 0;
+        g1 = 0;
       }
-    } else {
-      if (g1 && g2 && wwin->wm_hints->window_group != new_hints->window_group) {
-        i = 2;
-      } else if (g1 && !g2) {
-        i = 5;
-      } else if (!g1 && g2) {
-        i = 6;
+
+      if (wwin->client_leader) {
+        if (g1 && g2 && wwin->wm_hints->window_group != new_hints->window_group) {
+          i = 1;
+        } else if (g1 && !g2) {
+          i = 3;
+        } else if (!g1 && g2) {
+          i = 4;
+        } else {
+          i = 0;
+        }
       } else {
-        i = 0;
-      }
-    }
-
-    /* Handling this may require more work. -Dan */
-    if (wwin->fake_group != NULL) {
-      i = 7;
-    }
-
-    if (wwin->wm_hints)
-      XFree(wwin->wm_hints);
-
-    wwin->wm_hints = new_hints;
-
-    /* do action according to state transition */
-    switch (i) {
-      /* 3 - change leader to value of CLIENT_LEADER */
-    case 3:
-      wApplicationDestroy(wApplicationOf(wwin->main_window));
-      wwin->main_window = wwin->client_leader;
-      wwin->group_id = None;
-      wApplicationCreate(wwin);
-      break;
-
-      /* 1,2,4 - change leader to new value of window_group */
-    case 1:
-    case 2:
-    case 4:
-      wApplicationDestroy(wApplicationOf(wwin->main_window));
-      wwin->main_window = new_hints->window_group;
-      wwin->group_id = wwin->main_window;
-      wApplicationCreate(wwin);
-      break;
-
-      /* 5 - destroy application */
-    case 5:
-      wApplicationDestroy(wApplicationOf(wwin->main_window));
-      wwin->main_window = None;
-      wwin->group_id = None;
-      break;
-
-      /* 6 - create application */
-    case 6:
-      wwin->main_window = new_hints->window_group;
-      wwin->group_id = wwin->main_window;
-      wApplicationCreate(wwin);
-      break;
-      /* 7 - we have a fake window group id, so just ignore anything else */
-    case 7:
-      break;
-    }
-
-    if (wwin->wm_hints) {
-      /* update icon */
-      if ((wwin->wm_hints->flags & IconPixmapHint)
-          || (wwin->wm_hints->flags & IconWindowHint)) {
-        WApplication *wapp;
-
-        if (wwin->flags.miniaturized && wwin->icon)
-          wIconUpdate(wwin->icon);
-
-        wapp = wApplicationOf(wwin->main_window);
-        if (wapp && wapp->app_icon) {
-          wIconUpdate(wapp->app_icon->icon);
-          wAppIconPaint(wapp->app_icon);
+        if (g1 && g2 && wwin->wm_hints->window_group != new_hints->window_group) {
+          i = 2;
+        } else if (g1 && !g2) {
+          i = 5;
+        } else if (!g1 && g2) {
+          i = 6;
+        } else {
+          i = 0;
         }
       }
 
-      if (wwin->wm_hints->flags & UrgencyHint)
-        wwin->flags.urgent = 1;
-      else
-        wwin->flags.urgent = 0;
-      wAppBounceWhileUrgent(wApplicationOf(wwin->main_window));
-      /*} else if (wwin->fake_group!=NULL) {
-        wwin->group_id = wwin->fake_group->leader; */
-    } else {
-      wwin->group_id = None;
-    }
-    break;
+      /* Handling this may require more work. -Dan */
+      if (wwin->fake_group != NULL) {
+        i = 7;
+      }
 
-  case XA_WM_NORMAL_HINTS:
-    /* normal (geometry) hints */
-    {
-      int foo;
-      unsigned bar;
+      if (wwin->wm_hints)
+        XFree(wwin->wm_hints);
 
-      if (XGetWindowAttributes(dpy, wwin->client_win, &attribs) != 0)
-        wClientGetNormalHints(wwin, &attribs, False, &foo, &foo, &bar, &bar);
-      /* TODO: should we check for consistency of the current
-       * size against the new geometry hints? */
-    }
-    break;
+      wwin->wm_hints = new_hints;
 
-  case XA_WM_TRANSIENT_FOR:
-    {
+      /* do action according to state transition */
+      switch (i) {
+          /* 3 - change leader to value of CLIENT_LEADER */
+        case 3:
+          wApplicationDestroy(wApplicationOf(wwin->main_window));
+          wwin->main_window = wwin->client_leader;
+          wwin->group_id = None;
+          wApplicationCreate(wwin);
+          break;
+
+          /* 1,2,4 - change leader to new value of window_group */
+        case 1:
+        case 2:
+        case 4:
+          wApplicationDestroy(wApplicationOf(wwin->main_window));
+          wwin->main_window = new_hints->window_group;
+          wwin->group_id = wwin->main_window;
+          wApplicationCreate(wwin);
+          break;
+
+          /* 5 - destroy application */
+        case 5:
+          wApplicationDestroy(wApplicationOf(wwin->main_window));
+          wwin->main_window = None;
+          wwin->group_id = None;
+          break;
+
+          /* 6 - create application */
+        case 6:
+          wwin->main_window = new_hints->window_group;
+          wwin->group_id = wwin->main_window;
+          wApplicationCreate(wwin);
+          break;
+          /* 7 - we have a fake window group id, so just ignore anything else */
+        case 7:
+          break;
+      }
+
+      if (wwin->wm_hints) {
+        /* update icon */
+        if ((wwin->wm_hints->flags & IconPixmapHint) || (wwin->wm_hints->flags & IconWindowHint)) {
+          WApplication *wapp;
+
+          if (wwin->flags.miniaturized && wwin->icon)
+            wIconUpdate(wwin->icon);
+
+          wapp = wApplicationOf(wwin->main_window);
+          if (wapp && wapp->app_icon) {
+            wIconUpdate(wapp->app_icon->icon);
+            wAppIconPaint(wapp->app_icon);
+          }
+        }
+
+        if (wwin->wm_hints->flags & UrgencyHint)
+          wwin->flags.urgent = 1;
+        else
+          wwin->flags.urgent = 0;
+        wAppBounceWhileUrgent(wApplicationOf(wwin->main_window));
+        /*} else if (wwin->fake_group!=NULL) {
+          wwin->group_id = wwin->fake_group->leader; */
+      } else {
+        wwin->group_id = None;
+      }
+      break;
+
+    case XA_WM_NORMAL_HINTS:
+      /* normal (geometry) hints */
+      {
+        int foo;
+        unsigned bar;
+
+        if (XGetWindowAttributes(dpy, wwin->client_win, &attribs) != 0)
+          wClientGetNormalHints(wwin, &attribs, False, &foo, &foo, &bar, &bar);
+        /* TODO: should we check for consistency of the current
+         * size against the new geometry hints? */
+      }
+      break;
+
+    case XA_WM_TRANSIENT_FOR: {
       Window new_owner;
       WWindow *owner;
 
@@ -522,8 +518,7 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
         if (owner) {
           if (owner->flags.semi_focused) {
             owner->flags.semi_focused = 0;
-            if ((owner->flags.mapped || owner->flags.shaded)
-                && owner->frame)
+            if ((owner->flags.mapped || owner->flags.shaded) && owner->frame)
               wFrameWindowPaint(owner->frame);
           }
         }
@@ -531,8 +526,7 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
         if (owner) {
           if (!owner->flags.semi_focused) {
             owner->flags.semi_focused = 1;
-            if ((owner->flags.mapped || owner->flags.shaded)
-                && owner->frame)
+            if ((owner->flags.mapped || owner->flags.shaded) && owner->frame)
               wFrameWindowPaint(owner->frame);
           }
         }
@@ -551,83 +545,80 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
             wWindowConfigureBorders(wwin);
         }
       }
-    }
-    break;
+    } break;
 
-  default:
-    if (event->atom == w_global.atom.wm.protocols) {
+    default:
+      if (event->atom == w_global.atom.wm.protocols) {
+        PropGetProtocols(wwin->client_win, &wwin->protocols);
 
-      PropGetProtocols(wwin->client_win, &wwin->protocols);
+        // WM_TAKE_FOCUS
+        if (wwin->protocols.TAKE_FOCUS)
+          wwin->client_flags.no_focusable = 0;
+        wwin->focus_mode = GetFocusMode(wwin);
 
-      // WM_TAKE_FOCUS
-      if (wwin->protocols.TAKE_FOCUS)
-        wwin->client_flags.no_focusable = 0;
-      wwin->focus_mode = GetFocusMode(wwin);
+        // WM_DELETE_WINDOW
+        wwin->client_flags.kill_close = !wwin->protocols.DELETE_WINDOW;
+        if (wwin->frame)
+          wWindowUpdateButtonImages(wwin);
 
-      // WM_DELETE_WINDOW
-      wwin->client_flags.kill_close = !wwin->protocols.DELETE_WINDOW;
-      if (wwin->frame)
-        wWindowUpdateButtonImages(wwin);
+      } else if (event->atom == w_global.atom.wm.colormap_windows) {
+        GetColormapWindows(wwin);
+        wColormapInstallForWindow(wwin->screen, wwin);
 
-    } else if (event->atom == w_global.atom.wm.colormap_windows) {
+      } else if (event->atom == w_global.atom.wmaker.menu) {
+        WApplication *wapp;
 
-      GetColormapWindows(wwin);
-      wColormapInstallForWindow(wwin->screen, wwin);
+        wapp = wApplicationOf(wwin->main_window);
+        if (wapp) {
+          if (wwin->fake_group) {
+            WScreen *scr = wwin->screen;
+            WWindow *foo = scr->focused_window;
+            WFakeGroupLeader *fPtr = wwin->fake_group;
 
-    } else if (event->atom == w_global.atom.wmaker.menu) {
-      WApplication *wapp;
+            wApplicationDestroy(wapp);
+            while (foo) {
+              if (foo->fake_group && foo->fake_group == fPtr) {
+                foo->client_flags.shared_appicon = 0;
+                foo->fake_group = NULL;
 
-      wapp = wApplicationOf(wwin->main_window);
-      if (wapp) {
-        if (wwin->fake_group) {
-          WScreen *scr = wwin->screen;
-          WWindow *foo = scr->focused_window;
-          WFakeGroupLeader *fPtr = wwin->fake_group;
+                if (foo->group_id != None)
+                  foo->main_window = foo->group_id;
+                else if (foo->client_leader != None)
+                  foo->main_window = foo->client_leader;
+                else if (WFLAGP(foo, emulate_appicon))
+                  foo->main_window = foo->client_win;
+                else
+                  foo->main_window = None;
 
-          wApplicationDestroy(wapp);
-          while (foo) {
-            if (foo->fake_group && foo->fake_group == fPtr) {
-              foo->client_flags.shared_appicon = 0;
-              foo->fake_group = NULL;
-
-              if (foo->group_id != None)
-                foo->main_window = foo->group_id;
-              else if (foo->client_leader != None)
-                foo->main_window = foo->client_leader;
-              else if (WFLAGP(foo, emulate_appicon))
-                foo->main_window = foo->client_win;
-              else
-                foo->main_window = None;
-
-              if (foo->main_window)
-                wApplicationCreate(foo);
+                if (foo->main_window)
+                  wApplicationCreate(foo);
+              }
+              foo = foo->prev;
             }
-            foo = foo->prev;
-          }
 
-          if (fPtr->leader != None)
-            XDestroyWindow(dpy, fPtr->leader);
-          fPtr->retainCount = 0;
-          fPtr->leader = None;
-          fPtr->origLeader = None;
+            if (fPtr->leader != None)
+              XDestroyWindow(dpy, fPtr->leader);
+            fPtr->retainCount = 0;
+            fPtr->leader = None;
+            fPtr->origLeader = None;
 
-          if (wPreferences.auto_arrange_icons) {
-            wArrangeIcons(wwin->screen, True);
+            if (wPreferences.auto_arrange_icons) {
+              wArrangeIcons(wwin->screen, True);
+            }
           }
+          /* make the appmenu be mapped */
+          wSetFocusTo(wwin->screen, NULL);
+          wSetFocusTo(wwin->screen, wwin->screen->focused_window);
         }
-        /* make the appmenu be mapped */
-        wSetFocusTo(wwin->screen, NULL);
-        wSetFocusTo(wwin->screen, wwin->screen->focused_window);
-      }
-    } else if (event->atom == w_global.atom.gnustep.wm_attr) {
-      GNUstepWMAttributes *attr;
+      } else if (event->atom == w_global.atom.gnustep.wm_attr) {
+        GNUstepWMAttributes *attr;
 
-      PropGetGNUstepWMAttr(wwin->client_win, &attr);
-      wWindowUpdateGNUstepAttr(wwin, attr);
-      XFree(attr);
-    } else {
-      wNETWMCheckClientHintChange(wwin, event);
-    }
+        PropGetGNUstepWMAttr(wwin->client_win, &attr);
+        wWindowUpdateGNUstepAttr(wwin, attr);
+        XFree(attr);
+      } else {
+        wNETWMCheckClientHintChange(wwin, event);
+      }
   }
 }
 
@@ -643,11 +634,10 @@ void wClientCheckProperty(WWindow * wwin, XPropertyEvent * event)
  * 	normal_hints is filled with valid data.
  *----------------------------------------------------------------------
  */
-void
-wClientGetNormalHints(WWindow * wwin, XWindowAttributes * wattribs, Bool geometry,
-		      int *x, int *y, unsigned *width, unsigned *height)
+void wClientGetNormalHints(WWindow *wwin, XWindowAttributes *wattribs, Bool geometry, int *x,
+                           int *y, unsigned *width, unsigned *height)
 {
-  int pre_icccm = 0;	/* not used */
+  int pre_icccm = 0; /* not used */
 
   /* find a position for the window */
   if (!wwin->normal_hints)
@@ -735,7 +725,7 @@ wClientGetNormalHints(WWindow * wwin, XWindowAttributes * wattribs, Bool geometr
   }
 }
 
-void GetColormapWindows(WWindow * wwin)
+void GetColormapWindows(WWindow *wwin)
 {
 #ifndef NO_CRASHES
   if (wwin->cmap_windows) {
@@ -745,8 +735,9 @@ void GetColormapWindows(WWindow * wwin)
   wwin->cmap_windows = NULL;
   wwin->cmap_window_no = 0;
 
-  if (!XGetWMColormapWindows(dpy, wwin->client_win, &(wwin->cmap_windows), &(wwin->cmap_window_no))
-      || !wwin->cmap_windows) {
+  if (!XGetWMColormapWindows(dpy, wwin->client_win, &(wwin->cmap_windows),
+                             &(wwin->cmap_window_no)) ||
+      !wwin->cmap_windows) {
     wwin->cmap_window_no = 0;
     wwin->cmap_windows = NULL;
   }

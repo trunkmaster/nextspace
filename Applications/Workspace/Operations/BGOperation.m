@@ -30,10 +30,10 @@
                     manager:(ProcessManager *)delegate
 {
   [super init];
-  
+
   // Initial arguments
   type = opType;
-  
+
   ASSIGN(source, (sourceDir != nil) ? sourceDir : @"");
   ASSIGN(target, (targetDir != nil) ? targetDir : @"");
   ASSIGN(files, fileList);
@@ -43,14 +43,13 @@
   ASSIGN(currFile, (fileList != nil) ? [fileList objectAtIndex:0] : @"");
 
   manager = delegate;
-  
+
   processUI = nil;
   alertUI = nil;
   message = nil;
 
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName:WMOperationDidCreateNotification
-                  object:self];
+  [[NSNotificationCenter defaultCenter] postNotificationName:WMOperationDidCreateNotification
+                                                      object:self];
 
   [self setState:OperationPrepare];
 
@@ -62,46 +61,43 @@
   TEST_RELEASE(source);
   TEST_RELEASE(target);
   TEST_RELEASE(files);
-  
+
   TEST_RELEASE(currSourceDir);
   TEST_RELEASE(currTargetDir);
   TEST_RELEASE(currFile);
 
   TEST_RELEASE(processUI);
-  
+
   [super dealloc];
 }
 
 // Bottom part of 'Processes' panel in 'Background' section
 - (BGProcess *)userInterface
 {
-  if (processUI == nil)
-    {
-      processUI = [[BGProcess alloc] initWithOperation:self];
-    }
-  
- return processUI;
+  if (processUI == nil) {
+    processUI = [[BGProcess alloc] initWithOperation:self];
+  }
+
+  return processUI;
 }
 
 - (void)updateProcessView:(BOOL)create
 {
   if (state == OperationStopping || state == OperationStopped)
     return;
-  
+
   // Process UI will be created if not exists
-  if (create)
-    {
-      [self userInterface];
-    }
-  
-  if (processUI)
-    {
-      [processUI updateWithMessage:message
-                              file:currFile
-                            source:currSourceDir
-                            target:currTargetDir
-                          progress:[self progressValue]];
-    }
+  if (create) {
+    [self userInterface];
+  }
+
+  if (processUI) {
+    [processUI updateWithMessage:message
+                            file:currFile
+                          source:currSourceDir
+                          target:currTargetDir
+                        progress:[self progressValue]];
+  }
 }
 
 - (OperationType)type
@@ -111,8 +107,7 @@
 
 - (NSString *)typeString
 {
-  switch (type)
-    {
+  switch (type) {
     case CopyOperation:
       return @"Copy";
       break;
@@ -145,7 +140,7 @@
       break;
     case PermissionOperation:
       return @"Permission";
-    }
+  }
 
   return @"";
 }
@@ -156,16 +151,14 @@
 {
   state = opState;
 
-  if (state == OperationAlert)
-    {
-      [[self userInterface] updateAlertWithMessage:problemDesc
-                                              help:problemSolutionDesc
-                                         solutions:solutions];
-    }
-  
-  [[NSNotificationCenter defaultCenter]
-        postNotificationName:WMOperationDidChangeStateNotification
-                      object:self];
+  if (state == OperationAlert) {
+    [[self userInterface] updateAlertWithMessage:problemDesc
+                                            help:problemSolutionDesc
+                                       solutions:solutions];
+  }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:WMOperationDidChangeStateNotification
+                                                      object:self];
 }
 - (OperationState)state
 {
@@ -173,8 +166,7 @@
 }
 - (NSString *)stateString
 {
-  switch (state)
-    {
+  switch (state) {
     case OperationPrepare:
       return @"Preparing";
     case OperationRunning:
@@ -189,7 +181,7 @@
       return @"Stopping";
     case OperationStopped:
       return @"Stopped";
-    }
+  }
 
   return @"";
 }
@@ -217,23 +209,20 @@
 {
   return files;
 }
-  
+
 // Must be overriden in subclass to describe operation specifics
 - (NSString *)titleString
 {
-  NSString   *title;
-  NSString   *path = source;
+  NSString *title;
+  NSString *path = source;
   NSUInteger filesCount = [files count];
-  
-  if (filesCount == 1)
-    {
-      path = [source stringByAppendingPathComponent:[files objectAtIndex:0]];
-    }
-  else if (filesCount > 1)
-    {
-      path = [NSString stringWithFormat:@"%@/(%lu items)", source, filesCount];
-    }
-  
+
+  if (filesCount == 1) {
+    path = [source stringByAppendingPathComponent:[files objectAtIndex:0]];
+  } else if (filesCount > 1) {
+    path = [NSString stringWithFormat:@"%@/(%lu items)", source, filesCount];
+  }
+
   return [NSString stringWithFormat:@"%@ %@", [self typeString], path];
 }
 

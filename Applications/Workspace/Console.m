@@ -46,11 +46,10 @@
 {
   [super init];
 
-  consoleFile = [NSTemporaryDirectory()
-                    stringByAppendingPathComponent:@"console.log"];
+  consoleFile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"console.log"];
   [consoleFile retain];
   ASSIGN(savedString, @"");
-  
+
   fh = nil;
   isActive = NO;
 
@@ -77,30 +76,26 @@
 
 - (void)activate
 {
-  if (window == nil)
-    {
-      [NSBundle loadNibNamed:@"Console" owner:self];
+  if (window == nil) {
+    [NSBundle loadNibNamed:@"Console" owner:self];
+  }
+
+  if (fh == nil) {
+    ASSIGN(fh, [NSFileHandle fileHandleForReadingAtPath:consoleFile]);
+    if (fh == nil) {
+      NXTRunAlertPanel(_(@"Workspace"), _(@"Couldn't open console file %@"), nil, nil, nil,
+                       consoleFile);
+      return;
     }
 
-  if (fh == nil)
-    {
-      ASSIGN(fh, [NSFileHandle fileHandleForReadingAtPath:consoleFile]);
-      if (fh == nil)
-        {
-          NXTRunAlertPanel(_(@"Workspace"),
-                           _(@"Couldn't open console file %@"), nil, nil, nil,
-                           consoleFile);
-          return;
-        }
+    timer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                             target:self
+                                           selector:@selector(readConsoleFile)
+                                           userInfo:nil
+                                            repeats:YES];
+    isActive = YES;
+  }
 
-      timer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                               target:self
-                                             selector:@selector(readConsoleFile)
-                                             userInfo:nil
-                                              repeats:YES];
-      isActive = YES;
-    }
-  
   [window makeKeyAndOrderFront:nil];
   [window setFrameAutosaveName:@"Console"];
   [text scrollPoint:NSMakePoint(0, [text frame].size.height)];
@@ -112,11 +107,11 @@
     return;
 
   [timer invalidate];
-  
+
   [fh closeFile];
   [fh release];
   fh = nil;
-  
+
   [window close];
 
   isActive = NO;
@@ -124,51 +119,37 @@
 
 - (void)readConsoleFile
 {
-  NSData         *data = [fh readDataToEndOfFile];
-  NSString       *string;
+  NSData *data = [fh readDataToEndOfFile];
+  NSString *string;
   NSUserDefaults *df;
-  unsigned       consoleHistory;
+  unsigned consoleHistory;
 
-  if ([data length] == 0)
-    {
-      return;
-    }
+  if ([data length] == 0) {
+    return;
+  }
 
   df = [NSUserDefaults standardUserDefaults];
-  if ([df objectForKey: @"ConsoleHistoryLength"])
-    {
-      consoleHistory = [df integerForKey: @"ConsoleHistoryLength"];
-    }
-  else
-    {
-      consoleHistory = 64 * 1024;
-    }
+  if ([df objectForKey:@"ConsoleHistoryLength"]) {
+    consoleHistory = [df integerForKey:@"ConsoleHistoryLength"];
+  } else {
+    consoleHistory = 64 * 1024;
+  }
 
-  string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]
-    autorelease];
+  string = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
 
-  if (text != nil)
-    {
-      [text replaceCharactersInRange:NSMakeRange([[text string] length], 0)
-			  withString:string];
-      if ([[text string] length] > consoleHistory)
-        {
-          [text replaceCharactersInRange:
-                  NSMakeRange(0, [[text string] length] - consoleHistory)
-                              withString: @""];
-        }
-      [text scrollRangeToVisible:NSMakeRange([[text string] length], 0)];
+  if (text != nil) {
+    [text replaceCharactersInRange:NSMakeRange([[text string] length], 0) withString:string];
+    if ([[text string] length] > consoleHistory) {
+      [text replaceCharactersInRange:NSMakeRange(0, [[text string] length] - consoleHistory)
+                          withString:@""];
     }
-  else
-    {
-      ASSIGN(savedString, [savedString stringByAppendingString: string]);
-      if ([savedString length] > consoleHistory)
-	{
-	  ASSIGN(savedString,[savedString
-		 substringFromIndex:[savedString length] -
-		 consoleHistory]);
-	}
+    [text scrollRangeToVisible:NSMakeRange([[text string] length], 0)];
+  } else {
+    ASSIGN(savedString, [savedString stringByAppendingString:string]);
+    if ([savedString length] > consoleHistory) {
+      ASSIGN(savedString, [savedString substringFromIndex:[savedString length] - consoleHistory]);
     }
+  }
 }
 
 // Notifications
@@ -182,9 +163,8 @@
   [defaults synchronize];
   globalDomain = [defaults persistentDomainForName:NSGlobalDomain];
 
-  font = [NSFont
-           fontWithName:[globalDomain objectForKey:@"NSUserFixedPitchFont"]
-                   size:[[globalDomain objectForKey:@"NSUserFixedPitchFontSize"] floatValue]];
+  font = [NSFont fontWithName:[globalDomain objectForKey:@"NSUserFixedPitchFont"]
+                         size:[[globalDomain objectForKey:@"NSUserFixedPitchFontSize"] floatValue]];
   [text setFont:font];
 }
 

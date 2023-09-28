@@ -41,7 +41,6 @@
 #include "xdnd.h"
 #include "desktop.h"
 
-
 static Atom _XA_XdndAware;
 static Atom _XA_XdndEnter;
 static Atom _XA_XdndLeave;
@@ -76,20 +75,20 @@ void wXDNDInitializeAtoms(void)
 void wXDNDMakeAwareness(Window window)
 {
   long int xdnd_version = XDND_VERSION;
-  XChangeProperty(dpy, window, _XA_XdndAware, XA_ATOM, 32,
-                  PropModeAppend, (unsigned char *)&xdnd_version, 1);
+  XChangeProperty(dpy, window, _XA_XdndAware, XA_ATOM, 32, PropModeAppend,
+                  (unsigned char *)&xdnd_version, 1);
 }
 
 static void wXDNDDecodeURI(char *uri)
 {
   char *last = uri + strlen(uri);
-  while (uri < last-2) {
+  while (uri < last - 2) {
     if (*uri == '%') {
       int h;
-      if (sscanf(uri+1, "%2X", &h) != 1)
+      if (sscanf(uri + 1, "%2X", &h) != 1)
         break;
       *uri = h;
-      memmove(uri+1, uri+3, last - (uri+2));
+      memmove(uri + 1, uri + 3, last - (uri + 2));
       last -= 2;
     }
     uri++;
@@ -108,10 +107,9 @@ Bool wXDNDProcessSelection(XEvent *event)
   XEvent xevent;
   Window selowner = XGetSelectionOwner(dpy, _XA_XdndSelection);
 
-  XGetWindowProperty(dpy, event->xselection.requestor,
-                     _XA_WINDOWMAKER_XDNDEXCHANGE,
-                     0, 65536, True, selected_typelist, &ret_type, &ret_format,
-                     &ret_item, &remain_byte, (unsigned char **)&delme);
+  XGetWindowProperty(dpy, event->xselection.requestor, _XA_WINDOWMAKER_XDNDEXCHANGE, 0, 65536, True,
+                     selected_typelist, &ret_type, &ret_format, &ret_item, &remain_byte,
+                     (unsigned char **)&delme);
 
   /* send finished */
   memset(&xevent, 0, sizeof(xevent));
@@ -133,22 +131,22 @@ Bool wXDNDProcessSelection(XEvent *event)
     scr->xdestring = delme;
     items = CFArrayCreateMutable(kCFAllocatorDefault, 4, NULL);
     retain = wstrdup(scr->xdestring);
-    XFree(scr->xdestring);	/* since xdestring was created by Xlib */
+    XFree(scr->xdestring); /* since xdestring was created by Xlib */
 
     length = strlen(retain);
 
     /* search in string */
     while (length--) {
-      if (retain[length] == '\r') {	/* useless char, nuke it */
+      if (retain[length] == '\r') { /* useless char, nuke it */
         retain[length] = 0;
       }
       if (retain[length] == '\n') {
         str_size = strlen(&retain[length + 1]);
         if (str_size) {
           CFArrayAppendValue(items, wstrdup(&retain[length + 1]));
-          total_size += str_size + 3;	/* reserve for " \"\"" */
-					/* this is nonsense -- if (length)
-					   WMAppendArray(items, WMCreateArray(1)); */
+          total_size += str_size + 3; /* reserve for " \"\"" */
+                                      /* this is nonsense -- if (length)
+                                         WMAppendArray(items, WMCreateArray(1)); */
         }
         retain[length] = 0;
       }
@@ -160,8 +158,8 @@ Bool wXDNDProcessSelection(XEvent *event)
 
     /* now pack new string */
     scr->xdestring = wmalloc(total_size);
-    scr->xdestring[0] = 0;	/* empty string */
-    for (CFIndex i = CFArrayGetCount(items)-1; i >= 0 ; i--) {
+    scr->xdestring[0] = 0; /* empty string */
+    for (CFIndex i = CFArrayGetCount(items) - 1; i >= 0; i--) {
       tmp = (char *)CFArrayGetValueAtIndex(items, i);
       /* only supporting file: URI objects */
       if (!strncmp(tmp, "file://", 7)) {
@@ -176,7 +174,7 @@ Bool wXDNDProcessSelection(XEvent *event)
     CFRelease(items);
     if (scr->xdestring[0])
       wDockReceiveDNDDrop(scr, event);
-    wfree(scr->xdestring);	/* this xdestring is not from Xlib (no XFree) */
+    wfree(scr->xdestring); /* this xdestring is not from Xlib (no XFree) */
   }
 
   return True;
@@ -191,8 +189,8 @@ static Bool isAwareXDND(Window window)
 
   if (!window)
     return False;
-  XGetWindowProperty(dpy, window, _XA_XdndAware,
-                     0, 0x8000000L, False, XA_ATOM, &actual, &format, &count, &remaining, &data);
+  XGetWindowProperty(dpy, window, _XA_XdndAware, 0, 0x8000000L, False, XA_ATOM, &actual, &format,
+                     &count, &remaining, &data);
   if (actual != XA_ATOM || format != 32 || count == 0 || !data) {
     if (data)
       XFree(data);
@@ -213,8 +211,7 @@ static Bool acceptXDND(Window window)
   dock = scr->dock;
   if (dock) {
     for (i = 0; i < dock->max_icons; i++) {
-      if (dock->icon_array[i]
-          && dock->icon_array[i]->icon->core->window == window) {
+      if (dock->icon_array[i] && dock->icon_array[i]->icon->core->window == window) {
         icon_pos = i;
         break;
       }
@@ -224,8 +221,7 @@ static Bool acceptXDND(Window window)
     dock = scr->desktops[scr->current_desktop]->clip;
     if (dock) {
       for (i = 0; i < dock->max_icons; i++) {
-        if (dock->icon_array[i]
-            && dock->icon_array[i]->icon->core->window == window) {
+        if (dock->icon_array[i] && dock->icon_array[i]->icon->core->window == window) {
           icon_pos = i;
           break;
         }
@@ -252,9 +248,8 @@ static void wXDNDGetTypeList(Display *dpy, Window window)
   unsigned long count, remaining;
   unsigned char *data = NULL;
 
-  XGetWindowProperty(dpy, window, _XA_XdndTypeList,
-                     0, 0x8000000L, False, XA_ATOM,
-                     &type, &format, &count, &remaining, &data);
+  XGetWindowProperty(dpy, window, _XA_XdndTypeList, 0, 0x8000000L, False, XA_ATOM, &type, &format,
+                     &count, &remaining, &data);
 
   if (type != XA_ATOM || format != 32 || count == 0 || !data) {
     if (data)
@@ -264,7 +259,7 @@ static void wXDNDGetTypeList(Display *dpy, Window window)
   }
 
   typelist = malloc((count + 1) * sizeof(Atom));
-  a = (Atom *) data;
+  a = (Atom *)data;
   for (i = 0; i < count; i++) {
     typelist[i] = a[i];
     if (typelist[i] == supported_typelist) {
@@ -280,7 +275,6 @@ static void wXDNDGetTypeList(Display *dpy, Window window)
 Bool wXDNDProcessClientMessage(XClientMessageEvent *event)
 {
   if (event->message_type == _XA_XdndEnter) {
-
     if (XDND_ENTER_THREE_TYPES(event)) {
       selected_typelist = XDND_ENTER_TYPE(event, 0);
     } else {
@@ -296,8 +290,8 @@ Bool wXDNDProcessClientMessage(XClientMessageEvent *event)
     return True;
   } else if (event->message_type == _XA_XdndDrop) {
     if (XDND_DROP_SOURCE_WIN(event) == XGetSelectionOwner(dpy, _XA_XdndSelection)) {
-      XConvertSelection(dpy, _XA_XdndSelection, selected_typelist,
-                        _XA_WINDOWMAKER_XDNDEXCHANGE, event->window, CurrentTime);
+      XConvertSelection(dpy, _XA_XdndSelection, selected_typelist, _XA_WINDOWMAKER_XDNDEXCHANGE,
+                        event->window, CurrentTime);
     }
     return True;
   } else if (event->message_type == _XA_XdndPosition) {

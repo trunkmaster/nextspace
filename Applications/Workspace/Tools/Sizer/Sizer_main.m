@@ -3,7 +3,7 @@
 // Project: Workspace
 //
 // Copyright (C) 2015 Sergii Stoian
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -39,34 +39,30 @@ void SignalHandler(int sig)
 {
   // if (sig == SIGTERM)
   //   fprintf(stderr, "FileOperation.tool: received TERMINATE signal\n");
-  if (sig == SIGINT)
-    {
-      fprintf(stderr, "Sizer.tool: received INTERRUPT signal\n");
-      StopOperation();
-    }
+  if (sig == SIGINT) {
+    fprintf(stderr, "Sizer.tool: received INTERRUPT signal\n");
+    StopOperation();
+  }
 }
 
-void StopOperation()
-{
-  isStopped = YES;
-}
+void StopOperation() { isStopped = YES; }
 
 int main(int argc, const char **argv)
 {
-  NSString       *op;
-  NSString       *source;
-  NSArray        *files;
+  NSString *op;
+  NSString *source;
+  NSArray *files;
   NSUserDefaults *df;
-  BOOL           argsOK = YES;
-  OperationType  opType;
-  Size           *sizer;
-  Communicator   *comm;
+  BOOL argsOK = YES;
+  OperationType opType;
+  Size *sizer;
+  Communicator *comm;
 
   CREATE_AUTORELEASE_POOL(pool);
 
   // Signals
   signal(SIGINT, SignalHandler);
-  //signal(SIGTERM, SignalHandler);
+  // signal(SIGTERM, SignalHandler);
 
   df = [NSUserDefaults standardUserDefaults];
   op = [df objectForKey:@"Operation"];
@@ -74,48 +70,34 @@ int main(int argc, const char **argv)
   files = [df objectForKey:@"Files"];
 
   // check args
-  if (source == nil || ![source isKindOfClass:[NSString class]])
-    {
-      printf("Sizer.tool: incorrect source path (-Source)!\n");
-      argsOK = NO;
-    }
-  if (files == nil || ![files isKindOfClass:[NSArray class]])
-    {
-      files = nil;
-    }
-  
-  if (argsOK == NO)
-    {
-      PrintHelp();
-      return 1;
-    }
+  if (source == nil || ![source isKindOfClass:[NSString class]]) {
+    printf("Sizer.tool: incorrect source path (-Source)!\n");
+    argsOK = NO;
+  }
+  if (files == nil || ![files isKindOfClass:[NSArray class]]) {
+    files = nil;
+  }
+
+  if (argsOK == NO) {
+    PrintHelp();
+    return 1;
+  }
 
   isStopped = NO;
 
-  if ([op isEqualToString:@"Copy"])
-    {
-      opType = CopyOp;
-    }
-  else if ([op isEqualToString:@"Move"])
-    {
-      opType = MoveOp;
-    }
-  else if ([op isEqualToString:@"Link"])
-    {
-      opType = LinkOp;
-    }
-  else if ([op isEqualToString:@"Duplicate"])
-    {
-      opType = DuplicateOp;
-    }
-  else if ([op isEqualToString:@"Delete"])
-    {
-      opType = DeleteOp;
-    }
-  else
-    {
-      opType = CopyOp;
-    }
+  if ([op isEqualToString:@"Copy"]) {
+    opType = CopyOp;
+  } else if ([op isEqualToString:@"Move"]) {
+    opType = MoveOp;
+  } else if ([op isEqualToString:@"Link"]) {
+    opType = LinkOp;
+  } else if ([op isEqualToString:@"Duplicate"]) {
+    opType = DuplicateOp;
+  } else if ([op isEqualToString:@"Delete"]) {
+    opType = DeleteOp;
+  } else {
+    opType = CopyOp;
+  }
 
   comm = [[Communicator alloc] init];
   sizer = [[Size alloc] init];
@@ -124,9 +106,9 @@ int main(int argc, const char **argv)
                          operationType:opType
                          sendIncrement:NO
                           communicator:comm];
-  
+
   [comm finishOperation:op stopped:isStopped];
-  
+
   [comm release];
   [sizer release];
 

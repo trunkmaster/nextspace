@@ -1,6 +1,6 @@
 /* -*- mode: objc -*- */
 //
-// Interface to Window Manager part of Workspace application. 
+// Interface to Window Manager part of Workspace application.
 // Consists of functions to avoid converting WindowMaker sources to ObjC.
 //
 // Project: Workspace
@@ -60,21 +60,20 @@ extern Display *dpy;
 
 NSImage *WSImageForRasterImage(RImage *r_image)
 {
-  BOOL		   hasAlpha = (r_image->format == RRGBAFormat) ? YES : NO;
+  BOOL hasAlpha = (r_image->format == RRGBAFormat) ? YES : NO;
   NSBitmapImageRep *rep = nil;
-  NSImage          *image = nil;
+  NSImage *image = nil;
 
-  rep = [[NSBitmapImageRep alloc]
-               initWithBitmapDataPlanes:&r_image->data
-                             pixelsWide:r_image->width
-                             pixelsHigh:r_image->height
-                          bitsPerSample:8
-                        samplesPerPixel:hasAlpha ? 4 : 3
-                               hasAlpha:hasAlpha
-                               isPlanar:NO
-                         colorSpaceName:NSDeviceRGBColorSpace
-                            bytesPerRow:0
-                           bitsPerPixel:hasAlpha ? 32 : 24];
+  rep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:&r_image->data
+                                                pixelsWide:r_image->width
+                                                pixelsHigh:r_image->height
+                                             bitsPerSample:8
+                                           samplesPerPixel:hasAlpha ? 4 : 3
+                                                  hasAlpha:hasAlpha
+                                                  isPlanar:NO
+                                            colorSpaceName:NSDeviceRGBColorSpace
+                                               bytesPerRow:0
+                                              bitsPerPixel:hasAlpha ? 32 : 24];
 
   if (rep) {
     image = [[NSImage alloc] init];
@@ -87,18 +86,18 @@ NSImage *WSImageForRasterImage(RImage *r_image)
 
 char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path)
 {
-  NSImage  *image = WSImageForRasterImage(r_image);
-  NSData   *tiffRep = [image TIFFRepresentation];
+  NSImage *image = WSImageForRasterImage(r_image);
+  NSData *tiffRep = [image TIFFRepresentation];
   NSString *filePath;
 
   filePath = [NSString stringWithCString:file_path];
   wfree(file_path);
-  
+
   if (![[filePath pathExtension] isEqualToString:@"tiff"]) {
     filePath = [filePath stringByDeletingPathExtension];
     filePath = [filePath stringByAppendingPathExtension:@"tiff"];
   }
-  
+
   [tiffRep writeToFile:filePath atomically:YES];
   [image release];
 
@@ -141,7 +140,7 @@ void WSUpdateScreenInfo(WScreen *scr)
   // Update WM Xrandr
   wUpdateXrandrInfo(scr);
 
-  screenRect = NSMakeRect(0,0,0,0);
+  screenRect = NSMakeRect(0, 0, 0, 0);
   for (int i = 0; i < scr->xrandr_info.count; i++) {
     headRect.origin.x = scr->xrandr_info.screens[i].pos.x;
     headRect.origin.y = scr->xrandr_info.screens[i].pos.y;
@@ -150,7 +149,7 @@ void WSUpdateScreenInfo(WScreen *scr)
 
     if (i == scr->xrandr_info.primary_head)
       primaryRect = headRect;
-    
+
     screenRect = NSUnionRect(screenRect, headRect);
   }
   scr->width = (int)screenRect.size.width;
@@ -163,41 +162,37 @@ void WSUpdateScreenInfo(WScreen *scr)
   // Place Dock into main display with changed usable area.
   // RecyclerIcon call should go first to update its position on screen.
   [RecyclerIcon updatePositionInDock:scr->dock];
-  moveDock(scr->dock,
-           (NSMaxX(primaryRect) - wPreferences.icon_size - DOCK_EXTRA_SPACE),
+  moveDock(scr->dock, (NSMaxX(primaryRect) - wPreferences.icon_size - DOCK_EXTRA_SPACE),
            primaryRect.origin.y);
-  
+
   // Move IconYard
   // IconYard is placed into main display automatically.
   wArrangeIcons(scr, True);
-  
+
   // Save Dock state with new position and screen size
   wScreenSaveState(scr);
 
   // Save changed layout in user's preferences directory
   // [systemScreen saveCurrentDisplayLayout];
- 
+
   // NSLog(@"XRRScreenChangeNotify: END");
   XUnlockDisplay(dpy);
 
   // NSLog(@"Sending OSEScreenDidChangeNotification...");
   // Send notification to active OSEScreen applications.
   [[NSDistributedNotificationCenter defaultCenter]
-     postNotificationName:OSEScreenDidChangeNotification
-                   object:nil];
+      postNotificationName:OSEScreenDidChangeNotification
+                    object:nil];
 }
 
-void WSUpdateScreenParameters(void)
-{
-  WSUpdateScreenInfo(wDefaultScreen());
-}
+void WSUpdateScreenParameters(void) { WSUpdateScreenInfo(wDefaultScreen()); }
 
 // Application events
 //------------------------------------------------------------------------------
 void WSActivateApplication(WScreen *scr, char *app_name)
 {
-  id           app;
-  NSString     *appName;
+  id app;
+  NSString *appName;
   NSConnection *appConnection;
 
   if (!strcmp(app_name, "Workspace")) {
@@ -206,13 +201,11 @@ void WSActivateApplication(WScreen *scr, char *app_name)
   }
 
   appName = [NSString stringWithCString:app_name];
-  app = [NSConnection rootProxyForConnectionWithRegisteredName:appName
-                                                          host:nil];
+  app = [NSConnection rootProxyForConnectionWithRegisteredName:appName host:nil];
   if (app == nil) {
     WSMessage("WSActivateApplication: Couldn't contact application %@.", appName);
     WSActivateWorkspaceApp(scr);
-  }
-  else {
+  } else {
     WSMessage("[WS+WM] Activating application `%@`", appName);
     [app activateIgnoringOtherApps:YES];
 
@@ -221,12 +214,10 @@ void WSActivateApplication(WScreen *scr, char *app_name)
     [[appConnection sendPort] invalidate];
     [appConnection invalidate];
     [app release];
-    
+
     if ([NSApp isActive] != NO) {
       WSMessage("Workspace is active - deactivating...");
-      [NSApp performSelectorOnMainThread:@selector(deactivate)
-                              withObject:nil
-                           waitUntilDone:YES];
+      [NSApp performSelectorOnMainThread:@selector(deactivate) withObject:nil waitUntilDone:YES];
     }
   }
 }
@@ -235,13 +226,12 @@ void WSActivateWorkspaceApp(WScreen *scr)
 {
   if (scr == NULL)
     scr = wDefaultScreen();
-  
+
   if ([NSApp isHidden] == NO) {
     [[NSApp delegate] performSelectorOnMainThread:@selector(activate)
                                        withObject:nil
                                     waitUntilDone:YES];
-  }
-  else {
+  } else {
     XSetInputFocus(dpy, scr->no_focus_win, RevertToParent, CurrentTime);
   }
 }
@@ -253,26 +243,28 @@ void WSActivateWorkspaceApp(WScreen *scr)
 // NSAlertAlternateReturn = 0;
 // NSAlertOtherReturn = -1;
 // NSAlertErrorReturn  = -2
-int WSRunAlertPanel(char *title, char *message,
-                     char *defaultButton, char *alternateButton, char *otherButton)
+int WSRunAlertPanel(char *title, char *message, char *defaultButton, char *alternateButton,
+                    char *otherButton)
 {
-  NSDictionary        *info;
+  NSDictionary *info;
   NSMutableDictionary *alertInfo;
   int result;
 
-  info = @{@"Title":[NSString stringWithCString:title],
-           @"Message":[NSString stringWithCString:message],
-           @"DefaultButton":[NSString stringWithCString:defaultButton],
-           @"AlternateButton":alternateButton?[NSString stringWithCString:alternateButton]:@"",
-           @"OtherButton":otherButton?[NSString stringWithCString:otherButton]:@""};
+  info = @{
+    @"Title" : [NSString stringWithCString:title],
+    @"Message" : [NSString stringWithCString:message],
+    @"DefaultButton" : [NSString stringWithCString:defaultButton],
+    @"AlternateButton" : alternateButton ? [NSString stringWithCString:alternateButton] : @"",
+    @"OtherButton" : otherButton ? [NSString stringWithCString:otherButton] : @""
+  };
   alertInfo = [info mutableCopy];
-  
+
   [[NSApp delegate] performSelectorOnMainThread:@selector(showWMAlert:)
                                      withObject:alertInfo
                                   waitUntilDone:YES];
   result = [[alertInfo objectForKey:@"Result"] integerValue];
   [alertInfo release];
-  
+
   return result;
 }
 
@@ -280,19 +272,18 @@ extern void wShakeWindow(WWindow *wwin);
 void WSRingBell(WWindow *wwin)
 {
   NXTDefaults *defs = [NXTDefaults globalUserDefaults];
-  NSString   *beepType = [defs objectForKey:@"NXSystemBeepType"];
+  NSString *beepType = [defs objectForKey:@"NXSystemBeepType"];
 
   if (beepType && [beepType isEqualToString:@"Visual"]) {
     wShakeWindow(wwin);
-  }
-  else {
+  } else {
     [[NSApp delegate] ringBell];
   }
 }
 
 void WSMessage(char *fmt, ...)
 {
-  va_list  args;
+  va_list args;
   NSString *format;
 
   if (GSDebugSet(@"WM") == YES) {

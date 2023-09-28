@@ -42,14 +42,14 @@
 {
   // Dragging
   NXTIconView *draggedSource;
-  NSArray    *draggedPaths;
-  PathIcon   *draggedIcon;
+  NSArray *draggedPaths;
+  PathIcon *draggedIcon;
   NXTIconSlot lastSlotDragEntered;
   NXTIconSlot lastSlotDragExited;
-  NSPoint    dragPoint;
+  NSPoint dragPoint;
   NSUInteger draggedMask;
 
-  BOOL       isRootIconDragged;
+  BOOL isRootIconDragged;
 }
 
 - (PathIcon *)iconInSlot:(NXTIconSlot)slot;
@@ -65,7 +65,6 @@
 - (NSDictionary *)storableRepresentation;
 
 // --- Drag and Drop
-- (BOOL)acceptsDragFromSource:(id)dSource
-                    withPaths:(NSArray *)dPaths;
+- (BOOL)acceptsDragFromSource:(id)dSource withPaths:(NSArray *)dPaths;
 
 @end

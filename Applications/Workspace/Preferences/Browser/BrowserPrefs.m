@@ -39,17 +39,16 @@ static inline NSRect IncrementedRect(NSRect r)
 @implementation BrowserPrefs (Private)
 - (void)setupArrows
 {
-  NSRect     aFrame;
-  NSRect     bFrame = [browser frame];
-  NSSize     s = [[rightArr superview] frame].size;
-  float      width;
+  NSRect aFrame;
+  NSRect bFrame = [browser frame];
+  NSSize s = [[rightArr superview] frame].size;
+  float width;
   NXTDefaults *df = [NXTDefaults userDefaults];
 
   if ([df floatForKey:BrowserViewerColumnWidth] != BROWSER_DEF_COLUMN_WIDTH) {
     [button setEnabled:YES];
     width = [df floatForKey:BrowserViewerColumnWidth];
-  }
-  else {
+  } else {
     width = BROWSER_DEF_COLUMN_WIDTH;
   }
 
@@ -70,7 +69,7 @@ static inline NSRect IncrementedRect(NSRect r)
 {
   NSDebugLLog(@"BrowserPrefs", @"BrowserPrefs: dealloc");
 
-//  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  //  [[NSNotificationCenter defaultCenter] removeObserver: self];
 
   TEST_RELEASE(box);
 
@@ -93,11 +92,11 @@ static inline NSRect IncrementedRect(NSRect r)
 
   [self setupArrows];
 
-/*  [[NSNotificationCenter defaultCenter]
-    addObserver: self
-       selector: @selector(changedSelection:)
-	   name: @"FileViewerDidChangeSelectionNotification"
-	 object: nil];*/
+  /*  [[NSNotificationCenter defaultCenter]
+      addObserver: self
+         selector: @selector(changedSelection:)
+             name: @"FileViewerDidChangeSelectionNotification"
+           object: nil];*/
 }
 
 - (NSString *)moduleName
@@ -116,24 +115,21 @@ static inline NSRect IncrementedRect(NSRect r)
 
 // --- NXTSizer delegate
 
-- (BOOL) arrowView:(NXTSizer *)sender
- shouldMoveByDelta:(float)delta
+- (BOOL)arrowView:(NXTSizer *)sender shouldMoveByDelta:(float)delta
 {
-  NSView     *superview = [sender superview];
-  NSSize     s = [superview frame].size;
-  NSRect     bFrame = [browser frame];
-  NSRect     aFrame = [rightArr frame];
+  NSView *superview = [sender superview];
+  NSSize s = [superview frame].size;
+  NSRect bFrame = [browser frame];
+  NSRect aFrame = [rightArr frame];
   NSUInteger newWidth;
 
-//  NSLog(@"[BrowserPrefs] arrowView moved by delta: %f", delta);
+  //  NSLog(@"[BrowserPrefs] arrowView moved by delta: %f", delta);
 
   newWidth = (aFrame.origin.x + delta) - bFrame.origin.x;
 
-  if (newWidth <= BROWSER_MIN_COLUMN_WIDTH ||
-      newWidth >= BROWSER_MAX_COLUMN_WIDTH)
-    {
-      return NO;
-    }
+  if (newWidth <= BROWSER_MIN_COLUMN_WIDTH || newWidth >= BROWSER_MAX_COLUMN_WIDTH) {
+    return NO;
+  }
 
   bFrame.size.width = newWidth;
   [browser setFrame:bFrame];
@@ -142,8 +138,7 @@ static inline NSRect IncrementedRect(NSRect r)
 
   if (newWidth == BROWSER_DEF_COLUMN_WIDTH) {
     [button setEnabled:NO];
-  }
-  else {
+  } else {
     [button setEnabled:YES];
   }
 
@@ -153,15 +148,14 @@ static inline NSRect IncrementedRect(NSRect r)
 - (void)arrowViewStoppedMoving:(NXTSizer *)sender
 {
   NSLog(@"[BrowserPrefs] browser column width changed to: %f",
-	[rightArr frame].origin.x - [browser frame].origin.x);
+        [rightArr frame].origin.x - [browser frame].origin.x);
 
-  [[NXTDefaults userDefaults]
-    setFloat:([rightArr frame].origin.x - [browser frame].origin.x)
-      forKey:BrowserViewerColumnWidth];
+  [[NXTDefaults userDefaults] setFloat:([rightArr frame].origin.x - [browser frame].origin.x)
+                                forKey:BrowserViewerColumnWidth];
 
   [[NSNotificationCenter defaultCenter]
-    postNotificationName:BrowserViewerColumnWidthDidChangeNotification
-		  object:self];
+      postNotificationName:BrowserViewerColumnWidthDidChangeNotification
+                    object:self];
 }
 
 // --- Button
@@ -170,13 +164,12 @@ static inline NSRect IncrementedRect(NSRect r)
 {
   if ([sender isEqualTo:button] == NO)
     return;
-  
+
   [sender setEnabled:NO];
-  [[NXTDefaults userDefaults] setFloat:BROWSER_DEF_COLUMN_WIDTH
-                               forKey:BrowserViewerColumnWidth];
+  [[NXTDefaults userDefaults] setFloat:BROWSER_DEF_COLUMN_WIDTH forKey:BrowserViewerColumnWidth];
   [[NSNotificationCenter defaultCenter]
-    postNotificationName:BrowserViewerColumnWidthDidChangeNotification
-        	  object:self];
+      postNotificationName:BrowserViewerColumnWidthDidChangeNotification
+                    object:self];
 
   [self setupArrows];
 }

@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2015 Sergii Stoian
 // Copyright (C) 2015-2018 Sergii Stoian
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -39,49 +39,46 @@
 {
   NSString *rootPath;
   NSString *displayedPath;
-  NSArray  *dirContents;
-  NSArray  *selection;
-  BOOL     isRootViewer;
+  NSArray *dirContents;
+  NSArray *selection;
+  BOOL isRootViewer;
 
   NSFileHandle *dirHandle;
 
   id<MediaManager> mediaManager;
 
-  OSEFileSystemMonitor *fileSystemMonitor;     // File system events
-  NSNumber            *monitorPathDescriptor; // file descriptor for path
+  OSEFileSystemMonitor *fileSystemMonitor;  // File system events
+  NSNumber *monitorPathDescriptor;          // file descriptor for path
 
   NSWindow *window;
-  id       box;
-  id       scrollView;
-  id       pathView;
-  id       containerBox;
-  id       shelf;
-  id       bogusWindow;
-  id       splitView;
-  id       diskInfo;
-  id       operationInfo;
+  id box;
+  id scrollView;
+  id pathView;
+  id containerBox;
+  id shelf;
+  id bogusWindow;
+  id splitView;
+  id diskInfo;
+  id operationInfo;
 
   int setEditedStateCount;
 
-//  PathViewScroller *scroller;
-  id <Viewer> viewer;
-  NSLock      *lock;
+  //  PathViewScroller *scroller;
+  id<Viewer> viewer;
+  NSLock *lock;
 
   NSTimer *checkTimer;
 
   // Preferences
-  BOOL      showHiddenFiles;
+  BOOL showHiddenFiles;
   NSInteger sortFilesBy;
 
   // Dragging
   NXTIconView *draggedSource;
-  PathIcon   *draggedIcon;
+  PathIcon *draggedIcon;
 }
 
-- initRootedAtPath:(NSString *)aRootPath
-            viewer:(NSString *)viewerType
-	    isRoot:(BOOL)isRoot;
-
+- initRootedAtPath:(NSString *)aRootPath viewer:(NSString *)viewerType isRoot:(BOOL)isRoot;
 
 - (BOOL)isRootViewer;
 - (BOOL)isRootViewerCopy;
@@ -95,25 +92,20 @@
 //=============================================================================
 - (NSString *)rootPath;
 - (NSString *)displayedPath;
-- (NSString *)absolutePath; // rootPath + displayedPath for FolderViewers
+- (NSString *)absolutePath;  // rootPath + displayedPath for FolderViewers
 - (NSArray *)selection;
 - (void)setPathFromAbsolutePath:(NSString *)absolutePath;
 - (NSString *)absolutePathFromPath:(NSString *)relPath;
 - (NSString *)pathFromAbsolutePath:(NSString *)absolutePath;
 - (NSArray *)absolutePathsForPaths:(NSArray *)relPaths;
-- (NSArray *)directoryContentsAtPath:(NSString *)relPath
-                             forPath:(NSString *)targetPath;
+- (NSArray *)directoryContentsAtPath:(NSString *)relPath forPath:(NSString *)targetPath;
 
 //=============================================================================
 // Actions
 //=============================================================================
-- (NSArray *)checkSelection:(NSArray *)filenames
-		     atPath:(NSString *)relativePath;
-- (void)validatePath:(NSString **)relativePath
-           selection:(NSArray **)filenames;
-- (void)displayPath:(NSString *)relativePath
-	  selection:(NSArray *)filenames
-	     sender:(id)sender;
+- (NSArray *)checkSelection:(NSArray *)filenames atPath:(NSString *)relativePath;
+- (void)validatePath:(NSString **)relativePath selection:(NSArray **)filenames;
+- (void)displayPath:(NSString *)relativePath selection:(NSArray *)filenames sender:(id)sender;
 
 - (void)setViewerType:(id)sender;
 
@@ -148,19 +140,18 @@
 //=============================================================================
 // Splitview
 //=============================================================================
-- (void)         splitView:(NSSplitView *)sender
- resizeSubviewsWithOldSize:(NSSize)oldSize;
+- (void)splitView:(NSSplitView *)sender resizeSubviewsWithOldSize:(NSSize)oldSize;
 
-- (CGFloat)     splitView:(NSSplitView *)sender
- constrainSplitPosition:(CGFloat)proposedPosition
-	    ofSubviewAt:(NSInteger)offset;
+- (CGFloat)splitView:(NSSplitView *)sender
+    constrainSplitPosition:(CGFloat)proposedPosition
+               ofSubviewAt:(NSInteger)offset;
 
 //=============================================================================
 // NXTIconLabel delegate
 //=============================================================================
-- (void)   iconLabel:(NXTIconLabel *)anIconLabel
- didChangeStringFrom:(NSString *)oldLabelString
-		  to:(NSString *)newLabelString;
+- (void)iconLabel:(NXTIconLabel *)anIconLabel
+    didChangeStringFrom:(NSString *)oldLabelString
+                     to:(NSString *)newLabelString;
 
 //=============================================================================
 // Viewer delegate
@@ -171,7 +162,7 @@
 // Window
 //=============================================================================
 - (void)setWindowEdited:(BOOL)onState;
-  
+
 //=============================================================================
 // Notifications
 //=============================================================================

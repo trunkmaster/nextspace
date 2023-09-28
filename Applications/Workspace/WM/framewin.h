@@ -26,39 +26,39 @@
 #include "wcore.h"
 #include "pixmap.h"
 
-#define BORDER_TOP		1
-#define BORDER_BOTTOM		2
-#define BORDER_LEFT		4
-#define BORDER_RIGHT		8
-#define BORDER_ALL		(1|2|4|8)
+#define BORDER_TOP 1
+#define BORDER_BOTTOM 2
+#define BORDER_LEFT 4
+#define BORDER_RIGHT 8
+#define BORDER_ALL (1 | 2 | 4 | 8)
 
 /* Window frame components and states */
-#define WFF_TITLEBAR		(1<<0)
-#define WFF_LEFT_BUTTON		(1<<1)
-#define WFF_RIGHT_BUTTON	(1<<2)
-#define WFF_RESIZEBAR		(1<<3)
-#define WFF_BORDER		(1<<4)
-#define WFF_SINGLE_STATE 	(1<<5)
-#define WFF_SELECTED		(1<<6)
-#define WFF_IS_SHADED		(1<<16)
+#define WFF_TITLEBAR (1 << 0)
+#define WFF_LEFT_BUTTON (1 << 1)
+#define WFF_RIGHT_BUTTON (1 << 2)
+#define WFF_RESIZEBAR (1 << 3)
+#define WFF_BORDER (1 << 4)
+#define WFF_SINGLE_STATE (1 << 5)
+#define WFF_SELECTED (1 << 6)
+#define WFF_IS_SHADED (1 << 16)
 
 /* Window states */
-#define WS_FOCUSED		0
-#define WS_UNFOCUSED		1
-#define WS_PFOCUSED		2
+#define WS_FOCUSED 0
+#define WS_UNFOCUSED 1
+#define WS_PFOCUSED 2
 
-#define TITLEBAR_EXTEND_SPACE	4
+#define TITLEBAR_EXTEND_SPACE 4
 
 typedef struct WFrameWindow {
-  WScreen *screen_ptr;	       /* pointer to the screen structure */
+  WScreen *screen_ptr; /* pointer to the screen structure */
 
   WCoreWindow *core;
 
-  WCoreWindow *titlebar;	       /* the titlebar */
-  WCoreWindow *left_button;	       /* miniaturize button */
-  WCoreWindow *right_button;	       /* close button */
+  WCoreWindow *titlebar;     /* the titlebar */
+  WCoreWindow *left_button;  /* miniaturize button */
+  WCoreWindow *right_button; /* close button */
 
-  short desktop;		       /* desktop that the window occupies */
+  short desktop; /* desktop that the window occupies */
 
   short top_width;
   int *title_clearance;
@@ -68,10 +68,10 @@ typedef struct WFrameWindow {
 
   short resizebar_corner_width;
 
-  WCoreWindow *resizebar;	       /* bottom resizebar */
+  WCoreWindow *resizebar; /* bottom resizebar */
 
-  Pixmap title_back[3];	       /* focused, unfocused, pfocused */
-  Pixmap resizebar_back[3];	       /* any, None, None */
+  Pixmap title_back[3];     /* focused, unfocused, pfocused */
+  Pixmap resizebar_back[3]; /* any, None, None */
   Pixmap lbutton_back[3];
   Pixmap rbutton_back[3];
 
@@ -83,7 +83,7 @@ typedef struct WFrameWindow {
   WMColor **title_color;
   WMFont **font;
 
-  char *title;		       /* window name (title) */
+  char *title; /* window name (title) */
 
   /* thing that uses this frame. passed as data to callbacks */
   void *child;
@@ -99,31 +99,31 @@ typedef struct WFrameWindow {
   void (*on_mousedown_resizebar)(WCoreWindow *sender, void *data, XEvent *event);
 
   struct {
-    unsigned int state:2;	       /* 3 possible states */
-    unsigned int justification:2;
-    unsigned int titlebar:1;
-    unsigned int resizebar:1;
-    unsigned int left_button:1;
-    unsigned int right_button:1;
-    
-    unsigned int need_texture_remake:1;
-    
-    unsigned int single_texture:1;
-    
-    unsigned int hide_left_button:1;
-    unsigned int hide_right_button:1;
+    unsigned int state : 2; /* 3 possible states */
+    unsigned int justification : 2;
+    unsigned int titlebar : 1;
+    unsigned int resizebar : 1;
+    unsigned int left_button : 1;
+    unsigned int right_button : 1;
 
-    unsigned int need_texture_change:1;
+    unsigned int need_texture_remake : 1;
 
-    unsigned int lbutton_dont_fit:1;
-    unsigned int rbutton_dont_fit:1;
+    unsigned int single_texture : 1;
 
-    unsigned int repaint_only_titlebar:1;
-    unsigned int repaint_only_resizebar:1;
+    unsigned int hide_left_button : 1;
+    unsigned int hide_right_button : 1;
 
-    unsigned int is_client_window_frame:1;
+    unsigned int need_texture_change : 1;
 
-    unsigned int incomplete_title:1;
+    unsigned int lbutton_dont_fit : 1;
+    unsigned int rbutton_dont_fit : 1;
+
+    unsigned int repaint_only_titlebar : 1;
+    unsigned int repaint_only_resizebar : 1;
+
+    unsigned int is_client_window_frame : 1;
+
+    unsigned int incomplete_title : 1;
   } flags;
   int depth;
   Visual *visual;
@@ -133,13 +133,11 @@ typedef struct WFrameWindow {
   unsigned long *selected_border_pixel;
 } WFrameWindow;
 
-WFrameWindow* wFrameWindowCreate(WScreen *scr, int wlevel, int x, int y,
-                                 int width, int height, int *clearance,
-                                 int *title_min, int *title_max, int flags,
-                                 union WTexture **title_texture,
-                                 union WTexture **resize_texture,
-                                 WMColor **color, WMFont **font,
-                                 int depth, Visual *visual, Colormap colormap);
+WFrameWindow *wFrameWindowCreate(WScreen *scr, int wlevel, int x, int y, int width, int height,
+                                 int *clearance, int *title_min, int *title_max, int flags,
+                                 union WTexture **title_texture, union WTexture **resize_texture,
+                                 WMColor **color, WMFont **font, int depth, Visual *visual,
+                                 Colormap colormap);
 
 void wFrameWindowUpdateBorders(WFrameWindow *fwin, int flags);
 

@@ -32,54 +32,48 @@
 #include "xrandr.h"
 #include "winmenu.h"
 
-enum {
-  WO_KEEP_ON_TOP,
-  WO_KEEP_AT_BOTTOM,
-  WO_OMNIPRESENT
-};
-static const char *const window_menu_items[] = {
-  [WO_KEEP_ON_TOP]    = N_("Keep Above All Windows"),
-  [WO_KEEP_AT_BOTTOM] = N_("Keep Below All Windows"),
-  [WO_OMNIPRESENT]    = N_("Show on All Desktops")
-};
+enum { WO_KEEP_ON_TOP, WO_KEEP_AT_BOTTOM, WO_OMNIPRESENT };
+static const char *const window_menu_items[] = {[WO_KEEP_ON_TOP] = N_("Keep Above All Windows"),
+                                                [WO_KEEP_AT_BOTTOM] = N_("Keep Below All Windows"),
+                                                [WO_OMNIPRESENT] = N_("Show on All Desktops")};
 
 static void execWindowCommand(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin = (WWindow *)entry->clientdata;
 
   switch (entry->index) {
-  case WO_KEEP_ON_TOP:
-    if (wwin->frame->core->stacking->window_level != NSFloatingWindowLevel)
-      ChangeStackingLevel(wwin->frame->core, NSFloatingWindowLevel);
-    else
-      ChangeStackingLevel(wwin->frame->core, NSNormalWindowLevel);
-    break;
+    case WO_KEEP_ON_TOP:
+      if (wwin->frame->core->stacking->window_level != NSFloatingWindowLevel)
+        ChangeStackingLevel(wwin->frame->core, NSFloatingWindowLevel);
+      else
+        ChangeStackingLevel(wwin->frame->core, NSNormalWindowLevel);
+      break;
 
-  case WO_KEEP_AT_BOTTOM:
-    if (wwin->frame->core->stacking->window_level != NSSunkenWindowLevel)
-      ChangeStackingLevel(wwin->frame->core, NSSunkenWindowLevel);
-    else
-      ChangeStackingLevel(wwin->frame->core, NSNormalWindowLevel);
-    break;
+    case WO_KEEP_AT_BOTTOM:
+      if (wwin->frame->core->stacking->window_level != NSSunkenWindowLevel)
+        ChangeStackingLevel(wwin->frame->core, NSSunkenWindowLevel);
+      else
+        ChangeStackingLevel(wwin->frame->core, NSNormalWindowLevel);
+      break;
 
-  case WO_OMNIPRESENT:
-    wWindowSetOmnipresent(wwin, !wwin->flags.omnipresent);
-    break;
+    case WO_OMNIPRESENT:
+      wWindowSetOmnipresent(wwin, !wwin->flags.omnipresent);
+      break;
   }
 }
 
-static void updateWindowMenu(WMenu *menu, WWindow * wwin)
+static void updateWindowMenu(WMenu *menu, WWindow *wwin)
 {
   /* keep on top check */
   menu->items[WO_KEEP_ON_TOP]->clientdata = wwin;
   menu->items[WO_KEEP_ON_TOP]->flags.indicator_on =
-    (wwin->frame->core->stacking->window_level == NSFloatingWindowLevel) ? 1 : 0;
+      (wwin->frame->core->stacking->window_level == NSFloatingWindowLevel) ? 1 : 0;
   wMenuSetEnabled(menu, WO_KEEP_ON_TOP, !wwin->flags.miniaturized);
 
   /* keep at bottom check */
   menu->items[WO_KEEP_AT_BOTTOM]->clientdata = wwin;
   menu->items[WO_KEEP_AT_BOTTOM]->flags.indicator_on =
-    (wwin->frame->core->stacking->window_level == NSSunkenWindowLevel) ? 1 : 0;
+      (wwin->frame->core->stacking->window_level == NSSunkenWindowLevel) ? 1 : 0;
   wMenuSetEnabled(menu, WO_KEEP_AT_BOTTOM, !wwin->flags.miniaturized);
 
   /* omnipresent check */
@@ -90,7 +84,7 @@ static void updateWindowMenu(WMenu *menu, WWindow * wwin)
   wMenuRealize(menu);
 }
 
-static WMenu *createWindowMenu(WScreen * scr)
+static WMenu *createWindowMenu(WScreen *scr)
 {
   WMenu *menu;
   WMenuItem *item;
@@ -111,14 +105,14 @@ static WMenu *createWindowMenu(WScreen * scr)
   return menu;
 }
 
-void CloseWindowMenu(WScreen * scr)
+void CloseWindowMenu(WScreen *scr)
 {
   if (scr->window_menu) {
     if (scr->window_menu->flags.mapped)
       wMenuUnmap(scr->window_menu);
 
     if (scr->window_menu->items[0]->clientdata) {
-      WWindow *wwin = (WWindow *) scr->window_menu->items[0]->clientdata;
+      WWindow *wwin = (WWindow *)scr->window_menu->items[0]->clientdata;
 
       wwin->flags.menu_open_for_me = 0;
     }
@@ -153,8 +147,8 @@ void OpenWindowMenu(WWindow *wwin, int x, int y, int keyboard)
     x = wwin->frame_x;
 
   /* Common menu position */
-  rect = wGetRectForHead(menu->frame->screen_ptr,
-                         wGetHeadForPointerLocation(menu->frame->screen_ptr));
+  rect =
+      wGetRectForHead(menu->frame->screen_ptr, wGetHeadForPointerLocation(menu->frame->screen_ptr));
   if (x < rect.pos.x - menu->frame->core->width / 2) {
     x = rect.pos.x - menu->frame->core->width / 2;
   }

@@ -60,12 +60,11 @@ static NSMutableArray *fileList = nil;
 
   return nil;
 }
-- (void)_optimizeItems:(NSMutableArray *)items
-              fileView:(NXTIconView *)view
+- (void)_optimizeItems:(NSMutableArray *)items fileView:(NXTIconView *)view
 {
-  NXTIcon         *icon;
+  NXTIcon *icon;
   NSMutableArray *itemsCopy = [items mutableCopy];
-  NSArray        *iconsCopy = [[view icons] copy];
+  NSArray *iconsCopy = [[view icons] copy];
 
   // Remove non-existing items
   for (NXTIcon *icon in iconsCopy) {
@@ -82,7 +81,7 @@ static NSMutableArray *fileList = nil;
     }
   }
   [itemsCopy release];
-  
+
   // [view performSelectorOnMainThread:@selector(adjustToFitIcons)
   //                        withObject:nil
   //                     waitUntilDone:YES];
@@ -90,13 +89,13 @@ static NSMutableArray *fileList = nil;
 
 - (void)main
 {
-  NSMutableSet   *selected = [[NSMutableSet new] autorelease];
+  NSMutableSet *selected = [[NSMutableSet new] autorelease];
   NXTFileManager *fm = [NXTFileManager defaultManager];
   NSMutableArray *items;
-  NSString       *path;
-  PathIcon       *anIcon;
-  NSUInteger     slotsWide, x;
-  NSInteger      dbFileIndex;
+  NSString *path;
+  PathIcon *anIcon;
+  NSUInteger slotsWide, x;
+  NSInteger dbFileIndex;
 
   items = [[fm directoryContentsAtPath:directoryPath
                                forPath:nil
@@ -104,13 +103,13 @@ static NSMutableArray *fileList = nil;
                             showHidden:YES] mutableCopy];
 
   _itemsCount = [items count];
-  
+
   dbFileIndex = [items indexOfObject:@".recycler.db"];
   if (dbFileIndex != NSNotFound) {
     [items removeObjectAtIndex:dbFileIndex];
     _itemsCount--;
   }
-  
+
   x = 0;
   slotsWide = [iconView slotsWide];
   [self _optimizeItems:items fileView:iconView];
@@ -122,10 +121,8 @@ static NSMutableArray *fileList = nil;
     [anIcon setIconImage:[[NSApp delegate] iconForFile:path]];
     [anIcon setPaths:[NSArray arrayWithObject:path]];
 
-    [iconView performSelectorOnMainThread:@selector(addIcon:)
-                               withObject:anIcon
-                            waitUntilDone:YES];
-    
+    [iconView performSelectorOnMainThread:@selector(addIcon:) withObject:anIcon waitUntilDone:YES];
+
     if ([selectedFiles containsObject:filename]) {
       [selected addObject:anIcon];
     }
@@ -141,8 +138,7 @@ static NSMutableArray *fileList = nil;
 
   if ([selected count] != 0) {
     [iconView selectIcons:selected];
-  }
-  else {
+  } else {
     [iconView scrollPoint:NSZeroPoint];
   }
 }
@@ -160,7 +156,7 @@ static NSMutableArray *fileList = nil;
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [fileSystemMonitor removePath:_path];
-  
+
   [_appIcon release];
   [recyclerDBPath release];
   [_path release];
@@ -171,21 +167,21 @@ static NSMutableArray *fileList = nil;
     [itemsLoader cancel];
     [itemsLoader release];
   }
-  
+
   [super dealloc];
 }
 
 - (id)initWithDock:(WDock *)dock
 {
-  XClassHint    classhint;
+  XClassHint classhint;
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  BOOL          isDir;
+  BOOL isDir;
   WAppIcon *workspace_dock_icon = dock->icon_array[0];
 
   self = [super init];
-  
+
   _dockIcon = [RecyclerIcon recyclerAppIconForDock:dock];
- 
+
   if (_dockIcon == NULL || dock == NULL) {
     NSLog(@"Recycler Dock icon creation failed!");
     return nil;
@@ -196,7 +192,7 @@ static NSMutableArray *fileList = nil;
   XSetClassHint(dpy, _dockIcon->icon->core->window, &classhint);
   _dockIcon->icon->owner = workspace_dock_icon->icon->owner;
   _dockIcon->main_window = workspace_dock_icon->main_window;
-  
+
   _path = [NSHomeDirectory() stringByAppendingPathComponent:@".Recycler"];
   [_path retain];
   recyclerDBPath = [_path stringByAppendingPathComponent:@".recycler.db"];
@@ -205,47 +201,44 @@ static NSMutableArray *fileList = nil;
   if ([fileManager fileExistsAtPath:_path isDirectory:&isDir] == NO) {
     if ([fileManager createDirectoryAtPath:_path attributes:nil] == NO) {
       NXTRunAlertPanel(_(@"Workspace"),
-                      _(@"Your Recycler storage doesn't exist and cannot"
-                        " be created at path: %@."),
-                      _(@"Dismiss"), nil, nil, _path);
+                       _(@"Your Recycler storage doesn't exist and cannot"
+                          " be created at path: %@."),
+                       _(@"Dismiss"), nil, nil, _path);
       // THINK: is it possible to not be able to create directory in $HOME?
     }
     // TODO: validate contents of exixsting directory: Was it created by Workspace?
-  }
-  else if (isDir == NO) {
+  } else if (isDir == NO) {
     NXTRunAlertPanel(_(@"Workspace"),
-                    _(@"Your Recycler storage is not directory.\n"
-                      "Do you want to disable or recover Recycler?.\n"
-                      "'Recover' operation destroys existing file '.Recycler'"
-                      " in your home directory."),
-                    _(@"Disable"), _(@"Recover"), nil);
+                     _(@"Your Recycler storage is not directory.\n"
+                        "Do you want to disable or recover Recycler?.\n"
+                        "'Recover' operation destroys existing file '.Recycler'"
+                        " in your home directory."),
+                     _(@"Disable"), _(@"Recover"), nil);
     // TODO: on disable Recycler icon should be removed from screen.
   }
 
-  _appIcon = [[RecyclerIcon alloc] initWithWindowRef:&_dockIcon->icon->core->window
-                                            recycler:self];
-  
-  appIconView = [[RecyclerIconView alloc] initWithFrame:NSMakeRect(0,0,64,64)];
+  _appIcon = [[RecyclerIcon alloc] initWithWindowRef:&_dockIcon->icon->core->window recycler:self];
+
+  appIconView = [[RecyclerIconView alloc] initWithFrame:NSMakeRect(0, 0, 64, 64)];
   [_appIcon setContentView:appIconView];
   [appIconView release];
 
   // Badge on appicon with number of items inside
-  badge = [[NXTIconBadge alloc] initWithPoint:NSMakePoint(2,51)
-                                        text:@"0"
-                                        font:[NSFont systemFontOfSize:9]
-                                   textColor:[NSColor blackColor]
-                                 shadowColor:[NSColor whiteColor]];
+  badge = [[NXTIconBadge alloc] initWithPoint:NSMakePoint(2, 51)
+                                         text:@"0"
+                                         font:[NSFont systemFontOfSize:9]
+                                    textColor:[NSColor blackColor]
+                                  shadowColor:[NSColor whiteColor]];
   [appIconView addSubview:badge];
   [badge release];
 
   [self updateIconImage];
-  
+
   fileSystemMonitor = [[NSApp delegate] fileSystemMonitor];
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(fileSystemChangedAtPath:)
-           name:OSEFileSystemChangedAtPath
-         object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(fileSystemChangedAtPath:)
+                                               name:OSEFileSystemChangedAtPath
+                                             object:nil];
   [fileSystemMonitor addPath:_path];
 
   return self;
@@ -254,13 +247,13 @@ static NSMutableArray *fileList = nil;
 - (void)awakeFromNib
 {
   NSSize iconSize;
-  
+
   [panel setFrameAutosaveName:@"Recycler"];
 
   [panelIcon setRefusesFirstResponder:YES];
   [[panelView verticalScroller] setRefusesFirstResponder:YES];
   [restoreBtn setRefusesFirstResponder:YES];
-  
+
   [panelView setHasHorizontalScroller:NO];
   [panelView setHasVerticalScroller:YES];
 
@@ -271,27 +264,25 @@ static NSMutableArray *fileList = nil;
   [filesView setAutoAdjustsToFitIcons:NO];
   iconSize = [NXTIconView defaultSlotSize];
   if ([[NXTDefaults userDefaults] objectForKey:@"IconSlotWidth"]) {
-    iconSize.width = [[NXTDefaults userDefaults] floatForKey:@"IconSlotWidth"]; 
+    iconSize.width = [[NXTDefaults userDefaults] floatForKey:@"IconSlotWidth"];
     [filesView setSlotSize:iconSize];
   }
-  
-  [filesView registerForDraggedTypes:@[NSFilenamesPboardType]];
+
+  [filesView registerForDraggedTypes:@[ NSFilenamesPboardType ]];
 
   [panelView setDocumentView:filesView];
-  [filesView setFrame:NSMakeRect(0, 0,
-                                 [[panelView contentView] frame].size.width, 0)];
-  [filesView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+  [filesView setFrame:NSMakeRect(0, 0, [[panelView contentView] frame].size.width, 0)];
+  [filesView setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
 
   [panelIcon setImage:[self iconImage]];
 
   operationQ = [[NSOperationQueue alloc] init];
   itemsLoader = nil;
 
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(iconWidthDidChange:)
-           name:@"IconSlotWidthDidChangeNotification"
-         object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(iconWidthDidChange:)
+                                               name:@"IconSlotWidthDidChangeNotification"
+                                             object:nil];
 }
 
 - (NSImage *)iconImage
@@ -307,30 +298,27 @@ static NSMutableArray *fileList = nil;
 - (void)updateIconImage
 {
   NSFileManager *fm = [NSFileManager defaultManager];
-  
+
   _itemsCount = [[fm directoryContentsAtPath:_path] count];
 
   if ([fm fileExistsAtPath:[_path stringByAppendingPathComponent:@".recycler.db"]])
     _itemsCount--;
-    
-  if (_itemsCount)
-    {
-      iconImage = [NSImage imageNamed:@"recyclerFull"];
-      [badge setStringValue:[NSString stringWithFormat:@"%lu", _itemsCount]];
-    }
-  else
-    {
-      iconImage = [NSImage imageNamed:@"recycler"];
-      [badge setStringValue:@""];
-    }
-  
-  [appIconView setImage:iconImage];  
+
+  if (_itemsCount) {
+    iconImage = [NSImage imageNamed:@"recyclerFull"];
+    [badge setStringValue:[NSString stringWithFormat:@"%lu", _itemsCount]];
+  } else {
+    iconImage = [NSImage imageNamed:@"recycler"];
+    [badge setStringValue:@""];
+  }
+
+  [appIconView setImage:iconImage];
 }
 
 - (void)updatePanel
 {
   NSString *iconLabel;
-  
+
   if (!panel)
     return;
 
@@ -341,7 +329,7 @@ static NSMutableArray *fileList = nil;
   else
     iconLabel = @"1 item";
   [panelItems setStringValue:iconLabel];
-  
+
   if (itemsLoader != nil) {
     [itemsLoader cancel];
     [itemsLoader release];
@@ -353,22 +341,17 @@ static NSMutableArray *fileList = nil;
                                                status:nil
                                                  path:_path
                                             selection:nil];
-  [itemsLoader addObserver:self
-                forKeyPath:@"isFinished"
-                   options:0
-                   context:&self->_itemsCount];
+  [itemsLoader addObserver:self forKeyPath:@"isFinished" options:0 context:&self->_itemsCount];
   [operationQ addOperation:itemsLoader];
 }
 
 - (void)showPanel
 {
-  if (panel == nil)
-    {
-      if (![NSBundle loadNibNamed:@"Recycler" owner:self])
-        {
-          NSLog(@"Error loading Recycler.gorm!");
-        }
+  if (panel == nil) {
+    if (![NSBundle loadNibNamed:@"Recycler" owner:self]) {
+      NSLog(@"Error loading Recycler.gorm!");
     }
+  }
 
   [self updateIconImage];
   [self updatePanel];
@@ -377,7 +360,7 @@ static NSMutableArray *fileList = nil;
   [panel makeKeyAndOrderFront:self];
 }
 
-- (void)mouseDown:(NSEvent*)theEvent
+- (void)mouseDown:(NSEvent *)theEvent
 {
   // NSLog(@"Recycler: mouse down!");
 
@@ -388,9 +371,9 @@ static NSMutableArray *fileList = nil;
 
 - (void)empty
 {
-  NSFileManager 	*fm = [NSFileManager defaultManager];
-  NSMutableArray	*items = [[fm directoryContentsAtPath:_path] mutableCopy];
-  NSMutableDictionary	*db = nil;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSMutableArray *items = [[fm directoryContentsAtPath:_path] mutableCopy];
+  NSMutableDictionary *db = nil;
 
   // Database
   if ([fm fileExistsAtPath:recyclerDBPath])
@@ -403,14 +386,14 @@ static NSMutableArray *fileList = nil;
       break;
     }
   }
-  
+
   if (![[ProcessManager shared] startOperationWithType:DeleteOperation
                                                 source:_path
                                                 target:nil
                                                  files:items]) {
     return;
   }
-  
+
   if (itemsLoader) {
     [itemsLoader cancel];
   }
@@ -427,19 +410,19 @@ static NSMutableArray *fileList = nil;
     [db release];
   }
   [items release];
-  
+
   [self updateIconImage];
 }
 
 - (void)restore:(id)sender
 {
-  NSSet                 *selectedItems = [filesView selectedIcons];
-  NSFileManager 	*fm = [NSFileManager defaultManager];
-  NSMutableDictionary	*db = nil;
-  NSMutableDictionary   *restoreDict;
-  NSMutableArray        *restoreSet;
-  NSArray               *items;
-  NSMutableSet          *missedItems = [NSMutableSet new];
+  NSSet *selectedItems = [filesView selectedIcons];
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSMutableDictionary *db = nil;
+  NSMutableDictionary *restoreDict;
+  NSMutableArray *restoreSet;
+  NSArray *items;
+  NSMutableSet *missedItems = [NSMutableSet new];
 
   // Database
   if ([fm fileExistsAtPath:recyclerDBPath]) {
@@ -452,35 +435,34 @@ static NSMutableArray *fileList = nil;
   if (db) {
     NSString *destPath;
     NSString *itemName;
-    
+
     for (NXTIcon *item in selectedItems) {
       if (!item || [item isKindOfClass:[NSNull class]])
         continue;
 
       itemName = [item labelString];
-      
+
       if ((destPath = [db objectForKey:itemName]) == nil) {
         // NSLog(@"Recycler: %@ has no record in Recycler DB.", itemName);
         [missedItems addObject:item];
         continue;
       }
-      
+
       if ((restoreSet = [restoreDict objectForKey:destPath]) == nil) {
         restoreSet = [NSMutableArray arrayWithObject:itemName];
-      }
-      else {
+      } else {
         [restoreSet addObject:itemName];
       }
-      
+
       [restoreDict setObject:restoreSet forKey:destPath];
     }
   }
 
   if ([missedItems count] > 0) {
     NXTRunAlertPanel(@"Restore from Recycler",
-                    @"The are items with unknown original location.\n"
-                    @"These items will be left selected in Recyler panel.",
-                    @"OK", nil, nil);
+                     @"The are items with unknown original location.\n"
+                     @"These items will be left selected in Recyler panel.",
+                     @"OK", nil, nil);
   }
 
   for (NSString *key in [restoreDict allKeys]) {
@@ -492,12 +474,11 @@ static NSMutableArray *fileList = nil;
                                                   files:items]) {
       [db removeObjectsForKeys:items];
       [db writeToFile:recyclerDBPath atomically:YES];
-    }
-    else {
+    } else {
       break;
     }
   }
-  
+
   [db release];
   [restoreDict release];
   [missedItems release];
@@ -510,14 +491,13 @@ static NSMutableArray *fileList = nil;
                        context:(void *)context
 {
   NSLog(@"Observer of '%@' was called.", keyPath);
-  [panelItems setStringValue:[NSString stringWithFormat:@"%lu items",
-                                       itemsLoader.itemsCount]];
+  [panelItems setStringValue:[NSString stringWithFormat:@"%lu items", itemsLoader.itemsCount]];
   for (NXTIcon *icon in [filesView icons]) {
     [icon setEditable:NO];
     [icon setDelegate:self];
     [icon setTarget:self];
     [icon setDragAction:@selector(iconDragged:withEvent:)];
-    [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
+    [icon registerForDraggedTypes:@[ NSFilenamesPboardType ]];
   }
 
   [filesView adjustToFitIcons];
@@ -526,14 +506,13 @@ static NSMutableArray *fileList = nil;
 }
 
 // IconView actions
-- (void)iconDragged:(PathIcon *)theIcon
-          withEvent:(NSEvent *)theEvent
+- (void)iconDragged:(PathIcon *)theIcon withEvent:(NSEvent *)theEvent
 {
-  NSRect       iconFrame = [theIcon frame];
-  NSPoint      iconLocation = iconFrame.origin;
+  NSRect iconFrame = [theIcon frame];
+  NSPoint iconLocation = iconFrame.origin;
   NSPasteboard *pasteBoard = [NSPasteboard pasteboardWithName:NSDragPboard];
   NSDictionary *iconInfo;
-  
+
   iconLocation.x += 8;
   iconLocation.y += iconFrame.size.width - 16;
 
@@ -543,9 +522,9 @@ static NSMutableArray *fileList = nil;
 
   [draggedIcon setSelected:NO];
   [draggedIcon setDimmed:YES];
-  
+
   // Pasteboard info for 'draggedIcon'
-  [pasteBoard declareTypes:@[NSFilenamesPboardType] owner:nil];
+  [pasteBoard declareTypes:@[ NSFilenamesPboardType ] owner:nil];
   [pasteBoard setPropertyList:[draggedIcon paths] forType:NSFilenamesPboardType];
   // if ((iconInfo = [draggedIcon info]) != nil) {
   //   [pasteBoard setPropertyList:iconInfo forType:NSGeneralPboardType];
@@ -570,9 +549,7 @@ static NSMutableArray *fileList = nil;
 {
   return YES;
 }
-- (void)draggedImage:(NSImage*)image
-             endedAt:(NSPoint)screenPoint
-           deposited:(BOOL)didDeposit
+- (void)draggedImage:(NSImage *)image endedAt:(NSPoint)screenPoint deposited:(BOOL)didDeposit
 {
   NSLog(@"draggedImage:endedAt:operation:");
   if (didDeposit == NO) {
@@ -582,20 +559,17 @@ static NSMutableArray *fileList = nil;
 }
 
 // NXTIcon delegate methods (NSDraggingDestination)
-- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
-                              icon:(NXTIcon *)icon
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender icon:(NXTIcon *)icon
 {
   // NSLog(@"[Recycler] draggingEntered:icon:");
   return draggingSourceMask;
 }
-- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
-                              icon:(NXTIcon *)icon
+- (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender icon:(NXTIcon *)icon
 {
   // NSLog(@"[Recycler] draggingUpdated:icon:");
   return draggingSourceMask;
 }
-- (void)draggingExited:(id <NSDraggingInfo>)sender
-                  icon:(NXTIcon *)icon
+- (void)draggingExited:(id<NSDraggingInfo>)sender icon:(NXTIcon *)icon
 {
   // NSLog(@"[Recycler] draggingOperationExited:icon:");
 }
@@ -604,7 +578,7 @@ static NSMutableArray *fileList = nil;
 - (void)iconWidthDidChange:(NSNotification *)notification
 {
   NXTDefaults *df = [NXTDefaults userDefaults];
-  NSSize     slotSize = [filesView slotSize];
+  NSSize slotSize = [filesView slotSize];
 
   slotSize.width = [df floatForKey:@"IconSlotWidth"];
   [filesView setSlotSize:slotSize];
@@ -613,7 +587,7 @@ static NSMutableArray *fileList = nil;
 - (void)fileSystemChangedAtPath:(NSNotification *)notif
 {
   NSDictionary *changes = [notif userInfo];
-  NSString     *changedPath = [changes objectForKey:@"ChangedPath"];
+  NSString *changedPath = [changes objectForKey:@"ChangedPath"];
 
   if ([changedPath isEqualToString:_path]) {
     [self updateIconImage];
@@ -621,8 +595,7 @@ static NSMutableArray *fileList = nil;
   }
 }
 
-- (void)     iconView:(NXTIconView*)anIconView
- didChangeSelectionTo:(NSSet *)selectedIcons
+- (void)iconView:(NXTIconView *)anIconView didChangeSelectionTo:(NSSet *)selectedIcons
 {
   [restoreBtn setEnabled:([selectedIcons count] > 0) ? YES : NO];
 }

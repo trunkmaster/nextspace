@@ -76,7 +76,6 @@
 
 #define ICON_BORDER 3
 
-
 static void miniwindowExpose(WObjDescriptor *desc, XEvent *event);
 static void miniwindowMouseDown(WObjDescriptor *desc, XEvent *event);
 static void miniwindowDblClick(WObjDescriptor *desc, XEvent *event);
@@ -95,9 +94,9 @@ static void unset_icon_image(WIcon *icon);
 /****** Notification Observer ******/
 
 static void _iconSettingsObserver(CFNotificationCenterRef center,
-                                  void *observedIcon, // observer
+                                  void *observedIcon,  // observer
                                   CFNotificationName name,
-                                  const void *settingsFlags, // object
+                                  const void *settingsFlags,  // object
                                   CFDictionaryRef userInfo)
 {
   WIcon *icon = (WIcon *)observedIcon;
@@ -105,8 +104,7 @@ static void _iconSettingsObserver(CFNotificationCenterRef center,
   if (CFStringCompare(name, WMDidChangeIconAppearanceSettings, 0) == 0) {
     uintptr_t flags = (uintptr_t)settingsFlags;
 
-    fprintf(stderr, "[icon.c] were changed settings with flags: %lu\n",
-            (uintptr_t)settingsFlags);
+    fprintf(stderr, "[icon.c] were changed settings with flags: %lu\n", (uintptr_t)settingsFlags);
 
     if ((flags & WTextureSettings) || (flags & WFontSettings)) {
       /* If the rimage exists, update the icon, else create it */
@@ -119,8 +117,7 @@ static void _iconSettingsObserver(CFNotificationCenterRef center,
     /* so that the appicon expose handlers will paint the appicon specific
      * stuff */
     XClearArea(dpy, icon->core->window, 0, 0, icon->core->width, icon->core->height, True);
-  }
-  else if (CFStringCompare(name, WMDidChangeIconTileSettings, 0) == 0) {
+  } else if (CFStringCompare(name, WMDidChangeIconTileSettings, 0) == 0) {
     update_icon_pixmap(icon);
     XClearArea(dpy, icon->core->window, 0, 0, 1, 1, True);
   }
@@ -177,11 +174,12 @@ WIcon *icon_create_for_wwindow(WWindow *wwin)
                                     WMDidChangeIconTileSettings, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
   }
-  
+
   return icon;
 }
 
-WIcon *icon_create_for_dock(WScreen *scr, const char *command, const char *wm_instance, const char *wm_class, int tile)
+WIcon *icon_create_for_dock(WScreen *scr, const char *command, const char *wm_instance,
+                            const char *wm_class, int tile)
 {
   WIcon *icon;
 
@@ -209,20 +207,15 @@ static WIcon *icon_create_core(WScreen *scr, int coord_x, int coord_y)
   WIcon *icon;
 
   icon = wmalloc(sizeof(WIcon));
-  icon->core = wCoreCreateTopLevel(scr,
-                                   coord_x,
-                                   coord_y,
-                                   wPreferences.icon_size,
-                                   wPreferences.icon_size,
-                                   0, scr->w_depth, scr->w_visual, scr->w_colormap,
-                                   scr->white_pixel);
+  icon->core =
+      wCoreCreateTopLevel(scr, coord_x, coord_y, wPreferences.icon_size, wPreferences.icon_size, 0,
+                          scr->w_depth, scr->w_visual, scr->w_colormap, scr->white_pixel);
 
   /* Set NETWM window type to be correctly handled by compton */
   // This atoms already exist in wmspe.c but defined static.
   Atom data = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DOCK", False);
   Atom property = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
-  XChangeProperty(dpy, icon->core->window, property,
-                  XA_ATOM, 32, PropModeReplace,
+  XChangeProperty(dpy, icon->core->window, property, XA_ATOM, 32, PropModeReplace,
                   (unsigned char *)&data, 1);
 
   /* will be overriden if this is a application icon */
@@ -252,8 +245,8 @@ void wIconDestroy(WIcon *icon)
   if (scr->notificationCenter) {
     CFNotificationCenterRemoveObserver(scr->notificationCenter, icon,
                                        WMDidChangeIconAppearanceSettings, NULL);
-    CFNotificationCenterRemoveObserver(scr->notificationCenter, icon,
-                                       WMDidChangeIconTileSettings, NULL);
+    CFNotificationCenterRemoveObserver(scr->notificationCenter, icon, WMDidChangeIconTileSettings,
+                                       NULL);
   }
 
   if (icon->handlerID)
@@ -294,39 +287,38 @@ static void icon_update_pixmap(WIcon *icon, RImage *image)
   WScreen *scr = icon->core->screen_ptr;
 
   switch (icon->tile_type) {
-  case TILE_NORMAL:
-    if (icon->show_title) // NEXTSPACE
-      tile = RCloneImage(scr->miniwindow_tile);
-    else
+    case TILE_NORMAL:
+      if (icon->show_title)  // NEXTSPACE
+        tile = RCloneImage(scr->miniwindow_tile);
+      else
+        tile = RCloneImage(scr->icon_tile);
+      break;
+    case TILE_CLIP:
+      tile = RCloneImage(scr->clip_tile);
+      break;
+    case TILE_DRAWER:
+      tile = RCloneImage(scr->drawer_tile);
+      break;
+    default:
+      /*
+       * The icon has always rigth value, this case is
+       * only to avoid a compiler warning with "tile"
+       * "may be used uninitialized"
+       */
+      WMLogWarning("Unknown tile type: %d.\n", icon->tile_type);
       tile = RCloneImage(scr->icon_tile);
-    break;
-  case TILE_CLIP:
-    tile = RCloneImage(scr->clip_tile);
-    break;
-  case TILE_DRAWER:
-    tile = RCloneImage(scr->drawer_tile);
-    break;
-  default:
-    /*
-     * The icon has always rigth value, this case is
-     * only to avoid a compiler warning with "tile"
-     * "may be used uninitialized"
-     */
-    WMLogWarning("Unknown tile type: %d.\n", icon->tile_type);
-    tile = RCloneImage(scr->icon_tile);
   }
 
   if (image) {
-    w = (image->width > wPreferences.icon_size)
-      ? wPreferences.icon_size : image->width;
+    w = (image->width > wPreferences.icon_size) ? wPreferences.icon_size : image->width;
     x = (wPreferences.icon_size - w) / 2;
     sx = (image->width - w) / 2;
 
     if (icon->show_title)
       theight = WMFontHeight(scr->icon_title_font);
 
-    h = (image->height + theight > wPreferences.icon_size
-         ? wPreferences.icon_size - theight : image->height);
+    h = (image->height + theight > wPreferences.icon_size ? wPreferences.icon_size - theight
+                                                          : image->height);
     y = theight + (wPreferences.icon_size - theight - h) / 2;
     sy = (image->height - h) / 2;
 
@@ -339,7 +331,7 @@ static void icon_update_pixmap(WIcon *icon, RImage *image)
     color.red = scr->icon_back_texture->light.red >> 8;
     color.green = scr->icon_back_texture->light.green >> 8;
     color.blue = scr->icon_back_texture->light.blue >> 8;
-    color.alpha = 150;	/* about 60% */
+    color.alpha = 150; /* about 60% */
     RClearImage(tile, &color);
   }
 
@@ -387,11 +379,9 @@ RImage *wIconValidateIconSize(RImage *icon, int max_size)
 
   if ((icon->width > (max_size + ICON_BORDER)) || (icon->height > (max_size + ICON_BORDER))) {
     if (icon->width > icon->height) {
-      scaled_image = RScaleImage(icon, max_icon_size,
-                                 (icon->height * max_icon_size / icon->width));
+      scaled_image = RScaleImage(icon, max_icon_size, (icon->height * max_icon_size / icon->width));
     } else {
-      scaled_image = RScaleImage(icon, (icon->width * max_icon_size / icon->height),
-                                 max_icon_size);
+      scaled_image = RScaleImage(icon, (icon->width * max_icon_size / icon->height), max_icon_size);
     }
     RReleaseImage(icon);
     icon = scaled_image;
@@ -469,8 +459,8 @@ static CFStringRef get_icon_cache_path(void)
   libURL = WMUserDefaultsCopyUserLibraryURL();
   libPath = CFURLCopyFileSystemPath(libURL, kCFURLPOSIXPathStyle);
   CFRelease(libURL);
-  cachePath = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%@%s/"),
-                                       libPath, CACHE_ICON_PATH);
+  cachePath =
+      CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%@%s/"), libPath, CACHE_ICON_PATH);
   CFRelease(libPath);
   path = WMUserDefaultsGetCString(cachePath, kCFStringEncodingUTF8);
 
@@ -479,7 +469,7 @@ static CFStringRef get_icon_cache_path(void)
     return cachePath;
 
   /* Create the folder */
-  ret = WMCreateDirectoriesAtPath((const char *) path);
+  ret = WMCreateDirectoriesAtPath((const char *)path);
 
   /* Exit 1 on success, 0 on failure */
   if (ret == 1)
@@ -496,10 +486,8 @@ static RImage *get_wwindow_image_from_wmhints(WWindow *wwin, WIcon *icon)
   XWMHints *hints = wwin->wm_hints;
 
   if (hints && (hints->flags & IconPixmapHint) && hints->icon_pixmap != None)
-    image = RCreateImageFromDrawable(icon->core->screen_ptr->rcontext,
-                                     hints->icon_pixmap,
-                                     (hints->flags & IconMaskHint)
-                                     ? hints->icon_mask : None);
+    image = RCreateImageFromDrawable(icon->core->screen_ptr->rcontext, hints->icon_pixmap,
+                                     (hints->flags & IconMaskHint) ? hints->icon_mask : None);
 
   return image;
 }
@@ -535,8 +523,7 @@ char *wIconStore(WIcon *icon)
     return NULL;
   }
 
-  iconPath = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%@%s.tiff"),
-                                      dirPath, file);
+  iconPath = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%@%s.tiff"), dirPath, file);
   len = (sizeof(char) * CFStringGetLength(iconPath)) + 1;
   path = wmalloc(len);
   CFStringGetCString(iconPath, path, len, kCFStringEncodingUTF8);
@@ -555,7 +542,7 @@ char *wIconStore(WIcon *icon)
     return NULL;
   }
 
-  path = WSSaveRasterImageAsTIFF(image, path); // NEXTSPACE
+  path = WSSaveRasterImageAsTIFF(image, path);  // NEXTSPACE
   RReleaseImage(image);
 
   return path;
@@ -563,7 +550,7 @@ char *wIconStore(WIcon *icon)
 
 static void cycleColor(CFRunLoopTimerRef timer, void *data)
 {
-  WIcon *icon = (WIcon *) data;
+  WIcon *icon = (WIcon *)data;
   WScreen *scr = icon->core->screen_ptr;
   XGCValues gcv;
 
@@ -571,8 +558,8 @@ static void cycleColor(CFRunLoopTimerRef timer, void *data)
   gcv.dash_offset = icon->step;
   XChangeGC(dpy, scr->icon_select_gc, GCDashOffset, &gcv);
 
-  XDrawRectangle(dpy, icon->core->window, scr->icon_select_gc, 0, 0,
-                 icon->core->width - 1, icon->core->height - 1);
+  XDrawRectangle(dpy, icon->core->window, scr->icon_select_gc, 0, 0, icon->core->width - 1,
+                 icon->core->height - 1);
   icon->handlerID = WMAddTimerHandler(COLOR_CYCLE_DELAY, 0, cycleColor, icon);
 }
 
@@ -595,8 +582,8 @@ void wIconSelect(WIcon *icon)
     if (!wPreferences.dont_blink)
       icon->handlerID = WMAddTimerHandler(10, 0, cycleColor, icon);
     else
-      XDrawRectangle(dpy, icon->core->window, scr->icon_select_gc, 0, 0,
-                     icon->core->width - 1, icon->core->height - 1);
+      XDrawRectangle(dpy, icon->core->window, scr->icon_select_gc, 0, 0, icon->core->width - 1,
+                     icon->core->height - 1);
   } else {
     if (icon->handlerID) {
       WMDeleteTimerHandler(icon->handlerID);
@@ -636,8 +623,9 @@ void set_icon_minipreview(WIcon *icon, RImage *image)
   RImage *scaled_mini_preview;
   WScreen *scr = icon->core->screen_ptr;
 
-  scaled_mini_preview = RSmoothScaleImage(image, wPreferences.minipreview_size - 2 * MINIPREVIEW_BORDER,
-	                                  wPreferences.minipreview_size - 2 * MINIPREVIEW_BORDER);
+  scaled_mini_preview =
+      RSmoothScaleImage(image, wPreferences.minipreview_size - 2 * MINIPREVIEW_BORDER,
+                        wPreferences.minipreview_size - 2 * MINIPREVIEW_BORDER);
 
   if (RConvertImage(scr->rcontext, scaled_mini_preview, &tmp)) {
     if (icon->mini_preview != None)
@@ -683,14 +671,13 @@ void update_icon_pixmap(WIcon *icon)
     XFreePixmap(dpy, icon->pixmap);
 
   icon->pixmap = None;
- 
+
   /* If dockapp, put inside the icon */
   if (icon->icon_win != None) {
     /* file_image is NULL, because is docked app */
     icon_update_pixmap(icon, NULL);
     set_dockapp_in_icon(icon);
-  }
-  else {
+  } else {
     /* Create the pixmap even if `file_image` is NULL */
     icon_update_pixmap(icon, icon->file_image);
   }
@@ -770,8 +757,7 @@ static void set_dockapp_in_icon(WIcon *icon)
   XSetWindowBorderWidth(dpy, icon->icon_win, 0);
 
   /* Put the dock application in the icon */
-  XReparentWindow(dpy, icon->icon_win, icon->core->window,
-                  (wPreferences.icon_size - w) / 2,
+  XReparentWindow(dpy, icon->icon_win, icon->core->window, (wPreferences.icon_size - w) / 2,
                   (wPreferences.icon_size - h) / 2);
 
   /* Show it and save */
@@ -782,8 +768,8 @@ static void set_dockapp_in_icon(WIcon *icon)
   if ((XGetWindowAttributes(dpy, icon->icon_win, &attr)) &&
       (attr.all_event_masks & ButtonPressMask))
     wHackedGrabButton(Button1, wPreferences.cmd_modifier_mask, icon->core->window, True,
-                      ButtonPressMask, GrabModeSync, GrabModeAsync,
-                      None, wPreferences.cursor[WCUR_ARROW]);
+                      ButtonPressMask, GrabModeSync, GrabModeAsync, None,
+                      wPreferences.cursor[WCUR_ARROW]);
 }
 
 /* Get the RImage from the XWindow wm_hints */
@@ -829,12 +815,11 @@ static void update_icon_title(WIcon *icon)
     if (x < 2) {
       x = 2;
     }
-    WMDrawString(scr->wmscreen, icon->core->window, scr->icon_title_color,
-                 scr->icon_title_font, x, 1, tmp_string, string_length);
+    WMDrawString(scr->wmscreen, icon->core->window, scr->icon_title_color, scr->icon_title_font, x,
+                 1, tmp_string, string_length);
     wfree(tmp_string);
   }
 }
-
 
 void wIconPaint(WIcon *icon)
 {
@@ -848,8 +833,8 @@ void wIconPaint(WIcon *icon)
   update_icon_title(icon);
 
   if (icon->selected)
-    XDrawRectangle(dpy, icon->core->window, scr->icon_select_gc, 0, 0,
-                   icon->core->width - 1, icon->core->height - 1);
+    XDrawRectangle(dpy, icon->core->window, scr->icon_select_gc, 0, 0, icon->core->width - 1,
+                   icon->core->height - 1);
 }
 
 /******************************************************************/
@@ -857,7 +842,7 @@ void wIconPaint(WIcon *icon)
 static void miniwindowExpose(WObjDescriptor *desc, XEvent *event)
 {
   /* Parameter not used, but tell the compiler that it is ok */
-  (void) event;
+  (void)event;
 
   wIconPaint(desc->parent);
 }
@@ -867,7 +852,7 @@ static void miniwindowDblClick(WObjDescriptor *desc, XEvent *event)
   WIcon *icon = desc->parent;
 
   /* Parameter not used, but tell the compiler that it is ok */
-  (void) event;
+  (void)event;
 
   assert(icon->owner != NULL);
 
@@ -904,72 +889,72 @@ static void miniwindowMouseDown(WObjDescriptor *desc, XEvent *event)
     }
   }
 
-  if (XGrabPointer(dpy, icon->core->window, False, ButtonMotionMask
-                   | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
+  if (XGrabPointer(dpy, icon->core->window, False,
+                   ButtonMotionMask | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
                    GrabModeAsync, None, None, CurrentTime) != GrabSuccess) {
   }
   while (1) {
-    WMMaskEvent(dpy, PointerMotionMask | ButtonReleaseMask | ButtonPressMask
-                | ButtonMotionMask | ExposureMask, &ev);
+    WMMaskEvent(
+        dpy,
+        PointerMotionMask | ButtonReleaseMask | ButtonPressMask | ButtonMotionMask | ExposureMask,
+        &ev);
     switch (ev.type) {
-    case Expose:
-      WMHandleEvent(&ev);
-      break;
-
-    case MotionNotify:
-      hasMoved = True;
-      if (!grabbed) {
-        if (abs(dx - ev.xmotion.x) >= MOVE_THRESHOLD
-            || abs(dy - ev.xmotion.y) >= MOVE_THRESHOLD) {
-          XChangeActivePointerGrab(dpy, ButtonMotionMask
-                                   | ButtonReleaseMask | ButtonPressMask,
-                                   wPreferences.cursor[WCUR_MOVE], CurrentTime);
-          grabbed = 1;
-        } else {
-          break;
-        }
-      }
-      x = ev.xmotion.x_root - dx;
-      y = ev.xmotion.y_root - dy;
-      XMoveWindow(dpy, icon->core->window, x, y);
-      break;
-
-    case ButtonPress:
-      break;
-
-    case ButtonRelease:
-      if (ev.xbutton.button != clickButton)
+      case Expose:
+        WMHandleEvent(&ev);
         break;
 
-      if (wwin->icon_x != x || wwin->icon_y != y)
-        wwin->flags.icon_moved = 1;
+      case MotionNotify:
+        hasMoved = True;
+        if (!grabbed) {
+          if (abs(dx - ev.xmotion.x) >= MOVE_THRESHOLD ||
+              abs(dy - ev.xmotion.y) >= MOVE_THRESHOLD) {
+            XChangeActivePointerGrab(dpy, ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
+                                     wPreferences.cursor[WCUR_MOVE], CurrentTime);
+            grabbed = 1;
+          } else {
+            break;
+          }
+        }
+        x = ev.xmotion.x_root - dx;
+        y = ev.xmotion.y_root - dy;
+        XMoveWindow(dpy, icon->core->window, x, y);
+        break;
 
-      XMoveWindow(dpy, icon->core->window, x, y);
+      case ButtonPress:
+        break;
 
-      wwin->icon_x = x;
-      wwin->icon_y = y;
-      XUngrabPointer(dpy, CurrentTime);
+      case ButtonRelease:
+        if (ev.xbutton.button != clickButton)
+          break;
 
-      if (wPreferences.auto_arrange_icons)
-        wArrangeIcons(wwin->screen, True);
-      if (wPreferences.single_click && !hasMoved)
-        miniwindowDblClick(desc, event);
-      return;
+        if (wwin->icon_x != x || wwin->icon_y != y)
+          wwin->flags.icon_moved = 1;
 
+        XMoveWindow(dpy, icon->core->window, x, y);
+
+        wwin->icon_x = x;
+        wwin->icon_y = y;
+        XUngrabPointer(dpy, CurrentTime);
+
+        if (wPreferences.auto_arrange_icons)
+          wArrangeIcons(wwin->screen, True);
+        if (wPreferences.single_click && !hasMoved)
+          miniwindowDblClick(desc, event);
+        return;
     }
   }
 }
 
-void set_icon_image_from_database(WIcon *icon, const char *wm_instance,
-                                  const char *wm_class, const char *command)
+void set_icon_image_from_database(WIcon *icon, const char *wm_instance, const char *wm_class,
+                                  const char *command)
 {
   char *file = NULL;
 
   file = get_icon_filename(wm_instance, wm_class, command, False);
   if (file) {
     icon->file = wstrdup(file);
-    icon->file_image = get_rimage_from_file(icon->core->screen_ptr,
-                                            icon->file, wPreferences.icon_size);
+    icon->file_image =
+        get_rimage_from_file(icon->core->screen_ptr, icon->file, wPreferences.icon_size);
     wfree(file);
   }
 }

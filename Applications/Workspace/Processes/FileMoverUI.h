@@ -33,7 +33,7 @@
   // IBOutlet NSBox       *processBox;
   // IBOutlet NSTextField *currentField;
   // IBOutlet NSButton    *stopButton;
-  // 
+  //
   // IBOutlet NSBox       *alertBox;
 
   OperationState operationState;
@@ -43,7 +43,7 @@
   id fromLabel;
   id toField;
   id toLabel;
-  id progressBar; // NXProgressPie
+  id progressBar;  // NXProgressPie
   id pauseButton;
 }
 
@@ -55,18 +55,16 @@
 
 - (void)fileOperation:(FileMover *)fop
        processingFile:(NSString *)filename
-	 sourcePrefix:(NSString *)sourcePrefix
-	 targetPrefix:(NSString *)targetPrefix;
+         sourcePrefix:(NSString *)sourcePrefix
+         targetPrefix:(NSString *)targetPrefix;
 
-- (void)  fileOperation:(FileMover *)anOperation
- processedToPercentDone:(float)percentDone;
+- (void)fileOperation:(FileMover *)anOperation processedToPercentDone:(float)percentDone;
 
-- (void) fileOperation:(FileMover *)anOperation
-      didChangeStateTo:(OperationState)aState;
+- (void)fileOperation:(FileMover *)anOperation didChangeStateTo:(OperationState)aState;
 
 - (void)fileOperation:(FileMover *)anOperation
-   encounteredProblem:(OperationProblem)problem
-     	  description:(NSString *)problemDescription
- solutionDescriptions:(NSArray *)solutions;
+      encounteredProblem:(OperationProblem)problem
+             description:(NSString *)problemDescription
+    solutionDescriptions:(NSArray *)solutions;
 
 @end

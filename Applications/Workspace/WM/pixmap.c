@@ -35,7 +35,7 @@
 #include "WM.h"
 #include "pixmap.h"
 
-#define DEF_XPM_CLOSENESS	40000
+#define DEF_XPM_CLOSENESS 40000
 
 /*
  *----------------------------------------------------------------------
@@ -50,7 +50,7 @@
  * 	DEF_XPM_CLOSENESS specifies the XpmCloseness
  *----------------------------------------------------------------------
  */
-WPixmap *wPixmapCreateFromXPMData(WScreen * scr, char **data)
+WPixmap *wPixmapCreateFromXPMData(WScreen *scr, char **data)
 {
   RImage *image;
   WPixmap *pix;
@@ -83,13 +83,14 @@ WPixmap *wPixmapCreateFromXPMData(WScreen * scr, char **data)
  *
  *----------------------------------------------------------------------
  */
-WPixmap *wPixmapCreateFromXBMData(WScreen * scr, char *data, char *mask,
-				  int width, int height, unsigned long fg, unsigned long bg)
+WPixmap *wPixmapCreateFromXBMData(WScreen *scr, char *data, char *mask, int width, int height,
+                                  unsigned long fg, unsigned long bg)
 {
   WPixmap *pix;
 
   pix = wmalloc(sizeof(WPixmap));
-  pix->image = XCreatePixmapFromBitmapData(dpy, scr->w_win, data, width, height, fg, bg, scr->w_depth);
+  pix->image =
+      XCreatePixmapFromBitmapData(dpy, scr->w_win, data, width, height, fg, bg, scr->w_depth);
   if (pix->image == None) {
     wfree(pix);
     return NULL;
@@ -135,7 +136,7 @@ WPixmap *wPixmapCreate(Pixmap image, Pixmap mask)
  * 	None
  *----------------------------------------------------------------------
  */
-void wPixmapDestroy(WPixmap * pix)
+void wPixmapDestroy(WPixmap *pix)
 {
   if (!pix->shared) {
     if (pix->mask && !pix->client_owned_mask) {

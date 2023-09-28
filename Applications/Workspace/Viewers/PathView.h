@@ -5,7 +5,7 @@
 // Description: FileViewer path view implementation
 //
 // Copyright (C) 2015-2019 Sergii Stoian
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -34,16 +34,16 @@
   FileViewer *_owner;
 
   NSString *_path;
-  NSArray  *_files;
-  NSArray  *_iconDragTypes;
+  NSArray *_files;
+  NSArray *_iconDragTypes;
   PathIcon *_multiIcon;
-  NSImage  *_multiImage;
-  NSImage  *_arrowImage;
-  
+  NSImage *_multiImage;
+  NSImage *_arrowImage;
+
   // Dragging
   NXTIconView *_dragSource;
-  PathIcon   *_dragIcon;
-  unsigned   _dragMask;
+  PathIcon *_dragIcon;
+  unsigned _dragMask;
 }
 
 - initWithFrame:(NSRect)r owner:(FileViewer *)fileViewer;

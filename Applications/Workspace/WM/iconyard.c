@@ -11,19 +11,18 @@
 void wIconYardShowIcons(WScreen *screen)
 {
   WAppIcon *appicon = screen->app_icon_list;
-  WWindow  *wwin;
+  WWindow *wwin;
 
   // Miniwindows
   wwin = screen->focused_window;
   while (wwin) {
-    if (wwin && wwin->flags.miniaturized &&
-        wwin->icon && !wwin->icon->mapped ) {
+    if (wwin && wwin->flags.miniaturized && wwin->icon && !wwin->icon->mapped) {
       XMapWindow(dpy, wwin->icon->core->window);
       wwin->icon->mapped = 1;
     }
     wwin = wwin->prev;
   }
-  
+
   // Appicons
   appicon = screen->app_icon_list;
   while (appicon) {
@@ -32,7 +31,7 @@ void wIconYardShowIcons(WScreen *screen)
     }
     appicon = appicon->next;
   }
-  
+
   XSync(dpy, False);
   screen->flags.icon_yard_mapped = 1;
   // wArrangeIcons(screen, True);
@@ -41,13 +40,12 @@ void wIconYardShowIcons(WScreen *screen)
 void wIconYardHideIcons(WScreen *screen)
 {
   WAppIcon *appicon = screen->app_icon_list;
-  WWindow  *wwin;
+  WWindow *wwin;
 
   // Miniwindows
   wwin = screen->focused_window;
   while (wwin) {
-    if (wwin && wwin->flags.miniaturized &&
-        wwin->icon && wwin->icon->mapped ) {
+    if (wwin && wwin->flags.miniaturized && wwin->icon && wwin->icon->mapped) {
       XUnmapWindow(dpy, wwin->icon->core->window);
       wwin->icon->mapped = 0;
     }
@@ -62,7 +60,7 @@ void wIconYardHideIcons(WScreen *screen)
     }
     appicon = appicon->next;
   }
-  
+
   XSync(dpy, False);
   screen->flags.icon_yard_mapped = 0;
 }
@@ -76,16 +74,16 @@ void wArrangeIcons(WScreen *scr, Bool arrangeAll)
   const int heads = wScreenHeads(scr);
 
   struct HeadVars {
-    int pf;		/* primary axis */
-    int sf;		/* secondary axis */
+    int pf; /* primary axis */
+    int sf; /* secondary axis */
     int fullW;
     int fullH;
     int pi, si;
-    int sx1, sx2, sy1, sy2;	/* screen boundary */
+    int sx1, sx2, sy1, sy2; /* screen boundary */
     int sw, sh;
     int xo, yo;
     int xs, ys;
-  } *vars;
+  } * vars;
 
   int isize = wPreferences.icon_size;
 
@@ -142,13 +140,13 @@ void wArrangeIcons(WScreen *scr, Bool arrangeAll)
     }
   }
 
-#define X ((wPreferences.icon_yard & IY_VERT)                           \
-           ? vars[head].xo + vars[head].xs*(vars[head].si*isize)        \
-           : vars[head].xo + vars[head].xs*(vars[head].pi*isize))
+#define X                                                                                       \
+  ((wPreferences.icon_yard & IY_VERT) ? vars[head].xo + vars[head].xs * (vars[head].si * isize) \
+                                      : vars[head].xo + vars[head].xs * (vars[head].pi * isize))
 
-#define Y ((wPreferences.icon_yard & IY_VERT)                           \
-           ? vars[head].yo + vars[head].ys*(vars[head].pi*isize)        \
-           : vars[head].yo + vars[head].ys*(vars[head].si*isize))
+#define Y                                                                                       \
+  ((wPreferences.icon_yard & IY_VERT) ? vars[head].yo + vars[head].ys * (vars[head].pi * isize) \
+                                      : vars[head].yo + vars[head].ys * (vars[head].si * isize))
 
   /* arrange application icons */
   aicon = scr->app_icon_list;
@@ -187,9 +185,8 @@ void wArrangeIcons(WScreen *scr, Bool arrangeAll)
 
   while (wwin) {
     if (wwin->icon && wwin->flags.miniaturized && !wwin->flags.hidden &&
-        (wwin->frame->desktop == scr->current_desktop ||
-         IS_OMNIPRESENT(wwin) || wPreferences.sticky_icons)) {
-
+        (wwin->frame->desktop == scr->current_desktop || IS_OMNIPRESENT(wwin) ||
+         wPreferences.sticky_icons)) {
       head = wGetHeadForWindow(wwin);
 
       if (arrangeAll || !wwin->flags.icon_moved) {

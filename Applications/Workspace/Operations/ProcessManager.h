@@ -44,7 +44,7 @@
 // - receive and display progress info from corresponding BGOperation;
 // - provide alert panel on BGOpertation state change to OperationAlert;
 // - call BGOpertation actions on user actions to GUI (progress and alert);
-// 
+//
 // Processes (controller of "Processes" panel):
 // - initialized on panel creation (firsr click on Tools->Processes...
 //   menu item);
@@ -112,7 +112,7 @@ typedef enum {
 
 - (NSDictionary *)_normalizeApplicationInfo:(NSDictionary *)appInfo;
 - (NSDictionary *)_applicationWithName:(NSString *)appName;
-  
+
 - (void)applicationWillLaunch:(NSNotification *)notif;
 - (void)applicationDidLaunch:(NSNotification *)notif;
 - (void)applicationDidTerminate:(NSNotification *)notif;

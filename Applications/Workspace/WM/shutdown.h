@@ -28,8 +28,8 @@
 
 /* shutdown modes */
 typedef enum {
- WMExitMode,
- WMRestartMode
+  WMExitMode,
+  WMRestartMode
 } WMShutdownMode;
 
 void wShutdown(WMShutdownMode mode);

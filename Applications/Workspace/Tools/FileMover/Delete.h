@@ -6,7 +6,7 @@
 //
 // Copyright (C) 2006-2014 Sergii Stoian
 // Copyright (C) 2005 Saso Kiselkov
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -28,8 +28,8 @@ void DeleteOperation(NSString *dir, NSArray *files);
 
 @interface Deleter : NSObject
 
-- (BOOL) fileManager: (NSFileManager*)fileManager
-  shouldProceedAfterError: (NSDictionary*)errorDictionary;
+- (BOOL)fileManager:(NSFileManager *)fileManager
+    shouldProceedAfterError:(NSDictionary *)errorDictionary;
 
 // - (void) fileManager: (NSFileManager*)fileManager
 //      willProcessPath: (NSString*)path;

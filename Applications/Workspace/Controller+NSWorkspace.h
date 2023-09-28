@@ -1,4 +1,4 @@
-/* 
+/*
    Copied from NSWorkspace.h
 
    Interface to Workspace Manager application.
@@ -10,7 +10,7 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -25,8 +25,8 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
@@ -73,13 +73,13 @@
 // * opening, manipulating, and obtaining information about files and devices
 // * tracking changes to the file system, devices, and the user database
 // * launching applications
-// * miscellaneous services such as animating an image and requesting 
+// * miscellaneous services such as animating an image and requesting
 //   additional time before power off
 // An NSWorkspace object is made available through the sharedWorkspace
 // method. For example, the following statement uses an NSWorkspace object to
 // request that a file be opened in the Edit application:
 //
-// [[NSWorkspace sharedWorkspace] openFile:"/Myfiles/README"                
+// [[NSWorkspace sharedWorkspace] openFile:"/Myfiles/README"
 //                         withApplication:"Edit"];
 //-----------------------------------------------------------------------------
 
@@ -98,7 +98,6 @@
 @class NSImage;
 @class NSView;
 
-
 @interface Controller (NSWorkspace)
 
 //-----------------------------------------------------------------------------
@@ -107,7 +106,7 @@
 
 /* Read configuration files from ~/Library/Services directory */
 - (void)initPrefs;
-  
+
 /* Initialize private implementation of NSWorkspace */
 - (id)initNSWorkspace;
 
@@ -149,7 +148,7 @@
     fullPath using the default application for its type; returns YES if file
     was successfully opened and NO otherwise.*/
 // [NSWorkspace _workspaceApplication]
-- (BOOL)openTempFile:(NSString*)fullPath;
+- (BOOL)openTempFile:(NSString *)fullPath;
 
 //-----------------------------------------------------------------------------
 //--- Manipulating Files
@@ -207,7 +206,7 @@ APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
 /** Describes the file system at fullPath in description and fileSystemType,
     sets the Flags appropriately, and returns YES if fullPath is a file system
     mount point, or NO if it isn't.*/
-/* Uses statfs call. 
+/* Uses statfs call.
    Not all systems with getmntinfo do have a statfs calls. In particular,
    NetBSD offers only a statvfs calls for compatibility with POSIX. Other BSDs
    and Linuxes have statvfs as well, but this returns less information than
@@ -238,7 +237,7 @@ APPKIT_EXPORT NSString *NSDirectoryFileType;
 APPKIT_EXPORT NSString *NSApplicationFileType;
 // A file system mount point
 APPKIT_EXPORT NSString *NSFilesystemFileType;
- // Executable shell command
+// Executable shell command
 APPKIT_EXPORT NSString *NSShellCommandFileType;
 
 /** Retrieves information about the file specified by fullPath, sets appName to
@@ -246,22 +245,20 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
     type to a value or file name extension indicating the file's type, and
     returns YES upon success and NO otherwise.*/
 // TODO (use libmagic)
-- (BOOL)getInfoForFile:(NSString*)fullPath
-           application:(NSString**)appName
-                  type:(NSString**)type;
+- (BOOL)getInfoForFile:(NSString *)fullPath application:(NSString **)appName type:(NSString **)type;
 
-/** Returns an NSImage with the icon for the single file specified by 
+/** Returns an NSImage with the icon for the single file specified by
     fullPath.*/
-- (NSImage*)iconForFile:(NSString*)fullPath;
+- (NSImage *)iconForFile:(NSString *)fullPath;
 
 /** Returns an NSImage with the icon for the files specified in pathArray, an
     array of NSStrings. If pathArray specifies one file, its icon is returned.
     If pathArray specifies more than one file, an icon representing the
     multiple selection is returned.*/
-- (NSImage*)iconForFiles:(NSArray*)pathArray;
+- (NSImage *)iconForFiles:(NSArray *)pathArray;
 
 /** Returns an NSImage the icon for the file type specified by fileType.*/
-- (NSImage*)iconForFileType:(NSString*)fileType;
+- (NSImage *)iconForFileType:(NSString *)fileType;
 
 // ADDON
 /** Returns an icon of directory in opened state.*/
@@ -290,7 +287,6 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
     applications installed in the standard locations.*/
 // CHECK
 - (void)findApplications;
-
 
 //-----------------------------------------------------------------------------
 //--- Launching and Manipulating Applications
@@ -346,16 +342,13 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
  */
 // CHECK
 // [NSWorkspace _workspaceApplication]
-- (BOOL)launchApplication:(NSString *)appName
-                 showIcon:(BOOL)showIcon
-               autolaunch:(BOOL)autolaunch;
-
+- (BOOL)launchApplication:(NSString *)appName showIcon:(BOOL)showIcon autolaunch:(BOOL)autolaunch;
 
 //-----------------------------------------------------------------------------
 //--- Unmounting a Device
 //-----------------------------------------------------------------------------
 
-/** Unmounts and ejects the device at path and returns YES if unmount 
+/** Unmounts and ejects the device at path and returns YES if unmount
     succeeded and NO otherwise.*/
 - (BOOL)unmountAndEjectDeviceAtPath:(NSString *)path;
 
@@ -385,7 +378,6 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 /** Returns the notification center for WorkSpace notifications.*/
 - (NSNotificationCenter *)notificationCenter;
 
-
 //-----------------------------------------------------------------------------
 // Tracking Changes to the User Defaults Database
 //-----------------------------------------------------------------------------
@@ -400,16 +392,13 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 // TODO
 - (BOOL)userDefaultsChanged;
 
-
 //-----------------------------------------------------------------------------
 // Animating an Image
 //-----------------------------------------------------------------------------
 
 /** Instructs Workspace Manager to animate a sliding image of image from
     fromPoint to toPoint, specified in screen coordinates.*/
-- (void)slideImage:(NSImage *)image
-              from:(NSPoint)fromPoint
-                to:(NSPoint)toPoint;
+- (void)slideImage:(NSImage *)image from:(NSPoint)fromPoint to:(NSPoint)toPoint;
 
 //-----------------------------------------------------------------------------
 // Requesting Additional Time before Power Off or Logout
@@ -438,11 +427,11 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 // @"NSOperationNumber"
 //   The tag of file operation in Workspace Manager (string).
 //-----------------------------------------------------------------------------
-APPKIT_EXPORT NSString *NSWorkspaceWillLaunchApplicationNotification;   // @"NSApplicationName"
-APPKIT_EXPORT NSString *NSWorkspaceDidLaunchApplicationNotification;    // @"NSApplicationName"
-APPKIT_EXPORT NSString *NSWorkspaceDidTerminateApplicationNotification; // @"NSApplicationName"
-APPKIT_EXPORT NSString *NSWorkspaceDidMountNotification;                // @"NSDevicePath"
-APPKIT_EXPORT NSString *NSWorkspaceDidPerformFileOperationNotification; // @"NSOperationNumber"
-APPKIT_EXPORT NSString *NSWorkspaceDidUnmountNotification;              // @"NSDevicePath"
+APPKIT_EXPORT NSString *NSWorkspaceWillLaunchApplicationNotification;    // @"NSApplicationName"
+APPKIT_EXPORT NSString *NSWorkspaceDidLaunchApplicationNotification;     // @"NSApplicationName"
+APPKIT_EXPORT NSString *NSWorkspaceDidTerminateApplicationNotification;  // @"NSApplicationName"
+APPKIT_EXPORT NSString *NSWorkspaceDidMountNotification;                 // @"NSDevicePath"
+APPKIT_EXPORT NSString *NSWorkspaceDidPerformFileOperationNotification;  // @"NSOperationNumber"
+APPKIT_EXPORT NSString *NSWorkspaceDidUnmountNotification;               // @"NSDevicePath"
 APPKIT_EXPORT NSString *NSWorkspaceWillPowerOffNotification;
-APPKIT_EXPORT NSString *NSWorkspaceWillUnmountNotification;             // @"NSDevicePath"
+APPKIT_EXPORT NSString *NSWorkspaceWillUnmountNotification;  // @"NSDevicePath"

@@ -36,7 +36,7 @@
 @interface Processes : NSObject
 {
   ProcessManager *manager;
-  
+
   int displayedFop;
 
   // Process.nib
@@ -48,7 +48,7 @@
   // AppProcessUI.nib
   id appBogusWindow;
   id appBox;
-  id appList; // should be procList: shared table for Apps and BGProcessess
+  id appList;  // should be procList: shared table for Apps and BGProcessess
   id appIcon;
   id appKillBtn;
   id appName;
@@ -89,4 +89,3 @@
 - (void)updateBGProcessList;
 
 @end
-

@@ -32,10 +32,10 @@
 
 @interface ItemsLoader : NSOperation
 {
-  NXTIconView  *iconView;
+  NXTIconView *iconView;
   NSTextField *statusField;
-  NSString    *directoryPath;
-  NSArray     *selectedFiles;
+  NSString *directoryPath;
+  NSArray *selectedFiles;
 }
 
 @property (atomic, readonly) NSInteger itemsCount;
@@ -49,30 +49,30 @@
 
 @interface Recycler : NSObject
 {
-  RecyclerIconView	*appIconView;
-  NXTIconBadge		*badge;
+  RecyclerIconView *appIconView;
+  NXTIconBadge *badge;
 
-  NSImage		*iconImage;
-  NSString		*recyclerDBPath;
-  
-  OSEFileSystemMonitor	*fileSystemMonitor;
+  NSImage *iconImage;
+  NSString *recyclerDBPath;
+
+  OSEFileSystemMonitor *fileSystemMonitor;
 
   // Panel
-  NSPanel		*panel;
-  NSImageView		*panelIcon;
-  NSTextField		*panelItems;
-  NSScrollView		*panelView;
-  NXTIconView		*filesView;
-  NSButton              *restoreBtn;
+  NSPanel *panel;
+  NSImageView *panelIcon;
+  NSTextField *panelItems;
+  NSScrollView *panelView;
+  NXTIconView *filesView;
+  NSButton *restoreBtn;
 
   // Items loader
-  NSOperationQueue	*operationQ;
-  ItemsLoader		*itemsLoader;
-  
+  NSOperationQueue *operationQ;
+  ItemsLoader *itemsLoader;
+
   // Dragging
-  id			draggedSource;
-  PathIcon		*draggedIcon;
-  NSDragOperation	draggingSourceMask;
+  id draggedSource;
+  PathIcon *draggedIcon;
+  NSDragOperation draggingSourceMask;
 }
 
 @property (atomic, readonly) WAppIcon *dockIcon;

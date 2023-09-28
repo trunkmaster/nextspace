@@ -48,31 +48,31 @@
 #define USE_DOCK_XDND
 /* Undefine to disable Motif WM hints handling */
 #define USE_MWM_HINTS
-/* Undefine if you don't want balloons for showing extra information, like window titles that 
+/* Undefine if you don't want balloons for showing extra information, like window titles that
    are not fully visible. */
 #define BALLOON_TEXT
-/* If balloons should be shaped or be simple rectangles. The X server must support the shape 
+/* If balloons should be shaped or be simple rectangles. The X server must support the shape
    extensions and it's support must be  enabled (default). */
 #ifdef USE_XSHAPE
-# define SHAPED_BALLOON
+#define SHAPED_BALLOON
 #endif
-/* Turn on a hack to make mouse and keyboard actions work even if the NumLock or ScrollLock 
+/* Turn on a hack to make mouse and keyboard actions work even if the NumLock or ScrollLock
    modifiers are turned on. They might inflict a performance/memory penalty. */
 #define NUMLOCK_HACK
-/* Define if you want the shape setting code to be optimized for applications that change 
-   their shape frequently (like xdaliclock -shape), removing flickering. If wmaker and your 
+/* Define if you want the shape setting code to be optimized for applications that change
+   their shape frequently (like xdaliclock -shape), removing flickering. If wmaker and your
    display are on different machines and the network connection is slow, it is not recommended. */
 #undef OPTIMIZE_SHAPE
-/* Define if you want window manager to send the synthetic ConfigureNotify event to windows 
+/* Define if you want window manager to send the synthetic ConfigureNotify event to windows
    while moving at every single movement. Default is to send a synthetic ConfigureNotify event
    only at the end of window moving, which improves performance. */
 #undef CONFIGURE_WINDOW_WHILE_MOVING
 /* Define if you want a dot to be shown in the application icon of applications that are hidden. */
 #define HIDDENDOT
-/* Ignores the PPosition hint from clients. This is needed for some programs that have buggy 
+/* Ignores the PPosition hint from clients. This is needed for some programs that have buggy
    implementations of such hint and place themselves in strange locations. */
 #undef IGNORE_PPOSITION
-/* Define if you want a resizebar with shadows like in AfterStep, instead of the default Openstep 
+/* Define if you want a resizebar with shadows like in AfterStep, instead of the default Openstep
    look. NEXTSTEP 3.3 also does not have these shadows. */
 #undef SHADOW_RESIZEBAR
 /* Define if you want the window creation animation when superfluous is enabled. */
@@ -85,65 +85,65 @@
  */
 
 /* number of window shortcuts */
-#define MAX_WINDOW_SHORTCUTS	10
+#define MAX_WINDOW_SHORTCUTS 10
 //#define MIN_TITLEFONT_HEIGHT(h)   ((h)>14 ? (h) : 14)
 /* window's titlebar height */
-#define TITLEBAR_HEIGHT		18
+#define TITLEBAR_HEIGHT 18
 /* height of the resizebar */
-#define RESIZEBAR_HEIGHT	8
+#define RESIZEBAR_HEIGHT 8
 /* min width of handles-corner_width */
-#define RESIZEBAR_MIN_WIDTH	20
+#define RESIZEBAR_MIN_WIDTH 20
 /* width of the corner of resizebars */
-#define RESIZEBAR_CORNER_WIDTH	28
-#define MENU_INDICATOR_SPACE	12
+#define RESIZEBAR_CORNER_WIDTH 28
+#define MENU_INDICATOR_SPACE 12
 /* minimum size for windows */
-#define MIN_WINDOW_SIZE		5
+#define MIN_WINDOW_SIZE 5
 /* size of the icon window */
-#define ICON_WIDTH		64
-#define ICON_HEIGHT		64
-#define ICON_BORDER_WIDTH	2
+#define ICON_WIDTH 64
+#define ICON_HEIGHT 64
+#define ICON_BORDER_WIDTH 2
 /* size of the icon pixmap */
-#define MAX_ICON_WIDTH		60
-#define MAX_ICON_HEIGHT		48
-#define MAX_DESKTOPS		100
-#define MAX_MENU_TEXT_LENGTH	512
-#define MAX_RESTART_ARGS	16
-#define MAX_DEAD_PROCESSES	128
-#define MAXLINE			1024
+#define MAX_ICON_WIDTH 60
+#define MAX_ICON_HEIGHT 48
+#define MAX_DESKTOPS 100
+#define MAX_MENU_TEXT_LENGTH 512
+#define MAX_RESTART_ARGS 16
+#define MAX_DEAD_PROCESSES 128
+#define MAXLINE 1024
 
 #ifdef _MAX_PATH
-#  define DEFAULT_PATH_MAX	_MAX_PATH
+#define DEFAULT_PATH_MAX _MAX_PATH
 #else
-#  define DEFAULT_PATH_MAX	512
+#define DEFAULT_PATH_MAX 512
 #endif
 
 #ifdef USE_XKB
-#  define KEEP_XKB_LOCK_STATUS
+#define KEEP_XKB_LOCK_STATUS
 #endif
 
 #if defined(HAVE_LIBINTL_H) && defined(I18N)
-#  include <libintl.h>
-#  define _(text) gettext(text)
+#include <libintl.h>
+#define _(text) gettext(text)
 /* Use N_() in initializers, it will make xgettext pick the string up for translation */
-#  define N_(text) (text)
-#  if defined(MENU_TEXTDOMAIN)
-#    define M_(text) dgettext(MENU_TEXTDOMAIN, text)
-#  else
-#    define M_(text) (text)
-#  endif
+#define N_(text) (text)
+#if defined(MENU_TEXTDOMAIN)
+#define M_(text) dgettext(MENU_TEXTDOMAIN, text)
 #else
-#  define _(text) text
-#  define N_(text) text
-#  define M_(text) text
+#define M_(text) (text)
+#endif
+#else
+#define _(text) text
+#define N_(text) text
+#define M_(text) text
 #endif /* defined(HAVE_LIBINTL_H) && defined(I18N) */
 
 /* class codes */
 typedef enum {
   WCLASS_UNKNOWN = 0,
-  WCLASS_WINDOW = 1,          /* managed client windows */
-  WCLASS_MENU = 2,            /* root menus */
+  WCLASS_WINDOW = 1, /* managed client windows */
+  WCLASS_MENU = 2,   /* root menus */
   WCLASS_APPICON = 3,
-  WCLASS_DUMMYWINDOW = 4,     /* window that holds window group leader */
+  WCLASS_DUMMYWINDOW = 4, /* window that holds window group leader */
   WCLASS_MINIWINDOW = 5,
   WCLASS_DOCK_ICON = 6,
   WCLASS_PAGER = 7,
@@ -152,63 +152,59 @@ typedef enum {
 } WClassType;
 
 /*
- * WObjDescriptor will be used by the event dispatcher to send events to a particular object 
- * through the methods in the method table. If all objects of the same class share the same 
- * methods, the class method table should be used, otherwise a new method table must be created 
+ * WObjDescriptor will be used by the event dispatcher to send events to a particular object
+ * through the methods in the method table. If all objects of the same class share the same
+ * methods, the class method table should be used, otherwise a new method table must be created
  * for each object.
- * It is also assigned to find the parent structure of a given window (like the WWindow or 
+ * It is also assigned to find the parent structure of a given window (like the WWindow or
  * WMenu for a button)
  */
 typedef struct WObjDescriptor {
-  void *self;                        /* the object that will be called */
+  void *self; /* the object that will be called */
   /* event handlers */
   void (*handle_expose)(struct WObjDescriptor *sender, XEvent *event);
   void (*handle_mousedown)(struct WObjDescriptor *sender, XEvent *event);
   void (*handle_enternotify)(struct WObjDescriptor *sender, XEvent *event);
   void (*handle_leavenotify)(struct WObjDescriptor *sender, XEvent *event);
 
-  WClassType parent_type;            /* type code of the parent */
-  void *parent;                      /* parent object (WWindow or WMenu) */
+  WClassType parent_type; /* type code of the parent */
+  void *parent;           /* parent object (WWindow or WMenu) */
 } WObjDescriptor;
 
 /* internal buttons */
-#define WBUT_CLOSE              0
-#define WBUT_BROKENCLOSE        1
-#define WBUT_ICONIFY            2
-#define WBUT_KILL		3
-#define WBUT_MAXIMIZE		4
-#define WBUT_RESTORE		5
-#define PRED_BPIXMAPS		6  /* count of WBUT icons */
+#define WBUT_CLOSE 0
+#define WBUT_BROKENCLOSE 1
+#define WBUT_ICONIFY 2
+#define WBUT_KILL 3
+#define WBUT_MAXIMIZE 4
+#define WBUT_RESTORE 5
+#define PRED_BPIXMAPS 6 /* count of WBUT icons */
 
 /* program states */
 typedef enum {
-  WSTATE_NORMAL		= 0,
-  WSTATE_EXITING	= 1,
-  WSTATE_MODAL		= 2,
-  WSTATE_NEED_EXIT	= 10, // SIGTERM, SIGINT, SIGHUP
-  WSTATE_NEED_RESTART	= 11, // SIGUSR1
-  WSTATE_RESTARTING	= 12,
-  WSTATE_NEED_REREAD	= 13  // SIGUSR2
+  WSTATE_NORMAL = 0,
+  WSTATE_EXITING = 1,
+  WSTATE_MODAL = 2,
+  WSTATE_NEED_EXIT = 10,     // SIGTERM, SIGINT, SIGHUP
+  WSTATE_NEED_RESTART = 11,  // SIGUSR1
+  WSTATE_RESTARTING = 12,
+  WSTATE_NEED_REREAD = 13  // SIGUSR2
 } wprog_state;
-#define WCHECK_STATE(chk_state)	(w_global.program.state == (chk_state))
-#define WCHANGE_STATE(nstate) {                                 \
-    if (w_global.program.state == WSTATE_NORMAL                 \
-        || (nstate) != WSTATE_MODAL)                            \
-      w_global.program.state = (nstate);                        \
-    if (w_global.program.signal_state != 0)			\
-      w_global.program.state = w_global.program.signal_state;	\
+#define WCHECK_STATE(chk_state) (w_global.program.state == (chk_state))
+#define WCHANGE_STATE(nstate)                                                \
+  {                                                                          \
+    if (w_global.program.state == WSTATE_NORMAL || (nstate) != WSTATE_MODAL) \
+      w_global.program.state = (nstate);                                     \
+    if (w_global.program.signal_state != 0)                                  \
+      w_global.program.state = w_global.program.signal_state;                \
   }
 
 /* Flags for the WM state when restarting/crash situations */
-#define WFLAGS_NONE       (0)
-#define WFLAGS_CRASHED    (1<<0)
+#define WFLAGS_NONE (0)
+#define WFLAGS_CRASHED (1 << 0)
 
 /* appearance settings clientdata flags */
-enum {
-  WFontSettings = 1 << 0,
-  WTextureSettings = 1 << 1,
-  WColorSettings = 1 << 2
-};
+enum { WFontSettings = 1 << 0, WTextureSettings = 1 << 1, WColorSettings = 1 << 2 };
 
 typedef struct {
   int x1, y1;
@@ -265,14 +261,13 @@ extern struct wm_global_variables {
 
 #ifdef HAVE_INOTIFY
   struct {
-    int fd_event_queue;   /* Inotify's queue file descriptor */
-    int wd_defaults;   /* Watch Descriptor for the 'Defaults' configuration file */
+    int fd_event_queue; /* Inotify's queue file descriptor */
+    int wd_defaults;    /* Watch Descriptor for the 'Defaults' configuration file */
   } inotify;
 #endif
 
   /* definition for X Atoms */
   struct {
-
     /* Window-Manager related */
     struct {
       Atom state;
@@ -428,4 +423,4 @@ extern CFStringRef WMDidCloseWindowNotification;
 
 void *userInfoValueForKey(CFDictionaryRef theDict, CFStringRef key);
 
-#endif // __WORKSPACE_WM__
+#endif  // __WORKSPACE_WM__

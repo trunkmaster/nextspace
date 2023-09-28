@@ -23,7 +23,7 @@
 #import "Workspace+WM.h"
 
 @interface WSApplication (Private)
-- (void)_openDocument:(NSString*)filePath;
+- (void)_openDocument:(NSString *)filePath;
 @end
 
 //-----------------------------------------------------------------------------
@@ -71,38 +71,38 @@
 @implementation WSAppIconView
 
 // Class variables
-static NSCell* dragCell = nil;
-static NSCell* tileCell = nil;
+static NSCell *dragCell = nil;
+static NSCell *tileCell = nil;
 
 static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   NSSize iconSize, retSize;
-  
+
   iconSize = [GSCurrentServer() iconSize];
   retSize.width = imageSize.width * iconSize.width / 64;
   retSize.height = imageSize.height * iconSize.height / 64;
   return retSize;
 }
 
-+ (void) initialize
++ (void)initialize
 {
   NSImage *tileImage;
-  NSSize  iconSize;
+  NSSize iconSize;
 
   iconSize = [GSCurrentServer() iconSize];
   /* _appIconInit will set our image */
-  dragCell = [[NSCell alloc] initImageCell: nil];
-  [dragCell setBordered: NO];
-  
+  dragCell = [[NSCell alloc] initImageCell:nil];
+  [dragCell setBordered:NO];
+
   tileImage = [[GSCurrentServer() iconTileImage] copy];
-  [tileImage setScalesWhenResized: YES];
-  [tileImage setSize: iconSize];
-  tileCell = [[NSCell alloc] initImageCell: tileImage];
+  [tileImage setScalesWhenResized:YES];
+  [tileImage setSize:iconSize];
+  tileCell = [[NSCell alloc] initImageCell:tileImage];
   RELEASE(tileImage);
-  [tileCell setBordered: NO];
+  [tileCell setBordered:NO];
 }
 
-- (BOOL)acceptsFirstMouse:(NSEvent*)theEvent
+- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
 {
   return YES;
 }
@@ -128,69 +128,64 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void)drawRect:(NSRect)rect
 {
   NSSize iconSize = [GSCurrentServer() iconSize];
-  
-  [tileCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
-  		   inView: self];
-  [dragCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
-		   inView: self];
+
+  [tileCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height) inView:self];
+  [dragCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height) inView:self];
 }
 
 - (id)initWithFrame:(NSRect)frame
 {
-  self = [super initWithFrame: frame];
-  [self registerForDraggedTypes: @[NSFilenamesPboardType]];
+  self = [super initWithFrame:frame];
+  [self registerForDraggedTypes:@[ NSFilenamesPboardType ]];
   return self;
 }
 
-- (void)mouseDown:(NSEvent*)theEvent
+- (void)mouseDown:(NSEvent *)theEvent
 {
   if ([theEvent clickCount] >= 2) {
     [NSApp unhide:self];
-  }
-  else {
-    NSPoint	lastLocation;
-    NSPoint	location;
-    NSUInteger eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask
-                            | NSPeriodicMask | NSOtherMouseUpMask
-                            | NSRightMouseUpMask);
-    NSDate	*theDistantFuture = [NSDate distantFuture];
-    BOOL	done = NO;
+  } else {
+    NSPoint lastLocation;
+    NSPoint location;
+    NSUInteger eventMask = (NSLeftMouseDownMask | NSLeftMouseUpMask | NSPeriodicMask |
+                            NSOtherMouseUpMask | NSRightMouseUpMask);
+    NSDate *theDistantFuture = [NSDate distantFuture];
+    BOOL done = NO;
 
     lastLocation = [theEvent locationInWindow];
-    [NSEvent startPeriodicEventsAfterDelay: 0.02 withPeriod: 0.02];
+    [NSEvent startPeriodicEventsAfterDelay:0.02 withPeriod:0.02];
 
     while (!done) {
-      theEvent = [NSApp nextEventMatchingMask: eventMask
-                                    untilDate: theDistantFuture
-                                       inMode: NSEventTrackingRunLoopMode
-                                      dequeue: YES];
-	
+      theEvent = [NSApp nextEventMatchingMask:eventMask
+                                    untilDate:theDistantFuture
+                                       inMode:NSEventTrackingRunLoopMode
+                                      dequeue:YES];
+
       switch ([theEvent type]) {
-      case NSRightMouseUp:
-      case NSOtherMouseUp:
-      case NSLeftMouseUp:
-        /* any mouse up means we're done */
-        done = YES;
-        break;
-      case NSPeriodic:
-        location = [_window mouseLocationOutsideOfEventStream];
-        if (NSEqualPoints(location, lastLocation) == NO)
-          {
-            NSPoint	origin = [_window frame].origin;
+        case NSRightMouseUp:
+        case NSOtherMouseUp:
+        case NSLeftMouseUp:
+          /* any mouse up means we're done */
+          done = YES;
+          break;
+        case NSPeriodic:
+          location = [_window mouseLocationOutsideOfEventStream];
+          if (NSEqualPoints(location, lastLocation) == NO) {
+            NSPoint origin = [_window frame].origin;
 
             origin.x += (location.x - lastLocation.x);
             origin.y += (location.y - lastLocation.y);
-            [_window setFrameOrigin: origin];
+            [_window setFrameOrigin:origin];
           }
-        break;
+          break;
 
-      default:
-        break;
+        default:
+          break;
       }
     }
     [NSEvent stopPeriodicEvents];
   }
-}                                                        
+}
 
 - (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender
 {
@@ -199,23 +194,21 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 
 - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
 {
-  NSArray	*types;
-  NSPasteboard	*dragPb;
+  NSArray *types;
+  NSPasteboard *dragPb;
 
   dragPb = [sender draggingPasteboard];
   types = [dragPb types];
-  if ([types containsObject: NSFilenamesPboardType] == YES)
-    {
-      NSArray	*names = [dragPb propertyListForType: NSFilenamesPboardType];
-      NSUInteger index;
+  if ([types containsObject:NSFilenamesPboardType] == YES) {
+    NSArray *names = [dragPb propertyListForType:NSFilenamesPboardType];
+    NSUInteger index;
 
-      [NSApp activateIgnoringOtherApps: YES];
-      for (index = 0; index < [names count]; index++)
-	{
-	  [(WSApplication *)NSApp _openDocument: [names objectAtIndex: index]];
-	}
-      return YES;
+    [NSApp activateIgnoringOtherApps:YES];
+    for (index = 0; index < [names count]; index++) {
+      [(WSApplication *)NSApp _openDocument:[names objectAtIndex:index]];
     }
+    return YES;
+  }
   return NO;
 }
 
@@ -223,16 +216,15 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 {
   NSImage *imgCopy = [anImage copy];
 
-  if (imgCopy)
-    {
-      NSSize imageSize = [imgCopy size];
+  if (imgCopy) {
+    NSSize imageSize = [imgCopy size];
 
-      [imgCopy setScalesWhenResized: YES];
-      [imgCopy setSize: scaledIconSizeForSize(imageSize)];
-    }
-  [dragCell setImage: imgCopy];
+    [imgCopy setScalesWhenResized:YES];
+    [imgCopy setSize:scaledIconSizeForSize(imageSize)];
+  }
+  [dragCell setImage:imgCopy];
   RELEASE(imgCopy);
-  [self setNeedsDisplay: YES];
+  [self setNeedsDisplay:YES];
 }
 
 @end
@@ -244,34 +236,32 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 - (void)_appIconInit
 {
   WSAppIconView *iv;
-  NSRect        iconContentRect;
-  NSRect        iconFrame;
-  NSRect        iconViewFrame;
+  NSRect iconContentRect;
+  NSRect iconFrame;
+  NSRect iconViewFrame;
 
   _app_icon_window = [[WSIconWindow alloc] initWithContentRect:NSZeroRect
                                                      styleMask:NSIconWindowMask
                                                        backing:NSBackingStoreRetained
                                                          defer:NO
                                                         screen:nil];
-    
+
   iconContentRect = [_app_icon_window frame];
   iconContentRect.size = [GSCurrentServer() iconSize];
   iconFrame = [_app_icon_window frameRectForContentRect:iconContentRect];
   iconFrame.origin = [[NSScreen mainScreen] frame].origin;
-  iconViewFrame = NSMakeRect(0, 0,
-                             iconContentRect.size.width,
-                             iconContentRect.size.height);
+  iconViewFrame = NSMakeRect(0, 0, iconContentRect.size.width, iconContentRect.size.height);
   [_app_icon_window setFrame:iconFrame display:YES];
 
   iv = [[WSAppIconView alloc] initWithFrame:iconViewFrame];
-  [iv setImage: [self applicationIconImage]];
+  [iv setImage:[self applicationIconImage]];
   [_app_icon_window setContentView:iv];
   RELEASE(iv);
 
   [_app_icon_window orderFrontRegardless];
 }
 
-- (void)_openDocument:(NSString*)filePath
+- (void)_openDocument:(NSString *)filePath
 {
   [_listener application:self openFile:filePath];
 }
@@ -285,11 +275,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
     [GSServerForWindow(menuWindow) setinputfocus:[menuWindow windowNumber]];
     return;
   }
-  
+
   if (_app_is_hidden) {
     wUnhideApplication(wApplicationWithName(NULL, "Workspace"), NO, NO);
     [super unhide:sender];
-  
+
     // if ([sender isKindOfClass:[NSMenuItem class]] == NO) {
     //   sender = [_main_menu itemWithTitle:@"Show"];
     // }

@@ -52,18 +52,16 @@
  * Position increment for smart placement: >= 1
  * Raise these values if it's too slow for you
  */
-#define PLACETEST_HSTEP	        8
-#define PLACETEST_VSTEP	        8
+#define PLACETEST_HSTEP 8
+#define PLACETEST_VSTEP 8
 
-#define X_ORIGIN WMAX(usableArea.x1,                            \
-                      wPreferences.window_place_origin.x)
+#define X_ORIGIN WMAX(usableArea.x1, wPreferences.window_place_origin.x)
 
-#define Y_ORIGIN WMAX(usableArea.y1,                            \
-                      wPreferences.window_place_origin.y)
+#define Y_ORIGIN WMAX(usableArea.y1, wPreferences.window_place_origin.y)
 
 /* Returns True if it is an icon and is in this workspace */
-static Bool iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2,
-                         int desktop, int *retX, int *retY)
+static Bool iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2, int desktop,
+                         int *retX, int *retY)
 {
   void *parent;
   int ok = 0;
@@ -71,26 +69,25 @@ static Bool iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2,
   parent = wcore->descriptor.parent;
 
   /* if it is an application icon */
-  if (wcore->descriptor.parent_type == WCLASS_APPICON && !((WAppIcon *) parent)->flags.docked) {
-    *retX = ((WAppIcon *) parent)->x_pos;
-    *retY = ((WAppIcon *) parent)->y_pos;
+  if (wcore->descriptor.parent_type == WCLASS_APPICON && !((WAppIcon *)parent)->flags.docked) {
+    *retX = ((WAppIcon *)parent)->x_pos;
+    *retY = ((WAppIcon *)parent)->y_pos;
 
     ok = 1;
   } else if (wcore->descriptor.parent_type == WCLASS_MINIWINDOW &&
-             (((WIcon *) parent)->owner->frame->desktop == desktop
-              || IS_OMNIPRESENT(((WIcon *) parent)->owner)
-              || wPreferences.sticky_icons)
-             && (((WIcon *) parent)->mapped || !((WIcon *) parent)->owner->screen->flags.icon_yard_mapped)) {
-    
-    *retX = ((WIcon *) parent)->owner->icon_x;
-    *retY = ((WIcon *) parent)->owner->icon_y;
+             (((WIcon *)parent)->owner->frame->desktop == desktop ||
+              IS_OMNIPRESENT(((WIcon *)parent)->owner) || wPreferences.sticky_icons) &&
+             (((WIcon *)parent)->mapped ||
+              !((WIcon *)parent)->owner->screen->flags.icon_yard_mapped)) {
+    *retX = ((WIcon *)parent)->owner->icon_x;
+    *retY = ((WIcon *)parent)->owner->icon_y;
     ok = 1;
-  } else if (wcore->descriptor.parent_type == WCLASS_WINDOW
-             && ((WWindow *) parent)->flags.icon_moved
-             && (((WWindow *) parent)->frame->desktop == desktop || IS_OMNIPRESENT((WWindow *) parent)
-                 || wPreferences.sticky_icons)) {
-    *retX = ((WWindow *) parent)->icon_x;
-    *retY = ((WWindow *) parent)->icon_y;
+  } else if (wcore->descriptor.parent_type == WCLASS_WINDOW &&
+             ((WWindow *)parent)->flags.icon_moved &&
+             (((WWindow *)parent)->frame->desktop == desktop || IS_OMNIPRESENT((WWindow *)parent) ||
+              wPreferences.sticky_icons)) {
+    *retX = ((WWindow *)parent)->icon_x;
+    *retY = ((WWindow *)parent)->icon_y;
 
     ok = 1;
   }
@@ -113,14 +110,14 @@ static Bool iconPosition(WCoreWindow *wcore, int sx1, int sy1, int sx2, int sy2,
 
 void PlaceIcon(WScreen *scr, int *x_ret, int *y_ret, int head)
 {
-  int pf;			/* primary axis */
-  int sf;			/* secondary axis */
+  int pf; /* primary axis */
+  int sf; /* secondary axis */
   int fullW;
   int fullH;
   char *map;
   int pi, si;
   WCoreWindow *obj;
-  int sx1, sx2, sy1, sy2;	/* screen boundary */
+  int sx1, sx2, sy1, sy2; /* screen boundary */
   int sw, sh;
   int xo, yo;
   int xs, ys;
@@ -178,16 +175,16 @@ void PlaceIcon(WScreen *scr, int *x_ret, int *y_ret, int head)
    */
   map = wmalloc((sw + 2) * (sh + 2));
 
-#define INDEX(x,y)	(((y)+1)*(sw+2) + (x) + 1)
+#define INDEX(x, y) (((y) + 1) * (sw + 2) + (x) + 1)
 
-  WM_ETARETI_BAG(scr->stacking_list, obj, iter) {
-
+  WM_ETARETI_BAG(scr->stacking_list, obj, iter)
+  {
     while (obj) {
       int x, y;
 
       if (iconPosition(obj, sx1, sy1, sx2, sy2, scr->current_desktop, &x, &y)) {
-        int xdi, ydi;	/* rounded down */
-        int xui, yui;	/* rounded up */
+        int xdi, ydi; /* rounded down */
+        int xui, yui; /* rounded up */
 
         xdi = x / isize;
         ydi = y / isize;
@@ -257,8 +254,7 @@ int calcIntersectionLength(int p1, int l1, int p2, int l2)
 /* Computes the intersecting area of two rectangles */
 int calcIntersectionArea(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
 {
-  return calcIntersectionLength(x1, w1, x2, w2)
-    * calcIntersectionLength(y1, h1, y2, h2);
+  return calcIntersectionLength(x1, w1, x2, w2) * calcIntersectionLength(y1, h1, y2, h2);
 }
 
 static int calcSumOfCoveredAreas(WWindow *wwin, int x, int y, int w, int h)
@@ -281,9 +277,10 @@ static int calcSumOfCoveredAreas(WWindow *wwin, int x, int y, int w, int h)
     tx = test_window->frame_x;
     ty = test_window->frame_y;
 
-    if (test_window->flags.mapped || (test_window->flags.shaded &&
-                                      test_window->frame->desktop == wwin->screen->current_desktop &&
-                                      !(test_window->flags.miniaturized || test_window->flags.hidden))) {
+    if (test_window->flags.mapped ||
+        (test_window->flags.shaded &&
+         test_window->frame->desktop == wwin->screen->current_desktop &&
+         !(test_window->flags.miniaturized || test_window->flags.hidden))) {
       sum_isect += calcIntersectionArea(tx, ty, tw, th, x, y, w, h);
     }
   }
@@ -303,17 +300,15 @@ static void set_width_height(WWindow *wwin, unsigned int *width, unsigned int *h
   }
   if (HAS_BORDER(wwin)) {
     *height += 2 * wwin->screen->frame_border_width;
-    *width  += 2 * wwin->screen->frame_border_width;
+    *width += 2 * wwin->screen->frame_border_width;
   }
 }
 
-static Bool
-window_overlaps(WWindow *win, int x, int y, int w, int h, Bool ignore_sunken)
+static Bool window_overlaps(WWindow *win, int x, int y, int w, int h, Bool ignore_sunken)
 {
   int tw, th, tx, ty;
 
-  if (ignore_sunken &&
-      win->frame->core->stacking->window_level < NSNormalWindowLevel) {
+  if (ignore_sunken && win->frame->core->stacking->window_level < NSNormalWindowLevel) {
     return False;
   }
 
@@ -322,11 +317,9 @@ window_overlaps(WWindow *win, int x, int y, int w, int h, Bool ignore_sunken)
   tx = win->frame_x;
   ty = win->frame_y;
 
-  if ((tx < (x + w)) && ((tx + tw) > x) &&
-      (ty < (y + h)) && ((ty + th) > y) &&
+  if ((tx < (x + w)) && ((tx + tw) > x) && (ty < (y + h)) && ((ty + th) > y) &&
       (win->flags.mapped ||
-       (win->flags.shaded &&
-        win->frame->desktop == win->screen->current_desktop &&
+       (win->flags.shaded && win->frame->desktop == win->screen->current_desktop &&
         !(win->flags.miniaturized || win->flags.hidden)))) {
     return True;
   }
@@ -334,8 +327,7 @@ window_overlaps(WWindow *win, int x, int y, int w, int h, Bool ignore_sunken)
   return False;
 }
 
-static Bool
-screen_has_space(WScreen *scr, int x, int y, int w, int h, Bool ignore_sunken)
+static Bool screen_has_space(WScreen *scr, int x, int y, int w, int h, Bool ignore_sunken)
 {
   WWindow *focused = scr->focused_window, *i;
 
@@ -354,9 +346,8 @@ screen_has_space(WScreen *scr, int x, int y, int w, int h, Bool ignore_sunken)
   return True;
 }
 
-static void
-smartPlaceWindow(WWindow *wwin, int *x_ret, int *y_ret, unsigned int width,
-		 unsigned int height, WArea usableArea)
+static void smartPlaceWindow(WWindow *wwin, int *x_ret, int *y_ret, unsigned int width,
+                             unsigned int height, WArea usableArea)
 {
   int test_x = 0, test_y = Y_ORIGIN;
   int from_x, to_x, from_y, to_y;
@@ -415,9 +406,8 @@ smartPlaceWindow(WWindow *wwin, int *x_ret, int *y_ret, unsigned int width,
   *y_ret = min_isect_y;
 }
 
-static Bool
-center_place_window(WWindow *wwin, int *x_ret, int *y_ret,
-                    unsigned int width, unsigned int height, WArea usableArea)
+static Bool center_place_window(WWindow *wwin, int *x_ret, int *y_ret, unsigned int width,
+                                unsigned int height, WArea usableArea)
 {
   int swidth, sheight;
 
@@ -434,10 +424,8 @@ center_place_window(WWindow *wwin, int *x_ret, int *y_ret,
   return True;
 }
 
-static Bool
-autoPlaceWindow(WWindow *wwin, int *x_ret, int *y_ret,
-		unsigned int width, unsigned int height,
-		Bool ignore_sunken, WArea usableArea)
+static Bool autoPlaceWindow(WWindow *wwin, int *x_ret, int *y_ret, unsigned int width,
+                            unsigned int height, Bool ignore_sunken, WArea usableArea)
 {
   WScreen *scr = wwin->screen;
   int x, y;
@@ -458,8 +446,7 @@ autoPlaceWindow(WWindow *wwin, int *x_ret, int *y_ret,
   /* this was based on fvwm2's smart placement */
   for (y = Y_ORIGIN; (y + height) < sh; y += PLACETEST_VSTEP) {
     for (x = X_ORIGIN; (x + width) < sw; x += PLACETEST_HSTEP) {
-      if (screen_has_space(scr, x, y,
-                           width, height, ignore_sunken)) {
+      if (screen_has_space(scr, x, y, width, height, ignore_sunken)) {
         *x_ret = x;
         *y_ret = y;
         return True;
@@ -470,9 +457,8 @@ autoPlaceWindow(WWindow *wwin, int *x_ret, int *y_ret,
   return False;
 }
 
-static void
-cascadeWindow(WScreen *scr, WWindow *wwin, int *x_ret, int *y_ret,
-	      unsigned int width, unsigned int height, int h, WArea usableArea)
+static void cascadeWindow(WScreen *scr, WWindow *wwin, int *x_ret, int *y_ret, unsigned int width,
+                          unsigned int height, int h, WArea usableArea)
 {
   set_width_height(wwin, &width, &height);
 
@@ -486,8 +472,8 @@ cascadeWindow(WScreen *scr, WWindow *wwin, int *x_ret, int *y_ret,
   }
 }
 
-static void randomPlaceWindow(WWindow *wwin, int *x_ret, int *y_ret,
-                              unsigned int width, unsigned int height, WArea usableArea)
+static void randomPlaceWindow(WWindow *wwin, int *x_ret, int *y_ret, unsigned int width,
+                              unsigned int height, WArea usableArea)
 {
   int w, h;
 
@@ -506,8 +492,8 @@ static void randomPlaceWindow(WWindow *wwin, int *x_ret, int *y_ret,
 void PlaceWindow(WWindow *wwin, int *x_ret, int *y_ret, unsigned width, unsigned height)
 {
   WScreen *scr = wwin->screen;
-  int h = WMFontHeight(scr->title_font)
-    + (wPreferences.window_title_clearance + TITLEBAR_EXTEND_SPACE) * 2;
+  int h = WMFontHeight(scr->title_font) +
+          (wPreferences.window_title_clearance + TITLEBAR_EXTEND_SPACE) * 2;
 
   if (h > wPreferences.window_title_max_height)
     h = wPreferences.window_title_max_height;
@@ -515,45 +501,44 @@ void PlaceWindow(WWindow *wwin, int *x_ret, int *y_ret, unsigned width, unsigned
   if (h < wPreferences.window_title_min_height)
     h = wPreferences.window_title_min_height;
 
-  WArea usableArea = wGetUsableAreaForHead(scr, wGetHeadForPointerLocation(scr),
-                                           NULL, True);
+  WArea usableArea = wGetUsableAreaForHead(scr, wGetHeadForPointerLocation(scr), NULL, True);
 
   switch (wPreferences.window_placement) {
-  case WPM_MANUAL:
-    InteractivePlaceWindow(wwin, x_ret, y_ret, width, height);
-    break;
-
-  case WPM_SMART:
-    smartPlaceWindow(wwin, x_ret, y_ret, width, height, usableArea);
-    break;
-
-  case WPM_CENTER:
-    if (center_place_window(wwin, x_ret, y_ret, width, height, usableArea))
+    case WPM_MANUAL:
+      InteractivePlaceWindow(wwin, x_ret, y_ret, width, height);
       break;
 
-  case WPM_AUTO:
-    if (autoPlaceWindow(wwin, x_ret, y_ret, width, height, False, usableArea)) {
+    case WPM_SMART:
+      smartPlaceWindow(wwin, x_ret, y_ret, width, height, usableArea);
       break;
-    } else if (autoPlaceWindow(wwin, x_ret, y_ret, width, height, True, usableArea)) {
+
+    case WPM_CENTER:
+      if (center_place_window(wwin, x_ret, y_ret, width, height, usableArea))
+        break;
+
+    case WPM_AUTO:
+      if (autoPlaceWindow(wwin, x_ret, y_ret, width, height, False, usableArea)) {
+        break;
+      } else if (autoPlaceWindow(wwin, x_ret, y_ret, width, height, True, usableArea)) {
+        break;
+      }
+      /* there isn't a break here, because if we fail, it should fall
+         through to cascade placement, as people who want tiling want
+         automagicness aren't going to want to place their window */
+
+    case WPM_CASCADE:
+      if (wPreferences.window_placement == WPM_AUTO || wPreferences.window_placement == WPM_CENTER)
+        scr->cascade_index++;
+
+      cascadeWindow(scr, wwin, x_ret, y_ret, width, height, h, usableArea);
+
+      if (wPreferences.window_placement == WPM_CASCADE)
+        scr->cascade_index++;
       break;
-    }
-    /* there isn't a break here, because if we fail, it should fall
-       through to cascade placement, as people who want tiling want
-       automagicness aren't going to want to place their window */
 
-  case WPM_CASCADE:
-    if (wPreferences.window_placement == WPM_AUTO || wPreferences.window_placement == WPM_CENTER)
-      scr->cascade_index++;
-
-    cascadeWindow(scr, wwin, x_ret, y_ret, width, height, h, usableArea);
-
-    if (wPreferences.window_placement == WPM_CASCADE)
-      scr->cascade_index++;
-    break;
-
-  case WPM_RANDOM:
-    randomPlaceWindow(wwin, x_ret, y_ret, width, height, usableArea);
-    break;
+    case WPM_RANDOM:
+      randomPlaceWindow(wwin, x_ret, y_ret, width, height, usableArea);
+      break;
   }
 
   /*

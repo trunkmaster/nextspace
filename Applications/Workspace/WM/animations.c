@@ -51,16 +51,16 @@
 
 #define NORMAL_ICON_KABOOM
 
-#define PIECES ((64/ICON_KABOOM_PIECE_SIZE)*(64/ICON_KABOOM_PIECE_SIZE))
-#define KAB_PRECISION		4
+#define PIECES ((64 / ICON_KABOOM_PIECE_SIZE) * (64 / ICON_KABOOM_PIECE_SIZE))
+#define KAB_PRECISION 4
 /* size of the pieces in the undocked icon explosion */
-#define ICON_KABOOM_PIECE_SIZE	4
-#define BOUNCE_HZ		25
-#define BOUNCE_DELAY		(1000/BOUNCE_HZ)
-#define BOUNCE_HEIGHT		24
-#define BOUNCE_LENGTH		0.3
-#define BOUNCE_DAMP		0.6
-#define URGENT_BOUNCE_DELAY	3000
+#define ICON_KABOOM_PIECE_SIZE 4
+#define BOUNCE_HZ 25
+#define BOUNCE_DELAY (1000 / BOUNCE_HZ)
+#define BOUNCE_HEIGHT 24
+#define BOUNCE_LENGTH 0.3
+#define BOUNCE_DAMP 0.6
+#define URGENT_BOUNCE_DELAY 3000
 
 #ifndef HAVE_FLOAT_MATHFUNC
 #  define sinf(x) ((float)sin((double)(x)))
@@ -131,20 +131,22 @@ void DoKaboom(WScreen *scr, Window win, int x, int y)
   Pixmap tmp;
 
   XSetClipMask(dpy, scr->copy_gc, None);
-  tmp = XCreatePixmap(dpy, scr->root_win, wPreferences.icon_size, wPreferences.icon_size, scr->depth);
+  tmp =
+      XCreatePixmap(dpy, scr->root_win, wPreferences.icon_size, wPreferences.icon_size, scr->depth);
   if (scr->w_visual == DefaultVisual(dpy, scr->screen))
-    XCopyArea(dpy, win, tmp, scr->copy_gc, 0, 0, wPreferences.icon_size, wPreferences.icon_size, 0, 0);
+    XCopyArea(dpy, win, tmp, scr->copy_gc, 0, 0, wPreferences.icon_size, wPreferences.icon_size, 0,
+              0);
   else {
     XImage *image;
 
-    image = XGetImage(dpy, win, 0, 0, wPreferences.icon_size,
-                      wPreferences.icon_size, AllPlanes, ZPixmap);
+    image = XGetImage(dpy, win, 0, 0, wPreferences.icon_size, wPreferences.icon_size, AllPlanes,
+                      ZPixmap);
     if (!image) {
       XUnmapWindow(dpy, win);
       return;
     }
-    XPutImage(dpy, tmp, scr->copy_gc, image, 0, 0, 0, 0,
-              wPreferences.icon_size, wPreferences.icon_size);
+    XPutImage(dpy, tmp, scr->copy_gc, image, 0, 0, 0, 0, wPreferences.icon_size,
+              wPreferences.icon_size);
     XDestroyImage(image);
   }
 
@@ -179,8 +181,8 @@ void DoKaboom(WScreen *scr, Window win, int x, int y)
     for (i = 0; i < j; i++) {
       if (ax[i] >= 0) {
         int _px = px[i] >> KAB_PRECISION;
-        XClearArea(dpy, scr->root_win, _px, py[i],
-                   ICON_KABOOM_PIECE_SIZE, ICON_KABOOM_PIECE_SIZE, False);
+        XClearArea(dpy, scr->root_win, _px, py[i], ICON_KABOOM_PIECE_SIZE, ICON_KABOOM_PIECE_SIZE,
+                   False);
         px[i] += pvx[i];
         py[i] += pvy[i];
         _px = px[i] >> KAB_PRECISION;
@@ -189,9 +191,9 @@ void DoKaboom(WScreen *scr, Window win, int x, int y)
           ax[i] = -1;
           k--;
         } else {
-          XCopyArea(dpy, tmp, scr->root_win, scr->copy_gc,
-                    ax[i] * ICON_KABOOM_PIECE_SIZE, ay[i] * ICON_KABOOM_PIECE_SIZE,
-                    ICON_KABOOM_PIECE_SIZE, ICON_KABOOM_PIECE_SIZE, _px, py[i]);
+          XCopyArea(dpy, tmp, scr->root_win, scr->copy_gc, ax[i] * ICON_KABOOM_PIECE_SIZE,
+                    ay[i] * ICON_KABOOM_PIECE_SIZE, ICON_KABOOM_PIECE_SIZE, ICON_KABOOM_PIECE_SIZE,
+                    _px, py[i]);
         }
       }
     }
@@ -201,10 +203,10 @@ void DoKaboom(WScreen *scr, Window win, int x, int y)
   }
 
   XFreePixmap(dpy, tmp);
-#endif	/* NORMAL_ICON_KABOOM */
+#endif /* NORMAL_ICON_KABOOM */
 }
 
-Pixmap MakeGhostIcon(WScreen * scr, Drawable drawable)
+Pixmap MakeGhostIcon(WScreen *scr, Drawable drawable)
 {
   RImage *back;
   RColor color;
@@ -246,7 +248,7 @@ void DoWindowBirth(WWindow *wwin)
   animateResize(scr, center_x, center_y, 1, 1, wwin->frame_x, wwin->frame_y, width, height);
 #else
   /* Parameter not used, but tell the compiler that it is ok */
-  (void) wwin;
+  (void)wwin;
 #endif
 }
 
@@ -260,20 +262,20 @@ typedef struct AppBouncerData {
 
 static void doAppBounce(CFRunLoopTimerRef timer, void *arg)
 {
-  AppBouncerData *data = (AppBouncerData*)arg;
+  AppBouncerData *data = (AppBouncerData *)arg;
   WAppIcon *aicon = data->wapp->app_icon;
 
   if (!aicon)
     return;
 
- reinit:
+reinit:
   if (data->wapp->refcount > 1) {
     if (wPreferences.raise_appicons_when_bouncing)
       XRaiseWindow(dpy, aicon->icon->core->window);
 
     const double ticks = BOUNCE_HZ * BOUNCE_LENGTH;
-    const double s = sqrt(BOUNCE_HEIGHT)/(ticks/2);
-    double h = BOUNCE_HEIGHT*pow(BOUNCE_DAMP, data->pow);
+    const double s = sqrt(BOUNCE_HEIGHT) / (ticks / 2);
+    double h = BOUNCE_HEIGHT * pow(BOUNCE_DAMP, data->pow);
     double sqrt_h = sqrt(h);
     if (h > 3) {
       double offset, x = s * data->count - sqrt_h;
@@ -281,33 +283,29 @@ static void doAppBounce(CFRunLoopTimerRef timer, void *arg)
         ++data->pow;
         data->count = 0;
         goto reinit;
-      } else ++data->count;
-      offset = h - x*x;
+      } else
+        ++data->count;
+      offset = h - x * x;
 
       switch (data->dir) {
-      case 0: /* left, bounce to right */
-        XMoveWindow(dpy, aicon->icon->core->window,
-                    aicon->x_pos + (int)offset, aicon->y_pos);
-        break;
-      case 1: /* right, bounce to left */
-        XMoveWindow(dpy, aicon->icon->core->window,
-                    aicon->x_pos - (int)offset, aicon->y_pos);
-        break;
-      case 2: /* top, bounce down */
-        XMoveWindow(dpy, aicon->icon->core->window,
-                    aicon->x_pos, aicon->y_pos + (int)offset);
-        break;
-      case 3: /* bottom, bounce up */
-        XMoveWindow(dpy, aicon->icon->core->window,
-                    aicon->x_pos, aicon->y_pos - (int)offset);
-        break;
+        case 0: /* left, bounce to right */
+          XMoveWindow(dpy, aicon->icon->core->window, aicon->x_pos + (int)offset, aicon->y_pos);
+          break;
+        case 1: /* right, bounce to left */
+          XMoveWindow(dpy, aicon->icon->core->window, aicon->x_pos - (int)offset, aicon->y_pos);
+          break;
+        case 2: /* top, bounce down */
+          XMoveWindow(dpy, aicon->icon->core->window, aicon->x_pos, aicon->y_pos + (int)offset);
+          break;
+        case 3: /* bottom, bounce up */
+          XMoveWindow(dpy, aicon->icon->core->window, aicon->x_pos, aicon->y_pos - (int)offset);
+          break;
       }
       return;
     }
   }
 
-  XMoveWindow(dpy, aicon->icon->core->window,
-              aicon->x_pos, aicon->y_pos);
+  XMoveWindow(dpy, aicon->icon->core->window, aicon->x_pos, aicon->y_pos);
   CommitStackingForWindow(aicon->icon->core);
   data->wapp->flags.bouncing = 0;
   WMDeleteTimerHandler(data->timer);
@@ -352,34 +350,38 @@ static int bounceDirection(WAppIcon *aicon)
   }
 
   if (aicon->dock && abs(aicon->xindex) != abs(aicon->yindex)) {
-    if (abs(aicon->xindex) < abs(aicon->yindex)) dir &= ~(top_e | bottom_e);
-    else dir &= ~(left_e | right_e);
+    if (abs(aicon->xindex) < abs(aicon->yindex))
+      dir &= ~(top_e | bottom_e);
+    else
+      dir &= ~(left_e | right_e);
   } else {
-    if (h < v) dir &= ~(top_e | bottom_e);
-    else dir &= ~(left_e | right_e);
+    if (h < v)
+      dir &= ~(top_e | bottom_e);
+    else
+      dir &= ~(left_e | right_e);
   }
 
   switch (dir) {
-  case left_e:
-    dir = 0;
-    break;
+    case left_e:
+      dir = 0;
+      break;
 
-  case right_e:
-    dir = 1;
-    break;
+    case right_e:
+      dir = 1;
+      break;
 
-  case top_e:
-    dir = 2;
-    break;
+    case top_e:
+      dir = 2;
+      break;
 
-  case bottom_e:
-    dir = 3;
-    break;
+    case bottom_e:
+      dir = 3;
+      break;
 
-  default:
-    WMLogWarning(_("Impossible direction: %d"), dir);
-    dir = 3;
-    break;
+    default:
+      WMLogWarning(_("Impossible direction: %d"), dir);
+      dir = 3;
+      break;
   }
 
   return dir;
@@ -387,8 +389,8 @@ static int bounceDirection(WAppIcon *aicon)
 
 void wAppBounce(WApplication *wapp)
 {
-  if (!wPreferences.no_animations && wapp->app_icon && !wapp->flags.bouncing
-      && !wPreferences.do_not_make_appicons_bounce) {
+  if (!wPreferences.no_animations && wapp->app_icon && !wapp->flags.bouncing &&
+      !wPreferences.do_not_make_appicons_bounce) {
     ++wapp->refcount;
     wapp->flags.bouncing = 1;
 
@@ -430,7 +432,8 @@ static void doAppUrgentBounce(CFRunLoopTimerRef timer, void *arg)
   WApplication *wapp = (WApplication *)arg;
 
   if (appIsUrgent(wapp)) {
-    if(wPreferences.bounce_appicons_when_urgent) wAppBounce(wapp);
+    if (wPreferences.bounce_appicons_when_urgent)
+      wAppBounce(wapp);
   } else {
     WMDeleteTimerHandler(wapp->urgent_bounce_timer);
     wapp->urgent_bounce_timer = NULL;
@@ -439,12 +442,12 @@ static void doAppUrgentBounce(CFRunLoopTimerRef timer, void *arg)
 
 void wAppBounceWhileUrgent(WApplication *wapp)
 {
-  if (!wapp) return;
+  if (!wapp)
+    return;
   if (appIsUrgent(wapp)) {
     if (!wapp->urgent_bounce_timer) {
-      wapp->urgent_bounce_timer = WMAddTimerHandler(URGENT_BOUNCE_DELAY,
-                                                    URGENT_BOUNCE_DELAY,
-                                                    doAppUrgentBounce, wapp);
+      wapp->urgent_bounce_timer =
+          WMAddTimerHandler(URGENT_BOUNCE_DELAY, URGENT_BOUNCE_DELAY, doAppUrgentBounce, wapp);
       doAppUrgentBounce(NULL, wapp);
     }
   } else {
@@ -458,7 +461,7 @@ void wAppBounceWhileUrgent(WApplication *wapp)
 static inline void _flushExpose(void)
 {
   XEvent tmpev;
-  
+
   while (XCheckTypedEvent(dpy, Expose, &tmpev))
     WMHandleEvent(&tmpev);
 }
@@ -470,7 +473,7 @@ void wShakeWindow(WWindow *wwin)
   int xo = x;
   int y = wwin->frame_y;
   int sleep_time = 2000;
-  
+
   num_steps = 3;
   num_shakes = 3;
   for (i = 0; i < num_shakes; i++) {
@@ -480,7 +483,7 @@ void wShakeWindow(WWindow *wwin)
       XSync(dpy, False);
       usleep(sleep_time);
     }
-    for (j = 0; j < num_steps*2; j++) {
+    for (j = 0; j < num_steps * 2; j++) {
       x -= 10;
       XMoveWindow(dpy, wwin->frame->core->window, x, y);
       XSync(dpy, False);
@@ -503,8 +506,8 @@ void wShakeWindow(WWindow *wwin)
 
 #ifdef USE_ANIMATIONS
 
-static void animateResizeFlip(WScreen *scr, int x, int y, int w, int h,
-                              int fx, int fy, int fw, int fh, int steps)
+static void animateResizeFlip(WScreen *scr, int x, int y, int w, int h, int fx, int fy, int fw,
+                              int fh, int steps)
 {
 #define FRAMES (MINIATURIZE_ANIMATION_FRAMES_F)
   float cx, cy, cw, ch;
@@ -557,14 +560,13 @@ static void animateResizeFlip(WScreen *scr, int x, int y, int w, int h,
     ch += hstep;
     if (angle >= final_angle)
       break;
-
   }
   XFlush(dpy);
 #undef FRAMES
 }
 
-static void animateResizeTwist(WScreen *scr, int x, int y, int w, int h,
-                               int fx, int fy, int fw, int fh, int steps)
+static void animateResizeTwist(WScreen *scr, int x, int y, int w, int h, int fx, int fy, int fw,
+                               int fh, int steps)
 {
 #define FRAMES (MINIATURIZE_ANIMATION_FRAMES_T)
   float cx, cy, cw, ch;
@@ -619,14 +621,13 @@ static void animateResizeTwist(WScreen *scr, int x, int y, int w, int h,
     ch += hstep;
     if (angle >= final_angle)
       break;
-
   }
   XFlush(dpy);
 #undef FRAMES
 }
 
-static void animateResizeZoom(WScreen *scr, int x, int y, int w, int h,
-                              int fx, int fy, int fw, int fh, int steps)
+static void animateResizeZoom(WScreen *scr, int x, int y, int w, int h, int fx, int fy, int fw,
+                              int fh, int steps)
 {
 #define FRAMES (MINIATURIZE_ANIMATION_FRAMES_Z)
   float cx[FRAMES], cy[FRAMES], cw[FRAMES], ch[FRAMES];
@@ -647,15 +648,15 @@ static void animateResizeZoom(WScreen *scr, int x, int y, int w, int h,
   XGrabServer(dpy);
   for (i = 0; i < steps; i++) {
     for (j = 0; j < FRAMES; j++) {
-      XDrawRectangle(dpy, scr->root_win, scr->frame_gc,
-                     (int)cx[j], (int)cy[j], (int)cw[j], (int)ch[j]);
+      XDrawRectangle(dpy, scr->root_win, scr->frame_gc, (int)cx[j], (int)cy[j], (int)cw[j],
+                     (int)ch[j]);
     }
     XFlush(dpy);
     wusleep(MINIATURIZE_ANIMATION_DELAY_Z);
 
     for (j = 0; j < FRAMES; j++) {
-      XDrawRectangle(dpy, scr->root_win, scr->frame_gc,
-                     (int)cx[j], (int)cy[j], (int)cw[j], (int)ch[j]);
+      XDrawRectangle(dpy, scr->root_win, scr->frame_gc, (int)cx[j], (int)cy[j], (int)cw[j],
+                     (int)ch[j]);
       if (j < FRAMES - 1) {
         cx[j] = cx[j + 1];
         cy[j] = cy[j + 1];
@@ -671,12 +672,14 @@ static void animateResizeZoom(WScreen *scr, int x, int y, int w, int h,
   }
 
   for (j = 0; j < FRAMES; j++)
-    XDrawRectangle(dpy, scr->root_win, scr->frame_gc, (int)cx[j], (int)cy[j], (int)cw[j], (int)ch[j]);
+    XDrawRectangle(dpy, scr->root_win, scr->frame_gc, (int)cx[j], (int)cy[j], (int)cw[j],
+                   (int)ch[j]);
   XFlush(dpy);
   wusleep(MINIATURIZE_ANIMATION_DELAY_Z);
 
   for (j = 0; j < FRAMES; j++)
-    XDrawRectangle(dpy, scr->root_win, scr->frame_gc, (int)cx[j], (int)cy[j], (int)cw[j], (int)ch[j]);
+    XDrawRectangle(dpy, scr->root_win, scr->frame_gc, (int)cx[j], (int)cy[j], (int)cw[j],
+                   (int)ch[j]);
 
   XUngrabServer(dpy);
 }
@@ -685,8 +688,8 @@ static void animateResizeZoom(WScreen *scr, int x, int y, int w, int h,
 
 int wGetAnimationGeometry(WWindow *wwin, int *ix, int *iy, int *iw, int *ih)
 {
-  if (wwin->screen->flags.startup || wPreferences.no_animations
-      || wwin->flags.skip_next_animation || wwin->icon == NULL)
+  if (wwin->screen->flags.startup || wPreferences.no_animations ||
+      wwin->flags.skip_next_animation || wwin->icon == NULL)
     return 0;
 
   if (!wPreferences.disable_miniwindows && !wwin->flags.net_handle_icon) {
@@ -712,7 +715,7 @@ int wGetAnimationGeometry(WWindow *wwin, int *ix, int *iy, int *iw, int *ih)
 
 void wAnimateResize(WScreen *scr, int x, int y, int w, int h, int fx, int fy, int fw, int fh)
 {
-  int style = wPreferences.iconification_style;	/* Catch the value */
+  int style = wPreferences.iconification_style; /* Catch the value */
   int steps;
 
   if (style == WIS_NONE)
@@ -722,22 +725,22 @@ void wAnimateResize(WScreen *scr, int x, int y, int w, int h, int fx, int fy, in
     style = rand() % 3;
 
   switch (style) {
-  case WIS_TWIST:
-    steps = MINIATURIZE_ANIMATION_STEPS_T;
-    if (steps > 0)
-      animateResizeTwist(scr, x, y, w, h, fx, fy, fw, fh, steps);
-    break;
-  case WIS_FLIP:
-    steps = MINIATURIZE_ANIMATION_STEPS_F;
-    if (steps > 0)
-      animateResizeFlip(scr, x, y, w, h, fx, fy, fw, fh, steps);
-    break;
-  case WIS_ZOOM:
-  default:
-    steps = MINIATURIZE_ANIMATION_STEPS_Z;
-    if (steps > 0)
-      animateResizeZoom(scr, x, y, w, h, fx, fy, fw, fh, steps);
-    break;
+    case WIS_TWIST:
+      steps = MINIATURIZE_ANIMATION_STEPS_T;
+      if (steps > 0)
+        animateResizeTwist(scr, x, y, w, h, fx, fy, fw, fh, steps);
+      break;
+    case WIS_FLIP:
+      steps = MINIATURIZE_ANIMATION_STEPS_F;
+      if (steps > 0)
+        animateResizeFlip(scr, x, y, w, h, fx, fy, fw, fh, steps);
+      break;
+    case WIS_ZOOM:
+    default:
+      steps = MINIATURIZE_ANIMATION_STEPS_Z;
+      if (steps > 0)
+        animateResizeZoom(scr, x, y, w, h, fx, fy, fw, fh, steps);
+      break;
   }
 }
 
@@ -751,62 +754,61 @@ void wAnimateShade(WWindow *wwin, Bool what)
     return;
 
   switch (what) {
-  case SHADE:
-    if (!wwin->screen->flags.startup) {
-      /* do the shading animation */
-      h = wwin->frame->core->height;
-      s = h / SHADE_STEPS;
+    case SHADE:
+      if (!wwin->screen->flags.startup) {
+        /* do the shading animation */
+        h = wwin->frame->core->height;
+        s = h / SHADE_STEPS;
+        if (s < 1)
+          s = 1;
+        w = wwin->frame->core->width;
+        y = wwin->frame->top_width;
+        while (h > wwin->frame->top_width + 1) {
+          XMoveWindow(dpy, wwin->client_win, 0, y);
+          XResizeWindow(dpy, wwin->frame->core->window, w, h);
+          XFlush(dpy);
+
+          if (time(NULL) - time0 > MAX_ANIMATION_TIME)
+            break;
+
+          if (SHADE_DELAY > 0)
+            wusleep(SHADE_DELAY * 1000L);
+          else
+            wusleep(10);
+          h -= s;
+          y -= s;
+        }
+        XMoveWindow(dpy, wwin->client_win, 0, wwin->frame->top_width);
+      }
+      break;
+
+    case UNSHADE:
+      h = wwin->frame->top_width + wwin->frame->bottom_width;
+      y = wwin->frame->top_width - wwin->client.height;
+      s = abs(y) / SHADE_STEPS;
       if (s < 1)
         s = 1;
       w = wwin->frame->core->width;
-      y = wwin->frame->top_width;
-      while (h > wwin->frame->top_width + 1) {
-        XMoveWindow(dpy, wwin->client_win, 0, y);
-        XResizeWindow(dpy, wwin->frame->core->window, w, h);
-        XFlush(dpy);
+      XMoveWindow(dpy, wwin->client_win, 0, y);
+      if (s > 0) {
+        while (h < wwin->client.height + wwin->frame->top_width + wwin->frame->bottom_width) {
+          XResizeWindow(dpy, wwin->frame->core->window, w, h);
+          XMoveWindow(dpy, wwin->client_win, 0, y);
+          XFlush(dpy);
+          if (SHADE_DELAY > 0)
+            wusleep(SHADE_DELAY * 2000L / 3);
+          else
+            wusleep(10);
+          h += s;
+          y += s;
 
-        if (time(NULL) - time0 > MAX_ANIMATION_TIME)
-          break;
-
-        if (SHADE_DELAY > 0)
-          wusleep(SHADE_DELAY * 1000L);
-        else
-          wusleep(10);
-        h -= s;
-        y -= s;
+          if (time(NULL) - time0 > MAX_ANIMATION_TIME)
+            break;
+        }
       }
       XMoveWindow(dpy, wwin->client_win, 0, wwin->frame->top_width);
-    }
-    break;
-
-  case UNSHADE:
-    h = wwin->frame->top_width + wwin->frame->bottom_width;
-    y = wwin->frame->top_width - wwin->client.height;
-    s = abs(y) / SHADE_STEPS;
-    if (s < 1)
-      s = 1;
-    w = wwin->frame->core->width;
-    XMoveWindow(dpy, wwin->client_win, 0, y);
-    if (s > 0) {
-      while (h < wwin->client.height + wwin->frame->top_width + wwin->frame->bottom_width) {
-        XResizeWindow(dpy, wwin->frame->core->window, w, h);
-        XMoveWindow(dpy, wwin->client_win, 0, y);
-        XFlush(dpy);
-        if (SHADE_DELAY > 0)
-          wusleep(SHADE_DELAY * 2000L / 3);
-        else
-          wusleep(10);
-        h += s;
-        y += s;
-
-        if (time(NULL) - time0 > MAX_ANIMATION_TIME)
-          break;
-      }
-    }
-    XMoveWindow(dpy, wwin->client_win, 0, wwin->frame->top_width);
-    break;
+      break;
   }
 }
 
 #endif /* USE_ANIMATIONS */
-

@@ -29,12 +29,12 @@
   id completionList;
   id runButton;
 
-  NSArray         *searchPaths;
+  NSArray *searchPaths;
   NSMutableString *savedCommand;
-  NSMutableArray  *historyList;
-  
-  NSArray   *completionSource;
-  NSArray   *commandVariants;
+  NSMutableArray *historyList;
+
+  NSArray *completionSource;
+  NSArray *commandVariants;
   NSInteger completionIndex;
 
   BOOL isRunInTerminal;

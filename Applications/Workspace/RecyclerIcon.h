@@ -25,7 +25,7 @@
 
 @interface RecyclerIconView : NSView
 {
-  NSTimer      *timer;
+  NSTimer *timer;
   unsigned int draggingMask;
 }
 - (void)setImage:(NSImage *)anImage;
@@ -38,7 +38,7 @@
 + (WAppIcon *)createAppIconForDock:(WDock *)dock;
 + (WAppIcon *)recyclerAppIconForDock:(WDock *)dock;
 + (void)updatePositionInDock:(WDock *)dock;
-  
+
 - (id)initWithWindowRef:(void *)X11Window recycler:(Recycler *)theRecycler;
 
 @end

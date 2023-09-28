@@ -42,8 +42,8 @@
 - (void)deselectText
 {
   NSString *fieldString = [self stringValue];
-  NSText   *fieldEditor = [_window fieldEditor:NO forObject:self];
-  
+  NSText *fieldEditor = [_window fieldEditor:NO forObject:self];
+
   [fieldEditor setSelectedRange:NSMakeRange([fieldString length], 0)];
 }
 @end
@@ -58,25 +58,24 @@
   [savedCommand release];
   [historyList release];
   [searchPaths release];
-  
+
   [super dealloc];
 }
 
 - init
 {
   NSString *envPath;
-  
+
   [super init];
-  
+
   [self initHistory];
   ASSIGN(completionSource, historyList);
   completionIndex = -1;
 
   savedCommand = [[NSMutableString alloc] init];
-  
+
   envPath = [[[NSProcessInfo processInfo] environment] objectForKey:@"PATH"];
-  searchPaths = [[NSArray alloc]
-                  initWithArray:[envPath componentsSeparatedByString:@":"]];
+  searchPaths = [[NSArray alloc] initWithArray:[envPath componentsSeparatedByString:@":"]];
   return self;
 }
 
@@ -97,12 +96,11 @@
 {
   if (window == nil) {
     [NSBundle loadNibNamed:@"Launcher" owner:self];
-  }
-  else {
+  } else {
     [completionList reloadColumn:0];
     // [completionList setTitle:@"History" ofColumn:0];
   }
-  
+
   [commandField selectText:nil];
   [window center];
   [window makeKeyAndOrderFront:nil];
@@ -115,13 +113,12 @@
 
 - (void)runCommand:(id)sender
 {
-  NSString       *commandLine = [commandField stringValue];
-  NSString       *commandPath = nil;
+  NSString *commandLine = [commandField stringValue];
+  NSString *commandPath = nil;
   NSMutableArray *commandArgs = nil;
-  NSTask         *commandTask = nil;
+  NSTask *commandTask = nil;
 
-  if (!commandLine || [commandLine length] == 0 ||
-      [commandLine isEqualToString:@""]) {
+  if (!commandLine || [commandLine length] == 0 || [commandLine isEqualToString:@""]) {
     return;
   }
 
@@ -133,13 +130,10 @@
           [proxy performSelector:@selector(runProgram) withObject:commandLine];
           [historyList insertObject:[commandField stringValue] atIndex:0];
           [self saveHistory];
-        }
-        @catch (NSException *exception) {
-          NXTRunAlertPanel(@"Run Command",
-                           @"Run command failed with exception: \'%@\'", 
-                           @"Close", nil, nil, [exception reason]);
-        }
-        @finally {
+        } @catch (NSException *exception) {
+          NXTRunAlertPanel(@"Run Command", @"Run command failed with exception: \'%@\'", @"Close",
+                           nil, nil, [exception reason]);
+        } @finally {
           [window close];
         }
       }
@@ -147,28 +141,24 @@
     return;
   }
 
-  commandArgs = [NSMutableArray 
-                  arrayWithArray:[commandLine componentsSeparatedByString:@" "]];
+  commandArgs = [NSMutableArray arrayWithArray:[commandLine componentsSeparatedByString:@" "]];
   commandPath = [commandArgs objectAtIndex:0];
   [commandArgs removeObjectAtIndex:0];
 
   NSLog(@"Running command: %@ with args %@", commandPath, commandArgs);
-  
+
   commandTask = [NSTask new];
   [commandTask setArguments:commandArgs];
   [commandTask setLaunchPath:commandPath];
-  
+
   @try {
     [commandTask launch];
     [historyList insertObject:[commandField stringValue] atIndex:0];
     [self saveHistory];
-  }
-  @catch (NSException *exception) {
-    NXTRunAlertPanel(@"Run Command",
-                    @"Run command failed with exception: \'%@\'", 
-                    @"Close", nil, nil, [exception reason]);
-  }
-  @finally {
+  } @catch (NSException *exception) {
+    NXTRunAlertPanel(@"Run Command", @"Run command failed with exception: \'%@\'", @"Close", nil,
+                     nil, [exception reason]);
+  } @finally {
     [window close];
   }
 }
@@ -177,36 +167,33 @@
 {
   if (sender != runInTerminal)
     return;
-  
+
   isRunInTerminal = [sender state];
 }
 
 // --- History file manipulations
 
-#define LIB_DIR    @"Library/Workspace"
+#define LIB_DIR @"Library/Workspace"
 #define WM_LIB_DIR @"Library/WindowMaker"
 
 - (void)initHistory
 {
-  NSString 	*libPath;
-  NSString	*histPath;  
-  NSString	*wmHistPath;
-  NSFileManager	*fm = [NSFileManager defaultManager];
-  BOOL		isDir;
+  NSString *libPath;
+  NSString *histPath;
+  NSString *wmHistPath;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  BOOL isDir;
 
   libPath = [NSHomeDirectory() stringByAppendingPathComponent:LIB_DIR];
   histPath = [libPath stringByAppendingPathComponent:@"LauncherHistory"];
-  wmHistPath = [NSHomeDirectory()
-                   stringByAppendingFormat:@"/%@/History", WM_LIB_DIR];
+  wmHistPath = [NSHomeDirectory() stringByAppendingFormat:@"/%@/History", WM_LIB_DIR];
 
   // Create ~/Library/Workspace directory if not exsist
   if ([fm fileExistsAtPath:libPath isDirectory:&isDir] == NO) {
     if ([fm createDirectoryAtPath:libPath attributes:nil] == NO) {
       NSLog(@"Failed to create library directory %@!", libPath);
     }
-  }
-  else if ([fm fileExistsAtPath:histPath isDirectory:&isDir] != NO &&
-           isDir == NO) {
+  } else if ([fm fileExistsAtPath:histPath isDirectory:&isDir] != NO && isDir == NO) {
     historyList = [[NSMutableArray alloc] initWithContentsOfFile:histPath];
   }
 
@@ -228,7 +215,7 @@
   NSString *latestCommand;
   NSString *element;
   NSUInteger elementsCount = [historyList count];
-  
+
   // Remove duplicates
   if (elementsCount > 1) {
     latestCommand = [historyList objectAtIndex:0];
@@ -240,9 +227,8 @@
       }
     }
   }
-  
-  historyPath = [NSHomeDirectory()
-                    stringByAppendingFormat:@"/%@/LauncherHistory", LIB_DIR];
+
+  historyPath = [NSHomeDirectory() stringByAppendingFormat:@"/%@/LauncherHistory", LIB_DIR];
   [historyList writeToFile:historyPath atomically:YES];
 }
 
@@ -252,7 +238,7 @@
 {
   NSMutableArray *variants = [[NSMutableArray alloc] init];
   NXTFileManager *fm = [NXTFileManager defaultManager];
-  NSString       *absPath;
+  NSString *absPath;
 
   if (!command || [command length] == 0 || [command isEqualToString:@""]) {
     return variants;
@@ -269,35 +255,35 @@
 
   absPath = [fm absolutePathForPath:command];
   // NSLog(@"Absolute command: %@ - %@", command, absPath);
-  if (absPath) { // Absolute path exists
+  if (absPath) {  // Absolute path exists
     NSArray *completion = [fm completionForPath:absPath isAbsolute:YES];
     for (NSString *path in completion) {
       if ([fm isExecutableFileAtPath:path]) {
         [variants addObject:path];
       }
     }
-  }
-  else { // No absolute path - go through the $PATH
+  } else {  // No absolute path - go through the $PATH
     NSArray *executables;
     executables = [fm executablesForSubstring:command];
     if ([executables count] > 0) {
       [variants addObjectsFromArray:executables];
     }
   }
-  
+
   return variants;
 }
 
 - (void)makeCompletion
 {
-  NSString   *command = [commandField stringValue];
+  NSString *command = [commandField stringValue];
   NSUInteger commandLength = [command length];
-  NSString   *variant;
+  NSString *variant;
   NSUInteger variantsCount;
 
   // NSLog(@">>> Make completion <<<");
 
-  if (commandVariants) [commandVariants release];
+  if (commandVariants)
+    [commandVariants release];
   commandVariants = [self completionForCommand:command];
   variantsCount = [commandVariants count];
 
@@ -307,10 +293,9 @@
     //       completionIndex);
     // Completion list handling
     if (variantsCount > 1) {
-      completionIndex = (completionSource == historyList) ? -1 : completionIndex+1;
+      completionIndex = (completionSource == historyList) ? -1 : completionIndex + 1;
       ASSIGN(completionSource, commandVariants);
-    }
-    else {
+    } else {
       completionIndex = 0;
       ASSIGN(completionSource, commandVariants);
     }
@@ -319,21 +304,18 @@
     // Extract and process current variant
     if (completionIndex < 0 && variantsCount == 1) {
       variant = commandVariants[0];
-    }
-    else if (completionIndex >= 0) {
+    } else if (completionIndex >= 0) {
       variant = commandVariants[completionIndex];
-    }
-    else {
+    } else {
       variant = [command stringByExpandingTildeInPath];
     }
     if ([[NXTFileManager defaultManager] directoryExistsAtPath:variant] &&
-        [variant characterAtIndex:[variant length]-1] != '/') {
+        [variant characterAtIndex:[variant length] - 1] != '/') {
       if ([command characterAtIndex:0] == '~') {
         variant = [variant stringByAbbreviatingWithTildeInPath];
       }
       variant = [variant stringByAppendingFormat:@"/"];
-    }
-    else if ([command characterAtIndex:0] == '~') {
+    } else if ([command characterAtIndex:0] == '~') {
       variant = [variant stringByAbbreviatingWithTildeInPath];
     }
     [commandField setStringValue:variant];
@@ -342,16 +324,14 @@
     if (completionIndex < 0 || variantsCount == 1) {
       [commandField deselectText];
       [savedCommand setString:variant];
-    }
-    else {
+    } else {
       NSText *fieldEditor = [window fieldEditor:NO forObject:commandField];
       NSRange range;
       commandLength = [savedCommand length];
       range = NSMakeRange(commandLength, ([variant length] - commandLength));
       [fieldEditor setSelectedRange:range];
     }
-  }
-  else {
+  } else {
     completionIndex = -1;
     ASSIGN(completionSource, historyList);
     [self reloadCompletionList];
@@ -362,24 +342,22 @@
 - (void)updateButtonsState
 {
   NXTFileManager *fm = [NXTFileManager defaultManager];
-  BOOL           isDir;
-  NSString       *text;
-  BOOL           isEnabled = YES;
+  BOOL isDir;
+  NSString *text;
+  BOOL isEnabled = YES;
 
   text = [fm absolutePathForPath:[commandField stringValue]];
   if (text == nil) {
     if (completionIndex < 0) {
       isEnabled = NO;
     }
-  }
-  else if ([text isEqualToString:@""] || [text characterAtIndex:0] == ' ') {
+  } else if ([text isEqualToString:@""] || [text characterAtIndex:0] == ' ') {
+    isEnabled = NO;
+  } else if (([text characterAtIndex:0] == '/') &&
+             (![fm fileExistsAtPath:text isDirectory:&isDir] || isDir)) {
     isEnabled = NO;
   }
-  else if (([text characterAtIndex:0] == '/') &&
-           (![fm fileExistsAtPath:text isDirectory:&isDir] || isDir)) {
-    isEnabled = NO;
-  }
-  
+
   [runInTerminal setEnabled:isEnabled];
   [runButton setEnabled:isEnabled];
 }
@@ -390,64 +368,63 @@
 {
   unichar c = [[theEvent characters] characterAtIndex:0];
 
-  switch(c) {
-  case NSDownArrowFunctionKey:
-    // NSLog(@"WMCommandField key: Down");
-    completionIndex++;
-    if (completionIndex >= [completionSource count]) {
-      completionIndex--;
-    }
-    [commandField setStringValue:[completionSource objectAtIndex:completionIndex]];
-    [completionList selectRow:completionIndex inColumn:0];
-    [self updateButtonsState];
-    break;
-  case NSUpArrowFunctionKey:
-    // NSLog(@"WMCommandField key: Up");
-    if (completionIndex > -1)
-      completionIndex--;
-    if (completionIndex >= 0) {
+  switch (c) {
+    case NSDownArrowFunctionKey:
+      // NSLog(@"WMCommandField key: Down");
+      completionIndex++;
+      if (completionIndex >= [completionSource count]) {
+        completionIndex--;
+      }
       [commandField setStringValue:[completionSource objectAtIndex:completionIndex]];
       [completionList selectRow:completionIndex inColumn:0];
-    }
-    else {
-      [commandField setStringValue:savedCommand];
-      [commandField deselectText];
-      [completionList reloadColumn:0];
-    }
-    [self updateButtonsState];
-    break;
-  case NSTabCharacter:
-    [[window fieldEditor:NO forObject:commandField]
-        setSelectedRange:NSMakeRange([[commandField stringValue] length], 0)];
-    break;
-  case 27: // Escape
-    [self makeCompletion];
-    break;
-  case NSLeftArrowFunctionKey:
-  case NSRightArrowFunctionKey:
-  case NSHomeFunctionKey:
-  case NSBeginFunctionKey:
-  case NSEndFunctionKey:
-    [savedCommand setString:[commandField stringValue]];
-    break;
-  default:
-    [savedCommand setString:[commandField stringValue]];
-    if ([savedCommand length] < 2) {
-      ASSIGN(completionSource, historyList);
-    }
-    completionIndex = -1;
-    [self reloadCompletionList];
-    break;
+      [self updateButtonsState];
+      break;
+    case NSUpArrowFunctionKey:
+      // NSLog(@"WMCommandField key: Up");
+      if (completionIndex > -1)
+        completionIndex--;
+      if (completionIndex >= 0) {
+        [commandField setStringValue:[completionSource objectAtIndex:completionIndex]];
+        [completionList selectRow:completionIndex inColumn:0];
+      } else {
+        [commandField setStringValue:savedCommand];
+        [commandField deselectText];
+        [completionList reloadColumn:0];
+      }
+      [self updateButtonsState];
+      break;
+    case NSTabCharacter:
+      [[window fieldEditor:NO forObject:commandField]
+          setSelectedRange:NSMakeRange([[commandField stringValue] length], 0)];
+      break;
+    case 27:  // Escape
+      [self makeCompletion];
+      break;
+    case NSLeftArrowFunctionKey:
+    case NSRightArrowFunctionKey:
+    case NSHomeFunctionKey:
+    case NSBeginFunctionKey:
+    case NSEndFunctionKey:
+      [savedCommand setString:[commandField stringValue]];
+      break;
+    default:
+      [savedCommand setString:[commandField stringValue]];
+      if ([savedCommand length] < 2) {
+        ASSIGN(completionSource, historyList);
+      }
+      completionIndex = -1;
+      [self reloadCompletionList];
+      break;
   }
   // NSLog(@"WMCommandField key: %i", c);
 }
 // --- Command and History browser delegate
-- (void)     browser:(NSBrowser *)sender
- createRowsForColumn:(NSInteger)column
-	    inMatrix:(NSMatrix *)matrix
+- (void)browser:(NSBrowser *)sender
+    createRowsForColumn:(NSInteger)column
+               inMatrix:(NSMatrix *)matrix
 {
   NSBrowserCell *cell;
-  
+
   if (sender != completionList || completionList == nil)
     return;
 
@@ -458,8 +435,7 @@
     if (completionSource != historyList) {
       [cell setTitle:[variant lastPathComponent]];
       [cell setRepresentedObject:variant];
-    }
-    else {
+    } else {
       [cell setTitle:variant];
     }
     [cell setRefusesFirstResponder:YES];
@@ -469,12 +445,12 @@
 - (void)listItemClicked:(id)sender
 {
   NSInteger selRow;
-  NSString  *absPath;
-  id        object;
+  NSString *absPath;
+  id object;
 
   if (sender != completionList)
     return;
-  
+
   completionIndex = [sender selectedRowInColumn:0];
   absPath = [[completionList selectedCellInColumn:0] representedObject];
   if (absPath == nil) {
@@ -483,24 +459,23 @@
   if ([[commandField stringValue] characterAtIndex:0] == '~') {
     absPath = [absPath stringByAbbreviatingWithTildeInPath];
   }
-  
+
   [commandField setStringValue:absPath];
   [self updateButtonsState];
-  
+
   [window makeFirstResponder:commandField];
 }
 
 - (void)reloadCompletionList
 {
   [completionList reloadColumn:0];
-  
+
   if (completionSource == historyList) {
     [completionList setTitle:@"History" ofColumn:0];
-  }
-  else {
+  } else {
     [completionList setTitle:@"Completion" ofColumn:0];
   }
-  
+
   if (completionIndex >= 0) {
     [completionList selectRow:completionIndex inColumn:0];
   }

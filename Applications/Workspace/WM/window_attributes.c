@@ -56,26 +56,29 @@
 #define DEF_APP_ICON "NXUnknownApplication.tiff"
 
 /* bit flags for the above window attributes */
-#define WA_TITLEBAR  		(1<<0)
-#define WA_RESIZABLE  		(1<<1)
-#define WA_CLOSABLE  		(1<<2)
-#define WA_MINIATURIZABLE  	(1<<3)
-#define WA_BROKEN_CLOSE  	(1<<4)
-#define WA_SHADEABLE  		(1<<5)
-#define WA_FOCUSABLE  		(1<<6)
-#define WA_OMNIPRESENT 	 	(1<<7)
-#define WA_SKIP_WINDOW_LIST  	(1<<8)
-#define WA_SKIP_SWITCHPANEL  	(1<<9)
-#define WA_FLOATING  		(1<<10)
-#define WA_IGNORE_KEYS 		(1<<11)
-#define WA_IGNORE_MOUSE  	(1<<12)
-#define WA_IGNORE_HIDE_OTHERS	(1<<13)
-#define WA_NOT_APPLICATION	(1<<14)
-#define WA_DONT_MOVE_OFF	(1<<15)
+#define WA_TITLEBAR            (1 << 0)
+#define WA_RESIZABLE           (1 << 1)
+#define WA_CLOSABLE            (1 << 2)
+#define WA_MINIATURIZABLE      (1 << 3)
+#define WA_BROKEN_CLOSE        (1 << 4)
+#define WA_SHADEABLE           (1 << 5)
+#define WA_FOCUSABLE           (1 << 6)
+#define WA_OMNIPRESENT         (1 << 7)
+#define WA_SKIP_WINDOW_LIST    (1 << 8)
+#define WA_SKIP_SWITCHPANEL    (1 << 9)
+#define WA_FLOATING            (1 << 10)
+#define WA_IGNORE_KEYS         (1 << 11)
+#define WA_IGNORE_MOUSE        (1 << 12)
+#define WA_IGNORE_HIDE_OTHERS  (1 << 13)
+#define WA_NOT_APPLICATION     (1 << 14)
+#define WA_DONT_MOVE_OFF       (1 << 15)
 
-#define APPLY_VAL(value, flag, attrib)                  \
-  if (value) {attr->flag = getBool(attrib, value);      \
-    if (mask) mask->flag = 1;}
+#define APPLY_VAL(value, flag, attrib)   \
+  if (value) {                           \
+    attr->flag = getBool(attrib, value); \
+    if (mask)                            \
+      mask->flag = 1;                    \
+  }
 
 /* Local stuff */
 
@@ -157,7 +160,7 @@ static CFTypeRef get_value(CFTypeRef dict_win, CFTypeRef dict_class, CFTypeRef d
 static CFTypeRef get_value_from_instanceclass(const char *value)
 {
   CFStringRef key;
-  CFTypeRef   val = NULL;
+  CFTypeRef val = NULL;
 
   if (!value)
     return NULL;
@@ -179,20 +182,18 @@ static int getBool(CFStringRef key, CFTypeRef value)
 
   if (CFGetTypeID(value) != CFStringGetTypeID()) {
     WMLogWarning(_("Wrong option format for key \"%s\". Should be %s."),
-             CFStringGetCStringPtr(key, kCFStringEncodingUTF8), "Boolean");
+                 CFStringGetCStringPtr(key, kCFStringEncodingUTF8), "Boolean");
     return 0;
   }
   val = CFStringGetCStringPtr(value, kCFStringEncodingUTF8);
 
-  if ((val[1] == '\0'
-       && (val[0] == 'y' || val[0] == 'Y' || val[0] == 'T' || val[0] == 't' || val[0] == '1'))
-      || (strcasecmp(val, "YES") == 0 || strcasecmp(val, "TRUE") == 0)) {
-
+  if ((val[1] == '\0' &&
+       (val[0] == 'y' || val[0] == 'Y' || val[0] == 'T' || val[0] == 't' || val[0] == '1')) ||
+      (strcasecmp(val, "YES") == 0 || strcasecmp(val, "TRUE") == 0)) {
     return 1;
-  } else if ((val[1] == '\0'
-              && (val[0] == 'n' || val[0] == 'N' || val[0] == 'F' || val[0] == 'f' || val[0] == '0'))
-             || (strcasecmp(val, "NO") == 0 || strcasecmp(val, "FALSE") == 0)) {
-
+  } else if ((val[1] == '\0' && (val[0] == 'n' || val[0] == 'N' || val[0] == 'F' || val[0] == 'f' ||
+                                 val[0] == '0')) ||
+             (strcasecmp(val, "NO") == 0 || strcasecmp(val, "FALSE") == 0)) {
     return 0;
   } else {
     WMLogWarning(_("can't convert \"%s\" to boolean"), val);
@@ -209,7 +210,7 @@ static const char *getString(CFStringRef key, CFTypeRef value)
 {
   if (CFGetTypeID(value) != CFStringGetTypeID()) {
     WMLogWarning(_("Wrong option format for key \"%s\". Should be %s."),
-             CFStringGetCStringPtr(key, kCFStringEncodingUTF8), "String");
+                 CFStringGetCStringPtr(key, kCFStringEncodingUTF8), "String");
     return NULL;
   }
 
@@ -227,9 +228,8 @@ static const char *getString(CFStringRef key, CFTypeRef value)
  *
  *----------------------------------------------------------------------
  */
-void wDefaultFillAttributes(const char *instance, const char *class,
-			    WWindowAttributes *attr, WWindowAttributes *mask,
-			    Bool useGlobalDefault)
+void wDefaultFillAttributes(const char *instance, const char *class, WWindowAttributes *attr,
+                            WWindowAttributes *mask, Bool useGlobalDefault)
 {
   CFTypeRef value, dw, dc, dn, da;
   char *buffer;
@@ -328,8 +328,8 @@ void wDefaultFillAttributes(const char *instance, const char *class,
   APPLY_VAL(value, full_maximize, AFullMaximize);
 }
 
-static CFTypeRef get_generic_value(const char *instance, const char *class,
-                                   CFStringRef option, Bool default_icon)
+static CFTypeRef get_generic_value(const char *instance, const char *class, CFStringRef option,
+                                   Bool default_icon)
 {
   CFTypeRef value, key, dict;
 
@@ -383,7 +383,7 @@ static CFTypeRef get_generic_value(const char *instance, const char *class,
 
 /* Get the file name of the image, using instance and class */
 char *get_icon_filename(const char *winstance, const char *wclass, const char *command,
-			Bool default_icon)
+                        Bool default_icon)
 {
   const char *file_name;
   char *file_path;
@@ -438,8 +438,7 @@ RImage *get_rimage_from_file(WScreen *scr, const char *file_name, int max_size)
 
   image = RLoadImage(scr->rcontext, file_name, 0);
   if (!image) {
-    WMLogWarning(_("error loading image file \"%s\": %s"), file_name,
-             RMessageForError(RErrorCode));
+    WMLogWarning(_("error loading image file \"%s\": %s"), file_name, RMessageForError(RErrorCode));
   }
 
   image = wIconValidateIconSize(image, max_size);
@@ -552,8 +551,7 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
 
   // WMWindowAttributes is empty
   if (!dict) {
-    dict = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                     &kCFTypeDictionaryKeyCallBacks,
+    dict = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
                                      &kCFTypeDictionaryValueCallBacks);
     if (dict)
       db->dictionary = dict;
@@ -568,21 +566,17 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
     buffer = wstrconcatdot(instance, class);
     key = CFStringCreateWithCString(kCFAllocatorDefault, buffer, kCFStringEncodingUTF8);
     wfree(buffer);
-  }
-  else if (instance) {
+  } else if (instance) {
     key = CFStringCreateWithCString(kCFAllocatorDefault, instance, kCFStringEncodingUTF8);
-  }
-  else if (class) {
+  } else if (class) {
     key = CFStringCreateWithCString(kCFAllocatorDefault, class, kCFStringEncodingUTF8);
-  }
-  else {
+  } else {
     key = CFRetain(AnyWindow);
   }
 
   if (file) {
     icon_path = CFStringCreateWithCString(kCFAllocatorDefault, file, kCFStringEncodingUTF8);
-    icon_entry = CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                           &kCFTypeDictionaryKeyCallBacks,
+    icon_entry = CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
                                            &kCFTypeDictionaryValueCallBacks);
     CFDictionarySetValue(icon_entry, AIcon, icon_path);
     CFRelease(icon_path);
@@ -609,19 +603,17 @@ void wDefaultChangeIcon(const char *instance, const char *class, const char *fil
     if (icon_entry && !same) {
       WMUserDefaultsMerge(attrs, icon_entry);
       CFDictionarySetValue(dict, key, attrs);
-    }
-    else {
+    } else {
       CFDictionaryRemoveValue(attrs, AIcon);
     }
-  }
-  else if (icon_entry && !same) {
+  } else if (icon_entry && !same) {
     CFDictionarySetValue(dict, key, icon_entry);
   }
 
   if (!wPreferences.flags.noupdates) {
     WMUserDefaultsWrite(db->dictionary, db->name);
   }
-  
+
   if (attrs) {
     CFRelease(attrs);
   }
@@ -641,8 +633,7 @@ void wDefaultPurgeInfo(const char *instance, const char *class)
 
   if (dict) {
     CFDictionaryRemoveValue(w_global.domain.window_attr->dictionary, key);
-    WMUserDefaultsWrite(w_global.domain.window_attr->dictionary,
-                        w_global.domain.window_attr->name);
+    WMUserDefaultsWrite(w_global.domain.window_attr->dictionary, w_global.domain.window_attr->name);
   }
 
   CFRelease(key);

@@ -29,14 +29,14 @@
   id panel;
   id popup;
 
-  NSDictionary * prefs;
+  NSDictionary *prefs;
 }
 
 + shared;
 - (void)loadModules;
-- (void) activate;
+- (void)activate;
 
-- (void) switchModule: (id)sender;
+- (void)switchModule:(id)sender;
 
 @end
 
@@ -44,4 +44,3 @@ extern NSString *ShelfIconSlotWidth;
 extern NSString *ShelfIsResizable;
 extern NSString *ShelfIconSlotWidthDidChangeNotification;
 extern NSString *ShelfResizableStateDidChangeNotification;
-

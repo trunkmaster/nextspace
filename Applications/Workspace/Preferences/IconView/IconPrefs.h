@@ -38,8 +38,8 @@
   id rightArr;
   id resizableSwitch;
 
-  NSBox  *box;
-  NSBox  *box2;
+  NSBox *box;
+  NSBox *box2;
   NXTIcon *icon;
 }
 

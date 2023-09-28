@@ -32,10 +32,10 @@ void wUpdateXrandrInfo(WScreen *scr);
 
 #define wScreenHeads(scr) ((scr)->xrandr_info.count ? (scr)->xrandr_info.count : 1)
 
-#define XFLAG_NONE	0x00
-#define XFLAG_DEAD	0x01
-#define XFLAG_MULTIPLE	0x02
-#define XFLAG_PARTIAL	0x04
+#define XFLAG_NONE 0x00
+#define XFLAG_DEAD 0x01
+#define XFLAG_MULTIPLE 0x02
+#define XFLAG_PARTIAL 0x04
 
 int wGetRectPlacementInfo(WScreen *scr, WMRect rect, int *flags);
 

@@ -33,8 +33,7 @@
 #include "framewin.h"
 #include "colormap.h"
 
-
-void wColormapInstallForWindow(WScreen * scr, WWindow * wwin)
+void wColormapInstallForWindow(WScreen* scr, WWindow* wwin)
 {
   int i;
   XWindowAttributes attributes;
@@ -96,7 +95,7 @@ void wColormapInstallForWindow(WScreen * scr, WWindow * wwin)
   XSync(dpy, False);
 }
 
-void wColormapAllowClientInstallation(WScreen * scr, Bool starting)
+void wColormapAllowClientInstallation(WScreen* scr, Bool starting)
 {
   scr->flags.colormap_stuff_blocked = starting;
   /*

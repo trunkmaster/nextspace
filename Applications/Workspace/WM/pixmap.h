@@ -25,24 +25,22 @@
 #include "screen.h"
 
 typedef struct WPixmap {
-  Pixmap image;		       /* icon image */
-  Pixmap mask;		       /* icon mask */
-  int width, height;		       /* size of pixmap */
-  int depth;			       /* depth of pixmap */
-  unsigned int shared:1;	       /* if pixmaps should be kept
-                                        * when structure is freed */
-  unsigned int client_owned:1;
-  unsigned int client_owned_mask:1;
+  Pixmap image;            /* icon image */
+  Pixmap mask;             /* icon mask */
+  int width, height;       /* size of pixmap */
+  int depth;               /* depth of pixmap */
+  unsigned int shared : 1; /* if pixmaps should be kept
+                            * when structure is freed */
+  unsigned int client_owned : 1;
+  unsigned int client_owned_mask : 1;
 } WPixmap;
-
 
 WPixmap *wPixmapCreate(Pixmap image, Pixmap mask);
 
 WPixmap *wPixmapCreateFromXPMData(WScreen *scr, char **data);
 
-WPixmap *wPixmapCreateFromXBMData(WScreen *scr, char *data, char *mask,
-                                  int width, int height, unsigned long fg,
-                                  unsigned long bg);
+WPixmap *wPixmapCreateFromXBMData(WScreen *scr, char *data, char *mask, int width, int height,
+                                  unsigned long fg, unsigned long bg);
 void wPixmapDestroy(WPixmap *pix);
 
 #endif /* __WORKSPACE_WM_PIXMAP__ */

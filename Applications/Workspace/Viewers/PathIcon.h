@@ -10,7 +10,7 @@
 //              'info' ivar.
 //
 // Copyright (C) 2015-2019 Sergii Stoian
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -34,11 +34,11 @@
 
 @interface PathIcon : NXTIcon
 {
-  NSArray             *paths;
-  NSDictionary        *info;
+  NSArray *paths;
+  NSDictionary *info;
 
-  unsigned int  draggingMask;
-  BOOL          doubleClickPassesClick;
+  unsigned int draggingMask;
+  BOOL doubleClickPassesClick;
 }
 
 // Metainformation getters and setters
@@ -52,12 +52,12 @@
 - (BOOL)isDoubleClickPassesClick;
 
 // NSDraggingDestination
-- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender;
-- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender;
-- (void)draggingExited:(id <NSDraggingInfo>)sender;
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender;
+- (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender;
+- (void)draggingExited:(id<NSDraggingInfo>)sender;
 
-- (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender;
-- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender;
-- (void)concludeDragOperation:(id <NSDraggingInfo>)sender;
+- (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender;
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender;
+- (void)concludeDragOperation:(id<NSDraggingInfo>)sender;
 
 @end

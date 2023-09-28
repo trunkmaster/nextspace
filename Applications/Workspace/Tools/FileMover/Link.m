@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2006-2014 Sergii Stoian
 // Copyright (C) 2005 Saso Kiselkov
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -25,67 +25,55 @@
 
 void CleanUpAfterLink(NSArray *files, NSString *dir)
 {
-  NSEnumerator  *e;
-  NSString      *filename;
+  NSEnumerator *e;
+  NSString *filename;
   NSFileManager *fm = [NSFileManager defaultManager];
-  
+
   e = [files objectEnumerator];
-  while ((filename = [e nextObject]) != nil)
-    {
-      [fm removeFileAtPath:[dir stringByAppendingPathComponent:filename]
-                   handler:nil];
-    }
+  while ((filename = [e nextObject]) != nil) {
+    [fm removeFileAtPath:[dir stringByAppendingPathComponent:filename] handler:nil];
+  }
 }
 
 void LinkOperation(NSString *sourceDir, NSArray *files, NSString *destDir)
 {
   NSFileManager *fm = [NSFileManager defaultManager];
-  NSEnumerator  *e = [files objectEnumerator];
-  NSString      *file;
-  Communicator  *comm = [Communicator shared];
+  NSEnumerator *e = [files objectEnumerator];
+  NSString *file;
+  Communicator *comm = [Communicator shared];
 
-  while (((file = [e nextObject]) != nil) && !isStopped)
-    {
-      NSString *sourceFile = [sourceDir stringByAppendingPathComponent:file];
-      NSString *destFile = [destDir stringByAppendingPathComponent:file];
+  while (((file = [e nextObject]) != nil) && !isStopped) {
+    NSString *sourceFile = [sourceDir stringByAppendingPathComponent:file];
+    NSString *destFile = [destDir stringByAppendingPathComponent:file];
 
-      [comm showProcessingFilename:file
-		      sourcePrefix:sourceDir
-		      targetPrefix:destDir
-		     bytesAdvanced:0
-                     operationType:LinkOp];
+    [comm showProcessingFilename:file
+                    sourcePrefix:sourceDir
+                    targetPrefix:destDir
+                   bytesAdvanced:0
+                   operationType:LinkOp];
 
-      if ([fm fileExistsAtPath:destFile])
-	{
-	  ProblemSolution s = [comm howToHandleProblem:FileExists];
+    if ([fm fileExistsAtPath:destFile]) {
+      ProblemSolution s = [comm howToHandleProblem:FileExists];
 
-	  if (s == SkipFile)
-	    {
-	      continue;
-	    }
-	  else if (![fm removeFileAtPath:destFile
-				 handler:nil])
-	    {
-      	      [comm howToHandleProblem: WriteError];
-	      continue;
-  	    }
-    	}
-
-      if (![fm createSymbolicLinkAtPath:destFile
-			    pathContent:sourceFile])
-	{
-   	  [comm howToHandleProblem:WriteError];
-	  continue;
-  	}
+      if (s == SkipFile) {
+        continue;
+      } else if (![fm removeFileAtPath:destFile handler:nil]) {
+        [comm howToHandleProblem:WriteError];
+        continue;
+      }
     }
-  
+
+    if (![fm createSymbolicLinkAtPath:destFile pathContent:sourceFile]) {
+      [comm howToHandleProblem:WriteError];
+      continue;
+    }
+  }
+
   // We received SIGTERM signal or 'Stop' command
   // Remove created duplicates and exit
-  if (isStopped)
-    {
-      if (makeCleanupOnStop)
-        {
-          CleanUpAfterLink(files, destDir);
-        }
+  if (isStopped) {
+    if (makeCleanupOnStop) {
+      CleanUpAfterLink(files, destDir);
     }
+  }
 }

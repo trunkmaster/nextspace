@@ -25,20 +25,20 @@
 
 @interface ModuleLoader : NSObject
 {
-        NSArray * viewerBundles;
-        NSDictionary * preferences;
+  NSArray *viewerBundles;
+  NSDictionary *preferences;
 }
 
 + shared;
 
-- (id <Viewer>) viewerForType: (NSString *) viewerType;
-- (id <Viewer>) preferredViewer;
+- (id<Viewer>)viewerForType:(NSString *)viewerType;
+- (id<Viewer>)preferredViewer;
 
- // a dict - viewer name is key, viewer shortcut is value
-- (NSDictionary *) menuViewerInfo;
+// a dict - viewer name is key, viewer shortcut is value
+- (NSDictionary *)menuViewerInfo;
 
- // returns a dict with initialized preferences modules - the keys
- // are the names of the modules, the values are the modules themselves
-- (NSDictionary *) preferencesModules;
+// returns a dict with initialized preferences modules - the keys
+// are the names of the modules, the values are the modules themselves
+- (NSDictionary *)preferencesModules;
 
 @end

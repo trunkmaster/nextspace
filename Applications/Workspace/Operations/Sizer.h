@@ -35,11 +35,11 @@ extern NSString *WMSizerGotNumbersNotification;
   unsigned long long totalBatchSize;
 
   // NSTask and operation management
-  BOOL     isSuspended;
-  NSTask   *task;
-  NSPipe   *readPipe;
-  NSPipe   *writePipe;
-  NSLock   *inputLock;
+  BOOL isSuspended;
+  NSTask *task;
+  NSPipe *readPipe;
+  NSPipe *writePipe;
+  NSLock *inputLock;
   NSString *truncatedLine;
 }
 

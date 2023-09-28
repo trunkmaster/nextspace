@@ -36,7 +36,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #ifdef USE_XSHAPE
-# include <X11/extensions/shape.h>
+#include <X11/extensions/shape.h>
 #endif
 #ifdef USE_DOCK_XDND
 #include "xdnd.h"
@@ -96,8 +96,8 @@ static void handleColormapNotify(XEvent *event);
 static void handleMapNotify(XEvent *event);
 static void handleUnmapNotify(XEvent *event);
 static void handleButtonPress(XEvent *event);
-static void handleButtonRelease(XEvent * event); /* NEXTSPACE */
-static void handleKeyRelease(XEvent * event); /* NEXTSPACE */
+static void handleButtonRelease(XEvent *event); /* NEXTSPACE */
+static void handleKeyRelease(XEvent *event);    /* NEXTSPACE */
 static void handleExpose(XEvent *event);
 static void handleDestroyNotify(XEvent *event);
 static void handleConfigureRequest(XEvent *event);
@@ -114,7 +114,6 @@ static void handleVisibilityNotify(XEvent *event);
 static void handle_selection_request(XSelectionRequestEvent *event);
 static void handle_selection_clear(XSelectionClearEvent *event);
 static void wdelete_death_handler(WMagicNumber id);
-
 
 #ifdef USE_XSHAPE
 static void handleShapeNotify(XEvent *event);
@@ -145,7 +144,7 @@ typedef struct DeathHandler {
 
 static CFMutableArrayRef deathHandlers = NULL;
 
-WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler * callback, void *cdata)
+WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler *callback, void *cdata)
 {
   DeathHandler *handler;
 
@@ -167,7 +166,7 @@ WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler * callback, void *cdata)
 
 static void wdelete_death_handler(WMagicNumber id)
 {
-  DeathHandler *handler = (DeathHandler *) id;
+  DeathHandler *handler = (DeathHandler *)id;
   CFIndex idx;
 
   if (!handler || !deathHandlers)
@@ -181,7 +180,7 @@ static void wdelete_death_handler(WMagicNumber id)
   }
 }
 
-void DispatchEvent(XEvent * event)
+void DispatchEvent(XEvent *event)
 {
   if (deathHandlers)
     handleDeadProcess();
@@ -208,97 +207,97 @@ void DispatchEvent(XEvent * event)
 
   saveTimestamp(event);
   switch (event->type) {
-  case MapRequest:
-    handleMapRequest(event);
-    break;
+    case MapRequest:
+      handleMapRequest(event);
+      break;
 
-  case KeyPress:
-    handleKeyPress(event);
-    break;
+    case KeyPress:
+      handleKeyPress(event);
+      break;
 
-  case KeyRelease:
-    handleKeyRelease(event);
-    break;
-    
-  case MotionNotify:
-    handleMotionNotify(event);
-    break;
+    case KeyRelease:
+      handleKeyRelease(event);
+      break;
 
-  case ConfigureRequest:
-    handleConfigureRequest(event);
-    break;
+    case MotionNotify:
+      handleMotionNotify(event);
+      break;
 
-  case DestroyNotify:
-    handleDestroyNotify(event);
-    break;
+    case ConfigureRequest:
+      handleConfigureRequest(event);
+      break;
 
-  case MapNotify:
-    handleMapNotify(event);
-    break;
+    case DestroyNotify:
+      handleDestroyNotify(event);
+      break;
 
-  case UnmapNotify:
-    handleUnmapNotify(event);
-    break;
+    case MapNotify:
+      handleMapNotify(event);
+      break;
 
-  case ButtonPress:
-    handleButtonPress(event);
-    break;
+    case UnmapNotify:
+      handleUnmapNotify(event);
+      break;
 
-  case Expose:
-    handleExpose(event);
-    break;
+    case ButtonPress:
+      handleButtonPress(event);
+      break;
 
-  case ButtonRelease:
-    handleButtonRelease(event);
-    break;
+    case Expose:
+      handleExpose(event);
+      break;
 
-  case PropertyNotify:
-    handlePropertyNotify(event);
-    break;
+    case ButtonRelease:
+      handleButtonRelease(event);
+      break;
 
-  case EnterNotify:
-    handleEnterNotify(event);
-    break;
+    case PropertyNotify:
+      handlePropertyNotify(event);
+      break;
 
-  case LeaveNotify:
-    handleLeaveNotify(event);
-    break;
+    case EnterNotify:
+      handleEnterNotify(event);
+      break;
 
-  case ClientMessage:
-    handleClientMessage(event);
-    break;
+    case LeaveNotify:
+      handleLeaveNotify(event);
+      break;
 
-  case ColormapNotify:
-    handleColormapNotify(event);
-    break;
+    case ClientMessage:
+      handleClientMessage(event);
+      break;
 
-  case MappingNotify:
-    if (event->xmapping.request == MappingKeyboard || event->xmapping.request == MappingModifier)
-      XRefreshKeyboardMapping(&event->xmapping);
-    break;
+    case ColormapNotify:
+      handleColormapNotify(event);
+      break;
 
-  case FocusIn:
-    handleFocusIn(event);
-    break;
+    case MappingNotify:
+      if (event->xmapping.request == MappingKeyboard || event->xmapping.request == MappingModifier)
+        XRefreshKeyboardMapping(&event->xmapping);
+      break;
 
-  case VisibilityNotify:
-    handleVisibilityNotify(event);
-    break;
+    case FocusIn:
+      handleFocusIn(event);
+      break;
 
-  case ConfigureNotify:
-    break;
+    case VisibilityNotify:
+      handleVisibilityNotify(event);
+      break;
 
-  case SelectionRequest:
-    handle_selection_request(&event->xselectionrequest);
-    break;
+    case ConfigureNotify:
+      break;
 
-  case SelectionClear:
-    handle_selection_clear(&event->xselectionclear);
-    break;
+    case SelectionRequest:
+      handle_selection_request(&event->xselectionrequest);
+      break;
 
-  default:
-    handleExtensions(event);
-    break;
+    case SelectionClear:
+      handle_selection_clear(&event->xselectionclear);
+      break;
+
+    default:
+      handleExtensions(event);
+      break;
   }
 }
 
@@ -325,7 +324,7 @@ void WMRunLoop_V0()
     WMHandleEvent(&event);
   }
   WMLogError("WMRunLoop_V0: run loop V1 is ready.");
-  
+
 #ifdef HAVE_INOTIFY
   /* Track some defaults files for changes */
   w_global.inotify.fd_event_queue = -1;
@@ -341,12 +340,12 @@ void WMRunLoop_V0()
 
 void WMRunLoop_V1()
 {
-  CFRunLoopRef        run_loop = CFRunLoopGetCurrent();
+  CFRunLoopRef run_loop = CFRunLoopGetCurrent();
   CFFileDescriptorRef xfd;
-  CFRunLoopSourceRef  xfd_source;
+  CFRunLoopSourceRef xfd_source;
 
   WMLogError("V1: Entering WM runloop with X connection: %i", ConnectionNumber(dpy));
-  
+
   // X connection file descriptor
   xfd = CFFileDescriptorCreate(kCFAllocatorDefault, ConnectionNumber(dpy), true,
                                _runLoopHandleEvent, NULL);
@@ -358,14 +357,14 @@ void WMRunLoop_V1()
   CFRelease(xfd);
 
   WMLogError("V1: Going into CFRunLoop...");
-  
+
   wm_runloop = run_loop;
   CFRunLoopRun();
   CFFileDescriptorDisableCallBacks(xfd, kCFFileDescriptorReadCallBack);
   CFRunLoopRemoveSource(run_loop, xfd_source, kCFRunLoopDefaultMode);
   /* Do not call CFFileDescriptorInvalidate(xfd)!
      This FD is a connection of Workspace application to X server. */
-  
+
   WMLogError("V1: CFRunLoop finished.");
 }
 
@@ -385,9 +384,9 @@ void WMRunLoop_V1()
 noreturn void EventLoop(void)
 {
   XEvent event;
-  
+
   for (;;) {
-    WMNextEvent(dpy, &event);	/* Blocks here */
+    WMNextEvent(dpy, &event); /* Blocks here */
     WMHandleEvent(&event);
   }
 }
@@ -425,13 +424,12 @@ void ProcessPendingEvents(void)
   }
 }
 
-Bool IsDoubleClick(WScreen * scr, XEvent * event)
+Bool IsDoubleClick(WScreen *scr, XEvent *event)
 {
   if ((scr->last_click_time > 0) &&
-      (event->xbutton.time - scr->last_click_time <= wPreferences.dblclick_time)
-      && (event->xbutton.button == scr->last_click_button)
-      && (event->xbutton.window == scr->last_click_window)) {
-
+      (event->xbutton.time - scr->last_click_time <= wPreferences.dblclick_time) &&
+      (event->xbutton.button == scr->last_click_button) &&
+      (event->xbutton.window == scr->last_click_window)) {
     scr->flags.next_click_is_not_double = 1;
     scr->last_click_time = 0;
     scr->last_click_window = event->xbutton.window;
@@ -478,15 +476,14 @@ static void handleDeadProcess(void)
         continue;
 
       if (tmp->pid == deadProcesses[deadProcessPtr].pid) {
-        (*tmp->callback) (tmp->pid,
-                          deadProcesses[deadProcessPtr].exit_status, tmp->client_data);
+        (*tmp->callback)(tmp->pid, deadProcesses[deadProcessPtr].exit_status, tmp->client_data);
         wdelete_death_handler(tmp);
       }
     }
   }
 }
 
-static void saveTimestamp(XEvent * event)
+static void saveTimestamp(XEvent *event)
 {
   /*
    * Never save CurrentTime as LastTimestamp because CurrentTime
@@ -494,44 +491,44 @@ static void saveTimestamp(XEvent * event)
    */
 
   switch (event->type) {
-  case ButtonRelease:
-  case ButtonPress:
-    w_global.timestamp.last_event = event->xbutton.time;
-    break;
-  case KeyPress:
-  case KeyRelease:
-    w_global.timestamp.last_event = event->xkey.time;
-    break;
-  case MotionNotify:
-    w_global.timestamp.last_event = event->xmotion.time;
-    break;
-  case PropertyNotify:
-    w_global.timestamp.last_event = event->xproperty.time;
-    break;
-  case EnterNotify:
-  case LeaveNotify:
-    w_global.timestamp.last_event = event->xcrossing.time;
-    break;
-  case SelectionClear:
-    w_global.timestamp.last_event = event->xselectionclear.time;
-    break;
-  case SelectionRequest:
-    w_global.timestamp.last_event = event->xselectionrequest.time;
-    break;
-  case SelectionNotify:
-    w_global.timestamp.last_event = event->xselection.time;
+    case ButtonRelease:
+    case ButtonPress:
+      w_global.timestamp.last_event = event->xbutton.time;
+      break;
+    case KeyPress:
+    case KeyRelease:
+      w_global.timestamp.last_event = event->xkey.time;
+      break;
+    case MotionNotify:
+      w_global.timestamp.last_event = event->xmotion.time;
+      break;
+    case PropertyNotify:
+      w_global.timestamp.last_event = event->xproperty.time;
+      break;
+    case EnterNotify:
+    case LeaveNotify:
+      w_global.timestamp.last_event = event->xcrossing.time;
+      break;
+    case SelectionClear:
+      w_global.timestamp.last_event = event->xselectionclear.time;
+      break;
+    case SelectionRequest:
+      w_global.timestamp.last_event = event->xselectionrequest.time;
+      break;
+    case SelectionNotify:
+      w_global.timestamp.last_event = event->xselection.time;
 #ifdef USE_DOCK_XDND
-    wXDNDProcessSelection(event);
+      wXDNDProcessSelection(event);
 #endif
-    break;
+      break;
   }
 }
 
-static void handleExtensions(XEvent * event)
+static void handleExtensions(XEvent *event)
 {
 #ifdef USE_XSHAPE
-  if (w_global.xext.shape.supported
-      && event->type == (w_global.xext.shape.event_base + ShapeNotify)) {
+  if (w_global.xext.shape.supported &&
+      event->type == (w_global.xext.shape.event_base + ShapeNotify)) {
     handleShapeNotify(event);
   }
 #endif
@@ -540,15 +537,14 @@ static void handleExtensions(XEvent * event)
     XkbEvent *e = (XkbEvent *)event;
     if (e->any.xkb_type == XkbBellNotify) {
       handleXkbBellNotify(e);
-    }
-    else if (e->any.xkb_type == XkbStateNotify) {
+    } else if (e->any.xkb_type == XkbStateNotify) {
       handleXkbStateNotify(e);
     }
   }
 #endif /* USE_XKB */
 }
 
-static void handleMapRequest(XEvent * ev)
+static void handleMapRequest(XEvent *ev)
 {
   WWindow *wwin;
   WScreen *scr = NULL;
@@ -565,8 +561,7 @@ static void handleMapRequest(XEvent * ev)
     /* deiconify and unhide*/
     if (wwin->flags.miniaturized) {
       wDeiconifyWindow(wwin);
-    }
-    else if (wwin->flags.hidden) {
+    } else if (wwin->flags.hidden) {
       WApplication *wapp = wApplicationOf(wwin->main_window);
       /* go to the last workspace that the user worked on the app */
       if (wapp) {
@@ -578,10 +573,10 @@ static void handleMapRequest(XEvent * ev)
     /* extra focus steps for GNUstep applications */
     if (wwin->flags.is_gnustep) {
       if (WINDOW_LEVEL(wwin) == NSMainMenuWindowLevel && wwin->flags.mapped == 0) {
-        /* GNUstep application activates and maps main menu. 
+        /* GNUstep application activates and maps main menu.
            Main menu window is managed but unmapped.*/
         WApplication *wapp = wApplicationOf(wwin->main_window);
-        
+
         wWindowMap(wwin);
         /* It's minimal app (menu only) or menu should be focused on workspace
            different from last focused window's. */
@@ -639,7 +634,7 @@ static void handleMapRequest(XEvent * ev)
   }
 }
 
-static void handleDestroyNotify(XEvent * event)
+static void handleDestroyNotify(XEvent *event)
 {
   WWindow *wwin;
   WApplication *app;
@@ -674,7 +669,7 @@ static void handleDestroyNotify(XEvent * event)
           }
         }
         fPtr->origLeader = None;
-      }      
+      }
     } while (widx != kCFNotFound);
   }
 
@@ -696,19 +691,21 @@ static void handleDestroyNotify(XEvent * event)
   }
 }
 
-static void handleExpose(XEvent * event)
+static void handleExpose(XEvent *event)
 {
   WObjDescriptor *desc;
   XEvent ev;
 
-  while (XCheckTypedWindowEvent(dpy, event->xexpose.window, Expose, &ev)) ;
+  while (XCheckTypedWindowEvent(dpy, event->xexpose.window, Expose, &ev))
+    ;
 
-  if (XFindContext(dpy, event->xexpose.window, w_global.context.client_win, (XPointer *) & desc) == XCNOENT) {
+  if (XFindContext(dpy, event->xexpose.window, w_global.context.client_win, (XPointer *)&desc) ==
+      XCNOENT) {
     return;
   }
 
   if (desc->handle_expose) {
-    (*desc->handle_expose) (desc, event);
+    (*desc->handle_expose)(desc, event);
   }
 }
 
@@ -723,20 +720,20 @@ static void executeWheelAction(WScreen *scr, XEvent *event, int action)
     next_direction = True;
 
   switch (action) {
-  case WA_SWITCH_WORKSPACES:
-    if (next_direction)
-      wDesktopRelativeChange(scr, 1);
-    else
-      wDesktopRelativeChange(scr, -1);
-    break;
+    case WA_SWITCH_WORKSPACES:
+      if (next_direction)
+        wDesktopRelativeChange(scr, 1);
+      else
+        wDesktopRelativeChange(scr, -1);
+      break;
 
-  case WA_SWITCH_WINDOWS:
-    wwin = scr->focused_window;
-    if (next_direction)
-      wWindowFocusNext(wwin, True);
-    else
-      wWindowFocusPrev(wwin, True);
-    break;
+    case WA_SWITCH_WINDOWS:
+      wwin = scr->focused_window;
+      if (next_direction)
+        wWindowFocusNext(wwin, True);
+      else
+        wWindowFocusPrev(wwin, True);
+      break;
   }
 }
 
@@ -745,38 +742,38 @@ static void executeButtonAction(WScreen *scr, XEvent *event, int action)
   WWindow *wwin;
 
   switch (action) {
-  case WA_SELECT_WINDOWS:
-    wUnselectWindows(scr);
-    wSelectWindows(scr, event);
-    break;
-  case WA_OPEN_WINLISTMENU:
-    OpenSwitchMenu(scr, event->xbutton.x_root, event->xbutton.y_root, False);
-    if (scr->switch_menu) {
-      if (scr->switch_menu->brother->flags.mapped)
-        event->xbutton.window = scr->switch_menu->brother->frame->core->window;
-      else
-        event->xbutton.window = scr->switch_menu->frame->core->window;
-    }
-    break;
-  case WA_MOVE_PREVWORKSPACE:
-    wDesktopRelativeChange(scr, -1);
-    break;
-  case WA_MOVE_NEXTWORKSPACE:
-    wDesktopRelativeChange(scr, 1);
-    break;
-  case WA_MOVE_PREVWINDOW:
-    wwin = scr->focused_window;
-    wWindowFocusPrev(wwin, True);
-    break;
-  case WA_MOVE_NEXTWINDOW:
-    wwin = scr->focused_window;
-    wWindowFocusNext(wwin, True);
-    break;
+    case WA_SELECT_WINDOWS:
+      wUnselectWindows(scr);
+      wSelectWindows(scr, event);
+      break;
+    case WA_OPEN_WINLISTMENU:
+      OpenSwitchMenu(scr, event->xbutton.x_root, event->xbutton.y_root, False);
+      if (scr->switch_menu) {
+        if (scr->switch_menu->brother->flags.mapped)
+          event->xbutton.window = scr->switch_menu->brother->frame->core->window;
+        else
+          event->xbutton.window = scr->switch_menu->frame->core->window;
+      }
+      break;
+    case WA_MOVE_PREVWORKSPACE:
+      wDesktopRelativeChange(scr, -1);
+      break;
+    case WA_MOVE_NEXTWORKSPACE:
+      wDesktopRelativeChange(scr, 1);
+      break;
+    case WA_MOVE_PREVWINDOW:
+      wwin = scr->focused_window;
+      wWindowFocusPrev(wwin, True);
+      break;
+    case WA_MOVE_NEXTWINDOW:
+      wwin = scr->focused_window;
+      wWindowFocusNext(wwin, True);
+      break;
   }
 }
 
 /* bindable */
-static void handleButtonPress(XEvent * event)
+static void handleButtonPress(XEvent *event)
 {
   WObjDescriptor *desc = NULL;
   WScreen *scr = wDefaultScreen();
@@ -784,10 +781,8 @@ static void handleButtonPress(XEvent * event)
 
   // reset current focused window button because ButtonPress may change focus
   WWindow *wwin = scr->focused_window;
-  if (wwin && wwin->client_win != scr->no_focus_win && wwin->frame &&
-      wwin->frame->left_button &&
-      event->xbutton.window != wwin->frame->left_button->window &&
-      wwin->frame->right_button &&
+  if (wwin && wwin->client_win != scr->no_focus_win && wwin->frame && wwin->frame->left_button &&
+      event->xbutton.window != wwin->frame->left_button->window && wwin->frame->right_button &&
       event->xbutton.window != wwin->frame->right_button->window) {
     scr->flags.modifier_pressed = 0;
     wWindowUpdateButtonImages(wwin);
@@ -834,10 +829,10 @@ static void handleButtonPress(XEvent * event)
 
   /* desc = NULL; */
   if (desc == NULL) {
-    if (XFindContext(dpy, event->xbutton.subwindow,
-                     w_global.context.client_win, (XPointer *)&desc) == XCNOENT) {
-      if (XFindContext(dpy, event->xbutton.window,
-                       w_global.context.client_win, (XPointer *)&desc) == XCNOENT) {
+    if (XFindContext(dpy, event->xbutton.subwindow, w_global.context.client_win,
+                     (XPointer *)&desc) == XCNOENT) {
+      if (XFindContext(dpy, event->xbutton.window, w_global.context.client_win,
+                       (XPointer *)&desc) == XCNOENT) {
         return;
       }
     }
@@ -845,19 +840,16 @@ static void handleButtonPress(XEvent * event)
 
   if (desc->parent_type == WCLASS_WINDOW) {
     XSync(dpy, 0);
-    if (event->xbutton.state & ( ALT_MOD_MASK | ControlMask)) {
+    if (event->xbutton.state & (ALT_MOD_MASK | ControlMask)) {
       XAllowEvents(dpy, AsyncPointer, CurrentTime);
-    }
-    else if (wPreferences.ignore_focus_click) {
+    } else if (wPreferences.ignore_focus_click) {
       XAllowEvents(dpy, AsyncPointer, CurrentTime);
-    }
-    else {
+    } else {
       XAllowEvents(dpy, ReplayPointer, CurrentTime);
     }
     XSync(dpy, 0);
-  } else if (desc->parent_type == WCLASS_APPICON
-             || desc->parent_type == WCLASS_MINIWINDOW
-             || desc->parent_type == WCLASS_DOCK_ICON) {
+  } else if (desc->parent_type == WCLASS_APPICON || desc->parent_type == WCLASS_MINIWINDOW ||
+             desc->parent_type == WCLASS_DOCK_ICON) {
     if (event->xbutton.state & wPreferences.cmd_modifier_mask) {
       WAppIcon *appicon = wAppIconFor(event->xbutton.window);
       WAppIcon *appicon0 = scr->dock->icon_array[0];
@@ -877,9 +869,9 @@ static void handleButtonPress(XEvent * event)
       }
     }
   }
-  
+
   if (desc->handle_mousedown != NULL) {
-    (*desc->handle_mousedown) (desc, event);
+    (*desc->handle_mousedown)(desc, event);
   }
 
   /* save double-click information */
@@ -892,22 +884,21 @@ static void handleButtonPress(XEvent * event)
   }
 }
 
-static void handleButtonRelease(XEvent * event)
+static void handleButtonRelease(XEvent *event)
 {
   WScreen *scr = wDefaultScreen();
 
-  if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win
-      && event->xbutton.button == Button3) {
+  if (!wPreferences.disable_root_mouse && event->xbutton.window == scr->root_win &&
+      event->xbutton.button == Button3) {
     if (scr->focused_window && scr->focused_window->flags.is_gnustep) {
       XSendEvent(dpy, scr->focused_window->client_win, True, ButtonReleaseMask, event);
-    }
-    else {
+    } else {
       XSendEvent(dpy, scr->dock->icon_array[0]->icon->icon_win, False, ButtonReleaseMask, event);
     }
   }
 }
 
-static void handleMapNotify(XEvent * event)
+static void handleMapNotify(XEvent *event)
 {
   WWindow *wwin;
 
@@ -925,14 +916,14 @@ static void handleMapNotify(XEvent * event)
   }
 }
 
-static void handleUnmapNotify(XEvent * event)
+static void handleUnmapNotify(XEvent *event)
 {
   WWindow *wwin;
   XEvent ev;
   Bool withdraw = False;
 
   /* WMLogInfo("handleUnmapNotify for window %lu.", event->xunmap.window); */
-  
+
   /* only process windows with StructureNotify selected (ignore SubstructureNotify) */
   wwin = wWindowFor(event->xunmap.window);
   if (!wwin)
@@ -945,9 +936,8 @@ static void handleUnmapNotify(XEvent * event)
   if (wwin->client_win != event->xunmap.event && !withdraw)
     return;
 
-  if (!wwin->flags.mapped && !withdraw
-      && wwin->frame->desktop == wwin->screen->current_desktop
-      && !wwin->flags.miniaturized && !wwin->flags.hidden)
+  if (!wwin->flags.mapped && !withdraw && wwin->frame->desktop == wwin->screen->current_desktop &&
+      !wwin->flags.miniaturized && !wwin->flags.hidden)
     return;
 
   XGrabServer(dpy);
@@ -958,8 +948,7 @@ static void handleUnmapNotify(XEvent * event)
   if (XCheckTypedWindowEvent(dpy, wwin->client_win, DestroyNotify, &ev)) {
     XUngrabServer(dpy);
     DispatchEvent(&ev);
-  }
-  else {
+  } else {
     Bool reparented = False;
 
     if (XCheckTypedWindowEvent(dpy, wwin->client_win, ReparentNotify, &ev))
@@ -981,7 +970,7 @@ static void handleUnmapNotify(XEvent * event)
   }
 }
 
-static void handleConfigureRequest(XEvent * event)
+static void handleConfigureRequest(XEvent *event)
 {
   WWindow *wwin;
 
@@ -996,7 +985,7 @@ static void handleConfigureRequest(XEvent * event)
   }
 }
 
-static void handlePropertyNotify(XEvent * event)
+static void handlePropertyNotify(XEvent *event)
 {
   WWindow *wwin;
   WApplication *wapp;
@@ -1017,35 +1006,32 @@ static void handlePropertyNotify(XEvent * event)
   }
 }
 
-static void handleClientMessage(XEvent * event)
+static void handleClientMessage(XEvent *event)
 {
   WWindow *wwin;
   WObjDescriptor *desc;
 
   /* handle transition from Normal to Iconic state */
-  if (event->xclient.message_type == w_global.atom.wm.change_state
-      && event->xclient.format == 32 && event->xclient.data.l[0] == IconicState) {
-
+  if (event->xclient.message_type == w_global.atom.wm.change_state && event->xclient.format == 32 &&
+      event->xclient.data.l[0] == IconicState) {
     wwin = wWindowFor(event->xclient.window);
     if (!wwin)
       return;
     if (!wwin->flags.miniaturized)
       wIconifyWindow(wwin);
-  }
-  else if (event->xclient.message_type == w_global.atom.wm.colormap_notify
-             && event->xclient.format == 32) {
+  } else if (event->xclient.message_type == w_global.atom.wm.colormap_notify &&
+             event->xclient.format == 32) {
     WScreen *scr = wDefaultScreen();
 
     if (!scr)
       return;
 
-    if (event->xclient.data.l[1] == 1) {	/* starting */
+    if (event->xclient.data.l[1] == 1) { /* starting */
       wColormapAllowClientInstallation(scr, True);
-    } else {	/* stopping */
+    } else { /* stopping */
       wColormapAllowClientInstallation(scr, False);
     }
-  }
-  else if (event->xclient.message_type == w_global.atom.wmaker.command) {
+  } else if (event->xclient.message_type == w_global.atom.wmaker.command) {
     char *command;
     size_t len;
 
@@ -1062,102 +1048,93 @@ static void handleClientMessage(XEvent * event)
 
     wfree(command);
 
-  }
-  else if (event->xclient.message_type == w_global.atom.wmaker.wm_function) {
+  } else if (event->xclient.message_type == w_global.atom.wmaker.wm_function) {
     WApplication *wapp;
     int done = 0;
     wapp = wApplicationOf(event->xclient.window);
-    WMLogInfo("Received client message: %li for: %s",
-             event->xclient.data.l[0],
-             wapp ? wapp->main_wwin->wm_instance : "Unknown");
+    WMLogInfo("Received client message: %li for: %s", event->xclient.data.l[0],
+              wapp ? wapp->main_wwin->wm_instance : "Unknown");
     if (wapp) {
       switch (event->xclient.data.l[0]) {
-      case WMFHideOtherApplications:
-        wApplicationHideOthers(wapp->main_wwin);
-        done = 1;
-        break;
+        case WMFHideOtherApplications:
+          wApplicationHideOthers(wapp->main_wwin);
+          done = 1;
+          break;
 
-      case WMFHideApplication:
-        WMLogInfo("Received WMFHideApplication client message");
-        wApplicationHide(wapp);
-        done = 1;
-        break;
+        case WMFHideApplication:
+          WMLogInfo("Received WMFHideApplication client message");
+          wApplicationHide(wapp);
+          done = 1;
+          break;
       }
     }
     if (!done) {
       wwin = wWindowFor(event->xclient.window);
       if (wwin) {
         switch (event->xclient.data.l[0]) {
-        case WMFHideOtherApplications:
-          wApplicationHideOthers(wwin);
-          break;
+          case WMFHideOtherApplications:
+            wApplicationHideOthers(wwin);
+            break;
 
-        case WMFHideApplication:
-          wApplicationHide(wApplicationOf(wwin->main_window));
-          break;
+          case WMFHideApplication:
+            wApplicationHide(wApplicationOf(wwin->main_window));
+            break;
         }
       }
     }
-  }
-  else if (event->xclient.message_type == w_global.atom.gnustep.wm_attr) {
+  } else if (event->xclient.message_type == w_global.atom.gnustep.wm_attr) {
     wwin = wWindowFor(event->xclient.window);
     if (!wwin)
       return;
     switch (event->xclient.data.l[0]) {
-    case GSWindowLevelAttr:
-      {
+      case GSWindowLevelAttr: {
         int level = (int)event->xclient.data.l[1];
 
         if (WINDOW_LEVEL(wwin) != level) {
           ChangeStackingLevel(wwin->frame->core, level);
         }
-      }
-      break;
+      } break;
     }
-  }
-  else if (event->xclient.message_type == w_global.atom.gnustep.titlebar_state) {
+  } else if (event->xclient.message_type == w_global.atom.gnustep.titlebar_state) {
     wwin = wWindowFor(event->xclient.window);
     if (!wwin)
       return;
     switch (event->xclient.data.l[0]) {
-    case WMTitleBarNormal:
-      wFrameWindowChangeState(wwin->frame, WS_UNFOCUSED);
-      break;
-    case WMTitleBarMain:
-      wFrameWindowChangeState(wwin->frame, WS_PFOCUSED);
-      break;
-    case WMTitleBarKey:
-      wFrameWindowChangeState(wwin->frame, WS_FOCUSED);
-      break;
+      case WMTitleBarNormal:
+        wFrameWindowChangeState(wwin->frame, WS_UNFOCUSED);
+        break;
+      case WMTitleBarMain:
+        wFrameWindowChangeState(wwin->frame, WS_PFOCUSED);
+        break;
+      case WMTitleBarKey:
+        wFrameWindowChangeState(wwin->frame, WS_FOCUSED);
+        break;
     }
-  }
-  else if (event->xclient.message_type == w_global.atom.wm.ignore_focus_events) {
+  } else if (event->xclient.message_type == w_global.atom.wm.ignore_focus_events) {
     WScreen *scr = wDefaultScreen();
     if (!scr)
       return;
     scr->flags.ignore_focus_events = event->xclient.data.l[0] ? 1 : 0;
-  }
-  else if (wNETWMProcessClientMessage(&event->xclient)) {
+  } else if (wNETWMProcessClientMessage(&event->xclient)) {
     /* do nothing */
 #ifdef USE_DOCK_XDND
-  }
-  else if (wXDNDProcessClientMessage(&event->xclient)) {
+  } else if (wXDNDProcessClientMessage(&event->xclient)) {
     /* do nothing */
-#endif	/* USE_DOCK_XDND */
-  }
-  else {
+#endif /* USE_DOCK_XDND */
+  } else {
     /*
      * Non-standard thing, but needed by OffiX DND.
      * For when the icon frame gets a ClientMessage
      * that should have gone to the icon_window.
      */
-    if (XFindContext(dpy, event->xbutton.window, w_global.context.client_win, (XPointer *) & desc) != XCNOENT) {
+    if (XFindContext(dpy, event->xbutton.window, w_global.context.client_win, (XPointer *)&desc) !=
+        XCNOENT) {
       struct WIcon *icon = NULL;
 
       if (desc->parent_type == WCLASS_MINIWINDOW) {
-        icon = (WIcon *) desc->parent;
+        icon = (WIcon *)desc->parent;
       } else if (desc->parent_type == WCLASS_DOCK_ICON || desc->parent_type == WCLASS_APPICON) {
-        icon = ((WAppIcon *) desc->parent)->icon;
+        icon = ((WAppIcon *)desc->parent)->icon;
       }
       if (icon && (wwin = icon->owner)) {
         if (wwin->client_win != event->xclient.window) {
@@ -1169,7 +1146,7 @@ static void handleClientMessage(XEvent * event)
   }
 }
 
-static void handleEnterNotify(XEvent * event)
+static void handleEnterNotify(XEvent *event)
 {
   WWindow *wwin;
   WObjDescriptor *desc = NULL;
@@ -1179,14 +1156,16 @@ static void handleEnterNotify(XEvent * event)
   if (XCheckTypedWindowEvent(dpy, event->xcrossing.window, LeaveNotify, &ev)) {
     /* already left the window... */
     saveTimestamp(&ev);
-    if (ev.xcrossing.mode == event->xcrossing.mode && ev.xcrossing.detail == event->xcrossing.detail) {
+    if (ev.xcrossing.mode == event->xcrossing.mode &&
+        ev.xcrossing.detail == event->xcrossing.detail) {
       return;
     }
   }
 
-  if (XFindContext(dpy, event->xcrossing.window, w_global.context.client_win, (XPointer *) & desc) != XCNOENT) {
+  if (XFindContext(dpy, event->xcrossing.window, w_global.context.client_win, (XPointer *)&desc) !=
+      XCNOENT) {
     if (desc->handle_enternotify)
-      (*desc->handle_enternotify) (desc, event);
+      (*desc->handle_enternotify)(desc, event);
   }
 
   /* enter to window */
@@ -1222,20 +1201,21 @@ static void handleEnterNotify(XEvent * event)
   }
 }
 
-static void handleLeaveNotify(XEvent * event)
+static void handleLeaveNotify(XEvent *event)
 {
   WObjDescriptor *desc = NULL;
 
-  if (XFindContext(dpy, event->xcrossing.window, w_global.context.client_win, (XPointer *) & desc) != XCNOENT) {
+  if (XFindContext(dpy, event->xcrossing.window, w_global.context.client_win, (XPointer *)&desc) !=
+      XCNOENT) {
     if (desc->handle_leavenotify)
-      (*desc->handle_leavenotify) (desc, event);
+      (*desc->handle_leavenotify)(desc, event);
   }
 }
 
 #ifdef USE_XSHAPE
-static void handleShapeNotify(XEvent * event)
+static void handleShapeNotify(XEvent *event)
 {
-  XShapeEvent *shev = (XShapeEvent *) event;
+  XShapeEvent *shev = (XShapeEvent *)event;
   WWindow *wwin;
   union {
     XEvent xevent;
@@ -1258,12 +1238,10 @@ static void handleShapeNotify(XEvent * event)
     return;
 
   if (!shev->shaped && wwin->flags.shaped) {
-
     wwin->flags.shaped = 0;
     wWindowClearShape(wwin);
 
   } else if (shev->shaped) {
-
     wwin->flags.shaped = 1;
     wWindowSetShape(wwin);
   }
@@ -1275,7 +1253,7 @@ static void handleXkbBellNotify(XkbEvent *event)
 {
   WWindow *wwin;
   WScreen *scr;
-  
+
   scr = wDefaultScreen();
   wwin = scr->focused_window;
   if (wwin && wwin->flags.focused) {
@@ -1295,21 +1273,19 @@ static void handleXkbStateNotify(XkbEvent *event)
   if (wwin && wwin->flags.focused) {
     XkbGetState(dpy, XkbUseCoreKbd, &staterec);
 
-    info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                     &kCFTypeDictionaryKeyCallBacks,
+    info = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks,
                                      &kCFTypeDictionaryValueCallBacks);
     group = CFNumberCreate(kCFAllocatorDefault, kCFNumberCharType, &staterec.group);
     CFDictionaryAddValue(info, CFSTR("XkbGroup"), group);
     CFRelease(group);
     CFNotificationCenterPostNotification(scr->notificationCenter,
-                                         WMDidChangeKeyboardLayoutNotification,
-                                         wwin, info, TRUE);
+                                         WMDidChangeKeyboardLayoutNotification, wwin, info, TRUE);
     CFRelease(info);
   }
 }
 #endif /* USE_XKB */
 
-static void handleColormapNotify(XEvent * event)
+static void handleColormapNotify(XEvent *event)
 {
   WWindow *wwin;
   WScreen *scr;
@@ -1334,7 +1310,6 @@ static void handleColormapNotify(XEvent * event)
         reinstall = True;
       } else if (event->xcolormap.state == ColormapUninstalled &&
                  scr->current_colormap == event->xcolormap.colormap) {
-
         /* some bastard app (like XV) removed our colormap */
         /*
          * can't enforce or things like xscreensaver wont work
@@ -1342,13 +1317,12 @@ static void handleColormapNotify(XEvent * event)
          */
       } else if (event->xcolormap.state == ColormapInstalled &&
                  scr->current_colormap == event->xcolormap.colormap) {
-
         /* someone has put our colormap back */
         reinstall = False;
       }
     }
-  } while (XCheckTypedEvent(dpy, ColormapNotify, event)
-           && ((wwin = wWindowFor(event->xcolormap.window)) || 1));
+  } while (XCheckTypedEvent(dpy, ColormapNotify, event) &&
+           ((wwin = wWindowFor(event->xcolormap.window)) || 1));
 
   if (reinstall && scr->current_colormap != None) {
     if (!scr->flags.colormap_stuff_blocked)
@@ -1356,17 +1330,18 @@ static void handleColormapNotify(XEvent * event)
   }
 }
 
-static void handleFocusIn(XEvent * event)
+static void handleFocusIn(XEvent *event)
 {
   WWindow *wwin;
 
   /*
    * For applications that like stealing the focus.
    */
-  while (XCheckTypedEvent(dpy, FocusIn, event)) ;
+  while (XCheckTypedEvent(dpy, FocusIn, event))
+    ;
   saveTimestamp(event);
-  if (event->xfocus.mode == NotifyUngrab
-      || event->xfocus.mode == NotifyGrab || event->xfocus.detail > NotifyNonlinearVirtual) {
+  if (event->xfocus.mode == NotifyUngrab || event->xfocus.mode == NotifyGrab ||
+      event->xfocus.detail > NotifyNonlinearVirtual) {
     return;
   }
 
@@ -1375,19 +1350,17 @@ static void handleFocusIn(XEvent * event)
     if (wwin->flags.mapped) {
       wSetFocusTo(wwin->screen, wwin);
       wRaiseFrame(wwin->frame->core);
-    }
-    else {
+    } else {
       wSetFocusTo(wwin->screen, NULL);
     }
-  }
-  else if (!wwin) {
+  } else if (!wwin) {
     WScreen *scr = wDefaultScreen();
     if (scr)
       wSetFocusTo(scr, NULL);
   }
 }
 
-static WWindow *windowUnderPointer(WScreen * scr)
+static WWindow *windowUnderPointer(WScreen *scr)
 {
   unsigned int mask;
   int foo;
@@ -1398,7 +1371,7 @@ static WWindow *windowUnderPointer(WScreen * scr)
   return NULL;
 }
 
-static int CheckFullScreenWindowFocused(WScreen * scr)
+static int CheckFullScreenWindowFocused(WScreen *scr)
 {
   if (scr->focused_window && scr->focused_window->flags.fullscreen)
     return 1;
@@ -1406,7 +1379,7 @@ static int CheckFullScreenWindowFocused(WScreen * scr)
     return 0;
 }
 
-static void handleKeyPress(XEvent * event)
+static void handleKeyPress(XEvent *event)
 {
   WScreen *scr = wDefaultScreen();
   WWindow *wwin = scr->focused_window;
@@ -1417,13 +1390,15 @@ static void handleKeyPress(XEvent * event)
   /* ignore CapsLock */
   modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
 
-  WMLogInfo("handleKeyPress: %i state: %i modifiers: %i",
-            event->xkey.keycode, event->xkey.state, modifiers);
+  WMLogInfo("handleKeyPress: %i state: %i modifiers: %i", event->xkey.keycode, event->xkey.state,
+            modifiers);
 
   /* Handle Alternate button press to change miniaturize button image at titlebar */
   if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
-       (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) && modifiers == 0) {
-    if (wwin && wwin->client_win /* != scr->no_focus_win && event->xkey.window != event->xkey.root */) {
+       (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
+      modifiers == 0) {
+    if (wwin &&
+        wwin->client_win /* != scr->no_focus_win && event->xkey.window != event->xkey.root */) {
       scr->flags.modifier_pressed = 1;
       wWindowUpdateButtonImages(wwin);
     }
@@ -1479,49 +1454,48 @@ static void handleKeyPress(XEvent * event)
 #define ISMAPPED(w) ((w) && !(w)->flags.miniaturized && ((w)->flags.mapped || (w)->flags.shaded))
 #define ISFOCUSED(w) ((w) && (w)->flags.focused)
 
-  switch (command)
-    {
-    /* case WKBD_RAISE: */
-    /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin)) { */
-    /*     CloseWindowMenu(scr); */
-    /*     wRaiseFrame(wwin->frame->core); */
-    /*   } */
-    /*   break; */
-    /* case WKBD_LOWER: */
-    /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin)) { */
-    /*     CloseWindowMenu(scr); */
-    /*     wLowerFrame(wwin->frame->core); */
-    /*   } */
-    /*   break; */
+  switch (command) {
+      /* case WKBD_RAISE: */
+      /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin)) { */
+      /*     CloseWindowMenu(scr); */
+      /*     wRaiseFrame(wwin->frame->core); */
+      /*   } */
+      /*   break; */
+      /* case WKBD_LOWER: */
+      /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin)) { */
+      /*     CloseWindowMenu(scr); */
+      /*     wLowerFrame(wwin->frame->core); */
+      /*   } */
+      /*   break; */
 
       /* Dock and Icon Yard */
-    /* case WKBD_DOCKHIDESHOW: */
-    /*   if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) { */
-    /*     if (scr->dock->mapped) { */
-    /*       wDockHideIcons(scr->dock); */
-    /*     } else { */
-    /*       wDockShowIcons(scr->dock); */
-    /*     } */
-    /*     } else { */
-    /*       XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event); */
-    /*     } */
-    /*   } */
-    /*   break; */
-    /* case WKBD_YARDHIDESHOW: */
-    /*   { */
-    /*     if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) { */
-    /*       if (scr->flags.icon_yard_mapped) { */
-    /*         wIconYardHideIcons(scr); */
-    /*       } */
-    /*       else { */
-    /*         wIconYardShowIcons(scr); */
-    /*       } */
-    /*     } else { */
-    /*       XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event); */
-    /*     } */
-    /*   } */
-    /*   break; */
-      
+      /* case WKBD_DOCKHIDESHOW: */
+      /*   if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) { */
+      /*     if (scr->dock->mapped) { */
+      /*       wDockHideIcons(scr->dock); */
+      /*     } else { */
+      /*       wDockShowIcons(scr->dock); */
+      /*     } */
+      /*     } else { */
+      /*       XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event); */
+      /*     } */
+      /*   } */
+      /*   break; */
+      /* case WKBD_YARDHIDESHOW: */
+      /*   { */
+      /*     if (!wwin || strcmp(wwin->wm_instance, "Workspace") != 0) { */
+      /*       if (scr->flags.icon_yard_mapped) { */
+      /*         wIconYardHideIcons(scr); */
+      /*       } */
+      /*       else { */
+      /*         wIconYardShowIcons(scr); */
+      /*       } */
+      /*     } else { */
+      /*       XSendEvent(dpy, wwin->client_win, True, KeyPressMask, event); */
+      /*     } */
+      /*   } */
+      /*   break; */
+
       /* Desktops navigation */
     case WKBD_FOCUSNEXT:
       StartWindozeCycle(wwin, event, True, False);
@@ -1545,37 +1519,34 @@ static void handleKeyPress(XEvent * event)
     case WKBD_LAST_DESKTOP:
       wDesktopChange(scr, scr->last_desktop, NULL);
       break;
-    case WKBD_DESKTOP_1 ... WKBD_DESKTOP_10:
-      {
-        widx = command - WKBD_DESKTOP_1;
-        i = (scr->current_desktop / 10) * 10 + widx;
-        if (wPreferences.ws_advance || i < scr->desktop_count)
-          wDesktopChange(scr, i, NULL);
-      }
-      break;
+    case WKBD_DESKTOP_1 ... WKBD_DESKTOP_10: {
+      widx = command - WKBD_DESKTOP_1;
+      i = (scr->current_desktop / 10) * 10 + widx;
+      if (wPreferences.ws_advance || i < scr->desktop_count)
+        wDesktopChange(scr, i, NULL);
+    } break;
 
     case WKBD_RELAUNCH:
       if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
-        (void) wRelaunchWindow(wwin);
+        (void)wRelaunchWindow(wwin);
       }
       break;
-    }
+  }
 }
 
 // NEXTSPACE
-static void handleKeyRelease(XEvent * event)
+static void handleKeyRelease(XEvent *event)
 {
   WScreen *scr = wDefaultScreen();
   WWindow *wwin = scr->focused_window;
-  
-  if (event->xkey.window == event->xkey.root ||
-      event->xkey.window == scr->no_focus_win) {
+
+  if (event->xkey.window == event->xkey.root || event->xkey.window == scr->no_focus_win) {
     return;
   }
   /* WMLogInfo("handleKeyRelease: %i state: %i mask: %i", */
   /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
-  if ( (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
-       (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R)) ) {
+  if ((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
+      (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) {
     if (wwin) {
       scr->flags.modifier_pressed = 0;
       wWindowUpdateButtonImages(wwin);
@@ -1586,23 +1557,22 @@ static void handleKeyRelease(XEvent * event)
   }
 }
 
-static void handleMotionNotify(XEvent * event)
+static void handleMotionNotify(XEvent *event)
 {
   WWindow *wwin = wWindowFor(event->xmotion.window);
 
   if (event->xmotion.state != 0 && wwin != NULL) {
     if (event->xmotion.state & Button1Mask &&
         XGrabPointer(dpy, event->xmotion.window, False,
-                     ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
-                     GrabModeAsync, GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
+                     ButtonMotionMask | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
+                     GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
       // wMouseMoveWindow checks for button on ButtonRelease event inside it's loop
       event->xbutton.button = Button1;
       if (event->xmotion.window == wwin->frame->titlebar->window ||
           event->xmotion.state & ALT_MOD_MASK) {
         /* move the window */
         wMouseMoveWindow(wwin, event);
-      } else if (IS_RESIZABLE(wwin) &&
-                 event->xmotion.window == wwin->frame->resizebar->window) {
+      } else if (IS_RESIZABLE(wwin) && event->xmotion.window == wwin->frame->resizebar->window) {
         wMouseResizeWindow(wwin, event);
       }
       XUngrabPointer(dpy, CurrentTime);
@@ -1610,7 +1580,7 @@ static void handleMotionNotify(XEvent * event)
   }
 }
 
-static void handleVisibilityNotify(XEvent * event)
+static void handleVisibilityNotify(XEvent *event)
 {
   WWindow *wwin;
 
@@ -1654,7 +1624,7 @@ static void handle_selection_request(XSelectionRequestEvent *event)
     atom_version = XInternAtom(dpy, "VERSION", False);
 
   if (event->target == atom_version) {
-    static const long icccm_version[] = { 2, 0 };
+    static const long icccm_version[] = {2, 0};
 
     /*
      * This protocol is defined in ICCCM 2.0:
@@ -1667,20 +1637,21 @@ static void handle_selection_request(XSelectionRequestEvent *event)
      * According to the ICCCM spec, we need to support being asked for a property
      * set to 'None' for compatibility with old clients
      */
-    notify.property = (event->property == None)?(event->target):(event->property);
+    notify.property = (event->property == None) ? (event->target) : (event->property);
 
-    XChangeProperty(dpy, event->requestor, notify.property,
-                    XA_INTEGER, 32, PropModeReplace,
-                    (unsigned char *) icccm_version, wlengthof(icccm_version));
+    XChangeProperty(dpy, event->requestor, notify.property, XA_INTEGER, 32, PropModeReplace,
+                    (unsigned char *)icccm_version, wlengthof(icccm_version));
   }
 
- not_our_selection:
+not_our_selection:
   if (notify.property == None)
-    WMLogWarning("received SelectionRequest(%s) for target=\"%s\" from requestor 0x%lX but we have no answer",
-             XGetAtomName(dpy, event->selection), XGetAtomName(dpy, event->target), (long) event->requestor);
+    WMLogWarning("received SelectionRequest(%s) for target=\"%s\" from requestor 0x%lX but we have "
+                 "no answer",
+                 XGetAtomName(dpy, event->selection), XGetAtomName(dpy, event->target),
+                 (long)event->requestor);
 
   /* Send the answer to the requestor */
-  XSendEvent(dpy, event->requestor, False, 0L, (XEvent *) &notify);
+  XSendEvent(dpy, event->requestor, False, 0L, (XEvent *)&notify);
 
 #else
   /*
@@ -1689,7 +1660,7 @@ static void handle_selection_request(XSelectionRequestEvent *event)
    * event with property set to 'None' to tell that we don't have this selection, but that is a bit
    * costly for an event that shall never happen).
    */
-  (void) event;
+  (void)event;
 #endif
 }
 
@@ -1711,6 +1682,6 @@ static void handle_selection_clear(XSelectionClearEvent *event)
    * If the support for ICCCM window manager replacement was not enabled, we should not receive
    * this kind of event, so we simply do nothing.
    */
-  (void) event;
+  (void)event;
 #endif
 }

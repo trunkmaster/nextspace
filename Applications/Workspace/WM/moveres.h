@@ -27,11 +27,11 @@
 #define MOVE_THRESHOLD 5
 
 /* geometry displays */
-#define WDIS_NEW		0	/* new style */
-#define WDIS_CENTER		1	/* center of screen */
-#define WDIS_TOPLEFT		2	/* top left corner of screen */
-#define WDIS_FRAME_CENTER	3	/* center of the frame */
-#define WDIS_TITLEBAR		4	/* titlebar */
-#define WDIS_NONE		5
+#define WDIS_NEW 0          /* new style */
+#define WDIS_CENTER 1       /* center of screen */
+#define WDIS_TOPLEFT 2      /* top left corner of screen */
+#define WDIS_FRAME_CENTER 3 /* center of the frame */
+#define WDIS_TITLEBAR 4     /* titlebar */
+#define WDIS_NONE 5
 
 #endif /* __WORKSPACE_WM_MOVERES__ */

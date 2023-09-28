@@ -28,7 +28,7 @@
 #import <Preferences.h>
 #import <Preferences/PrefsModule.h>
 
-#define SHELF_LABEL_WIDTH     100
+#define SHELF_LABEL_WIDTH 100
 #define SHELF_MIN_LABEL_WIDTH 40
 #define SHELF_MAX_LABEL_WIDTH 100
 
@@ -42,8 +42,8 @@
   id rightArr;
   id resizableSwitch;
 
-  NSBox  *box;
-  NSBox  *box2;
+  NSBox *box;
+  NSBox *box2;
   NXTIcon *icon;
 }
 

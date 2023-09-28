@@ -2,29 +2,29 @@
  * Until FreeBSD gets their act together;
  * http://www.mail-archive.com/freebsd-hackers@freebsd.org/msg69469.html
  */
-#if defined( FREEBSD )
-#   undef _XOPEN_SOURCE
+#if defined(FREEBSD)
+#undef _XOPEN_SOURCE
 #endif
 
-#if defined( FREEBSD ) || defined( DRAGONFLYBSD )
-#   include <sys/types.h>
+#if defined(FREEBSD) || defined(DRAGONFLYBSD)
+#include <sys/types.h>
 #else /* OPENBSD || NETBSD */
-#   include <sys/param.h>
+#include <sys/param.h>
 #endif
 #include <sys/sysctl.h>
 
 #include <assert.h>
 
-#if defined( OPENBSD )
-#   include <kvm.h>
-#   include <limits.h>	/* _POSIX2_LINE_MAX */
+#if defined(OPENBSD)
+#include <kvm.h>
+#include <limits.h> /* _POSIX2_LINE_MAX */
 #endif
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#if defined( OPENBSD )
-#   include <string.h>
+#if defined(OPENBSD)
+#include <string.h>
 #endif
 
 #include <unistd.h>
@@ -68,12 +68,12 @@ Bool GetCommandForPid(int pid, char ***argv, int *argc)
   size_t count;
   static char *args = NULL;
   static int argmax = 0;
-#if defined( OPENBSD )
-  char kvmerr[_POSIX2_LINE_MAX];	/* for kvm*() error reporting */
-  int procs;			/* kvm_getprocs() */
+#if defined(OPENBSD)
+  char kvmerr[_POSIX2_LINE_MAX]; /* for kvm*() error reporting */
+  int procs;                     /* kvm_getprocs() */
   kvm_t *kd;
   struct kinfo_proc *kp;
-  char **nargv;			/* kvm_getarg() */
+  char **nargv; /* kvm_getarg() */
 #endif
 
   *argv = NULL;
@@ -92,13 +92,13 @@ Bool GetCommandForPid(int pid, char ***argv, int *argc)
   }
 
   /* if argmax is still 0, something went very seriously wrong */
-  assert( argmax > 0);
+  assert(argmax > 0);
 
   /* space for args; no need to free before returning even on errors */
   if (args == NULL)
     args = (char *)wmalloc(argmax);
 
-#if defined( OPENBSD )
+#if defined(OPENBSD)
   /* kvm descriptor */
   kd = kvm_openfiles(NULL, NULL, NULL, KVM_NO_FILES, kvmerr);
   if (kd == NULL)
@@ -126,8 +126,8 @@ Bool GetCommandForPid(int pid, char ***argv, int *argc)
    * technically, overflow (or truncation, which isn't handled) can not
    * happen (should not, at least).
    */
-#define ARGSPACE ( count + strlen(nargv[ (*argc) ] ) + 1 )
-  while (nargv[*argc] && ARGSPACE < argmax ) {
+#define ARGSPACE (count + strlen(nargv[(*argc)]) + 1)
+  while (nargv[*argc] && ARGSPACE < argmax) {
     memcpy(args + count, nargv[*argc], strlen(nargv[*argc]));
     count += strlen(nargv[*argc]) + 1;
     (*argc)++;
@@ -139,11 +139,11 @@ Bool GetCommandForPid(int pid, char ***argv, int *argc)
 #else /* FREEBSD || NETBSD || DRAGONFLYBSD */
 
   mib[0] = CTL_KERN;
-#if defined( NETBSD )
+#if defined(NETBSD)
   mib[1] = KERN_PROC_ARGS;
   mib[2] = pid;
   mib[3] = KERN_PROC_ARGV;
-#elif defined( FREEBSD ) || defined( DRAGONFLYBSD )
+#elif defined(FREEBSD) || defined(DRAGONFLYBSD)
   mib[1] = KERN_PROC;
   mib[2] = KERN_PROC_ARGS;
   mib[3] = pid;

@@ -25,21 +25,21 @@
 {
   id window, text;
 
-  NSString     *consoleFile;
+  NSString *consoleFile;
   NSFileHandle *fh;
-  NSString     *savedString;
-  NSTimer      *timer;
+  NSString *savedString;
+  NSTimer *timer;
 
-  BOOL         isActive;
+  BOOL isActive;
 }
 
 - (NSWindow *)window;
 - (void)activate;
 - (void)deactivate;
 
- /** Reads data from the console file handle and appends it to the
-     console display. This method is invoked automatically by a timer
-     every 0.1 seconds. */
-- (void) readConsoleFile;
+/** Reads data from the console file handle and appends it to the
+    console display. This method is invoked automatically by a timer
+    every 0.1 seconds. */
+- (void)readConsoleFile;
 
 @end

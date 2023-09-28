@@ -67,29 +67,28 @@
 #include "dock.h"
 #include "Workspace+WM.h"
 
-
 #define ICON_SIZE wPreferences.icon_size
 
 /* animation speed constants */
-#define ICON_SLIDE_SLOWDOWN_UF	1
-#define ICON_SLIDE_DELAY_UF	1
-#define ICON_SLIDE_STEPS_UF	50  
+#define ICON_SLIDE_SLOWDOWN_UF 1
+#define ICON_SLIDE_DELAY_UF 1
+#define ICON_SLIDE_STEPS_UF 50
 
-#define ICON_SLIDE_SLOWDOWN_F	3
-#define ICON_SLIDE_DELAY_F	2
-#define ICON_SLIDE_STEPS_F	50
+#define ICON_SLIDE_SLOWDOWN_F 3
+#define ICON_SLIDE_DELAY_F 2
+#define ICON_SLIDE_STEPS_F 50
 
-#define ICON_SLIDE_SLOWDOWN_M	5
-#define ICON_SLIDE_DELAY_M	3
-#define ICON_SLIDE_STEPS_M	30
+#define ICON_SLIDE_SLOWDOWN_M 5
+#define ICON_SLIDE_DELAY_M 3
+#define ICON_SLIDE_STEPS_M 30
 
-#define ICON_SLIDE_SLOWDOWN_S	10
-#define ICON_SLIDE_DELAY_S	4
-#define ICON_SLIDE_STEPS_S	20
+#define ICON_SLIDE_SLOWDOWN_S 10
+#define ICON_SLIDE_DELAY_S 4
+#define ICON_SLIDE_STEPS_S 20
 
-#define ICON_SLIDE_SLOWDOWN_US	20
-#define ICON_SLIDE_DELAY_US	5
-#define ICON_SLIDE_STEPS_US	10
+#define ICON_SLIDE_SLOWDOWN_US 20
+#define ICON_SLIDE_DELAY_US 5
+#define ICON_SLIDE_STEPS_US 10
 
 /* XFetchName Wrapper */
 Bool wGetWindowName(Display *dpy, Window win, char **winname)
@@ -105,8 +104,8 @@ Bool wGetWindowName(Display *dpy, Window win, char **winname)
         XFree(text_prop.value);
       } else {
         text_prop.nitems = strlen((char *)text_prop.value);
-        if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >=
-            Success && num > 0 && *list) {
+        if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success && num > 0 &&
+            *list) {
           XFree(text_prop.value);
           *winname = wstrdup(*list);
           XFreeStringList(list);
@@ -160,7 +159,8 @@ static void _compressExposeEvents(void)
   /* compress all expose events into a single one */
   if (XCheckMaskEvent(dpy, ExposureMask, &event)) {
     /* ignore other exposure events for this window */
-    while (XCheckWindowEvent(dpy, event.xexpose.window, ExposureMask, &foo)) ;
+    while (XCheckWindowEvent(dpy, event.xexpose.window, ExposureMask, &foo))
+      ;
     /* eat exposes for other windows */
     _compressExposeEvents();
 
@@ -198,24 +198,22 @@ void wSlideWindowList(Window wins[], int n, int from_x, int from_y, int to_x, in
     int delay;
     int steps;
     int slowdown;
-  } apars[5] = {
-		{ICON_SLIDE_DELAY_UF, ICON_SLIDE_STEPS_UF, ICON_SLIDE_SLOWDOWN_UF},
-		{ICON_SLIDE_DELAY_F,  ICON_SLIDE_STEPS_F,  ICON_SLIDE_SLOWDOWN_F},
-		{ICON_SLIDE_DELAY_M,  ICON_SLIDE_STEPS_M,  ICON_SLIDE_SLOWDOWN_M},
-		{ICON_SLIDE_DELAY_S,  ICON_SLIDE_STEPS_S,  ICON_SLIDE_SLOWDOWN_S},
-		{ICON_SLIDE_DELAY_US, ICON_SLIDE_STEPS_US, ICON_SLIDE_SLOWDOWN_US}
-  };
+  } apars[5] = {{ICON_SLIDE_DELAY_UF, ICON_SLIDE_STEPS_UF, ICON_SLIDE_SLOWDOWN_UF},
+                {ICON_SLIDE_DELAY_F, ICON_SLIDE_STEPS_F, ICON_SLIDE_SLOWDOWN_F},
+                {ICON_SLIDE_DELAY_M, ICON_SLIDE_STEPS_M, ICON_SLIDE_SLOWDOWN_M},
+                {ICON_SLIDE_DELAY_S, ICON_SLIDE_STEPS_S, ICON_SLIDE_SLOWDOWN_S},
+                {ICON_SLIDE_DELAY_US, ICON_SLIDE_STEPS_US, ICON_SLIDE_SLOWDOWN_US}};
 
   slide_slowdown = apars[(int)wPreferences.icon_slide_speed].slowdown;
   slide_steps = apars[(int)wPreferences.icon_slide_speed].steps;
   slide_delay = apars[(int)wPreferences.icon_slide_speed].delay;
-  
+
   dx_int = to_x - from_x;
   dy_int = to_y - from_y;
   is_dx_nul = (dx_int == 0);
   is_dy_nul = (dy_int == 0);
-  dx = (float) dx_int;
-  dy = (float) dy_int;
+  dx = (float)dx_int;
+  dy = (float)dy_int;
 
   if (abs(dx_int) > abs(dy_int)) {
     dx_is_bigger = 1;
@@ -237,8 +235,7 @@ void wSlideWindowList(Window wins[], int n, int from_x, int from_y, int to_x, in
     px = (is_dy_nul ? 0.0F : py * dx / dy);
   }
 
-  while (((int)x) != to_x ||
-         ((int)y) != to_y) {
+  while (((int)x) != to_x || ((int)y) != to_y) {
     x += px;
     y += py;
     if ((px < 0 && (int)x < to_x) || (px > 0 && (int)x > to_x))
@@ -342,40 +339,37 @@ char *ShrinkString(WMFont *font, const char *string, int width)
   return text;
 }
 
-static void timeoutHandler(CFRunLoopTimerRef timer, void *data)
-{
-  *(int *)data = 1;
-}
+static void timeoutHandler(CFRunLoopTimerRef timer, void *data) { *(int *)data = 1; }
 
-static char *getTextSelection(WScreen * screen, Atom selection)
+static char *getTextSelection(WScreen *screen, Atom selection)
 {
   int buffer = -1;
 
   switch (selection) {
-  case XA_CUT_BUFFER0:
-    buffer = 0;
-    break;
-  case XA_CUT_BUFFER1:
-    buffer = 1;
-    break;
-  case XA_CUT_BUFFER2:
-    buffer = 2;
-    break;
-  case XA_CUT_BUFFER3:
-    buffer = 3;
-    break;
-  case XA_CUT_BUFFER4:
-    buffer = 4;
-    break;
-  case XA_CUT_BUFFER5:
-    buffer = 5;
-    break;
-  case XA_CUT_BUFFER6:
-    buffer = 6;
-    break;
-  case XA_CUT_BUFFER7:
-    buffer = 7;
-    break;
+    case XA_CUT_BUFFER0:
+      buffer = 0;
+      break;
+    case XA_CUT_BUFFER1:
+      buffer = 1;
+      break;
+    case XA_CUT_BUFFER2:
+      buffer = 2;
+      break;
+    case XA_CUT_BUFFER3:
+      buffer = 3;
+      break;
+    case XA_CUT_BUFFER4:
+      buffer = 4;
+      break;
+    case XA_CUT_BUFFER5:
+      buffer = 5;
+      break;
+    case XA_CUT_BUFFER6:
+      buffer = 6;
+      break;
+    case XA_CUT_BUFFER7:
+      buffer = 7;
+      break;
   }
   if (buffer >= 0) {
     char *data;
@@ -403,7 +397,8 @@ static char *getTextSelection(WScreen * screen, Atom selection)
 
     timer = WMAddTimerHandler(1000, 0, timeoutHandler, &timeout);
 
-    while (!XCheckTypedWindowEvent(dpy, screen->info_window, SelectionNotify, &ev) && !timeout) ;
+    while (!XCheckTypedWindowEvent(dpy, screen->info_window, SelectionNotify, &ev) && !timeout)
+      ;
 
     if (!timeout) {
       WMDeleteTimerHandler(timer);
@@ -418,10 +413,8 @@ static char *getTextSelection(WScreen * screen, Atom selection)
       return NULL;
     }
 
-    if (XGetWindowProperty(dpy, screen->info_window,
-                           clipboard, 0, 1024,
-                           False, XA_STRING, &rtype, &bits, &len,
-                           &bytes, (unsigned char **)&data) != Success) {
+    if (XGetWindowProperty(dpy, screen->info_window, clipboard, 0, 1024, False, XA_STRING, &rtype,
+                           &bits, &len, &bytes, (unsigned char **)&data) != Success) {
       return NULL;
     }
     if (rtype != XA_STRING || bits != 8) {
@@ -434,7 +427,7 @@ static char *getTextSelection(WScreen * screen, Atom selection)
   }
 }
 
-static char *getselection(WScreen * scr)
+static char *getselection(WScreen *scr)
 {
   char *tmp;
 
@@ -478,124 +471,128 @@ char *ExpandOptions(WScreen *scr, const char *cmdline)
     return NULL;
   }
   *out = 0;
-  ptr = 0;		/* input line pointer */
-  optr = 0;		/* output line pointer */
+  ptr = 0;  /* input line pointer */
+  optr = 0; /* output line pointer */
   state = S_NORMAL;
   while (ptr < len) {
     switch (state) {
-    case S_NORMAL:
-      switch (cmdline[ptr]) {
-      case '\\':
-        state = S_ESCAPE;
+      case S_NORMAL:
+        switch (cmdline[ptr]) {
+          case '\\':
+            state = S_ESCAPE;
+            break;
+          case '%':
+            state = S_OPTION;
+            break;
+          default:
+            state = S_NORMAL;
+            out[optr++] = cmdline[ptr];
+            break;
+        }
         break;
-      case '%':
-        state = S_OPTION;
-        break;
-      default:
+      case S_ESCAPE:
+        switch (cmdline[ptr]) {
+          case 'n':
+            out[optr++] = 10;
+            break;
+
+          case 'r':
+            out[optr++] = 13;
+            break;
+
+          case 't':
+            out[optr++] = 9;
+            break;
+
+          default:
+            out[optr++] = cmdline[ptr];
+        }
         state = S_NORMAL;
-        out[optr++] = cmdline[ptr];
         break;
-      }
-      break;
-    case S_ESCAPE:
-      switch (cmdline[ptr]) {
-      case 'n':
-        out[optr++] = 10;
-        break;
+      case S_OPTION:
+        state = S_NORMAL;
+        switch (cmdline[ptr]) {
+          case 'w':
+            if (scr->focused_window && scr->focused_window->flags.focused) {
+              snprintf(tmpbuf, sizeof(tmpbuf), "0x%x",
+                       (unsigned int)scr->focused_window->client_win);
+              slen = strlen(tmpbuf);
+              olen += slen;
+              nout = realloc(out, olen);
+              if (!nout) {
+                WMLogWarning(_("out of memory during expansion of '%s' for command \"%s\""), "%w",
+                             cmdline);
+                goto error;
+              }
+              out = nout;
+              strcat(out, tmpbuf);
+              optr += slen;
+            } else {
+              out[optr++] = ' ';
+            }
+            break;
 
-      case 'r':
-        out[optr++] = 13;
-        break;
-
-      case 't':
-        out[optr++] = 9;
-        break;
-
-      default:
-        out[optr++] = cmdline[ptr];
-      }
-      state = S_NORMAL;
-      break;
-    case S_OPTION:
-      state = S_NORMAL;
-      switch (cmdline[ptr]) {
-      case 'w':
-        if (scr->focused_window && scr->focused_window->flags.focused) {
-          snprintf(tmpbuf, sizeof(tmpbuf), "0x%x",
-                   (unsigned int)scr->focused_window->client_win);
-          slen = strlen(tmpbuf);
-          olen += slen;
-          nout = realloc(out, olen);
-          if (!nout) {
-            WMLogWarning(_("out of memory during expansion of '%s' for command \"%s\""), "%w", cmdline);
-            goto error;
-          }
-          out = nout;
-          strcat(out, tmpbuf);
-          optr += slen;
-        } else {
-          out[optr++] = ' ';
-        }
-        break;
-
-      case 'W':
-        snprintf(tmpbuf, sizeof(tmpbuf), "0x%x", (unsigned int)scr->current_desktop + 1);
-        slen = strlen(tmpbuf);
-        olen += slen;
-        nout = realloc(out, olen);
-        if (!nout) {
-          WMLogWarning(_("out of memory during expansion of '%s' for command \"%s\""), "%W", cmdline);
-          goto error;
-        }
-        out = nout;
-        strcat(out, tmpbuf);
-        optr += slen;
-        break;
+          case 'W':
+            snprintf(tmpbuf, sizeof(tmpbuf), "0x%x", (unsigned int)scr->current_desktop + 1);
+            slen = strlen(tmpbuf);
+            olen += slen;
+            nout = realloc(out, olen);
+            if (!nout) {
+              WMLogWarning(_("out of memory during expansion of '%s' for command \"%s\""), "%W",
+                           cmdline);
+              goto error;
+            }
+            out = nout;
+            strcat(out, tmpbuf);
+            optr += slen;
+            break;
 
 #ifdef USE_DOCK_XDND
-      case 'd':
-        if (!scr->xdestring) {
-          scr->flags.dnd_data_convertion_status = 1;
-          goto error;
-        }
-        slen = strlen(scr->xdestring);
-        olen += slen;
-        nout = realloc(out, olen);
-        if (!nout) {
-          WMLogWarning(_("out of memory during expansion of '%s' for command \"%s\""), "%d", cmdline);
-          goto error;
-        }
-        out = nout;
-        strcat(out, scr->xdestring);
-        optr += slen;
-        break;
-#endif	/* USE_DOCK_XDND */
+          case 'd':
+            if (!scr->xdestring) {
+              scr->flags.dnd_data_convertion_status = 1;
+              goto error;
+            }
+            slen = strlen(scr->xdestring);
+            olen += slen;
+            nout = realloc(out, olen);
+            if (!nout) {
+              WMLogWarning(_("out of memory during expansion of '%s' for command \"%s\""), "%d",
+                           cmdline);
+              goto error;
+            }
+            out = nout;
+            strcat(out, scr->xdestring);
+            optr += slen;
+            break;
+#endif /* USE_DOCK_XDND */
 
-      case 's':
-        if (!selection) {
-          selection = getselection(scr);
-        }
-        if (!selection) {
-          WMLogWarning(_("selection not available"));
-          goto error;
-        }
-        slen = strlen(selection);
-        olen += slen;
-        nout = realloc(out, olen);
-        if (!nout) {
-          WMLogWarning(_("out of memory during expansion of '%s' for command \"%s\""), "%s", cmdline);
-          goto error;
-        }
-        out = nout;
-        strcat(out, selection);
-        optr += slen;
-        break;
+          case 's':
+            if (!selection) {
+              selection = getselection(scr);
+            }
+            if (!selection) {
+              WMLogWarning(_("selection not available"));
+              goto error;
+            }
+            slen = strlen(selection);
+            olen += slen;
+            nout = realloc(out, olen);
+            if (!nout) {
+              WMLogWarning(_("out of memory during expansion of '%s' for command \"%s\""), "%s",
+                           cmdline);
+              goto error;
+            }
+            out = nout;
+            strcat(out, selection);
+            optr += slen;
+            break;
 
-      default:
-        out[optr++] = '%';
-        out[optr++] = cmdline[ptr];
-      }
-      break;
+          default:
+            out[optr++] = '%';
+            out[optr++] = cmdline[ptr];
+        }
+        break;
     }
     out[optr] = 0;
     ptr++;
@@ -604,7 +601,7 @@ char *ExpandOptions(WScreen *scr, const char *cmdline)
     XFree(selection);
   return out;
 
- error:
+error:
   wfree(out);
   if (selection)
     XFree(selection);
@@ -699,7 +696,7 @@ static void UnescapeWM_CLASS(const char *str, char **name, char **class)
   }
 
   /* unescape the class */
-  if (dot < j-1) {
+  if (dot < j - 1) {
     *class = wmalloc(j - (dot + 1) + 1);
     for (i = dot + 1, k = 0; i < j; i++) {
       if (str[i] != '\\')
@@ -757,12 +754,9 @@ static char *_getCommandForWindow(Window win, int elements)
 }
 
 /* Free result when done */
-char *wGetCommandForWindow(Window win)
-{
-  return _getCommandForWindow(win, 0);
-}
+char *wGetCommandForWindow(Window win) { return _getCommandForWindow(win, 0); }
 
-void wSetupCommandEnvironment(WScreen * scr)
+void wSetupCommandEnvironment(WScreen *scr)
 {
   char *tmp;
 
@@ -785,8 +779,8 @@ static void _shellCommandHandler(pid_t pid, unsigned int status, void *client_da
 
     buffer = wstrconcat(_("Could not execute command: "), data->command);
     dispatch_async(workspace_q, ^{
-        WSRunAlertPanel(_("Run Error"), buffer, _("Got It"), NULL, NULL);
-      });
+      WSRunAlertPanel(_("Run Error"), buffer, _("Got It"), NULL, NULL);
+    });
     wfree(buffer);
   } else if (status != 127) {
     /*
@@ -836,7 +830,7 @@ void wExecuteShellCommand(WScreen *scr, const char *command)
 /* Launch a new instance of the active window */
 Bool wRelaunchWindow(WWindow *wwin)
 {
-  if (! wwin || ! wwin->client_win) {
+  if (!wwin || !wwin->client_win) {
     WMLogError("no window to relaunch");
     return False;
   }
@@ -844,7 +838,7 @@ Bool wRelaunchWindow(WWindow *wwin)
   char **argv;
   int argc;
 
-  if (! XGetCommand(dpy, wwin->client_win, &argv, &argc) || argc == 0 || argv == NULL) {
+  if (!XGetCommand(dpy, wwin->client_win, &argv, &argc) || argc == 0 || argv == NULL) {
     WMLogError("cannot relaunch the application because no WM_COMMAND property is set");
     return False;
   }
@@ -857,8 +851,8 @@ Bool wRelaunchWindow(WWindow *wwin)
     setsid();
 #endif
     /* argv is not null-terminated */
-    char **a = (char **) malloc(argc + 1);
-    if (! a) {
+    char **a = (char **)malloc(argc + 1);
+    if (!a) {
       WMLogError("out of memory trying to relaunch the application");
       exit(-1);
     }
@@ -918,8 +912,7 @@ void wSetWVisualID(int screen, int val)
     for (i = 0; i < wVisualID_len; i++) {
       wVisualID[i] = -1;
     }
-  }
-  else if (screen >= wVisualID_len) {
+  } else if (screen >= wVisualID_len) {
     /* larger screen number than previously allocated
        so enlarge array */
     int oldlen = wVisualID_len;
@@ -942,7 +935,7 @@ CFTypeRef wGetNotificationInfoValue(CFDictionaryRef theDict, CFStringRef key)
 
   if (!theDict)
     return desired_value;
-  
+
   CFDictionaryGetKeysAndValues(theDict, &keys, &values);
   for (int i = 0; i < CFDictionaryGetCount(theDict); i++) {
     if (CFStringCompare(&keys[i], key, 0) == 0) {

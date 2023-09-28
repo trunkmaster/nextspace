@@ -61,28 +61,28 @@
 #undef SINGLE_MENULEVEL
 
 /* delays in ms for menu item selection hysteresis */
-#define MENU_SELECT_DELAY       200
+#define MENU_SELECT_DELAY 200
 
 /* delays in ms for jumpback of scrolled menus */
-#define MENU_JUMP_BACK_DELAY    400
+#define MENU_JUMP_BACK_DELAY 400
 
 /*menu scrolling */
-#define MENU_SCROLL_STEPS_UF	14
-#define MENU_SCROLL_DELAY_UF	1
+#define MENU_SCROLL_STEPS_UF 14
+#define MENU_SCROLL_DELAY_UF 1
 
-#define MENU_SCROLL_STEPS_F	10
-#define MENU_SCROLL_DELAY_F	5
+#define MENU_SCROLL_STEPS_F 10
+#define MENU_SCROLL_DELAY_F 5
 
-#define MENU_SCROLL_STEPS_M	6
-#define MENU_SCROLL_DELAY_M	5
+#define MENU_SCROLL_STEPS_M 6
+#define MENU_SCROLL_DELAY_M 5
 
-#define MENU_SCROLL_STEPS_S	4
-#define MENU_SCROLL_DELAY_S	6
+#define MENU_SCROLL_STEPS_S 4
+#define MENU_SCROLL_DELAY_S 6
 
-#define MENU_SCROLL_STEPS_US	1
-#define MENU_SCROLL_DELAY_US	8
+#define MENU_SCROLL_STEPS_US 1
+#define MENU_SCROLL_DELAY_US 8
 
-#define MENU_SCROLL_STEP  menuScrollParameters[(int)wPreferences.menu_scroll_speed].steps
+#define MENU_SCROLL_STEP menuScrollParameters[(int)wPreferences.menu_scroll_speed].steps
 #define MENU_SCROLL_DELAY menuScrollParameters[(int)wPreferences.menu_scroll_speed].delay
 
 /***** Local Stuff ******/
@@ -90,13 +90,11 @@
 static struct {
   int steps;
   int delay;
-} menuScrollParameters[5] = {
-                             {
-                              MENU_SCROLL_STEPS_UF, MENU_SCROLL_DELAY_UF}, {
-                                                                            MENU_SCROLL_STEPS_F, MENU_SCROLL_DELAY_F}, {
-                                                                                                                        MENU_SCROLL_STEPS_M, MENU_SCROLL_DELAY_M}, {
-                                                                                                                                                                    MENU_SCROLL_STEPS_S, MENU_SCROLL_DELAY_S}, {
-                                                                                                                                                                                                                MENU_SCROLL_STEPS_US, MENU_SCROLL_DELAY_US}};
+} menuScrollParameters[5] = {{MENU_SCROLL_STEPS_UF, MENU_SCROLL_DELAY_UF},
+                             {MENU_SCROLL_STEPS_F, MENU_SCROLL_DELAY_F},
+                             {MENU_SCROLL_STEPS_M, MENU_SCROLL_DELAY_M},
+                             {MENU_SCROLL_STEPS_S, MENU_SCROLL_DELAY_S},
+                             {MENU_SCROLL_STEPS_US, MENU_SCROLL_DELAY_US}};
 
 static void menuMouseDown(WObjDescriptor *desc, XEvent *event);
 static void menuExpose(WObjDescriptor *desc, XEvent *event);
@@ -109,9 +107,9 @@ static void closeCascade(WMenu *menu);
 /****** Notification Observers ******/
 
 static void appearanceObserver(CFNotificationCenterRef center,
-                               void *observedMenu, // observer
+                               void *observedMenu,  // observer
                                CFNotificationName name,
-                               const void *settingsFlags, // object
+                               const void *settingsFlags,  // object
                                CFDictionaryRef userInfo)
 {
   WMenu *menu = (WMenu *)observedMenu;
@@ -134,7 +132,6 @@ static void appearanceObserver(CFNotificationCenterRef center,
       wMenuPaint(menu);
     }
   } else if (menu->flags.titled) {
-
     if (flags & WFontSettings) {
       menu->flags.realized = 0;
       wMenuRealize(menu);
@@ -170,21 +167,18 @@ WMenu *wMenuCreate(WScreen *screen, const char *title, int main_menu)
 
   menu = wmalloc(sizeof(WMenu));
   menu->flags.app_menu = main_menu;
-  
+
   window_flags = WFF_SINGLE_STATE | WFF_BORDER;
   if (title) {
     window_flags |= WFF_TITLEBAR | WFF_RIGHT_BUTTON;
     menu->flags.titled = 1;
   }
-  menu->frame = wFrameWindowCreate(screen,
-                                   (main_menu ? NSMainMenuWindowLevel : NSSubmenuWindowLevel),
-                                   8, 2, 1, 1, &wPreferences.menu_title_clearance,
-                                   &wPreferences.menu_title_min_height,
-                                   &wPreferences.menu_title_max_height,
-                                   window_flags,
-                                   screen->menu_title_texture, NULL,
-                                   screen->menu_title_color, &screen->menu_title_font,
-                                   screen->w_depth, screen->w_visual, screen->w_colormap);
+  menu->frame = wFrameWindowCreate(
+      screen, (main_menu ? NSMainMenuWindowLevel : NSSubmenuWindowLevel), 8, 2, 1, 1,
+      &wPreferences.menu_title_clearance, &wPreferences.menu_title_min_height,
+      &wPreferences.menu_title_max_height, window_flags, screen->menu_title_texture, NULL,
+      screen->menu_title_color, &screen->menu_title_font, screen->w_depth, screen->w_visual,
+      screen->w_colormap);
 
   menu->frame->core->descriptor.parent = menu;
   menu->frame->core->descriptor.parent_type = WCLASS_MENU;
@@ -220,7 +214,8 @@ WMenu *wMenuCreate(WScreen *screen, const char *title, int main_menu)
 
   menu->frame->on_click_right = menuCloseClick;
 
-  menu->menu = wCoreCreate(menu->frame->core, 0, menu->frame->top_width, menu->frame->core->width, 10);
+  menu->menu =
+      wCoreCreate(menu->frame->core, 0, menu->frame->top_width, menu->frame->core->width, 10);
 
   menu->menu->descriptor.parent = menu;
   menu->menu->descriptor.parent_type = WCLASS_MENU;
@@ -249,7 +244,7 @@ WMenu *wMenuCreate(WScreen *screen, const char *title, int main_menu)
                                     WMDidChangeMenuTitleAppearanceSettings, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
   }
-  
+
   return menu;
 }
 
@@ -266,7 +261,6 @@ WMenu *wMenuCreateForApp(WScreen *screen, const char *title, int main_menu)
   return menu;
 }
 
-
 static void insertItem(WMenu *menu, WMenuItem *item, int index)
 {
   int i;
@@ -279,8 +273,7 @@ static void insertItem(WMenu *menu, WMenuItem *item, int index)
 }
 
 WMenuItem *wMenuItemInsert(WMenu *menu, int index, const char *text,
-                            void (*callback) (WMenu *menu, WMenuItem *item),
-                            void *clientdata)
+                           void (*callback)(WMenu *menu, WMenuItem *item), void *clientdata)
 {
   WMenuItem *item;
 
@@ -345,7 +338,7 @@ void wMenuItemRemove(WMenu *menu, int index)
     wfree(menu->items[index]->rtext);
   }
   if (menu->items[index]->free_cdata && menu->items[index]->clientdata) {
-    (*menu->items[index]->free_cdata) (menu->items[index]->clientdata);
+    (*menu->items[index]->free_cdata)(menu->items[index]->clientdata);
   }
   if (menu->items[index]->shortcut) {
     wfree(menu->items[index]->shortcut);
@@ -446,15 +439,16 @@ void wMenuItemSetSubmenu(WMenu *menu, WMenuItem *item, WMenu *submenu)
   if (!done) {
     item->submenu_index = menu->submenus_count;
 
-    menu->submenus = wrealloc(menu->submenus, sizeof(menu->submenus[0]) * (menu->submenus_count + 1));
+    menu->submenus =
+        wrealloc(menu->submenus, sizeof(menu->submenus[0]) * (menu->submenus_count + 1));
     menu->submenus[menu->submenus_count++] = submenu;
 
-    brother->submenus = wrealloc(brother->submenus, sizeof(brother->submenus[0]) * (brother->submenus_count + 1));
+    brother->submenus =
+        wrealloc(brother->submenus, sizeof(brother->submenus[0]) * (brother->submenus_count + 1));
     brother->submenus[brother->submenus_count++] = submenu->brother;
   }
 
   if (menu->flags.lowered) {
-
     submenu->flags.lowered = 1;
     ChangeStackingLevel(submenu->frame->core, NSNormalWindowLevel);
 
@@ -472,7 +466,6 @@ void wMenuItemRemoveSubmenu(WMenu *menu, WMenuItem *item)
 
   /* destroy cascade menu */
   if (item->submenu_index >= 0 && menu->submenus && menu->submenus[item->submenu_index] != NULL) {
-
     wMenuDestroy(menu->submenus[item->submenu_index], True);
 
     menu->submenus[item->submenu_index] = NULL;
@@ -482,10 +475,10 @@ void wMenuItemRemoveSubmenu(WMenu *menu, WMenuItem *item)
   }
 }
 
-#define F_NORMAL	0
-#define F_TOP		1
-#define F_BOTTOM	2
-#define F_NONE		3
+#define F_NORMAL 0
+#define F_TOP 1
+#define F_BOTTOM 2
+#define F_NONE 3
 static void drawFrame(WScreen *scr, Drawable win, int y, int w, int h, int type)
 {
   XSegment segs[2];
@@ -584,8 +577,8 @@ void wMenuItemPaint(WMenu *menu, int item_index, int selected)
   if (item->flags.indicator)
     x += MENU_INDICATOR_SPACE + 2;
 
-  WMDrawString(scr->wmscreen, win, color, scr->menu_item_font,
-               x, 3 + y + wPreferences.menu_text_clearance, item->text, strlen(item->text));
+  WMDrawString(scr->wmscreen, win, color, scr->menu_item_font, x,
+               3 + y + wPreferences.menu_text_clearance, item->text, strlen(item->text));
 
   if (item->submenu_index >= 0) {
     /* draw the cascade indicator */
@@ -600,22 +593,22 @@ void wMenuItemPaint(WMenu *menu, int item_index, int selected)
     WPixmap *indicator;
 
     switch (item->flags.indicator_type) {
-    case MI_CHECK:
-      indicator = scr->menu_check_indicator;
-      break;
-    case MI_MINIWINDOW:
-      indicator = scr->menu_mini_indicator;
-      break;
-    case MI_HIDDEN:
-      indicator = scr->menu_hide_indicator;
-      break;
-    case MI_SHADED:
-      indicator = scr->menu_shade_indicator;
-      break;
-    case MI_DIAMOND:
-    default:
-      indicator = scr->menu_radio_indicator;
-      break;
+      case MI_CHECK:
+        indicator = scr->menu_check_indicator;
+        break;
+      case MI_MINIWINDOW:
+        indicator = scr->menu_mini_indicator;
+        break;
+      case MI_HIDDEN:
+        indicator = scr->menu_hide_indicator;
+        break;
+      case MI_SHADED:
+        indicator = scr->menu_shade_indicator;
+        break;
+      case MI_DIAMOND:
+      default:
+        indicator = scr->menu_radio_indicator;
+        break;
     }
 
     iw = indicator->width;
@@ -697,10 +690,10 @@ void wMenuItemSelect(WMenu *menu, int item_index)
         /* Only call the callback if the submenu is not yet mapped. */
         if (menu->flags.brother) {
           if (!submenu || !submenu->flags.mapped) {
-            (*item->callback) (menu->brother, item);
+            (*item->callback)(menu->brother, item);
           }
         } else if (!submenu || !submenu->flags.tornoff) {
-          (*item->callback) (menu, item);
+          (*item->callback)(menu, item);
         }
       }
       /* the submenu menu might have changed */
@@ -733,7 +726,6 @@ void wMenuItemSelect(WMenu *menu, int item_index)
     wMenuItemPaint(menu, item_index, True);
   }
 }
-
 
 static Pixmap renderTexture(WMenu *menu)
 {
@@ -768,14 +760,14 @@ static Pixmap renderTexture(WMenu *menu)
     mid.red = mid.green = mid.blue = 40;
 
     for (i = 1; i < menu->items_count; i++) {
-      ROperateLine(img, RSubtractOperation, 0, i *menu->item_height - 2,
-                   menu->menu->width - 1, i *menu->item_height - 2, &mid);
+      ROperateLine(img, RSubtractOperation, 0, i * menu->item_height - 2, menu->menu->width - 1,
+                   i * menu->item_height - 2, &mid);
 
-      RDrawLine(img, 0, i *menu->item_height - 1,
-                menu->menu->width - 1, i *menu->item_height - 1, &dark);
+      RDrawLine(img, 0, i * menu->item_height - 1, menu->menu->width - 1, i * menu->item_height - 1,
+                &dark);
 
-      ROperateLine(img, RAddOperation, 0, i *menu->item_height,
-                   menu->menu->width - 1, i *menu->item_height, &light);
+      ROperateLine(img, RAddOperation, 0, i * menu->item_height, menu->menu->width - 1,
+                   i * menu->item_height, &light);
     }
   }
   if (!RConvertImage(scr->rcontext, img, &pix)) {
@@ -859,8 +851,7 @@ void wMenuRealize(WMenu *menu)
     /* search widest text on right */
     text = menu->items[i]->rtext;
     if (text)
-      rwidth = WMWidthOfString(scr->menu_item_font, text, strlen(text))
-        + 10;
+      rwidth = WMWidthOfString(scr->menu_item_font, text, strlen(text)) + 10;
     else if (menu->items[i]->submenu_index >= 0)
       rwidth = 16;
     else
@@ -876,8 +867,9 @@ void wMenuRealize(WMenu *menu)
 
   wCoreConfigure(menu->menu, 0, theight, mwidth, menu->items_count * eheight - 1);
 
-  wFrameWindowResize(menu->frame, mwidth, menu->items_count * eheight - 1
-                     + menu->frame->top_width + menu->frame->bottom_width);
+  wFrameWindowResize(
+      menu->frame, mwidth,
+      menu->items_count * eheight - 1 + menu->frame->top_width + menu->frame->bottom_width);
 
   updateTexture(menu);
 
@@ -894,10 +886,10 @@ void wMenuDestroy(WMenu *menu, int recurse)
   int i;
 
   if (menu->frame->screen_ptr->notificationCenter) {
-    CFNotificationCenterRemoveObserver(menu->frame->screen_ptr->notificationCenter,
-                                       menu, WMDidChangeMenuAppearanceSettings, NULL);
-    CFNotificationCenterRemoveObserver(menu->frame->screen_ptr->notificationCenter,
-                                       menu, WMDidChangeMenuTitleAppearanceSettings, NULL);
+    CFNotificationCenterRemoveObserver(menu->frame->screen_ptr->notificationCenter, menu,
+                                       WMDidChangeMenuAppearanceSettings, NULL);
+    CFNotificationCenterRemoveObserver(menu->frame->screen_ptr->notificationCenter, menu,
+                                       WMDidChangeMenuTitleAppearanceSettings, NULL);
   }
   /* remove any pending timers */
   if (menu->timer) {
@@ -907,7 +899,7 @@ void wMenuDestroy(WMenu *menu, int recurse)
 
   /* call destroy handler */
   if (menu->on_destroy) {
-    (*menu->on_destroy) (menu);
+    (*menu->on_destroy)(menu);
   }
   /* Destroy items if this menu own them. If this is the "brother" menu,
    * leave them alone as it is shared by them.
@@ -921,7 +913,7 @@ void wMenuDestroy(WMenu *menu, int recurse)
         wfree(menu->items[i]->rtext);
       }
       if (menu->items[i]->free_cdata && menu->items[i]->clientdata) {
-        (*menu->items[i]->free_cdata) (menu->items[i]->clientdata);
+        (*menu->items[i]->free_cdata)(menu->items[i]->clientdata);
       }
       if (menu->items[i]->shortcut) {
         wfree(menu->items[i]->shortcut);
@@ -966,7 +958,7 @@ static void move_menus(WMenu *menu, int x, int y)
     menu = menu->parent;
     x -= MENU_WIDTH(menu);
     if (!wPreferences.align_menus && menu->selected_item_index >= 0) {
-      y -= menu->selected_item_index *menu->item_height;
+      y -= menu->selected_item_index * menu->item_height;
     }
   }
   wMenuMove(menu, x, y, True);
@@ -982,7 +974,7 @@ static void makeVisible(WMenu *menu)
     return;
 
   x1 = menu->frame_x;
-  y1 = menu->frame_y + menu->frame->top_width + menu->selected_item_index *menu->item_height;
+  y1 = menu->frame_y + menu->frame->top_width + menu->selected_item_index * menu->item_height;
   x2 = x1 + MENU_WIDTH(menu);
   y2 = y1 + menu->item_height;
 
@@ -1001,11 +993,11 @@ static void makeVisible(WMenu *menu)
     new_y = rect.pos.y + rect.size.height - menu->item_height - 1;
   }
 
-  new_y = new_y - menu->frame->top_width - menu->selected_item_index *menu->item_height;
+  new_y = new_y - menu->frame->top_width - menu->selected_item_index * menu->item_height;
   move_menus(menu, new_x, new_y);
 }
 
-static int check_key(WMenu *menu, XKeyEvent * event)
+static int check_key(WMenu *menu, XKeyEvent *event)
 {
   int i, ch, s;
   char buffer[32];
@@ -1017,7 +1009,7 @@ static int check_key(WMenu *menu, XKeyEvent * event)
 
   s = (menu->selected_item_index >= 0 ? menu->selected_item_index + 1 : 0);
 
- again:
+again:
   for (i = s; i < menu->items_count; i++) {
     if (ch == toupper(menu->items[i]->text[0])) {
       return i;
@@ -1041,8 +1033,8 @@ static int keyboardMenu(WMenu *menu)
   int old_pos_x = menu->frame_x;
   int old_pos_y = menu->frame_y;
   int new_x = old_pos_x, new_y = old_pos_y;
-  WMRect rect = wGetRectForHead(menu->frame->screen_ptr,
-                                wGetHeadForPointerLocation(menu->frame->screen_ptr));
+  WMRect rect =
+      wGetRectForHead(menu->frame->screen_ptr, wGetHeadForPointerLocation(menu->frame->screen_ptr));
 
   XGrabKeyboard(dpy, menu->frame->core->window, True, GrabModeAsync, GrabModeAsync, CurrentTime);
 
@@ -1056,131 +1048,131 @@ static int keyboardMenu(WMenu *menu)
 
   while (!done && menu->flags.mapped) {
     XAllowEvents(dpy, AsyncKeyboard, CurrentTime);
-    WMMaskEvent(dpy, ExposureMask | ButtonMotionMask | ButtonPressMask
-                | ButtonReleaseMask | KeyPressMask | KeyReleaseMask | SubstructureNotifyMask, &event);
+    WMMaskEvent(dpy,
+                ExposureMask | ButtonMotionMask | ButtonPressMask | ButtonReleaseMask |
+                    KeyPressMask | KeyReleaseMask | SubstructureNotifyMask,
+                &event);
 
     switch (event.type) {
-    case KeyPress:
-      ksym = XLookupKeysym(&event.xkey, 0);
-      if (wPreferences.vi_key_menus) {
-        switch (ksym) {
-        case XK_h:
-          ksym = XK_Left;
-          break;
+      case KeyPress:
+        ksym = XLookupKeysym(&event.xkey, 0);
+        if (wPreferences.vi_key_menus) {
+          switch (ksym) {
+            case XK_h:
+              ksym = XK_Left;
+              break;
 
-        case XK_j:
-          ksym = XK_Down;
-          break;
+            case XK_j:
+              ksym = XK_Down;
+              break;
 
-        case XK_k:
-          ksym = XK_Up;
-          break;
+            case XK_k:
+              ksym = XK_Up;
+              break;
 
-        case XK_l:
-          ksym = XK_Right;
-          break;
-
-        }
-      }
-      switch (ksym) {
-      case XK_Escape:
-        done = 1;
-        break;
-
-      case XK_Home:
-#ifdef XK_KP_Home
-      case XK_KP_Home:
-#endif
-        wMenuItemSelect(menu, 0);
-        makeVisible(menu);
-        break;
-
-      case XK_End:
-#ifdef XK_KP_End
-      case XK_KP_End:
-#endif
-        wMenuItemSelect(menu, menu->items_count - 1);
-        makeVisible(menu);
-        break;
-
-      case XK_Up:
-#ifdef XK_KP_Up
-      case XK_KP_Up:
-#endif
-        if (menu->selected_item_index <= 0)
-          wMenuItemSelect(menu, menu->items_count - 1);
-        else
-          wMenuItemSelect(menu, menu->selected_item_index - 1);
-        makeVisible(menu);
-        break;
-
-      case XK_Down:
-#ifdef XK_KP_Down
-      case XK_KP_Down:
-#endif
-        if (menu->selected_item_index < 0)
-          wMenuItemSelect(menu, 0);
-        else if (menu->selected_item_index == menu->items_count - 1)
-          wMenuItemSelect(menu, 0);
-        else if (menu->selected_item_index < menu->items_count - 1)
-          wMenuItemSelect(menu, menu->selected_item_index + 1);
-        makeVisible(menu);
-        break;
-
-      case XK_Right:
-#ifdef XK_KP_Right
-      case XK_KP_Right:
-#endif
-        if (menu->selected_item_index >= 0) {
-          WMenuItem *item;
-          item = menu->items[menu->selected_item_index];
-
-          if (item->submenu_index >= 0 && menu->submenus
-              && menu->submenus[item->submenu_index]->items_count > 0) {
-
-            XUngrabKeyboard(dpy, CurrentTime);
-
-            wMenuItemSelect(menu->submenus[item->submenu_index], 0);
-            if (!keyboardMenu(menu->submenus[item->submenu_index]))
-              done = 1;
-
-            XGrabKeyboard(dpy, menu->frame->core->window, True,
-                          GrabModeAsync, GrabModeAsync, CurrentTime);
+            case XK_l:
+              ksym = XK_Right;
+              break;
           }
         }
-        break;
+        switch (ksym) {
+          case XK_Escape:
+            done = 1;
+            break;
 
-      case XK_Left:
+          case XK_Home:
+#ifdef XK_KP_Home
+          case XK_KP_Home:
+#endif
+            wMenuItemSelect(menu, 0);
+            makeVisible(menu);
+            break;
+
+          case XK_End:
+#ifdef XK_KP_End
+          case XK_KP_End:
+#endif
+            wMenuItemSelect(menu, menu->items_count - 1);
+            makeVisible(menu);
+            break;
+
+          case XK_Up:
+#ifdef XK_KP_Up
+          case XK_KP_Up:
+#endif
+            if (menu->selected_item_index <= 0)
+              wMenuItemSelect(menu, menu->items_count - 1);
+            else
+              wMenuItemSelect(menu, menu->selected_item_index - 1);
+            makeVisible(menu);
+            break;
+
+          case XK_Down:
+#ifdef XK_KP_Down
+          case XK_KP_Down:
+#endif
+            if (menu->selected_item_index < 0)
+              wMenuItemSelect(menu, 0);
+            else if (menu->selected_item_index == menu->items_count - 1)
+              wMenuItemSelect(menu, 0);
+            else if (menu->selected_item_index < menu->items_count - 1)
+              wMenuItemSelect(menu, menu->selected_item_index + 1);
+            makeVisible(menu);
+            break;
+
+          case XK_Right:
+#ifdef XK_KP_Right
+          case XK_KP_Right:
+#endif
+            if (menu->selected_item_index >= 0) {
+              WMenuItem *item;
+              item = menu->items[menu->selected_item_index];
+
+              if (item->submenu_index >= 0 && menu->submenus &&
+                  menu->submenus[item->submenu_index]->items_count > 0) {
+                XUngrabKeyboard(dpy, CurrentTime);
+
+                wMenuItemSelect(menu->submenus[item->submenu_index], 0);
+                if (!keyboardMenu(menu->submenus[item->submenu_index]))
+                  done = 1;
+
+                XGrabKeyboard(dpy, menu->frame->core->window, True, GrabModeAsync, GrabModeAsync,
+                              CurrentTime);
+              }
+            }
+            break;
+
+          case XK_Left:
 #ifdef XK_KP_Left
-      case XK_KP_Left:
+          case XK_KP_Left:
 #endif
-        if (menu->parent != NULL && menu->parent->selected_item_index >= 0) {
-          wMenuItemSelect(menu, -1);
-          move_menus(menu, old_pos_x, old_pos_y);
-          return True;
-        }
-        break;
+            if (menu->parent != NULL && menu->parent->selected_item_index >= 0) {
+              wMenuItemSelect(menu, -1);
+              move_menus(menu, old_pos_x, old_pos_y);
+              return True;
+            }
+            break;
 
-      case XK_Return:
+          case XK_Return:
 #ifdef XK_KP_Enter
-      case XK_KP_Enter:
+          case XK_KP_Enter:
 #endif
-        done = 2;
+            done = 2;
+            break;
+
+          default:
+            index = check_key(menu, &event.xkey);
+            if (index >= 0) {
+              wMenuItemSelect(menu, index);
+            }
+        }
         break;
 
       default:
-        index = check_key(menu, &event.xkey);
-        if (index >= 0) {
-          wMenuItemSelect(menu, index);
-        }
-      }
-      break;
+        if (event.type == ButtonPress)
+          done = 1;
 
-    default:
-      if (event.type == ButtonPress)
-        done = 1;
-
-      WMHandleEvent(&event);
+        WMHandleEvent(&event);
     }
   }
 
@@ -1201,7 +1193,7 @@ static int keyboardMenu(WMenu *menu)
     }
     closeCascade(menu);
 
-    (*item->callback) (menu, item);
+    (*item->callback)(menu, item);
   } else {
     if (!menu->flags.tornoff) {
       wMenuUnmap(menu);
@@ -1252,8 +1244,8 @@ void wMenuUnmap(WMenu *menu)
   menu->flags.mapped = 0;
 
   for (i = 0; i < menu->submenus_count; i++) {
-    if (menu->submenus[i] != NULL && menu->submenus[i]->flags.mapped
-        && !menu->submenus[i]->flags.tornoff) {
+    if (menu->submenus[i] != NULL && menu->submenus[i]->flags.mapped &&
+        !menu->submenus[i]->flags.tornoff) {
       wMenuUnmap(menu->submenus[i]);
     }
   }
@@ -1288,7 +1280,7 @@ void wMenuItemSetEnabled(WMenu *menu, WMenuItem *item, Bool enable)
   if (!menu || !item) {
     return;
   }
-  
+
   for (int i = 0; i < menu->items_count; i++) {
     if (menu->items[i] == item) {
       menu->items[i]->flags.enabled = enable;
@@ -1314,11 +1306,11 @@ static WMenu *findMenu(WScreen *scr, int *x_ret, int *y_ret)
   if (win == None) {
     return NULL;
   }
-  if (XFindContext(dpy, win, w_global.context.client_win, (XPointer *) & desc) == XCNOENT) {
+  if (XFindContext(dpy, win, w_global.context.client_win, (XPointer *)&desc) == XCNOENT) {
     return NULL;
   }
   if (desc->parent_type == WCLASS_MENU) {
-    menu = (WMenu *) desc->parent;
+    menu = (WMenu *)desc->parent;
     XTranslateCoordinates(dpy, root_ret, menu->menu->window, wx, wy, x_ret, y_ret, &junk_win);
     return menu;
   }
@@ -1333,9 +1325,9 @@ static void closeCascade(WMenu *menu)
     wMenuItemSelect(menu, -1);
     XSync(dpy, 0);
     wMenuUnmap(menu);
-    while (parent != NULL
-           && (parent->parent != NULL || !parent->flags.app_menu || parent->flags.brother)
-           && !parent->flags.tornoff) {
+    while (parent != NULL &&
+           (parent->parent != NULL || !parent->flags.app_menu || parent->flags.brother) &&
+           !parent->flags.tornoff) {
       wMenuItemSelect(parent, -1);
       wMenuUnmap(parent);
       parent = parent->parent;
@@ -1346,7 +1338,7 @@ static void closeCascade(WMenu *menu)
   }
 }
 
-#define getItemIndexAt(menu, x, y)   ((y)<0 ? -1 : (y)/(menu->item_height))
+#define getItemIndexAt(menu, x, y) ((y) < 0 ? -1 : (y) / (menu->item_height))
 
 static WMenu *parentMenu(WMenu *menu)
 {
@@ -1414,11 +1406,11 @@ WMenu *wMenuUnderPointer(WScreen *screen)
   if (win == None)
     return NULL;
 
-  if (XFindContext(dpy, win, w_global.context.client_win, (XPointer *) & desc) == XCNOENT)
+  if (XFindContext(dpy, win, w_global.context.client_win, (XPointer *)&desc) == XCNOENT)
     return NULL;
 
   if (desc->parent_type == WCLASS_MENU)
-    return (WMenu *) desc->parent;
+    return (WMenu *)desc->parent;
   return NULL;
 }
 
@@ -1472,7 +1464,7 @@ static void getScrollAmount(WMenu *menu, int *hamount, int *vamount)
 
 static void dragScrollMenuCallback(CFRunLoopTimerRef timer, void *data)
 {
-  WMenu *menu = (WMenu *) data;
+  WMenu *menu = (WMenu *)data;
   WScreen *scr = menu->menu->screen_ptr;
   WMenu *parent = parentMenu(menu);
   int hamount, vamount;
@@ -1489,7 +1481,8 @@ static void dragScrollMenuCallback(CFRunLoopTimerRef timer, void *data)
     } else {
       /* Pointer fell outside of menu. If the selected item is
        * not a submenu, unselect it */
-      if (menu->selected_item_index >= 0 && menu->items[menu->selected_item_index]->submenu_index < 0)
+      if (menu->selected_item_index >= 0 &&
+          menu->items[menu->selected_item_index]->submenu_index < 0)
         wMenuItemSelect(menu, -1);
       new_selected_item_index = 0;
     }
@@ -1543,7 +1536,7 @@ static void slideMenuCallback(CFRunLoopTimerRef timer, void *data)
   WScreen *scr = menu->menu->screen_ptr;
   WMRect rect = wGetRectForHead(scr, wGetHeadForPointerLocation(scr));
   WMenu *parent = parentMenu(menu);
-  
+
   if ((menu->frame_y + MENU_HEIGHT(menu)) > rect.size.height) {
     wMenuMove(parent, parent->frame_x, parent->frame_y - 1, True);
   } else {
@@ -1560,7 +1553,7 @@ static void slideMenuBackCallback(CFRunLoopTimerRef timer, void *data)
 {
   WMenu *menu = (WMenu *)data;
   WMenu *parent = parentMenu(menu);
-  
+
   if (menu->old_frame_y > 0 && menu->frame_y != menu->old_frame_y) {
     wMenuMove(parent, parent->frame_x, parent->frame_y + 1, True);
   } else {
@@ -1585,46 +1578,41 @@ static void trackMenuMouse(WMenu *menu)
   if (omenu->timer) {
     WMDeleteTimerHandler(omenu->timer);
   }
-  
+
   raiseMenus(omenu, True);
 
   /* WMLogInfo("Entering wMenuScroll event loop."); */
   while (!done) {
     WMNextEvent(dpy, &ev);
-    switch (ev.type)
-      {
-      case LeaveNotify:
-        {
-          smenu = wMenuUnderPointer(scr);
-          if (smenu == NULL || ((isMenuContainsSubmenu(menu, smenu) == False) && smenu != menu)) {
-            done = 1;
-          }
+    switch (ev.type) {
+      case LeaveNotify: {
+        smenu = wMenuUnderPointer(scr);
+        if (smenu == NULL || ((isMenuContainsSubmenu(menu, smenu) == False) && smenu != menu)) {
+          done = 1;
         }
-        break;
-      case ButtonPress:
-        {
-          Bool click_on_title = False;
-          /* True if we push on title, or drag the omenu to other position */
-          click_on_title = ev.xbutton.x_root >= omenu->frame_x &&
-            ev.xbutton.x_root <= omenu->frame_x + MENU_WIDTH(omenu) &&
-            ev.xbutton.y_root >= omenu->frame_y &&
-            ev.xbutton.y_root <= omenu->frame_y + omenu->frame->top_width;
-          WMHandleEvent(&ev);
-          smenu = wMenuUnderPointer(scr);
-          if (smenu == NULL || (smenu->flags.tornoff && smenu != omenu)) {
-            done = 1;
-          } else if (smenu == omenu && click_on_title) {
-            should_slide_back = False;
-            done = 1;
-          }
+      } break;
+      case ButtonPress: {
+        Bool click_on_title = False;
+        /* True if we push on title, or drag the omenu to other position */
+        click_on_title = ev.xbutton.x_root >= omenu->frame_x &&
+                         ev.xbutton.x_root <= omenu->frame_x + MENU_WIDTH(omenu) &&
+                         ev.xbutton.y_root >= omenu->frame_y &&
+                         ev.xbutton.y_root <= omenu->frame_y + omenu->frame->top_width;
+        WMHandleEvent(&ev);
+        smenu = wMenuUnderPointer(scr);
+        if (smenu == NULL || (smenu->flags.tornoff && smenu != omenu)) {
+          done = 1;
+        } else if (smenu == omenu && click_on_title) {
+          should_slide_back = False;
+          done = 1;
         }
-        break;
+      } break;
       case KeyPress:
         done = 1;
       default:
         WMHandleEvent(&ev);
         break;
-      }
+    }
   }
 
   /* WMLogInfo("Exiting wMenuScroll event loop."); */
@@ -1635,8 +1623,9 @@ static void trackMenuMouse(WMenu *menu)
 
 void wMenuSlideIfNeeded(WMenu *menu)
 {
-  WMRect rect = wGetRectForHead(menu->menu->screen_ptr, wGetHeadForPointerLocation(menu->menu->screen_ptr));
-  
+  WMRect rect =
+      wGetRectForHead(menu->menu->screen_ptr, wGetHeadForPointerLocation(menu->menu->screen_ptr));
+
   if (menu->timer == NULL && (menu->frame_y + MENU_HEIGHT(menu)) > rect.size.height) {
     menu->old_frame_x = menu->frame_x;
     menu->old_frame_y = menu->frame_y;
@@ -1644,11 +1633,7 @@ void wMenuSlideIfNeeded(WMenu *menu)
   }
 }
 
-
-static void menuExpose(WObjDescriptor *desc, XEvent *event)
-{
-  wMenuPaint(desc->parent);
-}
+static void menuExpose(WObjDescriptor *desc, XEvent *event) { wMenuPaint(desc->parent); }
 
 static WMenu *getSelectedLeafMenu(WMenu *menu)
 {
@@ -1659,9 +1644,9 @@ static WMenu *getSelectedLeafMenu(WMenu *menu)
     selected_item = menu->items[menu->selected_item_index];
   }
 
-  if (selected_item == NULL) { // no selected item in this menu
+  if (selected_item == NULL) {  // no selected item in this menu
     return menu->parent;
-  } else if (selected_item->submenu_index >= 0) { // going deeper
+  } else if (selected_item->submenu_index >= 0) {  // going deeper
     selected_menu = getSelectedLeafMenu(menu->submenus[selected_item->submenu_index]);
   } else {
     selected_menu = menu;
@@ -1672,14 +1657,14 @@ static WMenu *getSelectedLeafMenu(WMenu *menu)
 
 static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
 {
-  WMenu *event_menu = desc->parent; // menu where button press has happend
-  WMenu *mouse_menu = NULL;         // menu where button release has happend
+  WMenu *event_menu = desc->parent;  // menu where button press has happend
+  WMenu *mouse_menu = NULL;          // menu where button release has happend
   WMenuItem *item = NULL;
   WScreen *scr = event_menu->frame->screen_ptr;
   XEvent ev;
   int done = 0;
   int item_index = -1;
-  int old_selected_item_index = event_menu->selected_item_index; // selected item before click
+  int old_selected_item_index = event_menu->selected_item_index;  // selected item before click
   int x, y;
   BOOL first_run = true;
 
@@ -1697,10 +1682,9 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
     }
 
     mouse_menu = findMenu(scr, &x, &y);
-    
+
     switch (ev.type) {
-    case MotionNotify:
-      {
+      case MotionNotify: {
         // This part should detect these cases:
         // - mouse moved completely out of menu
         // - mouse moved inside menu (highlight/unhighlight items, open/close submenus)
@@ -1726,7 +1710,7 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
             WMenu *main_menu, *submenu;
             /* depending on where click was performed, item may be an item in parent
                menu (click on parent) or item in opened submenu (click on submenu) */
-            //item = getSelectedLeafItem(event_menu); // TODO: remove
+            // item = getSelectedLeafItem(event_menu); // TODO: remove
             /* always go to toplevel menu because event_menu could be a submenu
                of deselected item */
             main_menu = event_menu;
@@ -1749,14 +1733,14 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
           }
           break;
         }
-        
+
         dragScrollMenuCallback(NULL, mouse_menu);
-        
+
         item_index = getItemIndexAt(mouse_menu, x, y);
         /* WMLogInfo("Mouse on item %i in %s", item_index, mouse_menu->frame->title); */
         if (item_index >= 0) {
           item = mouse_menu->items[item_index];
-          if (/*entry->flags.enabled && */item->submenu_index >= 0 && mouse_menu->submenus) {
+          if (/*entry->flags.enabled && */ item->submenu_index >= 0 && mouse_menu->submenus) {
             WMenu *submenu = mouse_menu->submenus[item->submenu_index];
             if (submenu->flags.mapped && !submenu->flags.tornoff) {
               wMenuItemSelect(submenu, -1);
@@ -1769,11 +1753,9 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
         } else {
           wMenuItemSelect(mouse_menu, -1);
         }
-      }
-      break;
+      } break;
 
-    case ButtonPress:
-      {
+      case ButtonPress: {
         item_index = getItemIndexAt(event_menu, x, y);
         if (item_index < 0) {
           item_index = event_menu->selected_item_index;
@@ -1781,36 +1763,34 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
         if (item_index >= 0) {
           item = event_menu->items[item_index];
         }
-        
+
         /* WMLogInfo("[ButtonPress] event menu: %s, mouse menu: %s", */
         /*           event_menu ? event_menu->frame->title : "NULL", */
         /*           mouse_menu ? mouse_menu->frame->title : "NULL"); */
         if (item_index >= 0) {
           wMenuItemSelect(event_menu, item_index);
         }
-      }
-      break;
+      } break;
 
-    case ButtonRelease:
-      {
+      case ButtonRelease: {
         /* Button release posisions:
            1. On plain menu item: item->submenu_index < 0, smenu
            2. On item with submenu opened: item->submenu_index >=0, smenu
-           3. On menu tiitlebar: smenu, 
+           3. On menu tiitlebar: smenu,
            3. Out of menu: menu->selected_item_index == -1, !smenu
         */
         /* WMLogInfo("[ButtonRelease] event menu: %s, mouse menu: %s", */
         /*           event_menu ? event_menu->frame->title : "NULL", */
         /*           mouse_menu ? mouse_menu->frame->title : "NULL"); */
         if (ev.xbutton.button == event->xbutton.button) {
-          if (mouse_menu) { // on menu
+          if (mouse_menu) {  // on menu
             /* WMLogInfo("ButtonRelease: on menu"); */
             if (mouse_menu->selected_item_index >= 0) {
               item = mouse_menu->items[mouse_menu->selected_item_index];
               if (item->submenu_index < 0) {
                 /* WMLogInfo("ButtonRelease: on plain item"); */
                 if (item->callback != NULL && item->flags.enabled) {
-                  (*item->callback) (event_menu, item);
+                  (*item->callback)(event_menu, item);
                 }
                 wMenuItemSelect(mouse_menu, -1);
                 if (mouse_menu != event_menu || !mouse_menu->parent) {
@@ -1834,13 +1814,13 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
                   wMenuUnmap(mouse_menu);
                 }
               }
-            } else { //...without selection - probably on menu titlebar
+            } else {  //...without selection - probably on menu titlebar
               if (!mouse_menu->flags.app_menu || mouse_menu->flags.brother) {
                 closeCascade(mouse_menu);
               }
               wMenuItemSelect(mouse_menu, -1);
             }
-          } else if (event_menu) { // outside of menu
+          } else if (event_menu) {  // outside of menu
             /* WMLogInfo("ButtonRelease: out of menu %s", event_menu->frame->title); */
             if (!event_menu->flags.app_menu || event_menu->flags.brother) {
               closeCascade(event_menu);
@@ -1849,26 +1829,25 @@ static void menuMouseDown(WObjDescriptor *desc, XEvent *event)
           }
           done = 1;
         }
-      }
-      break;
+      } break;
 
-    case Expose:
-      WMHandleEvent(&ev);
-      break;
+      case Expose:
+        WMHandleEvent(&ev);
+        break;
     }
   }
 
   XSync(dpy, 0);
   XFlush(dpy);
-  
+
   if (event_menu && event_menu->timer) {
     WMDeleteTimerHandler(event_menu->timer);
     event_menu->timer = NULL;
-  }  
+  }
   if (mouse_menu && mouse_menu->timer) {
     WMDeleteTimerHandler(mouse_menu->timer);
     mouse_menu->timer = NULL;
-  }  
+  }
 }
 
 void wMenuMove(WMenu *menu, int x, int y, int submenus)
@@ -1893,17 +1872,19 @@ void wMenuMove(WMenu *menu, int x, int y, int submenus)
           wMenuMove(submenu, x + MENU_WIDTH(menu), y, submenus);
         } else {
           wMenuMove(submenu, x + MENU_WIDTH(menu),
-                    y + submenu->item_height *menu->selected_item_index, submenus);
+                    y + submenu->item_height * menu->selected_item_index, submenus);
         }
       }
     }
   }
-  if (submenus < 0 && menu->parent != NULL && menu->parent->flags.mapped && !menu->parent->flags.tornoff) {
+  if (submenus < 0 && menu->parent != NULL && menu->parent->flags.mapped &&
+      !menu->parent->flags.tornoff) {
     if (wPreferences.align_menus) {
       wMenuMove(menu->parent, x - MENU_WIDTH(menu->parent), y, submenus);
     } else {
-      wMenuMove(menu->parent, x - MENU_WIDTH(menu->parent), menu->frame_y
-                - menu->parent->item_height *menu->parent->selected_item_index, submenus);
+      wMenuMove(menu->parent, x - MENU_WIDTH(menu->parent),
+                menu->frame_y - menu->parent->item_height * menu->parent->selected_item_index,
+                submenus);
     }
   }
 }
@@ -1913,7 +1894,8 @@ static void changeMenuLevels(WMenu *menu, int lower)
   int i;
 
   if (!lower) {
-    ChangeStackingLevel(menu->frame->core, (!menu->parent ? NSMainMenuWindowLevel : NSSubmenuWindowLevel));
+    ChangeStackingLevel(menu->frame->core,
+                        (!menu->parent ? NSMainMenuWindowLevel : NSSubmenuWindowLevel));
     wRaiseFrame(menu->frame->core);
     menu->flags.lowered = 0;
   } else {
@@ -1922,8 +1904,8 @@ static void changeMenuLevels(WMenu *menu, int lower)
     menu->flags.lowered = 1;
   }
   for (i = 0; i < menu->submenus_count; i++) {
-    if (menu->submenus[i]
-        && !menu->submenus[i]->flags.tornoff && menu->submenus[i]->flags.lowered != lower) {
+    if (menu->submenus[i] && !menu->submenus[i]->flags.tornoff &&
+        menu->submenus[i]->flags.lowered != lower) {
       changeMenuLevels(menu->submenus[i], lower);
     }
   }
@@ -1935,7 +1917,7 @@ static void menuTitleDoubleClick(WCoreWindow *sender, void *data, XEvent *event)
   int lower;
 
   /* Parameter not used, but tell the compiler that it is ok */
-  (void) sender;
+  (void)sender;
 
   if (event->xbutton.state & wPreferences.cmd_modifier_mask) {
     if (menu->flags.lowered) {
@@ -1991,66 +1973,65 @@ static void menuTitleMouseDown(WCoreWindow *sender, void *data, XEvent *event)
   }
 
   started = False;
-  head_rect = wGetRectForHead(menu->frame->screen_ptr,
-                              wGetHeadForPointerLocation(menu->frame->screen_ptr));
+  head_rect =
+      wGetRectForHead(menu->frame->screen_ptr, wGetHeadForPointerLocation(menu->frame->screen_ptr));
   while (1) {
     WMMaskEvent(dpy, ButtonMotionMask | ButtonReleaseMask | ButtonPressMask | ExposureMask, &ev);
     switch (ev.type) {
-    case MotionNotify:
-      if (started) {
-        x += ev.xmotion.x_root - dx;
-        x = (x < 0) ? 0 : x;
-        if ((x + MENU_WIDTH(menu)) > head_rect.size.width) {
-          x = head_rect.size.width - MENU_WIDTH(menu);
+      case MotionNotify:
+        if (started) {
+          x += ev.xmotion.x_root - dx;
+          x = (x < 0) ? 0 : x;
+          if ((x + MENU_WIDTH(menu)) > head_rect.size.width) {
+            x = head_rect.size.width - MENU_WIDTH(menu);
+          }
+          y += ev.xmotion.y_root - dy;
+          y = (y < 0) ? 0 : y;
+          if ((y + menu->item_height) > head_rect.size.height) {
+            y = head_rect.size.height - menu->item_height;
+          }
+          dx = ev.xmotion.x_root;
+          dy = ev.xmotion.y_root;
+          wMenuMove(menu, x, y, True);
+        } else if (abs(ev.xmotion.x_root - dx) > MOVE_THRESHOLD ||
+                   abs(ev.xmotion.y_root - dy) > MOVE_THRESHOLD) {
+          started = True;
+          XGrabPointer(dpy, menu->frame->titlebar->window, False,
+                       ButtonMotionMask | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
+                       GrabModeAsync, None, wPreferences.cursor[WCUR_MOVE], CurrentTime);
         }
-        y += ev.xmotion.y_root - dy;
-        y = (y < 0) ? 0 : y;
-        if ((y + menu->item_height) > head_rect.size.height) {
-          y = head_rect.size.height - menu->item_height;
-        }
-        dx = ev.xmotion.x_root;
-        dy = ev.xmotion.y_root;
-        wMenuMove(menu, x, y, True);
-      } else if (abs(ev.xmotion.x_root - dx) > MOVE_THRESHOLD ||
-                 abs(ev.xmotion.y_root - dy) > MOVE_THRESHOLD) {
-        started = True;
-        XGrabPointer(dpy, menu->frame->titlebar->window, False,
-                     ButtonMotionMask | ButtonReleaseMask | ButtonPressMask,
-                     GrabModeAsync, GrabModeAsync, None,
-                     wPreferences.cursor[WCUR_MOVE], CurrentTime);
-      }
-      break;
-
-    case ButtonPress:
-      break;
-
-    case ButtonRelease:
-      if (ev.xbutton.button != event->xbutton.button) {
         break;
-      }
-      /* tear off the menu if it's a root menu or a cascade application menu */
-      if (!menu->flags.tornoff && !menu->flags.brother &&
-          (!menu->flags.app_menu || menu->parent != NULL) &&
-          (abs(old_x - x) > 5 || abs(old_y - y) > 5)) {
-        menu->flags.tornoff = 1;
-        wFrameWindowShowButton(menu->frame, WFF_RIGHT_BUTTON);
-        if (menu->parent) {
-          /* turn off selected menu item in parent menu */
-          wMenuItemSelect(menu->parent, -1);
-          /* make parent map the copy in place of the original */
-          for (i = 0; i < menu->parent->submenus_count; i++) {
-            if (menu->parent->submenus[i] == menu) {
-              menu->parent->submenus[i] = menu->brother;
+
+      case ButtonPress:
+        break;
+
+      case ButtonRelease:
+        if (ev.xbutton.button != event->xbutton.button) {
+          break;
+        }
+        /* tear off the menu if it's a root menu or a cascade application menu */
+        if (!menu->flags.tornoff && !menu->flags.brother &&
+            (!menu->flags.app_menu || menu->parent != NULL) &&
+            (abs(old_x - x) > 5 || abs(old_y - y) > 5)) {
+          menu->flags.tornoff = 1;
+          wFrameWindowShowButton(menu->frame, WFF_RIGHT_BUTTON);
+          if (menu->parent) {
+            /* turn off selected menu item in parent menu */
+            wMenuItemSelect(menu->parent, -1);
+            /* make parent map the copy in place of the original */
+            for (i = 0; i < menu->parent->submenus_count; i++) {
+              if (menu->parent->submenus[i] == menu) {
+                menu->parent->submenus[i] = menu->brother;
+              }
             }
           }
         }
-      }
-      XUngrabPointer(dpy, CurrentTime);
-      return;
+        XUngrabPointer(dpy, CurrentTime);
+        return;
 
-    default:
-      WMHandleEvent(&ev);
-      break;
+      default:
+        WMHandleEvent(&ev);
+        break;
     }
   }
 }
@@ -2095,16 +2076,16 @@ static void saveMenuInfo(CFMutableDictionaryRef dict, WMenu *menu, CFTypeRef key
 {
   CFStringRef value;
   CFMutableArrayRef list;
-  
-  value = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%i,%i"),
-                                   menu->frame_x, menu->frame_y);
+
+  value = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%i,%i"), menu->frame_x,
+                                   menu->frame_y);
   list = CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks);
   CFArrayAppendValue(list, value);
   if (menu->flags.lowered) {
     CFArrayAppendValue(list, CFSTR("lowered"));
   }
   CFDictionarySetValue(dict, key, list);
-  
+
   CFRelease(value);
   CFRelease(list);
 }
@@ -2119,9 +2100,9 @@ void wMenuSaveState(WScreen *scr)
   if (scr->switch_menu && scr->switch_menu->flags.tornoff) {
     saveMenuInfo(menus, scr->switch_menu, CFSTR("SwitchMenu"));
   }
-  
+
   CFDictionarySetValue(scr->session_state, CFSTR("Menus"), menus);
-  
+
   CFRelease(menus);
 }
 
@@ -2137,10 +2118,9 @@ static Bool getMenuInfo(CFTypeRef info, int *x, int *y, Bool *lowered)
     pos = CFArrayGetValueAtIndex(info, 0);
     if (CFArrayGetCount(info) > 1) {
       flags = CFArrayGetValueAtIndex(info, 1);
-      if (flags != NULL
-          && (CFGetTypeID(flags) == CFStringGetTypeID())
-          && (f = CFStringGetCStringPtr(flags, kCFStringEncodingUTF8)) != NULL
-          && strcmp(f, "lowered") == 0) {
+      if (flags != NULL && (CFGetTypeID(flags) == CFStringGetTypeID()) &&
+          (f = CFStringGetCStringPtr(flags, kCFStringEncodingUTF8)) != NULL &&
+          strcmp(f, "lowered") == 0) {
         *lowered = True;
       }
     }

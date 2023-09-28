@@ -4,7 +4,7 @@
 //
 // Copyright (C) 2006-2014 Sergii Stoian
 // Copyright (C) 2005 Saso Kiselkov
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -33,85 +33,69 @@
 void CleanUpAfterMove(NSString *sourceDir, NSArray *files, NSString *destDir)
 {
   NSFileManager *fm = [NSFileManager defaultManager];
-  NSEnumerator  *e = [files objectEnumerator];
-  NSString      *file;
+  NSEnumerator *e = [files objectEnumerator];
+  NSString *file;
 
-  while ((file = [e nextObject]) != nil)
-    {
-      NSString *src;
-      NSString *dest;
+  while ((file = [e nextObject]) != nil) {
+    NSString *src;
+    NSString *dest;
 
-      src = [sourceDir stringByAppendingPathComponent:file];
-      dest = [destDir stringByAppendingPathComponent:file];
+    src = [sourceDir stringByAppendingPathComponent:file];
+    dest = [destDir stringByAppendingPathComponent:file];
 
-      rename([src cString], [dest cString]);
-    }
+    rename([src cString], [dest cString]);
+  }
 }
 
-void MoveOperation(NSString *sourceDir, NSArray  *files, NSString *destDir)
+void MoveOperation(NSString *sourceDir, NSArray *files, NSString *destDir)
 {
   NSFileManager *fm = [NSFileManager defaultManager];
-  NSEnumerator  *e = [files objectEnumerator];
-  NSString      *file;
-  Communicator  *comm = [Communicator shared];
+  NSEnumerator *e = [files objectEnumerator];
+  NSString *file;
+  Communicator *comm = [Communicator shared];
 
-  while (((file = [e nextObject]) != nil) && !isStopped)
-    {
-      NSString *src, *dest;
-      NSString *smp, *dmp;
+  while (((file = [e nextObject]) != nil) && !isStopped) {
+    NSString *src, *dest;
+    NSString *smp, *dmp;
 
-      src = [sourceDir stringByAppendingPathComponent:file];
-      dest = [destDir stringByAppendingPathComponent:file];
+    src = [sourceDir stringByAppendingPathComponent:file];
+    dest = [destDir stringByAppendingPathComponent:file];
 
-      [comm showProcessingFilename:file
-		      sourcePrefix:sourceDir
-		      targetPrefix:destDir
-		     bytesAdvanced:0
-                     operationType:MoveOp];
+    [comm showProcessingFilename:file
+                    sourcePrefix:sourceDir
+                    targetPrefix:destDir
+                   bytesAdvanced:0
+                   operationType:MoveOp];
 
-      if ([fm fileExistsAtPath:dest])
-	{
-	  if ([comm howToHandleProblem:FileExists argument:dest] == SkipFile)
-	    {
-	      continue;
-	    }
-	  else if ([fm removeFileAtPath:dest handler:nil] == NO)
-	    {
-	      [comm howToHandleProblem:DeleteError argument:dest];
-	      continue;
-	    }
-	}
-
-      smp = [OSEFileSystem fileSystemMountPointAtPath:sourceDir];
-      dmp = [OSEFileSystem fileSystemMountPointAtPath:destDir];
-      if ([smp isEqualToString:dmp])
-        {
-          if (rename([src cString], [dest cString]) < 0)
-            {
-              [comm howToHandleProblem:MoveError
-                              argument:[NSString stringWithCString:
-                                                   strerror(errno)]];
-            }
-        }
-      else
-        {
-          // Copy then Delete
-          if (CopyOperation(sourceDir, [NSArray arrayWithObject:file],
-                            destDir, MoveOp) == YES)
-            {
-              NSLog(@"Move: Copy operation successfull");
-              DeleteOperation(sourceDir, [NSArray arrayWithObject:file]);
-            }
-        }
+    if ([fm fileExistsAtPath:dest]) {
+      if ([comm howToHandleProblem:FileExists argument:dest] == SkipFile) {
+        continue;
+      } else if ([fm removeFileAtPath:dest handler:nil] == NO) {
+        [comm howToHandleProblem:DeleteError argument:dest];
+        continue;
+      }
     }
+
+    smp = [OSEFileSystem fileSystemMountPointAtPath:sourceDir];
+    dmp = [OSEFileSystem fileSystemMountPointAtPath:destDir];
+    if ([smp isEqualToString:dmp]) {
+      if (rename([src cString], [dest cString]) < 0) {
+        [comm howToHandleProblem:MoveError argument:[NSString stringWithCString:strerror(errno)]];
+      }
+    } else {
+      // Copy then Delete
+      if (CopyOperation(sourceDir, [NSArray arrayWithObject:file], destDir, MoveOp) == YES) {
+        NSLog(@"Move: Copy operation successfull");
+        DeleteOperation(sourceDir, [NSArray arrayWithObject:file]);
+      }
+    }
+  }
 
   // We received SIGTERM signal or 'Stop' command
   // Remove created duplicates and exit
-  if (isStopped)
-    {
-      if (makeCleanupOnStop)
-        {
-          CleanUpAfterMove(destDir, files, sourceDir);
-        }
+  if (isStopped) {
+    if (makeCleanupOnStop) {
+      CleanUpAfterMove(destDir, files, sourceDir);
     }
+  }
 }

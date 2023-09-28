@@ -26,18 +26,18 @@
 
 #include "appicon.h"
 
-#define DOCK_EXTRA_SPACE	3
+#define DOCK_EXTRA_SPACE 3
 
 /* Vicinity in which an icon can be attached to the clip */
 #define CLIP_ATTACH_VICINITY	1
-#define CLIP_BUTTON_SIZE        23
+#define CLIP_BUTTON_SIZE      23
 
 /* The amount of space (in multiples of the icon size)
  * a docked icon must be dragged out to detach it */
-#define DOCK_DETTACH_THRESHOLD	2
+#define DOCK_DETTACH_THRESHOLD 2
 
 /* Max. number of icons the dock and clip can have */
-#define DOCK_MAX_ICONS		32
+#define DOCK_MAX_ICONS 32
 
 typedef struct WDock {
   WScreen *screen_ptr;
@@ -48,26 +48,26 @@ typedef struct WDock {
 
   int icon_count;
 
-#define WM_DOCK        0
-#define WM_CLIP        1
-#define WM_DRAWER      2
+#define WM_DOCK   0
+#define WM_CLIP   1
+#define WM_DRAWER 2
   int type;
 
   WMagicNumber auto_expand_magic;
   WMagicNumber auto_collapse_magic;
   WMagicNumber auto_raise_magic;
   WMagicNumber auto_lower_magic;
-  unsigned int auto_collapse:1;      /* if clip auto-collapse itself */
-  unsigned int auto_raise_lower:1;   /* if clip should raise/lower when
-                                      * entered/leaved */
-  unsigned int on_right_side:1;
-  unsigned int collapsed:1;
-  unsigned int mapped:1;
-  unsigned int lowered:1;
-  unsigned int attract_icons:1;      /* If clip should attract app-icons */
+  unsigned int auto_collapse : 1;       /* if clip auto-collapse itself */
+  unsigned int auto_raise_lower : 1;    /* if clip should raise/lower when
+                                           entered/leaved */
+  unsigned int on_right_side : 1;
+  unsigned int collapsed : 1;
+  unsigned int mapped : 1;
+  unsigned int lowered : 1;
+  unsigned int attract_icons : 1;       /* If clip should attract app-icons */
 
-  unsigned int lclip_button_pushed:1;
-  unsigned int rclip_button_pushed:1;
+  unsigned int lclip_button_pushed : 1;
+  unsigned int rclip_button_pushed : 1;
 
   struct WMenu *menu;
 
@@ -92,8 +92,8 @@ void wDockSetLevel(WDock *dock, int level);
 void wDockSaveState(WScreen *scr, CFDictionaryRef old_state);
 
 Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon);
-Bool wDockSnapIcon(WDock *dock, WAppIcon *icon, int req_x, int req_y,
-                   int *ret_x, int *ret_y, int redocking);
+Bool wDockSnapIcon(WDock *dock, WAppIcon *icon, int req_x, int req_y, int *ret_x, int *ret_y,
+                   int redocking);
 Bool wDockFindFreeSlot(WDock *dock, int *req_x, int *req_y);
 void wDockDetach(WDock *dock, WAppIcon *icon);
 Bool wDockMoveIconBetweenDocks(WDock *src, WDock *dest, WAppIcon *icon, int x, int y);
@@ -126,7 +126,7 @@ int wIsADrawer(WAppIcon *aicon);
 void wClipUpdateForDesktopChange(WScreen *scr, int desktop);
 
 RImage *wClipMakeTile(RImage *normalTile);
-RImage* wDrawerMakeTile(WScreen *scr, RImage *normalTile);
+RImage *wDrawerMakeTile(WScreen *scr, RImage *normalTile);
 
 #define WO_FAILED          0
 #define WO_NOT_APPLICABLE  1

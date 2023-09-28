@@ -6,7 +6,7 @@
 //
 // Copyright (C) 2005 Saso Kiselkov
 // Copyright (C) 2015-2019 Sergii Stoian
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -31,7 +31,7 @@
 @protocol Viewer <NSObject>
 
 + (NSString *)viewerType;
- // viewers without a shortcut should return @"", not `nil'
+// viewers without a shortcut should return @"", not `nil'
 + (NSString *)viewerShortcut;
 
 - (NSView *)view;
@@ -52,10 +52,9 @@
 //-----------------------------------------------------------------------------
 // Actions
 //-----------------------------------------------------------------------------
-- (void)displayPath:(NSString *)dirPath
-	  selection:(NSArray *)filenames;
+- (void)displayPath:(NSString *)dirPath selection:(NSArray *)filenames;
 
-- (void)reloadPathWithSelection:(NSString *)selection; // Reload contents of selected directory
+- (void)reloadPathWithSelection:(NSString *)selection;  // Reload contents of selected directory
 - (void)reloadPath:(NSString *)reloadPath;
 
 - (void)scrollToRange:(NSRange)range;
