@@ -48,8 +48,8 @@
 - (BOOL)acceptsFirstResponder
 {
   NSBrowser *view = (NSBrowser *)[_delegate view];
-  
-  if (self == [view matrixInColumn:[view selectedColumn]]) {
+
+  if (([view selectedColumn] < 0) || (self == [view matrixInColumn:[view selectedColumn]])) {
     return YES;
   }
 
@@ -341,7 +341,8 @@
 // Access to last selected column in browser (for example, focus tasks)
 - (NSView *)keyView
 {
-  return [view matrixInColumn:[view selectedColumn]];
+  NSInteger selectedColumn = [view selectedColumn];
+  return [view matrixInColumn:(selectedColumn > 0 ? selectedColumn : 0)];
 }
 
 - (void)setOwner:(FileViewer *)theFileViewer
