@@ -75,8 +75,7 @@ static NSString *_rootPath = @"/";
 // Icon handling
 - (NSImage *)_extIconForApp:(NSString *)appName info:(NSDictionary *)extInfo;
 - (NSImage *)unknownFiletypeImage;
-- (NSImage *)_saveImageFor:(NSString *)iconPath;
-- (NSString *)_thumbnailForFile:(NSString *)file;
+- (NSImage *)_imageFromFile:(NSString *)iconPath;
 - (NSImage *)_iconForExtension:(NSString *)ext;
 - (NSImage *)_iconForFileContents:(NSString *)fullPath;
 - (BOOL)_extension:(NSString *)ext role:(NSString *)role app:(NSString **)app;
@@ -667,7 +666,7 @@ static NSLock *raceLock = nil;
       }
       // Directory icon path found - get icon
       if (iconPath != nil) {
-        image = [self _saveImageFor:iconPath];
+        image = [self _imageFromFile:iconPath];
       }
     }
 
@@ -700,17 +699,6 @@ static NSLock *raceLock = nil;
   } else if ([mgr isReadableFileAtPath:fullPath] == YES) {
     // NSFileTypeRegular, NSFileType
     NSDebugLog(@"pathExtension is '%@'", pathExtension);
-
-    // TODO: Thumbnail of file
-    // if ([[NSUserDefaults standardUserDefaults]
-    //         boolForKey:@"GSUseFreedesktopThumbnails"]) {
-    //   // This image will be 128x128 pixels as oposed to the 48x48
-    //   // of other GNUstep icons or the 32x32 of the specification
-    //   image = [self _saveImageFor:[self _thumbnailForFile:fullPath]];
-    //   if (image != nil) {
-    //     return image;
-    //   }
-    // }
 
     // By executable bit
     if (image == nil && ([fileType isEqual:NSFileTypeRegular] == YES) &&
@@ -865,6 +853,19 @@ static NSLock *raceLock = nil;
   return YES;
 }
 
+- (NSDictionary *)activeApplication
+{
+  NSString *path = @"";
+  NSString *name = @"";
+  NSNumber *PID = [NSNumber numberWithInt:-1];
+
+  return @{
+    @"NSApplicationPath" : path,
+    @"NSApplicationName" : name,
+    @"NSApplicationProcessIdentifier" : PID
+  };
+}
+
 //-------------------------------------------------------------------------------------------------
 //--- Unmounting a Device
 //-------------------------------------------------------------------------------------------------
@@ -994,7 +995,7 @@ static NSLock *raceLock = nil;
       file = iconPath;
     }
     if ([[NSFileManager defaultManager] isReadableFileAtPath:file] == YES) {
-      return [self _saveImageFor:file];
+      return [self _imageFromFile:file];
     }
   }
   return nil;
@@ -1013,7 +1014,7 @@ static NSLock *raceLock = nil;
 }
 
 /** Try to create the image in an exception handling context */
-- (NSImage *)_saveImageFor:(NSString *)iconPath
+- (NSImage *)_imageFromFile:(NSString *)iconPath
 {
   NSImage *tmp = nil;
 
@@ -1024,36 +1025,13 @@ static NSLock *raceLock = nil;
       AUTORELEASE(tmp);
     }
   }
-  NS_HANDLER { NSLog(@"BAD TIFF FILE '%@'", iconPath); }
+  NS_HANDLER
+  {
+    NSLog(@"Bad or unsupported image file format '%@'", iconPath);
+  }
   NS_ENDHANDLER
 
   return tmp;
-}
-
-/** Returns the freedesktop thumbnail file name for a given file name */
-- (NSString *)_thumbnailForFile:(NSString *)file
-{
-  NSString *absolute;
-  NSString *digest;
-  NSString *thumbnail;
-
-  absolute = [[NSURL fileURLWithPath:[file stringByStandardizingPath]] absoluteString];
-  /* This compensates for a feature we have in NSURL, that is there to have
-   * MacOSX compatibility.
-   */
-  if ([absolute hasPrefix:@"file://localhost/"]) {
-    absolute = [@"file:///"
-        stringByAppendingString:[absolute
-                                    substringWithRange:NSMakeRange(17, [absolute length] - 17)]];
-  }
-
-  // FIXME: Not sure which encoding to use here.
-  digest = [[[[absolute dataUsingEncoding:NSASCIIStringEncoding] md5Digest]
-      hexadecimalRepresentation] lowercaseString];
-  thumbnail = [@"~/.thumbnails/normal"
-      stringByAppendingPathComponent:[digest stringByAppendingPathExtension:@"png"]];
-
-  return [thumbnail stringByStandardizingPath];
 }
 
 - (NSImage *)_iconForExtension:(NSString *)ext
@@ -1079,7 +1057,7 @@ static NSLock *raceLock = nil;
     prefs = [_extPreferences objectForKey:ext];
     iconPath = [prefs objectForKey:@"Icon"];
     if (iconPath) {
-      icon = [self _saveImageFor:iconPath];
+      icon = [self _imageFromFile:iconPath];
     }
 
     if (icon == nil && (extInfo = [self infoForExtension:ext]) != nil) {
@@ -1652,7 +1630,7 @@ static NSLock *raceLock = nil;
   }
 
   if (iconPath != nil) {
-    image = [self _saveImageFor:iconPath];
+    image = [self _imageFromFile:iconPath];
   }
 
   return image;
