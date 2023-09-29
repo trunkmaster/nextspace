@@ -141,13 +141,13 @@
     the appName application where flag indicates if sending application should
     be deactivated before the request is sent; returns YES if file was
     successfully opened and NO otherwise.*/
-// [NSWorkspace _workspaceApplication]
+// --- [NSWorkspace _workspaceApplication]
 - (BOOL)openFile:(NSString *)fullPath withApplication:(NSString *)appName andDeactivate:(BOOL)flag;
 
 /** Instructs Workspace Manager to open the temporary file specified by
     fullPath using the default application for its type; returns YES if file
     was successfully opened and NO otherwise.*/
-// [NSWorkspace _workspaceApplication]
+// --- [NSWorkspace _workspaceApplication]
 - (BOOL)openTempFile:(NSString *)fullPath;
 
 //-----------------------------------------------------------------------------
@@ -170,8 +170,7 @@ APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
     files in the source directory specifying the destination directory if
     needed using tag as an identifier for asynchronous operations; returns YES
     if operation succeeded and NO otherwise.*/
-// TODO
-// [NSWorkspace _workspaceApplication]
+// TODO: [NSWorkspace _workspaceApplication]
 // - (BOOL)performFileOperation:(NSString*)operation
 //                       source:(NSString*)source
 //                  destination:(NSString*)destination
@@ -181,7 +180,7 @@ APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
 /** Instructs Workspace Manager to select the file specified by fullPath
     opening a new file viewer if a path is specified by rootFullpath; returns
     YES if file was successfully selected and NO otherwise.*/
-// [NSWorkspace _workspaceApplication]
+// --- [NSWorkspace _workspaceApplication]
 - (BOOL)selectFile:(NSString *)fullPath inFileViewerRootedAtPath:(NSString *)rootFullpath;
 
 //-----------------------------------------------------------------------------
@@ -301,7 +300,6 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 
 /** Instructs Workspace Manager to launch the application appName and returns
     YES if application was successfully launched and NO otherwise.*/
-// TODO
 // --- [NSWorkspace _workspaceApplication]
 - (BOOL)launchApplication:(NSString *)appName;
 
@@ -340,9 +338,23 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
  * correctly.
  * </p>
  */
-// CHECK
-// [NSWorkspace _workspaceApplication]
+// --- [NSWorkspace _workspaceApplication]
 - (BOOL)launchApplication:(NSString *)appName showIcon:(BOOL)showIcon autolaunch:(BOOL)autolaunch;
+
+/** Returns NSDictionary with application information:
+    @"NSApplicationPath" - The full path to the app, as a NSString object.
+    @"NSApplicationName" - The app's name, as an NSString object.
+    @"NSApplicationProcessIdentifier" - The app's process ID, as an NSNumber object.
+
+    Apple specific:
+    @"NSApplicationBundleIdentifier" - The app’s bundle identifier, as an NSString object.
+    @"NSApplicationProcessSerialNumberHigh" - The high long of the process serial number (PSN), as
+                                              an NSNumber object.
+    @"NSApplicationProcessSerialNumberLow" - The low long of the process serial number (PSN), as an
+                                             NSNumber object.
+ */
+// TODO: [NSWorkspace _workspaceApplication]
+- (NSDictionary *)activeApplication;
 
 //-----------------------------------------------------------------------------
 //--- Unmounting a Device
@@ -406,8 +418,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 
 /** Requests more time before the power goes off or the user logs out; returns
     the granted number of additional milliseconds.*/
-// TODO
-// [NSWorkspace _workspaceApplication]
+// TODO: [NSWorkspace _workspaceApplication]
 // - (int)extendPowerOffBy:(int)requested;
 
 @end
