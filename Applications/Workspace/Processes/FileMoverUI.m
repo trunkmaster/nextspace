@@ -126,7 +126,7 @@
   //     return;
   //   }
 
-  if (![message isEqualToString:@""]) {
+  if (message && ![message isEqualToString:@""]) {
     [currentField
         setStringValue:NXTShortenString(message, [currentField bounds].size.width - 3,
                                         [currentField font], NXSymbolElement, NXTDotsAtRight)];
