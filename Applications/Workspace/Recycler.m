@@ -20,7 +20,7 @@
 //
 
 #import <DesktopKit/NXTAlert.h>
-#import <Operations/ProcessManager.h>
+#import <Processes/ProcessManager.h>
 
 #import <DesktopKit/NXTIcon.h>
 #import <DesktopKit/NXTIconLabel.h>

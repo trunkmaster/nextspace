@@ -20,6 +20,7 @@
 //
 
 #import <AppKit/AppKit.h>
+#include "Foundation/NSObjCRuntime.h"
 #import <SystemKit/OSESystemInfo.h>
 #import <SystemKit/OSEMouse.h>
 
@@ -36,7 +37,7 @@
 
 #import "Controller+NSWorkspace.h"
 #import "FileViewer.h"
-#import <Operations/ProcessManager.h>
+#import <Processes/ProcessManager.h>
 #import "PathIcon.h"
 
 @interface NSApplication (GNUstepPrivate)
@@ -224,7 +225,7 @@ static NSDragOperation savedMask;
     // wIconUpdate(wAppIconNew->icon);
     screenPoint.x = wAppIconNew->x_pos;
     screenPoint.y = [GSCurrentServer() boundsForScreen:0].size.height - wAppIconNew->y_pos;
-    screenPoint.y -= wPreferences.icon_size / 2;
+    screenPoint.y -= (CGFloat)wPreferences.icon_size / 2;
     [self _slideDraggedImageTo:screenPoint numberOfSteps:10 delay:0.01 waitAfterSlide:NO];
     wIconUpdate(wAppIconNew->icon);
     wAppIconPaint(wAppIconNew);

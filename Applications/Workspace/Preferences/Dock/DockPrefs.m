@@ -21,7 +21,7 @@
 
 #import "DockPrefs.h"
 #import <DesktopKit/NXTDefaults.h>
-#import "Operations/ProcessManager.h"
+#import "Processes/ProcessManager.h"
 #import <Workspace+WM.h>
 #import <WMNotificationCenter.h>
 

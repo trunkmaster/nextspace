@@ -27,7 +27,7 @@
 
 #import <AppKit/AppKit.h>
 
-#import <Operations/ProcessManager.h>
+#import <Processes/ProcessManager.h>
 #import <Processes/FileMoverUI.h>
 
 @implementation FileMoverUI

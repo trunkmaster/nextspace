@@ -26,7 +26,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "Operations/ProcessManager.h"
+#import "Processes/ProcessManager.h"
 #import "Processes/BGProcess.h"
 
 typedef enum {

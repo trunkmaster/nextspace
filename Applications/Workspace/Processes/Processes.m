@@ -25,7 +25,7 @@
 #import <DesktopKit/NXTAlert.h>
 #import <DesktopKit/Utilities.h>
 
-#import <Operations/ProcessManager.h>
+#import <Processes/ProcessManager.h>
 #import <Operations/BGOperation.h>
 #import "BGProcess.h"
 #import "Processes.h"

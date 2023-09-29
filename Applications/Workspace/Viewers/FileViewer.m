@@ -45,7 +45,7 @@
 #import "Inspectors/Inspector.h"
 #import "PathIcon.h"
 
-#import <Operations/ProcessManager.h>
+#import <Processes/ProcessManager.h>
 #import <Operations/FileMover.h>
 #import <Operations/Sizer.h>
 

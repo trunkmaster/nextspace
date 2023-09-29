@@ -22,7 +22,7 @@
 #import <AppKit/AppKit.h>
 #import <DesktopKit/DesktopKit.h>
 
-#import <ProcessManager.h>
+#import <Processes/ProcessManager.h>
 
 #import "FileAttributesInspector.h"
 #import "WMPopUp.h"

@@ -22,7 +22,7 @@
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEDisplay.h>
-#import <Operations/ProcessManager.h>
+#import <Processes/ProcessManager.h>
 #import <Viewers/ShelfView.h>
 
 #import "Recycler.h"

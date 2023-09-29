@@ -33,7 +33,7 @@
 #import "Workspace+WM.h"
 #import "Processes/Processes.h"
 
-#import "Operations/ProcessManager.h"
+#import "Processes/ProcessManager.h"
 #import "Operations/FileMover.h"
 
 NSString *WMOperationDidCreateNotification = @"BGOperationDidCreate";

@@ -43,7 +43,7 @@
 #import "Workspace+WM.h"
 #import "Controller.h"
 #import "Recycler.h"
-#import "Operations/ProcessManager.h"
+#import "Processes/ProcessManager.h"
 
 NSString *WMShowAlertPanel = @"WMShowAlertPanelNotification";
 dispatch_queue_t workspace_q;

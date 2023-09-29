@@ -57,7 +57,7 @@
 #import "WMNotificationCenter.h"
 
 #import <Operations/Mounter.h>
-#import <Operations/ProcessManager.h>
+#import <Processes/ProcessManager.h>
 #import <Processes/Processes.h>
 
 #import <DesktopKit/NXTAlert.h>
