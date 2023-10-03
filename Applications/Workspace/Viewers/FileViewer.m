@@ -62,6 +62,8 @@
 @end
 
 @implementation FileViewerWindow
+
+// override
 - (void)sendEvent:(NSEvent *)theEvent
 {
   NSView *v;
@@ -83,10 +85,22 @@
 
   [super sendEvent:theEvent];
 }
+
+// override - GNUstep bug, should be fixed upstream
+- (void)resetCursorRects
+{
+  // cursor rects resettting of ordered out window leads to app crash
+  if (!self.isVisible) {
+    return;
+  }
+  [super resetCursorRects];
+}
+
 - (void)handleWindowKeyUp:(NSEvent *)theEvent
 {
   // Should be implemented by delegate
 }
+
 @end
 
 @interface FileViewer (Private)
