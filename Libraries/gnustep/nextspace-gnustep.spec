@@ -36,7 +36,6 @@ Patch4:         libs-gui_NSDocument.patch
 Patch5:         libs-gui_NSPopUpButtonCell.patch
 Patch6:         libs-gui_NSPrintPanel.patch
 Patch7:         libs-gui_NSSavePanel.patch
-Patch8:         libs-gui_NSSound.patch
 
 # Build GNUstep libraries in one RPM package
 Provides:	gnustep-base-%{BASE_VERSION}
@@ -152,7 +151,6 @@ cp %{_sourcedir}/libs-gui_NSDocument.patch %{_builddir}/nextspace-gnustep/libs-g
 cp %{_sourcedir}/libs-gui_NSPopUpButtonCell.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 cp %{_sourcedir}/libs-gui_NSPrintPanel.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 cp %{_sourcedir}/libs-gui_NSSavePanel.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
-cp %{_sourcedir}/libs-gui_NSSound.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 cd %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 %patch2 -p1
 %patch3 -p1
@@ -160,7 +158,6 @@ cd %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-%patch8 -p1
 rm -rf %{buildroot}
 
 #
