@@ -1,9 +1,9 @@
 %define GS_REPO		https://github.com/gnustep
-%define BASE_VERSION	master
-%define GUI_VERSION	master
-%define BACK_VERSION	master
+%define BASE_VERSION	1_29_0
+%define GUI_VERSION	0_30_0
+%define BACK_VERSION	nextspace
 %define GORM_VERSION	1_3_1
-%define PC_VERSION	master
+%define PC_VERSION	0_7_0
 
 Name:           nextspace-gnustep
 Version:        %{BASE_VERSION}_%{GUI_VERSION}
@@ -13,11 +13,11 @@ Summary:        GNUstep libraries.
 Group:          Libraries/NextSpace
 License:        GPLv3
 URL:		http://www.gnustep.org
-Source0:        libs-base-%{BASE_VERSION}.tar.gz
-Source1:        libs-gui-%{GUI_VERSION}.tar.gz
-Source2:        libs-back-%{BACK_VERSION}.tar.gz
+Source0:        %{GS_REPO}/libs-base/archive/base-%{BASE_VERSION}.tar.gz
+Source1:        %{GS_REPO}/libs-gui/archive/gui-%{GUI_VERSION}.tar.gz
+Source2:        back-art.tar.gz
 Source3:        %{GS_REPO}/apps-gorm/archive/gorm-%{GORM_VERSION}.tar.gz
-Source4:        projectcenter-%{PC_VERSION}.tar.gz
+Source4:        %{GS_REPO}/apps-projectcenter/archive/projectcenter-%{PC_VERSION}.tar.gz
 Source5:        gdomap.interfaces
 Source6:        gdomap.service
 Source7:        gdnc.service
@@ -28,10 +28,15 @@ Source11:       gorm-images.tar.gz
 Source12:       gnustep-gui-images.tar.gz
 Source13:       gnustep-gui-panels.tar.gz
 
-Patch0:         libs-gui.patch
-Patch1:         libs-back.patch
-Patch2:         gorm.patch
-Patch3:         pc.patch
+Patch0:         gorm.patch
+Patch1:         pc.patch
+Patch2:         libs-gui_GSDisplayServer.patch
+Patch3:         libs-gui_NSApplication.patch
+Patch4:         libs-gui_NSDocument.patch
+Patch5:         libs-gui_NSPopUpButtonCell.patch
+Patch6:         libs-gui_NSPrintPanel.patch
+Patch7:         libs-gui_NSSavePanel.patch
+Patch8:         libs-gui_NSSound.patch
 
 # Build GNUstep libraries in one RPM package
 Provides:	gnustep-base-%{BASE_VERSION}
@@ -135,18 +140,27 @@ GNUstep Make installed with nextspace-core-devel package.
 
 %prep
 %setup -c -n nextspace-gnustep -a 0 -a 1 -a 2 -a 3 -a 4
-cp %{_sourcedir}/libs-gui.patch %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_VERSION}/
-cd %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_VERSION}/
-%patch0 -p1
-cp %{_sourcedir}/libs-back.patch %{_builddir}/nextspace-gnustep/libs-back-%{BACK_VERSION}/
-cd %{_builddir}/nextspace-gnustep/libs-back-%{BACK_VERSION}/
-%patch1 -p1
 cp %{_sourcedir}/gorm.patch %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
 cd %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
+%patch0 -p1
+cp %{_sourcedir}/pc.patch %{_builddir}/nextspace-gnustep/apps-projectcenter-projectcenter-%{PC_VERSION}/
+cd %{_builddir}/nextspace-gnustep/apps-projectcenter-projectcenter-%{PC_VERSION}/
+%patch1 -p1
+cp %{_sourcedir}/libs-gui_GSDisplayServer.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+cp %{_sourcedir}/libs-gui_NSApplication.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+cp %{_sourcedir}/libs-gui_NSDocument.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+cp %{_sourcedir}/libs-gui_NSPopUpButtonCell.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+cp %{_sourcedir}/libs-gui_NSPrintPanel.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+cp %{_sourcedir}/libs-gui_NSSavePanel.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+cp %{_sourcedir}/libs-gui_NSSound.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+cd %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 %patch2 -p1
-cp %{_sourcedir}/pc.patch %{_builddir}/nextspace-gnustep/apps-projectcenter-%{PC_VERSION}/
-cd %{_builddir}/nextspace-gnustep/apps-projectcenter-%{PC_VERSION}/
 %patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
 rm -rf %{buildroot}
 
 #
@@ -162,7 +176,7 @@ export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 
 # Foundation (relies on gnustep-make included in nextspace-core-devel)
-cd libs-base-%{BASE_VERSION}
+cd libs-base-base-%{BASE_VERSION}
 ./configure
 make
 %{make_install}
@@ -173,7 +187,7 @@ export ADDITIONAL_LIB_DIRS=" -L%{buildroot}/Library/Libraries"
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 
 # Application Kit
-cd libs-gui-%{GUI_VERSION}
+cd libs-gui-gui-%{GUI_VERSION}
 tar xzf %{_sourcedir}/gnustep-gui-panels.tar.gz
 sudo cp %{buildroot}/Developer/Makefiles/Additional/base.make /Developer/Makefiles/Additional/
 ./configure
@@ -183,7 +197,7 @@ sudo rm /Developer/Makefiles/Additional/base.make
 cd ..
 
 # Build ART GUI backend
-cd libs-back-%{BACK_VERSION}
+cd back-art
 export ADDITIONAL_TOOL_LIBS="-lgnustep-gui -lgnustep-base"
 ./configure \
     --enable-server=x11 \
@@ -202,7 +216,7 @@ make
 cd ..
 
 # Build ProjectCenter
-cd apps-projectcenter-%{PC_VERSION}
+cd apps-projectcenter-projectcenter-%{PC_VERSION}
 tar zxf %{_sourcedir}/projectcenter-images.tar.gz
 make
 cd ..
@@ -215,15 +229,15 @@ export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 export QA_SKIP_BUILD_ROOT=1
 # Install Base
-cd libs-base-%{BASE_VERSION}
+cd libs-base-base-%{BASE_VERSION}
 %{make_install}
 cd ..
 # Install GUI
-cd libs-gui-%{GUI_VERSION}
+cd libs-gui-gui-%{GUI_VERSION}
 %{make_install}
 cd ..
 # Install Back
-cd libs-back-%{BACK_VERSION}
+cd back-art
 %{make_install} fonts=no
 cd ..
 # Install GORM
@@ -232,7 +246,7 @@ cd apps-gorm-gorm-%{GORM_VERSION}
 %{make_install}
 cd ..
 # Install ProjectCenter
-cd apps-projectcenter-%{PC_VERSION}
+cd apps-projectcenter-projectcenter-%{PC_VERSION}
 %{make_install}
 cd ..
 

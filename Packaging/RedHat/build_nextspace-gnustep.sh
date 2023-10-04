@@ -24,18 +24,9 @@ cp ${REPO_DIR}/Libraries/gnustep/gorm-images.tar.gz ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/projectcenter-images.tar.gz ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/pc.patch ${SOURCES_DIR}
 cp ${REPO_DIR}/Libraries/gnustep/gorm.patch ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/libs-back.patch ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/libs-gui.patch ${SOURCES_DIR}
-print_H1 " Downloading GNUstep Base..."
-curl -L https://github.com/gnustep/libs-base/archive/master.tar.gz -o ${SOURCES_DIR}/libs-base-master.tar.gz
-print_H1 " Downloading GNUstep Back..."
-curl -L https://github.com/gnustep/libs-back/archive/master.tar.gz -o ${SOURCES_DIR}/libs-back-master.tar.gz
-print_H1 " Downloading GNUstep GUI..."
-curl -L https://github.com/gnustep/libs-gui/archive/master.tar.gz -o ${SOURCES_DIR}/libs-gui-master.tar.gz
-print_H1 " Downloading GNUstep ProjectCenter..."
-curl -L https://github.com/gnustep/apps-projectcenter/archive/master.tar.gz -o ${SOURCES_DIR}/projectcenter-master.tar.gz
-print_H1 " Downloading GNUstep GORM..."
-curl -L https://github.com/gnustep/apps-gorm/archive/master.tar.gz -o ${SOURCES_DIR}/gorm-master.tar.gz
+cp ${REPO_DIR}/Libraries/gnustep/libs-gui_* ${SOURCES_DIR}
+print_H1 " Downloading Local GNUstep Back..."
+tar zcf ${SOURCES_DIR}/back-art.tar.gz -C ${REPO_DIR}/Libraries/gnustep back-art
 
 print_H2 "===== Install GNUstep build dependencies..."
 DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
