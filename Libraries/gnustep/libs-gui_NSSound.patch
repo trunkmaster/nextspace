@@ -8,3 +8,4 @@ diff -ruN a/Headers/AppKit/NSSound.h b/Headers/AppKit/NSSound.h
 +#import <AppKit/AppKitDefines.h>
  #import <Foundation/NSObject.h>
  #import <Foundation/NSBundle.h>
+ 
