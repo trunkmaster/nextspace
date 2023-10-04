@@ -1,0 +1,46 @@
+--- a/Source/NSApplication.m	2022-12-29 04:05:31.000000000 -0500
++++ b/Source/NSApplication.m	2023-10-03 22:13:27.898321425 -0500
+@@ -2530,6 +2530,9 @@
+                   [_hidden addObject: win];
+                   [win orderOut: self];
+                 }
++              /* On hiding we also deactivate the application which will make 
++                 the menus go away too. */
++              [self deactivate];
+             }
+ 	  _app_is_hidden = YES;
+ 	  
+@@ -2552,12 +2555,9 @@
+ 	    {
+ 	      [[_app_icon_window contentView] setNeedsDisplay: YES];
+ 	    }
++
++          [[_main_menu itemWithTitle:@"Hide"] setTitle:@"Unhide"];
+ 	  
+-	  /*
+-	   * On hiding we also deactivate the application which will make the menus
+-	   * go away too.
+-	   */
+-	  [self deactivate];
+ 	  _unhide_on_activation = YES;
+ 	  
+ 	  info = [self _notificationUserInfo];
+@@ -2577,6 +2577,10 @@
+ 	  [self miniaturizeAll: sender];
+ 	}
+     }
++  else
++    {
++      [self unhide:sender];
++    }
+ #endif
+ }
+ 
+@@ -2595,6 +2599,7 @@
+ {
+   if (_app_is_hidden)
+     {
++      [[_main_menu itemWithTitle:@"Unhide"] setTitle:@"Hide"];
+       [self unhideWithoutActivation];
+       _unhide_on_activation = NO;
+     }
