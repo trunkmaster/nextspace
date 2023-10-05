@@ -74,7 +74,7 @@ static NSString *_rootPath = @"/";
 
 // Icon handling
 - (NSImage *)_extIconForApp:(NSString *)appName info:(NSDictionary *)extInfo;
-- (NSImage *)unknownFiletypeImage;
+- (NSImage *)_unknownFiletypeImage;
 - (NSImage *)_imageFromFile:(NSString *)iconPath;
 - (NSImage *)_iconForExtension:(NSString *)ext;
 - (NSImage *)_iconForFileContents:(NSString *)fullPath;
@@ -474,54 +474,6 @@ static NSLock *raceLock = nil;
   return NO;
 }
 
-- (NSString *)fullPathForApplication:(NSString *)appName
-{
-  NSString *base;
-  NSString *path;
-  NSString *ext;
-
-  if ([appName length] == 0) {
-    return nil;
-  }
-  if ([[appName lastPathComponent] isEqual:appName] == NO) {
-    if ([appName isAbsolutePath] == YES) {
-      return appName;  // MacOS-X implementation behavior.
-    }
-    /*
-     * Relative path ... get standarized absolute path
-     */
-    path = [[NSFileManager defaultManager] currentDirectoryPath];
-    appName = [path stringByAppendingPathComponent:appName];
-    appName = [appName stringByStandardizingPath];
-  }
-  base = [appName stringByDeletingLastPathComponent];
-  appName = [appName lastPathComponent];
-  ext = [appName pathExtension];
-  if ([ext length] == 0) {  // no extension, let's find one
-    path = [appName stringByAppendingPathExtension:@"app"];
-    path = [_applications objectForKey:path];
-    if (path == nil) {
-      path = [appName stringByAppendingPathExtension:@"debug"];
-      path = [_applications objectForKey:path];
-    }
-    if (path == nil) {
-      path = [appName stringByAppendingPathExtension:@"profile"];
-      path = [_applications objectForKey:path];
-    }
-  } else {
-    path = [_applications objectForKey:appName];
-  }
-
-  /*
-   * If the original name included a path, check that the located name
-   * matches it.  If it doesn't we return nil as MacOS-X does.
-   */
-  if ([base length] > 0 && [base isEqual:[path stringByDeletingLastPathComponent]] == NO) {
-    path = nil;
-  }
-  return path;
-}
-
 // FIXME: TODO
 // - (BOOL)getFileSystemInfoForPath:(NSString*)fullPath
 //                      isRemovable:(BOOL*)removableFlag
@@ -674,7 +626,7 @@ static NSLock *raceLock = nil;
     // folder doesn't contain dir icon
     if (image == nil) {
       image = [self _iconForExtension:pathExtension];
-      if (image == nil || image == [self unknownFiletypeImage]) {
+      if (image == nil || image == [self _unknownFiletypeImage]) {
         NSString *iconName;
 
         iconName = [folderPathIconDict objectForKey:fullPath];
@@ -715,7 +667,7 @@ static NSLock *raceLock = nil;
     }
 
     // By file contents
-    if (image == nil || image == [self unknownFiletypeImage]) {
+    if (image == nil || image == [self _unknownFiletypeImage]) {
       image = [self _iconForFileContents:fullPath];
     }
   } else if ([mgr isReadableFileAtPath:fullPath] == NO) {
@@ -723,7 +675,7 @@ static NSLock *raceLock = nil;
   }
 
   if (image == nil) {
-    image = [self unknownFiletypeImage];
+    image = [self _unknownFiletypeImage];
   }
 
   return image;
@@ -1002,7 +954,7 @@ static NSLock *raceLock = nil;
 }
 
 /** Returns the default icon to display for a file */
-- (NSImage *)unknownFiletypeImage
+- (NSImage *)_unknownFiletypeImage
 {
   static NSImage *image = nil;
 
@@ -1101,7 +1053,7 @@ static NSLock *raceLock = nil;
         }
         icon = unknownApplication;
       } else {
-        icon = [self unknownFiletypeImage];
+        icon = [self _unknownFiletypeImage];
       }
     }
 
@@ -1534,7 +1486,7 @@ static NSLock *raceLock = nil;
     return nil;
   }
   if ([[appName lastPathComponent] isEqual:appName]) {  // it's a name
-    appName = [self fullPathForApplication:appName];
+    appName = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
   } else {
     NSFileManager *fm;
     NSString *ext;
@@ -1578,7 +1530,7 @@ static NSLock *raceLock = nil;
   NSString *iconPath = nil;
   NSString *fullPath;
 
-  fullPath = [self fullPathForApplication:appName];
+  fullPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
   bundle = [self bundleForApp:fullPath];
   if (bundle == nil) {
     return nil;

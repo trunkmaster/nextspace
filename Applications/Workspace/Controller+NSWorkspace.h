@@ -187,20 +187,6 @@ APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
 //--- Requesting Information about Files
 //-----------------------------------------------------------------------------
 
-/** Returns the full path for the application appName.*/
-/* GNUstep:
-   Given an application name, return the full path for that application.
-   This method looks for the application in standard locations, and if not
-   found there, according to MacOS-X documentation, returns nil.
-   If the supplied application name is an absolute path, returns that path
-   irrespective of whether such an application exists or not.  This is
-   *not* the docmented debavior in the MacOS-X documentation, but is
-   the MacOS-X implemented behavior.
-   If the appName has an extension, it is used, otherwise in GNUstep
-   the standard app, debug, and profile extensions are tried.*/
-// CHECK
-// - (NSString*)fullPathForApplication:(NSString*)appName;
-
 // TODO (use libmagic)
 /** Describes the file system at fullPath in description and fileSystemType,
     sets the Flags appropriately, and returns YES if fullPath is a file system
