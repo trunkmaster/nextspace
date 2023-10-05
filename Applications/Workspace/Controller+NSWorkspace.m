@@ -36,6 +36,8 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
+#include "Processes/ProcessManager.h"
+#include "Foundation/NSDictionary.h"
 #include "log_utils.h"
 #include "Foundation/NSTimer.h"
 #include "Foundation/NSRunLoop.h"
@@ -803,15 +805,7 @@ static NSLock *raceLock = nil;
 
 - (NSDictionary *)activeApplication
 {
-  NSString *path = @"";
-  NSString *name = @"";
-  NSNumber *PID = [NSNumber numberWithInt:-1];
-
-  return @{
-    @"NSApplicationPath" : path,
-    @"NSApplicationName" : name,
-    @"NSApplicationProcessIdentifier" : PID
-  };
+  return [[ProcessManager shared] activeApplication];
 }
 
 //-------------------------------------------------------------------------------------------------

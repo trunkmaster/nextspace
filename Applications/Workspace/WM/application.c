@@ -496,16 +496,28 @@ void wApplicationActivate(WApplication *wapp)
     wapp->appState = CFDictionaryCreateMutable(
         kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   }
+
+  if (scr->notificationCenter) {
+    CFNotificationCenterPostNotification(scr->notificationCenter,
+                                         WMDidActivateApplicationNotification, wapp, NULL, TRUE);
+  }
 }
 
 void wApplicationDeactivate(WApplication *wapp)
 {
+  WScreen *scr = wapp->main_wwin->screen;
+
   if (wapp->app_icon) {
     wIconSetHighlited(wapp->app_icon->icon, False);
     wAppIconPaint(wapp->app_icon);
   }
   if (wapp->app_menu && wapp->app_menu->flags.mapped) {
     wApplicationMenuHide(wapp->app_menu);
+  }
+
+  if (scr->notificationCenter) {
+    CFNotificationCenterPostNotification(scr->notificationCenter,
+                                         WMDidDeactivateApplicationNotification, wapp, NULL, TRUE);
   }
 }
 

@@ -98,6 +98,8 @@ typedef enum {
   NSMutableArray *backInfoLabelCopies;
 }
 
+@property (readonly) NSDictionary *activeApplication;
+
 + shared;
 
 - (id)init;
@@ -112,10 +114,6 @@ typedef enum {
 
 - (NSDictionary *)_normalizeApplicationInfo:(NSDictionary *)appInfo;
 - (NSDictionary *)_applicationWithName:(NSString *)appName;
-
-- (void)applicationWillLaunch:(NSNotification *)notif;
-- (void)applicationDidLaunch:(NSNotification *)notif;
-- (void)applicationDidTerminate:(NSNotification *)notif;
 
 - (BOOL)terminateAllApps;
 
@@ -137,10 +135,6 @@ typedef enum {
                       target:(NSString *)dest
                        files:(NSArray *)files;
 
-- (void)operationDidCreate:(NSNotification *)notif;
-- (void)operationWillDestroy:(NSNotification *)notif;
-- (void)operationDidChangeState:(NSNotification *)notif;
-
 - (BOOL)terminateAllBGOperations;
 
 @end
@@ -148,9 +142,7 @@ typedef enum {
 @interface ProcessManager (InfoLabels)
 
 - (id)backInfoLabel;
-
 - (void)releaseBackInfoLabel:(id)label;
-
 - (void)updateBackInfoLabel;
 
 @end

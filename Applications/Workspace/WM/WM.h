@@ -121,6 +121,8 @@
 #define KEEP_XKB_LOCK_STATUS
 #endif
 
+#if !defined(__OBJC__)
+
 #if defined(HAVE_LIBINTL_H) && defined(I18N)
 #include <libintl.h>
 #define _(text) gettext(text)
@@ -135,7 +137,9 @@
 #define _(text) text
 #define N_(text) text
 #define M_(text) text
-#endif /* defined(HAVE_LIBINTL_H) && defined(I18N) */
+#endif /* HAVE_LIBINTL_H && I18N */
+
+#endif /* !__OBJC__ */
 
 /* class codes */
 typedef enum {
@@ -357,9 +361,11 @@ extern struct wm_global_variables {
 /* Applications */
 extern CFStringRef WMDidCreateApplicationNotification;
 extern CFStringRef WMDidDestroyApplicationNotification;
+extern CFStringRef WMDidActivateApplicationNotification;
+extern CFStringRef WMDidDeactivateApplicationNotification;
+/* Windows */
 extern CFStringRef WMDidManageWindowNotification;
 extern CFStringRef WMDidUnmanageWindowNotification;
-/* Windows */
 extern CFStringRef WMDidChangeWindowDesktopNotification;
 extern CFStringRef WMDidChangeWindowStateNotification;
 extern CFStringRef WMDidChangeWindowFocusNotification;

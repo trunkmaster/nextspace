@@ -280,6 +280,7 @@ static void _handleCFNotification(CFNotificationCenterRef center, void *observer
 
   // locally (e.g. Controller or ProcessManager)
   if ([name hasPrefix:@"WMDid"]) {
+    WMLogWarning("[WMNC postNotification:::] - %@", convertNStoCFDictionary(info));
     [super postNotificationName:name object:object userInfo:info];
   }
 

@@ -67,6 +67,7 @@ static BOOL _workspaceQuitting = NO;
   RELEASE(operations);
 
   TEST_RELEASE(backInfoLabelCopies);
+  TEST_RELEASE(_activeApplication);
 
   shared = nil;
 
@@ -92,10 +93,6 @@ static BOOL _workspaceQuitting = NO;
     operations = [[NSMutableArray alloc] init];
 
     //  Applications - AppKit notifications
-    [workspaceCenter addObserver:self
-                        selector:@selector(applicationWillLaunch:)
-                            name:NSWorkspaceWillLaunchApplicationNotification
-                          object:nil];
     // [[[NSWorkspace sharedWorkspace] notificationCenter]
     [workspaceCenter addObserver:self
                         selector:@selector(applicationDidLaunch:)
@@ -105,6 +102,10 @@ static BOOL _workspaceQuitting = NO;
     [workspaceCenter addObserver:self
                         selector:@selector(applicationDidTerminate:)
                             name:NSWorkspaceDidTerminateApplicationNotification
+                          object:nil];
+    [workspaceCenter addObserver:self
+                        selector:@selector(applicationDidBecomeActive:)
+                            name:NSApplicationDidBecomeActiveNotification
                           object:nil];
 
     // Background operations
@@ -128,19 +129,24 @@ static BOOL _workspaceQuitting = NO;
 
     // WM - CoreFoundation notifications
     [workspaceCenter addObserver:self
-                        selector:@selector(applicationDidCreate:)
+                        selector:@selector(windowManagerDidCreateApplication:)
                             name:CF_NOTIFICATION(WMDidCreateApplicationNotification)
                           object:nil];
     [workspaceCenter addObserver:self
-                        selector:@selector(applicationDidDestroy:)
+                        selector:@selector(windowManagerDidDestroyApplication:)
                             name:CF_NOTIFICATION(WMDidDestroyApplicationNotification)
                           object:nil];
     [workspaceCenter addObserver:self
-                        selector:@selector(applicationDidOpenWindow:)
+                        selector:@selector(windowManagerDidActivateApplication:)
+                            name:CF_NOTIFICATION(WMDidActivateApplicationNotification)
+                          object:nil];
+    
+    [workspaceCenter addObserver:self
+                        selector:@selector(windowManagerDidManageWindow:)
                             name:CF_NOTIFICATION(WMDidManageWindowNotification)
                           object:nil];
     [workspaceCenter addObserver:self
-                        selector:@selector(applicationDidCloseWindow:)
+                        selector:@selector(windowManagerDidUnmanageWindow:)
                             name:CF_NOTIFICATION(WMDidUnmanageWindowNotification)
                           object:nil];
   }
@@ -203,13 +209,6 @@ static BOOL _workspaceQuitting = NO;
   return nil;
 }
 
-// NSWorkspaceWillLaunchApplicationNotification
-// Do nothing. Launched application registered upon receiving
-// NSWorkspaceDidLaunchApplicationNotification.
-- (void)applicationWillLaunch:(NSNotification *)notif
-{
-}
-
 // NSWorkspaceDidLaunchApplicationNotification
 // Register launched application.
 // TODO
@@ -217,10 +216,9 @@ static BOOL _workspaceQuitting = NO;
 {
   NSDictionary *newAppInfo;
   NSString *newAppName;
-  NSDictionary *aInfo;
   NSString *aName;
   NSMutableOrderedSet *aPIDList, *newAppPID;
-  BOOL skipLaunchedApp = NO;
+  BOOL skipLaunchedApp = NO, addNewPID = YES;
 
   WMLogWarning("NSWorkspaceDidLaunchApplication: %@",
                convertNStoCFString([[notif userInfo] objectForKey:@"NSApplicationName"]));
@@ -231,7 +229,7 @@ static BOOL _workspaceQuitting = NO;
 
   // Check if application already in app list. If so - append PID to the
   // "NSApplicationProcessIdentifier" of existing object in 'applications' list.
-  for (aInfo in applications) {
+  for (NSDictionary *aInfo in applications) {
     aName = [aInfo objectForKey:@"NSApplicationName"];
     aPIDList = [aInfo objectForKey:@"NSApplicationProcessIdentifier"];
 
@@ -239,7 +237,6 @@ static BOOL _workspaceQuitting = NO;
       skipLaunchedApp = YES;
       if ([aPIDList containsObject:@""] == NO &&
           ([aPIDList containsObject:[newAppPID firstObject]] == NO)) {
-        [aPIDList unionOrderedSet:newAppPID];
       }
       break;
     }
@@ -271,6 +268,12 @@ static BOOL _workspaceQuitting = NO;
       [[[NSApp delegate] processesPanel] updateAppList];
     }
   }
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notif
+{
+  WMLogWarning("ApplicationDidBecomeActive: %@", convertNStoCFDictionary([notif userInfo]));
+  _activeApplication = [[notif userInfo] copy];
 }
 
 // Performs gracefull termination of running GNUstep applications.
@@ -376,15 +379,13 @@ static BOOL _workspaceQuitting = NO;
     [appInfo setObject:@"--" forKey:@"NSApplicationPath"];
   }
 
-  // NSApplicationProcessIdentifier = NSString*
+  // NSApplicationProcessIdentifier = NSNumber*
   if ((app_pid = wNETWMGetPidForWindow(wwin->client_win)) > 0) {
-    [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
-                forKey:@"NSApplicationProcessIdentifier"];
+    [appInfo setObject:[NSNumber numberWithInt:app_pid] forKey:@"NSApplicationProcessIdentifier"];
   } else if ((app_pid = wNETWMGetPidForWindow(wwin->main_window)) > 0) {
-    [appInfo setObject:[NSString stringWithFormat:@"%i", app_pid]
-                forKey:@"NSApplicationProcessIdentifier"];
+    [appInfo setObject:[NSNumber numberWithInt:app_pid] forKey:@"NSApplicationProcessIdentifier"];
   } else {
-    [appInfo setObject:@"-1" forKey:@"NSApplicationProcessIdentifier"];
+    [appInfo setObject:[NSNumber numberWithInt:-1] forKey:@"NSApplicationProcessIdentifier"];
   }
 
   return (NSDictionary *)appInfo;
@@ -417,7 +418,7 @@ static BOOL _workspaceQuitting = NO;
 }
 
 // WMDidCreateApplicationNotification
-- (void)applicationDidCreate:(NSNotification *)notif
+- (void)windowManagerDidCreateApplication:(NSNotification *)notif
 {
   WApplication *wapp = (WApplication *)[(CFObject *)[notif object] object];
   NSNotification *localNotif = nil;
@@ -443,7 +444,7 @@ static BOOL _workspaceQuitting = NO;
 
   wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
   appInfo = [self _applicationInfoForApp:wapp window:wwin];
-  NSDebugLLog(@"WM", @"ProcessManager-applicationDidCreate: %@", appInfo);
+  NSDebugLLog(@"WM", @"ProcessManager-windowManagerDidCreateApplication: %@", appInfo);
 
   localNotif = [NSNotification notificationWithName:NSWorkspaceDidLaunchApplicationNotification
                                              object:appInfo
@@ -456,7 +457,7 @@ static BOOL _workspaceQuitting = NO;
 // 1. normal - AppKit notfication mechanism works
 // 2. crash - no AppKit involved so we should use this code to inform ProcessManager
 // [ProcessManager applicationDidTerminate:] should expect 2 calls for option #1.
-- (void)applicationDidDestroy:(NSNotification *)notif
+- (void)windowManagerDidDestroyApplication:(NSNotification *)notif
 {
   WApplication *wapp = (WApplication *)[(CFObject *)[notif object] object];
   NSNotification *localNotif = nil;
@@ -473,8 +474,18 @@ static BOOL _workspaceQuitting = NO;
   [self applicationDidTerminate:localNotif];
 }
 
+- (void)windowManagerDidActivateApplication:(NSNotification *)notif
+{
+  WApplication *wapp = (WApplication *)[(CFObject *)[notif object] object];
+  WWindow *wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
+
+  _activeApplication = [self _applicationInfoForWindow:wwin];
+
+  WMLogWarning("Window Manager Did Activate Application: %@", convertNStoCFDictionary(_activeApplication));
+}
+
 // WMDidManageWindowNotification
-- (void)applicationDidOpenWindow:(NSNotification *)notif
+- (void)windowManagerDidManageWindow:(NSNotification *)notif
 {
   WWindow *wwin = (WWindow *)[(CFObject *)[notif object] object];
   NSDictionary *appInfo;
@@ -503,7 +514,7 @@ static BOOL _workspaceQuitting = NO;
 // 1. Determine application which owns subprocess
 // 2. Check if processes still exists from application PID list with
 //    kill (pid, 0).
-- (void)applicationDidCloseWindow:(NSNotification *)notif
+- (void)windowManagerDidUnmanageWindow:(NSNotification *)notif
 {
   WWindow *wwin = (WWindow *)[(CFObject *)[notif object] object];
   NSDictionary *wwinAppInfo, *appInfo;

@@ -88,6 +88,8 @@ struct wm_global_variables w_global;
 /* CoreFoundation notifications */
 CFStringRef WMDidCreateApplicationNotification = CFSTR("WMDidCreateApplicationNotification");
 CFStringRef WMDidDestroyApplicationNotification = CFSTR("WMDidDestroyApplicationNotification");
+CFStringRef WMDidActivateApplicationNotification = CFSTR("WMDidActivateApplicationNotification");
+CFStringRef WMDidDeactivateApplicationNotification = CFSTR("WMDidDeactivateApplicationNotification");
 
 CFStringRef WMDidManageWindowNotification = CFSTR("WMDidManageWindowNotification");
 CFStringRef WMDidUnmanageWindowNotification = CFSTR("WMDidUnmanageWindowNotification");
