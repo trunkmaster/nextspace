@@ -496,15 +496,14 @@ static BOOL _workspaceQuitting = NO;
   }
 
   appInfo = [self _applicationInfoForWindow:wwin];
-  NSLog(@"TODO: appInfo - %@", appInfo);
   if (!appInfo) {
     return;
   }
-  pidList = [self _pidsForApplicationWithName:[appInfo objectForKey:@"NSApplicationName"]];
+  pidList = [self _pidsForApplicationWithName:appInfo[@"NSApplicationName"]];
   if (!pidList) {
     return;
   }
-  [pidList addObject:[appInfo objectForKey:@"NSApplicationProcessIdentifier"]];
+  [pidList addObject:[appInfo[@"NSApplicationProcessIdentifier"] stringValue]];
   if ([[NSApp delegate] processesPanel]) {
     [[[NSApp delegate] processesPanel] updateAppList];
   }
