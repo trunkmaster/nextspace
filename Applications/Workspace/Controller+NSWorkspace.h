@@ -34,7 +34,7 @@
    - openFile:
    - iconForFile:
    - getInfoForFile:
-   - openIconForDirectory:
+   - iconForOpenedDirectory:
    Other areas of interest:
    - Notification center.
    - File operations.
@@ -243,7 +243,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
     the application the Workspace Manager would use to open fullPath, sets
     type to a value or file name extension indicating the file's type, and
     returns YES upon success and NO otherwise.*/
-// TODO (use libmagic)
+// use libmagic
 - (BOOL)getInfoForFile:(NSString *)fullPath application:(NSString **)appName type:(NSString **)type;
 
 /** Returns an NSImage with the icon for the single file specified by
@@ -261,7 +261,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 
 // ADDON
 /** Returns an icon of directory in opened state.*/
-- (NSImage *)openIconForDirectory:(NSString *)fullPath;
+- (NSImage *)iconForOpenedDirectory:(NSString *)fullPath;
 
 //-----------------------------------------------------------------------------
 //--- Tracking Changes to the File System
@@ -380,7 +380,6 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 - (NSArray *)mountNewRemovableMedia;
 
 /** Returns a list of the pathnames of all currently mounted removable disks.*/
-// TODO
 - (NSArray *)mountedRemovableMedia;
 
 //-----------------------------------------------------------------------------
@@ -445,4 +444,4 @@ APPKIT_EXPORT NSString *NSWorkspaceDidMountNotification;                 // @"NS
 APPKIT_EXPORT NSString *NSWorkspaceDidPerformFileOperationNotification;  // @"NSOperationNumber"
 APPKIT_EXPORT NSString *NSWorkspaceDidUnmountNotification;               // @"NSDevicePath"
 APPKIT_EXPORT NSString *NSWorkspaceWillPowerOffNotification;
-APPKIT_EXPORT NSString *NSWorkspaceWillUnmountNotification;  // @"NSDevicePath"
+APPKIT_EXPORT NSString *NSWorkspaceWillUnmountNotification;              // @"NSDevicePath"

@@ -747,7 +747,7 @@ static NSLock *raceLock = nil;
 }
 
 // NEXTSPACE addon
-- (NSImage *)openIconForDirectory:(NSString *)fullPath
+- (NSImage *)iconForOpenedDirectory:(NSString *)fullPath
 {
   NSString *appName, *fileType;
   NSString *openDirIconPath;

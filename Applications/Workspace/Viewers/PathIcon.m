@@ -743,7 +743,7 @@ static NSDragOperation savedMask;
   }
 
   if (draggingMask != NSDragOperationNone) {
-    NSImage *openedDir = [[NSApp delegate] openIconForDirectory:destPath];
+    NSImage *openedDir = [[NSApp delegate] iconForOpenedDirectory:destPath];
     if (openedDir) {
       [self setIconImage:openedDir];
     }
