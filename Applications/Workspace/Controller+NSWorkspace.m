@@ -36,13 +36,6 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
-#include "Processes/ProcessManager.h"
-#include "Foundation/NSDictionary.h"
-#include "log_utils.h"
-#include "Foundation/NSTimer.h"
-#include "Foundation/NSRunLoop.h"
-#include "AppKit/NSApplication.h"
-#include "Foundation/NSObjCRuntime.h"
 #import <Foundation/Foundation.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
@@ -51,9 +44,10 @@
 #import <DesktopKit/NXTFileManager.h>
 
 #import "Viewers/FileViewer.h"
-#import "Controller+NSWorkspace.h"
 #import "WMNotificationCenter.h"
+#import "Processes/ProcessManager.h"
 #import "Workspace+WM.h"
+#import "Controller+NSWorkspace.h"
 
 #define PosixExecutePermission (0111)
 
