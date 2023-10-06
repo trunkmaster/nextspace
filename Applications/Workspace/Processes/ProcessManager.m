@@ -23,6 +23,8 @@
 #include <signal.h>
 
 #import <DesktopKit/NXTAlert.h>
+#include "Foundation/NSOrderedSet.h"
+#include "Foundation/NSValue.h"
 #import <Foundation/NSString.h>
 #import <DesktopKit/NXTFileManager.h>
 
@@ -172,24 +174,11 @@ static BOOL _workspaceQuitting = NO;
 - (NSDictionary *)_normalizeApplicationInfo:(NSDictionary *)appInfo
 {
   NSMutableDictionary *_appInfo = [appInfo mutableCopy];
-  id nsPID;
-  NSString *appPID;
+  NSString *appPID = _appInfo[@"NSApplicationProcessIdentifier"];
 
-  // Detect class of "NSApplicationProcessIdentifier" value and replace
-  // with mutable array of strings.
-  nsPID = [_appInfo objectForKey:@"NSApplicationProcessIdentifier"];
-
-  // "NSApplicationProcessIdentifier" can be NSSmallInt, NSConstantString,
-  // GSCInlineString. Expected that all except NSSmallInt is kind of class
-  // NSString.
-  if ([nsPID isKindOfClass:[NSString class]]) {
-    appPID = nsPID;
-  } else {
-    appPID = [NSString stringWithFormat:@"%i", [nsPID intValue]];
-  }
-
-  [_appInfo setObject:[NSMutableOrderedSet orderedSetWithObject:appPID]
-               forKey:@"NSApplicationProcessIdentifier"];
+  _appInfo[@"NSApplicationProcessIdentifier"] = [NSMutableOrderedSet orderedSetWithObject:appPID];
+  // [_appInfo setObject:[NSMutableOrderedSet orderedSetWithObject:appPID]
+  //              forKey:@"NSApplicationProcessIdentifier"];
 
   return [_appInfo autorelease];
 }
@@ -210,25 +199,25 @@ static BOOL _workspaceQuitting = NO;
 // TODO
 - (void)applicationDidLaunch:(NSNotification *)notif
 {
-  NSDictionary *newAppInfo;
+  NSString *appName;
   BOOL appAlreadyRegistered = NO;
 
   WMLogWarning("NSWorkspaceDidLaunchApplication: %@",
-               convertNStoCFString([[notif userInfo] objectForKey:@"NSApplicationName"]));
+               convertNStoCFString([notif userInfo][@"NSApplicationName"]));
 
-  newAppInfo = [self _normalizeApplicationInfo:[notif userInfo]];
 
-  // Check if application already in app list. If so - append PID to the
-  // "NSApplicationProcessIdentifier" of existing object in 'applications' list.
+  // Check if application already in app list.
+  appName = [notif userInfo][@"NSApplicationName"];
   for (NSDictionary *aInfo in applications) {
-    if ([newAppInfo[@"NSApplicationName"] isEqualToString:aInfo[@"NSApplicationName"]]) {
+    if ([appName isEqualToString:aInfo[@"NSApplicationName"]]) {
       appAlreadyRegistered = YES;
       break;
     }
   }
 
   if (appAlreadyRegistered == NO) {
-    [applications addObject:newAppInfo];
+    NSDictionary *appInfo = [self _normalizeApplicationInfo:[notif userInfo]];
+    [applications addObject:appInfo];
   }
 
   if ([[NSApp delegate] processesPanel]) {
@@ -462,25 +451,26 @@ static BOOL _workspaceQuitting = NO;
 - (void)windowManagerDidManageWindow:(NSNotification *)notif
 {
   WWindow *wwin = (WWindow *)[(CFObject *)[notif object] object];
-  NSDictionary *appInfo;
+  NSDictionary *windowAppInfo, *appInfo;
   NSMutableOrderedSet *pidList = nil;
 
   if (_workspaceQuitting != NO || !wwin || !strcmp(wwin->wm_class, "GNUstep")) {
     return;
   }
 
-  appInfo = [self _applicationInfoForWindow:wwin];
-  if (!appInfo) {
+  windowAppInfo = [self _applicationInfoForWindow:wwin];
+  if (!windowAppInfo) {
     return;
   }
 
-  if ((appInfo = [self _applicationWithName:appInfo[@"NSApplicationName"]]) != nil) {
+  if ((appInfo = [self _applicationWithName:windowAppInfo[@"NSApplicationName"]]) != nil) {
     pidList = appInfo[@"NSApplicationProcessIdentifier"];
   }
   if (!pidList) {
     return;
   }
-  [pidList addObject:[appInfo[@"NSApplicationProcessIdentifier"] stringValue]];
+
+  [pidList addObject:windowAppInfo[@"NSApplicationProcessIdentifier"]];
   if ([[NSApp delegate] processesPanel]) {
     [[[NSApp delegate] processesPanel] updateAppList];
   }

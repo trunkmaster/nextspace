@@ -309,7 +309,6 @@ static Processes *shared = nil;
 
   // Process ID:
   pid = appInfo[@"NSApplicationProcessIdentifier"];
-  NSLog(@"Selected PID: %@", pid);
   [appPID setStringValue:[[pid array] componentsJoinedByString:@", "]];
 
   // Icon
