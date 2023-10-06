@@ -172,20 +172,20 @@ static BOOL _workspaceQuitting = NO;
 - (NSDictionary *)_normalizeApplicationInfo:(NSDictionary *)appInfo
 {
   NSMutableDictionary *_appInfo = [appInfo mutableCopy];
-  id nsapi;
+  id nsPID;
   NSString *appPID;
 
   // Detect class of "NSApplicationProcessIdentifier" value and replace
   // with mutable array of strings.
-  nsapi = [_appInfo objectForKey:@"NSApplicationProcessIdentifier"];
+  nsPID = [_appInfo objectForKey:@"NSApplicationProcessIdentifier"];
 
   // "NSApplicationProcessIdentifier" can be NSSmallInt, NSConstantString,
   // GSCInlineString. Expected that all except NSSmallInt is kind of class
   // NSString.
-  if ([nsapi isKindOfClass:[NSString class]]) {
-    appPID = nsapi;
+  if ([nsPID isKindOfClass:[NSString class]]) {
+    appPID = nsPID;
   } else {
-    appPID = [NSString stringWithFormat:@"%i", [nsapi intValue]];
+    appPID = [NSString stringWithFormat:@"%i", [nsPID intValue]];
   }
 
   [_appInfo setObject:[NSMutableOrderedSet orderedSetWithObject:appPID]
@@ -196,12 +196,8 @@ static BOOL _workspaceQuitting = NO;
 
 - (NSDictionary *)_applicationWithName:(NSString *)appName
 {
-  NSDictionary *entry;
-  NSString *eAppName;
-
-  for (entry in applications) {
-    eAppName = [entry objectForKey:@"NSApplicationName"];
-    if ([eAppName isEqualToString:appName]) {
+  for (NSDictionary *entry in applications) {
+    if ([entry[@"NSApplicationName"] isEqualToString:appName]) {
       return entry;
     }
   }
@@ -215,34 +211,23 @@ static BOOL _workspaceQuitting = NO;
 - (void)applicationDidLaunch:(NSNotification *)notif
 {
   NSDictionary *newAppInfo;
-  NSString *newAppName;
-  NSString *aName;
-  NSMutableOrderedSet *aPIDList, *newAppPID;
-  BOOL skipLaunchedApp = NO, addNewPID = YES;
+  BOOL appAlreadyRegistered = NO;
 
   WMLogWarning("NSWorkspaceDidLaunchApplication: %@",
                convertNStoCFString([[notif userInfo] objectForKey:@"NSApplicationName"]));
 
   newAppInfo = [self _normalizeApplicationInfo:[notif userInfo]];
-  newAppName = [newAppInfo objectForKey:@"NSApplicationName"];
-  newAppPID = [newAppInfo objectForKey:@"NSApplicationProcessIdentifier"];
 
   // Check if application already in app list. If so - append PID to the
   // "NSApplicationProcessIdentifier" of existing object in 'applications' list.
   for (NSDictionary *aInfo in applications) {
-    aName = [aInfo objectForKey:@"NSApplicationName"];
-    aPIDList = [aInfo objectForKey:@"NSApplicationProcessIdentifier"];
-
-    if ([aName isEqualToString:newAppName]) {
-      skipLaunchedApp = YES;
-      if ([aPIDList containsObject:@""] == NO &&
-          ([aPIDList containsObject:[newAppPID firstObject]] == NO)) {
-      }
+    if ([newAppInfo[@"NSApplicationName"] isEqualToString:aInfo[@"NSApplicationName"]]) {
+      appAlreadyRegistered = YES;
       break;
     }
   }
 
-  if (skipLaunchedApp == NO) {
+  if (appAlreadyRegistered == NO) {
     [applications addObject:newAppInfo];
   }
 
@@ -406,17 +391,6 @@ static BOOL _workspaceQuitting = NO;
   return (NSDictionary *)[appInfo autorelease];
 }
 
-- (NSMutableOrderedSet *)_pidsForApplicationWithName:(NSString *)appName
-{
-  NSDictionary *appInfo = [self _applicationWithName:appName];
-
-  if (!appInfo) {
-    return nil;
-  }
-
-  return [appInfo objectForKey:@"NSApplicationProcessIdentifier"];
-}
-
 // WMDidCreateApplicationNotification
 - (void)windowManagerDidCreateApplication:(NSNotification *)notif
 {
@@ -489,7 +463,7 @@ static BOOL _workspaceQuitting = NO;
 {
   WWindow *wwin = (WWindow *)[(CFObject *)[notif object] object];
   NSDictionary *appInfo;
-  NSMutableOrderedSet *pidList;
+  NSMutableOrderedSet *pidList = nil;
 
   if (_workspaceQuitting != NO || !wwin || !strcmp(wwin->wm_class, "GNUstep")) {
     return;
@@ -499,7 +473,10 @@ static BOOL _workspaceQuitting = NO;
   if (!appInfo) {
     return;
   }
-  pidList = [self _pidsForApplicationWithName:appInfo[@"NSApplicationName"]];
+
+  if ((appInfo = [self _applicationWithName:appInfo[@"NSApplicationName"]]) != nil) {
+    pidList = appInfo[@"NSApplicationProcessIdentifier"];
+  }
   if (!pidList) {
     return;
   }
