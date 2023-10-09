@@ -23,7 +23,6 @@
 #include <signal.h>
 
 #import <DesktopKit/NXTAlert.h>
-#include "Foundation/NSValue.h"
 #import <Foundation/NSString.h>
 #import <DesktopKit/NXTFileManager.h>
 
@@ -229,13 +228,19 @@ static BOOL _workspaceQuitting = NO;
   NSString *appName;
   NSDictionary *appInfo;
 
-  if (_workspaceQuitting) {
+  appName = [[notif userInfo] objectForKey:@"NSApplicationName"];
+  if (appName == nil) {
     return;
   }
-  appName = [[notif userInfo] objectForKey:@"NSApplicationName"];
+  appInfo = [self _applicationWithName:appName];
+  if (appInfo == nil) {
+    return;
+  }
 
-  if ((appInfo = [self _applicationWithName:appName])) {
-    [applications removeObject:appInfo];
+  NSLog(@"Application `%@` terminated, notification object: %@", appName, [notif object]);
+
+  [applications removeObject:appInfo];
+  if (_workspaceQuitting == NO) {
     if ([[NSApp delegate] processesPanel]) {
       [[[NSApp delegate] processesPanel] updateAppList];
     }
@@ -248,6 +253,84 @@ static BOOL _workspaceQuitting = NO;
   _activeApplication = [[notif userInfo] copy];
 }
 
+- (void)sendSignal:(int)signal toApplication:(NSDictionary *)appInfo
+{
+  NSSet *pidList = appInfo[@"NSApplicationProcessIdentifier"];
+  NSNotification *notif;
+
+  for (NSNumber *pid in pidList) {
+    // If PID is '-1' let window manager kill that app.
+    if ([pid intValue] != -1) {
+      NSLog(@"Sending INT signal to %i", [pid intValue]);
+      kill([pid intValue], signal);
+    }
+
+    // X11 app: In normal running mode it is tracked by Window Wanager.
+    // WM sends notification on app terminate. When Workspace is quiting we need to generate such
+    // notification because Window Manager preparing to quit.
+    // GNUstep app: send notification to remove app from list
+    if ([appInfo[@"IsXWindowApplication"] isEqualToString:@"NO"] && _workspaceQuitting == YES) {
+      notif = [NSNotification notificationWithName:NSWorkspaceDidTerminateApplicationNotification
+                                            object:@"ProcessManager"
+                                          userInfo:appInfo];
+      [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
+    }
+  }
+}
+
+- (BOOL)_terminateApplication:(NSDictionary *)appInfo
+{
+  NSString *_appName;
+  id _app = nil;
+
+  _appName = appInfo[@"NSApplicationName"];
+  if ([_appName isEqualToString:@"Workspace"] || [_appName isEqualToString:@"Login"]) {
+    // don't remove from app list - system apps
+    return YES;
+  }
+
+  NSLog(@"Terminating - %@", _appName);
+
+  _app = [NSConnection rootProxyForConnectionWithRegisteredName:_appName host:@""];
+  if (_app == nil) {
+    NSLog(@"Connection to %@ failed. Removing from list of known applications", _appName);
+    [applications removeObject:appInfo];
+    return YES;
+  }
+  // NSLog(@"_terminateApplication - performSelector:withObject:");
+  // id terminateObj = [_app performSelector:@selector(applicationShouldTerminate:)
+  //                                 withObject:NSApp];
+  // NSApplicationTerminateReply shouldTerminate = NSTerminateNow;
+  // if ([_app respondsToSelector:@selector(applicationShouldTerminate:)]) {
+  //   NSLog(@"_terminateApplication - applicationShouldTerminate:");
+  //   shouldTerminate = ([_app applicationShouldTerminate:NSApp] & 0xff);
+  //   NSLog(@"_terminateApplication: %@ - %li", terminateObj ? [terminateObj className] : terminateObj, shouldTerminate);
+  // }
+
+  // // NSApplicationTerminateReply shouldTerminate = ([_app applicationShouldTerminate:nil] & 0xff);
+  // if (shouldTerminate != NSTerminateNow) {
+  //   NSLog(@"Application '%@' is not terminated!", _appName);
+  //   return NO;
+  // }
+
+  // NSLog(@"Application '%@' should terminate: %li", _appName, shouldTerminate);
+  // [[_app connectionForProxy] invalidate];
+  // [self sendSignal:SIGINT toApplication:appInfo];
+
+  // libobjc2 prints out info to console all exception (even catched).
+  // I've switched to singal-based (above) to analyze and fix other cases with exceptions.
+  @try {
+    [_app terminate:nil];
+  } @catch (NSException *e) {
+    // application terminated -- remove app from launched apps list
+    [applications removeObject:appInfo];
+    [[_app connectionForProxy] invalidate];
+    return YES;
+  }
+
+  return NO;
+}
+
 // Performs gracefull termination of running GNUstep applications.
 // Returns:
 //   YES -- if all applications exited
@@ -255,59 +338,35 @@ static BOOL _workspaceQuitting = NO;
 - (BOOL)terminateAllApps
 {
   NSArray *_appsCopy = [applications copy];
-  NSString *_appName = nil;
-  id _app;
   BOOL _noRunningApps = YES;
 
   // Workspace goes into quit process.
   // Application removal from list will be processed inside this method
   _workspaceQuitting = YES;
 
-  // NSLog(@"Launched applications: %@", apps);
+  NSDebugLLog(@"Workspace", @"Terminating of runnig apps started!");
+
   for (NSDictionary *_appDict in _appsCopy) {
-    if ([[_appDict objectForKey:@"IsXWindowApplication"] isEqualToString:@"YES"]) {
-      NSSet *pidList = [_appDict objectForKey:@"NSApplicationProcessIdentifier"];
-
-      for (NSNumber *pid in pidList) {
-        // If PID is '-1' let window manager kill that app.
-        if ([pid integerValue] != -1) {
-          kill([pid integerValue], SIGKILL);
-        }
-      }
-      [applications removeObject:_appDict];
-      continue;  // go to 'while' statement
-    } else {
-      _appName = [_appDict objectForKey:@"NSApplicationName"];
-      if ([_appName isEqualToString:@"Workspace"] || [_appName isEqualToString:@"Login"]) {
-        // don't remove from app list - system apps
-        continue;  // go to 'while' statement
-      }
-      NSLog(@"Terminating - %@", _appName);
-      _app = [NSConnection rootProxyForConnectionWithRegisteredName:_appName host:@""];
-      if (_app == nil) {
-        NSLog(@"Connection to %@ failed. Removing from list of known applications", _appName);
-        [applications removeObject:_appDict];
-        continue;  // go to 'while' statement
-      }
-
-      @try {
-        [_app terminate:nil];
-      } @catch (NSException *e) {
-        // application terminated -- remove app from launched apps list
-        [applications removeObject:_appDict];
-        [[_app connectionForProxy] invalidate];
-        continue;  // go to 'while' statement
-      }
+    if ([_appDict[@"IsXWindowApplication"] isEqualToString:@"YES"]) {
+      [self sendSignal:SIGKILL toApplication:_appDict];
+      continue;
+    } else if ([self _terminateApplication:_appDict] != NO) {
+      continue;
     }
 
-    NSLog(@"Application %@ ignore terminate request!", _appName);
+    NSDebugLLog(@"Workspace", @"Application '%@' refused to terminate!",
+                [_appDict objectForKey:@"NSApplicationName"]);
     _noRunningApps = NO;
     _workspaceQuitting = NO;
     [[[NSApp delegate] processesPanel] updateAppList];
     break;
   }
 
-  NSLog(@"Terminating of runnig apps completed!");
+  // while ([applications count] > 1 && _workspaceQuitting != NO) {
+  //   NSDebugLLog(@"Workspace", @"Waiting for applications to terminate...");
+  //   [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+  // }
+  NSDebugLLog(@"Workspace", @"Terminating of runnig apps completed!");
   [_appsCopy release];
 
   return _noRunningApps;
@@ -429,7 +488,7 @@ static BOOL _workspaceQuitting = NO;
 
   appInfo = [self _applicationInfoForApp:wapp window:wapp->main_wwin];
   localNotif = [NSNotification notificationWithName:NSWorkspaceDidTerminateApplicationNotification
-                                             object:nil
+                                             object:@"WindowManager"
                                            userInfo:appInfo];
   [self applicationDidTerminate:localNotif];
 }

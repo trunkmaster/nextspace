@@ -20,6 +20,7 @@
 //
 
 #import <sys/types.h>
+#include "Foundation/NSValue.h"
 #import <signal.h>
 
 #import <DesktopKit/NXTAlert.h>
@@ -253,24 +254,7 @@ static Processes *shared = nil;
   if (NXTRunAlertPanel(_(@"Kill application"), _(@"Really kill application %@?"), _(@"Cancel"),
                        _(@"Kill"), nil,
                        [appInfo objectForKey:@"NSApplicationName"]) != NSAlertDefaultReturn) {
-    NSString *pidListString;
-    NSMutableArray *pidList;
-
-    pidList = [appInfo objectForKey:@"NSApplicationProcessIdentifier"];
-    for (NSString *pidString in pidList) {
-      kill([pidString intValue], SIGKILL);
-    }
-
-    if (![[appInfo objectForKey:@"IsXWindowApplication"]
-            isEqualToString:@"YES"]) {  // GNUstep app: send notification to remove app from list
-      NSNotification *notif;
-
-      notif = [NSNotification notificationWithName:NSWorkspaceDidTerminateApplicationNotification
-                                            object:nil
-                                          userInfo:appInfo];
-
-      [[[NSWorkspace sharedWorkspace] notificationCenter] postNotification:notif];
-    }
+    [manager sendSignal:SIGKILL toApplication:appInfo];
   }
 
   if (appList != nil) {

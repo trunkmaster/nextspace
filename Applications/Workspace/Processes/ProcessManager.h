@@ -115,6 +115,7 @@ typedef enum {
 - (NSDictionary *)_normalizeApplicationInfo:(NSDictionary *)appInfo;
 - (NSDictionary *)_applicationWithName:(NSString *)appName;
 
+- (void)sendSignal:(int)signal toApplication:(NSDictionary *)appInfo;
 - (BOOL)terminateAllApps;
 
 @end
