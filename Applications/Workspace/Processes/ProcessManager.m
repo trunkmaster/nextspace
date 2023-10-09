@@ -23,7 +23,6 @@
 #include <signal.h>
 
 #import <DesktopKit/NXTAlert.h>
-#include "Foundation/NSOrderedSet.h"
 #include "Foundation/NSValue.h"
 #import <Foundation/NSString.h>
 #import <DesktopKit/NXTFileManager.h>
@@ -170,7 +169,7 @@ static BOOL _workspaceQuitting = NO;
 
 @implementation ProcessManager (Applications)
 
-// Convert "NSApplicationProcessIdentifier" to mutable set of strings
+// Convert "NSApplicationProcessIdentifier" to mutable set
 - (NSDictionary *)_normalizeApplicationInfo:(NSDictionary *)appInfo
 {
   NSMutableDictionary *_appInfo = [appInfo mutableCopy];
@@ -196,7 +195,6 @@ static BOOL _workspaceQuitting = NO;
 
 // NSWorkspaceDidLaunchApplicationNotification
 // Register launched application.
-// TODO
 - (void)applicationDidLaunch:(NSNotification *)notif
 {
   NSString *appName;
@@ -265,16 +263,15 @@ static BOOL _workspaceQuitting = NO;
   // Application removal from list will be processed inside this method
   _workspaceQuitting = YES;
 
-  //  NSLog(@"Launched applications: %@", apps);
+  // NSLog(@"Launched applications: %@", apps);
   for (NSDictionary *_appDict in _appsCopy) {
     if ([[_appDict objectForKey:@"IsXWindowApplication"] isEqualToString:@"YES"]) {
-      NSSet *pidList;
-      pidList = [_appDict objectForKey:@"NSApplicationProcessIdentifier"];
+      NSSet *pidList = [_appDict objectForKey:@"NSApplicationProcessIdentifier"];
 
-      for (NSString *pidString in pidList) {
+      for (NSNumber *pid in pidList) {
         // If PID is '-1' let window manager kill that app.
-        if ([pidString isEqualToString:@"-1"] == NO) {
-          kill([pidString integerValue], SIGKILL);
+        if ([pid integerValue] != -1) {
+          kill([pid integerValue], SIGKILL);
         }
       }
       [applications removeObject:_appDict];
