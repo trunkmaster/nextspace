@@ -339,8 +339,13 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
     @"NSApplicationProcessSerialNumberLow" - The low long of the process serial number (PSN), as an
                                              NSNumber object.
  */
-// TODO: [NSWorkspace _workspaceApplication]
+// --- [NSWorkspace _workspaceApplication]
 - (NSDictionary *)activeApplication;
+
+// Return not only GNUstep application but also registered X11 applications.
+// Such application record has separate field @"IsXWindowApplication" set to @"YES".
+// --- [NSWorkspace _workspaceApplication]
+- (NSArray*) launchedApplications;
 
 //-----------------------------------------------------------------------------
 //--- Unmounting a Device

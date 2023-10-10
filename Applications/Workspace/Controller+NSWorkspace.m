@@ -802,6 +802,11 @@ static NSLock *raceLock = nil;
   return [[ProcessManager shared] activeApplication];
 }
 
+- (NSArray *)launchedApplications
+{
+  return [[ProcessManager shared] applications];
+}
+
 //-------------------------------------------------------------------------------------------------
 //--- Unmounting a Device
 //-------------------------------------------------------------------------------------------------
