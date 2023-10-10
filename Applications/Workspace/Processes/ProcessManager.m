@@ -261,7 +261,7 @@ static BOOL _workspaceQuitting = NO;
   for (NSNumber *pid in pidList) {
     // If PID is '-1' let window manager kill that app.
     if ([pid intValue] != -1) {
-      NSLog(@"Sending INT signal to %i", [pid intValue]);
+      NSDebugLLog(@"Workspace", @"Sending signal %i to %i", signal, [pid intValue]);
       kill([pid intValue], signal);
     }
 
@@ -289,44 +289,26 @@ static BOOL _workspaceQuitting = NO;
     return YES;
   }
 
-  NSLog(@"Terminating - %@", _appName);
+  NSDebugLLog(@"Workspace", @"Terminating - %@", _appName);
 
   _app = [NSConnection rootProxyForConnectionWithRegisteredName:_appName host:@""];
   if (_app == nil) {
-    NSLog(@"Connection to %@ failed. Removing from list of known applications", _appName);
+    NSDebugLLog(@"Workspace", @"Connection to %@ failed. Removing from list of known applications", _appName);
     [applications removeObject:appInfo];
     return YES;
   }
-  // NSLog(@"_terminateApplication - performSelector:withObject:");
-  // id terminateObj = [_app performSelector:@selector(applicationShouldTerminate:)
-  //                                 withObject:NSApp];
-  // NSApplicationTerminateReply shouldTerminate = NSTerminateNow;
-  // if ([_app respondsToSelector:@selector(applicationShouldTerminate:)]) {
-  //   NSLog(@"_terminateApplication - applicationShouldTerminate:");
-  //   shouldTerminate = ([_app applicationShouldTerminate:NSApp] & 0xff);
-  //   NSLog(@"_terminateApplication: %@ - %li", terminateObj ? [terminateObj className] : terminateObj, shouldTerminate);
-  // }
-
-  // // NSApplicationTerminateReply shouldTerminate = ([_app applicationShouldTerminate:nil] & 0xff);
-  // if (shouldTerminate != NSTerminateNow) {
-  //   NSLog(@"Application '%@' is not terminated!", _appName);
-  //   return NO;
-  // }
-
-  // NSLog(@"Application '%@' should terminate: %li", _appName, shouldTerminate);
-  // [[_app connectionForProxy] invalidate];
-  // [self sendSignal:SIGINT toApplication:appInfo];
-
-  // libobjc2 prints out info to console all exception (even catched).
-  // I've switched to singal-based (above) to analyze and fix other cases with exceptions.
   @try {
-    [_app terminate:nil];
+    [_app terminate:NSApp];
   } @catch (NSException *e) {
     // application terminated -- remove app from launched apps list
     [applications removeObject:appInfo];
     [[_app connectionForProxy] invalidate];
+    // libobjc2 prints out info to console all exception (even catched).
+    NSDebugLLog(@"Workspace", @"Application %@ was terminated. Ignore ObjC runtime exception - it's catched.", _appName);
     return YES;
   }
+
+  [[_app connectionForProxy] invalidate];
 
   return NO;
 }
@@ -362,10 +344,6 @@ static BOOL _workspaceQuitting = NO;
     break;
   }
 
-  // while ([applications count] > 1 && _workspaceQuitting != NO) {
-  //   NSDebugLLog(@"Workspace", @"Waiting for applications to terminate...");
-  //   [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
-  // }
   NSDebugLLog(@"Workspace", @"Terminating of runnig apps completed!");
   [_appsCopy release];
 
