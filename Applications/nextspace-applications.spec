@@ -24,6 +24,7 @@ BuildRequires:	nextspace-frameworks-devel
 BuildRequires:	pam-devel
 # Workspace
 BuildRequires:	libcorefoundation-devel
+BuildRequires:	fontconfig-devel
 BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libpng-devel
@@ -34,7 +35,9 @@ BuildRequires:	libXpm-devel
 BuildRequires:	libXmu-devel
 BuildRequires:	libexif-devel
 BuildRequires:	libXfixes-devel
-BuildRequires:	fontconfig-devel
+BuildRequires:	libXcomposite-devel
+BuildRequires:	libXrender-devel
+BuildRequires:	libXdamage-devel
 #
 Requires:	nextspace-frameworks
 Requires:	libcorefoundation
@@ -44,6 +47,9 @@ Requires:	libXinerama
 Requires:	libXpm
 Requires:	libXmu
 Requires:	libXfixes
+Requires:	libXcomposite
+Requires:	libXrender
+Requires:	libXdamage
 Requires:	libexif
 Requires:	xorg-x11-drv-evdev
 Requires:	xorg-x11-drv-intel
