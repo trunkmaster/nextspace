@@ -80,6 +80,7 @@
 #include "xmodifier.h"
 #include "dock.h"
 #include "application.h"
+#include "wmcomposer.h"
 
 /****** Global ******/
 Display *dpy;
@@ -175,7 +176,10 @@ static int _catchXError(Display *dpy, XErrorEvent *error)
        */
        || (error->request_code == X_InstallColormap))) {
     return 0;
+  } else if (wComposerErrorHandler(dpy, error)) {
+    return 0;
   }
+
   FormatXError(dpy, error, buffer, MAXLINE);
   WMLogWarning(_("internal X error: %s"), buffer);
   return -1;
