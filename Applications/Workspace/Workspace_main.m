@@ -28,6 +28,8 @@
 #import "Recycler.h"
 #import "Workspace+WM.h"
 
+#include "WM/wmcomposer.h"
+
 // Global - set in WM/event.c - WMRunLoop()
 CFRunLoopRef wm_runloop = NULL;
 
@@ -136,6 +138,22 @@ int main(int argc, const char **argv)
 
   fprintf(stderr, "=== Starting Workspace ===\n");
   workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+
+  //--- Compositor thread queue -------------------------------------
+  {
+    dispatch_queue_t cmp_q;
+    cmp_q = dispatch_queue_create("ns.workspace.composer", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_async(cmp_q, ^{
+      fprintf(stderr, "=== Initializing Composer ===\n");
+      if (wComposerInitialize() == True) {
+        fprintf(stderr, "=== Composer initialized ===\n");
+        wComposerRunLoop();
+        fprintf(stderr, "=== Composer completed it's execution ===\n");
+      } else {
+        fprintf(stderr, "=== Failed to initialize Composer ===\n");
+      }
+    });
+  }
 
   //--- Window Manager thread queue -------------------------------------
   {
