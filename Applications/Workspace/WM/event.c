@@ -318,7 +318,7 @@ void WMRunLoop_V0()
 {
   XEvent event;
 
-  WMLogError("WMRunLoop0: handling events while run loop is warming up.");
+  WMLogError("WMRunLoop_V0: handling events while run loop is warming up.");
   while (wm_runloop == NULL) {
     WMNextEvent(dpy, &event);
     WMHandleEvent(&event);
@@ -344,7 +344,7 @@ void WMRunLoop_V1()
   CFFileDescriptorRef xfd;
   CFRunLoopSourceRef xfd_source;
 
-  WMLogError("V1: Entering WM runloop with X connection: %i", ConnectionNumber(dpy));
+  WMLogError("WMRunLoop_V1: Entering WM runloop with X connection: %i", ConnectionNumber(dpy));
 
   // X connection file descriptor
   xfd = CFFileDescriptorCreate(kCFAllocatorDefault, ConnectionNumber(dpy), true,
@@ -356,7 +356,7 @@ void WMRunLoop_V1()
   CFRelease(xfd_source);
   CFRelease(xfd);
 
-  WMLogError("V1: Going into CFRunLoop...");
+  WMLogError("WMRunLoop_V1: Going into CFRunLoop...");
 
   wm_runloop = run_loop;
   CFRunLoopRun();
