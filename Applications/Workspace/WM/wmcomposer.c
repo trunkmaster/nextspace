@@ -44,7 +44,7 @@
 typedef struct _ignore {
   struct _ignore *next;
   unsigned long sequence;
-} ignore;
+} CMPIgnoreSequence;
 
 typedef struct _win {
   struct _win *next;
@@ -73,7 +73,7 @@ typedef struct _win {
   /* for drawing translucent windows */
   XserverRegion borderClip;
   struct _win *prev_trans;
-} win;
+} CMPWindow;
 
 typedef struct _conv {
   int size;
@@ -82,18 +82,18 @@ typedef struct _conv {
 
 typedef struct _fade {
   struct _fade *next;
-  win *w;
+  Display *dpy;
+  CMPWindow *w;
   double cur;
   double finish;
   double step;
-  void (*callback)(Display *dpy, win *w, Bool gone);
-  Display *dpy;
+  void (*callback)(Display *dpy, CMPWindow *w, Bool gone);
   Bool gone;
-} fade;
+} CMPFade;
 
 static Display *dpy;
-static win *list;
-static fade *fades;
+static CMPWindow *list;
+static CMPFade *fades;
 static int scr;
 static Window root;
 static Picture rootPicture;
@@ -105,7 +105,7 @@ static XserverRegion allDamage;
 static Bool clipChanged;
 static Bool hasNamePixmap;
 static int root_height, root_width;
-static ignore *ignore_head, **ignore_tail = &ignore_head;
+static CMPIgnoreSequence *ignore_head, **ignore_tail = &ignore_head;
 static int xfixes_event, xfixes_error;
 static int damage_event, damage_error;
 static int composite_event, composite_error;
@@ -144,13 +144,18 @@ typedef enum _compMode {
   CompClientShadows, /* use window extents for shadow, blurred */
 } CompMode;
 
-static void determine_mode(Display *dpy, win *w);
+static void determine_mode(Display *dpy, CMPWindow *w);
 
-static double get_opacity_percent(Display *dpy, win *w, double def);
+static double get_window_opacity_value(Display *dpy, CMPWindow *w, double def);
 
-static unsigned int get_opacity_prop(Display *dpy, win *w, unsigned int def);
+static unsigned int get_window_opacity_property(Display *dpy, CMPWindow *w, unsigned int def);
 
-static XserverRegion win_extents(Display *dpy, win *w);
+static XserverRegion window_extents_region(Display *dpy, CMPWindow *w);
+static XserverRegion window_border_size(Display *dpy, CMPWindow *w);
+    
+static void wComposerDiscardEventIgnore(Display *dpy, unsigned long sequence);
+static void wComposerSetEventIgnore(Display *dpy, unsigned long sequence);
+static int wComposerShouldIgnoreEvent(Display *dpy, unsigned long sequence);
 
 static CompMode compMode = CompSimple;
 
@@ -185,9 +190,9 @@ static int get_time_in_milliseconds(void)
 // Fading
 // ----------------------------------------------------------------------------------------------
 
-static fade *find_fade(win *w)
+static CMPFade *find_fade(CMPWindow *w)
 {
-  fade *f;
+  CMPFade *f;
 
   for (f = fades; f; f = f->next) {
     if (f->w == w) {
@@ -197,9 +202,9 @@ static fade *find_fade(win *w)
   return NULL;
 }
 
-static void dequeue_fade(Display *dpy, fade *f)
+static void dequeue_fade(Display *dpy, CMPFade *f)
 {
-  fade **prev;
+  CMPFade **prev;
 
   for (prev = &fades; *prev; prev = &(*prev)->next)
     if (*prev == f) {
@@ -212,15 +217,15 @@ static void dequeue_fade(Display *dpy, fade *f)
     }
 }
 
-static void cleanup_fade(Display *dpy, win *w)
+static void cleanup_fade(Display *dpy, CMPWindow *w)
 {
-  fade *f = find_fade(w);
+  CMPFade *f = find_fade(w);
   if (f) {
     dequeue_fade(dpy, f);
   }
 }
 
-static void enqueue_fade(Display *dpy, fade *f)
+static void enqueue_fade(Display *dpy, CMPFade *f)
 {
   if (!fades) {
     fade_time = get_time_in_milliseconds() + fade_delta;
@@ -229,15 +234,15 @@ static void enqueue_fade(Display *dpy, fade *f)
   fades = f;
 }
 
-static void set_fade(Display *dpy, win *w, double start, double finish, double step,
-                     void (*callback)(Display *dpy, win *w, Bool gone), Bool gone,
+static void set_fade(Display *dpy, CMPWindow *w, double start, double finish, double step,
+                     void (*callback)(Display *dpy, CMPWindow *w, Bool gone), Bool gone,
                      Bool exec_callback, Bool override)
 {
-  fade *f;
+  CMPFade *f;
 
   f = find_fade(w);
   if (!f) {
-    f = malloc(sizeof(fade));
+    f = malloc(sizeof(CMPFade));
     f->next = NULL;
     f->w = w;
     f->cur = start;
@@ -271,7 +276,7 @@ static void set_fade(Display *dpy, win *w, double start, double finish, double s
   if (w->shadow) {
     XRenderFreePicture(dpy, w->shadow);
     w->shadow = None;
-    w->extents = win_extents(dpy, w);
+    w->extents = window_extents_region(dpy, w);
   }
 }
 
@@ -293,7 +298,7 @@ static int fade_timeout(void)
 static void run_fades(Display *dpy)
 {
   int now = get_time_in_milliseconds();
-  fade *next = fades;
+  CMPFade *next = fades;
   int steps;
   Bool need_dequeue;
 
@@ -302,8 +307,8 @@ static void run_fades(Display *dpy)
   steps = 1 + (now - fade_time) / fade_delta;
 
   while (next) {
-    fade *f = next;
-    win *w = f->w;
+    CMPFade *f = next;
+    CMPWindow *w = f->w;
     next = f->next;
     f->cur += f->step * steps;
     if (f->cur >= 1) {
@@ -328,7 +333,7 @@ static void run_fades(Display *dpy)
     if (w->shadow) {
       XRenderFreePicture(dpy, w->shadow);
       w->shadow = None;
-      w->extents = win_extents(dpy, w);
+      w->extents = window_extents_region(dpy, w);
     }
     /* Must do this last as it might destroy f->w in callbacks */
     if (need_dequeue) {
@@ -339,7 +344,7 @@ static void run_fades(Display *dpy)
 }
 
 // ----------------------------------------------------------------------------------------------
-// Gaussian utilities
+// Gaussian blur
 // ----------------------------------------------------------------------------------------------
 static double gaussian(double r, double x, double y)
 {
@@ -485,9 +490,9 @@ static void presum_gaussian(conv *map)
 }
 
 // ----------------------------------------------------------------------------------------------
-// Shadows
+// Pictures and images
 // ----------------------------------------------------------------------------------------------
-static XImage *make_shadow(Display *dpy, double opacity, int width, int height)
+static XImage *create_shadow_image(Display *dpy, double opacity, int width, int height)
 {
   XImage *ximage;
   unsigned char *data;
@@ -582,15 +587,15 @@ static XImage *make_shadow(Display *dpy, double opacity, int width, int height)
   return ximage;
 }
 
-static Picture shadow_picture(Display *dpy, double opacity, Picture alpha_pict, int width,
-                              int height, int *wp, int *hp)
+static Picture create_shadow_picture(Display *dpy, double opacity, Picture alpha_pict,
+                                            int width, int height, int *wp, int *hp)
 {
   XImage *shadowImage;
   Pixmap shadowPixmap;
   Picture shadowPicture;
   GC gc;
 
-  shadowImage = make_shadow(dpy, opacity, width, height);
+  shadowImage = create_shadow_image(dpy, opacity, width, height);
   if (!shadowImage) {
     return None;
   }
@@ -626,8 +631,7 @@ static Picture shadow_picture(Display *dpy, double opacity, Picture alpha_pict, 
   return shadowPicture;
 }
 
-
-static Picture wComposerCreateSolidPicture(Display *dpy, Bool argb, double a, double r, double g, double b)
+static Picture create_solid_picture(Display *dpy, Bool argb, double a, double r, double g, double b)
 {
   Pixmap pixmap;
   Picture picture;
@@ -654,59 +658,10 @@ static Picture wComposerCreateSolidPicture(Display *dpy, Bool argb, double a, do
   c.blue = b * 0xffff;
   XRenderFillRectangle(dpy, PictOpSrc, picture, &c, 0, 0, 1, 1);
   XFreePixmap(dpy, pixmap);
+
   return picture;
 }
 
-// ----------------------------------------------------------------------------------------------
-// Events
-// ----------------------------------------------------------------------------------------------
-static void discard_ignore(Display *dpy, unsigned long sequence)
-{
-  while (ignore_head) {
-    if ((long)(sequence - ignore_head->sequence) > 0) {
-      ignore *next = ignore_head->next;
-      free(ignore_head);
-      ignore_head = next;
-      if (!ignore_head) {
-        ignore_tail = &ignore_head;
-      }
-    } else {
-      break;
-    }
-  }
-}
-
-static void set_ignore(Display *dpy, unsigned long sequence)
-{
-  ignore *i = malloc(sizeof(ignore));
-
-  if (!i) {
-    return;
-  }
-  
-  i->sequence = sequence;
-  i->next = NULL;
-  *ignore_tail = i;
-  ignore_tail = &i->next;
-}
-
-static int should_ignore(Display *dpy, unsigned long sequence)
-{
-  discard_ignore(dpy, sequence);
-  return ignore_head && ignore_head->sequence == sequence;
-}
-
-static win *find_win(Display *dpy, Window id)
-{
-  win *w;
-
-  for (w = list; w; w = w->next) {
-    if (w->id == id) {
-      return w;
-    }
-  }
-  return NULL;
-}
 
 static const char *backgroundProps[] = {
     "_XROOTPMAP_ID",
@@ -714,7 +669,7 @@ static const char *backgroundProps[] = {
     NULL,
 };
 
-static Picture root_tile(Display *dpy)
+static Picture root_tile_picture(Display *dpy)
 {
   Picture picture;
   Atom actual_type;
@@ -757,91 +712,20 @@ static Picture root_tile(Display *dpy)
   return picture;
 }
 
-static void paint_root(Display *dpy)
+static void paint_root_window(Display *dpy)
 {
   if (!rootTile) {
-    rootTile = root_tile(dpy);
+    rootTile = root_tile_picture(dpy);
   }
 
   XRenderComposite(dpy, PictOpSrc, rootTile, None, rootBuffer, 0, 0, 0, 0, 0, 0, root_width,
                    root_height);
 }
 
-static XserverRegion win_extents(Display *dpy, win *w)
+static void paint_all(Display *dpy, XserverRegion region)
 {
-  XRectangle r;
-
-  r.x = w->a.x;
-  r.y = w->a.y;
-  r.width = w->a.width + w->a.border_width * 2;
-  r.height = w->a.height + w->a.border_width * 2;
-  if (compMode != CompSimple && !(w->windowType == winDockAtom && excludeDockShadows)) {
-    if (compMode == CompServerShadows || w->mode != WINDOW_ARGB) {
-      XRectangle sr;
-
-      if (compMode == CompServerShadows) {
-        w->shadow_dx = 2;
-        w->shadow_dy = 7;
-        w->shadow_width = w->a.width;
-        w->shadow_height = w->a.height;
-      } else {
-        w->shadow_dx = shadowOffsetX;
-        w->shadow_dy = shadowOffsetY;
-        if (!w->shadow) {
-          double opacity = shadowOpacity;
-          if (w->mode == WINDOW_TRANS) {
-            opacity = opacity * ((double)w->opacity) / ((double)OPAQUE);
-          }
-          w->shadow = shadow_picture(dpy, opacity, w->alphaPict, w->a.width + w->a.border_width * 2,
-                                     w->a.height + w->a.border_width * 2, &w->shadow_width,
-                                     &w->shadow_height);
-        }
-      }
-      sr.x = w->a.x + w->shadow_dx;
-      sr.y = w->a.y + w->shadow_dy;
-      sr.width = w->shadow_width;
-      sr.height = w->shadow_height;
-      if (sr.x < r.x) {
-        r.width = (r.x + r.width) - sr.x;
-        r.x = sr.x;
-      }
-      if (sr.y < r.y) {
-        r.height = (r.y + r.height) - sr.y;
-        r.y = sr.y;
-      }
-      if (sr.x + sr.width > r.x + r.width) {
-        r.width = sr.x + sr.width - r.x;
-      }
-      if (sr.y + sr.height > r.y + r.height) {
-        r.height = sr.y + sr.height - r.y;
-      }
-    }
-  }
-  return XFixesCreateRegion(dpy, &r, 1);
-}
-
-static XserverRegion border_size(Display *dpy, win *w)
-{
-  XserverRegion border;
-  /*
-   * if window doesn't exist anymore,  this will generate an error
-   * as well as not generate a region.  Perhaps a better XFixes
-   * architecture would be to have a request that copies instead
-   * of creates, that way you'd just end up with an empty region
-   * instead of an invalid XID.
-   */
-  set_ignore(dpy, NextRequest(dpy));
-  border = XFixesCreateRegionFromWindow(dpy, w->id, WindowRegionBounding);
-  /* translate this */
-  set_ignore(dpy, NextRequest(dpy));
-  XFixesTranslateRegion(dpy, border, w->a.x + w->a.border_width, w->a.y + w->a.border_width);
-  return border;
-}
-
-static void wComposerPaintAll(Display *dpy, XserverRegion region)
-{
-  win *w;
-  win *t = NULL;
+  CMPWindow *w;
+  CMPWindow *t = NULL;
 
   if (!region) {
     XRectangle r;
@@ -885,7 +769,7 @@ static void wComposerPaintAll(Display *dpy, XserverRegion region)
     }
     if (clipChanged) {
       if (w->borderSize) {
-        set_ignore(dpy, NextRequest(dpy));
+        wComposerSetEventIgnore(dpy, NextRequest(dpy));
         XFixesDestroyRegion(dpy, w->borderSize);
         w->borderSize = None;
       }
@@ -899,10 +783,10 @@ static void wComposerPaintAll(Display *dpy, XserverRegion region)
       }
     }
     if (!w->borderSize) {
-      w->borderSize = border_size(dpy, w);
+      w->borderSize = window_border_size(dpy, w);
     }
     if (!w->extents) {
-      w->extents = win_extents(dpy, w);
+      w->extents = window_extents_region(dpy, w);
     }
     if (w->mode == WINDOW_SOLID) {
       int x, y, wid, hei;
@@ -911,9 +795,9 @@ static void wComposerPaintAll(Display *dpy, XserverRegion region)
       wid = w->a.width + w->a.border_width * 2;
       hei = w->a.height + w->a.border_width * 2;
       XFixesSetPictureClipRegion(dpy, rootBuffer, 0, 0, region);
-      set_ignore(dpy, NextRequest(dpy));
+      wComposerSetEventIgnore(dpy, NextRequest(dpy));
       XFixesSubtractRegion(dpy, region, region, w->borderSize);
-      set_ignore(dpy, NextRequest(dpy));
+      wComposerSetEventIgnore(dpy, NextRequest(dpy));
       XRenderComposite(dpy, PictOpSrc, w->picture, None, rootBuffer, 0, 0, 0, 0, x, y, wid, hei);
     }
     if (!w->borderClip) {
@@ -924,7 +808,7 @@ static void wComposerPaintAll(Display *dpy, XserverRegion region)
     t = w;
   }
   XFixesSetPictureClipRegion(dpy, rootBuffer, 0, 0, region);
-  paint_root(dpy);
+  paint_root_window(dpy);
   for (w = t; w; w = w->prev_trans) {
     XFixesSetPictureClipRegion(dpy, rootBuffer, 0, 0, w->borderClip);
     switch (compMode) {
@@ -934,9 +818,9 @@ static void wComposerPaintAll(Display *dpy, XserverRegion region)
         /* dont' bother drawing shadows on desktop windows */
         if (w->windowType == winDesktopAtom)
           break;
-        set_ignore(dpy, NextRequest(dpy));
+        wComposerSetEventIgnore(dpy, NextRequest(dpy));
         if (w->opacity != OPAQUE && !w->shadowPict)
-          w->shadowPict = wComposerCreateSolidPicture(dpy, True, (double)w->opacity / OPAQUE * 0.3, 0, 0, 0);
+          w->shadowPict = create_solid_picture(dpy, True, (double)w->opacity / OPAQUE * 0.3, 0, 0, 0);
         XRenderComposite(dpy, PictOpOver, w->shadowPict ? w->shadowPict : transBlackPicture,
                          w->picture, rootBuffer, 0, 0, 0, 0, w->a.x + w->shadow_dx,
                          w->a.y + w->shadow_dy, w->shadow_width, w->shadow_height);
@@ -951,7 +835,7 @@ static void wComposerPaintAll(Display *dpy, XserverRegion region)
         break;
     }
     if (w->opacity != OPAQUE && !w->alphaPict) {
-      w->alphaPict = wComposerCreateSolidPicture(dpy, False, (double)w->opacity / OPAQUE, 0, 0, 0);
+      w->alphaPict = create_solid_picture(dpy, False, (double)w->opacity / OPAQUE, 0, 0, 0);
     }
     if (w->mode == WINDOW_TRANS) {
       int x, y, wid, hei;
@@ -961,7 +845,7 @@ static void wComposerPaintAll(Display *dpy, XserverRegion region)
       y = w->a.y;
       wid = w->a.width + w->a.border_width * 2;
       hei = w->a.height + w->a.border_width * 2;
-      set_ignore(dpy, NextRequest(dpy));
+      wComposerSetEventIgnore(dpy, NextRequest(dpy));
       XRenderComposite(dpy, PictOpOver, w->picture, w->alphaPict, rootBuffer, 0, 0, 0, 0, x, y, wid,
                        hei);
     } else if (w->mode == WINDOW_ARGB) {
@@ -972,7 +856,7 @@ static void wComposerPaintAll(Display *dpy, XserverRegion region)
       y = w->a.y;
       wid = w->a.width + w->a.border_width * 2;
       hei = w->a.height + w->a.border_width * 2;
-      set_ignore(dpy, NextRequest(dpy));
+      wComposerSetEventIgnore(dpy, NextRequest(dpy));
       XRenderComposite(dpy, PictOpOver, w->picture, w->alphaPict, rootBuffer, 0, 0, 0, 0, x, y, wid,
                        hei);
     }
@@ -987,7 +871,7 @@ static void wComposerPaintAll(Display *dpy, XserverRegion region)
   }
 }
 
-static void add_damage(Display *dpy, XserverRegion damage)
+static void add_damage_region(Display *dpy, XserverRegion damage)
 {
   if (allDamage) {
     XFixesUnionRegion(dpy, allDamage, allDamage, damage);
@@ -997,17 +881,103 @@ static void add_damage(Display *dpy, XserverRegion damage)
   }
 }
 
-static void repair_win(Display *dpy, win *w)
+// ----------------------------------------------------------------------------------------------
+// Windows
+// ----------------------------------------------------------------------------------------------
+static CMPWindow *find_window(Display *dpy, Window id)
+{
+  CMPWindow *w;
+
+  for (w = list; w; w = w->next) {
+    if (w->id == id) {
+      return w;
+    }
+  }
+  return NULL;
+}
+
+static XserverRegion window_extents_region(Display *dpy, CMPWindow *w)
+{
+  XRectangle r;
+
+  r.x = w->a.x;
+  r.y = w->a.y;
+  r.width = w->a.width + w->a.border_width * 2;
+  r.height = w->a.height + w->a.border_width * 2;
+  if (compMode != CompSimple && !(w->windowType == winDockAtom && excludeDockShadows)) {
+    if (compMode == CompServerShadows || w->mode != WINDOW_ARGB) {
+      XRectangle sr;
+
+      if (compMode == CompServerShadows) {
+        w->shadow_dx = 2;
+        w->shadow_dy = 7;
+        w->shadow_width = w->a.width;
+        w->shadow_height = w->a.height;
+      } else {
+        w->shadow_dx = shadowOffsetX;
+        w->shadow_dy = shadowOffsetY;
+        if (!w->shadow) {
+          double opacity = shadowOpacity;
+          if (w->mode == WINDOW_TRANS) {
+            opacity = opacity * ((double)w->opacity) / ((double)OPAQUE);
+          }
+          w->shadow = create_shadow_picture(dpy, opacity, w->alphaPict, w->a.width + w->a.border_width * 2,
+                                     w->a.height + w->a.border_width * 2, &w->shadow_width,
+                                     &w->shadow_height);
+        }
+      }
+      sr.x = w->a.x + w->shadow_dx;
+      sr.y = w->a.y + w->shadow_dy;
+      sr.width = w->shadow_width;
+      sr.height = w->shadow_height;
+      if (sr.x < r.x) {
+        r.width = (r.x + r.width) - sr.x;
+        r.x = sr.x;
+      }
+      if (sr.y < r.y) {
+        r.height = (r.y + r.height) - sr.y;
+        r.y = sr.y;
+      }
+      if (sr.x + sr.width > r.x + r.width) {
+        r.width = sr.x + sr.width - r.x;
+      }
+      if (sr.y + sr.height > r.y + r.height) {
+        r.height = sr.y + sr.height - r.y;
+      }
+    }
+  }
+  return XFixesCreateRegion(dpy, &r, 1);
+}
+
+static XserverRegion window_border_size(Display *dpy, CMPWindow *w)
+{
+  XserverRegion border;
+  /*
+   * if window doesn't exist anymore,  this will generate an error
+   * as well as not generate a region.  Perhaps a better XFixes
+   * architecture would be to have a request that copies instead
+   * of creates, that way you'd just end up with an empty region
+   * instead of an invalid XID.
+   */
+  wComposerSetEventIgnore(dpy, NextRequest(dpy));
+  border = XFixesCreateRegionFromWindow(dpy, w->id, WindowRegionBounding);
+  /* translate this */
+  wComposerSetEventIgnore(dpy, NextRequest(dpy));
+  XFixesTranslateRegion(dpy, border, w->a.x + w->a.border_width, w->a.y + w->a.border_width);
+  return border;
+}
+
+static void repair_window(Display *dpy, CMPWindow *w)
 {
   XserverRegion parts;
 
   if (!w->damaged) {
-    parts = win_extents(dpy, w);
-    set_ignore(dpy, NextRequest(dpy));
+    parts = window_extents_region(dpy, w);
+    wComposerSetEventIgnore(dpy, NextRequest(dpy));
     XDamageSubtract(dpy, w->damage, None, None);
   } else {
     parts = XFixesCreateRegion(dpy, NULL, 0);
-    set_ignore(dpy, NextRequest(dpy));
+    wComposerSetEventIgnore(dpy, NextRequest(dpy));
     XDamageSubtract(dpy, w->damage, None, parts);
     XFixesTranslateRegion(dpy, parts, w->a.x + w->a.border_width, w->a.y + w->a.border_width);
     if (compMode == CompServerShadows) {
@@ -1018,13 +988,13 @@ static void repair_win(Display *dpy, win *w)
       XFixesDestroyRegion(dpy, o);
     }
   }
-  add_damage(dpy, parts);
+  add_damage_region(dpy, parts);
   w->damaged = 1;
 }
 
-static void wComposerMapWindow(Display *dpy, Window id, unsigned long sequence, Bool doFade)
+static void map_window(Display *dpy, Window id, unsigned long sequence, Bool doFade)
 {
-  win *w = find_win(dpy, id);
+  CMPWindow *w = find_window(dpy, id);
 
   if (!w) {
     return;
@@ -1035,21 +1005,21 @@ static void wComposerMapWindow(Display *dpy, Window id, unsigned long sequence, 
   XSelectInput(dpy, id, PropertyChangeMask);
 
   /* This needs to be here since we don't get PropertyNotify when unmapped */
-  w->opacity = get_opacity_prop(dpy, w, OPAQUE);
+  w->opacity = get_window_opacity_property(dpy, w, OPAQUE);
   determine_mode(dpy, w);
 
   w->damaged = 0;
 
   if (doFade && fadeWindows) {
-    set_fade(dpy, w, 0, get_opacity_percent(dpy, w, 1.0), fade_in_step, NULL, False, True, True);
+    set_fade(dpy, w, 0, get_window_opacity_value(dpy, w, 1.0), fade_in_step, NULL, False, True, True);
   }
 }
 
-static void finish_unmap_win(Display *dpy, win *w)
+static void finish_unmap_window(Display *dpy, CMPWindow *w)
 {
   w->damaged = 0;
   if (w->extents != None) {
-    add_damage(dpy, w->extents); /* destroys region */
+    add_damage_region(dpy, w->extents); /* destroys region */
     w->extents = None;
   }
 
@@ -1059,17 +1029,17 @@ static void finish_unmap_win(Display *dpy, win *w)
   }
 
   if (w->picture) {
-    set_ignore(dpy, NextRequest(dpy));
+    wComposerSetEventIgnore(dpy, NextRequest(dpy));
     XRenderFreePicture(dpy, w->picture);
     w->picture = None;
   }
 
   /* don't care about properties anymore */
-  set_ignore(dpy, NextRequest(dpy));
+  wComposerSetEventIgnore(dpy, NextRequest(dpy));
   XSelectInput(dpy, w->id, 0);
 
   if (w->borderSize) {
-    set_ignore(dpy, NextRequest(dpy));
+    wComposerSetEventIgnore(dpy, NextRequest(dpy));
     XFixesDestroyRegion(dpy, w->borderSize);
     w->borderSize = None;
   }
@@ -1085,20 +1055,22 @@ static void finish_unmap_win(Display *dpy, win *w)
   clipChanged = True;
 }
 
-static void unmap_callback(Display *dpy, win *w, Bool gone) { finish_unmap_win(dpy, w); }
-
-static void wComposerUnmapWindow(Display *dpy, Window id, Bool doFade)
+static void unmap_window_callback(Display *dpy, CMPWindow *w, Bool gone)
 {
-  win *w = find_win(dpy, id);
+  finish_unmap_window(dpy, w);
+}
+static void unmap_window(Display *dpy, Window id, Bool doFade)
+{
+  CMPWindow *w = find_window(dpy, id);
   if (!w) {
     return;
   }
   w->a.map_state = IsUnmapped;
   if (w->pixmap && doFade && fadeWindows) {
-    set_fade(dpy, w, w->opacity * 1.0 / OPAQUE, 0.0, fade_out_step, unmap_callback, False, False,
+    set_fade(dpy, w, w->opacity * 1.0 / OPAQUE, 0.0, fade_out_step, unmap_window_callback, False, False,
              True);
   } else {
-    finish_unmap_win(dpy, w);
+    finish_unmap_window(dpy, w);
   }
 }
 
@@ -1106,7 +1078,7 @@ static void wComposerUnmapWindow(Display *dpy, Window id, Bool doFade)
    not found: default
    otherwise the value
  */
-static unsigned int get_opacity_prop(Display *dpy, win *w, unsigned int def)
+static unsigned int get_window_opacity_property(Display *dpy, CMPWindow *w, unsigned int def)
 {
   Atom actual;
   int format;
@@ -1128,9 +1100,9 @@ static unsigned int get_opacity_prop(Display *dpy, win *w, unsigned int def)
    not found: default
    otherwise: the value
 */
-static double get_opacity_percent(Display *dpy, win *w, double def)
+static double get_window_opacity_value(Display *dpy, CMPWindow *w, double def)
 {
-  unsigned int opacity = get_opacity_prop(dpy, w, (unsigned int)(OPAQUE * def));
+  unsigned int opacity = get_window_opacity_property(dpy, w, (unsigned int)(OPAQUE * def));
 
   return opacity * 1.0 / OPAQUE;
 }
@@ -1139,7 +1111,7 @@ static double get_opacity_percent(Display *dpy, win *w, double def)
    Future might check for menu flag and other cool things
 */
 
-static Atom get_wintype_prop(Display *dpy, Window w)
+static Atom get_window_type_property(Display *dpy, Window w)
 {
   Atom actual;
   int format;
@@ -1158,7 +1130,7 @@ static Atom get_wintype_prop(Display *dpy, Window w)
   return winNormalAtom;
 }
 
-static void determine_mode(Display *dpy, win *w)
+static void determine_mode(Display *dpy, CMPWindow *w)
 {
   int mode;
   XRenderPictFormat *format;
@@ -1192,18 +1164,18 @@ static void determine_mode(Display *dpy, win *w)
     XserverRegion damage;
     damage = XFixesCreateRegion(dpy, NULL, 0);
     XFixesCopyRegion(dpy, damage, w->extents);
-    add_damage(dpy, damage);
+    add_damage_region(dpy, damage);
   }
 }
 
-static Atom determine_wintype(Display *dpy, Window w)
+static Atom get_window_type(Display *dpy, Window w)
 {
   Window root_return, parent_return;
   Window *children = NULL;
   unsigned int nchildren;
   Atom type;
 
-  type = get_wintype_prop(dpy, w);
+  type = get_window_type_property(dpy, w);
   if (type != winNormalAtom)
     return type;
 
@@ -1216,7 +1188,7 @@ static Atom determine_wintype(Display *dpy, Window w)
   }
 
   for (unsigned int i = 0; i < nchildren; i++) {
-    type = determine_wintype(dpy, children[i]);
+    type = get_window_type(dpy, children[i]);
     if (type != winNormalAtom) {
       return type;
     }
@@ -1228,10 +1200,10 @@ static Atom determine_wintype(Display *dpy, Window w)
   return winNormalAtom;
 }
 
-static void wComposerAddWindow(Display *dpy, Window id, Window prev)
+static void add_window(Display *dpy, Window id, Window prev)
 {
-  win *new = malloc(sizeof(win));
-  win **p;
+  CMPWindow *new = malloc(sizeof(CMPWindow));
+  CMPWindow **p;
 
   if (!new)
     return;
@@ -1245,7 +1217,7 @@ static void wComposerAddWindow(Display *dpy, Window id, Window prev)
     p = &list;
   }
   new->id = id;
-  set_ignore(dpy, NextRequest(dpy));
+  wComposerSetEventIgnore(dpy, NextRequest(dpy));
   if (!XGetWindowAttributes(dpy, id, &new->a)) {
     free(new);
     return;
@@ -1280,16 +1252,16 @@ static void wComposerAddWindow(Display *dpy, Window id, Window prev)
   new->borderClip = None;
   new->prev_trans = NULL;
 
-  new->windowType = determine_wintype(dpy, new->id);
+  new->windowType = get_window_type(dpy, new->id);
 
   new->next = *p;
   *p = new;
   if (new->a.map_state == IsViewable) {
-    wComposerMapWindow(dpy, id, new->damage_sequence - 1, True);
+    map_window(dpy, id, new->damage_sequence - 1, True);
   }
 }
 
-static void restack_win(Display *dpy, win *w, Window new_above)
+static void restack_window(Display *dpy, CMPWindow *w, Window new_above)
 {
   Window old_above;
 
@@ -1299,7 +1271,7 @@ static void restack_win(Display *dpy, win *w, Window new_above)
     old_above = None;
   }
   if (old_above != new_above) {
-    win **prev;
+    CMPWindow **prev;
 
     /* unhook */
     for (prev = &list; *prev; prev = &(*prev)->next) {
@@ -1320,9 +1292,9 @@ static void restack_win(Display *dpy, win *w, Window new_above)
   }
 }
 
-static void wComposerConfigureWindow(Display *dpy, XConfigureEvent *ce)
+static void configure_window(Display *dpy, XConfigureEvent *ce)
 {
-  win *w = find_win(dpy, ce->window);
+  CMPWindow *w = find_window(dpy, ce->window);
   XserverRegion damage = None;
 
   if (!w) {
@@ -1362,12 +1334,12 @@ static void wComposerConfigureWindow(Display *dpy, XConfigureEvent *ce)
   w->a.height = ce->height;
   w->a.border_width = ce->border_width;
   w->a.override_redirect = ce->override_redirect;
-  restack_win(dpy, w, ce->above);
+  restack_window(dpy, w, ce->above);
   if (damage) {
-    XserverRegion extents = win_extents(dpy, w);
+    XserverRegion extents = window_extents_region(dpy, w);
     XFixesUnionRegion(dpy, damage, damage, extents);
     XFixesDestroyRegion(dpy, extents);
-    add_damage(dpy, damage);
+    add_damage_region(dpy, damage);
   }
   w->shape_bounds.x += w->a.x;
   w->shape_bounds.y += w->a.y;
@@ -1379,9 +1351,9 @@ static void wComposerConfigureWindow(Display *dpy, XConfigureEvent *ce)
   clipChanged = True;
 }
 
-static void circulate_win(Display *dpy, XCirculateEvent *ce)
+static void circulate_windows(Display *dpy, XCirculateEvent *ce)
 {
-  win *w = find_win(dpy, ce->window);
+  CMPWindow *w = find_window(dpy, ce->window);
   Window new_above;
 
   if (!w) {
@@ -1392,22 +1364,22 @@ static void circulate_win(Display *dpy, XCirculateEvent *ce)
   } else {
     new_above = None;
   }
-  restack_win(dpy, w, new_above);
+  restack_window(dpy, w, new_above);
   clipChanged = True;
 }
 
-static void finish_destroy_win(Display *dpy, Window id, Bool gone)
+static void finish_destroy_window(Display *dpy, Window id, Bool gone)
 {
-  win **prev, *w;
+  CMPWindow **prev, *w;
 
   for (prev = &list; (w = *prev); prev = &w->next) {
     if (w->id == id) {
       if (gone) {
-        finish_unmap_win(dpy, w);
+        finish_unmap_window(dpy, w);
       }
       *prev = w->next;
       if (w->picture) {
-        set_ignore(dpy, NextRequest(dpy));
+        wComposerSetEventIgnore(dpy, NextRequest(dpy));
         XRenderFreePicture(dpy, w->picture);
         w->picture = None;
       }
@@ -1424,7 +1396,7 @@ static void finish_destroy_win(Display *dpy, Window id, Bool gone)
         w->shadow = None;
       }
       if (w->damage != None) {
-        set_ignore(dpy, NextRequest(dpy));
+        wComposerSetEventIgnore(dpy, NextRequest(dpy));
         XDamageDestroy(dpy, w->damage);
         w->damage = None;
       }
@@ -1435,75 +1407,59 @@ static void finish_destroy_win(Display *dpy, Window id, Bool gone)
   }
 }
 
-static void destroy_callback(Display *dpy, win *w, Bool gone)
+static void destroy_callback(Display *dpy, CMPWindow *w, Bool gone)
 {
-  finish_destroy_win(dpy, w->id, gone);
+  finish_destroy_window(dpy, w->id, gone);
 }
 
-static void wComposerRemoveWindow(Display *dpy, Window id, Bool gone, Bool doFade)
+static void destroy_window(Display *dpy, Window id, Bool gone, Bool doFade)
 {
-  win *w = find_win(dpy, id);
+  CMPWindow *w = find_window(dpy, id);
   if (w && w->pixmap && doFade && fadeWindows) {
     set_fade(dpy, w, w->opacity * 1.0 / OPAQUE, 0.0, fade_out_step, destroy_callback, gone, False,
              True);
   } else {
-    finish_destroy_win(dpy, id, gone);
+    finish_destroy_window(dpy, id, gone);
   }
 }
 
-static void wComposerProcessDamageEvent(Display *dpy, XDamageNotifyEvent *de)
+// ----------------------------------------------------------------------------------------------
+// Events
+// ----------------------------------------------------------------------------------------------
+static void wComposerDiscardEventIgnore(Display *dpy, unsigned long sequence)
 {
-  win *w = find_win(dpy, de->drawable);
-
-  if (!w) {
-    return;
-  }
-  repair_win(dpy, w);
-}
-
-static void shape_win(Display *dpy, XShapeEvent *se)
-{
-  win *w = find_win(dpy, se->window);
-
-  if (!w) {
-    return;
-  }
-  if (se->kind == ShapeClip || se->kind == ShapeBounding) {
-    XserverRegion region0;
-    XserverRegion region1;
-
-    clipChanged = True;
-
-    region0 = XFixesCreateRegion(dpy, &w->shape_bounds, 1);
-
-    if (se->shaped == True) {
-      w->shaped = True;
-      w->shape_bounds.x = w->a.x + se->x;
-      w->shape_bounds.y = w->a.y + se->y;
-      w->shape_bounds.width = se->width;
-      w->shape_bounds.height = se->height;
+  while (ignore_head) {
+    if ((long)(sequence - ignore_head->sequence) > 0) {
+      CMPIgnoreSequence *next = ignore_head->next;
+      free(ignore_head);
+      ignore_head = next;
+      if (!ignore_head) {
+        ignore_tail = &ignore_head;
+      }
     } else {
-      w->shaped = False;
-      w->shape_bounds.x = w->a.x;
-      w->shape_bounds.y = w->a.y;
-      w->shape_bounds.width = w->a.width;
-      w->shape_bounds.height = w->a.height;
+      break;
     }
-
-    region1 = XFixesCreateRegion(dpy, &w->shape_bounds, 1);
-    XFixesUnionRegion(dpy, region0, region0, region1);
-    XFixesDestroyRegion(dpy, region1);
-
-    /* ask for repaint of the old and new region */
-    wComposerPaintAll(dpy, region0);
   }
 }
 
-static void expose_root(Display *dpy, Window rootwin, XRectangle *rects, int nrects)
+static void wComposerSetEventIgnore(Display *dpy, unsigned long sequence)
 {
-  XserverRegion region = XFixesCreateRegion(dpy, rects, nrects);
+  CMPIgnoreSequence *i = malloc(sizeof(CMPIgnoreSequence));
 
-  add_damage(dpy, region);
+  if (!i) {
+    return;
+  }
+  
+  i->sequence = sequence;
+  i->next = NULL;
+  *ignore_tail = i;
+  ignore_tail = &i->next;
+}
+
+static int wComposerShouldIgnoreEvent(Display *dpy, unsigned long sequence)
+{
+  wComposerDiscardEventIgnore(dpy, sequence);
+  return ignore_head && ignore_head->sequence == sequence;
 }
 
 Bool wComposerErrorHandler(Display *dpy, XErrorEvent *ev)
@@ -1512,7 +1468,7 @@ Bool wComposerErrorHandler(Display *dpy, XErrorEvent *ev)
   const char *name = NULL;
   static char buffer[256];
 
-  if (should_ignore(dpy, ev->serial)) {
+  if (wComposerShouldIgnoreEvent(dpy, ev->serial)) {
     return True;
   }
 
@@ -1572,128 +1528,174 @@ Bool wComposerErrorHandler(Display *dpy, XErrorEvent *ev)
   return True;
 }
 
-// static XRectangle *expose_rects = NULL;
-// static int size_expose = 0;
-// static int n_expose = 0;
-// static int p;
-// void wComposerProcessEvent(Display *dpy, XEvent ev)
-// {
-//   if (!autoRedirect) {
-//     switch (ev.type) {
-//       case CreateNotify:
-//         wComposerAddWindow(dpy, ev.xcreatewindow.window, 0);
-//         break;
-//       case ConfigureNotify:
-//         wComposerConfigureWindow(dpy, &ev.xconfigure);
-//         break;
-//       case DestroyNotify:
-//         wComposerRemoveWindow(dpy, ev.xdestroywindow.window, True, True);
-//         break;
-//       case MapNotify:
-//         wComposerMapWindow(dpy, ev.xmap.window, ev.xmap.serial, True);
-//         break;
-//       case UnmapNotify:
-//         wComposerUnmapWindow(dpy, ev.xunmap.window, True);
-//         break;
-//       case ReparentNotify:
-//         if (ev.xreparent.parent == root) {
-//           wComposerAddWindow(dpy, ev.xreparent.window, 0);
-//         } else {
-//           wComposerRemoveWindow(dpy, ev.xreparent.window, False, True);
-//         }
-//         break;
-//       case CirculateNotify:
-//         circulate_win(dpy, &ev.xcirculate);
-//         break;
-//       case Expose:
-//         if (ev.xexpose.window == root) {
-//           int more = ev.xexpose.count + 1;
-//           if (n_expose == size_expose) {
-//             if (expose_rects) {
-//               expose_rects = realloc(expose_rects, (size_expose + more) * sizeof(XRectangle));
-//               size_expose += more;
-//             } else {
-//               expose_rects = malloc(more * sizeof(XRectangle));
-//               size_expose = more;
-//             }
-//           }
-//           expose_rects[n_expose].x = ev.xexpose.x;
-//           expose_rects[n_expose].y = ev.xexpose.y;
-//           expose_rects[n_expose].width = ev.xexpose.width;
-//           expose_rects[n_expose].height = ev.xexpose.height;
-//           n_expose++;
-//           if (ev.xexpose.count == 0) {
-//             expose_root(dpy, root, expose_rects, n_expose);
-//             n_expose = 0;
-//           }
-//         }
-//         break;
-//       case PropertyNotify:
-//         for (p = 0; backgroundProps[p]; p++) {
-//           if (ev.xproperty.atom == XInternAtom(dpy, backgroundProps[p], False)) {
-//             if (rootTile) {
-//               XClearArea(dpy, root, 0, 0, 0, 0, True);
-//               XRenderFreePicture(dpy, rootTile);
-//               rootTile = None;
-//               break;
-//             }
-//           }
-//         }
-//         /* check if Trans property was changed */
-//         if (ev.xproperty.atom == opacityAtom) {
-//           /* reset mode and redraw window */
-//           win *w = find_win(dpy, ev.xproperty.window);
-//           if (w) {
-//             if (fadeTrans) {
-//               double start, finish, step;
-//               start = w->opacity * 1.0 / OPAQUE;
-//               finish = get_opacity_percent(dpy, w, 1.0);
-//               if (start > finish)
-//                 step = fade_in_step;
-//               else
-//                 step = fade_out_step;
-//               set_fade(dpy, w, start, finish, step, NULL, False, True, False);
-//             } else {
-//               w->opacity = get_opacity_prop(dpy, w, OPAQUE);
-//               determine_mode(dpy, w);
-//               if (w->shadow) {
-//                 XRenderFreePicture(dpy, w->shadow);
-//                 w->shadow = None;
-//                 w->extents = win_extents(dpy, w);
-//               }
-//             }
-//           }
-//         }
-//         break;
-//       default:
-//         if (ev.type == damage_event + XDamageNotify) {
-//           fprintf(stderr, "XDamageNotify");
-//           damage_win(dpy, (XDamageNotifyEvent *)&ev);
-//         } else if (ev.type == xshape_event + ShapeNotify) {
-//           fprintf(stderr, "ShapeNotify");
-//           shape_win(dpy, (XShapeEvent *)&ev);
-//         }
-//         break;
-//     }
-//   }
-// }
+static void wComposerProcessDamageEvent(Display *dpy, XDamageNotifyEvent *de)
+{
+  CMPWindow *w = find_window(dpy, de->drawable);
 
-#include "WM/core/log_utils.h"
+  if (!w) {
+    return;
+  }
+  repair_window(dpy, w);
+}
+
+static void wComposerProcessShapeEvent(Display *dpy, XShapeEvent *se)
+{
+  CMPWindow *w = find_window(dpy, se->window);
+
+  if (!w) {
+    return;
+  }
+  if (se->kind == ShapeClip || se->kind == ShapeBounding) {
+    XserverRegion region0;
+    XserverRegion region1;
+
+    clipChanged = True;
+
+    region0 = XFixesCreateRegion(dpy, &w->shape_bounds, 1);
+
+    if (se->shaped == True) {
+      w->shaped = True;
+      w->shape_bounds.x = w->a.x + se->x;
+      w->shape_bounds.y = w->a.y + se->y;
+      w->shape_bounds.width = se->width;
+      w->shape_bounds.height = se->height;
+    } else {
+      w->shaped = False;
+      w->shape_bounds.x = w->a.x;
+      w->shape_bounds.y = w->a.y;
+      w->shape_bounds.width = w->a.width;
+      w->shape_bounds.height = w->a.height;
+    }
+
+    region1 = XFixesCreateRegion(dpy, &w->shape_bounds, 1);
+    XFixesUnionRegion(dpy, region0, region0, region1);
+    XFixesDestroyRegion(dpy, region1);
+
+    /* ask for repaint of the old and new region */
+    paint_all(dpy, region0);
+  }
+}
+
+static XRectangle *expose_rects = NULL;
+static int size_expose = 0;
+static int n_expose = 0;
+static int p;
+void wComposerProcessEvent(Display *dpy, XEvent ev)
+{
+  if (!autoRedirect) {
+    switch (ev.type) {
+      case CreateNotify:
+        add_window(dpy, ev.xcreatewindow.window, 0);
+        break;
+      case ConfigureNotify:
+        configure_window(dpy, &ev.xconfigure);
+        break;
+      case DestroyNotify:
+        destroy_window(dpy, ev.xdestroywindow.window, True, True);
+        break;
+      case MapNotify:
+        map_window(dpy, ev.xmap.window, ev.xmap.serial, True);
+        break;
+      case UnmapNotify:
+        unmap_window(dpy, ev.xunmap.window, True);
+        break;
+      case ReparentNotify:
+        if (ev.xreparent.parent == root) {
+          add_window(dpy, ev.xreparent.window, 0);
+        } else {
+          destroy_window(dpy, ev.xreparent.window, False, True);
+        }
+        break;
+      case CirculateNotify:
+        circulate_windows(dpy, &ev.xcirculate);
+        break;
+      case Expose:
+        if (ev.xexpose.window == root) {
+          int more = ev.xexpose.count + 1;
+          if (n_expose == size_expose) {
+            if (expose_rects) {
+              expose_rects = realloc(expose_rects, (size_expose + more) * sizeof(XRectangle));
+              size_expose += more;
+            } else {
+              expose_rects = malloc(more * sizeof(XRectangle));
+              size_expose = more;
+            }
+          }
+          expose_rects[n_expose].x = ev.xexpose.x;
+          expose_rects[n_expose].y = ev.xexpose.y;
+          expose_rects[n_expose].width = ev.xexpose.width;
+          expose_rects[n_expose].height = ev.xexpose.height;
+          n_expose++;
+          if (ev.xexpose.count == 0) {
+            add_damage_region(dpy, XFixesCreateRegion(dpy, expose_rects, n_expose));
+            n_expose = 0;
+          }
+        }
+        break;
+      case PropertyNotify:
+        for (p = 0; backgroundProps[p]; p++) {
+          if (ev.xproperty.atom == XInternAtom(dpy, backgroundProps[p], False)) {
+            if (rootTile) {
+              XClearArea(dpy, root, 0, 0, 0, 0, True);
+              XRenderFreePicture(dpy, rootTile);
+              rootTile = None;
+              break;
+            }
+          }
+        }
+        /* check if Trans property was changed */
+        if (ev.xproperty.atom == opacityAtom) {
+          /* reset mode and redraw window */
+          CMPWindow *w = find_window(dpy, ev.xproperty.window);
+          if (w) {
+            if (fadeTrans) {
+              double start, finish, step;
+              start = w->opacity * 1.0 / OPAQUE;
+              finish = get_window_opacity_value(dpy, w, 1.0);
+              if (start > finish)
+                step = fade_in_step;
+              else
+                step = fade_out_step;
+              set_fade(dpy, w, start, finish, step, NULL, False, True, False);
+            } else {
+              w->opacity = get_window_opacity_property(dpy, w, OPAQUE);
+              determine_mode(dpy, w);
+              if (w->shadow) {
+                XRenderFreePicture(dpy, w->shadow);
+                w->shadow = None;
+                w->extents = window_extents_region(dpy, w);
+              }
+            }
+          }
+        }
+        break;
+      default:
+        if (ev.type == damage_event + XDamageNotify) {
+          wComposerProcessDamageEvent(dpy, (XDamageNotifyEvent *)&ev);
+        } else if (ev.type == xshape_event + ShapeNotify) {
+          wComposerProcessShapeEvent(dpy, (XShapeEvent *)&ev);
+        }
+        break;
+    }
+  }
+}
+
+#include "core/log_utils.h"
 void wComposerRunLoop()
 {
   struct pollfd ufd;
   XEvent ev;
-  XRectangle *expose_rects = NULL;
-  int size_expose = 0;
-  int n_expose = 0;
-  int p;
+  // XRectangle *expose_rects = NULL;
+  // int size_expose = 0;
+  // int n_expose = 0;
+  // int p;
 
   WMLogError("Composer: Entering runloop with X connection: %i", ConnectionNumber(dpy));
 
   ufd.fd = ConnectionNumber(dpy);
   ufd.events = POLLIN;
   if (!autoRedirect) {
-    wComposerPaintAll(dpy, None);
+    paint_all(dpy, None);
   }
 
   for (;;) {
@@ -1709,110 +1711,110 @@ void wComposerRunLoop()
       }
       XNextEvent(dpy, &ev);
       if ((ev.type & 0x7f) != KeymapNotify) {
-        discard_ignore(dpy, ev.xany.serial);
+        wComposerDiscardEventIgnore(dpy, ev.xany.serial);
       }
-      // wComposerProcessEvent(dpy, ev);
-      if (!autoRedirect) {
-        switch (ev.type) {
-          case CreateNotify:
-            wComposerAddWindow(dpy, ev.xcreatewindow.window, 0);
-            break;
-          case ConfigureNotify:
-            wComposerConfigureWindow(dpy, &ev.xconfigure);
-            break;
-          case DestroyNotify:
-            wComposerRemoveWindow(dpy, ev.xdestroywindow.window, True, True);
-            break;
-          case MapNotify:
-            wComposerMapWindow(dpy, ev.xmap.window, ev.xmap.serial, True);
-            break;
-          case UnmapNotify:
-            wComposerUnmapWindow(dpy, ev.xunmap.window, True);
-            break;
-          case ReparentNotify:
-            if (ev.xreparent.parent == root) {
-              wComposerAddWindow(dpy, ev.xreparent.window, 0);
-            } else {
-              wComposerRemoveWindow(dpy, ev.xreparent.window, False, True);
-            }
-            break;
-          case CirculateNotify:
-            circulate_win(dpy, &ev.xcirculate);
-            break;
-          case Expose:
-            if (ev.xexpose.window == root) {
-              int more = ev.xexpose.count + 1;
-              if (n_expose == size_expose) {
-                if (expose_rects) {
-                  expose_rects = realloc(expose_rects, (size_expose + more) * sizeof(XRectangle));
-                  size_expose += more;
-                } else {
-                  expose_rects = malloc(more * sizeof(XRectangle));
-                  size_expose = more;
-                }
-              }
-              expose_rects[n_expose].x = ev.xexpose.x;
-              expose_rects[n_expose].y = ev.xexpose.y;
-              expose_rects[n_expose].width = ev.xexpose.width;
-              expose_rects[n_expose].height = ev.xexpose.height;
-              n_expose++;
-              if (ev.xexpose.count == 0) {
-                expose_root(dpy, root, expose_rects, n_expose);
-                n_expose = 0;
-              }
-            }
-            break;
-          case PropertyNotify:
-            for (p = 0; backgroundProps[p]; p++) {
-              if (ev.xproperty.atom == XInternAtom(dpy, backgroundProps[p], False)) {
-                if (rootTile) {
-                  XClearArea(dpy, root, 0, 0, 0, 0, True);
-                  XRenderFreePicture(dpy, rootTile);
-                  rootTile = None;
-                  break;
-                }
-              }
-            }
-            /* check if Trans property was changed */
-            if (ev.xproperty.atom == opacityAtom) {
-              /* reset mode and redraw window */
-              win *w = find_win(dpy, ev.xproperty.window);
-              if (w) {
-                if (fadeTrans) {
-                  double start, finish, step;
-                  start = w->opacity * 1.0 / OPAQUE;
-                  finish = get_opacity_percent(dpy, w, 1.0);
-                  if (start > finish)
-                    step = fade_in_step;
-                  else
-                    step = fade_out_step;
-                  set_fade(dpy, w, start, finish, step, NULL, False, True, False);
-                } else {
-                  w->opacity = get_opacity_prop(dpy, w, OPAQUE);
-                  determine_mode(dpy, w);
-                  if (w->shadow) {
-                    XRenderFreePicture(dpy, w->shadow);
-                    w->shadow = None;
-                    w->extents = win_extents(dpy, w);
-                  }
-                }
-              }
-            }
-            break;
-          default:
-            if (ev.type == damage_event + XDamageNotify) {
-              wComposerProcessDamageEvent(dpy, (XDamageNotifyEvent *)&ev);
-            } else if (ev.type == xshape_event + ShapeNotify) {
-              shape_win(dpy, (XShapeEvent *)&ev);
-            }
-            break;
-        }
-      }
+      wComposerProcessEvent(dpy, ev);
+      // if (!autoRedirect) {
+      //   switch (ev.type) {
+      //     case CreateNotify:
+      //       wComposerAddWindow(dpy, ev.xcreatewindow.window, 0);
+      //       break;
+      //     case ConfigureNotify:
+      //       wComposerConfigureWindow(dpy, &ev.xconfigure);
+      //       break;
+      //     case DestroyNotify:
+      //       wComposerRemoveWindow(dpy, ev.xdestroywindow.window, True, True);
+      //       break;
+      //     case MapNotify:
+      //       wComposerMapWindow(dpy, ev.xmap.window, ev.xmap.serial, True);
+      //       break;
+      //     case UnmapNotify:
+      //       wComposerUnmapWindow(dpy, ev.xunmap.window, True);
+      //       break;
+      //     case ReparentNotify:
+      //       if (ev.xreparent.parent == root) {
+      //         wComposerAddWindow(dpy, ev.xreparent.window, 0);
+      //       } else {
+      //         wComposerRemoveWindow(dpy, ev.xreparent.window, False, True);
+      //       }
+      //       break;
+      //     case CirculateNotify:
+      //       circulate_win(dpy, &ev.xcirculate);
+      //       break;
+      //     case Expose:
+      //       if (ev.xexpose.window == root) {
+      //         int more = ev.xexpose.count + 1;
+      //         if (n_expose == size_expose) {
+      //           if (expose_rects) {
+      //             expose_rects = realloc(expose_rects, (size_expose + more) * sizeof(XRectangle));
+      //             size_expose += more;
+      //           } else {
+      //             expose_rects = malloc(more * sizeof(XRectangle));
+      //             size_expose = more;
+      //           }
+      //         }
+      //         expose_rects[n_expose].x = ev.xexpose.x;
+      //         expose_rects[n_expose].y = ev.xexpose.y;
+      //         expose_rects[n_expose].width = ev.xexpose.width;
+      //         expose_rects[n_expose].height = ev.xexpose.height;
+      //         n_expose++;
+      //         if (ev.xexpose.count == 0) {
+      //           expose_root(dpy, root, expose_rects, n_expose);
+      //           n_expose = 0;
+      //         }
+      //       }
+      //       break;
+      //     case PropertyNotify:
+      //       for (p = 0; backgroundProps[p]; p++) {
+      //         if (ev.xproperty.atom == XInternAtom(dpy, backgroundProps[p], False)) {
+      //           if (rootTile) {
+      //             XClearArea(dpy, root, 0, 0, 0, 0, True);
+      //             XRenderFreePicture(dpy, rootTile);
+      //             rootTile = None;
+      //             break;
+      //           }
+      //         }
+      //       }
+      //       /* check if Trans property was changed */
+      //       if (ev.xproperty.atom == opacityAtom) {
+      //         /* reset mode and redraw window */
+      //         win *w = find_win(dpy, ev.xproperty.window);
+      //         if (w) {
+      //           if (fadeTrans) {
+      //             double start, finish, step;
+      //             start = w->opacity * 1.0 / OPAQUE;
+      //             finish = get_opacity_percent(dpy, w, 1.0);
+      //             if (start > finish)
+      //               step = fade_in_step;
+      //             else
+      //               step = fade_out_step;
+      //             set_fade(dpy, w, start, finish, step, NULL, False, True, False);
+      //           } else {
+      //             w->opacity = get_opacity_prop(dpy, w, OPAQUE);
+      //             determine_mode(dpy, w);
+      //             if (w->shadow) {
+      //               XRenderFreePicture(dpy, w->shadow);
+      //               w->shadow = None;
+      //               w->extents = win_extents(dpy, w);
+      //             }
+      //           }
+      //         }
+      //       }
+      //       break;
+      //     default:
+      //       if (ev.type == damage_event + XDamageNotify) {
+      //         wComposerProcessDamageEvent(dpy, (XDamageNotifyEvent *)&ev);
+      //       } else if (ev.type == xshape_event + ShapeNotify) {
+      //         shape_win(dpy, (XShapeEvent *)&ev);
+      //       }
+      //       break;
+      //   }
+      // }
     } while (QLength(dpy));
 
     if (allDamage && !autoRedirect) {
       static int paint;
-      wComposerPaintAll(dpy, allDamage);
+      paint_all(dpy, allDamage);
       paint++;
       XSync(dpy, False);
       allDamage = None;
@@ -2020,9 +2022,9 @@ Bool wComposerInitialize()
 
   rootPicture = XRenderCreatePicture(
       dpy, root, XRenderFindVisualFormat(dpy, DefaultVisual(dpy, scr)), CPSubwindowMode, &pa);
-  blackPicture = wComposerCreateSolidPicture(dpy, True, 1, 0, 0, 0);
+  blackPicture = create_solid_picture(dpy, True, 1, 0, 0, 0);
   if (compMode == CompServerShadows) {
-    transBlackPicture = wComposerCreateSolidPicture(dpy, True, 0.3, 0, 0, 0);
+    transBlackPicture = create_solid_picture(dpy, True, 0.3, 0, 0, 0);
   }
   allDamage = None;
   clipChanged = True;
@@ -2037,7 +2039,7 @@ Bool wComposerInitialize()
     XShapeSelectInput(dpy, root, ShapeNotifyMask);
     XQueryTree(dpy, root, &root_return, &parent_return, &children, &nchildren);
     for (unsigned int i = 0; i < nchildren; i++)
-      wComposerAddWindow(dpy, children[i], i ? children[i - 1] : None);
+      add_window(dpy, children[i], i ? children[i - 1] : None);
     XFree(children);
   }
   XUngrabServer(dpy);
