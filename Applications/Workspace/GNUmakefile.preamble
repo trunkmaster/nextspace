@@ -33,3 +33,4 @@ ADDITIONAL_CFLAGS += -DNDEBUG -D_XOPEN_SOURCE=600 -D_GNU_SOURCE
 ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR) -I./$(WM_DIR)/core
 ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags fontconfig`
 ADDITIONAL_GUI_LIBS += -lfontconfig -lXft -lwraster -lXext -lXrandr -lXfixes -lXcursor
+ADDITIONAL_GUI_LIBS += -lXrender -lXdamage -lXcomposite

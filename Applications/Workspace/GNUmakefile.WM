@@ -69,7 +69,8 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/xrandr.c \
 	$(WM_DIR)/xutil.c \
 	$(WM_DIR)/xmodifier.c \
-	$(WM_DIR)/xdnd.c
+	$(WM_DIR)/xdnd.c \
+	$(WM_DIR)/wmcomposer.c
 
 ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
 $(APP_NAME)_C_FILES += $(WM_DIR)/osdep_bsd.c
