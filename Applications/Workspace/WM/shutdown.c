@@ -113,6 +113,7 @@ void wShutdown(WMShutdownMode mode)
       wScreenSaveState(scr);
       wNETWMCleanup(scr);         /* Delete _NET_* Atoms */
       PropCleanUp(scr->root_win); /* WM specific properties */
+      XDeleteProperty(dpy, scr->root_win, XInternAtom(dpy, "_XROOTPMAP_ID", False));
       RShutdown();                /* wraster clean exit */
 #if HAVE_SYSLOG_H
       WMSyslogClose();

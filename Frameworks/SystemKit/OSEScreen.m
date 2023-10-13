@@ -34,6 +34,8 @@ typedef struct _XRRScreenResources {
 */
 
 #import <AppKit/NSGraphics.h>
+#include <X11/Xlib.h>
+#include <X11/X.h>
 #import <DesktopKit/NXTAlert.h>
 #import <DesktopKit/NXTDefaults.h>
 #include <X11/Xatom.h>
@@ -530,6 +532,42 @@ static OSEScreen *systemScreen = nil;
   return success;
 }
 
+- (void)_setBackgroundXColor:(XColor)xColor
+                  forXScreen:(Screen *)xScreen
+{
+  Atom rootpmap_id = XInternAtom(xDisplay, "_XROOTPMAP_ID", False);
+  Atom type;
+  int format;
+  unsigned long length, after;
+  unsigned char *data = 0;
+  Pixmap pixmap = None;
+
+  // Clear out the old _XROOTPMAP_ID property
+  int result = XGetWindowProperty(xDisplay, xRootWindow, rootpmap_id, 0, 1, True, AnyPropertyType,
+                                  &type, &format, &length, &after, &data);
+
+  if (result == Success && data && type == XA_PIXMAP && format == 32 && length == 1) {
+    // XKillClient(xDisplay, *((Pixmap *)data));
+    XFree(data);
+  }
+
+  // Set new _XROOTPMAP_ID property
+  pixmap = XCreatePixmap(xDisplay, xRootWindow, 8, 8, DefaultDepth(xDisplay, 0));
+  if (pixmap != None) {
+    XGCValues gc_values;
+    gc_values.foreground = xColor.pixel;
+    gc_values.background = xColor.pixel;
+    gc_values.function = GXcopy;
+    GC gc = XCreateGC(xDisplay, xRootWindow, (GCForeground | GCBackground), &gc_values);
+
+    XFillRectangle(xDisplay, pixmap, gc, 0, 0, 8, 8);
+    XChangeProperty(xDisplay, xRootWindow, rootpmap_id, XA_PIXMAP, 32, PropModeReplace,
+                    (unsigned char *)&pixmap, 1);
+    XFreeGC(xDisplay, gc);
+    // XFreePixmap(xDisplay, pixmap);
+  }
+}
+
 - (BOOL)setBackgroundColorRed:(CGFloat)redComponent
                         green:(CGFloat)greenComponent
                          blue:(CGFloat)blueComponent
@@ -561,7 +599,9 @@ static OSEScreen *systemScreen = nil;
   
   XSetWindowBackground(xDisplay, xRootWindow, xColor.pixel);
   XClearWindow(xDisplay, xRootWindow);
+  [self _setBackgroundXColor:xColor forXScreen:xScreen];
   XSync(xDisplay, False);
+
   return YES;
 }
 

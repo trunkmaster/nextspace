@@ -684,10 +684,11 @@ static Picture root_tile_picture(Display *dpy)
 
   pixmap = None;
   for (p = 0; backgroundProps[p]; p++) {
-    if (XGetWindowProperty(dpy, root, XInternAtom(dpy, backgroundProps[p], False), 0, 4, False,
-                           AnyPropertyType, &actual_type, &actual_format, &nitems, &bytes_after,
-                           &prop) == Success &&
-        actual_type == XInternAtom(dpy, "PIXMAP", False) && actual_format == 32 && nitems == 1) {
+    int result = XGetWindowProperty(dpy, root, XInternAtom(dpy, backgroundProps[p], False), 0, 4,
+                                    False, AnyPropertyType, &actual_type, &actual_format, &nitems,
+                                    &bytes_after, &prop);
+    if (result == Success && actual_type == XInternAtom(dpy, "PIXMAP", False) &&
+        actual_format == 32 && nitems == 1) {
       memcpy(&pixmap, prop, 4);
       XFree(prop);
       fill = False;
