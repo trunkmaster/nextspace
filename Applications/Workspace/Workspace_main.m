@@ -125,6 +125,9 @@ int WSApplicationMain(int argc, const char **argv)
 
 int main(int argc, const char **argv)
 {
+  dispatch_queue_t composer_q;
+  dispatch_queue_t window_manager_q;
+
   if (_isWindowServerReady() == NO) {
     fprintf(stderr, "[Workspace] X Window server is not ready on display '%s'\n",
             getenv("DISPLAY"));
@@ -138,31 +141,14 @@ int main(int argc, const char **argv)
 
   fprintf(stderr, "=== Starting Workspace ===\n");
   workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
-
-  //--- Compositor thread queue -------------------------------------
   {
-    dispatch_queue_t cmp_q;
-    cmp_q = dispatch_queue_create("ns.workspace.composer", DISPATCH_QUEUE_CONCURRENT);
-    dispatch_async(cmp_q, ^{
-      fprintf(stderr, "=== Initializing Composer ===\n");
-      if (wComposerInitialize() == True) {
-        fprintf(stderr, "=== Composer initialized ===\n");
-        wComposerRunLoop();
-        fprintf(stderr, "=== Composer completed it's execution ===\n");
-      } else {
-        fprintf(stderr, "=== Failed to initialize Composer ===\n");
-      }
-    });
-  }
-
-  //--- Window Manager thread queue -------------------------------------
-  {
-    dispatch_queue_t wm_q;
-
+    composer_q = dispatch_queue_create("ns.workspace.composer", DISPATCH_QUEUE_CONCURRENT);
     // DISPATCH_QUEUE_CONCURRENT is mandatory for CFRunLoop run.
-    wm_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_CONCURRENT);
+    window_manager_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_CONCURRENT);
+
+    //--- Initialize Window Manager
     fprintf(stderr, "=== Initializing Window Manager ===\n");
-    dispatch_sync(wm_q, ^{
+    dispatch_sync(window_manager_q, ^{
       @autoreleasepool {
         // Restore display layout
         [[[OSEScreen new] autorelease] applySavedDisplayLayout];
@@ -175,11 +161,23 @@ int main(int argc, const char **argv)
     });
     fprintf(stderr, "=== Window Manager initialized! ===\n");
 
+    //--- Start Composer
+    dispatch_async(composer_q, ^{
+      fprintf(stderr, "=== Initializing Composer ===\n");
+      if (wComposerInitialize() == True) {
+        fprintf(stderr, "=== Composer initialized ===\n");
+        wComposerRunLoop();
+        fprintf(stderr, "=== Composer completed it's execution ===\n");
+      } else {
+        fprintf(stderr, "=== Failed to initialize Composer ===\n");
+      }
+    });
+
     // Start WM run loop V0 to catch events while V1 is warming up.
-    dispatch_async(wm_q, ^{
+    dispatch_async(window_manager_q, ^{
       WMRunLoop_V0();
     });
-    dispatch_async(wm_q, ^{
+    dispatch_async(window_manager_q, ^{
       WMRunLoop_V1();
     });
   }
