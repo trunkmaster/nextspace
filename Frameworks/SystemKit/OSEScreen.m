@@ -552,15 +552,13 @@ static OSEScreen *systemScreen = nil;
   }
 
   // Set new _XROOTPMAP_ID property
-  pixmap = XCreatePixmap(xDisplay, xRootWindow, 8, 8, DefaultDepth(xDisplay, 0));
+  pixmap = XCreatePixmap(xDisplay, xRootWindow, 1, 1, DefaultDepth(xDisplay, 0));
   if (pixmap != None) {
     XGCValues gc_values;
     gc_values.foreground = xColor.pixel;
-    gc_values.background = xColor.pixel;
-    gc_values.function = GXcopy;
-    GC gc = XCreateGC(xDisplay, xRootWindow, (GCForeground | GCBackground), &gc_values);
+    GC gc = XCreateGC(xDisplay, xRootWindow, GCForeground, &gc_values);
 
-    XFillRectangle(xDisplay, pixmap, gc, 0, 0, 8, 8);
+    XFillRectangle(xDisplay, pixmap, gc, 0, 0, 1, 1);
     XChangeProperty(xDisplay, xRootWindow, rootpmap_id, XA_PIXMAP, 32, PropModeReplace,
                     (unsigned char *)&pixmap, 1);
     XFreeGC(xDisplay, gc);
@@ -596,9 +594,11 @@ static OSEScreen *systemScreen = nil;
             x_color_spec);
     return NO;
   }
-  
+
+  // Set background for non-compositor sessions
   XSetWindowBackground(xDisplay, xRootWindow, xColor.pixel);
   XClearWindow(xDisplay, xRootWindow);
+  // Set background for sessions with compositor
   [self _setBackgroundXColor:xColor forXScreen:xScreen];
   XSync(xDisplay, False);
 
