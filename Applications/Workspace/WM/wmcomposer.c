@@ -24,6 +24,7 @@
    says above. Not that I can really do anything about it
 */
 
+#include <X11/X.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -490,7 +491,7 @@ static void presum_gaussian(conv *map)
 }
 
 // ----------------------------------------------------------------------------------------------
-// Pictures and images
+// Pictures, images and painting
 // ----------------------------------------------------------------------------------------------
 static XImage *create_shadow_image(Display *dpy, double opacity, int width, int height)
 {
@@ -662,47 +663,35 @@ static Picture create_solid_picture(Display *dpy, Bool argb, double a, double r,
   return picture;
 }
 
-
-static const char *backgroundProps[] = {
-    "_XROOTPMAP_ID",
-    "_XSETROOT_ID",
-    NULL,
-};
-
 static Picture root_tile_picture(Display *dpy)
 {
   Picture picture;
   Atom actual_type;
-  Pixmap pixmap;
+  Pixmap pixmap = None;
   int actual_format;
   unsigned long nitems;
   unsigned long bytes_after;
   unsigned char *prop;
-  Bool fill;
+  Bool shouldFill = False;
   XRenderPictureAttributes pa;
-  int p;
 
-  pixmap = None;
-  for (p = 0; backgroundProps[p]; p++) {
-    int result = XGetWindowProperty(dpy, root, XInternAtom(dpy, backgroundProps[p], False), 0, 4,
-                                    False, AnyPropertyType, &actual_type, &actual_format, &nitems,
-                                    &bytes_after, &prop);
-    if (result == Success && actual_type == XInternAtom(dpy, "PIXMAP", False) &&
-        actual_format == 32 && nitems == 1) {
-      memcpy(&pixmap, prop, 4);
-      XFree(prop);
-      fill = False;
-      break;
-    }
+  int result = XGetWindowProperty(dpy, root, XInternAtom(dpy, "_XROOTPMAP_ID", False), 0, 4, False,
+                                  AnyPropertyType, &actual_type, &actual_format, &nitems,
+                                  &bytes_after, &prop);
+  if (result == Success && actual_type == XInternAtom(dpy, "PIXMAP", False) &&
+      actual_format == 32 && nitems == 1) {
+    memcpy(&pixmap, prop, 4);
+    XFree(prop);
   }
+
   if (!pixmap) {
     pixmap = XCreatePixmap(dpy, root, 1, 1, DefaultDepth(dpy, scr));
-    fill = True;
+    shouldFill = True;
   }
   pa.repeat = True;
   picture = XRenderCreatePicture(dpy, pixmap, XRenderFindVisualFormat(dpy, DefaultVisual(dpy, scr)),
                                  CPRepeat, &pa);
-  if (fill) {
+  if (shouldFill) {
     XRenderColor c;
 
     // c.red = c.green = c.blue = 0x8080;
@@ -1580,7 +1569,6 @@ static void wComposerProcessShapeEvent(Display *dpy, XShapeEvent *se)
 static XRectangle *expose_rects = NULL;
 static int size_expose = 0;
 static int n_expose = 0;
-static int p;
 void wComposerProcessEvent(Display *dpy, XEvent ev)
 {
   if (!autoRedirect) {
@@ -1634,14 +1622,12 @@ void wComposerProcessEvent(Display *dpy, XEvent ev)
         }
         break;
       case PropertyNotify:
-        for (p = 0; backgroundProps[p]; p++) {
-          if (ev.xproperty.atom == XInternAtom(dpy, backgroundProps[p], False)) {
-            if (rootTile) {
-              XClearArea(dpy, root, 0, 0, 0, 0, True);
-              XRenderFreePicture(dpy, rootTile);
-              rootTile = None;
-              break;
-            }
+        if (ev.xproperty.atom == XInternAtom(dpy, "_XROOTPMAP_ID", False)) {
+          if (rootTile) {
+            XClearArea(dpy, root, 0, 0, 0, 0, True);
+            XRenderFreePicture(dpy, rootTile);
+            rootTile = None;
+            break;
           }
         }
         /* check if Trans property was changed */
@@ -1715,102 +1701,6 @@ void wComposerRunLoop()
         wComposerDiscardEventIgnore(dpy, ev.xany.serial);
       }
       wComposerProcessEvent(dpy, ev);
-      // if (!autoRedirect) {
-      //   switch (ev.type) {
-      //     case CreateNotify:
-      //       wComposerAddWindow(dpy, ev.xcreatewindow.window, 0);
-      //       break;
-      //     case ConfigureNotify:
-      //       wComposerConfigureWindow(dpy, &ev.xconfigure);
-      //       break;
-      //     case DestroyNotify:
-      //       wComposerRemoveWindow(dpy, ev.xdestroywindow.window, True, True);
-      //       break;
-      //     case MapNotify:
-      //       wComposerMapWindow(dpy, ev.xmap.window, ev.xmap.serial, True);
-      //       break;
-      //     case UnmapNotify:
-      //       wComposerUnmapWindow(dpy, ev.xunmap.window, True);
-      //       break;
-      //     case ReparentNotify:
-      //       if (ev.xreparent.parent == root) {
-      //         wComposerAddWindow(dpy, ev.xreparent.window, 0);
-      //       } else {
-      //         wComposerRemoveWindow(dpy, ev.xreparent.window, False, True);
-      //       }
-      //       break;
-      //     case CirculateNotify:
-      //       circulate_win(dpy, &ev.xcirculate);
-      //       break;
-      //     case Expose:
-      //       if (ev.xexpose.window == root) {
-      //         int more = ev.xexpose.count + 1;
-      //         if (n_expose == size_expose) {
-      //           if (expose_rects) {
-      //             expose_rects = realloc(expose_rects, (size_expose + more) * sizeof(XRectangle));
-      //             size_expose += more;
-      //           } else {
-      //             expose_rects = malloc(more * sizeof(XRectangle));
-      //             size_expose = more;
-      //           }
-      //         }
-      //         expose_rects[n_expose].x = ev.xexpose.x;
-      //         expose_rects[n_expose].y = ev.xexpose.y;
-      //         expose_rects[n_expose].width = ev.xexpose.width;
-      //         expose_rects[n_expose].height = ev.xexpose.height;
-      //         n_expose++;
-      //         if (ev.xexpose.count == 0) {
-      //           expose_root(dpy, root, expose_rects, n_expose);
-      //           n_expose = 0;
-      //         }
-      //       }
-      //       break;
-      //     case PropertyNotify:
-      //       for (p = 0; backgroundProps[p]; p++) {
-      //         if (ev.xproperty.atom == XInternAtom(dpy, backgroundProps[p], False)) {
-      //           if (rootTile) {
-      //             XClearArea(dpy, root, 0, 0, 0, 0, True);
-      //             XRenderFreePicture(dpy, rootTile);
-      //             rootTile = None;
-      //             break;
-      //           }
-      //         }
-      //       }
-      //       /* check if Trans property was changed */
-      //       if (ev.xproperty.atom == opacityAtom) {
-      //         /* reset mode and redraw window */
-      //         win *w = find_win(dpy, ev.xproperty.window);
-      //         if (w) {
-      //           if (fadeTrans) {
-      //             double start, finish, step;
-      //             start = w->opacity * 1.0 / OPAQUE;
-      //             finish = get_opacity_percent(dpy, w, 1.0);
-      //             if (start > finish)
-      //               step = fade_in_step;
-      //             else
-      //               step = fade_out_step;
-      //             set_fade(dpy, w, start, finish, step, NULL, False, True, False);
-      //           } else {
-      //             w->opacity = get_opacity_prop(dpy, w, OPAQUE);
-      //             determine_mode(dpy, w);
-      //             if (w->shadow) {
-      //               XRenderFreePicture(dpy, w->shadow);
-      //               w->shadow = None;
-      //               w->extents = win_extents(dpy, w);
-      //             }
-      //           }
-      //         }
-      //       }
-      //       break;
-      //     default:
-      //       if (ev.type == damage_event + XDamageNotify) {
-      //         wComposerProcessDamageEvent(dpy, (XDamageNotifyEvent *)&ev);
-      //       } else if (ev.type == xshape_event + ShapeNotify) {
-      //         shape_win(dpy, (XShapeEvent *)&ev);
-      //       }
-      //       break;
-      //   }
-      // }
     } while (QLength(dpy));
 
     if (allDamage && !autoRedirect) {
@@ -1830,22 +1720,23 @@ void wComposerRunLoop()
 
 static Bool wComposerRegister(Display *dpy)
 {
-  Window w;
-  Atom a;
+  Window window;
+  Atom atom;
   static char net_wm_cm[] = "_NET_WM_CM_Sxx";
 
+  // EWMH 1.4.draft-2
   snprintf(net_wm_cm, sizeof(net_wm_cm), "_NET_WM_CM_S%d", scr);
-  a = XInternAtom(dpy, net_wm_cm, False);
+  atom = XInternAtom(dpy, net_wm_cm, False);
 
-  w = XGetSelectionOwner(dpy, a);
-  if (w != None) {
+  window = XGetSelectionOwner(dpy, atom);
+  if (window != None) {
     XTextProperty tp;
     char **strs;
     int count;
     Atom winNameAtom = XInternAtom(dpy, "_NET_WM_NAME", False);
 
-    if (!XGetTextProperty(dpy, w, &tp, winNameAtom) && !XGetTextProperty(dpy, w, &tp, XA_WM_NAME)) {
-      fprintf(stderr, "Another composite manager is already running (0x%lx)\n", (unsigned long)w);
+    if (!XGetTextProperty(dpy, window, &tp, winNameAtom) && !XGetTextProperty(dpy, window, &tp, XA_WM_NAME)) {
+      fprintf(stderr, "Another composite manager is already running (0x%lx)\n", (unsigned long)window);
       return False;
     }
     if (XmbTextPropertyToTextList(dpy, &tp, &strs, &count) == Success) {
@@ -1859,11 +1750,11 @@ static Bool wComposerRegister(Display *dpy)
     return False;
   }
 
-  w = XCreateSimpleWindow(dpy, RootWindow(dpy, scr), 0, 0, 1, 1, 0, None, None);
+  window = XCreateSimpleWindow(dpy, RootWindow(dpy, scr), 0, 0, 1, 1, 0, None, None);
 
-  Xutf8SetWMProperties(dpy, w, "xcompmgr", "xcompmgr", NULL, 0, NULL, NULL, NULL);
+  Xutf8SetWMProperties(dpy, window, "Composer", "xcompmgr", NULL, 0, NULL, NULL, NULL);
 
-  XSetSelectionOwner(dpy, a, w, 0);
+  XSetSelectionOwner(dpy, atom, window, 0);
 
   return True;
 }
@@ -2047,3 +1938,8 @@ Bool wComposerInitialize()
 
   return True;
 }
+
+void wComposerShutdown()
+{
+  
+    }
