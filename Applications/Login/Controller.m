@@ -20,6 +20,7 @@
 //
 
 #import "Controller.h"
+#include "Foundation/NSObjCRuntime.h"
 #import "UserSession.h"
 
 #import <unistd.h>
@@ -31,6 +32,7 @@
 #endif
 
 #import <SystemKit/OSEDisplay.h>
+#import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEMouse.h>
 #import <DesktopKit/NXTAlert.h>
 
@@ -169,9 +171,9 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
   winattrs.cursor = XCreateFontCursor(xDisplay, XC_left_ptr);
   XChangeWindowAttributes(xDisplay, xRootWindow, CWCursor, &winattrs);
   
-  XSetWindowBackground(xDisplay, xRootWindow, 5460853L);
-  XClearWindow(xDisplay, xRootWindow);
-  XSync(xDisplay, false);
+  [[OSEScreen sharedScreen] setBackgroundColorRed:83.0 / 255.0
+                                            green:83.0 / 255.0
+                                             blue:116.0 / 255.0];
 }
 
 - (void)setWindowVisible:(BOOL)flag
