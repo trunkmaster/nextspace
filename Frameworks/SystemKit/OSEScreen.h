@@ -71,17 +71,19 @@
 
 @interface OSEScreen : NSObject
 {
-  Display        *xDisplay;
-  Window         xRootWindow;
+ @private
+  Display *xDisplay;
+  Window xRootWindow;
+
+  Pixmap background_pixmap;
+  GC background_gc;
+  XGCValues background_gc_values;
+  id backgroundPixmapOwner;
 
   BOOL useAutosave;
-
   NSLock *updateScreenLock;
-  
   XRRScreenResources *screen_resources;
-  
   NSMutableArray *systemDisplays;
-
   NSSize sizeInPixels, sizeInMilimeters;
 }
 
