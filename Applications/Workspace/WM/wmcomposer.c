@@ -1162,7 +1162,7 @@ static Atom get_window_type(Display *dpy, Window window)
   unsigned int nchildren;
   Atom type;
 
-  type = get_window_type_property(dpy, w);
+  type = get_window_type_property(dpy, window);
 
   if (type != winNormalAtom)
     return type;
