@@ -61,7 +61,7 @@
 // Workspace notification center
 //-----------------------------------------------------------------------------
 
-static WMNotificationCenter *_workspaceCenter = nil;
+static WMNotificationCenter *_windowManagerCenter = nil;
 
 typedef enum NotificationSource { LocalNC, DistributedNC, CoreFoundationNC } NotificationSource;
 
@@ -103,7 +103,7 @@ static void _handleCFNotification(CFNotificationCenterRef center, void *observer
   NSDictionary *nsUserInfo = nil;
 
   // This is the mirrored notification sent by us
-  if (object == _workspaceCenter) {
+  if (object == _windowManagerCenter) {
     WMLogWarning("_handleCFNotification: Received mirrored notification from CF. Ignoring...");
     return;
   }
@@ -119,7 +119,7 @@ static void _handleCFNotification(CFNotificationCenterRef center, void *observer
   WMLogWarning("[WMNC] _handleCFNotificaition: dispatching CF notification %@ - %@", name,
                userInfo);
 
-  [_workspaceCenter postNotificationName:nsName object:nsObject userInfo:nsUserInfo];
+  [_windowManagerCenter postNotificationName:nsName object:nsObject userInfo:nsUserInfo];
 
   [nsObject release];
   [nsUserInfo release];
@@ -168,10 +168,10 @@ static void _handleCFNotification(CFNotificationCenterRef center, void *observer
 
 + (instancetype)defaultCenter
 {
-  if (!_workspaceCenter) {
+  if (!_windowManagerCenter) {
     [[WMNotificationCenter alloc] init];
   }
-  return _workspaceCenter;
+  return _windowManagerCenter;
 }
 
 - (void)dealloc
@@ -190,7 +190,7 @@ static void _handleCFNotification(CFNotificationCenterRef center, void *observer
   self = [super init];
 
   if (self != nil) {
-    _workspaceCenter = self;
+    _windowManagerCenter = self;
 
     _remoteCenter = [[NSDistributedNotificationCenter defaultCenter] retain];
     @try {

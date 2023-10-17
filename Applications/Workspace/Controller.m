@@ -21,7 +21,6 @@
 #import <errno.h>
 #import <string.h>
 #import <sys/utsname.h>
-#include "Foundation/NSNotification.h"
 
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <X11/Xlib.h>
@@ -390,7 +389,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // We don't need to handle events on quit.
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   // Not need to remove observers explicitely for NSWorkspaceCenter.
-  [_workspaceCenter release];
+  [_windowManagerCenter release];
 
   // Close and save file viewers, close panels.
   [self _saveWindowsStateAndClose];
@@ -626,14 +625,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [self updateKeyboardBadge:nil];
 
   // Workspace Notification Central
-  _workspaceCenter = [WMNotificationCenter defaultCenter];
+  _windowManagerCenter = [WMNotificationCenter defaultCenter];
 
   // Window Manager events
-  [_workspaceCenter addObserver:self
+  [_windowManagerCenter addObserver:self
                        selector:@selector(updateWorkspaceBadge:)
                            name:CF_NOTIFICATION(WMDidChangeDesktopNotification)
                          object:nil];
-  [_workspaceCenter addObserver:self
+  [_windowManagerCenter addObserver:self
                        selector:@selector(updateKeyboardBadge:)
                            name:CF_NOTIFICATION(WMDidChangeKeyboardLayoutNotification)
                          object:nil];
@@ -750,6 +749,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // Workspace quit.
 // Log Out and Power Off terminate quitting when some application won't stop,
 // some removable media won't unmount/eject (optional: think).
+#define LogOut NSAlertDefaultReturn
+#define PowerOff NSAlertAlternateReturn
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
   NSApplicationTerminateReply terminateReply;
@@ -758,7 +759,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   switch (NXTRunAlertPanel(_(@"Log Out"), _(@"Do you really want to log out?"), _(@"Log out"),
                            _(@"Power off"), _(@"Cancel"))) {
-    case NSAlertDefaultReturn:  // Log Out
+    case LogOut:
     {
       [[NSApp mainMenu] close];
       _isQuitting = [procManager terminateAllBGOperations];
@@ -781,7 +782,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
         ws_quit_code = WSLogoutOnQuit;
       }
     } break;
-    case NSAlertAlternateReturn:  // Power off
+    case PowerOff:
     {
       [[NSApp mainMenu] close];
       _isQuitting = [procManager terminateAllBGOperations];
@@ -800,6 +801,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
         [self _finishTerminateProcess];
         terminateReply = NSTerminateNow;
         ws_quit_code = WSPowerOffOnQuit;
+
       }
     } break;
     default:

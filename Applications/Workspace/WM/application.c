@@ -431,8 +431,10 @@ void wApplicationDestroy(WApplication *wapp)
   scr = wapp->main_wwin->screen;
 
   // Notify Workspace's ProcessManager
-  CFNotificationCenterPostNotification(scr->notificationCenter, WMDidDestroyApplicationNotification,
-                                       wapp, NULL, TRUE);
+  if (!wapp->flags.is_gnustep) {
+    CFNotificationCenterPostNotification(scr->notificationCenter,
+                                         WMDidDestroyApplicationNotification, wapp, NULL, TRUE);
+  }
 
   if (wapp == scr->wapp_list) {
     if (wapp->next)

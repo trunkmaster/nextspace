@@ -1750,7 +1750,7 @@ static Bool wComposerRegister(Display *dpy)
 
   window = XCreateSimpleWindow(dpy, RootWindow(dpy, scr), 0, 0, 1, 1, 0, None, None);
 
-  Xutf8SetWMProperties(dpy, window, "Composer", "xcompmgr", NULL, 0, NULL, NULL, NULL);
+  Xutf8SetWMProperties(dpy, window, "Workspace Composer", "xcompmgr", NULL, 0, NULL, NULL, NULL);
 
   XSetSelectionOwner(dpy, atom, window, 0);
 

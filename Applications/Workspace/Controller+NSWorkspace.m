@@ -36,6 +36,8 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
+#include "Foundation/NSBundle.h"
+#include "AppKit/NSImage.h"
 #import <Foundation/Foundation.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
@@ -166,10 +168,6 @@ static NSString *_rootPath = @"/";
   if (_applications == nil) {
     [self findApplications];
   }
-  // [_workspaceCenter addObserver:self
-  //                      selector:@selector(_workspacePreferencesChanged:)
-  //                          name:GSWorkspacePreferencesChanged
-  //                        object:nil];
 
   /* icon association and caching */
   folderPathIconDict = [[NSMutableDictionary alloc] initWithCapacity:5];
@@ -322,7 +320,8 @@ static NSLock *raceLock = nil;
     NSString *wmName;
     NSBundle *appBundle;
     NSDictionary *appInfo;
-    NSString *iconPath;
+    NSString *iconName = nil;
+    NSString *iconPath = nil;
     NSString *launchPath;
 
     // Don't launch ourself and Login panel
@@ -356,7 +355,18 @@ static NSLock *raceLock = nil;
                        nil, nil, nil, appName, fullPath);
       return NO;
     }
-    iconPath = [appBundle pathForImageResource:[appInfo objectForKey:@"NSIcon"]];
+
+    if ((iconName = appInfo[@"NSIcon"]) != nil) {
+      iconPath = [appBundle pathForImageResource:[appInfo objectForKey:@"NSIcon"]];
+      if (iconPath == nil) {
+        NSLog(@"No icon for application found in app bundle!");
+      }
+    } else {
+      iconName = @"NXUnknownApplication";
+    }
+    if (iconPath == nil) {
+      iconPath = [[NSBundle mainBundle] pathForImageResource:iconName];
+    }
 
     [raceLock lock];
     wLaunchingAppIconCreate([[wmName stringByDeletingPathExtension] cString], "GNUstep",
@@ -842,7 +852,7 @@ static NSLock *raceLock = nil;
 
 - (NSNotificationCenter *)notificationCenter
 {
-  return _workspaceCenter;
+  return _windowManagerCenter;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1205,31 +1215,25 @@ static NSLock *raceLock = nil;
 //    * TODO  add a user info to aNotification, which includes a bitmask
 //    *       denoting the updated preference files.
 //    */
-//   NSFileManager		*mgr = [NSFileManager defaultManager];
-//   NSData		*data;
-//   NSDictionary		*dict;
+//   NSFileManager *mgr = [NSFileManager defaultManager];
+//   NSData *data;
+//   NSDictionary *dict;
 
-//   if ([mgr isReadableFileAtPath: extPrefPath] == YES)
-//     {
-//       data = [NSData dataWithContentsOfFile: extPrefPath];
-//       if (data)
-// 	{
-// 	  dict = [NSDeserializer deserializePropertyListFromData: data
-// 					       mutableContainers: NO];
-// 	  ASSIGN(extPreferences, dict);
-// 	}
+//   if ([mgr isReadableFileAtPath:extPrefPath] == YES) {
+//     data = [NSData dataWithContentsOfFile:extPrefPath];
+//     if (data) {
+//       dict = [NSDeserializer deserializePropertyListFromData:data mutableContainers:NO];
+//       ASSIGN(extPreferences, dict);
 //     }
+//   }
 
-//   if ([mgr isReadableFileAtPath: appListPath] == YES)
-//     {
-//       data = [NSData dataWithContentsOfFile: appListPath];
-//       if (data)
-// 	{
-// 	  dict = [NSDeserializer deserializePropertyListFromData: data
-// 					       mutableContainers: NO];
-// 	  ASSIGN(applications, dict);
-// 	}
+//   if ([mgr isReadableFileAtPath:appListPath] == YES) {
+//     data = [NSData dataWithContentsOfFile:appListPath];
+//     if (data) {
+//       dict = [NSDeserializer deserializePropertyListFromData:data mutableContainers:NO];
+//       ASSIGN(applications, dict);
 //     }
+//   }
 //   /*
 //    *	Invalidate the cache of icons for file extensions.
 //    */
@@ -1292,7 +1296,7 @@ static NSLock *raceLock = nil;
     @"NSApplicationPath" : appName
   };
   NSLog(@"Application UserInfo: %@", userinfo);
-  [_workspaceCenter postNotificationName:NSWorkspaceWillLaunchApplicationNotification
+  [_windowManagerCenter postNotificationName:NSWorkspaceWillLaunchApplicationNotification
                                   object:self
                                 userInfo:userinfo];
   task = [NSTask launchedTaskWithLaunchPath:path arguments:args];
@@ -1328,7 +1332,7 @@ static NSLock *raceLock = nil;
   if (appicon) {
     wLaunchingAppIconDestroy(wDefaultScreen(), appicon);
   }
-  [_workspaceCenter
+  [_windowManagerCenter
       postNotificationName:NSWorkspaceDidTerminateApplicationNotification
                     object:self
                   userInfo:@{@"NSApplicationName" : [[task launchPath] lastPathComponent]}];
@@ -1658,10 +1662,10 @@ static NSLock *raceLock = nil;
   _extPreferences = map;
   data = [NSSerializer serializePropertyList:_extPreferences];
   if ([data writeToFile:_extPrefPath atomically:YES]) {
-    // [_workspaceCenter postNotificationName:GSWorkspacePreferencesChanged
+    // [NSNotificationCenter defaultCenter] postNotificationName:GSWorkspacePreferencesChanged
     //                                 object:self];
   } else {
-    NSLog(@"Update %@ of failed", _extPrefPath);
+    NSDebugLLog(@"Workspace", @"Update %@ of failed", _extPrefPath);
   }
 }
 
@@ -1697,10 +1701,10 @@ static NSLock *raceLock = nil;
   _extPreferences = map;
   data = [NSSerializer serializePropertyList:_extPreferences];
   if ([data writeToFile:_extPrefPath atomically:YES]) {
-    // [_workspaceCenter postNotificationName:GSWorkspacePreferencesChanged
+    // [NSNotificationCenter defaultCenter] postNotificationName:GSWorkspacePreferencesChanged
     //                                 object:self];
   } else {
-    NSLog(@"Update %@ of failed", _extPrefPath);
+    NSDebugLLog(@"Workspace", @"Update %@ of failed", _extPrefPath);
   }
 }
 
