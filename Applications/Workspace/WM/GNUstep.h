@@ -39,24 +39,24 @@ enum {
 
 #ifndef __Foundation_h_GNUSTEP_BASE_INCLUDE
 /*
- * Window levels are taken from GNUstep (gui/AppKit/NSWindow.h)
+ * Window level names are taken from GNUstep (gui/AppKit/NSWindow.h)
  * Applications are actually permitted to use any value in the
  * range INT_MIN+1 to INT_MAX
  */
 enum {
-  //                                // OPENSTEP  // MacOS  // GNUstep
-  NSDesktopWindowLevel     = -1000, // ----      // 2      // -1000
-  NSSunkenWindowLevel      = -1,    // ----      // ----   // ----
-  NSNormalWindowLevel      = 0,     // 0         // 3      // 0
-  NSFloatingWindowLevel    = 3,     // 3         // 4      // 2
-  NSDockWindowLevel        = 5,     // 5         // 6      // 21
-  NSSubmenuWindowLevel     = 10,    // 10        // 5      // 3
-  NSTornOffMenuWindowLevel = 10,    // ----      // 5      // 3
-  NSMainMenuWindowLevel    = 20,    // 20        // 7      // 20
-  NSStatusWindowLevel      = 21,    // ----      // 8      // 21
-  NSModalPanelWindowLevel  = 100,   // ----      // 9      // 100
-  NSPopUpMenuWindowLevel   = 101,   // ----      // 10     // 101
-  NSScreenSaverWindowLevel = 1000   // ----      // 12     // 1000
+  //                      NEXTSPACE  // OPENSTEP  // MacOS  // GNUstep  // EWMH
+  NSDesktopWindowLevel     = -1000,  // --------  // 2      // -1000    _NET_WM_WINDOW_TYPE_DESKTOP
+  NSSunkenWindowLevel      = -1,     // --------  // -----  // -------  -------
+  NSNormalWindowLevel      = 0,      // 0         // 3      // 0        _NET_WM_WINDOW_TYPE_NORMAL
+  NSFloatingWindowLevel    = 3,      // 3         // 4      // 2        _NET_WM_WINDOW_TYPE_UTILITY
+  NSDockWindowLevel        = 5,      // 5         // 6      // 21       _NET_WM_WINDOW_TYPE_DOCK
+  NSSubmenuWindowLevel     = 10,     // 10        // 5      // 3        _NET_WM_WINDOW_TYPE_MENU
+  NSTornOffMenuWindowLevel = 10,     // --------  // 5      // 3        _NET_WM_WINDOW_TYPE_MENU
+  NSMainMenuWindowLevel    = 20,     // 20        // 7      // 20       _NET_WM_WINDOW_TYPE_TOOLBAR
+  NSStatusWindowLevel      = 21,     // --------  // 8      // 21       _NET_WM_WINDOW_TYPE_DOCK
+  NSModalPanelWindowLevel  = 100,    // --------  // 9      // 100      _NET_WM_WINDOW_TYPE_NORMAL (!)
+  NSPopUpMenuWindowLevel   = 101,    // --------  // 10     // 101      _NET_WM_WINDOW_TYPE_TOOLTIP or _DIALOG
+  NSScreenSaverWindowLevel = 1000    // --------  // 12     // 1000     -------
 };
 /* typedef NSUInteger NSWindowStyleMask; */
 enum {
