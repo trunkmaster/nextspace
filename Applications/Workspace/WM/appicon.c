@@ -1171,8 +1171,8 @@ WAppIcon *wLaunchingAppIconCreate(const char *wm_instance, const char *wm_class,
   WAppIcon *app_icon = NULL;
   Window icon_window;
 
-  if (wm_instance == NULL || wm_class == NULL) {
-    // Can't create launching icon without application name
+  if (wm_instance == NULL || wm_class == NULL || image_path == NULL) {
+    // Can't create launching icon without application name and icon path
     return NULL;
   }
 
