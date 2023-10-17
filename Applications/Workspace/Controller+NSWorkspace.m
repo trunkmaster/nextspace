@@ -36,6 +36,8 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
+#include "Foundation/NSBundle.h"
+#include "AppKit/NSImage.h"
 #import <Foundation/Foundation.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
@@ -322,7 +324,8 @@ static NSLock *raceLock = nil;
     NSString *wmName;
     NSBundle *appBundle;
     NSDictionary *appInfo;
-    NSString *iconPath;
+    NSString *iconName = nil;
+    NSString *iconPath = nil;
     NSString *launchPath;
 
     // Don't launch ourself and Login panel
@@ -356,7 +359,18 @@ static NSLock *raceLock = nil;
                        nil, nil, nil, appName, fullPath);
       return NO;
     }
-    iconPath = [appBundle pathForImageResource:[appInfo objectForKey:@"NSIcon"]];
+
+    if ((iconName = appInfo[@"NSIcon"]) != nil) {
+      iconPath = [appBundle pathForImageResource:[appInfo objectForKey:@"NSIcon"]];
+      if (iconPath == nil) {
+        NSLog(@"No icon for application found in app bundle!");
+      }
+    } else {
+      iconName = @"NXUnknownApplication";
+    }
+    if (iconPath == nil) {
+      iconPath = [[NSBundle mainBundle] pathForImageResource:iconName];
+    }
 
     [raceLock lock];
     wLaunchingAppIconCreate([[wmName stringByDeletingPathExtension] cString], "GNUstep",
