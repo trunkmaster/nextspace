@@ -83,7 +83,7 @@
   NSMutableDictionary *_iconMap;
   NSMutableDictionary *_launched;
   NSArray *_wrappers;
-  NSNotificationCenter *_workspaceCenter;
+  NSNotificationCenter *_windowManagerCenter;
   BOOL _fileSystemChanged;
   BOOL _userDefaultsChanged;
   // ~/Library/Services/.GNUstepAppList
