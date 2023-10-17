@@ -2906,7 +2906,7 @@ void swapColors(unsigned char *image_data, NSBitmapImageRep *rep) {
         data[0] = generic._NET_WM_WINDOW_TYPE_NORMAL_ATOM;
         skipTaskbar = YES;
       } else if (level == NSMainMenuWindowLevel) {
-        data[0] = generic._NET_WM_WINDOW_TYPE_DOCK_ATOM;
+        data[0] = generic._NET_WM_WINDOW_TYPE_TOOLBAR_ATOM;
         skipTaskbar = YES;
       } else if (level == NSSubmenuWindowLevel ||
                  level == NSTornOffMenuWindowLevel) {
