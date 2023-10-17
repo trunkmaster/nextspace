@@ -355,7 +355,7 @@ WDefaultEntry optionList[] = {
   {"AutoFocus", "YES", NULL, &wPreferences.auto_focus, getBool, NULL, NULL, NULL},
   {"RaiseDelay", "0", NULL, &wPreferences.raise_delay, getInt, NULL, NULL, NULL},
   {"CirculateRaise", "YES", NULL, &wPreferences.circ_raise, getBool, NULL, NULL, NULL},
-  {"Superfluous", "NO", NULL, &wPreferences.superfluous, getBool, NULL, NULL, NULL},
+  {"Superfluous", "YES", NULL, &wPreferences.superfluous, getBool, NULL, NULL, NULL},
   {"StickyIcons", "YES", NULL, &wPreferences.sticky_icons, getBool, setStickyIcons, NULL, NULL},
   {"SaveSessionOnExit", "NO", NULL, &wPreferences.save_session_on_exit, getBool, NULL, NULL, NULL},
   {"ScrollableMenus", "YES", NULL, &wPreferences.scrollable_menus, getBool, NULL, NULL, NULL},
