@@ -40,7 +40,6 @@
 #include <core/string_utils.h>
 #include <core/log_utils.h>
 
-#include "AppKit/NSWindow.h"
 #include "WM.h"
 #include "window.h"
 #include "screen.h"
