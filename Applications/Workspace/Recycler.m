@@ -218,6 +218,7 @@ static NSMutableArray *fileList = nil;
   }
 
   _appIcon = [[RecyclerIcon alloc] initWithWindowRef:&_dockIcon->icon->core->window recycler:self];
+  [_appIcon setLevel:NSDockWindowLevel];
 
   appIconView = [[RecyclerIconView alloc] initWithFrame:NSMakeRect(0, 0, 64, 64)];
   [_appIcon setContentView:appIconView];
