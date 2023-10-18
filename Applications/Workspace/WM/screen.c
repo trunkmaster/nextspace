@@ -624,6 +624,10 @@ static void createInternalWindows(WScreen *scr)
   scr->dock_shadow =
       XCreateWindow(dpy, scr->root_win, 0, 0, wPreferences.icon_size, wPreferences.icon_size, 0,
                     scr->w_depth, CopyFromParent, scr->w_visual, vmask, &attribs);
+  Atom data = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DOCK", False);
+  Atom property = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
+  XChangeProperty(dpy, scr->dock_shadow, property, XA_ATOM, 32, PropModeReplace,
+                  (unsigned char *)&data, 1);
 
   /* workspace name */
   vmask = CWBackPixel | CWSaveUnder | CWOverrideRedirect | CWColormap | CWBorderPixel;
