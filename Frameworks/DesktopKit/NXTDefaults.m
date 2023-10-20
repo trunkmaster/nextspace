@@ -146,10 +146,11 @@ static NSLock     *syncLock;
 
 - (void)dealloc
 {
-  NSLog(@"[NXTDefaults] - dealloc");
   [self synchronize];
-  
-  if (syncTimer) [syncTimer release];
+
+  if (syncTimer) {
+    [syncTimer release];
+  }
   [defaultsDict release];
   [filePath release];
   [syncLock release];
