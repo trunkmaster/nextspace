@@ -157,10 +157,10 @@ static int wComposerShouldIgnoreEvent(Display *dpy, unsigned long sequence);
 
 static CompMode compMode = CompSimple;
 
-static int shadowRadius = 12;
-static int shadowOffsetX = -15;
-static int shadowOffsetY = -15;
-static double shadowOpacity = .75;
+static int shadowRadius = 20;       // 12;
+static int shadowOffsetX = -30;     // -15;
+static int shadowOffsetY = -30;     // -15;
+static double shadowOpacity = .20;  //.75;
 
 static Bool fadeWindows = False;
 static Bool fadeTrans = False;
