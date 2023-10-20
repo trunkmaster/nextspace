@@ -66,7 +66,7 @@ extern NSString *WMOperationProcessingFileNotification;
 extern NSString *WMApplicationDidTerminateSubprocessNotification;
 
 typedef enum {
-  CopyOperation,
+  CopyOperation = 1,
   DuplicateOperation,
   MoveOperation,
   LinkOperation,

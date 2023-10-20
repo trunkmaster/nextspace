@@ -428,16 +428,34 @@ static NSLock *raceLock = nil;
 //--- Manipulating Files
 //-------------------------------------------------------------------------------------------------
 // FIXME: TODO
-// - (BOOL)performFileOperation:(NSString*)operation
-//                       source:(NSString*)source
-//                  destination:(NSString*)destination
-//                        files:(NSArray*)files
-//                          tag:(int*)tag
-// {
-//   // FiXME
+- (BOOL)performFileOperation:(NSString*)operation
+                      source:(NSString*)source
+                 destination:(NSString*)destination
+                       files:(NSArray*)files
+                         tag:(int*)tag
+{
+  OperationType opType = 0;
 
-//   return NO;
-// }
+  if ([operation isEqualToString:@"Copy"]) {
+    opType = CopyOperation;
+  } else if ([operation isEqualToString:@"Duplicate"]) {
+    opType = DuplicateOperation;
+  } else if ([operation isEqualToString:@"Move"]) {
+    opType = MoveOperation;
+  } else if ([operation isEqualToString:@"Link"]) {
+    opType = LinkOperation;
+  } else if ([operation isEqualToString:@"Delete"]) {
+    opType = DeleteOperation;
+  } else if ([operation isEqualToString:@"Recycle"]) {
+    opType = RecycleOperation;
+  }
+
+  if (opType) {
+    [procManager startOperationWithType:opType source:source target:destination files:files];
+    return YES;
+  }
+  return NO;
+}
 
 // From OpenUp:
 // [[NSWorkspace sharedWorkspace] selectFile:archivePath
