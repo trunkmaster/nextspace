@@ -113,6 +113,7 @@
 
 - (void)applicationDidBecomeActive:(NSNotification*)aNotification
 {
+  [self showPreferencesWindow];
 }
 
 - (BOOL)application:(NSApplication *)application openFile:(NSString *)fileName
