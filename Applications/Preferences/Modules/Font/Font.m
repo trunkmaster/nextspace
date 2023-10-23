@@ -212,7 +212,7 @@ NSString *WWMDefaultsPath(void)
   
   // Convert font name into the FontConfig format.
   value = [NSMutableString stringWithFormat:@"%@:postscriptname=%@:pixelsize=%.0f:antialias=false",
-                    [font familyName], [font fontName], [font pointSize]];
+                                            [font familyName], [font fontName], [font pointSize]];
   NSLog(@"[Font] set WM font %@ = `%@`", key, value);
 
   [wmDefaults setObject:value forKey:key];
@@ -224,7 +224,7 @@ NSString *WWMDefaultsPath(void)
 {
   NSString	*fontKey;
   NSString	*fontSizeKey;
-  NSFont	*font, *boldFont;
+  NSFont	*font;
 
   fontKey = [fontCategories
               objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
@@ -238,21 +238,13 @@ NSString *WWMDefaultsPath(void)
   fontSizeKey = [NSString stringWithFormat:@"%@Size", fontKey];
   font = [NSFont fontWithName:getStringDefault(domain, fontKey)
                          size:getFloatDefault(domain, fontSizeKey)];
-  boldFont = [[NSFontManager sharedFontManager] convertFont:font
-                                                toHaveTrait:NSBoldFontMask];
-
   //
   [fontNameTextField setFont:font];
   [fontNameTextField setStringValue:[NSString stringWithFormat: @"%@ %g point",
                                               [font displayName],
                                               [font pointSize]]];
-
   //
   [fontExampleTextView setFont:font];
-  [fontExampleTextView setFont:boldFont
-                         range:NSMakeRange([normalExampleString length],
-                                           [boldExampleString length]+1)];
-
   //
   [enableAntiAliasingButton setIntValue:getBoolDefault(domain, @"GSFontAntiAlias")];
 
@@ -293,10 +285,10 @@ NSString *WWMDefaultsPath(void)
   [image release];
   [fontCategories dealloc];
 
-  if (view) {
-    [normalExampleString release];
-    [boldExampleString release];
-  }
+  // if (view) {
+  //   [normalExampleString release];
+  //   [boldExampleString release];
+  // }
   
   [super dealloc];
 }
@@ -336,16 +328,7 @@ NSString *WWMDefaultsPath(void)
   exampleString = NSLocalizedStringFromTableInBundle(@"Example Text",
                                                      @"Localizable",
                                                      bundle, @"");
-  normalExampleString = [[NSString alloc] initWithFormat:@"Normal:\n%@",
-                                          exampleString];
-  boldExampleString = [[NSString alloc] initWithFormat:@"Bold:\n%@",
-                                        exampleString];
-  
-  [fontExampleTextView setText:[NSString stringWithFormat:@"%@\n%@",
-                                         normalExampleString,
-                                         boldExampleString]];
-  // [fontExampleTextView
-  //     readRTFDFromFile:[bundle pathForResource:@"ExampleText" ofType:@"rtf"]];
+  [fontExampleTextView setText:exampleString];
 
   [self updateUI];
 }
