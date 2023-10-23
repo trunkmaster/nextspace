@@ -94,6 +94,8 @@
     if ([screen savedBackgroundColorRed:&red green:&green blue:&blue] == YES) {
       [screen setBackgroundColorRed:red green:green blue:blue];
     }
+  } else {
+    [self showPreferencesWindow];
   }
 }
 
