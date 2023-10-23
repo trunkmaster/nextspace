@@ -186,23 +186,25 @@ NSString *WWMDefaultsPath(void)
   userDefPath = [NSString stringWithFormat:@"%@/.NextSpace/WM.plist",
                           GSDefaultsRootForUser(NSUserName())];
 
-  if (![[NSFileManager defaultManager] fileExistsAtPath:userDefPath]) {
-    userDefPath = nil;
-  }
+  // if (![[NSFileManager defaultManager] fileExistsAtPath:userDefPath]) {
+  //   userDefPath = nil;
+  // }
 
   return userDefPath;
 }
 
 - (void)setWMFont:(NSFont *)font key:(NSString *)key
 {
-  NSString            *wmDefaultsPath = WWMDefaultsPath();
+  NSString *wmDefaultsPath = WWMDefaultsPath();
   NSMutableDictionary *wmDefaults;
-  NSMutableString     *value;
+  NSMutableString *value;
+  NSDistributedNotificationCenter *center = nil;
 
   if (![[NSFileManager defaultManager] fileExistsAtPath:wmDefaultsPath]) {
     /* TODO: WM doesn't track WM.plist changes if it doesn't exist.
        We need to send WMDidChangeWindowAppearanceSettings to the distributed
        notification center (WM should handle this notification and reread file). */
+    center = [NSDistributedNotificationCenter defaultCenter];
     NSLog(@"[Font] can't find existing WM defaults database! Creating new...");
     wmDefaults = [NSMutableDictionary new];
   }
@@ -211,13 +213,17 @@ NSString *WWMDefaultsPath(void)
   }
   
   // Convert font name into the FontConfig format.
-  value = [NSMutableString stringWithFormat:@"%@:postscriptname=%@:pixelsize=%.0f:antialias=false",
-                                            [font familyName], [font fontName], [font pointSize]];
-  NSLog(@"[Font] set WM font %@ = `%@`", key, value);
+  value = [NSMutableString stringWithFormat:@"%@:postscriptname=%@:pixelsize=%.0f:antialias=%@",
+                                            [font familyName], [font fontName], [font pointSize],
+                                            [enableAntiAliasingButton state] ? @"true" : @"false"];
+  NSLog(@"[Font] set WM font %@ = `%@` -> (%@)", key, value, wmDefaultsPath);
 
   [wmDefaults setObject:value forKey:key];
   [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
   [wmDefaults release];
+  if (center != nil) {
+    [center postNotificationName:@"WMDidChangeWindowAppearanceSettings" object:nil];
+  }
 }
 
 - (void)updateUI
@@ -423,14 +429,12 @@ NSString *WWMDefaultsPath(void)
     setStringDefault(fontName, @"NSLabelFont");
     setFloatDefault(fontSize, @"NSLabelFontSize");
     // NSMiniFontSize=9, NSSmallFontSize=11
-    setFloatDefault(fontSize - 4.0, @"NSMiniFontSize");
+    setFloatDefault(fontSize - 3.0, @"NSMiniFontSize");
     setFloatDefault(fontSize - 2.0, @"NSSmallFontSize");
     // WM
-    [self setWMFont:[NSFont fontWithName:[font familyName] size:fontSize - 4.0]
-                key:@"IconTitleFont"];
+    [self setWMFont:[NSFont fontWithName:fontName size:fontSize - 3.0] key:@"IconTitleFont"];
     [self setWMFont:font key:@"MenuTextFont"];
-    [self setWMFont:[NSFont fontWithName:[font familyName] size:fontSize * 2.0]
-                key:@"LargeDisplayFont"];
+    [self setWMFont:[NSFont fontWithName:fontName size:fontSize * 2.0] key:@"LargeDisplayFont"];
   }
   else if ([fontKey isEqualToString:@"NSBoldFont"]) { // Bold System
     // NSBoldFont, NSBoldFontSize=12
