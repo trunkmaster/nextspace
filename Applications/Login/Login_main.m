@@ -349,7 +349,7 @@ int main(int argc, const char **argv)
     // do window decorations ourselves
     [[NSUserDefaults standardUserDefaults] setBool:NO 
                                             forKey:@"GSX11HandlesWindowDecorations"];
-    setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
+    // setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
     // Start our application without appicon
     [LoginApplication sharedApplication];
     NSApplicationMain(argc, argv);

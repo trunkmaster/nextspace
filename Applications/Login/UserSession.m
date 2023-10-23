@@ -117,7 +117,7 @@
   setenv("GNUSTEP_PATHLIST", [[NSString stringWithFormat:@"%s:/:/usr/NextSpace:/Network", user->pw_dir] cString], 1);
   
   setenv("INFOPATH", [[NSString stringWithFormat:@"%s/Library/Documentation/info:/Library/Documentation/info:/usr/NextSpace/Documentation/info", user->pw_dir] cString], 1);
-  setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
+  // setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
   
   // For developers
   setenv("GNUSTEP_MAKEFILES", "/Developer/Makefiles", 1);
