@@ -198,13 +198,12 @@ NSString *WWMDefaultsPath(void)
   NSString *wmDefaultsPath = WWMDefaultsPath();
   NSMutableDictionary *wmDefaults;
   NSMutableString *value;
-  NSDistributedNotificationCenter *center = nil;
+  NSDistributedNotificationCenter *center = [NSDistributedNotificationCenter defaultCenter];
 
   if (![[NSFileManager defaultManager] fileExistsAtPath:wmDefaultsPath]) {
     /* TODO: WM doesn't track WM.plist changes if it doesn't exist.
        We need to send WMDidChangeWindowAppearanceSettings to the distributed
        notification center (WM should handle this notification and reread file). */
-    center = [NSDistributedNotificationCenter defaultCenter];
     NSLog(@"[Font] can't find existing WM defaults database! Creating new...");
     wmDefaults = [NSMutableDictionary new];
   }
@@ -222,7 +221,7 @@ NSString *WWMDefaultsPath(void)
   [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
   [wmDefaults release];
   if (center != nil) {
-    [center postNotificationName:@"WMDidChangeWindowAppearanceSettings" object:nil];
+    [center postNotificationName:@"WMDidChangeWindowAppearanceSettings" object:@"GSWorkspaceNotification"];
   }
 }
 
