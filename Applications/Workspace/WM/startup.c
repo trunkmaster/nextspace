@@ -651,6 +651,11 @@ void wStartUp(Bool defaultScreenOnly)
   WMHookEventHandler(DispatchEvent);
 
   /* initialize defaults stuff */
+  w_global.domain.wm_preferences = wDefaultsInitDomain("WM", true);
+  if (!w_global.domain.wm_preferences->dictionary) {
+    WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WMState");
+  }
+
   w_global.domain.wm = wDefaultsInitDomain("WMState", true);
   if (!w_global.domain.wm->dictionary) {
     WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WMState");

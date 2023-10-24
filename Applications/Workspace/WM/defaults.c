@@ -886,6 +886,10 @@ void wDefaultsReadStatic(CFMutableDictionaryRef dict)
 }
 
 // Apply `plvalue` from `new_dict` to appropriate `entry->addr` specified in `optionList`
+// Load wPreferences with values loaded from WM.plist - set default values otherwise.
+// 
+// TODO: Currently `w_global.domain.wm->dictionary` is a memory rep of the WMState.plist file.
+// So, this function has no connection to WM.plist file if any exsists.
 void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNotify)
 {
   CFTypeRef plvalue = NULL;
@@ -896,8 +900,8 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNot
   void *tdata;
   CFDictionaryRef old_dict = NULL;
 
-  if (w_global.domain.wm->dictionary != new_dict)
-    old_dict = w_global.domain.wm->dictionary;
+  if (w_global.domain.wm_preferences->dictionary != new_dict)
+    old_dict = w_global.domain.wm_preferences->dictionary;
 
   needs_refresh = 0;
 
@@ -906,15 +910,15 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNot
 
     if (new_dict) {
       plvalue = CFDictionaryGetValue(new_dict, entry->plkey);
-    }
-    else {
+      if (plvalue)
+        WMLogWarning("Got value: %@ for %@", plvalue, entry->plkey);
+    } else {
       plvalue = NULL;
     }
-    
+
     if (!old_dict) {
       old_value = NULL;
-    }
-    else {
+    } else {
       old_value = CFDictionaryGetValue(old_dict, entry->plkey);
     }
 
@@ -922,17 +926,16 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNot
     /* WMLogError("Check if default exist: %@", entry->plkey); */
     if (plvalue && CFEqual(plvalue, entry->plvalue)) {
       plvalue = NULL;
-      /* WMLogError("Removing setting equal to default: %@", entry->plkey); */
+      // WMLogError("Removing setting equal to default: %@", entry->plkey);
       CFDictionaryRemoveValue(new_dict, entry->plkey);
-      /* WMLogError("Removed"); */
+      // WMLogError("Removed");
     }
 
     if (!plvalue) {
       /* value was deleted from DB. Keep current value */
       plvalue = entry->plvalue;
       /* continue; */
-    }
-    else if (!old_value) {
+    } else if (!old_value) {
       /* set value for the 1st time */
     }
     else if (CFEqual(plvalue, old_value)) {
@@ -942,6 +945,7 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNot
 
     if (plvalue) {
       /* convert data */
+      WMLogWarning("Processing %@", entry->plkey);
       if ((*entry->convert) (scr, entry, plvalue, entry->addr, &tdata)) {
         if (entry->update) {
           needs_refresh |= (*entry->update) (scr, entry, tdata, entry->extra_data);
@@ -950,7 +954,9 @@ void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNot
     }
   }
 
-  if (shouldNotify && needs_refresh != 0/* && !scr->flags.startup && !scr->flags.startup2*/) {
+  WMLogInfo("%@ values: %@ - needs_refresh: %i", w_global.domain.wm_preferences->name, w_global.domain.wm_preferences->dictionary, needs_refresh);
+
+  if (shouldNotify && needs_refresh != 0 /* && !scr->flags.startup && !scr->flags.startup2*/) {
     int foo;
 
     foo = 0;

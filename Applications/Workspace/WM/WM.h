@@ -242,6 +242,7 @@ extern struct wm_global_variables {
   struct {
     /* Note: you must #include <defaults.h> if you want to use them */
     struct WDDomain *wm;
+    struct WDDomain *wm_preferences;
     struct WDDomain *window_attr;
     struct WDDomain *root_menu;
   } domain;

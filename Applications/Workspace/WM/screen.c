@@ -800,7 +800,7 @@ WScreen *wScreenInit(int screen_number)
   allocGCs(scr);
 
   /* read defaults for this screen */
-  wDefaultsRead(scr, w_global.domain.wm->dictionary, True);
+  wDefaultsRead(scr, w_global.domain.wm_preferences->dictionary, True);
 
   {
     XColor xcol;
