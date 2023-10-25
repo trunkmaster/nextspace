@@ -735,38 +735,38 @@ static void _updateDomain(WDDomain *domain, Bool shouldNotify)
     return;
   }
 
-  WMLogWarning("Updating domain %@...", domain->name);
-
 #ifdef HAVE_INOTIFY
   wDefaultsShouldTrackChanges(domain, false);
 #endif
   
+  WMLogWarning("Updating domain %@...", domain->name);
   /* User dictionary */
   dict = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->name, false);
+  if (CFStringCompare(domain->name, CFSTR("WM"), 0) == 0) {
+    WMLogWarning("Updating domain %@ with dictionary: %@", domain->name, dict);
+  }
   if (dict) {
-    if (CFGetTypeID(dict) != CFDictionaryGetTypeID()) {
-      CFRelease(dict);
-      dict = NULL;
-      WMLogError("Domain %@ of defaults database is corrupted!", domain->name);
-    }
-    else {
+    if (CFGetTypeID(dict) == CFDictionaryGetTypeID()) {
       if ((scr = wDefaultScreen()) && CFStringCompare(domain->name, CFSTR("WM"), 0) == 0) {
         wDefaultsReadPreferences(scr, dict, shouldNotify);
       }
       if (domain->dictionary) {
         CFRelease(domain->dictionary);
       }
-      domain->dictionary = dict;
+      domain->dictionary = CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, dict);
+    } else {
+      WMLogError("Domain %@ of defaults database is corrupted!", domain->name);
     }
-  }
-  else {
+    CFRelease(dict);
+    dict = NULL;
+  } else {
     WMLogError("Could not load domain %@. It is not dictionary!", domain->name);
     if (domain->dictionary) {
       WMLogError("Write from memory to path %@.", domain->path);
       WMUserDefaultsWrite(domain->dictionary, domain->name);
     }
   }
-  
+
   domain->timestamp = WMUserDefaultsFileModificationTime(domain->name, 0);
 #ifdef HAVE_INOTIFY
   wDefaultsShouldTrackChanges(domain, true);
@@ -816,31 +816,29 @@ static void _processWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBac
 
     domain = _domainForWatchDescriptor(pevent->wd);
     if (!domain) {
-      WMLogWarning("inotify: ignore event for domain that is not tracked anymore.");
+      WMLogWarning("inotify [descriptor %i]: ignore event for domain that is not tracked anymore.",
+                   pevent->wd);
       goto next_event;
     }
 
     if (pevent->mask & IN_MODIFY) {
-      WMLogWarning("inotify: defaults domain has been modified. Rereading defaults database.");
-      /* _updateDomain(domain); */
+      WMLogWarning("inotify [descriptor %i]: defaults domain has been modified.", pevent->wd);
       wDefaultsUpdateDomainsIfNeeded(NULL);
     }
     
     if (pevent->mask & IN_MOVE_SELF) {
-      WMLogWarning("inotify: %i defaults domain has been moved.", pevent->wd);
-      /* _updateDomain(domain); */
+      WMLogWarning("inotify [descriptor %i]: defaults domain has been moved.", pevent->wd);
       wDefaultsUpdateDomainsIfNeeded(NULL);
     }
     
     if (pevent->mask & IN_DELETE_SELF) {
-      WMLogWarning("inotify: %i defaults domain has been deleted!", pevent->wd);
-      /* _updateDomain(domain); */
+      WMLogWarning("inotify [descriptor %i]: defaults domain has been deleted.", pevent->wd);
       wDefaultsUpdateDomainsIfNeeded(NULL);
     }
     
     if (pevent->mask & IN_UNMOUNT) {
       WMLogWarning("inotify: the unit containing the defaults database has"
-                   " been unmounted. Setting --static mode."
+                   " been unmounted. Disabling tracking changes mode."
                    " Any changes will not be saved.");
 
       wDefaultsShouldTrackChanges(domain, false);
@@ -851,7 +849,7 @@ static void _processWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBac
     /* move to next event in the buffer */
     i += sizeof(struct inotify_event) + pevent->len;
   }
-  
+
   CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
 }
 
@@ -920,6 +918,7 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
 {
   WDDomain *domain;
   static int inited = 0;
+  CFMutableDictionaryRef dict;
 
   if (!inited) {
     inited = 1;
@@ -933,22 +932,24 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
   domain->name = CFStringCreateWithCString(kCFAllocatorDefault, domain_name, kCFStringEncodingUTF8);
   domain->inotify_watch = -1;
 
-  domain->dictionary = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->name, true);
-  if (domain->dictionary) {
-    if ((CFGetTypeID(domain->dictionary) != CFDictionaryGetTypeID())) {
-      CFRelease(domain->dictionary);
+  // Initializing domain->dictionary
+  dict = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->name, true);
+  if (dict) {
+    if ((CFGetTypeID(dict) != CFDictionaryGetTypeID())) {
+      CFRelease(dict);
       domain->dictionary = NULL;
-      WMLogError(_("domain %s (%s) of defaults database is corrupted!"), domain_name,
-                 WMUserDefaultsGetCString(CFURLGetString(domain->path), kCFStringEncodingUTF8));
+      WMLogError("domain %s (%@) of defaults database is corrupted!", domain_name,
+                 CFURLGetString(domain->path));
     }
-  }
-  else {
+    domain->dictionary = CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, dict);
+    CFRelease(dict);
+  } else {
     WMLogError("creating empty domain: %@", domain->name);
     domain->dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
                                                    &kCFTypeDictionaryKeyCallBacks,
                                                    &kCFTypeDictionaryValueCallBacks);
   }
-  
+
   if (domain->dictionary && WMUserDefaultsWrite(domain->dictionary, domain->name)) {
     CFURLRef osURL;
     
@@ -1021,17 +1022,19 @@ void wDefaultsReadPreferences(WScreen *scr, CFMutableDictionaryRef new_dict, Boo
   unsigned int needs_refresh = 0;
   void *tdata;
 
+  WMLogWarning("Reading preferences from WM.plist....");
+
   if (w_global.domain.wm_preferences->dictionary != new_dict) {
     old_dict = w_global.domain.wm_preferences->dictionary;
   }
+
+  WMLogWarning("WindowTitleFont from new_dict %@", CFDictionaryGetValue(new_dict, CFSTR("WindowTitleFont")));
 
   for (i = 0; i < wlengthof(optionList); i++) {
     entry = &optionList[i];
 
     if (new_dict) {
       plvalue = CFDictionaryGetValue(new_dict, entry->plkey);
-      if (plvalue)
-        WMLogWarning("Got value: %@ for %@", plvalue, entry->plkey);
     } else {
       plvalue = NULL;
     }
@@ -1131,7 +1134,7 @@ void wDefaultsReadPreferences(WScreen *scr, CFMutableDictionaryRef new_dict, Boo
 }
 
 // Update in-memory representaion of user defaults.
-// Also used as CFTimer callback.
+// Also used as CFTimer callback - that's why argument exists.
 void wDefaultsUpdateDomainsIfNeeded(void* arg)
 {
   WScreen *scr;
@@ -1145,8 +1148,8 @@ void wDefaultsUpdateDomainsIfNeeded(void* arg)
 
   // ~/Library/Preferences/.NextSpace/WMState.plist
   time = WMUserDefaultsFileModificationTime(w_global.domain.wm_state->name, 0);
-  if (w_global.domain.wm_preferences->timestamp < time) {
-    _updateDomain(w_global.domain.wm_preferences, True);
+  if (w_global.domain.wm_state->timestamp < time) {
+    _updateDomain(w_global.domain.wm_state, True);
   }
 
   // ~/Library/Preferences/.NextSpace/WMWindowAttributes.plist
