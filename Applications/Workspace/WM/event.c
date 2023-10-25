@@ -328,8 +328,8 @@ void WMRunLoop_V0()
 #ifdef HAVE_INOTIFY
   /* Track some defaults files for changes */
   w_global.inotify.fd_event_queue = -1;
-  wDefaultsShouldTrackChanges(w_global.domain.wm, true);
-  wDefaultsShouldTrackChanges(w_global.domain.window_attr, true);
+  wDefaultsShouldTrackChanges(w_global.domain.wm_preferences, true);
+  wDefaultsShouldTrackChanges(w_global.domain.window_attrs, true);
 #else
   /* Setup defaults files polling */
   if (!wPreferences.flags.noupdates) {

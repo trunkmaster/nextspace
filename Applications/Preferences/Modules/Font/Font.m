@@ -220,9 +220,6 @@ NSString *WWMDefaultsPath(void)
   [wmDefaults setObject:value forKey:key];
   [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
   [wmDefaults release];
-  if (center != nil) {
-    [center postNotificationName:@"WMDidChangeWindowAppearanceSettings" object:@"GSWorkspaceNotification"];
-  }
 }
 
 - (void)updateUI

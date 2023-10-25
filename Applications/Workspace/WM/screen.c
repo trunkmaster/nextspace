@@ -800,7 +800,8 @@ WScreen *wScreenInit(int screen_number)
   allocGCs(scr);
 
   /* read defaults for this screen */
-  wDefaultsRead(scr, w_global.domain.wm_preferences->dictionary, True);
+  wDefaultsReadPreferences(scr, w_global.domain.wm_preferences->dictionary, True);
+  fprintf(stderr, "Menu item font is: %s\n", scr->menu_item_font->name);
 
   {
     XColor xcol;

@@ -121,7 +121,7 @@ void WMSetDockAppImage(NSString *path, int position, BOOL save)
     CFMutableDictionaryRef winAttrs, appAttrs;
     CFStringRef appKey, iconFile;
 
-    winAttrs = w_global.domain.window_attr->dictionary;
+    winAttrs = w_global.domain.window_attrs->dictionary;
 
     appKey = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s.%s"), btn->wm_instance,
                                       btn->wm_class);

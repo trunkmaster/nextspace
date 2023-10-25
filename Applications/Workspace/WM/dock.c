@@ -714,7 +714,7 @@ static WAppIcon *mainIconCreate(WScreen *scr, int type, const char *name)
       icon_desc = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks,
                                             &kCFTypeDictionaryValueCallBacks);
       CFDictionarySetValue(icon_desc, CFSTR("Icon"), CFSTR(APP_ICON));
-      CFDictionarySetValue(w_global.domain.window_attr->dictionary, CFSTR("Workspace.GNUstep"),
+      CFDictionarySetValue(w_global.domain.window_attrs->dictionary, CFSTR("Workspace.GNUstep"),
                            icon_desc);
       CFRelease(icon_desc);
       btn = wAppIconCreateForDock(scr, NULL, "Workspace", "GNUstep", TILE_NORMAL);

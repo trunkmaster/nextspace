@@ -230,8 +230,8 @@ extern struct WPreferences {
 } wPreferences;
 
 WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges);
-void wDefaultsReadStatic(CFMutableDictionaryRef dict);
-void wDefaultsRead(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNotify);
+void wDefaultsReadStaticPreferences(CFMutableDictionaryRef dict);
+void wDefaultsReadPreferences(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNotify);
 void wDefaultsUpdateDomainsIfNeeded(void *arg);
 
 #ifdef HAVE_INOTIFY

@@ -167,8 +167,8 @@ static CFTypeRef get_value_from_instanceclass(const char *value)
 
   key = CFStringCreateWithCString(kCFAllocatorDefault, value, kCFStringEncodingUTF8);
 
-  if (w_global.domain.window_attr->dictionary)
-    val = key ? CFDictionaryGetValue(w_global.domain.window_attr->dictionary, key) : NULL;
+  if (w_global.domain.window_attrs->dictionary)
+    val = key ? CFDictionaryGetValue(w_global.domain.window_attrs->dictionary, key) : NULL;
 
   if (key)
     CFRelease(key);
@@ -245,8 +245,8 @@ void wDefaultFillAttributes(const char *instance, const char *class, WWindowAttr
   dn = get_value_from_instanceclass(instance);
   dc = get_value_from_instanceclass(class);
 
-  if ((w_global.domain.window_attr->dictionary) && (useGlobalDefault))
-    da = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, AnyWindow);
+  if ((w_global.domain.window_attrs->dictionary) && (useGlobalDefault))
+    da = CFDictionaryGetValue(w_global.domain.window_attrs->dictionary, AnyWindow);
 
   /* get the data */
   value = get_value(dw, dc, dn, da, ANoTitlebar, No, useGlobalDefault);
@@ -338,7 +338,7 @@ static CFTypeRef get_generic_value(const char *instance, const char *class, CFSt
   /* Search the icon name using class and instance */
   if (class && instance) {
     key = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%s.%s"), instance, class);
-    dict = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, key);
+    dict = CFDictionaryGetValue(w_global.domain.window_attrs->dictionary, key);
     CFRelease(key);
 
     if (dict) {
@@ -350,7 +350,7 @@ static CFTypeRef get_generic_value(const char *instance, const char *class, CFSt
   if (!value && instance) {
     key = CFStringCreateWithCString(kCFAllocatorDefault, instance, kCFStringEncodingUTF8);
 
-    dict = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, key);
+    dict = CFDictionaryGetValue(w_global.domain.window_attrs->dictionary, key);
     CFRelease(key);
 
     if (dict) {
@@ -362,7 +362,7 @@ static CFTypeRef get_generic_value(const char *instance, const char *class, CFSt
   if (!value && class) {
     key = CFStringCreateWithCString(kCFAllocatorDefault, class, kCFStringEncodingUTF8);
 
-    dict = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, key);
+    dict = CFDictionaryGetValue(w_global.domain.window_attrs->dictionary, key);
     CFRelease(key);
 
     if (dict)
@@ -372,7 +372,7 @@ static CFTypeRef get_generic_value(const char *instance, const char *class, CFSt
   /* Search the default icon name - See default_icon argument! */
   if (!value && default_icon) {
     /* AnyWindow is "*" - see wdefaults.c */
-    dict = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, AnyWindow);
+    dict = CFDictionaryGetValue(w_global.domain.window_attrs->dictionary, AnyWindow);
 
     if (dict)
       value = CFDictionaryGetValue(dict, option);
@@ -502,7 +502,7 @@ int wDefaultGetStartWorkspace(WScreen *scr, const char *instance, const char *cl
   int w;
   const char *tmp;
 
-  if (!w_global.domain.window_attr->dictionary)
+  if (!w_global.domain.window_attrs->dictionary)
     return -1;
 
   value = get_generic_value(instance, class, AStartWorkspace, True);
@@ -527,7 +527,7 @@ const char *wDefaultGetIconFile(const char *instance, const char *class, Bool de
   CFTypeRef value;
   const char *tmp;
 
-  if (!w_global.domain.window_attr || !w_global.domain.window_attr->dictionary)
+  if (!w_global.domain.window_attrs || !w_global.domain.window_attrs->dictionary)
     return NULL;
 
   value = get_generic_value(instance, class, AIcon, default_icon);
@@ -542,7 +542,7 @@ const char *wDefaultGetIconFile(const char *instance, const char *class, Bool de
 
 void wDefaultChangeIcon(const char *instance, const char *class, const char *file)
 {
-  WDDomain *db = w_global.domain.window_attr;
+  WDDomain *db = w_global.domain.window_attrs;
   CFMutableDictionaryRef dict = db->dictionary;
   CFMutableDictionaryRef icon_entry = NULL;
   CFMutableDictionaryRef attrs = NULL;
@@ -629,11 +629,11 @@ void wDefaultPurgeInfo(const char *instance, const char *class)
   CFDictionaryRef dict;
 
   key = CFStringCreateWithFormat(kCFAllocatorDefault, NULL, CFSTR("%s.%s"), instance, class);
-  dict = CFDictionaryGetValue(w_global.domain.window_attr->dictionary, key);
+  dict = CFDictionaryGetValue(w_global.domain.window_attrs->dictionary, key);
 
   if (dict) {
-    CFDictionaryRemoveValue(w_global.domain.window_attr->dictionary, key);
-    WMUserDefaultsWrite(w_global.domain.window_attr->dictionary, w_global.domain.window_attr->name);
+    CFDictionaryRemoveValue(w_global.domain.window_attrs->dictionary, key);
+    WMUserDefaultsWrite(w_global.domain.window_attrs->dictionary, w_global.domain.window_attrs->name);
   }
 
   CFRelease(key);

@@ -650,21 +650,28 @@ void wStartUp(Bool defaultScreenOnly)
   /* set hook for out event dispatcher in WINGs event dispatcher */
   WMHookEventHandler(DispatchEvent);
 
-  /* initialize defaults stuff */
+  /*
+    Initialize defaults stuff
+  */
+  // Read defaults from WM.plist file. This file may not exist - use hardcoded defults (defaults.c).
+  // Defaults are propagated into wPreferences, WScreen.
   w_global.domain.wm_preferences = wDefaultsInitDomain("WM", true);
   if (!w_global.domain.wm_preferences->dictionary) {
     WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WMState");
   }
 
-  w_global.domain.wm = wDefaultsInitDomain("WMState", true);
-  if (!w_global.domain.wm->dictionary) {
-    WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WMState");
+  // Process defaults that don't change until a restart and are screen independent.
+  // Were read from WM.plist on previous step.
+  if (w_global.domain.wm_preferences) {
+    wDefaultsReadStaticPreferences(w_global.domain.wm_preferences->dictionary);
+    // WMUserDefaultsWrite(w_global.domain.wm_preferences->dictionary, w_global.domain.wm_preferences->name);
+  } else {
+    wDefaultsReadStaticPreferences(NULL);
   }
 
-  /* read defaults that don't change until a restart and are screen independent */
-  wDefaultsReadStatic(w_global.domain.wm ? w_global.domain.wm->dictionary : NULL);
-  if (w_global.domain.wm) {
-    WMUserDefaultsWrite(w_global.domain.wm->dictionary, w_global.domain.wm->name);
+  w_global.domain.wm_state = wDefaultsInitDomain("WMState", true);
+  if (!w_global.domain.wm_state->dictionary) {
+    WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WMState");
   }
 
   /* check sanity of some values */
@@ -675,8 +682,8 @@ void wStartUp(Bool defaultScreenOnly)
   }
 
   /* init other domains */
-  w_global.domain.window_attr = wDefaultsInitDomain("WMWindowAttributes", true);
-  if (!w_global.domain.window_attr->dictionary) {
+  w_global.domain.window_attrs = wDefaultsInitDomain("WMWindowAttributes", true);
+  if (!w_global.domain.window_attrs->dictionary) {
     WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WMWindowAttributes");
   }
 

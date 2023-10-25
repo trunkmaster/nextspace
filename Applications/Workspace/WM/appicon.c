@@ -955,7 +955,7 @@ Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)
 static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_instance,
                                         const char *wm_class)
 {
-  CFMutableDictionaryRef dict = w_global.domain.window_attr->dictionary;
+  CFMutableDictionaryRef dict = w_global.domain.window_attrs->dictionary;
   CFMutableDictionaryRef adict = NULL;
   CFTypeRef val;
   CFStringRef key;
@@ -994,7 +994,7 @@ static void wApplicationSaveIconPathFor(const char *iconPath, const char *wm_ins
   }
 
   if (val && !wPreferences.flags.noupdates) {
-    WMUserDefaultsWrite(w_global.domain.window_attr->dictionary, w_global.domain.window_attr->name);
+    WMUserDefaultsWrite(w_global.domain.window_attrs->dictionary, w_global.domain.window_attrs->name);
   }
 
   if (adict) {

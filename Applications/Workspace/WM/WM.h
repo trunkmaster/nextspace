@@ -241,9 +241,9 @@ extern struct wm_global_variables {
   /* Global Domains, for storing dictionaries */
   struct {
     /* Note: you must #include <defaults.h> if you want to use them */
-    struct WDDomain *wm;
+    struct WDDomain *wm_state;
     struct WDDomain *wm_preferences;
-    struct WDDomain *window_attr;
+    struct WDDomain *window_attrs;
     struct WDDomain *root_menu;
   } domain;
 
