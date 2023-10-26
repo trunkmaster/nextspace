@@ -33,6 +33,7 @@ typedef struct WDDomain {
   CFMutableDictionaryRef dictionary;
   CFURLRef path;
   CFAbsoluteTime timestamp;
+  Bool shouldTrackChanges;
 #ifdef HAVE_INOTIFY
   int inotify_watch;
 #endif

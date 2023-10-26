@@ -151,7 +151,7 @@ static void _handleCFNotification(CFNotificationCenterRef center, void *observer
                  convertNStoCFString(objectName));
   }
 
-  if ([name hasPrefix:@"WMShould"]) {
+  if ([name hasPrefix:@"WM"]) {
     [self _postCFNotification:name userInfo:[aNotification userInfo]];
   } else {
     // Examples:

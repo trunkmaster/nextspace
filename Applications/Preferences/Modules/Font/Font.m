@@ -50,24 +50,24 @@
 
 @implementation Font (Private)
 
-static NSBundle		   *bundle = nil;
-static NSUserDefaults      *defaults = nil;
+static NSBundle *bundle = nil;
+static NSUserDefaults *defaults = nil;
 static NSMutableDictionary *domain = nil;
-static NSPanel             *fontPanel = nil;
+static NSPanel *fontPanel = nil;
 
-// + userFontOfSize:		[Application Font]	<NSUserFont>
+// + userFontOfSize:            [Application Font]  <NSUserFont>
 // + userFixedPitchFontOfSize: 	[Fixed Pitch Font]	<NSUserFixedPitchFont>
-// + systemFontOfSize:	       	[System Font]		<NSFont>
-// + boldSystemFontOfSize:     	[Bold System Font]	<NSBoldFont>
+// + systemFontOfSize:          [System Font]       <NSFont>
+// + boldSystemFontOfSize:      [Bold System Font]  <NSBoldFont>
 // ========================== MACOSX, GS_API_LATEST ===========================
-// + toolTipsFontOfSize:	[System Font:11]	<NSToolTipsFont>
-// + menuFontOfSize:		[System Font]		<NSMenuFont>
-// + messageFontOfSize:		[System Font:14]	<NSMessageFont>
-// + controlContentFontOfSize:	[System Font]		<NSControlContentFont>
-// + labelFontOfSize:		[System Font]		<NSLabelFont>
-// + titleBarFontOfSize:	[Bold System Font]	<NSTitleBarFont>
-// + menuBarFontOfSize:		[Bold System Font]	<NSMenuBarFont>
-// + paletteFontOfSize:		[Bold System Font]	<NSPaletteFont>
+// + toolTipsFontOfSize:        [System Font:11]    <NSToolTipsFont>
+// + menuFontOfSize:            [System Font]       <NSMenuFont>
+// + messageFontOfSize:         [System Font:14]    <NSMessageFont>
+// + controlContentFontOfSize:  [System Font]       <NSControlContentFont>
+// + labelFontOfSize:           [System Font]       <NSLabelFont>
+// + titleBarFontOfSize:        [Bold System Font]  <NSTitleBarFont>
+// + menuBarFontOfSize:         [Bold System Font]  <NSMenuBarFont>
+// + paletteFontOfSize:         [Bold System Font]  <NSPaletteFont>
 // ========================== MACOSX, GS_API_LATEST ===========================
 
 static NSMutableDictionary *defaultValues(void)
@@ -198,7 +198,6 @@ NSString *WWMDefaultsPath(void)
   NSString *wmDefaultsPath = WWMDefaultsPath();
   NSMutableDictionary *wmDefaults;
   NSMutableString *value;
-  NSDistributedNotificationCenter *center = [NSDistributedNotificationCenter defaultCenter];
 
   if (![[NSFileManager defaultManager] fileExistsAtPath:wmDefaultsPath]) {
     /* TODO: WM doesn't track WM.plist changes if it doesn't exist.
@@ -206,16 +205,15 @@ NSString *WWMDefaultsPath(void)
        notification center (WM should handle this notification and reread file). */
     NSLog(@"[Font] can't find existing WM defaults database! Creating new...");
     wmDefaults = [NSMutableDictionary new];
-  }
-  else {
+  } else {
     wmDefaults = [[NSMutableDictionary alloc] initWithContentsOfFile:wmDefaultsPath];
   }
-  
+
   // Convert font name into the FontConfig format.
   value = [NSMutableString stringWithFormat:@"%@:postscriptname=%@:pixelsize=%.0f:antialias=%@",
                                             [font familyName], [font fontName], [font pointSize],
                                             [enableAntiAliasingButton state] ? @"true" : @"false"];
-  NSLog(@"[Font] set WM font %@ = `%@` -> (%@)", key, value, wmDefaultsPath);
+  // NSLog(@"[Font] set WM font %@ = `%@` -> (%@)", key, value, wmDefaultsPath);
 
   [wmDefaults setObject:value forKey:key];
   [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
@@ -387,28 +385,25 @@ NSString *WWMDefaultsPath(void)
 
 - (void)changeFont:(id)sender
 {
-  NSString      *fontName, *fontKey;
-  CGFloat       fontSize;
+  NSString *fontName, *fontKey;
+  CGFloat fontSize;
   NSFontManager *fontManager = [NSFontManager sharedFontManager];
-  NSFont        *font;
+  NSFont *font;
 
   font = [fontManager convertFont:[fontExampleTextView font]];
   fontName = [font fontName];
   fontSize = [font pointSize];
-  fontKey = [fontCategories
-              objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
+  fontKey = [fontCategories objectForKey:[fontCategoryPopUp titleOfSelectedItem]];
 
-  if ([fontKey isEqualToString:@"NSUserFont"]) { // Application
+  if ([fontKey isEqualToString:@"NSUserFont"]) {  // Application
     // NSUserFont, NSUserFontSize=12
     setStringDefault(fontName, @"NSUserFont");
     setFloatDefault(fontSize, @"NSUserFontSize");
-  }
-  else if ([fontKey isEqualToString:@"NSUserFixedPitchFont"]) {// Fixed Pitch
+  } else if ([fontKey isEqualToString:@"NSUserFixedPitchFont"]) {  // Fixed Pitch
     // NSUserFixedPitchFont, NSUserFixedPitchFontSize
     setStringDefault(fontName, @"NSUserFixedPitchFont");
     setFloatDefault(fontSize, @"NSUserFixedPitchFontSize");
-  }
-  else if ([fontKey isEqualToString:@"NSFont"]) { // System
+  } else if ([fontKey isEqualToString:@"NSFont"]) {  // System
     // NSFont, NSFontSize=12
     setStringDefault(fontName, @"NSFont");
     setFloatDefault(fontSize, @"NSFontSize");
@@ -428,11 +423,13 @@ NSString *WWMDefaultsPath(void)
     setFloatDefault(fontSize - 3.0, @"NSMiniFontSize");
     setFloatDefault(fontSize - 2.0, @"NSSmallFontSize");
     // WM
-    [self setWMFont:[NSFont fontWithName:fontName size:fontSize - 3.0] key:@"IconTitleFont"];
     [self setWMFont:font key:@"MenuTextFont"];
+    [self setWMFont:[NSFont fontWithName:fontName size:fontSize - 3.0] key:@"IconTitleFont"];
     [self setWMFont:[NSFont fontWithName:fontName size:fontSize * 2.0] key:@"LargeDisplayFont"];
-  }
-  else if ([fontKey isEqualToString:@"NSBoldFont"]) { // Bold System
+    [[NSDistributedNotificationCenter defaultCenter]
+        postNotificationName:@"WMPreferencesDidChangeNotification"
+                      object:@"GSWorkspaceNotification"];
+  } else if ([fontKey isEqualToString:@"NSBoldFont"]) {  // Bold System
     // NSBoldFont, NSBoldFontSize=12
     setStringDefault(fontName, @"NSBoldFont");
     setFloatDefault(fontSize, @"NSBoldFontSize");
@@ -447,8 +444,10 @@ NSString *WWMDefaultsPath(void)
     // WM
     [self setWMFont:font key:@"MenuTitleFont"];
     [self setWMFont:font key:@"WindowTitleFont"];
-  }
-  else if ([fontKey isEqualToString:@"NSToolTipsFont"]) { // Tool Tips
+    [[NSDistributedNotificationCenter defaultCenter]
+        postNotificationName:@"WMPreferencesDidChangeNotification"
+                      object:@"GSWorkspaceNotification"];
+  } else if ([fontKey isEqualToString:@"NSToolTipsFont"]) {  // Tool Tips
     // NSToolTipsFont, NSToolTipsFontSize=11
     setStringDefault(fontName, @"NSToolTipsFont");
     setFloatDefault(fontSize, @"NSToolTipsFontSize");
@@ -457,8 +456,8 @@ NSString *WWMDefaultsPath(void)
   [defaults synchronize];
   [self updateUI];
   [[NSDistributedNotificationCenter defaultCenter]
-    postNotificationName:@"NXTSystemFontPreferencesDidChangeNotification"
-                  object:@"Preferences"];
+      postNotificationName:@"NXTSystemFontPreferencesDidChangeNotification"
+                    object:@"Preferences"];
 }
 
 @end // Font

@@ -107,6 +107,9 @@ CFStringRef WMDidDestroyDesktopNotification = CFSTR("WMDidDestroyDesktopNotifica
 CFStringRef WMDidChangeDesktopNotification = CFSTR("WMDidChangeDesktopNotification");
 CFStringRef WMDidChangeDesktopNameNotification = CFSTR("WMDidChangeDesktopNameNotification");
 
+// WM.plist
+CFStringRef WMPreferencesDidChangeNotification = CFSTR("WMPreferencesDidChangeNotification");
+
 CFStringRef WMDidChangeWindowAppearanceSettings = CFSTR("WMDidChangeWindowAppearanceSettings");
 CFStringRef WMDidChangeIconAppearanceSettings = CFSTR("WMDidChangeIconAppearanceSettings");
 CFStringRef WMDidChangeIconTileSettings = CFSTR("WMDidChangeIconTileSettings");
@@ -115,6 +118,7 @@ CFStringRef WMDidChangeMenuTitleAppearanceSettings =
     CFSTR("WMDidChangeMenuTitleAppearanceSettings");
 
 CFStringRef WMDidChangeKeyboardLayoutNotification = CFSTR("WMDidChangeKeyboardLayoutNotification");
+// WMState.plist
 CFStringRef WMDidChangeDockContentNotification = CFSTR("WMDidChangeDockContentNotification");
 
 /* GNUstep applications notifications */
@@ -655,9 +659,9 @@ void wStartUp(Bool defaultScreenOnly)
   */
   // Read defaults from WM.plist file. This file may not exist - use hardcoded defults (defaults.c).
   // Defaults are propagated into wPreferences, WScreen.
-  w_global.domain.wm_preferences = wDefaultsInitDomain("WM", true);
+  w_global.domain.wm_preferences = wDefaultsInitDomain("WM", false);
   if (!w_global.domain.wm_preferences->dictionary) {
-    WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WMState");
+    WMLogWarning("could not read domain \"WM\" from defaults database");
   }
 
   // Process defaults that don't change until a restart and are screen independent.
@@ -671,12 +675,12 @@ void wStartUp(Bool defaultScreenOnly)
 
   w_global.domain.wm_state = wDefaultsInitDomain("WMState", true);
   if (!w_global.domain.wm_state->dictionary) {
-    WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WMState");
+    WMLogWarning("could not read domain \"WMState\" from defaults database");
   }
 
   /* check sanity of some values */
   if (wPreferences.icon_size < 64) {
-    WMLogWarning(_("Icon size is configured to %i, but it's too small. Using 64 instead"),
+    WMLogWarning("Icon size is configured to %i, but it's too small. Using 64 instead",
                  wPreferences.icon_size);
     wPreferences.icon_size = 64;
   }
@@ -684,7 +688,7 @@ void wStartUp(Bool defaultScreenOnly)
   /* init other domains */
   w_global.domain.window_attrs = wDefaultsInitDomain("WMWindowAttributes", true);
   if (!w_global.domain.window_attrs->dictionary) {
-    WMLogWarning(_("could not read domain \"%s\" from defaults database"), "WMWindowAttributes");
+    WMLogWarning("could not read domain \"WMWindowAttributes\" from defaults database");
   }
 
   wSetErrorHandler();

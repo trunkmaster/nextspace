@@ -378,7 +378,8 @@ extern CFStringRef WMDidCreateDesktopNotification;
 extern CFStringRef WMDidDestroyDesktopNotification;
 extern CFStringRef WMDidChangeDesktopNotification;
 extern CFStringRef WMDidChangeDesktopNameNotification;
-/* Appearance */
+/* Appearance and settings - WM.plist */
+extern CFStringRef WMPreferencesDidChangeNotification; // for notification with changes made outside of WM
 extern CFStringRef WMDidChangeWindowAppearanceSettings;
 extern CFStringRef WMDidChangeIconAppearanceSettings;
 extern CFStringRef WMDidChangeIconTileSettings;

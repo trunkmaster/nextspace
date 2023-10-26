@@ -736,15 +736,14 @@ static void _updateDomain(WDDomain *domain, Bool shouldNotify)
   }
 
 #ifdef HAVE_INOTIFY
-  wDefaultsShouldTrackChanges(domain, false);
+  if (domain->inotify_watch >= 0) {
+    wDefaultsShouldTrackChanges(domain, false);
+  }
 #endif
   
   WMLogWarning("Updating domain %@...", domain->name);
   /* User dictionary */
   dict = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->name, false);
-  if (CFStringCompare(domain->name, CFSTR("WM"), 0) == 0) {
-    WMLogWarning("Updating domain %@ with dictionary: %@", domain->name, dict);
-  }
   if (dict) {
     if (CFGetTypeID(dict) == CFDictionaryGetTypeID()) {
       if ((scr = wDefaultScreen()) && CFStringCompare(domain->name, CFSTR("WM"), 0) == 0) {
@@ -769,7 +768,9 @@ static void _updateDomain(WDDomain *domain, Bool shouldNotify)
 
   domain->timestamp = WMUserDefaultsFileModificationTime(domain->name, 0);
 #ifdef HAVE_INOTIFY
-  wDefaultsShouldTrackChanges(domain, true);
+  if (domain->shouldTrackChanges) {
+    wDefaultsShouldTrackChanges(domain, true);
+  }
 #endif
 }
 
@@ -853,35 +854,46 @@ static void _processWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBac
   CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
 }
 
+static Bool _initializeInotify()
+{
+  w_global.inotify.fd_event_queue = inotify_init();
+  if (w_global.inotify.fd_event_queue < 0) {
+    WMLogWarning("** inotify ** could not initialise an inotify instance."
+                 " Changes to the defaults database will require a restart to take effect.");
+    return False;
+  } else {  // Add to runloop
+    CFFileDescriptorRef ifd = NULL;
+    CFRunLoopSourceRef ifd_source = NULL;
+
+    ifd = CFFileDescriptorCreate(kCFAllocatorDefault, w_global.inotify.fd_event_queue, true,
+                                 _processWatchEvents, NULL);
+    CFFileDescriptorEnableCallBacks(ifd, kCFFileDescriptorReadCallBack);
+
+    ifd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, ifd, 0);
+    CFRunLoopAddSource(wm_runloop, ifd_source, kCFRunLoopDefaultMode);
+    CFRelease(ifd_source);
+    CFRelease(ifd);
+  }
+
+  return True;
+}
+
 void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shouldTrack)
 {
   CFStringRef domainPath = NULL;
-  const char  *watchPath = NULL;
+  const char *watchPath = NULL;
 
-  if (!domain)
+  if (!domain) {
     return;
+  }
 
-  // Initialize inotify
-  if (w_global.inotify.fd_event_queue < 0) {
-    w_global.inotify.fd_event_queue = inotify_init();
-    if (w_global.inotify.fd_event_queue < 0) {
-      WMLogWarning(_("** inotify ** could not initialise an inotify instance."
-                     " Changes to the defaults database will require a restart to take effect."));
-      return;
-    }
-    else { // Add to runloop
-      CFFileDescriptorRef ifd = NULL;
-      CFRunLoopSourceRef  ifd_source = NULL;
-  
-      ifd = CFFileDescriptorCreate(kCFAllocatorDefault, w_global.inotify.fd_event_queue, true,
-                                   _processWatchEvents, NULL);
-      CFFileDescriptorEnableCallBacks(ifd, kCFFileDescriptorReadCallBack);
+  if (!wm_runloop) {
+    return;
+  }
 
-      ifd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, ifd, 0);
-      CFRunLoopAddSource(wm_runloop, ifd_source, kCFRunLoopDefaultMode);
-      CFRelease(ifd_source);
-      CFRelease(ifd);
-    }
+  // Initialize inotify if needed
+  if ((w_global.inotify.fd_event_queue < 0) && (_initializeInotify() == False)) {
+    return;
   }
 
   // Create watcher
@@ -895,33 +907,40 @@ void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shouldTrack)
     domain->inotify_watch = inotify_add_watch(w_global.inotify.fd_event_queue, watchPath, mask);
     
     if (domain->inotify_watch < 0) {
-      WMLogWarning(_("** inotify ** could not add an inotify watch on path %s (error: %i %s)."
-                     " Changes to the defaults database will require a restart to take effect."),
+      WMLogWarning("** inotify ** could not add an inotify watch on path %s (error: %i %s)."
+                   " Changes to the defaults database will require a restart to take effect.",
                    watchPath, errno, strerror(errno));
     }
     CFRelease(domainPath);
-  }
-  else if (domain->inotify_watch >= 0) {
+  } else if (domain->inotify_watch >= 0) {
     WMLogError("inotify: will remove watch for %@.", domain->name);
-
-    if (domain->inotify_watch >= 0) {
-      inotify_rm_watch(w_global.inotify.fd_event_queue, domain->inotify_watch);
-    }
+    inotify_rm_watch(w_global.inotify.fd_event_queue, domain->inotify_watch);
     domain->inotify_watch = -1;
   }
+  // else shouldTrack == false but domain is not tracked for changes - do nothing.
 }
 
 #endif /* HAVE_INOTIFY */
 
+static void _settingsObserver(CFNotificationCenterRef center,
+                              void *observer,  // NULL
+                              CFNotificationName name,
+                              const void *object,  // object - ignored
+                              CFDictionaryRef userInfo)
+{
+  wDefaultsUpdateDomainsIfNeeded(NULL);
+}
+
 // Called from startup.c
+static Bool isOptionListsIntialized = false;
+static Bool isObserverSet = false;
 WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
 {
   WDDomain *domain;
-  static int inited = 0;
   CFMutableDictionaryRef dict;
 
-  if (!inited) {
-    inited = 1;
+  if (isOptionListsIntialized == false) {
+    isOptionListsIntialized = true;
     _initializeOptionLists();
   }
 
@@ -931,6 +950,7 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
   domain = wmalloc(sizeof(WDDomain));
   domain->name = CFStringCreateWithCString(kCFAllocatorDefault, domain_name, kCFStringEncodingUTF8);
   domain->inotify_watch = -1;
+  domain->shouldTrackChanges = shouldTrackChanges;
 
   // Initializing domain->dictionary
   dict = (CFMutableDictionaryRef)WMUserDefaultsRead(domain->name, true);
@@ -945,9 +965,8 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
     CFRelease(dict);
   } else {
     WMLogError("creating empty domain: %@", domain->name);
-    domain->dictionary = CFDictionaryCreateMutable(kCFAllocatorDefault, 1,
-                                                   &kCFTypeDictionaryKeyCallBacks,
-                                                   &kCFTypeDictionaryValueCallBacks);
+    domain->dictionary = CFDictionaryCreateMutable(
+        kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   }
 
   if (domain->dictionary && WMUserDefaultsWrite(domain->dictionary, domain->name)) {
@@ -959,9 +978,14 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
     domain->path = CFURLCreateCopyAppendingPathExtension(NULL, osURL, CFSTR("plist"));
     CFRelease(osURL);
 
-    if (wm_runloop) {
-      WMLogInfo("start tracking changes for domain: %@", domain->name);
-      wDefaultsShouldTrackChanges(domain, shouldTrackChanges);
+    wDefaultsShouldTrackChanges(domain, shouldTrackChanges);
+
+    // first domain without tracking changes (inotify)
+    if ((shouldTrackChanges == false) && (isObserverSet == false)) {
+      WMLogError("Setting up `WMSettingsDidChangeNotification` observer...");
+      CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), NULL, _settingsObserver,
+                                      WMPreferencesDidChangeNotification, NULL,
+                                      CFNotificationSuspensionBehaviorDeliverImmediately);
     }
   }
 
