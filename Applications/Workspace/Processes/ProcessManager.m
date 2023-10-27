@@ -22,8 +22,9 @@
 #include <sys/types.h>
 #include <signal.h>
 
-#import <DesktopKit/NXTAlert.h>
 #import <Foundation/NSString.h>
+
+#import <DesktopKit/NXTAlert.h>
 #import <DesktopKit/NXTFileManager.h>
 
 #include "CoreFoundationBridge.h"

@@ -22,3 +22,5 @@ AllowAllArgumentsOnNextLine: false
 PointerAlignment: Right
 ColumnLimit: 100
 SortIncludes: Never
+PointerAlignment: Right
+AlignConsecutiveBitFields: AcrossEmptyLinesAndComments

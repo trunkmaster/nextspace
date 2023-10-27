@@ -24,7 +24,8 @@
 	    "setDockCollapse:",
 	    "setIconYardVisibility:",
 	    "showHelpPanel:",
-	    "hide:"
+	    "hide:",
+	    "hideOtherApplications:"
 	);
 	Outlets = (
 	    deviceManager,

@@ -29,7 +29,8 @@
 #include <core/string_utils.h>
 
 #import <DesktopKit/DesktopKit.h>
-#import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTHelpPanel.h>
+
 #import <SystemKit/OSEDisplay.h>
 #import <SystemKit/OSEFileSystemMonitor.h>
 #import <SystemKit/OSEKeyboard.h>
@@ -58,9 +59,6 @@
 #import <Operations/Mounter.h>
 #import <Processes/ProcessManager.h>
 #import <Processes/Processes.h>
-
-#import <DesktopKit/NXTAlert.h>
-#import <DesktopKit/NXTHelpPanel.h>
 
 static NSString *WorkspaceVersion = @"0.8";
 
@@ -852,6 +850,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   } else {
     *error = [NSString stringWithFormat:@"path \"%@\" does not exist", path];
   }
+}
+
+- (void)hideOtherApplications:(id)sender
+{
+  NSLog(@"hideOtherApplications");
+  [[NSDistributedNotificationCenter defaultCenter]
+      postNotificationName:CF_NOTIFICATION(WMShouldHideOthersNotification)
+                    object:@"GSWorkspaceNotification"];
 }
 
 //============================================================================
