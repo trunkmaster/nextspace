@@ -359,7 +359,7 @@ WApplication *wApplicationCreate(WWindow *wwin)
 
     // Notify Workspace's ProcessManager
     CFNotificationCenterPostNotification(scr->notificationCenter,
-                                         WMDidCreateApplicationNotification, wapp, NULL, TRUE);
+                                         WMDidCreateApplicationNotification, wapp, NULL, true);
   }
 
   return wapp;

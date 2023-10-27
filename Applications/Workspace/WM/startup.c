@@ -107,9 +107,6 @@ CFStringRef WMDidDestroyDesktopNotification = CFSTR("WMDidDestroyDesktopNotifica
 CFStringRef WMDidChangeDesktopNotification = CFSTR("WMDidChangeDesktopNotification");
 CFStringRef WMDidChangeDesktopNameNotification = CFSTR("WMDidChangeDesktopNameNotification");
 
-// WM.plist
-CFStringRef WMPreferencesDidChangeNotification = CFSTR("WMPreferencesDidChangeNotification");
-
 CFStringRef WMDidChangeWindowAppearanceSettings = CFSTR("WMDidChangeWindowAppearanceSettings");
 CFStringRef WMDidChangeIconAppearanceSettings = CFSTR("WMDidChangeIconAppearanceSettings");
 CFStringRef WMDidChangeIconTileSettings = CFSTR("WMDidChangeIconTileSettings");
@@ -118,10 +115,12 @@ CFStringRef WMDidChangeMenuTitleAppearanceSettings =
     CFSTR("WMDidChangeMenuTitleAppearanceSettings");
 
 CFStringRef WMDidChangeKeyboardLayoutNotification = CFSTR("WMDidChangeKeyboardLayoutNotification");
+
+/* GNUstep applications notifications. Public ObjC part resides in DesktopKit/NXTWorkspace.h */
+// WM.plist
+CFStringRef WMDidChangeAppearanceSettingsNotification = CFSTR("WMDidChangeAppearanceSettingsNotification");
 // WMState.plist
 CFStringRef WMDidChangeDockContentNotification = CFSTR("WMDidChangeDockContentNotification");
-
-/* GNUstep applications notifications */
 // Hide Others
 CFStringRef WMShouldHideOthersNotification = CFSTR("WMShouldHideOthersNotification");
 CFStringRef WMDidHideOthersNotification = CFSTR("WMDidHideOthersNotification");

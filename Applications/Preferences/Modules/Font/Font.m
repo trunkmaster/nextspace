@@ -40,6 +40,8 @@
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSAttributedString.h>
 
+#import <DesktopKit/NXTWorkspace.h>
+
 #import "Font.h"
 
 @interface Font (Private)
@@ -427,7 +429,7 @@ NSString *WWMDefaultsPath(void)
     [self setWMFont:[NSFont fontWithName:fontName size:fontSize - 3.0] key:@"IconTitleFont"];
     [self setWMFont:[NSFont fontWithName:fontName size:fontSize * 2.0] key:@"LargeDisplayFont"];
     [[NSDistributedNotificationCenter defaultCenter]
-        postNotificationName:@"WMPreferencesDidChangeNotification"
+        postNotificationName:WMDidChangeAppearanceSettingsNotification
                       object:@"GSWorkspaceNotification"];
   } else if ([fontKey isEqualToString:@"NSBoldFont"]) {  // Bold System
     // NSBoldFont, NSBoldFontSize=12
@@ -445,7 +447,7 @@ NSString *WWMDefaultsPath(void)
     [self setWMFont:font key:@"MenuTitleFont"];
     [self setWMFont:font key:@"WindowTitleFont"];
     [[NSDistributedNotificationCenter defaultCenter]
-        postNotificationName:@"WMPreferencesDidChangeNotification"
+        postNotificationName:WMDidChangeAppearanceSettingsNotification
                       object:@"GSWorkspaceNotification"];
   } else if ([fontKey isEqualToString:@"NSToolTipsFont"]) {  // Tool Tips
     // NSToolTipsFont, NSToolTipsFontSize=11

@@ -984,7 +984,7 @@ WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges)
     if ((shouldTrackChanges == false) && (isObserverSet == false)) {
       WMLogError("Setting up `WMSettingsDidChangeNotification` observer...");
       CFNotificationCenterAddObserver(CFNotificationCenterGetLocalCenter(), NULL, _settingsObserver,
-                                      WMPreferencesDidChangeNotification, NULL,
+                                      WMDidChangeAppearanceSettingsNotification, NULL,
                                       CFNotificationSuspensionBehaviorDeliverImmediately);
     }
   }
