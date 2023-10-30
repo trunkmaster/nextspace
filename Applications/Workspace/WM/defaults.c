@@ -175,6 +175,8 @@ static WDECallbackUpdate setModifierKeyLabels;
 static WDECallbackConvert getCursor;
 static WDECallbackUpdate setCursor;
 
+static WDECallbackUpdate setAntialiasedText;
+
 /*
  * Tables to convert strings to enumeration values.
  * Values stored are char
@@ -474,10 +476,9 @@ WDefaultEntry optionList[] = {
     {"MenuStyle", "normal", seMenuStyles, &wPreferences.menu_style, getEnum, setMenuStyle, NULL,
      NULL},
     {"WidgetColor", "(solid, \"#aaaaaa\")", NULL, NULL, getTexture, setWidgetColor, NULL, NULL},
-    {"IconBack", "(\"tpixmap\", \"/Library/Images/common_Tile.tiff\", \"#000000\")", NULL, NULL,
-     getTexture, setIconTile, NULL, NULL},
-    {"MiniwindowBack", "(\"tpixmap\", \"/Library/Images/common_MiniWindowTile.tiff\", \"#000000\")",
-     NULL, NULL, getTexture, setMiniwindowTile, NULL, NULL}, /* NEXTSPACE */
+    {"IconBack", DEF_ICON_BACK, NULL, NULL, getTexture, setIconTile, NULL, NULL},
+    /* NEXTSPACE */
+    {"MiniwindowBack", DEF_MINIWINDOW_BACK, NULL, NULL, getTexture, setMiniwindowTile, NULL, NULL},
     {"TitleJustify", "center", seJustifications, &wPreferences.title_justification, getEnum,
      setJustify, NULL, NULL},
     {"WindowTitleFont", DEF_TITLE_FONT, NULL, NULL, getFont, setWinTitleFont, NULL, NULL},
@@ -499,6 +500,7 @@ WDefaultEntry optionList[] = {
     {"MenuTextFont", DEF_MENU_ENTRY_FONT, NULL, NULL, getFont, setMenuTextFont, NULL, NULL},
     {"IconTitleFont", DEF_ICON_TITLE_FONT, NULL, NULL, getFont, setIconTitleFont, NULL, NULL},
     {"ClipTitleFont", DEF_CLIP_TITLE_FONT, NULL, NULL, getFont, setClipTitleFont, NULL, NULL},
+    {"UseAntialiasedText", "NO", NULL, NULL, getBool, setAntialiasedText, NULL, NULL},
     {"ShowClipTitle", "YES", NULL, &wPreferences.show_clip_title, getBool, NULL, NULL, NULL},
     {"LargeDisplayFont", DEF_WORKSPACE_NAME_FONT, NULL, NULL, getFont, setLargeDisplayFont, NULL,
      NULL},
@@ -665,7 +667,6 @@ WDefaultEntry optionList[] = {
      NULL},
     {"CycleIgnoreMinimized", "NO", NULL, &wPreferences.cycle_ignore_minimized, getBool, NULL, NULL,
      NULL}};
-
 
 /* set `plkey` and `plvalue` fields of entries in `optionList` and `staticOptionList` */
 static void _initializeOptionLists(void)
@@ -2626,6 +2627,21 @@ static int setLargeDisplayFont(WScreen *scr, WDefaultEntry *entry, void *tdata, 
     WMReleaseFont(scr->workspace_name_font);
 
   scr->workspace_name_font = font;
+
+  return 0;
+}
+
+static int setAntialiasedText(WScreen *scr, WDefaultEntry *entry, void *tdata, void *foo)
+{
+  char *flag = tdata;
+
+  /* Parameter not used, but tell the compiler that it is ok */
+  (void) entry;
+  (void) foo;
+
+  scr->wmscreen->antialiasedText = *flag;
+
+  fprintf(stderr, "setAntialiasedText: %s\n", (Bool)*flag ? "True" : "False");
 
   return 0;
 }

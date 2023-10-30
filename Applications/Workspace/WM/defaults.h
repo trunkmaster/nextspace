@@ -213,17 +213,17 @@ extern struct WPreferences {
 #ifdef USE_ICCCM_WMREPLACE
     unsigned int replace : 1; /* replace existing window manager */
 #endif
-    unsigned int nodock : 1;                /* don't display the dock */
-    unsigned int noclip : 1;                /* don't display the clip */
-    unsigned int clip_merged_in_dock : 1;   /* disable clip, switch workspaces with dock */
-    unsigned int nodrawer : 1;              /* don't use drawers */
+    unsigned int nodock                : 1; /* don't display the dock */
+    unsigned int noclip                : 1; /* don't display the clip */
+    unsigned int clip_merged_in_dock   : 1; /* disable clip, switch workspaces with dock */
+    unsigned int nodrawer              : 1; /* don't use drawers */
     unsigned int wrap_appicons_in_dock : 1; /* Whether to wrap appicons when Dock is
                                                moved up and down */
-    unsigned int noupdates : 1;             /* don't require ~/GNUstep (-static) */
-    unsigned int noautolaunch : 1;          /* don't autolaunch apps */
-    unsigned int norestore : 1;             /* don't restore session */
-    unsigned int restarting : 2;
-  } flags;                                  /* internal flags */
+    unsigned int noupdates             : 1; /* don't require ~/GNUstep (-static) */
+    unsigned int noautolaunch          : 1; /* don't autolaunch apps */
+    unsigned int norestore             : 1; /* don't restore session */
+    unsigned int restarting            : 2;
+  } flags; /* internal flags */
 
   /* Map table between w_cursor and actual X id */
   Cursor cursor[WCUR_LAST];
@@ -256,6 +256,8 @@ void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shouldTrack);
 #define DEF_WINDOW_TITLE_EXTEND_SPACE "0"
 #define DEF_MENU_TITLE_EXTEND_SPACE "0"
 #define DEF_MENU_TEXT_EXTEND_SPACE "0"
+#define DEF_ICON_BACK "(\"tpixmap\", \"/Library/Images/common_Tile.tiff\", \"#000000\")"
+#define DEF_MINIWINDOW_BACK "(\"tpixmap\", \"/Library/Images/common_MiniWindowTile.tiff\", \"#000000\")"
 
 #ifndef HAVE_INOTIFY
 /* Check defaults database for changes every this many milliseconds */
