@@ -174,7 +174,6 @@ WMFont *WMCreateFont(WMScreen *scrPtr, const char *fontName)
     fname = wstrdup(fontName);
   }
 
-  /* if (!WINGsConfiguration.antialiasedText && !strstr(fname, ":antialias=")) { */
   if (!scrPtr->antialiasedText && !strstr(fname, ":antialias=")) {
     fname = wstrappend(fname, ":antialias=false");
   }
@@ -199,9 +198,7 @@ WMFont *WMCreateFont(WMScreen *scrPtr, const char *fontName)
 
   font->height = font->font->ascent + font->font->descent;
   font->y = font->font->ascent;
-
   font->refCount = 1;
-
   font->name = fname;
 
 #ifdef USE_PANGO
