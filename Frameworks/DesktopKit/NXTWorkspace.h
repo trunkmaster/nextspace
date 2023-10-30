@@ -21,7 +21,8 @@
 
 #import <Foundation/NSString.h>
 
-/* Notifications to communicate with applications. Manadatory prefixes in
+/*
+   Notifications to communicate with applications. Manadatory prefixes in
    notification names are:
      - WMShould for notification from application to perform some action
      - WMDid to notify application about action completion
@@ -29,14 +30,17 @@
 
    All notifications object must be set to @"GSWorkspaceNotification".
    Otherwise Workspace Manager will ignore this notification.
-   All notifications must contain in userInfo:
-     "WindowID" = CFNumber;
-     "ApplicationName" = CFString;
 */
 // WM.plist
 extern NSString* WMDidChangeAppearanceSettingsNotification;
 // WMState.plist
 extern NSString* WMDidChangeDockContentNotification;
+
+/*
+   All WMShould and WMDid notifications must contain in userInfo:
+     "WindowID" = CFNumber;
+     "ApplicationName" = CFString;
+ */
 // Hide All
 extern NSString* WMShouldHideOthersNotification;
 extern NSString* WMDidHideOthersNotification;
