@@ -1,6 +1,8 @@
 BasedOnStyle: Google
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
 AlwaysBreakBeforeMultilineStrings: false
 BreakBeforeBraces: Custom
 BraceWrapping:
@@ -24,3 +26,6 @@ ColumnLimit: 100
 SortIncludes: Never
 PointerAlignment: Right
 AlignConsecutiveBitFields: AcrossEmptyLinesAndComments
+AlignTrailingComments: true
+AlignEscapedNewlines: Left
+AlignOperands: Align
