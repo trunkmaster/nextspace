@@ -195,31 +195,32 @@ NSString *WWMDefaultsPath(void)
   return userDefPath;
 }
 
-- (void)setWMFont:(NSFont *)font key:(NSString *)key
+- (void)setWMPreference:(NSString *)value forKey:(NSString *)key
 {
   NSString *wmDefaultsPath = WWMDefaultsPath();
   NSMutableDictionary *wmDefaults;
-  NSMutableString *value;
 
   if (![[NSFileManager defaultManager] fileExistsAtPath:wmDefaultsPath]) {
-    /* TODO: WM doesn't track WM.plist changes if it doesn't exist.
-       We need to send WMDidChangeWindowAppearanceSettings to the distributed
-       notification center (WM should handle this notification and reread file). */
     NSLog(@"[Font] can't find existing WM defaults database! Creating new...");
     wmDefaults = [NSMutableDictionary new];
   } else {
     wmDefaults = [[NSMutableDictionary alloc] initWithContentsOfFile:wmDefaultsPath];
   }
 
+  [wmDefaults setObject:value forKey:key];
+  [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
+  [wmDefaults release];
+}
+
+- (void)setWMFont:(NSFont *)font forKey:(NSString *)key
+{
+  NSMutableString *value;
+
   // Convert font name into the FontConfig format.
   value = [NSMutableString stringWithFormat:@"%@:postscriptname=%@:pixelsize=%.0f:antialias=%@",
                                             [font familyName], [font fontName], [font pointSize],
                                             [enableAntiAliasingButton state] ? @"true" : @"false"];
-  // NSLog(@"[Font] set WM font %@ = `%@` -> (%@)", key, value, wmDefaultsPath);
-
-  [wmDefaults setObject:value forKey:key];
-  [wmDefaults writeToFile:wmDefaultsPath atomically:YES];
-  [wmDefaults release];
+  [self setWMPreference:value forKey:key];
 }
 
 - (void)updateUI
@@ -377,8 +378,12 @@ NSString *WWMDefaultsPath(void)
 
 - (IBAction)enableAntiAliasingChanged:(id)sender
 {
+  // GS
   setBoolDefault([sender intValue], @"GSFontAntiAlias");
   setIntDefault(0, @"back-art-subpixel-text");
+
+  // WM
+  [self setWMPreference:([sender intValue] ? @"YES" : @"NO") forKey:@"UseAntialiasedText"];
   
   [self updateUI];
 }
@@ -425,9 +430,9 @@ NSString *WWMDefaultsPath(void)
     setFloatDefault(fontSize - 3.0, @"NSMiniFontSize");
     setFloatDefault(fontSize - 2.0, @"NSSmallFontSize");
     // WM
-    [self setWMFont:font key:@"MenuTextFont"];
-    [self setWMFont:[NSFont fontWithName:fontName size:fontSize - 3.0] key:@"IconTitleFont"];
-    [self setWMFont:[NSFont fontWithName:fontName size:fontSize * 2.0] key:@"LargeDisplayFont"];
+    [self setWMFont:font forKey:@"MenuTextFont"];
+    [self setWMFont:[NSFont fontWithName:fontName size:fontSize - 3.0] forKey:@"IconTitleFont"];
+    [self setWMFont:[NSFont fontWithName:fontName size:fontSize * 2.0] forKey:@"LargeDisplayFont"];
     [[NSDistributedNotificationCenter defaultCenter]
         postNotificationName:WMDidChangeAppearanceSettingsNotification
                       object:@"GSWorkspaceNotification"];
@@ -444,8 +449,8 @@ NSString *WWMDefaultsPath(void)
     setStringDefault(fontName, @"NSPaletteFont");
     setFloatDefault(fontSize, @"NSPaletteFontSize");
     // WM
-    [self setWMFont:font key:@"MenuTitleFont"];
-    [self setWMFont:font key:@"WindowTitleFont"];
+    [self setWMFont:font forKey:@"MenuTitleFont"];
+    [self setWMFont:font forKey:@"WindowTitleFont"];
     [[NSDistributedNotificationCenter defaultCenter]
         postNotificationName:WMDidChangeAppearanceSettingsNotification
                       object:@"GSWorkspaceNotification"];
