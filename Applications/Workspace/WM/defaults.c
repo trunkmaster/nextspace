@@ -2641,8 +2641,6 @@ static int setAntialiasedText(WScreen *scr, WDefaultEntry *entry, void *tdata, v
 
   scr->wmscreen->antialiasedText = *flag;
 
-  fprintf(stderr, "setAntialiasedText: %s\n", (Bool)*flag ? "True" : "False");
-
   return 0;
 }
 
