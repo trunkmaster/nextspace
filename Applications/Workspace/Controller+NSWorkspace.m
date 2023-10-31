@@ -36,6 +36,7 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
+#include "Foundation/NSValue.h"
 #include "Foundation/NSBundle.h"
 #include "AppKit/NSImage.h"
 #import <Foundation/Foundation.h>
@@ -427,7 +428,7 @@ static NSLock *raceLock = nil;
 //-------------------------------------------------------------------------------------------------
 //--- Manipulating Files
 //-------------------------------------------------------------------------------------------------
-// FIXME: TODO
+// Operation types supported by ProcessManager: Copy, Duplicate, Move, Link, Delete, Recycle
 - (BOOL)performFileOperation:(NSString*)operation
                       source:(NSString*)source
                  destination:(NSString*)destination
@@ -451,8 +452,17 @@ static NSLock *raceLock = nil;
   }
 
   if (opType) {
-    [procManager startOperationWithType:opType source:source target:destination files:files];
-    return YES;
+    id operation = [procManager startOperationWithType:opType
+                                                source:source
+                                                target:destination
+                                                 files:files];
+    if (operation) {
+      NSNumber *opHash = [NSNumber numberWithUnsignedInteger:[operation hash]];
+      *tag = [opHash intValue];
+      return YES;
+    } else {
+      return NO;
+    }
   }
   return NO;
 }
