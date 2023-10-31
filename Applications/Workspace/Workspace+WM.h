@@ -42,8 +42,6 @@ extern WorkspaceExitCode ws_quit_code;
 //-----------------------------------------------------------------------------
 #ifdef __OBJC__
 
-#undef _
-
 #include <wraster.h>
 
 #include <WM/core/log_utils.h>
