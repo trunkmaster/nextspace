@@ -852,14 +852,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   }
 }
 
-- (void)hideOtherApplications:(id)sender
-{
-  NSLog(@"hideOtherApplications");
-  [[NSDistributedNotificationCenter defaultCenter]
-      postNotificationName:CF_NOTIFICATION(WMShouldHideOthersNotification)
-                    object:@"GSWorkspaceNotification"];
-}
-
 //============================================================================
 // Access to Workspace data via NSApp
 //============================================================================
@@ -1047,8 +1039,22 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // Application menu
 //============================================================================
 
+- (void)hideOtherApplications:(id)sender
+{
+  Window xWindow = (Window)[GSCurrentServer() windowDevice:[[NSApp keyWindow] windowNumber]];
+  NSDictionary *info =
+      @{@"WindowID" : [NSNumber numberWithUnsignedLong:xWindow], @"ApplicationName" : @"Workspace"};
+
+  NSLog(@"hideOtherApplications for X window ID: %lu", xWindow);
+  
+  [[NSDistributedNotificationCenter defaultCenter]
+      postNotificationName:CF_NOTIFICATION(WMShouldHideOthersNotification)
+                    object:@"GSWorkspaceNotification"
+                  userInfo:info];
+}
+
 // Info
-- (void)showInfoPanel:sender
+- (void)showInfoPanel:(id)sender
 {
   if (infoPanel == nil) {
     [NSBundle loadNibNamed:@"InfoPanel" owner:self];
@@ -1059,7 +1065,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [infoPanel makeKeyAndOrderFront:nil];
 }
 
-- (void)showLegalPanel:sender
+- (void)showLegalPanel:(id)sender
 {
   if (legalPanel == nil) {
     NSScrollView *sv;
@@ -1078,7 +1084,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 // TODO
-- (void)saveLegalToFile:sender
+- (void)saveLegalToFile:(id)sender
 {
   NSSavePanel *sp = [NXTSavePanel savePanel];
 
@@ -1154,7 +1160,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 // Tools -> Inspector
-- (void)showAttributesInspector:sender
+- (void)showAttributesInspector:(id)sender
 {
   if (!inspector) {
     [self _loadInpectors];
@@ -1162,7 +1168,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [inspector showAttributesInspector:self];
 }
 
-- (void)showContentsInspector:sender
+- (void)showContentsInspector:(id)sender
 {
   if (!inspector) {
     [self _loadInpectors];
@@ -1170,7 +1176,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [inspector showContentsInspector:self];
 }
 
-- (void)showToolsInspector:sender
+- (void)showToolsInspector:(id)sender
 {
   if (!inspector) {
     [self _loadInpectors];
@@ -1178,7 +1184,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [inspector showToolsInspector:self];
 }
 
-- (void)showPermissionsInspector:sender
+- (void)showPermissionsInspector:(id)sender
 {
   if (!inspector) {
     [self _loadInpectors];
@@ -1217,7 +1223,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [console activate];
 }
 
-- (void)showLauncher:sender
+- (void)showLauncher:(id)sender
 {
   if (launcher == nil) {
     launcher = [[Launcher alloc] init];

@@ -120,19 +120,37 @@ static void hideOthersObserver(CFNotificationCenterRef center,
                                const void *object,  // object - ignored
                                CFDictionaryRef userInfo)
 {
-  CFNumberRef windowID = CFDictionaryGetValue(userInfo, CFSTR("WindowID"));
-  /* WApplication *observer_wapp = (WApplication *)wobserver; */
-  /* WApplication *wapp; */
-  Window window = 0;
-  WWindow *wwin;
+  CFStringRef appName = CFDictionaryGetValue(userInfo, CFSTR("ApplicationName"));
+  WApplication *wapp = (WApplication *)wobserver;
+  // CFNumberRef windowID = NULL;
+  // Window window = 0;
+  // WWindow *wwin = NULL;
 
-  if (windowID) {
-    WMLogInfo("Will hide other applications for window %lu", window);
-    CFNumberGetValue(windowID, kCFNumberLongType, &window);
-    wwin = wWindowFor(window);
-    wApplicationHideOthers(wwin);
-    postWorkspaceNotification(wwin, WMDidHideOthersNotification);
+  if (wApplicationOf(wapp->main_window) == NULL) {
+    WMLogCritical("You've forgot to remove CFNotificationObserver to WMShouldHideOthersNotification!!!");
+    return;
   }
+
+  if (CFStringCompare(appName, wapp->appName, 0) == 0) {
+    wApplicationHideOthers(wapp->main_wwin);
+  }
+  // if (CFStringCompare(appName, wapp->appName, 0)) {
+  //   if (wapp->flags.hidden == 0) {
+  //     // windowID = CFDictionaryGetValue(userInfo, CFSTR("WindowID"));
+  //     // if (windowID) {
+  //     //   CFNumberGetValue(windowID, kCFNumberLongType, &window);
+  //     //   // WMLogInfo("Will hide other applications for window %lu", window);
+  //     //   wwin = wWindowFor(window);
+  //     // }
+  //     // wwin = wWindowFor(wapp->main_window);
+  //     if (wapp->flags.is_gnustep && wapp->gsmenu_wwin) {
+  //       WMLogInfo("send WM_HIDE_APP protocol message to client to %@.", wapp->appName);
+  //       wClientSendProtocol(wapp->gsmenu_wwin, w_global.atom.gnustep.wm_hide_app, CurrentTime);
+  //     } else {
+  //       wApplicationHide(wapp);
+  //     }
+  //   }
+  // }
 }
 
 static WWindow *makeMainWindow(WScreen *scr, Window window)
@@ -393,6 +411,10 @@ void wApplicationDestroy(WApplication *wapp)
   if (wapp->refcount > 0)
     return;
 
+  scr = wapp->main_wwin->screen;
+  
+  CFNotificationCenterRemoveEveryObserver(scr->notificationCenter, wapp);
+
   CFArrayRemoveAllValues(wapp->windows);
   CFRelease(wapp->windows);
   /* WMLogError("wapp->windows retain count: %li", CFGetRetainCount(wapp->windows)); */
@@ -427,8 +449,6 @@ void wApplicationDestroy(WApplication *wapp)
     wapp->refcount = 1;
     return;
   }
-
-  scr = wapp->main_wwin->screen;
 
   // Notify Workspace's ProcessManager
   if (!wapp->flags.is_gnustep) {
@@ -610,6 +630,8 @@ void wApplicationHide(WApplication *wapp)
     return;
   }
 
+  WMLogWarning("wmApplicationHide() called for application `%@`", wapp->appName);
+
   scr = wapp->main_wwin->screen;
   hadfocus = 0;
   wlist = scr->focused_window;
@@ -625,10 +647,10 @@ void wApplicationHide(WApplication *wapp)
   /* Special treatment of Workspace: set focus to main menu prior to any window
      hiding to prevent searching for next focused window. Workspace's main menu
      will not be unmapped on hiding. */
-  if (wapp->gsmenu_wwin && !strcmp(wapp->gsmenu_wwin->wm_instance, "Workspace")) {
-    XSetInputFocus(dpy, wapp->gsmenu_wwin->client_win, RevertToParent, CurrentTime);
-    is_workspace = True;
-  }
+  // if (wapp->gsmenu_wwin && !strcmp(wapp->gsmenu_wwin->wm_instance, "Workspace")) {
+  //   XSetInputFocus(dpy, wapp->gsmenu_wwin->client_win, RevertToParent, CurrentTime);
+  //   is_workspace = True;
+  // }
 
   while (wlist) {
     if (wlist->main_window == wapp->main_window &&
@@ -654,7 +676,7 @@ void wApplicationHide(WApplication *wapp)
       }
       wlist = wlist->prev;
     }
-    wSetFocusTo(scr, wlist);
+    // wSetFocusTo(scr, wlist);
   }
 
   wapp->flags.hidden = 1;
