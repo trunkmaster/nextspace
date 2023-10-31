@@ -245,12 +245,10 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 
 /** Returns whether a change to the file system has been registered with a
     noteFileSystemChanged message since the last fileSystemChanged message.*/
-// CHECK
-// - (BOOL)fileSystemChanged;
+- (BOOL)fileSystemChanged;
 
 /** Informs Workspace Manager that the file system has changed.*/
-// CHECK
-// - (void)noteFileSystemChanged;
+- (void)noteFileSystemChanged;
 
 //-----------------------------------------------------------------------------
 //--- Updating Registered Services and File Types

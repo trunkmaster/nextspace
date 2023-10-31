@@ -781,18 +781,18 @@ static NSLock *raceLock = nil;
 //-------------------------------------------------------------------------------------------------
 //--- Tracking Changes to the File System
 //-------------------------------------------------------------------------------------------------
-// - (BOOL)fileSystemChanged
-// {
-//   BOOL flag = _fileSystemChanged;
+- (BOOL)fileSystemChanged
+{
+  BOOL flag = _fileSystemChanged;
 
-//   _fileSystemChanged = NO;
-//   return flag;
-// }
+  _fileSystemChanged = NO;
+  return flag;
+}
 
-// - (void)noteFileSystemChanged
-// {
-//   _fileSystemChanged = YES;
-// }
+- (void)noteFileSystemChanged
+{
+  _fileSystemChanged = YES;
+}
 
 //-------------------------------------------------------------------------------------------------
 //--- Updating Registered Services and File Types
