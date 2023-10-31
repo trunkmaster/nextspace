@@ -36,6 +36,7 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
+#include "AppKit/NSWorkspace.h"
 #include "Foundation/NSValue.h"
 #include "Foundation/NSBundle.h"
 #include "AppKit/NSImage.h"
@@ -437,19 +438,27 @@ static NSLock *raceLock = nil;
 {
   OperationType opType = 0;
 
-  if ([operation isEqualToString:@"Copy"]) {
+  if ([operation isEqualToString:NSWorkspaceCopyOperation]) {
     opType = CopyOperation;
-  } else if ([operation isEqualToString:@"Duplicate"]) {
+  } else if ([operation isEqualToString:NSWorkspaceDuplicateOperation]) {
     opType = DuplicateOperation;
-  } else if ([operation isEqualToString:@"Move"]) {
+  } else if ([operation isEqualToString:NSWorkspaceMoveOperation]) {
     opType = MoveOperation;
-  } else if ([operation isEqualToString:@"Link"]) {
+  } else if ([operation isEqualToString:NSWorkspaceLinkOperation]) {
     opType = LinkOperation;
-  } else if ([operation isEqualToString:@"Delete"]) {
+  } else if ([operation isEqualToString:NSWorkspaceDestroyOperation]) {
     opType = DeleteOperation;
-  } else if ([operation isEqualToString:@"Recycle"]) {
+  } else if ([operation isEqualToString:NSWorkspaceRecycleOperation]) {
     opType = RecycleOperation;
-  }
+  } /*else if ([operation isEqualToString:NSWorkspaceCompressOperation]) {
+    opType = ;
+  } else if ([operation isEqualToString:NSWorkspaceDecompressOperation]) {
+    opType = ;
+  } else if ([operation isEqualToString:NSWorkspaceEncryptOperation]) {
+    opType = ;
+  } else if ([operation isEqualToString:NSWorkspaceDecryptOperation]) {
+    opType = ;
+  }*/
 
   if (opType) {
     id operation = [procManager startOperationWithType:opType

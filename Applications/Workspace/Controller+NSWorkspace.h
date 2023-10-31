@@ -154,28 +154,18 @@
 //--- Manipulating Files
 //-----------------------------------------------------------------------------
 
-//--- Possible values for operation in performFileOperation:...
-APPKIT_EXPORT NSString *NSWorkspaceMoveOperation;
-APPKIT_EXPORT NSString *NSWorkspaceCopyOperation;
-APPKIT_EXPORT NSString *NSWorkspaceLinkOperation;
-APPKIT_EXPORT NSString *NSWorkspaceCompressOperation;
-APPKIT_EXPORT NSString *NSWorkspaceDecompressOperation;
-APPKIT_EXPORT NSString *NSWorkspaceEncryptOperation;
-APPKIT_EXPORT NSString *NSWorkspaceDecryptOperation;
-APPKIT_EXPORT NSString *NSWorkspaceDestroyOperation;
-APPKIT_EXPORT NSString *NSWorkspaceRecycleOperation;
-APPKIT_EXPORT NSString *NSWorkspaceDuplicateOperation;
-
 /** Requests the Workspace Manager to perform a file operation on a set of
     files in the source directory specifying the destination directory if
     needed using tag as an identifier for asynchronous operations; returns YES
-    if operation succeeded and NO otherwise.*/
-// TODO: [NSWorkspace _workspaceApplication]
-// - (BOOL)performFileOperation:(NSString*)operation
-//                       source:(NSString*)source
-//                  destination:(NSString*)destination
-//                        files:(NSArray*)files
-//                          tag:(int*)tag;
+    if operation succeeded and NO otherwise.
+
+    Strings for operation types defined in AppKit/NSWorkspace.h*/
+// --- [NSWorkspace _workspaceApplication]
+- (BOOL)performFileOperation:(NSString *)operation
+                      source:(NSString *)source
+                 destination:(NSString *)destination
+                       files:(NSArray *)files
+                         tag:(int *)tag;
 
 /** Instructs Workspace Manager to select the file specified by fullPath
     opening a new file viewer if a path is specified by rootFullpath; returns
