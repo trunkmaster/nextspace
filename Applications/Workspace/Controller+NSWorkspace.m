@@ -392,35 +392,46 @@ static NSLock *raceLock = nil;
     NSBundle *appBundle;
     NSDictionary *appInfo;
     NSString *wmName;
+    NSString *wmClass;
     NSString *iconPath;
     NSString *launchPath;
+
+    launchPath = [self _locateApplicationBinary:appName];
+    if (launchPath == nil) {
+      return NO;
+    }
 
     appBundle = [self _bundleForApp:appName];
     if (appBundle) {
       appInfo = [appBundle infoDictionary];
       iconPath = [appBundle pathForImageResource:[appInfo objectForKey:@"NSIcon"]];
       wmName = [appInfo objectForKey:@"NSExecutable"];
-      launchPath = [self _locateApplicationBinary:appName];
-      if (launchPath == nil) {
+      wmClass = [wmName pathExtension];
+
+      if ([wmClass isEqualToString:@""] == NO) {
+        wmName = [wmName stringByDeletingPathExtension];
+      } else {
+        wmClass = @"GNUstep";
+      }
+
+      [raceLock lock];
+      wLaunchingAppIconCreate([wmName cString], [wmClass cString], [launchPath cString], point.x,
+                              point.y, [iconPath cString]);
+      [raceLock unlock];
+
+      if (![self openFile:fullPath withApplication:appName andDeactivate:YES]) {
+        NXTRunAlertPanel(_(@"Workspace"), _(@"Failed to start application \"%@\" for file \"%@\""),
+                         nil, nil, nil, appName, [fullPath lastPathComponent]);
         return NO;
       }
-      [raceLock lock];
-      wLaunchingAppIconCreate([[wmName stringByDeletingPathExtension] cString], "GNUstep",
-                              [launchPath cString], point.x, point.y, [iconPath cString]);
-      [raceLock unlock];
+      // If multiple files are opened at once we need to wait for app to start.
+      // Otherwise two copies of one application become alive.
+      while (([wmClass isEqualToString:@"GNUstep"] != NO) &&
+             ([self _connectApplication:appName] == nil)) {
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+      }
+      return YES;
     }
-
-    if (![self openFile:fullPath withApplication:appName andDeactivate:YES]) {
-      NXTRunAlertPanel(_(@"Workspace"), _(@"Failed to start application \"%@\" for file \"%@\""),
-                       nil, nil, nil, appName, [fullPath lastPathComponent]);
-      return NO;
-    }
-    // If multiple files are opened at once we need to wait for app to start.
-    // Otherwise two copies of one application become alive.
-    while ([self _connectApplication:appName] == nil) {
-      [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
-    }
-    return YES;
   }
 
   return NO;
@@ -1395,9 +1406,7 @@ static NSLock *raceLock = nil;
     if (host == nil) {
       host = @"";
     } else {
-      NSHost *h;
-
-      h = [NSHost hostWithName:host];
+      NSHost *h = [NSHost hostWithName:host];
       if ([h isEqual:[NSHost currentHost]] == YES) {
         host = @"";
       }
