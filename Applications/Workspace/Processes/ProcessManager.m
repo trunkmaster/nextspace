@@ -250,7 +250,7 @@ static BOOL _workspaceQuitting = NO;
 
 - (void)applicationDidBecomeActive:(NSNotification *)notif
 {
-  WMLogWarning("ApplicationDidBecomeActive: %@", convertNStoCFDictionary([notif userInfo]));
+  // WMLogWarning("ApplicationDidBecomeActive: %@", convertNStoCFDictionary([notif userInfo]));
   _activeApplication = [[notif userInfo] copy];
 }
 

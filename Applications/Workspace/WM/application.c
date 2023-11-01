@@ -114,6 +114,45 @@ static void shadeObserver(CFNotificationCenterRef center,
   }
 }
 
+static void hideObserver(CFNotificationCenterRef center,
+                         void *wobserver,  // wapp
+                         CFNotificationName name,
+                         const void *object,  // object - ignored
+                         CFDictionaryRef userInfo)
+{
+  WApplication *wapp = (WApplication *)wobserver;
+  CFStringRef appName = CFDictionaryGetValue(userInfo, CFSTR("NSApplicationName"));
+
+  if (!appName || CFStringCompare(appName, wapp->appName, 0) != 0) {
+    // Unknown application or application is not observed object
+    // WMLogInfo("hideObserver: `%@` application is not observed object - %@.",
+    //           appName, wapp->appName);
+    return;
+  }
+
+  wapp->flags.hidden = 1;
+  WMLogInfo("hideObserver: %@ did HIDE.", wapp->appName);
+}
+
+static void unhideObserver(CFNotificationCenterRef center,
+                         void *wobserver,  // wapp
+                         CFNotificationName name,
+                         const void *object,  // object - ignored
+                         CFDictionaryRef userInfo)
+{
+  WApplication *wapp = (WApplication *)wobserver;
+  CFStringRef appName = CFDictionaryGetValue(userInfo, CFSTR("NSApplicationName"));
+
+  if (!appName || CFStringCompare(appName, wapp->appName, 0) != 0) {
+    // Unknown application or application is not observed object
+    // WMLogInfo("unhideObserver: `%@` application is not observed object - %@.",
+    //           appName, wapp->appName);
+    return;
+  }
+  wapp->flags.hidden = 0;
+  WMLogInfo("unhideObserver: %@ did UNHIDE.", wapp->appName);
+}
+
 static void hideOthersObserver(CFNotificationCenterRef center,
                                void *wobserver,  // wapp
                                CFNotificationName name,
@@ -122,35 +161,15 @@ static void hideOthersObserver(CFNotificationCenterRef center,
 {
   CFStringRef appName = CFDictionaryGetValue(userInfo, CFSTR("ApplicationName"));
   WApplication *wapp = (WApplication *)wobserver;
-  // CFNumberRef windowID = NULL;
-  // Window window = 0;
-  // WWindow *wwin = NULL;
 
   if (wApplicationOf(wapp->main_window) == NULL) {
-    WMLogCritical("You've forgot to remove CFNotificationObserver to WMShouldHideOthersNotification!!!");
+    // WMLogCritical("You've forgot to remove CFNotificationObserver to WMShouldHideOthersNotification!!!");
     return;
   }
 
   if (CFStringCompare(appName, wapp->appName, 0) == 0) {
     wApplicationHideOthers(wapp->main_wwin);
   }
-  // if (CFStringCompare(appName, wapp->appName, 0)) {
-  //   if (wapp->flags.hidden == 0) {
-  //     // windowID = CFDictionaryGetValue(userInfo, CFSTR("WindowID"));
-  //     // if (windowID) {
-  //     //   CFNumberGetValue(windowID, kCFNumberLongType, &window);
-  //     //   // WMLogInfo("Will hide other applications for window %lu", window);
-  //     //   wwin = wWindowFor(window);
-  //     // }
-  //     // wwin = wWindowFor(wapp->main_window);
-  //     if (wapp->flags.is_gnustep && wapp->gsmenu_wwin) {
-  //       WMLogInfo("send WM_HIDE_APP protocol message to client to %@.", wapp->appName);
-  //       wClientSendProtocol(wapp->gsmenu_wwin, w_global.atom.gnustep.wm_hide_app, CurrentTime);
-  //     } else {
-  //       wApplicationHide(wapp);
-  //     }
-  //   }
-  // }
 }
 
 static WWindow *makeMainWindow(WScreen *scr, Window window)
@@ -308,8 +327,6 @@ WApplication *wApplicationCreate(WWindow *wwin)
     wapp->appName =
         CFStringCreateWithCString(kCFAllocatorDefault, wwin->wm_class, kCFStringEncodingUTF8);
   }
-  /* wapp->app_name = wwin->flags.is_gnustep ? wstrdup(wwin->wm_instance) : wstrdup(wwin->wm_class);
-   */
 
   wApplicationAddWindow(wapp, wwin);
 
@@ -374,6 +391,12 @@ WApplication *wApplicationCreate(WWindow *wwin)
     CFNotificationCenterAddObserver(scr->notificationCenter, wapp, hideOthersObserver,
                                     WMShouldHideOthersNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
+    // CFNotificationCenterAddObserver(scr->notificationCenter, wapp, hideObserver,
+    //                                 CFSTR("NSApplicationDidHideNotification"), NULL,
+    //                                 CFNotificationSuspensionBehaviorDeliverImmediately);
+    // CFNotificationCenterAddObserver(scr->notificationCenter, wapp, unhideObserver,
+    //                                 CFSTR("NSApplicationDidUnhideNotification"), NULL,
+    //                                 CFNotificationSuspensionBehaviorDeliverImmediately);
 
     // Notify Workspace's ProcessManager
     CFNotificationCenterPostNotification(scr->notificationCenter,
@@ -580,7 +603,7 @@ static inline void flushExpose(void)
   XSync(dpy, 0);
 }
 
-static void hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin)
+static void _hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin)
 {
   if (wwin->flags.miniaturized) {
     if (wwin->icon) {
@@ -617,9 +640,9 @@ static void hideWindow(WIcon *icon, int icon_x, int icon_y, WWindow *wwin)
 void wApplicationHide(WApplication *wapp)
 {
   WScreen *scr;
-  WWindow *wlist;
+  WWindow *list_wwin;
   int hadfocus;
-  Bool is_workspace = False;
+  Bool wapp_is_workspace = False;
 
   if (!wapp) {
     WMLogWarning("trying to hide a non grouped window");
@@ -630,16 +653,25 @@ void wApplicationHide(WApplication *wapp)
     return;
   }
 
-  WMLogWarning("wmApplicationHide() called for application `%@`", wapp->appName);
+  WMLogWarning("wApplicationHide(%@)", wapp->appName);
+
+  if (wapp->flags.hidden) {
+    WMLogWarning("trying to hide already hidden application `%@`", wapp->appName);
+    return;
+  }
 
   scr = wapp->main_wwin->screen;
   hadfocus = 0;
-  wlist = scr->focused_window;
-  if (!wlist) {
+  list_wwin = scr->focused_window;
+  if (!list_wwin) {
+    WMLogWarning("(wmApplicationHide) no focused window for app `%@`", wapp->appName);
     return;
   }
-  if (wlist->main_window == wapp->main_window) {
-    wapp->last_focused = wlist;
+
+  wapp->flags.skip_next_animation = 1;
+
+  if (list_wwin->main_window == wapp->main_window) {
+    wapp->last_focused = list_wwin;
   } else {
     wapp->last_focused = NULL;
   }
@@ -647,39 +679,46 @@ void wApplicationHide(WApplication *wapp)
   /* Special treatment of Workspace: set focus to main menu prior to any window
      hiding to prevent searching for next focused window. Workspace's main menu
      will not be unmapped on hiding. */
-  // if (wapp->gsmenu_wwin && !strcmp(wapp->gsmenu_wwin->wm_instance, "Workspace")) {
-  //   XSetInputFocus(dpy, wapp->gsmenu_wwin->client_win, RevertToParent, CurrentTime);
-  //   is_workspace = True;
-  // }
-
-  while (wlist) {
-    if (wlist->main_window == wapp->main_window &&
-        (is_workspace == False || wlist != wapp->gsmenu_wwin)) {
-      if (wlist->flags.focused) {
-        hadfocus = 1;
-      }
-      if (wapp->app_icon) {
-        hideWindow(wapp->app_icon->icon, wapp->app_icon->x_pos, wapp->app_icon->y_pos, wlist);
-      }
-    }
-    wlist = wlist->prev;
+  if (wapp->flags.is_gnustep && !CFStringCompare(wapp->appName, CFSTR("Workspace"), 0)) {
+    XSetInputFocus(dpy, wapp->gsmenu_wwin->client_win, RevertToParent, CurrentTime);
+    wapp_is_workspace = True;
   }
 
-  wapp->flags.skip_next_animation = 0;
-
-  if (hadfocus && is_workspace == False) {
-    wlist = scr->focused_window;
-    while (wlist) {
-      if (!WFLAGP(wlist, no_focusable) && !wlist->flags.hidden &&
-          (wlist->flags.mapped || wlist->flags.shaded)) {
-        break;
+  // Perform windows hiding
+  while (list_wwin) {
+    if (list_wwin->main_window == wapp->main_window) {
+      if (list_wwin->flags.focused) {
+        hadfocus = 1;
       }
-      wlist = wlist->prev;
+      if (wapp->app_icon && (wapp_is_workspace == False || list_wwin != wapp->gsmenu_wwin)) {
+        WMLogInfo("Hiding window %lu (%s) of %s", list_wwin->client_win,
+                  (WINDOW_LEVEL(list_wwin) == NSMainMenuWindowLevel) ? "menu" : "window",
+                  list_wwin->wm_instance);
+        _hideWindow(wapp->app_icon->icon, wapp->app_icon->x_pos, wapp->app_icon->y_pos, list_wwin);
+      }
     }
-    // wSetFocusTo(scr, wlist);
+    list_wwin = list_wwin->prev;
   }
 
   wapp->flags.hidden = 1;
+
+  wapp->flags.skip_next_animation = 0;
+
+  if (hadfocus && wapp_is_workspace == False) {
+    list_wwin = scr->focused_window;
+    // WMLogInfo("(wApplicationHide:) searching for window to focus... focused: %s", scr->focused_window->wm_instance);
+    while (list_wwin) {
+      if (!WFLAGP(list_wwin, no_focusable) && !list_wwin->flags.hidden &&
+          (list_wwin->flags.mapped || list_wwin->flags.shaded)) {
+        break;
+      }
+      list_wwin = list_wwin->prev;
+    }
+    if (list_wwin) {
+      WMLogInfo("(wApplicationHide:) Setting focus to window: %s", list_wwin->wm_instance);
+      wSetFocusTo(scr, list_wwin);
+    }
+  }
 
   if (wPreferences.auto_arrange_icons) {
     wArrangeIcons(scr, True);
@@ -691,41 +730,44 @@ void wApplicationHide(WApplication *wapp)
 #endif
 }
 
-void wApplicationHideOthers(WWindow *awin)
+void wApplicationHideOthers(WWindow *wwin)
 {
-  WWindow *wwin;
+  WWindow *list_wwin;
+  WApplication *list_wapp;
   WApplication *wapp;
-  WApplication *tapp;
 
-  if (!awin)
+  if (!wwin) {
     return;
-  wwin = awin->screen->focused_window;
-  wapp = wApplicationOf(wwin->main_window);
+  }
+  list_wwin = wwin->screen->focused_window;
+  wapp = wApplicationOf(list_wwin->main_window);
 
-  while (wwin) {
-    tapp = wApplicationOf(wwin->main_window);
-    if (wwin != awin && tapp != wapp && wwin->frame->desktop == awin->screen->current_desktop &&
-        !(wwin->flags.miniaturized || wwin->flags.hidden) && !wwin->flags.internal_window &&
-        !WFLAGP(wwin, no_hide_others)) {
-      if (tapp != wapp && wwin->protocols.HIDE_APP) {
-        /* WMLogInfo("send WM_HIDE_APP protocol message to client."); */
-        wClientSendProtocol(wwin, w_global.atom.gnustep.wm_hide_app, CurrentTime);
-      } else if (wwin->main_window == None || WFLAGP(wwin, no_appicon)) {
-        if (!WFLAGP(wwin, no_miniaturizable)) {
-          wwin->flags.skip_next_animation = 1;
-          wIconifyWindow(wwin);
+  WMLogWarning("wApplicationHideOthers(%@)", wapp->appName);
+
+  while (list_wwin) {
+    list_wapp = wApplicationOf(list_wwin->main_window);
+    if (list_wapp != wapp && list_wwin->frame->desktop == wwin->screen->current_desktop &&
+        !(list_wwin->flags.miniaturized || list_wwin->flags.hidden) &&
+        !list_wwin->flags.internal_window) {
+      if (list_wapp && list_wwin->main_window != None &&
+          list_wwin->main_window != wwin->main_window) {
+        if (list_wwin->protocols.HIDE_APP) {
+          // Inform client about hiding.
+          // Normally WMFHideApplication comes from application (GNUstep) - it's a one call to
+          // wApplicationHide() through handleClientMessage() (event.c).
+          // In this case we hide app windows on previous line and send client message to draw
+          // hidden dot on appicon. This leads to second call to wApplicationHide().
+          wClientSendProtocol(list_wwin, w_global.atom.gnustep.wm_hide_app, CurrentTime);
+        } else {
+          wApplicationHide(list_wapp);
         }
-      } else if (wwin->main_window != None && awin->main_window != wwin->main_window) {
-        if (tapp) {
-          tapp->flags.skip_next_animation = 1;
-          wApplicationHide(tapp);
-        } else if (!WFLAGP(wwin, no_miniaturizable)) {
-          wwin->flags.skip_next_animation = 1;
-          wIconifyWindow(wwin);
-        }
+      } else if ((list_wwin->main_window == None || WFLAGP(list_wwin, no_appicon)) &&
+                 !WFLAGP(list_wwin, no_miniaturizable)) {
+        list_wwin->flags.skip_next_animation = 1;
+        wIconifyWindow(list_wwin);
       }
     }
-    wwin = wwin->prev;
+    list_wwin = list_wwin->prev;
   }
 }
 

@@ -79,7 +79,7 @@ typedef enum NotificationSource { LocalNC, DistributedNC, CoreFoundationNC } Not
   // userInfo
   cfUserInfo = convertNStoCFDictionary(info);
 
-  WMLogWarning("[WMNC] post CF notification: %@ - %@", cfName, cfUserInfo);
+  // WMLogWarning("post CF notification: %@", cfName);
 
   CFNotificationCenterPostNotification(_coreFoundationCenter, cfName, self, cfUserInfo, TRUE);
 
@@ -104,7 +104,7 @@ static void _handleCFNotification(CFNotificationCenterRef center, void *observer
 
   // This is the mirrored notification sent by us
   if (object == _windowManagerCenter) {
-    WMLogWarning("_handleCFNotification: Received mirrored notification from CF. Ignoring...");
+    WMLogWarning("handle CF notification: Received mirrored notification from CF. Ignoring...");
     return;
   }
 
@@ -116,8 +116,7 @@ static void _handleCFNotification(CFNotificationCenterRef center, void *observer
     nsUserInfo = convertCFtoNSDictionary(userInfo);
   }
 
-  WMLogWarning("[WMNC] _handleCFNotificaition: dispatching CF notification %@ - %@", name,
-               userInfo);
+  WMLogWarning("handle CF notificaition: Dispatching %@ - %@", name, userInfo);
 
   [_windowManagerCenter postNotificationName:nsName object:nsObject userInfo:nsUserInfo];
 
@@ -142,18 +141,21 @@ static void _handleCFNotification(CFNotificationCenterRef center, void *observer
     objectName = object;
   }
 
-  if ([name isEqualToString:@"NSApplicationDidResignActiveNotification"] ||
-      [name isEqualToString:@"NSApplicationDidBecomeActiveNotification"]) {
+  if ([name hasPrefix:@"NSApplication"]) {
     NSString *appName = [aNotification userInfo][@"NSApplicationName"];
-    WMLogWarning("[WMNC] %s - %s", [aNotification name].cString, appName.cString);
+    WMLogWarning("handle remote notification: %s - %s", [aNotification name].cString, appName.cString);
   } else {
-    WMLogWarning("[WMNC] handle remote notification: %@ - %@", convertNStoCFString(name),
+    WMLogWarning("handle remote notification: %@ - %@", convertNStoCFString(name),
                  convertNStoCFString(objectName));
   }
 
-  if ([name hasPrefix:@"WM"]) {
-    [self _postCFNotification:name userInfo:[aNotification userInfo]];
-  } else {
+  // Post all notifications to CFNotificationCenter
+  [self _postCFNotification:name userInfo:[aNotification userInfo]];
+
+  // if ([name hasPrefix:@"WM"]) {
+  //   [self _postCFNotification:name userInfo:[aNotification userInfo]];
+  // } else {
+  if ([name hasPrefix:@"WM"] == NO) {
     // Examples:
     //   NSWorkspaceWillLaunchApplicationNotification - by Controller+NSWorkspace
     //   NSWorkspaceDidLaunchApplicationNotification - by AppKit
