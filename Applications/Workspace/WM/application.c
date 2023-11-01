@@ -172,6 +172,8 @@ static void hideOthersObserver(CFNotificationCenterRef center,
   }
 }
 
+
+
 static WWindow *makeMainWindow(WScreen *scr, Window window)
 {
   WWindow *wwin;
@@ -391,12 +393,12 @@ WApplication *wApplicationCreate(WWindow *wwin)
     CFNotificationCenterAddObserver(scr->notificationCenter, wapp, hideOthersObserver,
                                     WMShouldHideOthersNotification, NULL,
                                     CFNotificationSuspensionBehaviorDeliverImmediately);
-    // CFNotificationCenterAddObserver(scr->notificationCenter, wapp, hideObserver,
-    //                                 CFSTR("NSApplicationDidHideNotification"), NULL,
-    //                                 CFNotificationSuspensionBehaviorDeliverImmediately);
-    // CFNotificationCenterAddObserver(scr->notificationCenter, wapp, unhideObserver,
-    //                                 CFSTR("NSApplicationDidUnhideNotification"), NULL,
-    //                                 CFNotificationSuspensionBehaviorDeliverImmediately);
+    CFNotificationCenterAddObserver(scr->notificationCenter, wapp, hideObserver,
+                                    CFSTR("NSApplicationDidHideNotification"), NULL,
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+    CFNotificationCenterAddObserver(scr->notificationCenter, wapp, unhideObserver,
+                                    CFSTR("NSApplicationDidUnhideNotification"), NULL,
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
 
     // Notify Workspace's ProcessManager
     CFNotificationCenterPostNotification(scr->notificationCenter,
@@ -524,22 +526,21 @@ void wApplicationActivate(WApplication *wapp)
 
   wApplicationMakeFirst(wapp);
 
-  if (wapp->flags.is_gnustep || wapp->app_menu->flags.mapped) {
-    return;
-  }
+  if (!wapp->flags.is_gnustep && !wapp->app_menu->flags.mapped) {
+    if (wapp->menus_state && !wapp->app_menu->flags.restored) {
+      wApplicationMenuRestoreFromState(wapp->app_menu, wapp->menus_state);
+      wapp->app_menu->flags.restored = 1;
+    } else if (wapp->app_menu->flags.hidden) {
+      wApplicationMenuShow(wapp->app_menu);
+    } else {
+      wMenuMap(wapp->app_menu);
+    }
 
-  if (wapp->menus_state && !wapp->app_menu->flags.restored) {
-    wApplicationMenuRestoreFromState(wapp->app_menu, wapp->menus_state);
-    wapp->app_menu->flags.restored = 1;
-  } else if (wapp->app_menu->flags.hidden) {
-    wApplicationMenuShow(wapp->app_menu);
-  } else {
-    wMenuMap(wapp->app_menu);
-  }
-
-  if (!wapp->appState) {
-    wapp->appState = CFDictionaryCreateMutable(
-        kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    if (!wapp->appState) {
+      wapp->appState = CFDictionaryCreateMutable(
+          kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    }
+    wapp->last_focused = scr->focused_window;
   }
 
   if (scr->notificationCenter) {
@@ -751,15 +752,14 @@ void wApplicationHideOthers(WWindow *wwin)
         !list_wwin->flags.internal_window) {
       if (list_wapp && list_wwin->main_window != None &&
           list_wwin->main_window != wwin->main_window) {
-        if (list_wwin->protocols.HIDE_APP) {
+        wApplicationHide(list_wapp);
+        if (list_wwin->protocols.HIDE_APP && CFStringCompare(list_wapp->appName, CFSTR("Workspace"), 0)) {
           // Inform client about hiding.
           // Normally WMFHideApplication comes from application (GNUstep) - it's a one call to
           // wApplicationHide() through handleClientMessage() (event.c).
           // In this case we hide app windows on previous line and send client message to draw
           // hidden dot on appicon. This leads to second call to wApplicationHide().
           wClientSendProtocol(list_wwin, w_global.atom.gnustep.wm_hide_app, CurrentTime);
-        } else {
-          wApplicationHide(list_wapp);
         }
       } else if ((list_wwin->main_window == None || WFLAGP(list_wwin, no_appicon)) &&
                  !WFLAGP(list_wwin, no_miniaturizable)) {
