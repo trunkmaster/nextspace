@@ -475,7 +475,17 @@ static BOOL _workspaceQuitting = NO;
 - (void)windowManagerDidActivateApplication:(NSNotification *)notif
 {
   WApplication *wapp = (WApplication *)[(CFObject *)[notif object] object];
-  WWindow *wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
+  WWindow *wwin = NULL;
+
+  if (wapp == NULL) {
+    return;
+  }
+
+  if (CFArrayGetCount(wapp->windows) <= 0) {
+    wwin = wapp->main_wwin;
+  } else {
+    wwin = wapp->last_focused ? wapp->last_focused : (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
+  }
 
   _activeApplication = [self _applicationInfoForWindow:wwin];
 
