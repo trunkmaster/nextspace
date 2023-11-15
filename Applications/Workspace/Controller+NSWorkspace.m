@@ -410,8 +410,15 @@ static NSLock *raceLock = nil;
 
       if ([wmClass isEqualToString:@""] == NO) {
         wmName = [wmName stringByDeletingPathExtension];
-      } else {
+      } else if (appInfo[@"NSPrincipalClass"] != nil) {
         wmClass = @"GNUstep";
+      } else {
+        NXTRunAlertPanel(_(@"Workspace"),
+                         @"Failed to start application \"%@\" for file \"%@\".\n"
+                          "Application is not GNUstep nor Xlib based.\n"
+                          "Please check contents of application Info-gnustep.plist.",
+                         nil, nil, nil, appName, [fullPath lastPathComponent]);
+        return NO;
       }
 
       [raceLock lock];
@@ -419,18 +426,18 @@ static NSLock *raceLock = nil;
                               point.y, [iconPath cString]);
       [raceLock unlock];
 
-      if (![self openFile:fullPath withApplication:appName andDeactivate:YES]) {
+      if ([self openFile:fullPath withApplication:appName andDeactivate:YES] == NO) {
         NXTRunAlertPanel(_(@"Workspace"), _(@"Failed to start application \"%@\" for file \"%@\""),
                          nil, nil, nil, appName, [fullPath lastPathComponent]);
         return NO;
+      } else {
+        // If multiple files are opened at once we need to wait for app to start.
+        // Otherwise two copies of one application become alive.
+        while ([self _connectApplication:appName] == nil) {
+          [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+        }
+        return YES;
       }
-      // If multiple files are opened at once we need to wait for app to start.
-      // Otherwise two copies of one application become alive.
-      while (([wmClass isEqualToString:@"GNUstep"] != NO) &&
-             ([self _connectApplication:appName] == nil)) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
-      }
-      return YES;
     }
   }
 
