@@ -23,6 +23,8 @@
 #include <signal.h>
 
 #import <Foundation/NSString.h>
+#include "Foundation/NSDictionary.h"
+#include "Foundation/NSObjCRuntime.h"
 
 #import <DesktopKit/NXTAlert.h>
 #import <DesktopKit/NXTFileManager.h>
@@ -32,8 +34,8 @@
 #import "Controller.h"
 #import "WMNotificationCenter.h"
 #import "Workspace+WM.h"
-#import "Processes/Processes.h"
 
+#import "Processes/Processes.h"
 #import "Processes/ProcessManager.h"
 #import "Operations/FileMover.h"
 
@@ -329,7 +331,8 @@ static BOOL _workspaceQuitting = NO;
 
   NSDebugLLog(@"Workspace", @"Terminating of runnig apps started!");
 
-  for (NSDictionary *_appDict in _appsCopy) {
+  for (int idx = [_appsCopy count] - 1; idx >= 0; idx--) {
+    NSDictionary *_appDict = _appsCopy[idx];
     if ([_appDict[@"IsXWindowApplication"] isEqualToString:@"YES"]) {
       [self sendSignal:SIGKILL toApplication:_appDict];
       continue;
