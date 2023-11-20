@@ -752,63 +752,77 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
   NSApplicationTerminateReply terminateReply;
+  NSString *terminateMode;
 
   wDefaultScreen()->flags.ignore_focus_events = 1;
 
   switch (NXTRunAlertPanel(_(@"Log Out"), _(@"Do you really want to log out?"), _(@"Log out"),
                            _(@"Power off"), _(@"Cancel"))) {
     case LogOut:
-    {
-      [[NSApp mainMenu] close];
-      _isQuitting = [procManager terminateAllBGOperations];
-      if (_isQuitting != NO) {
-        // Save running applications
-        [self _saveRunningApplications];
-        _isQuitting = [procManager terminateAllApps];
-        if (_isQuitting == NO) {
-          NXTRunAlertPanel(_(@"Log Out"), _(@"'%@' application request to cancel Log Out."), _(@"Dismiss"), nil, nil,
-                           [self activeApplication][@"NSApplicationName"]);
-        }
-      }
-
-      if (_isQuitting == NO) {
-        terminateReply = NSTerminateCancel;
-      } else {
-        // Close Workspace windows, hide Dock, quit WM
-        [self _finishTerminateProcess];
         terminateReply = NSTerminateNow;
         ws_quit_code = WSLogoutOnQuit;
-      }
-    } break;
+      break;
     case PowerOff:
-    {
-      [[NSApp mainMenu] close];
-      _isQuitting = [procManager terminateAllBGOperations];
-      if (_isQuitting != NO) {
-        // Save running applications
-        [self _saveRunningApplications];
-        _isQuitting = [procManager terminateAllApps];
-        if (_isQuitting == NO) {
-          NXTRunAlertPanel(_(@"Power Off"), _(@"'%@' application request to cancel Power Off."),
-                           _(@"Dismiss"), nil, nil, [self activeApplication][@"NSApplicationName"]);
-        }
-      }
-      if (_isQuitting == NO) {
-        terminateReply = NSTerminateCancel;
-      } else {
-        [self _finishTerminateProcess];
         terminateReply = NSTerminateNow;
         ws_quit_code = WSPowerOffOnQuit;
-
-      }
-    } break;
+      break;
     default:
-      _isQuitting = NO;
       terminateReply = NSTerminateCancel;
       break;
   }
 
-  if (_isQuitting == NO) {
+  if (terminateReply == NSTerminateNow) {
+    terminateMode = (ws_quit_code == WSPowerOffOnQuit) ? @"Power Off" : @"Log Out";
+
+    // NSLog(@"Controller: sending NSWorkspaceWillPowerOffNotification");
+    // Give a chance to apps to ask for more time before quit
+    // Notice that this notification also will be sent by GSServiceManager with forwardInvocation:
+    // of terminate: method.
+    [[[NSWorkspace sharedWorkspace] notificationCenter]
+        postNotificationName:NSWorkspaceWillPowerOffNotification
+                      object:nil];
+    // Wait for [[NSWorkspace sharedWorkspace] extendPowerOffBy:] call from apps.
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:.1]];
+
+    if (powerOffTimer && [powerOffTimer isValid]) {
+      NSLog(@"Waiting for %i seconds", (powerOffTimeout / 1000));
+      [[NSRunLoop currentRunLoop] runMode:NSModalPanelRunLoopMode beforeDate:[NSDate distantFuture]];
+      // NSTimeInterval timeInterval = (powerOffTimeout / 1000.0);
+      // NSInteger result;
+      // result = NXTRunAlertPanel(terminateMode, @"%@ will be completed in %i seconds...", @"Cancel",
+      //                           nil, nil, terminateMode, timeInterval, terminateMode);
+      // if (result == NSAlertDefaultReturn) {
+      //   powerOffTimeout = 0;
+      //   [powerOffTimer invalidate];
+      //   powerOffTimer = nil;
+      //   terminateReply = NSTerminateCancel;
+      // }
+    }
+
+    if (terminateReply != NSTerminateCancel) {
+      _isQuitting = [procManager terminateAllBGOperations];
+      if (_isQuitting != NO) {
+        // Save running applications
+        [self _saveRunningApplications];
+        _isQuitting = [procManager terminateAllApps];
+        if (_isQuitting == NO) {
+          NXTRunAlertPanel(terminateMode, @"'%@' application requested to cancel %@.", @"Dismiss",
+                           nil, nil, [self activeApplication][@"NSApplicationName"], terminateMode);
+          terminateReply = NSTerminateCancel;
+        } else {
+          // Close Workspace windows, hide Dock, quit WM
+          [[NSApp mainMenu] close];
+          [self _finishTerminateProcess];
+        }
+      } else {
+        terminateReply = NSTerminateCancel;
+      }
+    }
+  }
+
+  [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
+
+  if (terminateReply == NSTerminateCancel) {
     [[NSApp mainMenu] display];
     // FIXME: restore Workspace focus. It's not correct from user POV - managed application
     // may want to have focus to review unsaved data. For now it's better not to have two app

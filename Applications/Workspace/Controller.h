@@ -78,6 +78,8 @@
   Recycler *recycler;
 
   NXTSound *bellSound;
+  NSTimer *powerOffTimer;
+  int powerOffTimeout;
 
   // NSWorkspace category ivars
   NSMutableDictionary *_iconMap;
