@@ -443,7 +443,11 @@ static BOOL _workspaceQuitting = NO;
     return;
   }
 
-  wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
+  if (CFArrayGetCount(wapp->windows) <= 0) {
+    wwin = wapp->main_wwin;
+  } else {
+    wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
+  }
   appInfo = [self _applicationInfoForApp:wapp window:wwin];
   NSDebugLLog(@"WM", @"ProcessManager-windowManagerDidCreateApplication: %@", appInfo);
 
