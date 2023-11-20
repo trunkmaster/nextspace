@@ -36,10 +36,6 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
-#include "AppKit/NSWorkspace.h"
-#include "Foundation/NSValue.h"
-#include "Foundation/NSBundle.h"
-#include "AppKit/NSImage.h"
 #import <Foundation/Foundation.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
@@ -944,14 +940,30 @@ static NSLock *raceLock = nil;
 
 //-------------------------------------------------------------------------------------------------
 //--- Requesting Additional Time before Power Off or Logout
+// + Workspace sends NSWorkspaceWillPowerOffNotification
+// + Wait for -extendPowerOffBy: for 1 second
+// + Workspace checks if NSTimer is valid. If timer is vaild, wait for timer invalidation.
+// + Workspace starts to -terminate: applications
+// 
+// + -extendPowerOffBy: sets NSTimer for requested number of milliseconds.
 //-------------------------------------------------------------------------------------------------
+- (int)extendPowerOffBy:(int)requested
+{
+  if (powerOffTimeout <= 0) {
+    powerOffTimeout = requested;
+    powerOffTimer = [NSTimer scheduledTimerWithTimeInterval:(powerOffTimeout / 1000.0)
+                                                    repeats:NO
+                                                      block:^(NSTimer *timer) {
+                                                        powerOffTimeout = 0;
+                                                        [timer invalidate];
+                                                        powerOffTimer = nil;
+                                                        [NSApp abortModal];
+                                                      }];
+    [[NSRunLoop currentRunLoop] addTimer:powerOffTimer forMode:NSModalPanelRunLoopMode];
+  }
 
-// FIXME: TODO
-// - (int)extendPowerOffBy:(int)requested
-// {
-//   // TODO
-//   return 0;
-// }
+  return powerOffTimeout;
+}
 
 @end
 
