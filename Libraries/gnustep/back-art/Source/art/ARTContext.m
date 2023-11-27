@@ -54,6 +54,11 @@
   return [ARTGState class];
 }
 
+- (BOOL)supportsDrawGState
+{
+  return YES;
+}
+
 - (void)setupDrawInfo:(void *)device
 {
   int bpp;

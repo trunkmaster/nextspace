@@ -27,10 +27,7 @@
 #include <AppKit/NSAffineTransform.h>
 
 #include "ARTGState.h"
-
-#ifndef RDS
 #include "x11/XWindowBuffer.h"
-#endif
 #include "blit.h"
 
 @implementation ARTGState (composite)
@@ -1126,6 +1123,23 @@ static BOOL _rect_advance(rect_trace_t *t, int *x0, int *x1)
   } else {
     [self compositeGState:source fromRect:aRect toPoint:aPoint op:op];
   }
+}
+
+- (void)drawGState:(GSGState *)source
+          fromRect:(NSRect)aRect
+           toPoint:(NSPoint)aPoint
+                op:(NSCompositingOperation)op
+          fraction:(CGFloat)delta
+{
+  // NSLog(@"ARTGState-drawGState: %@ to point: %@", NSStringFromRect(aRect),
+  //       NSStringFromPoint(aPoint));
+  // NSLog(@"ARTGState-drawGState: source CTM: %@", source->ctm);
+  // NSLog(@"ARTGState-drawGState:        CTM: %@", ctm);
+  aRect.origin.x = round(aRect.origin.x);
+  aRect.origin.y = round(aRect.origin.y);
+  aRect.size.width = round(aRect.size.width);
+  aRect.size.height = round(aRect.size.height);
+  [self compositeGState:source fromRect:aRect toPoint:aPoint op:op fraction:delta];
 }
 
 - (void)compositerect:(NSRect)aRect op:(NSCompositingOperation)op
