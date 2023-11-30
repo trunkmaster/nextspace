@@ -328,11 +328,16 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   if (rootViewerWindow == nil) {
     NXTDefaults *df = [NXTDefaults userDefaults];
+    NSString *preferredViewer = [df objectForKey:@"PreferredViewer"];
+
+    if (!preferredViewer) {
+      preferredViewer = @"Browser";
+    }
 
     WMLogWarning("No saved root FileViewer window. Open default with viewer type: %@",
-                 convertNStoCF([df objectForKey:@"PreferredViewer"]));
+                 convertNStoCF(preferredViewer));
 
-    fv = [self newViewerRootedAt:@"/" viewer:[df objectForKey:@"PreferredViewer"] isRoot:YES];
+    fv = [self newViewerRootedAt:@"/" viewer:preferredViewer isRoot:YES];
     [fv displayPath:NSHomeDirectory() selection:nil sender:self];
     rootViewerWindow = [fv window];
     rootViewer = fv;
