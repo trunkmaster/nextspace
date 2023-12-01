@@ -25,6 +25,8 @@
 #include <math.h>
 
 #include <AppKit/NSAffineTransform.h>
+#include <AppKit/NSGraphics.h>
+#include <AppKit/NSBitmapImageRep.h>
 
 #include "ARTGState.h"
 #include "x11/XWindowBuffer.h"
@@ -456,10 +458,12 @@ static BOOL _rect_advance(rect_trace_t *t, int *x0, int *x1)
 
   {
     BOOL dst_needs_alpha;
-    op = [self _composite_func:!ags->wi->
-                     has_alpha:NO:!wi->
-                     has_alpha:&
-               dst_needs_alpha:composite_op:&blit_func];
+    op = [self _composite_func:!ags->wi->has_alpha
+                              :NO
+                              :!wi->has_alpha
+                              :&dst_needs_alpha
+                              :composite_op
+                              :&blit_func];
     if (op == -1)
       return;
 
@@ -1125,21 +1129,273 @@ static BOOL _rect_advance(rect_trace_t *t, int *x0, int *x1)
   }
 }
 
+
+- (unsigned char *)artScale
+{
+  // art_u8 *dest_buffer = art_new(art_u8, dest_buffer_width * dest_buffer_height *
+  // sizeof(ags->wi->data)); double affine[6] = {0, 0, 0, 0, 0, 0}; affine[0] = source_ts.m11;
+  // affine[1] = source_ts.m12;
+  // affine[2] = source_ts.m21;
+  // affine[3] = source_ts.m22;
+  // affine[4] = source_ts.tX;
+  // affine[5] = source_ts.tY;
+  // art_rgb_rgba_affine(dest_buffer, 0, 0, dest_buffer_width, dest_buffer_height,
+  //                     dest_buffer_width * ags->wi->bytes_per_pixel, ags->wi->data, ags->wi->sx,
+  //                     ags->wi->sy, ags->wi->bytes_per_line, affine, ART_FILTER_NEAREST, NULL);
+  // art_rgb_bitmap_affine(dest_buffer, 0, 0, dest_buffer_width, dest_buffer_height,
+  //                       dest_buffer_width * 4, ags->wi->data, ags->wi->sx, ags->wi->sy,
+  //                       ags->wi->bytes_per_line, 0x00000001, affine, ART_FILTER_NEAREST, NULL);
+  // art_rgb_rgba_affine(dest_buffer, 0, 0, dest_buffer_width, dest_buffer_height,
+  //                     ags->wi->bytes_per_line, ags->wi->data,
+  //                     aRect.size.width, aRect.size.height,
+  //                     ags->wi->bytes_per_line, affine, ART_FILTER_NEAREST,
+  //                     NULL);
+  return NULL;
+}
+
+unsigned char *_scaleImage(unsigned char *data, unsigned new_width, unsigned new_height,
+                           unsigned old_width, unsigned old_height)
+{
+  int ox;
+  int px, py;
+  register int x, y, t;
+  int dx, dy;
+  unsigned char *src;
+  unsigned char *dest;
+
+  if (data == NULL)
+    return NULL;
+
+  NSLog(@"_scaleImage from: %ix%i to: %ix%i", old_width, old_height, new_width, new_height);
+
+  unsigned char *new_data = malloc(sizeof(unsigned char) * new_height * new_width * 4);
+  memset(new_data, 0, sizeof(unsigned char) * new_height * new_width * 4);
+  // RImage *img = RCreateImage(new_width, new_height, False);
+  // d = img->data;
+  dest = new_data;
+
+  /* fixed point math idea taken from Imlib by
+   * Carsten Haitzler (Rasterman) */
+  dx = (old_width << 16) / new_width;
+  dy = (old_height << 16) / new_height;
+  NSLog(@"dx: %i, dy: %i", dx, dy);
+
+  py = 0;
+
+  // if (img->format == RRGBAFormat) {
+    for (y = 0; y < new_height; y++) {
+      t = old_width * (py >> 16);
+      NSLog(@"py: %i, py >> 16: %i, t: %i", py, py >> 16, t);
+
+      src = data + (t << 2); /* data+t*4 */
+
+      ox = 0;
+      px = 0;
+      for (x = 0; x < new_width; x++) {
+        px += dx;
+
+        *(dest++) = *(src);
+        *(dest++) = *(src + 1);
+        *(dest++) = *(src + 2);
+        *(dest++) = *(src + 3);
+
+        t = (px - ox) >> 16;
+        ox += t << 16;
+
+        src += t << 2; /* t*4 */
+      }
+      py += dy;
+    }
+  // } else {
+  //   for (y = 0; y < new_height; y++) {
+  //     t = old_width * (py >> 16);
+
+  //     s = data + (t << 1) + t; /* image->data+t*3 */
+
+  //     ox = 0;
+  //     px = 0;
+  //     for (x = 0; x < new_width; x++) {
+  //       px += dx;
+
+  //       *(d++) = *(s);
+  //       *(d++) = *(s + 1);
+  //       *(d++) = *(s + 2);
+
+  //       t = (px - ox) >> 16;
+  //       ox += t << 16;
+
+  //       s += (t << 1) + t; /* t*3 */
+  //     }
+  //     py += dy;
+  //   }
+  // }
+
+    // return img->data;
+    return new_data;
+}
+
+// Convert RGBA unpacked to ARGB packed.
+// Packed ARGB values are layed out as ARGB on big endian systems
+// and as BGRA on little endian systems
+static void _swapColors(unsigned char *image_data, NSBitmapImageRep *rep) {
+  unsigned char *target = image_data;
+  unsigned char *source = [rep bitmapData];
+  NSInteger width = [rep pixelsWide];
+  NSInteger height = [rep pixelsHigh];
+  NSInteger samples_per_pixel = [rep samplesPerPixel];
+  NSInteger bytes_per_row = [rep bytesPerRow];
+  unsigned char *r, *g, *b, *a;
+  NSInteger x, y;
+
+#if GS_WORDS_BIGENDIAN
+  // RGBA -> ARGB
+  r = target + 1;
+  g = target + 2;
+  b = target + 3;
+  a = target;
+#else
+  // RGBA -> BGRA
+  r = target + 2;
+  g = target + 1;
+  b = target;
+  a = target + 3;
+#endif
+
+  if (samples_per_pixel == 4) {
+    for (y = 0; y < height; y++) {
+      unsigned char *d = source;
+      for (x = 0; x < width; x++) {
+        *r = d[0];
+        *g = d[1];
+        *b = d[2];
+        *a = d[3];
+        r += 4;
+        g += 4;
+        b += 4;
+        a += 4;
+        d += samples_per_pixel;
+      }
+      source += bytes_per_row;
+    }
+  } else if (samples_per_pixel == 3) {
+    for (y = 0; y < height; y++) {
+      unsigned char *d = source;
+      for (x = 0; x < width; x++) {
+        *r = d[0];
+        *g = d[1];
+        *b = d[2];
+        *a = 255;
+        r += 4;
+        g += 4;
+        b += 4;
+        a += 4;
+        d += samples_per_pixel;
+      }
+      source += bytes_per_row;
+    }
+  }
+}
+
 - (void)drawGState:(GSGState *)source
           fromRect:(NSRect)aRect
            toPoint:(NSPoint)aPoint
                 op:(NSCompositingOperation)op
           fraction:(CGFloat)delta
 {
-  // NSLog(@"ARTGState-drawGState: %@ to point: %@", NSStringFromRect(aRect),
-  //       NSStringFromPoint(aPoint));
-  // NSLog(@"ARTGState-drawGState: source CTM: %@", source->ctm);
-  // NSLog(@"ARTGState-drawGState:        CTM: %@", ctm);
+  ARTGState *ags = (ARTGState *)source;
+
   aRect.origin.x = round(aRect.origin.x);
   aRect.origin.y = round(aRect.origin.y);
   aRect.size.width = round(aRect.size.width);
   aRect.size.height = round(aRect.size.height);
-  [self compositeGState:source fromRect:aRect toPoint:aPoint op:op fraction:delta];
+
+  NSAffineTransformStruct local_ts = [ctm transformStruct];
+  NSAffineTransformStruct source_ts = [source->ctm transformStruct];
+  // NSAffineTransform *backup_ctm = [[NSAffineTransform alloc] initWithTransform:source->ctm];
+
+  // NSLog(@"drawGState: rect %@ point: %@", NSStringFromRect(aRect), NSStringFromPoint(aPoint));
+  // NSLog(@"drawGState: source CTM: %@", source->ctm);
+  // NSLog(@"drawGState:        CTM: %@", ctm);
+  // NSLog(@"drawGState: NEW    CTM: %@", source->ctm);
+  if ((1 - local_ts.m11) > 0.01 /*&& source_ts.m11 != local_ts.m11*/) {
+    // source_ts.m11 = local_ts.m11;
+    // source_ts.m12 = local_ts.m12;
+    // source_ts.m21 = local_ts.m21;
+    // source_ts.m22 = local_ts.m22;
+    // [source->ctm setTransformStruct:source_ts];
+    [source DPSscale:local_ts.m11:local_ts.m22];
+
+    // int dest_buffer_width = aRect.size.width;
+    // int dest_buffer_height = aRect.size.height;
+    // int dest_buffer_width = ceil(aRect.size.width * local_ts.m11);
+    // int dest_buffer_height = ceil(aRect.size.height * local_ts.m22);
+    // wi - window buffer
+    // ags->wi - image buffer
+    // NSLog(@"drawGState:AGS->WI: width: %i, height: %i -- WI: width: %i, height: %i", ags->wi->sx,
+    //       ags->wi->sy, wi->sx, wi->sy);
+
+    NSLog(@"Buffer size: %lu, bytes: _per_pixel: %i, _per_line: %i, unsigned char size: %lu",
+          sizeof(ags->wi->data), ags->wi->bytes_per_pixel, ags->wi->bytes_per_line,
+          sizeof(unsigned char));
+
+    NSBitmapImageRep *imageRep =
+        [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
+                                                pixelsWide:ags->wi->sx
+                                                pixelsHigh:ags->wi->sy
+                                             bitsPerSample:8
+                                           samplesPerPixel:4
+                                                  hasAlpha:ags->wi->has_alpha ? YES : NO
+                                                  isPlanar:NO
+                                            colorSpaceName:NSDeviceRGBColorSpace
+                                               bytesPerRow:ags->wi->bytes_per_line
+                                              bitsPerPixel:ags->wi->bits_per_pixel];
+    int buffer_size = ags->wi->sy * ags->wi->bytes_per_line;
+    // unsigned char *dest_buffer = malloc(buffer_size);
+    memcpy([imageRep bitmapData], ags->wi->data, buffer_size);
+    // _swapColors(dest_buffer, imageRep);
+    // memcpy([imageRep bitmapData], dest_buffer, buffer_size);
+    // free(dest_buffer);
+    [drawcontext GSDrawImage:aRect:imageRep];
+
+    // unsigned char *dest_buffer =
+    //     _scaleImage(ags->wi->data, dest_buffer_width, dest_buffer_height,
+    //                 (unsigned)aRect.size.width, (unsigned)aRect.size.height);
+    // unsigned char *dest_buffer =
+    //     _scaleImage(ags->wi->data, dest_buffer_width, dest_buffer_height, ags->wi->sx,
+    //     ags->wi->sy);
+    // free(ags->wi->data);
+    // ags->wi->data = dest_buffer;
+    // ags->wi->sx = dest_buffer_width;
+    // ags->wi->sy = dest_buffer_height;
+    // ags->wi->bytes_per_line = (unsigned)aRect.size.width * ags->wi->bytes_per_pixel;
+
+    // unsigned char *dest_buffer =
+    //     malloc(sizeof(unsigned char) * dest_buffer_height * dest_buffer_width * 4);
+    // memset(
+    //     dest_buffer, 0,
+    //     sizeof(unsigned char) * dest_buffer_width * dest_buffer_height * ags->wi->bytes_per_pixel);
+    // // int y;
+    // for (y = 0; y < dest_buffer_height; y += ags->wi->bytes_per_line) {
+
+    // }
+    // memcpy(dest_buffer, ags->wi->data,
+    //        sizeof(unsigned char) * dest_buffer_height * dest_buffer_width * 4);
+
+    // free(ags->wi->data);
+    // ags->wi->data = dest_buffer;
+    // ags->wi->sx = dest_buffer_width;
+    // ags->wi->sy = dest_buffer_height;
+    // ags->wi->bytes_per_line = dest_buffer_width * ags->wi->bytes_per_pixel;
+  } else {
+    // NSDictionary *rr = [self GSReadRect:aRect];
+    // NSLog(@"ReadRect Size: %@", [rr objectForKey:@"Size"]);
+    // NSLog(@"ReadRect Matrix: %@", [rr objectForKey:@"Matrix"]);
+
+    [self compositeGState:source fromRect:aRect toPoint:aPoint op:op fraction:delta];
+  }
+
+  // [source->ctm initWithTransform:backup_ctm];
+  // [backup_ctm release];
 }
 
 - (void)compositerect:(NSRect)aRect op:(NSCompositingOperation)op

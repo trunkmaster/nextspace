@@ -56,7 +56,7 @@
 
 - (BOOL)supportsDrawGState
 {
-  return YES;
+  return NO;
 }
 
 - (void)setupDrawInfo:(void *)device
@@ -69,10 +69,12 @@
   gs_win = device;
   [(XGServer *)server getForScreen:gs_win->screen_id
                        pixelFormat:&bpp
-                             masks:&
-                          red_mask:&
-                        green_mask:&blue_mask];
+                             masks:&red_mask
+                                  :&green_mask
+                                  :&blue_mask];
   artcontext_setup_draw_info(&DI, red_mask, green_mask, blue_mask, bpp);
+  // DI.inline_alpha = YES;
+  // DI.inline_alpha_ofs = 0;
 }
 
 - (void)flushGraphics
