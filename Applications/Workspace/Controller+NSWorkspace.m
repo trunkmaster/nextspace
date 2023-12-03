@@ -90,6 +90,7 @@ static NSString *_rootPath = @"/";
 // application communication
 - (BOOL)_launchApplication:(NSString *)appName arguments:(NSArray *)args;
 - (id)_connectApplication:(NSString *)appName;
+- (NSDictionary *)_bundleInfoForApp:(NSString *)appName;
 
 @end
 
@@ -235,7 +236,7 @@ static NSString *_rootPath = @"/";
       }
     } @catch (NSException *e) {
       NSWarnLog(@"Failed to contact '%@' to open file", appName);
-      NXTRunAlertPanel(_(@"Workspace"), _(@"Failed to contact app '%@' to open file"), nil, nil,
+      NXTRunAlertPanel(_(@"Workspace"), _(@"Failed to contact app '%@' to open file."), nil, nil,
                        nil, appName);
       return NO;
     }
@@ -315,68 +316,28 @@ static NSLock *raceLock = nil;
 
   if ([fileType isEqualToString:NSApplicationFileType]) {
     // .app should be launched
-    NSString *wmName;
-    NSBundle *appBundle;
     NSDictionary *appInfo;
-    NSString *iconName = nil;
-    NSString *iconPath = nil;
-    NSString *launchPath;
 
     // Don't launch ourself and Login panel
     if ([appName isEqualToString:@"Workspace"] || [appName isEqualToString:@"Login"]) {
       return YES;
     }
 
-    appBundle = [[NSBundle alloc] initWithPath:fullPath];
-    appInfo = [appBundle infoDictionary];
-    if (!appInfo) {
-      NXTRunAlertPanel(_(@"Workspace"),
-                       _(@"Failed to start application \"%@\".\n"
-                          "Application info dictionary was not found or broken."),
-                       nil, nil, nil, appName);
-      return NO;
-    }
-    wmName = [appInfo objectForKey:@"NSExecutable"];
-    if (!wmName) {
-      NSLog(@"No application NSExecutable found.");
-      NXTRunAlertPanel(_(@"Workspace"),
-                       _(@"Failed to start application at path '%@'.\n"
-                          "Executable name is unknown. It may be damaged or incomplete."),
-                       fullPath, nil, nil, nil);
-      return NO;
-    }
-    launchPath = [self _locateApplicationBinary:fullPath];
-    if (launchPath == nil) {
-      NXTRunAlertPanel(_(@"Workspace"),
-                       _(@"Failed to start application '%@'.\n"
-                          "Executable '%@' was not found inside application bundle."),
-                       nil, nil, nil, appName, fullPath);
-      return NO;
-    }
+    appInfo = [self _bundleInfoForApp:fullPath];
+    if (appInfo) {
+      [raceLock lock];
+      wLaunchingAppIconCreate([appInfo[@"WMName"] cString], [appInfo[@"WMClass"] cString],
+                              [appInfo[@"LaunchPath"] cString], point.x, point.y,
+                              [appInfo[@"IconPath"] cString]);
+      [raceLock unlock];
 
-    if ((iconName = appInfo[@"NSIcon"]) != nil) {
-      iconPath = [appBundle pathForImageResource:[appInfo objectForKey:@"NSIcon"]];
-      if (iconPath == nil) {
-        NSLog(@"No icon for application found in app bundle!");
+      if ([self launchApplication:fullPath] == NO) {
+        NXTRunAlertPanel(_(@"Workspace"), _(@"Failed to start application \"%@\""), nil, nil, nil,
+                         appName);
+      } else {
+        return YES;
       }
-    } else {
-      iconName = @"NXUnknownApplication";
     }
-    if (iconPath == nil) {
-      iconPath = [[NSBundle mainBundle] pathForImageResource:iconName];
-    }
-
-    [raceLock lock];
-    wLaunchingAppIconCreate([[wmName stringByDeletingPathExtension] cString], "GNUstep",
-                            [launchPath cString], point.x, point.y, [iconPath cString]);
-    [raceLock unlock];
-
-    if ([self launchApplication:fullPath] == NO) {
-      NXTRunAlertPanel(_(@"Workspace"), _(@"Failed to start application \"%@\""), nil, nil, nil,
-                       appName);
-      return NO;
-    }
-    return YES;
   } else if ([fileType isEqualToString:NSDirectoryFileType] ||
              [fileType isEqualToString:NSFilesystemFileType] ||
              [_wrappers containsObject:[fullPath pathExtension]]) {
@@ -385,54 +346,27 @@ static NSLock *raceLock = nil;
     return YES;
   } else if (appName) {
     // .app found for opening file type
-    NSBundle *appBundle;
     NSDictionary *appInfo;
-    NSString *wmName;
-    NSString *wmClass;
-    NSString *iconPath;
-    NSString *launchPath;
 
-    launchPath = [self _locateApplicationBinary:appName];
-    if (launchPath == nil) {
-      return NO;
-    }
-
-    appBundle = [self _bundleForApp:appName];
-    if (appBundle) {
-      appInfo = [appBundle infoDictionary];
-      iconPath = [appBundle pathForImageResource:[appInfo objectForKey:@"NSIcon"]];
-      wmName = [appInfo objectForKey:@"NSExecutable"];
-      wmClass = [wmName pathExtension];
-
-      if ([wmClass isEqualToString:@""] == NO) {
-        wmName = [wmName stringByDeletingPathExtension];
-      } else if (appInfo[@"NSPrincipalClass"] != nil) {
-        wmClass = @"GNUstep";
-      } else {
-        NXTRunAlertPanel(_(@"Workspace"),
-                         @"Failed to start application \"%@\" for file \"%@\".\n"
-                          "Application is not GNUstep nor Xlib based.\n"
-                          "Please check contents of application Info-gnustep.plist.",
-                         nil, nil, nil, appName, [fullPath lastPathComponent]);
-        return NO;
-      }
-
+    appInfo = [self _bundleInfoForApp:appName];
+    if (appInfo) {
       [raceLock lock];
-      wLaunchingAppIconCreate([wmName cString], [wmClass cString], [launchPath cString], point.x,
-                              point.y, [iconPath cString]);
+      wLaunchingAppIconCreate([appInfo[@"WMName"] cString], [appInfo[@"WMClass"] cString],
+                              [appInfo[@"LaunchPath"] cString], point.x, point.y,
+                              [appInfo[@"IconPath"] cString]);
       [raceLock unlock];
 
       if ([self openFile:fullPath withApplication:appName andDeactivate:YES] == NO) {
         NXTRunAlertPanel(_(@"Workspace"), _(@"Failed to start application \"%@\" for file \"%@\""),
                          nil, nil, nil, appName, [fullPath lastPathComponent]);
-        return NO;
       } else {
         // If multiple files are opened at once we need to wait for app to start.
         // Otherwise two copies of one application become alive.
-        while ([self _connectApplication:appName] == nil) {
-          [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+        if ([appInfo[@"WMClass"] isEqualToString:@"GNUstep"]) {
+          return ([self _connectApplication:appName] == nil) ? NO : YES;
+        } else {
+          return YES;
         }
-        return YES;
       }
     }
   }
@@ -1367,7 +1301,7 @@ static NSLock *raceLock = nil;
                                   object:self
                                 userInfo:userinfo];
   task = [NSTask launchedTaskWithLaunchPath:path arguments:args];
-  if (task == nil) {
+  if (task == nil || [task isRunning] == NO) {
     return NO;
   }
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -1493,40 +1427,82 @@ static NSLock *raceLock = nil;
   return app;
 }
 
-
-/**
- * Returns the path set for the icon matching the image by
- * -_setBestIcon:forExtension:
- */
-- (NSString *)_getBestIconForExtension:(NSString *)ext
+/* Get application bundle, validates its Info-gnustep.plist and return dictionary with keys:
+   "WMName" - application name. For Xlib applications it first part of "name.class" NSExecutable
+   "WMClass" - second part of of NSExecutable. For GNUstep applications value is "GNUstep".
+   ExecutablePath - absolute path to executable used for NSTask.
+   IconPath - icon file for sliding appicon.
+*/
+- (NSDictionary *)_bundleInfoForApp:(NSString *)appName
 {
-  NSString *iconPath = nil;
+  NSBundle *appBundle;
+  NSDictionary *appInfo;
+  NSString *wmName;
+  NSString *wmClass;
+  NSString *launchPath;
+  NSString *iconName;
+  NSString *iconPath;
 
-  if (_extPreferences != nil) {
-    NSDictionary *inf;
+  appBundle = [self _bundleForApp:appName];
+  appInfo = [appBundle infoDictionary];
 
-    inf = [_extPreferences objectForKey:[ext lowercaseString]];
-    if (inf != nil) {
-      iconPath = [inf objectForKey:@"Icon"];
-    }
+  if (!appInfo) {
+    NXTRunAlertPanel(_(@"Workspace"),
+                     _(@"Failed to start application \"%@\".\n"
+                        "Application info dictionary was not found or broken."),
+                     nil, nil, nil, appName);
+    return nil;
   }
-  return iconPath;
-}
 
-/**
- * Gets the applications cache (generated by the make_services tool)
- * and looks up the special entry that contains a dictionary of all
- * file extensions recognised by GNUstep applications.  Then finds
- * the dictionary of applications that can handle our file and
- * returns it.
- */
-- (NSDictionary *)_infoForExtension:(NSString *)ext
-{
-  NSDictionary *map;
+  wmName = [appInfo objectForKey:@"NSExecutable"];
+  if (!wmName) {
+    NSLog(@"No application NSExecutable found.");
+    NXTRunAlertPanel(_(@"Workspace"),
+                     _(@"Failed to start application '%@'.\n"
+                        "Executable name is unknown. It may be damaged or incomplete."),
+                     appName, nil, nil, nil);
+    return nil;
+  }
 
-  ext = [ext lowercaseString];
-  map = [_applications objectForKey:@"GSExtensionsMap"];
-  return [map objectForKey:ext];
+  wmClass = [wmName pathExtension];
+  if ([wmClass isEqualToString:@""] == NO) {
+    wmName = [wmName stringByDeletingPathExtension];
+  } else if (appInfo[@"NSPrincipalClass"] != nil) {
+    wmClass = @"GNUstep";
+  } else {
+    NXTRunAlertPanel(_(@"Workspace"),
+                     @"Failed to start application \"%@\" for selected file.\n"
+                      "Application is not GNUstep nor Xlib based.\n"
+                      "Please check contents of application Info-gnustep.plist.",
+                     nil, nil, nil, appName);
+    return nil;
+  }
+
+  launchPath = [self _locateApplicationBinary:appName];
+  if (launchPath == nil) {
+    NXTRunAlertPanel(_(@"Workspace"),
+                     _(@"Failed to start application '%@'.\n"
+                        "Executable was not found inside application bundle."),
+                     nil, nil, nil, appName);
+    return nil;
+  }
+
+  iconName = appInfo[@"NSIcon"];
+  if (iconName) {
+    iconPath = [appBundle pathForImageResource:iconName];
+    if (iconPath == nil) {
+      iconPath = [[NSBundle mainBundle] pathForImageResource:@"NXUnknownApplication"];
+    }
+  } else {
+    iconPath = [[NSBundle mainBundle] pathForImageResource:@"NXUnknownApplication"];
+  }
+
+  return @{
+    @"WMName" : wmName,
+    @"WMClass" : wmClass,
+    @"ExecutablePath" : launchPath,
+    @"IconPath" : iconPath
+  };
 }
 
 /**
@@ -1572,6 +1548,42 @@ static NSLock *raceLock = nil;
   }
   return [NSBundle bundleWithPath:appName];
 }
+
+/**
+ * Returns the path set for the icon matching the image by
+ * -_setBestIcon:forExtension:
+ */
+- (NSString *)_getBestIconForExtension:(NSString *)ext
+{
+  NSString *iconPath = nil;
+
+  if (_extPreferences != nil) {
+    NSDictionary *inf;
+
+    inf = [_extPreferences objectForKey:[ext lowercaseString]];
+    if (inf != nil) {
+      iconPath = [inf objectForKey:@"Icon"];
+    }
+  }
+  return iconPath;
+}
+
+/**
+ * Gets the applications cache (generated by the make_services tool)
+ * and looks up the special entry that contains a dictionary of all
+ * file extensions recognised by GNUstep applications.  Then finds
+ * the dictionary of applications that can handle our file and
+ * returns it.
+ */
+- (NSDictionary *)_infoForExtension:(NSString *)ext
+{
+  NSDictionary *map;
+
+  ext = [ext lowercaseString];
+  map = [_applications objectForKey:@"GSExtensionsMap"];
+  return [map objectForKey:ext];
+}
+
 
 /**
  * Returns the application icon for the given app.
