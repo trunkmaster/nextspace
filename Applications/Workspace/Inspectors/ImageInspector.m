@@ -38,27 +38,22 @@ static id imageInspector = nil;
 
 @implementation ImageInspector
 
-static inline NSSize
-scaleProportionally(NSSize imageSize, NSSize canvasSize, BOOL scaleUpOrDown)
+static inline NSSize scaleProportionally(NSSize imageSize, NSSize canvasSize, BOOL scaleUpOrDown)
 {
   CGFloat ratio;
 
-  if (imageSize.width <= 0
-      || imageSize.height <= 0)
-    {
-      return NSMakeSize(0, 0);
-    }
+  if (imageSize.width <= 0 || imageSize.height <= 0) {
+    return NSMakeSize(0, 0);
+  }
 
   /* Get the smaller ratio and scale the image size by it.  */
-  ratio = MIN(canvasSize.width / imageSize.width,
-	      canvasSize.height / imageSize.height);
-  
+  ratio = MIN(canvasSize.width / imageSize.width, canvasSize.height / imageSize.height);
+
   /* Only scale down, unless scaleUpOrDown is YES */
-  if (ratio < 1.0 || scaleUpOrDown)
-    {
-      imageSize.width *= ratio;
-      imageSize.height *= ratio;
-    }
+  if (ratio < 1.0 || scaleUpOrDown) {
+    imageSize.width *= ratio;
+    imageSize.height *= ratio;
+  }
 
   return imageSize;
 }
@@ -67,15 +62,12 @@ scaleProportionally(NSSize imageSize, NSSize canvasSize, BOOL scaleUpOrDown)
 
 + new
 {
-  if (imageInspector == nil)
-    {
-      imageInspector = [super new];
-      if (![NSBundle loadNibNamed:@"ImageInspector"
-                            owner:imageInspector])
-        {
-          imageInspector = nil;
-        }
+  if (imageInspector == nil) {
+    imageInspector = [super new];
+    if (![NSBundle loadNibNamed:@"ImageInspector" owner:imageInspector]) {
+      imageInspector = nil;
     }
+  }
 
   return imageInspector;
 }
@@ -85,7 +77,7 @@ scaleProportionally(NSSize imageSize, NSSize canvasSize, BOOL scaleUpOrDown)
   NSDebugLLog(@"Inspector", @"FileContentsInspector: dealloc");
 
   TEST_RELEASE(view);
- 
+
   [super dealloc];
 }
 
@@ -99,19 +91,18 @@ scaleProportionally(NSSize imageSize, NSSize canvasSize, BOOL scaleUpOrDown)
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString *fp;
   NSString *path = nil;
-  NSArray  *files = nil;
+  NSArray *files = nil;
 
   [self getSelectedPath:&path andFiles:&files];
-  
+
   fp = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
 
   NSLog(@"Image Inspector-isLocalFile: %@", fp);
-  
-  if (![fm isReadableFileAtPath:fp])
-    {
-      return NO;
-    }
-  
+
+  if (![fm isReadableFileAtPath:fp]) {
+    return NO;
+  }
+
   return YES;
 }
 
@@ -120,9 +111,8 @@ scaleProportionally(NSSize imageSize, NSSize canvasSize, BOOL scaleUpOrDown)
 - ok:sender
 {
   NSString *fp;
-  
-  fp = [selectedPath
-         stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
+
+  fp = [selectedPath stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
 
   [[NSApp delegate] openFile:fp];
 
@@ -131,37 +121,32 @@ scaleProportionally(NSSize imageSize, NSSize canvasSize, BOOL scaleUpOrDown)
 
 - revert:sender
 {
-  NSString   *fp;
-  NSImage    *image;
-  NSSize     imageSize;
-  NSRect     cellFrame;
-  NSSize     cellSize;
-  CGFloat    scaleFactor;
+  NSString *fp;
+  NSImage *image;
+  NSSize imageSize;
+  NSRect cellFrame;
+  NSSize cellSize;
+  CGFloat scaleFactor;
 
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];
 
-  fp = [selectedPath
-         stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
+  fp = [selectedPath stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
 
   image = [[NSImage alloc] initWithContentsOfFile:fp];
   imageSize = [image size];
-  [widthField
-    setStringValue:[NSString stringWithFormat:@"%0.f", imageSize.width]];
-  [heightField
-    setStringValue:[NSString stringWithFormat:@"%0.f", imageSize.height]];
+  [widthField setStringValue:[NSString stringWithFormat:@"%0.f", imageSize.width]];
+  [heightField setStringValue:[NSString stringWithFormat:@"%0.f", imageSize.height]];
   [imageView setImage:image];
   [image release];
 
-  cellFrame = [(NSImageCell *)[imageView cell]
-                  drawingRectForBounds:[imageView bounds]];
+  cellFrame = [(NSImageCell *)[imageView cell] drawingRectForBounds:[imageView bounds]];
   // cellFrame = [imageView drawingRectForBounds:[imageView bounds]];
   cellSize = scaleProportionally(imageSize, cellFrame.size, NO);
-  
+
   // Image scaled proportionally and we can calculate from any size parameter
-  scaleFactor = cellSize.width/imageSize.width;
-  [zoomPercentField
-    setStringValue:[NSString stringWithFormat:@"%0.f%%", scaleFactor*100]];
-  
+  scaleFactor = cellSize.width / imageSize.width;
+  [zoomPercentField setStringValue:[NSString stringWithFormat:@"%0.f%%", scaleFactor * 100]];
+
   // Buttons state and title, window edited state
   [super revert:self];
 
@@ -170,6 +155,5 @@ scaleProportionally(NSSize imageSize, NSSize canvasSize, BOOL scaleUpOrDown)
 
   return self;
 }
-
 
 @end

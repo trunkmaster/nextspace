@@ -35,10 +35,10 @@
   id applyButton;
 
   NSString *warnText;
-  BOOL     applyRecursively;
-  
+  BOOL applyRecursively;
+
   NSString *path;
-  NSArray  *files;
+  NSArray *files;
   unsigned oldMode;
   unsigned mode;
 }

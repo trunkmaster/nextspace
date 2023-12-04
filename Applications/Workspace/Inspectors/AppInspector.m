@@ -38,45 +38,40 @@ static id appInspector = nil;
   NSUInteger count = [docListMtrx numberOfColumns];
   NSUInteger i;
 
-  for (i=0; i<count; i++)
-    {
-      [docListMtrx removeColumn:0];
-    }
+  for (i = 0; i < count; i++) {
+    [docListMtrx removeColumn:0];
+  }
 }
 
 - (void)_fillMatrixForTypes:(NSDictionary *)types appPath:(NSString *)path
 {
   NSEnumerator *e;
   NSButtonCell *cell;
-  NSUInteger   i, count;
+  NSUInteger i, count;
   NSDictionary *type;
-  NSString     *iconName, *iconPath;
-  NSImage      *icon;
-  NSArray      *exts;
-  
+  NSString *iconName, *iconPath;
+  NSImage *icon;
+  NSArray *exts;
+
   [self _emptyMatrix];
 
   e = [types objectEnumerator];
-  while ((type = [e nextObject]) != nil)
-    {
-      iconName = [type objectForKey:@"NSIcon"];
-      iconPath = [NSBundle
-                   pathForResource:[iconName stringByDeletingPathExtension]
-                            ofType:[iconName pathExtension]
-                       inDirectory:path];
-      icon = [[NSImage alloc] initByReferencingFile:iconPath];
-      exts = [type objectForKey:@"NSUnixExtensions"];
-      for (i=0; i<[exts count]; i++)
-        {
-          [docListMtrx addColumn];
-          [docListMtrx sizeToCells];
-          cell = [docListMtrx cellAtRow:0
-                                 column:[docListMtrx numberOfColumns]-1];
-          [cell setTitle:[exts objectAtIndex:i]];
-          [cell setImage:icon];
-        }
-      [icon release];
+  while ((type = [e nextObject]) != nil) {
+    iconName = [type objectForKey:@"NSIcon"];
+    iconPath = [NSBundle pathForResource:[iconName stringByDeletingPathExtension]
+                                  ofType:[iconName pathExtension]
+                             inDirectory:path];
+    icon = [[NSImage alloc] initByReferencingFile:iconPath];
+    exts = [type objectForKey:@"NSUnixExtensions"];
+    for (i = 0; i < [exts count]; i++) {
+      [docListMtrx addColumn];
+      [docListMtrx sizeToCells];
+      cell = [docListMtrx cellAtRow:0 column:[docListMtrx numberOfColumns] - 1];
+      [cell setTitle:[exts objectAtIndex:i]];
+      [cell setImage:icon];
     }
+    [icon release];
+  }
   [docListMtrx sizeToCells];
 }
 
@@ -88,15 +83,12 @@ static id appInspector = nil;
 
 + new
 {
-  if (appInspector == nil)
-    {
-      appInspector = [super new];
-      if (![NSBundle loadNibNamed:@"AppInspector"
-                            owner:appInspector])
-        {
-          appInspector = nil;
-        }
+  if (appInspector == nil) {
+    appInspector = [super new];
+    if (![NSBundle loadNibNamed:@"AppInspector" owner:appInspector]) {
+      appInspector = nil;
     }
+  }
 
   return appInspector;
 }
@@ -109,14 +101,14 @@ static id appInspector = nil;
   TEST_RELEASE(docListView);
 
   // release controls here
-  
+
   [super dealloc];
 }
 
 - (void)awakeFromNib
 {
   NSButtonCell *cell;
-  
+
   [[docListView horizontalScroller] setArrowsPosition:NSScrollerArrowsNone];
 
   cell = [[NSButtonCell new] autorelease];
@@ -124,7 +116,7 @@ static id appInspector = nil;
   [cell setFont:[NSFont toolTipsFontOfSize:0.0]];
   [cell setButtonType:NSOnOffButton];
   [cell setRefusesFirstResponder:YES];
-  
+
   docListMtrx = [docListView documentView];
   [docListMtrx setMode:NSListModeMatrix];
   [docListMtrx setPrototype:cell];
@@ -135,24 +127,21 @@ static id appInspector = nil;
 - (BOOL)isValidApplication
 {
   NSString *path = nil;
-  NSArray  *files = nil;
+  NSArray *files = nil;
   NSString *appPath = nil;
   NSString *appInfoPath = nil;
 
   [self getSelectedPath:&path andFiles:&files];
 
-  if ((appPath = [path stringByAppendingPathComponent:[files objectAtIndex:0]])
-      == nil)
-    {
-      return NO;
-    }
+  if ((appPath = [path stringByAppendingPathComponent:[files objectAtIndex:0]]) == nil) {
+    return NO;
+  }
 
   if ((appInfoPath = [NSBundle pathForResource:@"Info-gnustep"
                                         ofType:@"plist"
-                                   inDirectory:appPath]) == nil)
-    {
-      return NO;
-    }
+                                   inDirectory:appPath]) == nil) {
+    return NO;
+  }
 
   return YES;
 }
@@ -175,32 +164,26 @@ static id appInspector = nil;
 
 - revert:sender
 {
-  NSString     *path = nil;
-  NSArray      *files = nil;
-  NSString     *appPath = nil;
-  NSString     *appInfoPath = nil;
+  NSString *path = nil;
+  NSArray *files = nil;
+  NSString *appPath = nil;
+  NSString *appInfoPath = nil;
   NSDictionary *appInfo;
 
   [self getSelectedPath:&path andFiles:&files];
   appPath = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
 
-  if (appPath == nil)
-    {
-      return self;
-    }
+  if (appPath == nil) {
+    return self;
+  }
 
-  appInfoPath = [NSBundle pathForResource:@"Info-gnustep"
-                                   ofType:@"plist"
-                              inDirectory:appPath];
-  if (appInfoPath)
-    {
-      appInfo = [NSDictionary dictionaryWithContentsOfFile:appInfoPath];
-      [appVersionField
-        setStringValue:[appInfo objectForKey:@"ApplicationRelease"]];
-      [self _fillMatrixForTypes:[appInfo objectForKey:@"NSTypes"]
-                        appPath:appPath];
-    }
-  
+  appInfoPath = [NSBundle pathForResource:@"Info-gnustep" ofType:@"plist" inDirectory:appPath];
+  if (appInfoPath) {
+    appInfo = [NSDictionary dictionaryWithContentsOfFile:appInfoPath];
+    [appVersionField setStringValue:[appInfo objectForKey:@"ApplicationRelease"]];
+    [self _fillMatrixForTypes:[appInfo objectForKey:@"NSTypes"] appPath:appPath];
+  }
+
   // NSLog(@"NSTypes = %@", [appInfo objectForKey:@"NSTypes"]);
 
   // Buttons state and title, window edited state

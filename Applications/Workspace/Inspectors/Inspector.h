@@ -20,7 +20,7 @@
 //
 
 //
-// Inspector bundle loaded by Workspace and dispayed with one 
+// Inspector bundle loaded by Workspace and dispayed with one
 // activate*Inspector: methods.
 // Inspector is a parent class for built-in inspectors. That's why actual
 // initialization performed in activateInspector: method. activateInspector:
@@ -33,17 +33,17 @@
 
 @interface Inspector : NSObject
 {
-  id window;         // The Inspector window.
-  id fileIconButton; // The Button that displays the file's icon.
-  id fileNameField;  // The TextField that displays the file name.
-  id dirNameField;   // The TextField that holds the current directory.
-  id dirTitleField;  // The TextField that titles dirNameField.
-  id okButton;       // The Inspector's OK button.
-  id revertButton;   // The Inspector's Revert button.
+  id window;          // The Inspector window.
+  id fileIconButton;  // The Button that displays the file's icon.
+  id fileNameField;   // The TextField that displays the file name.
+  id dirNameField;    // The TextField that holds the current directory.
+  id dirTitleField;   // The TextField that titles dirNameField.
+  id okButton;        // The Inspector's OK button.
+  id revertButton;    // The Inspector's Revert button.
 
-@private
+ @private
   NSBox *box;
-  id    popUpButton;
+  id popUpButton;
 
   // Special NSTextField that displays "No ... Inspector" text
   id noInspectorBox;
@@ -51,22 +51,22 @@
 
   // Local cache of FileViewer selection
   NSString *filePath;
-  NSArray  *fileSelection;
-  BOOL     fileViewerSelectionChanged;
+  NSArray *fileSelection;
+  BOOL fileViewerSelectionChanged;
 
   // built-in inspectors
-  Inspector             *attributesInspector;
+  Inspector *attributesInspector;
   // FileContentsInspector *contentsInspector;
-  Inspector             *toolsInspector;
-  Inspector             *accessInspector;
+  Inspector *toolsInspector;
+  Inspector *accessInspector;
 
-  WMInspector           *currentInspector;
+  WMInspector *currentInspector;
 
   // array of "bundle.registry contents"
   // + path=@"path to bundle" or path=@"BUILTIN"
-  NSMutableArray        *inspectorsRegistry;
+  NSMutableArray *inspectorsRegistry;
   // "path to bundle"="object instance"
-  NSMutableDictionary   *contentsInspectors;
+  NSMutableDictionary *contentsInspectors;
 }
 
 + sharedInspector;

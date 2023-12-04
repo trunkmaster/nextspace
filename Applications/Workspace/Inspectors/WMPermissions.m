@@ -54,21 +54,15 @@ enum {
   // ASSIGN(dash, [NSImage imageNamed:@"PermNoChange"]);
 
   ASSIGN(check,
-         [[[NSImage alloc] initByReferencingFile:
-                         [bundle pathForResource:@"PermYes"
-                                          ofType: @"tiff"]]
-           autorelease]);
+         [[[NSImage alloc] initByReferencingFile:[bundle pathForResource:@"PermYes"
+                                                                  ofType:@"tiff"]] autorelease]);
   ASSIGN(cross,
-         [[[NSImage alloc] initByReferencingFile:
-                         [bundle pathForResource:@"PermNo"
-                                          ofType: @"tiff"]]
-           autorelease]);
+         [[[NSImage alloc] initByReferencingFile:[bundle pathForResource:@"PermNo"
+                                                                  ofType:@"tiff"]] autorelease]);
   ASSIGN(dash,
-         [[[NSImage alloc] initByReferencingFile:
-                         [bundle pathForResource:@"PermNoChange"
-                                          ofType: @"tiff"]]
-           autorelease]);
-  
+         [[[NSImage alloc] initByReferencingFile:[bundle pathForResource:@"PermNoChange"
+                                                                  ofType:@"tiff"]] autorelease]);
+
   editable = YES;
   nochange = 0;
 
@@ -79,153 +73,123 @@ enum {
 {
   NSSize s = [self frame].size;
   int xslot = s.width / 3;
-  int yslot = displaysExecute ? s.height / 3 : s.height/2;
+  int yslot = displaysExecute ? s.height / 3 : s.height / 2;
   int i;
   NSPoint p;
 
   NSLog(@"WMPermissions: mode: %lo nochange: %lo", mode, nochange);
   // NSLog(@"WMPermissions: mode: %i", mode);
-  
+
   // user
-  p = NSMakePoint(xslot*0.5 - 22, yslot * 0.5 + 8);
-  if (nochange & (1 << (UserField + ReadField)))
-    {
-      [dash compositeToPoint:p operation:NSCompositeSourceOver];
-    }
-  else
-    {
-      if (mode & (1 << (UserField + ReadField)))
-        [check compositeToPoint:p operation:NSCompositeSourceOver];
-      else
-        [cross compositeToPoint:p operation:NSCompositeSourceOver];
-    }
+  p = NSMakePoint(xslot * 0.5 - 22, yslot * 0.5 + 8);
+  if (nochange & (1 << (UserField + ReadField))) {
+    [dash compositeToPoint:p operation:NSCompositeSourceOver];
+  } else {
+    if (mode & (1 << (UserField + ReadField)))
+      [check compositeToPoint:p operation:NSCompositeSourceOver];
+    else
+      [cross compositeToPoint:p operation:NSCompositeSourceOver];
+  }
 
-  p = NSMakePoint(xslot*1.5 - 22, yslot * 0.5 + 8);
-  if (nochange & (1 << (GroupField + ReadField)))
-    {
-      [dash compositeToPoint:p operation:NSCompositeSourceOver];
-    }
-  else
-    {
-      if (mode & (1 << (GroupField + ReadField)))
-        [check compositeToPoint:p operation:NSCompositeSourceOver];
-      else
-        [cross compositeToPoint:p operation:NSCompositeSourceOver];
-    }
+  p = NSMakePoint(xslot * 1.5 - 22, yslot * 0.5 + 8);
+  if (nochange & (1 << (GroupField + ReadField))) {
+    [dash compositeToPoint:p operation:NSCompositeSourceOver];
+  } else {
+    if (mode & (1 << (GroupField + ReadField)))
+      [check compositeToPoint:p operation:NSCompositeSourceOver];
+    else
+      [cross compositeToPoint:p operation:NSCompositeSourceOver];
+  }
 
-  p = NSMakePoint(xslot*2.5 - 22, yslot * 0.5 + 8);
-  if (nochange & (1 << (OtherField + ReadField)))
-    {
-      [dash compositeToPoint:p operation:NSCompositeSourceOver];
-    }
-  else
-    {
-      if (mode & (1 << (OtherField + ReadField)))
-        [check compositeToPoint:p operation:NSCompositeSourceOver];
-      else
-        [cross compositeToPoint:p operation:NSCompositeSourceOver];
-    }
+  p = NSMakePoint(xslot * 2.5 - 22, yslot * 0.5 + 8);
+  if (nochange & (1 << (OtherField + ReadField))) {
+    [dash compositeToPoint:p operation:NSCompositeSourceOver];
+  } else {
+    if (mode & (1 << (OtherField + ReadField)))
+      [check compositeToPoint:p operation:NSCompositeSourceOver];
+    else
+      [cross compositeToPoint:p operation:NSCompositeSourceOver];
+  }
 
   // group
-  p = NSMakePoint(xslot*0.5 - 22, yslot * 1.5 + 8);
-  if (nochange & (1 << (UserField + WriteField)))
-    {
-      [dash compositeToPoint:p operation:NSCompositeSourceOver];
-    }
-  else
-    {
-      if (mode & (1 << (UserField + WriteField)))
-        [check compositeToPoint:p operation:NSCompositeSourceOver];
-      else
-        [cross compositeToPoint:p operation:NSCompositeSourceOver];
-    }
+  p = NSMakePoint(xslot * 0.5 - 22, yslot * 1.5 + 8);
+  if (nochange & (1 << (UserField + WriteField))) {
+    [dash compositeToPoint:p operation:NSCompositeSourceOver];
+  } else {
+    if (mode & (1 << (UserField + WriteField)))
+      [check compositeToPoint:p operation:NSCompositeSourceOver];
+    else
+      [cross compositeToPoint:p operation:NSCompositeSourceOver];
+  }
 
-  p = NSMakePoint(xslot*1.5 - 22, yslot * 1.5 + 8);
-  if (nochange & (1 << (GroupField + WriteField)))
-    {
-      [dash compositeToPoint:p operation:NSCompositeSourceOver];
-    }
-  else
-    {
-      if (mode & (1 << (GroupField + WriteField)))
-        [check compositeToPoint:p operation:NSCompositeSourceOver];
-      else
-        [cross compositeToPoint:p operation:NSCompositeSourceOver];
-    }
+  p = NSMakePoint(xslot * 1.5 - 22, yslot * 1.5 + 8);
+  if (nochange & (1 << (GroupField + WriteField))) {
+    [dash compositeToPoint:p operation:NSCompositeSourceOver];
+  } else {
+    if (mode & (1 << (GroupField + WriteField)))
+      [check compositeToPoint:p operation:NSCompositeSourceOver];
+    else
+      [cross compositeToPoint:p operation:NSCompositeSourceOver];
+  }
 
-  p = NSMakePoint(xslot*2.5 - 22, yslot * 1.5 + 8);
-  if (nochange & (1 << (OtherField + WriteField)))
-    {
-      [dash compositeToPoint:p operation:NSCompositeSourceOver];
-    }
-  else
-    {
-      if (mode & (1 << (OtherField + WriteField)))
-        [check compositeToPoint:p operation:NSCompositeSourceOver];
-      else
-        [cross compositeToPoint:p operation:NSCompositeSourceOver];
-    }
+  p = NSMakePoint(xslot * 2.5 - 22, yslot * 1.5 + 8);
+  if (nochange & (1 << (OtherField + WriteField))) {
+    [dash compositeToPoint:p operation:NSCompositeSourceOver];
+  } else {
+    if (mode & (1 << (OtherField + WriteField)))
+      [check compositeToPoint:p operation:NSCompositeSourceOver];
+    else
+      [cross compositeToPoint:p operation:NSCompositeSourceOver];
+  }
 
   // other
-  if (displaysExecute)
-    {
-      p = NSMakePoint(xslot*0.5 - 22, yslot * 2.5 + 8);
-      if (nochange & (1 << (UserField + ExecuteField)))
-        {
-          [dash compositeToPoint:p operation:NSCompositeSourceOver];
-        }
+  if (displaysExecute) {
+    p = NSMakePoint(xslot * 0.5 - 22, yslot * 2.5 + 8);
+    if (nochange & (1 << (UserField + ExecuteField))) {
+      [dash compositeToPoint:p operation:NSCompositeSourceOver];
+    } else {
+      if (mode & (1 << (UserField + ExecuteField)))
+        [check compositeToPoint:p operation:NSCompositeSourceOver];
       else
-        {
-          if (mode & (1 << (UserField + ExecuteField)))
-            [check compositeToPoint:p operation:NSCompositeSourceOver];
-          else
-            [cross compositeToPoint:p operation:NSCompositeSourceOver];
-        }
-
-      p = NSMakePoint(xslot*1.5 - 22, yslot * 2.5 + 8);
-      if (nochange & (1 << (GroupField + ExecuteField)))
-        {
-          [dash compositeToPoint:p operation:NSCompositeSourceOver];
-        }
-      else
-        {
-          if (mode & (1 << (GroupField + ExecuteField)))
-            [check compositeToPoint:p operation:NSCompositeSourceOver];
-          else
-            [cross compositeToPoint:p operation:NSCompositeSourceOver];
-        }
-
-      p = NSMakePoint(xslot*2.5 - 22, yslot * 2.5 + 8);
-      if (nochange & (1 << (OtherField + ExecuteField)))
-        {
-          [dash compositeToPoint:p operation:NSCompositeSourceOver];
-        }
-      else
-        {
-          if (mode & (1 << (OtherField + ExecuteField)))
-            [check compositeToPoint:p operation:NSCompositeSourceOver];
-          else
-            [cross compositeToPoint:p operation:NSCompositeSourceOver];
-        }
+        [cross compositeToPoint:p operation:NSCompositeSourceOver];
     }
+
+    p = NSMakePoint(xslot * 1.5 - 22, yslot * 2.5 + 8);
+    if (nochange & (1 << (GroupField + ExecuteField))) {
+      [dash compositeToPoint:p operation:NSCompositeSourceOver];
+    } else {
+      if (mode & (1 << (GroupField + ExecuteField)))
+        [check compositeToPoint:p operation:NSCompositeSourceOver];
+      else
+        [cross compositeToPoint:p operation:NSCompositeSourceOver];
+    }
+
+    p = NSMakePoint(xslot * 2.5 - 22, yslot * 2.5 + 8);
+    if (nochange & (1 << (OtherField + ExecuteField))) {
+      [dash compositeToPoint:p operation:NSCompositeSourceOver];
+    } else {
+      if (mode & (1 << (OtherField + ExecuteField)))
+        [check compositeToPoint:p operation:NSCompositeSourceOver];
+      else
+        [cross compositeToPoint:p operation:NSCompositeSourceOver];
+    }
+  }
 
   // Draw table
   PSsetgray(0.33);
-  PSrectstroke(0.0, 0.0, s.width-1, s.height-1);
+  PSrectstroke(0.0, 0.0, s.width - 1, s.height - 1);
 
-  for (i=1; i<=2; i++)
-    {
-      PSmoveto(xslot*i, 0.0);
-      PSlineto(xslot*i, s.height);
-      PSstroke();
-    }
+  for (i = 1; i <= 2; i++) {
+    PSmoveto(xslot * i, 0.0);
+    PSlineto(xslot * i, s.height);
+    PSstroke();
+  }
 
-  if (displaysExecute)
-    {
-      PSmoveto(0.0, yslot*2);
-      PSlineto(xslot*3, yslot*2);
-      PSstroke();
-    }
+  if (displaysExecute) {
+    PSmoveto(0.0, yslot * 2);
+    PSlineto(xslot * 3, yslot * 2);
+    PSstroke();
+  }
 
   PSmoveto(0.0, yslot);
   PSlineto(s.width, yslot);
@@ -311,24 +275,21 @@ enum {
     return;
 
   p = [self convertPoint:[ev locationInWindow] fromView:nil];
-  if (displaysExecute)
-    {
-      p.y /= (s.height / 3);
-      if (p.y < 1)
-        permField = ReadField;
-      else if (p.y > 1 && p.y < 2)
-        permField = WriteField;
-      else
-        permField = ExecuteField;
-    }
-  else
-    {
-      p.y /= (s.height / 2);
-      if (p.y < 1)
-        permField = ReadField;
-      else
-        permField = WriteField;
-    }
+  if (displaysExecute) {
+    p.y /= (s.height / 3);
+    if (p.y < 1)
+      permField = ReadField;
+    else if (p.y > 1 && p.y < 2)
+      permField = WriteField;
+    else
+      permField = ExecuteField;
+  } else {
+    p.y /= (s.height / 2);
+    if (p.y < 1)
+      permField = ReadField;
+    else
+      permField = WriteField;
+  }
 
   p.x /= (s.width / 3);
   if (p.x < 1)
@@ -340,7 +301,7 @@ enum {
 
   if (nochange & (1 << (userField + permField)))
     nochange &= ~(1 << (userField + permField));
-  
+
   if (mode & (1 << (userField + permField)))
     mode &= ~(1 << (userField + permField));
   else

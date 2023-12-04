@@ -20,7 +20,7 @@
 //
 
 //
-// The default file contents inspector. 
+// The default file contents inspector.
 // Shows file description returned by NXTFileManager (libmagic functionality).
 //
 
@@ -38,8 +38,7 @@
   id encodingField;
 
   NSString *selectedPath;
-  NSArray  *selectedFiles;
-
+  NSArray *selectedFiles;
 }
 
 @end

@@ -29,12 +29,11 @@
 static inline NSUInteger numberOfLinesInString(NSString *string)
 {
   NSUInteger numberOfLines, index, stringLength = [string length];
-  
-  for (index=0, numberOfLines=0; index < stringLength; numberOfLines++)
-    {
-      index = NSMaxRange([string lineRangeForRange:NSMakeRange(index, 0)]);
-    }
-  
+
+  for (index = 0, numberOfLines = 0; index < stringLength; numberOfLines++) {
+    index = NSMaxRange([string lineRangeForRange:NSMakeRange(index, 0)]);
+  }
+
   return numberOfLines;
 }
 
@@ -50,9 +49,9 @@ static inline NSUInteger numberOfLinesInString(NSString *string)
 {
   NSDictionary *selTextAttrs;
   NSFileHandle *handle;
-  NSData       *data;
-  NSString     *string;
-  NSUInteger   showedLines, allLines;
+  NSData *data;
+  NSString *string;
+  NSUInteger showedLines, allLines;
 
   // Prepare text view
   [fileInfoText setAlignment:NSLeftTextAlignment];
@@ -69,36 +68,30 @@ static inline NSUInteger numberOfLinesInString(NSString *string)
   [fileInfoText setAutoresizingMask:NSViewHeightSizable];
   // [[fileInfoText enclosingScrollView] setHasHorizontalScroller:YES];
   // [[fileInfoText textContainer] setWidthTracksTextView:NO];
-  
+
   // Load 1KB of text from file
   handle = [NSFileHandle fileHandleForReadingAtPath:path];
   data = [handle readDataOfLength:1024];
   string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-  
+
   showedLines = numberOfLinesInString(string);
   allLines = numberOfLinesInString([NSString stringWithContentsOfFile:path]);
 
-  if (showedLines == allLines)
-    {
-      [fileInfoText setText:string];
-    }
-  else
-    {
-      [fileInfoText setText:[NSString stringWithFormat:@"%@\n...", string]];
-    }
-  
+  if (showedLines == allLines) {
+    [fileInfoText setText:string];
+  } else {
+    [fileInfoText setText:[NSString stringWithFormat:@"%@\n...", string]];
+  }
+
   [string release];
 
   // Meta information
-  [encodingField
-    setStringValue:[[NXTFileManager defaultManager] mimeEncodingForFile:path]];
+  [encodingField setStringValue:[[NXTFileManager defaultManager] mimeEncodingForFile:path]];
 
-  [linesField setStringValue:[NSString stringWithFormat:@"%lu/%lu",
-                                       showedLines, allLines]];
+  [linesField setStringValue:[NSString stringWithFormat:@"%lu/%lu", showedLines, allLines]];
 
   [[[self okButton] cell] setTitle:@"Edit"];
   [[self okButton] setEnabled:YES];
-
 }
 
 @end
@@ -111,15 +104,12 @@ static id contentsInspector = nil;
 
 + new
 {
-  if (contentsInspector == nil)
-    {
-      contentsInspector = [super new];
-      if (![NSBundle loadNibNamed:@"RTFInspector"
-                            owner:contentsInspector])
-        {
-          contentsInspector = nil;
-        }
+  if (contentsInspector == nil) {
+    contentsInspector = [super new];
+    if (![NSBundle loadNibNamed:@"RTFInspector" owner:contentsInspector]) {
+      contentsInspector = nil;
     }
+  }
 
   return contentsInspector;
 }
@@ -129,7 +119,7 @@ static id contentsInspector = nil;
   NSDebugLLog(@"Inspector", @"FileContentsInspector: dealloc");
 
   TEST_RELEASE(view);
- 
+
   [super dealloc];
 }
 
@@ -142,9 +132,8 @@ static id contentsInspector = nil;
 - ok:sender
 {
   NSString *fp;
-  
-  fp = [selectedPath
-         stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
+
+  fp = [selectedPath stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
 
   [[NSApp delegate] openFile:fp];
 
@@ -153,48 +142,43 @@ static id contentsInspector = nil;
 
 - revert:sender
 {
-  NSString       *filePath;
-  NSData         *fileContentsAsData;
-  NSDictionary   *docAttrs;
-  NSSize         size = NSZeroSize;
-  CGFloat        factor = 0.0;
-  NSTextStorage  *newTextStorage = nil;
+  NSString *filePath;
+  NSData *fileContentsAsData;
+  NSDictionary *docAttrs;
+  NSSize size = NSZeroSize;
+  CGFloat factor = 0.0;
+  NSTextStorage *newTextStorage = nil;
   NXTFileManager *fm = [NXTFileManager defaultManager];
 
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];
-  filePath = [selectedPath
-               stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
+  filePath = [selectedPath stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
 
   // Buttons state and title, window edited state
   [super revert:self];
-  
+
   fileContentsAsData = [[NSData alloc] initWithContentsOfFile:filePath];
   newTextStorage = [[NSTextStorage alloc] initWithRTF:fileContentsAsData
                                    documentAttributes:&docAttrs];
-  if (newTextStorage)
-    {
-      // [[fileInfoText layoutManager]
-      //    setHyphenationFactor:
-      //     [[docAttrs objectForKey:@"HyphenationFactor"] floatValue]];
-      [[fileInfoText layoutManager] replaceTextStorage:newTextStorage];
-      
-      // Meta information
-      [encodingField setStringValue:[fm mimeEncodingForFile:filePath]];
+  if (newTextStorage) {
+    // [[fileInfoText layoutManager]
+    //    setHyphenationFactor:
+    //     [[docAttrs objectForKey:@"HyphenationFactor"] floatValue]];
+    [[fileInfoText layoutManager] replaceTextStorage:newTextStorage];
 
-      [linesField
-        setStringValue:[NSString stringWithFormat:@"%lu",
-                                 numberOfLinesInString([newTextStorage string])]];
-      [newTextStorage release];
+    // Meta information
+    [encodingField setStringValue:[fm mimeEncodingForFile:filePath]];
 
-      [[[self okButton] cell] setTitle:@"Edit"];
-      [[self okButton] setEnabled:YES];
-      
-    }
-  
+    [linesField setStringValue:[NSString stringWithFormat:@"%lu", numberOfLinesInString(
+                                                                      [newTextStorage string])]];
+    [newTextStorage release];
+
+    [[[self okButton] cell] setTitle:@"Edit"];
+    [[self okButton] setEnabled:YES];
+  }
+
   [fileContentsAsData release];
 
   return self;
 }
-
 
 @end

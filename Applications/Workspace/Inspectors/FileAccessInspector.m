@@ -29,8 +29,7 @@
 
 @interface FileAccessInspector (Private)
 
-- (void)_setPermissionsRecursively:(unsigned)aMode
-                      forDirectory:(NSString *)dir;
+- (void)_setPermissionsRecursively:(unsigned)aMode forDirectory:(NSString *)dir;
 
 // update the warning about suid root executable binaries
 // - (void) updateWarnSuidRootExec: (unsigned) aMode;
@@ -65,29 +64,25 @@
 
 - (void)_setPermissionsRecursively:(unsigned)aMode forDirectory:(NSString *)dir
 {
-  NSString            *file, *fp;
+  NSString *file, *fp;
   NSMutableDictionary *fattrs;
-  NSFileManager       *fm = [NSFileManager defaultManager];
-  NSEnumerator        *e = [fm enumeratorAtPath:dir];
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSEnumerator *e = [fm enumeratorAtPath:dir];
 
-  while ((file = [e nextObject]) != nil)
-    {
-      // NSLog(@"FileAccessInspector _setPerms:forDirectory: %@ - %@", dir, file);
-      fp = [dir stringByAppendingPathComponent:file];
-      fattrs = [[fm fileAttributesAtPath:fp traverseLink:NO] mutableCopy];
-      
-      [fattrs setObject:[NSNumber numberWithInt:aMode]
-                 forKey:NSFilePosixPermissions];
-      if ([fm changeFileAttributes:fattrs atPath:fp] == NO)
-        {
-          NXTRunAlertPanel(_(@"Workspace Inspector"),
-                           _(@"Couldn't change permissions for \n%@."),
-                           nil, nil, nil, fp);
-          RELEASE(fattrs);
-          return;
-        }
+  while ((file = [e nextObject]) != nil) {
+    // NSLog(@"FileAccessInspector _setPerms:forDirectory: %@ - %@", dir, file);
+    fp = [dir stringByAppendingPathComponent:file];
+    fattrs = [[fm fileAttributesAtPath:fp traverseLink:NO] mutableCopy];
+
+    [fattrs setObject:[NSNumber numberWithInt:aMode] forKey:NSFilePosixPermissions];
+    if ([fm changeFileAttributes:fattrs atPath:fp] == NO) {
+      NXTRunAlertPanel(_(@"Workspace Inspector"), _(@"Couldn't change permissions for \n%@."), nil,
+                       nil, nil, fp);
       RELEASE(fattrs);
+      return;
     }
+    RELEASE(fattrs);
+  }
 }
 
 @end
@@ -98,15 +93,12 @@ static id accessInspector = nil;
 
 + new
 {
-  if (accessInspector == nil)
-    {
-      accessInspector = [super new];
-      if (![NSBundle loadNibNamed:@"FileAccessInspector"
-                            owner:accessInspector])
-        {
-          accessInspector = nil;
-        }
+  if (accessInspector == nil) {
+    accessInspector = [super new];
+    if (![NSBundle loadNibNamed:@"FileAccessInspector" owner:accessInspector]) {
+      accessInspector = nil;
     }
+  }
 
   return accessInspector;
 }
@@ -128,61 +120,50 @@ static id accessInspector = nil;
   warnText = [[warnField stringValue] copy];
   applyRecursively = [applyButton state];
   [applyButton retain];
-  
+
   [permissionsView setDisplaysExecute:YES];
   [permissionsView setTarget:self];
   [permissionsView setAction:@selector(permissionsChanged:)];
 }
 
-
 // --- Actions ---
 
 - (void)permissionsChanged:sender
 {
-  mode = (mode & (S_ISUID | S_ISGID | S_ISVTX)) |
-    [(WMPermissions *)sender mode];
+  mode = (mode & (S_ISUID | S_ISGID | S_ISVTX)) | [(WMPermissions *)sender mode];
 
   [super touch:self];
 }
 
 - (void)changeSuid:sender
 {
-  if ([sender state] == YES)
-    {
-      mode |= S_ISUID;
-    }
-  else
-    {
-      mode &= ~(S_ISUID);
-    }
+  if ([sender state] == YES) {
+    mode |= S_ISUID;
+  } else {
+    mode &= ~(S_ISUID);
+  }
 
   [super touch:self];
 }
 
 - (void)changeGuid:sender
 {
-  if ([sender state] == YES)
-    {
-      mode |= S_ISGID;
-    }
-  else
-    {
-      mode &= ~(S_ISGID);
-    }
+  if ([sender state] == YES) {
+    mode |= S_ISGID;
+  } else {
+    mode &= ~(S_ISGID);
+  }
 
   [super touch:self];
 }
 
 - (void)changeSticky:sender
 {
-  if ([sender state] == YES)
-    {
-      mode |= S_ISVTX;
-    }
-  else
-    {
-      mode &= ~(S_ISVTX);
-    }
+  if ([sender state] == YES) {
+    mode |= S_ISVTX;
+  } else {
+    mode &= ~(S_ISVTX);
+  }
 
   [super touch:self];
 }
@@ -190,18 +171,14 @@ static id accessInspector = nil;
 - (void)applyRecursively:senderPath
 {
   applyRecursively = [applyButton state];
-  
-  if (applyRecursively)
-    {
-      [warnField setStringValue:warnText];
-      [super touch:self];
-    }
-  else
-    {
-      [warnField setStringValue:@""];
-    }
-}
 
+  if (applyRecursively) {
+    [warnField setStringValue:warnText];
+    [super touch:self];
+  } else {
+    [warnField setStringValue:@""];
+  }
+}
 
 // --- Overrides and bundle.registry ---
 
@@ -212,58 +189,48 @@ static id accessInspector = nil;
   NSString *fileType;
   NSString *fp;
   NSString *selectedPath = nil;
-  NSArray  *selectedFiles = nil;
+  NSArray *selectedFiles = nil;
 
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];
-  
-  fp = [selectedPath
-         stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
-  [[NSApp delegate] getInfoForFile:fp
-                       application:&defaultAppName
-                              type:&fileType];
 
-  if ([fileType isEqualToString:NSFilesystemFileType])
-    {
-      return NO;
-    }
+  fp = [selectedPath stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
+  [[NSApp delegate] getInfoForFile:fp application:&defaultAppName type:&fileType];
+
+  if ([fileType isEqualToString:NSFilesystemFileType]) {
+    return NO;
+  }
 
   return YES;
 }
 
 - (void)ok:sender
 {
-  NSString            *file, *fp;
+  NSString *file, *fp;
   NSMutableDictionary *fattrs;
-  NSFileManager       *fm = [NSFileManager defaultManager];
-  NSEnumerator        *e = [files objectEnumerator];
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSEnumerator *e = [files objectEnumerator];
 
   // Apply changes to file
-  while ((file = [e nextObject]) != nil)
-    {
-      // NSLog(@"FileAccessInspector ok: %@ - %@", path, file);
-      fp = [path stringByAppendingPathComponent:file];
-      fattrs = [[fm fileAttributesAtPath:fp traverseLink:NO] mutableCopy];
-      
-      [fattrs setObject:[NSNumber numberWithInt:mode]
-                 forKey:NSFilePosixPermissions];
-      if ([fm changeFileAttributes:fattrs atPath:fp] == NO)
-        {
-          NXTRunAlertPanel(_(@"Workspace Inspector"),
-                           _(@"Couldn't change permissions for \n%@."),
-                           nil, nil, nil, fp);
-          RELEASE(fattrs);
-          return;
-        }
+  while ((file = [e nextObject]) != nil) {
+    // NSLog(@"FileAccessInspector ok: %@ - %@", path, file);
+    fp = [path stringByAppendingPathComponent:file];
+    fattrs = [[fm fileAttributesAtPath:fp traverseLink:NO] mutableCopy];
 
-      // 'file' is a directory and "Apply..." selected
-      if (applyRecursively &&
-          [[fattrs fileType] isEqualToString:NSFileTypeDirectory])
-        {
-          [self _setPermissionsRecursively:mode forDirectory:fp];
-        }
-      
+    [fattrs setObject:[NSNumber numberWithInt:mode] forKey:NSFilePosixPermissions];
+    if ([fm changeFileAttributes:fattrs atPath:fp] == NO) {
+      NXTRunAlertPanel(_(@"Workspace Inspector"), _(@"Couldn't change permissions for \n%@."), nil,
+                       nil, nil, fp);
       RELEASE(fattrs);
+      return;
     }
+
+    // 'file' is a directory and "Apply..." selected
+    if (applyRecursively && [[fattrs fileType] isEqualToString:NSFileTypeDirectory]) {
+      [self _setPermissionsRecursively:mode forDirectory:fp];
+    }
+
+    RELEASE(fattrs);
+  }
 
   oldMode = mode;
   [self revert:self];
@@ -271,21 +238,21 @@ static id accessInspector = nil;
 
 - revert:sender
 {
-  NSString      *selectedPath = nil;
-  NSArray       *selectedFiles = nil;
+  NSString *selectedPath = nil;
+  NSArray *selectedFiles = nil;
   NSFileManager *fm = [NSFileManager defaultManager];
-  NSString      *fp;
-  NSDictionary  *fattrs;
+  NSString *fp;
+  NSDictionary *fattrs;
 
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];
 
- // if (sender != [self revertButton] &&
- //     [path isEqualToString:selectedPath] &&
- //     [files isEqualToArray:selectedFiles])
- //    {
- //      return;
- //    }
- 
+  // if (sender != [self revertButton] &&
+  //     [path isEqualToString:selectedPath] &&
+  //     [files isEqualToArray:selectedFiles])
+  //    {
+  //      return;
+  //    }
+
   ASSIGN(path, selectedPath);
   ASSIGN(files, selectedFiles);
 
@@ -302,91 +269,78 @@ static id accessInspector = nil;
   [warnField setStringValue:@""];
   [applyButton setState:NSOffState];
   applyRecursively = NO;
-  if ([applyButton superview])
-    {
-      [applyButton removeFromSuperview];
-    }
-  
-  if ([files count] > 1)
-    {
-      unsigned long mask = 0, m, om;
-      NSEnumerator  *e = [files objectEnumerator];
-      NSString      *file, *fp;
+  if ([applyButton superview]) {
+    [applyButton removeFromSuperview];
+  }
 
-      // Get first file permissions in selection and set to 'om' ivar
-      fp = [path stringByAppendingPathComponent:[e nextObject]];
+  if ([files count] > 1) {
+    unsigned long mask = 0, m, om;
+    NSEnumerator *e = [files objectEnumerator];
+    NSString *file, *fp;
+
+    // Get first file permissions in selection and set to 'om' ivar
+    fp = [path stringByAppendingPathComponent:[e nextObject]];
+    fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
+    om = [fattrs filePosixPermissions];
+    while ((file = [e nextObject]) != nil) {
+      // This code must be here to cover first file (which attributes
+      // set outside of cycle)
+      if ([[fattrs fileType] isEqualToString:NSFileTypeDirectory] && ![applyButton superview]) {
+        [view addSubview:applyButton];
+      }
+
+      fp = [path stringByAppendingPathComponent:file];
       fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
-      om = [fattrs filePosixPermissions];
-      while ((file = [e nextObject]) != nil)
-        {
-          // This code must be here to cover first file (which attributes
-          // set outside of cycle)
-          if ([[fattrs fileType] isEqualToString:NSFileTypeDirectory] &&
-              ![applyButton superview])
-            {
-              [view addSubview:applyButton];
-            }
-          
-          fp = [path stringByAppendingPathComponent:file];
-          fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
-          m = [fattrs filePosixPermissions];
+      m = [fattrs filePosixPermissions];
 
-          // XOR 2 files' permissions - non-equal bits return '1'
-          // OR result with 'mask' bits - '1' bits in mask remains '1'
-          mask = mask | (om ^ m);
-          om = m;
-          
-          // don't allow changes when we're not the owner
-          if (![[fattrs fileOwnerAccountName] isEqualToString:NSUserName()]
-              && geteuid() != 0)
-            {
-              [permissionsView setEditable:NO];
-              [suidButton setEnabled:NO];
-              [guidButton setEnabled:NO];
-              [stickyButton setEnabled:NO];
-            }
-        }
-
-      // Display permissions
-      [permissionsView setNoChangeMask:mask];
-      [permissionsView setMode:m]; // last file permissions in selection
-
-      oldMode = m;
-    }
-  else
-    {
-      fp = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
-      fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
-
-      oldMode = [fattrs filePosixPermissions];
-      mode = oldMode;
-
-      if ([[fattrs fileType] isEqualToString:NSFileTypeDirectory] &&
-          ![applyButton superview])
-        {
-          [view addSubview:applyButton];
-          [stickyButton setEnabled:YES];
-        }
+      // XOR 2 files' permissions - non-equal bits return '1'
+      // OR result with 'mask' bits - '1' bits in mask remains '1'
+      mask = mask | (om ^ m);
+      om = m;
 
       // don't allow changes when we're not the owner
-      if (![[fattrs fileOwnerAccountName] isEqualToString:NSUserName()]
-          && geteuid() != 0)
-        {
-          [permissionsView setEditable:NO];
-          [suidButton setEnabled:NO];
-          [guidButton setEnabled:NO];
-          [stickyButton setEnabled:NO];
-          [applyButton setEnabled:NO];
-        }
-      
-      // Permissions grid
-      [permissionsView setNoChangeMask:0];
-      [permissionsView setMode:mode];
-      // Special bits
-      [suidButton setState:(mode & S_ISUID)];
-      [guidButton setState:(mode & S_ISGID)];
-      [stickyButton setState:(mode & S_ISVTX)];
+      if (![[fattrs fileOwnerAccountName] isEqualToString:NSUserName()] && geteuid() != 0) {
+        [permissionsView setEditable:NO];
+        [suidButton setEnabled:NO];
+        [guidButton setEnabled:NO];
+        [stickyButton setEnabled:NO];
+      }
     }
+
+    // Display permissions
+    [permissionsView setNoChangeMask:mask];
+    [permissionsView setMode:m];  // last file permissions in selection
+
+    oldMode = m;
+  } else {
+    fp = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
+    fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
+
+    oldMode = [fattrs filePosixPermissions];
+    mode = oldMode;
+
+    if ([[fattrs fileType] isEqualToString:NSFileTypeDirectory] && ![applyButton superview]) {
+      [view addSubview:applyButton];
+      [stickyButton setEnabled:YES];
+    }
+
+    // don't allow changes when we're not the owner
+    if (![[fattrs fileOwnerAccountName] isEqualToString:NSUserName()] && geteuid() != 0) {
+      [permissionsView setEditable:NO];
+      [suidButton setEnabled:NO];
+      [guidButton setEnabled:NO];
+      [stickyButton setEnabled:NO];
+      [applyButton setEnabled:NO];
+    }
+
+    // Permissions grid
+    [permissionsView setNoChangeMask:0];
+    [permissionsView setMode:mode];
+    // Special bits
+    [suidButton setState:(mode & S_ISUID)];
+    [guidButton setState:(mode & S_ISGID)];
+    [stickyButton setState:(mode & S_ISVTX)];
+  }
 
   // Buttons state and title, window edited state
   [super revert:self];

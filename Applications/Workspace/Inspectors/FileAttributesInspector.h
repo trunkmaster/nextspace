@@ -42,7 +42,7 @@
   NSImage *computeSizeBtnAlternateImage;
 
   NSString *path;
-  NSArray  *files;
+  NSArray *files;
 
   NSDictionary *users;
   NSDictionary *groups;
@@ -50,14 +50,14 @@
 
   NSString *user;
   NSString *group;
-  BOOL     modeChanged;
+  BOOL modeChanged;
   unsigned oldMode;
   unsigned mode;
 }
 
-- (void) changeOwner:sender;
-- (void) changeGroup:sender;
-- (void) computeSize:sender;
-- (void) changePerms:sender;
+- (void)changeOwner:sender;
+- (void)changeGroup:sender;
+- (void)computeSize:sender;
+- (void)changePerms:sender;
 
 @end

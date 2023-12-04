@@ -28,8 +28,8 @@
   id view;
   id sortByMatrix;
 
-  NSString            *folderPath;
-  NXTDefaults          *wsDefaults;
+  NSString *folderPath;
+  NXTDefaults *wsDefaults;
   NSMutableDictionary *folderDefaults;
 }
 

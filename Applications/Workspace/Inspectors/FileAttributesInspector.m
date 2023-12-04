@@ -44,9 +44,9 @@
 - (NSString *)_sizeOfSelection;
 - (void)_updateSize;
 
- // find all user accounts on this machine
+// find all user accounts on this machine
 - (void)locateUsers;
- // find all groups on this machine + mark all that we're a member of
+// find all groups on this machine + mark all that we're a member of
 - (void)locateGroups;
 
 - (void)updateOwner;
@@ -59,53 +59,40 @@
 - (NSString *)_stringFromSize:(unsigned long long)filesize
 {
   if (filesize < 5 * 1024)
-    return [NSString stringWithFormat: _(@"%u Bytes"),
-                     (unsigned int) filesize];
+    return [NSString stringWithFormat:_(@"%u Bytes"), (unsigned int)filesize];
   else if (filesize < 1024 * 1024)
-    return [NSString stringWithFormat: _(@"%.2f KB"),
-                     (CGFloat) filesize / 1024];
-  else if (filesize < ((unsigned long long) 1024 * 1024 * 1024))
-    return [NSString stringWithFormat: _(@"%.2f MB"),
-                     (CGFloat) filesize / (1024 * 1024)];
+    return [NSString stringWithFormat:_(@"%.2f KB"), (CGFloat)filesize / 1024];
+  else if (filesize < ((unsigned long long)1024 * 1024 * 1024))
+    return [NSString stringWithFormat:_(@"%.2f MB"), (CGFloat)filesize / (1024 * 1024)];
   else
-    return [NSString stringWithFormat: _(@"%.3f GB"),
-                     (CGFloat) filesize / (1024 * 1024 * 1024)];
+    return [NSString stringWithFormat:_(@"%.3f GB"), (CGFloat)filesize / (1024 * 1024 * 1024)];
 }
 
 - (NSString *)_sizeOfSelection
 {
   int i;
-  NSMutableArray        *pathArray = [NSMutableArray new];
+  NSMutableArray *pathArray = [NSMutableArray new];
   NSDirectoryEnumerator *de;
-  NSDictionary          *fattrs;
-  NSFileManager         *fm = [NSFileManager defaultManager];
-  unsigned long long    totalSize = 0;
+  NSDictionary *fattrs;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  unsigned long long totalSize = 0;
 
-  for (i=0; i<[files count]; i++)
-    {
-      [pathArray addObject:
-                   [path stringByAppendingPathComponent:
-                                   [files objectAtIndex:i]]];
-    }
+  for (i = 0; i < [files count]; i++) {
+    [pathArray addObject:[path stringByAppendingPathComponent:[files objectAtIndex:i]]];
+  }
 
-  for (NSString *file in pathArray)
-    {
-      fattrs = [fm fileAttributesAtPath:file traverseLink:NO];
-      if ([[fattrs fileType] isEqualToString:NSFileTypeDirectory])
-        {
-          // Directories
-          de = [fm enumeratorAtPath:file];
-          while ([de nextObject] != nil
-                 && (fattrs = [de fileAttributes]) != nil)
-            {
-              totalSize += [fattrs fileSize];
-            }
-        }
-      else
-        {
-          totalSize += [fattrs fileSize];
-        }
+  for (NSString *file in pathArray) {
+    fattrs = [fm fileAttributesAtPath:file traverseLink:NO];
+    if ([[fattrs fileType] isEqualToString:NSFileTypeDirectory]) {
+      // Directories
+      de = [fm enumeratorAtPath:file];
+      while ([de nextObject] != nil && (fattrs = [de fileAttributes]) != nil) {
+        totalSize += [fattrs fileSize];
+      }
+    } else {
+      totalSize += [fattrs fileSize];
     }
+  }
 
   return [self _stringFromSize:totalSize];
 }
@@ -116,64 +103,56 @@
 // If any directory selected - empty field and enable button.
 - (void)_updateSize
 {
-  NSDictionary   *fattrs;
-  NSFileManager  *fm = [NSFileManager defaultManager];
-  NSString       *fPath;
-  int            i;
-  BOOL           computeSize = YES;
-  
-  for (i=0; i<[files count]; i++)
-    {
-      fPath = [path stringByAppendingPathComponent:[files objectAtIndex:i]];
-      fattrs = [fm fileAttributesAtPath:fPath traverseLink:NO];
-      if ([[fattrs fileType] isEqualToString:NSFileTypeDirectory] &&
-          [fm isReadableFileAtPath:fPath])
-        {
-          computeSize = NO;
-          break;
-        }
-    }
+  NSDictionary *fattrs;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString *fPath;
+  int i;
+  BOOL computeSize = YES;
 
-  if (computeSize) // only files was selected
-    {
-      [fileSizeField setStringValue:[self _sizeOfSelection]];
-      [computeSizeBtn setImage:computeSizeBtnAlternateImage];
-      [computeSizeBtn setEnabled:NO];
+  for (i = 0; i < [files count]; i++) {
+    fPath = [path stringByAppendingPathComponent:[files objectAtIndex:i]];
+    fattrs = [fm fileAttributesAtPath:fPath traverseLink:NO];
+    if ([[fattrs fileType] isEqualToString:NSFileTypeDirectory] &&
+        [fm isReadableFileAtPath:fPath]) {
+      computeSize = NO;
+      break;
     }
-  else
-    {
-      [fileSizeField setStringValue:nil];
-      [computeSizeBtn setImage:computeSizeBtnImage];
-      [computeSizeBtn setEnabled:YES];
-    }
+  }
+
+  if (computeSize)  // only files was selected
+  {
+    [fileSizeField setStringValue:[self _sizeOfSelection]];
+    [computeSizeBtn setImage:computeSizeBtnAlternateImage];
+    [computeSizeBtn setEnabled:NO];
+  } else {
+    [fileSizeField setStringValue:nil];
+    [computeSizeBtn setImage:computeSizeBtnImage];
+    [computeSizeBtn setEnabled:YES];
+  }
 }
 
 // Sizer:BGOperation notification selector.
 - (void)_showSizeOfSelection:(NSNotification *)notif
 {
-  NSDictionary       *info = [notif userInfo];
+  NSDictionary *info = [notif userInfo];
   unsigned long long size;
 
-  [[NSNotificationCenter defaultCenter]
-    removeObserver:self
-              name:WMSizerGotNumbersNotification
-            object:[notif object]];
+  [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                  name:WMSizerGotNumbersNotification
+                                                object:[notif object]];
 
   [[notif object] release];
-  
-  if (info)
-    {
-      size = [[info objectForKey:@"Size"] unsignedLongLongValue];
-      // NSLog(@"Inspector: got size: %llu", size);
-      [fileSizeField setStringValue:[self _stringFromSize:size]];
-    }
-  else
-    {
-      [fileSizeField setStringValue:@""];
-    }
-  
+
+  if (info) {
+    size = [[info objectForKey:@"Size"] unsignedLongLongValue];
+    // NSLog(@"Inspector: got size: %llu", size);
+    [fileSizeField setStringValue:[self _stringFromSize:size]];
+  } else {
+    [fileSizeField setStringValue:@""];
+  }
+
   sizer = nil;
-  
+
   [fileSizeField setTextColor:[NSColor blackColor]];
   [computeSizeBtn setImage:computeSizeBtnImage];
   [computeSizeBtn setEnabled:YES];
@@ -181,43 +160,39 @@
 
 - (void)locateUsers
 {
-  struct passwd       *pwd;
+  struct passwd *pwd;
   NSMutableDictionary *usrs = [NSMutableDictionary dictionary];
 
-  while ((pwd = getpwent()) != NULL)
-    {
-      [usrs setObject:[NSNumber numberWithInt:pwd->pw_uid]
-               forKey:[NSString stringWithCString:pwd->pw_name]];
-    }
+  while ((pwd = getpwent()) != NULL) {
+    [usrs setObject:[NSNumber numberWithInt:pwd->pw_uid]
+             forKey:[NSString stringWithCString:pwd->pw_name]];
+  }
 
   users = [usrs copy];
 }
 
 - (void)locateGroups
 {
-  NSString            *userName = NSUserName();
-  struct group        *groupEntry;
+  NSString *userName = NSUserName();
+  struct group *groupEntry;
   NSMutableDictionary *allGrs = [NSMutableDictionary dictionary];
   NSMutableDictionary *myGrs = [NSMutableDictionary dictionary];
 
-  while ((groupEntry = getgrent()) != NULL)
-    {
-      char     *member;
-      unsigned i;
-      NSNumber *gid = [NSNumber numberWithInt:groupEntry->gr_gid];
-      NSString *gname = [NSString stringWithCString:groupEntry->gr_name];
+  while ((groupEntry = getgrent()) != NULL) {
+    char *member;
+    unsigned i;
+    NSNumber *gid = [NSNumber numberWithInt:groupEntry->gr_gid];
+    NSString *gname = [NSString stringWithCString:groupEntry->gr_name];
 
-      [allGrs setObject:gid forKey:gname];
+    [allGrs setObject:gid forKey:gname];
 
-      for (i=0; (member = groupEntry->gr_mem[i]) != NULL; i++)
-        {
-          if ([userName isEqualToString:[NSString stringWithCString:member]])
-            {
-              [myGrs setObject:gid forKey:gname];
-              break;
-            }
-        }
+    for (i = 0; (member = groupEntry->gr_mem[i]) != NULL; i++) {
+      if ([userName isEqualToString:[NSString stringWithCString:member]]) {
+        [myGrs setObject:gid forKey:gname];
+        break;
+      }
     }
+  }
 
   // add our own group
   groupEntry = getgrgid(getegid());
@@ -232,58 +207,49 @@
 
 - (void)updateOwner
 {
-  NSArray       *sortedUsers = nil;
-  NSString      *selectedTitle = nil;
-  NSString      *f;
-  NSString      *fp;
-  NSDictionary  *fattrs;
-  NSEnumerator  *e;
+  NSArray *sortedUsers = nil;
+  NSString *selectedTitle = nil;
+  NSString *f;
+  NSString *fp;
+  NSDictionary *fattrs;
+  NSEnumerator *e;
   NSFileManager *fm = [NSFileManager defaultManager];
-  BOOL          enableBtn = NO;
-  
+  BOOL enableBtn = NO;
+
   [fileOwnerBtn removeAllItems];
 
   // We're root: fill popup with users and define button state to YES
-  if (geteuid() == 0)
-    {
-      if (users == nil)
-        {
-          [self locateUsers];
-        }
-
-      sortedUsers = [[users allKeys] sortedArrayUsingSelector:
-                             @selector(caseInsensitiveCompare:)];
-      [fileOwnerBtn addItemsWithTitles:sortedUsers];
-      enableBtn = YES;
+  if (geteuid() == 0) {
+    if (users == nil) {
+      [self locateUsers];
     }
+
+    sortedUsers = [[users allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    [fileOwnerBtn addItemsWithTitles:sortedUsers];
+    enableBtn = YES;
+  }
 
   // Define selected title in popup
-  if ([files count] > 1)
-    {
-      e = [files objectEnumerator];
-      while ((f = [e nextObject]) != nil)
-        {
-          fp = [path stringByAppendingPathComponent:f];
-          fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
-          if (selectedTitle == nil)
-            {
-              selectedTitle = [fattrs fileOwnerAccountName];
-            }
-          
-          // owner of one of the file differs: get out of 'while'
-          if (![selectedTitle isEqualToString:[fattrs fileOwnerAccountName]])
-            {
-              selectedTitle = @"---";
-              break;
-            }
-        }
-    }
-  else
-    {
-      fp = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
+  if ([files count] > 1) {
+    e = [files objectEnumerator];
+    while ((f = [e nextObject]) != nil) {
+      fp = [path stringByAppendingPathComponent:f];
       fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
-      selectedTitle = [fattrs fileOwnerAccountName];
+      if (selectedTitle == nil) {
+        selectedTitle = [fattrs fileOwnerAccountName];
+      }
+
+      // owner of one of the file differs: get out of 'while'
+      if (![selectedTitle isEqualToString:[fattrs fileOwnerAccountName]]) {
+        selectedTitle = @"---";
+        break;
+      }
     }
+  } else {
+    fp = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
+    fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
+    selectedTitle = [fattrs fileOwnerAccountName];
+  }
 
   [fileOwnerBtn setEnabled:enableBtn];
   [fileOwnerBtn addItemWithTitle:selectedTitle];
@@ -292,68 +258,57 @@
 
 - (void)updateGroup
 {
-  NSArray  *sortedGroups = nil;
+  NSArray *sortedGroups = nil;
   NSString *selectedTitle = nil;
 
-  NSString      *f;
-  NSString      *fp;
-  NSDictionary  *fattrs;
-  NSEnumerator  *e;
+  NSString *f;
+  NSString *fp;
+  NSDictionary *fattrs;
+  NSEnumerator *e;
   NSFileManager *fm = [NSFileManager defaultManager];
-  BOOL          enableBtn = NO;
+  BOOL enableBtn = NO;
 
   [fileGroupBtn removeAllItems];
 
   // Fill popup with groups
-  if (groups == nil)
-    {
-      [self locateGroups];
-    }
-  sortedGroups = [[groups allKeys] sortedArrayUsingSelector:
-                           @selector(caseInsensitiveCompare:)];
+  if (groups == nil) {
+    [self locateGroups];
+  }
+  sortedGroups = [[groups allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
   [fileGroupBtn addItemsWithTitles:sortedGroups];
-  
-  if (geteuid() == 0)
-    {
-      [fileGroupBtn setEnabled:YES];
-    }
+
+  if (geteuid() == 0) {
+    [fileGroupBtn setEnabled:YES];
+  }
 
   // Define selected title in popup
-  if ([files count] > 1)
-    {
-      e = [files objectEnumerator];
-      while ((f = [e nextObject]) != nil)
-        {
-          fp = [path stringByAppendingPathComponent:f];
-          fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
-          if (selectedTitle == nil)
-            {
-              selectedTitle = [fattrs fileGroupOwnerAccountName];
-              enableBtn = [[fattrs fileOwnerAccountName] isEqual:NSUserName()];
-            }
-          if (enableBtn == YES)
-            {
-              enableBtn = [[fattrs fileOwnerAccountName] isEqual:NSUserName()];
-            }
-          
-          // group of one of the file differs: get out of 'while'
-          if (![selectedTitle
-                 isEqualToString:[fattrs fileGroupOwnerAccountName]])
-            {
-              selectedTitle = @"---";
-              break;
-            }
-        }
-    }
-  else
-    {
-      fp = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
+  if ([files count] > 1) {
+    e = [files objectEnumerator];
+    while ((f = [e nextObject]) != nil) {
+      fp = [path stringByAppendingPathComponent:f];
       fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
+      if (selectedTitle == nil) {
+        selectedTitle = [fattrs fileGroupOwnerAccountName];
+        enableBtn = [[fattrs fileOwnerAccountName] isEqual:NSUserName()];
+      }
+      if (enableBtn == YES) {
+        enableBtn = [[fattrs fileOwnerAccountName] isEqual:NSUserName()];
+      }
 
-      enableBtn = [[fattrs fileOwnerAccountName] isEqual:NSUserName()];
-
-      selectedTitle = [fattrs fileGroupOwnerAccountName];
+      // group of one of the file differs: get out of 'while'
+      if (![selectedTitle isEqualToString:[fattrs fileGroupOwnerAccountName]]) {
+        selectedTitle = @"---";
+        break;
+      }
     }
+  } else {
+    fp = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
+    fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
+
+    enableBtn = [[fattrs fileOwnerAccountName] isEqual:NSUserName()];
+
+    selectedTitle = [fattrs fileGroupOwnerAccountName];
+  }
 
   [fileGroupBtn setEnabled:enableBtn];
   [fileGroupBtn addItemWithTitle:selectedTitle];
@@ -368,18 +323,15 @@ static id attributesInspector = nil;
 
 + new
 {
-  if (attributesInspector == nil)
-    {
-      self = attributesInspector = [super new];
+  if (attributesInspector == nil) {
+    self = attributesInspector = [super new];
 
-      [NSPopUpButton setCellClass:[PopUpListCell class]];
+    [NSPopUpButton setCellClass:[PopUpListCell class]];
 
-      if (![NSBundle loadNibNamed:@"FileAttributesInspector"
-                            owner:attributesInspector])
-        {
-          attributesInspector = nil;
-        }
+    if (![NSBundle loadNibNamed:@"FileAttributesInspector" owner:attributesInspector]) {
+      attributesInspector = nil;
     }
+  }
 
   return attributesInspector;
 }
@@ -404,11 +356,11 @@ static id attributesInspector = nil;
 
   ASSIGN(computeSizeBtnImage, [computeSizeBtn image]);
   ASSIGN(computeSizeBtnAlternateImage, [computeSizeBtn alternateImage]);
-  
+
   [dateView setYearVisible:YES];
 
   sizer = nil;
-  
+
   NSLog(@"[FileAttributesInspector] awakeFromNib END");
 }
 
@@ -429,7 +381,6 @@ static id attributesInspector = nil;
 
   [super dealloc];
 }
-
 
 // --- Actions ---
 
@@ -458,11 +409,10 @@ static id attributesInspector = nil;
                                          files:files
                                        manager:[ProcessManager shared]];
 
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(_showSizeOfSelection:)
-           name:WMSizerGotNumbersNotification
-         object:sizer];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_showSizeOfSelection:)
+                                               name:WMSizerGotNumbersNotification
+                                             object:sizer];
 }
 
 - (void)changePerms:sender
@@ -470,7 +420,6 @@ static id attributesInspector = nil;
   mode = [permissionsView mode];
   [super touch:self];
 }
-
 
 // --- Overridings and bundle.registry ---
 
@@ -481,31 +430,27 @@ static id attributesInspector = nil;
   NSString *fileType;
   NSString *fp;
   NSString *selectedPath = nil;
-  NSArray  *selectedFiles = nil;
+  NSArray *selectedFiles = nil;
 
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];
-  
-  fp = [selectedPath
-         stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
-  [[NSApp delegate] getInfoForFile:fp
-                       application:&defaultAppName
-                              type:&fileType];
 
-  if ([fileType isEqualToString:NSFilesystemFileType])
-    {
-      return NO;
-    }
+  fp = [selectedPath stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
+  [[NSApp delegate] getInfoForFile:fp application:&defaultAppName type:&fileType];
+
+  if ([fileType isEqualToString:NSFilesystemFileType]) {
+    return NO;
+  }
 
   return YES;
 }
 
 - (void)ok:sender
 {
-  NSFileManager       *fm = [NSFileManager defaultManager];
+  NSFileManager *fm = [NSFileManager defaultManager];
   NSMutableDictionary *fattrs;
-  int                 uid, gid;
-  NSEnumerator        *e = [files objectEnumerator];
-  NSString            *file, *fp;
+  int uid, gid;
+  NSEnumerator *e = [files objectEnumerator];
+  NSString *file, *fp;
 
   NSLog(@"FileAttributesInspector: ok:%@ %@", [sender className], path);
 
@@ -514,56 +459,52 @@ static id attributesInspector = nil;
     uid = [[users objectForKey:user] intValue];
   else
     uid = -1;
-  
+
   if (group)
     gid = [[groups objectForKey:group] intValue];
   else
     gid = -1;
 
   // Apply changes to file
-  while ((file = [e nextObject]) != nil)
-    {
-      fp = [path stringByAppendingPathComponent:file];
-      
-      // Permissions changed
-      if (mode != oldMode)
-        {
-          fattrs = [[fm fileAttributesAtPath:fp traverseLink:NO] mutableCopy];
-          [fattrs setObject:[NSNumber numberWithInt:mode]
-                     forKey:NSFilePosixPermissions];
-          [fm changeFileAttributes:fattrs atPath:fp];
-          RELEASE(fattrs);
-        }
+  while ((file = [e nextObject]) != nil) {
+    fp = [path stringByAppendingPathComponent:file];
 
-      // Owner and group
-      chown([fp cString], uid, gid);
+    // Permissions changed
+    if (mode != oldMode) {
+      fattrs = [[fm fileAttributesAtPath:fp traverseLink:NO] mutableCopy];
+      [fattrs setObject:[NSNumber numberWithInt:mode] forKey:NSFilePosixPermissions];
+      [fm changeFileAttributes:fattrs atPath:fp];
+      RELEASE(fattrs);
     }
-  
+
+    // Owner and group
+    chown([fp cString], uid, gid);
+  }
+
   [super revert:self];
 }
 
 - revert:sender
 {
   NSCalendarDate *modDate;
-  NSDictionary   *fattrs;
-  NSFileManager  *fm = [NSFileManager defaultManager];
-  NSString       *selectedPath = nil;
-  NSArray        *selectedFiles = nil;
-  NSString       *fp;
+  NSDictionary *fattrs;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString *selectedPath = nil;
+  NSArray *selectedFiles = nil;
+  NSString *fp;
 
-  if (sizer) [sizer stop:self];
- 
+  if (sizer) {
+    [sizer stop:self];
+  }
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];
 
-  if (sender != [self revertButton] &&
-      [path isEqualToString:selectedPath] &&
-      [files isEqualToArray:selectedFiles])
-    {
-      return self;
-    }
+  if (sender != [self revertButton] && [path isEqualToString:selectedPath] &&
+      [files isEqualToArray:selectedFiles]) {
+    return self;
+  }
 
   // NSLog(@"FAI revert: %@ %@", selectedPath, selectedFiles);
-  
+
   ASSIGN(path, selectedPath);
   ASSIGN(files, selectedFiles);
 
@@ -572,7 +513,7 @@ static id attributesInspector = nil;
 
   // Size:
   [self _updateSize];
-  
+
   // Ownership
   DESTROY(user);
   DESTROY(group);
@@ -581,66 +522,58 @@ static id attributesInspector = nil;
 
   fp = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
   fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
-  if ([files count] == 1)
-    {
-      // Link To: (NSTextView)
-      if ([[fattrs fileType] isEqualToString:NSFileTypeSymbolicLink])
-        {
-          [linkToField setText:[fm pathContentOfSymbolicLinkAtPath:fp]];
-        }
-
-      // Permissions
-      modeChanged = NO;
-      oldMode = mode = [fattrs filePosixPermissions];
-      [permissionsView setMode:mode];
-      [permissionsView setNoChangeMask:0000];
-      if (![[fattrs fileOwnerAccountName] isEqualToString:NSUserName()]
-          && geteuid() != 0)
-        [permissionsView setEditable:NO];
-      else
-        [permissionsView setEditable:YES];
-      
-      // Date
-      modDate = [[fattrs fileModificationDate]
-                  dateWithCalendarFormat:nil
-                                timeZone:[NSTimeZone localTimeZone]];
-      [dateView setCalendarDate:modDate];
+  if ([files count] == 1) {
+    // Link To: (NSTextView)
+    if ([[fattrs fileType] isEqualToString:NSFileTypeSymbolicLink]) {
+      [linkToField setText:[fm pathContentOfSymbolicLinkAtPath:fp]];
     }
-  else
-    {
-      unsigned long mask = 0, m, om;
-      NSEnumerator  *e = [files objectEnumerator];
-      NSString      *file, *fp;
-      NSTimeZone    *tz;
 
-      // First file permission will be XOR'ed with other files' permissions
-      fp = [path stringByAppendingPathComponent:[e nextObject]];
-      fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
-      om = [fattrs filePosixPermissions];
-      while ((file = [e nextObject]) != nil)
-        {
-          fp = [path stringByAppendingPathComponent:file];
-          fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
-          m = [fattrs filePosixPermissions];
-          
-          // XOR 2 files' permissions - non-equal bits return '1'
-          // OR result with 'mask' bits - '1' bits in mask remains '1'
-          mask = mask | (om ^ m);
-          om = m;
-        }
-      
-      // Display permissions
-      // TODO: make multiple files permissions editable
-      [permissionsView setNoChangeMask:mask];
-      [permissionsView setMode:m]; // last file permissions in selection
+    // Permissions
+    modeChanged = NO;
+    oldMode = mode = [fattrs filePosixPermissions];
+    [permissionsView setMode:mode];
+    [permissionsView setNoChangeMask:0000];
+    if (![[fattrs fileOwnerAccountName] isEqualToString:NSUserName()] && geteuid() != 0)
       [permissionsView setEditable:NO];
+    else
+      [permissionsView setEditable:YES];
 
-      // Date
-      tz = [NSTimeZone timeZoneForSecondsFromGMT:0];
-      [dateView setCalendarDate:[[NSDate dateWithTimeIntervalSince1970:0]
-                                  dateWithCalendarFormat:nil
-                                                timeZone:tz]];
+    // Date
+    modDate = [[fattrs fileModificationDate] dateWithCalendarFormat:nil
+                                                           timeZone:[NSTimeZone localTimeZone]];
+    [dateView setCalendarDate:modDate];
+  } else {
+    unsigned long mask = 0, m, om;
+    NSEnumerator *e = [files objectEnumerator];
+    NSString *file, *fp;
+    NSTimeZone *tz;
+
+    // First file permission will be XOR'ed with other files' permissions
+    fp = [path stringByAppendingPathComponent:[e nextObject]];
+    fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
+    om = [fattrs filePosixPermissions];
+    while ((file = [e nextObject]) != nil) {
+      fp = [path stringByAppendingPathComponent:file];
+      fattrs = [fm fileAttributesAtPath:fp traverseLink:NO];
+      m = [fattrs filePosixPermissions];
+
+      // XOR 2 files' permissions - non-equal bits return '1'
+      // OR result with 'mask' bits - '1' bits in mask remains '1'
+      mask = mask | (om ^ m);
+      om = m;
     }
+
+    // Display permissions
+    // TODO: make multiple files permissions editable
+    [permissionsView setNoChangeMask:mask];
+    [permissionsView setMode:m];  // last file permissions in selection
+    [permissionsView setEditable:NO];
+
+    // Date
+    tz = [NSTimeZone timeZoneForSecondsFromGMT:0];
+    [dateView setCalendarDate:[[NSDate dateWithTimeIntervalSince1970:0] dateWithCalendarFormat:nil
+                                                                                      timeZone:tz]];
+  }
 
   // Buttons and window edited state
   [super revert:self];

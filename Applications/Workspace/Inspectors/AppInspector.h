@@ -28,7 +28,7 @@
   id view;
   id appVersionField;
   id docListView;
-  
+
   NSMatrix *docListMtrx;
 }
 

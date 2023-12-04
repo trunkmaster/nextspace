@@ -32,15 +32,12 @@ static id dirInspector = nil;
 
 + new
 {
-  if (dirInspector == nil)
-    {
-      dirInspector = [super new];
-      if (![NSBundle loadNibNamed:@"FolderInspector"
-                            owner:dirInspector])
-        {
-          dirInspector = nil;
-        }
+  if (dirInspector == nil) {
+    dirInspector = [super new];
+    if (![NSBundle loadNibNamed:@"FolderInspector" owner:dirInspector]) {
+      dirInspector = nil;
     }
+  }
 
   return dirInspector;
 }
@@ -61,13 +58,12 @@ static id dirInspector = nil;
 {
   NSEnumerator *e = [[sortByMatrix cells] objectEnumerator];
   NSButtonCell *c;
-  NSString     *p;
-  NSArray      *s;
+  NSString *p;
+  NSArray *s;
 
-  while ((c = [e nextObject]) != nil)
-    {
-      [c setRefusesFirstResponder:YES];
-    }
+  while ((c = [e nextObject]) != nil) {
+    [c setRefusesFirstResponder:YES];
+  }
 
   wsDefaults = [NXTDefaults userDefaults];
 }
@@ -77,38 +73,33 @@ static id dirInspector = nil;
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString *fp;
   NSString *selectedPath = nil;
-  NSArray  *selectedFiles = nil;
+  NSArray *selectedFiles = nil;
 
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];
-  
-  fp = [selectedPath
-         stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
-  if (![fm isReadableFileAtPath:fp])
-    {
-      return NO;
-    }
-  
+
+  fp = [selectedPath stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];
+  if (![fm isReadableFileAtPath:fp]) {
+    return NO;
+  }
+
   return YES;
 }
 
 // Control actions
 - (void)setSortBy:sender
 {
-  if ([[sortByMatrix selectedCell] tag] !=
-      [[folderDefaults objectForKey:@"SortBy"] intValue])
-    {
-      [self touch:self];
-    }
+  if ([[sortByMatrix selectedCell] tag] != [[folderDefaults objectForKey:@"SortBy"] intValue]) {
+    [self touch:self];
+  }
 }
 
 // Public Methods - overrides of superclass
 
 - touch:sender
 {
-  [folderDefaults
-    setObject:[NSNumber numberWithInt:[[sortByMatrix selectedCell] tag]]
-       forKey:@"SortBy"];
-  
+  [folderDefaults setObject:[NSNumber numberWithInt:[[sortByMatrix selectedCell] tag]]
+                     forKey:@"SortBy"];
+
   return [super touch:sender];
 }
 
@@ -116,44 +107,37 @@ static id dirInspector = nil;
 {
   [wsDefaults setObject:folderDefaults forKey:folderPath];
 
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName:WMFolderSortMethodDidChangeNotification
-                  object:folderPath];
-  
+  [[NSNotificationCenter defaultCenter] postNotificationName:WMFolderSortMethodDidChangeNotification
+                                                      object:folderPath];
+
   [self revert:self];
-  
+
   return self;
 }
 
 - revert:sender
 {
-  NSString   *path = nil;
-  NSArray    *files = nil;
+  NSString *path = nil;
+  NSArray *files = nil;
   NXTSortType sortType;
 
   ASSIGN(folderDefaults, nil);
-  
+
   [self getSelectedPath:&path andFiles:&files];
-  
-  ASSIGN(folderPath,
-         [path stringByAppendingPathComponent:[files objectAtIndex:0]]);
 
-  if ([wsDefaults objectForKey:folderPath] != nil)
-    {
-      folderDefaults = [[wsDefaults objectForKey:folderPath] mutableCopy];
-    }
+  ASSIGN(folderPath, [path stringByAppendingPathComponent:[files objectAtIndex:0]]);
 
-  if (folderDefaults == nil)
-    {
-      ASSIGN(folderDefaults, [[NSMutableDictionary new] autorelease]);
-      sortType = [[NXTFileManager defaultManager] sortFilesBy];
-      [folderDefaults setObject:[NSNumber numberWithInt:sortType]
-                         forKey:@"SortBy"];
-    }
-  else
-    {
-      sortType = [[folderDefaults objectForKey:@"SortBy"] intValue];
-    }
+  if ([wsDefaults objectForKey:folderPath] != nil) {
+    folderDefaults = [[wsDefaults objectForKey:folderPath] mutableCopy];
+  }
+
+  if (folderDefaults == nil) {
+    ASSIGN(folderDefaults, [[NSMutableDictionary new] autorelease]);
+    sortType = [[NXTFileManager defaultManager] sortFilesBy];
+    [folderDefaults setObject:[NSNumber numberWithInt:sortType] forKey:@"SortBy"];
+  } else {
+    sortType = [[folderDefaults objectForKey:@"SortBy"] intValue];
+  }
 
   [sortByMatrix selectCellWithTag:sortType];
 

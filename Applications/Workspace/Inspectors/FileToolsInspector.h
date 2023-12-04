@@ -32,10 +32,10 @@
   id view;
 
   NSWorkspace *ws;
-  NSString    *defaultEditor;
- 
+  NSString *defaultEditor;
+
   NSString *path;
-  NSArray  *files;
+  NSArray *files;
 }
 
 - (void)appSelected:sender;
