@@ -931,11 +931,12 @@ CFTypeRef wGetNotificationInfoValue(CFDictionaryRef theDict, CFStringRef key)
 {
   const void *keys;
   const void *values;
-  void *desired_value = "";
+  void *desired_value = NULL;
 
-  if (!theDict)
+  if (!theDict) {
     return desired_value;
-
+  }
+  
   CFDictionaryGetKeysAndValues(theDict, &keys, &values);
   for (int i = 0; i < CFDictionaryGetCount(theDict); i++) {
     if (CFStringCompare(&keys[i], key, 0) == 0) {

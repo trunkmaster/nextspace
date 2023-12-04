@@ -424,9 +424,14 @@ static void desktopObserver(CFNotificationCenterRef center, void *observer, CFNo
                             const void *screen, CFDictionaryRef userInfo)
 {
   WScreen *scr = (WScreen *)screen;
-  CFNumberRef ws = (CFNumberRef)wGetNotificationInfoValue(userInfo, CFSTR("desktop"));
+  CFNumberRef ws;
   int desktop;
 
+  ws = (CFNumberRef)wGetNotificationInfoValue(userInfo, CFSTR("desktop"));
+  if (ws == NULL) {
+    return;
+  }
+  
   CFNumberGetValue(ws, kCFNumberShortType, &desktop);
 
   if (CFStringCompare(name, WMDidChangeDesktopNameNotification, 0) == 0) {
