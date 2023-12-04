@@ -790,8 +790,7 @@ static Inspector *inspectorPanel = nil;
   
   NSLog(@"%@ getSelectedPath:andFiles:", [self className]);
 
-  viewer = [(Controller *)[NSApp delegate]
-               fileViewerForWindow:[NSApp mainWindow]];
+  viewer = [(Controller *)[NSApp delegate] fileViewerForWindow:[NSApp keyWindow]];
   if (viewer)
     {
       path = [viewer absolutePath];
