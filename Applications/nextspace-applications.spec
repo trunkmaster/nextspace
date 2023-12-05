@@ -52,8 +52,10 @@ Requires:	libXrender
 Requires:	libXdamage
 Requires:	libexif
 Requires:	xorg-x11-drv-evdev
+%ifnarch aarch64
 Requires:	xorg-x11-drv-intel
 Requires:	xorg-x11-drv-vesa
+%endif
 Requires:	xorg-x11-drv-synaptics
 Requires:	xorg-x11-server-Xorg
 %if 0%{?el7}
