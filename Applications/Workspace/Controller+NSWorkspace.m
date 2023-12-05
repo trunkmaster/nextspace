@@ -1321,26 +1321,25 @@ static NSLock *raceLock = nil;
 {
   NSTask *task = [aNotif object];
   int exitCode = [task terminationStatus];
+  NSString *appCommand = [task launchPath];
   WAppIcon *appicon;
-  char *command;
 
   [[NSNotificationCenter defaultCenter] removeObserver:self
                                                   name:NSTaskDidTerminateNotification
                                                 object:task];
 
-  command = (char *)[[task launchPath] cString];
-  appicon = wLaunchingAppIconForCommand(wDefaultScreen(), command);
+  appicon = wLaunchingAppIconForCommand(wDefaultScreen(), (char *)[appCommand cString]);
   if (appicon) {
     wLaunchingAppIconDestroy(wDefaultScreen(), appicon);
   }
   [_windowManagerCenter
       postNotificationName:NSWorkspaceDidTerminateApplicationNotification
                     object:self
-                  userInfo:@{@"NSApplicationName" : [[task launchPath] lastPathComponent]}];
+                  userInfo:@{@"NSApplicationName" : [appCommand lastPathComponent]}];
 
   if (exitCode != 0) {
-    NXTRunAlertPanel(_(@"Workspace"), _(@"Application '%s' exited with code %i"), nil, nil, nil,
-                     command, exitCode);
+    NXTRunAlertPanel(_(@"Workspace"), _(@"Application '%@' exited with code %i"), nil, nil, nil,
+                     [appCommand lastPathComponent], exitCode);
   }
 }
 
