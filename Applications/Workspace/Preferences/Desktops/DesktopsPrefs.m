@@ -230,7 +230,7 @@
   NSDictionary *wsInfo = nil;
   NSString *wsName = nil;
 
-  NSDebugLLog(@"Preferences", @"Text changed in %@", [object className]);
+  NSDebugLLog(@"Preferences", @"Text changed in %@", [[aNotification object] className]);
   if ([aNotification object] != nameField) {
     return;
   }

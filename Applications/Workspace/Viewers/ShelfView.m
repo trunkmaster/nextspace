@@ -437,8 +437,9 @@
     return draggedMask;
   }
 
-  NSDebugLLog(@"Shelf", @"DRAG: slot.x,y: %i,%i last slot.x,y: %i,%i slotsWide: %i icon:%@", slot.x,
-              slot.y, lastSlotDragEntered.x, lastSlotDragEntered.y, slotsWide, icon);
+  NSDebugLLog(@"Shelf", @"DRAG: slot.x,y: %i,%i last slot.x,y: %i,%i slotsWide: %i icon:%@",
+              slotUnderMouse.x, slotUnderMouse.y, lastSlotDragEntered.x, lastSlotDragEntered.y,
+              slotsWide, icon);
 
   lastSlotDragEntered.x = slotUnderMouse.x;
   lastSlotDragEntered.y = slotUnderMouse.y;

@@ -182,18 +182,17 @@ static NSTimer *clickTimer = nil;
                 }
             }
 
-          NSDebugLLog(@"BrowserViewer", @"_charBuffer: %@ _lastKeyPressed:%f(%f) selected:%i",
-                _charBuffer, _lastKeyPressed, [ev timestamp], s);
+            // NSDebugLLog(@"BrowserViewer", @"_charBuffer: %@ _lastKeyPressed:%f(%f) selected:%i",
+            //             _charBuffer, _lastKeyPressed, [ev timestamp], s);
 
-          _alphaNumericalLastColumn = selectedColumn;
-          _lastKeyPressed = [ev timestamp];
+            _alphaNumericalLastColumn = selectedColumn;
+            _lastKeyPressed = [ev timestamp];
 
-          //[[self loadedCellAtRow:column:] stringValue]
-          sv = [((*lcarc)(self, lcarcSel, s, selectedColumn)) stringValue];
+            //[[self loadedCellAtRow:column:] stringValue]
+            sv = [((*lcarc)(self, lcarcSel, s, selectedColumn)) stringValue];
 
-          // selected cell aleady contains typed string - _charBuffer
-          if (([sv length] > 0) && ([sv hasPrefix:_charBuffer]))
-            {
+            // selected cell aleady contains typed string - _charBuffer
+            if (([sv length] > 0) && ([sv hasPrefix:_charBuffer])) {
               return;
             }
 

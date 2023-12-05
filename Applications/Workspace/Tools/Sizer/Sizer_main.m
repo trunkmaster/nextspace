@@ -112,7 +112,6 @@ int main(int argc, const char **argv)
   [comm release];
   [sizer release];
 
-  NSDebugLLog(@"Tools", @"time: %f sec", [[NSDate date] timeIntervalSinceDate:start]);
   DESTROY(pool);
 
   return 0;

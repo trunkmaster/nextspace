@@ -409,7 +409,8 @@ static BOOL _workspaceQuitting = NO;
 
   // Get icon image from windowmaker app structure(WApplication)
   // NSApplicationIcon=NSImage*
-  NSDebugLLog(@"Processes", @"%@ icon filename: %s", xAppName, wapp->app_icon->icon->file);
+  NSDebugLLog(@"Processes", @"%@ icon filename: %s", appInfo[@"NSApplicationName"],
+              wapp->app_icon->icon->file);
   if (wapp->app_icon->icon->file_image) {
     [appInfo setObject:WSImageForRasterImage(wapp->app_icon->icon->file_image)
                 forKey:@"NSApplicationIcon"];

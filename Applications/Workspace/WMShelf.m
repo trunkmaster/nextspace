@@ -371,8 +371,9 @@
     return draggedMask;
   }
 
-  NSDebugLLog(@"Shelf", @"DRAG: slot.x,y: %i,%i last slot.x,y: %i,%i slotsWide: %i icon:%@", slot.x,
-              slot.y, lastSlotDragEntered.x, lastSlotDragEntered.y, slotsWide, icon);
+  NSDebugLLog(@"Shelf", @"DRAG: slot.x,y: %i,%i last slot.x,y: %i,%i slotsWide: %i icon:%@",
+              slotUnderMouse.x, slotUnderMouse.y, lastSlotDragEntered.x, lastSlotDragEntered.y,
+              slotsWide, icon);
 
   lastSlotDragEntered.x = slotUnderMouse.x;
   lastSlotDragEntered.y = slotUnderMouse.y;
@@ -422,7 +423,7 @@
   NSDebugLLog(@"Shelf", @"[WMShelf] prepare for drag operation = %lu", draggedMask);
   if (draggedMask == NSDragOperationMove) {
     if ([sender draggingSource] == self) {
-      NSDebugLLog(@"Shelf", "[WMShelf] prepare to Move icon inside Shelf");
+      NSDebugLLog(@"Shelf", @"[WMShelf] prepare to Move icon inside Shelf");
     } else {
       NSPasteboard *pasteBoard = [sender draggingPasteboard];
       NSArray *paths = [pasteBoard propertyListForType:NSFilenamesPboardType];

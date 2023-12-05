@@ -122,7 +122,6 @@ int main(int argc, const char **argv)
 
   [[Communicator shared] finishOperation:op stopped:isStopped];
 
-  NSDebugLLog(@"Tools", @"time: %f sec", [[NSDate date] timeIntervalSinceDate:start]);
   DESTROY(pool);
 
   return 0;

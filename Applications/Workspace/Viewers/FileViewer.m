@@ -1536,7 +1536,7 @@
     return NSDragOperationNone;
   }
 
-  NSDebugLLog(@"FileViewer", @"[FileViewer] draggingSourceOperationMaskForPaths: %@", filenames);
+  NSDebugLLog(@"FileViewer", @"[FileViewer] draggingSourceOperationMaskForPaths: %@", paths);
 
   mask = (NSDragOperationCopy | NSDragOperationLink | NSDragOperationMove | NSDragOperationDelete);
 
@@ -1727,7 +1727,7 @@
                                      files:files
                                    manager:[ProcessManager shared]];
 
-  NSDebugLLog(@"FileViewer", @"Relative path after destroy: %@", relPath);
+  NSDebugLLog(@"FileViewer", @"Full path after destroy: %@", fullPath);
 }
 
 // Disk
