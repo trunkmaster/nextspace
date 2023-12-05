@@ -267,7 +267,7 @@
 
 - (void)dealloc
 {
-  NSLog(@"[BrowserViewer] dealloc");
+  NSDebugLLog(@"Memory", @"[BrowserViewer] dealloc");
   [[NSNotificationCenter defaultCenter] removeObserver:self];
     
   TEST_RELEASE(currentPath);
@@ -287,7 +287,7 @@
   [super init];
 
   if (![NSBundle loadNibNamed:@"BrowserViewer" owner:self]) {
-    NSLog(@"Error: failed to load BrowserViewer interface file!");
+    NSDebugLLog(@"BrowserViewer", @"Error: failed to load BrowserViewer interface file!");
     [self autorelease];
     return nil;
   }

@@ -591,13 +591,13 @@
   NSEnumerator *e = [relPaths objectEnumerator];
   NSString *relPath;
 
-  //  NSLog(@"[FileViewer] relative paths: %@", relPaths);
+  NSDebugLLog(@"FileViewer", @"[FileViewer] relative paths: %@", relPaths);
 
   while ((relPath = [e nextObject])) {
     [absPaths addObject:[self absolutePathFromPath:relPath]];
   }
 
-  //  NSLog(@"[FileViewer] absolute paths: %@", absPaths);
+  NSDebugLLog(@"FileViewer", @"[FileViewer] absolute paths: %@", absPaths);
 
   return (NSArray *)absPaths;
 }
@@ -889,7 +889,7 @@
                        @"filename while multiple files are selected"];
   }
 
-  //  NSLog(@"Rename selection: %@", selection);
+  NSDebugLLog(@"FileViewer", @"Rename selection: %@", selection);
 
   if ([selection count]) {
     // It's a file
@@ -1082,8 +1082,8 @@
 
   slotSize = [shelf slotSize];
 
-  // NSLog(@"[FileViewer-splitView:constrainSplitPosition] slot height: %0.f",
-  //       slotSize.height);
+  NSDebugLLog(@"FileViewer", @"[FileViewer-splitView:constrainSplitPosition] slot height: %0.f",
+              slotSize.height);
 
   newSlot = rintf(proposedPosition / slotSize.height);
 
@@ -1128,10 +1128,10 @@
   // Set attributes of icon
   icon = (PathIcon *)[anIconLabel icon];
   path = [[icon paths] objectAtIndex:0];
-  // NSLog(@"Icon old path: %@", path);
+  NSDebugLLog(@"FileViewer", @"Icon old path: %@", path);
   path = [path stringByDeletingLastPathComponent];
   path = [path stringByAppendingPathComponent:newLabelString];
-  // NSLog(@"Icon new path: %@", path);
+  NSDebugLLog(@"FileViewer", @"Icon new path: %@", path);
   [icon setPaths:[NSArray arrayWithObject:path]];
   NSDebugLLog(@"FileViewer", @"FileViewer(%@): Icon now have paths: %@", rootPath, [icon paths]);
 }
@@ -1198,8 +1198,8 @@
 
 - (void)windowDidResize:(NSNotification *)notif
 {
-  // NSLog(@"[FileViewer windowDidResize:] viewer column count: %lu",
-  //       [(NSBrowser *)[viewer view] numberOfVisibleColumns]);
+  NSDebugLLog(@"FileViewer", @"[FileViewer windowDidResize:] viewer column count: %lu",
+              [(NSBrowser *)[viewer view] numberOfVisibleColumns]);
 
   // Update column attributes here.
   // Call to updateWindowWidth: leads to segfault because of active
@@ -1223,7 +1223,7 @@
   unichar c = [[theEvent characters] characterAtIndex:0];
   NSString *string;
 
-  // NSLog(@"[FileViewer] window received key up: %X", c);
+  NSDebugLLog(@"FileViewer", @"[FileViewer] window received key up: %X", c);
 
   switch (c) {
     case '/':
@@ -1324,8 +1324,8 @@
 
   operations = [changes objectForKey:@"Operations"];
 
-  // NSLog(@"[FileViewer:%@] OSEFileSystem got filesystem changes %@ at %@",
-  //       [self displayedPath], operations, changedPath);
+  NSDebugLLog(@"FileViewer", @"[FileViewer:%@] OSEFileSystem got filesystem changes %@ at %@",
+              [self displayedPath], operations, changedPath);
 
   // 'selectedPath' contains absolute path with 1 FS object selected
   // 'changedPath' - directory where changes occured
@@ -1353,9 +1353,10 @@
     // newFullPath      == "changedPath/changedFileTo"
     // selectedFullPath == "selectedPath/selectedFile"
 
-    // NSLog(@"[FileViewer] OSEFileSystem: 'Rename' "
-    //       @"operation occured for %@(%@). New name %@",
-    //       changedFullPath, selectedFullPath, newFullPath);
+    NSDebugLLog(@"FileViewer",
+                @"[FileViewer] OSEFileSystem: 'Rename' "
+                @"operation occured for %@(%@). New name %@",
+                changedFullPath, selectedFullPath, newFullPath);
 
     commonPath = NXTIntersectionPath(selectedFullPath, changedFullPath);
 
@@ -1450,8 +1451,8 @@
   PathIcon *icon;
   NSString *iconPath;
 
-  // NSLog(@"Volume '%@' did mount at path: %@",
-  //       [[notif userInfo] objectForKey:@"UNIXDevice"], mountPoint);
+  NSDebugLLog(@"FileViewer", @"Volume '%@' did mount at path: %@",
+              [[notif userInfo] objectForKey:@"UNIXDevice"], mountPoint);
 
   // Check if mounted removable icon already exist in the Shelf
   for (icon in [shelf icons]) {
@@ -1480,8 +1481,8 @@
   NSString *mountPoint = [[notif userInfo] objectForKey:@"MountPoint"];
   NSString *iconPath;
 
-  // NSLog(@"Volume '%@' mounted at '%@' did unmount",
-  //       [[notif userInfo] objectForKey:@"UNIXDevice"], mountPoint);
+  NSDebugLLog(@"FileViewer", @"Volume '%@' mounted at '%@' did unmount",
+              [[notif userInfo] objectForKey:@"UNIXDevice"], mountPoint);
 
   while ((icon = [e nextObject]) != nil) {
     iconPath = [[icon paths] objectAtIndex:0];
@@ -1508,7 +1509,7 @@
 {
   // BGOperation *fop = [notif object];
 
-  // NSLog(@"[FileViewer] %@ object %@", [fop operationType], [fop filename]);
+  // NSDebugLLog(@"FileViewer", @"[FileViewer] %@ object %@", [fop operationType], [fop filename]);
 }
 
 //=============================================================================
@@ -1535,7 +1536,7 @@
     return NSDragOperationNone;
   }
 
-  //  NSLog(@"[FileViewer] draggingSourceOperationMaskForPaths: %@", filenames);
+  NSDebugLLog(@"FileViewer", @"[FileViewer] draggingSourceOperationMaskForPaths: %@", filenames);
 
   mask = (NSDragOperationCopy | NSDragOperationLink | NSDragOperationMove | NSDragOperationDelete);
 
@@ -1679,8 +1680,8 @@
 {
   NSArray *files = nil;
 
-  // NSLog(@"[FileViewer duplicate] path=%@ selection=%@",
-  //       [self absolutePath], selection);
+  NSDebugLLog(@"FileViewer", @"[FileViewer duplicate] path=%@ selection=%@", [self absolutePath],
+              selection);
 
   if ([selection count] > 0) {
     files = selection;
@@ -1726,7 +1727,7 @@
                                      files:files
                                    manager:[ProcessManager shared]];
 
-  // NSLog(@"Relative path after destroy: %@", relPath);
+  NSDebugLLog(@"FileViewer", @"Relative path after destroy: %@", relPath);
 }
 
 // Disk

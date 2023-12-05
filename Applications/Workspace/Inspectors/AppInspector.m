@@ -184,7 +184,7 @@ static id appInspector = nil;
     [self _fillMatrixForTypes:[appInfo objectForKey:@"NSTypes"] appPath:appPath];
   }
 
-  // NSLog(@"NSTypes = %@", [appInfo objectForKey:@"NSTypes"]);
+  NSDebugLLog(@"Inspector", @"NSTypes = %@", [appInfo objectForKey:@"NSTypes"]);
 
   // Buttons state and title, window edited state
   return [super revert:self];

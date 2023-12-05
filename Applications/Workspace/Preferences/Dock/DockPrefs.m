@@ -62,7 +62,7 @@ NSImage *WMDockAppImage(int position)
   NSImage *icon = nil;
 
   if (btn) {
-    // NSLog(@"W+W: icon image file: %s", btn->icon->file);
+    // NSDebugLLog(@"Preferences", @"W+W: icon image file: %s", btn->icon->file);
     if (btn->icon->file) {  // Docked and not running application
       iconPath = [NSString stringWithCString:btn->icon->file];
       icon = [[NSImage alloc] initWithContentsOfFile:iconPath];

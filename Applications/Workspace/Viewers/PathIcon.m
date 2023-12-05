@@ -82,9 +82,10 @@ static NSDragOperation savedMask;
 
   while (appicon) {
     if (!strcmp(wm_instance, appicon->wm_instance) && !strcmp(wm_class, appicon->wm_class)) {
-      NSLog(@"Appicon found: destroyed=%i running=%i launching=%i docked=%i editing=%i",
-            appicon->flags.destroyed, appicon->flags.running, appicon->flags.launching,
-            appicon->flags.docked, appicon->flags.editing);
+      NSDebugLLog(@"PathIcon",
+                  @"Appicon found: destroyed=%i running=%i launching=%i docked=%i editing=%i",
+                  appicon->flags.destroyed, appicon->flags.running, appicon->flags.launching,
+                  appicon->flags.docked, appicon->flags.editing);
       return appicon;
     }
     appicon = appicon->next;
@@ -103,7 +104,7 @@ static NSDragOperation savedMask;
   NSArray *execParts;
   NSMutableDictionary *wmAppInfo = nil;
 
-  NSLog(@"[GSDragView] check if application icon already exist: %@", appPath);
+  NSDebugLLog(@"PathIcon", @"[GSDragView] check if application icon already exist: %@", appPath);
 
   if (!appPath || [[appPath pathExtension] isEqualToString:@"app"] == NO) {
     return nil;
@@ -148,7 +149,7 @@ static NSDragOperation savedMask;
   RImage *r_image;
   WAppIcon *appIcon;
 
-  NSLog(@"[GSDragView] create appicon for: %@.%@", wmInstance, wmClass);
+  NSDebugLLog(@"PathIcon", @"[GSDragView] create appicon for: %@.%@", wmInstance, wmClass);
 
   appIcon = wAppIconCreateForDock(wScreen, [commandPath cString], [wmInstance cString],
                                   [wmClass cString], TILE_NORMAL);
@@ -180,8 +181,8 @@ static NSDragOperation savedMask;
   if (dockable == NO)
     return;
 
-  // NSLog(@"Screen resolution: %@",
-  //       NSStringFromRect([GSCurrentServer() boundsForScreen:0]));
+  NSDebugLLog(@"PathIcon", @"Screen resolution: %@",
+              NSStringFromRect([GSCurrentServer() boundsForScreen:0]));
   screenBounds = [GSCurrentServer() boundsForScreen:[[[self window] screen] screenNumber]];
   screenPoint.y = NSMaxY(screenBounds) - screenPoint.y;
   screenPoint.y -= wPreferences.icon_size;
@@ -214,7 +215,7 @@ static NSDragOperation savedMask;
   if (onDock != NO) {
     wDefaultChangeIcon(wAppIconNew->wm_instance, wAppIconNew->wm_class, wAppIconNew->icon->file);
     if (!wDockAttachIcon(wScreen->dock, wAppIconNew, dock_x, dock_y, YES)) {
-      NSLog(@"[PathIcon] WARNING: the icon was not docked!");
+      NSDebugLLog(@"PathIcon", @"[PathIcon] WARNING: the icon was not docked!");
     }
     wAppIconNew->flags.running = 0;
     wAppIconNew->flags.launching = 0;
@@ -262,7 +263,7 @@ static NSDragOperation savedMask;
   startPoint = [eWindow convertBaseToScreen:[theEvent locationInWindow]];
   startPoint.x -= offset.width;
   startPoint.y -= offset.height;
-  // NSLog(@"Drag window origin %@\n", NSStringFromPoint(startPoint));
+  NSDebugLLog(@"PathIcon", @"Drag window origin %@\n", NSStringFromPoint(startPoint));
 
   // Notify the source that dragging has started
   if ([dragSource respondsToSelector:@selector(draggedImage:beganAt:)]) {
@@ -398,7 +399,7 @@ static NSDragOperation savedMask;
         } break;
 
         case GSAppKitDraggingStatus:
-          NSDebugLLog(@"NSDragging", @"got GSAppKitDraggingStatus\n");
+          NSDebugLLog(@"PathIcon", @"PathIcon: got GSAppKitDraggingStatus\n");
           if ((int)[theEvent data1] == targetWindowRef) {
             NSDragOperation newTargetMask = (NSDragOperation)[theEvent data2];
             if (newTargetMask != targetMask) {
@@ -409,7 +410,7 @@ static NSDragOperation savedMask;
           break;
 
         case GSAppKitDraggingFinished:
-          NSLog(@"Internal: got GSAppKitDraggingFinished out of seq");
+          NSDebugLLog(@"PathIcon", @"PathIcon: got GSAppKitDraggingFinished out of seq");
           break;
 
         case GSAppKitWindowFocusIn:
@@ -419,7 +420,7 @@ static NSDragOperation savedMask;
           break;
 
         default:
-          NSDebugLLog(@"NSDragging", @"dropped NSAppKitDefined (%d) event", sub);
+          NSDebugLLog(@"PathIcon", @"PathIcon: dropped NSAppKitDefined (%d) event", sub);
           break;
       }
     } break;
@@ -474,7 +475,7 @@ static NSDragOperation savedMask;
       }
       break;
     default:
-      NSLog(@"Internal: dropped event (%d) during dragging", (int)[theEvent type]);
+      NSDebugLLog(@"PathIcon", @"PathIcon: dropped event (%d) during dragging", (int)[theEvent type]);
   }
 }
 
@@ -558,7 +559,7 @@ static NSDragOperation savedMask;
   if (target == nil || isSelectable == NO || [ev type] != NSLeftMouseDown) {
     return;
   }
-  // NSLog(@"PathIcon: mouseDown: %@", paths);
+  NSDebugLLog(@"PathIcon", @"PathIcon: mouseDown: %@", paths);
 
   clickCount = [ev clickCount];
   modifierFlags = [ev modifierFlags];
@@ -570,7 +571,7 @@ static NSDragOperation savedMask;
 
   // Dragging
   if ([target respondsToSelector:dragAction]) {
-    // NSLog(@"[PathIcon-mouseDown]: DRAGGING");
+    NSDebugLLog(@"PathIcon", @"[PathIcon-mouseDown]: DRAGGING");
     NSPoint startPoint = [ev locationInWindow];
     NSInteger eventMask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
     NSInteger moveThreshold = [mouse accelerationThreshold];
@@ -587,12 +588,12 @@ static NSDragOperation savedMask;
   [_window makeFirstResponder:[longLabel nextKeyView]];
   // Clicking
   if (clickCount == 2) {
-    // NSLog(@"PathIcon: 2 mouseDown: %@", paths);
+    NSDebugLLog(@"PathIcon", @"PathIcon: 2 mouseDown: %@", paths);
     if ([target respondsToSelector:doubleAction]) {
       [target performSelector:doubleAction withObject:self];
     }
   } else if (clickCount == 1 || clickCount > 2) {
-    // NSLog(@"PathIcon: 1 || >2 mouseDown: %@", paths);
+    NSDebugLLog(@"PathIcon", @"PathIcon: 1 || >2 mouseDown: %@", paths);
     // if (!doubleClickPassesClick && [self _waitForSecondMouseClick] != nil) {
     if (!doubleClickPassesClick) {
       NSEvent *e;
@@ -685,13 +686,13 @@ static NSDragOperation savedMask;
       (NSDragOperationCopy | NSDragOperationMove | NSDragOperationLink | NSDragOperationDelete);
 
   if ([fileManager isWritableFileAtPath:destPath] == NO) {
-    NSLog(@"[FileViewer] %@ is not writable!", destPath);
+    NSDebugLLog(@"PathIcon", @"[PathIcon] %@ is not writable!", destPath);
     return NSDragOperationNone;
   }
 
   if ([[[fileManager fileAttributesAtPath:destPath traverseLink:YES] fileType]
           isEqualToString:NSFileTypeDirectory] == NO) {
-    NSLog(@"[FileViewer] destination path `%@` is not a directory!", destPath);
+    NSDebugLLog(@"PathIcon", @"[PathIcon] destination path `%@` is not a directory!", destPath);
     return NSDragOperationNone;
   }
 
@@ -699,21 +700,23 @@ static NSDragOperation savedMask;
     NSRange r;
 
     if ([fileManager isDeletableFileAtPath:path] == NO) {
-      NSLog(@"[FileViewer] path %@ can not be deleted."
-            @"Disabling Move and Delete operation.",
-            path);
+      NSDebugLLog(@"PathIcon",
+                  @"[PathIcon] path %@ can not be deleted."
+                  @"Disabling Move and Delete operation.",
+                  path);
       mask ^= (NSDragOperationMove | NSDragOperationDelete);
     }
 
     if ([path isEqualToString:destPath]) {
-      NSLog(@"[FileViewer] source and destination paths are equal "
-            @"(%@ == %@)",
-            path, destPath);
+      NSDebugLLog(@"PathIcon",
+                  @"[PathIcon] source and destination paths are equal "
+                  @"(%@ == %@)",
+                  path, destPath);
       return NSDragOperationNone;
     }
 
     if ([[path stringByDeletingLastPathComponent] isEqualToString:destPath]) {
-      NSLog(@"[FileViewer] `%@` already exists in `%@`", path, destPath);
+      NSDebugLLog(@"PathIcon", @"[PathIcon] `%@` already exists in `%@`", path, destPath);
       return NSDragOperationNone;
     }
   }
@@ -730,13 +733,13 @@ static NSDragOperation savedMask;
   sourcePaths = [PASTEBOARD propertyListForType:NSFilenamesPboardType];
   destPath = [paths objectAtIndex:0];
 
-  NSLog(@"[PathIcon] draggingEntered: %@(%@) -> %@", [[sender draggingSource] className],
-        [delegate className], destPath);
+  NSDebugLLog(@"PathIcon", @"[PathIcon] draggingEntered: %@(%@) -> %@",
+              [[sender draggingSource] className], [delegate className], destPath);
 
   if ([sender draggingSource] == self) {
     draggingMask = NSDragOperationNone;
   } else if (![sourcePaths isKindOfClass:[NSArray class]] || [sourcePaths count] == 0) {
-    NSLog(@"[PathIcon] source path list is not NSArray or NSArray is empty!");
+    NSDebugLLog(@"PathIcon", @"[PathIcon] source path list is not NSArray or NSArray is empty!");
     draggingMask = NSDragOperationNone;
   } else {
     draggingMask = [self _draggingDestinationMaskForPaths:sourcePaths intoPath:destPath];
@@ -754,7 +757,7 @@ static NSDragOperation savedMask;
 
 - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender
 {
-  // NSLog(@"[PathIcon] draggingUpdated: mask - %i", draggingMask);
+  NSDebugLLog(@"PathIcon", @"[PathIcon] draggingUpdated: mask - %i", draggingMask);
   return draggingMask;
 }
 
@@ -762,7 +765,7 @@ static NSDragOperation savedMask;
 {
   Controller *wsDelegate = [NSApp delegate];
 
-  NSLog(@"[PathIcon] draggingExited");
+  NSDebugLLog(@"PathIcon", @"[PathIcon] draggingExited");
   if (draggingMask != NSDragOperationNone) {
     [self setIconImage:[wsDelegate iconForFile:[paths objectAtIndex:0]]];
   }

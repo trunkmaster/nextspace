@@ -155,7 +155,7 @@ static inline void ReportGarbage(NSString *garbage)
   NSString *line;
   NSData *data = nil;
 
-  // NSLog(@"==== [FileOperation readInput]");
+  // NSDebugLLog(@"Sizer", @"==== [FileOperation readInput]");
 
   // === LOCK
   while (inputLock && [inputLock tryLock] == NO) {
@@ -199,7 +199,7 @@ static inline void ReportGarbage(NSString *garbage)
   if (truncatedLine != nil && [truncatedLine length] > 0) {
     truncatedLine = [truncatedLine stringByAppendingString:[lines objectAtIndex:0]];
     [lines replaceObjectAtIndex:0 withObject:[truncatedLine copy]];
-    // NSLog(@"LINE ASSEMBLED: %@", truncatedLine);
+    // NSDebugLLog(@"Sizer", @"LINE ASSEMBLED: %@", truncatedLine);
     ASSIGN(truncatedLine, @"");
   }
 
@@ -207,10 +207,10 @@ static inline void ReportGarbage(NSString *garbage)
   // transmitted from FileOperation tool.
   if (input != nil && [input length] > 1 && [input characterAtIndex:[input length] - 1] != '\n') {
     ASSIGN(truncatedLine, [lines objectAtIndex:[lines count] - 1]);
-    // NSLog(@"GOT TRUNCATED LINE: %@", truncatedLine);
+    // NSDebugLLog(@"Sizer", @"GOT TRUNCATED LINE: %@", truncatedLine);
   }
 
-  // NSLog(@"%@", input);
+  // NSDebugLLog(@"Sizer", @"%@", input);
 
   e = [lines objectEnumerator];
   while ((line = [e nextObject]) != nil) {
@@ -219,14 +219,14 @@ static inline void ReportGarbage(NSString *garbage)
 
     // skip over empty lines
     if ([line length] < 1) {
-      // NSLog(@"skipping empty line");
+      // NSDebugLLog(@"Sizer", @"skipping empty line");
       // ReportGarbage(line);
       continue;
     }
 
     args = [line componentsSeparatedByString:@"\t"];
     msgType = [[args objectAtIndex:0] characterAtIndex:0];
-    // NSLog(@"ARGS: %@", args);
+    // NSDebugLLog(@"Sizer", @"ARGS: %@", args);
 
     switch (msgType) {
       case '0':
@@ -341,7 +341,7 @@ static inline void ReportGarbage(NSString *garbage)
     [[readPipe fileHandleForReading] waitForDataInBackgroundAndNotify];
   }
 
-  // NSLog(@"==== [Sizer readInput] END");
+  // NSDebugLLog(@"Sizer", @"==== [Sizer readInput] END");
 
   // === UNLOCK
   [inputLock unlock];

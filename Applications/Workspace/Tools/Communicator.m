@@ -285,14 +285,14 @@ static Communicator *shared = nil;
 
       switch (answer) {
         case 'S':
-          NSLog(@"Communicator: SymlinkTargetNotExist: SKIP");
+          // NSDebugLLog(@"Tools", @"Communicator: SymlinkTargetNotExist: SKIP");
           defaultSymlinkTargetAction = SkipFile;
         case 's':
-          NSLog(@"Communicator: SymlinkTargetNotExist: skip");
+          // NSDebugLLog(@"Tools", @"Communicator: SymlinkTargetNotExist: skip");
           return SkipFile;
 
         case 'N':
-          NSLog(@"Communicator: SymlinkTargetNotExist: SKIP");
+          // NSDebugLLog(@"Tools", @"Communicator: SymlinkTargetNotExist: SKIP");
           defaultSymlinkTargetAction = NewLink;
         case 'n':
           return NewLink;

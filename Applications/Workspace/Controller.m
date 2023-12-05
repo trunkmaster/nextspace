@@ -113,12 +113,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   inspectorsPath =
       [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"Inspectors.bundle"];
 
-  // NSLog(@"[Controller] Inspectors: %@", inspectorsPath);
+  // NSDebugLLog(@"Controller", @"[Controller] Inspectors: %@", inspectorsPath);
 
   inspectorsBundle = [[NSBundle alloc] initWithPath:inspectorsPath];
 
-  // NSLog(@"[Controller] Inspectors Class: %@",
-  //       [inspectorsBundle principalClass]);
+  // NSDebugLLog(@"Controller", @"[Controller] Inspectors Class: %@",
+  //             [inspectorsBundle principalClass]);
   inspector = [[[inspectorsBundle principalClass] alloc] init];
 }
 
@@ -409,7 +409,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [workspaceBadge release];
 
   // Media and media manager
-  // NSLog(@"OSEMediaManager RC:%lu", [mediaManager retainCount]);
+  // NSDebugLLog(@"Controller", @"OSEMediaManager RC:%lu", [mediaManager retainCount]);
   [mediaAdaptor ejectAllRemovables];
   [mediaManager release];  //  mediaAdaptor released also
   [mediaOperations release];
@@ -779,7 +779,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   if (terminateReply == NSTerminateNow) {
     terminateMode = (ws_quit_code == WSPowerOffOnQuit) ? @"Power Off" : @"Log Out";
 
-    // NSLog(@"Controller: sending NSWorkspaceWillPowerOffNotification");
+    // NSDebugLLog(@"Controller", @"Controller: sending NSWorkspaceWillPowerOffNotification");
     // Give a chance to apps to ask for more time before quit
     // Notice that this notification also will be sent by GSServiceManager with forwardInvocation:
     // of terminate: method.
@@ -847,7 +847,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   if (_isQuitting != NO)
     return;
 
-  // NSLog(@"Activating Workspace from Controller!");
+  // NSDebugLLog(@"Controller", @"Activating Workspace from Controller!");
   [NSApp activateIgnoringOtherApps:YES];
 }
 
@@ -1316,7 +1316,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // if (fileViewer) {
   //   selectedPath = [fileViewer absolutePath];
   // }
-  // NSLog(@"Validate menu: %@ item: %@", menuTitle, [menuItem title]);
+  // NSDebugLLog(@"Controller", @"Validate menu: %@ item: %@", menuTitle, [menuItem title]);
 
   if ([menuTitle isEqualToString:@"File"]) {
     if ([[menuItem title] isEqualToString:@"Empty Recycler"]) {
@@ -1389,7 +1389,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     [mediaOperations setObject:bgop forKey:[bgop source]];
     [bgop release];
 
-    NSLog(@"[Contoller media-start] <%@> %@ [%@]", [info objectForKey:@"Title"],
+    NSDebugLLog(@"Controller", @"[Contoller media-start] <%@> %@ [%@]", [info objectForKey:@"Title"],
           [info objectForKey:@"Message"], [bgop source]);
   }
 }
@@ -1415,7 +1415,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     NXTRunAlertPanel([info objectForKey:@"Title"], [info objectForKey:@"Message"], nil, nil, nil);
   }
 
-  NSLog(@"[Contoller media-end] <%@> %@ [%@]", [info objectForKey:@"Title"],
+  NSDebugLLog(@"Controller", @"[Contoller media-end] <%@> %@ [%@]", [info objectForKey:@"Title"],
         [info objectForKey:@"Message"], source);
 }
 
@@ -1436,10 +1436,10 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   if (builtinDisplay) {
     if (![systemPower isLidClosed] && ![builtinDisplay isActive]) {
-      NSLog(@"Workspace: activating display %@", [builtinDisplay outputName]);
+      NSDebugLLog(@"Controller", @"Workspace: activating display %@", [builtinDisplay outputName]);
       [screen activateDisplay:builtinDisplay];
     } else if ([systemPower isLidClosed] && [builtinDisplay isActive]) {
-      NSLog(@"Workspace: DEactivating display %@", [builtinDisplay outputName]);
+      NSDebugLLog(@"Controller", @"Workspace: DEactivating display %@", [builtinDisplay outputName]);
       [screen deactivateDisplay:builtinDisplay];
     }
   }
@@ -1453,8 +1453,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   NSInteger result;
 
-  // NSLog(@"WMShowAlertPanel thread: %@ (main: %@) mode: %@", [NSThread currentThread],
-  //       [NSThread mainThread], [[NSRunLoop currentRunLoop] currentMode]);
+  // NSDebugLLog(@"Controller", @"WMShowAlertPanel thread: %@ (main: %@) mode: %@",
+  //             [NSThread currentThread], [NSThread mainThread],
+  //             [[NSRunLoop currentRunLoop] currentMode]);
 
   result = NXTRunAlertPanel([alertInfo objectForKey:@"Title"], [alertInfo objectForKey:@"Message"],
                             [alertInfo objectForKey:@"DefaultButton"],

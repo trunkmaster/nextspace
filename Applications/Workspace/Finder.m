@@ -97,7 +97,7 @@
 
 - (void)dealloc
 {
-  NSLog(@"[FindWorker] -dealloc");
+  NSDebugLLog(@"Memory", @"[FindWorker] -dealloc");
   [searchPaths release];
   [expression release];
   [super dealloc];
@@ -142,7 +142,7 @@
   // NSUInteger   patternLength = [[expression pattern] length];
   NSUInteger offset;
 
-  // NSLog(@"Search for contents in file:%@", filePath);
+  // NSDebugLLog(@"Finder", @"Search for contents in file:%@", filePath);
 
   dataChunk = [handle readDataOfLength:1024 * 1024];
   while ([dataChunk length] > 0) {
@@ -174,7 +174,7 @@
   NSDictionary *attrs;
   NSString *itemFormat;
 
-  // NSLog(@"Processing directory %@...", dirPath);
+  // NSDebugLLog(@"Finder", @"Processing directory %@...", dirPath);
 
   dirContents = [fm directoryContentsAtPath:dirPath forPath:nil showHidden:[fm isShowHiddenFiles]];
   itemFormat = ([dirPath isEqualToString:@"/"] == NO) ? @"%@/%@" : @"%@%@";
@@ -208,7 +208,7 @@
 
 - (void)main
 {
-  NSLog(@"[Finder] will search contents: %@", isContentSearch ? @"Yes" : @"No");
+  NSDebugLLog(@"Finder", @"[Finder] will search contents: %@", isContentSearch ? @"Yes" : @"No");
 
   for (NSString *path in searchPaths) {
     [self findInDirectory:path];
@@ -246,7 +246,7 @@
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-  NSLog(@"Finder operation was finished.");
+  NSDebugLLog(@"Finder", @"Finder operation was finished.");
   [self performSelectorOnMainThread:@selector(finishFind) withObject:nil waitUntilDone:YES];
 }
 
@@ -265,7 +265,7 @@
 
 - (void)dealloc
 {
-  NSLog(@"Finder: dealloc");
+  NSDebugLLog(@"Memory", @"Finder: dealloc");
 
   [variantList release];
   [resultIcon release];
@@ -413,7 +413,7 @@
   NSString *enteredText;
 
   if ([operationQ operationCount] > 0) {
-    NSLog(@"[Finder] stopping search operation.");
+    NSDebugLLog(@"Finder", @"[Finder] stopping search operation.");
     [operationQ cancelAllOperations];
   } else {
     enteredText = [findField stringValue];
@@ -628,7 +628,7 @@
 // --- Result icon action
 - (void)resultIconDoubleClicked:(id)sender
 {
-  NSLog(@"Result icon double action: %@", [sender className]);
+  NSDebugLLog(@"Finder", @"Result icon double action: %@", [sender className]);
   [fileViewer open:sender];
 }
 
@@ -770,13 +770,13 @@
   shelfIcons = [shelf selectedIcons];
   path = [fm absolutePathForPath:[findField stringValue]];
 
-  // NSLog(@"Absolute Path: %@", path);
+  // NSDebugLLog(@"Finder", @"Absolute Path: %@", path);
   // Check if enetered text is existing directory
   if (path && ([fm directoryExistsAtPath:path] == NO)) {
     path = [path stringByDeletingLastPathComponent];
   }
 
-  // NSLog(@"Field: %@ Path: %@", [findField stringValue], path);
+  // NSDebugLLog(@"Finder", @"Field: %@ Path: %@", [findField stringValue], path);
   // Clicked item is not absolute path
   if ([fm absolutePathForPath:item] == nil) {
     // Text field entry is not usable - get value from the shelf
@@ -790,7 +790,7 @@
     path = item;
   }
 
-  // NSLog(@"[Finder] + result list clicked:%@", path);
+  // NSDebugLLog(@"Finder", @"[Finder] + result list clicked:%@", path);
   [resultIcon setIconImage:[[NSApp delegate] iconForFile:path]];
   [resultIcon setPaths:@[ path ]];
   if (![resultIcon superview]) {

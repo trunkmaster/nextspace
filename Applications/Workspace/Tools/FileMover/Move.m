@@ -85,7 +85,7 @@ void MoveOperation(NSString *sourceDir, NSArray *files, NSString *destDir)
     } else {
       // Copy then Delete
       if (CopyOperation(sourceDir, [NSArray arrayWithObject:file], destDir, MoveOp) == YES) {
-        NSLog(@"Move: Copy operation successfull");
+        NSDebugLLog(@"Tools", @"Move: Copy operation successfull");
         DeleteOperation(sourceDir, [NSArray arrayWithObject:file]);
       }
     }

@@ -62,7 +62,6 @@ static BOOL _workspaceQuitting = NO;
 - (void)dealloc
 {
   NSDebugLLog(@"Memory", @"ProcessManager: dealloc");
-  NSLog(@"ProcessManager: dealloc");
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
@@ -240,7 +239,8 @@ static BOOL _workspaceQuitting = NO;
     return;
   }
 
-  NSLog(@"Application `%@` terminated, notification object: %@", appName, [notif object]);
+  NSDebugLLog(@"Processes", @"Application `%@` terminated, notification object: %@", appName,
+              [notif object]);
 
   [applications removeObject:appInfo];
   if (_workspaceQuitting == NO) {
@@ -409,7 +409,7 @@ static BOOL _workspaceQuitting = NO;
 
   // Get icon image from windowmaker app structure(WApplication)
   // NSApplicationIcon=NSImage*
-  // NSLog(@"%@ icon filename: %s", xAppName, wapp->app_icon->icon->file);
+  NSDebugLLog(@"Processes", @"%@ icon filename: %s", xAppName, wapp->app_icon->icon->file);
   if (wapp->app_icon->icon->file_image) {
     [appInfo setObject:WSImageForRasterImage(wapp->app_icon->icon->file_image)
                 forKey:@"NSApplicationIcon"];
@@ -645,7 +645,7 @@ static BOOL _workspaceQuitting = NO;
                                                       manager:self];
     } break;
     default:
-      NSLog(@"ProcessManager: requested operation is not supported!");
+      NSDebugLLog(@"Processes", @"ProcessManager: requested operation is not supported!");
   }
   // newOperation will be registered upon receiving
   // WMOperationDidCreateNotification
@@ -705,7 +705,7 @@ static BOOL _workspaceQuitting = NO;
                            @"Do you want to stop all operations and quit?",
                            @"Cancel", @"Review operations", @"Stop and quit", nil)) {
     case NSAlertDefaultReturn:  // Cancel
-      NSLog(@"Workspace quit: cancel terminating running background operations.");
+      NSDebugLLog(@"Processes", @"Workspace quit: cancel terminating running background operations.");
       break;
     case NSAlertAlternateReturn:  // Review operations
       [[[NSApp delegate] processesPanel] showOperation:[operations objectAtIndex:0]];
@@ -741,8 +741,8 @@ static BOOL _workspaceQuitting = NO;
     backInfoLabelCopies = [[NSMutableArray alloc] initWithCapacity:1];
   }
 
-  // NSLog(@"[Processes] backInfoLabel: labels befor create new: %lu",
-  //       [backInfoLabelCopies count]);
+  NSDebugLLog(@"Processes", @"[Processes] backInfoLabel: labels befor create new: %lu",
+              [backInfoLabelCopies count]);
 
   label = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 180, 12)];
   [label setTextColor:[NSColor darkGrayColor]];

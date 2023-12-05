@@ -29,7 +29,7 @@
 
 - (void)dealloc
 {
-  NSLog(@"Console: dealloc");
+  NSDebugLLog(@"Memory", @"Console: dealloc");
 
   [DNC removeObserver:self];
 

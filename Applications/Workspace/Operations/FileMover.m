@@ -241,22 +241,22 @@ static inline void ReportGarbage(NSString *garbage)
       switch (solution) {
         case 0:  // Skip
           if (subseq) {
-            NSLog(@"SymlinkTargetNotExist: SKIP");
+            NSDebugLLog(@"FileMover", @"SymlinkTargetNotExist: SKIP");
             [[writePipe fileHandleForWriting]
                 writeData:[@"S\n" dataUsingEncoding:NSASCIIStringEncoding]];
           } else {
-            NSLog(@"SymlinkTargetNotExist: skip");
+            NSDebugLLog(@"FileMover", @"SymlinkTargetNotExist: skip");
             [[writePipe fileHandleForWriting]
                 writeData:[@"s\n" dataUsingEncoding:NSASCIIStringEncoding]];
           }
           break;
         case 1:  // "New Link" - copy link file
           if (subseq) {
-            NSLog(@"SymlinkTargetNotExist: NEWLINK");
+            NSDebugLLog(@"FileMover", @"SymlinkTargetNotExist: NEWLINK");
             [[writePipe fileHandleForWriting]
                 writeData:[@"N\n" dataUsingEncoding:NSASCIIStringEncoding]];
           } else {
-            NSLog(@"SymlinkTargetNotExist: newlink");
+            NSDebugLLog(@"FileMover", @"SymlinkTargetNotExist: newlink");
             [[writePipe fileHandleForWriting]
                 writeData:[@"n\n" dataUsingEncoding:NSASCIIStringEncoding]];
           }
@@ -510,7 +510,7 @@ static inline void ReportGarbage(NSString *garbage)
   NSString *line;
   NSData *data = nil;
 
-  // NSLog(@"==== [FileOperation readInput]");
+  // NSDebugLLog(@"FileMover", @"==== [FileOperation readInput]");
 
   // === LOCK
   while (inputLock && [inputLock tryLock] == NO) {
@@ -555,7 +555,7 @@ static inline void ReportGarbage(NSString *garbage)
   if (truncatedLine != nil && [truncatedLine length] > 0) {
     truncatedLine = [truncatedLine stringByAppendingString:[lines objectAtIndex:0]];
     [lines replaceObjectAtIndex:0 withObject:[truncatedLine copy]];
-    // NSLog(@"LINE ASSEMBLED: %@", truncatedLine);
+    // NSDebugLLog(@"FileMover", @"LINE ASSEMBLED: %@", truncatedLine);
     ASSIGN(truncatedLine, @"");
   }
 
@@ -563,10 +563,10 @@ static inline void ReportGarbage(NSString *garbage)
   // transmitted from FileOperation tool.
   if (input != nil && [input length] > 1 && [input characterAtIndex:[input length] - 1] != '\n') {
     ASSIGN(truncatedLine, [lines objectAtIndex:[lines count] - 1]);
-    // NSLog(@"GOT TRUNCATED LINE: %@", truncatedLine);
+    // NSDebugLLog(@"FileMover", @"GOT TRUNCATED LINE: %@", truncatedLine);
   }
 
-  // NSLog(@"%@", input);
+  // NSDebugLLog(@"FileMover", @"%@", input);
 
   e = [lines objectEnumerator];
   while ((line = [e nextObject]) != nil) {
@@ -575,14 +575,14 @@ static inline void ReportGarbage(NSString *garbage)
 
     // skip over empty lines
     if ([line length] < 1) {
-      // NSLog(@"skipping empty line");
+      // NSDebugLLog(@"FileMover", @"skipping empty line");
       // ReportGarbage(line);
       continue;
     }
 
     args = [line componentsSeparatedByString:@"\t"];
     msgType = [[args objectAtIndex:0] characterAtIndex:0];
-    // NSLog(@"ARGS: %@", args);
+    // NSDebugLLog(@"FileMover", @"ARGS: %@", args);
 
     switch (msgType) {
       case '0':
@@ -615,7 +615,7 @@ static inline void ReportGarbage(NSString *garbage)
         break;
         // F\t<message>\t<currFile>\t<source dir>\t<target dir>
       case 'F': {
-        // NSLog(@"%@", input);
+        // NSDebugLLog(@"FileMover", @"%@", input);
         if ([args count] < 5) {
           NSDebugLLog(@"FileMover", @"F: not enought args: %@", args);
           continue;
@@ -627,8 +627,8 @@ static inline void ReportGarbage(NSString *garbage)
 
         if (numberOfFiles > 0) {
           numberOfFilesDone++;
-          // NSLog(@"numberOfFilesDone: %llu (%llu)",
-          //       numberOfFilesDone, numberOfFiles);
+          // NSDebugLLog(@"FileMover", @"numberOfFilesDone: %llu (%llu)", numberOfFilesDone,
+          //             numberOfFiles);
         }
         if (!isSizing && [currFile isEqualToString:@""]) {
           [self setState:OperationCompleted];
@@ -651,8 +651,7 @@ static inline void ReportGarbage(NSString *garbage)
         }
         doneBatchSize += advance;
 
-        // NSLog(@"doneBatchSize: %llu (%llu)",
-        //       doneBatchSize, totalBatchSize);
+        // NSDebugLLog(@"FileMover", @"doneBatchSize: %llu (%llu)", doneBatchSize, totalBatchSize);
         [self updateProcessView:NO];
       } break;
       case 'Q':
@@ -742,7 +741,7 @@ static inline void ReportGarbage(NSString *garbage)
     [[readPipe fileHandleForReading] waitForDataInBackgroundAndNotify];
   }
 
-  // NSLog(@"==== [FileOperation readInput] END");
+  // NSDebugLLog(@"FileMover", @"==== [FileOperation readInput] END");
 
   // === UNLOCK
   [inputLock unlock];

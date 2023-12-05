@@ -70,7 +70,7 @@
   NSEnumerator *e = [fm enumeratorAtPath:dir];
 
   while ((file = [e nextObject]) != nil) {
-    // NSLog(@"FileAccessInspector _setPerms:forDirectory: %@ - %@", dir, file);
+    // NSDebugLLog(@"Inspector", @"FileAccessInspector _setPerms:forDirectory: %@ - %@", dir, file);
     fp = [dir stringByAppendingPathComponent:file];
     fattrs = [[fm fileAttributesAtPath:fp traverseLink:NO] mutableCopy];
 
@@ -212,7 +212,7 @@ static id accessInspector = nil;
 
   // Apply changes to file
   while ((file = [e nextObject]) != nil) {
-    // NSLog(@"FileAccessInspector ok: %@ - %@", path, file);
+    // NSDebugLLog(@"Inspector", @"FileAccessInspector ok: %@ - %@", path, file);
     fp = [path stringByAppendingPathComponent:file];
     fattrs = [[fm fileAttributesAtPath:fp traverseLink:NO] mutableCopy];
 
@@ -256,7 +256,7 @@ static id accessInspector = nil;
   ASSIGN(path, selectedPath);
   ASSIGN(files, selectedFiles);
 
-  // NSLog(@"FileAccessInspector path: %@ files: %@", path, files);
+  // NSDebugLLog(@"Inspector", @"FileAccessInspector path: %@ files: %@", path, files);
 
   // Set initial editable state for permission controls
   [permissionsView setEditable:YES];

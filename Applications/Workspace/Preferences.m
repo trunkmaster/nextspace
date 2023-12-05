@@ -43,7 +43,7 @@ static Preferences *shared = nil;
 
 - (void)dealloc
 {
-  NSLog(@"Preferences: dealloc");
+  NSDebugLLog(@"Memory", @"Preferences: dealloc");
   TEST_RELEASE(panel);
   TEST_RELEASE(prefs);
 

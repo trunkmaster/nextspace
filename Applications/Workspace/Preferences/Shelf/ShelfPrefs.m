@@ -109,7 +109,7 @@ static inline NSRect IncrementedRect(NSRect r)
   [iconLabel setStringValue:@"Workspace.app"];
 
   rState = [[NXTDefaults userDefaults] integerForKey:ShelfIsResizable];
-  NSLog(@"Preferences: resizableSwitch state: %li", rState);
+  NSDebugLLog(@"Preferences", @"ShelfPrefs: resizableSwitch state: %li", rState);
   [resizableSwitch setIntValue:rState];
   // if (rState == 0)
   //   [resizableSwitch setState:NSOnState];

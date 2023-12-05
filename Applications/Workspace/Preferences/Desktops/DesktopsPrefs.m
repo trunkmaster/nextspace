@@ -48,7 +48,7 @@
   path = [NSString stringWithCString:wm_path];
   CFRelease(stringRef);
 
-  NSLog(@"WMState path: %@", path);
+  NSDebugLLog(@"Preferences", @"WMState path: %@", path);
 
   return path;
 }
@@ -138,11 +138,10 @@
   [self arrangeDesktopReps];
   [[desktopReps objectAtIndex:wDefaultScreen()->current_desktop] performClick:self];
 
-  // NSLog(@"switchKey = %@ (%li/%li), directSwitchKey = %@ (%li/%li)",
-  //       [switchKey className], [[switchKey selectedItem] tag],
-  //       [switchKey numberOfItems],
-  //       [directSwitchKey className], [[directSwitchKey selectedItem] tag],
-  //       [directSwitchKey numberOfItems]);
+  NSDebugLLog(@"Preferences", @"switchKey = %@ (%li/%li), directSwitchKey = %@ (%li/%li)",
+              [switchKey className], [[switchKey selectedItem] tag], [switchKey numberOfItems],
+              [directSwitchKey className], [[directSwitchKey selectedItem] tag],
+              [directSwitchKey numberOfItems]);
 
   // Shortcuts
   shortcut = [wmDefaults objectForKey:@"NextWorkspaceKey"];
@@ -194,7 +193,7 @@
 
   for (int i = 0; i < desktopsCount; i++) {
     button = [desktopReps objectAtIndex:i];
-    // NSLog(@"%d - Sender: %@, Button: %@", i, [sender title], [button title]);
+    NSDebugLLog(@"Preferences", @"%d - Sender: %@, Button: %@", i, [sender title], [button title]);
     if (sender == button) {
       [sender setState:NSOnState];
       if (wmStateDesktops && [wmStateDesktops count] > i) {
@@ -206,7 +205,7 @@
       [nameField setStringValue:name];
       selectedDesktopRep = sender;
     } else {
-      // NSLog(@"%d -  Button: %@ set to NSOffState", i, [button title]);
+      NSDebugLLog(@"Preferences", @"%d -  Button: %@ set to NSOffState", i, [button title]);
       [button setState:NSOffState];
     }
   }
@@ -231,7 +230,7 @@
   NSDictionary *wsInfo = nil;
   NSString *wsName = nil;
 
-  // NSLog(@"Text changed in %@", [object className]);
+  NSDebugLLog(@"Preferences", @"Text changed in %@", [object className]);
   if ([aNotification object] != nameField) {
     return;
   }

@@ -51,9 +51,9 @@ BOOL CopyOperation(NSString *sourceDir, NSArray *files, NSString *destDir, Opera
 
   e = [files objectEnumerator];
   while (((file = [e nextObject]) != nil) && !isStopped && (opResult == YES)) {
-    NSLog(@"Copy operation START");
+    NSDebugLLog(@"Tools", @"Copy operation START");
     opResult = CopyFile(file, sourceDir, destDir, NO, opType);
-    NSLog(@"Copy operation END");
+    NSDebugLLog(@"Tools", @"Copy operation END");
   }
 
   // We received SIGTERM signal or 'Stop' command
@@ -77,7 +77,7 @@ BOOL CopyDirectory(NSString *sourceDir, NSString *targetDir, NSDictionary *fileA
   BOOL dir;
   Communicator *comm = [Communicator shared];
 
-  // NSLog(@"Copy directory: %@ to %@", sourceDir, targetDir);
+  NSDebugLLog(@"Tools", @"Copy directory: %@ to %@", sourceDir, targetDir);
   [comm showProcessingFilename:nil
                   sourcePrefix:sourceDir
                   targetPrefix:targetDir
@@ -212,7 +212,7 @@ BOOL CopySymbolicLink(NSString *sourceFile, NSString *targetFile, NSDictionary *
   Communicator *comm = [Communicator shared];
   NSString *pathContent;
 
-  // NSLog(@"Copy symlink: %@ to: %@", sourceFile, targetFile);
+  NSDebugLLog(@"Tools", @"Copy symlink: %@ to: %@", sourceFile, targetFile);
 
   s = [comm howToHandleProblem:SymlinkEncountered];
 
@@ -286,7 +286,7 @@ BOOL CopyFile(NSString *filename, NSString *sourcePrefix, NSString *targetPrefix
   targetFile = [targetPrefix stringByAppendingPathComponent:filename];
   fattrs = [fm fileAttributesAtPath:sourceFile traverseLink:traverseLink];
 
-  // NSLog(@"Copy filename: %@ %@ %@", filename, sourcePrefix, targetPrefix);
+  NSDebugLLog(@"Tools", @"Copy filename: %@ %@ %@", filename, sourcePrefix, targetPrefix);
   [comm showProcessingFilename:filename
                   sourcePrefix:sourcePrefix
                   targetPrefix:targetPrefix
@@ -345,7 +345,7 @@ void DuplicateOperation(NSString *sourceDir, NSArray *files)
   NSString *file;
   Communicator *comm = [Communicator shared];
 
-  // NSLog(@"FileOperation: Duplicate %@, %@", sourceDir, files);
+  NSDebugLLog(@"Tools", @"FileOperation: Duplicate %@, %@", sourceDir, files);
 
   // Normalize
   if (files == nil || ![files isKindOfClass:[NSArray class]] || [files count] <= 0) {
@@ -441,7 +441,7 @@ BOOL DuplicateFile(NSString *filename, NSString *sourcePrefix, BOOL traverseLink
   targetFile = [sourcePrefix stringByAppendingPathComponent:targetFile];
   fattrs = [fm fileAttributesAtPath:sourceFile traverseLink:traverseLink];
 
-  NSLog(@"Duplcate file: %@ to %@", sourceFile, targetFile);
+  NSDebugLLog(@"Tools", @"Duplcate file: %@ to %@", sourceFile, targetFile);
 
   [comm showProcessingFilename:filename
                   sourcePrefix:sourcePrefix

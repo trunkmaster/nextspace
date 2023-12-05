@@ -40,7 +40,7 @@ void SignalHandler(int sig)
   // if (sig == SIGTERM)
   //   fprintf(stderr, "FileOperation.tool: received TERMINATE signal\n");
   if (sig == SIGINT) {
-    fprintf(stderr, "Sizer.tool: received INTERRUPT signal\n");
+    NSLog(@"Sizer.tool: received INTERRUPT signal");
     StopOperation();
   }
 }
@@ -71,7 +71,7 @@ int main(int argc, const char **argv)
 
   // check args
   if (source == nil || ![source isKindOfClass:[NSString class]]) {
-    printf("Sizer.tool: incorrect source path (-Source)!\n");
+    NSLog(@"Sizer.tool: incorrect source path (-Source)!");
     argsOK = NO;
   }
   if (files == nil || ![files isKindOfClass:[NSArray class]]) {
@@ -112,7 +112,7 @@ int main(int argc, const char **argv)
   [comm release];
   [sizer release];
 
-  // NSLog(@"time: %f sec", [[NSDate date] timeIntervalSinceDate:start]);
+  NSDebugLLog(@"Tools", @"time: %f sec", [[NSDate date] timeIntervalSinceDate:start]);
   DESTROY(pool);
 
   return 0;

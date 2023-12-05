@@ -145,7 +145,7 @@
 
   if (info) {
     size = [[info objectForKey:@"Size"] unsignedLongLongValue];
-    // NSLog(@"Inspector: got size: %llu", size);
+    // NSDebugLLog(@"Inspector", @"Inspector: got size: %llu", size);
     [fileSizeField setStringValue:[self _stringFromSize:size]];
   } else {
     [fileSizeField setStringValue:@""];
@@ -338,7 +338,7 @@ static id attributesInspector = nil;
 
 - (void)awakeFromNib
 {
-  NSLog(@"[FileAttributesInspector] awakeFromNib");
+  NSDebugLLog(@"Ispector", @"[FileAttributesInspector] awakeFromNib");
 
   [linkToField setTextColor:[NSColor darkGrayColor]];
 
@@ -361,7 +361,7 @@ static id attributesInspector = nil;
 
   sizer = nil;
 
-  NSLog(@"[FileAttributesInspector] awakeFromNib END");
+  NSDebugLLog(@"Ispector", @"[FileAttributesInspector] awakeFromNib END");
 }
 
 - (void)dealloc
@@ -452,7 +452,7 @@ static id attributesInspector = nil;
   NSEnumerator *e = [files objectEnumerator];
   NSString *file, *fp;
 
-  NSLog(@"FileAttributesInspector: ok:%@ %@", [sender className], path);
+  NSDebugLLog(@"Ispector", @"FileAttributesInspector: ok:%@ %@", [sender className], path);
 
   // Get UID and GID to apply
   if (user)
@@ -503,7 +503,7 @@ static id attributesInspector = nil;
     return self;
   }
 
-  // NSLog(@"FAI revert: %@ %@", selectedPath, selectedFiles);
+  // NSDebugLLog(@"Inspector", @"FAI revert: %@ %@", selectedPath, selectedFiles);
 
   ASSIGN(path, selectedPath);
   ASSIGN(files, selectedFiles);
@@ -578,7 +578,7 @@ static id attributesInspector = nil;
   // Buttons and window edited state
   [super revert:self];
 
-  // NSLog(@"File Attributes Inspector: revert END!");
+  // NSDebugLLog(@"Inspector", @"File Attributes Inspector: revert END!");
   return self;
 }
 

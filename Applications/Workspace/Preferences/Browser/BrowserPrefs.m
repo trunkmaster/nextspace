@@ -123,7 +123,7 @@ static inline NSRect IncrementedRect(NSRect r)
   NSRect aFrame = [rightArr frame];
   NSUInteger newWidth;
 
-  //  NSLog(@"[BrowserPrefs] arrowView moved by delta: %f", delta);
+  // NSDebugLLog(@"Preferences", @"[BrowserPrefs] arrowView moved by delta: %f", delta);
 
   newWidth = (aFrame.origin.x + delta) - bFrame.origin.x;
 
@@ -147,8 +147,8 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)arrowViewStoppedMoving:(NXTSizer *)sender
 {
-  NSLog(@"[BrowserPrefs] browser column width changed to: %f",
-        [rightArr frame].origin.x - [browser frame].origin.x);
+  NSDebugLLog(@"Preferences", @"[BrowserPrefs] browser column width changed to: %f",
+              [rightArr frame].origin.x - [browser frame].origin.x);
 
   [[NXTDefaults userDefaults] setFloat:([rightArr frame].origin.x - [browser frame].origin.x)
                                 forKey:BrowserViewerColumnWidth];

@@ -97,7 +97,7 @@ static inline NSSize scaleProportionally(NSSize imageSize, NSSize canvasSize, BO
 
   fp = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
 
-  NSLog(@"Image Inspector-isLocalFile: %@", fp);
+  NSDebugLLog(@"Ispector", @"Image Inspector-isLocalFile: %@", fp);
 
   if (![fm isReadableFileAtPath:fp]) {
     return NO;

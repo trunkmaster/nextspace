@@ -45,7 +45,7 @@
 
 - (void)dealloc
 {
-  NSLog(@"BGProcess: dealloc");
+  NSDebugLLog(@"Memory", @"BGProcess: dealloc");
 
   RELEASE(processBox);
   processBox = nil;
@@ -151,8 +151,8 @@
   id button;
 
   if ([operation state] != OperationAlert) {
-    NSLog(@"BGProcess: Alert view is not updated because "
-           "process not in state OperationAlert!");
+    NSDebugLLog(@"Processes", @"BGProcess: Alert view is not updated because "
+                               "process not in state OperationAlert!");
     return;
   }
 
@@ -197,13 +197,13 @@
 {
   // === LOCK
   while (guiLock && ([guiLock tryLock] == NO)) {
-    NSLog(@"[BGProcess update view] LOCK FAILED! Waiting...");
+    NSDebugLLog(@"Processes", @"[BGProcess update view] LOCK FAILED! Waiting...");
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
                              beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
   // ===
 
-  // NSLog(@"==== [BGProcess updateOperationView]");
+  // NSDebugLLog(@"Processes", @"==== [BGProcess updateOperationView]");
 
   // Do not update view faster than AppKit can
   // NSDate *now = [NSDate date];
@@ -230,7 +230,7 @@
 
   // ASSIGN(lastViewUpdateDate, now);
 
-  // NSLog(@"==== [FileOperation updateOperationView] END");
+  // NSDebugLLog(@"Processes", @"==== [FileOperation updateOperationView] END");
 
   // === LOCK
   [guiLock unlock];

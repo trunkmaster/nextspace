@@ -79,7 +79,7 @@ static NSCell *tileCell = nil;
 {
   NSSize iconSize = NSMakeSize(64, 64);
 
-  // NSLog(@"Recycler View: drawRect!");
+  NSDebugLLog(@"Recycler", @"Recycler View: drawRect!");
 
   [tileCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height) inView:self];
   [dragCell drawWithFrame:NSMakeRect(0, 0, iconSize.width, iconSize.height) inView:self];
@@ -111,7 +111,7 @@ static NSTimeInterval tInterval = 0;
 
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender
 {
-  // NSLog(@"Recycler: dragging entered!");
+  NSDebugLLog(@"Recycler", @"Recycler: dragging entered!");
 
   NSArray *sourcePaths;
   BOOL draggedFromRecycler = NO;
@@ -120,7 +120,7 @@ static NSTimeInterval tInterval = 0;
 
   for (NSString *path in sourcePaths) {
     if ([path rangeOfString:recycler.path].location != NSNotFound) {
-      NSLog(@"%@ is in %@", path, recycler.path);
+      NSDebugLLog(@"Recycler", @"%@ is in %@", path, recycler.path);
       draggedFromRecycler = YES;
       break;
     }
@@ -138,7 +138,7 @@ static NSTimeInterval tInterval = 0;
 
 - (void)draggingExited:(id<NSDraggingInfo>)sender
 {
-  // NSLog(@"Recycler: dragging exited!");
+  NSDebugLLog(@"Recycler", @"Recycler: dragging exited!");
   [recycler updateIconImage];
 }
 
@@ -153,7 +153,7 @@ static NSTimeInterval tInterval = 0;
 
 - (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender
 {
-  NSLog(@"Recycler: prepare fo dragging");
+  NSDebugLLog(@"Recycler", @"Recycler: prepare fo dragging");
   return ([sender draggingSourceOperationMask] == NSDragOperationNone) ? NO : YES;
 }
 
@@ -175,7 +175,7 @@ static NSTimeInterval tInterval = 0;
     db = [NSMutableDictionary new];
   }
 
-  NSLog(@"Recycler: perform dragging");
+  NSDebugLLog(@"Recycler", @"Recycler: perform dragging");
 
   [recycler setIconImage:[NSImage imageNamed:@"recycler"]];
 
@@ -209,7 +209,7 @@ static NSTimeInterval tInterval = 0;
 
 - (void)concludeDragOperation:(id<NSDraggingInfo>)sender
 {
-  // NSLog(@"Recycler: conclude dragging");
+  NSDebugLLog(@"Recycler", @"Recycler: conclude dragging");
 }
 
 @end

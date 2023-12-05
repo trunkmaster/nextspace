@@ -48,6 +48,7 @@
 #include <WM/core/log_utils.h>
 
 #import <Foundation/NSException.h>
+#import <Foundation/NSDebug.h>
 #import <AppKit/NSWorkspace.h>
 #import <AppKit/NSApplication.h>
 
@@ -178,7 +179,8 @@ static void _handleCFNotification(CFNotificationCenterRef center, void *observer
 
 - (void)dealloc
 {
-  NSLog(@"WMNotificationCenter: dealloc");
+  NSDebugLLog(@"Memory", @"WMNotificationCenter: dealloc");
+  
   CFNotificationCenterRemoveEveryObserver(_coreFoundationCenter, self);
   CFRelease(_coreFoundationCenter);
   [_remoteCenter removeObserver:self];

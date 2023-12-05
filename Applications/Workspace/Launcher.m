@@ -52,7 +52,7 @@
 
 - (void)dealloc
 {
-  NSLog(@"Launcher: dealloc");
+  NSDebugLLog(@"Memory", @"Launcher: dealloc");
 
   [window release];
   [savedCommand release];
@@ -145,7 +145,7 @@
   commandPath = [commandArgs objectAtIndex:0];
   [commandArgs removeObjectAtIndex:0];
 
-  NSLog(@"Running command: %@ with args %@", commandPath, commandArgs);
+  NSDebugLLog(@"Launcher", @"Running command: %@ with args %@", commandPath, commandArgs);
 
   commandTask = [NSTask new];
   [commandTask setArguments:commandArgs];
@@ -191,7 +191,7 @@
   // Create ~/Library/Workspace directory if not exsist
   if ([fm fileExistsAtPath:libPath isDirectory:&isDir] == NO) {
     if ([fm createDirectoryAtPath:libPath attributes:nil] == NO) {
-      NSLog(@"Failed to create library directory %@!", libPath);
+      NSDebugLLog(@"Launcher", @"Failed to create library directory %@!", libPath);
     }
   } else if ([fm fileExistsAtPath:histPath isDirectory:&isDir] != NO && isDir == NO) {
     historyList = [[NSMutableArray alloc] initWithContentsOfFile:histPath];
@@ -201,7 +201,7 @@
   if (historyList == nil) {
     historyList = [[NSMutableArray alloc] initWithContentsOfFile:wmHistPath];
     if (historyList == nil) {
-      NSLog(@"Failed to load history file %@", wmHistPath);
+      NSDebugLLog(@"Launcher", @"Failed to load history file %@", wmHistPath);
       historyList = [[NSMutableArray alloc] init];
     }
   }
@@ -244,7 +244,7 @@
     return variants;
   }
 
-  // NSLog(@"completionFor: %@ - %@", command, historyList);
+  // NSDebugLLog(@"Launcher", @"completionFor: %@ - %@", command, historyList);
 
   // Go through the history first
   // for (NSString *compElement in historyList) {
@@ -254,7 +254,7 @@
   // }
 
   absPath = [fm absolutePathForPath:command];
-  // NSLog(@"Absolute command: %@ - %@", command, absPath);
+  // NSDebugLLog(@"Launcher", @"Absolute command: %@ - %@", command, absPath);
   if (absPath) {  // Absolute path exists
     NSArray *completion = [fm completionForPath:absPath isAbsolute:YES];
     for (NSString *path in completion) {
@@ -280,7 +280,7 @@
   NSString *variant;
   NSUInteger variantsCount;
 
-  // NSLog(@">>> Make completion <<<");
+  // NSDebugLLog(@"Launcher", @">>> Make completion <<<");
 
   if (commandVariants)
     [commandVariants release];
@@ -288,9 +288,8 @@
   variantsCount = [commandVariants count];
 
   if (variantsCount > 0) {
-    // NSLog(@"Completions: %lu source: %@ index: %li",
-    //       variantsCount, (completionSource == historyList ? @"History" : @"Completion"),
-    //       completionIndex);
+    NSDebugLLog(@"Launcher", @"Completions: %lu source: %@ index: %li", variantsCount,
+                (completionSource == historyList ? @"History" : @"Completion"), completionIndex);
     // Completion list handling
     if (variantsCount > 1) {
       completionIndex = (completionSource == historyList) ? -1 : completionIndex + 1;
@@ -370,7 +369,7 @@
 
   switch (c) {
     case NSDownArrowFunctionKey:
-      // NSLog(@"WMCommandField key: Down");
+      // NSDebugLLog(@"Launcher", @"WMCommandField key: Down");
       completionIndex++;
       if (completionIndex >= [completionSource count]) {
         completionIndex--;
@@ -380,7 +379,7 @@
       [self updateButtonsState];
       break;
     case NSUpArrowFunctionKey:
-      // NSLog(@"WMCommandField key: Up");
+      // NSDebugLLog(@"Launcher", @"WMCommandField key: Up");
       if (completionIndex > -1)
         completionIndex--;
       if (completionIndex >= 0) {
@@ -416,7 +415,7 @@
       [self reloadCompletionList];
       break;
   }
-  // NSLog(@"WMCommandField key: %i", c);
+  // NSDebugLLog(@"Launcher", @"WMCommandField key: %i", c);
 }
 // --- Command and History browser delegate
 - (void)browser:(NSBrowser *)sender

@@ -115,7 +115,7 @@ static Processes *shared = nil;
 
 - (void)dealloc
 {
-  NSLog(@"Processes: dealloc");
+  NSDebugLLog(@"Memory", @"Processes: dealloc");
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
@@ -177,7 +177,7 @@ static Processes *shared = nil;
 {
   NSString *identifier = [aTableColumn identifier];
 
-  //  NSLog(@"tableView:objectValueForTableColumn:%@row:%i",
+  //  NSDebugLLog(@"Processes", @"tableView:objectValueForTableColumn:%@row:%i",
   //  identifier, rowIndex);
 
   if (aTableView == appList) {
@@ -297,7 +297,7 @@ static Processes *shared = nil;
 
   // Icon
   icon = appInfo[@"NSApplicationIcon"];
-  // NSLog(@"showApp: icon class name: %@ [%@]", [icon className], icon);
+  // NSDebugLLog(@"Processes", @"showApp: icon class name: %@ [%@]", [icon className], icon);
   if ([name isEqualToString:@"Workspace"]) {
     [appIcon setImage:[NSApp applicationIconImage]];
   } else if (icon && [icon isKindOfClass:[NSImage class]]) {
@@ -404,15 +404,15 @@ static Processes *shared = nil;
 
     bgop = [opList objectAtIndex:idx];
 
-    // NSLog(@"[Processes showOperation:%@] row #%i selected",
-    //       [sender className], idx);
+    // NSDebugLLog(@"Processes", @"[Processes showOperation:%@] row #%i selected", [sender className],
+    //             idx);
 
     [backList selectRow:idx byExtendingSelection:NO];
 
     [backFopBox setContentView:[[bgop userInterface] processView]];
     [bgop updateProcessView:YES];
   } else {
-    NSLog(@"Show NO operation view");
+    NSDebugLLog(@"Processes", @"Show NO operation view");
     displayedFop = -1;
     [backFopBox setContentView:backNoFopLabel];
   }

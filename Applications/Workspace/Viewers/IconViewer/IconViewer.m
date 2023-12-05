@@ -64,8 +64,8 @@
   NSMutableArray *itemsCopy = [items mutableCopy];
   NSArray        *iconsCopy = [[view icons] copy];
 
-  // NSLog(@"_updateItems: %lu", [items count]);
-  
+  NSDebugLLog(@"IconViewer", @"_updateItems: %lu", [items count]);
+
   // Remove non-existing items
   for (NXTIcon *icon in iconsCopy) {
     if ([items indexOfObject:[[icon label] text]] == NSNotFound) {
@@ -100,7 +100,7 @@
                             waitUntilDone:NO];
   }
 
-  NSLog(@"IconView: Begin path loading... %@ [%@]", directoryPath, selectedFiles);
+  NSDebugLLog(@"IconViewer", @"IconView: Begin path loading... %@ [%@]", directoryPath, selectedFiles);
 
   x = y = 0;
   slotsWide = [iconView slotsWide];
@@ -163,7 +163,7 @@
                              withObject:selectedIcons
                           waitUntilDone:YES];
   
-  NSLog(@"IconView: End path loading...");
+  NSDebugLLog(@"IconViewer", @"IconView: End path loading...");
   [selectedIcons release];
   [iconsToAdd release];
   
@@ -276,7 +276,7 @@ static NSRect viewFrame;
 
 - (void)dealloc
 {
-  NSLog(@"[IconViewer](%@) -dealloc", rootPath);
+  NSDebugLLog(@"Memory", @"[IconViewer](%@) -dealloc", rootPath);
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   if (itemsLoader != nil) {
@@ -461,8 +461,8 @@ static NSRect viewFrame;
   }
 
   path = [rootPath stringByAppendingPathComponent:dirPath];
-  NSLog(@"IconViewer(%@): display path: %@ updateOnDisplay:%i",
-        rootPath, dirPath, updateOnDisplay);
+  NSDebugLLog(@"IconViewer", @"IconViewer(%@): display path: %@ updateOnDisplay:%i", rootPath,
+              dirPath, updateOnDisplay);
 
   if (updateOnDisplay == NO) {
     [iconView removeAllIcons];
@@ -497,7 +497,7 @@ static NSRect viewFrame;
     return;
   
   // r = [[iconView enclosingScrollView] documentVisibleRect];
-  // NSLog(@"[IconViewer] reloadPath visible rect: %@", NSStringFromRect(r));
+  // NSDebugLLog(@"IconViewer", @"[IconViewer] reloadPath visible rect: %@", NSStringFromRect(r));
   updateOnDisplay = YES;
   [self displayPath:reloadPath selection:selection];
   // updateOnDisplay = NO;
@@ -509,7 +509,7 @@ static NSRect viewFrame;
   NSString *path, *fullPath;
   NSString *appName, *fileType;
 
-  // NSLog(@"[IconViewer] open path:%@ selection:%@", currentPath, selection);
+  NSDebugLLog(@"IconViewer", @"[IconViewer] open path:%@ selection:%@", currentPath, selection);
 
   if ([selected count] == 0) {
     [_owner displayPath:currentPath selection:nil sender:self];
@@ -572,7 +572,7 @@ static NSRect viewFrame;
 {
   NXTIconLabel *iconLabel;
   
-  NSLog(@"IconView: Observer `%@` of '%@' was called.", [self className], keyPath);
+  NSDebugLLog(@"IconViewer", @"IconView: Observer `%@` of '%@' was called.", [self className], keyPath);
   for (NXTIcon *icon in [iconView icons]) {
     [icon setEditable:YES];
     [icon setDelegate:self];
@@ -610,7 +610,7 @@ static NSRect viewFrame;
   if (anIconView != iconView)
     return;
 
-  NSLog(@"IconViewer(%@): selection did change.", rootPath);
+  NSDebugLLog(@"IconViewer", @"IconViewer(%@): selection did change.", rootPath);
 
   for (NXTIcon *icon in selectedIcons) {
     [icon setShowsExpandedLabelWhenSelected:showsExpanded];
@@ -633,7 +633,7 @@ static NSRect viewFrame;
     ch = [characters characterAtIndex:0];
   }
   
-  NSLog(@"[IconViewer] keyDown: %c", ch);
+  NSDebugLLog(@"IconViewer", @"[IconViewer] keyDown: %c", ch);
 
   if ((ch == NSUpArrowFunctionKey) && (modifierFlags & NSCommandKeyMask)) {
     [self displayPath:[currentPath stringByDeletingLastPathComponent]
@@ -656,12 +656,12 @@ static NSRect viewFrame;
       SEL lcarcSel = @selector(loadedCellAtRow:column:);
       IMP lcarc = [self methodForSelector:lcarcSel];
 
-      // NSLog(@"selectedColumn: %i", selectedColumn);
-      
+      // NSDebugLLog(@"IconViewer", @"selectedColumn: %i", selectedColumn);
+
       matrix = [self matrixInColumn:selectedColumn];
       n = [matrix numberOfRows];
       s = [matrix selectedRow];
-          
+
       if (clickTimer && [clickTimer isValid]) {
         [clickTimer invalidate];
       }
@@ -684,7 +684,7 @@ static NSRect viewFrame;
               && s >= 0)
             {
               NSString *transition;
-              transition = [_charBuffer 
+              transition = [_charBuffer
                                  stringByAppendingString:
                                [characters substringToIndex:1]];
               RELEASE(_charBuffer);
@@ -699,7 +699,7 @@ static NSRect viewFrame;
             }
         }
 
-      // NSLog(@"_charBuffer: %@ _lastKeyPressed:%f(%f) selected:%i",
+      // NSDebugLLog(@"BrowserViewer", @"_charBuffer: %@ _lastKeyPressed:%f(%f) selected:%i",
       //       _charBuffer, _lastKeyPressed, [ev timestamp], s);
 
       _alphaNumericalLastColumn = selectedColumn;
@@ -749,7 +749,7 @@ static NSRect viewFrame;
           // [matrix performClick:self];
           return;
         }
-        
+
       _lastKeyPressed = 0.;
       return;
     }

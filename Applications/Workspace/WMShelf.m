@@ -156,12 +156,12 @@
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString *path;
 
-  NSDebugLLog(@"WMShelf", @"[WMShelf] checkShelfContentsExist");
+  NSDebugLLog(@"Shelf", @"[WMShelf] checkShelfContentsExist");
 
   for (PathIcon *icon in [self icons]) {
     path = [[icon paths] objectAtIndex:0];
     if (![fm fileExistsAtPath:path]) {
-      NSLog(@"Shelf element %@ doesn't exist.", path);
+      NSDebugLLog(@"Shelf", @"Shelf element %@ doesn't exist.", path);
       [self removeIcon:icon];
     }
   }
@@ -215,7 +215,7 @@
   NSPoint iconLocation = iconFrame.origin;
   NXTIconSlot iconSlot = [self slotForIcon:sender];
 
-  NSLog(@"[WMShelf] iconDragged: %@", [sender className]);
+  NSDebugLLog(@"Shelf", @"[WMShelf] iconDragged: %@", [sender className]);
 
   draggedSource = self;
   draggedIcon = [sender retain];
@@ -254,7 +254,7 @@
 // --- NSDraggingSource
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 {
-  NSLog(@"[WMShelf] draggingSourceOperationMaskForLocal: %@", isLocal ? @"YES" : @"NO");
+  NSDebugLLog(@"Shelf", @"[WMShelf] draggingSourceOperationMaskForLocal: %@", isLocal ? @"YES" : @"NO");
   NXTIconSlot iconSlot = [self slotForIcon:[[self selectedIcons] anyObject]];
 
   if ((iconSlot.x == 0 && iconSlot.y == 0) || isLocal == NO) {
@@ -277,12 +277,13 @@
              endedAt:(NSPoint)screenPoint
            operation:(NSDragOperation)operation
 {
-  NSLog(@"[WMShelf] draggedImage:endedAt:operation:%lu mask:%lu", operation, draggedMask);
+  NSDebugLLog(@"Shelf", @"[WMShelf] draggedImage:endedAt:operation:%lu mask:%lu", operation,
+              draggedMask);
 
   if ((draggedMask == NSDragOperationCopy) && ![self iconInSlot:lastSlotDragEntered] &&
       isRootIconDragged == NO) {
-    NSLog(@"Operation is Copy and no icon in slot [%i,%i]", lastSlotDragEntered.x,
-          lastSlotDragEntered.y);
+    NSDebugLLog(@"Shelf", @"Operation is Copy and no icon in slot [%i,%i]", lastSlotDragEntered.x,
+                lastSlotDragEntered.y);
     [self putIcon:draggedIcon intoSlot:lastSlotDragEntered];
     [draggedIcon setDimmed:NO];
     [draggedIcon registerForDraggedTypes:@[ NSFilenamesPboardType ]];
@@ -324,8 +325,8 @@
   draggedPaths = [pasteBoard propertyListForType:NSFilenamesPboardType];
   draggedSource = [dragInfo draggingSource];
 
-  NSLog(@"[WMShelf] -draggingEntered (source:%@)", [draggedSource className]);
-  NSLog(@"[WMShelf] -draggingEntered with paths: %@)", draggedPaths);
+  NSDebugLLog(@"Shelf", @"[WMShelf] -draggingEntered (source:%@)", [draggedSource className]);
+  NSDebugLLog(@"Shelf", @"[WMShelf] -draggingEntered with paths: %@)", draggedPaths);
 
   if ([self acceptsDragFromSource:draggedSource withPaths:draggedPaths] == NO) {
     draggedMask = NSDragOperationNone;
@@ -349,8 +350,8 @@
   NXTIconSlot slotUnderMouse;
   NXTIcon *icon = nil;
 
-  // NSLog(@"[WMShelf] -draggingUpdated (source:%@)",
-  //       [[dragInfo draggingSource] className]);
+  NSDebugLLog(@"Shelf", @"[WMShelf] -draggingUpdated (source:%@)",
+              [[dragInfo draggingSource] className]);
 
   mouseLocation = [self convertPoint:[dragInfo draggingLocation] fromView:nil];
   slotUnderMouse = NXTMakeIconSlot(floorf(mouseLocation.x / slotSize.width),
@@ -370,9 +371,8 @@
     return draggedMask;
   }
 
-  // NSLog(@"DRAG: slot.x,y: %i,%i last slot.x,y: %i,%i slotsWide: %i icon:%@",
-  //       slot.x, slot.y, lastSlotDragEntered.x, lastSlotDragEntered.y,
-  //       slotsWide, icon);
+  NSDebugLLog(@"Shelf", @"DRAG: slot.x,y: %i,%i last slot.x,y: %i,%i slotsWide: %i icon:%@", slot.x,
+              slot.y, lastSlotDragEntered.x, lastSlotDragEntered.y, slotsWide, icon);
 
   lastSlotDragEntered.x = slotUnderMouse.x;
   lastSlotDragEntered.y = slotUnderMouse.y;
@@ -397,15 +397,16 @@
     }
   }
 
-  NSLog(@"[WMShelf] draggingUpdated draggedMask=%lu slot: {%i,%i}", draggedMask,
-        lastSlotDragEntered.x, lastSlotDragEntered.y);
+  NSDebugLLog(@"Shelf", @"[WMShelf] draggingUpdated draggedMask=%lu slot: {%i,%i}", draggedMask,
+              lastSlotDragEntered.x, lastSlotDragEntered.y);
 
   return draggedMask;
 }
 
 - (void)draggingExited:(id<NSDraggingInfo>)dragInfo
 {
-  NSLog(@"[WMShelf] -dragginExited (source:%@)", [[dragInfo draggingSource] className]);
+  NSDebugLLog(@"Shelf", @"[WMShelf] -dragginExited (source:%@)",
+              [[dragInfo draggingSource] className]);
 
   if (draggedIcon && [draggedIcon superview]) {
     [self removeIcon:draggedIcon];
@@ -418,14 +419,15 @@
 
 - (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender
 {
-  NSLog(@"[WMShelf] prepare for drag operation = %lu", draggedMask);
+  NSDebugLLog(@"Shelf", @"[WMShelf] prepare for drag operation = %lu", draggedMask);
   if (draggedMask == NSDragOperationMove) {
     if ([sender draggingSource] == self) {
-      NSLog(@"[WMShelf] prepare to Move icon inside Shelf");
+      NSDebugLLog(@"Shelf", "[WMShelf] prepare to Move icon inside Shelf");
     } else {
       NSPasteboard *pasteBoard = [sender draggingPasteboard];
       NSArray *paths = [pasteBoard propertyListForType:NSFilenamesPboardType];
-      NSLog(@"[WMShelf] prepare to Move %@ from %@", paths, [[sender draggingSource] className]);
+      NSDebugLLog(@"Shelf", @"[WMShelf] prepare to Move %@ from %@", paths,
+                  [[sender draggingSource] className]);
     }
   }
   return YES;
@@ -433,7 +435,7 @@
 
 - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender
 {
-  NSLog(@"[WMShelf] performDragOperation");
+  NSDebugLLog(@"Shelf", @"[WMShelf] performDragOperation");
   [draggedIcon registerForDraggedTypes:@[ NSFilenamesPboardType ]];
   if (delegate) {
     [draggedIcon setDelegate:delegate];
@@ -446,7 +448,7 @@
 
 - (void)concludeDragOperation:(id<NSDraggingInfo>)sender
 {
-  NSLog(@"[WMShelf] concludeDragOperation");
+  NSDebugLLog(@"Shelf", @"[WMShelf] concludeDragOperation");
   if (draggedIcon && [draggedIcon superview]) {
     [draggedIcon setDimmed:NO];
   }

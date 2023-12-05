@@ -58,7 +58,7 @@
 {
   [super awakeFromNib];
 
-  NSLog(@"FileMoverUI: awakeFromNib: %@", [operation source]);
+  NSDebugLLog(@"Processes", @"FileMoverUI: awakeFromNib: %@", [operation source]);
 
   [fromField setStringValue:[operation source]];
   if ([operation type] == DeleteOperation) {
@@ -80,7 +80,7 @@
 
 - (void)dealloc
 {
-  NSLog(@"FileMoverUI: dealloc");
+  NSDebugLLog(@"Memory", @"FileMoverUI: dealloc");
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
@@ -109,12 +109,12 @@
 {
   // === LOCK
   while (guiLock && ([guiLock tryLock] == NO)) {
-    NSLog(@"[FileMoverUI updateProcessView] LOCK FAILED! Waiting...");
+    NSDebugLLog(@"Processes", @"[FileMoverUI updateProcessView] LOCK FAILED! Waiting...");
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
   // ===
 
-  // NSLog(@"==== [FileOperation updateOperationView]");
+  // NSDebugLLog(@"Processes", @"==== [FileOperation updateOperationView]");
 
   // NSDate *now;
   // Do not update view faster than AppKit can update
@@ -154,7 +154,7 @@
 
   // ASSIGN(lastViewUpdateDate, now);
 
-  // NSLog(@"==== [FileOperation updateOperationView] END");
+  // NSDebugLLog(@"Processes", @"==== [FileOperation updateOperationView] END");
 
   // === LOCK
   [guiLock unlock];
@@ -235,7 +235,7 @@
 
 - (void)alertButtonClicked:(id)sender
 {
-  NSLog(@"FileMoverUI: alertButtonClicked!");
+  NSDebugLLog(@"Processes", @"FileMoverUI: alertButtonClicked!");
   [(FileMover *)operation postSolution:[sender tag] applyToSubsequent:[alertRepeatButton state]];
 }
 

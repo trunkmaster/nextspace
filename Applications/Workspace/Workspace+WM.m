@@ -175,10 +175,10 @@ void WSUpdateScreenInfo(WScreen *scr)
   // Save changed layout in user's preferences directory
   // [systemScreen saveCurrentDisplayLayout];
 
-  // NSLog(@"XRRScreenChangeNotify: END");
+  NSDebugLLog(@"Screen", @"XRRScreenChangeNotify: END");
   XUnlockDisplay(dpy);
 
-  // NSLog(@"Sending OSEScreenDidChangeNotification...");
+  NSDebugLLog(@"Screen", @"Sending OSEScreenDidChangeNotification...");
   // Send notification to active OSEScreen applications.
   [[NSDistributedNotificationCenter defaultCenter]
       postNotificationName:OSEScreenDidChangeNotification

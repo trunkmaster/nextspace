@@ -363,7 +363,7 @@ static NSMutableArray *fileList = nil;
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-  // NSLog(@"Recycler: mouse down!");
+  NSDebugLLog(@"Recycler", @"Recycler: mouse down!");
 
   if ([theEvent clickCount] >= 2) {
     [self showPanel];
@@ -444,7 +444,7 @@ static NSMutableArray *fileList = nil;
       itemName = [item labelString];
 
       if ((destPath = [db objectForKey:itemName]) == nil) {
-        // NSLog(@"Recycler: %@ has no record in Recycler DB.", itemName);
+        NSDebugLLog(@"Recycler", @"Recycler: %@ has no record in Recycler DB.", itemName);
         [missedItems addObject:item];
         continue;
       }
@@ -468,7 +468,7 @@ static NSMutableArray *fileList = nil;
 
   for (NSString *key in [restoreDict allKeys]) {
     items = [restoreDict objectForKey:key];
-    // NSLog(@"%@ will be restored into `%@`", items, key);
+    NSDebugLLog(@"Recycler", @"%@ will be restored into `%@`", items, key);
     if ([[ProcessManager shared] startOperationWithType:MoveOperation
                                                  source:_path
                                                  target:key
@@ -491,7 +491,7 @@ static NSMutableArray *fileList = nil;
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-  NSLog(@"Observer of '%@' was called.", keyPath);
+  NSDebugLLog(@"Recycler", @"Observer of '%@' was called.", keyPath);
   [panelItems setStringValue:[NSString stringWithFormat:@"%lu items", itemsLoader.itemsCount]];
   for (NXTIcon *icon in [filesView icons]) {
     [icon setEditable:NO];
@@ -543,7 +543,7 @@ static NSMutableArray *fileList = nil;
 // NSDraggingSource
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 {
-  NSLog(@"[Recycler] draggingSourceOperationMaskForLocal:");
+  NSDebugLLog(@"Recycler", @"[Recycler] draggingSourceOperationMaskForLocal:");
   return NSDragOperationMove;
 }
 - (BOOL)ignoreModifierKeysWhileDragging
@@ -552,7 +552,7 @@ static NSMutableArray *fileList = nil;
 }
 - (void)draggedImage:(NSImage *)image endedAt:(NSPoint)screenPoint deposited:(BOOL)didDeposit
 {
-  NSLog(@"draggedImage:endedAt:operation:");
+  NSDebugLLog(@"Recycler", @"draggedImage:endedAt:operation:");
   if (didDeposit == NO) {
     [draggedIcon setSelected:YES];
     [draggedIcon setDimmed:NO];
@@ -562,17 +562,17 @@ static NSMutableArray *fileList = nil;
 // NXTIcon delegate methods (NSDraggingDestination)
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender icon:(NXTIcon *)icon
 {
-  // NSLog(@"[Recycler] draggingEntered:icon:");
+  NSDebugLLog(@"Recycler", @"[Recycler] draggingEntered:icon:");
   return draggingSourceMask;
 }
 - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender icon:(NXTIcon *)icon
 {
-  // NSLog(@"[Recycler] draggingUpdated:icon:");
+  NSDebugLLog(@"Recycler", @"[Recycler] draggingUpdated:icon:");
   return draggingSourceMask;
 }
 - (void)draggingExited:(id<NSDraggingInfo>)sender icon:(NXTIcon *)icon
 {
-  // NSLog(@"[Recycler] draggingOperationExited:icon:");
+  NSDebugLLog(@"Recycler", @"[Recycler] draggingOperationExited:icon:");
 }
 
 // -- Notifications

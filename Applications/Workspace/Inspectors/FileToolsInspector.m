@@ -82,7 +82,7 @@ static id toolsInspector = nil;
 
 - (void)awakeFromNib
 {
-  NSLog(@"[FileToolsInspector] awakeFromNib");
+  NSDebugLLog(@"Ispector", @"[FileToolsInspector] awakeFromNib");
   [[appListView horizontalScroller] setArrowsPosition:NSScrollerArrowsNone];
 
   ws = [NSWorkspace sharedWorkspace];
@@ -197,7 +197,7 @@ static id toolsInspector = nil;
 
 - revert:sender
 {
-  NSLog(@"File Tools Inspector: revert:");
+  NSDebugLLog(@"Ispector", @"File Tools Inspector: revert:");
   NSMatrix *matrix;
   NSButtonCell *cell;
   NSFileManager *fm = [NSFileManager defaultManager];
@@ -215,7 +215,7 @@ static id toolsInspector = nil;
   {
     [ws setBestApp:@"TextEdit" inRole:nil forExtension:@""];
     [[NSApp delegate] getInfoForFile:@"/Users/me" application:&defaultAppName type:&fileType];
-    NSLog(@"Default application for all files: %@", defaultAppName);
+    NSDebugLLog(@"Ispector", @"Default application for all files: %@", defaultAppName);
     defaultAppName = nil;
     fileType = nil;
   }

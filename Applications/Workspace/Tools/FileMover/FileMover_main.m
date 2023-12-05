@@ -77,8 +77,8 @@ int main(int argc, const char **argv)
   // files = [df objectForKey:@"Files"];
   files = [[[[NSProcessInfo processInfo] environment] objectForKey:@"Files"] propertyList];
 
-  // NSLog(@"FileMover.tool: files: %@", files);
-  // NSLog(@"FileMover.tool: files count: %lu", [files count]);
+  NSDebugLLog(@"Tools", @"FileMover.tool: files: %@", files);
+  NSDebugLLog(@"Tools", @"FileMover.tool: files count: %lu", [files count]);
 
   // Check args
   if (op == nil || ![op isKindOfClass:[NSString class]]) {
@@ -122,7 +122,7 @@ int main(int argc, const char **argv)
 
   [[Communicator shared] finishOperation:op stopped:isStopped];
 
-  // NSLog(@"time: %f sec", [[NSDate date] timeIntervalSinceDate:start]);
+  NSDebugLLog(@"Tools", @"time: %f sec", [[NSDate date] timeIntervalSinceDate:start]);
   DESTROY(pool);
 
   return 0;

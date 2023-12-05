@@ -125,9 +125,9 @@ CFDictionaryRef convertNStoCFDictionary(NSDictionary *dictionary)
                                 &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
   for (NSString *key in [dictionary allKeys]) {
     keyCFString = convertNStoCFString(key);
-    // NSLog(@"Converted key: %@", key);
+    // NSDebugLLog(@"CoreFoundationBridge", @"Converted key: %@", key);
     valueCF = convertNStoCF([dictionary objectForKey:key]);
-    // NSLog(@"Converted value: %@", [dictionary objectForKey:key]);
+    // NSDebugLLog(@"CoreFoundationBridge", @"Converted value: %@", [dictionary objectForKey:key]);
     CFDictionaryAddValue(cfDictionary, keyCFString, valueCF);
     CFRelease(keyCFString);
     CFRelease(valueCF);

@@ -192,7 +192,7 @@ static NSString *_rootPath = @"/";
   // list of extensions of wrappers (will be shown as plain file in Workspace)
   _wrappers = [@"(bundle, preferences, inspector, service)" propertyList];
   [_wrappers retain];
-  // NSLog(@"Wrappers list: %@(0=%@)", wrappers, [wrappers objectAtIndex:0]);
+  // NSDebugLLog(@"NSWorkspace", @"Wrappers list: %@(0=%@)", wrappers, [wrappers objectAtIndex:0]);
 
   return self;
 }
@@ -1077,7 +1077,7 @@ static NSLock *raceLock = nil;
   NSString *mime0, *mime1;
   NSImage *image = nil;
 
-  // NSLog(@"%@: MIME type: %@ ", [fullPath lastPathComponent], mimeType);
+  // NSDebugLLog(@"NSWorkspace", @"%@: MIME type: %@ ", [fullPath lastPathComponent], mimeType);
 
   mime0 = [[mimeType pathComponents] objectAtIndex:0];
   mime1 = [[mimeType pathComponents] objectAtIndex:1];
@@ -1296,7 +1296,7 @@ static NSLock *raceLock = nil;
     @"NSApplicationName" : [[appName lastPathComponent] stringByDeletingPathExtension],
     @"NSApplicationPath" : appName
   };
-  NSLog(@"Application UserInfo: %@", userinfo);
+  NSDebugLLog(@"NSWorkspace", @"Application UserInfo: %@", userinfo);
   [_windowManagerCenter postNotificationName:NSWorkspaceWillLaunchApplicationNotification
                                   object:self
                                 userInfo:userinfo];
@@ -1456,7 +1456,7 @@ static NSLock *raceLock = nil;
 
   wmName = [appInfo objectForKey:@"NSExecutable"];
   if (!wmName) {
-    NSLog(@"No application NSExecutable found.");
+    NSDebugLLog(@"NSWorkspace", @"No application NSExecutable found.");
     NXTRunAlertPanel(_(@"Workspace"),
                      _(@"Failed to start application '%@'.\n"
                         "Executable name is unknown. It may be damaged or incomplete."),
