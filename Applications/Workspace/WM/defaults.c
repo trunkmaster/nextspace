@@ -420,8 +420,6 @@ WDefaultEntry optionList[] = {
     {"Attraction", "NO", NULL, &wPreferences.attract, getBool, NULL, NULL, NULL},
     {"DisableBlinking", "NO", NULL, &wPreferences.dont_blink, getBool, NULL, NULL, NULL},
     {"SingleClickLaunch", "NO", NULL, &wPreferences.single_click, getBool, NULL, NULL, NULL},
-    {"StrictWindozeCycle", "YES", NULL, &wPreferences.strict_windoze_cycle, getBool, NULL, NULL,
-     NULL},
     {"SwitchPanelOnlyOpen", "NO", NULL, &wPreferences.panel_only_open, getBool, NULL, NULL, NULL},
     {"MiniPreviewSize", "128", NULL, &wPreferences.minipreview_size, getInt, NULL, NULL, NULL},
     {"IgnoreGtkHints", "NO", NULL, &wPreferences.ignore_gtk_decoration_hints, getBool, NULL, NULL,
@@ -590,14 +588,14 @@ WDefaultEntry optionList[] = {
      */
     /* {"LowerKey", "\"Command+Down\"", (void *)WKBD_LOWER, NULL, getKeybind, setKeyGrab, NULL,
        NULL}, */
-    {"FocusNextKey", "\"Command+Tab\"", (void *)WKBD_FOCUSNEXT, NULL, getKeybind, setKeyGrab, NULL,
+    {"FocusNextKey", "\"Command+grave\"", (void *)WKBD_NEXT_WIN, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
-    {"FocusPrevKey", "\"Command+Shift+Tab\"", (void *)WKBD_FOCUSPREV, NULL, getKeybind, setKeyGrab,
+    {"FocusPrevKey", "\"Command+Shift+grave\"", (void *)WKBD_PREV_WIN, NULL, getKeybind, setKeyGrab,
      NULL, NULL},
-    {"GroupNextKey", "\"Command+grave\"", (void *)WKBD_GROUPNEXT, NULL, getKeybind, setKeyGrab,
+    {"GroupNextKey", "\"Command+Tab\"", (void *)WKBD_NEXT_APP, NULL, getKeybind, setKeyGrab, NULL,
+     NULL},
+    {"GroupPrevKey", "\"Command+Shift+Tab\"", (void *)WKBD_PREV_APP, NULL, getKeybind, setKeyGrab,
      NULL, NULL},
-    {"GroupPrevKey", "\"Command+Shift+grave\"", (void *)WKBD_GROUPPREV, NULL, getKeybind,
-     setKeyGrab, NULL, NULL},
     /* Workspaces */
     {"NextWorkspaceKey", "\"Control+Right\"", (void *)WKBD_NEXT_DESKTOP, NULL, getKeybind,
      setKeyGrab, NULL, NULL},

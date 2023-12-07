@@ -26,6 +26,6 @@
 
 #include "window.h"
 
-void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only);
+void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool cycle_inside_class);
 
 #endif /* __WORKSPACE_WM_CYCLING__ */

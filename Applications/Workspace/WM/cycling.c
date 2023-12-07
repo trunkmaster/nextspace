@@ -85,11 +85,38 @@
 /*   return oldFocused; */
 /* } */
 
-void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
+void SwitchWindow(WWindow *wwin, Bool cycle_inside_class)
+{
+  WScreen *scr = wwin->screen;
+  WApplication *wapp = wApplicationOf(wwin->main_window);
+
+  if (wapp && !cycle_inside_class) {
+    wApplicationActivate(wapp);
+  }
+  if (wapp && wapp->flags.is_gnustep && !cycle_inside_class) {
+    if (wapp->gsmenu_wwin) {
+      wSetFocusTo(scr, wapp->gsmenu_wwin);
+    } else {
+      WSActivateApplication(scr, wwin->wm_instance);
+    }
+  } else if (wwin->frame) {
+    wRaiseFrame(wwin->frame->core);
+    CommitStacking(scr);
+    if (!wwin->flags.mapped) {
+      wMakeWindowVisible(wwin);
+    } else {
+      wSetFocusTo(scr, wwin);
+    }
+  } else {
+    wSetFocusTo(scr, wwin);
+  }
+}
+
+void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool cycle_inside_class)
 {
   WShortKey binding;
   WSwitchPanel *swpanel = NULL;
-  WScreen *scr = wDefaultScreen();
+  WScreen *scr = wwin->screen;
   KeyCode leftKey = XKeysymToKeycode(dpy, XK_Left);
   KeyCode rightKey = XKeysymToKeycode(dpy, XK_Right);
   KeyCode homeKey = XKeysymToKeycode(dpy, XK_Home);
@@ -102,34 +129,40 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
   Bool somethingElse = False;
   Bool done = False;
   Bool hasModifier;
+  Bool isSwitchBack;
   int modifiers;
-  WWindow *newFocused;
-  /* WWindow         *oldFocused; */
+  WWindow *new_focused_wwin;
   XEvent ev;
 
-  if (!wwin)
+  if (!wwin) {
     return;
+  }
 
   if (next) {
-    if (class_only)
-      binding = wKeyBindings[WKBD_GROUPNEXT];
-    else
-      binding = wKeyBindings[WKBD_FOCUSNEXT];
+    if (cycle_inside_class) {
+      binding = wKeyBindings[WKBD_NEXT_WIN];
+    } else {
+      binding = wKeyBindings[WKBD_NEXT_APP];
+    }
+    isSwitchBack = False;
   } else {
-    if (class_only)
-      binding = wKeyBindings[WKBD_GROUPPREV];
-    else
-      binding = wKeyBindings[WKBD_FOCUSPREV];
+    if (cycle_inside_class) {
+      binding = wKeyBindings[WKBD_PREV_WIN];
+    } else {
+      binding = wKeyBindings[WKBD_PREV_APP];
+    }
+    isSwitchBack = True;
   }
 
   hasModifier = (binding.modifier != 0);
-  if (hasModifier)
+  if (hasModifier) {
     XGrabKeyboard(dpy, scr->root_win, False, GrabModeAsync, GrabModeAsync, CurrentTime);
-
+  }
   scr->flags.doing_alt_tab = 1;
 
-  swpanel = wInitSwitchPanel(scr, wwin, class_only);
-  /* oldFocused = wwin; */
+  if (cycle_inside_class == False) {
+    swpanel = wInitSwitchPanel(scr, wwin, cycle_inside_class);
+  }
 
   if (swpanel) {
     if (wwin->flags.mapped && !wPreferences.panel_only_open) {
@@ -137,58 +170,48 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
       if (wwin->flags.is_gnustep) {
         wSwitchPanelSelectFirst(swpanel, False);
       }
-      newFocused = wSwitchPanelSelectNext(swpanel, !next, True, class_only);
+      new_focused_wwin = wSwitchPanelSelectNext(swpanel, !next, True, cycle_inside_class);
     } else {
-      newFocused = wSwitchPanelSelectFirst(swpanel, False);
+      new_focused_wwin = wSwitchPanelSelectFirst(swpanel, False);
     }
-    /* oldFocused = change_focus_and_raise(newFocused, oldFocused, swpanel, scr, False); */
   } else {
-    if (wwin->frame->desktop == scr->current_desktop)
-      newFocused = wwin;
-    else
-      newFocused = NULL;
+    if (wwin->frame->desktop == scr->current_desktop) {
+      new_focused_wwin = wwin->prev;
+      SwitchWindow(new_focused_wwin, cycle_inside_class);
+    } else {
+      new_focused_wwin = NULL;
+    }
+    return;
   }
 
   while (hasModifier && !done) {
     WMMaskEvent(dpy,
-                KeyPressMask | KeyReleaseMask | ExposureMask | PointerMotionMask |
-                    ButtonReleaseMask | EnterWindowMask,
+                (KeyPressMask | KeyReleaseMask | ExposureMask | PointerMotionMask |
+                 ButtonReleaseMask | EnterWindowMask),
                 &ev);
 
     /* ignore CapsLock */
     modifiers = ev.xkey.state & w_global.shortcut.modifiers_mask;
 
-    if (!swpanel)
+    if (!swpanel) {
       break;
-
+    }
     switch (ev.type) {
       case KeyPress:
-        if ((wKeyBindings[WKBD_FOCUSNEXT].keycode == ev.xkey.keycode &&
-             wKeyBindings[WKBD_FOCUSNEXT].modifier == modifiers) ||
-            (wKeyBindings[WKBD_GROUPNEXT].keycode == ev.xkey.keycode &&
-             wKeyBindings[WKBD_GROUPNEXT].modifier == modifiers) ||
-            ev.xkey.keycode == rightKey) {
-          newFocused =
-              wSwitchPanelSelectNext(swpanel, False, ev.xkey.keycode != rightKey, class_only);
-          /* oldFocused = change_focus_and_raise(newFocused, oldFocused, swpanel, scr, False); */
-
-        } else if ((wKeyBindings[WKBD_FOCUSPREV].keycode == ev.xkey.keycode &&
-                    wKeyBindings[WKBD_FOCUSPREV].modifier == modifiers) ||
-                   (wKeyBindings[WKBD_GROUPPREV].keycode == ev.xkey.keycode &&
-                    wKeyBindings[WKBD_GROUPPREV].modifier == modifiers) ||
-                   ev.xkey.keycode == leftKey) {
-          newFocused =
-              wSwitchPanelSelectNext(swpanel, True, ev.xkey.keycode != leftKey, class_only);
-          /* oldFocused = change_focus_and_raise(newFocused, oldFocused, swpanel, scr, False); */
-
+        if ((binding.keycode == ev.xkey.keycode && binding.modifier == modifiers) ||
+            ev.xkey.keycode == rightKey || ev.xkey.keycode == leftKey) {
+          if (ev.xkey.keycode == rightKey) {
+            isSwitchBack = False;
+          } else if (ev.xkey.keycode == leftKey) {
+            isSwitchBack = True;
+          }
+          new_focused_wwin =
+              wSwitchPanelSelectNext(swpanel, isSwitchBack, True, cycle_inside_class);
         } else if (ev.xkey.keycode == homeKey || ev.xkey.keycode == endKey) {
-          newFocused = wSwitchPanelSelectFirst(swpanel, ev.xkey.keycode != homeKey);
-          /* oldFocused = change_focus_and_raise(newFocused, oldFocused, swpanel, scr, False); */
-
+          new_focused_wwin = wSwitchPanelSelectFirst(swpanel, ev.xkey.keycode != homeKey);
         } else if (ev.xkey.keycode == escapeKey) {
           /* Focus the first window of the swpanel, despite the 'False' */
-          newFocused = wSwitchPanelSelectFirst(swpanel, False);
-          /* oldFocused = change_focus_and_raise(newFocused, oldFocused, swpanel, scr, True); */
+          new_focused_wwin = wSwitchPanelSelectFirst(swpanel, False);
           esc_cancel = True;
           done = True;
 
@@ -203,23 +226,21 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
         break;
 
       case KeyRelease:
-        if (ev.xkey.keycode == shiftLKey || ev.xkey.keycode == shiftRKey)
-          if (wPreferences.strict_windoze_cycle)
-            break;
-
-        if (ev.xkey.keycode == leftKey || ev.xkey.keycode == rightKey)
+        if (ev.xkey.keycode == shiftLKey || ev.xkey.keycode == shiftRKey) {
           break;
-
-        if (ev.xkey.keycode == XK_Return)
+        }
+        if (ev.xkey.keycode == leftKey || ev.xkey.keycode == rightKey) {
           break;
-
-        if (ev.xkey.keycode != binding.keycode)
+        }
+        if (ev.xkey.keycode == XK_Return) {
+          break;
+        }
+        if (ev.xkey.keycode != binding.keycode) {
           done = True;
-
+        }
         break;
 
       case EnterNotify:
-
         /* ignore unwanted EnterNotify's */
         break;
 
@@ -229,7 +250,7 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
         WWindow *tmp;
         tmp = wSwitchPanelHandleEvent(swpanel, &ev);
         if (tmp) {
-          newFocused = tmp;
+          new_focused_wwin = tmp;
           /* oldFocused = change_focus_and_raise(newFocused, oldFocused, swpanel, scr, False); */
 
           if (ev.type == ButtonRelease)
@@ -243,36 +264,41 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
     }
   }
 
-  if (hasModifier)
+  if (hasModifier) {
     XUngrabKeyboard(dpy, CurrentTime);
-
-  if (swpanel)
+  }
+  if (swpanel) {
     wSwitchPanelDestroy(swpanel);
+  }
 
-  if (newFocused && !esc_cancel) {
-    WApplication *wapp = wApplicationOf(newFocused->main_window);
-    if (wapp && !class_only) {
-      wApplicationActivate(wapp);
-    }
-    if (wapp && wapp->flags.is_gnustep && !class_only) {
-      if (wapp->gsmenu_wwin)
-        wSetFocusTo(scr, wapp->gsmenu_wwin);
-      else
-        WSActivateApplication(scr, newFocused->wm_instance);
-    } else if (newFocused->frame) {
-      wRaiseFrame(newFocused->frame->core);
-      CommitStacking(scr);
-      if (!newFocused->flags.mapped)
-        wMakeWindowVisible(newFocused);
-      else
-        wSetFocusTo(scr, newFocused);
-    } else {
-      wSetFocusTo(scr, newFocused);
-    }
+  if (new_focused_wwin && !esc_cancel) {
+    SwitchWindow(new_focused_wwin, cycle_inside_class);
+    // WApplication *wapp = wApplicationOf(new_focused_wwin->main_window);
+    // if (wapp && !cycle_inside_class) {
+    //   wApplicationActivate(wapp);
+    // }
+    // if (wapp && wapp->flags.is_gnustep && !cycle_inside_class) {
+    //   if (wapp->gsmenu_wwin) {
+    //     wSetFocusTo(scr, wapp->gsmenu_wwin);
+    //   } else {
+    //     WSActivateApplication(scr, new_focused_wwin->wm_instance);
+    //   }
+    // } else if (new_focused_wwin->frame) {
+    //   wRaiseFrame(new_focused_wwin->frame->core);
+    //   CommitStacking(scr);
+    //   if (!new_focused_wwin->flags.mapped) {
+    //     wMakeWindowVisible(new_focused_wwin);
+    //   } else {
+    //     wSetFocusTo(scr, new_focused_wwin);
+    //   }
+    // } else {
+    //   wSetFocusTo(scr, new_focused_wwin);
+    // }
   }
 
   scr->flags.doing_alt_tab = 0;
 
-  if (somethingElse)
+  if (somethingElse) {
     WMHandleEvent(&ev);
+  }
 }

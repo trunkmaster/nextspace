@@ -192,7 +192,6 @@ extern struct WPreferences {
   int history_lines;                  /* history of "Run..." dialog */
   char cycle_active_head_only;        /* Cycle only windows on the active head */
   char cycle_ignore_minimized;        /* Ignore minimized windows when cycling */
-  char strict_windoze_cycle;          /* don't close switch panel when shift is released */
   char panel_only_open;               /* Only open the switch panel; don't switch */
   int minipreview_size;               /* Size of Mini-Previews in pixels */
 
@@ -384,15 +383,15 @@ enum {
   /* WKBD_RBCMAXIMIZE, */
 
   /* Apps and windows navigation - anywhere */
-  WKBD_FOCUSNEXT,  // Command + `
-  WKBD_FOCUSPREV,  // Command + ~ (Shift + `)
-  WKBD_GROUPNEXT,  // Command + Tab
-  WKBD_GROUPPREV,  // Command + Shift + Tab
+  WKBD_NEXT_WIN,  // Command + `
+  WKBD_PREV_WIN,  // Command + ~ (Shift + `)
+  WKBD_NEXT_APP,  // Command + Tab
+  WKBD_PREV_APP,  // Command + Shift + Tab
 
-  /* Desktop menu - anywhere */
   /* Dock and Icon Yard */
   /* WKBD_DOCKHIDESHOW, */
   /* WKBD_YARDHIDESHOW, */
+
   /* Desktops navigation */
   WKBD_NEXT_DESKTOP,
   WKBD_PREV_DESKTOP,
