@@ -24,6 +24,7 @@
 #define __WORKSPACE_WM_SWITCHPANEL__
 
 #include "screen.h"
+#include "window.h"
 
 typedef struct SwitchPanel WSwitchPanel;
 
@@ -38,5 +39,7 @@ struct WWindow *wSwitchPanelSelectFirst(WSwitchPanel *panel, int back);
 struct WWindow *wSwitchPanelHandleEvent(WSwitchPanel *panel, XEvent *event);
 
 Window wSwitchPanelGetWindow(WSwitchPanel *swpanel);
+
+void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool cycle_inside_class);
 
 #endif /* __WORKSPACE_WM_SWITCHPANEL__ */

@@ -61,7 +61,7 @@
 #include "window.h"
 #include "actions.h"
 #include "client.h"
-#include "cycling.h"
+#include "switchpanel.h"
 #include "application.h"
 #include "stacking.h"
 #include "defaults.h"
@@ -1359,24 +1359,24 @@ static void handleFocusIn(XEvent *event)
   }
 }
 
-static WWindow *windowUnderPointer(WScreen *scr)
-{
-  unsigned int mask;
-  int foo;
-  Window bar, win;
+// static WWindow *windowUnderPointer(WScreen *scr)
+// {
+//   unsigned int mask;
+//   int foo;
+//   Window bar, win;
 
-  if (XQueryPointer(dpy, scr->root_win, &bar, &win, &foo, &foo, &foo, &foo, &mask))
-    return wWindowFor(win);
-  return NULL;
-}
+//   if (XQueryPointer(dpy, scr->root_win, &bar, &win, &foo, &foo, &foo, &foo, &mask))
+//     return wWindowFor(win);
+//   return NULL;
+// }
 
-static int CheckFullScreenWindowFocused(WScreen *scr)
-{
-  if (scr->focused_window && scr->focused_window->flags.fullscreen)
-    return 1;
-  else
-    return 0;
-}
+// static int CheckFullScreenWindowFocused(WScreen *scr)
+// {
+//   if (scr->focused_window && scr->focused_window->flags.fullscreen)
+//     return 1;
+//   else
+//     return 0;
+// }
 
 static void handleKeyPress(XEvent *event)
 {
@@ -1497,16 +1497,16 @@ static void handleKeyPress(XEvent *event)
 
       /* Desktops navigation */
     case WKBD_NEXT_APP:
-      StartWindozeCycle(wwin, event, True, False);
+      wSwitchPanelStart(wwin, event, True, False);
       break;
     case WKBD_PREV_APP:
-      StartWindozeCycle(wwin, event, False, False);
+      wSwitchPanelStart(wwin, event, False, False);
       break;
     case WKBD_NEXT_WIN:
-      StartWindozeCycle(wwin, event, True, True);
+      wSwitchPanelStart(wwin, event, True, True);
       break;
     case WKBD_PREV_WIN:
-      StartWindozeCycle(wwin, event, False, True);
+      wSwitchPanelStart(wwin, event, False, True);
       break;
 
     case WKBD_NEXT_DESKTOP:
