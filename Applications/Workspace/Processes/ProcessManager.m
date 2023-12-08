@@ -264,7 +264,7 @@ static BOOL _workspaceQuitting = NO;
   for (NSNumber *pid in pidList) {
     // If PID is '-1' let window manager kill that app.
     if ([pid intValue] != -1) {
-      NSDebugLLog(@"Workspace", @"Sending signal %i to %i", signal, [pid intValue]);
+      NSDebugLLog(@"Processes", @"Sending signal %i to %i", signal, [pid intValue]);
       kill([pid intValue], signal);
     }
 
@@ -292,11 +292,11 @@ static BOOL _workspaceQuitting = NO;
     return YES;
   }
 
-  NSDebugLLog(@"Workspace", @"Terminating - %@", _appName);
+  NSDebugLLog(@"Processes", @"Terminating - %@", _appName);
 
   _app = [NSConnection rootProxyForConnectionWithRegisteredName:_appName host:@""];
   if (_app == nil) {
-    NSDebugLLog(@"Workspace", @"Connection to %@ failed. Removing from list of known applications", _appName);
+    NSDebugLLog(@"Processes", @"Connection to %@ failed. Removing from list of known applications", _appName);
     [applications removeObject:appInfo];
     return YES;
   }
@@ -307,7 +307,7 @@ static BOOL _workspaceQuitting = NO;
     [applications removeObject:appInfo];
     [[_app connectionForProxy] invalidate];
     // libobjc2 prints out info to console all exception (even catched).
-    NSDebugLLog(@"Workspace", @"Application %@ was terminated. Ignore ObjC runtime exception - it's catched.", _appName);
+    NSDebugLLog(@"Processes", @"Application %@ was terminated. Ignore ObjC runtime exception - it's catched.", _appName);
     return YES;
   }
 
@@ -329,7 +329,7 @@ static BOOL _workspaceQuitting = NO;
   // Application removal from list will be processed inside this method
   _workspaceQuitting = YES;
 
-  NSDebugLLog(@"Workspace", @"Terminating of runnig apps started!");
+  NSDebugLLog(@"Processes", @"Terminating of runnig apps started!");
 
   for (int idx = [_appsCopy count] - 1; idx >= 0; idx--) {
     NSDictionary *_appDict = _appsCopy[idx];
@@ -340,7 +340,7 @@ static BOOL _workspaceQuitting = NO;
       continue;
     }
 
-    NSDebugLLog(@"Workspace", @"Application '%@' refused to terminate!",
+    NSDebugLLog(@"Processes", @"Application '%@' refused to terminate!",
                 [_appDict objectForKey:@"NSApplicationName"]);
     _noRunningApps = NO;
     _workspaceQuitting = NO;
@@ -348,7 +348,7 @@ static BOOL _workspaceQuitting = NO;
     break;
   }
 
-  NSDebugLLog(@"Workspace", @"Terminating of runnig apps completed!");
+  NSDebugLLog(@"Processes", @"Terminating of runnig apps completed!");
   [_appsCopy release];
 
   return _noRunningApps;
@@ -406,12 +406,19 @@ static BOOL _workspaceQuitting = NO;
 - (NSDictionary *)_applicationInfoForApp:(WApplication *)wapp window:(WWindow *)wwin
 {
   NSMutableDictionary *appInfo = [[self _applicationInfoForWindow:wwin] mutableCopy];
+  NSImage *iconImage = nil;
 
   // Get icon image from windowmaker app structure(WApplication)
   // NSApplicationIcon=NSImage*
   NSDebugLLog(@"Processes", @"%@ icon filename: %s", appInfo[@"NSApplicationName"],
               wapp->app_icon->icon->file);
   if (wapp->app_icon->icon->file_image) {
+    iconImage = WSImageForRasterImage(wapp->app_icon->icon->file_image);
+  } else if (wapp->app_icon->icon->file) {
+    iconImage = [[NSImage alloc]
+        initByReferencingFile:[NSString stringWithCString:wapp->app_icon->icon->file]];
+  }
+  if (iconImage) {
     [appInfo setObject:WSImageForRasterImage(wapp->app_icon->icon->file_image)
                 forKey:@"NSApplicationIcon"];
   }
@@ -450,7 +457,7 @@ static BOOL _workspaceQuitting = NO;
     wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
   }
   appInfo = [self _applicationInfoForApp:wapp window:wwin];
-  NSDebugLLog(@"WM", @"ProcessManager-windowManagerDidCreateApplication: %@", appInfo);
+  NSDebugLLog(@"Processes", @"ProcessManager-windowManagerDidCreateApplication: %@", appInfo);
 
   localNotif = [NSNotification notificationWithName:NSWorkspaceDidLaunchApplicationNotification
                                              object:appInfo
