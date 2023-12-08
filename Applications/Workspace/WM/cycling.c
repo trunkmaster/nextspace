@@ -162,9 +162,6 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool cycle_insid
 
   if (cycle_inside_class == False) {
     swpanel = wInitSwitchPanel(scr, wwin, cycle_inside_class);
-  }
-
-  if (swpanel) {
     if (wwin->flags.mapped && !wPreferences.panel_only_open) {
       /* for GNUstep apps: main menu focus that is not in window focus list */
       if (wwin->flags.is_gnustep) {
@@ -176,12 +173,10 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool cycle_insid
     }
   } else {
     if (wwin->frame->desktop == scr->current_desktop) {
-      new_focused_wwin = wwin->prev;
-      SwitchWindow(new_focused_wwin, cycle_inside_class);
+      new_focused_wwin = wwin;
     } else {
       new_focused_wwin = NULL;
     }
-    return;
   }
 
   while (hasModifier && !done) {
@@ -196,6 +191,7 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool cycle_insid
     if (!swpanel) {
       break;
     }
+
     switch (ev.type) {
       case KeyPress:
         if ((binding.keycode == ev.xkey.keycode && binding.modifier == modifiers) ||
@@ -211,10 +207,9 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool cycle_insid
           new_focused_wwin = wSwitchPanelSelectFirst(swpanel, ev.xkey.keycode != homeKey);
         } else if (ev.xkey.keycode == escapeKey) {
           /* Focus the first window of the swpanel, despite the 'False' */
-          new_focused_wwin = wSwitchPanelSelectFirst(swpanel, False);
+          // new_focused_wwin = wSwitchPanelSelectFirst(swpanel, False);
+          new_focused_wwin = wwin;
           esc_cancel = True;
-          done = True;
-
         } else if (ev.xkey.keycode == returnKey) {
           /* Close the switch panel without eating the keypress */
           done = True;
@@ -226,16 +221,13 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool cycle_insid
         break;
 
       case KeyRelease:
-        if (ev.xkey.keycode == shiftLKey || ev.xkey.keycode == shiftRKey) {
+        if (ev.xkey.keycode == shiftLKey || ev.xkey.keycode == shiftRKey ||
+            ev.xkey.keycode == leftKey || ev.xkey.keycode == rightKey ||
+            ev.xkey.keycode == XK_Return) {
           break;
-        }
-        if (ev.xkey.keycode == leftKey || ev.xkey.keycode == rightKey) {
-          break;
-        }
-        if (ev.xkey.keycode == XK_Return) {
-          break;
-        }
-        if (ev.xkey.keycode != binding.keycode) {
+        } else if (ev.xkey.keycode == escapeKey) {
+          done = True;
+        } else if (ev.xkey.keycode != binding.keycode) {
           done = True;
         }
         break;
@@ -251,10 +243,9 @@ void StartWindozeCycle(WWindow *wwin, XEvent *event, Bool next, Bool cycle_insid
         tmp = wSwitchPanelHandleEvent(swpanel, &ev);
         if (tmp) {
           new_focused_wwin = tmp;
-          /* oldFocused = change_focus_and_raise(newFocused, oldFocused, swpanel, scr, False); */
-
-          if (ev.type == ButtonRelease)
+          if (ev.type == ButtonRelease) {
             done = True;
+          }
         }
       } break;
 
