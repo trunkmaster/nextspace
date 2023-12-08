@@ -35,7 +35,6 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/balloon.c \
 	$(WM_DIR)/client.c \
 	$(WM_DIR)/colormap.c \
-	$(WM_DIR)/cycling.c \
 	$(WM_DIR)/defaults.c \
 	$(WM_DIR)/dock.c \
 	$(WM_DIR)/event.c \
