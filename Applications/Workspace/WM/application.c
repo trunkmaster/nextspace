@@ -50,6 +50,7 @@
 #include "client.h"
 #include "framewin.h"
 #include "appmenu.h"
+#include "stacking.h"
 
 #include <Workspace+WM.h>
 
@@ -283,6 +284,40 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
       break;
     }
   }
+}
+
+void wApplicationSwitchWindow(WWindow *wwin, Bool forward)
+{
+  WApplication *wapp;
+  CFIndex count;
+  WWindow *new_wwin;
+  CFIndex cur_index, new_index;
+
+  if (wwin->frame->desktop != wwin->screen->current_desktop) {
+    return;
+  }
+
+  wapp = wApplicationForWindow(wwin);
+  count = CFArrayGetCount(wapp->windows);
+  cur_index = CFArrayGetFirstIndexOfValue(wapp->windows, CFRangeMake(0, count), wwin);
+  if (forward) {
+    new_index = (cur_index < count - 1) ? cur_index + 1 : 0;
+  } else {
+    new_index = (cur_index > 0) ? cur_index - 1 : count - 1;
+  }
+
+  new_wwin = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, new_index);
+  if (new_wwin->frame) {
+      wRaiseFrame(new_wwin->frame->core);
+      CommitStacking(new_wwin->screen);
+      if (!new_wwin->flags.mapped) {
+        wMakeWindowVisible(new_wwin);
+      } else {
+        wSetFocusTo(new_wwin->screen, new_wwin);
+      }
+    } else {
+      wSetFocusTo(new_wwin->screen, new_wwin);
+    }
 }
 
 WApplication *wApplicationCreate(WWindow *wwin)

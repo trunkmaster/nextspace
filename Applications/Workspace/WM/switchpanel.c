@@ -799,7 +799,7 @@ Window wSwitchPanelGetWindow(WSwitchPanel *swpanel)
   return WMWidgetXID(swpanel->win);
 }
 
-void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool cycle_inside_class)
+void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
 {
   WShortKey binding;
   WSwitchPanel *swpanel = NULL;
@@ -812,7 +812,7 @@ void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool cycle_insid
   KeyCode shiftRKey = XKeysymToKeycode(dpy, XK_Shift_R);
   KeyCode escapeKey = XKeysymToKeycode(dpy, XK_Escape);
   KeyCode returnKey = XKeysymToKeycode(dpy, XK_Return);
-  Bool esc_cancel = False;
+  Bool escCancel = False;
   Bool somethingElse = False;
   Bool done = False;
   Bool hasModifier;
@@ -826,14 +826,14 @@ void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool cycle_insid
   }
 
   if (next) {
-    if (cycle_inside_class) {
+    if (class_only) {
       binding = wKeyBindings[WKBD_NEXT_WIN];
     } else {
       binding = wKeyBindings[WKBD_NEXT_APP];
     }
     isSwitchBack = False;
   } else {
-    if (cycle_inside_class) {
+    if (class_only) {
       binding = wKeyBindings[WKBD_PREV_WIN];
     } else {
       binding = wKeyBindings[WKBD_PREV_APP];
@@ -847,14 +847,14 @@ void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool cycle_insid
   }
   scr->flags.doing_alt_tab = 1;
 
-  if (cycle_inside_class == False) {
-    swpanel = wInitSwitchPanel(scr, wwin, cycle_inside_class);
+  if (class_only == False) {
+    swpanel = wInitSwitchPanel(scr, wwin, class_only);
     if (wwin->flags.mapped && !wPreferences.panel_only_open) {
       /* for GNUstep apps: main menu focus that is not in window focus list */
       if (wwin->flags.is_gnustep) {
         wSwitchPanelSelectFirst(swpanel, False);
       }
-      new_focused_wwin = wSwitchPanelSelectNext(swpanel, !next, True, cycle_inside_class);
+      new_focused_wwin = wSwitchPanelSelectNext(swpanel, !next, True, class_only);
     } else {
       new_focused_wwin = wSwitchPanelSelectFirst(swpanel, False);
     }
@@ -889,14 +889,14 @@ void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool cycle_insid
             isSwitchBack = True;
           }
           new_focused_wwin =
-              wSwitchPanelSelectNext(swpanel, isSwitchBack, True, cycle_inside_class);
+              wSwitchPanelSelectNext(swpanel, isSwitchBack, True, class_only);
         } else if (ev.xkey.keycode == homeKey || ev.xkey.keycode == endKey) {
           new_focused_wwin = wSwitchPanelSelectFirst(swpanel, ev.xkey.keycode != homeKey);
         } else if (ev.xkey.keycode == escapeKey) {
           /* Focus the first window of the swpanel, despite the 'False' */
           // new_focused_wwin = wSwitchPanelSelectFirst(swpanel, False);
           new_focused_wwin = wwin;
-          esc_cancel = True;
+          escCancel = True;
         } else if (ev.xkey.keycode == returnKey) {
           /* Close the switch panel without eating the keypress */
           done = True;
@@ -948,12 +948,12 @@ void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool cycle_insid
     wSwitchPanelDestroy(swpanel);
   }
 
-  if (new_focused_wwin && !esc_cancel) {
+  if (new_focused_wwin && !escCancel) {
     WApplication *wapp = wApplicationOf(new_focused_wwin->main_window);
-    if (wapp && !cycle_inside_class) {
+    if (wapp && !class_only) {
       wApplicationActivate(wapp);
     }
-    if (wapp && wapp->flags.is_gnustep && !cycle_inside_class) {
+    if (wapp && wapp->flags.is_gnustep && !class_only) {
       if (wapp->gsmenu_wwin) {
         wSetFocusTo(scr, wapp->gsmenu_wwin);
       } else {

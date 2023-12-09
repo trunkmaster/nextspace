@@ -67,6 +67,7 @@ typedef struct WApplication {
 
 void wApplicationAddWindow(WApplication *wapp, struct WWindow *wwin);
 void wApplicationRemoveWindow(WApplication *wapp, struct WWindow *wwin);
+void wApplicationSwitchWindow(struct WWindow *wwin, Bool forward);
 
 WApplication *wApplicationCreate(struct WWindow *wwin);
 WApplication *wApplicationWithName(WScreen *scr, char *app_name);

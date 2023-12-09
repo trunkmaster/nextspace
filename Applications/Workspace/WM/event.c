@@ -1503,10 +1503,10 @@ static void handleKeyPress(XEvent *event)
       wSwitchPanelStart(wwin, event, False, False);
       break;
     case WKBD_NEXT_WIN:
-      wSwitchPanelStart(wwin, event, True, True);
+      wApplicationSwitchWindow(wwin, True);
       break;
     case WKBD_PREV_WIN:
-      wSwitchPanelStart(wwin, event, False, True);
+      wApplicationSwitchWindow(wwin, False);
       break;
 
     case WKBD_NEXT_DESKTOP:
