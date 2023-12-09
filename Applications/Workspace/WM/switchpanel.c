@@ -760,7 +760,7 @@ WWindow *wSwitchPanelHandleEvent(WSwitchPanel *panel, XEvent *event)
   if (!panel->win)
     return NULL;
 
-  if (event->type == MotionNotify) {
+  if (event->type == MotionNotify || event->type == ButtonRelease) {
     for (i = 0; i < CFArrayGetCount(panel->icons); i++) {
       icon = (WMFrame *)CFArrayGetValueAtIndex(panel->icons, i);
       if (WMWidgetXID(icon) == event->xmotion.window) {
@@ -774,16 +774,16 @@ WWindow *wSwitchPanelHandleEvent(WSwitchPanel *panel, XEvent *event)
     WWindow *wwin;
 
     for (i = 0; i < CFArrayGetCount(panel->windows); i++) {
-      wwin = (WWindow *)CFArrayGetValueAtIndex(panel->windows, i);
       changeImage(panel, i, i == focus, False, False);
     }
     panel->current = focus;
 
-    WMLogInfo("focus == %i (%li)", focus, CFArrayGetCount(panel->windows));
     wwin = (WWindow *)CFArrayGetValueAtIndex(panel->windows, focus);
-    WMLogInfo("focus title == %s", wwin->frame->title);
-
-    drawTitle(panel, panel->current, wwin->frame->title);
+    if (wwin->flags.is_gnustep) {
+      drawTitle(panel, panel->current, wwin->wm_instance);
+    } else {
+      drawTitle(panel, panel->current, wwin->wm_class);
+    }
 
     return wwin;
   }
@@ -926,13 +926,12 @@ void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool cycle_insid
       case LeaveNotify:
       case MotionNotify:
       case ButtonRelease: {
-        WWindow *tmp;
-        tmp = wSwitchPanelHandleEvent(swpanel, &ev);
+        WWindow *tmp = wSwitchPanelHandleEvent(swpanel, &ev);
         if (tmp) {
           new_focused_wwin = tmp;
-          if (ev.type == ButtonRelease) {
-            done = True;
-          }
+        }
+        if (ev.type == ButtonRelease) {
+          done = True;
         }
       } break;
 
