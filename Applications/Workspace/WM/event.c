@@ -1454,18 +1454,18 @@ static void handleKeyPress(XEvent *event)
 #define ISFOCUSED(w) ((w) && (w)->flags.focused)
 
   switch (command) {
-      /* case WKBD_RAISE: */
-      /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin)) { */
-      /*     CloseWindowMenu(scr); */
-      /*     wRaiseFrame(wwin->frame->core); */
-      /*   } */
-      /*   break; */
-      /* case WKBD_LOWER: */
-      /*   if (ISMAPPED(wwin) && ISFOCUSED(wwin)) { */
-      /*     CloseWindowMenu(scr); */
-      /*     wLowerFrame(wwin->frame->core); */
-      /*   } */
-      /*   break; */
+    case WKBD_RAISE:
+      if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
+        // CloseWindowMenu(scr);
+        wRaiseFrame(wwin->frame->core);
+      }
+      break;
+    case WKBD_LOWER:
+      if (ISMAPPED(wwin) && ISFOCUSED(wwin)) {
+        // CloseWindowMenu(scr);
+        wLowerFrame(wwin->frame->core);
+      }
+      break;
 
       /* Dock and Icon Yard */
       /* case WKBD_DOCKHIDESHOW: */

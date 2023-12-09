@@ -367,8 +367,8 @@ enum { DRAGMAX_MOVE, DRAGMAX_RESTORE, DRAGMAX_UNMAXIMIZE, DRAGMAX_NOMOVE };
 
 enum {
   /* window */  //--> appmenu
-  //  WKBD_RAISE,		// Command + UpArrow
-  //  WKBD_LOWER,		// Command + DownArrow
+  WKBD_RAISE,   // Command + UpArrow
+  WKBD_LOWER,   // Command + DownArrow
 
   /* tiling? */
   /* WKBD_VMAXIMIZE, */

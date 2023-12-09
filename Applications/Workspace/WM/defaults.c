@@ -584,10 +584,8 @@ WDefaultEntry optionList[] = {
     /* {"MinimizeAllKey", "\"Command+M\"", (void *)WKBD_MINIMIZEALL, NULL, getKeybind, setKeyGrab,
        NULL, NULL}, */
     /* Focus switch */
-    /* {"RaiseKey", "\"Command+Up\"", (void *)WKBD_RAISE, NULL, getKeybind, setKeyGrab, NULL, NULL},
-     */
-    /* {"LowerKey", "\"Command+Down\"", (void *)WKBD_LOWER, NULL, getKeybind, setKeyGrab, NULL,
-       NULL}, */
+    {"RaiseKey", "\"Command+Up\"", (void *)WKBD_RAISE, NULL, getKeybind, setKeyGrab, NULL, NULL},
+    {"LowerKey", "\"Command+Down\"", (void *)WKBD_LOWER, NULL, getKeybind, setKeyGrab, NULL, NULL},
     {"FocusNextKey", "\"Command+grave\"", (void *)WKBD_NEXT_WIN, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
     {"FocusPrevKey", "\"Command+Shift+grave\"", (void *)WKBD_PREV_WIN, NULL, getKeybind, setKeyGrab,
