@@ -114,20 +114,6 @@ static int canReceiveFocus(WWindow *wwin)
   return 1;
 }
 
-static Bool sameWindowClass(WWindow *wwin, WWindow *curwin)
-{
-  if (!wwin->wm_class || !curwin->wm_class)
-    return False;
-  if ((curwin->flags.is_gnustep || !strcmp(curwin->wm_class, "GNUstep")) &&
-      strcmp(wwin->wm_instance, curwin->wm_instance)) {
-    return False;
-  } else if (strcmp(wwin->wm_class, curwin->wm_class)) {
-    return False;
-  }
-
-  return True;
-}
-
 static void changeImage(WSwitchPanel *panel, int idecks, int selected, Bool dim, Bool force)
 {
   WMFrame *icon = NULL;
@@ -381,56 +367,39 @@ static void drawTitle(WSwitchPanel *panel, int idecks, const char *title)
     free(ntitle);
 }
 
-static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped, Bool class_only)
+static CFMutableArrayRef makeWindowListArray(WScreen *scr, int include_unmapped)
 {
   CFMutableArrayRef windows = CFArrayCreateMutable(kCFAllocatorDefault, 0, NULL);
-  WWindow *wwin = scr->focused_window;
 
-  /* WApplications */
-  if (class_only == False) {
-    WMLogInfo("window list array creation BEGIN");
-    WApplication *wapp = scr->wapp_list;
-    while (wapp) {
-      WWindow *w = NULL;
-      WMLogInfo("Inspect application: ");
-      if (wapp->flags.is_gnustep) {
-        if (wapp->gsmenu_wwin) {
-          w = wapp->gsmenu_wwin;
-          WMLogInfo("\t%s (menu: %lu)", w->wm_instance, w->client_win);
-        } else {
-          w = wapp->main_wwin;
-          WMLogInfo("\t%s (main window: %lu)", w->wm_instance, w->client_win);
-        }
-      } else if (CFArrayGetCount(wapp->windows) > 0) {
-        if (wapp->last_focused)
-          w = wapp->last_focused;
-        else
-          w = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
-        WMLogInfo("\t%s (window: %lu)", w->wm_instance, w->client_win);
+  // WMLogInfo("window list array creation BEGIN");
+  WApplication *wapp = scr->wapp_list;
+  while (wapp) {
+    WWindow *w = NULL;
+    // WMLogInfo("Inspect application: ");
+    if (wapp->flags.is_gnustep) {
+      if (wapp->gsmenu_wwin) {
+        w = wapp->gsmenu_wwin;
+        // WMLogInfo("\t%s (menu: %lu)", w->wm_instance, w->client_win);
+      } else {
+        w = wapp->main_wwin;
+        // WMLogInfo("\t%s (main window: %lu)", w->wm_instance, w->client_win);
       }
-
-      if (w)
-        CFArrayAppendValue(windows, w);
-
-      WMLogInfo("\tWindow count:%li", CFArrayGetCount(wapp->windows));
-      wapp = wapp->next;
-    }
-    WMLogInfo("window list array creation END");
-  } else {
-    /* Mapped windows */
-    while (wwin) {
-      if ((canReceiveFocus(wwin) != 0) &&
-          (wwin->flags.mapped || wwin->flags.shaded || include_unmapped) &&
-          !WFLAGP(wwin, skip_switchpanel)) {
-        if (!sameWindowClass(scr->focused_window, wwin)) {
-          wwin = wwin->prev;
-          continue;
-        }
-        CFArrayAppendValue(windows, wwin);
+    } else if (CFArrayGetCount(wapp->windows) > 0) {
+      if (wapp->last_focused) {
+        w = wapp->last_focused;
+      } else {
+        w = (WWindow *)CFArrayGetValueAtIndex(wapp->windows, 0);
       }
-      wwin = wwin->prev;
+      // WMLogInfo("\t%s (window: %lu)", w->wm_instance, w->client_win);
     }
+
+    if (w) {
+      CFArrayAppendValue(windows, w);
+    }
+    // WMLogInfo("\tWindow count:%li", CFArrayGetCount(wapp->windows));
+    wapp = wapp->next;
   }
+  // WMLogInfo("window list array creation END");
 
   return windows;
 }
@@ -447,7 +416,7 @@ static CFMutableArrayRef makeWindowFlagsArray(int count)
 }
 
 
-WSwitchPanel *wInitSwitchPanel(WScreen *scr, WWindow *curwin, Bool class_only)
+WSwitchPanel *wInitSwitchPanel(WScreen *scr, WWindow *curwin)
 {
   WWindow *wwin;
   WSwitchPanel *panel = wmalloc(sizeof(WSwitchPanel));
@@ -456,11 +425,11 @@ WSwitchPanel *wInitSwitchPanel(WScreen *scr, WWindow *curwin, Bool class_only)
   WMRect rect = wGetRectForHead(scr, wGetHeadForPointerLocation(scr));
 
   panel->scr = scr;
-  panel->windows = makeWindowListArray(scr, wPreferences.swtileImage != NULL, class_only);
+  panel->windows = makeWindowListArray(scr, wPreferences.swtileImage != NULL);
   win_count = CFArrayGetCount(panel->windows);
-  if (win_count)
+  if (win_count) {
     panel->flags = makeWindowFlagsArray(win_count);
-
+  }
   if (win_count == 0) {
     CFRelease(panel->windows);
     wfree(panel);
@@ -644,71 +613,47 @@ void wSwitchPanelDestroy(WSwitchPanel *panel)
   wfree(panel);
 }
 
-WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimized,
-                                Bool class_only)
+WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimized)
 {
-  WWindow *wwin, *curwin, *tmpwin;
+  WWindow *wwin;
   int count = CFArrayGetCount(panel->windows);
   int orig = panel->current;
   int i;
-  Bool dim = False;
 
-  if (count == 0 || orig < 0)
+  if (count == 0 || orig < 0) {
     return NULL;
-
-  if (!wPreferences.cycle_ignore_minimized)
-    ignore_minimized = False;
-
-  if (ignore_minimized && canReceiveFocus((WWindow *)CFArrayGetValueAtIndex(
-                              panel->windows, (count + panel->current) % count)) < 0)
-    ignore_minimized = False;
-
-  curwin = (WWindow *)CFArrayGetValueAtIndex(panel->windows, orig);
-  do {
-    do {
-      if (back)
-        panel->current--;
-      else
-        panel->current++;
-
-      panel->current = (count + panel->current) % count;
-      wwin = (WWindow *)CFArrayGetValueAtIndex(panel->windows, panel->current);
-
-      if (!class_only)
-        break;
-      if (panel->current == orig)
-        break;
-    } while (!sameWindowClass(wwin, curwin));
-  } while (ignore_minimized && panel->current != orig && canReceiveFocus(wwin) < 0);
-
-  for (i = 0; i < CFArrayGetCount(panel->windows); i++) {
-    tmpwin = (WWindow *)CFArrayGetValueAtIndex(panel->windows, i);
-    if (i == panel->current)
-      continue;
-    if (!class_only || sameWindowClass(tmpwin, curwin))
-      changeImage(panel, i, 0, False, False);
-    else {
-      if (i == orig)
-        dim = True;
-      changeImage(panel, i, 0, True, False);
-    }
   }
 
-  if (panel->current < panel->firstVisible)
+  do {
+    if (back) {
+      panel->current--;
+    } else {
+      panel->current++;
+    }
+    panel->current = (count + panel->current) % count;
+    wwin = (WWindow *)CFArrayGetValueAtIndex(panel->windows, panel->current);
+    break;
+  } while (ignore_minimized && panel->current != orig && canReceiveFocus(wwin) < 0);
+
+  for (i = 0; i < count; i++) {
+    if (i == panel->current) {
+      continue;
+    }
+    changeImage(panel, i, 0, False, False);
+  }
+
+  if (panel->current < panel->firstVisible) {
     scrollIcons(panel, panel->current - panel->firstVisible);
-  else if (panel->current - panel->firstVisible >= panel->visibleCount)
+  } else if (panel->current - panel->firstVisible >= panel->visibleCount) {
     scrollIcons(panel, panel->current - panel->firstVisible - panel->visibleCount + 1);
+  }
 
   if (panel->win) {
-    if (class_only) {
-      drawTitle(panel, panel->current, wwin->frame->title);
-    } else if (wwin->flags.is_gnustep || !strcmp(wwin->wm_class, "GNUstep")) {
+    if (wwin->flags.is_gnustep || !strcmp(wwin->wm_class, "GNUstep")) {
       drawTitle(panel, panel->current, wwin->wm_instance);
     } else {
       drawTitle(panel, panel->current, wwin->wm_class);
     }
-    if (panel->current != orig)
-      changeImage(panel, orig, 0, dim, False);
     changeImage(panel, panel->current, 1, False, False);
   }
 
@@ -799,7 +744,7 @@ Window wSwitchPanelGetWindow(WSwitchPanel *swpanel)
   return WMWidgetXID(swpanel->win);
 }
 
-void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
+void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next)
 {
   WShortKey binding;
   WSwitchPanel *swpanel = NULL;
@@ -826,18 +771,10 @@ void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
   }
 
   if (next) {
-    if (class_only) {
-      binding = wKeyBindings[WKBD_NEXT_WIN];
-    } else {
-      binding = wKeyBindings[WKBD_NEXT_APP];
-    }
+    binding = wKeyBindings[WKBD_NEXT_APP];
     isSwitchBack = False;
   } else {
-    if (class_only) {
-      binding = wKeyBindings[WKBD_PREV_WIN];
-    } else {
-      binding = wKeyBindings[WKBD_PREV_APP];
-    }
+    binding = wKeyBindings[WKBD_PREV_APP];
     isSwitchBack = True;
   }
 
@@ -847,23 +784,15 @@ void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
   }
   scr->flags.doing_alt_tab = 1;
 
-  if (class_only == False) {
-    swpanel = wInitSwitchPanel(scr, wwin, class_only);
-    if (wwin->flags.mapped && !wPreferences.panel_only_open) {
-      /* for GNUstep apps: main menu focus that is not in window focus list */
-      if (wwin->flags.is_gnustep) {
-        wSwitchPanelSelectFirst(swpanel, False);
-      }
-      new_focused_wwin = wSwitchPanelSelectNext(swpanel, !next, True, class_only);
-    } else {
-      new_focused_wwin = wSwitchPanelSelectFirst(swpanel, False);
+  swpanel = wInitSwitchPanel(scr, wwin);
+  if (wwin->flags.mapped && !wPreferences.panel_only_open) {
+    /* for GNUstep apps: main menu focus that is not in window focus list */
+    if (wwin->flags.is_gnustep) {
+      wSwitchPanelSelectFirst(swpanel, False);
     }
+    new_focused_wwin = wSwitchPanelSelectNext(swpanel, !next, True);
   } else {
-    if (wwin->frame->desktop == scr->current_desktop) {
-      new_focused_wwin = wwin;
-    } else {
-      new_focused_wwin = NULL;
-    }
+    new_focused_wwin = wSwitchPanelSelectFirst(swpanel, False);
   }
 
   while (hasModifier && !done) {
@@ -888,13 +817,11 @@ void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
           } else if (ev.xkey.keycode == leftKey) {
             isSwitchBack = True;
           }
-          new_focused_wwin =
-              wSwitchPanelSelectNext(swpanel, isSwitchBack, True, class_only);
+          new_focused_wwin = wSwitchPanelSelectNext(swpanel, isSwitchBack, True);
         } else if (ev.xkey.keycode == homeKey || ev.xkey.keycode == endKey) {
           new_focused_wwin = wSwitchPanelSelectFirst(swpanel, ev.xkey.keycode != homeKey);
         } else if (ev.xkey.keycode == escapeKey) {
           /* Focus the first window of the swpanel, despite the 'False' */
-          // new_focused_wwin = wSwitchPanelSelectFirst(swpanel, False);
           new_focused_wwin = wwin;
           escCancel = True;
         } else if (ev.xkey.keycode == returnKey) {
@@ -950,10 +877,10 @@ void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool class_only)
 
   if (new_focused_wwin && !escCancel) {
     WApplication *wapp = wApplicationOf(new_focused_wwin->main_window);
-    if (wapp && !class_only) {
+    if (wapp) {
       wApplicationActivate(wapp);
     }
-    if (wapp && wapp->flags.is_gnustep && !class_only) {
+    if (wapp && wapp->flags.is_gnustep) {
       if (wapp->gsmenu_wwin) {
         wSetFocusTo(scr, wapp->gsmenu_wwin);
       } else {

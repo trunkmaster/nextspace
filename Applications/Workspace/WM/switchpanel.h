@@ -28,18 +28,17 @@
 
 typedef struct SwitchPanel WSwitchPanel;
 
-WSwitchPanel *wInitSwitchPanel(WScreen *scr, struct WWindow *curwin, Bool class_only);
+WSwitchPanel *wInitSwitchPanel(WScreen *scr, struct WWindow *curwin);
 
 void wSwitchPanelDestroy(WSwitchPanel *panel);
 
-struct WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimized,
-                                       Bool class_only);
+struct WWindow *wSwitchPanelSelectNext(WSwitchPanel *panel, int back, int ignore_minimized);
 struct WWindow *wSwitchPanelSelectFirst(WSwitchPanel *panel, int back);
 
 struct WWindow *wSwitchPanelHandleEvent(WSwitchPanel *panel, XEvent *event);
 
 Window wSwitchPanelGetWindow(WSwitchPanel *swpanel);
 
-void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next, Bool cycle_inside_class);
+void wSwitchPanelStart(WWindow *wwin, XEvent *event, Bool next);
 
 #endif /* __WORKSPACE_WM_SWITCHPANEL__ */
