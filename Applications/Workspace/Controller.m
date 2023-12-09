@@ -1060,14 +1060,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)hideOtherApplications:(id)sender
 {
-  Window xWindow = (Window)[GSCurrentServer() windowDevice:[[NSApp keyWindow] windowNumber]];
-  NSDictionary *info =
-      @{@"WindowID" : [NSNumber numberWithUnsignedLong:xWindow], @"ApplicationName" : @"Workspace"};
-
-  [[NSDistributedNotificationCenter defaultCenter]
-      postNotificationName:CF_NOTIFICATION(WMShouldHideOthersNotification)
-                    object:@"GSWorkspaceNotification"
-                  userInfo:info];
+  [self hideOtherApplications];
 }
 
 // Info

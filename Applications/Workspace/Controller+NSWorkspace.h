@@ -270,7 +270,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
     Instructs all the other running applications to hide themselves.
     <em>not yet implemented</em>*/
 // TODO
-// - (void)hideOtherApplications;
+- (void)hideOtherApplications;
 
 /** Instructs Workspace Manager to launch the application appName and returns
     YES if application was successfully launched and NO otherwise.*/

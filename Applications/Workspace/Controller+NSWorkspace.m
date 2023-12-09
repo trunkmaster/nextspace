@@ -768,10 +768,17 @@ static NSLock *raceLock = nil;
 //-------------------------------------------------------------------------------------------------
 
 // FIXME: TODO
-// - (void)hideOtherApplications
-// {
-//   // TODO
-// }
+- (void)hideOtherApplications
+{
+  Window xWindow = (Window)[GSCurrentServer() windowDevice:[[NSApp keyWindow] windowNumber]];
+  NSDictionary *info =
+      @{@"WindowID" : [NSNumber numberWithUnsignedLong:xWindow], @"ApplicationName" : @"Workspace"};
+
+  [[NSDistributedNotificationCenter defaultCenter]
+      postNotificationName:CF_NOTIFICATION(WMShouldHideOthersNotification)
+                    object:@"GSWorkspaceNotification"
+                  userInfo:info];
+}
 
 - (BOOL)launchApplication:(NSString *)appName
 {
