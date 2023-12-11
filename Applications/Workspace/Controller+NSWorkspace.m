@@ -767,7 +767,6 @@ static NSLock *raceLock = nil;
 //--- Launching and Manipulating Applications
 //-------------------------------------------------------------------------------------------------
 
-// FIXME: TODO
 - (void)hideOtherApplications
 {
   Window xWindow = (Window)[GSCurrentServer() windowDevice:[[NSApp keyWindow] windowNumber]];
