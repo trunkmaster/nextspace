@@ -383,6 +383,22 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_finishTerminateProcess
 {
+  // Remove monitored paths and associated data (NSWorkspace)
+  for (NSString *dirPath in _appDirs) {
+    [fileSystemMonitor removePath:dirPath];
+  }
+  TEST_RELEASE(_appDirs);
+  [fileSystemMonitor removePath:_extPreferencesPath];
+  TEST_RELEASE(_extPreferencesPath);
+  _extPreferencesPath = nil;
+  TEST_RELEASE(_extPreferences);
+  _extPreferences = nil;
+  [fileSystemMonitor removePath:_appListPath];
+  TEST_RELEASE(_appListPath);
+  _appListPath = nil;
+  TEST_RELEASE(_appList);
+  _appList = nil;
+
   // Filesystem monitor
   if (fileSystemMonitor) {
     [fileSystemMonitor pause];
@@ -428,11 +444,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   TEST_RELEASE(_wrappers);
   TEST_RELEASE(_iconMap);
   TEST_RELEASE(_launched);
-  TEST_RELEASE(_appListPath);
-  TEST_RELEASE(_applications);
-  TEST_RELEASE(_extPrefPath);
-  TEST_RELEASE(_extPreferences);
-
+  
   [[NXTDefaults userDefaults] synchronize];
 
   // Quit NSApplication runloop

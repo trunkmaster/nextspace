@@ -109,7 +109,6 @@ static NSString *_rootPath = @"/";
   NSFileManager *mgr = [NSFileManager defaultManager];
   NSString *service;
   NSArray *libraryDirs;
-  NSArray *_appDirs;
   NSData *data;
   NSDictionary *dict;
 
@@ -119,14 +118,15 @@ static NSString *_rootPath = @"/";
   /*
    * Load file extension preferences.
    */
-  _extPrefPath = [service stringByAppendingPathComponent:@".GNUstepExtPrefs"];
-  RETAIN(_extPrefPath);
-  if ([mgr isReadableFileAtPath:_extPrefPath] == YES) {
-    data = [NSData dataWithContentsOfFile:_extPrefPath];
+  _extPreferencesPath = [service stringByAppendingPathComponent:@".GNUstepExtPrefs"];
+  RETAIN(_extPreferencesPath);
+  if ([mgr isReadableFileAtPath:_extPreferencesPath] == YES) {
+    data = [NSData dataWithContentsOfFile:_extPreferencesPath];
     if (data) {
       dict = [NSDeserializer deserializePropertyListFromData:data mutableContainers:NO];
       _extPreferences = RETAIN(dict);
     }
+    [[self fileSystemMonitor] addPath:_extPreferencesPath];
   }
 
   /*
@@ -138,15 +138,21 @@ static NSString *_rootPath = @"/";
     data = [NSData dataWithContentsOfFile:_appListPath];
     if (data) {
       dict = [NSDeserializer deserializePropertyListFromData:data mutableContainers:NO];
-      _applications = RETAIN(dict);
+      _appList = RETAIN(dict);
     }
+    [[self fileSystemMonitor] addPath:_appListPath];
   }
 
   _appDirs = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSAllDomainsMask, YES);
+  [_appDirs retain];
   for (NSString *dirPath in _appDirs) {
     NSLog(@"Directory `%@` will be added to filesystem monitor.", dirPath);
-    // [[self fileSystemMonitor] addPath:dirPath];
+    [[self fileSystemMonitor] addPath:dirPath];
   }
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(_fileSystemPathChanged:)
+                                               name:OSEFileSystemChangedAtPath
+                                             object:nil];
 }
 
 // NEXTSPACE
@@ -163,17 +169,9 @@ static NSString *_rootPath = @"/";
                                                name:NSUserDefaultsDidChangeNotification
                                              object:nil];
 
-  /* There's currently no way of knowing if things have changed due to
-   * apps being installed etc ... so we actually poll regularly.
-   */
-  // [[NSNotificationCenter defaultCenter] addObserver:self
-  //                                          selector:@selector(_workspacePreferencesChanged:)
-  //                                              name:@"GSHousekeeping"
-  //                                            object:nil];
-
-  _iconMap = [NSMutableDictionary new];
+   _iconMap = [NSMutableDictionary new];
   _launched = [NSMutableDictionary new];
-  if (_applications == nil) {
+  if (_appList == nil) {
     [self findApplications];
   }
 
@@ -763,13 +761,12 @@ static NSLock *raceLock = nil;
   if (path == nil) {
     path = [[NSTask launchPathForTool:@"make_services"] retain];
   }
-  task = [NSTask launchedTaskWithLaunchPath:path arguments:nil];
-  if (task != nil) {
-    [task waitUntilExit];
+  if (path != nil) {
+    task = [NSTask launchedTaskWithLaunchPath:path arguments:nil];
+    if (task != nil) {
+      [task waitUntilExit];
+    }
   }
-  // [self _workspacePreferencesChanged:
-  //         [NSNotification notificationWithName:GSWorkspacePreferencesChanged
-  //                                       object:self]];
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1223,38 +1220,52 @@ static NSLock *raceLock = nil;
 }
 
 //-------------------------------------------------------------------------------------------------
-//--- Preferences
+//--- ~/Livrary/Services and Applications
 //-------------------------------------------------------------------------------------------------
-// - (void)_workspacePreferencesChanged:(NSNotification *)aNotification
-// {
-//   /* FIXME reload only those preferences that really were changed
-//    * TODO  add a user info to aNotification, which includes a bitmask
-//    *       denoting the updated preference files.
-//    */
-//   NSFileManager *mgr = [NSFileManager defaultManager];
-//   NSData *data;
-//   NSDictionary *dict;
+- (void)_fileSystemPathChanged:(NSNotification *)aNotification
+{
+  NSString *changedPath = [aNotification userInfo][@"ChangedPath"];
+  NSString *changedFile = [aNotification userInfo][@"ChangedFile"];
+  NSFileManager *mgr = [NSFileManager defaultManager];
+  NSData *data;
+  NSDictionary *dict;
 
-//   if ([mgr isReadableFileAtPath:extPrefPath] == YES) {
-//     data = [NSData dataWithContentsOfFile:extPrefPath];
-//     if (data) {
-//       dict = [NSDeserializer deserializePropertyListFromData:data mutableContainers:NO];
-//       ASSIGN(extPreferences, dict);
-//     }
-//   }
+  // NSLog(@"NSWorkspace: changed path: %@ - %@ (operation: %@)", changedPath,
+  //       [aNotification userInfo][@"ChangedFile"], [aNotification userInfo][@"Operations"]);
 
-//   if ([mgr isReadableFileAtPath:appListPath] == YES) {
-//     data = [NSData dataWithContentsOfFile:appListPath];
-//     if (data) {
-//       dict = [NSDeserializer deserializePropertyListFromData:data mutableContainers:NO];
-//       ASSIGN(applications, dict);
-//     }
-//   }
-//   /*
-//    *	Invalidate the cache of icons for file extensions.
-//    */
-//   [_iconMap removeAllObjects];
-// }
+  if ([changedFile containsString:[_extPreferencesPath lastPathComponent]]) {
+    // NSLog(@"NSWorkspace: extension preferences changed at path %@", changedPath);
+    [[self fileSystemMonitor] removePath:_extPreferencesPath];
+    if ([mgr isReadableFileAtPath:_extPreferencesPath] == YES) {
+      data = [NSData dataWithContentsOfFile:_extPreferencesPath];
+      if (data) {
+        dict = [NSDeserializer deserializePropertyListFromData:data mutableContainers:NO];
+        ASSIGN(_extPreferences, dict);
+      }
+      [[self fileSystemMonitor] addPath:_extPreferencesPath];
+    }
+  }
+
+  if ([changedFile containsString:[_appListPath lastPathComponent]]) {
+    // NSLog(@"NSWorkspace: application list preferences changed at path %@", changedPath);
+    [[self fileSystemMonitor] removePath:_appListPath];
+    if ([mgr isReadableFileAtPath:_appListPath] == YES) {
+      data = [NSData dataWithContentsOfFile:_appListPath];
+      if (data) {
+        dict = [NSDeserializer deserializePropertyListFromData:data mutableContainers:NO];
+        ASSIGN(_appList, dict);
+      }
+      [[self fileSystemMonitor] addPath:_appListPath];
+    }
+  }
+  if ([_appDirs doesContain:changedPath]) {
+    // NSLog(@"NSWorkspace: applications at %@ changed", changedPath);
+    [self findApplications];
+  }
+  
+  // Invalidate the cache of icons for file extensions.
+  [_iconMap removeAllObjects];
+}
 
 //-------------------------------------------------------------------------------------------------
 //--- Application management
@@ -1594,7 +1605,7 @@ static NSLock *raceLock = nil;
   NSDictionary *map;
 
   ext = [ext lowercaseString];
-  map = [_applications objectForKey:@"GSExtensionsMap"];
+  map = [_appList objectForKey:@"GSExtensionsMap"];
   return [map objectForKey:ext];
 }
 
@@ -1752,11 +1763,11 @@ static NSLock *raceLock = nil;
   RELEASE(_extPreferences);
   _extPreferences = map;
   data = [NSSerializer serializePropertyList:_extPreferences];
-  if ([data writeToFile:_extPrefPath atomically:YES]) {
+  if ([data writeToFile:_extPreferencesPath atomically:YES]) {
     // [NSNotificationCenter defaultCenter] postNotificationName:GSWorkspacePreferencesChanged
     //                                 object:self];
   } else {
-    NSDebugLLog(@"Workspace", @"Update %@ of failed", _extPrefPath);
+    NSDebugLLog(@"Workspace", @"Update %@ of failed", _extPreferencesPath);
   }
 }
 
@@ -1791,11 +1802,11 @@ static NSLock *raceLock = nil;
   RELEASE(_extPreferences);
   _extPreferences = map;
   data = [NSSerializer serializePropertyList:_extPreferences];
-  if ([data writeToFile:_extPrefPath atomically:YES]) {
+  if ([data writeToFile:_extPreferencesPath atomically:YES]) {
     // [NSNotificationCenter defaultCenter] postNotificationName:GSWorkspacePreferencesChanged
     //                                 object:self];
   } else {
-    NSDebugLLog(@"Workspace", @"Update %@ of failed", _extPrefPath);
+    NSDebugLLog(@"Workspace", @"Update %@ of failed", _extPreferencesPath);
   }
 }
 

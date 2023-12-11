@@ -90,10 +90,12 @@
   BOOL _userDefaultsChanged;
   // ~/Library/Services/.GNUstepAppList
   NSString *_appListPath;
-  NSDictionary *_applications;
+  NSDictionary *_appList;
   // ~/Library/Services/.GNUstepExtPrefs
-  NSString *_extPrefPath;
+  NSString *_extPreferencesPath;
   NSDictionary *_extPreferences;
+  // Paths to Applications on all domains
+  NSArray *_appDirs;
 }
 
 @property (readonly) BOOL isQuitting;
