@@ -265,11 +265,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 //--- Launching and Manipulating Applications
 //-----------------------------------------------------------------------------
 
-/** Hides all applications other than the sender.
-    GNUstep:
-    Instructs all the other running applications to hide themselves.
-    <em>not yet implemented</em>*/
-// TODO
+/** Hides all applications other than the sender. */
 - (void)hideOtherApplications;
 
 /** Instructs Workspace Manager to launch the application appName and returns

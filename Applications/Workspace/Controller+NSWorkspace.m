@@ -36,6 +36,8 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
+#include "Foundation/NSPathUtilities.h"
+#include "Foundation/NSArray.h"
 #import <Foundation/Foundation.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
@@ -107,6 +109,7 @@ static NSString *_rootPath = @"/";
   NSFileManager *mgr = [NSFileManager defaultManager];
   NSString *service;
   NSArray *libraryDirs;
+  NSArray *_appDirs;
   NSData *data;
   NSDictionary *dict;
 
@@ -137,6 +140,12 @@ static NSString *_rootPath = @"/";
       dict = [NSDeserializer deserializePropertyListFromData:data mutableContainers:NO];
       _applications = RETAIN(dict);
     }
+  }
+
+  _appDirs = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSAllDomainsMask, YES);
+  for (NSString *dirPath in _appDirs) {
+    NSLog(@"Directory `%@` will be added to filesystem monitor.", dirPath);
+    // [[self fileSystemMonitor] addPath:dirPath];
   }
 }
 
