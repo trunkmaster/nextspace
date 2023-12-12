@@ -115,9 +115,7 @@ static NSString *_rootPath = @"/";
   libraryDirs = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
   service = [[libraryDirs objectAtIndex:0] stringByAppendingPathComponent:@"Services"];
 
-  /*
-   * Load file extension preferences.
-   */
+  // Load file extension preferences.
   _extPreferencesPath = [service stringByAppendingPathComponent:@".GNUstepExtPrefs"];
   RETAIN(_extPreferencesPath);
   if ([mgr isReadableFileAtPath:_extPreferencesPath] == YES) {
@@ -129,9 +127,7 @@ static NSString *_rootPath = @"/";
     [[self fileSystemMonitor] addPath:_extPreferencesPath];
   }
 
-  /*
-   * Load cached application information.
-   */
+  // Load cached application information.
   _appListPath = [service stringByAppendingPathComponent:@".GNUstepAppList"];
   RETAIN(_appListPath);
   if ([mgr isReadableFileAtPath:_appListPath] == YES) {
@@ -1265,6 +1261,11 @@ static NSLock *raceLock = nil;
   
   // Invalidate the cache of icons for file extensions.
   [_iconMap removeAllObjects];
+
+  // Update inspector info (may be opened at "Tools" section)
+  if (inspector != nil) {
+    [inspector revert:self];
+  }
 }
 
 //-------------------------------------------------------------------------------------------------

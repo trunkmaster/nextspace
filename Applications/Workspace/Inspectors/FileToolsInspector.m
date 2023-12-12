@@ -22,6 +22,7 @@
 #include <AppKit/AppKit.h>
 
 #import <DesktopKit/NXTDefaults.h>
+#include "AppKit/NSView.h"
 #import "FileToolsInspector.h"
 
 static inline void AddAppToMatrix(NSString *appName, NSMatrix *matrix)
@@ -82,13 +83,37 @@ static id toolsInspector = nil;
 
 - (void)awakeFromNib
 {
-  NSDebugLLog(@"Ispector", @"[FileToolsInspector] awakeFromNib");
+  NSButtonCell *cell;
+
+  NSDebugLLog(@"Inspector", @"[FileToolsInspector] awakeFromNib");
+  ws = [NSWorkspace sharedWorkspace];
+  // ws = [NSApp delegate];
+
+  defaultEditor =
+      [[[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"] stringByDeletingPathExtension];
+  [defaultEditor retain];
+
+  // App matrix scrollview
+  [appListView setBorderType:NSBezelBorder];
+  [appListView setHasHorizontalScroller:YES];
   [[appListView horizontalScroller] setArrowsPosition:NSScrollerArrowsNone];
 
-  ws = [NSWorkspace sharedWorkspace];
+  // App matrix
+  cell = [[NSButtonCell new] autorelease];
+  [cell setImagePosition:NSImageOnly];
+  [cell setButtonType:NSOnOffButton];
+  [cell setRefusesFirstResponder:YES];
 
-  defaultEditor = [[[[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"]
-      stringByDeletingPathExtension] retain];
+  appMatrix = [[[NSMatrix alloc] initWithFrame:NSMakeRect(0, 0, 64, 64)] autorelease];
+  [appMatrix setPrototype:cell];
+  [appMatrix setCellSize:NSMakeSize(64, 64)];
+  [appMatrix setTarget:self];
+  [appMatrix setDoubleAction:@selector(openWithApp:)];
+  [appMatrix setAction:@selector(appSelected:)];
+  [appMatrix setAutoscroll:YES];
+  [appMatrix setIntercellSpacing:NSZeroSize];
+
+  [appListView setDocumentView:appMatrix];
 }
 
 // --- Actions ---
@@ -197,53 +222,30 @@ static id toolsInspector = nil;
 
 - revert:sender
 {
-  NSDebugLLog(@"Ispector", @"File Tools Inspector: revert:");
-  NSMatrix *matrix;
-  NSButtonCell *cell;
+  NSDebugLLog(@"Inspector", @"File Tools Inspector: revert:");
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString *defaultAppName;
   NSString *fileType;
-
-  NSString *selectedPath = nil, *fp;
-  NSArray *selectedFiles = nil;
+  NSString *selectedPath;
+  NSString *filePath;
+  NSArray *selectedFiles;
 
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];
 
   ASSIGN(path, selectedPath);
   ASSIGN(files, selectedFiles);
 
-  {
-    [ws setBestApp:@"TextEdit" inRole:nil forExtension:@""];
-    [[NSApp delegate] getInfoForFile:@"/Users/me" application:&defaultAppName type:&fileType];
-    NSDebugLLog(@"Ispector", @"Default application for all files: %@", defaultAppName);
-    defaultAppName = nil;
-    fileType = nil;
+  filePath = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
+  [[NSApp delegate] getInfoForFile:filePath application:&defaultAppName type:&fileType];
+
+  if ([appMatrix numberOfRows] > 0) {
+    [appMatrix removeRow:0];
   }
-
-  fp = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
-  [[NSApp delegate] getInfoForFile:fp application:&defaultAppName type:&fileType];
-
-  // Create button matrix
-  cell = [[NSButtonCell new] autorelease];
-  [cell setImagePosition:NSImageOnly];
-  [cell setButtonType:NSOnOffButton];
-  [cell setRefusesFirstResponder:YES];
-
-  matrix = [[[NSMatrix alloc] initWithFrame:NSMakeRect(0, 0, 64, 64)] autorelease];
-  [matrix setPrototype:cell];
-  [matrix setCellSize:NSMakeSize(64, 64)];
-  [matrix setTarget:self];
-  [matrix setDoubleAction:@selector(openWithApp:)];
-  [matrix setAction:@selector(appSelected:)];
-  [matrix setAutoscroll:YES];
-  [matrix setIntercellSpacing:NSZeroSize];
 
   if (defaultAppName != nil ||
       (defaultEditor != nil && ([fileType isEqualToString:NSPlainFileType] ||
                                 [fileType isEqualToString:NSShellCommandFileType]))) {
-    NSEnumerator *e;
     NSString *appName;
-    NSButtonCell *cell;
     NSDictionary *extInfo;
     BOOL seenDefaultEditor = NO;
 
@@ -257,12 +259,13 @@ static id toolsInspector = nil;
       }
     }
 
-    AddAppToMatrix(defaultAppName, matrix);
+    AddAppToMatrix(defaultAppName, appMatrix);
 
-    if ((extInfo = [ws infoForExtension:[fp pathExtension]])) {
-      e = [[[extInfo allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]
-          objectEnumerator];
-      while ((appName = [e nextObject]) != nil) {
+    if ((extInfo = [ws infoForExtension:[filePath pathExtension]])) {
+      // e = [[[extInfo allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]
+      //     objectEnumerator];
+      // while ((appName = [e nextObject]) != nil) {
+      for (appName in [extInfo allKeys]) {
         appName = [appName stringByDeletingPathExtension];
 
         if ([appName isEqualToString:defaultAppName])
@@ -270,22 +273,21 @@ static id toolsInspector = nil;
         if ([appName isEqualToString:defaultEditor])
           seenDefaultEditor = YES;
 
-        AddAppToMatrix(appName, matrix);
+        AddAppToMatrix(appName, appMatrix);
       }
     }
 
     if (seenDefaultEditor == NO && defaultEditor != nil) {
-      AddAppToMatrix(defaultEditor, matrix);
+      AddAppToMatrix(defaultEditor, appMatrix);
     }
-
-    [self appSelected:matrix];
+    [self appSelected:appMatrix];
   } else {
     [defaultAppField setStringValue:nil];
     [appPathField setStringValue:nil];
   }
 
-  [matrix sizeToCells];
-  [appListView setDocumentView:matrix];
+  [appMatrix sizeToCells];
+  // [appListView setDocumentView:matrix];
 
   [super revert:self];
   [[[self okButton] cell] setTitle:@"Set Default"];

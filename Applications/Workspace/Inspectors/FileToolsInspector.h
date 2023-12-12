@@ -31,6 +31,8 @@
   id bottomTextField;
   id view;
 
+  NSMatrix *appMatrix;
+
   NSWorkspace *ws;
   NSString *defaultEditor;
 
