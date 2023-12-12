@@ -22,18 +22,24 @@
 #include <AppKit/AppKit.h>
 
 #import <DesktopKit/NXTDefaults.h>
-#include "AppKit/NSView.h"
 #import "FileToolsInspector.h"
 
 static inline void AddAppToMatrix(NSString *appName, NSMatrix *matrix)
 {
   NSButtonCell *cell;
-  NSWorkspace *ws = [NSWorkspace sharedWorkspace];
+  NSImage *icon;
+  NSString *appPath;
 
   [matrix addColumn];
   cell = [matrix cellAtRow:0 column:[matrix numberOfColumns] - 1];
   [cell setTitle:appName];
-  [cell setImage:[ws iconForFile:[ws fullPathForApplication:appName]]];
+  appPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
+  if (appPath) {
+    icon = [[NSApp delegate] iconForFile:appPath];
+    if (icon) {
+      [cell setImage:icon];
+    }
+  }
 }
 
 @interface FileToolsInspector (Private)
@@ -86,8 +92,8 @@ static id toolsInspector = nil;
   NSButtonCell *cell;
 
   NSDebugLLog(@"Inspector", @"[FileToolsInspector] awakeFromNib");
-  ws = [NSWorkspace sharedWorkspace];
-  // ws = [NSApp delegate];
+  // ws = [NSWorkspace sharedWorkspace];
+  ws = [NSApp delegate];
 
   defaultEditor =
       [[[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"] stringByDeletingPathExtension];
@@ -127,7 +133,7 @@ static id toolsInspector = nil;
     return;
   }
 
-  appFullPath = [ws fullPathForApplication:appName];
+  appFullPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
 
   [appPathField setStringValue:appFullPath];
   [defaultAppField setStringValue:appName];
@@ -222,7 +228,8 @@ static id toolsInspector = nil;
 
 - revert:sender
 {
-  NSDebugLLog(@"Inspector", @"File Tools Inspector: revert:");
+  // NSDebugLLog(@"Inspector", @"File Tools Inspector: revert:");
+  NSLog(@"File Tools Inspector: revert:");
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString *defaultAppName;
   NSString *fileType;
@@ -261,10 +268,8 @@ static id toolsInspector = nil;
 
     AddAppToMatrix(defaultAppName, appMatrix);
 
-    if ((extInfo = [ws infoForExtension:[filePath pathExtension]])) {
-      // e = [[[extInfo allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)]
-      //     objectEnumerator];
-      // while ((appName = [e nextObject]) != nil) {
+    if ((extInfo = [ws _infoForExtension:[filePath pathExtension]])) {
+      NSLog(@"Inspector: extension info: %@", extInfo);
       for (appName in [extInfo allKeys]) {
         appName = [appName stringByDeletingPathExtension];
 
@@ -287,7 +292,6 @@ static id toolsInspector = nil;
   }
 
   [appMatrix sizeToCells];
-  // [appListView setDocumentView:matrix];
 
   [super revert:self];
   [[[self okButton] cell] setTitle:@"Set Default"];

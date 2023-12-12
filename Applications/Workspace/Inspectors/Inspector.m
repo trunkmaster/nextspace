@@ -127,7 +127,7 @@
   if (currentInspector != inspector) {
     ASSIGN(currentInspector, inspector);
   }
-  NSDebugLLog(@"Ispector", @"Current inspector: %@", [currentInspector className]);
+  NSDebugLLog(@"Inspector", @"Current inspector: %@", [currentInspector className]);
 }
 
 // Returns array of bundle.registry files contents for 'contents' inpector
@@ -268,7 +268,7 @@
   if (object == nil) {
     if (![inspectorPath isEqualToString:@"BUILTIN"]) {
       if ([[NSBundle alloc] initWithPath:inspectorPath] == nil) {
-        NSDebugLLog(@"Ispector", @"ERROR: corrupted inspector bundle found at path: %@", inspectorPath);
+        NSDebugLLog(@"Inspector", @"ERROR: corrupted inspector bundle found at path: %@", inspectorPath);
         return nil;
       }
     }
@@ -354,7 +354,7 @@
       registry = [inspectorsRegistry objectAtIndex:i];
       if ([registry objectForKey:@"extensions"] != nil &&
           [[registry objectForKey:@"extensions"] containsObject:extension]) {
-        NSDebugLLog(@"Ispector", @"Extensions: '%@', extension: %@", [registry objectForKey:@"extensions"], extension);
+        NSDebugLLog(@"Inspector", @"Extensions: '%@', extension: %@", [registry objectForKey:@"extensions"], extension);
         if ([registry objectForKey:@"priority"] == nil) {
           pr = -1;
         } else {
@@ -363,7 +363,7 @@
         if (pr >= priority) {
           priority = pr;
           inspector = [self _inspectorWithRegistry:registry];
-          NSDebugLLog(@"Ispector", @"---Selected inspector with class name: %@ (%@)", [inspector className],
+          NSDebugLLog(@"Inspector", @"---Selected inspector with class name: %@ (%@)", [inspector className],
                 [[registry objectForKey:@"object"] className]);
         }
       }
@@ -386,7 +386,7 @@
     count = [inspectorsRegistry count];
     for (i = 0; i < count; i++) {
       registry = [inspectorsRegistry objectAtIndex:i];
-      NSDebugLLog(@"Ispector", @"--- inspector #%lu: %@", i, [registry objectForKey:@"class"]);
+      NSDebugLLog(@"Inspector", @"--- inspector #%lu: %@", i, [registry objectForKey:@"class"]);
       if ([[registry objectForKey:@"mode"] isEqualToString:mode]) {
         inspector = [self _inspectorWithRegistryIndex:i];
         break;
@@ -442,7 +442,7 @@ static Inspector *inspectorPanel = nil;
 
 - (void)dealloc
 {
-  NSDebugLLog(@"Ispector", @"Inspector(%@): dealloc", [window title]);
+  NSDebugLLog(@"Inspector", @"Inspector(%@): dealloc", [window title]);
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
@@ -465,7 +465,7 @@ static Inspector *inspectorPanel = nil;
 // This is the real -init of Inspector.
 - (void)activateInspector:sender
 {
-  NSDebugLLog(@"Ispector", @"%@ - activateInspector", [self className]);
+  NSDebugLLog(@"Inspector", @"%@ - activateInspector", [self className]);
 
   if (self != inspectorPanel) {
     return;
@@ -473,10 +473,10 @@ static Inspector *inspectorPanel = nil;
 
   // Inspector panel window must be loaded
   if (!window) {
-    NSDebugLLog(@"Ispector", @"Inspector: loading InspectorPanel GORM");
+    NSDebugLLog(@"Inspector", @"Inspector: loading InspectorPanel GORM");
 
     if (![NSBundle loadNibNamed:@"InspectorPanel" owner:self]) {
-      NSDebugLLog(@"Ispector", @"Error loading Inspector panel GORM file!");
+      NSDebugLLog(@"Inspector", @"Error loading Inspector panel GORM file!");
       return;
     }
     [window setFrameAutosaveName:@"Inspector"];
@@ -537,7 +537,7 @@ static Inspector *inspectorPanel = nil;
   }
 
   theInspector = [self _inspectorForMode:mode path:filePath files:fileSelection];
-  NSDebugLLog(@"Ispector", @"Set inspector: %@", [theInspector className]);
+  NSDebugLLog(@"Inspector", @"Set inspector: %@", [theInspector className]);
 
   // ---
   if (!theInspector) {
@@ -552,7 +552,7 @@ static Inspector *inspectorPanel = nil;
   //     theInspector = nil;
   //   }
 
-  NSDebugLLog(@"Ispector", @">>Set inspector class: %@ > '%@'", [theInspector className],
+  NSDebugLLog(@"Inspector", @">>Set inspector class: %@ > '%@'", [theInspector className],
         [[theInspector window] title]);
   [self _setInspector:theInspector];
 }
@@ -610,32 +610,30 @@ static Inspector *inspectorPanel = nil;
 // 4. FileViewer selection changed [FileViewer displayPath:selection:sender:]
 - (id)revert:sender
 {
-  if (sender == revertButton)  // button clicked
-  {
-    NSDebugLLog(@"Ispector", @"'Revert' button clicked. Send message to '%@'", [currentInspector className]);
+  if (sender == revertButton) {  // button clicked
+    NSDebugLLog(@"Inspector", @"'Revert' button clicked. Send message to '%@'",
+                [currentInspector className]);
     // Update contents of section inspector
     [currentInspector revert:sender];
-  } else if ([sender isKindOfClass:[FileViewer class]])  // selection changed
-  {
+  } else if ([sender isKindOfClass:[FileViewer class]]) {  // selection changed
     if ([window isVisible] == NO) {
       return self;
     }
-    NSDebugLLog(@"Ispector", @"Selection changed in FileViewer");
+    NSDebugLLog(@"Inspector", @"Selection changed in FileViewer");
     // Update Inspector panel fields
     fileViewerSelectionChanged = YES;
     [self _updateDisplay];
 
     // Update contents of section inspector
     [self selectView:popUpButton];
-  } else if (self == inspectorPanel)  // message from subclass
-  {
+  } else if (self == inspectorPanel) {
     [[okButton cell] setTitle:@"OK"];
     [okButton setEnabled:NO];
     [[revertButton cell] setTitle:@"Revert"];
     [revertButton setEnabled:NO];
 
     [window setDocumentEdited:NO];
-  } else {
+  } else if ([sender isKindOfClass:[Inspector class]]) {  // message from subclass
     [inspectorPanel revert:sender];
   }
 
@@ -700,7 +698,7 @@ static Inspector *inspectorPanel = nil;
     return;
   }
 
-  NSDebugLLog(@"Ispector", @"%@ getSelectedPath:andFiles:", [self className]);
+  NSDebugLLog(@"Inspector", @"%@ getSelectedPath:andFiles:", [self className]);
 
   viewer = [(Controller *)[NSApp delegate] fileViewerForWindow:[NSApp keyWindow]];
   if (viewer) {
@@ -712,7 +710,7 @@ static Inspector *inspectorPanel = nil;
       path = [path stringByDeletingLastPathComponent];
     }
 
-    NSDebugLLog(@"Ispector", @"2:%@:%@", path, selection);
+    NSDebugLLog(@"Inspector", @"2:%@:%@", path, selection);
 
     ASSIGN(filePath, path);
     ASSIGN(fileSelection, selection);
