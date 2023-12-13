@@ -100,9 +100,9 @@
 
 @interface Controller (NSWorkspace)
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 //--- Creating a NSWorkspace
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /* Read configuration files from ~/Library/Services directory */
 - (void)initPrefs;
@@ -110,9 +110,9 @@
 /* Initialize private implementation of NSWorkspace */
 - (id)initNSWorkspace;
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 //--- Opening Files
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /** Instructs Workspace Manager to open the file specified by fullPath using
     the default application for its type; returns YES if file was successfully
@@ -150,9 +150,9 @@
 // --- [NSWorkspace _workspaceApplication]
 - (BOOL)openTempFile:(NSString *)fullPath;
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 //--- Manipulating Files
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /** Requests the Workspace Manager to perform a file operation on a set of
     files in the source directory specifying the destination directory if
@@ -173,9 +173,9 @@
 // --- [NSWorkspace _workspaceApplication]
 - (BOOL)selectFile:(NSString *)fullPath inFileViewerRootedAtPath:(NSString *)rootFullpath;
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 //--- Requesting Information about Files
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 // TODO (use libmagic)
 /** Describes the file system at fullPath in description and fileSystemType,
@@ -239,9 +239,9 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 /** Returns an icon of directory in opened state.*/
 - (NSImage *)iconForOpenedDirectory:(NSString *)fullPath;
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 //--- Tracking Changes to the File System
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /** Returns whether a change to the file system has been registered with a
     noteFileSystemChanged message since the last fileSystemChanged message.*/
@@ -250,9 +250,9 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 /** Informs Workspace Manager that the file system has changed.*/
 - (void)noteFileSystemChanged;
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 //--- Updating Registered Services and File Types
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /** Instructs Workspace Manager to examine all applications in the normal
     places and update its records of registered services and file types.
@@ -261,9 +261,9 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 // CHECK
 - (void)findApplications;
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 //--- Launching and Manipulating Applications
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /** Hides all applications other than the sender. */
 - (void)hideOtherApplications;
@@ -277,37 +277,6 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
     the application's icon if showIcon is YES and using the dock autolaunching
     defaults if autolaunch is YES; returns YES if application was successfully
     launched and NO otherwise.*/
-/*
- * <p>Launches the specified application (unless it is already running).<br />
- * If the autolaunch flag is yes, sets the autolaunch user default for the
- * newly launched application, so that applications which understand the
- * concept of being autolaunched at system startup time can modify their
- * behavior appropriately.
- * </p>
- * <p>Sends an NSWorkspaceWillLaunchApplicationNotification before it
- * actually attempts to launch the application (this is not sent if the
- * application is already running).
- * </p>
- * <p>The application sends an NSWorkspaceDidlLaunchApplicationNotification
- * on completion of launching.  This is not sent if the application is already
- * running, or if it fails to complete its startup.
- * </p>
- * <p>Returns NO if the application cannot be launched (eg. it does not exist
- * or the binary is not executable).
- * </p>
- * <p>Returns YES if the application was already running or of it was launched
- * (this does not necessarily mean that the application succeeded in starting
- * up fully).
- * </p>
- * <p>Once an application has fully started up, you should be able to connect
- * to it using [NSConnection+rootProxyForConnectionWithRegisteredName:host:]
- * passing the application name (normally the filesystem name excluding path
- * and file extension) and an empty host name.  This will let you communicate
- * with the the [NSApplication-delegate] of the launched application, and you
- * can generally use this as a test of whether an application is running
- * correctly.
- * </p>
- */
 // --- [NSWorkspace _workspaceApplication]
 - (BOOL)launchApplication:(NSString *)appName showIcon:(BOOL)showIcon autolaunch:(BOOL)autolaunch;
 
@@ -329,19 +298,23 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 // Return not only GNUstep application but also registered X11 applications.
 // Such application record has separate field @"IsXWindowApplication" set to @"YES".
 // --- [NSWorkspace _workspaceApplication]
-- (NSArray*) launchedApplications;
+- (NSArray *)launchedApplications;
 
-//-----------------------------------------------------------------------------
+// NSWorkspace's method reimplementation.
+// It's not called by NSWorkspace, but used in private methods. Also can be used inside application
+- (NSString *)fullPathForApplication:(NSString *)appName;
+
+//-------------------------------------------------------------------------------------------------
 //--- Unmounting a Device
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /** Unmounts and ejects the device at path and returns YES if unmount
     succeeded and NO otherwise.*/
 - (BOOL)unmountAndEjectDeviceAtPath:(NSString *)path;
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 //--- Tracking Status Changes for Devices
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /** Causes the Workspace Manager to poll the system's drives for any disks
     that have been inserted but not yet mounted. Asks the Workspace Manager to
@@ -357,16 +330,16 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 /** Returns a list of the pathnames of all currently mounted removable disks.*/
 - (NSArray *)mountedRemovableMedia;
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 // Notification Center
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /** Returns the notification center for WorkSpace notifications.*/
 - (NSNotificationCenter *)notificationCenter;
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 // Tracking Changes to the User Defaults Database
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /** Informs Workspace Manager that the defaults database has changed.*/
 // TODO
@@ -378,17 +351,17 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 // TODO
 - (BOOL)userDefaultsChanged;
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 // Animating an Image
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /** Instructs Workspace Manager to animate a sliding image of image from
     fromPoint to toPoint, specified in screen coordinates.*/
 - (void)slideImage:(NSImage *)image from:(NSPoint)fromPoint to:(NSPoint)toPoint;
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 // Requesting Additional Time before Power Off or Logout
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 
 /** Requests more time before the power goes off or the user logs out; returns
     the granted number of additional milliseconds.*/
@@ -397,7 +370,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 
 @end
 
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 // Notifications (sent through the special notification center).
 //
 // userInfo keys (depends on type of notification):
@@ -411,7 +384,7 @@ APPKIT_EXPORT NSString *NSShellCommandFileType;
 //   The full path to operated device (string).
 // @"NSOperationNumber"
 //   The tag of file operation in Workspace Manager (string).
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 APPKIT_EXPORT NSString *NSWorkspaceWillLaunchApplicationNotification;    // @"NSApplicationName"
 APPKIT_EXPORT NSString *NSWorkspaceDidLaunchApplicationNotification;     // @"NSApplicationName"
 APPKIT_EXPORT NSString *NSWorkspaceDidTerminateApplicationNotification;  // @"NSApplicationName"

@@ -770,7 +770,7 @@
 
   // FileSystemMonitor
   // TODO:
-  // Even if path is not changed attributes of selected directory may be
+  // Even if path is not changed, attributes of selected directory may be
   // changed. For example, from non-readable to readable.
   if (![oldDisplayedPath isEqualToString:displayedPath]) {
     NSString *pathToMonitor = nil, *pathToUnmonitor = nil;

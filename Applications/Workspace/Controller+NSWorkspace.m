@@ -556,6 +556,7 @@ static NSLock *raceLock = nil;
 
   attributes = [mgr fileAttributesAtPath:fullPath traverseLink:YES];
   fileType = [attributes objectForKey:NSFileType];
+  NSLog(@"(NSWorkspace-iconForFile): %@, file type: %@, extension: %@", fullPath, fileType, pathExtension);
   if (([fileType isEqual:NSFileTypeDirectory] == YES) &&
       [mgr isReadableFileAtPath:fullPath] == NO) {
     image = [NSImage imageNamed:@"badFolder"];
@@ -808,6 +809,50 @@ static NSLock *raceLock = nil;
 - (NSArray *)launchedApplications
 {
   return [[ProcessManager shared] applications];
+}
+
+- (NSString *)fullPathForApplication:(NSString *)appName
+{
+  NSString *appPath;
+  NSString *appExt;
+  NSFileManager *fm;
+  BOOL isDir;
+
+  if (appName == nil || [appName length] == 0) {
+    return nil;
+  }
+
+  if ([appName isAbsolutePath] != NO) {
+    return appName;
+  }
+
+  fm = [NSFileManager defaultManager];
+  appExt = [appName pathExtension];
+
+  for (NSString *appDir in _appDirs) {
+    appPath = [appDir stringByAppendingPathComponent:appName];
+
+    if (appExt == nil || [appExt length] == 0) {  // no extension, let's find one
+      appPath =
+          [appDir stringByAppendingPathComponent:[appName stringByAppendingPathExtension:@"app"]];
+      if ([fm fileExistsAtPath:appPath isDirectory:&isDir] == NO || isDir == NO) {
+        appPath = [appDir
+            stringByAppendingPathComponent:[appName stringByAppendingPathExtension:@"debug"]];
+        if ([fm fileExistsAtPath:appPath isDirectory:&isDir] == NO || isDir == NO) {
+          appPath = [appDir
+              stringByAppendingPathComponent:[appName stringByAppendingPathExtension:@"profile"]];
+        }
+      }
+    }
+
+    if ([fm fileExistsAtPath:appPath isDirectory:&isDir] != NO && isDir != NO) {
+      break;
+    } else {
+      appPath = nil;
+    }
+  }
+
+  return appPath;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1225,11 +1270,18 @@ static NSLock *raceLock = nil;
   NSFileManager *mgr = [NSFileManager defaultManager];
   NSData *data;
   NSDictionary *dict;
+  BOOL isAppListChanged = NO;
 
-  // NSLog(@"NSWorkspace: changed path: %@ - %@ (operation: %@)", changedPath,
-  //       [aNotification userInfo][@"ChangedFile"], [aNotification userInfo][@"Operations"]);
+  NSLog(@"NSWorkspace: changed path: %@ - %@ (operation: %@)", changedPath,
+        [aNotification userInfo][@"ChangedFile"], [aNotification userInfo][@"Operations"]);
 
-  if ([changedFile containsString:[_extPreferencesPath lastPathComponent]]) {
+  if ([_appDirs doesContain:changedPath]) {
+    NSLog(@"NSWorkspace: applications at %@ changed", changedPath);
+    [self findApplications];
+    isAppListChanged = YES;
+  }
+
+  if ([changedFile containsString:[_extPreferencesPath lastPathComponent]] || isAppListChanged != NO) {
     // NSLog(@"NSWorkspace: extension preferences changed at path %@", changedPath);
     [[self fileSystemMonitor] removePath:_extPreferencesPath];
     if ([mgr isReadableFileAtPath:_extPreferencesPath] == YES) {
@@ -1239,10 +1291,12 @@ static NSLock *raceLock = nil;
         ASSIGN(_extPreferences, dict);
       }
       [[self fileSystemMonitor] addPath:_extPreferencesPath];
+    } else {
+      NSLog(@"ERROR: Failed to track extension preferences!");
     }
   }
 
-  if ([changedFile containsString:[_appListPath lastPathComponent]]) {
+  if ([changedFile containsString:[_appListPath lastPathComponent]] || isAppListChanged != NO) {
     // NSLog(@"NSWorkspace: application list preferences changed at path %@", changedPath);
     [[self fileSystemMonitor] removePath:_appListPath];
     if ([mgr isReadableFileAtPath:_appListPath] == YES) {
@@ -1252,19 +1306,17 @@ static NSLock *raceLock = nil;
         ASSIGN(_appList, dict);
       }
       [[self fileSystemMonitor] addPath:_appListPath];
+    } else {
+      NSLog(@"ERROR: Failed to applications list!");
     }
   }
-  if ([_appDirs doesContain:changedPath]) {
-    // NSLog(@"NSWorkspace: applications at %@ changed", changedPath);
-    [self findApplications];
-  }
-  
   // Invalidate the cache of icons for file extensions.
   [_iconMap removeAllObjects];
 
   // Update inspector info (may be opened at "Tools" section)
-  if (inspector != nil) {
-    [inspector revert:self];
+  if (inspector != nil && isAppListChanged != NO) {
+    NSLog(@"(NSWorkspace): updating inspector.");
+    [inspector revert:[inspector revertButton]];
   }
 }
 
@@ -1539,36 +1591,12 @@ static NSLock *raceLock = nil;
  */
 - (NSBundle *)_bundleForApp:(NSString *)appName
 {
-  if ([appName length] == 0) {
+  NSLog(@"(NSWorkspace-_bundleForApp): BEGIN - %@", appName);
+  if (appName == nil || [appName length] == 0) {
     return nil;
   }
-  if ([[appName lastPathComponent] isEqual:appName]) {  // it's a name
-    appName = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
-  } else {
-    NSFileManager *fm;
-    NSString *ext;
-    BOOL flag;
-
-    fm = [NSFileManager defaultManager];
-    ext = [appName pathExtension];
-    if ([ext length] == 0) {  // no extension, let's find one
-      NSString *path;
-
-      path = [appName stringByAppendingPathExtension:@"app"];
-      if ([fm fileExistsAtPath:path isDirectory:&flag] == NO || flag == NO) {
-        {
-          path = [appName stringByAppendingPathExtension:@"debug"];
-          if ([fm fileExistsAtPath:path isDirectory:&flag] == NO || flag == NO) {
-            path = [appName stringByAppendingPathExtension:@"profile"];
-          }
-        }
-        appName = path;
-      }
-      if ([fm fileExistsAtPath:appName isDirectory:&flag] == NO || flag == NO) {
-        appName = nil;
-      }
-    }
-  }
+  appName = [self fullPathForApplication:appName];
+  NSLog(@"(NSWorkspace-_bundleForApp): END - %@", appName);
   if (appName == nil) {
     return nil;
   }
@@ -1623,8 +1651,17 @@ static NSLock *raceLock = nil;
   NSString *iconPath = nil;
   NSString *fullPath;
 
-  fullPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
-  bundle = [self _bundleForApp:fullPath];
+  if ([appName isAbsolutePath] != NO) {
+    fullPath = appName;
+  } else {
+    fullPath = [self fullPathForApplication:appName];
+  }
+
+  if ([fullPath isAbsolutePath] != NO) {
+    bundle = [[NSBundle alloc] initWithPath:fullPath];
+  } else {
+    bundle = [self _bundleForApp:fullPath];
+  }
   if (bundle == nil) {
     return nil;
   }
