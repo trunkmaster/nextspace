@@ -33,7 +33,7 @@ static inline void AddAppToMatrix(NSString *appName, NSMatrix *matrix)
   [matrix addColumn];
   cell = [matrix cellAtRow:0 column:[matrix numberOfColumns] - 1];
   [cell setTitle:appName];
-  appPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
+  appPath = [[NSApp delegate] fullPathForApplication:appName];
   if (appPath) {
     icon = [[NSApp delegate] iconForFile:appPath];
     if (icon) {
@@ -92,7 +92,6 @@ static id toolsInspector = nil;
   NSButtonCell *cell;
 
   NSDebugLLog(@"Inspector", @"[FileToolsInspector] awakeFromNib");
-  // ws = [NSWorkspace sharedWorkspace];
   ws = [NSApp delegate];
 
   defaultEditor =
@@ -133,7 +132,7 @@ static id toolsInspector = nil;
     return;
   }
 
-  appFullPath = [[NSWorkspace sharedWorkspace] fullPathForApplication:appName];
+  appFullPath = [ws fullPathForApplication:appName];
 
   [appPathField setStringValue:appFullPath];
   [defaultAppField setStringValue:appName];
