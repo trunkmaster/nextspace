@@ -92,7 +92,7 @@ static id toolsInspector = nil;
   NSButtonCell *cell;
 
   NSDebugLLog(@"Inspector", @"[FileToolsInspector] awakeFromNib");
-  ws = [NSApp delegate];
+  workspace = [NSApp delegate];
 
   defaultEditor =
       [[[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"] stringByDeletingPathExtension];
@@ -125,17 +125,23 @@ static id toolsInspector = nil;
 
 - (void)appSelected:sender
 {
-  NSString *appFullPath;
   NSString *appName = [[sender selectedCell] title];
+  NSString *appFullPath = [workspace fullPathForApplication:appName];
 
-  if ([appName isEqualToString:[defaultAppField stringValue]]) {
+  if (appName == nil) {
     return;
   }
 
-  appFullPath = [ws fullPathForApplication:appName];
+  appFullPath = [workspace fullPathForApplication:appName];
+
+  if (appFullPath && [appFullPath isEqualToString:[appPathField stringValue]]) {
+    return;
+  }
 
   [appPathField setStringValue:appFullPath];
-  [defaultAppField setStringValue:appName];
+  if ([[defaultAppField stringValue] isEqualToString:defaultEditor] == NO) {
+    [defaultAppField setStringValue:appName];
+  }
 
   [super touch:self];
 }
@@ -211,7 +217,7 @@ static id toolsInspector = nil;
 
   // Save default application
   fp = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
-  [ws setBestApp:[selected title] inRole:nil forExtension:[fp pathExtension]];
+  [workspace setBestApp:[selected title] inRole:nil forExtension:[fp pathExtension]];
 
   // Exchange the icons in the matrix
   ASSIGN(title, [selected title]);
@@ -219,8 +225,8 @@ static id toolsInspector = nil;
   [first setTitle:title];
   DESTROY(title);
 
-  [first setImage:[ws iconForFile:[ws fullPathForApplication:[first title]]]];
-  [selected setImage:[ws iconForFile:[ws fullPathForApplication:[selected title]]]];
+  [first setImage:[workspace iconForFile:[workspace fullPathForApplication:[first title]]]];
+  [selected setImage:[workspace iconForFile:[workspace fullPathForApplication:[selected title]]]];
   [matrix selectCellAtRow:0 column:0];
   [self appSelected:matrix];
 }
@@ -267,7 +273,7 @@ static id toolsInspector = nil;
 
     AddAppToMatrix(defaultAppName, appMatrix);
 
-    if ((extInfo = [ws _infoForExtension:[filePath pathExtension]])) {
+    if ((extInfo = [workspace _infoForExtension:[filePath pathExtension]])) {
       NSLog(@"Inspector: extension info: %@", extInfo);
       for (appName in [extInfo allKeys]) {
         appName = [appName stringByDeletingPathExtension];

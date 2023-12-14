@@ -33,7 +33,7 @@
 
   NSMatrix *appMatrix;
 
-  NSWorkspace *ws;
+  NSWorkspace *workspace;
   NSString *defaultEditor;
 
   NSString *path;
