@@ -1317,7 +1317,7 @@
   }
 
   NSString *commonPath = NXTIntersectionPath(selectedPath, changedPath);
-  if (([commonPath length] < 1) || ([commonPath length] < [rootPath length])) {
+  if (([commonPath length] < [changedPath length]) || ([commonPath length] < [rootPath length])) {
     // No intersection or changed path is out of our focus.
     return;
   }
