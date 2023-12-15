@@ -548,17 +548,17 @@ static NSLock *raceLock = nil;
 {
   NSImage *image = nil;
   NSString *pathExtension = [[fullPath pathExtension] lowercaseString];
-  NSFileManager *mgr = [NSFileManager defaultManager];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
   NSDictionary *attributes;
   NSString *fileType;
   NSString *wmFileType, *appName;
   NSArray *searchPath;
 
-  attributes = [mgr fileAttributesAtPath:fullPath traverseLink:YES];
+  attributes = [fileManager fileAttributesAtPath:fullPath traverseLink:YES];
   fileType = [attributes objectForKey:NSFileType];
   NSLog(@"(NSWorkspace-iconForFile): %@, file type: %@, extension: %@", fullPath, fileType, pathExtension);
   if (([fileType isEqual:NSFileTypeDirectory] == YES) &&
-      [mgr isReadableFileAtPath:fullPath] == NO) {
+      [fileManager isReadableFileAtPath:fullPath] == NO) {
     image = [NSImage imageNamed:@"badFolder"];
   } else if ([fileType isEqual:NSFileTypeDirectory] == YES) {
     NSString *iconPath = nil;
@@ -588,7 +588,7 @@ static NSLock *raceLock = nil;
       if (image == nil) {
         image = [NSImage _standardImageWithName:@"NXApplication"];
       }
-    } else if ([pathExtension isEqualToString:@"bundle"]) {
+    } else if ([_wrappers containsObject:pathExtension] != NO) {
       image = [NSImage imageNamed:@"bundle"];
     }
 
@@ -601,9 +601,9 @@ static NSLock *raceLock = nil;
     // Directory icon '.dir.tiff', '.dir.png'
     if (iconPath == nil) {
       iconPath = [fullPath stringByAppendingPathComponent:@".dir.png"];
-      if ([mgr isReadableFileAtPath:iconPath] == NO) {
+      if ([fileManager isReadableFileAtPath:iconPath] == NO) {
         iconPath = [fullPath stringByAppendingPathComponent:@".dir.tiff"];
-        if ([mgr isReadableFileAtPath:iconPath] == NO) {
+        if ([fileManager isReadableFileAtPath:iconPath] == NO) {
           iconPath = nil;
         }
       }
@@ -639,18 +639,9 @@ static NSLock *raceLock = nil;
         }
       }
     }
-  } else if ([mgr isReadableFileAtPath:fullPath] == YES) {
+  } else if ([fileManager isReadableFileAtPath:fullPath] == YES) {
     // NSFileTypeRegular, NSFileType
     NSDebugLog(@"pathExtension is '%@'", pathExtension);
-
-    // By executable bit
-    if (image == nil && ([fileType isEqual:NSFileTypeRegular] == YES) &&
-        ([mgr isExecutableFileAtPath:fullPath] == YES)) {
-      if (unknownTool == nil) {
-        unknownTool = RETAIN([NSImage _standardImageWithName:@"NXTool"]);
-      }
-      image = unknownTool;
-    }
 
     // By extension
     if (image == nil) {
@@ -661,7 +652,17 @@ static NSLock *raceLock = nil;
     if (image == nil || image == [self _unknownFiletypeImage]) {
       image = [self _iconForFileContents:fullPath];
     }
-  } else if ([mgr isReadableFileAtPath:fullPath] == NO) {
+    
+    // By executable bit
+    if (image == nil && ([fileType isEqual:NSFileTypeRegular] == YES) &&
+        ([fileManager isExecutableFileAtPath:fullPath] == YES)) {
+      if (unknownTool == nil) {
+        unknownTool = RETAIN([NSImage _standardImageWithName:@"NXTool"]);
+      }
+      image = unknownTool;
+    }
+
+  } else if ([fileManager isReadableFileAtPath:fullPath] == NO) {
     image = [NSImage imageNamed:@"badFile"];
   }
 
@@ -675,7 +676,7 @@ static NSLock *raceLock = nil;
 - (NSImage *)iconForFiles:(NSArray *)pathArray
 {
   if ([pathArray count] == 1) {
-    return [self iconForFile:[pathArray objectAtIndex:0]];
+    return [self iconForFile:[pathArray firstObject]];
   }
   if (multipleFiles == nil) {
     multipleFiles = [NSImage imageNamed:@"MultipleSelection"];
