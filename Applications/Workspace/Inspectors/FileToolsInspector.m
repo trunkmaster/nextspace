@@ -126,20 +126,18 @@ static id toolsInspector = nil;
 - (void)appSelected:sender
 {
   NSString *appName = [[sender selectedCell] title];
-  NSString *appFullPath = [workspace fullPathForApplication:appName];
+  NSString *appFullPath;
 
   if (appName == nil) {
     return;
   }
 
   appFullPath = [workspace fullPathForApplication:appName];
-
-  if (appFullPath && [appFullPath isEqualToString:[appPathField stringValue]]) {
-    return;
+  if (appFullPath != nil) {
+    [appPathField setStringValue:appFullPath];
   }
 
-  [appPathField setStringValue:appFullPath];
-  if ([[defaultAppField stringValue] isEqualToString:defaultEditor] == NO) {
+  if ([sender selectedCell] == [sender cellAtRow:0 column:0]) {
     [defaultAppField setStringValue:appName];
   }
 
@@ -194,8 +192,8 @@ static id toolsInspector = nil;
   [[NSApp delegate] getInfoForFile:fp application:&defaultAppName type:&wsFileType];
 
   fmFileType = [[fm fileAttributesAtPath:fp traverseLink:NO] objectForKey:@"NSFileType"];
-  if ([wsFileType isEqualToString:NSDirectoryFileType] ||
-      [fmFileType isEqualToString:NSFileTypeDirectory]) {
+  if (([wsFileType isEqualToString:NSDirectoryFileType] ||
+       [fmFileType isEqualToString:NSFileTypeDirectory]) && defaultAppName == nil) {
     return NO;
   }
 
@@ -205,18 +203,17 @@ static id toolsInspector = nil;
 // Set default
 - (void)ok:sender
 {
-  NSMatrix *matrix = [appListView documentView];
   NSButtonCell *selected, *first;
   NSString *title = nil, *fp = nil;
 
-  if ([matrix numberOfColumns] == 0)
+  if ([appMatrix numberOfColumns] == 0)
     return;
 
-  selected = [matrix selectedCell];
-  first = [matrix cellAtRow:0 column:0];
+  selected = [appMatrix selectedCell];
+  first = [appMatrix cellAtRow:0 column:0];
 
   // Save default application
-  fp = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
+  fp = [path stringByAppendingPathComponent:[files firstObject]];
   [workspace setBestApp:[selected title] inRole:nil forExtension:[fp pathExtension]];
 
   // Exchange the icons in the matrix
@@ -227,8 +224,10 @@ static id toolsInspector = nil;
 
   [first setImage:[workspace iconForFile:[workspace fullPathForApplication:[first title]]]];
   [selected setImage:[workspace iconForFile:[workspace fullPathForApplication:[selected title]]]];
-  [matrix selectCellAtRow:0 column:0];
-  [self appSelected:matrix];
+
+  [appMatrix selectCellAtRow:0 column:0];
+  [self appSelected:appMatrix];
+  [super revert:self];
 }
 
 - revert:sender
@@ -241,63 +240,35 @@ static id toolsInspector = nil;
   NSString *selectedPath;
   NSString *filePath;
   NSArray *selectedFiles;
+  NSDictionary *appList;
 
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];
 
   ASSIGN(path, selectedPath);
   ASSIGN(files, selectedFiles);
 
-  filePath = [path stringByAppendingPathComponent:[files objectAtIndex:0]];
+  filePath = [path stringByAppendingPathComponent:[files firstObject]];
   [[NSApp delegate] getInfoForFile:filePath application:&defaultAppName type:&fileType];
 
   if ([appMatrix numberOfRows] > 0) {
     [appMatrix removeRow:0];
   }
+  defaultAppName = [defaultAppName stringByDeletingPathExtension];
+  AddAppToMatrix(defaultAppName, appMatrix);
 
-  if (defaultAppName != nil ||
-      (defaultEditor != nil && ([fileType isEqualToString:NSPlainFileType] ||
-                                [fileType isEqualToString:NSShellCommandFileType]))) {
-    NSString *appName;
-    NSDictionary *extInfo;
-    BOOL seenDefaultEditor = NO;
-
-    if (defaultAppName == nil) {
-      defaultAppName = defaultEditor;
-      seenDefaultEditor = YES;
-    } else {
-      defaultAppName = [defaultAppName stringByDeletingPathExtension];
-      if ([defaultAppName isEqualToString:defaultEditor]) {
-        seenDefaultEditor = YES;
+  if ((appList = [[NSApp delegate] applicationsForExtension:[filePath pathExtension]])) {
+    // NSLog(@"Inspector: extension info: %@", appList);
+    for (NSString *appName in [appList allKeys]) {
+      appName = [appName stringByDeletingPathExtension];
+      if ([appName isEqualToString:defaultAppName]) {
+        continue;
       }
+      AddAppToMatrix(appName, appMatrix);
     }
-
-    AddAppToMatrix(defaultAppName, appMatrix);
-
-    if ((extInfo = [workspace _infoForExtension:[filePath pathExtension]])) {
-      NSLog(@"Inspector: extension info: %@", extInfo);
-      for (appName in [extInfo allKeys]) {
-        appName = [appName stringByDeletingPathExtension];
-
-        if ([appName isEqualToString:defaultAppName])
-          continue;
-        if ([appName isEqualToString:defaultEditor])
-          seenDefaultEditor = YES;
-
-        AddAppToMatrix(appName, appMatrix);
-      }
-    }
-
-    if (seenDefaultEditor == NO && defaultEditor != nil) {
-      AddAppToMatrix(defaultEditor, appMatrix);
-    }
-    [self appSelected:appMatrix];
-  } else {
-    [defaultAppField setStringValue:nil];
-    [appPathField setStringValue:nil];
   }
 
+  [self appSelected:appMatrix];
   [appMatrix sizeToCells];
-
   [super revert:self];
   [[[self okButton] cell] setTitle:@"Set Default"];
 

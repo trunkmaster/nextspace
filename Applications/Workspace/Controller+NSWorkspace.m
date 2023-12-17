@@ -36,6 +36,8 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
+#include "Foundation/NSFileManager.h"
+#include "AppKit/NSWorkspace.h"
 #include "Foundation/NSPathUtilities.h"
 #include "Foundation/NSArray.h"
 #import <Foundation/Foundation.h>
@@ -79,11 +81,9 @@ static NSString *_rootPath = @"/";
 - (BOOL)_extension:(NSString *)ext role:(NSString *)role app:(NSString **)app;
 
 - (NSString *)_getBestIconForExtension:(NSString *)ext;
-- (NSDictionary *)_infoForExtension:(NSString *)ext;
 - (NSBundle *)_bundleForApp:(NSString *)appName;
 - (NSImage *)_appIconForApp:(NSString *)appName;
 - (NSString *)_locateApplicationBinary:(NSString *)appName;
-- (void)_setBestApp:(NSString *)appName inRole:(NSString *)role forExtension:(NSString *)ext;
 - (void)_setBestIcon:(NSString *)iconPath forExtension:(NSString *)ext;
 
 // Preferences
@@ -165,7 +165,7 @@ static NSString *_rootPath = @"/";
                                                name:NSUserDefaultsDidChangeNotification
                                              object:nil];
 
-   _iconMap = [NSMutableDictionary new];
+  _iconMap = [NSMutableDictionary new];
   _launched = [NSMutableDictionary new];
   if (_appList == nil) {
     [self findApplications];
@@ -301,16 +301,6 @@ static NSLock *raceLock = nil;
   // Get file type and application name
   [self getInfoForFile:fullPath application:&appName type:&fileType];
 
-  // Application is not associated - set `appName` to default editor.
-  if (appName == nil) {
-    if ([self _extension:[fullPath pathExtension] role:nil app:&appName] == NO) {
-      appName = [[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"];
-      if (!appName || [appName isEqualToString:@""]) {
-        appName = @"TextEdit";
-      }
-    }
-  }
-
   NSDebugLLog(@"Workspace", @"[Workspace] openFile: type '%@' with app: %@", fileType, appName);
 
   if (!raceLock) {
@@ -381,11 +371,11 @@ static NSLock *raceLock = nil;
 //--- Manipulating Files
 //-------------------------------------------------------------------------------------------------
 // Operation types supported by ProcessManager: Copy, Duplicate, Move, Link, Delete, Recycle
-- (BOOL)performFileOperation:(NSString*)operation
-                      source:(NSString*)source
-                 destination:(NSString*)destination
-                       files:(NSArray*)files
-                         tag:(int*)tag
+- (BOOL)performFileOperation:(NSString *)operation
+                      source:(NSString *)source
+                 destination:(NSString *)destination
+                       files:(NSArray *)files
+                         tag:(int *)tag
 {
   OperationType opType = 0;
 
@@ -510,8 +500,12 @@ static NSLock *raceLock = nil;
     if ([fileType isEqualToString:NSFileTypeRegular]) {
       if ([attributes filePosixPermissions] & PosixExecutePermission) {
         *type = NSShellCommandFileType;
+        *appName = @"Terminal";
       } else {
         *type = NSPlainFileType;
+      }
+      if (*appName == nil) {
+        [self _extension:@"" role:nil app:appName];
       }
     } else if ([fileType isEqualToString:NSFileTypeDirectory]) {
       if ([extension isEqualToString:@"app"] || [extension isEqualToString:@"debug"] ||
@@ -527,13 +521,16 @@ static NSLock *raceLock = nil;
       else if ([[fm fileAttributesAtPath:[fullPath stringByDeletingLastPathComponent]
                             traverseLink:YES] fileSystemNumber] != [attributes fileSystemNumber]) {
         *type = NSFilesystemFileType;
+        *appName = nil;
       } else {
         *type = NSDirectoryFileType;
+        *appName = nil;
       }
     } else {
-      // This catches sockets, character special, block special,
-      // and unknown file types
+      // This catches sockets, character special, block special, symblic links and unknown file
+      // types
       *type = NSPlainFileType;
+      *appName = nil;
     }
     return YES;
   } else {
@@ -556,7 +553,8 @@ static NSLock *raceLock = nil;
 
   attributes = [fileManager fileAttributesAtPath:fullPath traverseLink:YES];
   fileType = [attributes objectForKey:NSFileType];
-  NSLog(@"(NSWorkspace-iconForFile): %@, file type: %@, extension: %@", fullPath, fileType, pathExtension);
+  NSLog(@"(NSWorkspace-iconForFile): %@, file type: %@, extension: %@", fullPath, fileType,
+        pathExtension);
   if (([fileType isEqual:NSFileTypeDirectory] == YES) &&
       [fileManager isReadableFileAtPath:fullPath] == NO) {
     image = [NSImage imageNamed:@"badFolder"];
@@ -652,7 +650,7 @@ static NSLock *raceLock = nil;
     if (image == nil || image == [self _unknownFiletypeImage]) {
       image = [self _iconForFileContents:fullPath];
     }
-    
+
     // By executable bit
     if (image == nil && ([fileType isEqual:NSFileTypeRegular] == YES) &&
         ([fileManager isExecutableFileAtPath:fullPath] == YES)) {
@@ -729,6 +727,15 @@ static NSLock *raceLock = nil;
   }
 
   return [self iconForFile:fullPath];
+}
+
+- (NSDictionary *)applicationsForExtension:(NSString *)ext
+{
+  NSDictionary *map;
+
+  ext = [ext lowercaseString];
+  map = [_appList objectForKey:@"GSExtensionsMap"];
+  return [map objectForKey:ext];
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -856,6 +863,56 @@ static NSLock *raceLock = nil;
   return appPath;
 }
 
+/**
+ * Sets up a user preference for which app should be used to open files
+ * of the specified extension.
+ */
+- (void)setBestApp:(NSString *)appName inRole:(NSString *)role forExtension:(NSString *)ext
+{
+  NSMutableDictionary *map;
+  NSMutableDictionary *inf;
+  NSData *data;
+
+  ext = [ext lowercaseString];
+  if (_extPreferences != nil) {
+    map = [_extPreferences mutableCopy];
+  } else {
+    map = [NSMutableDictionary new];
+  }
+
+  inf = [[map objectForKey:ext] mutableCopy];
+  if (inf == nil) {
+    inf = [NSMutableDictionary new];
+  }
+  if (appName == nil) {
+    if (role == nil) {
+      NSString *iconPath = [inf objectForKey:@"Icon"];
+
+      RETAIN(iconPath);
+      [inf removeAllObjects];
+      if (iconPath) {
+        [inf setObject:iconPath forKey:@"Icon"];
+        RELEASE(iconPath);
+      }
+    } else {
+      [inf removeObjectForKey:role];
+    }
+  } else {
+    [inf setObject:appName forKey:(role ? (id)role : (id) @"Editor")];
+  }
+  [map setObject:inf forKey:ext];
+  RELEASE(inf);
+  RELEASE(_extPreferences);
+  _extPreferences = map;
+  data = [NSSerializer serializePropertyList:_extPreferences];
+  if ([data writeToFile:_extPreferencesPath atomically:YES]) {
+    // [NSNotificationCenter defaultCenter] postNotificationName:GSWorkspacePreferencesChanged
+    //                                 object:self];
+  } else {
+    NSDebugLLog(@"Workspace", @"Update %@ of failed", _extPreferencesPath);
+  }
+}
+
 //-------------------------------------------------------------------------------------------------
 //--- Unmounting a Device
 //-------------------------------------------------------------------------------------------------
@@ -932,7 +989,7 @@ static NSLock *raceLock = nil;
 // + Wait for -extendPowerOffBy: for 1 second
 // + Workspace checks if NSTimer is valid. If timer is vaild, wait for timer invalidation.
 // + Workspace starts to -terminate: applications
-// 
+//
 // + -extendPowerOffBy: sets NSTimer for requested number of milliseconds.
 //-------------------------------------------------------------------------------------------------
 - (int)extendPowerOffBy:(int)requested
@@ -1031,10 +1088,7 @@ static NSLock *raceLock = nil;
       AUTORELEASE(tmp);
     }
   }
-  NS_HANDLER
-  {
-    NSLog(@"Bad or unsupported image file format '%@'", iconPath);
-  }
+  NS_HANDLER { NSLog(@"Bad or unsupported image file format '%@'", iconPath); }
   NS_ENDHANDLER
 
   return tmp;
@@ -1066,7 +1120,7 @@ static NSLock *raceLock = nil;
       icon = [self _imageFromFile:iconPath];
     }
 
-    if (icon == nil && (extInfo = [self _infoForExtension:ext]) != nil) {
+    if (icon == nil && (extInfo = [self applicationsForExtension:ext]) != nil) {
       NSString *appName;
 
       /*
@@ -1146,9 +1200,8 @@ static NSLock *raceLock = nil;
 
 - (BOOL)_extension:(NSString *)ext role:(NSString *)role app:(NSString **)app
 {
-  NSEnumerator *enumerator;
   NSString *appName = nil;
-  NSDictionary *apps = [self _infoForExtension:ext];
+  NSDictionary *apps = [self applicationsForExtension:ext];
   NSDictionary *prefs;
   NSDictionary *info;
 
@@ -1213,39 +1266,33 @@ static NSLock *raceLock = nil;
   if (apps == nil || [apps count] == 0) {
     return NO;
   }
-  enumerator = [apps keyEnumerator];
 
   if (role == nil) {
-    BOOL found = NO;
-
     /*
      * If the requested role is 'nil', we can accept an app that is either
      * an Editor (preferred) or a Viewer, or unknown.
      */
-    while ((appName = [enumerator nextObject]) != nil) {
-      NSString *str;
-
+    for (appName in [apps allKeys]) {
       info = [apps objectForKey:appName];
-      str = [info objectForKey:@"NSRole"];
-      /* NB. If str is nil or an empty string, there is no role set,
+      role = [info objectForKey:@"NSRole"];
+      /* NB. If `role` is nil or an empty string, there is no role set,
        * and we treat this as an Editor since the role is unrestricted.
        */
-      if ([str length] == 0 || [str isEqualToString:@"Editor"]) {
+      if ([role length] == 0 || [role isEqualToString:@"Editor"]) {
         if (app != 0) {
           *app = appName;
         }
         return YES;
       }
-      if ([str isEqualToString:@"Viewer"]) {
+      if ([role isEqualToString:@"Viewer"]) {
         if (app != 0) {
           *app = appName;
         }
-        found = YES;
+        return YES;
       }
     }
-    return found;
   } else {
-    while ((appName = [enumerator nextObject]) != nil) {
+    for (appName in [apps allKeys]) {
       NSString *str;
 
       info = [apps objectForKey:appName];
@@ -1257,8 +1304,9 @@ static NSLock *raceLock = nil;
         return YES;
       }
     }
-    return NO;
   }
+
+  return NO;
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -1282,7 +1330,8 @@ static NSLock *raceLock = nil;
     isAppListChanged = YES;
   }
 
-  if ([changedFile containsString:[_extPreferencesPath lastPathComponent]] || isAppListChanged != NO) {
+  if ([changedFile containsString:[_extPreferencesPath lastPathComponent]] ||
+      isAppListChanged != NO) {
     // NSLog(@"NSWorkspace: extension preferences changed at path %@", changedPath);
     [[self fileSystemMonitor] removePath:_extPreferencesPath];
     if ([mgr isReadableFileAtPath:_extPreferencesPath] == YES) {
@@ -1378,8 +1427,8 @@ static NSLock *raceLock = nil;
   };
   NSDebugLLog(@"NSWorkspace", @"Application UserInfo: %@", userinfo);
   [_windowManagerCenter postNotificationName:NSWorkspaceWillLaunchApplicationNotification
-                                  object:self
-                                userInfo:userinfo];
+                                      object:self
+                                    userInfo:userinfo];
   task = [NSTask launchedTaskWithLaunchPath:path arguments:args];
   if (task == nil || [task isRunning] == NO) {
     return NO;
@@ -1507,10 +1556,10 @@ static NSLock *raceLock = nil;
 }
 
 /* Get application bundle, validates its Info-gnustep.plist and return dictionary with keys:
-   "WMName" - application name. For Xlib applications it first part of "name.class" NSExecutable
-   "WMClass" - second part of of NSExecutable. For GNUstep applications value is "GNUstep".
-   ExecutablePath - absolute path to executable used for NSTask.
-   IconPath - icon file for sliding appicon.
+   "WMName" - application name. For Xlib applications it first part of "name.class"
+   NSExecutable "WMClass" - second part of of NSExecutable. For GNUstep applications value is
+   "GNUstep". ExecutablePath - absolute path to executable used for NSTask. IconPath - icon
+   file for sliding appicon.
 */
 - (NSDictionary *)_bundleInfoForApp:(NSString *)appName
 {
@@ -1622,23 +1671,6 @@ static NSLock *raceLock = nil;
   }
   return iconPath;
 }
-
-/**
- * Gets the applications cache (generated by the make_services tool)
- * and looks up the special entry that contains a dictionary of all
- * file extensions recognised by GNUstep applications.  Then finds
- * the dictionary of applications that can handle our file and
- * returns it.
- */
-- (NSDictionary *)_infoForExtension:(NSString *)ext
-{
-  NSDictionary *map;
-
-  ext = [ext lowercaseString];
-  map = [_appList objectForKey:@"GSExtensionsMap"];
-  return [map objectForKey:ext];
-}
-
 
 /**
  * Returns the application icon for the given app.
@@ -1758,56 +1790,6 @@ static NSLock *raceLock = nil;
   }
 
   return path;
-}
-
-/**
- * Sets up a user preference  for which app should be used to open files
- * of the specified extension.
- */
-- (void)_setBestApp:(NSString *)appName inRole:(NSString *)role forExtension:(NSString *)ext
-{
-  NSMutableDictionary *map;
-  NSMutableDictionary *inf;
-  NSData *data;
-
-  ext = [ext lowercaseString];
-  if (_extPreferences != nil) {
-    map = [_extPreferences mutableCopy];
-  } else {
-    map = [NSMutableDictionary new];
-  }
-
-  inf = [[map objectForKey:ext] mutableCopy];
-  if (inf == nil) {
-    inf = [NSMutableDictionary new];
-  }
-  if (appName == nil) {
-    if (role == nil) {
-      NSString *iconPath = [inf objectForKey:@"Icon"];
-
-      RETAIN(iconPath);
-      [inf removeAllObjects];
-      if (iconPath) {
-        [inf setObject:iconPath forKey:@"Icon"];
-        RELEASE(iconPath);
-      }
-    } else {
-      [inf removeObjectForKey:role];
-    }
-  } else {
-    [inf setObject:appName forKey:(role ? (id)role : (id) @"Editor")];
-  }
-  [map setObject:inf forKey:ext];
-  RELEASE(inf);
-  RELEASE(_extPreferences);
-  _extPreferences = map;
-  data = [NSSerializer serializePropertyList:_extPreferences];
-  if ([data writeToFile:_extPreferencesPath atomically:YES]) {
-    // [NSNotificationCenter defaultCenter] postNotificationName:GSWorkspacePreferencesChanged
-    //                                 object:self];
-  } else {
-    NSDebugLLog(@"Workspace", @"Update %@ of failed", _extPreferencesPath);
-  }
 }
 
 /**
