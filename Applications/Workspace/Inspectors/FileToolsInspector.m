@@ -82,8 +82,6 @@ static id toolsInspector = nil;
   TEST_RELEASE(view);
   TEST_RELEASE(path);
 
-  RELEASE(defaultEditor);
-
   [super dealloc];
 }
 
@@ -93,10 +91,6 @@ static id toolsInspector = nil;
 
   NSDebugLLog(@"Inspector", @"[FileToolsInspector] awakeFromNib");
   workspace = [NSApp delegate];
-
-  defaultEditor =
-      [[[NXTDefaults userDefaults] objectForKey:@"DefaultEditor"] stringByDeletingPathExtension];
-  [defaultEditor retain];
 
   // App matrix scrollview
   [appListView setBorderType:NSBezelBorder];
@@ -232,8 +226,7 @@ static id toolsInspector = nil;
 
 - revert:sender
 {
-  // NSDebugLLog(@"Inspector", @"File Tools Inspector: revert:");
-  NSLog(@"File Tools Inspector: revert:");
+  NSDebugLLog(@"Inspector", @"File Tools Inspector: revert:");
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString *defaultAppName;
   NSString *fileType;
@@ -257,7 +250,6 @@ static id toolsInspector = nil;
   AddAppToMatrix(defaultAppName, appMatrix);
 
   if ((appList = [[NSApp delegate] applicationsForExtension:[filePath pathExtension]])) {
-    // NSLog(@"Inspector: extension info: %@", appList);
     for (NSString *appName in [appList allKeys]) {
       appName = [appName stringByDeletingPathExtension];
       if ([appName isEqualToString:defaultAppName]) {

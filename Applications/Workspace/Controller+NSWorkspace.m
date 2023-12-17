@@ -142,7 +142,7 @@ static NSString *_rootPath = @"/";
   _appDirs = NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSAllDomainsMask, YES);
   [_appDirs retain];
   for (NSString *dirPath in _appDirs) {
-    NSLog(@"Directory `%@` will be added to filesystem monitor.", dirPath);
+    // NSLog(@"Directory `%@` will be added to filesystem monitor.", dirPath);
     [[self fileSystemMonitor] addPath:dirPath];
   }
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -553,8 +553,8 @@ static NSLock *raceLock = nil;
 
   attributes = [fileManager fileAttributesAtPath:fullPath traverseLink:YES];
   fileType = [attributes objectForKey:NSFileType];
-  NSLog(@"(NSWorkspace-iconForFile): %@, file type: %@, extension: %@", fullPath, fileType,
-        pathExtension);
+  // NSLog(@"(NSWorkspace-iconForFile): %@, file type: %@, extension: %@", fullPath, fileType,
+  //       pathExtension);
   if (([fileType isEqual:NSFileTypeDirectory] == YES) &&
       [fileManager isReadableFileAtPath:fullPath] == NO) {
     image = [NSImage imageNamed:@"badFolder"];
@@ -1088,7 +1088,10 @@ static NSLock *raceLock = nil;
       AUTORELEASE(tmp);
     }
   }
-  NS_HANDLER { NSLog(@"Bad or unsupported image file format '%@'", iconPath); }
+  NS_HANDLER
+  {
+    NSLog(@"Bad or unsupported image file format '%@'", iconPath);
+  }
   NS_ENDHANDLER
 
   return tmp;
@@ -1325,14 +1328,12 @@ static NSLock *raceLock = nil;
         [aNotification userInfo][@"ChangedFile"], [aNotification userInfo][@"Operations"]);
 
   if ([_appDirs doesContain:changedPath]) {
-    NSLog(@"NSWorkspace: applications at %@ changed", changedPath);
     [self findApplications];
     isAppListChanged = YES;
   }
 
   if ([changedFile containsString:[_extPreferencesPath lastPathComponent]] ||
       isAppListChanged != NO) {
-    // NSLog(@"NSWorkspace: extension preferences changed at path %@", changedPath);
     [[self fileSystemMonitor] removePath:_extPreferencesPath];
     if ([mgr isReadableFileAtPath:_extPreferencesPath] == YES) {
       data = [NSData dataWithContentsOfFile:_extPreferencesPath];
@@ -1347,7 +1348,6 @@ static NSLock *raceLock = nil;
   }
 
   if ([changedFile containsString:[_appListPath lastPathComponent]] || isAppListChanged != NO) {
-    // NSLog(@"NSWorkspace: application list preferences changed at path %@", changedPath);
     [[self fileSystemMonitor] removePath:_appListPath];
     if ([mgr isReadableFileAtPath:_appListPath] == YES) {
       data = [NSData dataWithContentsOfFile:_appListPath];
@@ -1357,7 +1357,7 @@ static NSLock *raceLock = nil;
       }
       [[self fileSystemMonitor] addPath:_appListPath];
     } else {
-      NSLog(@"ERROR: Failed to applications list!");
+      NSLog(@"ERROR: Failed to read applications list at %@!", _appListPath);
     }
   }
   // Invalidate the cache of icons for file extensions.
@@ -1365,7 +1365,6 @@ static NSLock *raceLock = nil;
 
   // Update inspector info (may be opened at "Tools" section)
   if (inspector != nil && isAppListChanged != NO) {
-    NSLog(@"(NSWorkspace): updating inspector.");
     [inspector revert:[inspector revertButton]];
   }
 }
@@ -1641,12 +1640,10 @@ static NSLock *raceLock = nil;
  */
 - (NSBundle *)_bundleForApp:(NSString *)appName
 {
-  NSLog(@"(NSWorkspace-_bundleForApp): BEGIN - %@", appName);
   if (appName == nil || [appName length] == 0) {
     return nil;
   }
   appName = [self fullPathForApplication:appName];
-  NSLog(@"(NSWorkspace-_bundleForApp): END - %@", appName);
   if (appName == nil) {
     return nil;
   }

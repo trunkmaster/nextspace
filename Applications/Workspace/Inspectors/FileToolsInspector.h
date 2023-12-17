@@ -34,7 +34,6 @@
   NSMatrix *appMatrix;
 
   NSWorkspace *workspace;
-  NSString *defaultEditor;
 
   NSString *path;
   NSArray *files;
