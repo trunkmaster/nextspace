@@ -1149,6 +1149,14 @@
   [window makeFirstResponder:[viewer keyView]];
 }
 
+- (void)windowDidBecomeMain:(NSNotification *)aNotification
+{
+  if ([window isKeyWindow]) {
+    return;
+  }
+  [self _updateFocusInWindow];
+}
+
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
 {
   [self _updateFocusInWindow];

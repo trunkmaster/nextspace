@@ -686,6 +686,7 @@ static Inspector *inspectorPanel = nil;
   FileViewer *viewer;
   NSString *path;
   NSArray *selection;
+  Controller *appDelegate = [NSApp delegate];
 
   if (self != inspectorPanel) {
     [inspectorPanel getSelectedPath:pathString andFiles:fileArray];
@@ -700,7 +701,10 @@ static Inspector *inspectorPanel = nil;
 
   NSDebugLLog(@"Inspector", @"%@ getSelectedPath:andFiles:", [self className]);
 
-  viewer = [(Controller *)[NSApp delegate] fileViewerForWindow:[NSApp keyWindow]];
+  viewer = [appDelegate fileViewerForWindow:[NSApp keyWindow]];
+  if (viewer == nil) {
+    viewer = [appDelegate fileViewerForWindow:[NSApp mainWindow]];
+  }
   if (viewer) {
     path = [viewer absolutePath];
     selection = [viewer selection];
