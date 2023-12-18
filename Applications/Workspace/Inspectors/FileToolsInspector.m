@@ -22,6 +22,7 @@
 #include <AppKit/AppKit.h>
 
 #import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/Utilities.h>
 #import "FileToolsInspector.h"
 
 static inline void AddAppToMatrix(NSString *appName, NSMatrix *matrix)
@@ -126,13 +127,17 @@ static id toolsInspector = nil;
     return;
   }
 
-  appFullPath = [workspace fullPathForApplication:appName];
-  if (appFullPath != nil) {
-    [appPathField setStringValue:appFullPath];
-  }
-
+  // Default:
   if ([sender selectedCell] == [sender cellAtRow:0 column:0]) {
     [defaultAppField setStringValue:appName];
+  }
+
+  // Path:
+  appFullPath = [workspace fullPathForApplication:appName];
+  if (appFullPath != nil) {
+    appFullPath = NXTShortenString(appFullPath, [appPathField frame].size.width,
+                                   [appPathField font], NXPathElement, NXTDotsAtLeft);
+    [appPathField setStringValue:appFullPath];
   }
 
   [super touch:self];
