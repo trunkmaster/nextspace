@@ -13,9 +13,9 @@
     );
     CopyrightDescription = "You may freely copy, distribute, and reuse the code in this example.";
     NSExtensions = {
-//	"" = {
-//	    NSIcon = text.tiff;
-//	};
+	"" = {
+	    NSIcon = text.tiff;
+	};
 	rtf = {
 	    NSIcon = rtf.tiff;
 	};
