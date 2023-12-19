@@ -30,17 +30,14 @@
 -I.
 -I..
 -I../..
--IWM
--IWM/core
 -I/Users/me/Library/Headers
 -I/Developer/Headers
 -I/usr/NextSpace/include
+-IWM
+-IWM/core
 -I/usr/include/freetype2
 -I/usr/include/libpng16
 -I/usr/include/harfbuzz
--I/usr/include/glib-2.0
--I/usr/lib64/glib-2.0/include
--I/usr/include/sysprof-4
 -I/usr/include/libxml2
 -DWITH_UPOWER
 -I/usr/include/libupower-glib
@@ -49,4 +46,10 @@
 -I/usr/include/sysprof-4 
 -I/usr/include/libmount 
 -I/usr/include/blkid
+-DLINUX
+-DWITH_UDISKS
+-I/usr/include/udisks2
+-I/usr/include/dbus-1.0
+-I/usr/lib64/dbus-1.0/include
+-I/usr/include/gio-unix-2.0
 

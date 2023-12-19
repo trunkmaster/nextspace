@@ -169,7 +169,7 @@
 
 /** Instructs Workspace Manager to select the file specified by fullPath
     opening a new file viewer if a path is specified by rootFullpath; returns
-    YES if file was successfully selected and NO otherwise.*/
+    YES if file was successfully selected and NO otherwise. */
 // --- [NSWorkspace _workspaceApplication]
 - (BOOL)selectFile:(NSString *)fullPath inFileViewerRootedAtPath:(NSString *)rootFullpath;
 
@@ -180,27 +180,13 @@
 // TODO (use libmagic)
 /** Describes the file system at fullPath in description and fileSystemType,
     sets the Flags appropriately, and returns YES if fullPath is a file system
-    mount point, or NO if it isn't.*/
-/* Uses statfs call.
-   Not all systems with getmntinfo do have a statfs calls. In particular,
-   NetBSD offers only a statvfs calls for compatibility with POSIX. Other BSDs
-   and Linuxes have statvfs as well, but this returns less information than
-   the 4.4BSD statfs call. The NetBSD statvfs, on the other hand, is just a
-   statfs in disguise, i.e., it provides all information available in the
-   4.4BSD statfs call. Therefore, we go ahead an just #define statfs as
-   statvfs on NetBSD.  Note that the POSIX statvfs is not really helpful for
-   us here. The only information that could be extracted from the data
-   returned by that syscall is the ST_RDONLY flag. There is no owner field nor
-   a typename.  The statvfs call on Solaris returns a structure that includes
-   a non-standard f_basetype field, which provides the name of the underlying
-   file system type.*/
-// TODO
-// - (BOOL) getFileSystemInfoForPath: (NSString*)fullPath
-// 		      isRemovable: (BOOL*)removableFlag
-// 		       isWritable: (BOOL*)writableFlag
-// 		    isUnmountable: (BOOL*)unmountableFlag
-// 		      description: (NSString**)description
-// 			     type: (NSString**)fileSystemType;
+    mount point, or NO if it isn't. */
+- (BOOL)getFileSystemInfoForPath:(NSString *)fullPath
+                     isRemovable:(BOOL *)removableFlag
+                      isWritable:(BOOL *)writableFlag
+                   isUnmountable:(BOOL *)unmountableFlag
+                     description:(NSString **)description
+                            type:(NSString **)fileSystemType;
 
 //--- Return values for type in getInfoForFile:
 // A plain file or a directory that some application claims to be able to open

@@ -4,7 +4,7 @@
 #
 
 # Additional flags to pass to the preprocessor
-ADDITIONAL_CPPFLAGS += -DWITH_UPOWER -DREVISION=\"$(REVISION)\"
+ADDITIONAL_CPPFLAGS += -DWITH_UPOWER -DREVISION=\"$(REVISION)\" -DLINUX -DWITH_UDISKS
 ADDITIONAL_CPPFLAGS += -DAPP_ICON=\"$($(APP_NAME)_APPLICATION_ICON)\"
 
 # Additional flags to pass to Objective C compiler
@@ -14,10 +14,10 @@ ADDITIONAL_OBJCFLAGS += -Wall -Wno-unused-variable -Wno-typedef-redefinition
 #ADDITIONAL_CFLAGS +=
 
 # Additional flags to pass to the linker
-ADDITIONAL_LDFLAGS += `pkg-config --libs dbus-1 upower-glib` -ldispatch -ldl -lbsd 
+ADDITIONAL_LDFLAGS += `pkg-config --libs dbus-1 udisks2 upower-glib` -ldispatch -ldl -lbsd 
 
 # Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS += -I./ `pkg-config --cflags dbus-1 upower-glib`
+ADDITIONAL_INCLUDE_DIRS += -I./ `pkg-config --cflags dbus-1 udisks2 upower-glib`
 
 # Additional library directories the linker should search
 ADDITIONAL_LIB_DIRS += 

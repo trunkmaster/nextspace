@@ -36,12 +36,11 @@
 #include <unistd.h>
 
 #import <AppKit/AppKit.h>
-#include "Foundation/NSFileManager.h"
-#include "AppKit/NSWorkspace.h"
-#include "Foundation/NSPathUtilities.h"
-#include "Foundation/NSArray.h"
 #import <Foundation/Foundation.h>
 #import <GNUstepGUI/GSDisplayServer.h>
+
+#import <SystemKit/OSEUDisksAdaptor.h>
+#import <SystemKit/OSEUDisksDrive.h>
 
 #import <DesktopKit/NXTAlert.h>
 #import <DesktopKit/NXTDefaults.h>
@@ -454,33 +453,65 @@ static NSLock *raceLock = nil;
   return NO;
 }
 
-// FIXME: TODO
-// - (BOOL)getFileSystemInfoForPath:(NSString*)fullPath
-//                      isRemovable:(BOOL*)removableFlag
-//                       isWritable:(BOOL*)writableFlag
-//                    isUnmountable:(BOOL*)unmountableFlag
-//                      description:(NSString **)description
-//                             type:(NSString **)fileSystemType
-// {
-//   // uid_t uid;
-//   // struct statfs m;
-//   // NSStringEncoding enc;
+- (BOOL)getFileSystemInfoForPath:(NSString *)fullPath
+                     isRemovable:(BOOL *)removableFlag
+                      isWritable:(BOOL *)writableFlag
+                   isUnmountable:(BOOL *)unmountableFlag
+                     description:(NSString **)description
+                            type:(NSString **)fileSystemType
+{
+  OSEUDisksAdaptor *uda = [OSEUDisksAdaptor new];
+  OSEUDisksVolume *volume = [uda mountedVolumeForPath:fullPath];
+  OSEUDisksDrive *drive = [volume drive];
 
-//   // if (statfs([fullPath fileSystemRepresentation], &m))
-//   //   return NO;
+  if (volume == nil) {
+    return NO;
+  }
 
-//   // uid = geteuid();
-//   // enc = [NSString defaultCStringEncoding];
-//   // *removableFlag = NO; // FIXME
-//   // *writableFlag = (m.f_flags & MNT_RDONLY) == 0;
-//   // *unmountableFlag =
-//   //   (m.f_flags & MNT_ROOTFS) == 0 && (uid == 0 || uid == m.f_owner);
-//   // *description = @"filesystem"; // FIXME
-//   // *fileSystemType =
-//   // [[NSString alloc] initWithCString: m.f_fstypename encoding: enc];
+  if (drive == nil) {
+    return NO;
+  }
 
-//   return YES;
-// }
+  *removableFlag = drive.isRemovable;
+  *writableFlag = volume.isWritable;
+  *unmountableFlag = !volume.isSystem;
+
+  switch (volume.type) {
+    case NXTFSTypeEXT:
+      *fileSystemType = @"EXT";
+      break;
+    case NXTFSTypeXFS:
+      *fileSystemType = @"XFS";
+      break;
+    case NXTFSTypeFAT:
+      *fileSystemType = @"FAT";
+      break;
+    case NXTFSTypeISO:
+      *fileSystemType = @"ISO";
+      break;
+    case NXTFSTypeNTFS:
+      *fileSystemType = @"NTFS";
+      break;
+    case NXTFSTypeSwap:
+      *fileSystemType = @"SWAP";
+      break;
+    case NXTFSTypeUDF:
+      *fileSystemType = @"UDF";
+      break;
+    case NXTFSTypeUFS:
+      *fileSystemType = @"UFS";
+      break;
+    default:
+      *fileSystemType = @"UNKNOWN";
+  }
+
+  *description = [NSString stringWithFormat:@"%@ %@ filesystem at %@ drive",
+                                            (volume.isWritable ? @"Writable" : @"Readonly"),
+                                            *fileSystemType, drive.humanReadableName];
+  [uda release];
+
+  return YES;
+}
 
 - (BOOL)getInfoForFile:(NSString *)fullPath application:(NSString **)appName type:(NSString **)type
 {
