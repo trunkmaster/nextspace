@@ -22,7 +22,6 @@
 #ifdef WITH_UDISKS
 
 #import <DesktopKit/NXTFileManager.h>
-#import <SystemKit/OSEUDisksAdaptor.h>
 #import <SystemKit/OSEUDisksDrive.h>
 #import <SystemKit/OSEUDisksVolume.h>
 

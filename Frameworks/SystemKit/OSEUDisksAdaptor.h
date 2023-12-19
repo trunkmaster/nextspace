@@ -31,6 +31,8 @@
 
 #import <udisks/udisks.h>
 
+@class OSEUDisksVolume;
+
 @interface OSEUDisksAdaptor : NSObject <MediaManager>
 {
   NSMutableDictionary *jobsCache;
@@ -48,6 +50,7 @@
 - (NSDictionary *)availableDrives;
 - (NSDictionary *)availableVolumesForDrive:(NSString *)driveObjectPath;
 - (NSArray *)mountedVolumesForDrive:(NSString *)driveObjectPath;
+- (OSEUDisksVolume *)mountedVolumeForPath:(NSString *)filesystemPath;
 
 - (BOOL)setLoopToFileAtPath:(NSString *)imageFile;
 - (BOOL)unsetLoop:(NSString *)objectPath;

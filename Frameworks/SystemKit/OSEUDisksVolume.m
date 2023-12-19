@@ -235,34 +235,27 @@
 - (NXTFSType)type
 {
   NSString *fsType = [self propertyForKey:@"IdType" interface:BLOCK_INTERFACE];
-  
+
   // Return NXTFSType filesystem name
-  if ([fsType isEqualToString:@"msdosfs"] ||
-      [fsType isEqualToString:@"vfat"] ||
-      [fsType isEqualToString:@"fat"])
-    {
-      return NXTFSTypeFAT;
-    }
-  else if ([fsType isEqualToString:@"ntfs"])
-    {
-      return NXTFSTypeNTFS;
-    }
-  else if ([fsType isEqualToString:@"iso9660"])
-    {
-      return NXTFSTypeISO;
-    }
-  else if ([fsType isEqualToString:@"ufs"])
-    {
-      return NXTFSTypeUFS;
-    }
-  else if ([fsType isEqualToString:@"udf"])
-    {
-      return NXTFSTypeUDF;
-    }
-  else if ([fsType isEqualToString:@"swap"])
-    {
-      return NXTFSTypeSwap;
-    }
+  if ([fsType isEqualToString:@"ext2"] || [fsType isEqualToString:@"ext3"] ||
+      [fsType isEqualToString:@"ext4"]) {
+    return NXTFSTypeEXT;
+  } else if ([fsType isEqualToString:@"xfs"]) {
+    return NXTFSTypeXFS;
+  } else if ([fsType isEqualToString:@"msdosfs"] || [fsType isEqualToString:@"vfat"] ||
+             [fsType isEqualToString:@"fat"]) {
+    return NXTFSTypeFAT;
+  } else if ([fsType isEqualToString:@"ntfs"]) {
+    return NXTFSTypeNTFS;
+  } else if ([fsType isEqualToString:@"iso9660"]) {
+    return NXTFSTypeISO;
+  } else if ([fsType isEqualToString:@"ufs"]) {
+    return NXTFSTypeUFS;
+  } else if ([fsType isEqualToString:@"udf"]) {
+    return NXTFSTypeUDF;
+  } else if ([fsType isEqualToString:@"swap"]) {
+    return NXTFSTypeSwap;
+  }
 
   return -1;
 }

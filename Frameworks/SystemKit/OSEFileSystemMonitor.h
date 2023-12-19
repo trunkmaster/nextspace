@@ -48,8 +48,8 @@ extern NSString *OSEFileSystemChangedAtPath;
 @interface OSEFileSystemMonitor : NSObject
 {
   // Event monitor vars
-  OSEFileSystemMonitorThread *monitorThread; // event monitor OS-specific worker
-  NSTimer                   *checkTimer;
+  OSEFileSystemMonitorThread *monitorThread;  // event monitor OS-specific worker
+  NSTimer *checkTimer;
 
   // Monitor thread state
   BOOL monitorThreadShouldStart;
