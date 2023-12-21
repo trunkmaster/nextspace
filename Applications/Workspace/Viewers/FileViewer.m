@@ -1355,6 +1355,8 @@
       selectedFullPath = [selectedPath stringByAppendingPathComponent:selectedFile];
     } else {
       selectedFullPath = [NSString stringWithString:selectedPath];
+      [fileSystemMonitor removePath:changedFullPath];
+      [fileSystemMonitor addPath:newFullPath];
     }
 
     // changedFullPath  == "changedPath/changedFile"
@@ -1655,7 +1657,6 @@
   NSString *selectedPath = [self absolutePath];
   NSString *newPath;
   PathIcon *selectedIcon = [[pathView icons] lastObject];
-  ;
   NXTIconLabel *label;
 
   NSDebugLLog(@"FileViewer", @"NF: %@", selectedPath);
