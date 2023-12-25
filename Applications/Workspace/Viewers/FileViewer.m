@@ -734,7 +734,7 @@
 
   fullPath = [rootPath stringByAppendingPathComponent:relativePath];
 
-  NSDebugLLog(@"FileViewer", @"displayPath:%@ selection:%@", relativePath, filenames);
+  NSDebugLLog(@"FileViewer", @"[FileViewer] displayPath:%@ selection:%@", relativePath, filenames);
 
   ASSIGN(displayedPath, relativePath);
   ASSIGN(dirContents, [[NSFileManager defaultManager] directoryContentsAtPath:fullPath]);
@@ -883,13 +883,14 @@
   NSString *newFullPath = nil;
   NSString *oldFileName = nil;
 
-  if (selection && [selection count] != 1) {
+  NSDebugLLog(@"FileViewer", @"Rename selection: %@", selection);
+
+  if (selection && [selection count] > 1) {
     [NSException raise:NSInternalInconsistencyException
                 format:@"Attempt to change the "
                        @"filename while multiple files are selected"];
+    return NO;
   }
-
-  NSDebugLLog(@"FileViewer", @"Rename selection: %@", selection);
 
   if ([selection count]) {
     // It's a file
@@ -1659,7 +1660,7 @@
   PathIcon *selectedIcon = [[pathView icons] lastObject];
   NXTIconLabel *label;
 
-  NSDebugLLog(@"FileViewer", @"NF: %@", selectedPath);
+  NSDebugLLog(@"FileViewer", @"[FileViewer] newFolder at: %@", selectedPath);
 
   newPath = [selectedPath stringByAppendingPathComponent:folderName];
   for (idx = 1; [fm fileExistsAtPath:newPath]; idx++) {
@@ -1667,16 +1668,19 @@
     newPath = [selectedPath stringByAppendingPathComponent:folderName];
   }
 
+  [fileSystemMonitor removePath:selectedPath];
+
   if (![fm createDirectoryAtPath:newPath attributes:nil]) {
-    NXTRunAlertPanel(_(@"New Folder"), _(@"Unable to create folder.\n\
-			The selected path is not writable"), nil, nil, nil);
+    NXTRunAlertPanel(_(@"New Folder"),
+                     _(@"Unable to create folder.\nThe selected path is not writable"), nil, nil,
+                     nil);
     return;
   }
 
-  newPath = [self pathFromAbsolutePath:newPath];
+  NSDebugLLog(@"FileViewer", @"[FileViewer] newFolder: %@", newPath);
+  [self displayPath:[self pathFromAbsolutePath:newPath] selection:nil sender:self];
 
-  NSDebugLLog(@"FileViewer", @"NewFolder: %@", newPath);
-  [self displayPath:newPath selection:nil sender:self];
+  // [fileSystemMonitor addPath:newPath];
 
   // Here is new selected icon
   selectedIcon = [[pathView icons] lastObject];

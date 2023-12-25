@@ -22,6 +22,8 @@
 //
 
 #import <DesktopKit/DesktopKit.h>
+#include "Foundation/NSFileManager.h"
+#include "Foundation/NSArray.h"
 
 #import <DesktopKit/NXTDefaults.h>
 #import <DesktopKit/NXTFileManager.h>
@@ -419,7 +421,7 @@ static NSRect viewFrame;
 
   pathList = [NSMutableArray new];
   pathPrefix = [rootPath stringByAppendingPathComponent:currentPath];
-  
+
   if (selection && [selection count] > 0) {
     for (NSString *path in selection) {
       path = [pathPrefix stringByAppendingPathComponent:path];
@@ -437,8 +439,7 @@ static NSRect viewFrame;
 //=============================================================================
 // Actions
 //=============================================================================
-- (void)displayPath:(NSString *)dirPath
-          selection:(NSArray *)filenames
+- (void)displayPath:(NSString *)dirPath selection:(NSArray *)filenames
 {
   NSArray  *dirContents;
   NSString *path;
@@ -461,7 +462,7 @@ static NSRect viewFrame;
   }
 
   path = [rootPath stringByAppendingPathComponent:dirPath];
-  NSDebugLLog(@"IconViewer", @"IconViewer(%@): display path: %@ updateOnDisplay:%i", rootPath,
+  NSDebugLLog(@"IconViewer", @"[IconViewer(%@)]: display path: %@ updateOnDisplay:%i", rootPath,
               dirPath, updateOnDisplay);
 
   if (updateOnDisplay == NO) {
@@ -491,17 +492,19 @@ static NSRect viewFrame;
 }
 - (void)reloadPath:(NSString *)reloadPath
 {
-  NSRect r;
+  NSDebugLLog(@"IconViewer", @"[IconViewer] reloadPath: %@, currentPath: %@", reloadPath,
+              currentPath);
 
-  if ([reloadPath isEqualToString:currentPath] == NO)
+  // If changes were occured up the `currentPath` it may be a result of:
+  // 1. The contents of folder out of our focus was changed or,
+  // 2. Selected folder was destroyed.
+  // In the code below we're trying to check if (2) case has happened.
+  if (([reloadPath isEqualToString:currentPath] == NO) &&
+      ([[NSFileManager defaultManager] fileExistsAtPath:currentPath] == YES)) {
     return;
-  
-  // r = [[iconView enclosingScrollView] documentVisibleRect];
-  // NSDebugLLog(@"IconViewer", @"[IconViewer] reloadPath visible rect: %@", NSStringFromRect(r));
-  updateOnDisplay = YES;
+  }
+
   [self displayPath:reloadPath selection:selection];
-  // updateOnDisplay = NO;
-  // [iconView scrollRectToVisible:r];
 }
 - (void)open:sender
 {
@@ -549,9 +552,13 @@ static NSRect viewFrame;
   PathIcon *icon = [[iconView selectedIcons] anyObject];
   NSString *path;
 
-  [icon setLabelString:[newName lastPathComponent]];
-  path = [rootPath stringByAppendingPathComponent:newName];
-  [icon setIconImage:[[NSApp delegate] iconForFile:path]];
+  if (icon) {
+    [icon setLabelString:[newName lastPathComponent]];
+    path = [rootPath stringByAppendingPathComponent:newName];
+    [icon setIconImage:[[NSApp delegate] iconForFile:path]];
+  } else {
+    [self displayPath:newName selection:selection];
+  }
 }
 
 // -- Notifications
@@ -601,8 +608,7 @@ static NSRect viewFrame;
 //
 // --- NXTIconView delegate
 //
-- (void)     iconView:(NXTIconView*)anIconView
- didChangeSelectionTo:(NSSet *)selectedIcons
+- (void)iconView:(NXTIconView *)anIconView didChangeSelectionTo:(NSSet *)selectedIcons
 {
   NSMutableArray *selected = [NSMutableArray array];
   BOOL           showsExpanded = ([selectedIcons count] == 1) ? YES : NO;
@@ -610,14 +616,14 @@ static NSRect viewFrame;
   if (anIconView != iconView)
     return;
 
-  NSDebugLLog(@"IconViewer", @"IconViewer(%@): selection did change.", rootPath);
-
   for (NXTIcon *icon in selectedIcons) {
     [icon setShowsExpandedLabelWhenSelected:showsExpanded];
     [selected addObject:[icon labelString]];
   }
 
-  ASSIGN(selection, [[selected copy] autorelease]);
+  NSDebugLLog(@"IconViewer", @"[IconViewer(%@)]: selection did change to: %@.", currentPath, selected);
+
+  ASSIGN(selection, [selected copy]);
 
   [_owner displayPath:currentPath selection:selection sender:self];
 }
