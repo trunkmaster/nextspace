@@ -1608,7 +1608,7 @@ static NSLock *raceLock = nil;
     NXTRunAlertPanel(_(@"Workspace"),
                      _(@"Failed to start application \"%@\".\n"
                         "Application info dictionary was not found or broken."),
-                     nil, nil, nil, appName);
+                     nil, nil, nil, [appName lastPathComponent]);
     return nil;
   }
 
@@ -1618,7 +1618,7 @@ static NSLock *raceLock = nil;
     NXTRunAlertPanel(_(@"Workspace"),
                      _(@"Failed to start application '%@'.\n"
                         "Executable name is unknown. It may be damaged or incomplete."),
-                     appName, nil, nil, nil);
+                     nil, nil, nil, [appName lastPathComponent]);
     return nil;
   }
 
@@ -1632,7 +1632,7 @@ static NSLock *raceLock = nil;
                      @"Failed to start application \"%@\" for selected file.\n"
                       "Application is not GNUstep nor Xlib based.\n"
                       "Please check contents of application Info-gnustep.plist.",
-                     nil, nil, nil, appName);
+                     nil, nil, nil, [appName lastPathComponent]);
     return nil;
   }
 
@@ -1641,7 +1641,7 @@ static NSLock *raceLock = nil;
     NXTRunAlertPanel(_(@"Workspace"),
                      _(@"Failed to start application '%@'.\n"
                         "Executable was not found inside application bundle."),
-                     nil, nil, nil, appName);
+                     nil, nil, nil, [appName lastPathComponent]);
     return nil;
   }
 
