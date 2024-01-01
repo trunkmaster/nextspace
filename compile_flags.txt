@@ -27,6 +27,7 @@
 -fobjc-runtime=gnustep-2.0
 -fblocks
 -fconstant-string-class=NSConstantString
+-I.
 -I../..
 -I/Users/me/Library/Headers
 -I/Developer/Headers
