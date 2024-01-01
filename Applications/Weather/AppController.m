@@ -20,7 +20,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import <NXFoundation/NXBundle.h>
+#import <DesktopKit/NXTBundle.h>
 
 #import "AppController.h"
 
@@ -57,7 +57,7 @@ static NSUserDefaults *defaults = nil;
   weatherView = [[WeatherView alloc] initWithFrame:NSMakeRect(0, 0, 64, 64)];
   [[NSApp iconWindow] setContentView:weatherView];
 
-  timer = [NSTimer scheduledTimerWithTimeInterval:1800.0
+  timer = [NSTimer scheduledTimerWithTimeInterval:900.0
                                            target:self
                                          selector:@selector(updateWeather:)
                                          userInfo:nil
@@ -66,6 +66,7 @@ static NSUserDefaults *defaults = nil;
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notify
 {
+  [self loadBundles];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotif
@@ -110,19 +111,31 @@ static NSUserDefaults *defaults = nil;
 - (void)updateWeather:(NSTimer *)timer
 {
   NSDictionary *weather;
-  NSString     *fetcherName;
+  NSString *fetcherName;
+  NSImage *conditionImage;
 
-  fetcherName = [[NSUserDefaults standardUserDefaults] objectForKey:@"Fetcher"];
-  
   if (forecastFetcher == nil) {
-    forecastFetcher = [forecastModules objectForKey:fetcherName];
+    fetcherName = [[NSUserDefaults standardUserDefaults] objectForKey:@"Fetcher"];
+    if (fetcherName) {
+      forecastFetcher = [forecastModules objectForKey:fetcherName];
+    }
+    if (forecastFetcher == nil) {
+      forecastFetcher = [forecastModules objectForKey:[[forecastModules allKeys] firstObject]];
+    }
   }
 
+  [forecastFetcher setCityByName:@"Kyiv"];
   weather = [forecastFetcher fetchWeather];
+  NSLog(@"Weather data from %@: %@", [[forecastFetcher class] className], weather);
 
   if (weather && [[weather objectForKey:@"ErrorText"] length] == 0) {
     NSLog(@"Got weather forecast. %@", weather);
-    [weatherView setImage:[weather objectForKey:@"Image"]];
+    conditionImage = [weather objectForKey:@"Image"];
+    if (conditionImage != nil) {
+      [weatherView setImage:conditionImage];
+    } else {
+      [weatherView setImage:[NSApp applicationIconImage]];
+    }
     [weatherView setTemperature:[weather objectForKey:@"Temperature"]];
     [weatherView setHumidity:[weather objectForKey:@"Humidity"]];
     [weatherView setNeedsDisplay:YES];
@@ -135,25 +148,24 @@ static NSUserDefaults *defaults = nil;
 //
 // Modules
 //
-- (BOOL)registerModule:(id)aModule
-{
-  return YES;
-}
-
 - (void)loadBundles
 {
   NSDictionary *bRegistry;
-  NSArray      *modules;
+  NSArray *modules;
+  NSMutableDictionary *loadedModules = [[NSMutableDictionary alloc] init];
 
-  bRegistry = [[NXBundle shared] registerBundlesOfType:@"forecast"
-                                                atPath:nil];
-  modules = [[NXBundle shared] loadRegisteredBundles:bRegistry
-                                                type:@"Weather"
-                                            protocol:@protocol(Forecast)];
-  
-  for (id b in modules) {
-    [self registerModule:b];
+  bRegistry = [[NXTBundle shared] registerBundlesOfType:@"provider"
+                                                 atPath:[[NSBundle mainBundle] bundlePath]];
+  NSLog(@"Registered bundles: %@", bRegistry);
+  modules = [[NXTBundle shared] loadRegisteredBundles:bRegistry
+                                                 type:@"Weather"
+                                             protocol:@protocol(WeatherProvider)];
+  NSLog(@"Loaded number of bundles: %lu - %@", [modules count], [modules firstObject]);
+  for (id<WeatherProvider> provider in modules) {
+    [loadedModules setObject:provider forKey:provider.name];
   }
+  forecastModules = [[NSDictionary alloc] initWithDictionary:loadedModules];
+  [loadedModules release];
 }
 
 @end

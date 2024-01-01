@@ -15,12 +15,13 @@ PACKAGE_NAME = Weather
 APP_NAME = Weather
 $(APP_NAME)_APPLICATION_ICON = Weather.tiff
 
-SUBPROJECTS = Forecasts/OpenWeatherMap
+SUBPROJECTS = Providers/OpenMeteo
 
 #
 # Resource files
 #
-$(APP_NAME)_RESOURCE_FILES = Weather.tiff
+$(APP_NAME)_RESOURCE_FILES = Weather.tiff \
+	Providers/OpenMeteo/OpenMeteo.provider
 
 #
 # Localization

@@ -22,14 +22,14 @@
  
 #import <AppKit/AppKit.h>
 
-#import "Weather.h"
+#import "WeatherProvider.h"
 #import "WeatherView.h"
 
 @interface AppController : NSObject
 {
   WeatherView  *weatherView;
   NSDictionary *forecastModules;
-  id<Forecast> forecastFetcher;
+  id<WeatherProvider> forecastFetcher;
   NSTimer      *timer;
 }
 

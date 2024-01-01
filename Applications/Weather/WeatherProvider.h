@@ -2,8 +2,9 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol Forecast
+@protocol WeatherProvider
 
+- (NSString *)name;
 - (void)setCityByName:(NSString *)name;
 - (void)setUnits:(NSString *)name;
 - (void)setLanguage:(NSString *)code;

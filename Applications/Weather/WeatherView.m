@@ -53,13 +53,10 @@
   
   string = [[NSMutableString alloc] initWithString:text];
 
-  stringAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
-                                dColor, NSForegroundColorAttributeName,
-                              sFont, NSFontAttributeName, nil];
+  stringAttrs = @{NSForegroundColorAttributeName : dColor, NSFontAttributeName : sFont};
   [stringAttrs retain];
-  highlightAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   lColor, NSForegroundColorAttributeName,
-                                 sFont, NSFontAttributeName, nil];
+
+  highlightAttrs = @{NSForegroundColorAttributeName : lColor, NSFontAttributeName : sFont};
   [highlightAttrs retain];
 
   return self;
@@ -114,22 +111,16 @@ static int icon_number = 0;
 - (void)mouseDown:(NSEvent *)event
 {
   NSLog(@"mouseDown:");
-  if ([event clickCount] >= 2)
-    {
-      [NSApp activateIgnoringOtherApps:YES];
+  if ([event clickCount] >= 2) {
+    [NSApp activateIgnoringOtherApps:YES];
+  } else {
+    if (icon_number > 47) {
+      icon_number = 0;
+    } else {
+      icon_number++;
     }
-  else
-    {
-      if (icon_number > 47)
-        icon_number = 0;
-      else
-        icon_number++;
-      
-      [self
-        setImage:[NSImage
-                   imageNamed:[NSString
-                                stringWithFormat:@"%i.png", icon_number]]];
-    }    
+    [self setImage:[NSImage imageNamed:[NSString stringWithFormat:@"%i.png", icon_number]]];
+  }
 }
 
 - (id)initWithFrame:(NSRect)frameRect
