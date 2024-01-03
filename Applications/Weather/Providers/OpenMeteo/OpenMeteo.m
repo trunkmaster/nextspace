@@ -26,7 +26,6 @@
 
 #include <AppKit/NSImage.h>
 #include <WeatherProvider.h>
-#include <math.h>
 
 #import "OpenMeteo.h"
 
@@ -51,6 +50,7 @@
 //
 // Weather Provider protocol
 //
+@synthesize locationName;
 @synthesize current;
 @synthesize forecast;
 - (NSString *)name
@@ -58,7 +58,7 @@
   return @"OpenMeteo";
 }
 
-- (NSDictionary *)_queryCityByName:(NSString *)name
+- (NSDictionary *)_queryLocationByName:(NSString *)name
 {
   NSString *geoQuery;
 
@@ -68,9 +68,9 @@
   return [self query:geoQuery];  
 }
 
-- (NSArray *)cityListForName:(NSString *)name
+- (NSArray *)locationsListForName:(NSString *)name
 {
-  NSDictionary *geoResults = [self _queryCityByName:name];
+  NSDictionary *geoResults = [self _queryLocationByName:name];
   NSMutableArray *cityList = [NSMutableArray new];
 
   if (geoResults != nil) {
@@ -84,9 +84,9 @@
   return cityList;
 }
 
-- (BOOL)setCityByName:(NSString *)name
+- (BOOL)setLocationByName:(NSString *)name
 {
-  NSDictionary *geoResults = [self _queryCityByName:name];
+  NSDictionary *geoResults = [self _queryLocationByName:name];
   NSArray *resultsList;
 
   if (geoResults != nil) {
@@ -94,8 +94,8 @@
     if (resultsList && [resultsList count] > 0) {
       for (NSDictionary *entry in resultsList) {
         if ([entry[@"name"] isEqualToString:name]) {
-          NSLog(@"Got coordinates for %@: lat:%@ long: %@", name, entry[@"latitude"],
-                entry[@"longitude"]);
+          // NSLog(@"Got coordinates for %@: lat:%@ long: %@", name, entry[@"latitude"],
+          //       entry[@"longitude"]);
           if (latitude) {
             [latitude release];
           }
@@ -104,6 +104,7 @@
             [longtitude release];
           }
           longtitude = [entry[@"longitude"] copy];
+          locationName = [name copy];
           return YES;
         }
       }
@@ -113,11 +114,11 @@
   return NO;
 }
 
-- (NSDictionary *)unitsList {
+- (NSDictionary *)temperatureUnitsList {
   return @{@"Celsisus" : @"celsius", @"Farenheit" : @"farenheit"};
 }
 
-- (void)setUnits:(NSString *)name
+- (void)setTemperatureUnits:(NSString *)name
 {
   //
 }
@@ -137,6 +138,8 @@
 {
   [current release];
   [forecast release];
+  TEST_RELEASE(latitude);
+  TEST_RELEASE(longtitude);
   
   [super dealloc];
 }
@@ -214,11 +217,11 @@
         break;
       case 45:
       case 48:
-      case 51:
-      case 53:
-      case 55:
-      case 56:
-      case 57:
+      // case 51:
+      // case 53:
+      // case 55:
+      // case 56:
+      // case 57:
       case 71:
       case 72:
       case 73:

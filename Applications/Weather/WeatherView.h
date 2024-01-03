@@ -29,13 +29,13 @@
 {
   NSImage	*conditionImage;
   SunkenString *temperature;
-  SunkenString *humidity;
+  SunkenString *cityName;
   NSColor *tempPositiveColor;
   NSColor *tempNegativeColor;
 }
 
 - (void)setImage:(NSImage *)image;
 - (void)setTemperature:(NSString *)temp;
-- (void)setHumidity:(NSString *)hum;
+- (void)setLocationName:(NSString *)name;
 
 @end

@@ -175,7 +175,7 @@
                                            darkColor:nil
                                            textColor:tempPositiveColor];
 
-  humidity = [[SunkenString alloc] initWithString:@"%"
+  cityName = [[SunkenString alloc] initWithString:@""
                                              font:[NSFont systemFontOfSize:9]
                                        lightColor:nil
                                         darkColor:nil
@@ -191,8 +191,8 @@
   [conditionImage compositeToPoint:NSMakePoint(4, (62 - [conditionImage size].height))
                          operation:NSCompositeSourceOver];
 
-  [temperature drawAtPoint:NSMakePoint((64 - [temperature width]) / 2.0, [humidity height])];
-  [humidity drawAtPoint:NSMakePoint(4, 2)];
+  [temperature drawAtPoint:NSMakePoint((64 - [temperature width]) / 2.0, [cityName height])];
+  [cityName drawAtPoint:NSMakePoint((64 - [cityName width]) / 2.0, 2)];
   
   [super drawRect:rect];
 }
@@ -201,7 +201,7 @@
 {
   [conditionImage release];
   [temperature release];
-  [humidity release];
+  [cityName release];
   
   [super dealloc];
 }
@@ -227,9 +227,9 @@
   [temperature setStringValue:[NSString stringWithFormat:@"%@°", temp]];
 }
 
-- (void)setHumidity:(NSString *)hum
+- (void)setLocationName:(NSString *)name
 {
-  [humidity setStringValue:[NSString stringWithFormat:@"Humidity: %@%%", hum]];
+  [cityName setStringValue:name];
 }
 
 @end

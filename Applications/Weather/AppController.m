@@ -74,7 +74,12 @@ static NSUserDefaults *defaults = nil;
       weatherProvider = [forecastModules objectForKey:[[forecastModules allKeys] firstObject]];
     }
   }
-  [weatherProvider setCityByName:[[[NSTimeZone defaultTimeZone] name] lastPathComponent]];
+
+  if ([weatherProvider setLocationByName:[[[NSTimeZone defaultTimeZone] name] lastPathComponent]] !=
+      NO) {
+    // if ([weatherProvider setLocationByName:@"Copenhagen"] != NO) {
+    [weatherView setLocationName:weatherProvider.locationName];
+  }
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotif
@@ -130,7 +135,6 @@ static NSUserDefaults *defaults = nil;
       [weatherView setImage:[NSApp applicationIconImage]];
     }
     [weatherView setTemperature:weatherProvider.current.temperature];
-    [weatherView setHumidity:weatherProvider.current.humidity];
     [weatherView setNeedsDisplay:YES];
   }
   else {

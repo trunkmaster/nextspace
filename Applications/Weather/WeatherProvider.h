@@ -28,17 +28,18 @@
 - (NSString *)name;
 
 /* Returns YES if latitude and logitude were found for `name` */
-- (BOOL)setCityByName:(NSString *)name;
+- (BOOL)setLocationByName:(NSString *)name;
 /* If -setCityByname was not successfull present city list to user selection */
-- (NSArray *)cityListForName:(NSString *)name;
+- (NSArray *)locationsListForName:(NSString *)name;
 
 /* Key is human readable name, value is provider specific. */
-- (NSDictionary *)unitsList;
-- (void)setUnits:(NSString *)name;
+- (NSDictionary *)temperatureUnitsList;
+- (void)setTemperatureUnits:(NSString *)name;
 
 - (BOOL)fetchWeather;
 
 @end
+
 
 @interface WeatherCurrent : NSObject
 
@@ -52,17 +53,18 @@
 
 @interface WeatherForecast : NSObject
 
-@property (readwrite, assign) NSString *temperature;
-@property (readwrite, assign) NSString *humidity;
-@property (readwrite, assign) NSString *minTemperature;
-@property (readwrite, assign) NSString *maxTemperature;
+@property (readwrite, copy) NSString *temperature;
+@property (readwrite, copy) NSString *humidity;
+@property (readwrite, copy) NSString *minTemperature;
+@property (readwrite, copy) NSString *maxTemperature;
 
 @end
 
 
 @interface WeatherProvider : NSObject <WeatherProtocol>
 
-@property (readwrite, assign) WeatherCurrent *current;
-@property (readwrite, assign) WeatherForecast *forecast;
+@property (readwrite, copy) NSString *locationName;
+@property (readwrite, copy) WeatherCurrent *current;
+@property (readwrite, copy) WeatherForecast *forecast;
 
 @end
