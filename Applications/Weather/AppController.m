@@ -19,6 +19,7 @@
 */
 
 #import <DesktopKit/NXTBundle.h>
+#include "Foundation/NSObjCRuntime.h"
 #include "Foundation/NSTimeZone.h"
 #include "Foundation/NSUserDefaults.h"
 
@@ -136,6 +137,7 @@ static NSUserDefaults *defaults = nil;
     }
     [weatherView setTemperature:weatherProvider.current.temperature];
     [weatherView setNeedsDisplay:YES];
+    NSLog(@"Got forecast: %@", weatherProvider.forecast);
   }
   else {
     NSLog(@"Error getting data: %@", weatherProvider.current.error);

@@ -27,6 +27,9 @@
 #include <AppKit/NSImage.h>
 #include <WeatherProvider.h>
 
+#include "Foundation/NSArray.h"
+#include "Foundation/NSDictionary.h"
+#include "GNUstepBase/GNUstep.h"
 #import "OpenMeteo.h"
 
 #define QUERY_PREFIX @"https://api.open-meteo.com/v1/forecast?timezone=auto"
@@ -41,9 +44,8 @@
   @"current=temperature_2m,apparent_temperature,is_day,weather_code,cloud_cover,wind_speed_10m," \
   @"relative_humidity_2m"
 
-#define QUERY_DAILY                                                                       \
-  @"daily=temperature_2m_min,temperature_2m_max,weather_code,cloud_cover,wind_speed_10m," \
-  @"relative_humidity_2m "
+#define QUERY_DAILY                                                                              \
+  @"daily=temperature_2m_min,temperature_2m_max,weather_code,wind_speed_10m_max,wind_gusts_10m_max"
 
 @implementation OpenMeteo
 
@@ -51,8 +53,10 @@
 // Weather Provider protocol
 //
 @synthesize locationName;
+@synthesize fetchedDate;
 @synthesize current;
 @synthesize forecast;
+
 - (NSString *)name
 {
   return @"OpenMeteo";
@@ -114,13 +118,14 @@
   return NO;
 }
 
-- (NSDictionary *)temperatureUnitsList {
+- (NSDictionary *)temperatureUnitsList
+{
   return @{@"Celsisus" : @"celsius", @"Farenheit" : @"farenheit"};
 }
 
-- (void)setTemperatureUnits:(NSString *)name
+- (void)setTemperatureUnit:(NSString *)name
 {
-  //
+  temperatureUnit = [name copy];
 }
 
 //
@@ -128,33 +133,47 @@
 //
 - (id)init
 {
-  forecast = [[WeatherForecast alloc] init];
+  forecast = [[NSMutableArray alloc] init];
   current = [[WeatherCurrent alloc] init];
+  temperatureUnit = @"celsius";
   
   return self;
 }
 
 - (void)dealloc
 {
-  [current release];
-  [forecast release];
   TEST_RELEASE(latitude);
   TEST_RELEASE(longtitude);
+
+  TEST_RELEASE(temperatureUnit);
+  TEST_RELEASE(fetchedDate);
+  [current release];
+  [forecast release];
   
   [super dealloc];
 }
 
-// - (void)appendForecastForDay:(NSString *)day
-//                     highTemp:(NSString *)high
-//                      lowTemp:(NSString *)low
-//                  description:(NSString *)desc
-// {
-//   NSDictionary *dayForecast;
+- (void)_processDailyForecast:(NSDictionary *)dailyResults
+{
+  NSArray *time = dailyResults[@"time"];
+  NSArray *tempMin = dailyResults[@"temperature_2m_min"];
+  NSArray *tempMax = dailyResults[@"temperature_2m_max"];
+  NSArray *windSpeedMax = dailyResults[@"wind_speed_10m_max"];
+  NSArray *windGustsMax = dailyResults[@"wind_gusts_10m_max"];
+  WeatherForecast *_forecast;
 
-//   dayForecast = @{@"Day" : day, @"High" : high, @"Low" : low, @"Description" : desc};
-//   // NSLog(@"Append forecast: %@", dayForecast);
-//   [forecastList addObject:dayForecast];
-// }
+  [forecast release];
+  forecast = [[NSMutableArray alloc] init];
+
+  for (int i = 0; i < [time count]; i++) {
+    _forecast = [WeatherForecast new];
+    _forecast.minTemperature = tempMin[i];
+    _forecast.maxTemperature = tempMax[i];
+    _forecast.maxWindSpeed = windSpeedMax[i];
+    _forecast.maxWindGusts = windGustsMax[i];
+    [forecast addObject:_forecast];
+  }
+}
 
 /*
    WMO Weather interpretation codes (WW)
@@ -191,17 +210,25 @@
   NSString *imagePath;
   int weather_code;
 
-  queryString = [NSString stringWithFormat:@"%@&latitude=%@&longitude=%@&%@",
-                                           QUERY_PREFIX,
-                                           latitude, longtitude,
-                                           QUERY_CURRENT];
-  // NSLog(@"Query string: %@", queryString);
+  queryString = [NSString stringWithFormat:@"%@&latitude=%@&longitude=%@&%@&%@&temperature_unit=%@",
+                                           QUERY_PREFIX, latitude, longtitude, QUERY_CURRENT,
+                                           QUERY_DAILY, temperatureUnit];
+
+  NSLog(@"Query string: %@", queryString);
   results = [self query:queryString];
-  if (results != nil && results[@"error"] == nil &&
-      [results[@"current"] isKindOfClass:[NSNull class]] == NO) {
+
+  if (results == nil) {
+    if (results[@"error"] == nil) {
+      current.error = @"Unknown error occured while fetching weather data!";
+    } else {
+      current.error = results[@"reason"];
+    }
+    return NO;
+  }
+
+  if ([results[@"current"] isKindOfClass:[NSDictionary class]] != NO) {
     [current release];
     current = [[WeatherCurrent alloc] init];
-    // NSLog(@"Temperature is a %@", results[@"current"][@"temperature_2m"]);
     float temp = [results[@"current"][@"temperature_2m"] floatValue];
     current.temperature = [NSString stringWithFormat:@"%.0f", roundf(temp)];
     current.humidity = [results[@"current"][@"relative_humidity_2m"] copy];
@@ -239,22 +266,17 @@
     }
     current.image = [image copy];
     [image release];
-    return YES;
-  } else if (results[@"error"] != nil) {
-    current.error = results[@"reason"];
   } else {
-    current.error = @"Unknown error occured while fetching weather data!";
+    return NO;
   }
 
-  // for (NSDictionary *forecast in channel[@"item"][@"forecast"]) {
-  //   [self appendForecastForDay:forecast[@"day"]
-  //                     highTemp:forecast[@"high"]
-  //                      lowTemp:forecast[@"low"]
-  //                  description:forecast[@"desc"]];
-  // }
-  // [weatherCondition setObject:[NSDate date] forKey:@"Fetched"];
+  if ([results[@"daily"] isKindOfClass:[NSDictionary class]] != NO) {
+    [self _processDailyForecast:results[@"daily"]];
+  }
 
-  return NO;
+  fetchedDate = [NSDate date];
+
+  return YES;
 }
 
 - (NSDictionary *)query:(NSString *)statement

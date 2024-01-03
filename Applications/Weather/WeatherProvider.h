@@ -34,7 +34,7 @@
 
 /* Key is human readable name, value is provider specific. */
 - (NSDictionary *)temperatureUnitsList;
-- (void)setTemperatureUnits:(NSString *)name;
+- (void)setTemperatureUnit:(NSString *)name;
 
 - (BOOL)fetchWeather;
 
@@ -53,10 +53,10 @@
 
 @interface WeatherForecast : NSObject
 
-@property (readwrite, copy) NSString *temperature;
-@property (readwrite, copy) NSString *humidity;
 @property (readwrite, copy) NSString *minTemperature;
 @property (readwrite, copy) NSString *maxTemperature;
+@property (readwrite, copy) NSString *maxWindSpeed;
+@property (readwrite, copy) NSString *maxWindGusts;
 
 @end
 
@@ -64,7 +64,8 @@
 @interface WeatherProvider : NSObject <WeatherProtocol>
 
 @property (readwrite, copy) NSString *locationName;
+@property (readwrite, copy) NSDate *fetchedDate;
 @property (readwrite, copy) WeatherCurrent *current;
-@property (readwrite, copy) WeatherForecast *forecast;
+@property (readwrite, copy) NSMutableArray<WeatherForecast *> *forecast;
 
 @end

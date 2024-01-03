@@ -27,6 +27,7 @@
  @private
   NSString *latitude;
   NSString *longtitude;
+  NSString *temperatureUnit;
 }
 
 @end
