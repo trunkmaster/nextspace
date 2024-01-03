@@ -1,14 +1,8 @@
 /*
-  Class:               OpenMeteoForecast
-  Inherits from:       NSObject
-  Class descritopn:    Get and parse weather condition and forecast 
-                       from open-meteo.com.
+  Class:      OpenMeteo
+  Descrition: Get and parse weather condition and forecast from open-meteo.com.
 
-  Copyright (C) 2023- Sergii Stoian <stoian255@ukr.net>
-
-  -query: method 
-  Created by Guilherme Chapiewski on 10/19/12.
-  Copyright (c) 2012 Guilherme Chapiewski. All rights reserved.
+  Copyright (C) 2023-present Sergii Stoian <stoian255@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,19 +22,11 @@
 #import <Foundation/Foundation.h>
 #import <WeatherProvider.h>
 
-struct _Location {
+@interface OpenMeteo : WeatherProvider
+{
+ @private
   NSString *latitude;
   NSString *longtitude;
-};
-typedef struct _Location Location;
-
-@interface OpenMeteo : NSObject <WeatherProvider>
-{
-  Location coordiantes;
-  // { Day = @""; Low = @""; High = @""; Description = @"";}
-  NSDictionary *forecastDescription;
-  NSMutableArray *forecastList;
-  NSMutableDictionary *weatherCondition;
 }
 
 @end

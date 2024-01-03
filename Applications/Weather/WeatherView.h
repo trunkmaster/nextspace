@@ -3,7 +3,7 @@
   Inherits from:       NSView
   Class descritopn:    Dock app with weather conditions
 
-  Copyright (C) 2016 Sergii Stoian
+  Copyright (C) 2016-present Sergii Stoian <stoyan255@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,8 +28,10 @@
 @interface WeatherView : NSView
 {
   NSImage	*conditionImage;
-  SunkenString	*temperature;
-  SunkenString	*humidity;
+  SunkenString *temperature;
+  SunkenString *humidity;
+  NSColor *tempPositiveColor;
+  NSColor *tempNegativeColor;
 }
 
 - (void)setImage:(NSImage *)image;

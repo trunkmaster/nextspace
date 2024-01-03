@@ -7,7 +7,8 @@ $(BUNDLE_NAME)_PRINCIPAL_CLASS = OpenMeteo
 $(BUNDLE_NAME)_STANDARD_INSTALL = no
 
 $(BUNDLE_NAME)_OBJC_FILES= \
-	OpenMeteo.m
+	OpenMeteo.m \
+	../WeatherProvider.m
 
 $(BUNDLE_NAME)_RESOURCE_FILES = \
 	$(wildcard Resources/*.png) \

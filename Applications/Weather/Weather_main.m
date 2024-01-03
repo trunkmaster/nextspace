@@ -1,9 +1,9 @@
 /*
   Class:               None
   Inherits from:       None
-  Class descritopn:    Application entry point
+  Class descritopn:    Weather application entry point
 
-  Copyright (C) 2016 Sergii Stoian
+  Copyright (C) 2016-present Sergii Stoian <stoyan255@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by

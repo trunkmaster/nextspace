@@ -1,9 +1,7 @@
 /*
-  Class:               Appcontroller
-  Inherits from:       NSObject
-  Class descritopn:    NSApplication delegate
+  Weather application controller
 
-  Copyright (C) 2016 Sergii Stoian
+  Copyright (C) 2023-present Sergii Stoian <stoyan255@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,6 +19,8 @@
 */
 
 #import <DesktopKit/NXTBundle.h>
+#include "Foundation/NSTimeZone.h"
+#include "Foundation/NSUserDefaults.h"
 
 #import "AppController.h"
 
@@ -51,27 +51,40 @@ static NSUserDefaults *defaults = nil;
 
 - (void)awakeFromNib
 {
-  if (weatherView)
+  if (weatherView) {
     return;
-  
+  }
+
   weatherView = [[WeatherView alloc] initWithFrame:NSMakeRect(0, 0, 64, 64)];
   [[NSApp iconWindow] setContentView:weatherView];
-
-  timer = [NSTimer scheduledTimerWithTimeInterval:900.0
-                                           target:self
-                                         selector:@selector(updateWeather:)
-                                         userInfo:nil
-                                          repeats:YES];
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)notify
 {
+  NSString *fetcherName;
+
   [self loadBundles];
+
+  if (weatherProvider == nil) {
+    fetcherName = [[NSUserDefaults standardUserDefaults] objectForKey:@"Fetcher"];
+    if (fetcherName) {
+      weatherProvider = [forecastModules objectForKey:fetcherName];
+    }
+    if (weatherProvider == nil) {
+      weatherProvider = [forecastModules objectForKey:[[forecastModules allKeys] firstObject]];
+    }
+  }
+  [weatherProvider setCityByName:[[[NSTimeZone defaultTimeZone] name] lastPathComponent]];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotif
 {
   [self updateWeather:nil];
+  timer = [NSTimer scheduledTimerWithTimeInterval:900.0
+                                           target:self
+                                         selector:@selector(updateWeather:)
+                                         userInfo:nil
+                                          repeats:YES];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
@@ -110,38 +123,18 @@ static NSUserDefaults *defaults = nil;
 
 - (void)updateWeather:(NSTimer *)timer
 {
-  NSDictionary *weather;
-  NSString *fetcherName;
-  NSImage *conditionImage;
-
-  if (forecastFetcher == nil) {
-    fetcherName = [[NSUserDefaults standardUserDefaults] objectForKey:@"Fetcher"];
-    if (fetcherName) {
-      forecastFetcher = [forecastModules objectForKey:fetcherName];
-    }
-    if (forecastFetcher == nil) {
-      forecastFetcher = [forecastModules objectForKey:[[forecastModules allKeys] firstObject]];
-    }
-  }
-
-  [forecastFetcher setCityByName:@"Kyiv"];
-  weather = [forecastFetcher fetchWeather];
-  NSLog(@"Weather data from %@: %@", [[forecastFetcher class] className], weather);
-
-  if (weather && [[weather objectForKey:@"ErrorText"] length] == 0) {
-    NSLog(@"Got weather forecast. %@", weather);
-    conditionImage = [weather objectForKey:@"Image"];
-    if (conditionImage != nil) {
-      [weatherView setImage:conditionImage];
+  if ([weatherProvider fetchWeather] != NO) {
+    if (weatherProvider.current.image != nil) {
+      [weatherView setImage:weatherProvider.current.image];
     } else {
       [weatherView setImage:[NSApp applicationIconImage]];
     }
-    [weatherView setTemperature:[weather objectForKey:@"Temperature"]];
-    [weatherView setHumidity:[weather objectForKey:@"Humidity"]];
+    [weatherView setTemperature:weatherProvider.current.temperature];
+    [weatherView setHumidity:weatherProvider.current.humidity];
     [weatherView setNeedsDisplay:YES];
   }
   else {
-    NSLog(@"Error getting data: %@", [weather objectForKey:@"ErrorText"]);
+    NSLog(@"Error getting data: %@", weatherProvider.current.error);
   }
 }
 
@@ -156,12 +149,12 @@ static NSUserDefaults *defaults = nil;
 
   bRegistry = [[NXTBundle shared] registerBundlesOfType:@"provider"
                                                  atPath:[[NSBundle mainBundle] bundlePath]];
-  NSLog(@"Registered bundles: %@", bRegistry);
+  // NSLog(@"Registered bundles: %@", bRegistry);
   modules = [[NXTBundle shared] loadRegisteredBundles:bRegistry
                                                  type:@"Weather"
-                                             protocol:@protocol(WeatherProvider)];
-  NSLog(@"Loaded number of bundles: %lu - %@", [modules count], [modules firstObject]);
-  for (id<WeatherProvider> provider in modules) {
+                                             protocol:@protocol(WeatherProtocol)];
+  // NSLog(@"Loaded number of bundles: %lu - %@", [modules count], [modules firstObject]);
+  for (WeatherProvider *provider in modules) {
     [loadedModules setObject:provider forKey:provider.name];
   }
   forecastModules = [[NSDictionary alloc] initWithDictionary:loadedModules];

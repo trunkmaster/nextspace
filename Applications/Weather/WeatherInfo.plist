@@ -3,7 +3,7 @@
     ApplicationIcon = Weather.tiff;
     ApplicationName = Weather;
     ApplicationRelease = 0.8;
-    Copyright = "Copyright (C) 2023";
+    Copyright = "Copyright (C) 2023-present Sergii Stoian";
     CopyrightDescription = "Released under GPL";
     FullVersionID = 0.8;
     NSExecutable = Weather;

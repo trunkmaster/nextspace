@@ -1,9 +1,7 @@
 /*
-  Class:               Appcontroller
-  Inherits from:       NSObject
-  Class descritopn:    NSApplication delegate
+  Weather application controller
 
-  Copyright (C) 2016 Sergii Stoian
+  Copyright (C) 2023-present Sergii Stoian <stoyan255@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -19,7 +17,7 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
- 
+
 #import <AppKit/AppKit.h>
 
 #import "WeatherProvider.h"
@@ -27,10 +25,10 @@
 
 @interface AppController : NSObject
 {
-  WeatherView  *weatherView;
+  WeatherView *weatherView;
   NSDictionary *forecastModules;
-  id<WeatherProvider> forecastFetcher;
-  NSTimer      *timer;
+  WeatherProvider *weatherProvider;
+  NSTimer *timer;
 }
 
 - (void)showPreferencesWindow;

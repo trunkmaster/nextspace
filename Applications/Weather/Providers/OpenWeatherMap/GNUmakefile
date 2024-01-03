@@ -1,7 +1,7 @@
 include $(GNUSTEP_MAKEFILES)/common.make
 
 BUNDLE_NAME = OpenWeatherMap
-BUNDLE_EXTENSION = .forecast
+BUNDLE_EXTENSION = .provider
 
 $(BUNDLE_NAME)_PRINCIPAL_CLASS = OWMForecast
 $(BUNDLE_NAME)_STANDARD_INSTALL = no

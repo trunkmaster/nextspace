@@ -1,12 +1,12 @@
 /*
   Class:               YahooForecast
   Inherits from:       NSObject
-  Class descritopn:    Get and parse weather condition and forecast 
+  Class descritopn:    Get and parse weather condition and forecast
                        from yahoo.com.
 
   Copyright (C) 2016 Sergii Stoian <stoian255@ukr.net>
 
-  -query: method 
+  -query: method
   Created by Guilherme Chapiewski on 10/19/12.
   Copyright (c) 2012 Guilherme Chapiewski. All rights reserved.
 
@@ -55,19 +55,18 @@ NSDictionary *language = @{@"Arabic":@"ar", @"Bulgarian":@"bg", @"Catalan":@"ca"
 {
   [weatherCondition release];
   [forecastList release];
-  
+
   [super dealloc];
 }
 
 - (id)init
 {
   NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-  NSDictionary   *owmDefs = [defaults objectForKey:@"OpenWeatherMap"];
+  NSDictionary *owmDefs = [defaults objectForKey:@"OpenWeatherMap"];
 
-  NSLog(@"City: %@ Language: %@ Units: %@ APIKey: %@",
-        owmDefs[@"CityName"], owmDefs[@"Language"],
+  NSLog(@"City: %@ Language: %@ Units: %@ APIKey: %@", owmDefs[@"CityName"], owmDefs[@"Language"],
         owmDefs[@"Units"], owmDefs[@"APIKey"]);
-  
+
   forecastList = [[NSMutableArray alloc] init];
   weatherCondition = [[NSMutableDictionary alloc] init];
   [weatherCondition setObject:forecastList forKey:@"Forecasts"];
@@ -75,7 +74,7 @@ NSDictionary *language = @{@"Arabic":@"ar", @"Bulgarian":@"bg", @"Catalan":@"ca"
   if (owmDefs && [owmDefs isKindOfClass:[NSDictionary class]]) {
     if ((apiKey = owmDefs[@"APIKey"]) == nil) {
       NSLog(@"[OpenWeatherMap] unable to find API key. "
-            "Please check preferences. Aborting.");
+             "Please check preferences. Aborting.");
       return nil;
     }
     if ((units = owmDefs[@"Units"]) == nil) {
@@ -88,8 +87,13 @@ NSDictionary *language = @{@"Arabic":@"ar", @"Bulgarian":@"bg", @"Catalan":@"ca"
       [self setCityByName:@"London,uk"];
     }
   }
-  
+
   return self;
+}
+
+- (NSString *)name
+{
+  return @"OpenWeatherMap";
 }
 
 - (void)setCityByName:(NSString *)name
@@ -128,7 +132,7 @@ NSDictionary *language = @{@"Arabic":@"ar", @"Bulgarian":@"bg", @"Catalan":@"ca"
 {
   NSDictionary *dayForecast;
 
-  dayForecast = @{@"Day":day, @"High":high, @"Low":low, @"Description":desc};
+  dayForecast = @{@"Day" : day, @"High" : high, @"Low" : low, @"Description" : desc};
   // NSLog(@"Append forecast: %@", dayForecast);
   [forecastList addObject:dayForecast];
 }
@@ -136,30 +140,26 @@ NSDictionary *language = @{@"Arabic":@"ar", @"Bulgarian":@"bg", @"Catalan":@"ca"
 - (NSDictionary *)parseWeather:(NSDictionary *)results
 {
   NSString *imageName;
-  
+
   if (results != nil) {
-    [weatherCondition setObject:results[@"main"][@"temp"]
-                         forKey:@"Temperature"];
-    [weatherCondition setObject:results[@"weather"][0][@"description"]
-                         forKey:@"Description"];
-    [weatherCondition setObject:results[@"main"][@"humidity"]
-                         forKey:@"Humidity"];
+    [weatherCondition setObject:results[@"main"][@"temp"] forKey:@"Temperature"];
+    [weatherCondition setObject:results[@"weather"][0][@"description"] forKey:@"Description"];
+    [weatherCondition setObject:results[@"main"][@"humidity"] forKey:@"Humidity"];
 
     // imageName = [NSString stringWithFormat:@"%@.png",
     //                       channel[@"item"][@"condition"][@"code"]];
     // [weatherCondition setObject:[NSImage imageNamed:imageName]
     //                      forKey:@"Image"];
-      
+
     // for (NSDictionary *forecast in channel[@"item"][@"forecast"]) {
     //     [self appendForecastForDay:forecast[@"day"]
     //                       highTemp:forecast[@"high"]
     //                        lowTemp:forecast[@"low"]
     //                    description:forecast[@"desc"]];
     //   }
-      
+
     [weatherCondition setObject:[NSDate date] forKey:@"Fetched"];
-  }
-  else {
+  } else {
     [weatherCondition setObject:@"Error getting weather data from OpenWeatherMap!"
                          forKey:@"ErrorText"];
     NSLog(@"Error getting data from Yahoo! Results are: %@", results);
@@ -169,14 +169,13 @@ NSDictionary *language = @{@"Arabic":@"ar", @"Bulgarian":@"bg", @"Catalan":@"ca"
 
 - (NSDictionary *)_query:(NSString *)statement
 {
-  NSString     *query;
-  NSData       *jsonData;
-  NSError      *error = nil;
+  NSString *query;
+  NSData *jsonData;
+  NSError *error = nil;
   NSDictionary *results = nil;
 
   // Prepare query using modified NSString method implemented above
-  query = [NSString stringWithFormat:@"%@%@&APPID=%@",
-                    QUERY_PREFIX, statement, apiKey];
+  query = [NSString stringWithFormat:@"%@%@&APPID=%@", QUERY_PREFIX, statement, apiKey];
   NSLog(@"OWM query URL: %@", query);
 
   // if ((jsonData = [queryData dataUsingEncoding:NSUTF8StringEncoding]))
@@ -185,13 +184,9 @@ NSDictionary *language = @{@"Arabic":@"ar", @"Bulgarian":@"bg", @"Catalan":@"ca"
   // TODO: something wrong with GNUstep code.
   if ((jsonData = [[NSURL URLWithString:query] resourceDataUsingCache:NO])) {
     NSLog(@"Got %lu bytes with query: %@", [jsonData length], query);
-    results = [NSJSONSerialization JSONObjectWithData:jsonData
-                                              options:0
-                                                error:&error];
+    results = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (error || !results) {
-      NSLog(@"[%@ %@] JSON error: %@",
-            NSStringFromClass([self class]),
-            NSStringFromSelector(_cmd),
+      NSLog(@"[%@ %@] JSON error: %@", NSStringFromClass([self class]), NSStringFromSelector(_cmd),
             error.localizedDescription);
       results = nil;
     }
@@ -202,33 +197,28 @@ NSDictionary *language = @{@"Arabic":@"ar", @"Bulgarian":@"bg", @"Catalan":@"ca"
 
 - (NSDictionary *)fetchWeather
 {
-  NSString	*queryString = @"";
-  NSDictionary	*results;
+  NSString *queryString = @"";
+  NSDictionary *results;
 
   [weatherCondition removeObjectForKey:@"ErrorText"];
 
   if (cityID != nil && [cityID length] > 0) {
-    queryString = [queryString stringByAppendingFormat:@"id=%@",
-                               cityID];
+    queryString = [queryString stringByAppendingFormat:@"id=%@", cityID];
+  } else if (city != nil && [city length] > 0) {
+    queryString = [queryString stringByAppendingFormat:@"q=%@", city];
   }
-  else if (city != nil && [city length] > 0) {
-    queryString = [queryString stringByAppendingFormat:@"q=%@",
-                               city];
-  }
-  
+
   if (units != nil && [units length] > 0) {
-    queryString = [queryString stringByAppendingFormat:@"&units=%@",
-                               units];
+    queryString = [queryString stringByAppendingFormat:@"&units=%@", units];
   }
-  
+
   if (language != nil && [language length] > 0) {
-    queryString = [queryString stringByAppendingFormat:@"&langauge=%@",
-                               language];
+    queryString = [queryString stringByAppendingFormat:@"&langauge=%@", language];
   }
-  
+
   results = [self _query:queryString];
   [self parseWeather:results];
-  
+
   return weatherCondition;
 }
 
