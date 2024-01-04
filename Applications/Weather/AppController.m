@@ -19,9 +19,7 @@
 */
 
 #import <DesktopKit/NXTBundle.h>
-#include "Foundation/NSObjCRuntime.h"
-#include "Foundation/NSTimeZone.h"
-#include "Foundation/NSUserDefaults.h"
+#import <DesktopKit/NXTAlert.h>
 
 #import "AppController.h"
 
@@ -85,12 +83,12 @@ static NSUserDefaults *defaults = nil;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotif
 {
-  [self updateWeather:nil];
   timer = [NSTimer scheduledTimerWithTimeInterval:900.0
                                            target:self
                                          selector:@selector(updateWeather:)
                                          userInfo:nil
                                           repeats:YES];
+  [self updateWeather:timer];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
@@ -127,8 +125,17 @@ static NSUserDefaults *defaults = nil;
   // [[prefsController window] makeKeyAndOrderFront:self];
 }
 
-- (void)updateWeather:(NSTimer *)timer
+- (void)updateWeather:(NSTimer *)theTimer
 {
+  if (weatherProvider.locationName == nil) {
+    NXTRunAlertPanel(@"Weather", @"No location was set. Please set it in preferences.",
+                     @"Preferences", @"Cancel", nil);
+    if (theTimer != nil) {
+      [theTimer invalidate];
+      theTimer = nil;
+    }
+    return;
+  }
   if ([weatherProvider fetchWeather] != NO) {
     if (weatherProvider.current.image != nil) {
       [weatherView setImage:weatherProvider.current.image];

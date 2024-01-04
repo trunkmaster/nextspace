@@ -93,9 +93,8 @@
   NSDictionary *geoResults = [self _queryLocationByName:name];
   NSArray *resultsList;
 
-  if (geoResults != nil) {
-    resultsList = geoResults[@"results"];
-    if (resultsList && [resultsList count] > 0) {
+  if (geoResults != nil && (resultsList = geoResults[@"results"]) != nil) {
+    if ([resultsList count] > 0) {
       for (NSDictionary *entry in resultsList) {
         if ([entry[@"name"] isEqualToString:name]) {
           // NSLog(@"Got coordinates for %@: lat:%@ long: %@", name, entry[@"latitude"],
