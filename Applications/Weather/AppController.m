@@ -109,20 +109,12 @@ static NSUserDefaults *defaults = nil;
   return YES;
 }
 
-- (void)showPreferencesWindow
+- (void)showPreferencesWindow:(id)sender
 {
-  // if (prefsController == nil)
-  //   {
-  //     prefsController = [[PrefsController alloc] init];
-  //     if ([NSBundle loadNibNamed:@"PrefsWindow" owner:self] == NO)
-  //       {
-  //         NSLog(@"Error loading NIB PrefsWindow");
-  //         return;
-  //       }
-  //   }
-
-  [NSApp activateIgnoringOtherApps:YES];
-  // [[prefsController window] makeKeyAndOrderFront:self];
+  if (prefences == nil) {
+    prefences = [[Preferences alloc] initWithProvider:weatherProvider];    
+  }
+  [[prefences window] makeKeyAndOrderFront:self];
 }
 
 - (void)updateWeather:(NSTimer *)theTimer

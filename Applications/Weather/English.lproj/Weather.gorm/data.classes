@@ -2,7 +2,8 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     AppController = {
 	Actions = (
-	    "updateWeather:"
+	    "updateWeather:",
+	    "showPreferencesWindow:"
 	);
 	Outlets = (
 	);
@@ -10,6 +11,7 @@
     };
     FirstResponder = {
 	Actions = (
+	    "showPreferencesWindow:",
 	    "updateWeather:"
 	);
 	Super = NSObject;

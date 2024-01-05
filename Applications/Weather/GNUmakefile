@@ -29,14 +29,17 @@ $(APP_NAME)_RESOURCE_FILES = \
 # Localization
 #
 $(APP_NAME)_LANGUAGES = English
-$(APP_NAME)_LOCALIZED_RESOURCE_FILES = Weather.gorm
+$(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
+	Weather.gorm \
+	Preferences.gorm
 
 #
 # Class files
 #
 $(APP_NAME)_OBJC_FILES = \
 	AppController.m \
-	WeatherView.m	
+	WeatherView.m \
+	Preferences.m
 
 #
 # Other sources

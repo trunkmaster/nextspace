@@ -1,3 +1,34 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setGeoName:",
+	    "setLatitude:",
+	    "setLocationType:",
+	    "setLongitude:",
+	    "setTemperatureUnit:",
+	    "switchModule:"
+	);
+	Super = NSObject;
+    };
+    Preferences = {
+	Actions = (
+	    "setLocationType:",
+	    "setLatitude:",
+	    "setLongitude:",
+	    "setGeoName:",
+	    "setTemperatureUnit:"
+	);
+	Outlets = (
+	    panel,
+	    drawer,
+	    locationType,
+	    latitude,
+	    longitude,
+	    geoName,
+	    temperatureUnit,
+	    locationsList
+	);
+	Super = NSObject;
+    };
 }

@@ -22,6 +22,7 @@
 
 #import "WeatherProvider.h"
 #import "WeatherView.h"
+#import "Preferences.h"
 
 @interface AppController : NSObject
 {
@@ -29,9 +30,10 @@
   NSDictionary *forecastModules;
   WeatherProvider *weatherProvider;
   NSTimer *timer;
+  Preferences *prefences;
 }
 
-- (void)showPreferencesWindow;
+- (void)showPreferencesWindow:(id)sender;
 
 @end
 
