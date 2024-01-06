@@ -6,8 +6,7 @@
 	    "setLatitude:",
 	    "setLocationType:",
 	    "setLongitude:",
-	    "setTemperatureUnit:",
-	    "switchModule:"
+	    "setTemperatureUnit:"
 	);
 	Super = NSObject;
     };
@@ -21,12 +20,11 @@
 	);
 	Outlets = (
 	    panel,
-	    drawer,
-	    locationType,
-	    latitude,
-	    longitude,
-	    geoName,
-	    temperatureUnit,
+	    locationTypeMatrix,
+	    latitudeField,
+	    longitudeField,
+	    geoNameField,
+	    temperatureUnitPopup,
 	    locationsList
 	);
 	Super = NSObject;

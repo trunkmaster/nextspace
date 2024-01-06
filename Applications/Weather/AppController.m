@@ -21,6 +21,7 @@
 #import <DesktopKit/NXTBundle.h>
 #import <DesktopKit/NXTAlert.h>
 
+#import "Preferences.h"
 #import "AppController.h"
 
 static NSUserDefaults *defaults = nil;
@@ -112,20 +113,22 @@ static NSUserDefaults *defaults = nil;
 - (void)showPreferencesWindow:(id)sender
 {
   if (prefences == nil) {
-    prefences = [[Preferences alloc] initWithProvider:weatherProvider];    
+    prefences = [[Preferences alloc] initWithProvider:weatherProvider];
   }
+
   [[prefences window] makeKeyAndOrderFront:self];
 }
 
 - (void)updateWeather:(NSTimer *)theTimer
 {
   if (weatherProvider.locationName == nil) {
-    NXTRunAlertPanel(@"Weather", @"No location was set. Please set it in preferences.",
-                     @"Preferences", @"Cancel", nil);
     if (theTimer != nil) {
       [theTimer invalidate];
       theTimer = nil;
     }
+    [self showPreferencesWindow:self];
+    NXTRunAlertPanel(@"Weather", @"No location was set. Please set it in preferences.",
+                     @"Preferences", @"Cancel", nil);
     return;
   }
   if ([weatherProvider fetchWeather] != NO) {
