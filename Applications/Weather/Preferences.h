@@ -12,6 +12,8 @@
   IBOutlet id geoNameField;
   IBOutlet id locationsList;
   IBOutlet id temperatureUnitPopup;
+
+  WeatherProvider *provider;
 }
 
 - (instancetype)initWithProvider:(WeatherProvider *)theProvider;

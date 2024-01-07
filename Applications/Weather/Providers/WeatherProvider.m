@@ -21,9 +21,6 @@
 - (NSDictionary *)temperatureUnitsList {
   return nil;
 }
-- (void)setTemperatureUnit:(NSString *)name
-{
-}
 - (BOOL)fetchWeather
 {
   return NO;

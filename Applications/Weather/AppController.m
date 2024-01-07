@@ -19,6 +19,7 @@
 */
 
 #import <DesktopKit/NXTBundle.h>
+#include "WeatherView.h"
 #import <DesktopKit/NXTAlert.h>
 
 #import "Preferences.h"
@@ -131,6 +132,8 @@ static NSUserDefaults *defaults = nil;
                      @"Preferences", @"Cancel", nil);
     return;
   }
+  
+  [weatherView setLocationName:weatherProvider.locationName];
   if ([weatherProvider fetchWeather] != NO) {
     if (weatherProvider.current.image != nil) {
       [weatherView setImage:weatherProvider.current.image];

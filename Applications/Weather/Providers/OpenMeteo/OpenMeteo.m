@@ -29,6 +29,7 @@
 
 #include "Foundation/NSArray.h"
 #include "Foundation/NSDictionary.h"
+#include "Foundation/NSObjCRuntime.h"
 #include "GNUstepBase/GNUstep.h"
 #import "OpenMeteo.h"
 
@@ -53,6 +54,9 @@
 // Weather Provider protocol
 //
 @synthesize locationName;
+@synthesize latitude;
+@synthesize longitude;
+@synthesize temperatureUnit;
 @synthesize fetchedDate;
 @synthesize current;
 @synthesize forecast;
@@ -88,6 +92,10 @@
   return cityList;
 }
 
+- (void)setLocationName:(NSString *)name {
+  [self setLocationByName:name];
+}
+
 - (BOOL)setLocationByName:(NSString *)name
 {
   NSDictionary *geoResults = [self _queryLocationByName:name];
@@ -99,15 +107,10 @@
         if ([entry[@"name"] isEqualToString:name]) {
           // NSLog(@"Got coordinates for %@: lat:%@ long: %@", name, entry[@"latitude"],
           //       entry[@"longitude"]);
-          if (latitude) {
-            [latitude release];
-          }
-          latitude = [entry[@"latitude"] copy];
-          if (longtitude) {
-            [longtitude release];
-          }
-          longtitude = [entry[@"longitude"] copy];
-          locationName = [name copy];
+          latitude = entry[@"latitude"];
+          longitude = entry[@"longitude"];
+          NSLog(@"logitude RC: %lu", [longitude retainCount]);
+          locationName = name;
           return YES;
         }
       }
@@ -117,14 +120,18 @@
   return NO;
 }
 
-- (NSDictionary *)temperatureUnitsList
+- (NSArray *)temperatureUnitsList
 {
-  return @{@"Celsisus" : @"celsius", @"Farenheit" : @"farenheit"};
+  return @[@"Celsisus", @"Fahrenheit"];
 }
 
 - (void)setTemperatureUnit:(NSString *)name
 {
-  temperatureUnit = [name copy];
+  if ([name isEqualToString:@"Celsisus"] != NO) {
+    temperatureUnit = @"celsius";
+  } else if ([name isEqualToString:@"Fahrenheit"] != NO) {
+    temperatureUnit = @"fahrenheit";
+  }
 }
 
 //
@@ -142,7 +149,7 @@
 - (void)dealloc
 {
   TEST_RELEASE(latitude);
-  TEST_RELEASE(longtitude);
+  TEST_RELEASE(longitude);
 
   TEST_RELEASE(temperatureUnit);
   TEST_RELEASE(fetchedDate);
@@ -210,7 +217,7 @@
   int weather_code;
 
   queryString = [NSString stringWithFormat:@"%@&latitude=%@&longitude=%@&%@&%@&temperature_unit=%@",
-                                           QUERY_PREFIX, latitude, longtitude, QUERY_CURRENT,
+                                           QUERY_PREFIX, latitude, longitude, QUERY_CURRENT,
                                            QUERY_DAILY, temperatureUnit];
 
   NSLog(@"Query string: %@", queryString);

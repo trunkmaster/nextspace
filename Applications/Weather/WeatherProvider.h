@@ -33,7 +33,7 @@
 - (NSArray *)locationsListForName:(NSString *)name;
 
 /* Key is human readable name, value is provider specific. */
-- (NSDictionary *)temperatureUnitsList;
+- (NSArray *)temperatureUnitsList;
 - (void)setTemperatureUnit:(NSString *)name;
 
 - (BOOL)fetchWeather;
@@ -64,6 +64,10 @@
 @interface WeatherProvider : NSObject <WeatherProtocol>
 
 @property (readwrite, copy) NSString *locationName;
+@property (readwrite, copy) NSString *latitude;
+@property (readwrite, copy) NSString *longitude;
+@property (readwrite, copy) NSString *temperatureUnit;
+
 @property (readwrite, copy) NSDate *fetchedDate;
 @property (readwrite, copy) WeatherCurrent *current;
 @property (readwrite, copy) NSMutableArray<WeatherForecast *> *forecast;

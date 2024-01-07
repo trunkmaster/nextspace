@@ -24,10 +24,6 @@
 
 @interface OpenMeteo : WeatherProvider
 {
- @private
-  NSString *latitude;
-  NSString *longtitude;
-  NSString *temperatureUnit;
 }
 
 @end
