@@ -1355,8 +1355,8 @@ static NSLock *raceLock = nil;
   NSDictionary *dict;
   BOOL isAppListChanged = NO;
 
-  NSLog(@"NSWorkspace: changed path: %@ - %@ (operation: %@)", changedPath,
-        [aNotification userInfo][@"ChangedFile"], [aNotification userInfo][@"Operations"]);
+  // NSLog(@"NSWorkspace: changed path: %@ - %@ (operation: %@)", changedPath,
+  //       [aNotification userInfo][@"ChangedFile"], [aNotification userInfo][@"Operations"]);
 
   if ([_appDirs doesContain:changedPath]) {
     [self findApplications];
