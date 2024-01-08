@@ -19,6 +19,8 @@
 */
 
 #import <DesktopKit/NXTBundle.h>
+#include "AppKit/NSPanel.h"
+#include "Foundation/NSObjCRuntime.h"
 #include "WeatherView.h"
 #import <DesktopKit/NXTAlert.h>
 
@@ -78,7 +80,6 @@ static NSUserDefaults *defaults = nil;
 
   if ([weatherProvider setLocationByName:[[[NSTimeZone defaultTimeZone] name] lastPathComponent]] !=
       NO) {
-    // if ([weatherProvider setLocationByName:@"Copenhagen"] != NO) {
     [weatherView setLocationName:weatherProvider.locationName];
   }
 }
@@ -127,12 +128,14 @@ static NSUserDefaults *defaults = nil;
       [theTimer invalidate];
       theTimer = nil;
     }
-    [self showPreferencesWindow:self];
-    NXTRunAlertPanel(@"Weather", @"No location was set. Please set it in preferences.",
-                     @"Preferences", @"Cancel", nil);
+
+    if (NXTRunAlertPanel(@"Weather", @"No location was set. Please set it in preferences.",
+                         @"Preferences", @"Cancel", nil) == NSAlertDefault) {
+      [self showPreferencesWindow:self];
+    }
     return;
   }
-  
+
   [weatherView setLocationName:weatherProvider.locationName];
   if ([weatherProvider fetchWeather] != NO) {
     if (weatherProvider.current.image != nil) {

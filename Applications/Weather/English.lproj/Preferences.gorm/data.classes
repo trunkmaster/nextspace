@@ -2,6 +2,7 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
+	    "checkGeoName:",
 	    "setGeoName:",
 	    "setLatitude:",
 	    "setLocationType:",
@@ -16,7 +17,8 @@
 	    "setLatitude:",
 	    "setLongitude:",
 	    "setGeoName:",
-	    "setTemperatureUnit:"
+	    "setTemperatureUnit:",
+	    "checkGeoName:"
 	);
 	Outlets = (
 	    panel,
@@ -25,7 +27,7 @@
 	    longitudeField,
 	    geoNameField,
 	    temperatureUnitPopup,
-	    locationsList
+	    locationsSV
 	);
 	Super = NSObject;
     };

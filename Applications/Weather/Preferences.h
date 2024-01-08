@@ -1,6 +1,7 @@
 /* All rights reserved */
 
 #import <AppKit/AppKit.h>
+#include "AppKit/NSScrollView.h"
 #import "WeatherProvider.h"
 
 @interface Preferences : NSObject
@@ -10,10 +11,13 @@
   IBOutlet id latitudeField;
   IBOutlet id longitudeField;
   IBOutlet id geoNameField;
-  IBOutlet id locationsList;
   IBOutlet id temperatureUnitPopup;
 
   WeatherProvider *provider;
+
+  IBOutlet NSScrollView *locationsSV;
+  NSTableView *locationsList;
+  NSArray *locationsCache;
 }
 
 - (instancetype)initWithProvider:(WeatherProvider *)theProvider;

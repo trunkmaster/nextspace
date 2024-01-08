@@ -1,6 +1,9 @@
 /* All rights reserved */
 
 #import "Preferences.h"
+#include "Foundation/NSObjCRuntime.h"
+#include "AppKit/NSScrollView.h"
+#include "AppKit/NSTableColumn.h"
 
 @implementation Preferences
 
@@ -12,7 +15,7 @@
   
   if ([NSBundle loadNibNamed:@"Preferences" owner:self] == NO) {
     NSLog(@"Failed to load NIB Prefeences.");
-    TEST_RELEASE(provider);
+    [provider release];
     return self;
   }
 
@@ -35,6 +38,18 @@
   [temperatureUnitPopup removeAllItems];
   [temperatureUnitPopup addItemsWithTitles:[provider temperatureUnitsList]];
   [temperatureUnitPopup selectItemAtIndex:0];
+
+  NSLog(@"Locattions list %@ document class: %@", [locationsSV className], [locationsSV documentView]);
+  locationsList = [locationsSV documentView];
+  [locationsList setHeaderView:nil];
+  [locationsList setCornerView:nil];
+  [locationsList setDrawsGrid:NO];
+  [locationsList setDataSource:self];
+  [locationsList setTarget:self];
+  [locationsList setAction:@selector(locationListAction:)];
+
+  NSTableColumn *col = [locationsList tableColumns][0];
+  [col setMinWidth:locationsSV.documentVisibleRect.size.width];
 }
 
 - (IBAction)setLocationType:(id)sender
@@ -78,9 +93,49 @@
   [longitudeField setStringValue:provider.longitude];
 }
 
+- (IBAction)checkGeoName:(id)sender
+{
+  if (locationsCache) {
+    [locationsCache release];
+  }
+  locationsCache = [[provider locationsListForName:[geoNameField stringValue]] copy];
+  [locationsList reloadData];
+}
+
 - (IBAction)setTemperatureUnit:(id)sender
 {
   [provider setTemperatureUnit:[[sender selectedCell] stringValue]];
 }
 
+@end
+
+@implementation Preferences (GeoNameDelegate)
+
+- (void)controlTextDidChange:(NSNotification *)aNotification
+{
+  NSTextField *field = [aNotification object];
+  NSLog(@"GeoName text changed to: %@", [field stringValue]);
+}
+
+@end
+
+@implementation Preferences (LocationsListDelegate)
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
+{
+  return locationsCache ? [locationsCache count] : 0;
+}
+
+- (id)tableView:(NSTableView *)aTableView
+    objectValueForTableColumn:(NSTableColumn *)aTableColumn
+                          row:(NSInteger)rowIndex
+{
+  return locationsCache[rowIndex];
+}
+
+// - (void)tableView:(NSTableView *)aTableView
+//     setObjectValue:(id)anObject
+//     forTableColumn:(NSTableColumn *)aTableColumn
+//                row:(NSInteger)rowIndex
+// {
+// }
 @end

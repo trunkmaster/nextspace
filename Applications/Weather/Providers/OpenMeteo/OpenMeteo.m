@@ -92,7 +92,8 @@
   return cityList;
 }
 
-- (void)setLocationName:(NSString *)name {
+- (void)setLocationName:(NSString *)name
+{
   [self setLocationByName:name];
 }
 
@@ -107,10 +108,9 @@
         if ([entry[@"name"] isEqualToString:name]) {
           // NSLog(@"Got coordinates for %@: lat:%@ long: %@", name, entry[@"latitude"],
           //       entry[@"longitude"]);
-          latitude = entry[@"latitude"];
-          longitude = entry[@"longitude"];
-          NSLog(@"logitude RC: %lu", [longitude retainCount]);
-          locationName = name;
+          latitude = [[entry[@"latitude"] stringValue] copy];
+          longitude = [[entry[@"longitude"] stringValue] copy];
+          locationName = [name copy];
           return YES;
         }
       }
