@@ -18,6 +18,7 @@
   IBOutlet NSScrollView *locationsSV;
   NSTableView *locationsList;
   NSArray *locationsCache;
+  NSMutableArray *filteredLocationsCache;
 }
 
 - (instancetype)initWithProvider:(WeatherProvider *)theProvider;

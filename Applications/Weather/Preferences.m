@@ -1,11 +1,19 @@
 /* All rights reserved */
 
 #import "Preferences.h"
-#include "Foundation/NSObjCRuntime.h"
-#include "AppKit/NSScrollView.h"
-#include "AppKit/NSTableColumn.h"
+
+@interface Preferences (GeoNameDelegate)
+- (void)fillLocationsCache;
+- (void)clearLocationsCache;
+@end
 
 @implementation Preferences
+
+- (void)dealloc
+{
+  [self clearLocationsCache];
+  [super dealloc];
+}
 
 - (instancetype)initWithProvider:(WeatherProvider *)theProvider
 {
@@ -50,6 +58,8 @@
 
   NSTableColumn *col = [locationsList tableColumns][0];
   [col setMinWidth:locationsSV.documentVisibleRect.size.width];
+  [col setEditable:NO];
+  [locationsList setAllowsEmptySelection:YES];
 }
 
 - (IBAction)setLocationType:(id)sender
@@ -95,10 +105,7 @@
 
 - (IBAction)checkGeoName:(id)sender
 {
-  if (locationsCache) {
-    [locationsCache release];
-  }
-  locationsCache = [[provider locationsListForName:[geoNameField stringValue]] copy];
+  [self fillLocationsCache];
   [locationsList reloadData];
 }
 
@@ -111,10 +118,39 @@
 
 @implementation Preferences (GeoNameDelegate)
 
+- (void)fillLocationsCache
+{
+  if (locationsCache) {
+    [locationsCache release];
+  }
+  locationsCache = [[provider locationsListForName:[geoNameField stringValue]] copy];
+}
+
+- (void)clearLocationsCache
+{
+  [locationsCache release];
+  locationsCache = nil;
+  [filteredLocationsCache release];
+  filteredLocationsCache = nil;
+}
+
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
   NSTextField *field = [aNotification object];
-  NSLog(@"GeoName text changed to: %@", [field stringValue]);
+  NSString *value = [field stringValue];
+
+  // If locationCache is 100 - make clarifying request with more characters entered
+  if (([value length] > 2 && locationsCache == nil) || [locationsCache count] == 100) {
+    [self clearLocationsCache];
+    [self fillLocationsCache];
+  } else if ([value length] <= 2 && locationsCache != nil) {
+    [self clearLocationsCache];
+  }
+  [locationsList reloadData];
+
+  if ([filteredLocationsCache count] > 0) {
+    [locationsList selectRow:0 byExtendingSelection:NO];
+  }
 }
 
 @end
@@ -122,14 +158,31 @@
 @implementation Preferences (LocationsListDelegate)
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-  return locationsCache ? [locationsCache count] : 0;
+  if (locationsCache) {
+    NSString *geoValue = [geoNameField stringValue];
+    NSRange range = NSMakeRange(0, [geoValue length]);
+
+    if (filteredLocationsCache == nil) {
+      filteredLocationsCache = [NSMutableArray new];
+    } else {
+      [filteredLocationsCache removeAllObjects];
+    }
+
+    for (NSString *item in locationsCache) {
+      if ([item length] >= range.length && [[item substringFromRange:range] isEqualToString:geoValue]) {
+        [filteredLocationsCache addObject:item];
+      }
+    }
+  }
+
+  return filteredLocationsCache ? [filteredLocationsCache count] : 0;
 }
 
 - (id)tableView:(NSTableView *)aTableView
     objectValueForTableColumn:(NSTableColumn *)aTableColumn
                           row:(NSInteger)rowIndex
 {
-  return locationsCache[rowIndex];
+  return filteredLocationsCache[rowIndex];
 }
 
 // - (void)tableView:(NSTableView *)aTableView
@@ -138,4 +191,10 @@
 //                row:(NSInteger)rowIndex
 // {
 // }
+
+- (void)locationListAction:(id)sender
+{
+  NSLog(@"locationListAction");
+}
+
 @end

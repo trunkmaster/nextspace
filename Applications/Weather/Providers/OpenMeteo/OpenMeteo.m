@@ -70,8 +70,11 @@
 {
   NSString *geoQuery;
 
+  // geoQuery = [NSString stringWithFormat:@"https://geocoding-api.open-meteo.com/v1/"
+  //                                       @"search?name=%@&count=10&language=en&format=json",
+  //                                       name];
   geoQuery = [NSString stringWithFormat:@"https://geocoding-api.open-meteo.com/v1/"
-                                        @"search?name=%@&count=10&language=en&format=json",
+                                        @"search?name=%@&count=100&language=en&format=json",
                                         name];
   return [self query:geoQuery];  
 }
@@ -80,16 +83,34 @@
 {
   NSDictionary *geoResults = [self _queryLocationByName:name];
   NSMutableArray *cityList = [NSMutableArray new];
+  NSString *itemText;
 
   if (geoResults != nil) {
     NSArray *resultsList = geoResults[@"results"];
     if (resultsList && [resultsList count] > 0) {
       for (NSDictionary *entry in resultsList) {
-        [cityList addObject:entry[@"name"]];
+        itemText = [NSString stringWithFormat:@"%@, %@", entry[@"name"], entry[@"admin1"]];
+        if (entry[@"admin2"] != nil) {
+          itemText = [itemText stringByAppendingString:[NSString stringWithFormat:@", %@", entry[@"admin2"]]];
+        }
+        [cityList addObject:itemText];
       }
     }
   }
-  return cityList;
+
+  if ([cityList count] > 0) {
+    [cityList sortUsingComparator:^NSComparisonResult(id city1, id city2) {
+      if ([city1 isGreaterThan:city2]) {
+        return (NSComparisonResult)NSOrderedDescending;
+      }
+      if ([city1 isLessThan:city2]) {
+        return (NSComparisonResult)NSOrderedAscending;
+      }
+      return (NSComparisonResult)NSOrderedSame;
+    }];
+  }
+
+  return [cityList autorelease];
 }
 
 - (void)setLocationName:(NSString *)name
