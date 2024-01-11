@@ -1,6 +1,12 @@
 /* All rights reserved */
 
 #import "Preferences.h"
+#include "Foundation/NSObjCRuntime.h"
+#include "Foundation/NSException.h"
+#include "Foundation/NSRange.h"
+#include "AppKit/NSColor.h"
+#include "AppKit/NSAttributedString.h"
+#include "Foundation/NSAttributedString.h"
 
 @interface Preferences (GeoNameDelegate)
 - (void)fillLocationsCache;
@@ -47,7 +53,8 @@
   [temperatureUnitPopup addItemsWithTitles:[provider temperatureUnitsList]];
   [temperatureUnitPopup selectItemAtIndex:0];
 
-  NSLog(@"Locattions list %@ document class: %@", [locationsSV className], [locationsSV documentView]);
+  [geoNameField setAllowsEditingTextAttributes:YES];
+
   locationsList = [locationsSV documentView];
   [locationsList setHeaderView:nil];
   [locationsList setCornerView:nil];
@@ -148,8 +155,29 @@
   }
   [locationsList reloadData];
 
-  if ([filteredLocationsCache count] > 0) {
+  if (filteredLocationsCache && [filteredLocationsCache count] > 0) {
     [locationsList selectRow:0 byExtendingSelection:NO];
+
+    NSInteger valueLength = [value length];
+    NSMutableAttributedString *attributed =
+        [[NSMutableAttributedString alloc] initWithString:[filteredLocationsCache objectAtIndex:0]
+                                               attributes:@{NSForegroundColorAttributeName : NSColor.blackColor}];
+
+    // [attributed setAttributes:@{NSForegroundColorAttributeName : NSColor.blackColor}
+    //                     range:NSMakeRange(0, [value length])];
+    [attributed setAttributes:@{NSForegroundColorAttributeName : NSColor.lightGrayColor}
+                        range:NSMakeRange(value.length, attributed.length - value.length)];
+
+    NSLog(@"Attributed text: %@", attributed);
+    // [field setAttributedStringValue:attributed];
+    [NSTimer scheduledTimerWithTimeInterval:1.0
+                                    repeats:NO
+                                      block:^(NSTimer *timer) {
+                                        [geoNameField setAttributedStringValue:attributed];
+                                        // [panel makeFirstResponder:geoNameField];
+                                        [timer invalidate];
+                                      }];
+    [attributed release];
   }
 }
 
@@ -184,13 +212,6 @@
 {
   return filteredLocationsCache[rowIndex];
 }
-
-// - (void)tableView:(NSTableView *)aTableView
-//     setObjectValue:(id)anObject
-//     forTableColumn:(NSTableColumn *)aTableColumn
-//                row:(NSInteger)rowIndex
-// {
-// }
 
 - (void)locationListAction:(id)sender
 {

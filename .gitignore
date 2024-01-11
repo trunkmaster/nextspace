@@ -14,7 +14,7 @@ Applications/Workspace/WM/compile
 *.framework
 *derived_src
 *.preferences
-*.forecast
+*.provider
 *.wsprefs
 *.bundle
 *.viewer
