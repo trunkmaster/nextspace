@@ -1521,8 +1521,10 @@ static int check_modifier(XEvent *xEvent, KeySym key_sym)
         NSData *data = nil;
         Atom xType = xEvent.xselectionrequest.target;
 
+        NSLog(@"[back-art] SelectionRequest: xType: %s", XGetAtomName(dpy, xType));
+
         if (((xType == generic.UTF8_STRING_ATOM) || (xType == XA_STRING) ||
-             (xType == generic.TEXT_ATOM)) &&
+             (xType == generic.TEXT_ATOM) || (xType == XInternAtom(dpy, "text/plain", False))) &&
             [types containsObject:NSStringPboardType]) {
           NSString *s = [pb stringForType:NSStringPboardType];
 
@@ -1531,8 +1533,38 @@ static int check_modifier(XEvent *xEvent, KeySym key_sym)
           } else if ((xType == XA_STRING) || (xType == generic.TEXT_ATOM)) {
             data = [s dataUsingEncoding:NSISOLatin1StringEncoding];
           }
+        } else if (xType == XInternAtom(dpy, "text/uri-list", False) &&
+                   [types containsObject:NSFilenamesPboardType]) {
+          NSArray *filesList = [pb propertyListForType:NSFilenamesPboardType];
+          NSMutableString *filesString = [NSMutableString new];
+          for (NSString *filePath in filesList) {
+            if ([filePath rangeOfString:@"file:///"].location != 0) {
+              [filesString appendFormat:@"file://%@\n", filePath];
+            } else {
+              [filesString appendFormat:@"%@\n", filePath];
+            }
+          }
+          NSLog(@"[back-art] file list to send: %@\n", filesList);
+          data = [filesString dataUsingEncoding:NSUTF8StringEncoding];
+          [filesString release];
         }
         // FIXME: Add support for more types. See: xpbs.m
+        // "text/uri-list"
+        // "text/plain"
+        // "text/tab-separated-values"
+        // "text/richtext"
+        // "text/rtf"
+        // "text/html"
+        // "text/richtext"
+        // "image/tiff"
+        // "image/png"
+        // "image/svg"
+        // "application/postscript"
+        // "application/octet-stream"
+        // "application/x-rootwindow-drop"
+        // "application/richtext"
+        // "application/xhtml+xml"
+        // "application/rtf"
 
         if (data != nil) {
           DndClass dnd = xdnd();
