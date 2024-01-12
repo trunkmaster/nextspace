@@ -1847,17 +1847,16 @@ int wDockReceiveDNDDrop(WScreen *scr, XEvent *event)
 
     if (!btn->flags.forced_dock) {
       btn->flags.relaunching = btn->flags.running;
-      btn->flags.running = 1;
+      // btn->flags.running = 1;
+      btn->flags.launching = 1;
     }
     if (btn->wm_instance || btn->wm_class) {
       WWindowAttributes attr;
       memset(&attr, 0, sizeof(WWindowAttributes));
       wDefaultFillAttributes(btn->wm_instance, btn->wm_class, &attr, NULL, True);
-
-      if (!attr.no_appicon)
-        btn->flags.launching = 1;
-      else
+      if (attr.no_appicon) {
         btn->flags.running = 0;
+      }
     }
 
     btn->flags.paste_launch = 0;
