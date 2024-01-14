@@ -2,11 +2,52 @@
 
 . ./versions.inc.sh
 
+#----------------------------------------
+# Download
+#----------------------------------------
+GIT_PKG_NAME=libs-gui-gui-${gnustep_gui_version}
+SOURCES_DIR=${PROJECT_DIR}/Libraries/gnustep
+
+if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
+	curl -L https://github.com/gnustep/libs-gui/archive/gui-${gnustep_gui_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
+	cd ${BUILD_ROOT}
+	tar zxf ${GIT_PKG_NAME}.tar.gz || exit 1
+    # Patches
+    cd ${BUILD_ROOT}/${GIT_PKG_NAME}
+    patch -p1 < ${SOURCES_DIR}/libs-gui_NSApplication.patch
+    patch -p1 < ${SOURCES_DIR}/libs-gui_NSPopUpButton.patch
+    cd Images
+    tar zxf ${SOURCES_DIR}/gnustep-gui-images.tar.gz
+fi
+
 . /Developer/Makefiles/GNUstep.sh
+. /etc/profile.d/nextspace.sh
 
-cd ./nextspace-gui-${gnustep_gui_version} || exit 1
 
-$MAKE_CMD clean
-./configure
+#----------------------------------------
+# Build
+#----------------------------------------
+cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
+if [ -d obj ]; then
+    $MAKE_CMD clean
+fi
+if [ ${OS_NAME} = "debian" ]; then
+    ./configure --disable-icu-config || exit 1
+else
+    ./configure || exit 1
+fi
+$MAKE_CMD 
 
-$MAKE_CMD install
+#----------------------------------------
+# Install
+#----------------------------------------
+sudo -E $MAKE_CMD install
+sudo ldconfig
+
+#----------------------------------------
+# Install services
+#----------------------------------------
+sudo cp ${SOURCES_DIR}/gpbs.service /usr/NextSpace/lib/systemd
+sudo systemctl daemon-reload
+
+systemctl status gpbs || sudo systemctl enable /usr/NextSpace/lib/systemd/gpbs.service;

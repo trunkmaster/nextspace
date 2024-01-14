@@ -26,6 +26,7 @@ if [ -d "$HOME/Library" ];then
 else
 	cp -R /etc/skel/Library  $HOME/
 fi
+
 if [ -f "$HOME/.xinitrc" ];then
 	echo "$HOME/.xinitrc exists already, will not overwrite!"
 else
