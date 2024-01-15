@@ -1,8 +1,14 @@
-#!/bin/bash
+#!/bin/sh
 
 . ./versions.inc.sh
 . /Developer/Makefiles/GNUstep.sh
 . /etc/profile.d/nextspace.sh
+
+#----------------------------------------
+# Install package dependecies
+#----------------------------------------
+${ECHO} ">>> Installing packages for GNUstep Base (Foundation) build"
+sudo apt-get install -y ${GNUSTEP_BASE_DEPS}
 
 #----------------------------------------
 # Download

@@ -1,6 +1,13 @@
-#!/bin/bash
+#!/bin/sh
 
 . ./versions.inc.sh
+
+#----------------------------------------
+# Install package dependecies
+#----------------------------------------
+${ECHO} ">>> Installing packages for NextSpace frameworks build"
+sudo apt-get install -y ${FRAMEWORKS_BUILD_DEPS}
+sudo apt-get install -y ${FRAMEWORKS_RUN_DEPS}
 
 #----------------------------------------
 # Download

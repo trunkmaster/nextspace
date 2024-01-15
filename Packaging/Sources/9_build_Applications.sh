@@ -1,6 +1,14 @@
-#!/bin/bash
+#!/bin/sh
 
 . ./versions.inc.sh
+
+#----------------------------------------
+# Install package dependecies
+#----------------------------------------
+${ECHO} ">>> Installing packages for NextSpace applications build"
+sudo apt-get install -y ${APPS_BUILD_DEPS}
+sudo apt-get install -y ${APPS_RUN_DEPS}
+
 
 #----------------------------------------
 # Download

@@ -1,6 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 
 . ./versions.inc.sh
+
+#----------------------------------------
+# Install package dependecies
+#----------------------------------------
+${ECHO} ">>> Installing packages for GNUstep Make build"
+sudo apt-get install -y ${GNUSTEP_MAKE_DEPS}
 
 #----------------------------------------
 # Download

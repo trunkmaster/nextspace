@@ -1,6 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 
 . ./versions.inc.sh
+
+#----------------------------------------
+# Install package dependecies
+#----------------------------------------
+${ECHO} ">>> Installing packages for GNUstep GUI Backend (ART) build"
+sudo apt-get install -y ${BACK_ART_DEPS}
 
 #----------------------------------------
 # Download

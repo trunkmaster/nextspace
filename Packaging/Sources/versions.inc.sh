@@ -15,6 +15,8 @@ projectcenter_version=0_7_0
 roboto_mono_version=0.2020.05.08
 roboto_mono_checkout=master
 
+ECHO="/usr/bin/echo -e"
+
 #----------------------------------------
 # Paths
 #----------------------------------------
@@ -23,13 +25,14 @@ BUILD_ROOT="${_PWD}/BUILD_ROOT"
 if [ ! -d ${BUILD_ROOT} ]; then
   mkdir ${BUILD_ROOT}
 fi
-echo -e "Build in:\t${BUILD_ROOT}"
+${ECHO} "Build in:\t${BUILD_ROOT}"
 
 # Directory where nextspace GitHub repo resides
 cd ../..
 PROJECT_DIR=`pwd`
 cd ${PWD}
-echo -e "NextSpace:\t${PROJECT_DIR}"
+${ECHO} "NextSpace:\t${PROJECT_DIR}"
+cd ${_PWD}
 
 #----------------------------------------
 # Tools
@@ -42,11 +45,11 @@ fi
 # Linker
 ld -v | grep "gold" 2>&1 > /dev/null
 if [ "$?" = "1" ]; then
-	echo "Setting up Gold linker..."
+	${ECHO} "Setting up Gold linker..."
 	sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.bfd 10
 	sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.gold 100
 else
-  echo -e "Using linker:\tGold"
+  ${ECHO} "Using linker:\tGold"
 fi
 # Compiler
 which clang 2>&1 > /dev/null || `echo "No clang compiler found. Please install clang package."; exit 1`
@@ -57,9 +60,16 @@ CXX_COMPILER=clang++
 #----------------------------------------
 # OS release
 #----------------------------------------
-OS_NAME=`cat /etc/os-release | grep "^ID" | awk -F= '{print $2}'`
-OS_VERSION=`cat /etc/os-release | grep "^VERSION_ID" | awk -F= '{print $2}' | awk -F\" '{print $2}'`
-echo -e "OS:\t\t${OS_NAME}-${OS_VERSION}"
+OS_NAME=`cat /etc/os-release | grep "^ID=" | awk -F= '{print $2}'`
+OS_VERSION=`cat /etc/os-release | grep "^VERSION_ID" | awk -F= '{print $2}' | awk -F\" '{print $2}' | awk -F\. '{print $1}'`
+${ECHO} "OS:\t\t${OS_NAME}-${OS_VERSION}"
+
+if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
+    . ./${OS_NAME}-${OS_VERSION}.deps.sh || exit 1
+else
+    ${ECHO} "${OS_NAME} ${OS_VERSION} is not supported by these build scripts."
+    exit 1
+fi
 
 #----------------------------------------
 # Functions
@@ -80,4 +90,20 @@ git_remote_archive() {
       git checkout $branch
     fi
   fi
+}
+
+install_packages() {
+  apt-get install -y $@ || exit 1
+#  for PKG in $@ ;do
+#    ${ECHO} $PKG
+#    apt-get install -y  || exit 1
+#  done
+}
+
+uninstall_packages() {
+  apt-get purge -y $@
+#  for PKG in $@ ;do
+#    ${ECHO} $PKG
+#    apt-get purge -y $PKG || exit 1
+#  done
 }

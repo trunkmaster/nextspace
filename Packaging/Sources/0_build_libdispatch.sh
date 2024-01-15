@@ -1,6 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 
 . ./versions.inc.sh
+
+#----------------------------------------
+# Install package dependecies
+#----------------------------------------
+${ECHO} ">>> Installing packages for libdispatch build"
+sudo apt-get install -y ${BUILD_TOOLS} ${RUNTIME_DEPS}
 
 #----------------------------------------
 # Download

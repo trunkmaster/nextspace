@@ -1,6 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 
 . ./versions.inc.sh
+
+#----------------------------------------
+# Install package dependecies
+#----------------------------------------
+${ECHO} ">>> Installing packages for libwraster build"
+sudo apt-get install -y ${WRASTER_DEPS}
 
 #----------------------------------------
 # Download

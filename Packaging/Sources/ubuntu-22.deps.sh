@@ -1,25 +1,12 @@
-# libdispatch
-clang
-cmake
-libtool
-libbsd-dev
-#libstdc++-dev - installed as dependency
-
-# libcorefoundation
-#libdispatch-dev
-libxml2-dev
-libicu-dev
-libcurl-dev
-libuuid-dev
-
-# libobjc2
-
-# gnustep-make
-
-# libwraster
+. ./debian-12.deps.sh
 
 # gnustep-base
-
-# gnustep-gui
-
-# back-art
+GNUSTEP_BASE_DEPS="
+    ${GNUSTEP_BASE_DEPS}
+    libgnutls28-dev
+"
+# Applications
+APPS_BUILD_DEPS="
+    ${APPS_BUILD_DEPS}
+    libpam0g-dev
+"

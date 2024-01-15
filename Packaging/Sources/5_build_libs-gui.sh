@@ -1,6 +1,12 @@
-#!/bin/bash
+#!/bin/sh
 
 . ./versions.inc.sh
+
+#----------------------------------------
+# Install package dependecies
+#----------------------------------------
+${ECHO} ">>> Installing packages for GNUstep GUI (AppKit) build"
+sudo apt-get install -y ${GNUSTEP_GUI_DEPS}
 
 #----------------------------------------
 # Download
@@ -23,7 +29,6 @@ fi
 . /Developer/Makefiles/GNUstep.sh
 . /etc/profile.d/nextspace.sh
 
-
 #----------------------------------------
 # Build
 #----------------------------------------
@@ -31,7 +36,7 @@ cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
 if [ -d obj ]; then
     $MAKE_CMD clean
 fi
-if [ ${OS_NAME} = "debian" ]; then
+if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
     ./configure --disable-icu-config || exit 1
 else
     ./configure || exit 1
