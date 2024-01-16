@@ -1,8 +1,8 @@
 #----------------------------------------
 # Versions
 #----------------------------------------
-libdispatch_version=5.4.2
-libcorefoundation_version=5.4.2
+libdispatch_version=5.9.2
+libcorefoundation_version=5.9.2
 libobjc2_version=2.1
 gnustep_make_version=2_9_1
 gnustep_base_version=1_29_0
@@ -61,14 +61,21 @@ CXX_COMPILER=clang++
 # OS release
 #----------------------------------------
 OS_NAME=`cat /etc/os-release | grep "^ID=" | awk -F= '{print $2}'`
-OS_VERSION=`cat /etc/os-release | grep "^VERSION_ID" | awk -F= '{print $2}' | awk -F\" '{print $2}' | awk -F\. '{print $1}'`
+OS_VERSION=`cat /etc/os-release | grep "^VERSION_ID" | awk -F= '{print $2}'`
+VER=`echo ${OS_VERSION} | awk -F\" '{print $2}'`
+if [ -n "${VER}" ] && [ "${VER}" != " " ]; then
+  VER=`echo ${VER} | awk -F\. '{print $2}'`
+  if [ -n "${VER}" ] && [ "${VER}" != " " ]; then
+    OS_VERSION=${VER}
+  fi
+fi
 ${ECHO} "OS:\t\t${OS_NAME}-${OS_VERSION}"
 
 if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
     . ./${OS_NAME}-${OS_VERSION}.deps.sh || exit 1
-else
-    ${ECHO} "${OS_NAME} ${OS_VERSION} is not supported by these build scripts."
-    exit 1
+#else
+#    ${ECHO} "${OS_NAME} ${OS_VERSION} is not supported by these build scripts."
+#    exit 1
 fi
 
 #----------------------------------------
