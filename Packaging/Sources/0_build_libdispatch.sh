@@ -57,4 +57,11 @@ sudo $MAKE_CMD install
 # Postinstall
 #----------------------------------------
 sudo rm /usr/NextSpace/include/Block_private.h
+
+sudo mv /usr/NextSpace/lib/libBlocksRuntime.so /usr/NextSpace/lib/libBlocksRuntime.so.${libdispatch_version}
+sudo ln -s /usr/NextSpace/lib/libBlocksRuntime.so.${libdispatch_version} /usr/NextSpace/lib/libBlocksRuntime.so
+
+sudo mv /usr/NextSpace/lib/libdispatch.so /usr/NextSpace/lib/libdispatch.so.${libdispatch_version}
+sudo ln -s /usr/NextSpace/lib/libdispatch.so.${libdispatch_version} /usr/NextSpace/lib/libdispatch.so
+
 sudo ldconfig
