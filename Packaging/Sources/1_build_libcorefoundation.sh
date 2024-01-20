@@ -6,25 +6,30 @@
 # Download
 #----------------------------------------
 #PROJECT_DIR=${_PWD}/../..
-GIT_PKG_NAME=swift-corelibs-foundation-swift-${libcorefoundation_version}-RELEASE
+#GIT_PKG_NAME=swift-corelibs-foundation-swift-${libcorefoundation_version}-RELEASE
+GIT_PKG_NAME=apple-corefoundation-${libcorefoundation_version}
 
 if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
-	curl -L https://github.com/apple/swift-corelibs-foundation/archive/swift-${libcorefoundation_version}-RELEASE.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
+#	curl -L https://github.com/apple/swift-corelibs-foundation/archive/swift-${libcorefoundation_version}-RELEASE.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
+	curl -L https://github.com/trunkmaster/apple-corefoundation/archive/refs/tags/${libcorefoundation_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
 	cd ${BUILD_ROOT}
 	tar zxf ${GIT_PKG_NAME}.tar.gz
 
-	cd ${GIT_PKG_NAME}
+#	cd ${GIT_PKG_NAME}
 	### Patching
-	cp ${PROJECT_DIR}/Libraries/libcorefoundation/CFNotificationCenter.c CoreFoundation/AppServices.subproj/
-	cp ${PROJECT_DIR}/Libraries/libcorefoundation/CFFileDescriptor.h CoreFoundation/RunLoop.subproj/
-	cp ${PROJECT_DIR}/Libraries/libcorefoundation/CFFileDescriptor.c CoreFoundation/RunLoop.subproj/
-	cp CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h CoreFoundation/Base.subproj/
+#	cp ${PROJECT_DIR}/Libraries/libcorefoundation/CFNotificationCenter.c CoreFoundation/AppServices.subproj/
+	#cp ${PROJECT_DIR}/Libraries/libcorefoundation/CFFileDescriptor.h CoreFoundation/RunLoop.subproj/
+	#cp ${PROJECT_DIR}/Libraries/libcorefoundation/CFFileDescriptor.c CoreFoundation/RunLoop.subproj/
+#	cp CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h CoreFoundation/Base.subproj/
 
-	patch -p1 < ${PROJECT_DIR}/Libraries/libcorefoundation/CF_shared_on_linux.patch
-	patch -p1 < ${PROJECT_DIR}/Libraries/libcorefoundation/CFFileDescriptor.patch
-	patch -p1 < ${PROJECT_DIR}/Libraries/libcorefoundation/CFNotificationCenter.patch
+#	cd CoreFoundation
+#	patch -p1 < ${PROJECT_DIR}/Libraries/libcorefoundation/CF-5.9.2-SharedOnLinux.patch
+#	cd ..
+#	patch -p1 < ${PROJECT_DIR}/Libraries/libcorefoundation/CF_shared_on_linux.patch
+#	patch -p1 < ${PROJECT_DIR}/Libraries/libcorefoundation/CFFileDescriptor.patch
+#	patch -p1 < ${PROJECT_DIR}/Libraries/libcorefoundation/CFNotificationCenter.patch
 	#patch -p1 < ${PROJECT_DIR}/Libraries/libcorefoundation//CFString_centos.patch
-	cd ../..
+#	cd ../..
 fi
 
 #----------------------------------------
@@ -51,7 +56,7 @@ cmake .. \
 #	-DCMAKE_LINKER=/usr/bin/ld.gold \
 
 $MAKE_CMD clean
-$MAKE_CMD
+$MAKE_CMD || exit 1
 
 #----------------------------------------
 # Install
