@@ -5,8 +5,10 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-${ECHO} ">>> Installing packages for GNUstep GUI Backend (ART) build"
-sudo apt-get install -y ${BACK_ART_DEPS}
+if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
+  ${ECHO} ">>> Installing packages for GNUstep GUI Backend (ART) build"
+  sudo apt-get install -y ${BACK_ART_DEPS}
+fi
 
 #----------------------------------------
 # Download

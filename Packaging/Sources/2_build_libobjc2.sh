@@ -2,6 +2,18 @@
 
 . ./versions.inc.sh
 
+
+#----------------------------------------
+# Install package dependecies
+#----------------------------------------
+if [ ${OS_NAME} != "debian" ] || [ ${OS_NAME} != "ubuntu" ]; then
+	${ECHO} ">>> Installing ${OS_NAME} packages for ObjC 2.0 runtime build"
+	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
+	SPEC_FILE=${PROJECT_DIR}/Libraries/libobjc2/libobjc2.spec
+	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "libdispatch-devel" |awk -c '{print $1}'`
+	sudo yum -y install ${DEPS} || exit 1
+fi
+
 #----------------------------------------
 # Download
 #----------------------------------------

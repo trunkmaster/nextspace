@@ -46,8 +46,8 @@ fi
 ld -v | grep "gold" 2>&1 > /dev/null
 if [ "$?" = "1" ]; then
 	${ECHO} "Setting up Gold linker..."
-	sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.bfd 10
-	sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.gold 100
+	sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.gold 10
+	sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.bfd 100
 else
   ${ECHO} "Using linker:\tGold"
 fi
@@ -103,16 +103,8 @@ git_remote_archive() {
 
 install_packages() {
   apt-get install -y $@ || exit 1
-#  for PKG in $@ ;do
-#    ${ECHO} $PKG
-#    apt-get install -y  || exit 1
-#  done
 }
 
 uninstall_packages() {
-  apt-get purge -y $@
-#  for PKG in $@ ;do
-#    ${ECHO} $PKG
-#    apt-get purge -y $PKG || exit 1
-#  done
+  apt-get purge -y $@ || exit 1
 }

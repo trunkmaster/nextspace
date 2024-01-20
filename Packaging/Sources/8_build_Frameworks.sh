@@ -5,9 +5,17 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-${ECHO} ">>> Installing packages for NextSpace frameworks build"
-sudo apt-get install -y ${FRAMEWORKS_BUILD_DEPS}
-sudo apt-get install -y ${FRAMEWORKS_RUN_DEPS}
+${ECHO} ">>> Installing ${OS_NAME} packages for NextSpace frameworks build"
+if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
+	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
+  sudo apt-get install -y ${FRAMEWORKS_BUILD_DEPS}
+  sudo apt-get install -y ${FRAMEWORKS_RUN_DEPS}
+else
+	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
+	SPEC_FILE=${PROJECT_DIR}/Frameworks/nextspace-frameworks.spec
+	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
+	sudo yum -y install ${DEPS} || exit 1
+fi
 
 #----------------------------------------
 # Download

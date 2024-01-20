@@ -5,8 +5,10 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-${ECHO} ">>> Installing packages for GNUstep GUI (AppKit) build"
-sudo apt-get install -y ${GNUSTEP_GUI_DEPS}
+if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
+    ${ECHO} ">>> Installing packages for GNUstep GUI (AppKit) build"
+    sudo apt-get install -y ${GNUSTEP_GUI_DEPS}
+fi
 
 #----------------------------------------
 # Download

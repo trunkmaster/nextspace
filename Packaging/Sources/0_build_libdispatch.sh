@@ -5,8 +5,16 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-${ECHO} ">>> Installing packages for libdispatch build"
-sudo apt-get install -y ${BUILD_TOOLS} ${RUNTIME_DEPS}
+${ECHO} ">>> Installing ${OS_NAME} packages for Grand Central Dispatch build"
+if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
+	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
+	sudo apt-get install -y ${BUILD_TOOLS} ${RUNTIME_DEPS} || exit 1
+else
+	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
+	SPEC_FILE=${PROJECT_DIR}/Libraries/libdispatch/libdispatch.spec
+	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
+	sudo yum -y install ${DEPS} || exit 1
+fi
 
 #----------------------------------------
 # Download
