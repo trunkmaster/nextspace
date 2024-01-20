@@ -29,10 +29,10 @@ cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
 rm -rf CoreFoundation/_build 2>/dev/null
 mkdir -p CoreFoundation/_build
 cd CoreFoundation/_build
-C_FLAGS="-I/usr/NextSpace/include -Wno-switch"
+C_FLAGS="-I/usr/NextSpace/include -Wno-switch -Wno-enum-conversion -Wno-implicit-const-int-float-conversion"
 cmake .. \
 	-DCMAKE_C_COMPILER=${C_COMPILER} \
-	-DCMAKE_C_FLAGS=${C_FLAGS} \
+	-DCMAKE_C_FLAGS="${C_FLAGS}" \
 	-DCMAKE_SHARED_LINKER_FLAGS="-L/usr/NextSpace/lib -luuid" \
 	-DCF_DEPLOYMENT_SWIFT=NO \
 	-DBUILD_SHARED_LIBS=YES \
