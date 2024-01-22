@@ -68,6 +68,8 @@
 				<string>No</string>
 				<key>Command</key>
 				<string>/Applications/Terminal.app/Terminal</string>
+				<key>DropCommand</key>
+				<string>/Applications/Terminal.app/Terminal %d</string>
 				<key>Forced</key>
 				<string>No</string>
 				<key>Lock</key>
@@ -84,6 +86,8 @@
 				<string>No</string>
 				<key>Command</key>
 				<string>/Applications/TextEdit.app/TextEdit</string>
+				<key>DropCommand</key>
+				<string>/Applications/TextEdit.app/TextEdit %d</string>
 				<key>Forced</key>
 				<string>No</string>
 				<key>Lock</key>
