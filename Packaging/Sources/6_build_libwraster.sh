@@ -1,6 +1,7 @@
 #!/bin/sh
 
 . ./versions.inc.sh
+. /etc/profile.d/nextspace.sh
 
 #----------------------------------------
 # Install package dependecies
@@ -37,7 +38,7 @@ cp -R ${SOURCES_DIR} ${BUILD_ROOT}
 . /Developer/Makefiles/GNUstep.sh
 cd ${BUILD_DIR}
 export CC=${C_COMPILER}
-export CMAKE=cmake
+export CMAKE=${CMAKE_CMD}
 export QA_SKIP_BUILD_ROOT=1
 
 $MAKE_CMD

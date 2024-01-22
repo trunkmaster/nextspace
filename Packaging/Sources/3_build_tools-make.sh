@@ -12,7 +12,7 @@ if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Core/nextspace-core.spec
-	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v libobjc2 | awk -c '{print $1}'`
+	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v libobjc2 | grep -v "libdispatch-devel" | awk -c '{print $1}'`
 	sudo yum -y install ${DEPS} || exit 1
 fi
 

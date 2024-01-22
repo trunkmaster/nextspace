@@ -1,6 +1,7 @@
 #!/bin/sh
 
 . ./versions.inc.sh
+. /etc/profile.d/nextspace.sh
 
 #----------------------------------------
 # Install package dependecies

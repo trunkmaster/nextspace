@@ -1,6 +1,7 @@
 #!/bin/sh
 
 . ./versions.inc.sh
+. /etc/profile.d/nextspace.sh
 
 #----------------------------------------
 # Install package dependecies
@@ -12,8 +13,8 @@ if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
   sudo apt-get install -y ${APPS_RUN_DEPS}
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
-	SPEC_FILE=${PROJECT_DIR}/Frameworks/nextspace-frameworks.spec
-	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
+	SPEC_FILE=${PROJECT_DIR}/Applications/nextspace-applications.spec
+	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "nextspace-frameworks-devel" | grep -v "libcorefoundation-devel" | awk -c '{print $1}'`
 	sudo yum -y install ${DEPS} || exit 1
 fi
 
@@ -26,19 +27,19 @@ GORM_BUILD_DIR=${BUILD_ROOT}/gorm-${gorm_version}
 PC_BUILD_DIR=${BUILD_ROOT}/projectcenter-${projectcenter_version}
 
 if [ -d ${APP_BUILD_DIR} ]; then
-  rm -rf ${APP_BUILD_DIR}
+  sudo rm -rf ${APP_BUILD_DIR}
 fi
 cp -R ${SOURCES_DIR}/Applications ${BUILD_ROOT}
 
 # GORM
 if [ -d ${GORM_BUILD_DIR} ]; then
-  rm -rf ${GORM_BUILD_DIR}
+  sudo rm -rf ${GORM_BUILD_DIR}
 fi
 git_remote_archive https://github.com/gnustep/apps-gorm ${GORM_BUILD_DIR} gorm-${gorm_version}
 
 # ProjectCenter
 if [ -d ${PC_BUILD_DIR} ]; then
-  rm -rf ${PC_BUILD_DIR}
+  sudo rm -rf ${PC_BUILD_DIR}
 fi
 git_remote_archive https://github.com/gnustep/apps-projectcenter ${PC_BUILD_DIR} projectcenter-${projectcenter_version}
 
@@ -48,20 +49,22 @@ git_remote_archive https://github.com/gnustep/apps-projectcenter ${PC_BUILD_DIR}
 . /Developer/Makefiles/GNUstep.sh
 
 cd ${APP_BUILD_DIR}
+export CC=${C_COMPILER}
+export CMAKE=${CMAKE_CMD}
 $MAKE_CMD clean
 $MAKE_CMD
-sudo -E $MAKE_CMD install
+sudo -E $MAKE_CMD install || exit
 
 export GNUSTEP_INSTALLATION_DOMAIN=NETWORK
 cd ${GORM_BUILD_DIR}
 tar zxf ${SOURCES_DIR}/Libraries/gnustep/gorm-images.tar.gz
 $MAKE_CMD
-sudo -E $MAKE_CMD install
+sudo -E $MAKE_CMD install || exit
 
 cd ${PC_BUILD_DIR}
 tar zxf ${SOURCES_DIR}/Libraries/gnustep/projectcenter-images.tar.gz
 $MAKE_CMD
-sudo -E $MAKE_CMD install
+sudo -E $MAKE_CMD install || exit
 
 sudo ldconfig
 

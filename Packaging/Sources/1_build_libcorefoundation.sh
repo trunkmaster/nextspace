@@ -10,16 +10,43 @@ if [ ${OS_NAME} != "debian" ] && [ ${OS_NAME} != "ubuntu" ]; then
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Libraries/libcorefoundation/libcorefoundation.spec
 	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "libdispatch-devel" |awk -c '{print $1}'`
-	sudo yum -y install ${DEPS} || exit 1
+	sudo yum -y install ${DEPS} git || exit 1
 fi
 
 #----------------------------------------
 # Download
 #----------------------------------------
-GIT_PKG_NAME=apple-corefoundation-${libcorefoundation_version}
+if [ "${OS_NAME}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
+	GIT_PKG_NAME=swift-corelibs-foundation-swift-${libcorefoundation_version}-RELEASE
+else
+	GIT_PKG_NAME=apple-corefoundation-${libcorefoundation_version}
+fi
 
 if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
-	git clone --depth 1 https://github.com/trunkmaster/apple-corefoundation ${BUILD_ROOT}/${GIT_PKG_NAME}
+	if [ "${OS_NAME}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
+		curl -L https://github.com/apple/swift-corelibs-foundation/archive/swift-${libcorefoundation_version}-RELEASE.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
+		cd ${BUILD_ROOT}
+		tar zxf ${GIT_PKG_NAME}.tar.gz
+
+		cd ${GIT_PKG_NAME}
+		SOURCES_DIR=${PROJECT_DIR}/Libraries/libcorefoundation
+		patch -p1 < ${SOURCES_DIR}/CF_shared_on_linux.patch
+		patch -p1 < ${SOURCES_DIR}/CF_centos7.patch
+		patch -p1 < ${SOURCES_DIR}/CFString_centos.patch
+		
+		cp ${SOURCES_DIR}/CFNotificationCenter.c CoreFoundation/AppServices.subproj/
+		patch -p1 < ${SOURCES_DIR}/CFNotificationCenter.patch
+
+		cp ${SOURCES_DIR}/CFFileDescriptor.h CoreFoundation/RunLoop.subproj/
+		cp ${SOURCES_DIR}/CFFileDescriptor.c CoreFoundation/RunLoop.subproj/
+		patch -p1 < ${SOURCES_DIR}/CFFileDescriptor.patch
+
+		cp CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h CoreFoundation/Base.subproj/
+
+		cd ../..
+	else
+		git clone --depth 1 https://github.com/trunkmaster/apple-corefoundation ${BUILD_ROOT}/${GIT_PKG_NAME}
+	fi
 fi
 
 #----------------------------------------
@@ -29,8 +56,11 @@ cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
 rm -rf CoreFoundation/_build 2>/dev/null
 mkdir -p CoreFoundation/_build
 cd CoreFoundation/_build
-C_FLAGS="-I/usr/NextSpace/include -Wno-switch -Wno-enum-conversion -Wno-implicit-const-int-float-conversion"
-cmake .. \
+C_FLAGS="-I/usr/NextSpace/include -Wno-switch -Wno-enum-conversion"
+if [ "${OS_NAME}" != "centos" ] || [ "${OS_VERSION}" != "7" ]; then
+	C_FLAGS="${C_FLAGS} -Wno-implicit-const-int-float-conversion"
+fi
+$CMAKE_CMD .. \
 	-DCMAKE_C_COMPILER=${C_COMPILER} \
 	-DCMAKE_C_FLAGS="${C_FLAGS}" \
 	-DCMAKE_SHARED_LINKER_FLAGS="-L/usr/NextSpace/lib -luuid" \

@@ -37,7 +37,7 @@ rm -rf _build 2>/dev/null
 mkdir -p _build
 cd ./_build
 
-cmake .. \
+$CMAKE_CMD .. \
 	-DCMAKE_C_COMPILER=${C_COMPILER} \
 	-DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
 	-DGNUSTEP_INSTALL_TYPE=NONE \

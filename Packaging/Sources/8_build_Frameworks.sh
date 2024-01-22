@@ -1,6 +1,7 @@
 #!/bin/sh
 
 . ./versions.inc.sh
+. /etc/profile.d/nextspace.sh
 
 #----------------------------------------
 # Install package dependecies
@@ -13,7 +14,7 @@ if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Frameworks/nextspace-frameworks.spec
-	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
+	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "nextspace-gnustep-devel" | awk -c '{print $1}'`
 	sudo yum -y install ${DEPS} || exit 1
 fi
 

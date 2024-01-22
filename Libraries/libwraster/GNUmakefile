@@ -70,7 +70,7 @@ include $(GNUSTEP_MAKEFILES)/clibrary.make
 -include GNUmakefile.postamble
 
 before-all::
-	@ cd cmake; ${CMAKE} . -DCMAKE_C_COMPILER=clang
+	@ cd cmake; ${CMAKE} . -DCMAKE_C_COMPILER=${CC}
 
 after-clean::
 	@ rm -rf cmake/CMakeFiles
