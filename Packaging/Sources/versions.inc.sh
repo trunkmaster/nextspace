@@ -28,9 +28,9 @@ fi
 OS_VERSION=`cat /etc/os-release | grep "^VERSION_ID" | awk -F= '{print $2}'`
 VER=`echo ${OS_VERSION} | awk -F\" '{print $2}'`
 if [ -n "${VER}" ] && [ "${VER}" != " " ]; then
-  _VER=`echo ${VER} | awk -F\. '{print $2}'`
+  _VER=`echo ${VER} | awk -F\. '{print $1}'`
   if [ -n "${_VER}" ] && [ "${_VER}" != " " ]; then
-    VER=${_VER}
+    OS_VERSION=${_VER}
   else
     OS_VERSION=${VER}
   fi
