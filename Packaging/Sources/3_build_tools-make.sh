@@ -41,12 +41,12 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"/usr/NextSpace/lib"
 
 cp ${CORE_SOURCES}/nextspace.fsl ${BUILD_ROOT}/tools-make-make-${gnustep_make_version}/FilesystemLayouts/nextspace
 ./configure \
-	    --prefix=/ \
-	    --with-config-file=/Library/Preferences/GNUstep.conf \
-	    --with-layout=nextspace \
-	    --enable-native-objc-exceptions \
-	    --enable-debug-by-default \
-	    --with-library-combo=ng-gnu-gnu
+	--prefix=/ \
+	--with-config-file=/Library/Preferences/GNUstep.conf \
+	--with-layout=nextspace \
+	--enable-native-objc-exceptions \
+	--enable-debug-by-default \
+	--with-library-combo=ng-gnu-gnu
 
 #----------------------------------------
 # Install
@@ -72,6 +72,7 @@ sudo cp ${CORE_SOURCES}/etc/profile.d/nextspace.sh /etc/profile.d/
 
 sudo mkdir -p /etc/skel
 sudo cp -R ${CORE_SOURCES}/etc/skel/Library /etc/skel
+sudo cp -R ${CORE_SOURCES}/etc/skel/.config /etc/skel
 
 sudo cp ${CORE_SOURCES}/usr/NextSpace/bin/* /usr/NextSpace/bin/
 
