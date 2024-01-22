@@ -33,8 +33,9 @@ fi
 # Build
 #----------------------------------------
 cd ${BUILD_ROOT}/${GIT_PKG_NAME}
-#export RUNTIME_VERSION="-fobjc-runtime=gnustep-1.8"
 $MAKE_CMD clean
+#export RUNTIME_VERSION="gnustep-1.8"
+export PKG_CONFIG_PATH="/usr/NextSpace/lib/pkgconfig"
 export CC=clang
 export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"/usr/NextSpace/lib"

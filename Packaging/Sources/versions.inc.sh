@@ -85,14 +85,17 @@ CXX_COMPILER=`which clang++`
 if [ "${OS_NAME}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
   libdispatch_version=5.4.2
   libcorefoundation_version=5.4.2
+  gnustep_make_version=2_7_0
+  gnustep_base_version=1_28_0
+  gnustep_gui_version=0_29_0
 else
   libdispatch_version=5.9.2
   libcorefoundation_version=5.9.2
+  gnustep_make_version=2_9_1
+  gnustep_base_version=1_29_0
+  gnustep_gui_version=0_30_0
 fi
 libobjc2_version=2.1
-gnustep_make_version=2_9_1
-gnustep_base_version=1_29_0
-gnustep_gui_version=0_30_0
 #gnustep_back_version=0_30_0
 
 gorm_version=1_3_1
