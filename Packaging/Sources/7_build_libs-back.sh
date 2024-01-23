@@ -27,6 +27,9 @@ cp -R ${SOURCES_DIR}/back-art ${BUILD_ROOT}
 #----------------------------------------
 . /Developer/Makefiles/GNUstep.sh
 cd ${BUILD_DIR}
+if [ "${OS_NAME}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
+  patch -p2 < ${SOURCES_DIR}/back-art_centos7.patch
+fi
 
 ./configure \
   --enable-graphics=art \
