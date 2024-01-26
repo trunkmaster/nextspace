@@ -122,6 +122,9 @@
   // For developers
   setenv("GNUSTEP_MAKEFILES", "/Developer/Makefiles", 1);
 
+  // For CoreFoundation dynamic loading of CFNetwork
+  setenv("CFNETWORK_LIBRARY_PATH", "/usr/NextSpace/Frameworks/CFNetwork.framework/libCFNetwork.so", 1);
+
   [self _setupSessionLog];
   setenv("NS_LOGFILE", [_sessionLog cString], 1);
   
