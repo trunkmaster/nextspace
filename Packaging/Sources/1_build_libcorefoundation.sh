@@ -82,6 +82,7 @@ $MAKE_CMD || exit 1
 # Install
 #----------------------------------------
 sudo $MAKE_CMD install
+
 sudo mkdir -p /usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/${libcorefoundation_version}
 sudo cp -R CoreFoundation.framework/Headers /usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/${libcorefoundation_version}
 sudo cp -R CoreFoundation.framework/libCoreFoundation.so /usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/${libcorefoundation_version}/libCoreFoundation.so.${libcorefoundation_version}
@@ -90,10 +91,13 @@ sudo ln -sf ${libcorefoundation_version} Current
 cd ..
 sudo ln -sf Versions/Current/Headers Headers
 sudo ln -sf Versions/Current/libCoreFoundation.so.${libcorefoundation_version} libCoreFoundation.so
+
 # lib
 sudo mkdir -p /usr/NextSpace/lib
 cd /usr/NextSpace/lib
-sudo ln -sf ../Frameworks/CoreFoundation.framework/libCoreFoundation.so libCoreFoundation.so
+rm -f libCoreFoundation.so.${libcorefoundation_version}
+ln -sf ../Frameworks/CoreFoundation.framework/libCoreFoundation.so.${libcorefoundation_version} ./
+
 # include
 sudo mkdir -p /usr/NextSpace/include
 cd /usr/NextSpace/include
