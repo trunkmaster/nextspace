@@ -14,8 +14,10 @@ if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Applications/nextspace-applications.spec
-	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "nextspace-frameworks-devel" | grep -v "libcorefoundation-devel" | awk -c '{print $1}'`
+	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "nextspace" | grep -v "corefoundation" | awk -c '{print $1}'`
 	sudo yum -y install ${DEPS} || exit 1
+  DEPS=`rpmspec -q --requires ${SPEC_FILE} | grep -v corefoundation | grep -v nextspace`
+  sudo yum -y install ${DEPS} || exit 1
 fi
 
 #----------------------------------------
