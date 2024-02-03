@@ -95,8 +95,8 @@ sudo ln -sf Versions/Current/libCoreFoundation.so.${libcorefoundation_version} l
 # lib
 sudo mkdir -p /usr/NextSpace/lib
 cd /usr/NextSpace/lib
-rm -f libCoreFoundation.so.${libcorefoundation_version}
-ln -sf ../Frameworks/CoreFoundation.framework/libCoreFoundation.so.${libcorefoundation_version} ./
+sudo rm -f libCoreFoundation.so.${libcorefoundation_version}
+sudo ln -sf ../Frameworks/CoreFoundation.framework/libCoreFoundation.so.${libcorefoundation_version} ./
 
 # include
 sudo mkdir -p /usr/NextSpace/include
