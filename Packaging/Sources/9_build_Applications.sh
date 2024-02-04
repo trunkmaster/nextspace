@@ -54,7 +54,7 @@ cd ${APP_BUILD_DIR}
 export CC=${C_COMPILER}
 export CMAKE=${CMAKE_CMD}
 $MAKE_CMD clean
-$MAKE_CMD
+$MAKE_CMD || exit 1
 sudo -E $MAKE_CMD install || exit
 
 export GNUSTEP_INSTALLATION_DOMAIN=NETWORK

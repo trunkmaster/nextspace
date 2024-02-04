@@ -44,7 +44,7 @@ if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
 else
     ./configure || exit 1
 fi
-$MAKE_CMD 
+$MAKE_CMD || exit 1
 
 #----------------------------------------
 # Install
@@ -55,7 +55,7 @@ sudo ldconfig
 #----------------------------------------
 # Install services
 #----------------------------------------
-sudo cp ${SOURCES_DIR}/gpbs.service /usr/NextSpace/lib/systemd
-sudo systemctl daemon-reload
+sudo cp ${SOURCES_DIR}/gpbs.service /usr/NextSpace/lib/systemd || exit 1
+sudo systemctl daemon-reload || exit 1
 
 systemctl status gpbs || sudo systemctl enable /usr/NextSpace/lib/systemd/gpbs.service;

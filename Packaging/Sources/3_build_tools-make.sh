@@ -52,7 +52,7 @@ cp ${CORE_SOURCES}/nextspace.fsl ${BUILD_ROOT}/tools-make-make-${gnustep_make_ve
 #----------------------------------------
 # Install
 #----------------------------------------
-sudo $MAKE_CMD install
+sudo $MAKE_CMD install || exit 1
 cd ${_PWD}
 
 #----------------------------------------

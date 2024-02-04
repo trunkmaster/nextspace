@@ -41,6 +41,6 @@ export CC=${C_COMPILER}
 export CMAKE=${CMAKE_CMD}
 export QA_SKIP_BUILD_ROOT=1
 
-$MAKE_CMD
-sudo -E $MAKE_CMD install
+$MAKE_CMD || exit 1
+sudo -E $MAKE_CMD install || exit 1
 sudo ldconfig

@@ -33,8 +33,10 @@ fi
 
 ./configure \
   --enable-graphics=art \
-  --with-name=art
+  --with-name=art \
+  || exit 1
 
-$MAKE_CMD
-sudo -E $MAKE_CMD fonts=no install
+$MAKE_CMD || exit 1
+sudo -E $MAKE_CMD fonts=no install || exit 1
+
 sudo ldconfig

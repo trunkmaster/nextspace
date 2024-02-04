@@ -36,6 +36,6 @@ cp -R ${SOURCES_DIR} ${BUILD_ROOT}
 cd ${BUILD_DIR}
 
 $MAKE_CMD clean
-$MAKE_CMD
+$MAKE_CMD || exit 1
 sudo -E $MAKE_CMD install
 sudo ldconfig

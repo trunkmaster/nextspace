@@ -38,7 +38,7 @@ if [ -d obj ]; then
     $MAKE_CMD clean
 fi
 ./configure || exit 1
-$MAKE_CMD 
+$MAKE_CMD || exit 1
 
 #----------------------------------------
 # Install
