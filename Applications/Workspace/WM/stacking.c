@@ -141,7 +141,7 @@ void CommitStacking(WScreen *scr)
   }
   XRestackWindows(dpy, windows, i);
   wfree(windows);
-  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+  CFNotificationCenterPostNotification(scr->notificationCenter,
                                        WMDidResetWindowStackingNotification, scr, NULL, TRUE);
 }
 
@@ -518,7 +518,7 @@ void MoveInStackListAbove(WCoreWindow *next, WCoreWindow *frame)
     moveFrameToUnder(frame->stacking->above, frame);
   }
 
-  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+  CFNotificationCenterPostNotification(scr->notificationCenter,
                                        WMDidResetWindowStackingNotification, scr, NULL, TRUE);
 }
 
@@ -563,7 +563,7 @@ void MoveInStackListUnder(WCoreWindow *prev, WCoreWindow *frame)
   prev->stacking->under = frame;
   moveFrameToUnder(prev, frame);
 
-  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+  CFNotificationCenterPostNotification(scr->notificationCenter,
                                        WMDidResetWindowStackingNotification, scr, NULL, TRUE);
 }
 
@@ -585,7 +585,7 @@ void RemoveFromStackList(WCoreWindow *frame)
 
   frame->screen_ptr->window_count--;
 
-  CFNotificationCenterPostNotification(CFNotificationCenterGetLocalCenter(),
+  CFNotificationCenterPostNotification(frame->screen_ptr->notificationCenter,
                                        WMDidResetWindowStackingNotification, frame->screen_ptr,
                                        NULL, TRUE);
 }
