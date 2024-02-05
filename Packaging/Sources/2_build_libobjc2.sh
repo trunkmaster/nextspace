@@ -34,8 +34,8 @@ fi
 #----------------------------------------
 cd ${BUILD_ROOT}/libobjc2-${libobjc2_version} || exit 1
 rm -rf _build 2>/dev/null
-mkdir -p _build
-cd ./_build
+mkdir -p .build
+cd ./.build
 
 $CMAKE_CMD .. \
 	-DCMAKE_C_COMPILER=${C_COMPILER} \

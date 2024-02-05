@@ -54,8 +54,8 @@ fi
 #----------------------------------------
 cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
 rm -rf CoreFoundation/_build 2>/dev/null
-mkdir -p CoreFoundation/_build
-cd CoreFoundation/_build
+mkdir -p CoreFoundation/.build
+cd CoreFoundation/.build
 C_FLAGS="-I/usr/NextSpace/include -Wno-switch -Wno-enum-conversion"
 if [ "${OS_NAME}" != "centos" ] || [ "${OS_VERSION}" != "7" ]; then
 	C_FLAGS="${C_FLAGS} -Wno-implicit-const-int-float-conversion"
@@ -93,14 +93,14 @@ sudo ln -sf Versions/Current/Headers Headers
 sudo ln -sf Versions/Current/libCoreFoundation.so.${libcorefoundation_version} libCoreFoundation.so
 
 # lib
-sudo mkdir -p /usr/NextSpace/lib
-cd /usr/NextSpace/lib
-sudo rm -f libCoreFoundation.so.${libcorefoundation_version}
-sudo ln -sf ../Frameworks/CoreFoundation.framework/libCoreFoundation.so.${libcorefoundation_version} ./
+#sudo mkdir -p /usr/NextSpace/lib
+#cd /usr/NextSpace/lib
+#sudo rm -f libCoreFoundation.so.${libcorefoundation_version}
+#sudo ln -sf ../Frameworks/CoreFoundation.framework/libCoreFoundation.so.${libcorefoundation_version} ./
 
 # include
-sudo mkdir -p /usr/NextSpace/include
-cd /usr/NextSpace/include
-sudo ln -sf ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
+#sudo mkdir -p /usr/NextSpace/include
+#cd /usr/NextSpace/include
+#sudo ln -sf ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
 
 sudo ldconfig
