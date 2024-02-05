@@ -803,8 +803,8 @@ static void _processWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBac
    */
   eventQLength = read(w_global.inotify.fd_event_queue, buff, sizeof(buff));
 
-  if (eventQLength < 0) {
-    WMLogWarning("read problem when trying to get INotify event: %s", strerror(errno));
+  if (eventQLength <= 0) {
+    WMLogError("inotify: read problem when trying to get event: %s", strerror(errno));
     return;
   }
 
@@ -853,7 +853,7 @@ static void _processWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBac
 
 static Bool _initializeInotify()
 {
-  w_global.inotify.fd_event_queue = inotify_init();
+  w_global.inotify.fd_event_queue = inotify_init1(O_NONBLOCK);
   if (w_global.inotify.fd_event_queue < 0) {
     WMLogWarning("** inotify ** could not initialise an inotify instance."
                  " Changes to the defaults database will require a restart to take effect.");
