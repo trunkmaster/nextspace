@@ -38,6 +38,7 @@ $MAKE_CMD clean
 export PKG_CONFIG_PATH="/usr/NextSpace/lib/pkgconfig"
 export CC=clang
 export CXX=clang++
+export CFLAGS="-F/usr/NextSpace/Frameworks"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"/usr/NextSpace/lib"
 
 cp ${CORE_SOURCES}/nextspace.fsl ${BUILD_ROOT}/tools-make-make-${gnustep_make_version}/FilesystemLayouts/nextspace
