@@ -804,8 +804,9 @@ static void _processWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBac
   eventQLength = read(w_global.inotify.fd_event_queue, buff, sizeof(buff));
 
   if (eventQLength <= 0) {
+    // There's a problem to get events from queue. Enable callbacks again and wait for next event.
     WMLogError("inotify: read problem when trying to get event: %s", strerror(errno));
-    return;
+    goto done;
   }
 
   /* Check what events occured */
@@ -848,6 +849,7 @@ static void _processWatchEvents(CFFileDescriptorRef fdref, CFOptionFlags callBac
     i += sizeof(struct inotify_event) + pevent->len;
   }
 
+done:
   CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
 }
 
