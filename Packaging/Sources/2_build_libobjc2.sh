@@ -20,28 +20,26 @@ fi
 GIT_PKG_NAME=libobjc2-${libobjc2_version}
 
 if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
-	curl -L https://github.com/gnustep/libobjc2/archive/v${libobjc2_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
-#	curl -L https://github.com/Tessil/robin-map/archive/757de82.tar.gz -o ${BUILD_ROOT}/libobjc2_robin-map.tar.gz
+	# Use forked and fixed repo until upstream create a new release tag wit fix.
+#	curl -L https://github.com/gnustep/libobjc2/archive/v${libobjc2_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
+	git clone --depth 1 https://github.com/trunkmaster/libobjc2 ${BUILD_ROOT}/${GIT_PKG_NAME}
 	curl -L https://github.com/Tessil/robin-map/archive/v1.2.1.tar.gz -o ${BUILD_ROOT}/libobjc2_robin-map.tar.gz
+
 	cd ${BUILD_ROOT}
-	tar zxf ${GIT_PKG_NAME}.tar.gz
+#	tar zxf ${GIT_PKG_NAME}.tar.gz
+
 	tar zxf libobjc2_robin-map.tar.gz
-#	mv robin-map-757de829927489bee55ab02147484850c687b620/* ${GIT_PKG_NAME}/third_party/robin-map
 	mkdir -p ${GIT_PKG_NAME}/third_party
 	mv robin-map-1.2.1 ${GIT_PKG_NAME}/third_party/robin-map
-	${CMAKE_CMD} -B${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map -S${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map
-	${CMAKE_CMD} --build ${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map
-	
-#	cd ${GIT_PKG_NAME}
-#	patch < ${PROJECT_DIR}/Libraries/libobjc2/libobjc2-CMakeLists.patch
 fi
 
 #----------------------------------------
 # Build
 #----------------------------------------
-#${CMAKE_CMD} -B${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map -S${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map
-#${CMAKE_CMD} --build ${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map
-
+# build robin-map
+${CMAKE_CMD} -B${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map -S${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map
+${CMAKE_CMD} --build ${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map
+# build libobjc2
 cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
 rm -rf .build 2>/dev/null
 mkdir -p .build
