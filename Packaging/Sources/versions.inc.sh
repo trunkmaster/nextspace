@@ -95,7 +95,7 @@ else
   gnustep_base_version=1_29_0
   gnustep_gui_version=0_30_0
 fi
-libobjc2_version=2.2
+libobjc2_version=2.2.1
 #gnustep_back_version=0_30_0
 
 gorm_version=1_3_1
