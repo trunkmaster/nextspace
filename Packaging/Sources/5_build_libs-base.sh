@@ -35,7 +35,7 @@ fi
 #----------------------------------------
 cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
 if [ -d obj ]; then
-    $MAKE_CMD clean
+	$MAKE_CMD clean
 fi
 ./configure || exit 1
 $MAKE_CMD || exit 1

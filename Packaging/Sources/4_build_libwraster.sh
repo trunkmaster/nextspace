@@ -28,7 +28,7 @@ SOURCES_DIR=${PROJECT_DIR}/Libraries/libwraster
 BUILD_DIR=${BUILD_ROOT}/libwraster
 
 if [ -d ${BUILD_DIR} ]; then
-  rm -rf ${BUILD_DIR}
+	rm -rf ${BUILD_DIR}
 fi
 cp -R ${SOURCES_DIR} ${BUILD_ROOT}
 
