@@ -53,9 +53,9 @@ fi
 # Build
 #----------------------------------------
 cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
-rm -rf CoreFoundation/_build 2>/dev/null
-mkdir -p CoreFoundation/.build
-cd CoreFoundation/.build
+rm -rf .build 2>/dev/null
+mkdir -p .build
+cd .build
 C_FLAGS="-I/usr/NextSpace/include -Wno-switch -Wno-enum-conversion"
 if [ "${OS_NAME}" != "centos" ] || [ "${OS_VERSION}" != "7" ]; then
 	C_FLAGS="${C_FLAGS} -Wno-implicit-const-int-float-conversion"
