@@ -1,4 +1,4 @@
-name: Sources
+name: build_sources@ubuntu
 
 on:
   push:
