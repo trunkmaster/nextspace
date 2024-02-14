@@ -36,7 +36,11 @@ fi
 # Build
 #----------------------------------------
 # build robin-map
-${CMAKE_CMD} -B${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map -S${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map
+${CMAKE_CMD} \
+	-DCMAKE_C_COMPILER=${C_COMPILER} \
+	-DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
+	-B${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map \
+	-S${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map
 ${CMAKE_CMD} --build ${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map
 # build libobjc2
 cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
