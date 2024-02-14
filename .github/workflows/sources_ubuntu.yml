@@ -1,4 +1,4 @@
-name: build_sources@ubuntu
+name: sources@ubuntu-22.04
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - uses: actions/checkout@v3
