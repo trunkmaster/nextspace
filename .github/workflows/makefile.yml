@@ -1,0 +1,25 @@
+name: Sources
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: |
+        cd Packaging/Sources
+        ./0_build_libdispatch.sh
+        ./1_build_libcorefoundation.sh
+        ./2_build_libobjc2.sh
+        
+    - name: Finish
+      run: echo "SUCESS!"
