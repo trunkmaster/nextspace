@@ -37,7 +37,6 @@ fi
 #----------------------------------------
 # build robin-map
 ${CMAKE_CMD} \
-	-DCMAKE_C_COMPILER=${C_COMPILER} \
 	-DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
 	-B${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map \
 	-S${BUILD_ROOT}/${GIT_PKG_NAME}/third_party/robin-map
