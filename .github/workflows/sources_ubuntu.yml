@@ -14,12 +14,28 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Build
+    - name: Build core libraries
       run: |
         cd Packaging/Sources
         ./0_build_libdispatch.sh
         ./1_build_libcorefoundation.sh
         ./2_build_libobjc2.sh
+        ./3_build_tools-make.sh
+        ./4_build_libwraster.sh
         
-    - name: Finish
-      run: echo "SUCESS!"
+    - name: Build GNUstep
+      run: |
+        cd Packaging/Sources
+        ./5_build_libs-base.sh
+        ./6_build_libs-gui.sh
+        ./7_build_libs-back.sh
+
+    - name: Build NextSpace frameworks
+      run: |
+        cd Packaging/Sources
+        ./8_build_Frameworks.sh
+
+    - name: Build NextSpace applications
+      run: |
+        cd Packaging/Sources
+        ./9_build_Applications.sh
