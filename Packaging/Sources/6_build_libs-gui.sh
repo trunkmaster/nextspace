@@ -1,14 +1,15 @@
 #!/bin/sh
 
 . ./versions.inc.sh
+. /Developer/Makefiles/GNUstep.sh
 . /etc/profile.d/nextspace.sh
 
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
 if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
-  	{ECHO} ">>> Installing packages for GNUstep GUI (AppKit) build"
-	sudo apt-get install -y ${GNUSTEP_GUI_DEPS}
+  	${ECHO} ">>> Installing packages for GNUstep GUI (AppKit) build"
+	sudo apt-get install -q -y ${GNUSTEP_GUI_DEPS}
 fi
 
 #----------------------------------------
@@ -28,9 +29,6 @@ if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
 	cd Images
 	tar zxf ${SOURCES_DIR}/gnustep-gui-images.tar.gz
 fi
-
-. /Developer/Makefiles/GNUstep.sh
-. /etc/profile.d/nextspace.sh
 
 #----------------------------------------
 # Build
