@@ -1597,6 +1597,23 @@
   }
 }
 
+// Edit
+- (void)cut:(id)sender
+{
+}
+
+- (void)copy:(id)sender
+{
+  NSString *selectedPath = [self absolutePath];
+
+  NSLog(@"Copy selected path: %@, selecttion: %@", selectedPath, selection);
+}
+
+- (void)paste:(id)sender
+{
+}
+
+
 // File
 - (void)open:(id)sender
 {
@@ -1815,6 +1832,23 @@
         return NO;
       if ([[menuItem title] isEqualToString:@"Unmount"])
         return NO;
+    }
+  }
+
+  if ([menuTitle isEqualToString:@"Edit"]) {
+    if ([[menuItem title] isEqualToString:@"Copy"] ||
+        [[menuItem title] isEqualToString:@"Select All"]) {
+      return YES;
+    } else if ([[menuItem title] isEqualToString:@"Cut"]) {
+      // Check if parent directory is writable
+      NSString *parentDirectory = [selectedPath stringByDeletingLastPathComponent];
+      // NSLog(@"Chek if %@ is writable.", parentDirectory);
+      if ([[NSFileManager defaultManager] isWritableFileAtPath:parentDirectory] == NO) {
+        return NO;
+      }
+    } else if ([[menuItem title] isEqualToString:@"Paste"]) {
+      // Check pasteboard for contents
+      return NO;
     }
   }
 

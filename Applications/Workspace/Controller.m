@@ -1308,20 +1308,16 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 //--- Validation
+// FileViewer-related validation processed in FileViewer.m
 - (BOOL)validateMenuItem:(id<NSMenuItem>)menuItem
 {
   NSString *menuTitle = [[menuItem menu] title];
   FileViewer *fileViewer;
-  // NSString   *selectedPath;
 
   if (_isQuitting != NO)
     return NO;
 
   fileViewer = [self fileViewerForWindow:[NSApp keyWindow]];
-  // if (fileViewer) {
-  //   selectedPath = [fileViewer absolutePath];
-  // }
-  // NSDebugLLog(@"Controller", @"Validate menu: %@ item: %@", menuTitle, [menuItem title]);
 
   if ([menuTitle isEqualToString:@"File"]) {
     if ([[menuItem title] isEqualToString:@"Empty Recycler"]) {
