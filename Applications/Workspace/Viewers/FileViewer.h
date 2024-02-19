@@ -33,7 +33,7 @@
 #import "PathView.h"
 #import "PathViewScroller.h"
 
-@class NXTIconView, NXTIcon, NXTIconLabel;
+@class NXTIconView, NXTIcon, NXTIconLabel, ProcessManager;
 
 @interface FileViewer : NSObject
 {
@@ -49,6 +49,8 @@
 
   OSEFileSystemMonitor *fileSystemMonitor;  // File system events
   NSNumber *monitorPathDescriptor;          // file descriptor for path
+
+  ProcessManager *processManager;
 
   NSWindow *window;
   id box;

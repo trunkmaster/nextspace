@@ -94,6 +94,8 @@ typedef enum {
   // Array of objects which represents active operations (BGOperation).
   NSMutableArray *operations;
   NSMutableArray *applications;
+  // Array of operations introduced by "Edit" menu (Cut, Copy)
+  NSMutableDictionary *editOperations;
 
   NSMutableArray *backInfoLabelCopies;
 }
@@ -145,5 +147,18 @@ typedef enum {
 - (id)backInfoLabel;
 - (void)releaseBackInfoLabel:(id)label;
 - (void)updateBackInfoLabel;
+
+@end
+
+@interface ProcessManager (EditOperations)
+
+// Operation type could be either CopyOperation (Edit->Copy) or MoveOperation (Edit->Cut)
+// By default owner is a FileViewer object
+- (BOOL)registerEditOperation:(OperationType)opType
+                   forObjects:(NSArray *)objects
+                     forOwner:(id)owner;
+- (BOOL)unregisterEditOperation:(OperationType)opType forOwner:(id)owner;
+- (BOOL)hasRegisteredEditOperation:(OperationType)opType owner:(id)owner;
+- (NSArray *)objectsForEditOperation:(OperationType)opType owner:(id)owner;
 
 @end

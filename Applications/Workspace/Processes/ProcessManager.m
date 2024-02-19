@@ -23,6 +23,9 @@
 #include <signal.h>
 
 #import <Foundation/NSString.h>
+#include "GNUstepBase/GNUstep.h"
+#include "Foundation/NSValue.h"
+#include "Foundation/NSArray.h"
 #include "Foundation/NSDictionary.h"
 #include "Foundation/NSObjCRuntime.h"
 
@@ -68,6 +71,7 @@ static BOOL _workspaceQuitting = NO;
   RELEASE(applications);
   RELEASE(operations);
 
+  TEST_RELEASE(editOperations);
   TEST_RELEASE(backInfoLabelCopies);
   TEST_RELEASE(_activeApplication);
 
@@ -824,6 +828,57 @@ static BOOL _workspaceQuitting = NO;
 
   [backInfoLabelCopies makeObjectsPerformSelector:@selector(setStringValue:) withObject:labelText];
   [backInfoLabelCopies makeObjectsPerformSelector:@selector(setTextColor:) withObject:labelColor];
+}
+
+@end
+
+@implementation ProcessManager (EditOperations)
+
+- (BOOL)registerEditOperation:(OperationType)opType
+                   forObjects:(NSArray *)objects
+                     forOwner:(id)owner
+{
+  if (editOperations == nil) {
+    editOperations = [NSMutableDictionary new];
+  }
+
+  NSDictionary *operation =
+      @{@"OperationType" : [NSNumber numberWithInt:opType], @"Objects" : objects};
+  [editOperations setObject:operation forKey:owner];
+
+  return NO;
+}
+
+- (BOOL)unregisterEditOperation:(OperationType)opType
+                       forOwner:(id)owner
+{
+  [editOperations removeObjectForKey:owner];
+  return NO;
+}
+
+- (BOOL)hasRegisteredEditOperation:(OperationType)opType
+                             owner:(id)owner
+{
+  NSDictionary *operation = [editOperations objectForKey:owner];
+
+  if (operation) {
+    NSNumber *operationType = operation[@"OperationType"];
+    return (operation && operationType.intValue == opType);
+  }
+
+  return NO;
+}
+
+- (NSArray *)objectsForEditOperation:(OperationType)opType
+                               owner:(id)owner
+{
+  NSDictionary *operation = [editOperations objectForKey:owner];
+
+  if (operation) {
+    return operation[@"Objects"];
+  }
+
+  return nil;
 }
 
 @end

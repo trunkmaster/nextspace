@@ -40,17 +40,18 @@
 #import "math.h"
 
 #import "Controller.h"
-#import "FileViewer.h"
 #import "ModuleLoader.h"
 #import "Inspectors/Inspector.h"
+#import <Finder.h>
 #import "PathIcon.h"
 
-#import <Processes/ProcessManager.h>
 #import <Operations/FileMover.h>
 #import <Operations/Sizer.h>
+#import <Processes/ProcessManager.h>
 
 #import <Preferences/Browser/BrowserPrefs.h>
-#import <Finder.h>
+
+#import "FileViewer.h"
 
 #define NOTIFICATION_CENTER [NSNotificationCenter defaultCenter]
 #define WIN_MIN_HEIGHT 380
@@ -171,6 +172,8 @@
     aSize = NSMakeSize(168, PATH_VIEW_HEIGHT);
   }
   [NXTIconView setDefaultSlotSize:aSize];
+
+  processManager = [ProcessManager shared];
 
   // [NSBundle loadNibNamed:@"FileViewer" owner:self];
   // To avoid .gorm loading ineterference manually construct File Viewer window.
@@ -353,7 +356,7 @@
   [diskInfo release];
 
   // Just add label to viewer window. Proccesses will update it.
-  operationInfo = [[ProcessManager shared] backInfoLabel];
+  operationInfo = [processManager backInfoLabel];
   [operationInfo setEditable:NO];
   [operationInfo setSelectable:NO];
   [operationInfo setRefusesFirstResponder:YES];
@@ -447,7 +450,7 @@
   // Processes holds list of labels for FileViewers.
   // This message removes local copy of label from Processes' list
   if ([operationInfo retainCount] > 1) {
-    [[ProcessManager shared] releaseBackInfoLabel:operationInfo];
+    [processManager releaseBackInfoLabel:operationInfo];
   }
   TEST_RELEASE(lock);
 
@@ -1604,13 +1607,32 @@
 
 - (void)copy:(id)sender
 {
+  NSPasteboard *pb = [NSPasteboard generalPasteboard];
   NSString *selectedPath = [self absolutePath];
+  NSMutableArray *paths = [NSMutableArray new];
+
+  if (selection && [selection count] > 0) {
+    for (NSString *file in selection) {
+      [paths addObject:@{
+        @"Operation" : @"Copy",
+        @"Path" : [selectedPath stringByAppendingPathComponent:file]
+      }];
+    }
+  } else {
+    [paths addObject:@{@"Operation" : @"Copy", @"Path" : selectedPath}];
+  }
+
+  [pb declareTypes:@[ NSFilenamesPboardType ] owner:self];
+  [pb setPropertyList:paths forType:NSFilenamesPboardType];
 
   NSLog(@"Copy selected path: %@, selecttion: %@", selectedPath, selection);
 }
 
 - (void)paste:(id)sender
 {
+  NSPasteboard *pb = [NSPasteboard generalPasteboard];
+  NSArray *paths = [pb propertyListForType:NSFilenamesPboardType];
+  NSLog(@"[FileViewer-paste] %@", paths);
 }
 
 
@@ -1721,7 +1743,7 @@
                                  sourceDir:[self absolutePath]
                                  targetDir:nil
                                      files:files
-                                   manager:[ProcessManager shared]];
+                                   manager:processManager];
 }
 
 // TODO
@@ -1755,7 +1777,7 @@
                                  sourceDir:fullPath
                                  targetDir:nil
                                      files:files
-                                   manager:[ProcessManager shared]];
+                                   manager:processManager];
 
   NSDebugLLog(@"FileViewer", @"Full path after destroy: %@", fullPath);
 }
@@ -1848,7 +1870,11 @@
       }
     } else if ([[menuItem title] isEqualToString:@"Paste"]) {
       // Check pasteboard for contents
-      return NO;
+      // NSPasteboard *pb = [NSPasteboard generalPasteboard];
+      // NSArray *paths = [pb propertyListForType:NSFilenamesPboardType];
+      // if (!paths || [paths count] == 0) {
+      //   return NO;
+      // }
     }
   }
 
