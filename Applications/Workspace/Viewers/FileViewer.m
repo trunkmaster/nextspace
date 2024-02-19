@@ -1601,38 +1601,57 @@
 }
 
 // Edit
+/*
+   Cut, Copy and Paste operations implemented with ProcessManager for several reasons:
+   1. Access to pasteboard is quite slow - validateMenuItem: shows delay (try to detach Edit
+      menu and see delay in close button appearing).
+   2. FileViewer needs to know which files/directories were cut to displlay them grayed out.
+ */
+
 - (void)cut:(id)sender
 {
+  NSString *sourceDir = [self absolutePath];
+  NSArray *objects = selection;
+
+  if (selection == nil) {
+    objects = [NSArray arrayWithObject:[sourceDir lastPathComponent]];
+    sourceDir = [sourceDir stringByDeletingLastPathComponent];
+  }
+
+  [processManager registerEditOperation:MoveOperation
+                          directoryPath:sourceDir
+                                objects:objects];
 }
 
 - (void)copy:(id)sender
 {
-  NSPasteboard *pb = [NSPasteboard generalPasteboard];
-  NSString *selectedPath = [self absolutePath];
-  NSMutableArray *paths = [NSMutableArray new];
+  NSString *sourceDir = [self absolutePath];
+  NSArray *objects = selection;
 
-  if (selection && [selection count] > 0) {
-    for (NSString *file in selection) {
-      [paths addObject:@{
-        @"Operation" : @"Copy",
-        @"Path" : [selectedPath stringByAppendingPathComponent:file]
-      }];
-    }
-  } else {
-    [paths addObject:@{@"Operation" : @"Copy", @"Path" : selectedPath}];
+  if (selection == nil) {
+    objects = [NSArray arrayWithObject:[sourceDir lastPathComponent]];
+    sourceDir = [sourceDir stringByDeletingLastPathComponent];
   }
 
-  [pb declareTypes:@[ NSFilenamesPboardType ] owner:self];
-  [pb setPropertyList:paths forType:NSFilenamesPboardType];
-
-  NSLog(@"Copy selected path: %@, selecttion: %@", selectedPath, selection);
+  [processManager registerEditOperation:CopyOperation
+                          directoryPath:sourceDir
+                                objects:objects];
 }
 
 - (void)paste:(id)sender
 {
-  NSPasteboard *pb = [NSPasteboard generalPasteboard];
-  NSArray *paths = [pb propertyListForType:NSFilenamesPboardType];
-  NSLog(@"[FileViewer-paste] %@", paths);
+  NSDictionary *operation = processManager.editOperation;
+  OperationType opType = [operation[EditOperationTypeKey] integerValue];
+
+  NSLog(@"[FileViewer-paste] %@ - %@, opType: %i", operation[EditPathKey],
+        operation[EditObjectsKey], opType);
+
+  // Start operation
+  [processManager startOperationWithType:opType
+                                  source:operation[EditPathKey]
+                                  target:[self absolutePath]
+                                   files:operation[EditObjectsKey]];
+  [processManager unregisterEditOperation];
 }
 
 
@@ -1858,23 +1877,15 @@
   }
 
   if ([menuTitle isEqualToString:@"Edit"]) {
-    if ([[menuItem title] isEqualToString:@"Copy"] ||
-        [[menuItem title] isEqualToString:@"Select All"]) {
-      return YES;
-    } else if ([[menuItem title] isEqualToString:@"Cut"]) {
+    if ([[menuItem title] isEqualToString:@"Cut"]) {
       // Check if parent directory is writable
       NSString *parentDirectory = [selectedPath stringByDeletingLastPathComponent];
-      // NSLog(@"Chek if %@ is writable.", parentDirectory);
+      
       if ([[NSFileManager defaultManager] isWritableFileAtPath:parentDirectory] == NO) {
         return NO;
       }
     } else if ([[menuItem title] isEqualToString:@"Paste"]) {
-      // Check pasteboard for contents
-      // NSPasteboard *pb = [NSPasteboard generalPasteboard];
-      // NSArray *paths = [pb propertyListForType:NSFilenamesPboardType];
-      // if (!paths || [paths count] == 0) {
-      //   return NO;
-      // }
+      return ([processManager editOperation] != nil);
     }
   }
 

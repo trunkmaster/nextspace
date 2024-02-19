@@ -23,11 +23,6 @@
 #include <signal.h>
 
 #import <Foundation/NSString.h>
-#include "GNUstepBase/GNUstep.h"
-#include "Foundation/NSValue.h"
-#include "Foundation/NSArray.h"
-#include "Foundation/NSDictionary.h"
-#include "Foundation/NSObjCRuntime.h"
 
 #import <DesktopKit/NXTAlert.h>
 #import <DesktopKit/NXTFileManager.h>
@@ -68,10 +63,10 @@ static BOOL _workspaceQuitting = NO;
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-  RELEASE(applications);
-  RELEASE(operations);
+  RELEASE(_applications);
+  RELEASE(_operations);
 
-  TEST_RELEASE(editOperations);
+  TEST_RELEASE(_editOperation);
   TEST_RELEASE(backInfoLabelCopies);
   TEST_RELEASE(_activeApplication);
 
@@ -89,14 +84,14 @@ static BOOL _workspaceQuitting = NO;
     NSNotificationCenter *localCenter = [NSNotificationCenter defaultCenter];
     NSDictionary *_appInfo;
 
-    applications =
+    _applications =
         [[NSMutableArray alloc] initWithArray:[[NSWorkspace sharedWorkspace] launchedApplications]];
-    for (int i = 0; i < [applications count]; i++) {
-      _appInfo = [self _normalizeApplicationInfo:[applications objectAtIndex:i]];
-      [applications replaceObjectAtIndex:i withObject:_appInfo];
+    for (int i = 0; i < [_applications count]; i++) {
+      _appInfo = [self _normalizeApplicationInfo:[_applications objectAtIndex:i]];
+      [_applications replaceObjectAtIndex:i withObject:_appInfo];
     }
 
-    operations = [[NSMutableArray alloc] init];
+    _operations = [[NSMutableArray alloc] init];
 
     //  Applications - AppKit notifications
     // [[[NSWorkspace sharedWorkspace] notificationCenter]
@@ -160,16 +155,6 @@ static BOOL _workspaceQuitting = NO;
   return self;
 }
 
-- (NSArray *)applications
-{
-  return applications;
-}
-
-- (NSArray *)operations
-{
-  return operations;
-}
-
 @end
 
 @implementation ProcessManager (Applications)
@@ -189,7 +174,7 @@ static BOOL _workspaceQuitting = NO;
 
 - (NSDictionary *)_applicationWithName:(NSString *)appName
 {
-  for (NSDictionary *entry in applications) {
+  for (NSDictionary *entry in _applications) {
     if ([entry[@"NSApplicationName"] isEqualToString:appName]) {
       return entry;
     }
@@ -211,7 +196,7 @@ static BOOL _workspaceQuitting = NO;
 
   // Check if application already in app list.
   appName = [notif userInfo][@"NSApplicationName"];
-  for (NSDictionary *aInfo in applications) {
+  for (NSDictionary *aInfo in _applications) {
     if ([appName isEqualToString:aInfo[@"NSApplicationName"]]) {
       appAlreadyRegistered = YES;
       break;
@@ -220,7 +205,7 @@ static BOOL _workspaceQuitting = NO;
 
   if (appAlreadyRegistered == NO) {
     NSDictionary *appInfo = [self _normalizeApplicationInfo:[notif userInfo]];
-    [applications addObject:appInfo];
+    [_applications addObject:appInfo];
   }
 
   if ([[NSApp delegate] processesPanel]) {
@@ -246,7 +231,7 @@ static BOOL _workspaceQuitting = NO;
   NSDebugLLog(@"Processes", @"Application `%@` terminated, notification object: %@", appName,
               [notif object]);
 
-  [applications removeObject:appInfo];
+  [_applications removeObject:appInfo];
   if (_workspaceQuitting == NO) {
     if ([[NSApp delegate] processesPanel]) {
       [[[NSApp delegate] processesPanel] updateAppList];
@@ -301,14 +286,14 @@ static BOOL _workspaceQuitting = NO;
   _app = [NSConnection rootProxyForConnectionWithRegisteredName:_appName host:@""];
   if (_app == nil) {
     NSDebugLLog(@"Processes", @"Connection to %@ failed. Removing from list of known applications", _appName);
-    [applications removeObject:appInfo];
+    [_applications removeObject:appInfo];
     return YES;
   }
   @try {
     [_app terminate:NSApp];
   } @catch (NSException *e) {
     // application terminated -- remove app from launched apps list
-    [applications removeObject:appInfo];
+    [_applications removeObject:appInfo];
     [[_app connectionForProxy] invalidate];
     // libobjc2 prints out info to console all exception (even catched).
     NSDebugLLog(@"Processes", @"Application %@ was terminated. Ignore ObjC runtime exception - it's catched.", _appName);
@@ -326,7 +311,7 @@ static BOOL _workspaceQuitting = NO;
 //    NO -- if some application returns NO on applicationShouldTerminate: call.
 - (BOOL)terminateAllApps
 {
-  NSArray *_appsCopy = [applications copy];
+  NSArray *_appsCopy = [_applications copy];
   BOOL _noRunningApps = YES;
 
   // Workspace goes into quit process.
@@ -667,7 +652,7 @@ static BOOL _workspaceQuitting = NO;
 
 - (void)operationDidCreate:(NSNotification *)notif
 {
-  [operations addObject:[notif object]];
+  [_operations addObject:[notif object]];
 
   if ([[NSApp delegate] processesPanel]) {
     [[[NSApp delegate] processesPanel] updateBGProcessList];
@@ -678,7 +663,7 @@ static BOOL _workspaceQuitting = NO;
 
 - (void)operationWillDestroy:(NSNotification *)notif
 {
-  [operations removeObject:[notif object]];
+  [_operations removeObject:[notif object]];
 
   if ([[NSApp delegate] processesPanel]) {
     [[[NSApp delegate] processesPanel] updateBGProcessList];
@@ -708,7 +693,7 @@ static BOOL _workspaceQuitting = NO;
   BOOL success = NO;
 
   // No running background processes
-  if ([operations count] <= 0) {
+  if ([_operations count] <= 0) {
     return YES;
   }
 
@@ -720,11 +705,11 @@ static BOOL _workspaceQuitting = NO;
       NSDebugLLog(@"Processes", @"Workspace quit: cancel terminating running background operations.");
       break;
     case NSAlertAlternateReturn:  // Review operations
-      [[[NSApp delegate] processesPanel] showOperation:[operations objectAtIndex:0]];
+      [[[NSApp delegate] processesPanel] showOperation:[_operations objectAtIndex:0]];
       break;
     default:
       // Stop running operations
-      e = [operations objectEnumerator];
+      e = [_operations objectEnumerator];
       while ((bgOp = [e nextObject])) {
         [bgOp stop:self];
       }
@@ -733,7 +718,7 @@ static BOOL _workspaceQuitting = NO;
   }
 
   // Wait for operations to terminate
-  while ([operations count] > 0 && success != NO) {
+  while ([_operations count] > 0 && success != NO) {
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
 
@@ -812,15 +797,15 @@ static BOOL _workspaceQuitting = NO;
   NSString *labelText;
   NSColor *labelColor = [NSColor darkGrayColor];
 
-  if ([operations count] == 0) {
+  if ([_operations count] == 0) {
     labelText = @"";
-  } else if ([operations count] == 1) {
-    labelText = [self _typeMessageForOperation:[operations objectAtIndex:0]];
+  } else if ([_operations count] == 1) {
+    labelText = [self _typeMessageForOperation:[_operations objectAtIndex:0]];
   } else {
-    labelText = [NSString stringWithFormat:@"%lu background processes", [operations count]];
+    labelText = [NSString stringWithFormat:@"%lu background processes", [_operations count]];
   }
 
-  for (BGOperation *op in operations) {
+  for (BGOperation *op in _operations) {
     if ([op state] == OperationAlert) {
       labelColor = [NSColor whiteColor];
     }
@@ -832,53 +817,31 @@ static BOOL _workspaceQuitting = NO;
 
 @end
 
+NSString *EditOperationTypeKey = @"OperationType";
+NSString *EditPathKey = @"Path";
+NSString *EditObjectsKey = @"Objects";
+
 @implementation ProcessManager (EditOperations)
 
 - (BOOL)registerEditOperation:(OperationType)opType
-                   forObjects:(NSArray *)objects
-                     forOwner:(id)owner
+                directoryPath:(NSString *)dir
+                      objects:(NSArray *)objects
 {
-  if (editOperations == nil) {
-    editOperations = [NSMutableDictionary new];
-  }
+  _editOperation = @{
+    EditOperationTypeKey : [NSNumber numberWithInteger:opType],
+    EditPathKey : dir,
+    EditObjectsKey : objects
+  };
 
-  NSDictionary *operation =
-      @{@"OperationType" : [NSNumber numberWithInt:opType], @"Objects" : objects};
-  [editOperations setObject:operation forKey:owner];
+  [_editOperation retain];
 
-  return NO;
+  return YES;
 }
 
-- (BOOL)unregisterEditOperation:(OperationType)opType
-                       forOwner:(id)owner
+- (void)unregisterEditOperation
 {
-  [editOperations removeObjectForKey:owner];
-  return NO;
-}
-
-- (BOOL)hasRegisteredEditOperation:(OperationType)opType
-                             owner:(id)owner
-{
-  NSDictionary *operation = [editOperations objectForKey:owner];
-
-  if (operation) {
-    NSNumber *operationType = operation[@"OperationType"];
-    return (operation && operationType.intValue == opType);
-  }
-
-  return NO;
-}
-
-- (NSArray *)objectsForEditOperation:(OperationType)opType
-                               owner:(id)owner
-{
-  NSDictionary *operation = [editOperations objectForKey:owner];
-
-  if (operation) {
-    return operation[@"Objects"];
-  }
-
-  return nil;
+  [_editOperation release];
+  _editOperation = nil;
 }
 
 @end

@@ -91,24 +91,21 @@ typedef enum {
 
 @interface ProcessManager : NSObject
 {
-  // Array of objects which represents active operations (BGOperation).
-  NSMutableArray *operations;
-  NSMutableArray *applications;
-  // Array of operations introduced by "Edit" menu (Cut, Copy)
-  NSMutableDictionary *editOperations;
-
   NSMutableArray *backInfoLabelCopies;
 }
 
+  // Array of objects which represents active operations (BGOperation).
+@property (readonly) NSMutableArray *applications;
+@property (readonly) NSMutableArray *operations;
+
 @property (readonly) NSDictionary *activeApplication;
+// Operation introduced by "Edit" menu (Cut, Copy)
+@property (readonly) NSDictionary *editOperation;
 
 + shared;
 
 - (id)init;
 - (void)dealloc;
-
-- (NSArray *)applications;
-- (NSArray *)operations;
 
 @end
 
@@ -150,15 +147,16 @@ typedef enum {
 
 @end
 
+extern NSString *EditOperationTypeKey;
+extern NSString *EditPathKey;
+extern NSString *EditObjectsKey;
+
 @interface ProcessManager (EditOperations)
 
 // Operation type could be either CopyOperation (Edit->Copy) or MoveOperation (Edit->Cut)
-// By default owner is a FileViewer object
 - (BOOL)registerEditOperation:(OperationType)opType
-                   forObjects:(NSArray *)objects
-                     forOwner:(id)owner;
-- (BOOL)unregisterEditOperation:(OperationType)opType forOwner:(id)owner;
-- (BOOL)hasRegisteredEditOperation:(OperationType)opType owner:(id)owner;
-- (NSArray *)objectsForEditOperation:(OperationType)opType owner:(id)owner;
+                directoryPath:(NSString *)dir
+                      objects:(NSArray *)objects;
+- (void)unregisterEditOperation;
 
 @end
