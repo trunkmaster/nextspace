@@ -20,7 +20,6 @@
 
 @implementation ColorsPrefs
 
-
 // <PrefsModule>
 + (NSString *)name
 {
@@ -42,7 +41,7 @@
   [[cursorStyleMatrix cellWithTag:1] setRefusesFirstResponder:YES];
   [[cursorStyleMatrix cellWithTag:2] setRefusesFirstResponder:YES];
   [[cursorStyleMatrix cellWithTag:3] setRefusesFirstResponder:YES];
-  
+
   [view retain];
 }
 
@@ -58,29 +57,29 @@
 
 - (void)_updateControls:(Defaults *)defs
 {
-  //Window
+  // Window
   [windowBGColorBtn setColor:[defs windowBackgroundColor]];
   [windowSelectionColorBtn setColor:[defs windowSelectionColor]];
   [normalTextColorBtn setColor:[defs textNormalColor]];
   [blinkTextColorBtn setColor:[defs textBlinkColor]];
   [boldTextColorBtn setColor:[defs textBoldColor]];
-  
+
   [inverseTextBGColorBtn setColor:[defs textInverseBackground]];
   [inverseTextFGColor setColor:[defs textInverseForeground]];
-  
+
   [useBoldBtn setState:([defs useBoldTerminalFont] == YES)];
 
   // Cursor
   [cursorColorBtn setColor:[defs cursorColor]];
   [cursorStyleMatrix selectCellWithTag:[defs cursorStyle]];
 }
-  
+
 // Injects color settings into default preferences (Terminal.plist
 // or session file *.term).
 - (void)setDefault:(id)sender
 {
   Defaults *defs = [[Preferences shared] mainWindowPreferences];
-  
+
   [defs setBool:[useBoldBtn state] forKey:TerminalFontUseBoldKey];
 
   // Cursor
@@ -95,10 +94,10 @@
   [defs setTextNormalColor:[normalTextColorBtn color]];
   [defs setTextBlinklColor:[blinkTextColorBtn color]];
   [defs setTextBoldColor:[boldTextColorBtn color]];
-  
+
   [defs setTextInverseBackground:[inverseTextBGColorBtn color]];
   [defs setTextInverseForeground:[inverseTextFGColor color]];
-  
+
   [defs synchronize];
 }
 // Reads from loaded preferences (Terminal.plist or session file *.term).
@@ -114,13 +113,14 @@
 // Send changed preferences to window. No files changed or updated.
 - (void)setWindow:(id)sender
 {
-  Defaults     *prefs;
+  Defaults *prefs;
   NSDictionary *uInfo;
 
-  if (![sender isKindOfClass:[NSButton class]]) return;
-  
+  if (![sender isKindOfClass:[NSButton class]])
+    return;
+
   prefs = [[Defaults alloc] initEmpty];
-  
+
   [prefs setUseBoldTerminalFont:[useBoldBtn state]];
 
   // Cursor
@@ -135,7 +135,7 @@
   [prefs setTextNormalColor:[normalTextColorBtn color]];
   [prefs setTextBlinklColor:[blinkTextColorBtn color]];
   [prefs setTextBoldColor:[boldTextColorBtn color]];
-  
+
   [prefs setTextInverseBackground:[inverseTextBGColorBtn color]];
   [prefs setTextInverseForeground:[inverseTextFGColor color]];
 
@@ -143,9 +143,9 @@
   [prefs release];
 
   [[NSNotificationCenter defaultCenter]
-    postNotificationName:TerminalPreferencesDidChangeNotification
-                  object:[NSApp mainWindow]
-                userInfo:uInfo];
+      postNotificationName:TerminalPreferencesDidChangeNotification
+                    object:[NSApp mainWindow]
+                  userInfo:uInfo];
 }
 
 @end

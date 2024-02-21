@@ -48,7 +48,7 @@
 
 - (void)_updateControls:(Defaults *)defs
 {
-  NSString* characters = [defs wordCharacters];
+  NSString *characters = [defs wordCharacters];
   [wordCharactersField setStringValue:characters];
 }
 
@@ -57,7 +57,7 @@
   Defaults *defs = [[Preferences shared] mainWindowPreferences];
 
   [defs setWordCharacters:[wordCharactersField stringValue]];
-  
+
   [defs synchronize];
 }
 - (void)showDefault:(id)sender
@@ -72,7 +72,7 @@
 
 - (void)setWindow:(id)sender
 {
-  Defaults     *prefs;
+  Defaults *prefs;
   NSDictionary *uInfo;
 
   prefs = [[Defaults alloc] initEmpty];
@@ -83,9 +83,9 @@
   [prefs release];
 
   [[NSNotificationCenter defaultCenter]
-    postNotificationName:TerminalPreferencesDidChangeNotification
-                  object:[NSApp mainWindow]
-                userInfo:uInfo];
+      postNotificationName:TerminalPreferencesDidChangeNotification
+                    object:[NSApp mainWindow]
+                  userInfo:uInfo];
 }
 
 // Actions

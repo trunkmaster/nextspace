@@ -26,19 +26,19 @@
 
 @interface Controller : NSObject <NSMenuValidation>
 {
-  NSMutableArray      *idleList;
+  NSMutableArray *idleList;
   NSMutableDictionary *windows;
-  int                 num_windows;
-  NSWindow            *mainWindow;
-  NSTimer             *timer;
-  BOOL                isAppAutoLaunched;
-  
-  BOOL                quitPanelOpen;
+  int num_windows;
+  NSWindow *mainWindow;
+  NSTimer *timer;
+  BOOL isAppAutoLaunched;
 
-  Preferences           *preferencesPanel;
+  BOOL quitPanelOpen;
+
+  Preferences *preferencesPanel;
   TerminalServicesPanel *servicesPanel;
-  SetTitlePanel	        *setTitlePanel;
-  InfoPanel             *infoPanel;
+  SetTitlePanel *setTitlePanel;
+  InfoPanel *infoPanel;
 
   // Find
   NSWindow *findPanel;
@@ -65,8 +65,7 @@
 - (BOOL)isProgramClean:(NSString *)program;
 - (TerminalWindowController *)newWindow;
 - (TerminalWindowController *)newWindowWithShell;
-- (TerminalWindowController *)newWindowWithPreferences:(id)defs
-                                           startupFile:(NSString *)path;
+- (TerminalWindowController *)newWindowWithPreferences:(id)defs startupFile:(NSString *)path;
 - (void)openStartupFile:(NSString *)filePath;
 - (TerminalWindowController *)newWindowWithProgram:(NSString *)program
                                          arguments:(NSArray *)args
@@ -78,7 +77,6 @@
 - (int)pidForTerminalWindow:(TerminalWindowController *)twc;
 
 - (TerminalWindowController *)terminalWindowForWindow:(NSWindow *)win;
-- (id)preferencesForWindow:(NSWindow *)win
-                      live:(BOOL)isLive;
+- (id)preferencesForWindow:(NSWindow *)win live:(BOOL)isLive;
 
 @end

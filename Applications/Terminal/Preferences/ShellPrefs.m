@@ -53,45 +53,38 @@
 
 - (void)_updateControls:(Defaults *)defs
 {
-  NSString  *shellStr;
+  NSString *shellStr;
   NSInteger shellIndex;
 
-  if (defs)
-    {
-      shellStr = [defs shell];
-      shellIndex = [shellPopup indexOfItemWithTitle:shellStr];
-  
-      if ([shellStr isEqualToString:@"Command"] || shellIndex == -1)
-        {
-          [shellPopup selectItemWithTitle:@"Command"];
-          [commandField setStringValue:shellStr];
-        }
-      else
-        {
-          [shellPopup selectItemWithTitle:shellStr];
-          [loginShellBtn setState:[defs loginShell]];
-        }
+  if (defs) {
+    shellStr = [defs shell];
+    shellIndex = [shellPopup indexOfItemWithTitle:shellStr];
+
+    if ([shellStr isEqualToString:@"Command"] || shellIndex == -1) {
+      [shellPopup selectItemWithTitle:@"Command"];
+      [commandField setStringValue:shellStr];
+    } else {
+      [shellPopup selectItemWithTitle:shellStr];
+      [loginShellBtn setState:[defs loginShell]];
     }
+  }
 
   shellStr = [shellPopup titleOfSelectedItem];
-  if ([shellStr isEqualToString:@"Command"])
-    {
-      [loginShellBtn setEnabled:NO];
-      [loginShellBtn setState:0];
-      
-      [commandLabel setEnabled:YES];
-      [commandField setEnabled:YES];
-    }
-  else
-    {
-      [loginShellBtn setEnabled:YES];
-      
-      [commandLabel setEnabled:NO];
-      [commandField setEnabled:NO];
-      [commandField setStringValue:@""];
-    }
+  if ([shellStr isEqualToString:@"Command"]) {
+    [loginShellBtn setEnabled:NO];
+    [loginShellBtn setState:0];
+
+    [commandLabel setEnabled:YES];
+    [commandField setEnabled:YES];
+  } else {
+    [loginShellBtn setEnabled:YES];
+
+    [commandLabel setEnabled:NO];
+    [commandField setEnabled:NO];
+    [commandField setStringValue:@""];
+  }
 }
-  
+
 - (void)showWindow
 {
   [self _updateControls:[[Preferences shared] mainWindowLivePreferences]];
@@ -105,16 +98,13 @@
   Defaults *defs = [[Preferences shared] mainWindowPreferences];
   NSString *shellStr = [shellPopup titleOfSelectedItem];
 
-  if ([shellStr isEqualToString:@"Command"])
-    {
-      [defs setShell:[commandField stringValue]];
-      [defs setLoginShell:NO];
-    }
-  else
-    {
-      [defs setShell:shellStr];
-      [defs setLoginShell:[loginShellBtn state]];
-    }  
+  if ([shellStr isEqualToString:@"Command"]) {
+    [defs setShell:[commandField stringValue]];
+    [defs setLoginShell:NO];
+  } else {
+    [defs setShell:shellStr];
+    [defs setLoginShell:[loginShellBtn state]];
+  }
   [defs synchronize];
 }
 // Reset onscreen controls to values stored in UserDefaults
@@ -126,38 +116,34 @@
 // Modify live preferences through notification
 - (void)setWindow:(id)sender
 {
-  Defaults     *prefs;
+  Defaults *prefs;
   NSDictionary *uInfo;
-  NSString     *shellStr;
+  NSString *shellStr;
 
   if (![sender isKindOfClass:[NSButton class]])
     return;
-  
+
   prefs = [[Defaults alloc] initEmpty];
-  
+
   shellStr = [shellPopup titleOfSelectedItem];
-  if ([shellStr isEqualToString:@"Command"])
-    {
-      [prefs setShell:[commandField stringValue]];
-      [prefs setLoginShell:NO];
-    }
-  else
-    {
-      [prefs setShell:shellStr];
-      [prefs setLoginShell:[loginShellBtn state]];
-    }  
+  if ([shellStr isEqualToString:@"Command"]) {
+    [prefs setShell:[commandField stringValue]];
+    [prefs setLoginShell:NO];
+  } else {
+    [prefs setShell:shellStr];
+    [prefs setLoginShell:[loginShellBtn state]];
+  }
 
   uInfo = [NSDictionary dictionaryWithObject:prefs forKey:@"Preferences"];
   [prefs release];
-  
+
   [[NSNotificationCenter defaultCenter]
-    postNotificationName:TerminalPreferencesDidChangeNotification
-                  object:[NSApp mainWindow]
-                userInfo:uInfo];
+      postNotificationName:TerminalPreferencesDidChangeNotification
+                    object:[NSApp mainWindow]
+                  userInfo:uInfo];
 }
 
-- (BOOL)       control:(NSControl *)control
-  textShouldEndEditing:(NSText *)fieldEditor
+- (BOOL)control:(NSControl *)control textShouldEndEditing:(NSText *)fieldEditor
 {
   return YES;
 }

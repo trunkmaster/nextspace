@@ -20,20 +20,17 @@
 
 static NSString *characterSet;
 
-typedef struct
-{
+typedef struct {
   NSString *name;
   NSString *display_name;
 } character_set_choice_t;
 
-static character_set_choice_t cs_choices[] = {
-  {@"UTF-8"             ,__(@"Unicode")},
-  {@"ISO-8859-1"        ,__(@"West Europe, Latin-1")},
-  {@"ISO-8859-2"        ,__(@"East Europe, Latin-2")},
-  {@"BIG-5"             ,__(@"Traditional Chinese")},
-  {nil                  ,__(@"Custom, leave unchanged")},
-  {nil                  ,nil}
-};
+static character_set_choice_t cs_choices[] = {{@"UTF-8",      __(@"Unicode")},
+                                              {@"ISO-8859-1", __(@"West Europe, Latin-1")},
+                                              {@"ISO-8859-2", __(@"East Europe, Latin-2")},
+                                              {@"BIG-5",      __(@"Traditional Chinese")},
+                                              {nil,           __(@"Custom, leave unchanged")},
+                                              {nil,           nil}};
 
 @implementation LinuxPrefs
 
@@ -58,24 +55,20 @@ static character_set_choice_t cs_choices[] = {
   character_set_choice_t *c;
 
   [charsetBtn removeAllItems];
-  for (i = 0,c = cs_choices; c->display_name;i++, c++)
-    {
-      NSString *title;
-      if (c->name)
-        {
-          title = [NSString stringWithFormat: @"%@ (%@)",
-                            c->display_name, c->name];
-        }
-      else
-        {
-          title = c->display_name;
-        }
-      [charsetBtn addItemWithTitle:title];
+  for (i = 0, c = cs_choices; c->display_name; i++, c++) {
+    NSString *title;
+    if (c->name) {
+      title = [NSString stringWithFormat:@"%@ (%@)", c->display_name, c->name];
+    } else {
+      title = c->display_name;
     }
+    [charsetBtn addItemWithTitle:title];
+  }
   [view retain];
 
-  for (id c in [alternateKeyMtrx cells])
+  for (id c in [alternateKeyMtrx cells]) {
     [c setRefusesFirstResponder:YES];
+  }
 }
 
 // <PrefsModule>
@@ -89,15 +82,13 @@ static character_set_choice_t cs_choices[] = {
   int i;
   character_set_choice_t *c;
   NSString *characterSet = [defs characterSet];
-  
-  for (i=0,c=cs_choices;c->name;i++,c++)
-    {
-      if (c->name &&
-          [c->name caseInsensitiveCompare:characterSet] == NSOrderedSame)
-        break;
-    }
+
+  for (i = 0, c = cs_choices; c->name; i++, c++) {
+    if (c->name && [c->name caseInsensitiveCompare:characterSet] == NSOrderedSame)
+      break;
+  }
   [charsetBtn selectItemAtIndex:i];
-  
+
   [handleMulticellBtn setState:([defs useMultiCellGlyphs] == YES)];
 
   [escapeKeyBtn setState:[defs doubleEscape]];
@@ -107,21 +98,18 @@ static character_set_choice_t cs_choices[] = {
 - (void)setDefault:(id)sender
 {
   Defaults *defs = [[Preferences shared] mainWindowPreferences];
-  int      i = [charsetBtn indexOfSelectedItem];
- 
-  if (cs_choices[i].name != nil)
-    {
-      [defs setCharacterSet:cs_choices[i].name];
-    }
-  else
-    {
-      [defs setCharacterSet:nil];
-    }
+  int i = [charsetBtn indexOfSelectedItem];
+
+  if (cs_choices[i].name != nil) {
+    [defs setCharacterSet:cs_choices[i].name];
+  } else {
+    [defs setCharacterSet:nil];
+  }
   [defs setUseMultiCellGlyphs:[handleMulticellBtn state]];
 
   [defs setDoubleEscape:[escapeKeyBtn state]];
   [defs setAlternateAsMeta:[[alternateKeyMtrx selectedCell] tag]];
-  
+
   [defs synchronize];
 }
 - (void)showDefault:(id)sender
@@ -136,11 +124,12 @@ static character_set_choice_t cs_choices[] = {
 // TODO
 - (void)setWindow:(id)sender
 {
-  Defaults     *prefs;
+  Defaults *prefs;
   NSDictionary *uInfo;
 
-  if (![sender isKindOfClass:[NSButton class]]) return;
-  
+  if (![sender isKindOfClass:[NSButton class]])
+    return;
+
   prefs = [[Defaults alloc] initEmpty];
 
   // Character Set
@@ -157,9 +146,9 @@ static character_set_choice_t cs_choices[] = {
   [prefs release];
 
   [[NSNotificationCenter defaultCenter]
-    postNotificationName:TerminalPreferencesDidChangeNotification
-                  object:[NSApp mainWindow]
-                userInfo:uInfo];
+      postNotificationName:TerminalPreferencesDidChangeNotification
+                    object:[NSApp mainWindow]
+                  userInfo:uInfo];
 }
 
 // Actions
@@ -167,7 +156,7 @@ static character_set_choice_t cs_choices[] = {
 {
   NSString *csName;
   Defaults *defs = [[Preferences shared] mainWindowPreferences];
-  
+
   csName = cs_choices[[charsetBtn indexOfSelectedItem]].name;
   [defs setCharacterSet:csName];
   [defs synchronize];
@@ -192,7 +181,7 @@ static character_set_choice_t cs_choices[] = {
 - (void)setAlternateKey:(id)sender
 {
   Defaults *defs = [[Preferences shared] mainWindowPreferences];
-  
+
   [defs setAlternateAsMeta:[[alternateKeyMtrx selectedCell] tag]];
   [defs synchronize];
 }

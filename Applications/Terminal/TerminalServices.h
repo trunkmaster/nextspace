@@ -8,6 +8,8 @@
   of the License. See COPYING or main.m for more information.
 */
 
+#import <Foundation/Foundation.h>
+
 #ifndef Services_h
 #define Services_h
 
@@ -17,15 +19,15 @@
 
 // "Accept" block
 #define AcceptTypes @"AcceptTypes"
-#define ACCEPT_STRING    1 // "Plain text"
-#define ACCEPT_FILENAMES 2 // "Files"
-#define ACCEPT_RICH      3 // "Rich text"
+#define ACCEPT_STRING 1     // "Plain text"
+#define ACCEPT_FILENAMES 2  // "Files"
+#define ACCEPT_RICH 3       // "Rich text"
 
 // "Use Selection" block
 #define Input @"Input"
-#define INPUT_NO      0 // no option in Panel
-#define INPUT_STDIN   1 // "As Input"
-#define INPUT_CMDLINE 2 // "On Command Line"
+#define INPUT_NO 0       // no option in Panel
+#define INPUT_STDIN 1    // "As Input"
+#define INPUT_CMDLINE 2  // "On Command Line"
 
 // "Execution" block
 // #define Type @"Type"
@@ -36,12 +38,12 @@
 // 0 - "Run Service in the Background", 1 = "Run Service in a Window"
 #define ExecType @"ExecType"
 #define EXEC_IN_BACKGROUND 0
-#define EXEC_IN_WINDOW     1
+#define EXEC_IN_WINDOW 1
 
 // 1 = "New Window", 0 = "Idle Window"
 #define WindowType @"WindowType"
 #define WINDOW_IDLE 0
-#define WINDOW_NEW  1
+#define WINDOW_NEW 1
 
 // 1 = "Return Output", 0 = "Discard Output"
 #define ReturnData @"ReturnData"
@@ -73,4 +75,3 @@
 @end
 
 #endif
-

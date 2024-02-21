@@ -38,20 +38,19 @@
 
   [NSBundle loadNibNamed:@"Window" owner:self];
 
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(showWindow)
-           name:TerminalWindowSizeDidChangeNotification
-         object:nil];
-  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(showWindow)
+                                               name:TerminalWindowSizeDidChangeNotification
+                                             object:nil];
+
   return self;
 }
 
 - (void)awakeFromNib
 {
-  for (id cell in [shellExitMatrix cells])
+  for (id cell in [shellExitMatrix cells]) {
     [cell setRefusesFirstResponder:YES];
- 
+  }
   [view retain];
 }
 
@@ -64,8 +63,8 @@
 - (void)setFont:(id)sender
 {
   NSFontManager *fm = [NSFontManager sharedFontManager];
-  NSFontPanel   *fp = [fm fontPanel:YES];
-  
+  NSFontPanel *fp = [fm fontPanel:YES];
+
   [fm setSelectedFont:[fontField font] isMultiple:NO];
   [fp setDelegate:self];
 
@@ -74,21 +73,22 @@
   //   {
   //     [(PreferencesPanel *)[view window] fontPanelOpened:YES];
   //   }
- 
+
   // [fp makeKeyAndOrderFront:self];
   [fp orderFront:self];
 }
 
-- (void)changeFont:(id)sender // Font panel callback
+- (void)changeFont:(id)sender  // Font panel callback
 {
   NSFont *f = [sender convertFont:[fontField font]];
 
   // NSLog(@"Preferences: changeFont:%@", [sender className]);
 
-  if (!f) return;
-
-  [fontField setStringValue:[NSString stringWithFormat: @"%@ %0.1f pt.",
-                                      [f fontName], [f pointSize]]];
+  if (!f) {
+    return;
+  }
+  [fontField
+      setStringValue:[NSString stringWithFormat:@"%@ %0.1f pt.", [f fontName], [f pointSize]]];
   [fontField setFont:f];
 
   return;
@@ -97,7 +97,7 @@
 - (void)_updateControls:(Defaults *)prefs
 {
   NSFont *font;
-  
+
   [columnsField setIntegerValue:[prefs windowWidth]];
   [rowsField setIntegerValue:[prefs windowHeight]];
 
@@ -105,8 +105,8 @@
 
   font = [prefs terminalFont];
   [fontField setFont:font];
-  [fontField setStringValue:[NSString stringWithFormat:@"%@ %.1f pt.",
-                                      [font fontName], [font pointSize]]];
+  [fontField
+      setStringValue:[NSString stringWithFormat:@"%@ %.1f pt.", [font fontName], [font pointSize]]];
 }
 
 // Write to:
@@ -139,14 +139,15 @@
 // with notification.
 - (void)setWindow:(id)sender
 {
-  Defaults     *prefs;
+  Defaults *prefs;
   NSDictionary *uInfo;
 
-  if (![sender isKindOfClass:[NSButton class]])
+  if (![sender isKindOfClass:[NSButton class]]) {
     return;
-  
+  }
+
   prefs = [[Defaults alloc] initEmpty];
-  
+
   [prefs setWindowHeight:[rowsField intValue]];
   [prefs setWindowWidth:[columnsField intValue]];
   [prefs setWindowCloseBehavior:[[shellExitMatrix selectedCell] tag]];
@@ -154,25 +155,24 @@
 
   uInfo = [NSDictionary dictionaryWithObject:prefs forKey:@"Preferences"];
   [prefs release];
-  
+
   [[NSNotificationCenter defaultCenter]
-    postNotificationName:TerminalPreferencesDidChangeNotification
-                  object:[NSApp mainWindow]
-                userInfo:uInfo];
+      postNotificationName:TerminalPreferencesDidChangeNotification
+                    object:[NSApp mainWindow]
+                  userInfo:uInfo];
 }
 
 @end
 
 @implementation WindowPrefs (FontPanelDelegate)
 
-- (void)windowWillClose:(NSNotification*)aNotification
+- (void)windowWillClose:(NSNotification *)aNotification
 {
   // Tell PreferencesPanel about font panel closing
   // TODO: Actually this must handled by WindowMaker
-  if ([[view window] isVisible] == YES)
-    {
-      [(PreferencesPanel *)[view window] fontPanelOpened:NO];
-    }
+  if ([[view window] isVisible] == YES) {
+    [(PreferencesPanel *)[view window] fontPanelOpened:NO];
+  }
 }
 
 @end

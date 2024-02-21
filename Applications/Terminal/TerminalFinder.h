@@ -22,10 +22,12 @@
   findPrevious:
   enterSelection: (calls setFindString:)
 */
-#import <Foundation/NSObject.h>
+#import <Foundation/Foundation.h>
 
 #define Forward YES
 #define Backward NO
+
+@class NSPanel;
 
 @interface TerminalFinder : NSObject
 {
@@ -34,10 +36,10 @@
   id ignoreCaseButton;
   id findNextButton;
   id statusField;
-  
+
   NSString *findString;
   BOOL findStringChangedSinceLastPasteboardUpdate;
-  BOOL lastFindWasSuccessful;		/* A bit of a kludge */
+  BOOL lastFindWasSuccessful; /* A bit of a kludge */
 }
 
 /* Common way to get a text finder.
@@ -72,7 +74,6 @@
 
 @end
 
-
 @interface NSString (NSStringTextFinding)
 
 - (NSRange)findString:(NSString *)string
@@ -81,4 +82,3 @@
                  wrap:(BOOL)wrapFlag;
 
 @end
-        

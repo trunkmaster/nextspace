@@ -11,9 +11,11 @@
 #ifndef Terminal_h
 #define Terminal_h
 
+#import "Foundation/NSString.h"
 
-typedef struct
-{
+@class NSEvent;
+
+typedef struct {
   unichar ch;
   unsigned char color;
   unsigned char attr;
@@ -29,48 +31,47 @@ typedef struct
   */
 } screen_char_t;
 
-
 /* Used as a marker. */
 #define MULTI_CELL_GLYPH 0xfffe
 
-
 @protocol TerminalScreen
--(void) ts_sendCString: (const char *)str;
--(void) ts_sendCString: (const char *)msg  length: (int)len;
 
--(void) ts_goto:(int)x :(int)y;
--(void) ts_putChar:(screen_char_t)ch count:(int)c at:(int)x :(int)y;
--(void) ts_putChar:(screen_char_t)ch count:(int)c offset:(int)ofs;
+- (void)ts_sendCString:(const char *)str;
+- (void)ts_sendCString:(const char *)msg length:(int)len;
+
+- (void)ts_gotoX:(int)x Y:(int)y;
+- (void)ts_putChar:(screen_char_t)ch count:(int)c atX:(int)x Y:(int)y;
+- (void)ts_putChar:(screen_char_t)ch count:(int)c offset:(int)ofs;
 
 /* The portions scrolled/shifted from remain unchanged. However, it's
 assumed that they will be cleared or overwritten before the redraw is
 complete. (TODO check this) */
--(void) ts_scrollUp:(int)top :(int)bottom rows:(int)nr save:(BOOL)save;
--(void) ts_scrollDown:(int)top :(int)bottom rows:(int)nr;
--(void) ts_shiftRow:(int)y  at:(int)x0  delta:(int)d;
+- (void)ts_scrollUpTop:(int)top bottom:(int)bottom rows:(int)nr save:(BOOL)save;
+- (void)ts_scrollDownTop:(int)top bottom:(int)bottom rows:(int)nr;
+- (void)ts_shiftRow:(int)y at:(int)x0 delta:(int)d;
 
--(screen_char_t) ts_getCharAt:(int)x :(int)y;
+- (screen_char_t)ts_getCharAtX:(int)x Y:(int)y;
 
--(void) ts_setTitle:(NSString *)new_title type:(int)title_type;
+- (void)ts_setTitle:(NSString *)new_title type:(int)title_type;
 
 - (id)preferences;
 - (BOOL)useMultiCellGlyphs;
-- (int)relativeWidthOfCharacter: (unichar)ch;
+- (int)relativeWidthOfCharacter:(unichar)ch;
+
 @end
 
-
 @protocol TerminalParser
+
 - initWithTerminalScreen:(id<TerminalScreen>)ats width:(int)w height:(int)h;
 - (void)processByte:(unsigned char)c;
-- (void)setTerminalScreenWidth:(int)w
-                        height:(int)h
-                       cursorY:(int)cursor_y;
+- (void)setTerminalScreenWidth:(int)w height:(int)h cursorY:(int)cursor_y;
 - (void)handleKeyEvent:(NSEvent *)e;
 - (void)sendString:(NSString *)str;
 
 - (void)setCharset:(NSString *)charsetName;
 - (void)setDoubleEscape:(BOOL)doubleEscape;
 - (void)setAlternateAsMeta:(BOOL)altAsMeta;
+
 @end
 
 #endif

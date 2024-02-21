@@ -18,12 +18,14 @@
 
 #import <Foundation/Foundation.h>
 
-//NSUserDefaults *ud;
+// NSUserDefaults *ud;
+
+@class NSColor, NSFont;
 
 @interface Defaults : NSObject <NSCopying>
 {
   NSString *filePath;
-  id       defaults; // NSUserDefaults or NSMutableDictionary
+  id defaults;  // NSUserDefaults or NSMutableDictionary
 }
 
 + shared;
@@ -47,15 +49,15 @@
 - (void)removeObjectForKey:(NSString *)key;
 
 - (float)floatForKey:(NSString *)key;
-- (void)setFloat:(float)value forKey:(NSString*)key;
+- (void)setFloat:(float)value forKey:(NSString *)key;
 
 - (NSInteger)integerForKey:(NSString *)key;
 - (void)setInteger:(NSInteger)value forKey:(NSString *)key;
 
-- (BOOL)boolForKey:(NSString*)key;
-- (void)setBool:(BOOL)value forKey:(NSString*)key;
+- (BOOL)boolForKey:(NSString *)key;
+- (void)setBool:(BOOL)value forKey:(NSString *)key;
 
-- (NSString *)stringForKey:(NSString*)key;
+- (NSString *)stringForKey:(NSString *)key;
 
 @end
 
@@ -91,7 +93,7 @@ typedef enum {
 - (void)setWindowWidth:(int)width;
 - (int)windowHeight;
 - (void)setWindowHeight:(int)width;
-- (WindowCloseBehavior)windowCloseBehavior; // 'When Shell Exits'
+- (WindowCloseBehavior)windowCloseBehavior;  // 'When Shell Exits'
 - (void)setWindowCloseBehavior:(WindowCloseBehavior)behavior;
 - (NSFont *)terminalFont;
 - (void)setTerminalFont:(NSFont *)font;
@@ -162,10 +164,10 @@ extern NSString *TextInverseFGColorKey;
 extern NSString *TerminalFontUseBoldKey;
 
 @interface Defaults (Colors)
-#define CURSOR_BLOCK_INVERT  0
-#define CURSOR_BLOCK_STROKE  1
-#define CURSOR_BLOCK_FILL    2
-#define CURSOR_LINE          3
+#define CURSOR_BLOCK_INVERT 0
+#define CURSOR_BLOCK_STROKE 1
+#define CURSOR_BLOCK_FILL 2
+#define CURSOR_LINE 3
 
 + (NSDictionary *)descriptionFromColor:(NSColor *)color;
 + (NSColor *)colorFromDescription:(NSDictionary *)desc;
@@ -219,7 +221,7 @@ extern NSString *ScrollBottomOnInputKey;
 // Shell
 //---
 extern NSString *ShellKey;
-extern NSString	*LoginShellKey;
+extern NSString *LoginShellKey;
 
 @interface Defaults (Shell)
 - (NSString *)shell;
@@ -232,14 +234,10 @@ extern NSString	*LoginShellKey;
 // Startup
 //---
 extern NSString *StartupActionKey;
-extern NSString	*StartupFileKey;
-extern NSString	*HideOnAutolaunchKey;
+extern NSString *StartupFileKey;
+extern NSString *HideOnAutolaunchKey;
 
-typedef enum {
-  OnStartDoNothing = 1,
-  OnStartOpenFile = 2,
-  OnStartCreateShell = 3
-} StartupAction;
+typedef enum { OnStartDoNothing = 1, OnStartOpenFile = 2, OnStartCreateShell = 3 } StartupAction;
 
 @interface Defaults (Startup)
 - (StartupAction)startupAction;

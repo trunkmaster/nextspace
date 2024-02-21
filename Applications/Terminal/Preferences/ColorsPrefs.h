@@ -38,7 +38,7 @@
 
   id view;
 }
-- (void) setDefault: (id)sender;
-- (void) showDefault: (id)sender;
-- (void) setWindow: (id)sender;
+- (void)setDefault:(id)sender;
+- (void)showDefault:(id)sender;
+- (void)setWindow:(id)sender;
 @end

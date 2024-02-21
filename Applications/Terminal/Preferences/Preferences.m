@@ -39,11 +39,10 @@
 - (void)fontPanelOpened:(BOOL)isOpened
 {
   // fontPanelOpened = isOpened;
-  if (isOpened == NO)
-    {
-      [mainWindow makeMainWindow];
-      [self makeKeyAndOrderFront:mainWindow];
-    }
+  if (isOpened == NO) {
+    [mainWindow makeMainWindow];
+    [self makeKeyAndOrderFront:mainWindow];
+  }
   // else
   //   {
   //     mainWindow = [NSApp mainWindow];
@@ -58,34 +57,32 @@ static Preferences *shared = nil;
 
 + shared
 {
-  if (shared == nil)
-    {
-      shared = [self new];
-    }
+  if (shared == nil) {
+    shared = [self new];
+  }
   return shared;
 }
 
 - init
 {
   self = shared = [super init];
-  
-  prefModules = [NSDictionary dictionaryWithObjectsAndKeys:
-                                [ColorsPrefs new], [ColorsPrefs name],
-                              [DisplayPrefs new], [DisplayPrefs name],
-                              [LinuxPrefs new], [LinuxPrefs name],
-                              [ShellPrefs new], [ShellPrefs name],
-                              [StartupPrefs new], [StartupPrefs name],
-                              [TitleBarPrefs new], [TitleBarPrefs name],
-                              [SelectionPrefs new], [SelectionPrefs name],
-                              [WindowPrefs new], [WindowPrefs name],
-                              nil];
+
+  prefModules = @{
+    [ColorsPrefs name] : [ColorsPrefs new],
+    [DisplayPrefs name] : [DisplayPrefs new],
+    [LinuxPrefs name] : [LinuxPrefs new],
+    [ShellPrefs name] : [ShellPrefs new],
+    [StartupPrefs name] : [StartupPrefs new],
+    [TitleBarPrefs name] : [TitleBarPrefs new],
+    [SelectionPrefs name] : [SelectionPrefs new],
+    [WindowPrefs name] : [WindowPrefs new]
+  };
   [prefModules retain];
 
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(mainWindowDidChange:)
-           name:NSWindowDidBecomeMainNotification
-         object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(mainWindowDidChange:)
+                                               name:NSWindowDidBecomeMainNotification
+                                             object:nil];
 
   mainWindow = [NSApp mainWindow];
 
@@ -94,14 +91,11 @@ static Preferences *shared = nil;
 
 - (void)activatePanel
 {
-  if (window == nil)
-    {
-      [NSBundle loadNibNamed:@"PreferencesPanel" owner:self];
-    }
-  else
-    {
-      [self switchMode:modeBtn];
-    }
+  if (window == nil) {
+    [NSBundle loadNibNamed:@"PreferencesPanel" owner:self];
+  } else {
+    [self switchMode:modeBtn];
+  }
   [window makeKeyAndOrderFront:nil];
 }
 
@@ -117,55 +111,51 @@ static Preferences *shared = nil;
   [window close];
 }
 
-
 - (void)switchMode:(id)sender
 {
-  id <PrefsModule> module;
-  NSView           *mView;
+  id<PrefsModule> module;
+  NSView *mView;
 
-  module = [prefModules objectForKey:[sender titleOfSelectedItem]];
+  module = [prefModules objectForKey: [sender titleOfSelectedItem]];
   mView = [module view];
-  if ([modeContentBox contentView] != mView)
-    {
-      [(NSBox *)modeContentBox setContentView:mView];
-    }
+  if ([modeContentBox contentView] != mView) {
+    [(NSBox *)modeContentBox setContentView:mView];
+  }
   [module showWindow];
 }
 
 - (void)mainWindowDidChange:(NSNotification *)notif
 {
-  id <PrefsModule> module;
+  id<PrefsModule> module;
 
   NSLog(@"Preferences: main window now: %@", [[notif object] title]);
 
-  if ([[NSApp delegate] preferencesForWindow:[notif object] live:NO] == nil)
-    {
-      // NSLog(@"Preferences: main window is not terminal window.");
-      return;
-    }
+  if ([[NSApp delegate] preferencesForWindow:[notif object] live:NO] == nil) {
+    // NSLog(@"Preferences: main window is not terminal window.");
+    return;
+  }
 
-  if (mainWindow == [notif object])
-    {
-      // NSLog(@"Preferences: main terminal window left unchanged.");
-      return;
-    }
-  
+  if (mainWindow == [notif object]) {
+    // NSLog(@"Preferences: main terminal window left unchanged.");
+    return;
+  }
+
   mainWindow = [notif object];
-  
-  module = [prefModules objectForKey:[modeBtn titleOfSelectedItem]];
+
+  module = [prefModules objectForKey: [modeBtn titleOfSelectedItem]];
   [module showWindow];
 }
 
 - (Defaults *)mainWindowPreferences
 {
   Defaults *prefs;
-  
+
   prefs = [[NSApp delegate] preferencesForWindow:mainWindow live:NO];
 
   // This is the case: no terminal windows opened.
-  if (!prefs)
+  if (!prefs) {
     prefs = [Defaults shared];
-
+  }
   return prefs;
 }
 
@@ -178,18 +168,18 @@ static Preferences *shared = nil;
 - (Defaults *)mainWindowLivePreferences
 {
   Defaults *prefs;
-  
+
   prefs = [[NSApp delegate] preferencesForWindow:mainWindow live:YES];
 
-  if (!prefs)
+  if (!prefs) {
     prefs = [[NSApp delegate] preferencesForWindow:mainWindow live:NO];
-
+  }
   // Caller wants live preferences but there's no main window visible.
   // Sample case: no Terminal window exist and Terminal Prefernces panel was
   // opened.
-  if (!prefs)
+  if (!prefs) {
     prefs = [self mainWindowPreferences];
-
+  }
   return prefs;
 }
 

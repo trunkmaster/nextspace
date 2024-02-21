@@ -27,17 +27,16 @@
 
 - (void)activatePanel
 {
-  Defaults   *prefs;
-  
-  if (titlePanel == nil)
-    {
-      [NSBundle loadNibNamed:@"SetTitlePanel" owner:self];
-    }
+  Defaults *prefs;
+
+  if (titlePanel == nil) {
+    [NSBundle loadNibNamed:@"SetTitlePanel" owner:self];
+  }
 
   prefs = [[NSApp delegate] preferencesForWindow:[NSApp mainWindow] live:YES];
   if (!prefs)
     prefs = [[NSApp delegate] preferencesForWindow:[NSApp mainWindow] live:NO];
-  
+
   titleBarMask = [prefs titleBarElementsMask];
   [titleField setStringValue:[prefs customTitle]];
 
@@ -49,11 +48,10 @@
 {
   [titlePanel makeFirstResponder:titleField];
 
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(mainWindowDidChange:)
-           name:NSWindowDidBecomeMainNotification
-         object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(mainWindowDidChange:)
+                                               name:NSWindowDidBecomeMainNotification
+                                             object:nil];
 }
 
 - (void)dealloc
@@ -64,20 +62,20 @@
 
 - (void)setTitle:(id)sender
 {
-  Defaults     *prefs = [[Defaults alloc] initEmpty];
+  Defaults *prefs = [[Defaults alloc] initEmpty];
   NSDictionary *uInfo;
-  
+
   [prefs setTitleBarElementsMask:(titleBarMask | TitleBarCustomTitle)];
   [prefs setCustomTitle:[titleField stringValue]];
 
   uInfo = [NSDictionary dictionaryWithObject:prefs forKey:@"Preferences"];
   [prefs release];
-  
+
   [[NSNotificationCenter defaultCenter]
-    postNotificationName:TerminalPreferencesDidChangeNotification
-                  object:[NSApp mainWindow]
-                userInfo:uInfo];
-  
+      postNotificationName:TerminalPreferencesDidChangeNotification
+                    object:[NSApp mainWindow]
+                  userInfo:uInfo];
+
   [titlePanel close];
 }
 
@@ -94,13 +92,15 @@
   prefs = [[NSApp delegate] preferencesForWindow:[notif object] live:YES];
   if (!prefs)
     prefs = [[NSApp delegate] preferencesForWindow:[notif object] live:NO];
-  
+
   // Main window is not terminal window
-  if (prefs == nil) return;
+  if (prefs == nil)
+    return;
 
   // Main terminal window left unchanged
-  if (mainWindow == [notif object]) return;
-  
+  if (mainWindow == [notif object])
+    return;
+
   mainWindow = [notif object];
   titleBarMask = [prefs titleBarElementsMask];
   [titleField setStringValue:[prefs customTitle]];

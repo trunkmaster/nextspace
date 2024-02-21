@@ -63,16 +63,15 @@
 - (void)setAction:(id)sender
 {
   Defaults *defs = [Defaults shared];
-  
-  [defs setInteger:[[actionsMatrix selectedCell] tag]
-            forKey:StartupActionKey];
+
+  [defs setInteger:[[actionsMatrix selectedCell] tag] forKey:StartupActionKey];
   [defs synchronize];
 }
 - (void)setFilePath:(id)sender
 {
   NSOpenPanel *panel = [NSOpenPanel openPanel];
-  NSString    *sessionDir, *path;
-  Defaults    *defs = [Defaults shared];
+  NSString *sessionDir, *path;
+  Defaults *defs = [Defaults shared];
 
   [panel setCanChooseDirectories:NO];
   [panel setAllowsMultipleSelection:NO];
@@ -84,21 +83,18 @@
 
   if ([panel runModalForDirectory:sessionDir
                              file:@"Default.term"
-                            types:[NSArray arrayWithObject:@"term"]]
-      == NSOKButton)
-    {
-      if ((path = [panel filename]) != nil)
-        {
-          [filePathField setStringValue:path];
-          [defs setStartupFile:path];
-          [defs synchronize];
-        }
+                            types:[NSArray arrayWithObject:@"term"]] == NSOKButton) {
+    if ((path = [panel filename]) != nil) {
+      [filePathField setStringValue:path];
+      [defs setStartupFile:path];
+      [defs synchronize];
     }
+  }
 }
 - (void)setAutolaunch:(id)sender
 {
   Defaults *defs = [[Preferences shared] mainWindowLivePreferences];
-  
+
   [defs setHideOnAutolaunch:[autolaunchBtn state]];
   [defs synchronize];
 }

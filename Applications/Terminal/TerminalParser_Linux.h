@@ -20,13 +20,13 @@
 @interface TerminalParser_Linux : NSObject <TerminalParser>
 {
   id<TerminalScreen> ts;
-  int width,height;
+  int width, height;
 
   unsigned int tab_stop[8];
 
-  int x,y;
+  int x, y;
 
-  int top,bottom;
+  int top, bottom;
 
   unsigned int unich;
   int utf_count;
@@ -35,23 +35,37 @@
   int input_buf_len;
 
 #define TITLE_BUF_SIZE 255
-  char title_buf[TITLE_BUF_SIZE+1];
+  char title_buf[TITLE_BUF_SIZE + 1];
   unsigned int title_len, title_type;
 
-  enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESfunckey,
-         EShash, ESsetG0, ESsetG1, ESpercent, ESignore, ESnonstd,
-         ESpalette, EStitle_semi, EStitle_buf } ESstate;
+  enum {
+    ESnormal,
+    ESesc,
+    ESsquare,
+    ESgetpars,
+    ESgotpars,
+    ESfunckey,
+    EShash,
+    ESsetG0,
+    ESsetG1,
+    ESpercent,
+    ESignore,
+    ESnonstd,
+    ESpalette,
+    EStitle_semi,
+    EStitle_buf
+  } ESstate;
   int vc_state;
 
-  unsigned char decscnm,decom,decawm,deccm,decim;
+  unsigned char decscnm, decom, decawm, deccm, decim;
   unsigned char ques;
-  unsigned char charset,utf,disp_ctrl,toggle_meta;
-  int G0_charset,G1_charset;
+  unsigned char charset, utf, disp_ctrl, toggle_meta;
+  int G0_charset, G1_charset;
 
   const unichar *translate;
 
-  unsigned int intensity,underline,reverse,blink;
-  unsigned int color,def_color;
+  unsigned int intensity, underline, reverse, blink;
+  unsigned int color, def_color;
 #define foreground (color & 0x0f)
 #define background (color & 0xf0)
 
@@ -61,17 +75,16 @@
   int npar;
   int par[NPAR];
 
-  int saved_x,saved_y;
-  unsigned int s_intensity,s_underline,s_blink,s_reverse,s_charset,s_color;
-  int saved_G0,saved_G1;
+  int saved_x, saved_y;
+  unsigned int s_intensity, s_underline, s_blink, s_reverse, s_charset, s_color;
+  int saved_G0, saved_G1;
 
   iconv_t iconv_state;
   iconv_t iconv_input_state;
-  
+
   BOOL alternateAsMeta;
   BOOL sendDoubleEscape;
 }
 @end
 
 #endif
-

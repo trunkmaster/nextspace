@@ -8,15 +8,13 @@
   of the License. See COPYING or main.m for more information.
 */
 
-
-@class NSMutableDictionary,NSMutableArray;
-@class GSVbox,NSTableView,NSPopUpButton,NSTextField;
+#import <AppKit/AppKit.h>
 
 @interface TerminalServicesPanel : NSObject <NSTextFieldDelegate>
 {
   NSMutableDictionary *services;
-  NSMutableArray      *serviceList;
-  int                 current;
+  NSMutableArray *serviceList;
+  int current;
 
   id panel;
   // Table view
@@ -35,10 +33,10 @@
   id acceptFilesBtn;
   id acceptPlainTextBtn;
   id acceptRichTextBtn;
-  
+
   // Execution
   id executeTypeBtn;
-  id outputMatrix; // polymorphicMatrix
+  id outputMatrix;  // polymorphicMatrix
   id shellMatrix;
 
   id okBtn;

@@ -143,7 +143,7 @@ NSString *TerminalWindowSizeDidChangeNotification =
   [tView setIgnoreResize:NO];
   [win makeFirstResponder:tView];
 
-  [tView setBorder:4 :2];
+  [tView setBorderX:4 Y:2];
 
   [win setContentView:hBox];
   DESTROY(hBox);

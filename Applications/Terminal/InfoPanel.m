@@ -28,15 +28,13 @@
 
 - (void)activatePanel
 {
-  if (panel == nil)
-    {
-      if (![NSBundle loadNibNamed:@"Info" owner:self])
-        {
-         NSLog (@"Failed to load Info.gorm");
-         return;
-        }
-       [panel center];
+  if (panel == nil) {
+    if (![NSBundle loadNibNamed:@"Info" owner:self]) {
+      NSLog(@"Failed to load Info.gorm");
+      return;
     }
+    [panel center];
+  }
   [panel makeKeyAndOrderFront:self];
   // [NSTimer scheduledTimerWithTimeInterval:2.0
   //                                  target:self
@@ -57,28 +55,25 @@
 
 - (void)showAnimation
 {
-  NSString *mPath = [[NSBundle mainBundle]
-                                   pathForResource:@"ScrollingMach"
-                                            ofType:@"tiff"];
+  NSString *mPath = [[NSBundle mainBundle] pathForResource:@"ScrollingMach" ofType:@"tiff"];
   NSImage *scrollingMach = [[NSImage alloc] initWithContentsOfFile:mPath];
   NSImageView *machView;
 
-  machView = [[NSImageView alloc] initWithFrame:NSMakeRect(0,0,27,25)];
+  machView = [[NSImageView alloc] initWithFrame:NSMakeRect(0, 0, 27, 25)];
   [machView setImageScaling:NSScaleNone];
   [machView setImage:[scrollingMach autorelease]];
   [[panel contentView] addSubview:machView];
   [machView release];
 
-  for (int i = 0; i < 10; i++)
-    {
-      [machView lockFocus];
-      [scrollingMach compositeToPoint:NSMakePoint(0, 0)
-                             fromRect:NSMakeRect(0, i, 27, 25)
-                            operation:NSCompositeSourceOver];
-      [machView unlockFocus];
-      // [machView scrollRectToVisible:NSMakeRect(0, i, 27, 25)];
-      // [machView setNeedsDisplay:YES];
-    }
+  for (int i = 0; i < 10; i++) {
+    [machView lockFocus];
+    [scrollingMach compositeToPoint:NSMakePoint(0, 0)
+                           fromRect:NSMakeRect(0, i, 27, 25)
+                          operation:NSCompositeSourceOver];
+    [machView unlockFocus];
+    // [machView scrollRectToVisible:NSMakeRect(0, i, 27, 25)];
+    // [machView setNeedsDisplay:YES];
+  }
 
   // [[panel contentView] removeSubview:machView];
 }

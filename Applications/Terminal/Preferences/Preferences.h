@@ -50,7 +50,7 @@
 
 @interface PreferencesPanel : NSPanel
 {
-  BOOL     fontPanelOpened;
+  BOOL fontPanelOpened;
   NSWindow *mainWindow;
 }
 
@@ -64,7 +64,7 @@
   id window;
   id modeBtn;
   id modeContentBox;
-  
+
   NSWindow *mainWindow;
 }
 

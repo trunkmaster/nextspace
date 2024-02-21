@@ -24,42 +24,35 @@ static NSDictionary *servicesDictionary = nil;
 + (NSDictionary *)terminalServicesDictionary
 {
   NSDictionary *udServices;
-  
-  udServices = [[NSUserDefaults standardUserDefaults]
-                             dictionaryForKey:@"TerminalServices"];
-  if (udServices == nil && servicesDictionary == nil) { // no defs, no decision
+
+  udServices = [[NSUserDefaults standardUserDefaults] dictionaryForKey:@"TerminalServices"];
+  if (udServices == nil && servicesDictionary == nil) {  // no defs, no decision
     if (NXTRunAlertPanel(@"Terminal Services",
                          @"No services are define. "
                          @"Would you like to load a set of example services?",
                          @"Load Examples", @"Don't Load", nil) == NSOKButton) {
-      NSString *dPath = [[NSBundle mainBundle]
-                                  pathForResource:@"ExampleServices"
-                                           ofType:@"svcs"];
-      servicesDictionary = [[[NSDictionary
-                                      dictionaryWithContentsOfFile:dPath]
-                                     objectForKey:@"TerminalServices"] copy];
-    }
-    else {
+      NSString *dPath = [[NSBundle mainBundle] pathForResource:@"ExampleServices" ofType:@"svcs"];
+      servicesDictionary = [[[NSDictionary dictionaryWithContentsOfFile:dPath]
+          objectForKey:@"TerminalServices"] copy];
+    } else {
       servicesDictionary = [[NSDictionary alloc] init];
     }
-  }
-  else if (udServices != nil) { // there are defs, no decision
+  } else if (udServices != nil) {  // there are defs, no decision
     ASSIGN(servicesDictionary, udServices);
-  }
-  else if (servicesDictionary != nil) { // no defs, decision was made
+  } else if (servicesDictionary != nil) {  // no defs, decision was made
     // just return 'servicesDictionary'
   }
-  
+
   return servicesDictionary;
 }
 
 + (NSString *)serviceDirectory
 {
+  NSArray *searchPaths;
   NSString *path;
 
-  path = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-                                              NSUserDomainMask, YES) lastObject];
-  path = [path stringByAppendingPathComponent:@"Services"];
+  searchPaths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+  path = [[searchPaths lastObject] stringByAppendingPathComponent:@"Services"];
 
   return path;
 }
@@ -67,113 +60,104 @@ static NSDictionary *servicesDictionary = nil;
 + (NSDictionary *)plistForServiceNames:(NSArray *)services
 {
   NSMutableArray *a = [[NSMutableArray alloc] init];
-  NSDictionary   *d = [TerminalServices terminalServicesDictionary];
+  NSDictionary *d = [TerminalServices terminalServicesDictionary];
 
-  if (!services)
+  if (!services) {
     services = [d allKeys];
-
+  }
   for (NSString *name in services) {
-      NSMutableDictionary *md;
-      NSDictionary	  *info;
-      NSString            *menu_name;
-      NSString            *key;
-      int                 i;
-      NSArray             *types;
+    NSMutableDictionary *md;
+    NSDictionary *info;
+    NSString *menu_name;
+    NSString *key;
+    int i;
+    NSArray *types;
 
-      info = [d objectForKey:name];
+    info = [d objectForKey:name];
 
-      md = [[NSMutableDictionary alloc] init];
-      [md setObject:@"Terminal" forKey:@"NSPortName"];
-      [md setObject:@"terminalService" forKey:@"NSMessage"];
-      [md setObject:name forKey:@"NSUserData"];
+    md = [[NSMutableDictionary alloc] init];
+    [md setObject:@"Terminal" forKey:@"NSPortName"];
+    [md setObject:@"terminalService" forKey:@"NSMessage"];
+    [md setObject:name forKey:@"NSUserData"];
 
-      // Services menu item in format "Terminal/Service Name"
-      if ([name characterAtIndex:0] == '/') {
-        menu_name = [name substringFromIndex:1];
-      }
-      else {
-        menu_name = [NSString stringWithFormat:@"%@/%@",@"Terminal",name];
-      }
-      [md setObject:[NSDictionary dictionaryWithObjectsAndKeys:menu_name, @"default",nil]
-             forKey: @"NSMenuItem"];
+    // Services menu item in format "Terminal/Service Name"
+    if ([name characterAtIndex:0] == '/') {
+      menu_name = [name substringFromIndex:1];
+    } else {
+      menu_name = [NSString stringWithFormat:@"%@/%@", @"Terminal", name];
+    }
+    [md setObject:[NSDictionary dictionaryWithObjectsAndKeys:menu_name, @"default", nil]
+           forKey:@"NSMenuItem"];
 
-      // Key equivalent
-      key = [info objectForKey:Key];
-      if (key && [key length]) {
-        [md setObject:[NSDictionary dictionaryWithObjectsAndKeys:key,@"default",nil]
-               forKey:@"NSKeyEquivalent"];
-        }
-
-      // "Accept" block
-      if ([info objectForKey:AcceptTypes]) {
-        i = [[info objectForKey:AcceptTypes] intValue];
-      }
-      else {
-        i = ACCEPT_STRING;
-      }
-      
-      if (i == (ACCEPT_STRING | ACCEPT_FILENAMES)) {
-        types = [NSArray
-                  arrayWithObjects:NSStringPboardType,NSFilenamesPboardType,nil];
-      }
-      else if (i == ACCEPT_FILENAMES) {
-        types = [NSArray arrayWithObjects:NSFilenamesPboardType,nil];
-      }
-      else if (i == ACCEPT_STRING) {
-        types = [NSArray arrayWithObjects:NSStringPboardType,nil];
-      }
-      else {
-        types = nil;
-      }
-
-      // "Use Selection" block
-      i = [[info objectForKey:Input] intValue];
-      // Do not insert 'NSSendTypes' key if 'Use Selection - On Cmd Line'
-      // option was set and command line doesn't have '%s' symbol.
-      if ([[info objectForKey:Commandline] rangeOfString:@"%s"].location
-          == NSNotFound && i == INPUT_CMDLINE) {
-        i = INPUT_NO;
-      }
-      if (types && (i == INPUT_STDIN || i ==  INPUT_CMDLINE)) {
-        [md setObject:types forKey:@"NSSendTypes"];
-      }
-
-      // "Execution" block
-      i = [[info objectForKey:ExecType] intValue];
-      if (i == EXEC_IN_BACKGROUND) {
-        i = [[info objectForKey:ReturnData] intValue];
-        if (types && i==1)
-          [md setObject:types forKey:@"NSReturnTypes"];
-      }
-
-      if (![md objectForKey:@"NSSendTypes"] &&
-          ![md objectForKey:@"NSReturnTypes"]) {
-        NXTRunAlertPanel(@"Terminal Services",
-                         @"Service with name '%@' has neither Send nor"
-                         " Return values. Please specify '%%s' as command"
-                         " parameter or 'Return Output' in 'Execution' block. "
-                         "Services file was not saved.",
-                         @"OK", nil, nil, name);
-        DESTROY(md);
-        DESTROY(a);
-        return nil;
-      }
-
-      [a addObject:md];
-      DESTROY(md);
+    // Key equivalent
+    key = [info objectForKey:Key];
+    if (key && [key length]) {
+      [md setObject:[NSDictionary dictionaryWithObjectsAndKeys:key, @"default", nil]
+             forKey:@"NSKeyEquivalent"];
     }
 
-  return [NSDictionary dictionaryWithObject:[a autorelease]
-                                     forKey:@"NSServices"];
+    // "Accept" block
+    if ([info objectForKey:AcceptTypes]) {
+      i = [[info objectForKey:AcceptTypes] intValue];
+    } else {
+      i = ACCEPT_STRING;
+    }
+
+    if (i == (ACCEPT_STRING | ACCEPT_FILENAMES)) {
+      types = [NSArray arrayWithObjects:NSStringPboardType, NSFilenamesPboardType, nil];
+    } else if (i == ACCEPT_FILENAMES) {
+      types = [NSArray arrayWithObjects:NSFilenamesPboardType, nil];
+    } else if (i == ACCEPT_STRING) {
+      types = [NSArray arrayWithObjects:NSStringPboardType, nil];
+    } else {
+      types = nil;
+    }
+
+    // "Use Selection" block
+    i = [[info objectForKey:Input] intValue];
+    // Do not insert 'NSSendTypes' key if 'Use Selection - On Cmd Line'
+    // option was set and command line doesn't have '%s' symbol.
+    if ([[info objectForKey:Commandline] rangeOfString:@"%s"].location == NSNotFound &&
+        i == INPUT_CMDLINE) {
+      i = INPUT_NO;
+    }
+    if (types && (i == INPUT_STDIN || i == INPUT_CMDLINE)) {
+      [md setObject:types forKey:@"NSSendTypes"];
+    }
+
+    // "Execution" block
+    i = [[info objectForKey:ExecType] intValue];
+    if (i == EXEC_IN_BACKGROUND) {
+      i = [[info objectForKey:ReturnData] intValue];
+      if (types && i == 1)
+        [md setObject:types forKey:@"NSReturnTypes"];
+    }
+
+    if (![md objectForKey:@"NSSendTypes"] && ![md objectForKey:@"NSReturnTypes"]) {
+      NXTRunAlertPanel(@"Terminal Services",
+                       @"Service with name '%@' has neither Send nor"
+                        " Return values. Please specify '%%s' as command"
+                        " parameter or 'Return Output' in 'Execution' block. "
+                        "Services file was not saved.",
+                       @"OK", nil, nil, name);
+      DESTROY(md);
+      DESTROY(a);
+      return nil;
+    }
+
+    [a addObject:md];
+    DESTROY(md);
+  }
+
+  return [NSDictionary dictionaryWithObject:[a autorelease] forKey:@"NSServices"];
 }
 
 + (void)updateServicesPlist
 {
   NSString *path = [[TerminalServices serviceDirectory]
-                       stringByAppendingPathComponent:@"TerminalServices.plist"];
+      stringByAppendingPathComponent:@"TerminalServices.plist"];
 
-  [[TerminalServices plistForServiceNames:nil] writeToFile:path
-                                                atomically:YES];
+  [[TerminalServices plistForServiceNames:nil] writeToFile:path atomically:YES];
 
   /* TODO: if a submenu of services is 'held' open when services are
      reloaded, -gui crashes */
@@ -182,19 +166,15 @@ static NSDictionary *servicesDictionary = nil;
 
 - (NSDictionary *)_serviceInfoForName:(NSString *)name
 {
-  NSDictionary *d;
+  NSDictionary *d = [[TerminalServices terminalServicesDictionary] objectForKey:name];
 
-  d = [[TerminalServices terminalServicesDictionary] objectForKey:name];
-  
-  if (!d || ![d isKindOfClass:[NSDictionary class]])
+  if (!d || ![d isKindOfClass:[NSDictionary class]]) {
     return nil;
-  
+  }
   return d;
 }
 
-- (void)terminalService:(NSPasteboard *)pb
-               userData:(NSString *)name
-                  error:(NSString **)error
+- (void)terminalService:(NSPasteboard *)pb userData:(NSString *)name error:(NSString **)error
 {
   NSDictionary *info = [self _serviceInfoForName:name];
 
@@ -202,16 +182,15 @@ static NSDictionary *servicesDictionary = nil;
   NSString *cmdline;
   NSString *data;
   NSString *program;
-  NSArray  *arguments;
+  NSArray *arguments;
 
-  NSDebugLLog(@"service",@"run service %@\n",name);
+  NSDebugLLog(@"service", @"run service %@\n", name);
   if (!info) {
-    NSString *s =
-      _(@"There is no terminal service called '%@'.\n"
-        @"Your services list is probably out-of-date.\n"
-        @"Run 'make_services' to update it.");
+    NSString *s = _(@"There is no terminal service called '%@'.\n"
+                    @"Your services list is probably out-of-date.\n"
+                    @"Run 'make_services' to update it.");
 
-    *error=[[NSString stringWithFormat: s, name] retain];
+    *error = [[NSString stringWithFormat:s, name] retain];
     return;
   }
 
@@ -222,37 +201,31 @@ static NSDictionary *servicesDictionary = nil;
   cmdline = [info objectForKey:Commandline];
   if ([info objectForKey:AcceptTypes]) {
     accepttypes = [[info objectForKey:AcceptTypes] intValue];
-  }
-  else {
+  } else {
     accepttypes = ACCEPT_STRING;
   }
   shell = [[info objectForKey:ExecInShell] intValue];
 
-  NSDebugLLog(@"service",@"cmdline='%@' %i %i %i %i",
-              cmdline,type,ret_data,input,accepttypes);
+  NSDebugLLog(@"service", @"cmdline='%@' %i %i %i %i", cmdline, type, ret_data, input, accepttypes);
 
   // "Accept"
   data = nil;
   NSLog(@"NSStringPboardType: %@", [pb stringForType:NSStringPboardType]);
-  if (input && (accepttypes & ACCEPT_STRING) &&
-      (data = [pb stringForType:NSStringPboardType])) {
+  if (input && (accepttypes & ACCEPT_STRING) && (data = [pb stringForType:NSStringPboardType])) {
     NSLog(@"Got NSStringPboardType");
-  }
-  else if (input && (accepttypes & ACCEPT_FILENAMES) &&
-           (data = [pb propertyListForType:NSFilenamesPboardType])) {
-    NSDebugLLog(@"service",@"got filenames '%@' '%@' %i",
-                data,[data class],[data isProxy]);
+  } else if (input && (accepttypes & ACCEPT_FILENAMES) &&
+             (data = [pb propertyListForType:NSFilenamesPboardType])) {
+    NSDebugLLog(@"service", @"got filenames '%@' '%@' %i", data, [data class], [data isProxy]);
     NSLog(@"Got NSFilenamesPboardType");
   }
 
-  NSDebugLLog(@"service",@"got data '%@'",data);
+  NSDebugLLog(@"service", @"got data '%@'", data);
 
   // "Selection"
   if (input == INPUT_STDIN) {
     if ([data isKindOfClass:[NSArray class]])
       data = [(NSArray *)data componentsJoinedByString:@"\n"];
-  }
-  else if (input == INPUT_CMDLINE) {
+  } else if (input == INPUT_CMDLINE) {
     if (data && [data isKindOfClass:[NSArray class]])
       data = [(NSArray *)data componentsJoinedByString:@" "];
   }
@@ -268,28 +241,26 @@ static NSDictionary *servicesDictionary = nil;
 
     add_args = YES;
     p_pos = -1;
-    for (i = 0; i < [str length]-1; i++) {
-        ch = [str characterAtIndex:i];
-        if (ch != '%') {
-          continue;
-        }
-        ch = [str characterAtIndex:i+1];
-        if (ch == '%') {
-          [str replaceCharactersInRange:NSMakeRange(i,1)
-                             withString:@""];
-          continue;
-        }
-        if (ch == 's' && data && (input == 2)) {
-            add_args = NO;
-            [str replaceCharactersInRange:NSMakeRange(i, 2)
-                               withString:data];
-            i += [data length];
-            continue;
-        }
-        if (ch == 'p') {
-          p_pos = i;
-          continue;
-        }
+    for (i = 0; i < [str length] - 1; i++) {
+      ch = [str characterAtIndex:i];
+      if (ch != '%') {
+        continue;
+      }
+      ch = [str characterAtIndex:i + 1];
+      if (ch == '%') {
+        [str replaceCharactersInRange:NSMakeRange(i, 1) withString:@""];
+        continue;
+      }
+      if (ch == 's' && data && (input == 2)) {
+        add_args = NO;
+        [str replaceCharactersInRange:NSMakeRange(i, 2) withString:data];
+        i += [data length];
+        continue;
+      }
+      if (ch == 'p') {
+        p_pos = i;
+        continue;
+      }
     }
 
     if (input == INPUT_CMDLINE && data && add_args) {
@@ -300,178 +271,157 @@ static NSDictionary *servicesDictionary = nil;
 
     // "Add Arguments" panel will be shown
     if (p_pos != -1) {
-      cmdline = [self	getCommandlineFrom:cmdline
-                               selectRange:NSMakeRange(p_pos,2)
-                                   service:name];
+      cmdline = [self getCommandlineFrom:cmdline selectRange:NSMakeRange(p_pos, 2) service:name];
       if (!cmdline) {
-        *error=[_(@"Service aborted by user.") retain];
+        *error = [_(@"Service aborted by user.") retain];
         return;
       }
     }
 
     NSLog(@"Services: got cmdline: %@", cmdline);
-    
+
     // No Shell/Default shell
     if (shell) {
       program = [[Defaults shared] shell];
       program = [program stringByAppendingFormat:@" -c %@", cmdline];
       NSLog(@"Command line with default shell: %@", program);
-      
+
       arguments = [program componentsSeparatedByString:@" "];
       program = [arguments objectAtIndex:0];
-      arguments = [arguments subarrayWithRange:NSMakeRange(1, [arguments count]-1)];
-    }
-    else {
+      arguments = [arguments subarrayWithRange:NSMakeRange(1, [arguments count] - 1)];
+    } else {
       NSMutableArray *args;
-      
+
       args = [[cmdline componentsSeparatedByString:@" "] mutableCopy];
       program = [[args objectAtIndex:0] copy];
       [args removeObjectAtIndex:0];
       arguments = [args copy];
-      
+
       [args autorelease];
       [program autorelease];
     }
   }
-  
-  NSDebugLLog(@"service",@"final command line='%@'",cmdline);
+
+  NSDebugLLog(@"service", @"final command line='%@'", cmdline);
 
   // "Exectute" type
-  switch (type)
-    {
-    case EXEC_IN_BACKGROUND:
-      {
-        NSTask *t = [[[NSTask alloc] init] autorelease];
-        NSPipe *sin,*sout;
-        NSFileHandle *in,*out;
+  switch (type) {
+    case EXEC_IN_BACKGROUND: {
+      NSTask *t = [[[NSTask alloc] init] autorelease];
+      NSPipe *sin, *sout;
+      NSFileHandle *in, *out;
 
-        [t setLaunchPath:program];
-        [t setArguments:arguments];
+      [t setLaunchPath:program];
+      [t setArguments:arguments];
 
-        NSDebugLLog(@"service",@"t=%@",t);
+      NSDebugLLog(@"service", @"t=%@", t);
 
-        sin = [[[NSPipe alloc] init] autorelease];
-        [t setStandardInput:sin];
-        in = [sin fileHandleForWriting];
-        sout = [[[NSPipe alloc] init] autorelease];
-        [t setStandardOutput:sout];
-        out = [sout fileHandleForReading];
+      sin = [[[NSPipe alloc] init] autorelease];
+      [t setStandardInput:sin];
+      in = [sin fileHandleForWriting];
+      sout = [[[NSPipe alloc] init] autorelease];
+      [t setStandardOutput:sout];
+      out = [sout fileHandleForReading];
 
-        NSDebugLLog(@"service",@"launching");
-        [t launch];
+      NSDebugLLog(@"service", @"launching");
+      [t launch];
 
-        if (data && (input == INPUT_STDIN)) {
-          NSDebugLLog(@"service",@"writing data");
-          [in writeData: [data dataUsingEncoding: NSUTF8StringEncoding]];
-        }
-        [in closeFile];
-
-        NSDebugLLog(@"service",@"waitUntilExit");
-        [t waitUntilExit];
-
-        if (ret_data) {
-          NSString *s;
-          NSData   *result;
-          
-          NSDebugLLog(@"service",@"get result");
-          result = [out readDataToEndOfFile];
-          NSDebugLLog(@"service",@"got data |%@|",result);
-          s = [[NSString alloc] initWithData:result
-                                    encoding:NSUTF8StringEncoding];
-          s = [s autorelease];
-          NSDebugLLog(@"service",@"= '%@'",s);
-
-          if (accepttypes == (ACCEPT_STRING|ACCEPT_FILENAMES)) {
-            [pb declareTypes:[NSArray arrayWithObjects:
-                                        NSStringPboardType,
-                                      NSFilenamesPboardType,nil]
-                       owner:self];
-          }
-          else if (accepttypes == ACCEPT_FILENAMES) {
-            [pb declareTypes:[NSArray arrayWithObjects:
-                                        NSFilenamesPboardType,nil]
-                       owner:self];
-          }
-          else if (accepttypes == ACCEPT_STRING) {
-            [pb declareTypes:[NSArray arrayWithObjects:
-                                        NSStringPboardType,nil]
-                       owner:self];
-          }
-
-          if (accepttypes & ACCEPT_FILENAMES) {
-            NSMutableArray *ma = [[[NSMutableArray alloc] init] autorelease];
-            int i, c = [s length];
-            NSRange cur;
-
-            for (i = 0; i < c; ){
-              for ( ; i < c && [s characterAtIndex: i] <= 32; i++) ;
-              if (i == c) {
-                break;
-              }
-              cur.location=i;
-              for ( ; i < c && [s characterAtIndex: i] > 32; i++) ;
-              cur.length = i - cur.location;
-              [ma addObject:[s substringWithRange:cur]];
-            }
-
-            NSDebugLLog(@"service",@"returning filenames: %@", ma);
-            [pb setPropertyList:ma forType:NSFilenamesPboardType];
-          }
-
-          if (accepttypes & ACCEPT_STRING) {
-            [pb setString:s forType:NSStringPboardType];
-          }
-
-          NSDebugLLog(@"service",@"return is set");
-        }
-        else {
-          NSDebugLLog(@"service",@"ignoring output");
-          [out closeFile];
-          [t waitUntilExit];
-        }
-
-        NSDebugLLog(@"service",@"clean up");
+      if (data && (input == INPUT_STDIN)) {
+        NSDebugLLog(@"service", @"writing data");
+        [in writeData:[data dataUsingEncoding:NSUTF8StringEncoding]];
       }
-      break;
-    case EXEC_IN_WINDOW:
-      {
-        TerminalWindowController *twc = nil;
-        
-        if ([[info objectForKey:WindowType] intValue] == WINDOW_IDLE) {
-          twc = [[NSApp delegate] idleTerminalWindow];
-          NSDebugLLog(@"service",@"got window %@", twc);
-          if (twc) {
-            [twc showWindow:self];
-            [[twc terminalView] runProgram:program
-                             withArguments:arguments
-                              initialInput:input == INPUT_STDIN ? data : nil];
-          }
-          else {
-            twc = [[NSApp delegate]
-                        newWindowWithProgram:program
-                                   arguments:arguments
-                                       input:input == INPUT_STDIN ? data : nil];
-            [twc showWindow:self];
-          }
+      [in closeFile];
+
+      NSDebugLLog(@"service", @"waitUntilExit");
+      [t waitUntilExit];
+
+      if (ret_data) {
+        NSString *s;
+        NSData *result;
+
+        NSDebugLLog(@"service", @"get result");
+        result = [out readDataToEndOfFile];
+        NSDebugLLog(@"service", @"got data |%@|", result);
+        s = [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
+        s = [s autorelease];
+        NSDebugLLog(@"service", @"= '%@'", s);
+
+        if (accepttypes == (ACCEPT_STRING | ACCEPT_FILENAMES)) {
+          [pb declareTypes:[NSArray arrayWithObjects:NSStringPboardType, NSFilenamesPboardType, nil]
+                     owner:self];
+        } else if (accepttypes == ACCEPT_FILENAMES) {
+          [pb declareTypes:[NSArray arrayWithObjects:NSFilenamesPboardType, nil] owner:self];
+        } else if (accepttypes == ACCEPT_STRING) {
+          [pb declareTypes:[NSArray arrayWithObjects:NSStringPboardType, nil] owner:self];
         }
-        else {
-          if (shell) {
-            twc = [[NSApp delegate] newWindowWithShell];
-            [[[twc terminalView] terminalParser]
-                  sendString:[NSString stringWithFormat:@"%@\n", cmdline]];
+
+        if (accepttypes & ACCEPT_FILENAMES) {
+          NSMutableArray *ma = [[[NSMutableArray alloc] init] autorelease];
+          int i, c = [s length];
+          NSRange cur;
+
+          for (i = 0; i < c;) {
+            for (; i < c && [s characterAtIndex:i] <= 32; i++)
+              ;
+            if (i == c) {
+              break;
+            }
+            cur.location = i;
+            for (; i<c && [s characterAtIndex:i]> 32; i++)
+              ;
+            cur.length = i - cur.location;
+            [ma addObject:[s substringWithRange:cur]];
           }
-          else {
-            twc = [[NSApp delegate]
-                        newWindowWithProgram:program
-                                   arguments:arguments
-                                       input:input == INPUT_STDIN ? data : nil];
-          }
+
+          NSDebugLLog(@"service", @"returning filenames: %@", ma);
+          [pb setPropertyList:ma forType:NSFilenamesPboardType];
+        }
+
+        if (accepttypes & ACCEPT_STRING) {
+          [pb setString:s forType:NSStringPboardType];
+        }
+
+        NSDebugLLog(@"service", @"return is set");
+      } else {
+        NSDebugLLog(@"service", @"ignoring output");
+        [out closeFile];
+        [t waitUntilExit];
+      }
+
+      NSDebugLLog(@"service", @"clean up");
+    } break;
+    case EXEC_IN_WINDOW: {
+      TerminalWindowController *twc = nil;
+
+      if ([[info objectForKey:WindowType] intValue] == WINDOW_IDLE) {
+        twc = [[NSApp delegate] idleTerminalWindow];
+        NSDebugLLog(@"service", @"got window %@", twc);
+        if (twc) {
+          [twc showWindow:self];
+          [[twc terminalView] runProgram:program
+                           withArguments:arguments
+                            initialInput:input == INPUT_STDIN ? data : nil];
+        } else {
+          twc = [[NSApp delegate] newWindowWithProgram:program
+                                             arguments:arguments
+                                                 input:input == INPUT_STDIN ? data : nil];
           [twc showWindow:self];
         }
+      } else {
+        if (shell) {
+          twc = [[NSApp delegate] newWindowWithShell];
+          [[[twc terminalView] terminalParser]
+              sendString:[NSString stringWithFormat:@"%@\n", cmdline]];
+        } else {
+          twc = [[NSApp delegate] newWindowWithProgram:program
+                                             arguments:arguments
+                                                 input:input == INPUT_STDIN ? data : nil];
+        }
+        [twc showWindow:self];
       }
-      break;
-    }
-  NSDebugLLog(@"service",@"return");
+    } break;
+  }
+  NSDebugLLog(@"service", @"return");
 }
 
 @end
@@ -483,7 +433,7 @@ static NSDictionary *servicesDictionary = nil;
                          service:(NSString *)service_name
 {
   NSString *s;
-  int      result;
+  int result;
 
   if (addArgsPanel == nil) {
     if ([NSBundle loadNibNamed:@"AddArguments" owner:self] == NO) {
@@ -500,15 +450,14 @@ static NSDictionary *servicesDictionary = nil;
     // printf("t=%@ r=%@\n",[t text],NSStringFromRange(r));
     [text setSelectedRange:r];
   }
-  
+
   result = [NSApp runModalForWindow:addArgsPanel];
   s = [commandField stringValue];
   [addArgsPanel close];
 
   if (result == NSRunStoppedResponse) {
     return s;
-  }
-  else {
+  } else {
     return nil;
   }
 }

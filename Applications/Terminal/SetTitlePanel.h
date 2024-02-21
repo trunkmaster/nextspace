@@ -30,7 +30,7 @@
   id cancelBtn;
 
   NSUInteger titleBarMask;
-  NSWindow   *mainWindow;
+  NSWindow *mainWindow;
 }
 
 - (void)activatePanel;

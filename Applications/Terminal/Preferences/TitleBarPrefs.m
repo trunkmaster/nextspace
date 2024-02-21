@@ -49,21 +49,26 @@
 - (NSUInteger)_elementsMaskFromButtons
 {
   NSUInteger mask = 0;
-  
-  if ([shellPathBth state] == NSOnState)
+
+  if ([shellPathBth state] == NSOnState) {
     mask |= TitleBarShellPath;
-  if ([deviceNameBtn state] == NSOnState)
+  }
+  if ([deviceNameBtn state] == NSOnState) {
     mask |= TitleBarDeviceName;
-  if ([filenameBtn state] == NSOnState)
+  }
+  if ([filenameBtn state] == NSOnState) {
     mask |= TitleBarFileName;
-  if ([windowSizeBtn state] == NSOnState)
+  }
+  if ([windowSizeBtn state] == NSOnState) {
     mask |= TitleBarWindowSize;
-  if ([customTitleBtn state] == NSOnState)
+  }
+  if ([customTitleBtn state] == NSOnState) {
     mask |= TitleBarCustomTitle;
-  if ([xtermTitleBtn state] == NSOnState)
+  }
+  if ([xtermTitleBtn state] == NSOnState) {
     mask |= TitleBarXTermTitle;
-
-
+  }
+  
   return mask;
 }
 
@@ -72,62 +77,51 @@
 - (void)_updateDemoTitleBar
 {
   NSUInteger elementsMask = [self _elementsMaskFromButtons];
-  NSString   *title;
+  NSString *title;
   TerminalWindowController *twc = [[NSApp mainWindow] windowController];
 
   title = [NSString new];
-  
+
   if (elementsMask & TitleBarShellPath) {
-    title = [title stringByAppendingFormat:@"%@ ",
-               (twc == nil) ? @"/bin/zsh" : [twc shellPath]];
+    title = [title stringByAppendingFormat:@"%@ ", (twc == nil) ? @"/bin/zsh" : [twc shellPath]];
   }
   if (elementsMask & TitleBarDeviceName) {
-    title = [title stringByAppendingFormat:@"(%@) ",
-                  (twc == nil) ? @"pts/0" : [twc deviceName]];
+    title = [title stringByAppendingFormat:@"(%@) ", (twc == nil) ? @"pts/0" : [twc deviceName]];
   }
   if (elementsMask & TitleBarWindowSize) {
-    title = [title stringByAppendingFormat:@"%@ ",
-                  (twc == nil) ? @"80x24" : [twc windowSizeString]];
+    title =
+        [title stringByAppendingFormat:@"%@ ", (twc == nil) ? @"80x24" : [twc windowSizeString]];
   }
   if (elementsMask & TitleBarCustomTitle) {
     if ([title length] == 0) {
-      title = [NSString stringWithFormat:@"%@ ",
-                        [customTitleField stringValue]];
-    }
-    else {
-      title = [NSString stringWithFormat:@"%@ \u2014 %@ ",
-                        [customTitleField stringValue], title];
+      title = [NSString stringWithFormat:@"%@ ", [customTitleField stringValue]];
+    } else {
+      title = [NSString stringWithFormat:@"%@ \u2014 %@ ", [customTitleField stringValue], title];
     }
   }
   if (elementsMask & TitleBarFileName) {
     if ([title length] == 0) {
-      title = [NSString stringWithFormat:@"%@ ",
-                        (twc == nil) ? @"Default" : [twc fileName]];
-    }
-    else {
-      title = [title stringByAppendingFormat:@"\u2014 %@ ",
-                  (twc == nil) ? @"Default" : [twc fileName]];
+      title = [NSString stringWithFormat:@"%@ ", (twc == nil) ? @"Default" : [twc fileName]];
+    } else {
+      title =
+          [title stringByAppendingFormat:@"\u2014 %@ ", (twc == nil) ? @"Default" : [twc fileName]];
     }
   }
-  if (elementsMask & TitleBarXTermTitle)
-    {
-      if ([title length] == 0)
-        {
-          title = [NSString stringWithFormat:@"%@", @"Shell Title"];
-        }
-      else
-        {
-          title = [title stringByAppendingFormat:@"\u2014 %@", @"Shell Title"];
-        }
+  if (elementsMask & TitleBarXTermTitle) {
+    if ([title length] == 0) {
+      title = [NSString stringWithFormat:@"%@", @"Shell Title"];
+    } else {
+      title = [title stringByAppendingFormat:@"\u2014 %@", @"Shell Title"];
     }
- 
+  }
+
   [demoTitleBarField setStringValue:title];
 }
 
 - (void)_updateControls:(Defaults *)defs
 {
   NSUInteger titleBarMask = [defs titleBarElementsMask];
-  NSString   *customTitle = [defs customTitle];
+  NSString *customTitle = [defs customTitle];
 
   [shellPathBth setState:(titleBarMask & TitleBarShellPath) ? 1 : 0];
   [deviceNameBtn setState:(titleBarMask & TitleBarDeviceName) ? 1 : 0];
@@ -140,38 +134,34 @@
     [customTitleField setStringValue:@"Terminal"];
   else
     [customTitleField setStringValue:customTitle];
-  
+
   [self setElements:self];
 }
 
 - (void)setElements:(id)sender
 {
-  if ([customTitleBtn state] == NSOnState)
-    {
-      [customTitleField setEditable:YES];
-      [customTitleField setTextColor:[NSColor blackColor]];
-      [[view window] makeFirstResponder:customTitleField];
-    }
-  else
-    {
-      [customTitleField setEditable:NO];
-      [customTitleField setTextColor:[NSColor darkGrayColor]];
-      [[view window] makeFirstResponder:window];
-    }
+  if ([customTitleBtn state] == NSOnState) {
+    [customTitleField setEditable:YES];
+    [customTitleField setTextColor:[NSColor blackColor]];
+    [[view window] makeFirstResponder:customTitleField];
+  } else {
+    [customTitleField setEditable:NO];
+    [customTitleField setTextColor:[NSColor darkGrayColor]];
+    [[view window] makeFirstResponder:window];
+  }
 
   [self _updateDemoTitleBar];
 }
 
 - (void)setDefault:(id)sender
 {
-  Defaults   *defs = [[Preferences shared] mainWindowPreferences];
+  Defaults *defs = [[Preferences shared] mainWindowPreferences];
   NSUInteger titleBarMask = [self _elementsMaskFromButtons];
-  
+
   [defs setTitleBarElementsMask:titleBarMask];
-  if (titleBarMask & TitleBarCustomTitle)
-    {
-      [defs setCustomTitle:[customTitleField stringValue]];
-    }
+  if (titleBarMask & TitleBarCustomTitle) {
+    [defs setCustomTitle:[customTitleField stringValue]];
+  }
 
   [defs synchronize];
 }
@@ -186,30 +176,29 @@
 }
 - (void)setWindow:(id)sender
 {
-  Defaults     *prefs;
+  Defaults *prefs;
   NSDictionary *uInfo;
-  NSUInteger   titleBarMask;
+  NSUInteger titleBarMask;
 
-  if (![sender isKindOfClass:[NSButton class]]) return;
-  
+  if (![sender isKindOfClass:[NSButton class]])
+    return;
+
   prefs = [[Defaults alloc] initEmpty];
 
   titleBarMask = [self _elementsMaskFromButtons];
   [prefs setTitleBarElementsMask:titleBarMask];
-  if (titleBarMask & TitleBarCustomTitle)
-    {
-      [prefs setCustomTitle:[customTitleField stringValue]];
-    }
-  
+  if (titleBarMask & TitleBarCustomTitle) {
+    [prefs setCustomTitle:[customTitleField stringValue]];
+  }
+
   uInfo = [NSDictionary dictionaryWithObject:prefs forKey:@"Preferences"];
   [prefs release];
 
   [[NSNotificationCenter defaultCenter]
-    postNotificationName:TerminalPreferencesDidChangeNotification
-                  object:[NSApp mainWindow]
-                userInfo:uInfo];
+      postNotificationName:TerminalPreferencesDidChangeNotification
+                    object:[NSApp mainWindow]
+                  userInfo:uInfo];
 }
-
 
 // TextField delegate
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification
