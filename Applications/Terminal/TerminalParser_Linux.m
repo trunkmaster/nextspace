@@ -1210,8 +1210,9 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
       ret = iconv(iconv_input_state, (char **)&inp, &insize, &outp, &outsize);
       if (outsize != sizeof(buf)) {
         [ts ts_sendCString:buf length:sizeof(buf) - outsize];
-      } else
+      } else {
         NSBeep();
+      }
     }
   } else {
     unsigned char buf;
