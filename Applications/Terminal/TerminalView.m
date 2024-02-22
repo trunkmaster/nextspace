@@ -25,22 +25,24 @@
 #include <pty.h>
 #include <sys/wait.h>
 
-#import <Foundation/NSBundle.h>
-#import <Foundation/NSDebug.h>
-#import <Foundation/NSNotification.h>
-#import <Foundation/NSRunLoop.h>
-#import <Foundation/NSUserDefaults.h>
-#import <Foundation/NSCharacterSet.h>
-#import <Foundation/NSArchiver.h>
+#import <AppKit/AppKit.h>
 #import <GNUstepBase/Unicode.h>
-#import <AppKit/NSApplication.h>
-#import <AppKit/NSPasteboard.h>
-#import <AppKit/NSDragging.h>
-#import <AppKit/NSEvent.h>
-#import <AppKit/NSGraphics.h>
-#import <AppKit/NSScroller.h>
-#import <AppKit/DPSOperators.h>
-#import <AppKit/NSFontDescriptor.h>
+
+// #import <Foundation/NSBundle.h>
+// #import <Foundation/NSDebug.h>
+// #import <Foundation/NSNotification.h>
+// #import <Foundation/NSRunLoop.h>
+// #import <Foundation/NSUserDefaults.h>
+// #import <Foundation/NSCharacterSet.h>
+// #import <Foundation/NSArchiver.h>
+// #import <AppKit/NSApplication.h>
+// #import <AppKit/NSPasteboard.h>
+// #import <AppKit/NSDragging.h>
+// #import <AppKit/NSEvent.h>
+// #import <AppKit/NSGraphics.h>
+// #import <AppKit/NSScroller.h>
+// #import <AppKit/DPSOperators.h>
+// #import <AppKit/NSFontDescriptor.h>
 
 #import "TerminalWindow.h"
 #import "TerminalView.h"
@@ -1200,9 +1202,20 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
 @implementation TerminalView (keyboard)
 
+- (void)resetCursorRects
+{
+  const NSRect visibleRect = [self visibleRect];
+
+  if (!NSEqualRects(NSZeroRect, visibleRect)) {
+    [self addCursorRect:visibleRect cursor:[NSCursor IBeamCursor]];
+  }
+}
+
 - (void)keyDown:(NSEvent *)e
 {
   NSString *s = [e charactersIgnoringModifiers];
+
+  [NSCursor setHiddenUntilMouseMoves:YES];
 
   NSDebugLLog(@"key", @"got key flags=%08lx  repeat=%i '%@' '%@' %4i %04x %lu %04x %lu\n",
               [e modifierFlags], [e isARepeat], [e characters], [e charactersIgnoringModifiers],
