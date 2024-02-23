@@ -28,24 +28,10 @@
 #import <AppKit/AppKit.h>
 #import <GNUstepBase/Unicode.h>
 
-// #import <Foundation/NSBundle.h>
-// #import <Foundation/NSDebug.h>
-// #import <Foundation/NSNotification.h>
-// #import <Foundation/NSRunLoop.h>
-// #import <Foundation/NSUserDefaults.h>
-// #import <Foundation/NSCharacterSet.h>
-// #import <Foundation/NSArchiver.h>
-// #import <AppKit/NSApplication.h>
-// #import <AppKit/NSPasteboard.h>
-// #import <AppKit/NSDragging.h>
-// #import <AppKit/NSEvent.h>
-// #import <AppKit/NSGraphics.h>
-// #import <AppKit/NSScroller.h>
-// #import <AppKit/DPSOperators.h>
-// #import <AppKit/NSFontDescriptor.h>
-
 #import "TerminalWindow.h"
 #import "TerminalView.h"
+
+#pragma mark - Definitions
 
 /* TODO */
 @interface NSView (unlockfocus)
@@ -74,10 +60,12 @@ NSString *TerminalViewSizeDidChangeNotification = @"TerminalViewSizeDidChange";
 - (int)runProgram:(NSString *)path withArguments:(NSArray *)args initialInput:(NSString *)d;
 @end
 
+
+#pragma mark - Display
+
 //------------------------------------------------------------------------------
 //--- TerminalScreen protocol implementation and rendering methods
 //------------------------------------------------------------------------------
-
 @implementation TerminalView (display)
 
 #define ADD_DIRTY(ax0, ay0, asx, asy) \
@@ -107,6 +95,8 @@ NSString *TerminalViewSizeDidChangeNotification = @"TerminalViewSizeDidChange";
 
 static int total_draw = 0;
 
+
+#pragma mark - Colors
 //
 // --- Colors
 //
@@ -247,6 +237,9 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   INV_FG_S = [invFG saturationComponent];
   INV_FG_B = [invFG brightnessComponent];
 }
+
+
+#pragma mark - Rendering
 
 // ---
 // --- Rendering
@@ -681,6 +674,9 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   [super setNeedsDisplayInRect:r];
 }
 
+
+#pragma mark - Text manipulation
+
 // ---
 // --- Text manipulation
 // ---
@@ -787,6 +783,8 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
     [self addDataToWriteBuffer:&msg[l] length:len - l];
   }
 }
+
+#pragma mark - Movement
 
 // ---
 // --- Movement
@@ -992,6 +990,9 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   ADD_DIRTY(0, row, ts_width, 1);
 }
 
+
+#pragma mark - Misc
+
 // ---
 // --- Misc
 // ---
@@ -1056,6 +1057,9 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 }
 
 @end
+
+
+#pragma mark - Scrolling
 
 //------------------------------------------------------------------------------
 //--- Scrolling
@@ -1196,8 +1200,11 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
 @end
 
+
+#pragma mark - Keyboard and Mouse
+
 //------------------------------------------------------------------------------
-//--- Keyboard events
+//--- Keyboard and Mouse events
 //------------------------------------------------------------------------------
 
 @implementation TerminalView (keyboard)
@@ -1263,6 +1270,9 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 }
 
 @end
+
+
+#pragma mark - Selection
 
 //------------------------------------------------------------------------------
 //--- Selection, copy/paste/services
@@ -1728,6 +1738,9 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
 @end
 
+
+#pragma mark - Input
+
 //------------------------------------------------------------------------------
 //--- Handle master_fd
 //------------------------------------------------------------------------------
@@ -2059,6 +2072,9 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
 @end
 
+
+#pragma mark - Drag and Drop
+
 //------------------------------------------------------------------------------
 //--- Drag and Drop support
 //------------------------------------------------------------------------------
@@ -2138,6 +2154,9 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 }
 
 @end
+
+
+#pragma mark - Misc stuff
 
 //------------------------------------------------------------------------------
 //--- Misc. stuff
@@ -2335,6 +2354,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
                                                       object:self];
 }
 
+#pragma mark - Init and dealloc
 // ---
 // Init and dealloc
 // ---
@@ -2425,6 +2445,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   [super dealloc];
 }
 
+#pragma mark - Contents
 // ---
 // Contents of Terminal including scrollback buffer
 //
@@ -2518,6 +2539,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   [self _scrollTo:scroll_to update:YES];
 }
 
+#pragma mark - Window Prefernces
 // ---
 // Per-window preferences
 // ---
@@ -2649,6 +2671,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   [terminalParser setAlternateAsMeta:altAsMeta];
 }
 
+#pragma mark - Window Title
 // ---
 // Title (window, icon)
 // ---
@@ -2701,6 +2724,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   border_y = y;
 }
 
+#pragma mark - Drag and Drop
 // ---
 // Drag and drop
 // ---
@@ -2714,6 +2738,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   [NSApp registerServicesMenuSendTypes:types returnTypes:nil];
 }
 
+#pragma mark - Menu
 // ---
 // Menu (Edit: Copy, Paste, Select All, Clear Buffer)
 // ---
