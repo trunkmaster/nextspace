@@ -49,7 +49,7 @@ struct selection_range {
   NSFont *boldFont;
   int font_encoding;
   int boldFont_encoding;
-  BOOL use_multi_cell_glyphs;
+  BOOL useMultiCellGlyphs;
   float fx, fy, fx0, fy0;
 
   struct {
@@ -64,12 +64,13 @@ struct selection_range {
   // Scrolling
   // ---
   NSScroller *scroller;
-  BOOL scroll_bottom_on_input; /* preference */
+  BOOL shouldScrollBottomOnInput; /* preference */
+
   // Scrollback
-  screen_char_t *sb_buffer; /* scrollback buffer content storage */
-  int max_sb_depth;         /* maximum scrollback size in lines */
-  int curr_sb_depth;        /* current scrollback size in lines */
-  int curr_sb_position;     /* 0 = bottom; negative value = posision */
+  screen_char_t *scrollback; /* scrollback buffer content storage */
+  int curr_sb_position;      /* 0 = bottom; negative value = posision */
+  int max_sb_depth;          /* maximum scrollback size in lines */
+  int curr_sb_depth;         /* current scrollback size in lines */
 
   /* Scrolling by compositing takes a long while, so we break out of such
      loops fairly often to process other events */
@@ -78,9 +79,12 @@ struct selection_range {
      full-screen scrolls. pending_scroll is the combined pending line delta */
   int pending_scroll;
 
-  int ts_width;   // window width in characters (screen_char_t)
-  int ts_height;  // window height in lines
+  // ---
+  // Screen - visible part of terminal contents
+  // ---
   screen_char_t *screen;
+  int screen_width;   // window width in characters (screen_char_t)
+  int screen_height;  // window height in lines
 
   int cursor_x, cursor_y;
   int current_x, current_y;
@@ -181,16 +185,14 @@ struct selection_range {
 
 @end
 
-/* TODO: this is ugly */
-@interface TerminalView (scrolling_2)
-
-- (void)setScroller:(NSScroller *)sc;
-
+@interface TerminalView (scrolling)
+- (void)setScroller : (NSScroller *)sc;
 @end
 
-@interface TerminalView (input_2)
+@interface TerminalView (Input_Output) <RunLoopEvents>
 
 - (void)readData;
+- (void)writeData;
 
 - (void)closeProgram;
 
