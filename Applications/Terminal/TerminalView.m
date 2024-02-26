@@ -16,6 +16,7 @@
 
 #include <limits.h>
 #include <math.h>
+#include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <termio.h>
@@ -27,6 +28,7 @@
 #include <sys/wait.h>
 
 #import <AppKit/AppKit.h>
+#include "Foundation/NSObjCRuntime.h"
 #import <GNUstepBase/Unicode.h>
 
 #import "TerminalWindow.h"
@@ -2131,25 +2133,86 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 // Init and dealloc
 // ---
 
+#if 1
+#define SCROLLBACK_CHANGE_STEP 3 // number of screens
+// Adopt scrollback buffer to new 'max_sb_depth' value.
+// General logic:
+// - initially allocate memory for several terminal screens (3)
+// - realloc scrollback buffer by screen page until max_sb_depth will be reached
+// - on window resize or preference change buffer size should be recalculated
 - (BOOL)initScrollBackBufferWithDepth:(int)lines
 {
-  if (lines == INT_MAX) {
-    // Unlimited scrollback buffer - allocate for 10 screens
-    scrollback = malloc(sizeof(screen_char_t) * screen_width * screen_height * 10);
-    if (scrollback == NULL) {
-      return NO;
-    }
-    memset(scrollback, 0, sizeof(screen_char_t) * screen_width * screen_height * 10);
-  } else {
-    scrollback = malloc(sizeof(screen_char_t) * screen_width * lines);
-    if (scrollback == NULL) {
-      return NO;
-    }
-    memset(scrollback, 0, sizeof(screen_char_t) * screen_width * lines);
+  screen_char_t *new_scrollback;
+  int new_sb_depth;
+
+  if (scrollback || curr_sb_depth > 0) {
+    NSLog(@"WARNING: detected attempt to initialize existing scrollback buffer!");
+    return NO;
   }
+
+  new_sb_depth = (lines == SCROLLBACK_MAX) ? SCROLLBACK_CHANGE_STEP : lines;
+  // new_sb_depth = screen_height * SCROLLBACK_CHANGE_STEP;
+  // if (new_sb_depth > max_sb_depth) {
+  //   new_sb_depth = max_sb_depth;
+  // }
+
+  new_scrollback = malloc(sizeof(screen_char_t) * screen_width * new_sb_depth);
+  if (new_scrollback == NULL) {
+    NSLog(@"EROOR: failed to allocate scrollback buffer of depth %d (eroor: %s)",
+          new_sb_depth, strerror(errno));
+    return NO;
+  }
+  memset(new_scrollback, 0, sizeof(screen_char_t) * screen_width * new_sb_depth);
+
+  scrollback = new_scrollback;
+  alloc_sb_depth = new_sb_depth;
+
+  NSLog(@"Scrollback buffer initialized to %d of %d lines.", new_sb_depth, lines);
 
   return YES;
 }
+
+- (BOOL)updateScrollBackBufferWithDepth:(int)lines
+{
+  screen_char_t *new_scrollback;
+  int new_sb_depth;
+
+  if (alloc_sb_depth == lines) {
+    return YES;
+  }
+
+  if (scrollback == NULL || alloc_sb_depth == 0) {
+    return [self initScrollBackBufferWithDepth:lines];
+  }
+
+  // new_sb_depth = (lines == SCROLLBACK_MAX) ? SCROLLBACK_CHANGE_STEP : lines;
+  new_sb_depth = screen_height * SCROLLBACK_CHANGE_STEP;
+  if (new_sb_depth > max_sb_depth) {
+    new_sb_depth = max_sb_depth;
+  }
+
+  new_scrollback = realloc(scrollback, sizeof(screen_char_t) * screen_width * new_sb_depth);
+  if (new_scrollback == NULL) {
+    NSLog(@"ERROR: failed to re-allocate scrollback buffer to %d lines (eroor: %s)\n", new_sb_depth,
+          strerror(errno));
+    return NO;
+  }
+
+  if (new_sb_depth < max_sb_depth) {
+    // realloc to the `lines` size and refresh screen
+    NSLog(@"Scrollback buffer had shrinked from %d to %d lines.", alloc_sb_depth, new_sb_depth);
+    [self setNeedsDisplay:YES];
+  } else {
+    NSLog(@"Scrollback buffer had grown from %d to %d lines.", alloc_sb_depth, new_sb_depth);
+  }
+
+  scrollback = new_scrollback;
+  alloc_sb_depth = new_sb_depth;
+
+  return YES;
+}
+
+#endif
 
 - initWithFrame:(NSRect)frame
 {
@@ -2175,10 +2238,12 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   memset(screen, 0, sizeof(screen_char_t) * screen_width * screen_height);
   draw_all = 2;
 
-  max_sb_depth = [defaults scrollBackLines];
   shouldScrollBottomOnInput = [defaults scrollBottomOnInput];
-  scrollback = malloc(sizeof(screen_char_t) * screen_width * max_sb_depth);
-  memset(scrollback, 0, sizeof(screen_char_t) * screen_width * max_sb_depth);
+  // [self setScrollBufferMaxLength:[defaults scrollBackLines]];
+  max_sb_depth = [defaults scrollBackLines];
+  [self initScrollBackBufferWithDepth:max_sb_depth];
+  // scrollback = malloc(sizeof(screen_char_t) * screen_width * max_sb_depth);
+  // memset(scrollback, 0, sizeof(screen_char_t) * screen_width * max_sb_depth);
 
   terminalParser = [[TerminalParser_Linux alloc] initWithTerminalScreen:self
                                                                   width:screen_width
@@ -2574,61 +2639,40 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   return curr_sb_depth;
 }
 
-- (void)setScrollBufferMaxLength:(int)lines
+- (BOOL)setScrollBufferMaxLength:(int)lines
 {
   if (max_sb_depth == lines) {
-    return;
+    return YES;
   }
 
   if (lines == 0) {
     [self clearBuffer:self];
   }
 
-  max_sb_depth = lines;
-
-  {  // Adopt scrollback buffer to new 'max_sb_depth' value
+#if 0
+  // Adopt scrollback buffer to new 'max_sb_depth' value
+  {
     screen_char_t *new_sb_buffer;
-    int sby = (max_sb_depth > 0) ? max_sb_depth : 1;
-
-    curr_sb_depth = max_sb_depth;
+    int sby = (lines > 0) ? lines : 1;
 
     new_sb_buffer = malloc(sizeof(screen_char_t) * screen_width * sby);
     memset(new_sb_buffer, 0, sizeof(screen_char_t) * screen_width * sby);
-    free(scrollback);
+    if (scrollback) {
+      free(scrollback);
+      // curr_sb_depth = max_sb_depth;
+    }
 
     scrollback = new_sb_buffer;
   }
-
-  // Adopt scrollback buffer to new 'max_sb_depth' value.
-  // General logic:
-  // - initially allocate memory for 3 terminal screens
-  // - realloc scrollback buffer by screen page until max_sb_depth will be reached
-  // - on window resize or preference change buffer size should be recalculated
-
-#if 0
-  {
-    screen_char_t *new_sb_buffer;
-
-    if (curr_sb_depth > 0) {  // not empty
-      if (curr_sb_depth < max_sb_depth) {
-        // new value is greater - realloc current buffer if needed
-      } else {
-        // new buffer smaller of the currently used - realloc to the `lines` size and refresh screen
-      }
-    } else {
-      // Initial state: unlimited<->sized, empty<->filled
-      // if (curr_sb_depth < max_sb_depth) {
-      //   realloc(sb_buffer, sizeof(screen_char_t) * sx * curr_sb_depth);
-      // }
-      curr_sb_depth = max_sb_depth;
-
-      new_sb_buffer = malloc(sizeof(screen_char_t) * sx * curr_sb_depth);
-      memset(new_sb_buffer, 0, sizeof(screen_char_t) * sx * curr_sb_depth);
-      free(sb_buffer);
-      sb_buffer = new_sb_buffer;
-    }
-  }
 #endif
+
+#if 1
+  [self updateScrollBackBufferWithDepth:lines];
+#endif
+  
+  max_sb_depth = lines;
+
+  return YES;
 }
 
 - (void)setScrollBottomOnInput:(BOOL)scrollBottom

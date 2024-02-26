@@ -16,6 +16,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#import <../TerminalView.h>
 #import "DisplayPrefs.h"
 
 @implementation DisplayPrefs
@@ -151,7 +152,7 @@
     [prefs setScrollBackEnabled:YES];
 
     if ([bufferLengthMatrix selectedColumn] == 0) {
-      sbLines = INT_MAX;
+      sbLines = SCROLLBACK_MAX;
     } else {
       sbLines = [bufferLengthField integerValue];
     }

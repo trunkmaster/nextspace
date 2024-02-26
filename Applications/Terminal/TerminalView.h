@@ -11,7 +11,10 @@
 #ifndef TerminalView_h
 #define TerminalView_h
 
+#include <stdint.h>
+
 #import <Foundation/NSFileHandle.h>
+#include "Foundation/NSObjCRuntime.h"
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSView.h>
 #import <AppKit/NSMenu.h>
@@ -20,6 +23,8 @@
 #import "TerminalParser_Linux.h"
 
 #import "Defaults.h"
+
+#define SCROLLBACK_MAX INT_MAX
 
 extern NSString *TerminalViewBecameIdleNotification;
 extern NSString *TerminalViewBecameNonIdleNotification;
@@ -71,6 +76,7 @@ struct selection_range {
   int curr_sb_position;      /* 0 = bottom; negative value = posision */
   int max_sb_depth;          /* maximum scrollback size in lines */
   int curr_sb_depth;         /* current scrollback size in lines */
+  int alloc_sb_depth;        /* current number of lines which have allocated memory for */
 
   /* Scrolling by compositing takes a long while, so we break out of such
      loops fairly often to process other events */
@@ -157,7 +163,7 @@ struct selection_range {
 - (void)setFont:(NSFont *)aFont;
 - (void)setBoldFont:(NSFont *)bFont;
 - (int)scrollBufferLength;
-- (void)setScrollBufferMaxLength:(int)lines;
+- (BOOL)setScrollBufferMaxLength:(int)lines;
 - (void)setScrollBottomOnInput:(BOOL)scrollBottom;
 - (void)setCursorStyle:(NSUInteger)style;
 
