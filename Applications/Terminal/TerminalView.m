@@ -2134,7 +2134,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 // ---
 
 #if 1
-#define SCROLLBACK_CHANGE_STEP 3 // number of screens
+#define SCROLLBACK_GROW_STEP 3 // number of screens
 // Adopt scrollback buffer to new 'max_sb_depth' value.
 // General logic:
 // - initially allocate memory for several terminal screens (3)
@@ -2150,11 +2150,11 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     return NO;
   }
 
-  new_sb_depth = (lines == SCROLLBACK_MAX) ? SCROLLBACK_CHANGE_STEP : lines;
-  // new_sb_depth = screen_height * SCROLLBACK_CHANGE_STEP;
-  // if (new_sb_depth > max_sb_depth) {
-  //   new_sb_depth = max_sb_depth;
-  // }
+  // new_sb_depth = (lines == SCROLLBACK_MAX) ? screen_height * SCROLLBACK_CHANGE_STEP : lines;
+  new_sb_depth = screen_height * SCROLLBACK_GROW_STEP;
+  if (new_sb_depth > max_sb_depth) {
+    new_sb_depth = max_sb_depth;
+  }
 
   new_scrollback = malloc(sizeof(screen_char_t) * screen_width * new_sb_depth);
   if (new_scrollback == NULL) {
@@ -2172,7 +2172,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   return YES;
 }
 
-- (BOOL)updateScrollBackBufferWithDepth:(int)lines
+- (BOOL)changeScrollBackBufferDepth:(int)lines
 {
   screen_char_t *new_scrollback;
   int new_sb_depth;
@@ -2186,7 +2186,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   }
 
   // new_sb_depth = (lines == SCROLLBACK_MAX) ? SCROLLBACK_CHANGE_STEP : lines;
-  new_sb_depth = screen_height * SCROLLBACK_CHANGE_STEP;
+  new_sb_depth = screen_height * SCROLLBACK_GROW_STEP;
   if (new_sb_depth > max_sb_depth) {
     new_sb_depth = max_sb_depth;
   }
@@ -2198,7 +2198,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     return NO;
   }
 
-  if (new_sb_depth < max_sb_depth) {
+  if (new_sb_depth < alloc_sb_depth) {
     // realloc to the `lines` size and refresh screen
     NSLog(@"Scrollback buffer had shrinked from %d to %d lines.", alloc_sb_depth, new_sb_depth);
     [self setNeedsDisplay:YES];
@@ -2667,7 +2667,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 #endif
 
 #if 1
-  [self updateScrollBackBufferWithDepth:lines];
+  [self changeScrollBackBufferDepth:lines];
 #endif
   
   max_sb_depth = lines;
