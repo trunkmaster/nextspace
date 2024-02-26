@@ -2151,7 +2151,8 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   }
 
   // new_sb_depth = (lines == SCROLLBACK_MAX) ? screen_height * SCROLLBACK_CHANGE_STEP : lines;
-  new_sb_depth = screen_height * SCROLLBACK_GROW_STEP;
+  // new_sb_depth = screen_height * SCROLLBACK_GROW_STEP;
+  new_sb_depth = (lines == SCROLLBACK_MAX) ? (lines / screen_width) : lines;
   if (new_sb_depth > max_sb_depth) {
     new_sb_depth = max_sb_depth;
   }
@@ -2186,7 +2187,8 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   }
 
   // new_sb_depth = (lines == SCROLLBACK_MAX) ? SCROLLBACK_CHANGE_STEP : lines;
-  new_sb_depth = screen_height * SCROLLBACK_GROW_STEP;
+  // new_sb_depth = screen_height * SCROLLBACK_GROW_STEP;
+  new_sb_depth = (lines == SCROLLBACK_MAX) ? (lines / screen_width) : lines;
   if (new_sb_depth > max_sb_depth) {
     new_sb_depth = max_sb_depth;
   }
@@ -2667,6 +2669,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 #endif
 
 #if 1
+  max_sb_depth = lines;
   [self changeScrollBackBufferDepth:lines];
 #endif
   
