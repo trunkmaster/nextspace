@@ -426,7 +426,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   }
 
   /* draw vertical black line next after scrollbar */
-  if ((max_sb_depth > 0) && (r.origin.x < border_x)) {
+  if ((alloc_sb_depth > 0) && (r.origin.x < border_x)) {
     DPSsetgray(cur, 0.0);
     DPSrectfill(cur, r.origin.x, r.origin.y, r.origin.x + 1, r.size.height);
   }
@@ -487,7 +487,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       if (ry >= 0) {
         ch = &SCREEN(x0, ry);
       } else {
-        ch = &scrollback[x0 + (max_sb_depth + ry) * screen_width];
+        ch = &scrollback[x0 + (alloc_sb_depth + ry) * screen_width];
       }
 
       scr_y = (screen_height - 1 - iy) * fy + border_y;
@@ -600,7 +600,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       if (ry >= 0) {
         ch = &SCREEN(x0, ry);
       } else {
-        ch = &scrollback[x0 + (max_sb_depth + ry) * screen_width];
+        ch = &scrollback[x0 + (alloc_sb_depth + ry) * screen_width];
       }
 
       scr_y = (screen_height - 1 - iy) * fy + border_y;
@@ -954,23 +954,23 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
   if (save && (top == 0) && (bottom == screen_height)) { /* TODO? */
     int num;
-    if (rows < max_sb_depth) {
-      memmove(scrollback, &scrollback[screen_width * rows], sizeof(screen_char_t) * screen_width * (max_sb_depth - rows));
+    if (rows < alloc_sb_depth) {
+      memmove(scrollback, &scrollback[screen_width * rows], sizeof(screen_char_t) * screen_width * (alloc_sb_depth - rows));
       num = rows;
     } else {
-      num = max_sb_depth;
+      num = alloc_sb_depth;
     }
     if (num < screen_height) {
-      memmove(&scrollback[screen_width * (max_sb_depth - num)], screen, num * screen_width * sizeof(screen_char_t));
+      memmove(&scrollback[screen_width * (alloc_sb_depth - num)], screen, num * screen_width * sizeof(screen_char_t));
     } else {
-      memmove(&scrollback[screen_width * (max_sb_depth - num)], screen, screen_height * screen_width * sizeof(screen_char_t));
+      memmove(&scrollback[screen_width * (alloc_sb_depth - num)], screen, screen_height * screen_width * sizeof(screen_char_t));
       /* TODO: should this use video_erase_char? */
-      memset(&scrollback[screen_width * (max_sb_depth - num + screen_height)], 0,
+      memset(&scrollback[screen_width * (alloc_sb_depth - num + screen_height)], 0,
              screen_width * (num - screen_height) * sizeof(screen_char_t));
     }
     curr_sb_depth += num;
-    if (curr_sb_depth > max_sb_depth) {
-      curr_sb_depth = max_sb_depth;
+    if (curr_sb_depth > alloc_sb_depth) {
+      curr_sb_depth = alloc_sb_depth;
     }
   }
 
@@ -1246,7 +1246,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
 - (NSString *)_selectionAsString
 {
-  int ofs = max_sb_depth * screen_width;
+  int ofs = alloc_sb_depth * screen_width;
   NSMutableString *mstr;
   NSString *tmp;
   unichar buf[32];
@@ -1340,7 +1340,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   if (s.length == selection.length && s.location == selection.location)
     return;
 
-  ofs2 = max_sb_depth * screen_width;
+  ofs2 = alloc_sb_depth * screen_width;
 
   j = selection.location + selection.length;
   if (j > s.location)
@@ -1547,7 +1547,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   }
 
   if (g == 2) { /* select words */
-    int ofs = max_sb_depth * screen_width;
+    int ofs = alloc_sb_depth * screen_width;
     unichar ch, ch2;
     NSCharacterSet *cs;
     int i, j;
@@ -2135,10 +2135,10 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
 #if 1
 #define SCROLLBACK_GROW_STEP 3 // number of screens
-// Adopt scrollback buffer to new 'max_sb_depth' value.
+// Adopt scrollback buffer to new 'alloc_sb_depth' value.
 // General logic:
 // - initially allocate memory for several terminal screens (3)
-// - realloc scrollback buffer by screen page until max_sb_depth will be reached
+// - realloc scrollback buffer by screen page until alloc_sb_depth will be reached
 // - on window resize or preference change buffer size should be recalculated
 - (BOOL)initScrollBackBufferWithDepth:(int)lines
 {
@@ -2153,8 +2153,8 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   // new_sb_depth = (lines == SCROLLBACK_MAX) ? screen_height * SCROLLBACK_CHANGE_STEP : lines;
   // new_sb_depth = screen_height * SCROLLBACK_GROW_STEP;
   new_sb_depth = (lines == SCROLLBACK_MAX) ? (lines / screen_width) : lines;
-  if (new_sb_depth > max_sb_depth) {
-    new_sb_depth = max_sb_depth;
+  if (new_sb_depth > alloc_sb_depth) {
+    new_sb_depth = alloc_sb_depth;
   }
 
   new_scrollback = malloc(sizeof(screen_char_t) * screen_width * new_sb_depth);
@@ -2186,11 +2186,15 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     return [self initScrollBackBufferWithDepth:lines];
   }
 
-  // new_sb_depth = (lines == SCROLLBACK_MAX) ? SCROLLBACK_CHANGE_STEP : lines;
-  // new_sb_depth = screen_height * SCROLLBACK_GROW_STEP;
-  new_sb_depth = (lines == SCROLLBACK_MAX) ? (lines / screen_width) : lines;
-  if (new_sb_depth > max_sb_depth) {
-    new_sb_depth = max_sb_depth;
+  // new_sb_depth = (lines == SCROLLBACK_MAX) ? SCROLLBACK_GROW_STEP : lines;
+  // new_sb_depth = (lines == SCROLLBACK_MAX) ? (lines / screen_width) : lines;
+  if (lines < alloc_sb_depth) {
+    new_sb_depth = lines;
+  } else {
+    new_sb_depth = curr_sb_depth + (screen_height * SCROLLBACK_GROW_STEP);
+  }
+  if (new_sb_depth > alloc_sb_depth) {
+    new_sb_depth = alloc_sb_depth;
   }
 
   new_scrollback = realloc(scrollback, sizeof(screen_char_t) * screen_width * new_sb_depth);
@@ -2242,10 +2246,10 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
   shouldScrollBottomOnInput = [defaults scrollBottomOnInput];
   // [self setScrollBufferMaxLength:[defaults scrollBackLines]];
-  max_sb_depth = [defaults scrollBackLines];
-  [self initScrollBackBufferWithDepth:max_sb_depth];
-  // scrollback = malloc(sizeof(screen_char_t) * screen_width * max_sb_depth);
-  // memset(scrollback, 0, sizeof(screen_char_t) * screen_width * max_sb_depth);
+  alloc_sb_depth = [defaults scrollBackLines];
+  [self initScrollBackBufferWithDepth:alloc_sb_depth];
+  // scrollback = malloc(sizeof(screen_char_t) * screen_width * alloc_sb_depth);
+  // memset(scrollback, 0, sizeof(screen_char_t) * screen_width * alloc_sb_depth);
 
   terminalParser = [[TerminalParser_Linux alloc] initWithTerminalScreen:self
                                                                   width:screen_width
@@ -2349,7 +2353,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
   // Prepare new screen and history buffer
   nscreen = malloc(nsx * nsy * sizeof(screen_char_t));
-  new_sb_buffer = malloc(nsx * max_sb_depth * sizeof(screen_char_t));
+  new_sb_buffer = malloc(nsx * alloc_sb_depth * sizeof(screen_char_t));
   if (!nscreen || !new_sb_buffer) {
     NSLog(@"Failed to allocate screen buffer!");
     if (nscreen)
@@ -2359,7 +2363,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     return;
   }
   memset(nscreen, 0, sizeof(screen_char_t) * nsx * nsy);
-  memset(new_sb_buffer, 0, sizeof(screen_char_t) * nsx * max_sb_depth);
+  memset(new_sb_buffer, 0, sizeof(screen_char_t) * nsx * alloc_sb_depth);
 
   copy_sx = screen_width;
   if (copy_sx > nsx) {
@@ -2375,8 +2379,8 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   // cursor_y - vertical position of cursor (starts from 0)
 
   // fprintf(stderr,
-  //         "***> curr_sb_depth=%i, max_sb_depth=%i, sy=%i, nsy=%i cursor_y=%i\n",
-  //         curr_sb_depth, max_sb_depth, sy, nsy, cursor_y);
+  //         "***> curr_sb_depth=%i, alloc_sb_depth=%i, sy=%i, nsy=%i cursor_y=%i\n",
+  //         curr_sb_depth, alloc_sb_depth, sy, nsy, cursor_y);
 
   // what amount of lines shifted?
   // value is positive if gap between last line and view bottom exist
@@ -2412,19 +2416,19 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     if (ny >= nsy) {
       break;
     }
-    if (ny < -max_sb_depth) {
+    if (ny < -alloc_sb_depth) {
       continue;
     }
 
     // fprintf(stderr, "* iy=%i ny=%i\n", iy, ny);
 
     if (iy < 0) {
-      src = &scrollback[screen_width * (max_sb_depth + iy)];
+      src = &scrollback[screen_width * (alloc_sb_depth + iy)];
     } else {
       src = &screen[screen_width * iy];
     }
     if (ny < 0) {
-      dst = &new_sb_buffer[nsx * (max_sb_depth + ny)];
+      dst = &new_sb_buffer[nsx * (alloc_sb_depth + ny)];
     } else {
       dst = &nscreen[nsx * ny];
     }
@@ -2440,15 +2444,15 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   if (nsy <= cursor_y || screen_height < nsy) {
     curr_sb_depth = curr_sb_depth - line_shift;
   }
-  if (curr_sb_depth > max_sb_depth) {
-    curr_sb_depth = max_sb_depth;
+  if (curr_sb_depth > alloc_sb_depth) {
+    curr_sb_depth = alloc_sb_depth;
   }
   if (curr_sb_depth < 0) {
     curr_sb_depth = 0;
   }
   // fprintf(stderr,
-  //         "***< curr_sb_depth=%i, max_sb_depth=%i, sy=%i, nsy=%i cursor_y=%i\n",
-  //         curr_sb_depth, max_sb_depth, sy, nsy, cursor_y);
+  //         "***< curr_sb_depth=%i, alloc_sb_depth=%i, sy=%i, nsy=%i cursor_y=%i\n",
+  //         curr_sb_depth, alloc_sb_depth, sy, nsy, cursor_y);
 
   screen_width = nsx;
   screen_height = nsy;
@@ -2464,8 +2468,8 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     cursor_y = screen_height - 1;
   }
   // fprintf(stderr,
-  //         "***< curr_sb_depth=%i, max_sb_depth=%i, sy=%i, nsy=%i cursor_y=%i line_shift=%i\n",
-  //         curr_sb_depth, max_sb_depth, sy, nsy, cursor_y, line_shift);
+  //         "***< curr_sb_depth=%i, alloc_sb_depth=%i, sy=%i, nsy=%i cursor_y=%i line_shift=%i\n",
+  //         curr_sb_depth, alloc_sb_depth, sy, nsy, cursor_y, line_shift);
 
   [self _updateScroller];
 
@@ -2511,7 +2515,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 // - (NSString *)stringForRange:(struct selection_range)range
 - (NSString *)stringRepresentation
 {
-  int ofs = max_sb_depth * screen_width;
+  int ofs = alloc_sb_depth * screen_width;
   NSMutableString *mstr = [[NSMutableString alloc] init];
   NSString *tmp;
   unichar buf[32];
@@ -2643,7 +2647,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
 - (BOOL)setScrollBufferMaxLength:(int)lines
 {
-  if (max_sb_depth == lines) {
+  if (alloc_sb_depth == lines) {
     return YES;
   }
 
@@ -2651,8 +2655,10 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     [self clearBuffer:self];
   }
 
+  alloc_sb_depth = lines;
+
 #if 0
-  // Adopt scrollback buffer to new 'max_sb_depth' value
+  // Adopt scrollback buffer to new 'alloc_sb_depth' value
   {
     screen_char_t *new_sb_buffer;
     int sby = (lines > 0) ? lines : 1;
@@ -2661,7 +2667,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     memset(new_sb_buffer, 0, sizeof(screen_char_t) * screen_width * sby);
     if (scrollback) {
       free(scrollback);
-      // curr_sb_depth = max_sb_depth;
+      // curr_sb_depth = alloc_sb_depth;
     }
 
     scrollback = new_sb_buffer;
@@ -2669,12 +2675,9 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 #endif
 
 #if 1
-  max_sb_depth = lines;
   [self changeScrollBackBufferDepth:lines];
 #endif
   
-  max_sb_depth = lines;
-
   return YES;
 }
 
