@@ -2136,15 +2136,20 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
 #define SCROLLBACK_CHANGE_STEP 3 // number of screens
 // Adopt scrollback buffer to new 'max_sb_depth' value.
-// General logic:
+// 
+// General idea:
 // - initially allocate memory for SCROLLBACK_CHANGE_STEP terminal screens
 // - realloc scrollback buffer by SCROLLBACK_CHANGE_STEP screens until max_sb_depth will be reached
 // - on window resize or preference change buffer size should be recalculated
+// 
+// Grow/shrink minimum step is 1 screen.
+// Depth (_depth in var names) is a number of lines.
+// Size (_size in var names) is a number of characters.
 - (BOOL)changeScrollBackBufferDepth:(int)lines
 {
   screen_char_t *new_scrollback;
-  int new_sb_depth;
-  int new_sb_size;
+  int new_sb_depth; // lines
+  int new_sb_size;  // characters
 
   // There's nothing to do here
   if (alloc_sb_depth == lines || lines == 0) {
