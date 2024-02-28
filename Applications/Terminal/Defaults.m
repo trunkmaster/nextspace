@@ -699,24 +699,11 @@ NSString *ScrollBottomOnInputKey = @"ScrollBottomOnInput";
   NSUInteger scrollBackLines;
 
   if ([self scrollBackEnabled] == YES) {
-    if ([self scrollBackUnlimited] == YES) {
-      // TODO: now TerminalView allocates memory for to hold all lines
-      // at start (-init). If caluculations is based on INT_MAX TerminalView
-      // needs to allocate ~2GB of RAM. So TerminalView memory management
-      // must be rewritten to lazy allocating before "Unlimited" options
-      // can be used. For now it's hardocded to some reasonable value.
-      // scrollBackLines =
-      //   (INT_MAX-1)/([self defaultWindowWidth]*sizeof(screen_char_t));
-      // fprintf(stderr, "scrollBackLines=%i\n", scrollBackLines);
-      scrollBackLines = 1024;
-    } else  // scrollback limited
-    {
       scrollBackLines = lines;
-      if (scrollBackLines <= 0)
-        scrollBackLines = 256;
-    }
-  } else  // scrollback disabled
-  {
+      if (scrollBackLines < 0) {
+        scrollBackLines = 0;
+      }
+  } else {  // scrollback disabled
     scrollBackLines = 0;
   }
 
