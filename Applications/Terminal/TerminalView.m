@@ -2245,15 +2245,11 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   int new_sb_depth;
   int change_size = screen_height * SCROLLBACK_CHANGE_STEP;
 
-  if (alloc_sb_depth == max_sb_depth || alloc_sb_depth == SCROLLBACK_MAX) {
+  if (alloc_sb_depth == max_sb_depth || alloc_sb_depth == (SCROLLBACK_MAX / screen_width)) {
     return NO;
   }
 
   new_sb_depth = alloc_sb_depth + (shouldGrow ? change_size : -change_size);
-
-  if (new_sb_depth >= SCROLLBACK_MAX) {
-    return NO;
-  }
 
   if (new_sb_depth > max_sb_depth) {
     new_sb_depth = max_sb_depth;
