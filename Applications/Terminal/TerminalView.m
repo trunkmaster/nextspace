@@ -2146,20 +2146,8 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   int new_sb_depth;
   int new_sb_size;
 
-  // There's nothing to change
-  if (alloc_sb_depth == lines) {
-    return YES;
-  }
-
-  NSLog(@"changeScrollBackBufferDepth: %i", lines);
-
-  if (lines == 0) {
-    if (scrollback) {
-      [self clearBuffer:self];
-      alloc_sb_depth = 0;
-      free(scrollback);
-      scrollback = NULL;
-    }
+  // There's nothing to do here
+  if (alloc_sb_depth == lines || lines == 0) {
     return YES;
   }
 
@@ -2234,17 +2222,20 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     NSLog(@"Scrollback buffer initialized to %d of %d lines.", new_sb_depth, lines);
   } else if (new_sb_depth < alloc_sb_depth) {
     NSLog(@"Scrollback buffer had shrinked from %d to %d lines.", alloc_sb_depth, new_sb_depth);
-    if (curr_sb_depth > new_sb_depth) {
-      curr_sb_depth = new_sb_depth;
-    }
-    // [self _updateScroller];
-    [self _scrollTo:curr_sb_position update:YES];
   } else {
     NSLog(@"Scrollback buffer had grown from %d to %d lines.", alloc_sb_depth, new_sb_depth);
   }
 
   scrollback = new_scrollback;
   alloc_sb_depth = new_sb_depth;
+
+  // If buffer size shrinks and used buffer greater than allocated scroll bottom
+  // to omit crashes and garbage on screen redraw.
+  if (curr_sb_depth > new_sb_depth) {
+    curr_sb_depth = new_sb_depth;
+    [self _updateScroller];
+    [self _scrollTo:curr_sb_position update:YES];
+  }
 
   return YES;
 }
@@ -2701,12 +2692,17 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     return YES;
   }
 
+  max_sb_depth = lines;
   
   if (lines == 0) {
     [self clearBuffer:self];
+    alloc_sb_depth = 0;
+    if (scrollback) {
+      free(scrollback);
+      scrollback = NULL;
+    }
+    return YES;
   }
-
-  max_sb_depth = lines;
 
   [self changeScrollBackBufferDepth:lines];
   
