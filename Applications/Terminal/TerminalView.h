@@ -147,6 +147,7 @@ struct selection_range {
 
 - initWithPreferences:(id)preferences;
 - (Defaults *)preferences;  // used by terminal parser
+- (BOOL)resizeScrollbackBuffer:(BOOL)shouldGrow;
 
 - (NSObject<TerminalParser> *)terminalParser;
 

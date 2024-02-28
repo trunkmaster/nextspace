@@ -37,6 +37,8 @@
 
 #pragma mark - Definitions
 
+#define SCROLLBACK_CHANGE_STEP 1  // number of screens
+
 /* TODO */
 @interface NSView (unlockfocus)
 - (void)unlockFocusNeedsFlush:(BOOL)flush;
@@ -971,7 +973,11 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
     }
     curr_sb_depth += num;
     if (curr_sb_depth > alloc_sb_depth) {
-      curr_sb_depth = alloc_sb_depth;
+      if (alloc_sb_depth < max_sb_depth) {
+        [self resizeScrollbackBuffer:YES];
+      } else {
+        curr_sb_depth = alloc_sb_depth;
+      }
     }
   }
 
@@ -2134,22 +2140,24 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 // Init and dealloc
 // ---
 
-#define SCROLLBACK_CHANGE_STEP 3 // number of screens
 // Adopt scrollback buffer to new 'max_sb_depth' value.
-// 
+//
 // General idea:
 // - initially allocate memory for SCROLLBACK_CHANGE_STEP terminal screens
 // - realloc scrollback buffer by SCROLLBACK_CHANGE_STEP screens until max_sb_depth will be reached
 // - on window resize or preference change buffer size should be recalculated
-// 
+//
 // Grow/shrink minimum step is 1 screen.
 // Depth (_depth in var names) is a number of lines.
 // Size (_size in var names) is a number of characters.
+//
+// Changes: scrollback, alloc_sb_depth. May change curr_sb_depth on buffer shrinking.
 - (BOOL)changeScrollBackBufferDepth:(int)lines
 {
   screen_char_t *new_scrollback;
-  int new_sb_depth; // lines
-  int new_sb_size;  // characters
+  int char_size = sizeof(screen_char_t);
+  int new_sb_depth;  // lines
+  int new_sb_size;   // characters
 
   // There's nothing to do here
   if (alloc_sb_depth == lines || lines == 0) {
@@ -2167,7 +2175,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   if (new_sb_depth > max_sb_depth) {
     new_sb_depth = max_sb_depth;
   }
-  new_sb_size = sizeof(screen_char_t) * screen_width * new_sb_depth;
+  new_sb_size = char_size * screen_width * new_sb_depth;
 
   // Memory operations
   if (scrollback == NULL || alloc_sb_depth == 0) {  // Initialize
@@ -2178,7 +2186,6 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
       return NO;
     }
   } else {  // Grow or shrink
-    int char_size = sizeof(screen_char_t);
     int used_sb_size = char_size * curr_sb_depth * screen_width;
     int used_sb_start = (char_size * alloc_sb_depth * screen_width) - used_sb_size;
     screen_char_t *used_sb_copy = malloc(used_sb_size);
@@ -2194,17 +2201,6 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
       return NO;
     }
     memset(new_scrollback, 0, new_sb_size);
-
-    // fprintf(stderr, "used_sb_copy: \n");
-    // for (int i = 0; i < (curr_sb_depth * screen_width); i++) {
-    //   fprintf(stderr, "%c", used_sb_copy[i].ch);
-    // }
-    // fprintf(stderr, "\n");
-
-    // memcpy(&new_scrollback[new_sb_size - used_sb_size], used_sb_copy, used_sb_size);
-    // fprintf(stderr, "new_sb_size: %i, used_sb_size: %i, new chars: %lu, used chars: %lu\n",
-    //         new_sb_size, used_sb_size, new_sb_size/sizeof(screen_char_t),
-    //         used_sb_size/sizeof(screen_char_t));
 
     // Restore scrollback contents
     int new_sb_offset;
