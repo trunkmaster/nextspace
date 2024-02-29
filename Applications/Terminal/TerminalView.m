@@ -971,13 +971,15 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       memset(&scrollback[screen_width * (alloc_sb_depth - num + screen_height)], 0,
              screen_width * (num - screen_height) * sizeof(screen_char_t));
     }
-    curr_sb_depth += num;
-    if (curr_sb_depth > alloc_sb_depth) {
+    if ((curr_sb_depth + num) > alloc_sb_depth) {
       if (alloc_sb_depth < max_sb_depth) {
         [self resizeScrollbackBuffer:YES];
+        curr_sb_depth += num;
       } else {
         curr_sb_depth = alloc_sb_depth;
       }
+    } else {
+      curr_sb_depth += num;
     }
   }
 
