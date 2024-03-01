@@ -957,29 +957,33 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
   if (save && (top == 0) && (bottom == screen_height)) { /* TODO? */
     int num;
+
+    if ((curr_sb_depth + rows) > alloc_sb_depth) {
+      [self resizeScrollbackBuffer:YES];
+    }
+
     if (rows < alloc_sb_depth) {
-      memmove(scrollback, &scrollback[screen_width * rows], sizeof(screen_char_t) * screen_width * (alloc_sb_depth - rows));
+      memmove(scrollback, &scrollback[screen_width * rows],
+              sizeof(screen_char_t) * screen_width * (alloc_sb_depth - rows));
       num = rows;
     } else {
       num = alloc_sb_depth;
     }
+
     if (num < screen_height) {
-      memmove(&scrollback[screen_width * (alloc_sb_depth - num)], screen, num * screen_width * sizeof(screen_char_t));
+      memmove(&scrollback[screen_width * (alloc_sb_depth - num)], screen,
+              num * screen_width * sizeof(screen_char_t));
     } else {
-      memmove(&scrollback[screen_width * (alloc_sb_depth - num)], screen, screen_height * screen_width * sizeof(screen_char_t));
+      memmove(&scrollback[screen_width * (alloc_sb_depth - num)], screen,
+              screen_height * screen_width * sizeof(screen_char_t));
       /* TODO: should this use video_erase_char? */
       memset(&scrollback[screen_width * (alloc_sb_depth - num + screen_height)], 0,
              screen_width * (num - screen_height) * sizeof(screen_char_t));
     }
-    if ((curr_sb_depth + num) > alloc_sb_depth) {
-      if (alloc_sb_depth < max_sb_depth) {
-        [self resizeScrollbackBuffer:YES];
-        curr_sb_depth += num;
-      } else {
-        curr_sb_depth = alloc_sb_depth;
-      }
-    } else {
-      curr_sb_depth += num;
+
+    curr_sb_depth += num;
+    if (curr_sb_depth > max_sb_depth) {
+      curr_sb_depth = max_sb_depth;
     }
   }
 
@@ -2174,9 +2178,11 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   } else {
     new_sb_depth = alloc_sb_depth + (screen_height * SCROLLBACK_CHANGE_STEP);
   }
+
   if (new_sb_depth > max_sb_depth) {
     new_sb_depth = max_sb_depth;
   }
+
   new_sb_size = char_size * screen_width * new_sb_depth;
 
   // Memory operations
@@ -2194,6 +2200,12 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
     // Save scrollback contents
     memcpy(used_sb_copy, &scrollback[used_sb_start], used_sb_size);
+
+    // fprintf(stderr, "==========================================> used_sb_copy: \n");
+    // for (int i = 0; i < (curr_sb_depth * screen_width); i++) {
+    //   fprintf(stderr, "%c", used_sb_copy[i].ch);
+    // }
+    // fprintf(stderr, "<==========================================\n");
 
     new_scrollback = realloc(scrollback, new_sb_size);
     if (new_scrollback == NULL) {
@@ -2216,6 +2228,11 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
       new_sb_offset = (new_sb_size / char_size) - (used_sb_size / char_size);
       used_sb_offset = 0;
     }
+
+    // fprintf(stderr, "new_sb_size: %i, used_sb_size: %i, new chars: %lu, used chars: %lu\n",
+    //         new_sb_size, used_sb_size, new_sb_size/sizeof(screen_char_t),
+    //         used_sb_size/sizeof(screen_char_t));
+
     memcpy(&new_scrollback[new_sb_offset], &used_sb_copy[used_sb_offset], used_sb_size);
     free(used_sb_copy);
   }
