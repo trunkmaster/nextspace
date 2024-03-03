@@ -32,6 +32,7 @@
 #import <DesktopKit/NXTAlert.h>
 
 #import "Terminal.h"
+#import "TerminalView.h"
 #import "Defaults.h"
 
 @implementation Defaults
@@ -695,9 +696,14 @@ NSString *ScrollBottomOnInputKey = @"ScrollBottomOnInput";
 @implementation Defaults (Display)
 - (int)scrollBackLines
 {
-  if ([self objectForKey:ScrollBackLinesKey] == nil) {
-    [self setInteger:256 forKey:ScrollBackLinesKey];
+  if ([self boolForKey:ScrollBackEnabledKey] == NO) {
+    return 0;
+  } else if ([self boolForKey:ScrollBackUnlimitedKey] != NO) {
+    return SCROLLBACK_MAX;
+  } else if ([self objectForKey:ScrollBackLinesKey] == nil) {
+    return SCROLLBACK_DEFAULT;
   }
+
   return [self integerForKey:ScrollBackLinesKey];
 }
 - (void)setScrollBackLines:(int)lines

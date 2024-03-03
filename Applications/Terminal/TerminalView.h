@@ -24,6 +24,7 @@
 
 #import "Defaults.h"
 
+#define SCROLLBACK_DEFAULT 256
 #define SCROLLBACK_MAX INT_MAX
 
 extern NSString *TerminalViewBecameIdleNotification;
