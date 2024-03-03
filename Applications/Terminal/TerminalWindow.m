@@ -161,11 +161,11 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
 {
   self = [super init];
 
-  if (defs == nil)
+  if (defs == nil) {
     preferences = [[Defaults alloc] init];
-  else
+  } else {
     preferences = [[Defaults alloc] initWithDefaults:defs];
-
+  }
   [self _setupWindow];
   [[self window] setRepresentedFilename:path];
 

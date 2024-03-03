@@ -2303,9 +2303,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   draw_all = 2;
 
   shouldScrollBottomOnInput = [defaults scrollBottomOnInput];
-  // [self setScrollBufferMaxLength:[defaults scrollBackLines]];
   max_sb_depth = [defaults scrollBackLines];
-  // [self initScrollBackBufferWithDepth:max_sb_depth];
   [self resizeScrollbackBuffer:YES];
 
   terminalParser = [[TerminalParser_Linux alloc] initWithTerminalScreen:self
