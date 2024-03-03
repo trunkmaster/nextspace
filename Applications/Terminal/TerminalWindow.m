@@ -504,6 +504,10 @@ NSString *TerminalWindowSizeDidChangeNotification =
         }
     }
 
+    if ([prefs objectForKey:ScrollBackUnlimitedKey] != nil) {
+      [livePreferences setScrollBackUnlimited:[prefs boolForKey:ScrollBackUnlimitedKey]];
+    }
+
   if ([prefs objectForKey:ScrollBackLinesKey] != nil)
     {
       intValue = [prefs scrollBackLines]; // contains sanity checks

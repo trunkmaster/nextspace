@@ -68,9 +68,8 @@
       [bufferLengthMatrix selectCellWithTag:0];
     } else {
       [bufferLengthMatrix selectCellWithTag:1];
+      [bufferLengthField setIntegerValue:sbLines];
     }
-
-    [bufferLengthField setIntegerValue:sbLines];
   }
 
   [self setBufferEnabled:bufferEnabledBtn];
@@ -152,6 +151,7 @@
     [prefs setScrollBackEnabled:YES];
 
     if ([bufferLengthMatrix selectedColumn] == 0) {
+      [prefs setScrollBackUnlimited:YES];
       sbLines = SCROLLBACK_MAX;
     } else {
       sbLines = [bufferLengthField integerValue];

@@ -2146,7 +2146,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 // Init and dealloc
 // ---
 
-// Adopt scrollback buffer to new 'max_sb_depth' value.
+// Allocate scrollback buffer to new number of lines.
 //
 // General idea:
 // - initially allocate memory for SCROLLBACK_CHANGE_STEP terminal screens
