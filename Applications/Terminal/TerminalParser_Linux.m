@@ -64,7 +64,7 @@ static const unichar *_set_translate(int charset)
 
 @end
 
-#define SCREEN(x, y) ((x) + (y)*width)
+#define SCREEN(x, y) ((x) + (y) * width)
 
 @implementation TerminalParser_Linux
 
@@ -247,8 +247,9 @@ static const unichar *_set_translate(int charset)
 {                        /* not vt100? */
   int count;
 
-  if (!vpar)
+  if (!vpar) {
     vpar++;
+  }
   count = (vpar > width - x) ? (width - x) : vpar;
 
   [ts ts_putChar:video_erase_char count:count offset:SCREEN(x, y)];
@@ -399,10 +400,11 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
 
 - (void)_csi_at:(unsigned int)nr
 {
-  if (nr > width - x)
+  if (nr > width - x) {
     nr = width - x;
-  else if (!nr)
+  } else if (!nr) {
     nr = 1;
+  }
   insert_char(currcons, nr);
 }
 
@@ -410,11 +412,11 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
 // ESC [ L	IL	Insert the indicated # of blank lines.
 - (void)_csi_L:(unsigned int)nr
 {
-  if (nr > height - y)
+  if (nr > height - y) {
     nr = height - y;
-  else if (!nr)
+  } else if (!nr) {
     nr = 1;
-
+  }
   scrdown(foo, y, bottom, nr);
 }
 
@@ -422,20 +424,22 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
 // ESC [ P	DCH	Delete the indicated # of characters on current line.
 - (void)_csi_P:(unsigned int)nr
 {
-  if (nr > width - x)
+  if (nr > width - x) {
     nr = width - x;
-  else if (!nr)
+  } else if (!nr) {
     nr = 1;
+  }
   delete_char(currcons, nr);
 }
 
 // ESC [ M	DL	Delete the indicated # of lines.
 - (void)_csi_M:(unsigned int)nr
 {
-  if (nr > height - y)
+  if (nr > height - y) {
     nr = height - y;
-  else if (!nr)
+  } else if (!nr) {
     nr = 1;
+  }
   scrup(foo, y, bottom, nr, NO);
 }
 
@@ -656,8 +660,9 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
     case 9:
       while (x < width - 1) {
         x++;
-        if (tab_stop[x >> 5] & (1 << (x & 31)))
+        if (tab_stop[x >> 5] & (1 << (x & 31))) {
           break;
+        }
       }
       [ts ts_gotoX:x Y:y];
       return;
@@ -786,8 +791,9 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
       if (c == ';') {
         vc_state = EStitle_buf;
         title_len = 0;
-      } else
+      } else {
         vc_state = ESnormal;
+      }
       return;
     case EStitle_buf:
       if (title_len == TITLE_BUF_SIZE) {
@@ -817,8 +823,9 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
       vc_state = ESnormal;
       return;
     case ESsquare:
-      for (npar = 0; npar < NPAR; npar++)
+      for (npar = 0; npar < NPAR; npar++) {
         par[npar] = 0;
+      }
       npar = 0;
       vc_state = ESgetpars;
       if (c == '[') { /* Function key */
@@ -826,8 +833,9 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
         return;
       }
       ques = (c == '?');
-      if (ques)
+      if (ques) {
         return;
+      }
     case ESgetpars:
       if (c == ';' && npar < NPAR - 1) {
         npar++;
@@ -836,8 +844,9 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
         par[npar] *= 10;
         par[npar] += c - '0';
         return;
-      } else
+      } else {
         vc_state = ESgotpars;
+      }
     case ESgotpars:
       vc_state = ESnormal;
       switch (c) {
@@ -861,10 +870,11 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
           break;
         case 'n':
           if (!ques) {
-            if (par[0] == 5)
+            if (par[0] == 5) {
               status_report(tty);
-            else if (par[0] == 6)
+            } else if (par[0] == 6) {
               cursor_report(currcons, tty);
+            }
           }
           return;
       }
@@ -875,53 +885,63 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
       switch (c) {
         case 'G':
         case '`':
-          if (par[0])
+          if (par[0]) {
             par[0]--;
+          }
           gotoxy(currcons, par[0], y);
           return;
         case 'A':
-          if (!par[0])
+          if (!par[0]) {
             par[0]++;
+          }
           gotoxy(currcons, x, y - par[0]);
           return;
         case 'B':
         case 'e':
-          if (!par[0])
+          if (!par[0]) {
             par[0]++;
+          }
           gotoxy(currcons, x, y + par[0]);
           return;
         case 'C':
         case 'a':
-          if (!par[0])
+          if (!par[0]) {
             par[0]++;
+          }
           gotoxy(currcons, x + par[0], y);
           return;
         case 'D':
-          if (!par[0])
+          if (!par[0]) {
             par[0]++;
+          }
           gotoxy(currcons, x - par[0], y);
           return;
         case 'E':
-          if (!par[0])
+          if (!par[0]) {
             par[0]++;
+          }
           gotoxy(currcons, 0, y + par[0]);
           return;
         case 'F':
-          if (!par[0])
+          if (!par[0]) {
             par[0]++;
+          }
           gotoxy(currcons, 0, y - par[0]);
           return;
         case 'd':
-          if (par[0])
+          if (par[0]) {
             par[0]--;
+          }
           gotoxay(currcons, x, par[0]);
           return;
         case 'H':
         case 'f':
-          if (par[0])
+          if (par[0]) {
             par[0]--;
-          if (par[1])
+          }
+          if (par[1]) {
             par[1]--;
+          }
           gotoxay(currcons, par[1], par[0]);
           return;
         case 'J':
@@ -940,13 +960,14 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
           csi_P(currcons, par[0]);
           return;
         case 'c':
-          if (!par[0])
+          if (!par[0]) {
             respond_ID(tty);
+          }
           return;
         case 'g':
-          if (!par[0])
+          if (!par[0]) {
             tab_stop[x >> 5] &= ~(1 << (x & 31));
-          else if (par[0] == 3) {
+          } else if (par[0] == 3) {
             tab_stop[0] = tab_stop[1] = tab_stop[2] = tab_stop[3] = tab_stop[4] = 0;
           }
           return;
@@ -963,11 +984,12 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
 #endif
           return;
         case 'r':
-          if (!par[0])
+          if (!par[0]) {
             par[0]++;
-          if (!par[1])
+          }
+          if (!par[1]) {
             par[1] = height;
-          /* Minimum allowed region is 2 lines */
+          } /* Minimum allowed region is 2 lines */
           if (par[0] < par[1] && par[1] <= height) {
             top = par[0] - 1;
             bottom = par[1];
@@ -1022,29 +1044,33 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
 #endif
       return;
     case ESsetG0:
-      if (c == '0')
+      if (c == '0') {
         G0_charset = GRAF_MAP;
-      else if (c == 'B')
+      } else if (c == 'B') {
         G0_charset = LAT1_MAP;
-      else if (c == 'U')
+      } else if (c == 'U') {
         G0_charset = IBMPC_MAP;
-      else if (c == 'K')
+      } else if (c == 'K') {
         G0_charset = USER_MAP;
-      if (charset == 0)
+      }
+      if (charset == 0) {
         translate = set_translate(G0_charset, currcons);
+      }
       vc_state = ESnormal;
       return;
     case ESsetG1:
-      if (c == '0')
+      if (c == '0') {
         G1_charset = GRAF_MAP;
-      else if (c == 'B')
+      } else if (c == 'B') {
         G1_charset = LAT1_MAP;
-      else if (c == 'U')
+      } else if (c == 'U') {
         G1_charset = IBMPC_MAP;
-      else if (c == 'K')
+      } else if (c == 'K') {
         G1_charset = USER_MAP;
-      if (charset == 1)
+      }
+      if (charset == 1) {
         translate = set_translate(G1_charset, currcons);
+      }
       vc_state = ESnormal;
       return;
     default:
@@ -1072,13 +1098,15 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
           } else if ((c & 0xfe) == 0xfc) {
             utf_count = 5;
             unich = (c & 0x01);
-          } else
+          } else {
             utf_count = 0;
+          }
           return;
         }
       } else if (!iconv_state || translate != translate_maps[0]) {
-        if (toggle_meta)
+        if (toggle_meta) {
           c |= 0x80;
+        }
         unich = translate[c];
       } else
 #define PUTCH                                        \
@@ -1140,9 +1168,9 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
             ch.ch = ntohl(unich);
             PUTCH
           }
-          if (ret >= 0)
+          if (ret >= 0) {
             break;
-
+          }
           if (errno == EILSEQ) { /* illegal input sequence. skip one byte and try again. */
             ch.ch = 0xfffd;
             PUTCH
@@ -1160,8 +1188,9 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
 
         /* adjust the buffer */
         if (in_size != input_buf_len) {
-          if (in_size)
+          if (in_size) {
             memmove(input_buf, inp, in_size);
+          }
           input_buf_len = in_size;
         }
         return;
@@ -1218,13 +1247,15 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
     unsigned char buf;
     for (i = 0; i < l; i++) {
       ucs = [s characterAtIndex:i];
-      if (ucs == '\n')
+      if (ucs == '\n') {
         ucs = '\r';
+      }
       if (ucs < 256) {
         buf = ucs;
         [ts ts_sendCString:&buf length:1];
-      } else
+      } else {
         NSBeep();
+      }
     }
   }
 }
@@ -1442,12 +1473,14 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
       NSLog(@"Falling back to ISO-8859-1 (Latin1).");
     }
   } else {
-    if (iconv_state)
+    if (iconv_state) {
       iconv_close(iconv_state);
+    }
     iconv_state = NULL;
 
-    if (iconv_input_state)
+    if (iconv_input_state) {
       iconv_close(iconv_input_state);
+    }
     iconv_input_state = NULL;
   }
 }
@@ -1462,8 +1495,9 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
 
 - initWithTerminalScreen:(id<TerminalScreen>)ats width:(int)w height:(int)h
 {
-  if (!(self = [super init]))
+  if (!(self = [super init])) {
     return nil;
+  }
   ts = ats;
 
   width = w;
@@ -1482,10 +1516,12 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
 
 - (void)dealloc
 {
-  if (iconv_state)
+  if (iconv_state) {
     iconv_close(iconv_state);
-  if (iconv_input_state)
+  }
+  if (iconv_input_state) {
     iconv_close(iconv_input_state);
+  }
   [super dealloc];
 }
 
@@ -1499,14 +1535,18 @@ static unsigned char color_table[] = {0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 
   top = 0;
   bottom = height;
 
-  if (x >= width)
+  if (x >= width) {
     x = width - 1;
-  if (x < 0)
+  }
+  if (x < 0) {
     x = 0;
-  if (y >= height)
+  }
+  if (y >= height) {
     y = height - 1;
-  if (y < 0)
+  }
+  if (y < 0) {
     y = 0;
+  }
 }
 
 @end

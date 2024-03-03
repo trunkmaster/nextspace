@@ -193,7 +193,7 @@ struct selection_range {
 @end
 
 @interface TerminalView (scrolling)
-- (void)setScroller : (NSScroller *)sc;
+- (void)setScroller:(NSScroller *)sc;
 @end
 
 @interface TerminalView (Input_Output) <RunLoopEvents>
@@ -204,9 +204,7 @@ struct selection_range {
 - (void)closeProgram;
 
 // Next 3 methods return PID of program
-- (int)runProgram:(NSString *)path
-    withArguments:(NSArray *)args
-    initialInput:(NSString *)d;
+- (int)runProgram:(NSString *)path withArguments:(NSArray *)args initialInput:(NSString *)d;
 - (int)runProgram:(NSString *)path
     withArguments:(NSArray *)args
       inDirectory:(NSString *)directory

@@ -30,8 +30,9 @@
   name = [serviceList objectAtIndex:current];
   if ([nameChangeTF superview] != nil) {
     new_name = [nameChangeTF stringValue];
-    if (![new_name length])
+    if (![new_name length]) {
       new_name = name;
+    }
   } else {
     new_name = name;
   }
@@ -67,7 +68,7 @@
   // "Use Selection"
   [d setObject:[NSString stringWithFormat:@"%li", [[selectionMatrix selectedCell] tag]]
         forKey:Input];
-  
+
   // "Execution"
   NSInteger execType = [executeTypeBtn indexOfSelectedItem];
   NSInteger outTag = [[outputMatrix selectedCell] tag];
@@ -535,7 +536,7 @@
   if (![savePanel accessoryView]) {
     [savePanel setAccessoryView:accView];
   }
-  
+
   if ([savePanel runModalForDirectory:[Defaults sessionsDirectory] file:nil] == NSOKButton) {
     NSEnumerator *rowsEnum = [saveServicesTable selectedRowEnumerator];
     id row;

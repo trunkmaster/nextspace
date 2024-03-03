@@ -86,14 +86,12 @@ static NSDictionary *servicesDictionary = nil;
     } else {
       menu_name = [NSString stringWithFormat:@"%@/%@", @"Terminal", name];
     }
-    [md setObject:[NSDictionary dictionaryWithObjectsAndKeys:menu_name, @"default", nil]
-           forKey:@"NSMenuItem"];
+    [md setObject:@{@"default" : menu_name} forKey:@"NSMenuItem"];
 
     // Key equivalent
     key = [info objectForKey:Key];
     if (key && [key length]) {
-      [md setObject:[NSDictionary dictionaryWithObjectsAndKeys:key, @"default", nil]
-             forKey:@"NSKeyEquivalent"];
+      [md setObject:@{@"default" : key} forKey:@"NSKeyEquivalent"];
     }
 
     // "Accept" block
@@ -129,8 +127,9 @@ static NSDictionary *servicesDictionary = nil;
     i = [[info objectForKey:ExecType] intValue];
     if (i == EXEC_IN_BACKGROUND) {
       i = [[info objectForKey:ReturnData] intValue];
-      if (types && i == 1)
+      if (types && i == 1) {
         [md setObject:types forKey:@"NSReturnTypes"];
+      }
     }
 
     if (![md objectForKey:@"NSSendTypes"] && ![md objectForKey:@"NSReturnTypes"]) {
@@ -367,7 +366,7 @@ static NSDictionary *servicesDictionary = nil;
               break;
             }
             cur.location = i;
-            for (; i<c && [s characterAtIndex:i]> 32; i++)
+            for (; i < c && [s characterAtIndex:i] > 32; i++)
               ;
             cur.length = i - cur.location;
             [ma addObject:[s substringWithRange:cur]];

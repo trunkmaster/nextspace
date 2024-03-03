@@ -170,10 +170,11 @@ static Defaults *shared = nil;
 
 - (BOOL)synchronize
 {
-  if ([defaults isKindOfClass:[NSUserDefaults class]])
+  if ([defaults isKindOfClass:[NSUserDefaults class]]) {
     return [(NSUserDefaults *)defaults synchronize];
-  else
+  } else {
     return [defaults writeToFile:filePath atomically:YES];
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -319,10 +320,11 @@ NSString *TerminalFontSizeKey = @"TerminalFontSize";
 {
   NSInteger width = [self integerForKey:WindowWidthKey];
 
-  if (width <= 0)
+  if (width <= 0) {
     return DEFAULT_COLUMNS;
-  else
-    return width;
+  }
+
+  return width;
 }
 - (void)setWindowWidth:(int)width
 {
@@ -332,10 +334,11 @@ NSString *TerminalFontSizeKey = @"TerminalFontSize";
 {
   NSInteger height = [self integerForKey:WindowHeightKey];
 
-  if (height <= 0)
+  if (height <= 0) {
     return DEFAULT_LINES;
-  else
-    return height;
+  }
+
+  return height;
 }
 - (void)setWindowHeight:(int)height
 {
@@ -367,10 +370,11 @@ NSString *TerminalFontSizeKey = @"TerminalFontSize";
     }
   }
 
-  if ((screenFont = [terminalFont screenFont]))
+  if ((screenFont = [terminalFont screenFont])) {
     return screenFont;
-  else
-    return terminalFont;
+  }
+
+  return terminalFont;
 }
 - (void)setTerminalFont:(NSFont *)font
 {
@@ -447,9 +451,9 @@ NSString *DoubleEscapeKey = @"DoubleEscape";
 }
 - (void)setCharacterSet:(NSString *)cSet
 {
-  if (!cSet)
+  if (!cSet) {
     cSet = @"utf-8";
-
+  }
   [self setObject:cSet forKey:CharacterSetKey];
 }
 - (BOOL)alternateAsMeta
@@ -521,9 +525,12 @@ NSString *TerminalFontUseBoldKey = @"TerminalFontUseBold";
   blueComponent = [NSNumber numberWithFloat:[rgbColor blueComponent]];
   alphaComponent = [NSNumber numberWithFloat:[rgbColor alphaComponent]];
 
-  return [NSDictionary dictionaryWithObjectsAndKeys:redComponent, @"Red", greenComponent, @"Green",
-                                                    blueComponent, @"Blue", alphaComponent,
-                                                    @"Alpha", nil];
+  return @{
+    @"Red" : redComponent,
+    @"Green" : greenComponent,
+    @"Blue" : blueComponent,
+    @"Alpha" : alphaComponent
+  };
 }
 + (NSColor *)colorFromDescription:(NSDictionary *)desc
 {
@@ -545,9 +552,9 @@ NSString *TerminalFontUseBoldKey = @"TerminalFontUseBold";
 {
   NSInteger style = [self integerForKey:CursorStyleKey];
 
-  if (style < 0)
+  if (style < 0) {
     style = 0;
-
+  }
   return style;
 }
 - (void)setCursorStyle:(int)style
@@ -558,9 +565,9 @@ NSString *TerminalFontUseBoldKey = @"TerminalFontUseBold";
 {
   NSDictionary *desc = [defaults objectForKey:CursorColorKey];
 
-  if (!desc)
+  if (!desc) {
     desc = [Defaults descriptionFromColor:[NSColor grayColor]];
-
+  }
   return [[Defaults colorFromDescription:desc] retain];
 }
 - (void)setCursorColor:(NSColor *)color
@@ -571,9 +578,9 @@ NSString *TerminalFontUseBoldKey = @"TerminalFontUseBold";
 {
   NSDictionary *desc = [self objectForKey:WindowBGColorKey];
 
-  if (!desc)
+  if (!desc) {
     desc = [Defaults descriptionFromColor:[NSColor whiteColor]];
-
+  }
   return [[Defaults colorFromDescription:desc] retain];
 }
 - (void)setWindowBackgroundColor:(NSColor *)color
@@ -584,9 +591,9 @@ NSString *TerminalFontUseBoldKey = @"TerminalFontUseBold";
 {
   NSDictionary *desc = [self objectForKey:SelectionBGColorKey];
 
-  if (!desc)
+  if (!desc) {
     desc = [Defaults descriptionFromColor:[NSColor lightGrayColor]];
-
+  }
   return [[Defaults colorFromDescription:desc] retain];
 }
 - (void)setWindowSelectionColor:(NSColor *)color
@@ -606,9 +613,9 @@ NSString *TerminalFontUseBoldKey = @"TerminalFontUseBold";
 {
   NSDictionary *desc = [self objectForKey:TextNormalColorKey];
 
-  if (!desc)
+  if (!desc) {
     desc = [Defaults descriptionFromColor:[NSColor blackColor]];
-
+  }
   return [[Defaults colorFromDescription:desc] retain];
 }
 - (void)setTextNormalColor:(NSColor *)color
@@ -619,9 +626,9 @@ NSString *TerminalFontUseBoldKey = @"TerminalFontUseBold";
 {
   NSDictionary *desc = [self objectForKey:TextBoldColorKey];
 
-  if (!desc)
+  if (!desc) {
     desc = [Defaults descriptionFromColor:[NSColor blackColor]];
-
+  }
   return [[Defaults colorFromDescription:desc] retain];
 }
 - (void)setTextBoldColor:(NSColor *)color
@@ -632,9 +639,9 @@ NSString *TerminalFontUseBoldKey = @"TerminalFontUseBold";
 {
   NSDictionary *desc = [self objectForKey:TextBlinkColorKey];
 
-  if (!desc)
+  if (!desc) {
     desc = [Defaults descriptionFromColor:[NSColor yellowColor]];
-
+  }
   return [[Defaults colorFromDescription:desc] retain];
 }
 - (void)setTextBlinklColor:(NSColor *)color
@@ -645,9 +652,9 @@ NSString *TerminalFontUseBoldKey = @"TerminalFontUseBold";
 {
   NSDictionary *desc = [self objectForKey:TextInverseBGColorKey];
 
-  if (!desc)
+  if (!desc) {
     desc = [Defaults descriptionFromColor:[NSColor darkGrayColor]];
-
+  }
   return [[Defaults colorFromDescription:desc] retain];
 }
 - (void)setTextInverseBackground:(NSColor *)color
@@ -658,9 +665,9 @@ NSString *TerminalFontUseBoldKey = @"TerminalFontUseBold";
 {
   NSDictionary *desc = [self objectForKey:TextInverseFGColorKey];
 
-  if (!desc)
+  if (!desc) {
     desc = [Defaults descriptionFromColor:[NSColor whiteColor]];
-
+  }
   return [[Defaults colorFromDescription:desc] retain];
 }
 - (void)setTextInverseForeground:(NSColor *)color
@@ -691,7 +698,6 @@ NSString *ScrollBottomOnInputKey = @"ScrollBottomOnInput";
   if ([self objectForKey:ScrollBackLinesKey] == nil) {
     [self setInteger:256 forKey:ScrollBackLinesKey];
   }
-
   return [self integerForKey:ScrollBackLinesKey];
 }
 - (void)setScrollBackLines:(int)lines
@@ -699,10 +705,10 @@ NSString *ScrollBottomOnInputKey = @"ScrollBottomOnInput";
   NSUInteger scrollBackLines;
 
   if ([self scrollBackEnabled] == YES) {
-      scrollBackLines = lines;
-      if (scrollBackLines < 0) {
-        scrollBackLines = 0;
-      }
+    scrollBackLines = lines;
+    if (scrollBackLines < 0) {
+      scrollBackLines = 0;
+    }
   } else {  // scrollback disabled
     scrollBackLines = 0;
   }
@@ -711,9 +717,9 @@ NSString *ScrollBottomOnInputKey = @"ScrollBottomOnInput";
 }
 - (BOOL)scrollBackEnabled
 {
-  if ([self objectForKey:ScrollBackEnabledKey] == nil)
+  if ([self objectForKey:ScrollBackEnabledKey] == nil) {
     [self setScrollBackEnabled:YES];
-
+  }
   return [self boolForKey:ScrollBackEnabledKey];
 }
 - (void)setScrollBackEnabled:(BOOL)yn
@@ -722,12 +728,12 @@ NSString *ScrollBottomOnInputKey = @"ScrollBottomOnInput";
 }
 - (BOOL)scrollBackUnlimited
 {
-  if ([self scrollBackEnabled] == NO)
+  if ([self scrollBackEnabled] == NO) {
     return NO;
-
-  if ([self objectForKey:ScrollBackUnlimitedKey] == nil)
+  }
+  if ([self objectForKey:ScrollBackUnlimitedKey] == nil) {
     [self setBool:NO forKey:ScrollBackUnlimitedKey];
-
+  }
   return [self boolForKey:ScrollBackUnlimitedKey];
 }
 - (void)setScrollBackUnlimited:(BOOL)yn
@@ -736,9 +742,9 @@ NSString *ScrollBottomOnInputKey = @"ScrollBottomOnInput";
 }
 - (BOOL)scrollBottomOnInput
 {
-  if ([self objectForKey:ScrollBottomOnInputKey] == nil)
+  if ([self objectForKey:ScrollBottomOnInputKey] == nil) {
     [self setBool:YES forKey:ScrollBottomOnInputKey];
-
+  }
   return [self boolForKey:ScrollBottomOnInputKey];
 }
 - (void)setScrollBottomOnInput:(BOOL)yn
@@ -759,12 +765,12 @@ NSString *LoginShellKey = @"LoginShell";
 {
   NSString *shell = [self stringForKey:ShellKey];
 
-  if (!shell && getenv("SHELL"))
+  if (!shell && getenv("SHELL")) {
     shell = [NSString stringWithCString:getenv("SHELL")];
-
-  if (!shell)
+  }
+  if (!shell) {
     shell = @"/bin/sh";
-
+  }
   return shell;
 }
 - (void)setShell:(NSString *)sh
@@ -793,9 +799,9 @@ NSString *WordCharactersKey = @"WordCharacters";
 }
 - (void)setWordCharacters:(NSString *)characters
 {
-  if (characters == nil)
+  if (characters == nil) {
     characters = @"";
-
+  }
   [self setObject:characters forKey:WordCharactersKey];
 }
 @end
@@ -810,9 +816,9 @@ NSString *HideOnAutolaunchKey = @"HideOnAutolaunch";
 @implementation Defaults (Startup)
 - (StartupAction)startupAction
 {
-  if ([self integerForKey:StartupActionKey] == -1)
+  if ([self integerForKey:StartupActionKey] == -1) {
     [self setStartupAction:OnStartCreateShell];
-
+  }
   return [self integerForKey:StartupActionKey];
 }
 - (void)setStartupAction:(StartupAction)action

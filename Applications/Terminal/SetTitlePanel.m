@@ -34,9 +34,9 @@
   }
 
   prefs = [[NSApp delegate] preferencesForWindow:[NSApp mainWindow] live:YES];
-  if (!prefs)
+  if (!prefs) {
     prefs = [[NSApp delegate] preferencesForWindow:[NSApp mainWindow] live:NO];
-
+  }
   titleBarMask = [prefs titleBarElementsMask];
   [titleField setStringValue:[prefs customTitle]];
 
@@ -90,17 +90,17 @@
   Defaults *prefs;
 
   prefs = [[NSApp delegate] preferencesForWindow:[notif object] live:YES];
-  if (!prefs)
+  if (!prefs) {
     prefs = [[NSApp delegate] preferencesForWindow:[notif object] live:NO];
-
+  }
   // Main window is not terminal window
-  if (prefs == nil)
+  if (prefs == nil) {
     return;
-
+  }
   // Main terminal window left unchanged
-  if (mainWindow == [notif object])
+  if (mainWindow == [notif object]) {
     return;
-
+  }
   mainWindow = [notif object];
   titleBarMask = [prefs titleBarElementsMask];
   [titleField setStringValue:[prefs customTitle]];
