@@ -16,6 +16,7 @@
 
 #include <limits.h>
 #include <math.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -28,9 +29,10 @@
 #include <sys/wait.h>
 
 #import <AppKit/AppKit.h>
-#include "Terminal.h"
+#include "Foundation/NSString.h"
 #include "Foundation/NSObjCRuntime.h"
 #import <GNUstepBase/Unicode.h>
+#import <SystemKit/OSEFileSystemMonitor.h>
 
 #import "TerminalWindow.h"
 #import "TerminalView.h"
@@ -1229,6 +1231,17 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   }
 
   [terminalParser handleKeyEvent:e];
+
+  // Catch Retrun and Conrtol+C key press
+  // if ([s characterAtIndex:0] == 0xd ||
+  //     ([s characterAtIndex:0] == 0x63 && ([e modifierFlags] & NSControlKeyMask))) {
+  //   if (master_fd != -1) {
+  //     NSLog(@"Return key pressed. master_fd: %i, child_pid: %i, pgroup: %i", master_fd, child_pid,
+  //           tcgetpgrp(master_fd));
+  //   }
+  //   // return (master_fd == -1) || (tcgetpgrp(master_fd) == child_pid) ? NO : YES;
+  //   [NSApp checkTerminalWindowsState];
+  // }
 }
 
 - (BOOL)acceptsFirstResponder
@@ -1840,6 +1853,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
 - (void)writeData
 {
+  NSLog(@"Will write data");
   int l, new_size;
   l = write(master_fd, write_buf, write_buf_len);
   if (l < 0) {
@@ -1989,6 +2003,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
   rl = [NSRunLoop currentRunLoop];
   [rl addEvent:(void *)(intptr_t)master_fd type:ET_RDESC watcher:self forMode:NSDefaultRunLoopMode];
+  [rl addEvent:(void *)(intptr_t)master_fd type:ET_WDESC watcher:self forMode:NSDefaultRunLoopMode];
 
   [[NSNotificationCenter defaultCenter] postNotificationName:TerminalViewBecameNonIdleNotification
                                                       object:self];
@@ -2791,6 +2806,33 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
 - (BOOL)isUserProgramRunning
 {
+  NSString *childPath, *childText, *subchildPID = nil, *cmdPath = nil;
+  NSData *cmdData;
+  NSArray *children;
+  childPath = [NSString stringWithFormat:@"/proc/%i/task/%i/children", child_pid, child_pid];
+  childText = [NSString stringWithContentsOfFile:childPath];
+
+  while (childText.length > 0) {
+    children = [childText componentsSeparatedByString:@" "];
+    if (children.count > 0) {
+      subchildPID = children.firstObject;
+    } else {
+      break;
+    }
+    childPath = [NSString stringWithFormat:@"/proc/%@/task/%@/children", subchildPID, subchildPID];
+    childText = [NSString stringWithContentsOfFile:childPath];
+  }
+  
+  if (subchildPID.length > 0) {
+    cmdPath = [NSString stringWithFormat:@"/proc/%@/cmdline", subchildPID];
+    cmdData = [NSData dataWithContentsOfFile:cmdPath];
+    NSLog(@"New subchild PID: %@, cmdline: %@", subchildPID,
+          [NSString stringWithContentsOfFile:cmdPath]);
+    fprintf(stderr, "cmdline: %s\n", (const char *)[cmdData bytes]);
+  } else {
+    NSLog(@"%@ contents:%@:", childPath, childText);
+  }
+
   return (master_fd == -1) || (tcgetpgrp(master_fd) == child_pid) ? NO : YES;
 }
 
