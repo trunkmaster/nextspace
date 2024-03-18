@@ -1233,14 +1233,11 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   [terminalParser handleKeyEvent:e];
 
   // Catch Retrun and Conrtol+C key press
-  // if ([s characterAtIndex:0] == 0xd ||
-  //     ([s characterAtIndex:0] == 0x63 && ([e modifierFlags] & NSControlKeyMask))) {
-  //   if (master_fd != -1) {
-  //     NSLog(@"Return key pressed. master_fd: %i, child_pid: %i, pgroup: %i", master_fd, child_pid,
-  //           tcgetpgrp(master_fd));
-  //   }
-  //   // return (master_fd == -1) || (tcgetpgrp(master_fd) == child_pid) ? NO : YES;
-  //   [NSApp checkTerminalWindowsState];
+  // ([s characterAtIndex:0] == 0x63 && ([e modifierFlags] & NSControlKeyMask))) - Control+C
+  // if ([s characterAtIndex:0] == 0xd) {
+    // NSLog(@"Return key pressed. master_fd: %i, child_pid: %i, pgroup: %i", master_fd, child_pid,
+    //       tcgetpgrp(master_fd));
+  //   [[_window windowController] setDocumentEdited:[self isUserProgramRunning]];
   // }
 }
 
@@ -1800,6 +1797,10 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
     for (i = 0; i < size; i++) {
       [terminalParser processByte:buf[i]];
+      // Line Feed, Vertical Tabulation, Form Feed, Carriage Return
+      if (buf[i] == 10 || buf[i] == 11 || buf[i] == 12 || buf[i] == 13) {
+        [[_window windowController] setDocumentEdited:[self isUserProgramRunning]];
+      }
     }
     total += size;
     /*
@@ -2809,12 +2810,15 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   NSString *childPath, *childText, *subchildPID = nil, *cmdPath = nil;
   NSData *cmdData;
   NSArray *children;
+
   childPath = [NSString stringWithFormat:@"/proc/%i/task/%i/children", child_pid, child_pid];
   childText = [NSString stringWithContentsOfFile:childPath];
-
   while (childText.length > 0) {
     children = [childText componentsSeparatedByString:@" "];
     if (children.count > 0) {
+      if (children.count > 1) {
+        NSLog(@"WARNING: %lu subchildren found! %@", children.count, children);
+      }
       subchildPID = children.firstObject;
     } else {
       break;
@@ -2825,13 +2829,28 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   
   if (subchildPID.length > 0) {
     cmdPath = [NSString stringWithFormat:@"/proc/%@/cmdline", subchildPID];
-    cmdData = [NSData dataWithContentsOfFile:cmdPath];
-    NSLog(@"New subchild PID: %@, cmdline: %@", subchildPID,
-          [NSString stringWithContentsOfFile:cmdPath]);
-    fprintf(stderr, "cmdline: %s\n", (const char *)[cmdData bytes]);
+    NSLog(@"New subchild PID: %@", subchildPID);
   } else {
+    cmdPath = [NSString stringWithFormat:@"/proc/%i/cmdline", child_pid];
     NSLog(@"%@ contents:%@:", childPath, childText);
   }
+
+  // Normalize `cmdline` contents
+  cmdData = [NSData dataWithContentsOfFile:cmdPath];
+  char *data = (char *)[cmdData bytes];
+  for (int i = 0; i < [cmdData length]; i++) {
+    if (data[i] == 0) {
+      data[i] = ' ';
+    }
+  }
+  NSString *command = [[NSString alloc] initWithBytes:[cmdData bytes]
+                                               length:[cmdData length]
+                                             encoding:NSASCIIStringEncoding];
+  [programPath release];
+  programPath =
+      [[NSString alloc] initWithString:[command componentsSeparatedByString:@" "].firstObject];
+  [command release];
+  [[_window windowController] updateTitleBar:nil];
 
   return (master_fd == -1) || (tcgetpgrp(master_fd) == child_pid) ? NO : YES;
 }

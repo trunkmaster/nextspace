@@ -73,6 +73,7 @@ extern NSString *TerminalWindowSizeDidChangeNotification;
 - (NSString *)fileName;
 - (NSString *)windowSizeString;
 
+- (void)updateTitleBar:(NSNotification *)n;
 - (void)updateWindowSize:(NSSize)size;
 - (void)setFont:(NSFont *)newFont updateWindowSize:(BOOL)resizeWindow;
 

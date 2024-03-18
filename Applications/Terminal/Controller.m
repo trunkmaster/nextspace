@@ -416,11 +416,11 @@
   }
 
   // Activate timer for windows state checking
-  timer = [NSTimer scheduledTimerWithTimeInterval:2.0
+  timer = [NSTimer scheduledTimerWithTimeInterval:1.0
                                            target:self
                                          selector:@selector(checkTerminalWindowsState)
                                          userInfo:nil
-                                          repeats:YES];
+                                          repeats:NO];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)n
