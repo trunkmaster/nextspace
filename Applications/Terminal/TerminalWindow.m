@@ -266,7 +266,7 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
 - (void)updateTitleBar:(NSNotification *)n
 {
   NSString *title;
-  NSString *miniTitle = [self shellPath];
+  NSString *shellPath = [self shellPath];
   NSString *terminalWindowTitle = [tView xtermTitle];
   NSString *file;
 
@@ -274,16 +274,15 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
 
   title = [NSString new];
 
-  if (n)
-    titleBarElementsMask =
-        [preferences titleBarElementsMask];  // called from the notification, rather than directly
-
-  if (titleBarElementsMask & TitleBarShellPath)
-    title = [title stringByAppendingFormat:@"%@ ", [self shellPath]];
-
-  if (titleBarElementsMask & TitleBarDeviceName)
+  if (n) {
+    titleBarElementsMask = [preferences titleBarElementsMask];
+  }
+  if (titleBarElementsMask & TitleBarShellPath) {
+    title = [title stringByAppendingFormat:@"%@ ", shellPath];
+  }
+  if (titleBarElementsMask & TitleBarDeviceName) {
     title = [title stringByAppendingFormat:@"(%@) ", [self deviceName]];
-
+  }
   if (titleBarElementsMask & TitleBarWindowSize) {
     title = [title stringByAppendingFormat:@"%@ ", [self windowSizeString]];
   }
@@ -312,7 +311,7 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
   }
 
   [win setTitle:title];
-  [win setMiniwindowTitle:miniTitle];
+  [win setMiniwindowTitle:shellPath];
   [win setDocumentEdited:[tView isUserProgramRunning]];
 }
 
