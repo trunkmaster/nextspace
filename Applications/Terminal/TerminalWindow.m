@@ -313,6 +313,7 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
 
   [win setTitle:title];
   [win setMiniwindowTitle:miniTitle];
+  [win setDocumentEdited:[tView isUserProgramRunning]];
 }
 
 - (void)windowWillClose:(NSNotification *)n

@@ -1799,7 +1799,8 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       [terminalParser processByte:buf[i]];
       // Line Feed, Vertical Tabulation, Form Feed, Carriage Return
       if (buf[i] == 10 || buf[i] == 11 || buf[i] == 12 || buf[i] == 13) {
-        [[_window windowController] setDocumentEdited:[self isUserProgramRunning]];
+        [[_window windowController] updateTitleBar:nil];
+        // [[_window windowController] setDocumentEdited:[self isUserProgramRunning]];
       }
     }
     total += size;
@@ -2782,8 +2783,53 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   return xtermIconTitle;
 }
 
+- (void)_updateprogramPath
+{
+  NSString *childPath, *childText, *cmdPath, *cmdText;
+  NSData *cmdData;
+  NSString *childPID = [[NSNumber numberWithInt:child_pid] stringValue];
+  NSMutableArray *children = [NSMutableArray new];
+
+  do {
+    childPath = [NSString stringWithFormat:@"/proc/%@/task/%@/children", childPID, childPID];
+    childText = [NSString stringWithContentsOfFile:childPath];
+
+    [children setArray:[childText componentsSeparatedByString:@" "]];
+    [children removeObjectIdenticalTo:@""];
+
+    if (children.count > 0) {
+      childPID = children.firstObject;
+    }
+  } while (children.count > 0);
+  [children release];
+
+  cmdPath = [NSString stringWithFormat:@"/proc/%@/cmdline", childPID];
+
+  // Normalize `cmdline` contents
+  cmdData = [NSData dataWithContentsOfFile:cmdPath];
+  char *data = (char *)[cmdData bytes];
+  for (int i = 0; i < [cmdData length]; i++) {
+    if (data[i] == 0) {
+      data[i] = ' ';
+    }
+  }
+  NSString *command = [[NSString alloc] initWithBytes:[cmdData bytes]
+                                               length:[cmdData length]
+                                             encoding:NSASCIIStringEncoding];
+  NSLog(@"cmdline: `%@`", command);
+  cmdText =
+      [[NSString alloc] initWithString:[command componentsSeparatedByString:@" "].firstObject];
+  [command release];
+
+  if (cmdText && [cmdText isEqualToString:@""] == NO) {
+    [programPath release];
+    programPath = cmdText;
+  }
+}
+
 - (NSString *)programPath
 {
+  [self _updateprogramPath];
   return programPath;
 }
 
@@ -2807,51 +2853,6 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
 - (BOOL)isUserProgramRunning
 {
-  NSString *childPath, *childText, *subchildPID = nil, *cmdPath = nil;
-  NSData *cmdData;
-  NSArray *children;
-
-  childPath = [NSString stringWithFormat:@"/proc/%i/task/%i/children", child_pid, child_pid];
-  childText = [NSString stringWithContentsOfFile:childPath];
-  while (childText.length > 0) {
-    children = [childText componentsSeparatedByString:@" "];
-    if (children.count > 0) {
-      if (children.count > 1) {
-        NSLog(@"WARNING: %lu subchildren found! %@", children.count, children);
-      }
-      subchildPID = children.firstObject;
-    } else {
-      break;
-    }
-    childPath = [NSString stringWithFormat:@"/proc/%@/task/%@/children", subchildPID, subchildPID];
-    childText = [NSString stringWithContentsOfFile:childPath];
-  }
-  
-  if (subchildPID.length > 0) {
-    cmdPath = [NSString stringWithFormat:@"/proc/%@/cmdline", subchildPID];
-    NSLog(@"New subchild PID: %@", subchildPID);
-  } else {
-    cmdPath = [NSString stringWithFormat:@"/proc/%i/cmdline", child_pid];
-    NSLog(@"%@ contents:%@:", childPath, childText);
-  }
-
-  // Normalize `cmdline` contents
-  cmdData = [NSData dataWithContentsOfFile:cmdPath];
-  char *data = (char *)[cmdData bytes];
-  for (int i = 0; i < [cmdData length]; i++) {
-    if (data[i] == 0) {
-      data[i] = ' ';
-    }
-  }
-  NSString *command = [[NSString alloc] initWithBytes:[cmdData bytes]
-                                               length:[cmdData length]
-                                             encoding:NSASCIIStringEncoding];
-  [programPath release];
-  programPath =
-      [[NSString alloc] initWithString:[command componentsSeparatedByString:@" "].firstObject];
-  [command release];
-  [[_window windowController] updateTitleBar:nil];
-
   return (master_fd == -1) || (tcgetpgrp(master_fd) == child_pid) ? NO : YES;
 }
 
