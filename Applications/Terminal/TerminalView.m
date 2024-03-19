@@ -2783,9 +2783,9 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   return xtermIconTitle;
 }
 
-- (void)_updateprogramPath
+- (NSString *)programPath
 {
-  NSString *childPath, *childText, *cmdPath, *cmdText;
+  NSString *childPath, *childText, *cmdPath, *cmdText, *command;
   NSData *cmdData;
   NSString *childPID = [[NSNumber numberWithInt:child_pid] stringValue];
   NSMutableArray *children = [NSMutableArray new];
@@ -2805,7 +2805,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
   cmdPath = [NSString stringWithFormat:@"/proc/%@/cmdline", childPID];
 
-  // Normalize `cmdline` contents
+  // Normalize `cmdline` contents - replace NULL's with spaces
   cmdData = [NSData dataWithContentsOfFile:cmdPath];
   char *data = (char *)[cmdData bytes];
   for (int i = 0; i < [cmdData length]; i++) {
@@ -2813,10 +2813,12 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
       data[i] = ' ';
     }
   }
-  NSString *command = [[NSString alloc] initWithBytes:[cmdData bytes]
-                                               length:[cmdData length]
-                                             encoding:NSASCIIStringEncoding];
-  NSLog(@"cmdline: `%@`", command);
+
+  // Get command from `cmdline`
+  command = [[NSString alloc] initWithBytes:[cmdData bytes]
+                                     length:[cmdData length]
+                                   encoding:NSASCIIStringEncoding];
+  // NSLog(@"cmdline: `%@`", command);
   cmdText =
       [[NSString alloc] initWithString:[command componentsSeparatedByString:@" "].firstObject];
   [command release];
@@ -2825,11 +2827,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     [programPath release];
     programPath = cmdText;
   }
-}
 
-- (NSString *)programPath
-{
-  [self _updateprogramPath];
   return programPath;
 }
 
