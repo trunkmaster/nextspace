@@ -270,7 +270,7 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
   NSString *terminalWindowTitle = [tView xtermTitle];
   NSString *file;
 
-  NSLog(@"updateTitleBar");
+  // NSLog(@"updateTitleBar");
 
   title = [NSString new];
 

@@ -1799,8 +1799,8 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       [terminalParser processByte:buf[i]];
       // Line Feed, Vertical Tabulation, Form Feed, Carriage Return
       if (buf[i] == 10 || buf[i] == 11 || buf[i] == 12 || buf[i] == 13) {
+        // fprintf(stderr, "%i\n", buf[i]);
         [[_window windowController] updateTitleBar:nil];
-        // [[_window windowController] setDocumentEdited:[self isUserProgramRunning]];
       }
     }
     total += size;
@@ -2787,9 +2787,15 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 {
   NSString *childPath, *childText, *cmdPath, *cmdText, *command;
   NSData *cmdData;
-  NSString *childPID = [[NSNumber numberWithInt:child_pid] stringValue];
-  NSMutableArray *children = [NSMutableArray new];
+  NSString *childPID;
+  NSMutableArray *children;
 
+  if (child_pid == 0) {
+    return programPath;
+  }
+
+  childPID = [[NSNumber numberWithInt:child_pid] stringValue];
+  children = [NSMutableArray new];
   do {
     childPath = [NSString stringWithFormat:@"/proc/%@/task/%@/children", childPID, childPID];
     childText = [NSString stringWithContentsOfFile:childPath];
@@ -2808,6 +2814,10 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   // Normalize `cmdline` contents - replace NULL's with spaces
   cmdData = [NSData dataWithContentsOfFile:cmdPath];
   char *data = (char *)[cmdData bytes];
+  NSLog(@"cmdPath: %@, cmdData: %s", cmdPath, data);
+  if (data == NULL) {
+    return programPath;
+  }
   for (int i = 0; i < [cmdData length]; i++) {
     if (data[i] == 0) {
       data[i] = ' ';
