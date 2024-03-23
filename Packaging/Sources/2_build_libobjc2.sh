@@ -21,8 +21,8 @@ GIT_PKG_NAME=libobjc2-${libobjc2_version}
 
 if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
 	# Use forked and fixed repo until upstream create a new release tag wit fix.
-#	curl -L https://github.com/gnustep/libobjc2/archive/v${libobjc2_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
-	curl -L https://github.com/trunkmaster/libobjc2/archive/v${libobjc2_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
+	curl -L https://github.com/gnustep/libobjc2/archive/v${libobjc2_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
+#	curl -L https://github.com/trunkmaster/libobjc2/archive/v${libobjc2_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
 	curl -L https://github.com/Tessil/robin-map/archive/v1.2.1.tar.gz -o ${BUILD_ROOT}/libobjc2_robin-map.tar.gz
 
 	cd ${BUILD_ROOT}
