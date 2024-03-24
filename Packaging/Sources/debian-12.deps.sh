@@ -36,6 +36,7 @@ GNUSTEP_BASE_DEPS="
     libxslt1-dev
     libavahi-client-dev
     libcups2-dev
+    libgnutls28-dev
 "
 #--- gnustep-gui
 GNUSTEP_GUI_DEPS="
@@ -78,6 +79,7 @@ APPS_BUILD_DEPS="
     libxrender-dev
     libxdamage-dev
     libexif-dev
+    libpam0g-dev
 "
 APPS_RUN_DEPS="
     fontconfig
