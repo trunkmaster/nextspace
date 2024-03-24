@@ -1800,7 +1800,9 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       // Line Feed, Vertical Tabulation, Form Feed, Carriage Return
       if (buf[i] == 10 || buf[i] == 11 || buf[i] == 12 || buf[i] == 13) {
         // fprintf(stderr, "%i\n", buf[i]);
+        // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         [[_window windowController] updateTitleBar:nil];
+        // });
       }
     }
     total += size;
@@ -1943,7 +1945,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   cdirectory = [directory cString];
 
   cpath = [path cString];
-  programPath = [path copy];
+  programPath = [[path lastPathComponent] copy];
   if (arg0) {
     cargs[0] = [arg0 cString];
   } else {
@@ -2791,11 +2793,12 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   NSMutableArray *children;
 
   if (child_pid == 0) {
-    return programPath;
+    goto done;
   }
 
   childPID = [[NSNumber numberWithInt:child_pid] stringValue];
   children = [NSMutableArray new];
+  // fprintf(stderr, "%s", childPID.cString);
   do {
     childPath = [NSString stringWithFormat:@"/proc/%@/task/%@/children", childPID, childPID];
     childText = [NSString stringWithContentsOfFile:childPath];
@@ -2805,18 +2808,23 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
     if (children.count > 0) {
       childPID = children.firstObject;
+      // fprintf(stderr, " > %s", childPID.cString);
     }
   } while (children.count > 0);
   [children release];
+  // fprintf(stderr, "\n");
+  // if (childPID.intValue == child_pid) {
+  //   goto done;
+  // }
 
   cmdPath = [NSString stringWithFormat:@"/proc/%@/cmdline", childPID];
 
   // Normalize `cmdline` contents - replace NULL's with spaces
   cmdData = [NSData dataWithContentsOfFile:cmdPath];
   char *data = (char *)[cmdData bytes];
-  NSLog(@"cmdPath: %@, cmdData: %s", cmdPath, data);
+  // NSLog(@"cmdPath: %@, cmdData: %s", cmdPath, data);
   if (data == NULL) {
-    return programPath;
+    goto done;
   }
   for (int i = 0; i < [cmdData length]; i++) {
     if (data[i] == 0) {
@@ -2829,15 +2837,15 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
                                      length:[cmdData length]
                                    encoding:NSASCIIStringEncoding];
   // NSLog(@"cmdline: `%@`", command);
-  cmdText =
-      [[NSString alloc] initWithString:[command componentsSeparatedByString:@" "].firstObject];
+  cmdText = [NSString stringWithString:[command componentsSeparatedByString:@" "].firstObject];
   [command release];
 
   if (cmdText && [cmdText isEqualToString:@""] == NO) {
     [programPath release];
-    programPath = cmdText;
+    programPath = [[NSString alloc] initWithString:[cmdText lastPathComponent]];
   }
 
+done:
   return programPath;
 }
 
