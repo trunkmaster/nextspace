@@ -177,6 +177,7 @@ struct selection_range {
 - (NSString *)xtermTitle;
 - (NSString *)xtermIconTitle;
 - (NSString *)programPath;
+- (void)updateProgramPath;
 - (NSString *)deviceName;
 - (NSSize)windowSize;
 

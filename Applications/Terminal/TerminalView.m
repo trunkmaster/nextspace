@@ -29,6 +29,8 @@
 #include <sys/wait.h>
 
 #import <AppKit/AppKit.h>
+#include "Foundation/NSFileManager.h"
+#include "Foundation/NSNotification.h"
 #include "Foundation/NSString.h"
 #include "Foundation/NSObjCRuntime.h"
 #import <GNUstepBase/Unicode.h>
@@ -1738,6 +1740,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 {
   char buf[256];
   int size, total, i;
+  BOOL _updateTitlebar = NO;
 
   total = 0;
   num_scrolls = 0;
@@ -1800,9 +1803,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       // Line Feed, Vertical Tabulation, Form Feed, Carriage Return
       if (buf[i] == 10 || buf[i] == 11 || buf[i] == 12 || buf[i] == 13) {
         // fprintf(stderr, "%i\n", buf[i]);
-        // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-        [[_window windowController] updateTitleBar:nil];
-        // });
+        _updateTitlebar = YES;
       }
     }
     total += size;
@@ -1818,6 +1819,12 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
     */
     if (total >= 8192 || (num_scrolls + abs(pending_scroll)) > 10)
       break;
+  }
+
+  if (_updateTitlebar != NO) {
+    // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+      [self updateProgramPath];
+    // });
   }
 
   if (cursor_x != current_x || cursor_y != current_y) {
@@ -2785,15 +2792,17 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   return xtermIconTitle;
 }
 
-- (NSString *)programPath
+- (void)updateProgramPath
 {
   NSString *childPath, *childText, *cmdPath, *cmdText, *command;
   NSData *cmdData;
   NSString *childPID;
   NSMutableArray *children;
 
+  // fprintf(stderr, "--- updateProgramPath\n");
+
   if (child_pid == 0) {
-    goto done;
+    return;
   }
 
   childPID = [[NSNumber numberWithInt:child_pid] stringValue];
@@ -2820,11 +2829,14 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   cmdPath = [NSString stringWithFormat:@"/proc/%@/cmdline", childPID];
 
   // Normalize `cmdline` contents - replace NULL's with spaces
+  if ([[NSFileManager defaultManager] fileExistsAtPath:cmdPath] == NO) {
+    return;
+  }
   cmdData = [NSData dataWithContentsOfFile:cmdPath];
   char *data = (char *)[cmdData bytes];
   // NSLog(@"cmdPath: %@, cmdData: %s", cmdPath, data);
   if (data == NULL) {
-    goto done;
+    return;
   }
   for (int i = 0; i < [cmdData length]; i++) {
     if (data[i] == 0) {
@@ -2841,11 +2853,19 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   [command release];
 
   if (cmdText && [cmdText isEqualToString:@""] == NO) {
-    [programPath release];
-    programPath = [[NSString alloc] initWithString:[cmdText lastPathComponent]];
+    NSString *newProgramPath = [cmdText lastPathComponent];
+    // if ([programPath isEqualToString:newProgramPath] == NO) {
+      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+      [programPath release];
+      programPath = [[NSString alloc] initWithString:newProgramPath];
+      // NSLog(@"New programPath: `%@`", programPath);
+      [nc postNotificationName:TerminalViewTitleDidChangeNotification object:self];
+    // }
   }
+}
 
-done:
+- (NSString *)programPath
+{
   return programPath;
 }
 
