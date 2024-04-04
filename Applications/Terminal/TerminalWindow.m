@@ -240,12 +240,12 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
 }
 
 // --- Notifications ---
-- (void)viewSizeDidChange:(NSNotification *)n
+- (void)viewSizeDidChange:(NSNotification *)aNotification
 {
-  [self updateWindowSize:[[n object] windowSize]];
+  [self updateWindowSize:[[aNotification object] windowSize]];
 }
 
-- (void)updateTitleBar:(NSNotification *)n
+- (void)updateTitleBar:(NSNotification *)aNotification
 {
   NSString *title;
   NSString *shellPath = [self shellPath];
@@ -256,7 +256,7 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
 
   title = [NSString new];
 
-  if (n) {
+  if (aNotification) {
     titleBarElementsMask = [preferences titleBarElementsMask];
   }
   if (titleBarElementsMask & TitleBarShellPath) {
@@ -297,7 +297,7 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
   [win setDocumentEdited:[tView isUserProgramRunning]];
 }
 
-- (void)windowWillClose:(NSNotification *)n
+- (void)windowWillClose:(NSNotification *)aNotification
 {
   // NSLog(@"Window WILL close.");
 
@@ -328,7 +328,7 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
   return YES;
 }
 
-- (void)viewBecameIdle
+- (void)viewBecameIdle:(NSNotification *)aNotification
 {
   NSString *t;
 
@@ -345,7 +345,7 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
   [[NSApp delegate] terminalWindow:self becameIdle:YES];
 }
 
-- (void)viewBecameNonIdle
+- (void)viewBecameNonIdle:(NSNotification *)aNotification
 {
   NSDebugLLog(@"idle", @"%@ _becameNonIdle", self);
 

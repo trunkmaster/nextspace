@@ -29,10 +29,6 @@
 #include <sys/wait.h>
 
 #import <AppKit/AppKit.h>
-#include "Foundation/NSFileManager.h"
-#include "Foundation/NSNotification.h"
-#include "Foundation/NSString.h"
-#include "Foundation/NSObjCRuntime.h"
 #import <GNUstepBase/Unicode.h>
 #import <SystemKit/OSEFileSystemMonitor.h>
 
