@@ -243,24 +243,6 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
 - (void)viewSizeDidChange:(NSNotification *)n
 {
   [self updateWindowSize:[[n object] windowSize]];
-
-  // NSSize wSize = [[n object] windowSize];
-
-  // if (!livePreferences)
-  //   {
-  //     livePreferences = [preferences copy];
-  //   }
-
-  // if (wSize.width != [livePreferences windowWidth])
-  //   [livePreferences setWindowWidth:wSize.width];
-  // if (wSize.height != [livePreferences windowHeight])
-  //   [livePreferences setWindowHeight:wSize.height];
-
-  // [self updateTitleBar:n];
-
-  // [[NSNotificationCenter defaultCenter]
-  //       	postNotificationName:TerminalWindowSizeDidChangeNotification
-  //                             object:self];
 }
 
 - (void)updateTitleBar:(NSNotification *)n
