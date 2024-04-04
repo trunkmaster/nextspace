@@ -97,9 +97,10 @@ struct selection_range {
   int current_x, current_y;
 
   int draw_all; /* 0=only lazy, 1=don't know, do all, 2=do all */
-  BOOL draw_cursor;
+  BOOL shouldDrawCursor;
 
-  BOOL ignore_resize;
+  BOOL shouldIgnoreResize;
+  BOOL shouldUpdateTitlebar;
 
   float border_x, border_y;
 

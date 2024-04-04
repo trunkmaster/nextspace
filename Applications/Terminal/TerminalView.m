@@ -460,7 +460,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
   NSDebugLLog(@"draw", @"dirty (%i %i)-(%i %i)\n", x0, y0, x1, y1);
 
-  draw_cursor = draw_cursor || draw_all || (SCREEN(cursor_x, cursor_y).attr & 0x80) != 0;
+  shouldDrawCursor = shouldDrawCursor || draw_all || (SCREEN(cursor_x, cursor_y).attr & 0x80) != 0;
 
   {
     int ry;
@@ -771,7 +771,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   }
 
   //------------------- CURSOR ----------------------------------------------------
-  if (draw_cursor) {
+  if (shouldDrawCursor) {
     float x, y;
     [cursorColor set];
 
@@ -792,7 +792,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
         DPSrectfill(cur, x, y, fx, fy * 0.1);
         break;
     }
-    draw_cursor = NO;
+    shouldDrawCursor = NO;
   }
 
   NSDebugLLog(@"draw", @"total_draw=%i", total_draw);
@@ -1002,7 +1002,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
   if (current_y >= top && current_y <= bottom) {
     SCREEN(current_x, current_y).attr |= 0x80;
-    draw_cursor = YES;
+    shouldDrawCursor = YES;
     /*
       TODO: does this properly handle the case when the cursor is in
       an area that gets scrolled 'over'?
@@ -1058,7 +1058,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   step = screen_width * rows;
   if (current_y >= top && current_y <= bottom) {
     SCREEN(current_x, current_y).attr |= 0x80;
-    draw_cursor = YES;
+    shouldDrawCursor = YES;
   }
   memmove(s + step, s, (bottom - top - rows) * screen_width * sizeof(screen_char_t));
   if (!curr_sb_position) {
@@ -1103,7 +1103,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
   if (current_y == row) {
     SCREEN(current_x, current_y).attr |= 0x80;
-    draw_cursor = YES;
+    shouldDrawCursor = YES;
   }
 
   s = &SCREEN(x0, row);
@@ -1740,7 +1740,6 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 {
   char buf[256];
   int size, total, i;
-  BOOL _updateTitlebar = NO;
 
   total = 0;
   num_scrolls = 0;
@@ -1749,6 +1748,12 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   current_x = cursor_x;
   current_y = cursor_y;
 
+  // If previous run required update do it again to catch forked subprocess.
+  if (shouldUpdateTitlebar != NO) {
+    [self updateProgramPath];
+  }
+  shouldUpdateTitlebar = NO;
+  
   [self _clearSelection]; /* TODO? */
 
   NSDebugLLog(@"term", @"receiving output");
@@ -1803,7 +1808,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       // Line Feed, Vertical Tabulation, Form Feed, Carriage Return
       if (buf[i] == 10 || buf[i] == 11 || buf[i] == 12 || buf[i] == 13) {
         // fprintf(stderr, "%i\n", buf[i]);
-        _updateTitlebar = YES;
+        shouldUpdateTitlebar = YES;
       }
     }
     total += size;
@@ -1821,7 +1826,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       break;
   }
 
-  if (_updateTitlebar != NO) {
+  if (shouldUpdateTitlebar != NO) {
     // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
       [self updateProgramPath];
     // });
@@ -1831,7 +1836,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
     ADD_DIRTY(current_x, current_y, 1, 1);
     SCREEN(current_x, current_y).attr |= 0x80;
     ADD_DIRTY(cursor_x, cursor_y, 1, 1);
-    draw_cursor = YES;
+    shouldDrawCursor = YES;
   }
 
   NSDebugLLog(@"term", @"done (%i %i) (%i %i)\n", dirty.x0, dirty.y0, dirty.x1, dirty.y1);
@@ -2410,7 +2415,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   NSDebugLLog(@"term", @"_resizeTerminalTo: (%g %g) %i %i (%g %g)\n", size.width, size.height, nsx,
               nsy, nsx * fx, nsy * fy);
 
-  if (ignore_resize) {
+  if (shouldIgnoreResize) {
     NSDebugLLog(@"term", @"ignored");
     return;
   }
@@ -2894,7 +2899,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
 - (void)setIgnoreResize:(BOOL)ignore
 {
-  ignore_resize = ignore;
+  shouldIgnoreResize = ignore;
 }
 
 - (void)setBorderX:(float)x Y:(float)y
