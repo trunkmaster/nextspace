@@ -175,11 +175,11 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
                                              object:win];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(viewBecameIdle)
+                                           selector:@selector(viewBecameIdle:)
                                                name:TerminalViewBecameIdleNotification
                                              object:tView];
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(viewBecameNonIdle)
+                                           selector:@selector(viewBecameNonIdle:)
                                                name:TerminalViewBecameNonIdleNotification
                                              object:tView];
 

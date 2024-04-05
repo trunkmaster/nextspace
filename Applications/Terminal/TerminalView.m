@@ -1823,9 +1823,9 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   }
 
   if (shouldUpdateTitlebar != NO) {
-    // dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
       [self updateProgramPath];
-    // });
+    });
   }
 
   if (cursor_x != current_x || cursor_y != current_y) {
@@ -2856,12 +2856,13 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   if (cmdText && [cmdText isEqualToString:@""] == NO) {
     NSString *newProgramPath = [cmdText lastPathComponent];
     // if ([programPath isEqualToString:newProgramPath] == NO) {
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
       [programPath release];
       programPath = [[NSString alloc] initWithString:newProgramPath];
       // NSLog(@"New programPath: `%@`", programPath);
-      [nc postNotificationName:TerminalViewTitleDidChangeNotification object:self];
-    // }
+      [(TerminalWindowController *)[_window windowController]
+          performSelectorOnMainThread:@selector(updateTitleBar:)
+                           withObject:nil
+                        waitUntilDone:YES];
   }
 }
 
