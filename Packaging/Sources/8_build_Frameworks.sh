@@ -16,7 +16,7 @@ else
 	SPEC_FILE=${PROJECT_DIR}/Frameworks/nextspace-frameworks.spec
 	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "nextspace" | awk -c '{print $1}'`
 	sudo yum -y install ${DEPS} || exit 1
-	DEPS=`rpmspec -q --requires ${SPEC_FILE} | grep -v corefoundation | grep -v nextspace`
+	DEPS=`rpmspec -q --requires ${SPEC_FILE} | grep -v corefoundation | grep -v nextspace | awk -c '{print $1}'`
 	sudo yum -y install ${DEPS} || exit 1
 fi
 
