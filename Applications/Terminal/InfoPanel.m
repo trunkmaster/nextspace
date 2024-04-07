@@ -37,17 +37,18 @@
   }
   [panel makeKeyAndOrderFront:self];
 
-  [self animateAppIcon];
-
-  // [NSTimer scheduledTimerWithTimeInterval:5.0
-  //                                  target:self
-  //                                selector:@selector(animateAppIcon)
-  //                                userInfo:nil
-  //                                 repeats:YES];
+  iconTimer = [NSTimer scheduledTimerWithTimeInterval:5.0
+                                               target:self
+                                             selector:@selector(animateAppIcon)
+                                             userInfo:nil
+                                              repeats:YES];
 }
 
 - (void)closePanel
 {
+  if (iconTimer && [iconTimer isValid]) {
+    [iconTimer invalidate];
+  }
   [panel close];
   [panel release];
 }
@@ -75,6 +76,11 @@
 
 - (void)animateAppIcon
 {
+  if ([panel isVisible] == NO) {
+    machView.isAnimates = NO;
+    [iconTimer invalidate];
+    iconTimer = nil;
+  }
   machView.isAnimates = YES;
   if (animationTimer == nil) {
     animationTimer = [NSTimer timerWithTimeInterval:0.1
@@ -85,7 +91,6 @@
     [[NSRunLoop currentRunLoop] addTimer:animationTimer forMode:NSDefaultRunLoopMode];
   }
   [animationTimer fire];
-  // [NSEvent startPeriodicEventsAfterDelay:0.1 withPeriod:0.2];
 }
 
 @end

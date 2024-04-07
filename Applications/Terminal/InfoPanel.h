@@ -32,6 +32,7 @@
 
   TerminalIcon *machView;
   NSTimer *animationTimer;
+  NSTimer *iconTimer;
 }
 
 - (void)activatePanel;

@@ -50,7 +50,6 @@
     switch ((int)yPosition) {
       case 5:
         _isAnimates = NO;
-        // [NSEvent stopPeriodicEvents];
       case 0:
         yPosition = _scrollingImage.size.height - _scrollingRect.size.height;
 
