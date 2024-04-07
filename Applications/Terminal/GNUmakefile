@@ -34,7 +34,8 @@ Terminal_OBJC_FILES = \
 	\
 	InfoPanel.m\
 	\
-	TerminalFinder.m
+	TerminalFinder.m \
+	TerminalIcon.m \
 
 Terminal_LANGUAGES = English
 Terminal_LOCALIZED_RESOURCE_FILES = \
@@ -51,7 +52,8 @@ Terminal_RESOURCE_FILES = \
 	Preferences/Preferences.bundle \
 	Resources/ExampleServices.svcs \
 	Resources/Terminal.tiff \
-	Resources/ScrollingMach.tiff
+	Resources/ScrollingMach.tiff \
+	Resources/ScrollingOutput.tiff
 
 MAKE_STRINGS_OPTIONS = --aggressive-match --aggressive-remove
 

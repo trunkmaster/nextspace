@@ -1,10 +1,7 @@
 /*
-  Class:               InfoPanel
-  Inherits from:       NSObject
-  Class descritopn:    Panel to show information about application.
-                       Called from menu Info->Info Panel...
+  Project: Terminal
 
-  Copyright (c) 2015-2017 Sergii Stoian <stoyan255@gmail.com>
+  Copyright (c) 2024-present Sergii Stoian <stoyan255@gmail.com>
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -22,19 +19,17 @@
 */
 
 #import <AppKit/AppKit.h>
-#import "TerminalIcon.h"
 
-@interface InfoPanel : NSObject
+@interface TerminalIcon : NSImageView
 {
-  id panel;
-  id versionField;
-  id appIcon;
-
-  TerminalIcon *machView;
-  NSTimer *animationTimer;
+  CGFloat yPosition;
 }
+@property (readwrite, assign) BOOL isAnimates;
+@property (readwrite, assign) NSImage *iconImage;
+@property (readwrite, assign) NSImage *scrollingImage;
+@property (readwrite, assign) NSRect scrollingRect;
 
-- (void)activatePanel;
-- (void)closePanel;
+- (instancetype)initWithFrame:(NSRect)rect scrollingFrame:(NSRect)scrollingRect;
+- (void)animate;
 
 @end

@@ -33,6 +33,7 @@
 	    "jumpToSelection:",
 	    "modifyFont:",
 	    "modifyFontViaPanel:",
+	    "benchmark:",
 	    "newAction:",
 	    "openFindPanel:",
 	    "openServicesPanel:",
@@ -42,8 +43,7 @@
 	    "orderFrontFontPanel:",
 	    "pasteSelection:",
 	    "removeFontTrait:",
-	    "saveSession:",
-	    "} - initWithPreferences:"
+	    "saveSession:"
 	);
 	Super = NSObject;
     };

@@ -17,6 +17,7 @@
 */
 
 #import <sys/wait.h>
+#include "InfoPanel.h"
 
 #import <DesktopKit/DesktopKit.h>
 
@@ -433,6 +434,11 @@
     [setTitlePanel closeSetTitlePanel:self];
     [setTitlePanel release];
   }
+  if (infoPanel) {
+    [infoPanel closePanel];
+    [infoPanel release];
+  }
+  
   // Clear font pasteboard data
   NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSFontPboard];
   if ([pb dataForType:NSFontPboardType] != nil) {
