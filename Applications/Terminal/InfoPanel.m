@@ -37,11 +37,13 @@
   }
   [panel makeKeyAndOrderFront:self];
 
-  iconTimer = [NSTimer scheduledTimerWithTimeInterval:5.0
-                                               target:self
-                                             selector:@selector(animateAppIcon)
-                                             userInfo:nil
-                                              repeats:YES];
+  if (iconTimer == nil) {
+    iconTimer = [NSTimer scheduledTimerWithTimeInterval:5.0
+                                                 target:self
+                                               selector:@selector(animateAppIcon)
+                                               userInfo:nil
+                                                repeats:YES];
+  }
 }
 
 - (void)closePanel
