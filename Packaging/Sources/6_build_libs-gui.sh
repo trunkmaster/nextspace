@@ -26,6 +26,7 @@ if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
 	cd ${BUILD_ROOT}/${GIT_PKG_NAME}
 	patch -p1 < ${SOURCES_DIR}/libs-gui_NSApplication.patch
 	patch -p1 < ${SOURCES_DIR}/libs-gui_NSPopUpButton.patch
+	curl -L https://raw.githubusercontent.com/gnustep/libs-gui/master/Source/NSBitmapImageRep+GIF.m -o Source/NSBitmapImageRep+GIF.m
 	cd Images
 	tar zxf ${SOURCES_DIR}/gnustep-gui-images.tar.gz
 fi
