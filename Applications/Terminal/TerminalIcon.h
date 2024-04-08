@@ -22,14 +22,17 @@
 
 @interface TerminalIcon : NSImageView
 {
+  NSTextFieldCell *titleCell;
   CGFloat yPosition;
 }
+@property (readwrite, assign) BOOL isMiniWindow;
 @property (readwrite, assign) BOOL isAnimates;
 @property (readwrite, assign) NSImage *iconImage;
 @property (readwrite, assign) NSImage *scrollingImage;
 @property (readwrite, assign) NSRect scrollingRect;
 
 - (instancetype)initWithFrame:(NSRect)rect scrollingFrame:(NSRect)scrollingRect;
+- (void)setTitle:(NSString *)title;
 - (void)animate;
 
 @end

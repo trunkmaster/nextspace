@@ -18,6 +18,7 @@
 #include <GNUstepGUI/GSHbox.h>
 
 #import "Defaults.h"
+#import "TerminalIcon.h"
 
 extern NSString *TerminalWindowNoMoreActiveWindowsNotification;
 extern NSString *TerminalWindowSizeDidChangeNotification;
@@ -41,6 +42,10 @@ extern NSString *TerminalWindowSizeDidChangeNotification;
   // Title Bar
   NSUInteger titleBarElementsMask;
   NSString *titleBarCustomTitle;
+
+  // Miniwindow
+  TerminalIcon *miniIconView;
+  NSTimer *animationTimer;
 
   // Display
   BOOL scrollBackEnabled;

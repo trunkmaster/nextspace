@@ -293,8 +293,40 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
   }
 
   [win setTitle:title];
-  [win setMiniwindowTitle:shellPath];
   [win setDocumentEdited:[tView isUserProgramRunning]];
+
+  if ([win isMiniaturized] != NO) {
+    if (miniIconView == nil) {
+      NSString *scrImagePath = [[NSBundle mainBundle] pathForResource:@"ScrollingOutput"
+                                                               ofType:@"tiff"];
+
+      miniIconView = [[TerminalIcon alloc] initWithFrame:NSMakeRect(0, 0, 64, 64)
+                                          scrollingFrame:NSMakeRect(13, 17, 27, 23)];
+      [miniIconView setImageScaling:NSScaleNone];
+      miniIconView.iconImage = [NSApp applicationIconImage];
+      miniIconView.scrollingImage = [[NSImage alloc] initWithContentsOfFile:scrImagePath];
+      miniIconView.isMiniWindow = YES;
+      [[win counterpart] setContentView:miniIconView];
+
+      [miniIconView release];
+    }
+
+    [miniIconView setTitle:shellPath];
+
+    if ([tView isUserProgramRunning] != NO) {
+      miniIconView.isAnimates = YES;
+      [miniIconView animate];
+    } else {
+      miniIconView.isAnimates = NO;
+      [miniIconView setNeedsDisplay:YES];
+      [miniIconView display];
+    }
+
+  } else if (miniIconView) {
+    [miniIconView setTitle:shellPath];
+  } else {
+    [win setMiniwindowTitle:shellPath];
+  }
 }
 
 - (void)windowWillClose:(NSNotification *)aNotification

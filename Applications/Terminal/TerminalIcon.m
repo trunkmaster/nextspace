@@ -41,11 +41,48 @@
   return self;
 }
 
+- (void)setTitle:(NSString *)title
+{
+  if (titleCell == nil) {
+    CGFloat fontSize;
+
+    titleCell = [[NSTextFieldCell alloc] initTextCell:title];
+    [titleCell setSelectable:NO];
+    [titleCell setEditable:NO];
+    [titleCell setBordered:NO];
+    [titleCell setAlignment:NSCenterTextAlignment];
+    [titleCell setDrawsBackground:NO];
+    [titleCell setTextColor:[NSColor whiteColor]];
+    fontSize = [NSFont systemFontSizeForControlSize:NSMiniControlSize];
+    [titleCell setFont:[NSFont systemFontOfSize:fontSize]];
+  } else {
+    [titleCell setStringValue:title];
+  }
+  [self setNeedsDisplay:YES];
+}
+
 - (void)drawRect:(NSRect)aRect
 {
-  [[NSApp applicationIconImage] compositeToPoint:NSMakePoint(0, 0)
-                                        fromRect:NSMakeRect(0, 0, 48, 48)
-                                       operation:NSCompositeSourceOver];
+  NSPoint iconPoint = NSMakePoint((_frame.size.width - _iconImage.size.width) / 2.0,
+                                     (_frame.size.width - _iconImage.size.height) / 2.0);
+
+  if (_isMiniWindow != NO) {
+    iconPoint.y -= (13 / 2.0) - 1;
+    // Tile
+    [[NSImage imageNamed:@"common_MiniWindowTile"] compositeToPoint:NSMakePoint(0, 0)
+                                                           fromRect:NSMakeRect(0, 0, 64, 64)
+                                                          operation:NSCompositeSourceOver];
+    // Title
+    [titleCell drawWithFrame:NSMakeRect(3, _frame.size.height - 13, _frame.size.width - 6, 10)
+                      inView:self];
+  }
+
+  // Icon
+  [_iconImage compositeToPoint:iconPoint
+                      fromRect:NSMakeRect(0, 0, _iconImage.size.width, _iconImage.size.height)
+                     operation:NSCompositeSourceOver];
+
+  // Animation
   if (_isAnimates != NO) {
     switch ((int)yPosition) {
       case 5:
@@ -54,8 +91,8 @@
         yPosition = _scrollingImage.size.height - _scrollingRect.size.height;
 
     }
-
-    [_scrollingImage compositeToPoint:_scrollingRect.origin
+    [_scrollingImage compositeToPoint:NSMakePoint(_scrollingRect.origin.x + iconPoint.x,
+                                                  _scrollingRect.origin.y + iconPoint.y)
                              fromRect:NSMakeRect(0, yPosition, _scrollingRect.size.width,
                                                  _scrollingRect.size.height)
                             operation:NSCompositeSourceOver];
