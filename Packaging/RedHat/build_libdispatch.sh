@@ -3,12 +3,8 @@
 
 . `dirname $0`/functions
 
-if [ $# -eq 0 ];then
-    print_help
-    exit 1
-fi
+${ECHO} "NextSpace:\t${REPO_DIR}"
 
-REPO_DIR=$1
 SPEC_FILE=${REPO_DIR}/Libraries/libdispatch/libdispatch.spec
 DISPATCH_VERSION=`rpm_version ${SPEC_FILE}`
 

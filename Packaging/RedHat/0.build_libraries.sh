@@ -25,10 +25,12 @@ fi
 REPO_DIR=$1
 
 # Apple Grand Central Dispatch
-`dirname $0`/build_libdispatch.sh $1
-if [ $? -eq 1 ]; then
-    echo "Aborting..."
-    exit 1
+if [ "$OS_NAME" = "CentOS" ];then
+    `dirname $0`/build_libdispatch.sh $1
+    if [ $? -eq 1 ]; then
+        echo "Aborting..."
+        exit 1
+    fi
 fi
 
 # Apple Core Foundation
