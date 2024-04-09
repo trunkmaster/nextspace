@@ -1,11 +1,11 @@
-Name:		libobjc2
-Version:	2.1
-Release:	0%{?dist}
-Summary:	GNUstep Objecttive-C runtime library.
-License:	GPL v2.0
-URL:		https://github.com/gnustep/libobjc2
-Source0:	https://github.com/gnustep/libobjc2/archive/v%{version}.tar.gz
-Source1:	https://github.com/Tessil/robin-map/archive/757de82.tar.gz
+Name:     libobjc2
+Version:  2.2.1
+Release:  0%{?dist}
+Summary:  GNUstep Objecttive-C runtime library.
+License:  GPL v2.0
+URL:      https://github.com/gnustep/libobjc2
+Source0:  https://github.com/gnustep/libobjc2/archive/v%{version}.tar.gz
+Source1:  https://github.com/Tessil/robin-map/archive/v1.2.1.tar.gz
 
 %if 0%{?el7}
 BuildRequires:	cmake3
@@ -56,7 +56,8 @@ Development header files for libdispatch (includes kqueue and pthread_workqueue)
 #%setup -q
 #%autosetup -n libobjc2-%{version}
 %setup -n libobjc2-%{version} -a 1
-mv robin-map-757de829927489bee55ab02147484850c687b620/* third_party/robin-map
+mkdir -p third_party/robin-map
+mv robin-map-1.2.1/* third_party/robin-map
 
 %build
 mkdir _build

@@ -1,25 +1,25 @@
-Name:     libcorefoundation
-Version:  5.9.2
-Epoch:		0
-Release:	0%{?dist}
-Summary:	Apple CoreFoundation framework.
-License:	Apache 2.0
-URL:      https://github.com/trunkmaster/apple-corefoundation
-Source0:  libcorefoundation-%{version}.tar.gz
+Name:       libcorefoundation
+Version:    5.9.2
+Epoch:      0
+Release:    0%{?dist}
+Summary:    Apple CoreFoundation framework.
+License:    Apache 2.0
+URL:        https://github.com/trunkmaster/apple-corefoundation
+Source0:    libcorefoundation-%{version}.tar.gz
 
-BuildRequires:	cmake
-BuildRequires:	clang >= 7.0.1
-BuildRequires:	libdispatch-devel
-BuildRequires:	libxml2-devel
-BuildRequires:	libicu-devel
-BuildRequires:	libcurl-devel
-BuildRequires:	libuuid-devel
+BuildRequires:  cmake
+BuildRequires:  clang >= 7.0.1
+BuildRequires:  libdispatch-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  libicu-devel
+BuildRequires:  libcurl-devel
+BuildRequires:  libuuid-devel
 
-Requires:	libdispatch
-Requires:	libxml2
-Requires:	libicu
-Requires:	libcurl
-Requires:	libuuid
+Requires:   libdispatch
+Requires:   libxml2
+Requires:   libicu
+Requires:   libcurl
+Requires:   libuuid
 
 %description
 Apple Core Foundation framework.
@@ -37,11 +37,9 @@ Development header files for CoreFoundation framework.
 %build
 mkdir -p .build
 cd .build
-CF_CFLAGS="-I/usr/NextSpace/include -Wno-switch"
 cmake .. \
       -DCMAKE_C_COMPILER=clang \
-      -DCMAKE_C_FLAGS="$CF_CFLAGS" \
-      -DCMAKE_C_FLAGS_DEBUG="$CF_CFLAGS -g" \
+      -DCMAKE_C_FLAGS="-I/usr/NextSpace/include -Wno-switch" \
       -DCMAKE_SHARED_LINKER_FLAGS="-L/usr/NextSpace/lib -luuid" \
       -DCF_DEPLOYMENT_SWIFT=NO \
       -DBUILD_SHARED_LIBS=YES \
@@ -89,9 +87,12 @@ ln -s ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
 /bin/rm -rf /usr/NextSpace/Frameworks/CoreFoundation.framework
 
 %changelog
-* Tue Jan 18 2022 flatpak-session-helper
-Renamed to libcorefoundation to not interfere with libfoundation
-on Fedora.
+* Tue Apr 9 2024 Sergii Stoian <stoyan255@gmail.com>
+- Leave only Fedora 39+ code here.
+
+* Tue Jan 18 2022 Sergii Stoian <stoyan255@gmail.com>
+- Renamed to libcorefoundation to not interfere with libfoundation
+  on Fedora.
 
 * Tue Dec 1 2020 Sergii Stoian <stoyan255@gmail.com>
 - CFFileDescriptor was added to the build.

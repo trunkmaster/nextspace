@@ -3,12 +3,6 @@
 
 . `dirname $0`/functions
 
-if [ $# -eq 0 ];then
-    print_help
-    exit 1
-fi
-
-REPO_DIR=$1
 SPEC_FILE=${REPO_DIR}/Libraries/libobjc2/libobjc2.spec
 OBJC2_VERSION=`rpm_version ${SPEC_FILE}`
 

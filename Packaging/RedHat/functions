@@ -15,7 +15,7 @@ _PWD=`pwd`
 # Directory where nextspace GitHub repo resides
 cd ../..
 REPO_DIR=`pwd`
-#${ECHO} "NextSpace:\t${REPO_DIR}"
+${ECHO} "NextSpace:\t${REPO_DIR}"
 cd ${_PWD}
 ${ECHO} "Packaging:\t"`pwd`
 

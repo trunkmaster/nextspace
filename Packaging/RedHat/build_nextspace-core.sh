@@ -3,12 +3,6 @@
 
 . `dirname $0`/functions
 
-if [ $# -eq 0 ];then
-    print_help
-    exit 1
-fi
-
-REPO_DIR=$1
 SPEC_FILE=${REPO_DIR}/Core/nextspace-core.spec
 
 print_H1 " Building of NEXTSPACE core components (nextspace-core) RPM..."

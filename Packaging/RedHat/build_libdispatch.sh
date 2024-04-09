@@ -3,8 +3,6 @@
 
 . `dirname $0`/functions
 
-${ECHO} "NextSpace:\t${REPO_DIR}"
-
 SPEC_FILE=${REPO_DIR}/Libraries/libdispatch/libdispatch.spec
 DISPATCH_VERSION=`rpm_version ${SPEC_FILE}`
 
