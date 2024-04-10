@@ -1,6 +1,6 @@
 Name:		libdispatch
 Epoch:		2
-Version:	5.4.2
+Version:	5.9.2
 Release:	1%{?dist}
 Summary:	Grand Central Dispatch (GCD or libdispatch).
 License:	Apache 2.0

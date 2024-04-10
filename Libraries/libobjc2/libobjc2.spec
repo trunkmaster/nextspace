@@ -107,12 +107,16 @@ mv -v %{buildroot}/usr/NextSpace/include/Block.h %{buildroot}/usr/NextSpace/incl
 /usr/NextSpace/include/Block_private.h
 
 %pre devel
-mv -v /usr/NextSpace/include/Block.h /usr/NextSpace/include/Block-libdispatch.h
-ln -sv /usr/NextSpace/include/Block-libobjc.h /usr/NextSpace/include/Block.h
+if [ -f /usr/NextSpace/include/Block.h ];then
+	mv -v /usr/NextSpace/include/Block.h /usr/NextSpace/include/Block-libdispatch.h
+	ln -sv /usr/NextSpace/include/Block-libobjc.h /usr/NextSpace/include/Block.h
+fi
 
 %postun devel
-mv /usr/NextSpace/include/Block-libdispatch.h /usr/NextSpace/include/Block.h
-rm /usr/NextSpace/include/Block.h
+if [ -f /usr/NextSpace/include/Block-libdispatch.h ];then
+	mv /usr/NextSpace/include/Block-libdispatch.h /usr/NextSpace/include/Block.h
+	rm /usr/NextSpace/include/Block.h
+fi
 
 %changelog
 * Thu Aug 27 2020 Sergii Stoian <stoyan255@gmail.com> - 2.1-0

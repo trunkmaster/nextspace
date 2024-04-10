@@ -56,7 +56,7 @@ cd .build
 # Frameworks
 mkdir -p %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}
 cp -R CoreFoundation.framework/Headers %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}
-cp -R CoreFoundation.framework/libCoreFoundation.so.* %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework
+cp -R CoreFoundation.framework/libCoreFoundation.so* %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework
 cd %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions
 ln -s %{version} Current
 cd ..
@@ -74,7 +74,7 @@ ln -s ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
 %check
 
 %files
-/usr/NextSpace/Frameworks/CoreFoundation.framework/libCoreFoundation.so.*
+/usr/NextSpace/Frameworks/CoreFoundation.framework/libCoreFoundation.so*
 /usr/NextSpace/Frameworks/CoreFoundation.framework/Versions
 /usr/NextSpace/lib/libCoreFoundation.so
 
