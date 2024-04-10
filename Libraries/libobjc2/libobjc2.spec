@@ -1,4 +1,4 @@
-Name:     libobjc2
+Name:	libobjc2
 Version:  2.2.1
 Release:  0%{?dist}
 Summary:  GNUstep Objecttive-C runtime library.
@@ -53,35 +53,46 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 Development header files for libdispatch (includes kqueue and pthread_workqueue).
 
 %prep
-#%setup -q
-#%autosetup -n libobjc2-%{version}
 %setup -n libobjc2-%{version} -a 1
-mkdir -p third_party/robin-map
-mv robin-map-1.2.1/* third_party/robin-map
 
 %build
-mkdir _build
-cd _build
 %if 0%{?el7}
 source /opt/rh/llvm-toolset-7.0/enable
-cmake3 .. \
+CMAKE_CMD=cmake3
 %else
-cmake .. \
+CMAKE_CMD=cmake
 %endif
-    -DGNUSTEP_INSTALL_TYPE=NONE \
-    -DCMAKE_C_COMPILER=clang \
-    -DCMAKE_CXX_COMPILER=clang++ \
-    -DCMAKE_C_FLAGS="-I/usr/NextSpace/include -g" \
-    -DCMAKE_LIBRARY_PATH=/usr/NextSpace/lib \
-    -DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
-    -DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
-    -DTESTS=OFF \
-    -DCMAKE_BUILD_TYPE=Release
+
+${CMAKE_CMD} \
+	-DCMAKE_CXX_COMPILER=clang++ \
+	-B%{_builddir}/%{name}-%{version}/robin-map-1.2.1 \
+	-S%{_builddir}/%{name}-%{version}/robin-map-1.2.1
+${CMAKE_CMD} --build robin-map-1.2.1
+
+mkdir .build
+cd .build
+
+COMPILER_FLAGS="-I/usr/NextSpace/include -g -Wno-gnu-folding-constant"
+${CMAKE_CMD} .. \
+	-Dtsl-robin-map_DIR=%{_builddir}/%{name}-%{version}/robin-map-1.2.1 \
+	-DCMAKE_C_COMPILER=clang \
+	-DCMAKE_CXX_COMPILER=clang++ \
+	-DGNUSTEP_INSTALL_TYPE=NONE \
+	-DCMAKE_C_FLAGS=${COMPILER_FLAGS} \
+	-DCMAKE_CXX_FLAGS=${COMPILER_FLAGS} \
+	-DCMAKE_OBJC_FLAGS=${COMPILER_FLAGS} \
+	-DCMAKE_LIBRARY_PATH=/usr/NextSpace/lib \
+	-DCMAKE_INSTALL_LIBDIR=lib \
+	-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
+	-DCMAKE_MODULE_LINKER_FLAGS="-fuse-ld=/usr/bin/ld.gold -Wl,-rpath,/usr/NextSpace/lib" \
+	-DCMAKE_SKIP_RPATH=ON \
+	-DTESTS=OFF \
+	-DCMAKE_BUILD_TYPE=Debug
 
 make
 
 %install
-cd _build
+cd .build
 make install DESTDIR=%{buildroot}
 mv -v %{buildroot}/usr/NextSpace/include/Block.h %{buildroot}/usr/NextSpace/include/Block-libobjc.h 
 
