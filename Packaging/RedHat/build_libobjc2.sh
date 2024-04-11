@@ -3,7 +3,11 @@
 
 . `dirname $0`/functions
 
-SPEC_FILE=${REPO_DIR}/Libraries/libobjc2/libobjc2.spec
+if [ "$OS_ID" == "centos" ];then
+    SPEC_FILE=${REPO_DIR}/Libraries/libobjc2/libobjc2-centos.spec
+else
+    SPEC_FILE=${REPO_DIR}/Libraries/libobjc2/libobjc2.spec
+fi
 OBJC2_VERSION=`rpm_version ${SPEC_FILE}`
 
 print_H1 " Building Objective-C Runtime(libobjc2) package..."
