@@ -20,6 +20,7 @@ fi
 #----------------------------------------
 # Download
 #----------------------------------------
+OBJC_PKG_NAME=libobjc2-${libobjc2_version}
 if [ "$OS_NAME" = "centos" ];then
 	ROBIN_MAP_VERSION=757de829927489bee55ab02147484850c687b620
 	ROBIN_MAP_PKG_NAME=757de82.tar.gz
@@ -28,9 +29,9 @@ else
 	ROBIN_MAP_PKG_NAME=v${ROBIN_MAP_VERSION}.tar.gz
 fi
 
-if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
+if [ ! -d ${BUILD_ROOT}/libobjc2-${libobjc2_version} ]; then
 	curl -L https://github.com/gnustep/libobjc2/archive/v${libobjc2_version}.tar.gz -o ${BUILD_ROOT}/libobjc2-${libobjc2_version}.tar.gz
-	curl -L https://github.com/Tessil/robin-map/archive/${ROBIN_MAP_PG_NAME}.tar.gz -o ${BUILD_ROOT}/libobjc2_robin-map.tar.gz
+	curl -L https://github.com/Tessil/robin-map/archive/${ROBIN_MAP_PKG_NAME} -o ${BUILD_ROOT}/libobjc2_robin-map.tar.gz
 
 	cd ${BUILD_ROOT}
 	tar zxf libobjc2-${libobjc2_version}.tar.gz
@@ -47,7 +48,7 @@ ${CMAKE_CMD} \
 	-S${BUILD_ROOT}/robin-map-${ROBIN_MAP_VERSION}
 ${CMAKE_CMD} --build ${BUILD_ROOT}/robin-map-${ROBIN_MAP_VERSION}
 # build libobjc2
-cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
+cd ${BUILD_ROOT}/${OBJC_PKG_NAME} || exit 1
 rm -rf .build 2>/dev/null
 mkdir -p .build
 cd ./.build
