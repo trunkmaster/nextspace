@@ -20,7 +20,7 @@ fi
 #----------------------------------------
 # Download
 #----------------------------------------
-if [ "$OS_NAME" == "centos" ];then
+if [ "$OS_NAME" = "centos" ];then
 	ROBIN_MAP_VERSION=757de829927489bee55ab02147484850c687b620
 	ROBIN_MAP_PKG_NAME=757de82.tar.gz
 else
