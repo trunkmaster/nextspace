@@ -19,7 +19,7 @@ fi
 
 # Apple Grand Central Dispatch
 ${ECHO} "OS name: $OS_NAME"
-if [ "$OS_NAME" == "centos" ];then
+if [ "$OS_ID" == "centos" ];then
     `dirname $0`/build_libdispatch.sh $1
     if [ $? -eq 1 ]; then
         echo "Aborting..."
