@@ -6,11 +6,6 @@
 
 . `dirname $0`/functions
 
-if [ $# -eq 0 ];then
-    print_help
-    exit 1
-fi
-
 prepare_environment
 if [ $? -eq 1 ];then
     print_ERR "Failed to setup building environment. Exiting..."
