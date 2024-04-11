@@ -17,9 +17,8 @@ if [ "$OS_NAME" == "Rocky Linux" ] || [ "$OS_NAME" == "AlmaLinux" ] && [ $OS_VER
     dnf config-manager --set-enabled powertools
 fi
 
-REPO_DIR=$1
-
 # Apple Grand Central Dispatch
+${ECHO} "OS name: $OS_NAME"
 if [ "$OS_NAME" == "centos" ];then
     `dirname $0`/build_libdispatch.sh $1
     if [ $? -eq 1 ]; then
