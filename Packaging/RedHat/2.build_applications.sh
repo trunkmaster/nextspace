@@ -5,14 +5,8 @@
 
 . `dirname $0`/functions
 
-if [ $# -eq 0 ];then
-    print_help
-    exit
-fi
-
 prepare_environment
 
-REPO_DIR=$1
 LOG_FILE=/dev/null
 SPEC_FILE=${REPO_DIR}/Applications/nextspace-applications.spec
 
