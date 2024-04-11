@@ -21,19 +21,22 @@ jobs:
       - run:
           name: Install Libraries
           command: |
-            /root/nextspace/Packaging/RedHat/0.build_libraries.sh /root/nextspace
+            cd /root/nextspace/Packaging/RedHat
+            ./0.build_libraries.sh
             rm -r /root/rpmbuild/BUILD/*
             rm -r /root/rpmbuild/RPMS/*
       - run:
           name: Build and install Frameworks
           command: |
-            /root/nextspace/Packaging/RedHat/1.build_frameworks.sh /root/nextspace
+            cd /root/nextspace/Packaging/RedHat
+            ./1.build_frameworks.sh
             rm -r /root/rpmbuild/BUILD/*
             rm -r /root/rpmbuild/RPMS/*
       - run:
           name: Build and install Applications
           command: |
-            /root/nextspace/Packaging/RedHat/2.build_applications.sh /root/nextspace
+            cd /root/nextspace/Packaging/RedHat
+            ./2.build_applications.sh
             rm -r /root/rpmbuild/BUILD/*
             rm -r /root/rpmbuild/RPMS/*
           
