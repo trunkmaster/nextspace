@@ -8,7 +8,7 @@
 if [ ${OS_NAME} != "debian" ] && [ ${OS_NAME} != "ubuntu" ]; then
 	${ECHO} ">>> Installing ${OS_NAME} packages for ObjC 2.0 runtime build"
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
-	if [ "$OS_ID" == "centos" ];then
+	if [ "$OS_NAME" == "centos" ];then
 		SPEC_FILE=${PROJECT_DIR}/Libraries/libobjc2/libobjc2.spec
 	else
 		SPEC_FILE=${PROJECT_DIR}/Libraries/libobjc2/libobjc2-centos.spec
@@ -20,23 +20,20 @@ fi
 #----------------------------------------
 # Download
 #----------------------------------------
-GIT_PKG_NAME=libobjc2-${libobjc2_version}
-if [ "$OS_ID" == "centos" ];then
-	ROBIN_MAP_VERSION=1.2.1
-else
+if [ "$OS_NAME" == "centos" ];then
 	ROBIN_MAP_VERSION=757de829927489bee55ab02147484850c687b620
+	ROBIN_MAP_PKG_NAME=757de82.tar.gz
+else
+	ROBIN_MAP_VERSION=1.2.1
+	ROBIN_MAP_PKG_NAME=v${ROBIN_MAP_VERSION}.tar.gz
 fi
 
 if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
-	curl -L https://github.com/gnustep/libobjc2/archive/v${libobjc2_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
-	if [ "$OS_ID" == "centos" ];then
-		curl -L https://github.com/Tessil/robin-map/archive/v${ROBIN_MAP_VERSION}.tar.gz -o ${BUILD_ROOT}/libobjc2_robin-map.tar.gz
-	else
-		curl -L https://github.com/Tessil/robin-map/archive/757de82.tar.gz -o ${BUILD_ROOT}/libobjc2_robin-map.tar.gz
-	fi
+	curl -L https://github.com/gnustep/libobjc2/archive/v${libobjc2_version}.tar.gz -o ${BUILD_ROOT}/libobjc2-${libobjc2_version}.tar.gz
+	curl -L https://github.com/Tessil/robin-map/archive/${ROBIN_MAP_PG_NAME}.tar.gz -o ${BUILD_ROOT}/libobjc2_robin-map.tar.gz
 
 	cd ${BUILD_ROOT}
-	tar zxf ${GIT_PKG_NAME}.tar.gz
+	tar zxf libobjc2-${libobjc2_version}.tar.gz
 	tar zxf libobjc2_robin-map.tar.gz
 fi
 
