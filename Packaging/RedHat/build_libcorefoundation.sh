@@ -3,11 +3,15 @@
 
 . `dirname $0`/functions
 
-SPEC_FILE=${REPO_DIR}/Libraries/libcorefoundation/libcorefoundation.spec
+if [ "${OS_ID}" = "centos" ];then
+    SPEC_FILE=${REPO_DIR}/Libraries/libcorefoundation/libcorefoundation-centos.spec
+else
+    SPEC_FILE=${REPO_DIR}/Libraries/libcorefoundation/libcorefoundation.spec
+fi
 CF_VERSION=`rpm_version ${SPEC_FILE}`
 
 print_H1 " Building Core Foundation (libcorefoundation) package..."
-if [ "${OS_NAME}" = "centos" ];then
+if [ "${OS_ID}" = "centos" ];then
     cp ${REPO_DIR}/Libraries/libcorefoundation/*.patch ${SOURCES_DIR}
     cp ${REPO_DIR}/Libraries/libcorefoundation/CFNotificationCenter.c ${SOURCES_DIR}
     cp ${REPO_DIR}/Libraries/libcorefoundation/CFFileDescriptor.[ch] ${SOURCES_DIR}
@@ -19,7 +23,7 @@ sudo yum -y install ${DEPS}
 
 print_H2 "===== Downloading Core Foundation sources..."
 _VER=`rpmspec -q --qf "%{version}:" ${SPEC_FILE} | awk -F: '{print $1}'`
-if [ "${OS_NAME}" = "centos" ];then
+if [ "${OS_ID}" = "centos" ];then
     curl -L https://github.com/apple/swift-corelibs-foundation/archive/swift-${_VER}-RELEASE.tar.gz -o ${SOURCES_DIR}/libcorefoundation-${_VER}.tar.gz
 else
     curl -L https://github.com/trunkmaster/apple-corefoundation/archive/refs/tags/${_VER}.tar.gz -o ${SOURCES_DIR}/libcorefoundation-${_VER}.tar.gz
