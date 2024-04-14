@@ -17,13 +17,15 @@
 */
 
 #import "ActivityPrefs.h"
+#include "Foundation/NSObjCRuntime.h"
 
 @implementation ActivityPrefs
 
-// <PrefsModule>
+#pragma mark - PrefsModule protocol
+
 + (NSString *)name
 {
-  return @"Colors";
+  return @"Activity Monitor";
 }
 
 - (NSView *)view
@@ -41,7 +43,18 @@
   [self _updateControls:[[Preferences shared] mainWindowLivePreferences]];
 }
 
+#pragma mark - ActivityPrefs
 
+- init
+{
+  self = [super init];
+
+  if ([NSBundle loadNibNamed:@"ActivityMonitor" owner:self] == NO) {
+    NSLog(@"Failed to load ActivityMonitor NIB.");
+  }
+
+  return self;
+}
 
 - (IBAction)setWindow:(id)sender
 {

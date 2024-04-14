@@ -17,7 +17,6 @@
 */
 
 #import "../Controller.h"
-#import "../Controller.h"
 #import "Preferences.h"
 
 #import "ColorsPrefs.h"
@@ -28,6 +27,7 @@
 #import "StartupPrefs.h"
 #import "TitleBarPrefs.h"
 #import "WindowPrefs.h"
+#import "ActivityPrefs.h"
 
 // This class manages key/main window state for FontPanel opening
 @implementation PreferencesPanel
@@ -68,6 +68,7 @@ static Preferences *shared = nil;
   self = shared = [super init];
 
   prefModules = @{
+    [ActivityPrefs name] : [ActivityPrefs new],
     [ColorsPrefs name] : [ColorsPrefs new],
     [DisplayPrefs name] : [DisplayPrefs new],
     [LinuxPrefs name] : [LinuxPrefs new],
