@@ -93,10 +93,10 @@ sudo ln -sf Versions/Current/Headers Headers
 sudo ln -sf Versions/Current/libCoreFoundation.so.${libcorefoundation_version} libCoreFoundation.so
 
 # lib
-#sudo mkdir -p /usr/NextSpace/lib
-#cd /usr/NextSpace/lib
-#sudo rm -f libCoreFoundation.so.${libcorefoundation_version}
-#sudo ln -sf ../Frameworks/CoreFoundation.framework/libCoreFoundation.so.${libcorefoundation_version} ./
+sudo mkdir -p /usr/NextSpace/lib
+cd /usr/NextSpace/lib
+sudo rm -f libCoreFoundation.so*
+sudo ln -sf ../Frameworks/CoreFoundation.framework/libCoreFoundation.so* ./
 
 # include
 #sudo mkdir -p /usr/NextSpace/include
