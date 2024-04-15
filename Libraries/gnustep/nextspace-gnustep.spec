@@ -30,12 +30,12 @@ Source13:   gnustep-gui-panels.tar.gz
 
 Patch0:     gorm.patch
 Patch1:     pc.patch
-Patch2:     libs-gui_GSDisplayServer.patch
+#Patch2:     libs-gui_GSDisplayServer.patch
 Patch3:     libs-gui_NSApplication.patch
-Patch4:     libs-gui_NSDocument.patch
-Patch5:     libs-gui_NSPopUpButtonCell.patch
-Patch6:     libs-gui_NSPrintPanel.patch
-Patch7:     libs-gui_NSSavePanel.patch
+#Patch4:     libs-gui_NSDocument.patch
+Patch5:     libs-gui_NSPopUpButton.patch
+#Patch6:     libs-gui_NSPrintPanel.patch
+#Patch7:     libs-gui_NSSavePanel.patch
 Patch8:     libs-gui_NSSound.patch
 
 # Build GNUstep libraries in one RPM package
@@ -146,21 +146,27 @@ cd %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
 cp %{_sourcedir}/pc.patch %{_builddir}/nextspace-gnustep/apps-projectcenter-projectcenter-%{PC_VERSION}/
 cd %{_builddir}/nextspace-gnustep/apps-projectcenter-projectcenter-%{PC_VERSION}/
 %patch -P1 -p1
-cp %{_sourcedir}/libs-gui_GSDisplayServer.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+#cp %{_sourcedir}/libs-gui_GSDisplayServer.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 cp %{_sourcedir}/libs-gui_NSApplication.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
-cp %{_sourcedir}/libs-gui_NSDocument.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+#cp %{_sourcedir}/libs-gui_NSDocument.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 cp %{_sourcedir}/libs-gui_NSPopUpButtonCell.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
-cp %{_sourcedir}/libs-gui_NSPrintPanel.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
-cp %{_sourcedir}/libs-gui_NSSavePanel.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+#cp %{_sourcedir}/libs-gui_NSPrintPanel.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+#cp %{_sourcedir}/libs-gui_NSSavePanel.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 cp %{_sourcedir}/libs-gui_NSSound.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 cd %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
-%patch -P2 -p1
+#%patch -P2 -p1
 %patch -P3 -p1
-%patch -P4 -p1
+#%patch -P4 -p1
 %patch -P5 -p1
-%patch -P6 -p1
-%patch -P7 -p1
+#%patch -P6 -p1
+#%patch -P7 -p1
 %patch -P8 -p1
+
+# Temporary solution until 
+cd %{_builddir}/nextspace-gnustep/libs-base-base-%{BASE_VERSION}/
+curl -L https://raw.githubusercontent.com/gnustep/libs-base/master/config/config.initialize.m -o config/config.initialize.m
+cd %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+curl -L https://raw.githubusercontent.com/gnustep/libs-gui/master/Source/NSBitmapImageRep+GIF.m -o Source/NSBitmapImageRep+GIF.m
 rm -rf %{buildroot}
 
 #
