@@ -65,7 +65,7 @@ ln -s Versions/Current/Headers Headers
 # lib
 mkdir -p %{buildroot}/usr/NextSpace/lib
 cd %{buildroot}/usr/NextSpace/lib
-ln -s ../Frameworks/CoreFoundation.framework/libCoreFoundation.so libCoreFoundation.so
+ln -s ../Frameworks/CoreFoundation.framework/libCoreFoundation.so* ./
 # include
 mkdir -p %{buildroot}/usr/NextSpace/include
 cd %{buildroot}/usr/NextSpace/include
@@ -76,7 +76,7 @@ ln -s ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
 %files
 /usr/NextSpace/Frameworks/CoreFoundation.framework/libCoreFoundation.so*
 /usr/NextSpace/Frameworks/CoreFoundation.framework/Versions
-/usr/NextSpace/lib/libCoreFoundation.so
+/usr/NextSpace/lib/libCoreFoundation.so*
 
 %files devel
 /usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}/Headers
