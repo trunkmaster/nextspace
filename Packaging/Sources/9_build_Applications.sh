@@ -73,5 +73,15 @@ sudo ldconfig
 #----------------------------------------
 # Post install
 #----------------------------------------
+${ECHO} "Setting up Login window service to run at system startup..."
 sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
 sudo systemctl set-default graphical.target
+
+# SELinux
+SELINUX_STATE=`grep "^SELINUX=.*" /etc/selinux/config | awk -F= '{print $2}'`
+if [ "${SELINUX_STATE}" != "disabled" ]; then
+	${ECHO} -n "SELinux enabled - dissabling it..."
+	sudo sed -i -e ' s/SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
+	${ECHO} "done"
+	${ECHO} "Please reboot to apply changes."
+fi
