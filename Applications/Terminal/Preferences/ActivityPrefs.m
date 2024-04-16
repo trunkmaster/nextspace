@@ -17,7 +17,6 @@
 */
 
 #import "ActivityPrefs.h"
-#include "Foundation/NSObjCRuntime.h"
 
 @implementation ActivityPrefs
 
@@ -33,14 +32,10 @@
   return view;
 }
 
-- (void)_updateControls:(Defaults *)defs
-{
-}
-
 // Show preferences of main window
 - (void)showWindow
 {
-  [self _updateControls:[[Preferences shared] mainWindowLivePreferences]];
+  Defaults *defaults = [[Preferences shared] mainWindowLivePreferences];
 }
 
 #pragma mark - ActivityPrefs
@@ -54,6 +49,17 @@
   }
 
   return self;
+}
+
+- (void)awakeFromNib
+{
+  [view retain];
+  [view removeFromSuperview];
+  [window release];
+
+  [cleanCommandsList loadColumnZero];
+  [cleanCommandsList setHasHorizontalScroller:NO];
+  [cleanCommandField setStringValue:@""];
 }
 
 - (IBAction)setWindow:(id)sender
@@ -82,6 +88,31 @@
 
 - (IBAction)setBackgroundProcesses:(id)sender
 {
+}
+
+@end
+
+@implementation ActivityPrefs (BrowserDelegate)
+
+- (NSString *)browser:(NSBrowser *)sender titleOfColumn:(NSInteger)column
+{
+  return @"\"Clean\" commands";
+}
+
+- (NSInteger)browser:(NSBrowser *)sender numberOfRowsInColumn:(NSInteger)column
+{
+  NSLog(@"browser:numberOfRowsInColumn:");
+  return 1;
+}
+
+- (void)browser:(NSBrowser *)sender
+    willDisplayCell:(id)cell
+              atRow:(NSInteger)row
+             column:(NSInteger)column
+{
+  [cell setTitle:@"ssh"];
+  [cell setRefusesFirstResponder:YES];
+  [cell setLeaf:YES];
 }
 
 @end

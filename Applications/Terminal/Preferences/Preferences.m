@@ -115,12 +115,12 @@ static Preferences *shared = nil;
 - (void)switchMode:(id)sender
 {
   id<PrefsModule> module;
-  NSView *mView;
+  NSView *moduleView;
 
   module = [prefModules objectForKey: [sender titleOfSelectedItem]];
-  mView = [module view];
-  if ([modeContentBox contentView] != mView) {
-    [(NSBox *)modeContentBox setContentView:mView];
+  moduleView = [module view];
+  if ([modeContentBox contentView] != moduleView) {
+    [(NSBox *)modeContentBox setContentView:moduleView];
   }
   [module showWindow];
 }
