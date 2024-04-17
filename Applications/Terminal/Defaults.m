@@ -761,6 +761,52 @@ NSString *ScrollBottomOnInputKey = @"ScrollBottomOnInput";
 @end
 
 //----------------------------------------------------------------------------
+// Activity Monitor
+//---
+NSString *ActivityMonitorEnabledKey = @"ActivityMonitorEnabled";
+NSString *IsBackgroundProcessesCleanKey = @"IsBackgroundProcessesClean";
+NSString *CleanCommandsKey = @"CleanCommands";
+
+@implementation Defaults (ActivityMonitor)
+- (BOOL)isActivityMonitorEnabled
+{
+  if ([self objectForKey:ActivityMonitorEnabledKey] == nil) {
+    [self setIsActivityMonitorEnabled:YES];
+  }
+  return [self boolForKey:ActivityMonitorEnabledKey];
+}
+- (void)setIsActivityMonitorEnabled:(BOOL)yn
+{
+  [self setBool:yn forKey:ActivityMonitorEnabledKey];
+}
+
+- (BOOL)isBackgroundProcessesClean
+{
+  if ([self objectForKey:IsBackgroundProcessesCleanKey] == nil) {
+    [self setIsBackgroundProcessesClean:YES];
+  }
+  return [self boolForKey:IsBackgroundProcessesCleanKey];  
+}
+- (void)setIsBackgroundProcessesClean:(BOOL)yn
+{
+  [self setBool:yn forKey:IsBackgroundProcessesCleanKey];
+}
+
+- (NSArray *)cleanupCommands
+{
+  if ([self objectForKey:CleanCommandsKey] == nil) {
+    [self setCleanupCommands:@[ @"ssh", @"telnet", @"rlogin" ]];
+  }
+  return [self objectForKey:CleanCommandsKey];
+}
+- (void)setCleanupCommands:(NSArray *)list
+{
+  [self setObject:list forKey:CleanCommandsKey];
+}
+@end
+
+
+//----------------------------------------------------------------------------
 // Shell
 //---
 NSString *ShellKey = @"Shell";

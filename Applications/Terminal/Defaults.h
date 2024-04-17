@@ -220,16 +220,18 @@ extern NSString *ScrollBottomOnInputKey;
 //----------------------------------------------------------------------------
 // Activity Monitor
 //---
-// extern NSString *ActivityMonitorEnabledKey;
-// extern NSString *IsBackgroundProcessesCleanKey;
-// extern NSString *CleanCommandsKey;
+extern NSString *ActivityMonitorEnabledKey;
+extern NSString *IsBackgroundProcessesCleanKey;
+extern NSString *CleanCommandsKey;
 
-// @interface Defaults (ActivityMonitor)
-// - (BOOL)isActivityMonitorEnabled;
-// - (void)setIsActivityMonitorEnabled:(BOOL)yn;
-// - (BOOL)isBackgroundProcessesClean;
-// - (void)setIsBackgroundProcessesClean:(BOOL)yn;
-// @end
+@interface Defaults (ActivityMonitor)
+- (BOOL)isActivityMonitorEnabled;
+- (void)setIsActivityMonitorEnabled:(BOOL)yn;
+- (BOOL)isBackgroundProcessesClean;
+- (void)setIsBackgroundProcessesClean:(BOOL)yn;
+- (NSArray *)cleanupCommands;
+- (void)setCleanupCommands:(NSArray *)list;
+@end
 
 //----------------------------------------------------------------------------
 // Shell
