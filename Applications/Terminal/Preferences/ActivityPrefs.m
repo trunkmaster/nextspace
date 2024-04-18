@@ -35,7 +35,10 @@
 // Show preferences of main window
 - (void)showWindow
 {
-  Defaults *defaults = [[Preferences shared] mainWindowLivePreferences];
+  Defaults *defaults = [[Preferences shared] mainWindowPreferences];
+
+  [activityMonitorButton setState:[defaults isActivityMonitorEnabled]];
+  [backgroundProcessesButton setState:[defaults isBackgroundProcessesClean]];
 }
 
 #pragma mark - ActivityPrefs
@@ -62,33 +65,45 @@
   [cleanCommandField setStringValue:@""];
 }
 
-- (IBAction)setWindow:(id)sender
-{
-}
-
-- (IBAction)setDefault:(id)sender
-{
-}
-
-- (IBAction)showDefault:(id)sender
-{
-}
-
 - (IBAction)addCleanCommand:(id)sender
 {
+  Defaults *defaults = [[Preferences shared] mainWindowPreferences];
+  NSMutableArray *commandsList = [[defaults cleanCommands] mutableCopy];
+
+  [commandsList addObject:[cleanCommandField stringValue]];
+  [defaults setCleanCommands:commandsList];
+  [defaults synchronize];
+
+  [commandsList release];
+  [cleanCommandField setStringValue:@""];
+  [cleanCommandsList reloadColumn:0];
 }
 
 - (IBAction)removeCleanCommand:(id)sender
 {
+  Defaults *defaults = [[Preferences shared] mainWindowPreferences];
+  NSMutableArray *commandsList = [[defaults cleanCommands] mutableCopy];
+
+  [commandsList removeObject:[[cleanCommandsList selectedCell] stringValue]];
+  [defaults setCleanCommands:commandsList];
+  [defaults synchronize];
+
+  [commandsList release];
+  [cleanCommandsList reloadColumn:0];
 }
 
 - (IBAction)setActivityMonitor:(id)sender
 {
-
+  Defaults *defaults = [[Preferences shared] mainWindowPreferences];
+  [defaults setIsActivityMonitorEnabled:[activityMonitorButton state] ? YES : NO];
+  [defaults synchronize];
 }
 
 - (IBAction)setBackgroundProcesses:(id)sender
 {
+  Defaults *defaults = [[Preferences shared] mainWindowPreferences];
+  [defaults setIsBackgroundProcessesClean:[backgroundProcessesButton state] ? YES : NO];
+  [defaults synchronize];
 }
 
 @end
@@ -97,13 +112,15 @@
 
 - (NSString *)browser:(NSBrowser *)sender titleOfColumn:(NSInteger)column
 {
-  return @"\"Clean\" commands";
+  return @"\"Clean\" Commands";
 }
 
 - (NSInteger)browser:(NSBrowser *)sender numberOfRowsInColumn:(NSInteger)column
 {
-  NSLog(@"browser:numberOfRowsInColumn:");
-  return 1;
+  Defaults *defaults = [[Preferences shared] mainWindowPreferences];
+  NSArray *commandsList = [defaults cleanCommands];
+
+  return [[defaults cleanCommands] count];
 }
 
 - (void)browser:(NSBrowser *)sender
@@ -111,9 +128,14 @@
               atRow:(NSInteger)row
              column:(NSInteger)column
 {
-  [cell setTitle:@"ssh"];
-  [cell setRefusesFirstResponder:YES];
-  [cell setLeaf:YES];
+  Defaults *defaults = [[Preferences shared] mainWindowPreferences];
+  NSString *command = [[defaults cleanCommands] objectAtIndex:row];
+
+  if (command) {
+    [cell setTitle:command];
+    [cell setRefusesFirstResponder:YES];
+    [cell setLeaf:YES];
+  }
 }
 
 @end

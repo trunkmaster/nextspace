@@ -2,9 +2,6 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     ActivityPrefs = {
 	Actions = (
-	    "setWindow:",
-	    "setDefault:",
-	    "showDefault:",
 	    "addCleanCommand:",
 	    "removeCleanCommand:",
 	    "setActivityMonitor:",
@@ -27,10 +24,7 @@
 	    "addCleanCommand:",
 	    "removeCleanCommand:",
 	    "setActivityMonitor:",
-	    "setBackgroundProcesses:",
-	    "setDefault:",
-	    "setWindow:",
-	    "showDefault:"
+	    "setBackgroundProcesses:"
 	);
 	Super = NSObject;
     };

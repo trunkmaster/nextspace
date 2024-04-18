@@ -229,8 +229,8 @@ extern NSString *CleanCommandsKey;
 - (void)setIsActivityMonitorEnabled:(BOOL)yn;
 - (BOOL)isBackgroundProcessesClean;
 - (void)setIsBackgroundProcessesClean:(BOOL)yn;
-- (NSArray *)cleanupCommands;
-- (void)setCleanupCommands:(NSArray *)list;
+- (NSArray *)cleanCommands;
+- (void)setCleanCommands:(NSArray *)list;
 @end
 
 //----------------------------------------------------------------------------

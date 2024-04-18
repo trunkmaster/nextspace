@@ -18,7 +18,7 @@
 
 #import <AppKit/AppKit.h>
 
-#include "Preferences.h"
+#import "Preferences.h"
 
 @interface ActivityPrefs : NSObject <PrefsModule>
 {
@@ -31,9 +31,6 @@
   IBOutlet id addButton;
   IBOutlet id removeButton;
 }
-- (IBAction)setWindow:(id)sender;
-- (IBAction)setDefault:(id)sender;
-- (IBAction)showDefault:(id)sender;
 - (IBAction)addCleanCommand:(id)sender;
 - (IBAction)removeCleanCommand:(id)sender;
 - (IBAction)setActivityMonitor:(id)sender;

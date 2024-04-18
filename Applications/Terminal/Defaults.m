@@ -792,14 +792,14 @@ NSString *CleanCommandsKey = @"CleanCommands";
   [self setBool:yn forKey:IsBackgroundProcessesCleanKey];
 }
 
-- (NSArray *)cleanupCommands
+- (NSArray *)cleanCommands
 {
   if ([self objectForKey:CleanCommandsKey] == nil) {
-    [self setCleanupCommands:@[ @"ssh", @"telnet", @"rlogin" ]];
+    [self setCleanCommands:@[ @"ssh", @"telnet", @"rlogin" ]];
   }
   return [self objectForKey:CleanCommandsKey];
 }
-- (void)setCleanupCommands:(NSArray *)list
+- (void)setCleanCommands:(NSArray *)list
 {
   [self setObject:list forKey:CleanCommandsKey];
 }
