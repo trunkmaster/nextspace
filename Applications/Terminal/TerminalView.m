@@ -1802,7 +1802,8 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
     for (i = 0; i < size; i++) {
       [terminalParser processByte:buf[i]];
       // Line Feed, Vertical Tabulation, Form Feed, Carriage Return
-      if (buf[i] == 10 || buf[i] == 11 || buf[i] == 12 || buf[i] == 13) {
+      if (isActivityMonitorEnabled &&
+          (buf[i] == 10 || buf[i] == 11 || buf[i] == 12 || buf[i] == 13)) {
         // fprintf(stderr, "%i\n", buf[i]);
         shouldUpdateTitlebar = YES;
       }
@@ -2344,6 +2345,8 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
   [self updateColors:nil];
   [self setCursorStyle:[defaults cursorStyle]];
+
+  isActivityMonitorEnabled = [defaults isActivityMonitorEnabled];
 
   return self;
 }

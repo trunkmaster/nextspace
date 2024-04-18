@@ -744,7 +744,9 @@
 
 - (void)setupTerminalWindow:(TerminalWindowController *)controller
 {
-  [controller setDocumentEdited:YES];
+  if ([[controller preferences] isActivityMonitorEnabled]) {
+    [controller setDocumentEdited:YES];
+  }
 
   if ([[windows allValues] count] > 0) {
     NSRect mwFrame = [[NSApp mainWindow] frame];

@@ -251,6 +251,7 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
   NSString *shellPath = [self shellPath];
   NSString *terminalWindowTitle = [tView xtermTitle];
   NSString *file;
+  BOOL isActivityMonitorEnabled = [preferences isActivityMonitorEnabled];
 
   // NSLog(@"updateTitleBar");
 
@@ -293,9 +294,12 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
   }
 
   [win setTitle:title];
-  [win setDocumentEdited:[tView isUserProgramRunning]];
 
-  if ([win isMiniaturized] != NO) {
+  if (isActivityMonitorEnabled != NO) {
+    [win setDocumentEdited:[tView isUserProgramRunning]];
+  }
+
+  if (isActivityMonitorEnabled && ([win isMiniaturized] != NO)) {
     if (miniIconView == nil) {
       NSString *scrImagePath = [[NSBundle mainBundle] pathForResource:@"ScrollingOutput"
                                                                ofType:@"tiff"];
@@ -313,7 +317,7 @@ NSString *TerminalWindowSizeDidChangeNotification = @"TerminalWindowSizeDidChang
 
     [miniIconView setTitle:shellPath];
 
-    if ([tView isUserProgramRunning] != NO) {
+    if ( ([tView isUserProgramRunning] != NO)) {
       miniIconView.isAnimates = YES;
       [miniIconView animate];
     } else {

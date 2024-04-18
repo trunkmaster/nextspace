@@ -101,6 +101,7 @@ struct selection_range {
 
   BOOL shouldIgnoreResize;
   BOOL shouldUpdateTitlebar;
+  BOOL isActivityMonitorEnabled;
 
   float border_x, border_y;
 
