@@ -2,7 +2,7 @@
 //
 // Project: Preferences
 //
-// Copyright (C) 2014-2019 Sergii Stoian
+// Copyright (C) 2014-present Sergii Stoian
 // Copyright (C) 2022-2023 Andres Morales
 //
 // This application is free software; you can redistribute it and/or
@@ -20,15 +20,20 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <AppKit/NSImage.h>
+#import <AppKit/AppKit.h>
+#import <GNUstepGUI/GSServicesManager.h>
+
 #import <Preferences.h>
 
 @interface Services: NSObject <PrefsModule>
 {
+  NSImage *image;
   id view;
   id window;
+  id servicesList;
+  id actionButton;
 
-  NSImage *image;
+  GSServicesManager *serviceManager;
 }
 
 @end

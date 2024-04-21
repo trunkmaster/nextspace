@@ -20,32 +20,19 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <AppKit/NSApplication.h>
-#import <AppKit/NSNibLoading.h>
-#import <AppKit/NSView.h>
-#import <AppKit/NSBox.h>
-#import <AppKit/NSImage.h>
-#import <AppKit/NSButton.h>
-#import <AppKit/NSTableView.h>
-#import <AppKit/NSTableColumn.h>
-#import <AppKit/NSBrowser.h>
-#import <AppKit/NSMatrix.h>
-
 #import "Services.h"
+#include "Foundation/NSDictionary.h"
+#include "Foundation/NSObjCRuntime.h"
+#include "GNUstepGUI/GSServicesManager.h"
 
 @implementation Services
 
-static NSBundle                 *bundle = nil;
-static NSUserDefaults           *defaults = nil;
-static NSMutableDictionary      *domain = nil;
+static NSBundle *bundle = nil;
 
 - (id)init
 {
   self = [super init];
   
-  defaults = [NSUserDefaults standardUserDefaults];
-  domain = [[defaults persistentDomainForName:NSGlobalDomain] mutableCopy];
-
   bundle = [NSBundle bundleForClass:[self class]];
   NSString *imagePath = [bundle pathForResource:@"Services" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
@@ -55,7 +42,6 @@ static NSMutableDictionary      *domain = nil;
 
 - (void)dealloc
 {
-  NSLog(@"Services -dealloc");
   [image release];
   [super dealloc];
 }
@@ -64,19 +50,22 @@ static NSMutableDictionary      *domain = nil;
 {
   [view retain];
   [window release];
+
+  serviceManager = [GSServicesManager manager];
+  [serviceManager rebuildServices];
+  NSLog(@"Services: %@", [[serviceManager menuServices] allKeys]);
+  [servicesList loadColumnZero];
 }
 
 - (NSView *)view
 {
-  if (view == nil)
-    {
-      if (![NSBundle loadNibNamed:@"Services" owner:self])
-        {
-          NSLog (@"Services.preferences: Could not load NIB, aborting.");
-          return nil;
-        }
+  if (view == nil) {
+    if (![NSBundle loadNibNamed:@"Services" owner:self]) {
+      NSLog(@"Services.preferences: Could not load NIB, aborting.");
+      return nil;
     }
-  
+  }
+
   return view;
 }
 
@@ -93,6 +82,44 @@ static NSMutableDictionary      *domain = nil;
 //
 // Action methods
 //
+- (void)setServiceState:(id)sender
+{
+}
+
+- (void)browser:(NSBrowser *)brow
+    willDisplayCell:(NSBrowserCell *)cell
+              atRow:(NSInteger)row
+             column:(NSInteger)col
+{
+  NSDictionary *services = [serviceManager menuServices];
+
+  if (col == 0) {
+    NSArray *apps = [services allKeys];
+    NSString *app = [apps objectAtIndex:row];
+
+    // [cell setRepresentedObject:app];
+    [cell setLeaf:NO];
+    [cell setStringValue:app];
+  } else {
+    // NSArray *ls = [[brow selectedCellInColumn:0] representedObject];
+    // id it = [ls objectAtIndex:row];
+    // NSString *name = [it valueForKeyPath:@"NSMenuItem.default"];
+    // [cell setLeaf:YES];
+    // [cell setStringValue:niceName(name)];
+    // [cell setRepresentedObject:name];
+  }
+}
+
+- (NSInteger)browser:(NSBrowser *)brow numberOfRowsInColumn:(NSInteger)col
+{
+  if (col == 0) {
+    return [[[serviceManager menuServices] allKeys] count];
+  } else {
+    // NSArray *ls = [[brow selectedCellInColumn:0] representedObject];
+    // return [ls count];
+    return 0;
+  }
+}
 
 @end
 

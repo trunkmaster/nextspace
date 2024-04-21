@@ -21,10 +21,10 @@ SUBPROJECTS = \
 	Modules/Keyboard \
 	Modules/Mouse \
 	Modules/Sound \
+	Modules/Services \
 	Modules/Expert
 #	Modules/Date \
 #	Modules/Menu \
-#	Modules/Services \
 #	Modules/Password \
 #	Modules/Power
 
@@ -39,10 +39,10 @@ $(APP_NAME)_RESOURCE_FILES = \
 	Modules/Keyboard/Keyboard.preferences \
 	Modules/Mouse/Mouse.preferences \
 	Modules/Sound/Sound.preferences \
+	Modules/Services/Services.preferences \
 	Modules/Expert/Expert.preferences
 #	Modules/Date/Date.preferences \
 #	Modules/Menu/Menu.preferences \
-#	Modules/Services/Services.preferences \
 #	Modules/Password/Password.preferences \
 #	Modules/Power/Power.preferences
 

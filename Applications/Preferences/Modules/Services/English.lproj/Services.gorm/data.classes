@@ -1,11 +1,20 @@
 {
     "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setSeriviceState:"
+	);
+	Super = NSObject;
+    };
     Services = {
 	Actions = (
+	    "setSeriviceState:"
 	);
 	Outlets = (
 	    view,
-	    window
+	    window,
+	    actionButton,
+	    servicesList
 	);
 	Super = NSObject;
     };
