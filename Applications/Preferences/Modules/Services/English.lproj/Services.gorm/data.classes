@@ -2,13 +2,13 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     FirstResponder = {
 	Actions = (
-	    "setSeriviceState:"
+	    "setServiceState:"
 	);
 	Super = NSObject;
     };
     Services = {
 	Actions = (
-	    "setSeriviceState:"
+	    "setServiceState:"
 	);
 	Outlets = (
 	    view,

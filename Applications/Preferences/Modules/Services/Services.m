@@ -21,6 +21,7 @@
 //
 
 #import "Services.h"
+#include "Foundation/NSString.h"
 #include "Foundation/NSDictionary.h"
 #include "Foundation/NSObjCRuntime.h"
 #include "GNUstepGUI/GSServicesManager.h"
@@ -48,6 +49,7 @@ static NSBundle *bundle = nil;
 
 - (void)_fetchServices
 {
+  [serviceManager rebuildServices];
   NSDictionary *menuServices = [serviceManager menuServices];
   NSString *appName;
 
@@ -70,7 +72,8 @@ static NSBundle *bundle = nil;
     }
   }
 
-  NSLog(@"SERVICES: %@", [applications allKeys]);
+  NSLog(@"SERVICES: %@", applications);
+  [menuServices writeToFile:@"Services.plist" atomically:YES];
 
   ASSIGN(services, applications);
   [applications release];
@@ -114,14 +117,30 @@ static NSBundle *bundle = nil;
 //
 - (void)setServiceState:(id)sender
 {
-  NSString *item = [[servicesList selectedCellInColumn:1] representedObject];
+  NSString *selected = nil;
+  // NSString *selected = [servicesList path];
+  // NSString *service;
+  // NSString *item = [[servicesList selectedCellInColumn:1] representedObject];
 
-  if (item) {
-    BOOL show = ![serviceManager showsServicesMenuItem:item];
-    [serviceManager setShowsServicesMenuItem:item to:show];
+  NSLog(@"Selected service path: %@", selected);
 
-    [servicesList reloadColumn:0];
+  if ([servicesList selectedColumn] == 1) {
+    NSDictionary *service = [[servicesList selectedCellInColumn:1] representedObject];
+    selected = [service valueForKeyPath:@"NSMenuItem.default"];
+    NSLog(@"Setting state to service: %@", selected);
+    [serviceManager setShowsServicesMenuItem:selected
+                                          to:![serviceManager showsServicesMenuItem:selected]];
+  } else {
+    NSString *appName = [[servicesList selectedCellInColumn:0] title];
+    NSArray *appServices = [services objectForKey:appName];
+    for (NSDictionary *service in appServices) {
+      selected = [service valueForKeyPath:@"NSMenuItem.default"];
+      [serviceManager setShowsServicesMenuItem:selected
+                                            to:![serviceManager showsServicesMenuItem:selected]];
+    }
   }
+  [self _fetchServices];
+  [servicesList reloadColumn:[servicesList selectedColumn]];
 }
 
 - (NSString *)menuItemForService:(NSDictionary *)svc level:(int)level
@@ -165,8 +184,10 @@ static NSBundle *bundle = nil;
   } else {
     NSArray *appServices = [[browser selectedCellInColumn:0] representedObject];
     NSDictionary *svc = [appServices objectAtIndex:row];
-    
+
     [cell setStringValue:[self menuItemForService:svc level:1]];
+    // [cell setEnabled:[serviceManager
+    //                      showsServicesMenuItem:[svc valueForKeyPath:@"NSMenuItem.default"]]];
     [cell setLeaf:YES];
     [cell setRepresentedObject:svc];
   }
