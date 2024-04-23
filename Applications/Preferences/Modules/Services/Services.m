@@ -46,6 +46,36 @@ static NSBundle *bundle = nil;
   [super dealloc];
 }
 
+- (void)_fetchServices
+{
+  NSDictionary *menuServices = [serviceManager menuServices];
+  NSString *appName;
+
+  NSMutableDictionary *applications = [NSMutableDictionary new];
+  NSMutableArray *appServicesList;
+
+
+  for (NSDictionary *svc in [menuServices allValues]) {
+    appName = [svc valueForKey:@"NSPortName"];
+    appServicesList = [applications objectForKey:appName];
+
+    if (appServicesList == nil) {
+      appServicesList = [NSMutableArray new];
+      [appServicesList addObject:svc];
+      [applications setObject:appServicesList forKey:appName];
+      [appServicesList release];
+    } else {
+      [appServicesList addObject:svc];
+      [applications setObject:appServicesList forKey:appName];
+    }
+  }
+
+  NSLog(@"SERVICES: %@", [applications allKeys]);
+
+  ASSIGN(services, applications);
+  [applications release];
+}
+
 - (void)awakeFromNib
 {
   [view retain];
@@ -53,7 +83,7 @@ static NSBundle *bundle = nil;
 
   serviceManager = [GSServicesManager manager];
   [serviceManager rebuildServices];
-  NSLog(@"Services: %@", [[serviceManager menuServices] allKeys]);
+  [self _fetchServices];
   [servicesList loadColumnZero];
 }
 
@@ -84,40 +114,72 @@ static NSBundle *bundle = nil;
 //
 - (void)setServiceState:(id)sender
 {
+  NSString *item = [[servicesList selectedCellInColumn:1] representedObject];
+
+  if (item) {
+    BOOL show = ![serviceManager showsServicesMenuItem:item];
+    [serviceManager setShowsServicesMenuItem:item to:show];
+
+    [servicesList reloadColumn:0];
+  }
 }
 
-- (void)browser:(NSBrowser *)brow
+- (NSString *)menuItemForService:(NSDictionary *)svc level:(int)level
+{
+  NSString *itemTitle = [svc valueForKeyPath:@"NSMenuItem.default"];
+  NSArray *components = [itemTitle pathComponents];
+
+  if (components.count == 0) {
+    return nil;
+  }
+
+  return components[level];
+}
+
+- (BOOL)menuItemIsOnly:(NSArray *)svc
+{
+  if ([svc count] > 1) {
+    return NO;
+  } else {
+    NSDictionary *service = svc[0];
+    NSString *serviceTitle = [service valueForKeyPath:@"NSMenuItem.default"];
+    if ([serviceTitle pathComponents].count > 1) {
+      return NO;
+    }
+  }
+  return YES;
+}
+
+- (void)browser:(NSBrowser *)browser
     willDisplayCell:(NSBrowserCell *)cell
               atRow:(NSInteger)row
              column:(NSInteger)col
 {
-  NSDictionary *services = [serviceManager menuServices];
-
   if (col == 0) {
     NSArray *apps = [services allKeys];
-    NSString *app = [apps objectAtIndex:row];
+    NSArray *appServices = services[apps[row]];
 
-    // [cell setRepresentedObject:app];
-    [cell setLeaf:NO];
-    [cell setStringValue:app];
+    [cell setStringValue:[self menuItemForService:appServices[0] level:0]];
+    [cell setLeaf:[self menuItemIsOnly:appServices]];
+    [cell setRepresentedObject:appServices];
   } else {
-    // NSArray *ls = [[brow selectedCellInColumn:0] representedObject];
-    // id it = [ls objectAtIndex:row];
-    // NSString *name = [it valueForKeyPath:@"NSMenuItem.default"];
-    // [cell setLeaf:YES];
-    // [cell setStringValue:niceName(name)];
-    // [cell setRepresentedObject:name];
+    NSArray *appServices = [[browser selectedCellInColumn:0] representedObject];
+    NSDictionary *svc = [appServices objectAtIndex:row];
+    
+    [cell setStringValue:[self menuItemForService:svc level:1]];
+    [cell setLeaf:YES];
+    [cell setRepresentedObject:svc];
   }
+  [cell setRefusesFirstResponder:YES];
 }
 
-- (NSInteger)browser:(NSBrowser *)brow numberOfRowsInColumn:(NSInteger)col
+- (NSInteger)browser:(NSBrowser *)browser numberOfRowsInColumn:(NSInteger)col
 {
   if (col == 0) {
-    return [[[serviceManager menuServices] allKeys] count];
+    return [services count];
   } else {
-    // NSArray *ls = [[brow selectedCellInColumn:0] representedObject];
-    // return [ls count];
-    return 0;
+    NSString *appName = [[browser selectedCellInColumn:0] stringValue];
+    return [[services objectForKey:appName] count];
   }
 }
 
