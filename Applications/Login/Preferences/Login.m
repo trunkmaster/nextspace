@@ -116,9 +116,12 @@
   struct group *grp;
   int i = 0;
   BOOL isAdmin = NO;
-  
+
   grp = getgrnam("wheel");
-  while (grp->gr_mem[i] != NULL) {
+  if (grp == NULL) {
+    grp = getgrnam("adm");
+  }
+  while (grp && grp->gr_mem[i] != NULL) {
     printf("[Login] wheel member: %s\n", grp->gr_mem[i]);
     if (!strcmp(grp->gr_mem[i], [NSUserName() cString])) {
       isAdmin = YES;
