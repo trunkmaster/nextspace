@@ -21,6 +21,7 @@
 //
 
 #import "Services.h"
+#include "AppKit/NSFont.h"
 
 @implementation Services
 
@@ -250,6 +251,9 @@ static NSBundle *bundle = nil;
     [cell setStringValue:[self menuItemForService:svc level:1]];
     // [cell setEnabled:[serviceManager
     //                      showsServicesMenuItem:[svc valueForKeyPath:@"NSMenuItem.default"]]];
+    if ([serviceManager showsServicesMenuItem:[svc valueForKeyPath:@"NSMenuItem.default"]] == NO) {
+      [cell setFont:[NSFont fontWithName:@"Helvetica-Oblique" size:12.0]];
+    }
     [cell setLeaf:YES];
     [cell setRepresentedObject:svc];
   }
