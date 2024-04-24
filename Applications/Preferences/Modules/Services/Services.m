@@ -21,10 +21,6 @@
 //
 
 #import "Services.h"
-#include "Foundation/NSString.h"
-#include "Foundation/NSDictionary.h"
-#include "Foundation/NSObjCRuntime.h"
-#include "GNUstepGUI/GSServicesManager.h"
 
 @implementation Services
 
@@ -47,17 +43,64 @@ static NSBundle *bundle = nil;
   [super dealloc];
 }
 
+- (void)_updateAllServices
+{
+  NSString *_servicesPath;
+  NSDictionary *_allServices = nil;
+
+  _servicesPath = [NSHomeDirectory() stringByAppendingString:@"/Library/Services/.GNUstepServices"];
+
+  if ([[NSFileManager defaultManager] fileExistsAtPath:_servicesPath]) {
+    NSData *data = [NSData dataWithContentsOfFile:_servicesPath];
+
+    if (data) {
+      id plist = [NSDeserializer deserializePropertyListFromData:data mutableContainers:YES];
+      if (plist) {
+        [[NSDictionary dictionaryWithDictionary:plist] writeToFile:@"SERVICES.plist"
+                                                        atomically:YES];
+        _allServices =
+            [[NSDictionary alloc] initWithDictionary:[plist valueForKeyPath:@"ByService.default"]];
+        ASSIGN(allServices, _allServices);
+      }
+    }
+  }
+
+  return;
+}
+
+- (void)_updateDisabledServices
+{
+  NSString *_disabledPath;
+  NSArray *_disabledServices = nil;
+
+  _disabledPath = [NSHomeDirectory() stringByAppendingString:@"/Library/Services/.GNUstepDisabled"];
+
+  if ([[NSFileManager defaultManager] fileExistsAtPath:_disabledPath]) {
+    NSData *data = [NSData dataWithContentsOfFile:_disabledPath];
+
+    if (data) {
+      id plist = [NSDeserializer deserializePropertyListFromData:data mutableContainers:NO];
+      if (plist) {
+        NSLog(@"Disabled SERVICES: %@", plist);
+        _disabledServices = [[NSArray alloc] initWithArray:plist];
+        ASSIGN(disabledServices, _disabledServices);
+      }
+    }
+  }
+}
+
+
 - (void)_fetchServices
 {
-  [serviceManager rebuildServices];
-  NSDictionary *menuServices = [serviceManager menuServices];
   NSString *appName;
 
   NSMutableDictionary *applications = [NSMutableDictionary new];
   NSMutableArray *appServicesList;
 
+  [self _updateAllServices];
+  [self _updateDisabledServices];
 
-  for (NSDictionary *svc in [menuServices allValues]) {
+  for (NSDictionary *svc in [allServices allValues]) {
     appName = [svc valueForKey:@"NSPortName"];
     appServicesList = [applications objectForKey:appName];
 
@@ -71,9 +114,6 @@ static NSBundle *bundle = nil;
       [applications setObject:appServicesList forKey:appName];
     }
   }
-
-  NSLog(@"SERVICES: %@", applications);
-  [menuServices writeToFile:@"Services.plist" atomically:YES];
 
   ASSIGN(services, applications);
   [applications release];
@@ -141,6 +181,23 @@ static NSBundle *bundle = nil;
   }
   [self _fetchServices];
   [servicesList reloadColumn:[servicesList selectedColumn]];
+}
+
+- (void)serviceListClicked:(id)sender
+{
+  NSLog(@"Service LIst clicked: %@", [sender className]);
+  NSBrowser *browser = sender;
+  NSUInteger col = [browser selectedColumn];
+
+  if (col == 1) {
+    NSDictionary *svc = [[browser selectedCellInColumn:col] representedObject];
+    NSString *menuItem = [svc valueForKeyPath:@"NSMenuItem.default"];
+    if ([disabledServices doesContain:menuItem]) {
+      [actionButton setTitle:@"Enable"];
+    } else {
+      [actionButton setTitle:@"Disable"];
+    }
+  }
 }
 
 - (NSString *)menuItemForService:(NSDictionary *)svc level:(int)level

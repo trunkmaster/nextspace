@@ -34,6 +34,8 @@
   id actionButton;
 
   GSServicesManager *serviceManager;
+  NSDictionary *allServices;
+  NSDictionary *disabledServices;
   NSMutableDictionary *services;
 }
 
