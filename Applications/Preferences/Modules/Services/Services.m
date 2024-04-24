@@ -61,6 +61,7 @@ static NSBundle *bundle = nil;
         _allServices =
             [[NSDictionary alloc] initWithDictionary:[plist valueForKeyPath:@"ByService.default"]];
         ASSIGN(allServices, _allServices);
+        [_allServices release];
       }
     }
   }
@@ -84,6 +85,7 @@ static NSBundle *bundle = nil;
         NSLog(@"Disabled SERVICES: %@", plist);
         _disabledServices = [[NSArray alloc] initWithArray:plist];
         ASSIGN(disabledServices, _disabledServices);
+        [_disabledServices release];
       }
     }
   }
@@ -93,7 +95,6 @@ static NSBundle *bundle = nil;
 - (void)_fetchServices
 {
   NSString *appName;
-
   NSMutableDictionary *applications = [NSMutableDictionary new];
   NSMutableArray *appServicesList;
 
@@ -155,14 +156,13 @@ static NSBundle *bundle = nil;
 //
 // Action methods
 //
+
+#pragma mark - Button
+
 - (void)setServiceState:(id)sender
 {
   NSString *selected = nil;
-  // NSString *selected = [servicesList path];
-  // NSString *service;
-  // NSString *item = [[servicesList selectedCellInColumn:1] representedObject];
-
-  NSLog(@"Selected service path: %@", selected);
+  NSString *selectedPath = [servicesList path];
 
   if ([servicesList selectedColumn] == 1) {
     NSDictionary *service = [[servicesList selectedCellInColumn:1] representedObject];
@@ -179,8 +179,11 @@ static NSBundle *bundle = nil;
                                             to:![serviceManager showsServicesMenuItem:selected]];
     }
   }
+
   [self _fetchServices];
   [servicesList reloadColumn:[servicesList selectedColumn]];
+  [(NSBrowser *)servicesList setPath:selectedPath];
+  [self serviceListClicked:servicesList];
 }
 
 - (void)serviceListClicked:(id)sender
@@ -199,6 +202,8 @@ static NSBundle *bundle = nil;
     }
   }
 }
+
+#pragma mark - Browser
 
 - (NSString *)menuItemForService:(NSDictionary *)svc level:(int)level
 {
