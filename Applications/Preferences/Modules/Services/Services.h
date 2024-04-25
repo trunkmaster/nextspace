@@ -35,9 +35,8 @@
 
   GSServicesManager *serviceManager;
   NSDictionary *allServices;
-  NSDictionary *disabledServices;
+  NSArray *disabledServices;
   NSMutableDictionary *services;
 }
 
 @end
-

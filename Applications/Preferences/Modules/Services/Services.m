@@ -21,7 +21,60 @@
 //
 
 #import "Services.h"
-#include "AppKit/NSFont.h"
+
+@implementation GSServicesManager (Preferences)
+
+- (NSDictionary *)allServices
+{
+  NSDictionary *_services = nil;
+
+  if ([[NSFileManager defaultManager] fileExistsAtPath:_servicesPath]) {
+    NSData *data = [NSData dataWithContentsOfFile:_servicesPath];
+
+    if (data) {
+      id plist = [NSDeserializer deserializePropertyListFromData:data mutableContainers:YES];
+      if (plist) {
+        _services =
+            [[NSDictionary alloc] initWithDictionary:[plist valueForKeyPath:@"ByService.default"]];
+      }
+    }
+  }
+
+  return _services;
+}
+
+- (NSArray *)disabledServices
+{
+  NSArray *_services = nil;
+
+  if ([[NSFileManager defaultManager] fileExistsAtPath:_disabledPath]) {
+    NSData *data = [NSData dataWithContentsOfFile:_disabledPath];
+
+    if (data) {
+      id plist = [NSDeserializer deserializePropertyListFromData:data mutableContainers:NO];
+      if (plist) {
+        NSLog(@"Disabled SERVICES: %@", plist);
+        _services = [[NSArray alloc] initWithArray:plist];
+      }
+    }
+  }
+
+  return _services;
+}
+
+- (NSString *)itemTitleForService:(NSDictionary *)svc menuLevel:(int)level
+{
+  NSString *itemTitle = [svc valueForKeyPath:@"NSMenuItem.default"];
+  NSArray *components = [itemTitle pathComponents];
+
+  if (components.count == 0) {
+    return nil;
+  }
+
+  return components[level];
+}
+
+@end
 
 @implementation Services
 
@@ -40,58 +93,11 @@ static NSBundle *bundle = nil;
 
 - (void)dealloc
 {
+  [allServices release];
+  [disabledServices release];
   [image release];
   [super dealloc];
 }
-
-- (void)_updateAllServices
-{
-  NSString *_servicesPath;
-  NSDictionary *_allServices = nil;
-
-  _servicesPath = [NSHomeDirectory() stringByAppendingString:@"/Library/Services/.GNUstepServices"];
-
-  if ([[NSFileManager defaultManager] fileExistsAtPath:_servicesPath]) {
-    NSData *data = [NSData dataWithContentsOfFile:_servicesPath];
-
-    if (data) {
-      id plist = [NSDeserializer deserializePropertyListFromData:data mutableContainers:YES];
-      if (plist) {
-        [[NSDictionary dictionaryWithDictionary:plist] writeToFile:@"SERVICES.plist"
-                                                        atomically:YES];
-        _allServices =
-            [[NSDictionary alloc] initWithDictionary:[plist valueForKeyPath:@"ByService.default"]];
-        ASSIGN(allServices, _allServices);
-        [_allServices release];
-      }
-    }
-  }
-
-  return;
-}
-
-- (void)_updateDisabledServices
-{
-  NSString *_disabledPath;
-  NSArray *_disabledServices = nil;
-
-  _disabledPath = [NSHomeDirectory() stringByAppendingString:@"/Library/Services/.GNUstepDisabled"];
-
-  if ([[NSFileManager defaultManager] fileExistsAtPath:_disabledPath]) {
-    NSData *data = [NSData dataWithContentsOfFile:_disabledPath];
-
-    if (data) {
-      id plist = [NSDeserializer deserializePropertyListFromData:data mutableContainers:NO];
-      if (plist) {
-        NSLog(@"Disabled SERVICES: %@", plist);
-        _disabledServices = [[NSArray alloc] initWithArray:plist];
-        ASSIGN(disabledServices, _disabledServices);
-        [_disabledServices release];
-      }
-    }
-  }
-}
-
 
 - (void)_fetchServices
 {
@@ -99,8 +105,8 @@ static NSBundle *bundle = nil;
   NSMutableDictionary *applications = [NSMutableDictionary new];
   NSMutableArray *appServicesList;
 
-  [self _updateAllServices];
-  [self _updateDisabledServices];
+  ASSIGN(allServices, [serviceManager allServices]);
+  ASSIGN(disabledServices, [serviceManager disabledServices]);
 
   for (NSDictionary *svc in [allServices allValues]) {
     appName = [svc valueForKey:@"NSPortName"];
@@ -131,6 +137,8 @@ static NSBundle *bundle = nil;
   [self _fetchServices];
   [servicesList loadColumnZero];
 }
+
+#pragma mark - Protocol
 
 - (NSView *)view
 {
@@ -201,22 +209,14 @@ static NSBundle *bundle = nil;
     } else {
       [actionButton setTitle:@"Disable"];
     }
+    [actionButton setEnabled:YES];
+  } else {
+    [actionButton setEnabled:NO];
+    [actionButton setTitle:@"Disable"];
   }
 }
 
 #pragma mark - Browser
-
-- (NSString *)menuItemForService:(NSDictionary *)svc level:(int)level
-{
-  NSString *itemTitle = [svc valueForKeyPath:@"NSMenuItem.default"];
-  NSArray *components = [itemTitle pathComponents];
-
-  if (components.count == 0) {
-    return nil;
-  }
-
-  return components[level];
-}
 
 - (BOOL)menuItemIsOnly:(NSArray *)svc
 {
@@ -241,16 +241,14 @@ static NSBundle *bundle = nil;
     NSArray *apps = [services allKeys];
     NSArray *appServices = services[apps[row]];
 
-    [cell setStringValue:[self menuItemForService:appServices[0] level:0]];
+    [cell setStringValue:[serviceManager itemTitleForService:appServices[0] menuLevel:0]];
     [cell setLeaf:[self menuItemIsOnly:appServices]];
     [cell setRepresentedObject:appServices];
   } else {
     NSArray *appServices = [[browser selectedCellInColumn:0] representedObject];
     NSDictionary *svc = [appServices objectAtIndex:row];
 
-    [cell setStringValue:[self menuItemForService:svc level:1]];
-    // [cell setEnabled:[serviceManager
-    //                      showsServicesMenuItem:[svc valueForKeyPath:@"NSMenuItem.default"]]];
+    [cell setStringValue:[serviceManager itemTitleForService:svc menuLevel:1]];
     if ([serviceManager showsServicesMenuItem:[svc valueForKeyPath:@"NSMenuItem.default"]] == NO) {
       [cell setFont:[NSFont fontWithName:@"Helvetica-Oblique" size:12.0]];
     }
