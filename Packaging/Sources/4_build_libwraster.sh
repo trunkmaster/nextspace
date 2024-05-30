@@ -6,9 +6,6 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-${ECHO} ">>> Installing packages for libwraster build"
-sudo apt-get install -y ${WRASTER_DEPS}
-
 ${ECHO} ">>> Installing ${OS_NAME} packages for WRaster library build"
 if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
