@@ -91,14 +91,14 @@ if [ "${OS_NAME}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
 else
   libdispatch_version=5.9.2
   libcorefoundation_version=5.9.2
-  gnustep_make_version=2_9_1
-  gnustep_base_version=1_29_0
-  gnustep_gui_version=0_30_0
+  gnustep_make_version=2_9_2
+  gnustep_base_version=1_30_0
+  gnustep_gui_version=0_31_0
 fi
 libobjc2_version=2.2.1
 #gnustep_back_version=0_30_0
 
-gorm_version=1_3_1
+gorm_version=1_4_0
 projectcenter_version=0_7_0
 
 roboto_mono_version=0.2020.05.08
