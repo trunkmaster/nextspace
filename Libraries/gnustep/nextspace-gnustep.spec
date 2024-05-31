@@ -142,7 +142,7 @@ cp %{_sourcedir}/pc.patch %{_builddir}/nextspace-gnustep/apps-projectcenter-proj
 cd %{_builddir}/nextspace-gnustep/apps-projectcenter-projectcenter-%{PC_VERSION}/
 %patch -P1 -p1
 cp %{_sourcedir}/libs-gui_NSApplication.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
-cp %{_sourcedir}/libs-gui_NSPopUpButtonCell.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+cp %{_sourcedir}/libs-gui_NSPopUpButton.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 cd %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 %patch -P2 -p1
 %patch -P3 -p1
