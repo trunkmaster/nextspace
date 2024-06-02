@@ -1,17 +1,17 @@
-diff -ruN a/GNUmakefile b/GNUmakefile
---- a/GNUmakefile	2022-10-28 12:41:54.000000000 -0400
-+++ b/GNUmakefile	2023-08-05 23:28:16.539774998 -0400
-@@ -181,6 +181,7 @@
- 	GormShelfPref.gorm \
- 	GormSoundInspector.gorm \
- 	GormViewSizeInspector.gorm \
+diff -ruN a/Applications/Gorm/GNUmakefile b/Applications/Gorm/GNUmakefile
+--- a/Applications/Gorm/GNUmakefile	2024-05-30 00:10:32.000000000 -0500
++++ b/Applications/Gorm/GNUmakefile	2024-05-30 22:50:28.932738959 -0500
+@@ -148,6 +148,7 @@
+ Gorm_LOCALIZED_RESOURCE_FILES = \
+ 	Gorm.gorm \
+ 	GormLanguageViewController.gorm \
 +	InfoPanel.gorm \
  	Gorm.rtfd
  
  Gorm_LANGUAGES = \
 diff -ruN a/GormCore/GormDocumentController.h b/GormCore/GormDocumentController.h
---- a/GormCore/GormDocumentController.h	2022-10-28 12:41:54.000000000 -0400
-+++ b/GormCore/GormDocumentController.h	2023-08-06 00:10:48.308297018 -0400
+--- a/GormCore/GormDocumentController.h	2024-05-30 00:10:32.000000000 -0500
++++ b/GormCore/GormDocumentController.h	2024-05-30 22:42:53.829256137 -0500
 @@ -41,10 +41,16 @@
  
  @interface GormDocumentController : NSDocumentController
@@ -30,9 +30,9 @@ diff -ruN a/GormCore/GormDocumentController.h b/GormCore/GormDocumentController.
  @end
  
 diff -ruN a/GormCore/GormDocumentController.m b/GormCore/GormDocumentController.m
---- a/GormCore/GormDocumentController.m	2022-10-28 12:41:54.000000000 -0400
-+++ b/GormCore/GormDocumentController.m	2023-08-05 23:32:23.339052057 -0400
-@@ -30,6 +30,30 @@
+--- a/GormCore/GormDocumentController.m	2024-05-30 00:10:32.000000000 -0500
++++ b/GormCore/GormDocumentController.m	2024-05-30 22:45:42.331108944 -0500
+@@ -31,6 +31,30 @@
  
  @implementation GormDocumentController
  
@@ -63,7 +63,7 @@ diff -ruN a/GormCore/GormDocumentController.m b/GormCore/GormDocumentController.
  - (id) currentDocument
  {
    NSArray  *documents = [self documents];
-@@ -205,4 +229,17 @@
+@@ -206,4 +230,17 @@
  {
    return  [self openDocumentWithContentsOfURL:url display:YES];
  }
