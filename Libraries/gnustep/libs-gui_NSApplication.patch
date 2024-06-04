@@ -1,46 +1,63 @@
---- a/Source/NSApplication.m	2022-12-29 04:05:31.000000000 -0500
-+++ b/Source/NSApplication.m	2023-10-03 22:13:27.898321425 -0500
-@@ -2530,6 +2530,9 @@
+# Changes
+# 2024-06-04  Sergii Stoian  <stoyan255@gmail.com>
+#	* Deactivate application only if window manager accepted hide action.
+#	* Change "Hide/Unhide" menu item title depending on app state.
+#	* Call unhide: if hide: was called on hidden app. Actually it's always the case
+#	  because menu item bound to -hide: method.
+
+diff --git a/Source/NSApplication.m b/Source/NSApplication.m
+index 1de44a1bd..9b631b110 100644
+--- a/Source/NSApplication.m
++++ b/Source/NSApplication.m
+@@ -2542,8 +2542,15 @@ image.</p><p>See Also: -applicationIconImage</p>
                    [_hidden addObject: win];
                    [win orderOut: self];
                  }
-+              /* On hiding we also deactivate the application which will make 
-+                 the menus go away too. */
++              /*
++               * On hiding we also deactivate the application which will make
++               * the menus go away too.
++               */
 +              [self deactivate];
++              _unhide_on_activation = YES;
              }
- 	  _app_is_hidden = YES;
+-	  _app_is_hidden = YES;
++          [[_main_menu itemWithTitle:@"Hide"] setTitle:@"Unhide"];
++          _app_is_hidden = YES;
  	  
-@@ -2552,12 +2555,9 @@
+ 	  if (YES == [[NSUserDefaults standardUserDefaults]
+ 		       boolForKey: @"GSSuppressAppIcon"])
+@@ -2564,14 +2571,7 @@ image.</p><p>See Also: -applicationIconImage</p>
  	    {
  	      [[_app_icon_window contentView] setNeedsDisplay: YES];
  	    }
-+
-+          [[_main_menu itemWithTitle:@"Hide"] setTitle:@"Unhide"];
- 	  
+-	  
 -	  /*
 -	   * On hiding we also deactivate the application which will make the menus
 -	   * go away too.
 -	   */
 -	  [self deactivate];
- 	  _unhide_on_activation = YES;
- 	  
+-	  _unhide_on_activation = YES;
+-	  
++ 
  	  info = [self _notificationUserInfo];
-@@ -2577,6 +2577,10 @@
+ 	  [nc postNotificationName: NSApplicationDidHideNotification
+ 			    object: self
+@@ -2589,6 +2589,10 @@ image.</p><p>See Also: -applicationIconImage</p>
  	  [self miniaturizeAll: sender];
  	}
      }
 +  else
 +    {
-+      [self unhide:sender];
++      [self unhide: sender];
 +    }
  #endif
  }
  
-@@ -2595,6 +2599,7 @@
+@@ -2605,6 +2609,7 @@ image.</p><p>See Also: -applicationIconImage</p>
+  */
+ - (void) unhide: (id)sender
  {
++  [[_main_menu itemWithTitle:@"Unhide"] setTitle:@"Hide"];
    if (_app_is_hidden)
      {
-+      [[_main_menu itemWithTitle:@"Unhide"] setTitle:@"Hide"];
        [self unhideWithoutActivation];
-       _unhide_on_activation = NO;
-     }
