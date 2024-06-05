@@ -135,9 +135,9 @@ GNUstep Make installed with nextspace-core-devel package.
 
 %prep
 %setup -c -n nextspace-gnustep -a 0 -a 1 -a 2 -a 3 -a 4
-#cp %{_sourcedir}/gorm.patch %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
-#cd %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
-#%patch -P0 -p1
+cp %{_sourcedir}/gorm.patch %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
+cd %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
+%patch -P0 -p1
 cp %{_sourcedir}/pc.patch %{_builddir}/nextspace-gnustep/apps-projectcenter-projectcenter-%{PC_VERSION}/
 cd %{_builddir}/nextspace-gnustep/apps-projectcenter-projectcenter-%{PC_VERSION}/
 %patch -P1 -p1
