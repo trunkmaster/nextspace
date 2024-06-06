@@ -1,70 +1,32 @@
 # ChangeLog
-2019-12-19  Sergii Stoian  <stoyan255@gmail.com>
+# 2019-12-19  Sergii Stoian  <stoyan255@gmail.com>
+#   * Source/NSMenuView.m 
+#     (setHighlightedItemIndex:): do not highlight first item for pulldown popup 
+#       button's menu.
+#     (rectOfItemAtIndex:): draw first item cell of pulldown popup menu.
+#     (setWindowFrameForAttachingToRect:onScreen:preferredEdge:popUpSelectedItem:):
+#       remove useless (was used for old-style popup menu) positionning code for
+#       popup menu. Check if owning popup is not pulldown before vertical 
+#       position correction.
 
-	* Source/NSMenuView.m (setHighlightedItemIndex:): do not highlight first
-	item for pulldown popup button's menu.
-	(sizeToFit): removed commented useless code; fixed formatting.
-	(rectOfItemAtIndex:): draw first item cell of pulldown popup menu.
-	(setWindowFrameForAttachingToRect:onScreen:preferredEdge:popUpSelectedItem:):
-	remove useless (was used for old-style popup menu) positionning code for
-	popup menu. Check if owning popup is not pulldown before vertical
-	position correction.
-
-	* Source/NSPopUpButtonCell.m (attachPopUpWithFrame:inView:): make setting
-	selected item code more generic for pulldown and non-pulldown button.
-	Fixed formatting.
 diff --git a/Source/NSMenuView.m b/Source/NSMenuView.m
-index 0eb2db5..eaca6e7 100644
---- gnustep-gui-0.28.0.orig/Source/NSMenuView.m
-+++ gnustep-gui-0.28.0/Source/NSMenuView.m
-@@ -405,7 +405,15 @@ static float menuBarHeight = 0.0;
-     }
+index d15919862..32561803b 100644
+--- a/Source/NSMenuView.m
++++ b/Source/NSMenuView.m
+@@ -406,6 +406,12 @@ - (void) setHighlightedItemIndex: (NSInteger)index
  
    // Set ivar to new index.
--  _highlightedItemIndex = index;
-+  if ([_attachedMenu _ownedByPopUp] &&
-+      index == 0 && [[_attachedMenu _owningPopUp] pullsDown])
+   _highlightedItemIndex = index;
++  // Do not highlight first item for pulldown popup button's menu
++  if ([_attachedMenu _ownedByPopUp] && index == 0 &&
++      [[_attachedMenu _owningPopUp] pullsDown])
 +    {
 +      _highlightedItemIndex = -1;
-+    }
-+  else
-+    {  
-+      _highlightedItemIndex = index;
 +    }
  
    // Highlight new
    if (_highlightedItemIndex != -1) 
-@@ -764,15 +772,8 @@ static float menuBarHeight = 0.0;
-       unsigned i;
-       unsigned howMany = [_itemCells count];
-       float currentX = HORIZONTAL_MENU_LEFT_PADDING;
--//      NSRect scRect = [[NSScreen mainScreen] frame];
--
-       GSIArrayRemoveAllItems(cellRects);
- 
--/*
--      scRect.size.height = [NSMenuView menuBarHeight];
--      [self setFrameSize: scRect.size];
--      _cellSize.height = scRect.size.height;
--*/
-       _cellSize.height = [NSMenuView menuBarHeight];
- 
-       if (howMany && isPullDown)
-@@ -967,10 +968,9 @@ static float menuBarHeight = 0.0;
-         }
- 
-       [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
--                                     [self totalHeight] 
--                                     + menuBarHeight)];
--      [_titleView setFrame: NSMakeRect (0, [self totalHeight],
--                                        NSWidth (_bounds), menuBarHeight)];
-+                                     [self totalHeight] + menuBarHeight)];
-+      [_titleView setFrame: NSMakeRect(0, [self totalHeight],
-+                                       NSWidth (_bounds), menuBarHeight)];
-     }
-   _needsSizing = NO;
- }
-@@ -1048,13 +1048,6 @@ static float menuBarHeight = 0.0;
+@@ -1051,13 +1057,6 @@ - (NSRect) rectOfItemAtIndex: (NSInteger)index
        [self sizeToFit];
      } 
  
@@ -78,7 +40,7 @@ index 0eb2db5..eaca6e7 100644
    if (_horizontal == YES)
      {
        GSCellRect aRect;
-@@ -1212,37 +1205,6 @@ static float menuBarHeight = 0.0;
+@@ -1215,37 +1214,6 @@ - (void) setWindowFrameForAttachingToRect: (NSRect)screenRect
    if (_needsSizing)
      [self sizeToFit];
  
@@ -116,7 +78,7 @@ index 0eb2db5..eaca6e7 100644
    cellFrame = screenRect;
  
    /*
-@@ -1296,22 +1258,11 @@ static float menuBarHeight = 0.0;
+@@ -1299,19 +1267,8 @@ - (void) setWindowFrameForAttachingToRect: (NSRect)screenRect
            popUpFrame.size.width += borderOffsetInBaseCoords;
            popUpFrame.origin.x -= borderOffsetInBaseCoords;
  
@@ -133,16 +95,11 @@ index 0eb2db5..eaca6e7 100644
 -
            // Compute position for popups, if needed
 -          if (selectedItemIndex != -1) 
-+          if (selectedItemIndex != -1
-+              && [[_attachedMenu _owningPopUp] pullsDown] == NO)
++           if (selectedItemIndex != -1 && [[_attachedMenu _owningPopUp] pullsDown] == NO)
              {
--              popUpFrame.origin.y
--                  += cellFrame.size.height * selectedItemIndex;
-+              popUpFrame.origin.y += cellFrame.size.height * selectedItemIndex;
-             }
-         }
-       else
-@@ -1319,23 +1270,14 @@ static float menuBarHeight = 0.0;
+               popUpFrame.origin.y
+                   += cellFrame.size.height * selectedItemIndex;
+@@ -1322,18 +1279,8 @@ - (void) setWindowFrameForAttachingToRect: (NSRect)screenRect
            f = cellFrame.size.width * (items - 1);
            popUpFrame.size.width += f;
  
@@ -158,63 +115,16 @@ index 0eb2db5..eaca6e7 100644
 -
            // Compute position for popups, if needed
 -          if (selectedItemIndex != -1) 
-+          if (selectedItemIndex != -1
-+              && [[_attachedMenu _owningPopUp] pullsDown] == NO)
++          if (selectedItemIndex != -1 && [[_attachedMenu _owningPopUp] pullsDown] == NO)
              {
                popUpFrame.origin.x -= cellFrame.size.width * selectedItemIndex;
              }
-         }
--    }  
-+    }
+@@ -1341,7 +1288,7 @@ - (void) setWindowFrameForAttachingToRect: (NSRect)screenRect
+     }  
    
    // Update position, if needed, using the preferredEdge
-   if (selectedItemIndex == -1)
-diff --git a/Source/NSPopUpButtonCell.m b/Source/NSPopUpButtonCell.m
-index 729c32d..74be338 100644
---- gnustep-gui-0.28.0.orig/Source/NSPopUpButtonCell.m
-+++ gnustep-gui-0.28.0/Source/NSPopUpButtonCell.m
-@@ -905,7 +905,7 @@ static NSImage *_pbc_image[5];
-   NSNotificationCenter  *nc = [NSNotificationCenter defaultCenter];
-   NSWindow              *cvWin = [controlView window];
-   NSMenuView            *mr = [_menu menuRepresentation];
--  NSInteger                   selectedItem;
-+  NSInteger             selectedItem;
- 
-   [nc postNotificationName: NSPopUpButtonCellWillPopUpNotification
-                     object: self];
-@@ -918,14 +918,17 @@ static NSImage *_pbc_image[5];
-   cellFrame.origin = [cvWin convertBaseToScreen: cellFrame.origin];
- 
-   if (_pbcFlags.pullsDown)
--    selectedItem = -1;
-+    {
-+      selectedItem = -1;
-+    }
-   else
+-  if (selectedItemIndex == -1)
++  if (selectedItemIndex == -1 && [[_attachedMenu _owningPopUp] pullsDown] == NO)
      {
-       selectedItem = [self indexOfSelectedItem];
--      if (selectedItem == -1)
--	{
--	  selectedItem = 0;
--	}
-+    }
-+
-+  if (selectedItem == -1)
-+    {
-+      selectedItem = 0;
-     }
+       NSRect screenFrame;
  
-   if (selectedItem > 0)
-@@ -953,9 +956,9 @@ static NSImage *_pbc_image[5];
- 		       selectedItem: selectedItem];
- 
-   [nc addObserver: self
--      selector: @selector(_handleNotification:)
--      name: NSMenuDidSendActionNotification
--      object: _menu];
-+         selector: @selector(_handleNotification:)
-+             name: NSMenuDidSendActionNotification
-+           object: _menu];
- }
- 
- /**

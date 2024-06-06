@@ -9,7 +9,7 @@ diff --git a/Source/NSApplication.m b/Source/NSApplication.m
 index 1de44a1bd..9b631b110 100644
 --- a/Source/NSApplication.m
 +++ b/Source/NSApplication.m
-@@ -2542,8 +2542,15 @@ image.</p><p>See Also: -applicationIconImage</p>
+@@ -2542,8 +2542,15 @@ - (void) hide: (id)sender
                    [_hidden addObject: win];
                    [win orderOut: self];
                  }
@@ -26,7 +26,7 @@ index 1de44a1bd..9b631b110 100644
  	  
  	  if (YES == [[NSUserDefaults standardUserDefaults]
  		       boolForKey: @"GSSuppressAppIcon"])
-@@ -2564,14 +2571,7 @@ image.</p><p>See Also: -applicationIconImage</p>
+@@ -2564,14 +2571,7 @@ - (void) hide: (id)sender
  	    {
  	      [[_app_icon_window contentView] setNeedsDisplay: YES];
  	    }
@@ -42,7 +42,7 @@ index 1de44a1bd..9b631b110 100644
  	  info = [self _notificationUserInfo];
  	  [nc postNotificationName: NSApplicationDidHideNotification
  			    object: self
-@@ -2589,6 +2589,10 @@ image.</p><p>See Also: -applicationIconImage</p>
+@@ -2589,6 +2589,10 @@ - (void) hide: (id)sender
  	  [self miniaturizeAll: sender];
  	}
      }
@@ -53,7 +53,7 @@ index 1de44a1bd..9b631b110 100644
  #endif
  }
  
-@@ -2605,6 +2609,7 @@ image.</p><p>See Also: -applicationIconImage</p>
+@@ -2605,6 +2609,7 @@ - (BOOL) isHidden
   */
  - (void) unhide: (id)sender
  {
