@@ -62,17 +62,22 @@ $MAKE_CMD
 #----------------------------------------
 # Install
 #----------------------------------------
-sudo $MAKE_CMD install
+#sudo $MAKE_CMD install
+$INSTALL_CMD
 
 #----------------------------------------
 # Postinstall
 #----------------------------------------
-sudo rm /usr/NextSpace/include/Block_private.h
+$RM_CMD $DEST_DIR/usr/NextSpace/include/Block_private.h
 
-sudo mv /usr/NextSpace/lib/libBlocksRuntime.so /usr/NextSpace/lib/libBlocksRuntime.so.${libdispatch_version}
-sudo ln -s /usr/NextSpace/lib/libBlocksRuntime.so.${libdispatch_version} /usr/NextSpace/lib/libBlocksRuntime.so
+$ECHO "-- Creating link for libBlocksRuntime.so.${libdispatch_version}"
+$MV_CMD $DEST_DIR/usr/NextSpace/lib/libBlocksRuntime.so $DEST_DIR/usr/NextSpace/lib/libBlocksRuntime.so.${libdispatch_version}
+$LN_CMD $DEST_DIR/usr/NextSpace/lib/libBlocksRuntime.so.${libdispatch_version} $DEST_DIR/usr/NextSpace/lib/libBlocksRuntime.so
 
-sudo mv /usr/NextSpace/lib/libdispatch.so /usr/NextSpace/lib/libdispatch.so.${libdispatch_version}
-sudo ln -s /usr/NextSpace/lib/libdispatch.so.${libdispatch_version} /usr/NextSpace/lib/libdispatch.so
+$ECHO "-- Creating link for libdispatch.so.${libdispatch_version}"
+$MV_CMD $DEST_DIR/usr/NextSpace/lib/libdispatch.so ${DEST_DIR}/usr/NextSpace/lib/libdispatch.so.${libdispatch_version}
+$LN_CMD $DEST_DIR/usr/NextSpace/lib/libdispatch.so.${libdispatch_version} $DEST_DIR/usr/NextSpace/lib/libdispatch.so
 
-sudo ldconfig
+if [ $DEST_DIR = "" ];then
+	sudo ldconfig
+fi

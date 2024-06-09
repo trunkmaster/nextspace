@@ -75,8 +75,15 @@ $MAKE_CMD
 #----------------------------------------
 # Install
 #----------------------------------------
-sudo mv -v /usr/NextSpace/include/Block.h /usr/NextSpace/include/Block-libdispatch.h
-sudo $MAKE_CMD install || exit 1
-sudo mv -v /usr/NextSpace/include/Block.h /usr/NextSpace/include/Block-libobjc.h
-sudo mv -v /usr/NextSpace/include/Block-libdispatch.h /usr/NextSpace/include/Block.h
-sudo ldconfig
+if [ -f $DEST_DIR/usr/NextSpace/include/Block.h ]; then
+	$MV_CMD $DEST_DIR/usr/NextSpace/include/Block.h $DEST_DIR/usr/NextSpace/include/Block-libdispatch.h
+fi
+$INSTALL_CMD || exit 1
+if [ -f $DEST_DIR/usr/NextSpace/include/Block-libdispatch.h ]; then
+	$MV_CMD $DEST_DIR/usr/NextSpace/include/Block.h $DEST_DIR/usr/NextSpace/include/Block-libobjc.h
+	$MV_CMD $DEST_DIR/usr/NextSpace/include/Block-libdispatch.h $DEST_DIR/usr/NextSpace/include/Block.h
+fi
+
+if [ $DEST_DIR = "" ];then
+	sudo ldconfig
+fi

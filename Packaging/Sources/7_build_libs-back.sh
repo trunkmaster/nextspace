@@ -37,6 +37,12 @@ fi
 	|| exit 1
 
 $MAKE_CMD || exit 1
-sudo -E $MAKE_CMD fonts=no install || exit 1
 
-sudo ldconfig
+#----------------------------------------
+# Install
+#----------------------------------------
+$INSTALL_CMD fonts=no || exit 1
+
+if [ $DEST_DIR = "" ];then
+	sudo ldconfig
+fi

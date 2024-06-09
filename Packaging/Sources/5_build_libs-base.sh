@@ -43,8 +43,7 @@ $MAKE_CMD || exit 1
 #----------------------------------------
 # Install
 #----------------------------------------
-sudo -E $MAKE_CMD install
-sudo ldconfig
+$INSTALL_CMD
 cd ${_PWD}
 
 #----------------------------------------
@@ -52,15 +51,18 @@ cd ${_PWD}
 #----------------------------------------
 SOURCES_DIR=${PROJECT_DIR}/Libraries/gnustep
 
-sudo mkdir -p /usr/NextSpace/etc
-sudo cp ${SOURCES_DIR}/gdomap.interfaces /usr/NextSpace/etc/
-sudo mkdir -p /usr/NextSpace/lib/systemd
-sudo cp ${SOURCES_DIR}/gdomap.service /usr/NextSpace/lib/systemd
-sudo cp ${SOURCES_DIR}/gdnc.service /usr/NextSpace/lib/systemd
-sudo cp ${SOURCES_DIR}/gdnc-local.service /usr/NextSpace/lib/systemd
-sudo systemctl daemon-reload
+$MKDIR_CMD $DEST_DIR/usr/NextSpace/etc
+$CP_CMD ${SOURCES_DIR}/gdomap.interfaces $DEST_DIR/usr/NextSpace/etc/
+$MKDIR_CMD $DEST_DIR/usr/NextSpace/lib/systemd
+$CP_CMD ${SOURCES_DIR}/gdomap.service $DEST_DIR/usr/NextSpace/lib/systemd
+$CP_CMD ${SOURCES_DIR}/gdnc.service $DEST_DIR/usr/NextSpace/lib/systemd
+$CP_CMD ${SOURCES_DIR}/gdnc-local.service $DEST_DIR/usr/NextSpace/lib/systemd
 
-systemctl status gdomap || sudo systemctl enable /usr/NextSpace/lib/systemd/gdomap.service;
-systemctl status gdnc || sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc.service;
-sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc-local.service;
-sudo systemctl start gdomap gdnc
+if [ $DEST_DIR = "" ];then
+	sudo ldconfig
+	sudo systemctl daemon-reload
+	systemctl status gdomap || sudo systemctl enable /usr/NextSpace/lib/systemd/gdomap.service;
+	systemctl status gdnc || sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc.service;
+	sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc-local.service;
+	sudo systemctl start gdomap gdnc
+fi

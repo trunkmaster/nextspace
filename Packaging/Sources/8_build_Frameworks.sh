@@ -39,5 +39,11 @@ cd ${BUILD_DIR}
 
 $MAKE_CMD clean
 $MAKE_CMD || exit 1
-sudo -E $MAKE_CMD install
-sudo ldconfig
+
+#----------------------------------------
+# Install
+#----------------------------------------
+$INSTALL_CMD
+if [ $DEST_DIR = "" ];then
+	sudo ldconfig
+fi

@@ -39,5 +39,8 @@ export CMAKE=${CMAKE_CMD}
 export QA_SKIP_BUILD_ROOT=1
 
 $MAKE_CMD || exit 1
-sudo -E $MAKE_CMD install || exit 1
-sudo ldconfig
+$INSTALL_CMD || exit 1
+
+if [ $DEST_DIR = "" ];then
+	sudo ldconfig
+fi

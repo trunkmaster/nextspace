@@ -1,5 +1,6 @@
 
 ECHO="/usr/bin/echo -e"
+
 #----------------------------------------
 # Paths
 #----------------------------------------
@@ -17,6 +18,11 @@ cd ${PWD}
 ${ECHO} "NextSpace:\t${PROJECT_DIR}"
 cd ${_PWD}
 
+if [ "$1" != "" ];then
+  DEST_DIR=${1}
+else
+  DEST_DIR=""
+fi
 #----------------------------------------
 # OS release
 #----------------------------------------
@@ -55,6 +61,28 @@ if type "gmake" 2>/dev/null >/dev/null ;then
 else
   MAKE_CMD=make
 fi
+#
+if [ "$1" != "" ];then
+  INSTALL_CMD="${MAKE_CMD} install DESTDIR=${1}"
+else
+  INSTALL_CMD="sudo -E ${MAKE_CMD} install"
+fi
+
+# Utilities
+if [ "$1" != "" ];then
+  RM_CMD="rm"
+  LN_CMD="ln -sf"
+  MV_CMD="mv -v"
+  CP_CMD="cp -R"
+  MKDIR_CMD="mkdir -p"
+else
+  RM_CMD="sudo rm"
+  LN_CMD="sudo ln -sf"
+  MV_CMD="sudo mv -v"
+  CP_CMD="sudo cp -R"
+  MKDIR_CMD="sudo mkdir -p"
+fi
+
 # Linker
 ld -v | grep "gold" 2>&1 > /dev/null
 if [ "$?" = "1" ]; then

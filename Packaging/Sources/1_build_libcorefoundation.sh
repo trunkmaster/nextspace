@@ -81,26 +81,31 @@ $MAKE_CMD || exit 1
 #----------------------------------------
 # Install
 #----------------------------------------
-sudo $MAKE_CMD install
+$INSTALL_CMD
 
-sudo mkdir -p /usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/${libcorefoundation_version}
-sudo cp -R CoreFoundation.framework/Headers /usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/${libcorefoundation_version}
-sudo cp -R CoreFoundation.framework/libCoreFoundation.so /usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/${libcorefoundation_version}/libCoreFoundation.so.${libcorefoundation_version}
-cd /usr/NextSpace/Frameworks/CoreFoundation.framework/Versions
-sudo ln -sf ${libcorefoundation_version} Current
+DEST_DIR=${DEST_DIR}/usr/NextSpace/Frameworks/CoreFoundation.framework
+
+$MKDIR_CMD $DEST_DIR/Versions/${libcorefoundation_version}
+cd $DEST_DIR
+# Headers
+$MV_CMD Headers Versions/${libcorefoundation_version}
+$LN_CMD Versions/Current/Headers Headers
+cd Versions
+$LN_CMD ${libcorefoundation_version} Current
 cd ..
-sudo ln -sf Versions/Current/Headers Headers
-sudo ln -sf Versions/Current/libCoreFoundation.so.${libcorefoundation_version} libCoreFoundation.so
-
-# lib
-#sudo mkdir -p /usr/NextSpace/lib
-#cd /usr/NextSpace/lib
-#sudo rm -f libCoreFoundation.so*
-#sudo ln -sf ../Frameworks/CoreFoundation.framework/libCoreFoundation.so* ./
+# Libraries
+$MV_CMD libCoreFoundation.so* Versions/${libcorefoundation_version}
+$LN_CMD Versions/Current/libCoreFoundation.so.${libcorefoundation_version} libCoreFoundation.so
+$LN_CMD Versions/Current/libCoreFoundation.so.${libcorefoundation_version} CoreFoundation
+cd ../../lib
+$RM_CMD libCoreFoundation.so*
+$LN_CMD ../Frameworks/CoreFoundation.framework/Versions/${libcorefoundation_version}/libCoreFoundation.so* ./
 
 # include
 #sudo mkdir -p /usr/NextSpace/include
 #cd /usr/NextSpace/include
 #sudo ln -sf ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
 
-sudo ldconfig
+if [ $DEST_DIR = "" ];then
+	sudo ldconfig
+fi

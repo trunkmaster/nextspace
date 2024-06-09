@@ -48,13 +48,15 @@ $MAKE_CMD || exit 1
 #----------------------------------------
 # Install
 #----------------------------------------
-sudo -E $MAKE_CMD install
-sudo ldconfig
+$INSTALL_CMD
 
 #----------------------------------------
 # Install services
 #----------------------------------------
-sudo cp ${SOURCES_DIR}/gpbs.service /usr/NextSpace/lib/systemd || exit 1
-sudo systemctl daemon-reload || exit 1
+$CP_CMD ${SOURCES_DIR}/gpbs.service $DEST_DIR/usr/NextSpace/lib/systemd || exit 1
 
-systemctl status gpbs || sudo systemctl enable /usr/NextSpace/lib/systemd/gpbs.service;
+if [ $DEST_DIR = "" ];then
+	sudo ldconfig
+	sudo systemctl daemon-reload || exit 1
+	systemctl status gpbs || sudo systemctl enable /usr/NextSpace/lib/systemd/gpbs.service;
+fi

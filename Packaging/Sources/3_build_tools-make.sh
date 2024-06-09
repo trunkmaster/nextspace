@@ -53,7 +53,7 @@ cp ${CORE_SOURCES}/nextspace.fsl ${BUILD_ROOT}/tools-make-make-${gnustep_make_ve
 #----------------------------------------
 # Install
 #----------------------------------------
-sudo $MAKE_CMD install || exit 1
+$INSTALL_CMD || exit 1
 cd ${_PWD}
 
 #----------------------------------------
@@ -61,21 +61,28 @@ cd ${_PWD}
 #----------------------------------------
 CORE_SOURCES=${CORE_SOURCES}/os_files
 
-sudo mkdir -p /Library/Preferences
-sudo cp ${CORE_SOURCES}/Library/Preferences/* /Library/Preferences/
+$MKDIR_CMD $DEST_DIR/Library/Preferences
+$CP_CMD ${CORE_SOURCES}/Library/Preferences/* $DEST_DIR/Library/Preferences/
 
-if [ -d /etc/ld.so.conf.d ];then
-	sudo cp ${CORE_SOURCES}/etc/ld.so.conf.d/nextspace.conf /etc/ld.so.conf.d/
+if [ -d $DEST_DIR/etc/ld.so.conf.d ];then
+	$CP_CMD ${CORE_SOURCES}/etc/ld.so.conf.d/nextspace.conf /etc/ld.so.conf.d/
 	sudo ldconfig
 fi
 
-sudo mkdir -p /etc/profile.d
-sudo cp ${CORE_SOURCES}/etc/profile.d/nextspace.sh /etc/profile.d/
+if ! [ -d $DEST_DIR/etc/profile.d ]; then
+	$MKDIR_CMD $DEST_DIR/etc/profile.d
+fi
+$CP_CMD ${CORE_SOURCES}/etc/profile.d/nextspace.sh $DEST_DIR/etc/profile.d/
 
-sudo mkdir -p /etc/skel
-sudo cp -R ${CORE_SOURCES}/etc/skel/Library /etc/skel
-sudo cp -R ${CORE_SOURCES}/etc/skel/.config /etc/skel
+if ! [ -d $DEST_DIR/etc/skel ]; then
+	$MKDIR_CMD $DEST_DIR/etc/skel
+fi
+$CP_CMD ${CORE_SOURCES}/etc/skel/Library $DEST_DIR/etc/skel
+$CP_CMD ${CORE_SOURCES}/etc/skel/.config $DEST_DIR/etc/skel
 
-sudo cp ${CORE_SOURCES}/usr/NextSpace/bin/* /usr/NextSpace/bin/
+$CP_CMD ${CORE_SOURCES}/usr/NextSpace/bin/* $DEST_DIR/usr/NextSpace/bin/
 
-sudo cp -R ${CORE_SOURCES}/usr/share/* /usr/share/
+if ! [ -d $DEST_DIR/usr/share ]; then
+	$MKDIR_CMD $DEST_DIR/usr/share
+fi
+$CP_CMD ${CORE_SOURCES}/usr/share/* $DEST_DIR/usr/share/
