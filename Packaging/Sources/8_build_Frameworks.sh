@@ -44,6 +44,6 @@ $MAKE_CMD || exit 1
 # Install
 #----------------------------------------
 $INSTALL_CMD
-if [ $DEST_DIR = "" ];then
+if [ "$DEST_DIR" = "" ]; then
 	sudo ldconfig
 fi

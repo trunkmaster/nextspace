@@ -84,6 +84,6 @@ if [ -f $DEST_DIR/usr/NextSpace/include/Block-libdispatch.h ]; then
 	$MV_CMD $DEST_DIR/usr/NextSpace/include/Block-libdispatch.h $DEST_DIR/usr/NextSpace/include/Block.h
 fi
 
-if [ $DEST_DIR = "" ];then
+if [ "$DEST_DIR" = "" ]; then
 	sudo ldconfig
 fi

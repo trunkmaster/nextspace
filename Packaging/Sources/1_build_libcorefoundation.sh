@@ -106,6 +106,6 @@ $LN_CMD ../Frameworks/CoreFoundation.framework/Versions/${libcorefoundation_vers
 #cd /usr/NextSpace/include
 #sudo ln -sf ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
 
-if [ $DEST_DIR = "" ];then
+if [ "$DEST_DIR" = "" ]; then
 	sudo ldconfig
 fi

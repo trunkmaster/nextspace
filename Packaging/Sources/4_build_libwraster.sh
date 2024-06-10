@@ -41,6 +41,6 @@ export QA_SKIP_BUILD_ROOT=1
 $MAKE_CMD || exit 1
 $INSTALL_CMD || exit 1
 
-if [ $DEST_DIR = "" ];then
+if [ "$DEST_DIR" = "" ]; then
 	sudo ldconfig
 fi

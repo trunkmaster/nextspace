@@ -78,6 +78,6 @@ $ECHO "-- Creating link for libdispatch.so.${libdispatch_version}"
 $MV_CMD $DEST_DIR/usr/NextSpace/lib/libdispatch.so ${DEST_DIR}/usr/NextSpace/lib/libdispatch.so.${libdispatch_version}
 $LN_CMD $DEST_DIR/usr/NextSpace/lib/libdispatch.so.${libdispatch_version} $DEST_DIR/usr/NextSpace/lib/libdispatch.so
 
-if [ $DEST_DIR = "" ];then
+if [ "$DEST_DIR" = "" ]; then
 	sudo ldconfig
 fi

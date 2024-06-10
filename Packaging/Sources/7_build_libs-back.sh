@@ -43,6 +43,6 @@ $MAKE_CMD || exit 1
 #----------------------------------------
 $INSTALL_CMD fonts=no || exit 1
 
-if [ $DEST_DIR = "" ];then
+if [ "$DEST_DIR" = "" ]; then
 	sudo ldconfig
 fi
