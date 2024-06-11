@@ -1,5 +1,5 @@
 Name:           nextspace-applications
-Version:        0.91
+Version:        0.95
 Release:        0%{?dist}
 Summary:        NextSpace desktop core applications.
 
@@ -153,6 +153,9 @@ fi
 /bin/rm /usr/NextSpace/Preferences/Login
 
 %changelog
+* Wed Jun 12 2024  Sergii Stoian <stoyan255@gmail.com> - 0.95-0
+- bump package version to 0.95 release.
+
 * Fri Jan 15 2021  Sergii Stoian <stoyan255@gmail.com> - 0.91-0
 - added libfoundation dependency.
 - autotools dependecies were removed (in favour of cmake).

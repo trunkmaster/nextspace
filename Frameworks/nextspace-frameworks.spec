@@ -1,5 +1,5 @@
 Name:           nextspace-frameworks
-Version:        0.91
+Version:        0.95
 Release:        0%{?dist}
 Summary:        NextSpace core libraries.
 Group:          Libraries/NextSpace
@@ -138,6 +138,9 @@ cd ..
 /sbin/ldconfig
 
 %changelog
+* Wed Jun 12 2024  Sergii Stoian <stoyan255@gmail.com> - 0.95-0
+- bump package version to 0.95 release.
+
 * Fri May 22 2020 Sergii Stoian <stoyan255@gmail.com> - 0.90-2
 - new dependency "google-roboto-mono-fonts" - RobotoMono.nfont
   use files from this package.
