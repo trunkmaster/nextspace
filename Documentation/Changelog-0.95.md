@@ -1,13 +1,9 @@
 # 0.95: changes since 0.90
 
-STOPPED ON COMMIT 8e0f3d09aeda44b2e177061c16f616365d2c6012
-
-- /etc/profile.d/nextspace.sh: fixes to development and user environment settings
 - Fixes to package installation of Xorg (Xavier Brochard <xavier@alternatif.org>)
-- Frameworks/DesktopKit/NXTSavePanel.m (runModalForDirectory:file:): center panel on display if there's no saved frame yet. Fixes issue #295.
-- Use forked and simplified GNUstep Back ART backend with enhancements. I hope it's temporary solution for Xorg - next big would be a switch to Wayland.
 - SELinux policies support: adds policies, changes to the spec and to the install script (Frederico Munoz <fsmunoz@gmail.com>)
-- Use internal version of GNUstep Back with modified sources - only ART backend included.
+- ProjectCenter and GORM changes to icons and info panels (Andres Morales <armm77@icloud.com>)
+- Use internal version of GNUstep Back with modified sources: see "back-art" below.
 - base libraries versions bump:
 	- GNUstep Make 2.9.2
 	- GNUstep Base 1.30.0
@@ -15,30 +11,9 @@ STOPPED ON COMMIT 8e0f3d09aeda44b2e177061c16f616365d2c6012
 	- libobjc2 2.2.1
 	- libdispatch 5.9.2
 	- Core Foundation 5.9.2
+- /etc/profile.d/nextspace.sh: fixes to development and user environment settings
 - Fontconfig configuration was made systemwide (link in /etc/fonts/conf.d).
 - Packaging/Sources scripts now works for Debian 12 and Ubuntu 22.04 as well as Fedora 39.
-- back-art: implemented DnD support of filenames. At least it works between Workspace and WM (DnD of files over docked and not running apps).
-
-## Terminal
-
-- Added "Paste Selection" menu item (OnFlApp <onflapp@gmail.com>).
-- Added support for setting title via xterm escape sequence (OnFlApp <onflapp@gmail.com>).
-- Use shell configured in preferences if "Default Shell" option was set. Open new window with shell and send command to that shell for "New Window" and "Default Shell" case.
-- On "Paste" operation insert space before pasting text only if character before cursor is not space.
-- Adjust default terminal colors to more visible on light background.
-- Fixed window size representation to be on par with WM.
-- Dynamically enlarge scrollback buffer on new incoming data (output to terminal screen) up to the maximum lines has been set in preferences.
-- Improved running processes tracking (/proc info is used).
-- Display currently running program in titlebar.
-- Implemented miniaturized window icon animation when window contents is changing. Animation represents real dynamics of lines shift in terminal window.
-- Implemented timed app icon animation in Info panel.
-- Added "Activity Monitor" preferences section. If activity monitor was diabled - icon animation is disabled too.
-
-## Preferences
-- Minor fixes in Font and Mouse preferences.
-- Added Services section.
-- Show window if application was not autostarted, hide it otherwise.
-- Fixed subsections placement for Keyboard Preferences.
 
 ## Workspace
 
@@ -92,6 +67,28 @@ Major part of Workspace WM (formerly WindowMaker) was refactored and rewritten t
 - CFFileDescriptor - doesn't exists in opensource version of CoreFoundation. Thanks to http://www.puredarwin.org project - I've grabbed and enhanced it to work on my current setup. In Workspace/WM CFFileDescriptor is used to track Xlib and Linux inotify events.
 - CFNotificationCenter - missed from Apple's sources except header file - I've used Stuart Crook implementation found on GitHub, fixed, tested and used for notifications delivery inside WM and between WM and Workspace. Works good.
 
-## DesktopKit
+## Terminal
 
-- NXTFileManager.m (absolutePathForCommand:): new method returns absolute path of the command searching through directories specified in PATH environment variable.
+- Added "Paste Selection" menu item (OnFlApp <onflapp@gmail.com>).
+- Added support for setting title via xterm escape sequence (OnFlApp <onflapp@gmail.com>).
+- Use shell configured in preferences if "Default Shell" option was set. Open new window with shell and send command to that shell for "New Window" and "Default Shell" case.
+- On "Paste" operation insert space before pasting text only if character before cursor is not space.
+- Adjust default terminal colors to more visible on light background.
+- Fixed window size representation to be on par with WM.
+- Dynamically enlarge scrollback buffer on new incoming data (output to terminal screen) up to the maximum lines has been set in preferences.
+- Improved running processes tracking (/proc info is used).
+- Display currently running program in titlebar.
+- Implemented miniaturized window icon animation when window contents is changing. Animation represents real dynamics of lines shift in terminal window.
+- Implemented timed app icon animation in Info panel.
+- Added "Activity Monitor" preferences section. If activity monitor was diabled - icon animation is disabled too.
+
+## Preferences
+- Minor fixes in Font and Mouse preferences.
+- Added Services section.
+- Show window if application was not autostarted, hide it otherwise.
+- Fixed subsections placement for Keyboard Preferences.
+
+## back-art
+- Use forked and simplified GNUstep Back ART backend with enhancements. I hope it's temporary solution for Xorg - next big would be a switch to Wayland.
+- implemented DnD support of filenames. At least it works between Workspace and WM (DnD of files over docked and not running apps).
+- make main application menu window type to _NET_WM_WINDOW_TYPE_TOOLBAR.
