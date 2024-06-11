@@ -1,10 +1,12 @@
-# 0.95: changes since 0.90
+# NEXTSPACE 0.95 changes
+
+## General
 
 - Fixes to package installation of Xorg (Xavier Brochard <xavier@alternatif.org>)
 - SELinux policies support: adds policies, changes to the spec and to the install script (Frederico Munoz <fsmunoz@gmail.com>)
 - ProjectCenter and GORM changes to icons and info panels (Andres Morales <armm77@icloud.com>)
-- Use internal version of GNUstep Back with modified sources: see "back-art" below.
-- base libraries versions bump:
+- Use internal version of GNUstep Back with modified sources: see "back-art" section below.
+- Base libraries versions bump for Debian/Ubuntu and Fedora:
 	- GNUstep Make 2.9.2
 	- GNUstep Base 1.30.0
 	- GNUstep GUI 0.31.0
@@ -15,7 +17,9 @@
 - Fontconfig configuration was made systemwide (link in /etc/fonts/conf.d).
 - Packaging/Sources scripts now works for Debian 12 and Ubuntu 22.04 as well as Fedora 39.
 
-## Workspace
+## Applications
+
+### Workspace
 
 - Adedded and implemented "Open in Workspace" service (OnFlApp <onflapp@gmail.com>)
 - "Hide" menu item: treat Workspace application specially - set focus to main menu before windows hiding, do not hide main menu, do not change focus to other app after windows hiding.
@@ -32,12 +36,12 @@
 - Implemented -extendPowerOffBy: method even though it was neither working on NeXT nor on Apple platforms.
 - Track for applications and services appearing/removal - update caches.
 
-### Window Manager
+#### Window Manager
 
-Major part of Workspace WM (formerly WindowMaker) was refactored and rewritten to ged rid of most WINGs data structures.
+Major part of Workspace Window Manager (formerly WindowMaker) was refactored and rewritten.
 
 - WINGs data structures and supporting functions were completely replaced by CoreFoundation counterparts. 
-    - WINGs removed - only core components/structures left essential to provide WM's functionality (title/resize bars, window management, icons, baloons, DnD, menus).
+    - WINGs removed - only core components/structures left essential to provide core WM's functionality (title/resize bars, window management, icons, baloons, DnD, menus).
     - CFStrings with UTF-8 encoding now used whenever it's possible and appropriate.
     - Adopted usage of many CoreFoundation data structures (CFArray, CFDictionary, CFData, CFPropertyList...)
 - Removed WM's blocking event loop - use CFRunLoop to manage Xlib events, timers, notifications using new CFFileDescriptor implementation. Animations became more smooth and nice looking without freeze or speedup.
@@ -61,13 +65,7 @@ Major part of Workspace WM (formerly WindowMaker) was refactored and rewritten t
 - Window's menu (right-click on titlebar) stripped down to window options.
 - Set root window background pixmap with _ROOTPMAP_ID property name to be catched by composer.
 
-## Core Foundation
-
-- New framework as dependency of Workspace Window Manager.
-- CFFileDescriptor - doesn't exists in opensource version of CoreFoundation. Thanks to http://www.puredarwin.org project - I've grabbed and enhanced it to work on my current setup. In Workspace/WM CFFileDescriptor is used to track Xlib and Linux inotify events.
-- CFNotificationCenter - missed from Apple's sources except header file - I've used Stuart Crook implementation found on GitHub, fixed, tested and used for notifications delivery inside WM and between WM and Workspace. Works good.
-
-## Terminal
+### Terminal
 
 - Added "Paste Selection" menu item (OnFlApp <onflapp@gmail.com>).
 - Added support for setting title via xterm escape sequence (OnFlApp <onflapp@gmail.com>).
@@ -82,13 +80,23 @@ Major part of Workspace WM (formerly WindowMaker) was refactored and rewritten t
 - Implemented timed app icon animation in Info panel.
 - Added "Activity Monitor" preferences section. If activity monitor was diabled - icon animation is disabled too.
 
-## Preferences
+### Preferences
+
 - Minor fixes in Font and Mouse preferences.
 - Added Services section.
 - Show window if application was not autostarted, hide it otherwise.
 - Fixed subsections placement for Keyboard Preferences.
 
-## back-art
-- Use forked and simplified GNUstep Back ART backend with enhancements. I hope it's temporary solution for Xorg - next big would be a switch to Wayland.
-- implemented DnD support of filenames. At least it works between Workspace and WM (DnD of files over docked and not running apps).
-- make main application menu window type to _NET_WM_WINDOW_TYPE_TOOLBAR.
+## Libraries and frameworks
+
+### Core Foundation
+
+- New framework as dependency of Workspace Window Manager.
+- CFFileDescriptor - doesn't exists in opensource version of CoreFoundation. Thanks to http://www.puredarwin.org project - I've grabbed and enhanced it to work on my current setup. In Workspace/WM CFFileDescriptor is used to track Xlib and Linux inotify events.
+- CFNotificationCenter - missed from Apple's sources except header file - I've used Stuart Crook implementation found on GitHub, fixed, tested and used for notifications delivery inside WM and between WM and Workspace. Works good.
+
+### back-art
+
+- Use forked and simplified GNUstep Back ART backend with enhancements. The reason is: ART backend works almost perfectly for NEXTSPACE and most of changes I've made were to X11 part of backend which are quite useless for Cairo-X11 backend. I hope it's temporary solution for Xorg - next big step would be a switch to Wayland/Cairo.
+- Implemented DnD support of filenames. At least it works between Workspace and WM (DnD of files over docked and not running apps).
+- Added support for WM-based main application menus: set window type to _NET_WM_WINDOW_TYPE_TOOLBAR.
