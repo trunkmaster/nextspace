@@ -13,8 +13,15 @@ else
     sudo yum remove libdispatch* -y
 fi
 
-sudo rm -rf /usr/NextSpace
+sudo rm -rf /etc/profile.d/nextspace.sh
+sudo rm -rf /usr/share/icons/NextSpace
 sudo rm -rf /usr/share/plymouth/themes/nextspace
+sudo rm -rf /usr/share/plymouth/themes/plymouth-preview
+sudo rm -rf /usr/NextSpace
 sudo rm -rf /Applications
 sudo rm -rf /Developer
 sudo rm -rf /Library
+
+sudo apt purge ${RUNTIME_RUN_DEPS} ${WRASTER_RUN_DEPS} ${GNUSTEP_BASE_RUN_DEPS} \
+               ${GNUSTEP_GUI_RUN_DEPS} ${BACK_ART_RUN_DEPS} ${FRAMEWORKS_RUN_DEPS} \
+               ${APPS_RUN_DEPS}
