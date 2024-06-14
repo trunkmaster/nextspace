@@ -1,3 +1,5 @@
+# Works for Debian 12 and Ubuntu 22.04
+
 BUILD_TOOLS="
     curl
     clang
@@ -18,13 +20,13 @@ GNUSTEP_MAKE_DEPS="
 "
 RUNTIME_RUN_DEPS="
     libbsd0
+    libuuid1
     libcurl4
     libcurl3-gnutls
     zsh
     plymouth
     plymouth-label
 "
-#    libuuid1
 #--- libwraster
 WRASTER_DEPS="
     libgif-dev
@@ -41,17 +43,16 @@ WRASTER_RUN_DEPS="
     libgif7
     libjpeg8
     libtiff5
+    libpng16-16
     libwebp7
     libxpm4
     libxmu6
     libxext6
     libx11-6 
 "
-#    libpng16-16  # GRUB
 #--- gnustep-base
 GNUSTEP_BASE_DEPS="
     libffi-dev
-    libicu-dev
     libxml2-dev
     libxslt1-dev
     libavahi-client-dev
@@ -59,14 +60,15 @@ GNUSTEP_BASE_DEPS="
     libgnutls28-dev
 "
 GNUSTEP_BASE_RUN_DEPS="
-    libicu70
+    libffi8
+    libavahi-client3
     libxml2
     libxslt1.1
-    libavahi-client3
+    libicu70
+    libicu-dev
+    libgnutls30
     libcups2
 "
-#    libffi8      # System
-#    libgnutls30  # System
 #--- gnustep-gui
 GNUSTEP_GUI_DEPS="
     libao-dev
@@ -87,12 +89,12 @@ BACK_ART_DEPS="
 "
 BACK_ART_RUN_DEPS="
     libart-2.0-2
+    libfreetype6
     libxcursor1
     libxfixes3
     libxt6
     libxrandr2
 "
-#    libfreetype6 # GRUB
 #--- Frameworks
 FRAMEWORKS_BUILD_DEPS="
     libmagic-dev
@@ -106,11 +108,11 @@ FRAMEWORKS_BUILD_DEPS="
 "
 FRAMEWORKS_RUN_DEPS="
     libmagic1
-    udisks2
-    libudisks2-0
+    libglib2.0-0
     dbus
     libdbus-1-3
-    libglib2.0-0
+    udisks2
+    libudisks2-0
     libupower-glib3
     libxkbfile1
     libxrandr2

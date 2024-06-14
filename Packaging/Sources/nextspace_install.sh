@@ -12,7 +12,7 @@ RELEASE=0.95
 #===============================================================================
 echo -e -n "\e[1m"
 echo "This script will install NEXTSPACE release $RELEASE and configure system."
-echo -n "Do you want to continue? [yn]: "
+echo -n "Do you want to continue? [yN]: "
 echo -e -n "\e[0m"
 read YN
 if [ $YN != "y" ]; then
@@ -20,21 +20,29 @@ if [ $YN != "y" ]; then
     exit
 fi
 
+#===============================================================================
 # Install dependency packages
-sudo apt install ${$PKGS_LIST}
+#===============================================================================
+sudo apt install ${RUNTIME_RUN_DEPS} ${WRASTER_RUN_DEPS} ${GNUSTEP_BASE_RUN_DEPS} \
+                 ${GNUSTEP_GUI_RUN_DEPS} ${BACK_ART_RUN_DEPS} ${FRAMEWORKS_RUN_DEPS} \
+                 ${APPS_RUN_DEPS}
 
+#===============================================================================
 # Extract distribution
-# Enable services
-# Ask and start Login panel
+#===============================================================================
 
+#===============================================================================
 # More X drivers. Workaround until NextSpace RPMs include them as dependencies
+#===============================================================================
 echo -n "Installing X11 drivers and utilities..."
-yum -y -q install xorg-x11-drivers xorg-x11-xinit xorg-x11-utils 2>&1 > /dev/null
+sudo apt-get install xserver-xorg-input-all xserver-xorg-video-all xorg-x11-xinit xorg-x11-utils 2>&1 > /dev/null
 echo -e -n "\e[32m"
 echo "done"
 echo -e -n "\e[0m"
 
+#===============================================================================
 # Hostname in /etc/hosts
+#===============================================================================
 echo -n "Checking /etc/hosts..."
 HOSTNAME="`hostname -s`"
 grep "$HOSTNAME" /etc/hosts 2>&1 > /dev/null
@@ -53,8 +61,22 @@ else
     echo -e -n "\e[0m"
 fi
 
-# Disable SELinux
+#===============================================================================
+# Enable services
+#===============================================================================
+sudo systemctl daemon-reload
+systemctl status gdomap || sudo systemctl enable /usr/NextSpace/lib/systemd/gdomap.service;
+systemctl status gdnc || sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc.service;
+systemctl status gdnc-local || sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc-local.service;
+systemctl status gpbs || sudo systemctl enable /usr/NextSpace/lib/systemd/gpbs.service;
+sudo systemctl start gdomap gdnc
 
+${ECHO} "Setting up Login window service to run at system startup..."
+sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
+
+#===============================================================================
+# Disable SELinux
+#===============================================================================
 echo -n "Checking SELinux configuration..."
 
 SELINUX_MODE=$(getenforce)
@@ -97,35 +119,11 @@ echo
 # TODO: echo -n "Installing NEXTSPACE SELinux policies..."
 
 
-# Install User packages
-echo -n "Installing NEXTSPACE User packages..."
-yum -y -q install --enablerepo=epel NSUser/*.rpm 2>&1 > /dev/null
-ldconfig
-echo -e -n "\e[32m"
-echo "done"
-echo -e -n "\e[0m"
-
-# Install Developer packages
-echo -e -n "\e[1m"
-echo -n "Do you want to install packages for NEXTSPACE development? [yn]: "
-echo -e -n "\e[0m"
-read YN
-if [ $YN = "y" ]; then
-    echo -n "Installing NEXTSPACE Developer packages..."
-    ENABLE_REPO="--enable-repo=epel"
-    if [ $OS_NAME == "centos" ] && [ $OS_VERSION == "7" ]; then
-        yum -y -q install centos-release-scl 2>&1 > /dev/null
-        ENABLE_REPO+=" --enable-repo=centos-sclo-sclo --enable-repo=centos-sclo-rh"
-    fi
-    yum -y -q install ${ENABLE_REPO} NSDeveloper/*.rpm 2>&1 > /dev/null
-    echo -e -n "\e[32m"
-    echo "done"
-    echo -e -n "\e[0m"
-fi
-
+#===============================================================================
 # Adding user
+#===============================================================================
 echo -e -n "\e[1m"
-echo -n "Do you want to add user? [yn]: "
+echo -n "Do you want to add user? [yN]: "
 echo -e -n "\e[0m"
 read YN
 if [ $YN = "y" ]; then
@@ -141,18 +139,22 @@ if [ $YN = "y" ]; then
     restorecon -R /Users 2>&1 > /dev/null
 fi
 
+#===============================================================================
 # Setting up Login Panel
+#===============================================================================
 echo -e -n "\e[1m"
-echo -n "Start graphical login panel on system boot? [yn]: "
+echo -n "Start graphical login panel on system boot? [yN]: "
 echo -e -n "\e[0m"
 read YN
 if [ $YN = "y" ]; then
     systemctl set-default graphical.target
 fi
 
+#===============================================================================
 # Check if Login Panel works
+#===============================================================================
 echo -e -n "\e[1m"
-echo -n "Do you want to start graphical login panel now? [yn]: "
+echo -n "Do you want to start graphical login panel now? [yN]: "
 echo -e -n "\e[0m"
 read YN
 if [ $YN = "y" ]; then

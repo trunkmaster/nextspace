@@ -70,13 +70,15 @@ $INSTALL_CMD
 #----------------------------------------
 $RM_CMD $DEST_DIR/usr/NextSpace/include/Block_private.h
 
+cd ${DEST_DIR}/usr/NextSpace/lib
+
 $ECHO "-- Creating link for libBlocksRuntime.so.${libdispatch_version}"
-$MV_CMD $DEST_DIR/usr/NextSpace/lib/libBlocksRuntime.so $DEST_DIR/usr/NextSpace/lib/libBlocksRuntime.so.${libdispatch_version}
-$LN_CMD $DEST_DIR/usr/NextSpace/lib/libBlocksRuntime.so.${libdispatch_version} $DEST_DIR/usr/NextSpace/lib/libBlocksRuntime.so
+$MV_CMD libBlocksRuntime.so libBlocksRuntime.so.${libdispatch_version}
+$LN_CMD libBlocksRuntime.so.${libdispatch_version} libBlocksRuntime.so
 
 $ECHO "-- Creating link for libdispatch.so.${libdispatch_version}"
-$MV_CMD $DEST_DIR/usr/NextSpace/lib/libdispatch.so ${DEST_DIR}/usr/NextSpace/lib/libdispatch.so.${libdispatch_version}
-$LN_CMD $DEST_DIR/usr/NextSpace/lib/libdispatch.so.${libdispatch_version} $DEST_DIR/usr/NextSpace/lib/libdispatch.so
+$MV_CMD libdispatch.so libdispatch.so.${libdispatch_version}
+$LN_CMD libdispatch.so.${libdispatch_version} libdispatch.so
 
 if [ "$DEST_DIR" = "" ]; then
 	sudo ldconfig
