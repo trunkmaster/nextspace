@@ -1,3 +1,5 @@
+%global toolchain clang
+
 Name:	libobjc2
 Version:  2.2.1
 Release:  0%{?dist}
@@ -87,7 +89,7 @@ ${CMAKE_CMD} .. \
 	-DCMAKE_MODULE_LINKER_FLAGS="-fuse-ld=/usr/bin/ld.gold -Wl,-rpath,/usr/NextSpace/lib" \
 	-DCMAKE_SKIP_RPATH=ON \
 	-DTESTS=OFF \
-	-DCMAKE_BUILD_TYPE=Debug
+	-DCMAKE_BUILD_TYPE=Release
 
 make
 

@@ -1,3 +1,5 @@
+%global toolchain clang
+
 Name:       libcorefoundation
 Version:    5.9.2
 Epoch:      0
@@ -35,6 +37,8 @@ Development header files for CoreFoundation framework.
 %setup -n apple-corefoundation-%{version}
 
 %build
+unset CFLAGS
+unset LDFLAGS
 mkdir -p .build
 cd .build
 cmake .. \

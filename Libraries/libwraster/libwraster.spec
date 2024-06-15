@@ -1,3 +1,4 @@
+%global toolchain clang
 %define WRASTER_VERSION 7.0.1
 
 Name:           libwraster

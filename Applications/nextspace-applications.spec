@@ -1,3 +1,5 @@
+%global toolchain clang
+
 Name:           nextspace-applications
 Version:        0.95
 Release:        0%{?dist}

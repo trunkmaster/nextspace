@@ -1,3 +1,5 @@
+%global toolchain clang
+
 Name:		libdispatch
 Epoch:		2
 Version:	5.9.2
