@@ -60,11 +60,13 @@ $INSTALL_CMD || exit
 export GNUSTEP_INSTALLATION_DOMAIN=NETWORK
 cd ${GORM_BUILD_DIR}
 tar zxf ${SOURCES_DIR}/Libraries/gnustep/gorm-images.tar.gz
+patch -p1 < ${SOURCES_DIR}/Libraries/gnustep/gorm.patch
 $MAKE_CMD
 $INSTALL_CMD || exit
 
 cd ${PC_BUILD_DIR}
 tar zxf ${SOURCES_DIR}/Libraries/gnustep/projectcenter-images.tar.gz
+patch -p1 < ${SOURCES_DIR}/Libraries/gnustep/pc.patch
 $MAKE_CMD
 $INSTALL_CMD || exit
 
