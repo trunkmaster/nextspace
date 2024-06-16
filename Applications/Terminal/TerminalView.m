@@ -39,6 +39,26 @@
 
 #define SCROLLBACK_CHANGE_STEP 1  // number of screens
 
+@interface NSArray (IsEmpty)
+- (BOOL)isEmpty;
+@end
+@implementation NSArray (IsEmpty)
+- (BOOL)isEmpty
+{
+  BOOL isEmpty = NO;
+
+  if (self.count > 0) {
+    if (self.count == 1 && [self.firstObject isEqualToString:@""]) {
+      isEmpty = YES;
+    }
+  } else {
+    isEmpty = YES;
+  }
+
+  return isEmpty;
+}
+@end
+
 /* TODO */
 @interface NSView (unlockfocus)
 - (void)unlockFocusNeedsFlush:(BOOL)flush;
@@ -1866,7 +1886,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
 - (void)writeData
 {
-  NSLog(@"Will write data");
+  // NSLog(@"Will write data");
   int l, new_size;
   l = write(master_fd, write_buf, write_buf_len);
   if (l < 0) {
@@ -2267,11 +2287,11 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 
   // Debugging info
   if (scrollback == NULL || alloc_sb_depth == 0) {
-    NSLog(@"Scrollback buffer initialized to %d of %d lines.", new_sb_depth, lines);
+    NSDebugLLog(@"Scrollback", @"Scrollback buffer initialized to %d of %d lines.", new_sb_depth, lines);
   } else if (new_sb_depth < alloc_sb_depth) {
-    NSLog(@"Scrollback buffer had shrinked from %d to %d lines.", alloc_sb_depth, new_sb_depth);
+    NSDebugLLog(@"Scrollback", @"Scrollback buffer had shrinked from %d to %d lines.", alloc_sb_depth, new_sb_depth);
   } else {
-    NSLog(@"Scrollback buffer had grown from %d to %d lines.", alloc_sb_depth, new_sb_depth);
+    NSDebugLLog(@"Scrollback", @"Scrollback buffer had grown from %d to %d lines.", alloc_sb_depth, new_sb_depth);
   }
 
   scrollback = new_scrollback;
@@ -2803,7 +2823,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   NSString *childPID;
   NSMutableArray *children;
 
-  // fprintf(stderr, "--- updateProgramPath\n");
+  // fprintf(stderr, "--- updateProgramPath - %i\n", child_pid);
 
   if (child_pid == 0) {
     return;
@@ -2819,11 +2839,12 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     [children setArray:[childText componentsSeparatedByString:@" "]];
     [children removeObjectIdenticalTo:@""];
 
-    if (children.count > 0) {
+    // if (children.count > 0 && [children.firstObject isEqualToString:@""] == NO) {
+    if (children.isEmpty == NO) {
       childPID = children.firstObject;
       // fprintf(stderr, " > %s", childPID.cString);
     }
-  } while (children.count > 0);
+  } while (children.isEmpty == NO);
   [children release];
   // fprintf(stderr, "\n");
   // if (childPID.intValue == child_pid) {
@@ -2838,7 +2859,6 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   }
   cmdData = [NSData dataWithContentsOfFile:cmdPath];
   char *data = (char *)[cmdData bytes];
-  // NSLog(@"cmdPath: %@, cmdData: %s", cmdPath, data);
   if (data == NULL) {
     return;
   }
