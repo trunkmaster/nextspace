@@ -3,11 +3,11 @@
 Name:       libcorefoundation
 Version:    5.9.2
 Epoch:      0
-Release:    0%{?dist}
+Release:    1%{?dist}
 Summary:    Apple CoreFoundation framework.
 License:    Apache 2.0
 URL:        https://github.com/trunkmaster/apple-corefoundation
-Source0:    libcorefoundation-%{version}.tar.gz
+Source0:    libcorefoundation-%{version}-1.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  clang >= 7.0.1
@@ -34,7 +34,7 @@ Requires: %{name}%{?_isa} = %{epoch}:%{version}-%{release}
 Development header files for CoreFoundation framework.
 
 %prep
-%setup -n apple-corefoundation-%{version}
+%setup -n apple-corefoundation-%{version}-1
 
 %build
 unset CFLAGS

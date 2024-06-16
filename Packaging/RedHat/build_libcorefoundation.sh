@@ -26,7 +26,8 @@ _VER=`rpmspec -q --qf "%{version}:" ${SPEC_FILE} | awk -F: '{print $1}'`
 if [ "${OS_ID}" = "centos" ];then
     curl -L https://github.com/apple/swift-corelibs-foundation/archive/swift-${_VER}-RELEASE.tar.gz -o ${SOURCES_DIR}/libcorefoundation-${_VER}.tar.gz
 else
-    curl -L https://github.com/trunkmaster/apple-corefoundation/archive/refs/tags/${_VER}.tar.gz -o ${SOURCES_DIR}/libcorefoundation-${_VER}.tar.gz
+    _REL=`rpmspec -q --qf "%{release}:" ${SPEC_FILE} | awk -F: '{print $1}' | awk -F. '{print $1}'`
+    curl -L https://github.com/trunkmaster/apple-corefoundation/archive/refs/tags/${_VER}-${_REL}.tar.gz -o ${SOURCES_DIR}/libcorefoundation-${_VER}-${_REL}.tar.gz
 fi
 spectool -g -R ${SPEC_FILE}
 
