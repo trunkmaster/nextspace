@@ -1,14 +1,15 @@
 #!/bin/sh
 # -*-Shell-script-*-
 
-. `dirname $0`/functions
+BUILD_RPM=1
+. ../environment.sh
 
-SPEC_FILE=${REPO_DIR}/Libraries/libdispatch/libdispatch.spec
+SPEC_FILE=${PROJECT_DIR}/Libraries/libdispatch/libdispatch.spec
 DISPATCH_VERSION=`rpm_version ${SPEC_FILE}`
 
 # libdispatch
 print_H1 " Building Grand Central Dispatch (libdispatch) package..."
-cp ${REPO_DIR}/Libraries/libdispatch/libdispatch-dispatch.h.patch ${SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/libdispatch/libdispatch-dispatch.h.patch ${RPM_SOURCES_DIR}
 
 print_H2 "===== Install libdispatch build dependencies..."
 DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
@@ -16,7 +17,7 @@ sudo yum -y install ${DEPS}
 
 print_H2 "===== Downloading libdispatch sources..."
 VER=`rpmspec -q --qf "%{version}:" ${SPEC_FILE} | awk -F: '{print $1}'`
-curl -L https://github.com/apple/swift-corelibs-libdispatch/archive/swift-${VER}-RELEASE.tar.gz -o ${SOURCES_DIR}/libdispatch-${VER}.tar.gz
+curl -L https://github.com/apple/swift-corelibs-libdispatch/archive/swift-${VER}-RELEASE.tar.gz -o ${RPM_SOURCES_DIR}/libdispatch-${VER}.tar.gz
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building libdispatch package..."

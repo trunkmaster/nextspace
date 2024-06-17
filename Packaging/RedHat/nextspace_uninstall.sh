@@ -1,8 +1,8 @@
 #!/bin/sh
 
-. ./versions.inc.sh
+. ../environment.sh
 
-if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
+if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
     sudo systemctl stop loginwindow gpbs gdnc-local gdnc  gdomap 
     sudo systemctl disable loginwindow gdomap gdnc gpbs gdnc-local
 

@@ -1,12 +1,12 @@
 #!/bin/sh
 
-. ./versions.inc.sh
+. ../environment.sh
 
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-${ECHO} ">>> Installing ${OS_NAME} packages for Grand Central Dispatch build"
-if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
+${ECHO} ">>> Installing ${OS_ID} packages for Grand Central Dispatch build"
+if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -q -y ${BUILD_TOOLS} ${RUNTIME_DEPS} || exit 1
 else
@@ -32,7 +32,7 @@ fi
 # Build
 #----------------------------------------
 cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
-if [ "${OS_NAME}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
+if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
 	patch -p1 < ${PROJECT_DIR}/Libraries/libdispatch/libdispatch-dispatch.h.patch
 fi
 rm -rf _build 2>/dev/null
