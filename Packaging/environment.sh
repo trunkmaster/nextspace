@@ -79,8 +79,8 @@ if [ -z $BUILD_RPM ]; then
 else
   RELEASE_USR="$_PWD/$OS_ID-$OS_VERSION/NSUser"
   RELEASE_DEV="$_PWD/$OS_ID-$OS_VERSION/NSDeveloper"
-  mkdir -p ${RELEASE_USR}
-  mkdir -p ${RELEASE_DEV}
+#  mkdir -p ${RELEASE_USR}
+#  mkdir -p ${RELEASE_DEV}
 
   RPM_SOURCES_DIR=~/rpmbuild/SOURCES
   RPM_SPECS_DIR=~/rpmbuild/SPECS
@@ -141,13 +141,12 @@ else
   ${ECHO} "Using linker:\tGold"
 fi
 # Compiler
-if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
-  source /opt/rh/llvm-toolset-7.0/enable
+if [ "${OS_ID}" = "fedora" ] || [ "${OS_ID}" = "debian" || [ "${OS_ID}" = "ubuntu" ] ]; then
+  which clang 2>&1 > /dev/null || `echo "No clang compiler found. Please install clang package."; exit 1`
+  C_COMPILER=`which clang`
+  which clang++ 2>&1 > /dev/null || `echo "No clang++ compiler found. Please install clang++ package."; exit 1`
+  CXX_COMPILER=`which clang++`
 fi
-which clang 2>&1 > /dev/null || `echo "No clang compiler found. Please install clang package."; exit 1`
-C_COMPILER=`which clang`
-which clang++ 2>&1 > /dev/null || `echo "No clang++ compiler found. Please install clang++ package."; exit 1`
-CXX_COMPILER=`which clang++`
 
 ###############################################################################
 # Functions
