@@ -16,8 +16,8 @@ jobs:
       - checkout:
           path: /root/nextspace
       - run:
-          name: Install SUDO
-          command: yum -y install sudo git openssh-clients
+          name: Install build tools
+          command: yum -y install sudo git openssh-clients which
       - run:
           name: Install Libraries
           command: |
