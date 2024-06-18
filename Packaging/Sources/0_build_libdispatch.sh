@@ -6,7 +6,7 @@
 # Install package dependecies
 #----------------------------------------
 ${ECHO} ">>> Installing ${OS_ID} packages for Grand Central Dispatch build"
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+if [ "${OS_ID}" = "debian" ] || [ "${OS_ID}" = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -q -y ${BUILD_TOOLS} ${RUNTIME_DEPS} || exit 1
 else

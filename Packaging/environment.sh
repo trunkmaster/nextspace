@@ -5,6 +5,31 @@ ECHO="/usr/bin/echo -e"
 _PWD=`pwd`
 
 #----------------------------------------
+# Operating system
+#----------------------------------------
+. /etc/os-release
+# OS name like "fedora"
+OS_ID=$ID
+_ID=`echo ${ID} | awk -F\" '{print $2}'`
+if [ -n "${_ID}" ] && [ "${_ID}" != " " ]; then
+  OS_ID=${_ID}
+fi
+# OS version like "39"
+OS_VERSION=$VERSION_ID
+_VER=`echo ${VERSION_ID} | awk -F\. '{print $1}'`
+if [ -n "${_VER}" ] && [ "${_VER}" != " " ]; then
+  OS_VERSION=$_VER
+fi
+# Name like "Fedora Linux"
+OS_NAME=$NAME
+${ECHO} "OS:\t\t${OS_ID}-${OS_VERSION}"
+
+# Package dependencies for Debian/Ubuntu
+if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+    . ./${OS_ID}-${OS_VERSION}.deps.sh || exit 1
+fi
+
+#----------------------------------------
 # Library versions
 #----------------------------------------
 if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
@@ -28,36 +53,6 @@ projectcenter_version=0_7_0
 
 roboto_mono_version=0.2020.05.08
 roboto_mono_checkout=master
-
-#----------------------------------------
-# Operating system
-#----------------------------------------
-source /etc/os-release
-# OS name like "fedora"
-OS_ID=$ID
-_ID=`echo ${ID} | awk -F\" '{print $2}'`
-if [ -n "${_ID}" ] && [ "${_ID}" != " " ]; then
-  OS_ID=${_ID}
-fi
-# OS version like "39"
-OS_VERSION=$VERSION_ID
-VER=`echo ${VERSION_ID} | awk -F\" '{print $2}'`
-if [ -n "${VER}" ] && [ "${VER}" != " " ]; then
-  _VER=`echo ${VER} | awk -F\. '{print $1}'`
-  if [ -n "${_VER}" ] && [ "${_VER}" != " " ]; then
-    OS_VERSION=${_VER}
-  else
-    OS_VERSION=${VER}
-  fi
-fi
-# Name like "Fedora Linux"
-OS_NAME=$NAME
-${ECHO} "OS:\t\t${OS_ID}-${OS_VERSION}"
-
-# Package dependencies for Debian/Ubuntu
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
-    . ./${OS_ID}-${OS_VERSION}.deps.sh || exit 1
-fi
 
 #----------------------------------------
 # Paths
