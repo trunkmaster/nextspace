@@ -141,10 +141,10 @@ else
   ${ECHO} "Using linker:\tGold"
 fi
 # Compiler
-which clang 2>&1 > /dev/null || `echo "No clang compiler found. Please install clang package."; exit 1`
 if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
   source /opt/rh/llvm-toolset-7.0/enable
 fi
+which clang 2>&1 > /dev/null || `echo "No clang compiler found. Please install clang package."; exit 1`
 C_COMPILER=`which clang`
 which clang++ 2>&1 > /dev/null || `echo "No clang++ compiler found. Please install clang++ package."; exit 1`
 CXX_COMPILER=`which clang++`
