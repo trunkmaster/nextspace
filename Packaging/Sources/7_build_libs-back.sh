@@ -1,12 +1,12 @@
 #!/bin/sh
 
-. ./versions.inc.sh
+. ../environment.sh
 . /etc/profile.d/nextspace.sh
 
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
+if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} ">>> Installing packages for GNUstep GUI Backend (ART) build"
 	sudo apt-get install -y ${BACK_ART_DEPS}
 fi
@@ -27,7 +27,7 @@ cp -R ${SOURCES_DIR}/back-art ${BUILD_ROOT}
 #----------------------------------------
 . /Developer/Makefiles/GNUstep.sh
 cd ${BUILD_DIR}
-if [ "${OS_NAME}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
+if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
 	patch -p2 < ${SOURCES_DIR}/back-art_centos7.patch
 fi
 

@@ -1,14 +1,14 @@
 #!/bin/sh
 
-. ./versions.inc.sh
+. ../environment.sh
 
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-if [ ${OS_NAME} != "debian" ] && [ ${OS_NAME} != "ubuntu" ]; then
-	${ECHO} ">>> Installing ${OS_NAME} packages for ObjC 2.0 runtime build"
+if [ ${OS_ID} != "debian" ] && [ ${OS_ID} != "ubuntu" ]; then
+	${ECHO} ">>> Installing ${OS_ID} packages for ObjC 2.0 runtime build"
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
-	if [ "$OS_NAME" == "centos" ];then
+	if [ "$OS_ID" == "centos" ];then
 		SPEC_FILE=${PROJECT_DIR}/Libraries/libobjc2/libobjc2.spec
 	else
 		SPEC_FILE=${PROJECT_DIR}/Libraries/libobjc2/libobjc2-centos.spec
@@ -21,7 +21,7 @@ fi
 # Download
 #----------------------------------------
 OBJC_PKG_NAME=libobjc2-${libobjc2_version}
-if [ "$OS_NAME" = "centos" ];then
+if [ "$OS_ID" = "centos" ];then
 	ROBIN_MAP_VERSION=757de829927489bee55ab02147484850c687b620
 	ROBIN_MAP_PKG_NAME=757de82.tar.gz
 else

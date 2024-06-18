@@ -1,12 +1,12 @@
 #!/bin/sh
 
-. ./versions.inc.sh
+. ../environment.sh
 
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-if [ ${OS_NAME} != "debian" ] && [ ${OS_NAME} != "ubuntu" ]; then
-	${ECHO} ">>> Installing ${OS_NAME} packages for CoreFoundation build"
+if [ ${OS_ID} != "debian" ] && [ ${OS_ID} != "ubuntu" ]; then
+	${ECHO} ">>> Installing ${OS_ID} packages for CoreFoundation build"
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Libraries/libcorefoundation/libcorefoundation.spec
 	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "libdispatch-devel" |awk -c '{print $1}'`
@@ -16,14 +16,14 @@ fi
 #----------------------------------------
 # Download
 #----------------------------------------
-if [ "${OS_NAME}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
+if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
 	GIT_PKG_NAME=swift-corelibs-foundation-swift-${libcorefoundation_version}-RELEASE
 else
 	GIT_PKG_NAME=apple-corefoundation-${libcorefoundation_version}
 fi
 
 if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
-	if [ "${OS_NAME}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
+	if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
 		curl -L https://github.com/apple/swift-corelibs-foundation/archive/swift-${libcorefoundation_version}-RELEASE.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
 		cd ${BUILD_ROOT}
 		tar zxf ${GIT_PKG_NAME}.tar.gz
@@ -57,7 +57,7 @@ rm -rf .build 2>/dev/null
 mkdir -p .build
 cd .build
 C_FLAGS="-I/usr/NextSpace/include -Wno-switch -Wno-enum-conversion"
-if [ "${OS_NAME}" != "centos" ] || [ "${OS_VERSION}" != "7" ]; then
+if [ "${OS_ID}" != "centos" ] || [ "${OS_VERSION}" != "7" ]; then
 	C_FLAGS="${C_FLAGS} -Wno-implicit-const-int-float-conversion"
 fi
 $CMAKE_CMD .. \

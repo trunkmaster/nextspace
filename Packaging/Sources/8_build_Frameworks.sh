@@ -1,13 +1,13 @@
 #!/bin/sh
 
-. ./versions.inc.sh
+. ../environment.sh
 . /etc/profile.d/nextspace.sh
 
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-${ECHO} ">>> Installing ${OS_NAME} packages for NextSpace frameworks build"
-if [ ${OS_NAME} = "debian" ] || [ ${OS_NAME} = "ubuntu" ]; then
+${ECHO} ">>> Installing ${OS_ID} packages for NextSpace frameworks build"
+if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -y ${FRAMEWORKS_BUILD_DEPS}
 	sudo apt-get install -y ${FRAMEWORKS_RUN_DEPS}
