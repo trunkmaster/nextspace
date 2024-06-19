@@ -1,7 +1,7 @@
 %global toolchain clang
 
 Name:		libdispatch
-Epoch:		2
+Epoch:		1
 Version:	5.9.2
 Release:	1%{?dist}
 Summary:	Grand Central Dispatch (GCD or libdispatch).
