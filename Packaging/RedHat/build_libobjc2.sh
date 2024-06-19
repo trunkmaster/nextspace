@@ -1,12 +1,13 @@
 #!/bin/sh
 # -*-Shell-script-*-
 
-. `dirname $0`/functions
+BUILD_RPM=1
+. `dirname $0`/../environment.sh
 
 if [ "$OS_ID" == "centos" ];then
-    SPEC_FILE=${REPO_DIR}/Libraries/libobjc2/libobjc2-centos.spec
+    SPEC_FILE=${PROJECT_DIR}/Libraries/libobjc2/libobjc2-centos.spec
 else
-    SPEC_FILE=${REPO_DIR}/Libraries/libobjc2/libobjc2.spec
+    SPEC_FILE=${PROJECT_DIR}/Libraries/libobjc2/libobjc2.spec
 fi
 OBJC2_VERSION=`rpm_version ${SPEC_FILE}`
 

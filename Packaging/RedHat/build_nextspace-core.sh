@@ -1,9 +1,10 @@
 #!/bin/sh
 # -*-Shell-script-*-
 
-. `dirname $0`/functions
+BUILD_RPM=1
+. `dirname $0`/../environment.sh
 
-SPEC_FILE=${REPO_DIR}/Core/nextspace-core.spec
+SPEC_FILE=${PROJECT_DIR}/Core/nextspace-core.spec
 
 print_H1 " Building of NEXTSPACE core components (nextspace-core) RPM..."
 
@@ -16,13 +17,13 @@ CORE_VERSION=`rpmspec -q --qf "%{version}:" ${SPEC_FILE} | awk -F: '{print $1}'`
 cd /tmp 
 rm -rf ./nextspace-os_files-${CORE_VERSION}
 mkdir -p /tmp/nextspace-os_files-${CORE_VERSION}
-cp -R ${REPO_DIR}/Core/os_files/* ./nextspace-os_files-${CORE_VERSION}/
+cp -R ${PROJECT_DIR}/Core/os_files/* ./nextspace-os_files-${CORE_VERSION}/
 rm ./nextspace-os_files-${CORE_VERSION}/GNUmakefile
-tar zcf ${SOURCES_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz nextspace-os_files-${CORE_VERSION}
+tar zcf ${RPM_SOURCES_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz nextspace-os_files-${CORE_VERSION}
 cd $CWD
 
 CORE_VERSION=`rpm_version ${SPEC_FILE}`
-cp ${REPO_DIR}/Core/nextspace.fsl ${SOURCES_DIR}
+cp ${PROJECT_DIR}/Core/nextspace.fsl ${RPM_SOURCES_DIR}
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building NEXTSPACE core components (nextspace-core) RPM..."

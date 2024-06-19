@@ -1,26 +1,27 @@
 #!/bin/sh
 # -*-Shell-script-*-
 
-. `dirname $0`/functions
+BUILD_RPM=1
+. `dirname $0`/../environment.sh
 
-SPEC_FILE=${REPO_DIR}/Libraries/gnustep/nextspace-gnustep.spec
+SPEC_FILE=${PROJECT_DIR}/Libraries/gnustep/nextspace-gnustep.spec
 GNUSTEP_VERSION=`rpm_version ${SPEC_FILE}`
 
 print_H1 " Building NEXTSPACE GNUstep (nextspace-gnustep) package..."
-cp ${REPO_DIR}/Libraries/gnustep/gdnc-local.service ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/gdnc.service ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/gdomap.interfaces ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/gdomap.service ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/gpbs.service ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/gnustep-gui-images.tar.gz ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/gnustep-gui-panels.tar.gz ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/gorm-images.tar.gz ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/projectcenter-images.tar.gz ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/pc.patch ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/gorm.patch ${SOURCES_DIR}
-cp ${REPO_DIR}/Libraries/gnustep/libs-gui_* ${SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/gdnc-local.service ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/gdnc.service ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/gdomap.interfaces ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/gdomap.service ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/gpbs.service ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/gnustep-gui-images.tar.gz ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/gnustep-gui-panels.tar.gz ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/gorm-images.tar.gz ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/projectcenter-images.tar.gz ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/pc.patch ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/gorm.patch ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/libs-gui_* ${RPM_SOURCES_DIR}
 print_H1 " Downloading Local GNUstep Back..."
-tar zcf ${SOURCES_DIR}/back-art.tar.gz -C ${REPO_DIR}/Libraries/gnustep back-art
+tar zcf ${RPM_SOURCES_DIR}/back-art.tar.gz -C ${PROJECT_DIR}/Libraries/gnustep back-art
 
 print_H2 "===== Install GNUstep build dependencies..."
 DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`

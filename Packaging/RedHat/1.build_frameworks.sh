@@ -3,12 +3,13 @@
 # run this script as has appropriate rights.
 #
 
-. `dirname $0`/functions
+BUILD_RPM=1
+. `dirname $0`/../environment.sh
 
 prepare_environment
 
 LOG_FILE=${CWD}/frameworks_build.log
-SPEC_FILE=${REPO_DIR}/Frameworks/nextspace-frameworks.spec
+SPEC_FILE=${PROJECT_DIR}/Frameworks/nextspace-frameworks.spec
 
 print_H1 " Building NEXTSPACE Frameworks package..."
 
@@ -20,9 +21,9 @@ sudo yum -y install ${DEPS}
 
 print_H2 "===== Downloading nextspace-frameworks sources..."
 source /Developer/Makefiles/GNUstep.sh
-cd ${REPO_DIR}/Frameworks && make dist
+cd ${PROJECT_DIR}/Frameworks && make dist
 cd $CWD
-mv ${REPO_DIR}/nextspace-frameworks-${FRAMEWORKS_VERSION}.tar.gz ${SOURCES_DIR}
+mv ${PROJECT_DIR}/nextspace-frameworks-${FRAMEWORKS_VERSION}.tar.gz ${RPM_SOURCES_DIR}
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building nextspace-frameworks package..."

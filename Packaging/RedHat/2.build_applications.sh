@@ -3,12 +3,13 @@
 # run this script as has appropriate rights.
 #
 
-. `dirname $0`/functions
+BUILD_RPM=1
+. `dirname $0`/../environment.sh
 
 prepare_environment
 
 LOG_FILE=/dev/null
-SPEC_FILE=${REPO_DIR}/Applications/nextspace-applications.spec
+SPEC_FILE=${PROJECT_DIR}/Applications/nextspace-applications.spec
 
 print_H1 " Building NEXTSPACE Applications package..."
 
@@ -23,13 +24,13 @@ if [ $OS_ID == "centos" ] && [ $OS_VERSION == "7" ];then
 fi
 
 print_H2 "--- Prepare Workspace sources"
-cd ${REPO_DIR}/Applications/Workspace
+cd ${PROJECT_DIR}/Applications/Workspace
 #rm WM/src/wconfig.h && rm WM/configure && ./WM.configure
 
 print_H2 "--- Creating applications source tarball"
-cd ${REPO_DIR}/Applications && make dist
+cd ${PROJECT_DIR}/Applications && make dist
 cd $CWD
-mv ${REPO_DIR}/nextspace-applications-${APPLICATIONS_VERSION}.tar.gz ${SOURCES_DIR}
+mv ${PROJECT_DIR}/nextspace-applications-${APPLICATIONS_VERSION}.tar.gz ${RPM_SOURCES_DIR}
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building nextspace-applications package..."

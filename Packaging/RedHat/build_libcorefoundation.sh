@@ -1,20 +1,21 @@
 #!/bin/sh
 # -*-Shell-script-*-
 
-. `dirname $0`/functions
+BUILD_RPM=1
+. ../environment.sh
 
 if [ "${OS_ID}" = "centos" ];then
-    SPEC_FILE=${REPO_DIR}/Libraries/libcorefoundation/libcorefoundation-centos.spec
+    SPEC_FILE=${PROJECT_DIR}/Libraries/libcorefoundation/libcorefoundation-centos.spec
 else
-    SPEC_FILE=${REPO_DIR}/Libraries/libcorefoundation/libcorefoundation.spec
+    SPEC_FILE=${PROJECT_DIR}/Libraries/libcorefoundation/libcorefoundation.spec
 fi
 CF_VERSION=`rpm_version ${SPEC_FILE}`
 
 print_H1 " Building Core Foundation (libcorefoundation) package..."
 if [ "${OS_ID}" = "centos" ];then
-    cp ${REPO_DIR}/Libraries/libcorefoundation/*.patch ${SOURCES_DIR}
-    cp ${REPO_DIR}/Libraries/libcorefoundation/CFNotificationCenter.c ${SOURCES_DIR}
-    cp ${REPO_DIR}/Libraries/libcorefoundation/CFFileDescriptor.[ch] ${SOURCES_DIR}
+    cp ${PROJECT_DIR}/Libraries/libcorefoundation/*.patch ${RPM_SOURCES_DIR}
+    cp ${PROJECT_DIR}/Libraries/libcorefoundation/CFNotificationCenter.c ${RPM_SOURCES_DIR}
+    cp ${PROJECT_DIR}/Libraries/libcorefoundation/CFFileDescriptor.[ch] ${RPM_SOURCES_DIR}
 fi
 
 print_H2 "===== Install Core Foundation build dependencies..."
@@ -23,11 +24,11 @@ sudo yum -y install ${DEPS}
 
 print_H2 "===== Downloading Core Foundation sources..."
 _VER=`rpmspec -q --qf "%{version}:" ${SPEC_FILE} | awk -F: '{print $1}'`
-if [ "${OS_ID}" = "centos" ];then
-    curl -L https://github.com/apple/swift-corelibs-foundation/archive/swift-${_VER}-RELEASE.tar.gz -o ${SOURCES_DIR}/libcorefoundation-${_VER}.tar.gz
+if [ "$OS_ID" = "centos" ];then
+    curl -L https://github.com/apple/swift-corelibs-foundation/archive/swift-${_VER}-RELEASE.tar.gz -o ${RPM_SOURCES_DIR}/libcorefoundation-${_VER}.tar.gz
 else
     _REL=`rpmspec -q --qf "%{release}:" ${SPEC_FILE} | awk -F: '{print $1}' | awk -F. '{print $1}'`
-    curl -L https://github.com/trunkmaster/apple-corefoundation/archive/refs/tags/${_VER}-${_REL}.tar.gz -o ${SOURCES_DIR}/libcorefoundation-${_VER}-${_REL}.tar.gz
+    curl -L https://github.com/trunkmaster/apple-corefoundation/archive/refs/tags/${_VER}-${_REL}.tar.gz -o ${RPM_SOURCES_DIR}/libcorefoundation-${_VER}-${_REL}.tar.gz
 fi
 spectool -g -R ${SPEC_FILE}
 
