@@ -79,8 +79,8 @@ if [ -z $BUILD_RPM ]; then
 else
   RELEASE_USR="$_PWD/$OS_ID-$OS_VERSION/NSUser"
   RELEASE_DEV="$_PWD/$OS_ID-$OS_VERSION/NSDeveloper"
-#  mkdir -p ${RELEASE_USR}
-#  mkdir -p ${RELEASE_DEV}
+  mkdir -p ${RELEASE_USR}
+  mkdir -p ${RELEASE_DEV}
 
   RPM_SOURCES_DIR=~/rpmbuild/SOURCES
   RPM_SPECS_DIR=~/rpmbuild/SPECS
