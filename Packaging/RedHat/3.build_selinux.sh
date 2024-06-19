@@ -4,7 +4,8 @@
 # Notice it always rebuilds and reinstalls packages even if they're already installed.
 #
 
-. `dirname $0`/functions
+BUILD_RPM=1
+. ../environment.sh
 
 if [ $# -eq 0 ];then
     print_help
