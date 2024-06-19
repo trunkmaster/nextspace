@@ -81,11 +81,16 @@ make %{?_smp_mflags}
 cd _build
 make install DESTDIR=%{buildroot}
 rm %{buildroot}/usr/NextSpace/include/Block_private.h
+cd %{buildroot}/usr/NextSpace/lib
+mv libBlocksRuntime.so libBlocksRuntime.so.%{version}
+ln -sf libBlocksRuntime.so.%{version} libBlocksRuntime.so
+mv libdispatch.so libdispatch.so.%{version}
+ln -sf libdispatch.so.%{version} libdispatch.so
 
 %check
 
 %files
-/usr/NextSpace/lib/*.so
+/usr/NextSpace/lib/*.so*
 
 %files devel
 /usr/NextSpace/include/Block.h
