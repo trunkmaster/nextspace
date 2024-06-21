@@ -1,7 +1,12 @@
 # -*- mode: makefile-gmake -*-
 
-DEST_SYS_LIB = $(DESTDIR)/$(GNUSTEP_SYSTEM_LIBRARY)
-DEST_LOC_LIB = $(DESTDIR)/$(GNUSTEP_LOCAL_LIBRARY)
+ifeq ("$(DESTDIR)", "")
+  DEST_SYS_LIB = $(GNUSTEP_SYSTEM_LIBRARY)
+  DEST_LOC_LIB = $(GNUSTEP_LOCAL_LIBRARY)
+else
+  DEST_SYS_LIB = $(DESTDIR)/$(GNUSTEP_SYSTEM_LIBRARY)
+  DEST_LOC_LIB = $(DESTDIR)/$(GNUSTEP_LOCAL_LIBRARY)
+endif
 
 after-clean::
 
@@ -19,7 +24,7 @@ after-install::
 	  mkdir -p $(DEST_LOC_LIB); \
 	fi
 	if [ ! -e $(DEST_LOC_LIB)/Fonts ]; then \
-	  ln -s Frameworks/DesktopKit.framework/Resources/Fonts $(DEST_LOC_LIB); \
+	  ln -s $(DEST_SYS_LIB)/Frameworks/DesktopKit.framework/Resources/Fonts $(DEST_LOC_LIB); \
 	fi
 
 # /usr/NextSpace/Fonts
