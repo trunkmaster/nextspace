@@ -97,8 +97,6 @@ make
 cd .build
 make install DESTDIR=%{buildroot}
 mv -v %{buildroot}/usr/NextSpace/include/Block.h %{buildroot}/usr/NextSpace/include/Block-libobjc.h 
-SHORT_VER=`echo %{version} | awk -F. '{print $1}'`
-ln -sf libobjc.so.%{version} libobjc.so.$SHORT_VER
 
 %files
 /usr/NextSpace/lib/libobjc.so*
