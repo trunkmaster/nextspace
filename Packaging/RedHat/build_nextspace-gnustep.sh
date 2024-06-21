@@ -42,6 +42,7 @@ if [ $STATUS -eq 0 ]; then
     install_rpm nextspace-gnustep-devel ${RPMS_DIR}/nextspace-gnustep-devel-${GNUSTEP_VERSION}.rpm
     mv ${RPMS_DIR}/nextspace-gnustep-devel-${GNUSTEP_VERSION}.rpm ${RELEASE_DEV}
     mv ${RPMS_DIR}/nextspace-gnustep-debuginfo-${GNUSTEP_VERSION}.rpm ${RELEASE_DEV}
+    mv ${RPMS_DIR}/nextspace-gnustep-devel-debuginfo-${GNUSTEP_VERSION}.rpm ${RELEASE_DEV}
     if [ -f ${RPMS_DIR}/nextspace-gnustep-debugsource-${GNUSTEP_VERSION}.rpm ];then
         mv ${RPMS_DIR}/nextspace-gnustep-debugsource-${GNUSTEP_VERSION}.rpm ${RELEASE_DEV}
     fi
