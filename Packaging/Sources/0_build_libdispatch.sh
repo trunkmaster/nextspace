@@ -69,15 +69,18 @@ $INSTALL_CMD
 # Postinstall
 #----------------------------------------
 $RM_CMD $DEST_DIR/usr/NextSpace/include/Block_private.h
+SHORT_VER=`echo ${libdispatch_version} | awk -F. '{print $1}'`
 
 cd ${DEST_DIR}/usr/NextSpace/lib
 
 $ECHO "-- Creating link for libBlocksRuntime.so.${libdispatch_version}"
 $MV_CMD libBlocksRuntime.so libBlocksRuntime.so.${libdispatch_version}
+$LN_CMD libBlocksRuntime.so.${libdispatch_version} libBlocksRuntime.so.${SHORT_VER}
 $LN_CMD libBlocksRuntime.so.${libdispatch_version} libBlocksRuntime.so
 
 $ECHO "-- Creating link for libdispatch.so.${libdispatch_version}"
 $MV_CMD libdispatch.so libdispatch.so.${libdispatch_version}
+$LN_CMD libdispatch.so.${libdispatch_version} libdispatch.so.${SHORT_VER}
 $LN_CMD libdispatch.so.${libdispatch_version} libdispatch.so
 
 if [ "$DEST_DIR" = "" ]; then

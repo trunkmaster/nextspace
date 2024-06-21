@@ -82,10 +82,13 @@ cd _build
 make install DESTDIR=%{buildroot}
 rm %{buildroot}/usr/NextSpace/include/Block_private.h
 cd %{buildroot}/usr/NextSpace/lib
+SHORT_VER=`echo %{version} | awk -F. '{print $1}'`
 mv libBlocksRuntime.so libBlocksRuntime.so.%{version}
 ln -sf libBlocksRuntime.so.%{version} libBlocksRuntime.so
+ln -sf libBlocksRuntime.so.%{version} libBlocksRuntime.so.$SHORT_VER
 mv libdispatch.so libdispatch.so.%{version}
 ln -sf libdispatch.so.%{version} libdispatch.so
+ln -sf libdispatch.so.%{version} libdispatch.so.$SHORT_VER
 
 %check
 
