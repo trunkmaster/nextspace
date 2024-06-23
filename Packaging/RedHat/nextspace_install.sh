@@ -219,13 +219,13 @@ if [ "$YN" = "y" ]; then
     echo -n "Please enter username: "
     read USERNAME
     echo "Adding username $USERNAME"
-    adduser -b /Users -s /bin/zsh -G audio,wheel $USERNAME
+    sudo adduser -b /Users -s /bin/zsh -G audio,wheel $USERNAME
     echo "Setting up password..."
-    passwd $USERNAME
+    sudo passwd $USERNAME
     echo "Updating SELinux file contexts..."
     ## Needed to update the filesystem contexts that depend on HOME_DIR, and wrongly assume /home
-    semodule -e ns-core  2>&1 > /dev/null
-    restorecon -R /Users 2>&1 > /dev/null
+    sudo semodule -e ns-core  2>&1 > /dev/null
+    sudo restorecon -R /Users 2>&1 > /dev/null
 fi
 
 #===============================================================================
@@ -236,7 +236,7 @@ echo -n "Start graphical login panel on system boot? [y/N]: "
 echo -e -n "\e[0m"
 read YN
 if [ "$YN" = "y" ]; then
-    systemctl set-default graphical.target
+    sudo systemctl set-default graphical.target
 fi
 
 #===============================================================================
@@ -247,7 +247,7 @@ echo -n "Do you want to start graphical login panel now? [y/N]: "
 echo -e -n "\e[0m"
 read YN
 if [ "$YN" = "y" ]; then
-    systemctl start loginwindow
+    sudo systemctl start loginwindow
 fi
 
 echo -e "\e[32m"
