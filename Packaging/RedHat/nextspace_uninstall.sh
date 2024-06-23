@@ -1,5 +1,6 @@
 #!/bin/sh
 
+BUILD_RPM=1
 . ../environment.sh
 
 if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
