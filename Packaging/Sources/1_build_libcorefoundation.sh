@@ -17,18 +17,19 @@ fi
 # Download
 #----------------------------------------
 if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
-	GIT_PKG_NAME=swift-corelibs-foundation-swift-${libcorefoundation_version}-RELEASE
+	CF_PKG_NAME=swift-corelibs-foundation-swift-${libcorefoundation_version}-RELEASE
 else
-	GIT_PKG_NAME=apple-corefoundation-${libcorefoundation_version}
+	CF_PKG_NAME=apple-corefoundation-${libcorefoundation_version}
+	CFNET_PKG_NAME=apple-cfnetwork
 fi
 
-if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
+if [ ! -d ${BUILD_ROOT}/${CF_PKG_NAME} ]; then
 	if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
-		curl -L https://github.com/apple/swift-corelibs-foundation/archive/swift-${libcorefoundation_version}-RELEASE.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
+		curl -L https://github.com/apple/swift-corelibs-foundation/archive/swift-${libcorefoundation_version}-RELEASE.tar.gz -o ${BUILD_ROOT}/${CF_PKG_NAME}.tar.gz
 		cd ${BUILD_ROOT}
-		tar zxf ${GIT_PKG_NAME}.tar.gz
+		tar zxf ${CF_PKG_NAME}.tar.gz
 
-		cd ${GIT_PKG_NAME}
+		cd ${CF_PKG_NAME}
 		SOURCES_DIR=${PROJECT_DIR}/Libraries/libcorefoundation
 		patch -p1 < ${SOURCES_DIR}/CF_shared_on_linux.patch
 		patch -p1 < ${SOURCES_DIR}/CF_centos7.patch
@@ -45,14 +46,16 @@ if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
 
 		cd ../..
 	else
-		git clone --depth 1 https://github.com/trunkmaster/apple-corefoundation ${BUILD_ROOT}/${GIT_PKG_NAME}
+		git clone --depth 1 https://github.com/trunkmaster/apple-corefoundation ${BUILD_ROOT}/${CF_PKG_NAME}
+		git clone --depth 1 https://github.com/trunkmaster/apple-cfnetwork ${BUILD_ROOT}/${CFNET_PKG_NAME}
 	fi
 fi
 
 #----------------------------------------
 # Build
 #----------------------------------------
-cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
+# CoreFoundation
+cd ${BUILD_ROOT}/${CF_PKG_NAME} || exit 1
 rm -rf .build 2>/dev/null
 mkdir -p .build
 cd .build
@@ -73,20 +76,43 @@ $CMAKE_CMD .. \
 	-DCMAKE_SKIP_RPATH=ON \
 	-DCMAKE_BUILD_TYPE=Debug \
 	|| exit 1
-#	-DCMAKE_LINKER=/usr/bin/ld.gold \
 
-$MAKE_CMD clean
 $MAKE_CMD || exit 1
+
+# CFNetwork
+if [ -n  "$libcfnetwork_version" ]; then
+	cd ${BUILD_ROOT}/${CFNET_PKG_NAME} || exit 1
+	rm -rf .build 2>/dev/null
+	mkdir -p .build
+	cd .build
+	CFN_CFLAGS="-F../../${CF_PKG_NAME}/.build -I/usr/NextSpace/include"
+	CFN_LD_FLAGS="-L/usr/NextSpace/lib -L../../${CF_PKG_NAME}/.build/CoreFoundation.framework"
+	cmake .. \
+			-DCMAKE_C_COMPILER=${C_COMPILER} \
+			-DCMAKE_CXX_COMPILER=clang++ \
+			-DCFNETWORK_CFLAGS="${CFN_CFLAGS}" \
+			-DCFNETWORK_LDLAGS="${CFN_LD_FLAGS}" \
+			-DBUILD_SHARED_LIBS=YES \
+			-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
+			-DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
+			\
+			-DCMAKE_SKIP_RPATH=ON \
+			-DCMAKE_BUILD_TYPE=Debug
+	$MAKE_CMD || exit 1
+fi
 
 #----------------------------------------
 # Install
 #----------------------------------------
+
+### CoreFoundation
+cd ${BUILD_ROOT}/${CF_PKG_NAME}/.build || exit 1
 $INSTALL_CMD
 
-DEST_DIR=${DEST_DIR}/usr/NextSpace/Frameworks/CoreFoundation.framework
+CF_DIR=${DEST_DIR}/usr/NextSpace/Frameworks/CoreFoundation.framework
 
-$MKDIR_CMD $DEST_DIR/Versions/${libcorefoundation_version}
-cd $DEST_DIR
+$MKDIR_CMD ${CF_DIR}/Versions/${libcorefoundation_version}
+cd $CF_DIR
 # Headers
 $MV_CMD Headers Versions/${libcorefoundation_version}
 $LN_CMD Versions/Current/Headers Headers
@@ -101,10 +127,29 @@ cd ../../lib
 $RM_CMD libCoreFoundation.so*
 $LN_CMD ../Frameworks/CoreFoundation.framework/Versions/${libcorefoundation_version}/libCoreFoundation.so* ./
 
-# include
-#sudo mkdir -p /usr/NextSpace/include
-#cd /usr/NextSpace/include
-#sudo ln -sf ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
+### CFNetwork
+if [ -n  "$libcfnetwork_version" ]; then
+	cd ${BUILD_ROOT}/${CFNET_PKG_NAME}/.build || exit 1
+	$INSTALL_CMD
+
+	CFNET_DIR=${DEST_DIR}/usr/NextSpace/Frameworks/CFNetwork.framework
+
+	$MKDIR_CMD $CFNET_DIR/Versions/${libcfnetwork_version}
+	cd $CFNET_DIR
+	# Headers
+	$MV_CMD Headers Versions/${libcfnetwork_version}
+	$LN_CMD Versions/Current/Headers Headers
+	cd Versions
+	$LN_CMD ${libcfnetwork_version} Current
+	cd ..
+	# Libraries
+	$MV_CMD libCFNetwork.so* Versions/${libcfnetwork_version}
+	$LN_CMD Versions/Current/libCFNetwork.so.${libcfnetwork_version} libCFNetwork.so
+	$LN_CMD Versions/Current/libCFNetwork.so.${libcfnetwork_version} CFNetwork
+	cd ../../lib
+	$RM_CMD libCFNetwork.so*
+	$LN_CMD ../Frameworks/CFNetwork.framework/Versions/${libcfnetwork_version}/libCFNetwork.so* ./
+fi
 
 if [ "$DEST_DIR" = "" ]; then
 	sudo ldconfig

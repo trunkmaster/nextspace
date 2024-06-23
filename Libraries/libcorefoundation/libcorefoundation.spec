@@ -1,4 +1,5 @@
 %global toolchain clang
+%define CFNET_VERSION 129.20
 
 Name:       libcorefoundation
 Version:    5.9.2
@@ -35,6 +36,7 @@ Development header files for CoreFoundation framework.
 
 %prep
 %setup -n apple-corefoundation-%{version}-1
+git clone --depth 1 https://github.com/trunkmaster/apple-cfnetwork CFNetwork
 
 %build
 unset CFLAGS
@@ -54,41 +56,93 @@ cmake .. \
 
 make %{?_smp_mflags}
 
+%if !0%{?el7}
+	cd ../CFNetwork
+	mkdir -p .build
+	cd .build
+	CFN_CFLAGS="-F../../${CF_PKG_NAME}/.build -I/usr/NextSpace/include"
+	CFN_LD_FLAGS="-L/usr/NextSpace/lib -L../../${CF_PKG_NAME}/.build/CoreFoundation.framework"
+	cmake .. \
+			-DCMAKE_C_COMPILER=clang \
+			-DCMAKE_CXX_COMPILER=clang++ \
+			-DCFNETWORK_CFLAGS="${CFN_CFLAGS}" \
+			-DCFNETWORK_LDLAGS="${CFN_LD_FLAGS}" \
+			-DBUILD_SHARED_LIBS=YES \
+			-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
+			-DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
+			\
+			-DCMAKE_SKIP_RPATH=ON \
+			-DCMAKE_BUILD_TYPE=Debug
+	make
+%endif
+
 %install
 cd .build
-# Make GNUstep framework
-# Frameworks
+# Make GNUstep frameworks
 mkdir -p %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}
-cp -R CoreFoundation.framework/Headers %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}
-cp -R CoreFoundation.framework/libCoreFoundation.so* %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework
-cd %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions
+mkdir -p %{buildroot}/usr/NextSpace/lib
+# framework
+cd CoreFoundation.framework
+cp -R Headers %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}
+cp -R libCoreFoundation.so* %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}
+#
+cd %{buildroot}/usr/NextSpace/Frameworks/CoreFoundation.framework
+ln -s Versions/Current/Headers Headers
+cd Versions
 ln -s %{version} Current
 cd ..
-ln -s Versions/Current/Headers Headers
-#ln -s Versions/Current/libCoreFoundation.so.%{version} libCoreFoundation.so
 # lib
-mkdir -p %{buildroot}/usr/NextSpace/lib
+ln -s Versions/Current/libCoreFoundation.so.%{version} libCoreFoundation.so
+ln -s Versions/Current/libCoreFoundation.so.%{version} CoreFoundation
 cd %{buildroot}/usr/NextSpace/lib
-ln -s ../Frameworks/CoreFoundation.framework/libCoreFoundation.so* ./
+ln -s ../Frameworks/CoreFoundation.framework/Versions/%{version}/libCoreFoundation.so* ./
 # include
-mkdir -p %{buildroot}/usr/NextSpace/include
-cd %{buildroot}/usr/NextSpace/include
-ln -s ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
+#mkdir -p %{buildroot}/usr/NextSpace/include
+#cd %{buildroot}/usr/NextSpace/include
+#ln -s ../Frameworks/CoreFoundation.framework/Headers CoreFoundation
+
+# CFNetwork
+CFNET_VERSION=129.20
+cd %{_builddir}/apple-corefoundation-%{version}-1/CFNetwork/.build/CFNetwork.framework
+mkdir -p %{buildroot}/usr/NextSpace/Frameworks/CFNetwork.framework/Versions/${CFNET_VERSION}
+cp -R Headers %{buildroot}/usr/NextSpace/Frameworks/CFNetwork.framework/Versions/${CFNET_VERSION}
+cp -R libCFNetwork.so* %{buildroot}/usr/NextSpace/Frameworks/CFNetwork.framework/Versions/${CFNET_VERSION}
+
+cd %{buildroot}/usr/NextSpace/Frameworks/CFNetwork.framework 
+ln -s Versions/Current/Headers Headers
+cd Versions
+ln -s ${CFNET_VERSION} Current
+cd ..
+# lib
+ln -s Versions/Current/libCFNetwork.so.${CFNET_VERSION} libCFNetwork.so
+ln -s Versions/Current/libCFNetwork.so.${CFNET_VERSION} CFNetwork
+cd %{buildroot}/usr/NextSpace/lib
+ln -s ../Frameworks/CFNetwork.framework/Versions/${CFNET_VERSION}/libCFNetwork.so* ./
 
 %check
 
 %files
+/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}/libCoreFoundation.so*
+/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/Current
+/usr/NextSpace/Frameworks/CoreFoundation.framework/CoreFoundation
 /usr/NextSpace/Frameworks/CoreFoundation.framework/libCoreFoundation.so*
-/usr/NextSpace/Frameworks/CoreFoundation.framework/Versions
+/usr/NextSpace/Frameworks/CFNetwork.framework/Versions/%{CFNET_VERSION}/libCFNetwork.so*
+/usr/NextSpace/Frameworks/CFNetwork.framework/Versions/Current
+/usr/NextSpace/Frameworks/CFNetwork.framework/CFNetwork
+/usr/NextSpace/Frameworks/CFNetwork.framework/libCFNetwork.so
 /usr/NextSpace/lib/libCoreFoundation.so*
+/usr/NextSpace/lib/libCFNetwork.so*
 
 %files devel
 /usr/NextSpace/Frameworks/CoreFoundation.framework/Versions/%{version}/Headers
 /usr/NextSpace/Frameworks/CoreFoundation.framework/Headers
-/usr/NextSpace/include/CoreFoundation
+#/usr/NextSpace/include/CoreFoundation
+/usr/NextSpace/Frameworks/CFNetwork.framework/Versions/%{CFNET_VERSION}/Headers
+/usr/NextSpace/Frameworks/CFNetwork.framework/Headers
 
 %postun
 /bin/rm -rf /usr/NextSpace/Frameworks/CoreFoundation.framework
+/bin/rm -rf /usr/NextSpace/Frameworks/CFNetwork.framework
 
 %changelog
 * Tue Apr 9 2024 Sergii Stoian <stoyan255@gmail.com>

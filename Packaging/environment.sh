@@ -41,6 +41,7 @@ if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
 else
   libdispatch_version=5.9.2
   libcorefoundation_version=5.9.2
+  libcfnetwork_version=129.20
   gnustep_make_version=2_9_2
   gnustep_base_version=1_30_0
   gnustep_gui_version=0_31_0
