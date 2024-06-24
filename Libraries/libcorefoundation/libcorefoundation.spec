@@ -17,6 +17,7 @@ BuildRequires:  libxml2-devel
 BuildRequires:  libicu-devel
 BuildRequires:  libcurl-devel
 BuildRequires:  libuuid-devel
+BuildRequires:  avahi-compat-libdns_sd-devel
 
 Requires:   libdispatch
 Requires:   libxml2
