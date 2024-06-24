@@ -5,7 +5,11 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-if [ ${OS_ID} != "debian" ] && [ ${OS_ID} != "ubuntu" ]; then
+${ECHO} ">>> Installing ${OS_ID} packages for CoreFoundation library build"
+if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
+	sudo apt-get install -y ${RUNTIME_DEPS} || exit 1
+else
 	${ECHO} ">>> Installing ${OS_ID} packages for CoreFoundation build"
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Libraries/libcorefoundation/libcorefoundation.spec
@@ -47,8 +51,10 @@ if [ ! -d ${BUILD_ROOT}/${CF_PKG_NAME} ]; then
 		cd ../..
 	else
 		git clone --depth 1 https://github.com/trunkmaster/apple-corefoundation ${BUILD_ROOT}/${CF_PKG_NAME}
-		git clone --depth 1 https://github.com/trunkmaster/apple-cfnetwork ${BUILD_ROOT}/${CFNET_PKG_NAME}
 	fi
+fi
+if [ ! -d ${BUILD_ROOT}/${CFNET_PKG_NAME} ]; then
+	git clone --depth 1 https://github.com/trunkmaster/apple-cfnetwork ${BUILD_ROOT}/${CFNET_PKG_NAME}
 fi
 
 #----------------------------------------

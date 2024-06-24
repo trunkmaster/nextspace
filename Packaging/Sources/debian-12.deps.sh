@@ -11,6 +11,7 @@ RUNTIME_DEPS="
     libbsd-dev
     uuid-dev
     libcurl4-gnutls-dev
+    libavahi-compat-libdnssd-dev
 "
 #--- gnustep-make
 GNUSTEP_MAKE_DEPS="
@@ -23,6 +24,7 @@ RUNTIME_RUN_DEPS="
     libuuid1
     libcurl4
     libcurl3-gnutls
+    libavahi-compat-libdnssd1
     zsh
     plymouth
     plymouth-label
