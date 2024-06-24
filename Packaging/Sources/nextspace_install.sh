@@ -111,6 +111,7 @@ DEST_DIR=""
     $ECHO "Copying /usr/NextSpace..."
     $CP_CMD usr/NextSpace /usr
 }
+sudo ldconfig
 
 #===============================================================================
 # More X drivers. Workaround until NextSpace RPMs include them as dependencies
