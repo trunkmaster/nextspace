@@ -71,7 +71,7 @@ export RUNTIME_VERSION="gnustep-1.8"
 export CC=clang
 export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
-export CFLAGS=""
+export CFLAGS="-F/usr/NextSpace/Frameworks"
 export LDFLAGS=""
 
 # Build gnustep-make to include in -devel package
@@ -140,7 +140,9 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 %post
 useradd -D -b /Users -s /bin/zsh
 tuned-adm profile desktop
-plymouth-set-default-theme -R nextspace
+if [ ! "`plymouth-set-default-theme`" = "nextspace" ]; then
+  plymouth-set-default-theme -R nextspace
+fi
 
 %preun
 if [ $1 -eq 0 ]; then
