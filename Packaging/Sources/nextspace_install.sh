@@ -1,162 +1,175 @@
 #!/bin/sh
-# It is a helper script for automated install of NEXTSPACE.
-# This script should be placed along with NSUser and NSDeveloper
-# directories.
+# It is a helper script for automated install of NEXTSPACE which has been built
+# with scripts. Should be placed next to binary build hierarchy.
 
-RELEASE=0.95
-
+. ./install_environment.sh
 . ./debian-12.deps.sh
 
 #===============================================================================
 # Main sequence
 #===============================================================================
-echo -e -n "\e[1m"
-echo "This script will install NEXTSPACE release $RELEASE and configure system."
-echo -n "Do you want to continue? [yN]: "
-echo -e -n "\e[0m"
+$ECHO -e -n "\e[1m"
+$ECHO "========================================================================="
+$ECHO "This script will install NEXTSPACE release $RELEASE and configure system."
+$ECHO "========================================================================="
+$ECHO -n "Do you want to continue? [y/N]: "
+$ECHO -e -n "\e[0m"
 read YN
 if [ $YN != "y" ]; then
-    echo "OK, maybe next time. Exiting..."
+    $ECHO "OK, maybe next time. Exiting..."
     exit
 fi
 
 #===============================================================================
 # Install dependency packages
 #===============================================================================
-sudo apt install ${RUNTIME_RUN_DEPS} ${WRASTER_RUN_DEPS} ${GNUSTEP_BASE_RUN_DEPS} \
+$ECHO -e "\e[1m"
+$ECHO "========================================================================="
+$ECHO "Installing system packages needed for NextSpace..."
+$ECHO "========================================================================="
+$ECHO -e -n "\e[0m"
+sudo apt-get install ${RUNTIME_RUN_DEPS} ${WRASTER_RUN_DEPS} ${GNUSTEP_BASE_RUN_DEPS} \
                  ${GNUSTEP_GUI_RUN_DEPS} ${BACK_ART_RUN_DEPS} ${FRAMEWORKS_RUN_DEPS} \
-                 ${APPS_RUN_DEPS}
+                 ${APPS_RUN_DEPS} 2>&1 > /dev/null
 
 #===============================================================================
 # Extract distribution
 #===============================================================================
+$ECHO -e "\e[1m"
+$ECHO "========================================================================="
+$ECHO "Installing NextSpace..."
+$ECHO "========================================================================="
+$ECHO -e -n "\e[0m"
+$ECHO "Populating /etc..."
+CORE_SOURCES="."
+DEST_DIR=""
+{
+    # Preferences
+    $MKDIR_CMD $DEST_DIR/Library/Preferences
+    $CP_CMD ${CORE_SOURCES}/Library/Preferences/* $DEST_DIR/Library/Preferences/
+
+    # Linker cache
+    if ! [ -d $DEST_DIR/etc/ld.so.conf.d ];then
+        $MKDIR_CMD -v $DEST_DIR/etc/ld.so.conf.d
+    fi
+    $CP_CMD ${CORE_SOURCES}/etc/ld.so.conf.d/nextspace.conf $DEST_DIR/etc/ld.so.conf.d/
+    sudo ldconfig
+
+    # X11
+    if ! [ -d $DEST_DIR/etc/X11/xorg.conf.d ];then
+        $MKDIR_CMD -v $DEST_DIR/etc/X11/xorg.conf.d
+    fi
+    $CP_CMD ${CORE_SOURCES}/etc/X11/Xresources.nextspace $DEST_DIR/etc/X11
+    $CP_CMD ${CORE_SOURCES}/etc/X11/xorg.conf.d/*.conf $DEST_DIR/etc/X11/xorg.conf.d/
+
+    # PolKit & udev
+    if ! [ -d $DEST_DIR/etc/polkit-1/rules.d ];then
+        $MKDIR_CMD -v $DEST_DIR/etc/polkit-1/rules.d
+    fi
+    $CP_CMD ${CORE_SOURCES}/etc/polkit-1/rules.d/*.rules $DEST_DIR/etc/polkit-1/rules.d/
+    if ! [ -d $DEST_DIR/etc/udev/rules.d ];then
+        $MKDIR_CMD -v $DEST_DIR/etc/udev/rules.d
+    fi
+    $CP_CMD ${CORE_SOURCES}/etc/udev/rules.d/*.rules $DEST_DIR/etc/udev/rules.d/
+
+    # User environment
+    if ! [ -d $DEST_DIR/etc/profile.d ];then
+        $MKDIR_CMD -v $DEST_DIR/etc/profile.d
+    fi
+    $CP_CMD ${CORE_SOURCES}/etc/profile.d/nextspace.sh $DEST_DIR/etc/profile.d/
+
+    if ! [ -d $DEST_DIR/etc/skel ];then
+        $MKDIR_CMD -v $DEST_DIR/etc/skel
+    fi
+    $CP_CMD ${CORE_SOURCES}/etc/skel/Library $DEST_DIR/etc/skel/
+    $CP_CMD ${CORE_SOURCES}/etc/skel/.config $DEST_DIR/etc/skel/
+    $CP_CMD ${CORE_SOURCES}/etc/skel/.emacs.d $DEST_DIR/etc/skel/
+    $CP_CMD ${CORE_SOURCES}/etc/skel/.gtkrc-2.0 $DEST_DIR/etc/skel/
+    $CP_CMD ${CORE_SOURCES}/etc/skel/.*.nextspace $DEST_DIR/etc/skel/
+
+    # Scripts
+    if ! [ -d $DEST_DIR/usr/NextSpace/bin ];then
+        $MKDIR_CMD -v $DEST_DIR/usr/NextSpace/bin
+    fi
+    $CP_CMD ${CORE_SOURCES}/usr/NextSpace/bin/* $DEST_DIR/usr/NextSpace/bin/
+
+    # Icons and Plymouth resources
+    if ! [ -d $DEST_DIR/usr/share ];then
+        $MKDIR_CMD -v $DEST_DIR/usr/share
+    fi
+    $CP_CMD ${CORE_SOURCES}/usr/share/* $DEST_DIR/usr/share/
+
+    $ECHO "Copying /Applications..."
+    $CP_CMD Applications /
+    $ECHO "Copying /Developer..."
+    $CP_CMD Developer /
+    $ECHO "Copying /Library..."
+    $CP_CMD Library /
+    $ECHO "Copying /usr/NextSpace..."
+    $CP_CMD usr/NextSpace /usr
+}
 
 #===============================================================================
 # More X drivers. Workaround until NextSpace RPMs include them as dependencies
 #===============================================================================
-echo -n "Installing X11 drivers and utilities..."
-sudo apt-get install xserver-xorg-input-all xserver-xorg-video-all xorg-x11-xinit xorg-x11-utils 2>&1 > /dev/null
-echo -e -n "\e[32m"
-echo "done"
-echo -e -n "\e[0m"
+$ECHO -e "\e[1m"
+$ECHO "========================================================================="
+$ECHO "Installing X11 drivers and utilities..."
+$ECHO "========================================================================="
+$ECHO -e -n "\e[0m"
+sudo apt-get install xserver-xorg-input-all xserver-xorg-video-all xorg-x11-xinit 2>&1 > /dev/null
 
 #===============================================================================
 # Hostname in /etc/hosts
 #===============================================================================
-echo -n "Checking /etc/hosts..."
-HOSTNAME="`hostname -s`"
-grep "$HOSTNAME" /etc/hosts 2>&1 > /dev/null
-if [ $? -eq 1 ];then
-    if [ $HOSTNAME != `hostname` ];then
-        HOSTNAME="$HOSTNAME `hostname`"
-    fi
-    echo -e -n "\e[33m"
-    echo "configuring needed"
-    echo -e -n "\e[0m"
-    echo "Configuring hostname ($HOSTNAME)..."
-    sed -i 's/localhost4.localdomain4/localhost4.localdomain4 '"$HOSTNAME"'/g' /etc/hosts
-else
-    echo -e -n "\e[32m"
-    echo "good"
-    echo -e -n "\e[0m"
-fi
+setup_hosts
 
 #===============================================================================
 # Enable services
 #===============================================================================
 sudo systemctl daemon-reload
-systemctl status gdomap || sudo systemctl enable /usr/NextSpace/lib/systemd/gdomap.service;
-systemctl status gdnc || sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc.service;
-systemctl status gdnc-local || sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc-local.service;
-systemctl status gpbs || sudo systemctl enable /usr/NextSpace/lib/systemd/gpbs.service;
-sudo systemctl start gdomap gdnc
-
-${ECHO} "Setting up Login window service to run at system startup..."
-sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
-
-#===============================================================================
-# Disable SELinux
-#===============================================================================
-echo -n "Checking SELinux configuration..."
-
-SELINUX_MODE=$(getenforce)
-echo ...done.
-echo
-echo -e -n "\e[1m"
-echo "Current SELinux mode is ${SELINUX_MODE}"
-echo
-echo -e -n "\e[0m"
-echo "Please choose the default SELinux mode"
-echo
-echo " 1) Permissive: SELinux will be active but will only log policy violations instead of enforcing them (default for NEXTSPACE)."
-echo " 2) Enforcing: SELinux will enforce the loaded policies and actively block access attempts which are not allowed (distro default)."
-echo " 3) Disabled: the SELinux subsystem will be disabled (choose this one if you have a strong reason for it)."
-echo
-echo "The recommended (and default) option is \"Permissive\", which will prevent SELinux from blocking accesses while logging them."
-echo "Choose \"Enforcing\" if you want or need to keep SELinux active, this will use the NEXTSPACE policies; keep in mind that they are a work in progress."
-echo "You can also choose to completely disable the SELinux subsystem; this should functionally be similar to \"Permissive\" but will not log anything."
-echo
-echo -e -n "\e[1m"
-echo -n "SELinux mode [default: 1]?"
-echo -e -n "\e[0m"
-read SEL
-echo -n "Setting SELinux default mode to "
-if [ 1$SEL -eq  12 ]; then
-    echo -n enforcing
-    sed -i -e ' s/SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config
-    touch /.autorelabel
-elif [ 1$SEL -eq 13 ]; then
-    echo -n disabled
-    sed -i -e ' s/SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
-else
-    echo -n permissive
-    sed -i -e ' s/SELINUX=.*/SELINUX=permissive/' /etc/selinux/config
-    touch /.autorelabel
+$ECHO -n "Checking for Distributed Objects Mapper: "
+systemctl is-enabled gdomap
+if [ $? -ne 0 ];then
+    $ECHO "Enabling Distributed Objects Mapper service..."
+    sudo systemctl enable /usr/NextSpace/lib/systemd/gdomap.service
+    sudo systemctl start gdomap
 fi
-echo "... done."
-echo "Filesystem with undergo automatic relabelling upon reboot for \"Permissive\" and \"Enforcing\" policies".
-echo
-# TODO: echo -n "Installing NEXTSPACE SELinux policies..."
-
+$ECHO -n "Checking for Distributed Notification Center: "
+systemctl is-enabled gdnc
+if [ $? -ne 0 ];then
+    $ECHO "Enabling Distributed Notification Center service..."
+    sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc.service
+    sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc-local.service
+    sudo systemctl start gdnc gdnc-local
+fi
+$ECHO -n "Checking for Pasteboard: "
+systemctl is-enabled gpbs
+if [ $? -ne 0 ];then
+    $ECHO "Enabling Pasteboard service..."
+    sudo systemctl enable /usr/NextSpace/lib/systemd/gpbs.service
+    sudo systemctl start gpbs
+fi
+$ECHO -n "Checking for Login panel: "
+systemctl is-enabled loginwindow
+if [ $? -ne 0 ];then
+    $ECHO "Enabling Login panel service..."
+    sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
+fi
 
 #===============================================================================
+# SELinux configuration
+#===============================================================================
+#setup_selinux
+
+$ECHO -e -n "\e[1m"
+$ECHO "========================================================================="
+$ECHO "Post-install optional configuration"
+$ECHO "========================================================================="
+$ECHO -e -n "\e[0m"
+
 # Adding user
-#===============================================================================
-echo -e -n "\e[1m"
-echo -n "Do you want to add user? [yN]: "
-echo -e -n "\e[0m"
-read YN
-if [ $YN = "y" ]; then
-    echo -n "Please enter username: "
-    read USERNAME
-    echo "Adding username $USERNAME"
-    adduser -b /Users -s /bin/zsh -G audio,wheel $USERNAME
-    echo "Setting up password..."
-    passwd $USERNAME
-    echo "Updating SELinux file contexts..."
-    ## Needed to update the filesystem contexts that depend on HOME_DIR, and wrongly assume /home
-    semodule -e ns-core  2>&1 > /dev/null
-    restorecon -R /Users 2>&1 > /dev/null
-fi
+add_user
 
-#===============================================================================
 # Setting up Login Panel
-#===============================================================================
-echo -e -n "\e[1m"
-echo -n "Start graphical login panel on system boot? [yN]: "
-echo -e -n "\e[0m"
-read YN
-if [ $YN = "y" ]; then
-    systemctl set-default graphical.target
-fi
-
-#===============================================================================
-# Check if Login Panel works
-#===============================================================================
-echo -e -n "\e[1m"
-echo -n "Do you want to start graphical login panel now? [yN]: "
-echo -e -n "\e[0m"
-read YN
-if [ $YN = "y" ]; then
-    systemctl start loginwindow
-fi
+setup_loginwindow

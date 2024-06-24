@@ -55,34 +55,3 @@ cp ${CORE_SOURCES}/nextspace.fsl ${BUILD_ROOT}/tools-make-make-${gnustep_make_ve
 #----------------------------------------
 $INSTALL_CMD || exit 1
 cd ${_PWD}
-
-#----------------------------------------
-# Install system configuration files
-#----------------------------------------
-CORE_SOURCES=${CORE_SOURCES}/os_files
-
-$MKDIR_CMD $DEST_DIR/Library/Preferences
-$CP_CMD ${CORE_SOURCES}/Library/Preferences/* $DEST_DIR/Library/Preferences/
-
-if [ -d $DEST_DIR/etc/ld.so.conf.d ];then
-	$CP_CMD ${CORE_SOURCES}/etc/ld.so.conf.d/nextspace.conf /etc/ld.so.conf.d/
-	sudo ldconfig
-fi
-
-if ! [ -d $DEST_DIR/etc/profile.d ]; then
-	$MKDIR_CMD $DEST_DIR/etc/profile.d
-fi
-$CP_CMD ${CORE_SOURCES}/etc/profile.d/nextspace.sh $DEST_DIR/etc/profile.d/
-
-if ! [ -d $DEST_DIR/etc/skel ]; then
-	$MKDIR_CMD $DEST_DIR/etc/skel
-fi
-$CP_CMD ${CORE_SOURCES}/etc/skel/Library $DEST_DIR/etc/skel
-$CP_CMD ${CORE_SOURCES}/etc/skel/.config $DEST_DIR/etc/skel
-
-$CP_CMD ${CORE_SOURCES}/usr/NextSpace/bin/* $DEST_DIR/usr/NextSpace/bin/
-
-if ! [ -d $DEST_DIR/usr/share ]; then
-	$MKDIR_CMD $DEST_DIR/usr/share
-fi
-$CP_CMD ${CORE_SOURCES}/usr/share/* $DEST_DIR/usr/share/
