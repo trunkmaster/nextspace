@@ -256,11 +256,11 @@ cd ..
 # Files
 #
 %files
-/Library/
-/usr/NextSpace/
+/Library
+/usr/NextSpace
 
 %files devel
-/Developer/
+/Developer
 
 #
 # Package install
@@ -268,7 +268,7 @@ cd ..
 # for %pre and %post $1 = 1 - installation, 2 - upgrade
 #%pre
 %post
-libs -p /sbin/ldconfig
+ldconfig
 if [ $1 -eq 1 ]; then
     # post-installation
     systemctl enable /usr/NextSpace/lib/systemd/gdomap.service;
@@ -278,10 +278,8 @@ if [ $1 -eq 1 ]; then
     systemctl start gdomap gdnc gpbs;
 elif [ $1 -eq 2 ]; then
     # post-upgrade
-    #echo "Please restart GNUstep services manually with command:"
-    #echo "# systemctl restart gdomap gdnc gpbs"
     systemctl daemon-reload;
-    # systemctl restart gdomap gdnc gpbs;
+    systemctl restart gdomap gdnc gpbs;
 fi
 
 # for %preun and %postun $1 = 0 - uninstallation, 1 - upgrade. 
@@ -299,7 +297,9 @@ elif  [ $1 -eq 1 ]; then
 fi
 
 %postun
-/bin/rm -rf /usr/NextSpace/Preferences/
+if [ -d /usr/NextSpace/Preferences ]; then
+  rm -rf /usr/NextSpace/Preferences
+fi
 
 %changelog
 * Thu Apr 30 2020 Sergii Stoian <stoyan255@gmail.com> - 1_27_0_nextspace-1

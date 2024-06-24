@@ -126,7 +126,9 @@ cd ..
 #%pre
 
 %post
-/bin/ln -s /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/25-nextspace-fonts.conf /etc/fonts/conf.d/25-nextspace-fonts.conf
+if [ ! -f /etc/fonts/conf.d/25-nextspace-fonts.conf ];then
+  /bin/ln -s /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/25-nextspace-fonts.conf /etc/fonts/conf.d/25-nextspace-fonts.conf
+fi
 /sbin/ldconfig
 
 #

@@ -141,18 +141,22 @@ if [ $1 -eq 1 ]; then
 elif [ $1 -eq 2 ]; then
     # post-upgrade
     systemctl daemon-reload;
-    # systemctl restart loginwindow;
+    systemctl restart loginwindow;
 fi
 
 
 %preun
 if [ $1 -eq 0 ]; then
-   systemctl disable loginwindow.service
-   systemctl set-default multi-user.target
+    systemctl stop loginwindow.service
+    systemctl disable loginwindow.service
+    systemctl set-default multi-user.target
+    chvt 02
 fi
 
 %postun
-/bin/rm /usr/NextSpace/Preferences/Login
+if [ -f /usr/NextSpace/Preferences/Login ]; then
+    rm /usr/NextSpace/Preferences/Login
+fi
 
 %changelog
 * Wed Jun 12 2024  Sergii Stoian <stoyan255@gmail.com> - 0.95-0

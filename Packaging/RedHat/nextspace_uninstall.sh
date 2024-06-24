@@ -1,21 +1,17 @@
 #!/bin/sh
 
-BUILD_RPM=1
-. ../environment.sh
-
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
-    sudo systemctl stop loginwindow gpbs gdnc-local gdnc  gdomap 
-    sudo systemctl disable loginwindow gdomap gdnc gpbs gdnc-local
-
-    sudo rm -rf /etc/profile.d/nextspace.sh
-    sudo rm -rf /usr/share/icons/NextSpace
-    sudo rm -rf /usr/share/plymouth/themes/nextspace
-    sudo rm -rf /usr/share/plymouth/themes/plymouth-preview
-    sudo rm -rf /usr/NextSpace
-    sudo rm -rf /Applications
-    sudo rm -rf /Developer
-    sudo rm -rf /Library
-else
-    sudo yum -y remove nextspace\* libwraster\* libobjc2\* libcorefoundation\* libdispatch\* 
+clear
+echo -e -n "\e[1m"
+echo "==============================================================================="
+echo "This script will REMOVE NextSpace"
+echo "==============================================================================="
+echo -e -n "\e[33m"
+echo -n "Do you want to continue? [y/N]: "
+echo -e -n "\e[0m"
+read YN
+if [ "$YN" != "y" ]; then
+    echo "Great! I hope you enjoy using NextSpace."
+    exit
 fi
 
+sudo yum -y remove nextspace\* libwraster\* libobjc2\* libcorefoundation\* libdispatch\*
