@@ -58,13 +58,13 @@ fi
 #===============================================================================
 # Hostname in /etc/hosts
 #===============================================================================
-setup_hosts()
+setup_hosts
 echo
 
 #===============================================================================
 # Disable SELinux
 #===============================================================================
-setup_selinux()
+setup_selinux
 echo
 
 #===============================================================================
@@ -139,10 +139,10 @@ echo "==========================================================================
 echo -e -n "\e[0m"
 
 # Adding user
-add_user()
+add_user
 
 # Setting up Login Panel
-setup_loginwindow()
+setup_loginwindow
 
 echo -e "\e[32m"
 echo " NEXTSPACE $RELEASE successfuly installed! Wolcome to the NeXT world!"
