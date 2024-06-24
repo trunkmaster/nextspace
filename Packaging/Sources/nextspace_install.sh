@@ -4,14 +4,16 @@
 
 . ./install_environment.sh
 . ./debian-12.deps.sh
+clear
 
 #===============================================================================
 # Main sequence
 #===============================================================================
-$ECHO -e -n "\e[1m"
+$ECHO -e -n "\e[33m"
 $ECHO "========================================================================="
 $ECHO "This script will install NEXTSPACE release $RELEASE and configure system."
 $ECHO "========================================================================="
+$ECHO -e -n "\e[1m"
 $ECHO -n "Do you want to continue? [y/N]: "
 $ECHO -e -n "\e[0m"
 read YN
@@ -31,6 +33,7 @@ $ECHO -e -n "\e[0m"
 sudo apt-get install ${RUNTIME_RUN_DEPS} ${WRASTER_RUN_DEPS} ${GNUSTEP_BASE_RUN_DEPS} \
                  ${GNUSTEP_GUI_RUN_DEPS} ${BACK_ART_RUN_DEPS} ${FRAMEWORKS_RUN_DEPS} \
                  ${APPS_RUN_DEPS} 2>&1 > /dev/null
+$ECHO -e "\e[32m Done! \e[0m"
 
 #===============================================================================
 # Extract distribution
@@ -117,8 +120,14 @@ $ECHO "=========================================================================
 $ECHO "Installing X11 drivers and utilities..."
 $ECHO "========================================================================="
 $ECHO -e -n "\e[0m"
-sudo apt-get install xserver-xorg-input-all xserver-xorg-video-all xorg-x11-xinit 2>&1 > /dev/null
+sudo apt-get install xserver-xorg-input-all xserver-xorg-video-all 2>&1 > /dev/null
+$ECHO -e "\e[32m Done! \e[0m"
 
+$ECHO -e "\e[1m"
+$ECHO "========================================================================="
+$ECHO "Performing system check and configuration..."
+$ECHO "========================================================================="
+$ECHO -e -n "\e[0m"
 #===============================================================================
 # Hostname in /etc/hosts
 #===============================================================================
@@ -156,6 +165,7 @@ if [ $? -ne 0 ];then
     $ECHO "Enabling Login panel service..."
     sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
 fi
+$ECHO
 
 #===============================================================================
 # SELinux configuration
@@ -173,3 +183,10 @@ add_user
 
 # Setting up Login Panel
 setup_loginwindow
+
+
+$ECHO -e "\e[32m"
+$ECHO "========================================================================="
+$ECHO "    NEXTSPACE $RELEASE successfuly installed! Wolcome to the NeXT world! "
+$ECHO "========================================================================="
+$ECHO -e "\e[0m"
