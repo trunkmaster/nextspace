@@ -87,7 +87,7 @@ echo
 # Install Developer packages
 #===============================================================================
 echo -e -n "\e[33m"
-echo -n "Do you want to install packages for NEXTSPACE development? [yN]: "
+echo -n "Do you want to install packages for NEXTSPACE development? [y/N]: "
 echo -e -n "\e[0m"
 read YN
 if [ "$YN" = "y" ]; then
