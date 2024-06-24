@@ -35,6 +35,9 @@ Patch1:     pc.patch
 Patch2:     libs-gui_NSApplication.patch
 Patch3:     libs-gui_NSPopUpButton.patch
 Patch4:     libs-gui_GSThemeDrawing.patch
+%if 0%{?el7}
+Patch5:     libs-base_initialize.patch
+%endif
 
 # Build GNUstep libraries in one RPM package
 Provides:   gnustep-base-%{BASE_VERSION}
@@ -150,6 +153,11 @@ cd %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 %patch -P2 -p1
 %patch -P3 -p1
 %patch -P4 -p1
+%if 0%{?el7}
+cp %{_sourcedir}/libs-base_initialize.patch %{_builddir}/nextspace-gnustep/libs-base-base-%{BASE_VERSION}/
+cd %{_builddir}/nextspace-gnustep/libs-base-base-%{BASE_VERSION}/
+%patch -P5 -p1
+%endif
 
 rm -rf %{buildroot}
 

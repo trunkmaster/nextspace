@@ -100,7 +100,7 @@ if [ "$YN" = "y" ]; then
     if [ $OS_NAME == "centos" ]; then
         if [ $VERSION_ID == "7" ]; then
             sudo yum -y -q install centos-release-scl 2>&1 > /dev/null || exit 1
-            ENABLE_EPEL+=" --enable-repo=centos-sclo-sclo --enable-repo=centos-sclo-rh"
+            ENABLE_EPEL+=" --enablerepo=centos-sclo-sclo --enable-epo=centos-sclo-rh"
         fi
     fi
     sudo yum -y -q install $ENABLE_EPEL NSDeveloper/*.rpm 2>&1 > /dev/null || exit 1
