@@ -25,16 +25,16 @@
 - "Hide" menu item: treat Workspace application specially - set focus to main menu before windows hiding, do not hide main menu, do not change focus to other app after windows hiding.
 - Implemented "Hide Others" menu item.
 - Implemented Cut/Copy/Paste operations for files and directories.
-- Don't create launching icon if WM name is empty; change WM icon only of supplied path is not empty.
 - Fixes to keyboard layout changes and app icon badge display. Don't show keyboard layout badge on appicon if single keyboard layout was configured.
 - Continued fixing of focus problems - it still happens occassionally.
 - Don't set focus to GNUstep and Withdrawn (dockapp) windows. GNUstep sets focus by itself, dockapp windows is not intended to be focused by design (fixes focus flickering of Workspace during startup if dockapp is autolaunched).
 - Improved applications termination handling.
 - "Launching appicons": implementation was moved into WM: made appicons list part of WScreen structure; use wSlideWindow() for flying icon animation for more smooth animation.
-- NSWorkspace delegate functionality completely implemented, tested and fixed.
+- Don't create launching icon if WM name is empty; change WM icon only of supplied path is not empty.
+- NSWorkspace delegate functionality completely implemented and tested.
 - Show alert panel for incorrectly created application wrappers.
 - Implemented -extendPowerOffBy: method even though it was neither working on NeXT nor on Apple platforms.
-- Track for applications and services appearing/removal - update caches.
+- Track for applications and services installation/removal - update caches, no need to logout/login.
 
 #### Window Manager
 

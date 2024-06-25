@@ -23,6 +23,7 @@ Dependencies have to be built and installed in predetermined order like this:
 $ ./0_build_libdispatch.sh
 $ ./1_build_licorefoundation.sh
 $ ./2_build_libobjc2.sh
+$ ./3_build_core.sh
 $ ./3_build_tools-make.sh
 $ ./4_build_libwraster.sh
 $ ./5_build_libs-base.sh
