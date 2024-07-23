@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ECHO="/bin/echo"
+ECHO="/bin/echo -e"
 MKDIR_CMD="sudo mkdir -p"
 RM_CMD="sudo rm"
 LN_CMD="sudo ln -sf"
@@ -110,26 +110,77 @@ add_user()
         ## Needed to update the filesystem contexts that depend on HOME_DIR, and wrongly assume /home
         sudo semodule -e ns-core  2>&1 > /dev/null
         sudo restorecon -R /Users 2>&1 > /dev/null
+    else
+        groups | grep audio || 
+        $ECHO "User you're running this script as is not member of 'audio' group - sound will not work."
+        $ECHO "Consider adding user to group with command:"
+        $ECHO "$ sudo usermod $USER -a -G audio"
     fi
 }
 
 setup_loginwindow()
 {
-    # Default boot target
-    $ECHO -e -n "\e[33m"
-    $ECHO -n "Start graphical login panel on system boot? [y/N]: "
-    $ECHO -e -n "\e[0m"
-    read YN
-    if [ "$YN" = "y" ]; then
-        sudo systemctl set-default graphical.target
+    IS_CONFIGURED=0
+
+    if [ -f /etc/systemd/system/display-manager.service ]; then
+        DESC=`cat /etc/systemd/system/display-manager.service | grep Description | awk -F= '{print $2}'`
+        DM_UNIT=`readlink -f /etc/systemd/system/display-manager.service`
+        DM_UNIT_FILE=`basename $DM_UNIT`
+        if [ "$DM_UNIT_FILE" = "loginwindow.service" ]; then
+            IS_CONFIGURED=1
+        fi
+    fi
+    if [ $IS_CONFIGURED = 1 ]; then
+        return
     fi
 
-    # Start it now
-    $ECHO -e -n "\e[33m"
-    $ECHO -n "Do you want to start graphical login panel now? [y/N]: "
-    $ECHO -e -n "\e[0m"
+    $ECHO "==============================================================================="
+    $ECHO "Configuring graphical login panel..."
+    $ECHO "==============================================================================="
+    $ECHO "You already have configured graphical login manager:"
+    $ECHO "    $DESC - $DM_UNIT"
+
+    $ECHO -n "Replace it with NEXTSPACE login panel? [y/N]: "
     read YN
     if [ "$YN" = "y" ]; then
-        sudo systemctl start loginwindow
+        sudo systemctl disable $DM_UNIT_FILE
+        sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
+        IS_CONFIGURED=1
+    else
+        $ECHO "Your answer is 'No'. Got it."
+        $ECHO "You may later enable NEXTSPACE login panel with commands:"
+        $ECHO "    $ sudo systemctl disable $DM_UNIT_FILE"
+        $ECHO "    $ sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service"
+        $ECHO "To return to your current setup after that use the following commands:"
+        $ECHO "    $ sudo systemctl disable loginwindow.service"
+        $ECHO "    $ sudo systemctl enable $DM_UNIT"
+    fi
+
+    if [ $IS_CONFIGURED = 1 ]; then
+        # Default boot target
+        $ECHO -e -n "\e[33m"
+        $ECHO -n "Start graphical login panel on system boot? [y/N]: "
+        $ECHO -e -n "\e[0m"
+        read YN
+        if [ "$YN" = "y" ]; then
+            sudo systemctl set-default graphical.target
+        else
+            $ECHO "Got it. You may change it later with command:"
+            $ECHO "$ sudo systemctl set-default graphical.target"
+        fi
+    fi
+
+    if [ $IS_CONFIGURED = 1 ]; then
+        # Start it now
+        $ECHO -e -n "\e[33m"
+        $ECHO -n "Do you want to start graphical login panel now? [y/N]: "
+        $ECHO -e -n "\e[0m"
+        read YN
+        if [ "$YN" = "y" ]; then
+            sudo systemctl start loginwindow
+        else
+            $ECHO "Got it. You may start login panel with command:"
+            $ECHO "    $ sudo systemctl start loginwindow"
+        fi
     fi
 }
