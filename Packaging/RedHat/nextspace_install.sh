@@ -145,5 +145,7 @@ add_user
 setup_loginwindow
 
 echo -e "\e[32m"
-echo " NEXTSPACE $RELEASE successfuly installed! Wolcome to the NeXT world!"
+echo "==============================================================================="
+echo " NEXTSPACE $RELEASE successfuly installed! Welcome to the NeXT world!"
+echo "==============================================================================="
 echo -e "\e[0m"
