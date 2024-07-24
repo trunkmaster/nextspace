@@ -1,4 +1,4 @@
-name: fedora-39
+name: Fedora 39
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
 
     - name: Install build tools
       run: dnf -y install sudo git openssh-clients which binutils clang
-    - name: Install Libraries
+    - name: Build and install Libraries
       run: |
         cd Packaging/RedHat
         ./0.build_libraries.sh
@@ -24,10 +24,6 @@ jobs:
       run: |
         cd Packaging/RedHat
         ./1.build_frameworks.sh
-    - name: Build NextSpace frameworks
-      run: |
-        cd Packaging/Sources
-        ./8_build_Frameworks.sh
     - name: Build and install Applications
       run: |
         cd Packaging/RedHat
