@@ -1,0 +1,34 @@
+name: fedora-39
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    container: amd64/fedora:39
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install build tools
+      run: dnf -y install sudo git openssh-clients which binutils clang
+    - name: Install Libraries
+      run: |
+        cd Packaging/RedHat
+        ./0.build_libraries.sh
+    - name: Build and install Frameworks
+      run: |
+        cd Packaging/RedHat
+        ./1.build_frameworks.sh
+    - name: Build NextSpace frameworks
+      run: |
+        cd Packaging/Sources
+        ./8_build_Frameworks.sh
+    - name: Build and install Applications
+      run: |
+        cd Packaging/RedHat
+        ./2.build_applications.sh
