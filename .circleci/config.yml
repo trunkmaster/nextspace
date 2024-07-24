@@ -17,7 +17,7 @@ jobs:
           path: /root/nextspace
       - run:
           name: Install build tools
-          command: yum -y install sudo git openssh-clients which
+          command: yum -y install sudo git openssh-clients which binutils
       - run:
           name: Install Libraries
           command: |
