@@ -26,6 +26,7 @@ BuildRequires:	nextspace-frameworks-devel
 BuildRequires:	pam-devel
 # Workspace
 BuildRequires:	libcorefoundation-devel
+BuildRequires:  libbsd-devel
 BuildRequires:	fontconfig-devel
 BuildRequires:	giflib-devel
 BuildRequires:	libjpeg-turbo-devel
