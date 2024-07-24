@@ -17,8 +17,8 @@ jobs:
 
     - name: APT update
       run: |
+        apt-get -q -y update
         apt-get -y -q install sudo
-        sudo apt-get -q -y update
 
     - name: Build core libraries
       run: |
