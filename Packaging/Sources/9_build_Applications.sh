@@ -75,7 +75,7 @@ sudo ldconfig
 #----------------------------------------
 # Post install
 #----------------------------------------
-if [ "$DEST_DIR" = "" ]; then
+if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true"]; then
 	# Login
 	${ECHO} "Setting up Login window service to run at system startup..."
 	sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
