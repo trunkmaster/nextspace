@@ -111,10 +111,12 @@ add_user()
         sudo semodule -e ns-core  2>&1 > /dev/null
         sudo restorecon -R /Users 2>&1 > /dev/null
     else
-        groups | grep audio || 
-        $ECHO "User you're running this script as is not member of 'audio' group - sound will not work."
-        $ECHO "Consider adding user to group with command:"
-        $ECHO "$ sudo usermod $USER -a -G audio"
+        HAS_AUDIO=`groups | grep audio`
+        if [ "$HAS_AUDIO" = "" ]; then
+            $ECHO "WARNING: User you're running this script as is not member of 'audio' group - sound will not work."
+            $ECHO "         Consider adding user to group with command:"
+            $ECHO "         $ sudo usermod $USER -a -G audio"
+        fi
     fi
 }
 
