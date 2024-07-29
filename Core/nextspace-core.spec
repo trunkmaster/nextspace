@@ -72,6 +72,7 @@ export CC=clang
 export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 export CFLAGS="-F/usr/NextSpace/Frameworks"
+export CXXFLAGS=""
 export LDFLAGS=""
 
 # Build gnustep-make to include in -devel package
