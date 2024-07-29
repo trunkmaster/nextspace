@@ -68,13 +68,3 @@ ADDITIONAL_LDFLAGS = -lXpm -lpng -ljpeg -lgif -ltiff -lwebp -lX11 -lXext -lXmu -
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/clibrary.make
 -include GNUmakefile.postamble
-
-before-all::
-	@ cd cmake; ${CMAKE} . -DCMAKE_C_COMPILER=${CC}
-
-after-clean::
-	@ rm -rf cmake/CMakeFiles
-	@ rm -f cmake/CMakeCache.txt
-	@ rm -f cmake/Makefile
-	@ rm -f cmake/cmake_install.cmake
-	@ rm -f config.h

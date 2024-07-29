@@ -1,0 +1,16 @@
+ifndef CMAKE
+CMAKE=cmake
+endif
+ifndef CC
+CC=clang
+endif
+
+before-all::
+	@ cd cmake; ${CMAKE} . -DCMAKE_C_COMPILER=${CC}
+
+after-clean::
+	@ rm -rf cmake/CMakeFiles
+	@ rm -f cmake/CMakeCache.txt
+	@ rm -f cmake/Makefile
+	@ rm -f cmake/cmake_install.cmake
+	@ rm -f config.h
