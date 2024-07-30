@@ -30,7 +30,15 @@ endif()
 check_include_files("stdnoreturn.h" HAVE_STDNORETURN)
 
 check_include_files("stdio.h;jpeglib.h" USE_JPEG)
-check_include_files("wand/MagickWand.h" USE_MAGICK)
+
+find_package(ImageMagick COMPONENTS MagickWand)
+if (ImageMagick_MagickWand_FOUND)
+  # set(USE_MAGICK 1)
+  set(CMAKE_REQUIRED_INCLUDES "/usr/include/ImageMagick-7")
+  set(CMAKE_REQUIRED_LIBRARIES "-lMagickWand-7.Q16HDRI")
+  check_include_files("Magick/MagickWand.h" USE_MAGICK)
+endif()
+
 check_include_files("png.h" USE_PNG)
 
 check_include_files("gif_lib.h" HAVE_GIF)
