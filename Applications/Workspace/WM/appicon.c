@@ -37,6 +37,7 @@
 #include <core/util.h>
 #include <core/log_utils.h>
 #include <core/string_utils.h>
+#include <core/file_utils.h>
 #include <core/wevent.h>
 #include <core/wuserdefaults.h>
 
@@ -1131,6 +1132,10 @@ static Window _createIconForSliding(WScreen *scr, int x, int y, const char *imag
   RImage *rimage = NULL;
   Pixmap pixmap = 0, mask = 0;
 
+  if (image_path == NULL) {
+    WMLogInfo("[appicon.c] _createIconForSliding Could not create image. No image path specified.");
+  }
+
   // Window
   attribs.save_under = True;
   attribs.override_redirect = True;
@@ -1142,20 +1147,25 @@ static Window _createIconForSliding(WScreen *scr, int x, int y, const char *imag
                             scr->w_depth, CopyFromParent, scr->w_visual, vmask, &attribs);
 
   // Image
-  if (image_path != NULL) {
+  rimage = RLoadImage(scr->rcontext, image_path, 0);
+  if (!rimage) {
+    image_path = WMAbsolutePathForFile(wPreferences.image_paths, "NXApplication.tiff");
     rimage = RLoadImage(scr->rcontext, image_path, 0);
+  }
+  if (rimage) {
     RConvertImageMask(scr->rcontext, rimage, &pixmap, &mask, 158);
     RReleaseImage(rimage);
+    if (pixmap && mask) {
+      XSetWindowBackgroundPixmap(dpy, image_win, pixmap);
+      XShapeCombineMask(dpy, image_win, ShapeBounding, 0, 0, mask, ShapeSet);
+      XFreePixmap(dpy, pixmap);
+      XFreePixmap(dpy, mask);
+    } else {
+      WMLogInfo("[appicon.c] _createIconForSliding Failed to load image at path: %s", image_path);
+    }
   } else {
-    WMLogInfo("[appicon.c] _createIconForSliding Could not create image, image_path = %s",
-              image_path);
+    WMLogInfo("[appicon.c] _createIconForSliding Failed to load image at path: %s", image_path);
   }
-
-  XSetWindowBackgroundPixmap(dpy, image_win, pixmap);
-  XShapeCombineMask(dpy, image_win, ShapeBounding, 0, 0, mask, ShapeSet);
-
-  XFreePixmap(dpy, pixmap);
-  XFreePixmap(dpy, mask);
 
   XClearWindow(dpy, image_win);
 

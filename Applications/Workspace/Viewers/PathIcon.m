@@ -154,21 +154,26 @@ static NSDragOperation savedMask;
   appIcon = wAppIconCreateForDock(wScreen, [commandPath cString], [wmInstance cString],
                                   [wmClass cString], TILE_NORMAL);
   r_image = RLoadImage(wScreen->rcontext, [iconPath cString], 0);
-  // RConvertImage(wScreen->rcontext, r_image, &x_pixmap);
+  if (!r_image) {
+    iconPath = [[NSBundle mainBundle] pathForImageResource:@"NXApplication.tiff"];
+    r_image = RLoadImage(wScreen->rcontext, [iconPath cString], 0);
+  }
 
-  appIcon->icon->file = wstrdup([iconPath cString]);
-  appIcon->icon->file_image = RCloneImage(r_image);
-  wfree(r_image);
-  wIconUpdate(appIcon->icon);
+  if (r_image) {
+    appIcon->icon->file = wstrdup([iconPath cString]);
+    appIcon->icon->file_image = RCloneImage(r_image);
+    wfree(r_image);
+    wIconUpdate(appIcon->icon);
 
-  wGhostIcon = MakeGhostIcon(wScreen, appIcon->icon->pixmap);
-  XSetWindowBackgroundPixmap(dpy, wScreen->dock_shadow, wGhostIcon);
-  XClearWindow(dpy, wScreen->dock_shadow);
+    wGhostIcon = MakeGhostIcon(wScreen, appIcon->icon->pixmap);
+    XSetWindowBackgroundPixmap(dpy, wScreen->dock_shadow, wGhostIcon);
+    XClearWindow(dpy, wScreen->dock_shadow);
 
-  Window wins[2]; /* Managing shadow window */
-  wins[0] = appIcon->icon->core->window;
-  wins[1] = wScreen->dock_shadow;
-  XRestackWindows(dpy, wins, 2);
+    Window wins[2]; /* Managing shadow window */
+    wins[0] = appIcon->icon->core->window;
+    wins[1] = wScreen->dock_shadow;
+    XRestackWindows(dpy, wins, 2);
+  }
 
   return appIcon;
 }
