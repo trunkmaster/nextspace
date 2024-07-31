@@ -238,10 +238,11 @@ RImage *RLoadImage(RContext *context, const char *file, int index)
 		RErrorCode = RERR_BADFORMAT;
 		return NULL;
 	}
-
+#ifdef USE_MAGICK
         if (image == NULL) {
           image = RLoadMagick(file);
-	}
+        }
+#endif
 
 	/* store image in cache */
 	if (RImageCacheSize > 0 && image &&
