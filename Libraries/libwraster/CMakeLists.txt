@@ -7,6 +7,9 @@ project(libwraster
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# source directory is a cmake subdir - TODO
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/")
+
 include(CheckIncludeFiles)
 include(CheckFunctionExists)
 include(CheckSymbolExists)
@@ -33,14 +36,11 @@ check_include_files("stdnoreturn.h" HAVE_STDNORETURN)
 
 check_include_files("stdio.h;jpeglib.h" USE_JPEG)
 
-set(CMAKE_REQUIRED_LIBRARIES "GraphicsMagick")
-set(CMAKE_REQUIRED_INCLUDES "/usr/include/GraphicsMagick")
-check_include_files("wand/magick_wand.h" USE_MAGICK)
-# find_package(GraphicsMagick COMPONENTS MagickWand)
-if (GraphicsMagick_MagickWand_FOUND)
-  # set(USE_MAGICK 1)
-#  set(CMAKE_REQUIRED_INCLUDES "/usr/include/ImageMagick-7")
-  #set(CMAKE_REQUIRED_LIBRARIES "-lMagickWand-7.Q16HDRI")
+find_package(GraphicsMagick COMPONENTS MagickWand)
+if (GraphicsMagick_FOUND)
+  set(USE_MAGICK 1)
+  set(MAGICK_INCLUDES -I${GraphicsMagick_INCLUDE_DIRS})
+  set(MAGICK_LIBS -l${GraphicsMagick_LIBRARIES})
 endif()
 
 check_include_files("png.h" USE_PNG)
@@ -66,5 +66,5 @@ if (HAVE_XSHM)
 endif()
 check_include_files("X11/xpm.h" USE_XPM)
 
-configure_file(config.h.in ../config.h)
-
+configure_file(cmake/config.h.in ../config.h)
+configure_file(cmake/GNUmakefile.config.in ../GNUmakefile.config @ONLY)

@@ -32,38 +32,47 @@ libwraster_C_FILES =	\
 libwraster_HEADER_FILES_INSTALL_DIR = .
 libwraster_HEADER_FILES = wraster.h
 
-#if USE_GIF
+
+-include GNUmakefile.config
+ifdef USE_GIF
 libwraster_C_FILES += load_gif.c
-#endif
+ADDITIONAL_LDFLAGS += -lgif
+endif
 
-#if USE_JPEG
+ifdef USE_JPEG
 libwraster_C_FILES += load_jpeg.c
-#endif
+endif
 
-#if USE_PNG
+ifdef USE_PNG
 libwraster_C_FILES += load_png.c
-#endif
+ADDITIONAL_LDFLAGS += -lpng
+endif
 
-#if USE_TIFF
+ifdef USE_TIFF
 libwraster_C_FILES += load_tiff.c
-#endif
+ADDITIONAL_LDFLAGS += -ltiff
+endif
 
-#if USE_XPM
+ifdef USE_XPM
 libwraster_C_FILES += load_xpm.c
-#else
-#libwraster_C_FILES += load_xpm_normalized.c
-#endif
+ADDITIONAL_LDFLAGS += -lXpm
+else
+libwraster_C_FILES += load_xpm_normalized.c
+endif
 
-#if USE_WEBP
+ifdef USE_WEBP
 libwraster_C_FILES += load_webp.c
-#endif
+ADDITIONAL_LDFLAGS += -lwebp
+endif
 
-#if USE_MAGICK
-#libwraster_C_FILES += load_magick.c
-#endif
+ifdef USE_MAGICK
+libwraster_C_FILES += load_magick.c
+ADDITIONAL_CFLAGS += $(MAGICK_INCLUDES)
+ADDITIONAL_LDFLAGS += $(MAGICK_LIBS) -lGraphicsMagickWand
+endif
 
 #ADDITIONAL_CFLAGS = -D_XOPEN_SOURCE=600 -D_GNU_SOURCE -Wall -Wextra -Wno-sign-compare -Wno-deprecated -Wno-deprecated-declarations -MT -MD -MP
-ADDITIONAL_LDFLAGS = -lXpm -lpng -ljpeg -lgif -ltiff -lwebp -lX11 -lXext -lXmu -lm
+ADDITIONAL_LDFLAGS += -ljpeg -lX11 -lXext -lXmu -lm
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/clibrary.make
