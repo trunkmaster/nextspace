@@ -19,12 +19,10 @@
  *  Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
  *  MA 02110-1301, USA.
  */
-// #include <magick/api.h>
 #include <string.h>
 #include <wand/magick_wand.h>
-// #include <wand/pixel_wand.h>
-// #include <magick/common.h>
-// #include <magick/constitute.h>
+#include "wraster.h"
+#include "imgformat.h"
 
 // #ifdef USE_MAGICK
 // #if USE_MAGICK < 7
@@ -34,14 +32,8 @@
 // #endif
 // #endif
 
-#include "config.h"
-#include "wraster.h"
-#include "imgformat.h"
-#include "wr_i18n.h"
-
 
 // static int RInitMagickIfNeeded(void);
-
 
 /*
 RImage *RLoadMagick(const char *file_name)
