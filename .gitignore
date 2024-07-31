@@ -1,5 +1,4 @@
 *.rpm
-*.in
 *libtool.m4
 *lt*.m4
 *.emacs.desktop*
@@ -23,3 +22,4 @@
 *.deps
 *.dir
 *~
+.build
