@@ -30,77 +30,116 @@
 
 #include <config.h>
 #include "wraster.h"
-#include "imgformat.h"
-#include "wr_i18n.h"
 
-static RImage *convert_data(unsigned char *data, int width, int height, uint16_t alpha,
-                            uint16_t amode)
+typedef struct {
+  uint16_t numImages;   /* number of images in tiff */
+  uint16_t imageNumber; /* number of current image */
+  uint32_t subfileType;
+  uint32_t width;
+  uint32_t height;
+  uint16_t bitsPerSample;   /* number of bits per data channel */
+  uint16_t samplesPerPixel; /* number of channels per pixel */
+  uint16_t planarConfig;    /* meshed or separate */
+  uint16_t photoInterp;     /* photometric interpretation of bitmap data, */
+  uint16_t compression;
+  uint16_t extraSamples; /* Alpha */
+  int assocAlpha;
+  int quality; /* compression quality (for jpeg) 1 to 255 */
+  int error;
+  float xdpi;
+  float ydpi;
+  char isBigEndian; /* meaningful only for 16 & 32 bit depths */
+  char is16Bit;
+  char is32Bit;
+} RTiffInfo;
+
+/* Read some information about the image. Note that currently we don't
+   determine numImages. */
+static RTiffInfo *RTiffGetInfo(TIFF *tif)
 {
-  RImage *image = NULL;
-  TIFF *tif;
-  int i, ch;
-  unsigned char *r, *g, *b, *a;
+  RTiffInfo *info = NULL;
+  uint16_t *sample_info = NULL;
 
-  /* convert data */
-  image = RCreateImage(width, height, alpha);
+  if (tif == NULL) {
+    return NULL;
+  }
 
-  if (alpha)
-    ch = 4;
-  else
-    ch = 3;
+  info = malloc(sizeof(RTiffInfo));
+  memset(info, 0, sizeof(RTiffInfo));
+  // if (imageNumber >= 0) {
+  //   if (TIFFSetDirectory(image, imageNumber) == 0)
+  //     return NULL;
+  //   info->imageNumber = imageNumber;
+  // }
 
-  if (image) {
-    int x, y;
+  info->imageNumber = 0;
 
-    r = image->data;
-    g = image->data + 1;
-    b = image->data + 2;
-    a = image->data + 3;
+  TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &info->width);
+  TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &info->height);
+  TIFFGetField(tif, TIFFTAG_COMPRESSION, &info->compression);
+  if (info->compression == COMPRESSION_JPEG)
+    TIFFGetField(tif, TIFFTAG_JPEGQUALITY, &info->quality);
+  TIFFGetField(tif, TIFFTAG_SUBFILETYPE, &info->subfileType);
+  TIFFGetField(tif, TIFFTAG_EXTRASAMPLES, &info->extraSamples, &sample_info);
+  info->extraSamples = (info->extraSamples == 1 && ((sample_info[0] == EXTRASAMPLE_ASSOCALPHA) ||
+                                                    (sample_info[0] == EXTRASAMPLE_UNASSALPHA)));
+  info->assocAlpha = (info->extraSamples == 1 && sample_info[0] == EXTRASAMPLE_ASSOCALPHA);
 
-    /* data seems to be stored upside down */
-    data += width * (height - 1);
-    for (y = 0; y < height; y++) {
-      for (x = 0; x < width; x++) {
-        *(r) = (*data) & 0xff;
-        *(g) = (*data >> 8) & 0xff;
-        *(b) = (*data >> 16) & 0xff;
+  /* If the following tags aren't present then use the TIFF defaults. */
+  TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE, &info->bitsPerSample);
+  TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLESPERPIXEL, &info->samplesPerPixel);
+  TIFFGetFieldDefaulted(tif, TIFFTAG_PLANARCONFIG, &info->planarConfig);
 
-        if (alpha) {
-          *(a) = (*data >> 24) & 0xff;
+  /* If TIFFTAG_PHOTOMETRIC is not present then assign a reasonable default.
+     `The TIFF 5.0 specification doesn't give a default. */
+  if (!TIFFGetField(tif, TIFFTAG_PHOTOMETRIC, &info->photoInterp)) {
+    switch (info->samplesPerPixel) {
+      case 1:
+        info->photoInterp = PHOTOMETRIC_MINISBLACK;
+        break;
+      case 3:
+      case 4:
+        info->photoInterp = PHOTOMETRIC_RGB;
+        break;
+      default:
+        TIFFError(TIFFFileName(tif), "Missing needed \"PhotometricInterpretation\" tag");
+        return NULL;
+    }
+    TIFFError(TIFFFileName(tif), "No \"PhotometricInterpretation\" tag, assuming %s\n",
+              info->photoInterp == PHOTOMETRIC_RGB ? "RGB" : "min-is-black");
+  }
 
-          if (amode && (*a > 0)) {
-            *r = (*r * 255) / *(a);
-            *g = (*g * 255) / *(a);
-            *b = (*b * 255) / *(a);
-          }
-
-          a += 4;
-        }
-
-        r += ch;
-        g += ch;
-        b += ch;
-        data++;
+  // resolution
+  {
+    uint16_t resolution_unit;
+    float xres, yres;
+    if (TIFFGetField(tif, TIFFTAG_XRESOLUTION, &xres) &&
+        TIFFGetField(tif, TIFFTAG_YRESOLUTION, &yres)) {
+      TIFFGetFieldDefaulted(tif, TIFFTAG_RESOLUTIONUNIT, &resolution_unit);
+      if (resolution_unit == 2)  // Inch
+      {
+        info->xdpi = xres;
+        info->ydpi = yres;
+      } else if (resolution_unit == 3)  // Centimeter
+      {
+        info->xdpi = xres * 2.54;
+        info->ydpi = yres * 2.54;
       }
-      data -= 2 * width;
     }
   }
+
+  return info;
 }
 
 RImage *RLoadTIFF(const char *file, int index)
 {
   RImage *image = NULL;
   TIFF *tif;
+  RTiffInfo *info = NULL;
   int i;
 #if TIFFLIB_VERSION < 20210416
-  uint16 alpha, amode, extrasamples;
-  uint16 *sampleinfo;
-  uint32 width, height;
   uint32 *data, *ptr;
 #else
-  uint16_t alpha, amode, extrasamples;
-  uint16_t *sampleinfo;
-  uint32_t width, height;
   uint32_t *data, *ptr;
 #endif
 
@@ -120,16 +159,9 @@ RImage *RLoadTIFF(const char *file, int index)
   }
 
   /* get info */
-  TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
-  TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
+  info = RTiffGetInfo(tif);
 
-  TIFFGetFieldDefaulted(tif, TIFFTAG_EXTRASAMPLES, &extrasamples, &sampleinfo);
-
-  alpha = (extrasamples == 1 && ((sampleinfo[0] == EXTRASAMPLE_ASSOCALPHA) ||
-                                 (sampleinfo[0] == EXTRASAMPLE_UNASSALPHA)));
-  amode = (extrasamples == 1 && sampleinfo[0] == EXTRASAMPLE_ASSOCALPHA);
-
-  if (width < 1 || height < 1) {
+  if (info->width < 1 || info->height < 1) {
     RErrorCode = RERR_BADIMAGEFILE;
     TIFFClose(tif);
     return NULL;
@@ -139,19 +171,19 @@ RImage *RLoadTIFF(const char *file, int index)
 #if TIFFLIB_VERSION < 20210416
   ptr = data = (uint32 *)_TIFFmalloc(width * height * sizeof(uint32));
 #else
-  ptr = data = (uint32_t *)_TIFFmalloc(width * height * sizeof(uint32_t));
+  ptr = data = (uint32_t *)_TIFFmalloc(info->width * info->height * sizeof(uint32_t));
 #endif
 
   if (!data) {
     RErrorCode = RERR_NOMEMORY;
   } else {
-    image = RCreateImage(width, height, alpha);
-    if (!TIFFReadRGBAImageOriented(tif, width, height, data, ORIENTATION_TOPLEFT, 0)) {
+    image = RCreateImage(info->width, info->height, info->extraSamples);
+    if (!TIFFReadRGBAImageOriented(tif, info->width, info->height, data, ORIENTATION_TOPLEFT, 0)) {
       RErrorCode = RERR_BADIMAGEFILE;
       RReleaseImage(image);
       image = NULL;
     } else if (data) {
-      memcpy(image->data, data, width * height * sizeof(uint32_t));
+      memcpy(image->data, data, info->width * info->height * sizeof(uint32_t));
     }
     _TIFFfree(ptr);
   }
@@ -160,3 +192,57 @@ RImage *RLoadTIFF(const char *file, int index)
 
   return image;
 }
+
+#if 0
+static RImage *convert_data(unsigned char *data, RTiffInfo *info)
+{
+  RImage *image = NULL;
+  int ch;
+  unsigned char *r, *g, *b, *a;
+
+  /* convert data */
+  image = RCreateImage(info->width, info->height, info->extraSamples);
+
+  if (info->extraSamples)
+    ch = 4;
+  else
+    ch = 3;
+
+  if (image) {
+    int x, y;
+
+    r = image->data;
+    g = image->data + 1;
+    b = image->data + 2;
+    a = image->data + 3;
+
+    /* data seems to be stored upside down */
+    data += info->width * (info->height - 1);
+    for (y = 0; y < info->height; y++) {
+      for (x = 0; x < info->width; x++) {
+        *(r) = (*data) & 0xff;
+        *(g) = (*data >> 8) & 0xff;
+        *(b) = (*data >> 16) & 0xff;
+
+        if (info->extraSamples) {
+          *(a) = (*data >> 24) & 0xff;
+
+          if (info->assocAlpha && (*a > 0)) {
+            *r = (*r * 255) / *(a);
+            *g = (*g * 255) / *(a);
+            *b = (*b * 255) / *(a);
+          }
+
+          a += 4;
+        }
+
+        r += ch;
+        g += ch;
+        b += ch;
+        data++;
+      }
+      data -= 2 * info->width;
+    }
+  }
+}
+#endif
