@@ -202,7 +202,7 @@ RImage *RLoadImage(RContext *context, const char *file, int index)
 
 #ifdef USE_TIFF
 	case IM_TIFF:
-		image = RLoadTIFF(file, index);
+          image = RLoadTIFF(file, index);
 		break;
 #endif				/* USE_TIFF */
 
@@ -237,6 +237,10 @@ RImage *RLoadImage(RContext *context, const char *file, int index)
 	default:
 		RErrorCode = RERR_BADFORMAT;
 		return NULL;
+	}
+
+        if (image == NULL) {
+          image = RLoadMagick(file);
 	}
 
 	/* store image in cache */
