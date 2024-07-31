@@ -33,120 +33,130 @@
 #include "imgformat.h"
 #include "wr_i18n.h"
 
+static RImage *convert_data(unsigned char *data, int width, int height, uint16_t alpha,
+                            uint16_t amode)
+{
+  RImage *image = NULL;
+  TIFF *tif;
+  int i, ch;
+  unsigned char *r, *g, *b, *a;
+
+  /* convert data */
+  image = RCreateImage(width, height, alpha);
+
+  if (alpha)
+    ch = 4;
+  else
+    ch = 3;
+
+  if (image) {
+    int x, y;
+
+    r = image->data;
+    g = image->data + 1;
+    b = image->data + 2;
+    a = image->data + 3;
+
+    /* data seems to be stored upside down */
+    data += width * (height - 1);
+    for (y = 0; y < height; y++) {
+      for (x = 0; x < width; x++) {
+        *(r) = (*data) & 0xff;
+        *(g) = (*data >> 8) & 0xff;
+        *(b) = (*data >> 16) & 0xff;
+
+        if (alpha) {
+          *(a) = (*data >> 24) & 0xff;
+
+          if (amode && (*a > 0)) {
+            *r = (*r * 255) / *(a);
+            *g = (*g * 255) / *(a);
+            *b = (*b * 255) / *(a);
+          }
+
+          a += 4;
+        }
+
+        r += ch;
+        g += ch;
+        b += ch;
+        data++;
+      }
+      data -= 2 * width;
+    }
+  }
+}
 
 RImage *RLoadTIFF(const char *file, int index)
 {
-	RImage *image = NULL;
-	TIFF *tif;
-	int i, ch;
-	unsigned char *r, *g, *b, *a;
+  RImage *image = NULL;
+  TIFF *tif;
+  int i;
 #if TIFFLIB_VERSION < 20210416
-	uint16 alpha, amode, extrasamples;
-	uint16 *sampleinfo;
-	uint32 width, height;
-	uint32 *data, *ptr;
+  uint16 alpha, amode, extrasamples;
+  uint16 *sampleinfo;
+  uint32 width, height;
+  uint32 *data, *ptr;
 #else
-	uint16_t alpha, amode, extrasamples;;
-	uint16_t *sampleinfo;
-	uint32_t width, height;
-	uint32_t *data, *ptr;
+  uint16_t alpha, amode, extrasamples;
+  uint16_t *sampleinfo;
+  uint32_t width, height;
+  uint32_t *data, *ptr;
 #endif
 
-	tif = TIFFOpen(file, "r");
-	if (!tif)
-		return NULL;
+  tif = TIFFOpen(file, "r");
+  if (!tif)
+    return NULL;
 
-	/* seek index */
-	i = index;
-	while (i > 0) {
-		if (!TIFFReadDirectory(tif)) {
-			RErrorCode = RERR_BADINDEX;
-			TIFFClose(tif);
-			return NULL;
-		}
-		i--;
-	}
+  /* seek index */
+  i = index;
+  while (i > 0) {
+    if (!TIFFReadDirectory(tif)) {
+      RErrorCode = RERR_BADINDEX;
+      TIFFClose(tif);
+      return NULL;
+    }
+    i--;
+  }
 
-	/* get info */
-	TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
-	TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
+  /* get info */
+  TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
+  TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
 
-	TIFFGetFieldDefaulted(tif, TIFFTAG_EXTRASAMPLES, &extrasamples, &sampleinfo);
+  TIFFGetFieldDefaulted(tif, TIFFTAG_EXTRASAMPLES, &extrasamples, &sampleinfo);
 
-	alpha = (extrasamples == 1 &&
-		 ((sampleinfo[0] == EXTRASAMPLE_ASSOCALPHA) || (sampleinfo[0] == EXTRASAMPLE_UNASSALPHA)));
-	amode = (extrasamples == 1 && sampleinfo[0] == EXTRASAMPLE_ASSOCALPHA);
+  alpha = (extrasamples == 1 && ((sampleinfo[0] == EXTRASAMPLE_ASSOCALPHA) ||
+                                 (sampleinfo[0] == EXTRASAMPLE_UNASSALPHA)));
+  amode = (extrasamples == 1 && sampleinfo[0] == EXTRASAMPLE_ASSOCALPHA);
 
-	if (width < 1 || height < 1) {
-		RErrorCode = RERR_BADIMAGEFILE;
-		TIFFClose(tif);
-		return NULL;
-	}
+  if (width < 1 || height < 1) {
+    RErrorCode = RERR_BADIMAGEFILE;
+    TIFFClose(tif);
+    return NULL;
+  }
 
-	/* read data */
+  /* read data */
 #if TIFFLIB_VERSION < 20210416
-	ptr = data = (uint32 *) _TIFFmalloc(width * height * sizeof(uint32));
+  ptr = data = (uint32 *)_TIFFmalloc(width * height * sizeof(uint32));
 #else
-	ptr = data = (uint32_t *) _TIFFmalloc(width * height * sizeof(uint32_t));
+  ptr = data = (uint32_t *)_TIFFmalloc(width * height * sizeof(uint32_t));
 #endif
 
-	if (!data) {
-		RErrorCode = RERR_NOMEMORY;
-	} else {
-		if (!TIFFReadRGBAImage(tif, width, height, data, 0)) {
-			RErrorCode = RERR_BADIMAGEFILE;
-		} else {
+  if (!data) {
+    RErrorCode = RERR_NOMEMORY;
+  } else {
+    image = RCreateImage(width, height, alpha);
+    if (!TIFFReadRGBAImageOriented(tif, width, height, data, ORIENTATION_TOPLEFT, 0)) {
+      RErrorCode = RERR_BADIMAGEFILE;
+      RReleaseImage(image);
+      image = NULL;
+    } else if (data) {
+      memcpy(image->data, data, width * height * sizeof(uint32_t));
+    }
+    _TIFFfree(ptr);
+  }
 
-			/* convert data */
-			image = RCreateImage(width, height, alpha);
+  TIFFClose(tif);
 
-			if (alpha)
-				ch = 4;
-			else
-				ch = 3;
-
-			if (image) {
-				int x, y;
-
-				r = image->data;
-				g = image->data + 1;
-				b = image->data + 2;
-				a = image->data + 3;
-
-				/* data seems to be stored upside down */
-				data += width * (height - 1);
-				for (y = 0; y < height; y++) {
-					for (x = 0; x < width; x++) {
-
-						*(r) = (*data) & 0xff;
-						*(g) = (*data >> 8) & 0xff;
-						*(b) = (*data >> 16) & 0xff;
-
-						if (alpha) {
-							*(a) = (*data >> 24) & 0xff;
-
-							if (amode && (*a > 0)) {
-								*r = (*r * 255) / *(a);
-								*g = (*g * 255) / *(a);
-								*b = (*b * 255) / *(a);
-							}
-
-							a += 4;
-						}
-
-						r += ch;
-						g += ch;
-						b += ch;
-						data++;
-					}
-					data -= 2 * width;
-				}
-			}
-		}
-		_TIFFfree(ptr);
-	}
-
-	TIFFClose(tif);
-
-	return image;
+  return image;
 }
