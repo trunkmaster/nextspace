@@ -20,11 +20,9 @@
 #ifndef __WRASTER_ROTATE_H__
 #define __WRASTER_ROTATE_H__
 
-
 /*
  * Returns a new image, rotated by 180 degrees
  */
 RImage *wraster_rotate_image_180(RImage *source);
-
 
 #endif

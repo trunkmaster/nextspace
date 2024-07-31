@@ -32,20 +32,20 @@
 #include "config.h"
 
 typedef enum {
-	IM_ERROR   = -1,
-	IM_UNKNOWN =  0,
-	IM_XPM     =  1,
-	IM_TIFF    =  2,
-	IM_PNG     =  3,
-	IM_PPM     =  4,
-	IM_JPEG    =  5,
-	IM_GIF     =  6,
-	IM_WEBP    =  7
+  IM_ERROR = -1,
+  IM_UNKNOWN = 0,
+  IM_XPM = 1,
+  IM_TIFF = 2,
+  IM_PNG = 3,
+  IM_PPM = 4,
+  IM_JPEG = 5,
+  IM_GIF = 6,
+  IM_WEBP = 7
 } WRImgFormat;
 
 /* How many image types we have. */
 /* Increase this when adding new image types! */
-#define IM_TYPES    7
+#define IM_TYPES 7
 
 /*
  * Function for Loading in a specific format
@@ -97,6 +97,5 @@ Bool RSaveJPEG(RImage *image, const char *filename, char *title);
  * Function to terminate properly
  */
 void RReleaseCache(void);
-
 
 #endif

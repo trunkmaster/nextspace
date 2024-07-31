@@ -20,10 +20,8 @@
 #ifndef __WRASTER_XUTIL_H__
 #define __WRASTER_XUTIL_H__
 
-
 #ifdef USE_XSHM
 Pixmap R_CreateXImageMappedPixmap(RContext *context, RXImage *ximage);
 #endif
-
 
 #endif

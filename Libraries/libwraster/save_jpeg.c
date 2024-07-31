@@ -25,13 +25,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
-#include <errno.h>
 #include <jpeglib.h>
 
 #include "wraster.h"
 #include "imgformat.h"
-#include "wr_i18n.h"
 
 /*
  *  Save RImage to JPEG image
@@ -39,66 +36,66 @@
 
 Bool RSaveJPEG(RImage *img, const char *filename, char *title)
 {
-	FILE *file;
-	int x, y, img_depth;
-	char *buffer;
-	RColor pixel;
-	struct jpeg_compress_struct cinfo;
-	struct jpeg_error_mgr jerr;
-	JSAMPROW row_pointer;
+  FILE *file;
+  int x, y, img_depth;
+  char *buffer;
+  RColor pixel;
+  struct jpeg_compress_struct cinfo;
+  struct jpeg_error_mgr jerr;
+  JSAMPROW row_pointer;
 
-	file = fopen(filename, "wb");
-	if (!file) {
-		RErrorCode = RERR_OPEN;
-		return False;
-	}
+  file = fopen(filename, "wb");
+  if (!file) {
+    RErrorCode = RERR_OPEN;
+    return False;
+  }
 
-	if (img->format == RRGBAFormat)
-		img_depth = 4;
-	else
-		img_depth = 3;
+  if (img->format == RRGBAFormat)
+    img_depth = 4;
+  else
+    img_depth = 3;
 
-	/* collect separate RGB values to a buffer */
-	buffer = malloc(sizeof(char) * 3 * img->width * img->height);
-	for (y = 0; y < img->height; y++) {
-		for (x = 0; x < img->width; x++) {
-			RGetPixel(img, x, y, &pixel);
-			buffer[y*img->width*3+x*3+0] = (char)(pixel.red);
-			buffer[y*img->width*3+x*3+1] = (char)(pixel.green);
-			buffer[y*img->width*3+x*3+2] = (char)(pixel.blue);
-		}
-	}
+  /* collect separate RGB values to a buffer */
+  buffer = malloc(sizeof(char) * 3 * img->width * img->height);
+  for (y = 0; y < img->height; y++) {
+    for (x = 0; x < img->width; x++) {
+      RGetPixel(img, x, y, &pixel);
+      buffer[y * img->width * 3 + x * 3 + 0] = (char)(pixel.red);
+      buffer[y * img->width * 3 + x * 3 + 1] = (char)(pixel.green);
+      buffer[y * img->width * 3 + x * 3 + 2] = (char)(pixel.blue);
+    }
+  }
 
-	/* Setup Exception handling */
-	cinfo.err = jpeg_std_error(&jerr);
+  /* Setup Exception handling */
+  cinfo.err = jpeg_std_error(&jerr);
 
-	/* Initialize cinfo structure */
-	jpeg_create_compress(&cinfo);
-	jpeg_stdio_dest(&cinfo, file);
+  /* Initialize cinfo structure */
+  jpeg_create_compress(&cinfo);
+  jpeg_stdio_dest(&cinfo, file);
 
-	cinfo.image_width = img->width;
-	cinfo.image_height = img->height;
-	cinfo.input_components = 3;
-	cinfo.in_color_space = JCS_RGB;
+  cinfo.image_width = img->width;
+  cinfo.image_height = img->height;
+  cinfo.input_components = 3;
+  cinfo.in_color_space = JCS_RGB;
 
-	jpeg_set_defaults(&cinfo);
-	jpeg_set_quality(&cinfo, 85, TRUE);
-	jpeg_start_compress(&cinfo, TRUE);
+  jpeg_set_defaults(&cinfo);
+  jpeg_set_quality(&cinfo, 85, TRUE);
+  jpeg_start_compress(&cinfo, TRUE);
 
-	/* Set title if any */
-	if (title)
-		jpeg_write_marker(&cinfo, JPEG_COM, (const JOCTET*)title, strlen(title));
+  /* Set title if any */
+  if (title)
+    jpeg_write_marker(&cinfo, JPEG_COM, (const JOCTET *)title, strlen(title));
 
-	while (cinfo.next_scanline < cinfo.image_height) {
-        	row_pointer = (JSAMPROW) &buffer[cinfo.next_scanline * img_depth * img->width];
-		jpeg_write_scanlines(&cinfo, &row_pointer, 1);
-	}
+  while (cinfo.next_scanline < cinfo.image_height) {
+    row_pointer = (JSAMPROW)&buffer[cinfo.next_scanline * img_depth * img->width];
+    jpeg_write_scanlines(&cinfo, &row_pointer, 1);
+  }
 
-	jpeg_finish_compress(&cinfo);
+  jpeg_finish_compress(&cinfo);
 
-	/* Clean */
-	free(buffer);
-	fclose(file);
+  /* Clean */
+  free(buffer);
+  fclose(file);
 
-	return True;
+  return True;
 }

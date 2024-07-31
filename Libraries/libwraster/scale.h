@@ -20,11 +20,9 @@
 #ifndef __WRASTER_SCALE_H__
 #define __WRASTER_SCALE_H__
 
-
 /*
  * Function to change the smoothing filter used for image scaling (RSmoothScaleImage)
  */
 void wraster_change_filter(RScalingFilter type);
-
 
 #endif

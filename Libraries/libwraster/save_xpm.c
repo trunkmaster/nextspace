@@ -23,14 +23,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 #include <errno.h>
 
-#include "config.h"
 #include "wraster.h"
 #include "imgformat.h"
-#include "wr_i18n.h"
-
 
 /*
  * Restricted support for XPM images.
@@ -52,26 +48,27 @@
  */
 
 typedef struct XPMColor {
-	unsigned char red;
-	unsigned char green;
-	unsigned char blue;
-	int index;
-	struct XPMColor *next;
+  unsigned char red;
+  unsigned char green;
+  unsigned char blue;
+  int index;
+  struct XPMColor *next;
 } XPMColor;
 
-#define I2CHAR(i)	((i)<12 ? (i)+'0' : ((i)<38 ? (i)+'A'-12 : (i)+'a'-38))
-#define CINDEX(xpmc)	(((unsigned)(xpmc)->red)<<16|((unsigned)(xpmc)->green)<<8|((unsigned)(xpmc)->blue))
+#define I2CHAR(i) ((i) < 12 ? (i) + '0' : ((i) < 38 ? (i) + 'A' - 12 : (i) + 'a' - 38))
+#define CINDEX(xpmc) \
+  (((unsigned)(xpmc)->red) << 16 | ((unsigned)(xpmc)->green) << 8 | ((unsigned)(xpmc)->blue))
 
-static XPMColor *lookfor(XPMColor * list, int index)
+static XPMColor *lookfor(XPMColor *list, int index)
 {
-	if (!list)
-		return NULL;
+  if (!list)
+    return NULL;
 
-	for (; list != NULL; list = list->next) {
-		if (CINDEX(list) == index)
-			return list;
-	}
-	return NULL;
+  for (; list != NULL; list = list->next) {
+    if (CINDEX(list) == index)
+      return list;
+  }
+  return NULL;
 }
 
 /*
@@ -81,202 +78,199 @@ static XPMColor *lookfor(XPMColor * list, int index)
  *
  * Returns False on error
  */
-static Bool addcolor(XPMColor ** list, unsigned r, unsigned g, unsigned b, int *colors)
+static Bool addcolor(XPMColor **list, unsigned r, unsigned g, unsigned b, int *colors)
 {
-	XPMColor *tmpc;
-	XPMColor *newc;
-	int index;
+  XPMColor *tmpc;
+  XPMColor *newc;
+  int index;
 
-	index = r << 16 | g << 8 | b;
+  index = r << 16 | g << 8 | b;
 
-	tmpc = lookfor(*list, index);
+  tmpc = lookfor(*list, index);
 
-	if (tmpc)
-		return True;
+  if (tmpc)
+    return True;
 
-	newc = malloc(sizeof(XPMColor));
+  newc = malloc(sizeof(XPMColor));
 
-	if (!newc) {
+  if (!newc) {
+    RErrorCode = RERR_NOMEMORY;
 
-		RErrorCode = RERR_NOMEMORY;
+    return False;
+  }
 
-		return False;
-	}
+  newc->red = r;
+  newc->green = g;
+  newc->blue = b;
+  newc->next = *list;
+  *list = newc;
 
-	newc->red = r;
-	newc->green = g;
-	newc->blue = b;
-	newc->next = *list;
-	*list = newc;
+  (*colors)++;
 
-	(*colors)++;
-
-	return True;
+  return True;
 }
 
 static char *index2str(char *buffer, int index, int charsPerPixel)
 {
-	int i;
+  int i;
 
-	for (i = 0; i < charsPerPixel; i++) {
-		buffer[i] = I2CHAR(index & 63);
-		index >>= 6;
-	}
-	buffer[i] = 0;
+  for (i = 0; i < charsPerPixel; i++) {
+    buffer[i] = I2CHAR(index & 63);
+    index >>= 6;
+  }
+  buffer[i] = 0;
 
-	return buffer;
+  return buffer;
 }
 
-static void outputcolormap(FILE * file, XPMColor * colormap, int charsPerPixel)
+static void outputcolormap(FILE *file, XPMColor *colormap, int charsPerPixel)
 {
-	int index;
-	char buf[128];
+  int index;
+  char buf[128];
 
-	if (!colormap)
-		return;
+  if (!colormap)
+    return;
 
-	for (index = 0; colormap != NULL; colormap = colormap->next, index++) {
-		colormap->index = index;
-		fprintf(file, "\"%s c #%02x%02x%02x\",\n",
-			index2str(buf, index, charsPerPixel), colormap->red, colormap->green, colormap->blue);
-	}
+  for (index = 0; colormap != NULL; colormap = colormap->next, index++) {
+    colormap->index = index;
+    fprintf(file, "\"%s c #%02x%02x%02x\",\n", index2str(buf, index, charsPerPixel), colormap->red,
+            colormap->green, colormap->blue);
+  }
 }
 
-static void freecolormap(XPMColor * colormap)
+static void freecolormap(XPMColor *colormap)
 {
-	XPMColor *tmp;
+  XPMColor *tmp;
 
-	while (colormap) {
-		tmp = colormap->next;
-		free(colormap);
-		colormap = tmp;
-	}
+  while (colormap) {
+    tmp = colormap->next;
+    free(colormap);
+    colormap = tmp;
+  }
 }
 
 /* save routine is common to internal support and library support */
-Bool RSaveXPM(RImage * image, const char *filename)
+Bool RSaveXPM(RImage *image, const char *filename)
 {
-	FILE *file;
-	int x, y;
-	int colorCount = 0;
-	int charsPerPixel;
-	XPMColor *colormap = NULL;
-	XPMColor *tmpc;
-	int i;
-	int ok = 0;
-	unsigned char *r, *g, *b, *a;
-	char transp[16];
-	char buf[128];
+  FILE *file;
+  int x, y;
+  int colorCount = 0;
+  int charsPerPixel;
+  XPMColor *colormap = NULL;
+  XPMColor *tmpc;
+  int i;
+  int ok = 0;
+  unsigned char *r, *g, *b, *a;
+  char transp[16];
+  char buf[128];
 
-	file = fopen(filename, "wb+");
-	if (!file) {
-		RErrorCode = RERR_OPEN;
-		return False;
-	}
+  file = fopen(filename, "wb+");
+  if (!file) {
+    RErrorCode = RERR_OPEN;
+    return False;
+  }
 
-	fprintf(file, "/* XPM */\n");
+  fprintf(file, "/* XPM */\n");
 
-	fprintf(file, "static char *image[] = {\n");
+  fprintf(file, "static char *image[] = {\n");
 
-	r = image->data;
-	g = image->data + 1;
-	b = image->data + 2;
-	if (image->format == RRGBAFormat)
-		a = image->data + 3;
-	else
-		a = NULL;
+  r = image->data;
+  g = image->data + 1;
+  b = image->data + 2;
+  if (image->format == RRGBAFormat)
+    a = image->data + 3;
+  else
+    a = NULL;
 
-	/* first pass: make colormap for the image */
-	if (a)
-		colorCount = 1;
-	for (y = 0; y < image->height; y++) {
-		for (x = 0; x < image->width; x++) {
-			if (!a || *a > 127) {
-				if (!addcolor(&colormap, *r, *g, *b, &colorCount)) {
-					goto uhoh;
-				}
-			}
-			if (a) {
-				r += 4;
-				g += 4;
-				b += 4;
-				a += 4;
-			} else {
-				r += 3;
-				g += 3;
-				b += 3;
-			}
-		}
-	}
+  /* first pass: make colormap for the image */
+  if (a)
+    colorCount = 1;
+  for (y = 0; y < image->height; y++) {
+    for (x = 0; x < image->width; x++) {
+      if (!a || *a > 127) {
+        if (!addcolor(&colormap, *r, *g, *b, &colorCount)) {
+          goto uhoh;
+        }
+      }
+      if (a) {
+        r += 4;
+        g += 4;
+        b += 4;
+        a += 4;
+      } else {
+        r += 3;
+        g += 3;
+        b += 3;
+      }
+    }
+  }
 
-	charsPerPixel = 1;
-	while ((1 << charsPerPixel * 6) < colorCount)
-		charsPerPixel++;
+  charsPerPixel = 1;
+  while ((1 << charsPerPixel * 6) < colorCount)
+    charsPerPixel++;
 
-	/* write header info */
-	fprintf(file, "\"%i %i %i %i\",\n", image->width, image->height, colorCount, charsPerPixel);
+  /* write header info */
+  fprintf(file, "\"%i %i %i %i\",\n", image->width, image->height, colorCount, charsPerPixel);
 
-	/* write colormap data */
-	if (a) {
-		for (i = 0; i < charsPerPixel; i++)
-			transp[i] = ' ';
-		transp[i] = 0;
+  /* write colormap data */
+  if (a) {
+    for (i = 0; i < charsPerPixel; i++)
+      transp[i] = ' ';
+    transp[i] = 0;
 
-		fprintf(file, "\"%s c None\",\n", transp);
-	}
+    fprintf(file, "\"%s c None\",\n", transp);
+  }
 
-	outputcolormap(file, colormap, charsPerPixel);
+  outputcolormap(file, colormap, charsPerPixel);
 
-	r = image->data;
-	g = image->data + 1;
-	b = image->data + 2;
-	if (image->format == RRGBAFormat)
-		a = image->data + 3;
-	else
-		a = NULL;
+  r = image->data;
+  g = image->data + 1;
+  b = image->data + 2;
+  if (image->format == RRGBAFormat)
+    a = image->data + 3;
+  else
+    a = NULL;
 
-	/* write data */
-	for (y = 0; y < image->height; y++) {
+  /* write data */
+  for (y = 0; y < image->height; y++) {
+    fprintf(file, "\"");
 
-		fprintf(file, "\"");
+    for (x = 0; x < image->width; x++) {
+      if (!a || *a > 127) {
+        tmpc = lookfor(colormap, (unsigned)*r << 16 | (unsigned)*g << 8 | (unsigned)*b);
 
-		for (x = 0; x < image->width; x++) {
+        fprintf(file, "%s", index2str(buf, tmpc->index, charsPerPixel));
+      } else {
+        fprintf(file, "%s", transp);
+      }
 
-			if (!a || *a > 127) {
-				tmpc = lookfor(colormap, (unsigned)*r << 16 | (unsigned)*g << 8 | (unsigned)*b);
+      if (a) {
+        r += 4;
+        g += 4;
+        b += 4;
+        a += 4;
+      } else {
+        r += 3;
+        g += 3;
+        b += 3;
+      }
+    }
 
-				fprintf(file, "%s", index2str(buf, tmpc->index, charsPerPixel));
-			} else {
-				fprintf(file, "%s", transp);
-			}
+    if (y < image->height - 1)
+      fprintf(file, "\",\n");
+    else
+      fprintf(file, "\"};\n");
+  }
 
-			if (a) {
-				r += 4;
-				g += 4;
-				b += 4;
-				a += 4;
-			} else {
-				r += 3;
-				g += 3;
-				b += 3;
-			}
-		}
+  ok = 1;
+uhoh:
+  errno = 0;
+  fclose(file);
+  if (ok && errno == ENOSPC) {
+    RErrorCode = RERR_WRITE;
+  }
 
-		if (y < image->height - 1)
-			fprintf(file, "\",\n");
-		else
-			fprintf(file, "\"};\n");
-	}
+  freecolormap(colormap);
 
-	ok = 1;
- uhoh:
-	errno = 0;
-	fclose(file);
-	if (ok && errno == ENOSPC) {
-		RErrorCode = RERR_WRITE;
-	}
-
-	freecolormap(colormap);
-
-	return ok ? True : False;
+  return ok ? True : False;
 }

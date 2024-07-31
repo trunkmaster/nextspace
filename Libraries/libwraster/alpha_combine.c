@@ -17,53 +17,56 @@
  *  Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
  *  MA 02110-1301, USA.
  */
-#include "config.h"
 
 #include "wraster.h"
-#include "wr_i18n.h"
 
-void RCombineAlpha(unsigned char *d, unsigned char *s, int s_has_alpha,
-		   int width, int height, int dwi, int swi, int opacity) {
-	int x, y;
-	int t, sa;
-	int alpha;
-	float ratio, cratio;
+void RCombineAlpha(unsigned char *d, unsigned char *s, int s_has_alpha, int width, int height,
+                   int dwi, int swi, int opacity)
+{
+  int x, y;
+  int t, sa;
+  int alpha;
+  float ratio, cratio;
 
-	for (y=0; y<height; y++) {
-		for (x=0; x<width; x++) {
-			sa=s_has_alpha?*(s+3):255;
+  for (y = 0; y < height; y++) {
+    for (x = 0; x < width; x++) {
+      sa = s_has_alpha ? *(s + 3) : 255;
 
-			if (opacity!=255) {
-				t = sa * opacity + 0x80;
-				sa = ((t>>8)+t)>>8;
-			}
+      if (opacity != 255) {
+        t = sa * opacity + 0x80;
+        sa = ((t >> 8) + t) >> 8;
+      }
 
-			t = *(d+3) * (255-sa) + 0x80;
-			alpha = sa + (((t>>8)+t)>>8);
+      t = *(d + 3) * (255 - sa) + 0x80;
+      alpha = sa + (((t >> 8) + t) >> 8);
 
-			if (sa==0 || alpha==0) {
-				ratio = 0;
-				cratio = 1.0;
-			} else if(sa == alpha) {
-				ratio = 1.0;
-				cratio = 0;
-			} else {
-				ratio = (float)sa / alpha;
-				cratio = 1.0F - ratio;
-			}
+      if (sa == 0 || alpha == 0) {
+        ratio = 0;
+        cratio = 1.0;
+      } else if (sa == alpha) {
+        ratio = 1.0;
+        cratio = 0;
+      } else {
+        ratio = (float)sa / alpha;
+        cratio = 1.0F - ratio;
+      }
 
-			*d = (int)*d * cratio + (int)*s * ratio;
-			s++; d++;
-			*d = (int)*d * cratio + (int)*s * ratio;
-			s++; d++;
-			*d = (int)*d * cratio + (int)*s * ratio;
-			s++; d++;
-			*d = alpha;
-			d++;
+      *d = (int)*d * cratio + (int)*s * ratio;
+      s++;
+      d++;
+      *d = (int)*d * cratio + (int)*s * ratio;
+      s++;
+      d++;
+      *d = (int)*d * cratio + (int)*s * ratio;
+      s++;
+      d++;
+      *d = alpha;
+      d++;
 
-			if (s_has_alpha) s++;
-		}
-		d+=dwi;
-		s+=swi;
-	}
+      if (s_has_alpha)
+        s++;
+    }
+    d += dwi;
+    s += swi;
+  }
 }

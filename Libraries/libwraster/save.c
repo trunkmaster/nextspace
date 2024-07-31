@@ -33,35 +33,33 @@
 
 #include "wraster.h"
 #include "imgformat.h"
-#include "wr_i18n.h"
-
 
 Bool RSaveImage(RImage *image, const char *filename, const char *format)
 {
-    return RSaveTitledImage(image, filename, format, NULL);
+  return RSaveTitledImage(image, filename, format, NULL);
 }
 
 Bool RSaveTitledImage(RImage *image, const char *filename, const char *format, char *title)
 {
-    if (strcmp(format, "XPM") != 0) {
-        RErrorCode = RERR_BADFORMAT;
-        return False;
-    }
-    return RSaveXPM(image, filename);
-#ifdef USE_PNG
-    if (strcasecmp(format, "PNG") == 0)
-        return RSavePNG(image, filename, title);
-#endif
-#ifdef USE_JPEG
-    if (strcasecmp(format, "JPG") == 0)
-        return RSaveJPEG(image, filename, title);
-
-    if (strcasecmp(format, "JPEG") == 0)
-        return RSaveJPEG(image, filename, title);
-#endif
-    if (strcasecmp(format, "XPM") == 0)
-        return RSaveXPM(image, filename);
-
+  if (strcmp(format, "XPM") != 0) {
     RErrorCode = RERR_BADFORMAT;
     return False;
+  }
+  return RSaveXPM(image, filename);
+#ifdef USE_PNG
+  if (strcasecmp(format, "PNG") == 0)
+    return RSavePNG(image, filename, title);
+#endif
+#ifdef USE_JPEG
+  if (strcasecmp(format, "JPG") == 0)
+    return RSaveJPEG(image, filename, title);
+
+  if (strcasecmp(format, "JPEG") == 0)
+    return RSaveJPEG(image, filename, title);
+#endif
+  if (strcasecmp(format, "XPM") == 0)
+    return RSaveXPM(image, filename);
+
+  RErrorCode = RERR_BADFORMAT;
+  return False;
 }

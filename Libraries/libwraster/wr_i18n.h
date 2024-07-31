@@ -26,10 +26,10 @@
 #define WRASTER_I18N_H
 
 #if defined(HAVE_LIBINTL_H) && defined(I18N)
-# include <libintl.h>
-# define _(text) dgettext("WRaster", (text))
+#include <libintl.h>
+#define _(text) dgettext("WRaster", (text))
 #else
-# define _(text) (text)
+#define _(text) (text)
 #endif
 
 /*

@@ -32,71 +32,70 @@
 // #endif
 // #endif
 
-
 // static int RInitMagickIfNeeded(void);
 
 /*
 RImage *RLoadMagick(const char *file_name)
 {
-	RImage *image = NULL;
-	unsigned char *ptr;
-	unsigned long w,h;
-	MagickWand *m_wand = NULL;
-	MagickBooleanType mrc;
-	MagickBooleanType hasAlfa;
-	PixelWand *bg_wand = NULL;
+        RImage *image = NULL;
+        unsigned char *ptr;
+        unsigned long w,h;
+        MagickWand *m_wand = NULL;
+        MagickBooleanType mrc;
+        MagickBooleanType hasAlfa;
+        PixelWand *bg_wand = NULL;
 
-	if (RInitMagickIfNeeded()) {
-		RErrorCode = RERR_BADFORMAT;
-		return NULL;
-	}
+        if (RInitMagickIfNeeded()) {
+                RErrorCode = RERR_BADFORMAT;
+                return NULL;
+        }
 
-	// Create a wand
-	m_wand = NewMagickWand();
+        // Create a wand
+        m_wand = NewMagickWand();
 
-	// set the default background as transparent
-	bg_wand = NewPixelWand();
-	PixelSetColor(bg_wand, "none");
-	MagickSetBackgroundColor(m_wand, bg_wand);
-	
+        // set the default background as transparent
+        bg_wand = NewPixelWand();
+        PixelSetColor(bg_wand, "none");
+        MagickSetBackgroundColor(m_wand, bg_wand);
 
-	// Read the input image
-	if (!MagickReadImage(m_wand, file_name)) {
-		RErrorCode = RERR_BADIMAGEFILE;
-		goto bye;
-	}
 
-	w = MagickGetImageWidth(m_wand);
-	h = MagickGetImageHeight(m_wand);
+        // Read the input image
+        if (!MagickReadImage(m_wand, file_name)) {
+                RErrorCode = RERR_BADIMAGEFILE;
+                goto bye;
+        }
 
-	hasAlfa = MagickGetImageAlphaChannel(m_wand);
+        w = MagickGetImageWidth(m_wand);
+        h = MagickGetImageHeight(m_wand);
 
-	image = RCreateImage(w, h, (unsigned int) hasAlfa);
-	if (!image) {
-		RErrorCode = RERR_NOMEMORY;
-		goto bye;
-	}
+        hasAlfa = MagickGetImageAlphaChannel(m_wand);
 
-	ptr = image->data;
-	if (hasAlfa == MagickFalse)
-		mrc = MagickExportImagePixels(m_wand, 0, 0, (size_t)w, (size_t)h, "RGB", CharPixel, ptr);
-	else
-		mrc = MagickExportImagePixels(m_wand, 0, 0, (size_t)w, (size_t)h, "RGBA", CharPixel, ptr);
+        image = RCreateImage(w, h, (unsigned int) hasAlfa);
+        if (!image) {
+                RErrorCode = RERR_NOMEMORY;
+                goto bye;
+        }
 
-	if (mrc == MagickFalse) {
-		RErrorCode = RERR_BADIMAGEFILE;
-		RReleaseImage(image);
-		image = NULL;
-		goto bye;
-	}
+        ptr = image->data;
+        if (hasAlfa == MagickFalse)
+                mrc = MagickExportImagePixels(m_wand, 0, 0, (size_t)w, (size_t)h, "RGB", CharPixel,
+ptr); else mrc = MagickExportImagePixels(m_wand, 0, 0, (size_t)w, (size_t)h, "RGBA", CharPixel,
+ptr);
+
+        if (mrc == MagickFalse) {
+                RErrorCode = RERR_BADIMAGEFILE;
+                RReleaseImage(image);
+                image = NULL;
+                goto bye;
+        }
 
 bye:
-	// Tidy up
-	DestroyPixelWand(bg_wand);
-	MagickClearException(m_wand);
-	DestroyMagickWand(m_wand);
+        // Tidy up
+        DestroyPixelWand(bg_wand);
+        MagickClearException(m_wand);
+        DestroyMagickWand(m_wand);
 
-	return image;
+        return image;
 }
 */
 
@@ -134,12 +133,12 @@ RImage *RLoadMagick(const char *file_name)
   PixelSetColor(background, "none");
   MagickSetImageBackgroundColor(magick_wand, background);
   DestroyPixelWand(background);
-  
+
   w = MagickGetImageWidth(magick_wand);
   h = MagickGetImageHeight(magick_wand);
 
   fprintf(stderr, "w: %lu, h: %lu\n", w, h);
-      
+
   is_success = MagickIsOpaqueImage(magick_wand, &is_opaque);
 
   image = RCreateImage(w, h, !is_opaque);
@@ -160,7 +159,7 @@ RImage *RLoadMagick(const char *file_name)
         MagickGetImagePixels(magick_wand, 0, 0, (size_t)w, (size_t)h, "RGBA", CharPixel, ptr);
     fprintf(stderr, "MagickGetImagePixels: %d, alpha\n", is_success);
   }
-  
+
   if (!is_success) {
     RErrorCode = RERR_BADIMAGEFILE;
     RReleaseImage(image);
@@ -202,8 +201,8 @@ bye:
 
 void RReleaseMagick(void)
 {
-	// if (magick_state == MW_Ready) {
-	// 	MagickWandTerminus();
-	// 	magick_state = MW_NotReady;
-	// }
+  // if (magick_state == MW_Ready) {
+  // 	MagickWandTerminus();
+  // 	magick_state = MW_NotReady;
+  // }
 }

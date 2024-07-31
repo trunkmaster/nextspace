@@ -24,10 +24,7 @@
 #include <string.h>
 #include <X11/Xlib.h>
 
-#include "config.h"
 #include "wraster.h"
-#include "wr_i18n.h"
-
 
 /*
  *----------------------------------------------------------------------
@@ -37,108 +34,106 @@
  *                1 1 1 /10
  *----------------------------------------------------------------------
  */
-int RBlurImage(RImage * image)
+int RBlurImage(RImage *image)
 {
-	register int x, y;
-	register int tmp;
-	unsigned char *ptr, *nptr;
-	unsigned char *pptr = NULL, *tmpp;
-	int ch = image->format == RRGBAFormat ? 4 : 3;
+  register int x, y;
+  register int tmp;
+  unsigned char *ptr, *nptr;
+  unsigned char *pptr = NULL, *tmpp;
+  int ch = image->format == RRGBAFormat ? 4 : 3;
 
-	pptr = malloc(image->width * ch);
-	if (!pptr) {
-		RErrorCode = RERR_NOMEMORY;
-		return False;
-	}
-#define MASK(prev, cur, next, ch)\
-    (*(prev-ch) + *prev + *(prev+ch)\
-    +*(cur-ch) + 2 * *cur + *(cur+ch)\
-    +*(next-ch) + *next + *(next+ch)) / 10
+  pptr = malloc(image->width * ch);
+  if (!pptr) {
+    RErrorCode = RERR_NOMEMORY;
+    return False;
+  }
+#define MASK(prev, cur, next, ch)                                                              \
+  (*(prev - ch) + *prev + *(prev + ch) + *(cur - ch) + 2 * *cur + *(cur + ch) + *(next - ch) + \
+   *next + *(next + ch)) /                                                                     \
+      10
 
-	memcpy(pptr, image->data, image->width * ch);
+  memcpy(pptr, image->data, image->width * ch);
 
-	ptr = image->data;
-	nptr = ptr + image->width * ch;
-	tmpp = pptr;
+  ptr = image->data;
+  nptr = ptr + image->width * ch;
+  tmpp = pptr;
 
-	if (ch == 3) {
-		ptr += 3;
-		nptr += 3;
-		pptr += 3;
+  if (ch == 3) {
+    ptr += 3;
+    nptr += 3;
+    pptr += 3;
 
-		for (y = 1; y < image->height - 1; y++) {
+    for (y = 1; y < image->height - 1; y++) {
+      for (x = 1; x < image->width - 1; x++) {
+        tmp = *ptr;
+        *ptr = MASK(pptr, ptr, nptr, 3);
+        *pptr = tmp;
+        ptr++;
+        nptr++;
+        pptr++;
 
-			for (x = 1; x < image->width - 1; x++) {
-				tmp = *ptr;
-				*ptr = MASK(pptr, ptr, nptr, 3);
-				*pptr = tmp;
-				ptr++;
-				nptr++;
-				pptr++;
+        tmp = *ptr;
+        *ptr = MASK(pptr, ptr, nptr, 3);
+        *pptr = tmp;
+        ptr++;
+        nptr++;
+        pptr++;
 
-				tmp = *ptr;
-				*ptr = MASK(pptr, ptr, nptr, 3);
-				*pptr = tmp;
-				ptr++;
-				nptr++;
-				pptr++;
+        tmp = *ptr;
+        *ptr = MASK(pptr, ptr, nptr, 3);
+        *pptr = tmp;
+        ptr++;
+        nptr++;
+        pptr++;
+      }
+      pptr = tmpp;
+      ptr += 6;
+      nptr += 6;
+      pptr += 6;
+    }
+  } else {
+    ptr += 4;
+    nptr += 4;
+    pptr += 4;
 
-				tmp = *ptr;
-				*ptr = MASK(pptr, ptr, nptr, 3);
-				*pptr = tmp;
-				ptr++;
-				nptr++;
-				pptr++;
-			}
-			pptr = tmpp;
-			ptr += 6;
-			nptr += 6;
-			pptr += 6;
-		}
-	} else {
-		ptr += 4;
-		nptr += 4;
-		pptr += 4;
+    for (y = 1; y < image->height - 1; y++) {
+      for (x = 1; x < image->width - 1; x++) {
+        tmp = *ptr;
+        *ptr = MASK(pptr, ptr, nptr, 4);
+        *pptr = tmp;
+        ptr++;
+        nptr++;
+        pptr++;
 
-		for (y = 1; y < image->height - 1; y++) {
-			for (x = 1; x < image->width - 1; x++) {
-				tmp = *ptr;
-				*ptr = MASK(pptr, ptr, nptr, 4);
-				*pptr = tmp;
-				ptr++;
-				nptr++;
-				pptr++;
+        tmp = *ptr;
+        *ptr = MASK(pptr, ptr, nptr, 4);
+        *pptr = tmp;
+        ptr++;
+        nptr++;
+        pptr++;
 
-				tmp = *ptr;
-				*ptr = MASK(pptr, ptr, nptr, 4);
-				*pptr = tmp;
-				ptr++;
-				nptr++;
-				pptr++;
+        tmp = *ptr;
+        *ptr = MASK(pptr, ptr, nptr, 4);
+        *pptr = tmp;
+        ptr++;
+        nptr++;
+        pptr++;
 
-				tmp = *ptr;
-				*ptr = MASK(pptr, ptr, nptr, 4);
-				*pptr = tmp;
-				ptr++;
-				nptr++;
-				pptr++;
+        tmp = *ptr;
+        *ptr = MASK(pptr, ptr, nptr, 4);
+        *pptr = tmp;
+        ptr++;
+        nptr++;
+        pptr++;
+      }
+      pptr = tmpp;
+      ptr += 8;
+      nptr += 8;
+      pptr += 8;
+    }
+  }
 
-				tmp = *ptr;
-				*ptr = MASK(pptr, ptr, nptr, 4);
-				*pptr = tmp;
-				ptr++;
-				nptr++;
-				pptr++;
-			}
-			pptr = tmpp;
-			ptr += 8;
-			nptr += 8;
-			pptr += 8;
-		}
-	}
+  free(tmpp);
 
-	free(tmpp);
-
-	return True;
+  return True;
 }
-
