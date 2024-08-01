@@ -146,17 +146,18 @@ static NSDragOperation savedMask;
                                 command:(NSString *)commandPath
                               imagePath:(NSString *)iconPath
 {
-  RImage *r_image;
+  RImage *r_image = NULL;
   WAppIcon *appIcon;
 
   NSDebugLLog(@"PathIcon", @"[GSDragView] create appicon for: %@.%@", wmInstance, wmClass);
 
   appIcon = wAppIconCreateForDock(wScreen, [commandPath cString], [wmInstance cString],
                                   [wmClass cString], TILE_NORMAL);
-  r_image = RLoadImage(wScreen->rcontext, [iconPath cString], 0);
+
+  r_image = WSLoadRasterImage([iconPath cString]);
   if (!r_image) {
     iconPath = [[NSBundle mainBundle] pathForImageResource:@"NXApplication.tiff"];
-    r_image = RLoadImage(wScreen->rcontext, [iconPath cString], 0);
+    r_image = WSLoadRasterImage([iconPath cString]);
   }
 
   if (r_image) {

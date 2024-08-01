@@ -28,7 +28,6 @@
 #include <unistd.h>
 #include <string.h>
 #include <strings.h>
-#include <ctype.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -50,7 +49,8 @@
 #include "desktop.h"
 #include "defaults.h"
 #include "icon.h"
-#include "misc.h"
+
+#include <Workspace+WM.h>
 
 /* Icon for app without own icon. Bundled with NXAppKit. */
 #define DEF_APP_ICON "NXUnknownApplication.tiff"
@@ -436,7 +436,8 @@ RImage *get_rimage_from_file(WScreen *scr, const char *file_name, int max_size)
     return NULL;
   }
 
-  image = RLoadImage(scr->rcontext, file_name, 0);
+  // image = RLoadImage(scr->rcontext, file_name, 0);
+  image = WSLoadRasterImage(file_name);
   if (!image) {
     WMLogWarning(_("error loading image file \"%s\": %s"), file_name, RMessageForError(RErrorCode));
   }

@@ -64,6 +64,8 @@
 #include "xdnd.h"
 #endif
 
+#include <Workspace+WM.h>
+
 /*
  * icon_file for the dock is got from the preferences file by
  * using the classname/instancename
@@ -1147,10 +1149,12 @@ static Window _createIconForSliding(WScreen *scr, int x, int y, const char *imag
                             scr->w_depth, CopyFromParent, scr->w_visual, vmask, &attribs);
 
   // Image
-  rimage = RLoadImage(scr->rcontext, image_path, 0);
+  // rimage = RLoadImage(scr->rcontext, image_path, 0);
+  rimage = WSLoadRasterImage(image_path);
   if (!rimage) {
     image_path = WMAbsolutePathForFile(wPreferences.image_paths, "NXApplication.tiff");
-    rimage = RLoadImage(scr->rcontext, image_path, 0);
+    // rimage = RLoadImage(scr->rcontext, image_path, 0);
+    rimage = WSLoadRasterImage(image_path);
   }
   if (rimage) {
     RConvertImageMask(scr->rcontext, rimage, &pixmap, &mask, 158);
