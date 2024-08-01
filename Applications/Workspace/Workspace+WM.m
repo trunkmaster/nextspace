@@ -58,6 +58,67 @@ extern Display *dpy;
 // TODO: all events based function should be replaces with CF notifications.
 //-----------------------------------------------------------------------------
 
+@interface NSBitmapImageRep (GSPrivate)
+- (NSBitmapImageRep *)_convertToFormatBitsPerSample:(NSInteger)bps
+                                    samplesPerPixel:(NSInteger)spp
+                                           hasAlpha:(BOOL)alpha
+                                           isPlanar:(BOOL)isPlanar
+                                     colorSpaceName:(NSString *)colorSpaceName
+                                       bitmapFormat:(NSBitmapFormat)bitmapFormat
+                                        bytesPerRow:(NSInteger)rowBytes
+                                       bitsPerPixel:(NSInteger)pixelBits;
+@end
+
+RImage *WSLoadRasterImage(const char *file_path)
+{
+  NSImage *image = [[NSImage alloc] initWithContentsOfFile:[NSString stringWithCString:file_path]];
+  RImage *raster_image = NULL;
+
+  if (image) {
+    NSSize imageSize;
+    NSBitmapImageRep *imageRep, *convertedRep;
+    BOOL isAlpha;
+    int repsCount, width, height, samplesPerPixel;
+    NSArray *imageRepresentations;
+
+    imageRepresentations = [image representations];
+    repsCount = imageRepresentations.count;
+    
+    // imageRep = (NSBitmapImageRep *)[image bestRepresentationForDevice:nil];
+    for (int i = 0; i < repsCount; i++) {
+      imageRep = imageRepresentations[i];
+      if ([imageRep samplesPerPixel] < 4) {
+        imageRep = nil;
+      }
+    }
+    if (imageRep == nil) {
+      imageRep = imageRepresentations[0];
+    }
+
+    imageSize = [image size];
+    width = ceil(imageSize.width);
+    height = ceil(imageSize.height);
+    isAlpha = [imageRep hasAlpha];
+    samplesPerPixel = [imageRep hasAlpha] ? 4 : 3;
+
+    convertedRep = [imageRep _convertToFormatBitsPerSample:8
+                                           samplesPerPixel:samplesPerPixel
+                                                  hasAlpha:isAlpha
+                                                  isPlanar:NO
+                                            colorSpaceName:NSCalibratedRGBColorSpace
+                                              bitmapFormat:[imageRep bitmapFormat]
+                                               bytesPerRow:0
+                                              bitsPerPixel:0];
+
+    raster_image = RCreateImage(width, height, isAlpha);
+    memcpy(raster_image->data, [convertedRep bitmapData],
+           width * height * sizeof(unsigned char) * samplesPerPixel);
+    [image release];
+  }
+
+  return raster_image;
+}
+
 NSImage *WSImageForRasterImage(RImage *r_image)
 {
   BOOL hasAlpha = (r_image->format == RRGBAFormat) ? YES : NO;
