@@ -69,6 +69,27 @@ extern Display *dpy;
                                        bitsPerPixel:(NSInteger)pixelBits;
 @end
 
+static NSBitmapImageRep *_getBestRepresentationFromImage(NSImage *image)
+{
+  NSArray *imageRepresentations = [image representations];
+  NSUInteger repsCount;
+  NSBitmapImageRep *imageRep;
+  NSInteger largestBPP = 0;
+  int bestRepIndex = 0;
+
+  // Get representation with highest Bits/Pixel value
+  repsCount = imageRepresentations.count;
+  for (NSUInteger i = 0; i < repsCount; i++) {
+    imageRep = imageRepresentations[i];
+    if ([imageRep bitsPerPixel] > largestBPP) {
+      largestBPP = [imageRep bitsPerPixel];
+      bestRepIndex = i;
+    }
+  }
+
+  return imageRepresentations[bestRepIndex];
+}
+
 RImage *WSLoadRasterImage(const char *file_path)
 {
   NSImage *image = [[NSImage alloc] initWithContentsOfFile:[NSString stringWithCString:file_path]];
@@ -78,24 +99,11 @@ RImage *WSLoadRasterImage(const char *file_path)
     NSSize imageSize;
     NSBitmapImageRep *imageRep, *convertedRep;
     BOOL isAlpha;
-    int repsCount, width, height, samplesPerPixel;
-    NSArray *imageRepresentations;
+    int width, height, samplesPerPixel;
 
-    imageRepresentations = [image representations];
-    repsCount = imageRepresentations.count;
-    
-    // imageRep = (NSBitmapImageRep *)[image bestRepresentationForDevice:nil];
-    for (int i = 0; i < repsCount; i++) {
-      imageRep = imageRepresentations[i];
-      if ([imageRep samplesPerPixel] < 4) {
-        imageRep = nil;
-      }
-    }
-    if (imageRep == nil) {
-      imageRep = imageRepresentations[0];
-    }
+    imageRep = _getBestRepresentationFromImage(image);
 
-    imageSize = [image size];
+    imageSize = [imageRep size];
     width = ceil(imageSize.width);
     height = ceil(imageSize.height);
     isAlpha = [imageRep hasAlpha];
