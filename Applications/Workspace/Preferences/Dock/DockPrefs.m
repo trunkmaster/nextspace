@@ -105,7 +105,7 @@ void WMSetDockAppImage(NSString *path, int position, BOOL save)
   }
   btn->icon->file = wstrdup([path cString]);
 
-  rimage = RLoadImage(wDefaultScreen()->rcontext, btn->icon->file, 0);
+  rimage = WSLoadRasterImage(btn->icon->file);
   if (!rimage) {
     return;
   }
