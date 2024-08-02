@@ -27,6 +27,7 @@
 -fobjc-runtime=gnustep-1.8
 -fblocks
 -fconstant-string-class=NSConstantString
+-F/usr/NextSpace/Frameworks
 -I.
 -I..
 -I../..
