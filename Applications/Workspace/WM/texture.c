@@ -37,8 +37,10 @@
 
 #include "WM.h"
 #include "texture.h"
-#include "window.h"
-#include "misc.h"
+
+#include <window.h>
+#include <defaults.h>
+#include <Workspace+WM.h>
 
 static void bevelImage(RImage *image, int relief);
 static RImage *get_texture_image(WScreen *scr, const char *pixmap_file);
@@ -341,7 +343,8 @@ static RImage *get_texture_image(WScreen *scr, const char *pixmap_file)
     WMLogWarning(_("image file \"%s\" used as texture could not be found."), pixmap_file);
     return NULL;
   }
-  image = RLoadImage(scr->rcontext, file, 0);
+  // image = RLoadImage(scr->rcontext, file, 0);
+  image = WSLoadRasterImage(file);
   if (!image) {
     WMLogWarning(_("could not load texture pixmap \"%s\":%s"), file, RMessageForError(RErrorCode));
     wfree(file);
