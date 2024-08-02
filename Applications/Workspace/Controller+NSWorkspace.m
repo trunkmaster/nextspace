@@ -1495,6 +1495,8 @@ static NSLock *raceLock = nil;
       postNotificationName:NSWorkspaceDidTerminateApplicationNotification
                     object:self
                   userInfo:@{@"NSApplicationName" : [appCommand lastPathComponent]}];
+  // Update GSLaunchedApplications file state
+  [[NSWorkspace sharedWorkspace] launchedApplications];
 
   if (exitCode != 0) {
     NXTRunAlertPanel(_(@"Workspace"), _(@"Application '%@' exited with code %i"), nil, nil, nil,
