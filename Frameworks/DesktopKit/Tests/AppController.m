@@ -50,7 +50,7 @@
 }
 
 //----------------------------------------------------------------------------
-#pragma mark | Actions
+#pragma mark - Actions
 //----------------------------------------------------------------------------
 
 - (void)showTextFieldsDemo:(id)sender
@@ -70,6 +70,8 @@
     }
   [clockViewTest show];
 }
+
+#pragma mark - Alert Panels
 
 - (void)showMultilineAlert:(id)sender
 {
@@ -117,79 +119,34 @@
                   @"Wiskey", @"Beer", @"Vodka");
 }
 
-- (void)showCursorsTest:(id)sender
+- (void)showCustomAlert:(id)sender
 {
-  if (cursorsTest == nil)
-    {
-      cursorsTest = [[CursorsTest alloc] init];
-    }
-  [cursorsTest show];
+  NXTAlert *alert;
+
+  alert = [[NXTAlert alloc]
+        initWithTitle:@"Login"
+              message:@"Session finished with error. "
+                       "Please select action below.\n"
+                       "\"Restart\" - returns to Workspace\n"
+                       "\"Cleanup\" - kill all running applications and return to Lohgin\n"
+                       "\"Desribe\" - see console log contents to understand cause of error\n"
+        defaultButton:@"Restart"
+      alternateButton:@"Cleanup"
+          otherButton:@"Describe"];
+
+  // [panel setTarget:self];
+  // [panel setAction:@selector(alertButtonPressed:)];
+  // [[alert panel] orderFront:self];
+  [alert show];
+  // [NSApp runModalForWindow:[alert panel]];
 }
 
-- (void)showIconViewTest:(id)sender
+- (void)alertButtonPressed:(id)sender
 {
-  if (iconViewTest == nil)
-    {
-      iconViewTest = [[IconViewTest alloc] init];
-    }
-  [iconViewTest show];
+  
 }
 
-- (void)showTextTest:(id)sender
-{
-  if (textTest == nil) {
-    textTest = [[TextTest alloc] init];
-  }
-  [textTest show];
-}
-
-- (void)showDrawingTest:(id)sender
-{
-  if (drawingTest == nil) {
-    drawingTest = [[DrawingTest alloc] init];
-  }
-  [drawingTest show];
-}
-
-- (void)showHelpPanel:(id)sender
-{
-  NXTHelpPanel *helpPanel;
-
-  NSString     *helpDir;
-
-  helpDir = [[NSBundle mainBundle] pathForResource:@"Help"
-                                            ofType:@""
-                                       inDirectory:@""];
-  // helpPanel = [NXTHelpPanel sharedHelpPanel];
-  helpPanel = [NXTHelpPanel sharedHelpPanelWithDirectory:helpDir];
-  NSLog(@"Order Help: (%@)%@", helpPanel, [helpPanel helpDirectory]);
-  [helpPanel makeKeyAndOrderFront:self];
-}
-- (void)showHelpTemplatePanel:(id)sender
-{
-  NXTHelpPanel *helpPanel;
-  NSString     *helpDir;
-
-  helpDir = [[NSBundle mainBundle] pathForResource:@"HelpTemplate"
-                                            ofType:@""
-                                       inDirectory:@""];
-  NSLog(@"Get Help Panel for dir: %@", helpDir);
-  helpPanel = [NXTHelpPanel sharedHelpPanelWithDirectory:helpDir];
-  NSLog(@"Order Help Template: (%@)%@", helpPanel, [helpPanel helpDirectory]);
-  [helpPanel makeKeyAndOrderFront:self];
-}
-
-- (void)showListViewTest:(id)sender
-{
-  if (listViewTest == nil) {
-    listViewTest = [[ListViewTest alloc] init];
-  }
-  [listViewTest show];
-}
-
-//
-//--- Open and Save panels
-//
+# pragma mark - Open and Save panels
 
 - (void)openSavePanel:(id)sender
 {
@@ -267,6 +224,78 @@
   if (openPanel) {
     [openPanel setAllowsMultipleSelection:[sender state]];
   }
+}
+
+#pragma mark - Misc
+
+- (void)showCursorsTest:(id)sender
+{
+  if (cursorsTest == nil)
+    {
+      cursorsTest = [[CursorsTest alloc] init];
+    }
+  [cursorsTest show];
+}
+
+- (void)showIconViewTest:(id)sender
+{
+  if (iconViewTest == nil)
+    {
+      iconViewTest = [[IconViewTest alloc] init];
+    }
+  [iconViewTest show];
+}
+
+- (void)showTextTest:(id)sender
+{
+  if (textTest == nil) {
+    textTest = [[TextTest alloc] init];
+  }
+  [textTest show];
+}
+
+- (void)showDrawingTest:(id)sender
+{
+  if (drawingTest == nil) {
+    drawingTest = [[DrawingTest alloc] init];
+  }
+  [drawingTest show];
+}
+
+- (void)showHelpPanel:(id)sender
+{
+  NXTHelpPanel *helpPanel;
+
+  NSString     *helpDir;
+
+  helpDir = [[NSBundle mainBundle] pathForResource:@"Help"
+                                            ofType:@""
+                                       inDirectory:@""];
+  // helpPanel = [NXTHelpPanel sharedHelpPanel];
+  helpPanel = [NXTHelpPanel sharedHelpPanelWithDirectory:helpDir];
+  NSLog(@"Order Help: (%@)%@", helpPanel, [helpPanel helpDirectory]);
+  [helpPanel makeKeyAndOrderFront:self];
+}
+- (void)showHelpTemplatePanel:(id)sender
+{
+  NXTHelpPanel *helpPanel;
+  NSString     *helpDir;
+
+  helpDir = [[NSBundle mainBundle] pathForResource:@"HelpTemplate"
+                                            ofType:@""
+                                       inDirectory:@""];
+  NSLog(@"Get Help Panel for dir: %@", helpDir);
+  helpPanel = [NXTHelpPanel sharedHelpPanelWithDirectory:helpDir];
+  NSLog(@"Order Help Template: (%@)%@", helpPanel, [helpPanel helpDirectory]);
+  [helpPanel makeKeyAndOrderFront:self];
+}
+
+- (void)showListViewTest:(id)sender
+{
+  if (listViewTest == nil) {
+    listViewTest = [[ListViewTest alloc] init];
+  }
+  [listViewTest show];
 }
 
 @end
