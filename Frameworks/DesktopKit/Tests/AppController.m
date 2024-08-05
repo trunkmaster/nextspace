@@ -122,6 +122,7 @@
 - (void)showCustomAlert:(id)sender
 {
   NXTAlert *alert;
+  NSInteger choice;
 
   alert = [[NXTAlert alloc]
         initWithTitle:@"Login"
@@ -138,7 +139,21 @@
   // [panel setAction:@selector(alertButtonPressed:)];
   // [[alert panel] orderFront:self];
   [alert show];
-  // [NSApp runModalForWindow:[alert panel]];
+  choice = [NSApp runModalForWindow:[alert panel]];
+  switch (choice) {
+    case NSAlertDefaultReturn:
+      NSLog(@"Alert Panel: start from scratch.");
+      break;
+    case NSAlertAlternateReturn:
+      NSLog(@"Alert Panel: Kill Them All!");
+      break;
+    case NSAlertOtherReturn:
+      NSLog(@"Alert Panel: show console.log contents.");
+      break;
+    default:
+      NSLog(@"Alert Panel: user has made a strange choice!");
+  }
+  [[alert panel] close];
 }
 
 - (void)alertButtonPressed:(id)sender
