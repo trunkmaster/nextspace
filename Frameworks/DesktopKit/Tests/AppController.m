@@ -122,25 +122,27 @@
 - (void)showCustomAlert:(id)sender
 {
   NXTAlert *alert;
-  NSInteger choice;
 
   alert = [[NXTAlert alloc]
         initWithTitle:@"Login"
-              message:@"Session finished with error. "
-                       "Please select action below.\n"
-                       "\"Restart\" - returns to Workspace\n"
-                       "\"Cleanup\" - kill all running applications and return to Lohgin\n"
-                       "\"Desribe\" - see console log contents to understand cause of error\n"
+              message:@"Session finished with error.\n\n"
+                       "Do you want to return to Workspace (Restart), "
+                       "quit session closing all applications (Quit) "
+                       "or show log file to get more information about session failure (Explain)?"
         defaultButton:@"Restart"
-      alternateButton:@"Cleanup"
-          otherButton:@"Describe"];
+      alternateButton:@"Quit"
+          otherButton:@"Explain..."];
 
-  // [panel setTarget:self];
-  // [panel setAction:@selector(alertButtonPressed:)];
-  // [[alert panel] orderFront:self];
+  [alert setButtonsTarget:self];
+  [alert setButtonsAction:@selector(alertButtonPressed:)];
+
   [alert show];
-  choice = [NSApp runModalForWindow:[alert panel]];
-  switch (choice) {
+  [NSApp runModalForWindow:[alert panel]];
+ }
+
+- (void)alertButtonPressed:(id)sender
+{
+  switch ([sender tag]) {
     case NSAlertDefaultReturn:
       NSLog(@"Alert Panel: start from scratch.");
       break;
@@ -149,16 +151,12 @@
       break;
     case NSAlertOtherReturn:
       NSLog(@"Alert Panel: show console.log contents.");
-      break;
+      return;
     default:
       NSLog(@"Alert Panel: user has made a strange choice!");
   }
-  [[alert panel] close];
-}
-
-- (void)alertButtonPressed:(id)sender
-{
-  
+  [NSApp stopModalWithCode:[sender tag]];
+  [[sender window] close];
 }
 
 # pragma mark - Open and Save panels

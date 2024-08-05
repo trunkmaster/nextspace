@@ -381,8 +381,23 @@
   return result;
 }
 
+
+- (void)setButtonsTarget:(id)target
+{
+  for (NSButton *button in buttons) {
+    [button setTarget:target];
+  }
+}
+- (void)setButtonsAction:(SEL)action
+{
+  for (NSButton *button in buttons) {
+    [button setAction:action];
+  }
+}
+
 - (void)buttonPressed:(id)sender
 {
+  
   if ([NSApp modalWindow] != panel) {
     NSLog(@"NXAalert panel button pressed when not in modal loop.");
     return;

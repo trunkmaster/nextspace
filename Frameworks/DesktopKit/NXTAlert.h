@@ -72,6 +72,8 @@
 - (void)show;
 - (NSInteger)runModal;
 
+- (void)setButtonsTarget:(id)target;
+- (void)setButtonsAction:(SEL)action;
 - (void)buttonPressed:(id)sender;
 @end
 
