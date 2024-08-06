@@ -121,17 +121,15 @@
 
 - (void)showCustomAlert:(id)sender
 {
-  NXTAlert *alert;
-
   alert = [[NXTAlert alloc]
         initWithTitle:@"Login"
               message:@"Session finished with error.\n\n"
-                       "Do you want to return to Workspace (Restart), "
-                       "quit session closing all applications (Quit) "
-                       "or show log file to get more information about session failure (Explain)?"
+                       "Click \"Restart\" to return to Workspace, "
+                       "click \"Quit\" to close your applications, "
+                       "click \"Explain\" to get more information about session failure."
         defaultButton:@"Restart"
       alternateButton:@"Quit"
-          otherButton:@"Explain..."];
+          otherButton:@"Explain"];
 
   [alert setButtonsTarget:self];
   [alert setButtonsAction:@selector(alertButtonPressed:)];
@@ -144,13 +142,22 @@
 {
   switch ([sender tag]) {
     case NSAlertDefaultReturn:
-      NSLog(@"Alert Panel: start from scratch.");
+      // NSLog(@"Alert Panel: start from scratch.");
       break;
     case NSAlertAlternateReturn:
-      NSLog(@"Alert Panel: Kill Them All!");
+      // NSLog(@"Alert Panel: Kill Them All!");
       break;
     case NSAlertOtherReturn:
-      NSLog(@"Alert Panel: show console.log contents.");
+      // NSLog(@"Alert Panel: show console.log contents.");
+      [NSBundle loadNibNamed:@"ConsoleLog" owner:self];
+      if (consoleLog) {
+        NSLog(@"Adding accessory view to Alert Panel.");
+        NSTextView *textView = [consoleLog documentView];
+        [textView setFont:[NSFont userFixedPitchFontOfSize:10.0]];
+        [textView setString:[NSString stringWithContentsOfFile:@"/tmp/GNUstepSecure1000/console.log"]];
+        [alert setAccessoryView:consoleLog];
+        [sender setEnabled:NO];
+      }
       return;
     default:
       NSLog(@"Alert Panel: user has made a strange choice!");

@@ -42,7 +42,10 @@
 
   NXTSavePanel     *savePanel;
   NXTOpenPanel     *openPanel;
-  NSBox            *accessoryView;
+  NSBox *accessoryView;
+
+  NXTAlert *alert;
+  NSScrollView *consoleLog;
 }
 
 @end

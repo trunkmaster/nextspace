@@ -242,6 +242,18 @@
   return panel;
 }
 
+- (void)setAccessoryView:(NSView *)view
+{
+  if (accessoryView) {
+    [accessoryView removeFromSuperview];
+  }
+
+  [[panel contentView] addSubview:view];
+  accessoryView = view;
+
+  [self sizeToFitScreen];
+}
+
 // --- Utility
 
 - (NSRect)rectForView:(NSTextView *)view
@@ -267,7 +279,6 @@
   NSRect   aFrame, bFrame;
   NSSize   cSize;
   CGFloat  maxWidth = 0.0, buttonWidth;
-  CGFloat  xShift;
   CGFloat  interButtonsOffset;
   CGFloat  panelEdgeOffset;
   NSButton *button;
@@ -294,12 +305,17 @@
     button = [buttons objectAtIndex:i];
       
     aFrame = [button frame];
-    xShift = aFrame.size.width - maxWidth;
-    aFrame.origin.x = panel.frame.size.width - (maxWidth + maxWidth*i);
+    aFrame.origin.x = panel.frame.size.width - (maxWidth + maxWidth * i);
     aFrame.origin.x -= (BUTTONS_SPACING * i) + BUTTONS_OFFSET;
     aFrame.size.width = maxWidth;
     [button setFrame:aFrame];
-  }  
+  }
+}
+
+- (void)sizeToFitScreen
+{
+  OSEScreen *screen = [[OSEScreen new] autorelease];
+  [self sizeToFitScreenSize:[screen sizeInPixels]];
 }
 
 - (void)sizeToFitScreenSize:(NSSize)screenSize
@@ -316,7 +332,7 @@
   
   textRect = [self rectForView:messageView];
 
-  if (textRect.size.height > messageFrame.size.height) {
+  if (textRect.size.height >= messageFrame.size.height) {
     [messageView setAlignment:NSLeftTextAlignment];
     panelFrame.size.height = emptyPanelHeight + textRect.size.height;
     while (panelFrame.size.height >= maxPanelHeight && [font pointSize] >= 11.0) {
@@ -351,7 +367,30 @@
     panelFrame.origin.y += [[panel screen] frame].size.height - screenSize.height;
     panelFrame.origin.x = (screenSize.width - panelFrame.size.width)/2;
   }
-  
+
+  // Accessory view
+  if (accessoryView) {
+    NSRect avFrame, mvFrame;
+    NSButton *button = buttons[0];
+    CGFloat additionalHeight = avFrame.size.height + 10;
+
+    // Enlarge panel height
+    panelFrame.size.height += additionalHeight;
+    panelFrame.origin.y -= additionalHeight;
+
+    // Setup accessory view frame
+    avFrame = accessoryView.frame;
+    avFrame.size.width = panelFrame.size.width + 4;
+    avFrame.origin.x = -2;
+    avFrame.origin.y = button.frame.origin.y + button.frame.size.height + 10;
+    [accessoryView setFrame:avFrame];
+
+    // Move message view up
+    mvFrame = messageView.frame;
+    mvFrame.origin.y += additionalHeight;
+    [messageView setFrame:mvFrame];
+  }
+
   [panel setFrame:panelFrame display:NO];
 
   // Buttons
@@ -362,9 +401,7 @@
 
 - (void)show
 {
-  OSEScreen *screen = [[OSEScreen new] autorelease];
-
-  [self sizeToFitScreenSize:[screen sizeInPixels]];
+  [self sizeToFitScreen];
   [panel makeFirstResponder:defaultButton];
   [panel makeKeyAndOrderFront:self];
 }

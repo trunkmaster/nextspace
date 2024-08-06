@@ -36,23 +36,25 @@
 
 @interface NXTAlert : NSObject
 {
-  NSPanel        *panel;
-  NSTextField    *titleField;
-  NSImageView    *icon;
-  NSTextView     *messageView;
-  NSButton       *defaultButton;
-  NSButton       *alternateButton;
-  NSButton       *otherButton;
+  NSPanel *panel;
 
-  NSString       *titleString;
-  NSString       *messageString;
-  NSString       *defaultString;
-  NSString       *alternateString;
-  NSString       *otherString;
+  NSTextField *titleField;
+  NSImageView *icon;
+  NSTextView *messageView;
+  NSView *accessoryView;
+  NSButton *defaultButton;
+  NSButton *alternateButton;
+  NSButton *otherButton;
+
+  NSString *titleString;
+  NSString *messageString;
+  NSString *defaultString;
+  NSString *alternateString;
+  NSString *otherString;
 
   NSMutableArray *buttons;
-  NSUInteger     maxButtonWidth;
-  NSUInteger     minButtonWidth;
+  NSUInteger maxButtonWidth;
+  NSUInteger minButtonWidth;
 }
 
 - (id)initWithTitle:(NSString *)titleText
@@ -67,6 +69,8 @@
        defaultBT:(NSString *)defaultText
      alternateBT:(NSString *)alternateText
          otherBT:(NSString *)otherText;
+
+- (void)setAccessoryView:(NSView *)view;
 
 - (NSPanel *)panel;
 - (void)show;

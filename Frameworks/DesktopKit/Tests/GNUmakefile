@@ -33,8 +33,9 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 	Text.gorm \
 	PanelOptions.gorm \
 	ListView.gorm \
-	Help \
-	HelpTemplate
+	ConsoleLog.gorm
+#	Help \
+#	HelpTemplate
 #
 # Class files
 #
