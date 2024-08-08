@@ -58,6 +58,7 @@
   }
   logPath = [logDir stringByAppendingPathComponent:@"console.log"];
   _sessionLog = [[NSString alloc] initWithString:logPath];
+  NSLog(@"Session log for %@ - %@", _userName, _sessionLog);
 }
 
 // Called for every launched command  (launchCommand:)

@@ -28,6 +28,7 @@
 #import <AppKit/AppKit.h>
 
 #import <DesktopKit/NXTDefaults.h>
+#import <DesktopKit/NXTAlert.h>
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEPower.h>
 
@@ -78,6 +79,10 @@ extern LoginExitCode panelExitCode;
   NSMutableDictionary  *userSessions;
 
   pam_handle_t         *PAM_handle;
+
+  // Error panel
+  NXTAlert *alert;
+  NSScrollView *consoleLogView;
 
   // Busy cursor
   XcursorAnimate       *busy_cursor;

@@ -34,7 +34,6 @@
 #import <SystemKit/OSEDisplay.h>
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEMouse.h>
-#import <DesktopKit/NXTAlert.h>
 
 static NSString *PAMAuthenticationException = @"PAMAuthenticationException";
 static NSString *PAMAccountExpiredException = @"PAMAccountExpiredException";
@@ -43,6 +42,7 @@ static NSString *PAMPermissionDeniedException = @"PAMPermissionDeniedException";
 static NSString *PAMSessionOpeningException = @"PAMSessionOpeningException";
 
 LoginExitCode panelExitCode;
+static NSString *consoleLogPath = nil;
 
 //=============================================================================
 // Manage user sessions
@@ -88,6 +88,56 @@ LoginExitCode panelExitCode;
   // ----------------
 }
 
+- (NSInteger)runAlertPanelForSession:(UserSession *)session
+{
+  alert = [[NXTAlert alloc]
+        initWithTitle:@"Login"
+              message:@"Session finished with error.\n\n"
+                       "Click \"Restart\" to return to Workspace, "
+                       "click \"Quit\" to close your applications, "
+                       "click \"Explain\" to get more information about session failure."
+        defaultButton:@"Restart"
+      alternateButton:@"Quit"
+          otherButton:@"Explain"];
+
+  [alert setButtonsTarget:self];
+  [alert setButtonsAction:@selector(alertButtonPressed:)];
+
+  consoleLogPath = [session.sessionLog copy];
+  NSLog(@"Console log for %@ - %@", session.userName, session.sessionLog);
+
+  [alert show];
+  return [NSApp runModalForWindow:[alert panel]];
+}
+
+- (void)alertButtonPressed:(id)sender
+{
+  switch ([sender tag]) {
+    case NSAlertDefaultReturn:
+      // NSLog(@"Alert Panel: start from scratch.");
+      break;
+    case NSAlertAlternateReturn:
+      // NSLog(@"Alert Panel: Kill Them All!");
+      break;
+    case NSAlertOtherReturn:
+      // NSLog(@"Alert Panel: show console.log contents.");
+      [NSBundle loadNibNamed:@"ConsoleLog" owner:self];
+      if (consoleLogView) {
+        // NSLog(@"Adding accessory view to Alert Panel.");
+        NSTextView *textView = [consoleLogView documentView];
+        [textView setFont:[NSFont userFixedPitchFontOfSize:10.0]];
+        [textView setString:[NSString stringWithContentsOfFile:consoleLogPath]];
+        [alert setAccessoryView:consoleLogView];
+        [sender setEnabled:NO];
+      }
+      return;
+    default:
+      NSLog(@"Alert Panel: user has made a strange choice!");
+  }
+  [NSApp stopModalWithCode:[sender tag]];
+  [[sender window] orderOut:self];
+}
+
 - (void)userSessionWillClose:(UserSession *)session
 {
   NSString  *user = session.userName;
@@ -107,15 +157,16 @@ LoginExitCode panelExitCode;
   if (sessionExitStatus == ShutdownExitCode) {
     panelExitCode = ShutdownExitCode;
     // [self setPanelExitCode:ShutdownExitCode];
-  }
-  else if (sessionExitStatus != 0 &&
-           sessionExitStatus != ShutdownExitCode &&
-           sessionExitStatus != RebootExitCode) {
-    choice = NXTRunAlertPanel(@"Login", @"Session finished with error. "
-                              "See console.log for details.\n"
-                              "Do you want to restart or cleanup session?\n"
-                              "Note: \"Cleanup\" will kill all running applications.",
-                              @"Restart", @"Cleanup", nil);
+  } else {
+  // else if (sessionExitStatus != 0 &&
+  //          sessionExitStatus != ShutdownExitCode &&
+  //          sessionExitStatus != RebootExitCode) {
+    // choice = NXTRunAlertPanel(@"Login", @"Session finished with error. "
+    //                           "See console.log for details.\n"
+    //                           "Do you want to restart or cleanup session?\n"
+    //                           "Note: \"Cleanup\" will kill all running applications.",
+    //                           @"Restart", @"Cleanup", nil);
+    choice = [self runAlertPanelForSession:session];
     if (choice == NSAlertAlternateReturn) {
       [self closeAllXClients];
     }

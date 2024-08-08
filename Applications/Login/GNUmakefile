@@ -30,6 +30,7 @@ Preferences
 #
 Login_RESOURCE_FILES = \
 Resources/Login.gorm \
+Resources/ConsoleLog.gorm \
 Resources/loginwindow.tiff \
 Resources/Login \
 Resources/Login.user \
