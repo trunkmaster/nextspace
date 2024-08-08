@@ -372,11 +372,7 @@
   if (accessoryView) {
     NSRect avFrame, mvFrame;
     NSButton *button = buttons[0];
-    CGFloat additionalHeight = avFrame.size.height + 10;
-
-    // Enlarge panel height
-    panelFrame.size.height += additionalHeight;
-    panelFrame.origin.y -= additionalHeight;
+    CGFloat additionalHeight;
 
     // Setup accessory view frame
     avFrame = accessoryView.frame;
@@ -384,6 +380,11 @@
     avFrame.origin.x = -2;
     avFrame.origin.y = button.frame.origin.y + button.frame.size.height + 10;
     [accessoryView setFrame:avFrame];
+
+    // Enlarge panel height
+    additionalHeight = avFrame.size.height + 10;
+    panelFrame.size.height += additionalHeight;
+    panelFrame.origin.y -= additionalHeight;
 
     // Move message view up
     mvFrame = messageView.frame;
