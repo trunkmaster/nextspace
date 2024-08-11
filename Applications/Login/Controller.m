@@ -67,6 +67,7 @@ static NSString *consoleLogPath = nil;
       @autoreleasepool {
         while (aSession.isRunning != NO) {
           [aSession launchSessionScript];
+          NSLog(@"Session Log (openSessionForUser:) - %@", aSession.sessionLog);
           [self performSelectorOnMainThread:@selector(userSessionWillClose:)
                                  withObject:aSession
                               waitUntilDone:YES];
@@ -103,7 +104,7 @@ static NSString *consoleLogPath = nil;
   [alert setButtonsTarget:self];
   [alert setButtonsAction:@selector(alertButtonPressed:)];
 
-  consoleLogPath = [session.sessionLog copy];
+  consoleLogPath = session.sessionLog;
   NSLog(@"Console log for %@ - %@", session.userName, session.sessionLog);
 
   [alert show];
@@ -166,7 +167,7 @@ static NSString *consoleLogPath = nil;
     //                           "Do you want to restart or cleanup session?\n"
     //                           "Note: \"Cleanup\" will kill all running applications.",
     //                           @"Restart", @"Cleanup", nil);
-    choice = [self runAlertPanelForSession:session];
+     choice = [self runAlertPanelForSession:session];
     if (choice == NSAlertAlternateReturn) {
       [self closeAllXClients];
     }

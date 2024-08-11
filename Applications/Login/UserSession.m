@@ -37,29 +37,18 @@
 @implementation UserSession
 
 // Log file for session use
-- (void)_setupSessionLog
-{
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSString      *logDir;
-  NSString      *logPath;
-  BOOL          isDir;
-  
-  logDir = [NSString stringWithFormat:@"/tmp/GNUstepSecure%u",
-                     getpwnam([_userName cString])->pw_uid];
-  
-  if (![fm fileExistsAtPath:logDir isDirectory:&isDir]) {
-    [fm createDirectoryAtPath:logDir
-        withIntermediateDirectories:YES
-                   attributes:@{NSFilePosixPermissions:@"700"}
-                        error:0];
-  }
-  if (_sessionLog != nil) {
-    [_sessionLog release];
-  }
-  logPath = [logDir stringByAppendingPathComponent:@"console.log"];
-  _sessionLog = [[NSString alloc] initWithString:logPath];
-  NSLog(@"Session log for %@ - %@", _userName, _sessionLog);
-}
+// - (NSString *)_sessionLogPath
+// {
+//   struct passwd *user;
+//   NSString *logPath;
+
+//   user = getpwnam([_userName cString]);
+//   if (user) {
+//     logPath = [[NSString alloc] initWithFormat:@"/tmp/GNUstepSecure%u/console.log", user->pw_uid];
+//   }
+
+//   return logPath;
+// }
 
 // Called for every launched command  (launchCommand:)
 - (BOOL)_setUserEnvironment
@@ -102,8 +91,8 @@
 
   // Create user GNUstep directory in /tmp.
   [[NSFileManager defaultManager]
-    createDirectoryAtPath:[NSString stringWithFormat:@"/tmp/GNUstepSecure%d", user->pw_uid]
-               attributes:@{@"NSFilePosixPermissions":[NSNumber numberWithShort:0700]}];
+      createDirectoryAtPath:[NSString stringWithFormat:@"/tmp/GNUstepSecure%d", user->pw_uid]
+                 attributes:@{@"NSFilePosixPermissions" : [NSNumber numberWithShort:0700]}];
 
   // General environment variables
   setenv("USER", user->pw_name, 1);
@@ -126,7 +115,7 @@
   // For CoreFoundation dynamic loading of CFNetwork
   setenv("CFNETWORK_LIBRARY_PATH", "/usr/NextSpace/lib/libCFNetwork.so", 1);
 
-  [self _setupSessionLog];
+  // [self _setupSessionLog];
   setenv("NS_LOGFILE", [_sessionLog cString], 1);
   
   return YES;
@@ -162,6 +151,10 @@
 
   _userName = [[NSString alloc] initWithString:name];
 
+  // _sessionLog = [self _sessionLogPath];
+  _sessionLog = [[NSString alloc]
+      initWithFormat:@"/tmp/GNUstepSecure%u/console.log", getpwnam([_userName cString])->pw_uid];
+ 
   return self;
 }
 
