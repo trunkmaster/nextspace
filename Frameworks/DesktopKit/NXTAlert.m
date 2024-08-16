@@ -21,6 +21,9 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
+#import <AppKit/AppKitExceptions.h>
+#import <GNUstepGUI/GSDisplayServer.h>
+
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEDisplay.h>
 #import <SystemKit/OSEMouse.h>
@@ -400,6 +403,66 @@
 
 // --- Actions
 
+- (NSInteger)runModalForWindow:(NSWindow *)theWindow
+{
+  NSModalSession theSession = 0;
+  NSInteger code = NSRunContinuesResponse;
+  NSEvent	*event;
+
+  NSLog(@"NXTAlert-runModalForWindow");
+
+  @try {
+    NSDate *limit;
+    GSDisplayServer *srv;
+    BOOL done = NO;
+
+    theSession = [NSApp beginModalSessionForWindow:theWindow];
+    limit = [NSDate distantPast];
+    srv = GSCurrentServer();
+
+    while (done == NO && code == NSRunContinuesResponse) {
+      // limit = [NSDate dateWithTimeIntervalSinceNow:1.0];
+      // Try to handle events for this session, discarding others.
+      // code = [self runModalSession:theSession];
+      if (code == NSRunContinuesResponse) {
+        // Wait until there are more events to handle.
+        event = DPSGetEvent(srv, NSAnyEventMask, limit, NSModalPanelRunLoopMode);
+        if (event != nil) {
+          NSWindow *eventWindow = [event window];
+
+          if (eventWindow == theWindow || [eventWindow worksWhenModal] == YES ||
+              [event type] == NSAppKitDefined) {
+            [NSApp sendEvent:event];
+          } else {
+            event = nil;  // Ignore/discard this event.
+          }
+        } else {
+          DPSGetEvent(srv, NSAnyEventMask, [NSDate distantFuture], NSModalPanelRunLoopMode);
+          // done = YES;		// No more events pending.
+        }
+      }
+      // if ([theWindow isVisible] == NO) {
+      //   [NSApp stopModal];
+      // }
+    }
+
+    [NSApp endModalSession:theSession];
+  } @catch (NSException *localException) {
+    if (theSession != 0) {
+      // NSWindow *win_to_close = theSession->window;
+
+      [NSApp endModalSession:theSession];
+      [theWindow close];
+    }
+    if ([[localException name] isEqual:NSAbortModalException] == NO) {
+      [localException raise];
+    }
+    code = NSRunAbortedResponse;
+  }
+
+  return code;
+}
+
 - (void)show
 {
   [self sizeToFitScreen];
@@ -412,7 +475,6 @@
   NSInteger result;
   
   [self show];
-  
   result = [NSApp runModalForWindow:panel];
   [panel orderOut:self];
   
