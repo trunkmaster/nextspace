@@ -49,6 +49,50 @@ static NSString *consoleLogPath = nil;
 //=============================================================================
 @implementation Controller (UserSession)
 
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+  UserSession *session = context;
+
+  NSLog(@"KVO: changed path %@. Exit status: %li. Thread: %@", keyPath, session.exitStatus, [NSThread currentThread]);
+
+  if ([session isKindOfClass:[UserSession class]] == NO) {
+    NSLog(@"Session is not kind of class UserSession, skip it.");
+    return;
+  }
+
+  if (session.isRunning != NO) {
+    NSLog(@"Session still running, skip it.");
+    return;
+  }
+
+  NSRunAlertPanel(@"Login", @"Something", @"OK", @"Cancel", nil);
+
+  // dispatch_sync(dispatch_get_main_queue(), ^{
+    // if (session.exitStatus != 0 && session.exitStatus != ShutdownExitCode &&
+    //     session.exitStatus != RebootExitCode) {
+  if ([self runAlertPanelForSession:session] == NSAlertAlternateReturn) {  // Quit
+    [self closeAllXClients];
+  } else {  // Restart
+    session.isRunning = YES;
+  }
+  [alert release];
+  // });
+
+  if (session.isRunning == NO) {
+    [session removeObserver:self forKeyPath:@"isRunning"];
+    [self userSessionWillClose:session];
+  }
+
+  if (session.exitStatus == ShutdownExitCode) {
+    [self performSelectorOnMainThread:@selector(shutDown:) withObject:self waitUntilDone:NO];
+  } else if (session.exitStatus == RebootExitCode) {
+    [self performSelectorOnMainThread:@selector(restart:) withObject:self waitUntilDone:NO];
+  }
+}
+
 - (void)openSessionForUser:(NSString *)user
 {
   UserSession *aSession;
@@ -57,35 +101,53 @@ static NSString *consoleLogPath = nil;
                                            name:user
                                        defaults:(NSDictionary *)prefs];
   [aSession readSessionScript];
-  aSession.isRunning = YES;
-  [userSessions setObject:aSession forKey:user]; // remember user session
+  [aSession addObserver:self
+             forKeyPath:@"isRunning"
+                options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+                context:aSession];
+  [userSessions setObject:aSession forKey:user];  // remember user session
   [aSession release];
 
   // --- GCD code ---
-  dispatch_queue_t gq = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
-  dispatch_async(gq, ^{
-      @autoreleasepool {
-        while (aSession.isRunning != NO) {
-          [aSession launchSessionScript];
-          NSLog(@"Session Log (openSessionForUser:) - %@", aSession.sessionLog);
-          [self performSelectorOnMainThread:@selector(userSessionWillClose:)
-                                 withObject:aSession
-                              waitUntilDone:YES];
-        }
-        
-        NSLog(@"[GCD] panelExitCode: %d", panelExitCode);
-        if (panelExitCode == ShutdownExitCode) {
-          [self performSelectorOnMainThread:@selector(shutDown:)
-                                 withObject:self
-                              waitUntilDone:NO];
-        }
-        else if (panelExitCode == RebootExitCode) {
-          [self performSelectorOnMainThread:@selector(restart:)
-                                 withObject:self
-                              waitUntilDone:NO];
-        }
-      }
-    });
+  // dispatch_queue_t session_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+  dispatch_queue_t session_q = dispatch_queue_create("ns.login.session", DISPATCH_QUEUE_CONCURRENT);
+  dispatch_async(session_q, ^{
+    @autoreleasepool {
+      // do {
+        NSLog(@"Session Log (openSessionForUser:) - %@", aSession.sessionLog);
+
+        [aSession launchSessionScript];
+
+        // if (aSession.exitStatus != 0 && aSession.exitStatus != ShutdownExitCode &&
+        //     aSession.exitStatus != RebootExitCode) {
+        // [self performSelectorOnMainThread:@selector(userSessionWillClose:)
+        //                        withObject:aSession
+        //                     waitUntilDone:YES];
+        // dispatch_sync(dispatch_get_main_queue(), ^{
+          // [self userSessionWillClose:aSession];
+          // if ([self runAlertPanelForSession:aSession] == NSAlertAlternateReturn) {
+          //   [self closeAllXClients];
+          //   aSession.isRunning = NO;
+          // } else {
+          //   aSession.isRunning = YES;
+          // }
+          // [alert release];
+        // });
+        // }
+      // } while (aSession != nil && aSession.isRunning != NO);
+      NSLog(@"(openSessionForUser:) session was FINISHED! Is running: %@", aSession.isRunning ? @"YES" : @"NO");
+
+      // if (aSession.exitStatus == ShutdownExitCode) {
+      //   [self performSelectorOnMainThread:@selector(shutDown:) withObject:self waitUntilDone:NO];
+      // } else if (aSession.exitStatus == RebootExitCode) {
+      //   [self performSelectorOnMainThread:@selector(restart:) withObject:self waitUntilDone:NO];
+      // }
+
+      // This will release UserSession object
+      // [self userSessionWillClose:aSession];
+    }
+  });
+  NSLog(@"(openSessionForUser:) session was STARTED!");
   // ----------------
 }
 
@@ -107,8 +169,9 @@ static NSString *consoleLogPath = nil;
   consoleLogPath = session.sessionLog;
   NSLog(@"Console log for %@ - %@", session.userName, session.sessionLog);
 
-  [alert show];
-  return [NSApp runModalForWindow:[alert panel]];
+  // [alert show];
+  // return [NSApp runModalForWindow:[alert panel]];
+  return [alert runModal];
 }
 
 - (void)alertButtonPressed:(id)sender
@@ -141,52 +204,23 @@ static NSString *consoleLogPath = nil;
 
 - (void)userSessionWillClose:(UserSession *)session
 {
-  NSString  *user = session.userName;
-  NSInteger choice;
-  NSInteger sessionExitStatus;
-
   NSLog(@"Session WILL close for user \'%@\' [%lu] exitStatus: %lu",
-        user, [session retainCount], session.exitStatus);
-  
-  if ([userSessions objectForKey:user] == nil) {
+        session.userName, [session retainCount], session.exitStatus);
+
+  if ([userSessions objectForKey:session.userName] == nil) {
     return;
-  }
-
-  session.isRunning = NO;
-  sessionExitStatus = session.exitStatus;
-
-  if (sessionExitStatus == ShutdownExitCode) {
-    panelExitCode = ShutdownExitCode;
-    // [self setPanelExitCode:ShutdownExitCode];
-  } else {
-  // else if (sessionExitStatus != 0 &&
-  //          sessionExitStatus != ShutdownExitCode &&
-  //          sessionExitStatus != RebootExitCode) {
-    // choice = NXTRunAlertPanel(@"Login", @"Session finished with error. "
-    //                           "See console.log for details.\n"
-    //                           "Do you want to restart or cleanup session?\n"
-    //                           "Note: \"Cleanup\" will kill all running applications.",
-    //                           @"Restart", @"Cleanup", nil);
-     choice = [self runAlertPanelForSession:session];
-    if (choice == NSAlertAlternateReturn) {
-      [self closeAllXClients];
-    }
-    else {
-      session.isRunning = YES;
-    }
   }
 
   // Do not close PAM session and show window if session aimed to be restarted.
   // Session will be restarted in GCD queue (openSessionForUser:)
   if (session.isRunning == NO) {
-    [userSessions removeObjectForKey:user];
+    [userSessions removeObjectForKey:session.userName];
     pam_end(PAM_handle, 0);
   
-    // TODO: actually this doesn't make sense because no multuple session handling
+    // TODO: actually this doesn't make sense because no multiple session handling
     // implemented yet. Leave it for the future.
     if ([[userSessions allKeys] count] == 0) {
-      if (sessionExitStatus != ShutdownExitCode &&
-          sessionExitStatus != RebootExitCode) {
+      if (session.exitStatus != ShutdownExitCode && session.exitStatus != RebootExitCode) {
         [self setWindowVisible:YES];
       }
     }
@@ -641,8 +675,7 @@ int ConversationFunction(int num_msg,
 #endif
       [self clearFields];
       return;
-    }
-    else if ([user isEqualToString:@"quit"]) {
+    } else if ([user isEqualToString:@"quit"]) {
       NSLog(@"Application will be stopped");
       panelExitCode = QuitExitCode;
       [NSApp stop:self]; // Go out of run loop

@@ -253,6 +253,12 @@
   return status;
 }
 
+- (void)setRunning:(NSNumber *)isRunning
+{
+  NSLog(@"isRunning = %@", isRunning);
+  self.isRunning = [isRunning boolValue];
+}
+
 @end
 
 @implementation UserSession (ScriptLaunch)
@@ -311,6 +317,10 @@
   NSLog(@"launchSession: %@", sessionScript);
 
   _exitStatus = 0;
+  // self.isRunning = YES;
+  [self performSelectorOnMainThread:@selector(setRunning:)
+                         withObject:[NSNumber numberWithBool:YES]
+                      waitUntilDone:YES];
 
   for (id scriptCommand in sessionScript) {
     if (scriptCommand == nil ||
@@ -345,8 +355,14 @@
        NSLog(@"Command %@ was aborted (SIGABRT). Interrupting session script launch sequence...",
              scriptCommand);
        break;
-     }
+    }
   }
+
+  // self.isRunning = NO;
+  // Session is running on cuncurrent thread. Change ivar value on main thread for KVO code.
+  [self performSelectorOnMainThread:@selector(setRunning:)
+                         withObject:[NSNumber numberWithBool:NO]
+                      waitUntilDone:YES];
 }
 
 @end
