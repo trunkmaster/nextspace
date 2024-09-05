@@ -121,22 +121,32 @@
 
 - (void)showCustomAlert:(id)sender
 {
-  alert = [[NXTAlert alloc]
-        initWithTitle:@"Login"
-              message:@"Session finished with error.\n\n"
-                       "Click \"Restart\" to return to Workspace, "
-                       "click \"Quit\" to close your applications, "
-                       "click \"Explain\" to get more information about session failure."
-        defaultButton:@"Restart"
-      alternateButton:@"Quit"
-          otherButton:@"Explain"];
+  dispatch_queue_t alert_q = dispatch_queue_create("kit.desktop.ns", DISPATCH_QUEUE_CONCURRENT);
+  dispatch_async(alert_q, ^{
+    alert = [[NXTAlert alloc]
+          initWithTitle:@"Login"
+                message:@"Session finished with error.\n\n"
+                         "Click \"Restart\" to return to Workspace, "
+                         "click \"Quit\" to close your applications, "
+                         "click \"Explain\" to get more information about session failure."
+          defaultButton:@"Restart"
+        alternateButton:@"Quit"
+            otherButton:@"Explain"];
 
-  [alert setButtonsTarget:self];
-  [alert setButtonsAction:@selector(alertButtonPressed:)];
+    [alert setButtonsTarget:self];
+    [alert setButtonsAction:@selector(alertButtonPressed:)];
 
-  [alert show];
-  [NSApp runModalForWindow:[alert panel]];
- }
+    sleep(1);
+    [alert show];
+    // [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+    // [NSApp performSelectorOnMainThread:@selector(runModalForWindow:)
+    //                         withObject:[alert panel]
+    //                      waitUntilDone:YES];
+    [alert performSelectorOnMainThread:@selector(runModalForWindow:)
+                            withObject:[alert panel]
+                         waitUntilDone:YES];
+  });
+}
 
 - (void)alertButtonPressed:(id)sender
 {
@@ -154,7 +164,8 @@
         NSLog(@"Adding accessory view to Alert Panel.");
         NSTextView *textView = [consoleLog documentView];
         [textView setFont:[NSFont userFixedPitchFontOfSize:10.0]];
-        [textView setString:[NSString stringWithContentsOfFile:@"/tmp/GNUstepSecure1000/console.log"]];
+        [textView
+            setString:[NSString stringWithContentsOfFile:@"/tmp/GNUstepSecure1000/console.log"]];
         [alert setAccessoryView:consoleLog];
         [sender setEnabled:NO];
       }

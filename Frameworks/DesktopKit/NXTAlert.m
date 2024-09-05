@@ -420,25 +420,24 @@
     limit = [NSDate distantPast];
     srv = GSCurrentServer();
 
-    while (done == NO && code == NSRunContinuesResponse) {
-      // limit = [NSDate dateWithTimeIntervalSinceNow:1.0];
+    while (code == NSRunContinuesResponse) {
+      // limit = [NSDate dateWithTimeIntervalSinceNow:0.1];
       // Try to handle events for this session, discarding others.
-      // code = [self runModalSession:theSession];
+      code = [NSApp runModalSession:theSession];
       if (code == NSRunContinuesResponse) {
         // Wait until there are more events to handle.
-        event = DPSGetEvent(srv, NSAnyEventMask, limit, NSModalPanelRunLoopMode);
+        event = DPSPeekEvent(srv, NSAnyEventMask, limit, NSModalPanelRunLoopMode);
         if (event != nil) {
           NSWindow *eventWindow = [event window];
 
           if (eventWindow == theWindow || [eventWindow worksWhenModal] == YES ||
               [event type] == NSAppKitDefined) {
-            [NSApp sendEvent:event];
-          } else {
-            event = nil;  // Ignore/discard this event.
+            // [NSApp sendEvent:event];
+            [eventWindow sendEvent:event];
+            [eventWindow setViewsNeedDisplay:YES];
+            // [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+            NSLog(@"NSSendEvent: %@", event);
           }
-        } else {
-          DPSGetEvent(srv, NSAnyEventMask, [NSDate distantFuture], NSModalPanelRunLoopMode);
-          // done = YES;		// No more events pending.
         }
       }
       // if ([theWindow isVisible] == NO) {
