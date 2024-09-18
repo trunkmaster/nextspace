@@ -57,6 +57,8 @@
   NSUInteger minButtonWidth;
 }
 
+@property (assign) id representedObject;
+
 - (id)initWithTitle:(NSString *)titleText
             message:(NSString *)messageText
       defaultButton:(NSString *)defaultText

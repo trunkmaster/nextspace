@@ -208,7 +208,6 @@
 - (void)awakeFromNib
 {
   NSDictionary *selectedAttrs;
-  // NSText       *fieldEditor;
 
   maxButtonWidth = ([panel frame].size.width - 16 - 10) / 3;
   minButtonWidth = [defaultButton frame].size.width;
@@ -224,12 +223,8 @@
   [messageView setSelectable:YES];
   [messageView setAlignment:NSCenterTextAlignment];
   [messageView setTextContainerInset:NSMakeSize(0,0)];
-  [[panel contentView] addSubview:messageView];
-  [messageView release];
   
   selectedAttrs = @{NSBackgroundColorAttributeName:[NSColor controlLightHighlightColor]};
-  // fieldEditor = [panel fieldEditor:YES forObject:messageView];
-  // [(NSTextView *)fieldEditor setSelectedTextAttributes:selectedAttrs];
   [messageView setSelectedTextAttributes:selectedAttrs];
 }
 
@@ -271,9 +266,14 @@
                            withinSelectedCharacterRange:textRange
                                         inTextContainer:[view textContainer]
                                               rectCount:&rectCount];
-  for (int i = 0; i < rectCount; i++) {
-    textRect.size.height += rectArray[i].size.height;
-  }
+  // if (rectArray) {
+    for (int i = 0; i < rectCount; i++) {
+      textRect.size.height += rectArray[i].size.height;
+    }
+  // } else {
+  //   textRect = [view frame];
+  // }
+
   return textRect;
 }
 
@@ -418,38 +418,39 @@
 
     theSession = [NSApp beginModalSessionForWindow:theWindow];
     limit = [NSDate distantPast];
+    // limit = [NSDate dateWithTimeIntervalSinceNow:0.5];
     srv = GSCurrentServer();
 
     while (code == NSRunContinuesResponse) {
       // limit = [NSDate dateWithTimeIntervalSinceNow:0.1];
       // Try to handle events for this session, discarding others.
-      code = [NSApp runModalSession:theSession];
-      if (code == NSRunContinuesResponse) {
+      // code = [NSApp runModalSession:theSession];
+      // if (code == NSRunContinuesResponse) {
         // Wait until there are more events to handle.
-        event = DPSPeekEvent(srv, NSAnyEventMask, limit, NSModalPanelRunLoopMode);
+        event = DPSGetEvent(srv, NSAnyEventMask, limit, NSModalPanelRunLoopMode);
         if (event != nil) {
           NSWindow *eventWindow = [event window];
 
-          if (eventWindow == theWindow || [eventWindow worksWhenModal] == YES ||
-              [event type] == NSAppKitDefined) {
+          if (eventWindow == theWindow || [eventWindow worksWhenModal] == YES /*||
+              [event type] != NSPeriodic*/) {
             // [NSApp sendEvent:event];
+            // [NSApp updateWindows];
             [eventWindow sendEvent:event];
-            [eventWindow setViewsNeedDisplay:YES];
-            // [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
             NSLog(@"NSSendEvent: %@", event);
+            // if ([[NSApp windows] indexOfObjectIdenticalTo:theWindow] == NSNotFound ||
+            //     ![theWindow isVisible]) {
+            //   [NSApp stopModal];
+            //   code = 0;
+            // }
           }
         }
-      }
-      // if ([theWindow isVisible] == NO) {
-      //   [NSApp stopModal];
-      // }
+
+        // }
     }
 
     [NSApp endModalSession:theSession];
   } @catch (NSException *localException) {
     if (theSession != 0) {
-      // NSWindow *win_to_close = theSession->window;
-
       [NSApp endModalSession:theSession];
       [theWindow close];
     }
@@ -501,7 +502,7 @@
     NSLog(@"NXAalert panel button pressed when not in modal loop.");
     return;
   }
-  
+
   [NSApp stopModalWithCode:[sender tag]];
 }
 
