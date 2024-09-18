@@ -26,6 +26,13 @@
 
 @class Controller;
 
+typedef enum {
+  QuittRequest = 128,
+  ShutdownRequest = 129,
+  RebootRequest = 130,
+  RestartRequest = 131
+} SessionRequestCode;
+
 @interface UserSession : NSObject
 {
   Controller     *appController;
@@ -33,10 +40,12 @@
   NSMutableArray *sessionScript;
 }
 
-@property (assign)   BOOL      isRunning;
+@property (assign) dispatch_queue_t run_queue;
+@property (assign) BOOL isRunning;
 @property (readonly) NSInteger exitStatus;
-@property (readonly) NSString  *userName;
-@property (readonly) NSString  *sessionLog;
+@property (assign) SessionRequestCode request;
+@property (readonly) NSString *userName;
+@property (readonly) NSString *sessionLog;
 
 // ---
 

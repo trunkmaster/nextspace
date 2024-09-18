@@ -102,7 +102,7 @@ extern LoginExitCode panelExitCode;
 @interface Controller (UserSession)
 
 - (void)openSessionForUser:(NSString *)userName;
-- (void)userSessionWillClose:(UserSession *)session;
+- (void)closeUserSession:(UserSession *)session;
 
 @end
 
