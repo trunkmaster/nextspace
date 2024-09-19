@@ -56,7 +56,8 @@ LoginExitCode panelExitCode;
 {
   UserSession *session = context;
 
-  NSLog(@"KVO: changed path %@. Exit status: %li. Thread: %@", keyPath, session.exitStatus, [NSThread currentThread]);
+  NSLog(@"KVO: changed path %@. Exit status: %li. Thread: %@", keyPath, session.exitStatus,
+        [NSThread currentThread]);
 
   if ([session isKindOfClass:[UserSession class]] == NO) {
     NSLog(@"Session is not kind of class UserSession, skip it.");
@@ -68,32 +69,17 @@ LoginExitCode panelExitCode;
     return;
   }
 
-  // if (session.exitStatus == ShutdownExitCode) { // Shutdown from Workspace
-  //   [self performSelectorOnMainThread:@selector(shutDown:) withObject:self waitUntilDone:NO];
-  // } else if (session.exitStatus == RebootExitCode) { // Reboot from Workspace
-  //   [self performSelectorOnMainThread:@selector(restart:) withObject:self waitUntilDone:NO];
-  // } else if (session.exitStatus != 0) { // Workspace crashed
-    [self runAlertPanelForSession:session];
-  // }
-
-  // // if (session.exitStatus != 0 && session.exitStatus != ShutdownExitCode &&
-  // //     session.exitStatus != RebootExitCode) {
-  // if ([self runAlertPanelForSession:session] == NSAlertAlternateReturn) {  // Quit
-  //   [self closeAllXClients];
-  // } else {  // Restart
-  //   session.isRunning = YES;
-  // }
-  // [alert release];
-
-  // if (session.isRunning == NO) {
-  //   [session removeObserver:self forKeyPath:@"isRunning"];
-  //   [self closeUserSession:session];
-  // }
+  [self runAlertPanelForSession:session];
 }
 
 - (void)openSessionForUser:(NSString *)user
 {
   UserSession *session;
+
+  if ([userSessions objectForKey:user]) {
+    NSLog(@"Session for user '%@' already opened.", user);
+    return;
+  }
 
   session = [[UserSession alloc] initWithOwner:self
                                            name:user
@@ -118,7 +104,7 @@ LoginExitCode panelExitCode;
   }
 
   dispatch_async(session.run_queue, ^{
-    NSLog(@"Session Log (openSessionForUser:) - %@", session.sessionLog);
+    NSLog(@"(runUserSesion:) Session Log - %@", session.sessionLog);
 
     [session launchSessionScript];
     // [session performSelectorOnMainThread:@selector(setRunning:)
@@ -129,9 +115,38 @@ LoginExitCode panelExitCode;
     //                           withObject:[NSNumber numberWithBool:NO]
     //                        waitUntilDone:YES];
 
-    NSLog(@"(openSessionForUser:) session was FINISHED! Is running: %@",
+    NSLog(@"(runUserSession:) session was FINISHED! Is running: %@",
           session.isRunning ? @"YES" : @"NO");
   });
+}
+
+- (void)closeUserSession:(UserSession *)session
+{
+  NSInteger exitStatus = session.exitStatus;
+
+  NSLog(@"Session WILL close for user \'%@\' [%lu] exitStatus: %lu", session.userName,
+        [session retainCount], exitStatus);
+
+  if ([userSessions objectForKey:session.userName] == nil) {
+    return;
+  }
+
+  // Do not close PAM session and show window if session aimed to be restarted.
+  // Session will be restarted in GCD queue (openSessionForUser:)
+  if (session.isRunning == NO) {
+    [userSessions removeObjectForKey:session.userName];
+    pam_end(PAM_handle, 0);
+  
+    // TODO: actually this doesn't make sense because no multiple session handling
+    // implemented yet. Leave it for the future.
+    if ([[userSessions allKeys] count] == 0) {
+      if (exitStatus != ShutdownExitCode && exitStatus != RebootExitCode) {
+        [self setWindowVisible:YES];
+      }
+    }
+  } else {
+    NSLog(@"closeUserSession: session still running - will not be closed.");
+  }
 }
 
 - (void)runAlertPanelForSession:(UserSession *)session
@@ -187,35 +202,6 @@ LoginExitCode panelExitCode;
   // [NSApp stopModalWithCode:[sender tag]];
   [[alert panel] orderOut:self];
   [alert release];
-}
-
-- (void)closeUserSession:(UserSession *)session
-{
-  NSInteger exitStatus = session.exitStatus;
-
-  NSLog(@"Session WILL close for user \'%@\' [%lu] exitStatus: %lu", session.userName,
-        [session retainCount], exitStatus);
-
-  if ([userSessions objectForKey:session.userName] == nil) {
-    return;
-  }
-
-  // Do not close PAM session and show window if session aimed to be restarted.
-  // Session will be restarted in GCD queue (openSessionForUser:)
-  if (session.isRunning == NO) {
-    [userSessions removeObjectForKey:session.userName];
-    pam_end(PAM_handle, 0);
-  
-    // TODO: actually this doesn't make sense because no multiple session handling
-    // implemented yet. Leave it for the future.
-    if ([[userSessions allKeys] count] == 0) {
-      if (exitStatus != ShutdownExitCode && exitStatus != RebootExitCode) {
-        [self setWindowVisible:YES];
-      }
-    }
-  } else {
-    NSLog(@"closeUserSession: session still running - will not be closed.");
-  }
 }
 
 @end
