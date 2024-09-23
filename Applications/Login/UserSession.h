@@ -26,13 +26,6 @@
 
 @class Controller;
 
-typedef enum {
-  QuittRequest = 128,
-  ShutdownRequest = 129,
-  RebootRequest = 130,
-  RestartRequest = 131
-} SessionRequestCode;
-
 @interface UserSession : NSObject
 {
   Controller     *appController;
@@ -43,7 +36,6 @@ typedef enum {
 @property (assign) dispatch_queue_t run_queue;
 @property (assign) BOOL isRunning;
 @property (readonly) NSInteger exitStatus;
-@property (assign) SessionRequestCode request;
 @property (readonly) NSString *userName;
 @property (readonly) NSString *sessionLog;
 

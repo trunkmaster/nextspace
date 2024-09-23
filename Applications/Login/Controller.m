@@ -69,7 +69,17 @@ LoginExitCode panelExitCode;
     return;
   }
 
-  [self runAlertPanelForSession:session];
+  if (session.exitStatus == ShutdownExitCode) {
+    panelExitCode = ShutdownExitCode;
+    [self shutDown:self];
+  } else if (session.exitStatus == RebootExitCode) {
+    panelExitCode = RebootExitCode;
+    [self restart:self];
+  } else if (session.exitStatus != 0) {
+    [self runAlertPanelForSession:session];
+  } else {
+    [self closeUserSession:session];
+  }
 }
 
 - (void)openSessionForUser:(NSString *)user
@@ -131,6 +141,8 @@ LoginExitCode panelExitCode;
     return;
   }
 
+  [session removeObserver:self forKeyPath:@"isRunning"];
+
   // Do not close PAM session and show window if session aimed to be restarted.
   // Session will be restarted in GCD queue (openSessionForUser:)
   if (session.isRunning == NO) {
@@ -181,7 +193,6 @@ LoginExitCode panelExitCode;
       break;
     case NSAlertAlternateReturn:
       // NSLog(@"Alert Panel: Quit session.");
-      [session removeObserver:self forKeyPath:@"isRunning"];
       [self closeUserSession:session];
       break;
     case NSAlertOtherReturn:
