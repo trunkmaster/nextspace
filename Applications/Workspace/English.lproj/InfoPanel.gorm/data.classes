@@ -2,63 +2,17 @@
     "## Comment" = "Do NOT change this file, Gorm maintains it";
     Controller = {
 	Actions = (
-	    "emptyRecycler:",
-	    "showConsole:",
-	    "newViewer:",
-	    "closeViewer:",
-	    "updateViewers:",
-	    "showFinder:",
-	    "showPrefsPanel:",
-	    "showProcesses:",
-	    "showInfoPanel:",
-	    "showLegalPanel:",
-	    "showAttributesInspector:",
-	    "showContentsInspector:",
-	    "showToolsInspector:",
-	    "showPermissionsInspector:",
-	    "saveLegalToFile:",
-	    "showLauncher:",
-	    "setDockVisibility:"
 	);
 	Outlets = (
-	    viewMenuItem,
-	    legalPanel,
-	    legalText,
-	    infoPanel,
-	    infoPanelImage,
-	    hostName,
-	    wsVersion,
-	    osType,
-	    kernelRelease,
-	    machineType,
-	    cpuType,
-	    cpuClock,
 	    memory,
+	    cpuType,
+	    infoPanel,
+	    osType,
+	    wsVersion,
+	    hostName,
 	    baseVersion,
 	    guiVersion,
-	    mediaAdaptor
-	);
-	Super = NSObject;
-    };
-    FirstResponder = {
-	Actions = (
-	    "closeViewer:",
-	    "emptyRecycler:",
-	    "newViewer:",
-	    "saveLegalToFile:",
-	    "setDockVisibility:",
-	    "showAttributesInspector:",
-	    "showConsole:",
-	    "showContentsInspector:",
-	    "showFinder:",
-	    "showInfoPanel:",
-	    "showLauncher:",
-	    "showLegalPanel:",
-	    "showPermissionsInspector:",
-	    "showPrefsPanel:",
-	    "showProcesses:",
-	    "showToolsInspector:",
-	    "updateViewers:"
+	    infoPanelImage
 	);
 	Super = NSObject;
     };
