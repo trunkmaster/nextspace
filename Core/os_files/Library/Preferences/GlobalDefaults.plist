@@ -8,6 +8,12 @@
     <string>Workspace</string>
     <key>GSCommandKeyString</key>
     <string></string>
+    <key>GSControlKeyString</key>
+    <string></string>
+    <key>GSAlternateKeyString</key>
+    <string></string>
+    <key>GSShiftKeyString</key>
+    <string></string>
     <key>GSFirstAlternateKey</key>
     <string>Super_L</string>
     <key>GSFirstCommandKey</key>
