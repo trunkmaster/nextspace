@@ -33,7 +33,8 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 	Text.gorm \
 	PanelOptions.gorm \
 	ListView.gorm \
-	ConsoleLog.gorm
+	ConsoleLog.gorm \
+	Autoresize.gorm
 #	Help \
 #	HelpTemplate
 #

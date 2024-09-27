@@ -69,9 +69,8 @@
 - (id)init
 {
   window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 500, 400)
-                                       styleMask:(NSTitledWindowMask 
-						  | NSResizableWindowMask)
-					 backing:NSBackingStoreRetained
+                                       styleMask:(NSTitledWindowMask | NSResizableWindowMask | NSClosableWindowMask)
+                                         backing:NSBackingStoreRetained
                                            defer:YES];
   [window setMinSize:NSMakeSize(500, 400)];
   [window setTitle:@"NSBezierPath drawing test"];

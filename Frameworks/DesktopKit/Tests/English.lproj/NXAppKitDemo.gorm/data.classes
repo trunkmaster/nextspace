@@ -14,7 +14,8 @@
 	    "openSavePanel:",
 	    "openOpenPanel:",
 	    "showListViewTest:",
-	    "showCustomAlert:"
+	    "showCustomAlert:",
+	    "openAutoresizeTest:"
 	);
 	Outlets = (
 	    integerTextField,
@@ -25,12 +26,13 @@
     };
     FirstResponder = {
 	Actions = (
-	    "showCustomAlert:",
+	    "openAutoresizeTest:",
 	    "openOpenPanel:",
 	    "openSavePanel:",
 	    "show3LineAlert:",
 	    "showClockViewDemo:",
 	    "showCursorsTest:",
+	    "showCustomAlert:",
 	    "showDrawingTest:",
 	    "showHelpPanel:",
 	    "showHelpTemplatePanel:",
