@@ -343,7 +343,7 @@
   // Disk info label
   // Frame of info labels will be adjusted in 'updateInfoLabels:' later.
   diskInfo = [[NSTextField alloc] initWithFrame:NSMakeRect(8, 312, 231, 12)];
-  [diskInfo setAutoresizingMask:(NSViewMaxXMargin | NSViewMinYMargin | NSViewWidthSizable)];
+  [diskInfo setAutoresizingMask:(NSViewMinYMargin | NSViewWidthSizable)];
   [diskInfo setEnabled:NO];  // not editable, not selectable
   [diskInfo setBezeled:NO];
   [diskInfo setBordered:NO];
@@ -383,7 +383,7 @@
   // Path view enclosed into scroll view
   scrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 212, SPLIT_DEF_WIDTH, 98)];
   [scrollView setBorderType:NSBezelBorder];
-  [scrollView setAutoresizingMask:(NSViewWidthSizable | NSViewMaxXMargin | NSViewMinYMargin)];
+  [scrollView setAutoresizingMask:(NSViewWidthSizable | NSViewMinYMargin)];
 
   pathView = [[PathView alloc] initWithFrame:NSMakeRect(0, 0, SPLIT_DEF_WIDTH - 4, 98) owner:self];
   [pathView setAutoresizingMask:0];
