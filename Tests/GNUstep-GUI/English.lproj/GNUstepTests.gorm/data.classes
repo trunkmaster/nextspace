@@ -1,0 +1,26 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    AppController = {
+	Actions = (
+	    "showFontPanel:"
+	);
+	Outlets = (
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "showHelpPanel:",
+	    "showHelpTemplatePanel:",
+	    "showFontPanel:"
+	);
+	Super = NSObject;
+    };
+    NSApplication = {
+	Actions = (
+	    "showHelpTemplatePanel:",
+	    "showHelpPanel:"
+	);
+	Super = NSResponder;
+    };
+}

@@ -1,0 +1,28 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    AppController = {
+	Actions = (
+	    "setCreateDirs:",
+	    "setChooseDirs:",
+	    "setChooseFiles:",
+	    "setHideExtension:",
+	    "setMultiSelection:",
+	    "setPkgsIsDirs:"
+	);
+	Outlets = (
+	    accessoryView
+	);
+	Super = NSObject;
+    };
+    FirstResponder = {
+	Actions = (
+	    "setCreateDirs:",
+	    "setChooseDirs:",
+	    "setChooseFiles:",
+	    "setHideExtension:",
+	    "setMultiSelection:",
+	    "setPkgsIsDirs:"
+	);
+	Super = NSObject;
+    };
+}
