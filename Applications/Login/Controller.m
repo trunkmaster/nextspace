@@ -187,12 +187,11 @@ LoginExitCode panelExitCode;
   UserSession *session = alert.representedObject;
 
   switch ([sender tag]) {
-    case NSAlertDefaultReturn:
-      // NSLog(@"Alert Panel: Restart session.");
+    case NSAlertDefaultReturn: // Restart
       [self runUserSession:session];
       break;
-    case NSAlertAlternateReturn:
-      // NSLog(@"Alert Panel: Quit session.");
+    case NSAlertAlternateReturn:  // Quit
+      [session terminateAllApplications];
       [self closeUserSession:session];
       break;
     case NSAlertOtherReturn:
