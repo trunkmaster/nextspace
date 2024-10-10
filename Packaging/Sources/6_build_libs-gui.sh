@@ -55,7 +55,7 @@ $INSTALL_CMD
 #----------------------------------------
 $CP_CMD ${SOURCES_DIR}/gpbs.service $DEST_DIR/usr/NextSpace/lib/systemd || exit 1
 
-if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true"]; then
+if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 	sudo ldconfig
 	sudo systemctl daemon-reload || exit 1
 	systemctl status gpbs || sudo systemctl enable /usr/NextSpace/lib/systemd/gpbs.service;
