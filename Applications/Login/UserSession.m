@@ -259,38 +259,6 @@
   self.isRunning = [isRunning boolValue];
 }
 
-- (void)terminateAllApplications
-{
-  int pid = 0;
-  int status = 0;
-
-  signal(SIGCHLD, SIG_DFL);
-
-  pid = fork();
-  switch (pid) {
-    case 0: {
-      if ([self _setUserEnvironment] == YES) {
-        [[NSApp delegate] closeAllXClients];
-        abort();
-      }
-    } break;
-    default: {
-      NSLog(@"Waiting for PID: %i", pid);
-      waitpid(pid, &status, 0);
-      NSLog(@"Waiting for PID: %i - DONE", pid);
-      // while (waitpid(pid, &status, 0) == -1) {
-      //   if (errno == EINTR) {
-      //     printf("[laucnCommand] Parent interrrupted - restarting...\n");
-      //     continue;
-      //   } else {
-      //     perror("[launchCommand] waitpid() failed");
-      //     status = 1;
-      //   }
-      // }
-    }
-  }
-}
-
 @end
 
 @implementation UserSession (ScriptLaunch)

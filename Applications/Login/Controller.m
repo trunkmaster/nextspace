@@ -185,13 +185,20 @@ LoginExitCode panelExitCode;
 - (void)alertButtonPressed:(id)sender
 {
   UserSession *session = alert.representedObject;
+  NSInteger buttonTag = [sender tag];
 
-  switch ([sender tag]) {
-    case NSAlertDefaultReturn: // Restart
+  if (buttonTag == NSAlertDefaultReturn || NSAlertAlternateReturn) {
+    [[alert panel] close];
+    [alert release];
+  }
+
+  switch (buttonTag) {
+    case NSAlertDefaultReturn:  // Restart
       [self runUserSession:session];
       break;
     case NSAlertAlternateReturn:  // Quit
-      [session terminateAllApplications];
+      // At this point only applications with visible windows will be killed
+      [self closeAllXClients];
       [self closeUserSession:session];
       break;
     case NSAlertOtherReturn:
@@ -209,9 +216,6 @@ LoginExitCode panelExitCode;
     default:
       NSLog(@"Alert Panel: user has made a strange choice!");
   }
-  // [NSApp stopModalWithCode:[sender tag]];
-  [[alert panel] orderOut:self];
-  [alert release];
 }
 
 @end
@@ -280,17 +284,14 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
 
   XSync(xDisplay, 0);
   XSetErrorHandler(catchXErrors);
-  XQueryTree(xDisplay, xRootWindow, &dummywindow, &dummywindow, 
-	     &children, &nchildren);
+  XQueryTree(xDisplay, xRootWindow, &dummywindow, &dummywindow, &children, &nchildren);
 
   for (i = 0; i < nchildren; i++) {
-    if (XGetWindowAttributes(xDisplay, children[i], &attr)
-        && (attr.map_state != IsUnmapped)) {
+    if (XGetWindowAttributes(xDisplay, children[i], &attr) && (attr.map_state != IsUnmapped)) {
       // children[i] = XmuClientWindow(xDisplay, children[i]);
       XKillClient(xDisplay, children[i]);
       // XDestroyWindow(xDisplay, children[i]);
-    }
-    else {
+    } else {
       children[i] = 0;
     }
   }

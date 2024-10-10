@@ -51,8 +51,6 @@
            logAppend:(BOOL)append
                 wait:(BOOL)isWait;
 
-- (void)terminateAllApplications;
-
 @end
 
 @interface UserSession (ScriptLaunch)
