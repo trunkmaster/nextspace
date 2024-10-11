@@ -187,7 +187,7 @@ LoginExitCode panelExitCode;
   UserSession *session = alert.representedObject;
   NSInteger buttonTag = [sender tag];
 
-  if (buttonTag == NSAlertDefaultReturn || NSAlertAlternateReturn) {
+  if (buttonTag == NSAlertDefaultReturn || buttonTag == NSAlertAlternateReturn) {
     [[alert panel] close];
     [alert release];
   }
