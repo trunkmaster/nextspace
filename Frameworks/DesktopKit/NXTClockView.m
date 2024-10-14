@@ -106,7 +106,8 @@ NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
 
   // The next 2 method calls sets 'colonDisplayRect' ivar but it will not
   // cause drawing because 'is24HourFormat' was not changed
-  is24HourFormat = [[NXTDefaults globalUserDefaults] boolForKey:NXTClockView24HourFormat];
+  is24HourFormat = [[NXTDefaults globalUserDefaults]
+                         boolForKey:NXTClockView24HourFormat];
   [self set24HourFormat:is24HourFormat];
   
   [self setCalendarDate:[NSCalendarDate dateWithYear:1970
@@ -120,20 +121,19 @@ NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
   return self;
 }
 
-- initWithFrame:(NSRect)aFrame
-           tile:(NSImage *)image
-   displayRects:(NSDictionary *)rects
+- (void)setTileImage:(NSImage *)image
 {
-  NSString *rectString;
-  NSSize   tileSize;
-  
-  [self initWithFrame:aFrame];
+  NSSize tileSize;
 
   if (image != nil) {
     tileImage = image;
     tileSize = [image size];
     tileRect = NSMakeRect(0, 0, tileSize.width, tileSize.height);
   }
+}
+- (void)setDisplayRects:(NSDictionary *)rects
+{
+  NSString *rectString;
 
   // Reassert display rects already assigned in initWithFrame:
   if (rects != nil) {
@@ -148,8 +148,16 @@ NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
     if ((rectString = [rects objectForKey:@"Year"]) != nil)
       yearDisplayRect = NSRectFromString(rectString);
   }
-
   [self set24HourFormat:is24HourFormat];
+}
+
+- initWithFrame:(NSRect)aFrame
+           tile:(NSImage *)image
+   displayRects:(NSDictionary *)rects
+{
+  [self initWithFrame:aFrame];
+  [self setTileImage:image];
+  [self setDisplayRects:rects];
 
   return self;
 }
@@ -241,47 +249,17 @@ NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
 #pragma mark - Drawing
 //-----------------------------------------------------------------------------
 
-- (void)_calculateColonRect
-{
-  CGFloat xCenter, xOffset = 0;
-
-  // if (is24HourFormat == NO)
-  //   xOffset = -4;
-  // else
-  //   xOffset = 3;
-
-  xCenter = ceilf(timeDisplayRect.size.width / 2 - colonRect.size.width / 2) + xOffset;
-  colonDisplayRect =
-      NSMakeRect(xCenter, timeDisplayRect.origin.y, colonRect.size.width, colonRect.size.height);
-  NSLog(@"colonDisplayRect: %@", NSStringFromRect(colonDisplayRect));
-}
-
 - (void)sizeToFit
 {
   NSRect myFrame = [self frame];
 
   if (isYearVisible) {
-    myFrame.size.height = 71;
-    tileRect.size.height = 71;
-    tileRect.origin.y = 9;
-
-    dowDisplayRect.origin.y = 41;
-    dayDisplayRect.origin.y = 22;
-    monthDisplayRect.origin.y = 16;
-    timeDisplayRect.origin.y = 53;
+    myFrame.size.height = 70;
   } else {
     myFrame.size.height = 64;
-    tileRect.size.height = 62;
-    tileRect.origin.y = 18;
-
-    dowDisplayRect.origin.y = 32;
-    dayDisplayRect.origin.y = 13;
-    monthDisplayRect.origin.y = 7;
-    timeDisplayRect.origin.y = 44;
   }
-  // myFrame.size.width = 55;
+  myFrame.size.width = 55;
 
-  [self _calculateColonRect];
   [self setFrame:myFrame];
 }
 
@@ -290,7 +268,6 @@ NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
   isColonVisible = !isColonVisible;
   [self setCalendarDate:[NSCalendarDate calendarDate]];
 }
-
 
 - (void)_drawColon
 {
@@ -515,7 +492,6 @@ NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
 {
   if (isYearVisible != flag) {
     isYearVisible = flag;
-    [self sizeToFit];
     if (clockBits != nil) {
       dateChanged = YES;
       [self displayRect:yearDisplayRect];
@@ -530,20 +506,16 @@ NSString *NXTClockView24HourFormat = @"ClockView24HourFormat";
 
 - (void)set24HourFormat:(BOOL)flag
 {
-  // CGFloat rectCenterX;
+  CGFloat rectCenter;
   
-  // if (flag == NO)
-  //   timeOffset = -4;
-  // else
-  //   timeOffset = 3;
+  if (flag == NO)
+    timeOffset = -4;
+  else
+    timeOffset = 3;
 
-  // rectCenterX = ceilf(timeDisplayRect.size.width/2 - colonRect.size.width/2) + timeOffset;
-  // colonDisplayRect = NSMakeRect(rectCenterX, timeDisplayRect.origin.y, colonRect.size.width,
-  //                               colonRect.size.height);
-  // NSLog(@"colonDisplayRect: %@", NSStringFromRect(colonDisplayRect));
-
-  [self _calculateColonRect];
-
+  rectCenter = ceilf(timeDisplayRect.size.width/2 - colonRect.size.width/2) + timeOffset;
+  colonDisplayRect = NSMakeRect(rectCenter, timeDisplayRect.origin.y,
+                                colonRect.size.width, colonRect.size.height);
   if (is24HourFormat != flag) {
     is24HourFormat = flag;
     if (clockBits != nil) {

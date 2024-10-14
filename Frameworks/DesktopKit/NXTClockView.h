@@ -96,6 +96,8 @@
 //-----------------------------------------------------------------------------
 /** Loads 'clockbits.tiff' located in framework resources. */
 - initWithFrame:(NSRect)aFrame;
+- (void)setTileImage:(NSImage *)image;
+- (void)setDisplayRects:(NSDictionary *)rects;
 
 /** Uses framework 'clockbits.tiff' for everything except tile image.
     `displayRects` is a dictionary with rects to place elements inside specified
@@ -103,6 +105,7 @@
 - initWithFrame:(NSRect)aFrame
            tile:(NSImage *)image
    displayRects:(NSDictionary *)rects;
+
 
 /** If `languageName` is `nil` loads clockbits for system default language (
     first language specified in `NSLanguages` array in NSGlobalDomain). */
