@@ -44,7 +44,7 @@
   [image release];
 
   if (view) {
-   [view release];
+    [view release];
   }
 
   [super dealloc];
@@ -54,19 +54,23 @@
 {
   [view retain];
   [window release];
+
+  [clockViewBackground setImage:[NSImage imageNamed:@"common_Tile"]];
+  [clockView setYearVisible:NO];
+  // [clockView set24HourFormat:NO];
+  [clockView setCalendarDate:[NSCalendarDate now]];
 }
 
 - (NSView *)view
 {
   if (view == nil) {
-      if (![NSBundle loadNibNamed:@"Date" owner:self]) {
-         NSLog (@"Date.preferences: Could not load NIB, aborting.");
-         return nil;
-      }
+    if (![NSBundle loadNibNamed:@"Date" owner:self]) {
+      NSLog(@"Date.preferences: Could not load NIB, aborting.");
+      return nil;
+    }
   }
   return view;
 }
-
 
 - (NSString *)buttonCaption
 {
@@ -78,39 +82,34 @@
   return image;
 }
 
-- (void) changeHourTypeAction: (id) sender
+- (void)change24Hour:(id)sender
 {
-
+  [clockView set24HourFormat:[sender integerValue] ? YES : NO];
+  // [clockView setNeedsDisplay:YES];
 };
 
-- (void) increaseFieldAction: (id) sender
+- (void)increaseFieldAction:(id)sender
 {
-
 };
 
-- (void) decreaseFieldAction: (id) sender
+- (void)decreaseFieldAction:(id)sender
 {
-
 };
 
-- (void) changeClockFaceAction: (id) sender
+- (void)changeClockFaceAction:(id)sender
 {
-
 };
 
-- (void) selectRegionAction: (id) sender
+- (void)selectRegionAction:(id)sender
 {
-
 };
 
-- (void) setTimeAction: (id) sender
+- (void)setTimeAction:(id)sender
 {
-
 };
 
-- (void) timeManuallyChangedAction: (id) sender
+- (void)timeManuallyChangedAction:(id)sender
 {
-
 };
 
 @end

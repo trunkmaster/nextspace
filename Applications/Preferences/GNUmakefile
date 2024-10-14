@@ -15,6 +15,7 @@ $(APP_NAME)_APPLICATION_ICON = Mask.tiff
 
 SUBPROJECTS = \
 	Modules/Localization \
+	Modules/Date \
 	Modules/Font \
 	Modules/Display \
 	Modules/Screen \
@@ -23,7 +24,6 @@ SUBPROJECTS = \
 	Modules/Sound \
 	Modules/Services \
 	Modules/Expert
-#	Modules/Date \
 #	Modules/Menu \
 #	Modules/Password \
 #	Modules/Power
@@ -33,6 +33,7 @@ SUBPROJECTS = \
 #
 $(APP_NAME)_RESOURCE_FILES = \
 	Modules/Localization/Localization.preferences \
+	Modules/Date/Date.preferences \
 	Modules/Font/Font.preferences \
 	Modules/Display/Display.preferences \
 	Modules/Screen/Screen.preferences \
@@ -41,7 +42,6 @@ $(APP_NAME)_RESOURCE_FILES = \
 	Modules/Sound/Sound.preferences \
 	Modules/Services/Services.preferences \
 	Modules/Expert/Expert.preferences
-#	Modules/Date/Date.preferences \
 #	Modules/Menu/Menu.preferences \
 #	Modules/Password/Password.preferences \
 #	Modules/Power/Power.preferences

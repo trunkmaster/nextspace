@@ -2,5 +2,5 @@
   type = Preferences;
   mode = Font;
   class = Font;
-  priority = 8;
+  priority = 2;
 }

@@ -22,23 +22,27 @@
 
 #import <AppKit/AppKit.h>
 #import <Preferences.h>
+#import <DesktopKit/NXTClockView.h>
 
 @interface Date : NSObject <PrefsModule>
 {
-   id window;
-   id view;
-   id timeZoneSelectorView;
-   id timeZoneRegionSelectorPopUpButton;
-   NSImage *image;
-   NSImage *handImage;
+  IBOutlet NSWindow *window;
+  IBOutlet NSView *view;
+  IBOutlet NXTClockView *clockView;
+  IBOutlet NSImageView *clockViewBackground;
+  id timeZoneSelectorView;
+  id timeZoneRegionSelectorPopUpButton;
+  NSImage *image;
+  NSImage *handImage;
 }
 
-- (void) changeHourTypeAction: (id) sender;
-- (void) increaseFieldAction: (id) sender;
-- (void) decreaseFieldAction: (id) sender;
-- (void) changeClockFaceAction: (id) sender;
-- (void) selectRegionAction: (id) sender;
-- (void) setTimeAction: (id) sender;
-- (void) timeManuallyChangedAction: (id) sender;
+- (void)change24Hour:(id)sender;
+
+- (void)increaseFieldAction:(id)sender;
+- (void)decreaseFieldAction:(id)sender;
+- (void)changeClockFaceAction:(id)sender;
+- (void)selectRegionAction:(id)sender;
+- (void)setTimeAction:(id)sender;
+- (void)timeManuallyChangedAction:(id)sender;
 
 @end

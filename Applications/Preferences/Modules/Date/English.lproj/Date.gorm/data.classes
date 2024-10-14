@@ -7,16 +7,9 @@
 	);
 	Super = NSView;
     };
-    Clock = {
-	Actions = (
-	);
-	Outlets = (
-	);
-	Super = NSView;
-    };
     Date = {
 	Actions = (
-	    "changeHourTypeAction:",
+	    "change24Hour:",
 	    "increaseFieldAction:",
 	    "decreaseFieldAction:",
 	    "changeClockFaceAction:",
@@ -28,14 +21,16 @@
 	    window,
 	    view,
 	    timeZoneSelectorView,
-	    timeZoneRegionSelectorPopUpButton
+	    timeZoneRegionSelectorPopUpButton,
+	    clockView,
+	    clockViewBackground
 	);
 	Super = NSObject;
     };
     FirstResponder = {
 	Actions = (
 	    "changeClockFaceAction:",
-	    "changeHourTypeAction:",
+	    "change24Hour:",
 	    "decreaseFieldAction:",
 	    "increaseFieldAction:",
 	    "selectRegionAction:",
@@ -43,6 +38,13 @@
 	    "timeManuallyChangedAction:"
 	);
 	Super = NSObject;
+    };
+    NXTClockView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
     };
     Time = {
 	Actions = (
