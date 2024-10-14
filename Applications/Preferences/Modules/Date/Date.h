@@ -23,6 +23,7 @@
 #import <AppKit/AppKit.h>
 #import <Preferences.h>
 #import <DesktopKit/NXTClockView.h>
+#import <DesktopKit/NXTDefaults.h>
 
 @interface Date : NSObject <PrefsModule>
 {
@@ -34,6 +35,8 @@
   id timeZoneRegionSelectorPopUpButton;
   NSImage *image;
   NSImage *handImage;
+
+  NXTDefaults	*defaults;
 }
 
 - (void)change24Hour:(id)sender;

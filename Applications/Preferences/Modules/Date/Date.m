@@ -21,6 +21,7 @@
 //
 
 #import "Date.h"
+#include "ClockView.h"
 
 @implementation Date
 
@@ -34,6 +35,8 @@
   bundle = [NSBundle bundleForClass:[self class]];
   imagePath = [bundle pathForResource:@"Date" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
+
+  defaults = [NXTDefaults globalUserDefaults];
 
   return self;
 }
@@ -52,12 +55,21 @@
 
 - (void)awakeFromNib
 {
+  NSDictionary *cvdisplayRects;
+
   [view retain];
   [window release];
 
-  [clockViewBackground setImage:[NSImage imageNamed:@"common_Tile"]];
+  cvdisplayRects = @{
+    @"DayOfWeek" : NSStringFromRect(NSMakeRect(14, 33, 33, 6)),
+    @"Day" : NSStringFromRect(NSMakeRect(14, 15, 33, 17)),
+    @"Month" : NSStringFromRect(NSMakeRect(14, 9, 31, 6)),
+    @"Time" : NSStringFromRect(NSMakeRect(5, 46, 53, 11))
+  };
+
+  [clockView setTileImage:[NSImage imageNamed:@"ClockViewTile"]];
+  [clockView setDisplayRects:cvdisplayRects];
   [clockView setYearVisible:NO];
-  // [clockView set24HourFormat:NO];
   [clockView setCalendarDate:[NSCalendarDate now]];
 }
 
@@ -86,30 +98,30 @@
 {
   [clockView set24HourFormat:[sender integerValue] ? YES : NO];
   // [clockView setNeedsDisplay:YES];
-};
+}
 
 - (void)increaseFieldAction:(id)sender
 {
-};
+}
 
 - (void)decreaseFieldAction:(id)sender
 {
-};
+}
 
 - (void)changeClockFaceAction:(id)sender
 {
-};
+}
 
 - (void)selectRegionAction:(id)sender
 {
-};
+}
 
 - (void)setTimeAction:(id)sender
 {
-};
+}
 
 - (void)timeManuallyChangedAction:(id)sender
 {
-};
+}
 
 @end
