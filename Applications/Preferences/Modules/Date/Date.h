@@ -21,16 +21,16 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <Preferences.h>
 #import <DesktopKit/NXTClockView.h>
 #import <DesktopKit/NXTDefaults.h>
+#import <Preferences.h>
 
 @interface Date : NSObject <PrefsModule>
 {
   IBOutlet NSWindow *window;
   IBOutlet NSView *view;
   IBOutlet NXTClockView *clockView;
-  IBOutlet NSImageView *clockViewBackground;
+  IBOutlet NSButton *hour24Button;
   id timeZoneSelectorView;
   id timeZoneRegionSelectorPopUpButton;
   NSImage *image;

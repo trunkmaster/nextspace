@@ -60,17 +60,19 @@
   [view retain];
   [window release];
 
+  // Clock view
   cvdisplayRects = @{
     @"DayOfWeek" : NSStringFromRect(NSMakeRect(14, 33, 33, 6)),
     @"Day" : NSStringFromRect(NSMakeRect(14, 15, 33, 17)),
     @"Month" : NSStringFromRect(NSMakeRect(14, 9, 31, 6)),
     @"Time" : NSStringFromRect(NSMakeRect(5, 46, 53, 11))
   };
-
   [clockView setTileImage:[NSImage imageNamed:@"ClockViewTile"]];
   [clockView setDisplayRects:cvdisplayRects];
   [clockView setYearVisible:NO];
   [clockView setCalendarDate:[NSCalendarDate now]];
+
+  [hour24Button setIntValue:[clockView is24HourFormat] ? 1 : 0];
 }
 
 - (NSView *)view
@@ -97,7 +99,6 @@
 - (void)change24Hour:(id)sender
 {
   [clockView set24HourFormat:[sender integerValue] ? YES : NO];
-  // [clockView setNeedsDisplay:YES];
 }
 
 - (void)increaseFieldAction:(id)sender

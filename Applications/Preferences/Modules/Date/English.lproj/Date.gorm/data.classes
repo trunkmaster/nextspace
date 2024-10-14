@@ -23,7 +23,7 @@
 	    timeZoneSelectorView,
 	    timeZoneRegionSelectorPopUpButton,
 	    clockView,
-	    clockViewBackground
+	    hour24Button
 	);
 	Super = NSObject;
     };
