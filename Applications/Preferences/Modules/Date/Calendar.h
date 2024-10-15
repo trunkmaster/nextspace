@@ -24,7 +24,9 @@
 
 @interface Calendar : NSView
 {
-  NSImage  *imageWeek, *imageDay, *imageDayB;
+  NSImage *imageWeeks;
+  NSImage *imageDays;
+  NSImage *imageDaysB;
 }
 
 @end

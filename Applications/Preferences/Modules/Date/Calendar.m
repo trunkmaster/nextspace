@@ -24,60 +24,59 @@
 
 @implementation Calendar
 
-- (void) drawRect:(NSRect)calendar
+- (void)drawRect:(NSRect)calendar
 {
-  NSString *imagePathWeek, *imagePathDay;
-  NSBundle *bundleWeek,*bundleDay;
-  int n,x=0;
+  NSString *imagePathWeeks, *imagePathDays;
+  NSBundle *bundleWeeks, *bundleDays;
+  int n, x = 0;
 
-  bundleWeek = [NSBundle bundleForClass:[self class]];
-  imagePathWeek = [bundleWeek pathForResource: @"weeks" ofType: @"tiff"];
-  imageWeek = [[NSImage alloc] initWithContentsOfFile: imagePathWeek];
+  bundleWeeks = [NSBundle bundleForClass:[self class]];
+  imagePathWeeks = [bundleWeeks pathForResource:@"weeks" ofType:@"tiff"];
+  imageWeeks = [[NSImage alloc] initWithContentsOfFile:imagePathWeeks];
 
-  bundleDay = [NSBundle bundleForClass:[self class]];
-  imagePathDay = [bundleDay pathForResource: @"days" ofType: @"tiff"];
-  imageDay = [[NSImage alloc] initWithContentsOfFile: imagePathDay];
+  bundleDays = [NSBundle bundleForClass:[self class]];
+  imagePathDays = [bundleDays pathForResource:@"days" ofType:@"tiff"];
+  imageDays = [[NSImage alloc] initWithContentsOfFile:imagePathDays];
 
-  if (imageWeek) {
-     [imageWeek compositeToPoint:NSMakePoint(0, 0)
-                       operation:NSCompositeSourceOver];
+  if (imageWeeks) {
+    [imageWeeks compositeToPoint:NSMakePoint(0, 0) operation:NSCompositeSourceOver];
 
-       for (n=1; n<=109; n+=18) {
-           [imageDay drawAtPoint:NSMakePoint(n,82)
-                        fromRect:NSMakeRect(x,91,17,13)
-                       operation:NSCompositeHighlight
-                        fraction:1.0]; //1
+    for (n = 1; n <= 109; n += 18) {
+      [imageDays drawAtPoint:NSMakePoint(n, 82)
+                   fromRect:NSMakeRect(x, 91, 17, 13)
+                  operation:NSCompositeHighlight
+                   fraction:1.0];  // 1
 
-           [imageDay drawAtPoint:NSMakePoint(n,66)
-                        fromRect:NSMakeRect(x,78,17,13)
-                       operation:NSCompositeHighlight
-                        fraction:1.0]; //2
+      [imageDays drawAtPoint:NSMakePoint(n, 66)
+                   fromRect:NSMakeRect(x, 78, 17, 13)
+                  operation:NSCompositeHighlight
+                   fraction:1.0];  // 2
 
-           [imageDay drawAtPoint:NSMakePoint(n,50)
-                        fromRect:NSMakeRect(x,65,17,13)
-                       operation:NSCompositeHighlight
-                        fraction:1.0]; //3
+      [imageDays drawAtPoint:NSMakePoint(n, 50)
+                   fromRect:NSMakeRect(x, 65, 17, 13)
+                  operation:NSCompositeHighlight
+                   fraction:1.0];  // 3
 
-           [imageDay drawAtPoint:NSMakePoint(n,34)
-                        fromRect:NSMakeRect(x,52,17,13)
-                       operation:NSCompositeHighlight
-                        fraction:1.0]; //4
+      [imageDays drawAtPoint:NSMakePoint(n, 34)
+                   fromRect:NSMakeRect(x, 52, 17, 13)
+                  operation:NSCompositeHighlight
+                   fraction:1.0];  // 4
 
-           [imageDay drawAtPoint:NSMakePoint(n,18)
-                        fromRect:NSMakeRect(x,39,17,13)
-                       operation:NSCompositeHighlight
-                        fraction:1.0]; //5
+      [imageDays drawAtPoint:NSMakePoint(n, 18)
+                   fromRect:NSMakeRect(x, 39, 17, 13)
+                  operation:NSCompositeHighlight
+                   fraction:1.0];  // 5
 
-           [imageDay drawAtPoint:NSMakePoint(n,2)
-                        fromRect:NSMakeRect(x,26,17,13)
-                       operation:NSCompositeHighlight
-                        fraction:1.0]; //6
-            x+=17;       
-       }
+      [imageDays drawAtPoint:NSMakePoint(n, 2)
+                   fromRect:NSMakeRect(x, 26, 17, 13)
+                  operation:NSCompositeHighlight
+                   fraction:1.0];  // 6
+      x += 17;
+    }
   } else {
-      [[NSColor redColor] set];
-      NSLog(@"Image not found");
-     }
+    [[NSColor redColor] set];
+    NSLog(@"Image not found");
+  }
 }
 
 @end

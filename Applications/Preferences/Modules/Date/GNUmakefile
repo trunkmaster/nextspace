@@ -36,11 +36,6 @@ $(BUNDLE_NAME)_RESOURCE_FILES = \
 	Resources/daysH.tiff \
 	Resources/world.tiff \
 	Resources/weeks.tiff \
-	Resources/left.tiff \
-	Resources/leftH.tiff \
-	Resources/right.tiff \
-	Resources/rightH.tiff \
-	Resources/ClockView.tiff \
 	Resources/clockbits.tiff \
 	Resources/bundle.registry
 
