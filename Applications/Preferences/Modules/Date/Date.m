@@ -98,7 +98,9 @@
 
 - (void)change24Hour:(id)sender
 {
-  [clockView set24HourFormat:[sender integerValue] ? YES : NO];
+  BOOL flag = [sender integerValue] ? YES : NO;
+
+  [defaults setBool:flag forKey:NXTClockView24HourFormat];
 }
 
 - (void)increaseFieldAction:(id)sender
