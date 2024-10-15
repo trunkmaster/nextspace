@@ -31,6 +31,7 @@
   IBOutlet NSView *view;
   IBOutlet NXTClockView *clockView;
   IBOutlet NSButton *hour24Button;
+  IBOutlet NSTextField *timeField;
   id timeZoneSelectorView;
   id timeZoneRegionSelectorPopUpButton;
   NSImage *image;

@@ -56,6 +56,7 @@
 - (void)awakeFromNib
 {
   NSDictionary *cvdisplayRects;
+  NSCalendarDate *nowDate = [NSCalendarDate now];
 
   [view retain];
   [window release];
@@ -70,9 +71,13 @@
   [clockView setTileImage:[NSImage imageNamed:@"ClockViewTile"]];
   [clockView setDisplayRects:cvdisplayRects];
   [clockView setYearVisible:NO];
-  [clockView setCalendarDate:[NSCalendarDate now]];
+  [clockView setCalendarDate:nowDate];
 
   [hour24Button setIntValue:[clockView is24HourFormat] ? 1 : 0];
+
+  [timeField
+      setStringValue:[NSString stringWithFormat:@"%lu:%lu:%lu", nowDate.hourOfDay,
+                                                nowDate.minuteOfHour, nowDate.secondOfMinute]];
 }
 
 - (NSView *)view
