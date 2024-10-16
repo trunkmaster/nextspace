@@ -24,7 +24,9 @@
 	    timeZoneRegionSelectorPopUpButton,
 	    clockView,
 	    hour24Button,
-	    timeField
+	    timeField,
+	    monthField,
+	    yearField
 	);
 	Super = NSObject;
     };
