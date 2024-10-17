@@ -24,6 +24,7 @@
 #import <DesktopKit/NXTClockView.h>
 #import <DesktopKit/NXTDefaults.h>
 #import <Preferences.h>
+#import "Calendar.h"
 
 @interface Date : NSObject <PrefsModule>
 {
@@ -32,6 +33,9 @@
   IBOutlet NXTClockView *clockView;
   IBOutlet NSButton *hour24Button;
   IBOutlet NSTextField *timeField;
+  IBOutlet NSTextField *monthField;
+  IBOutlet NSTextField *yearField;
+  IBOutlet Calendar *calendarView;
   id timeZoneSelectorView;
   id timeZoneRegionSelectorPopUpButton;
   NSImage *image;

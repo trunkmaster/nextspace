@@ -21,7 +21,6 @@
 //
 
 #import "Date.h"
-#include "ClockView.h"
 
 @implementation Date
 
@@ -78,6 +77,10 @@
   [timeField
       setStringValue:[NSString stringWithFormat:@"%lu:%lu:%lu", nowDate.hourOfDay,
                                                 nowDate.minuteOfHour, nowDate.secondOfMinute]];
+  [monthField setStringValue:[nowDate descriptionWithCalendarFormat:@"%B"]];
+  [yearField setStringValue:[nowDate descriptionWithCalendarFormat:@"%Y"]];
+
+  [calendarView setDate:nowDate];
 }
 
 - (NSView *)view

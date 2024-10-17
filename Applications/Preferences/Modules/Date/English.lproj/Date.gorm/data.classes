@@ -26,7 +26,8 @@
 	    hour24Button,
 	    timeField,
 	    monthField,
-	    yearField
+	    yearField,
+	    calendarView
 	);
 	Super = NSObject;
     };

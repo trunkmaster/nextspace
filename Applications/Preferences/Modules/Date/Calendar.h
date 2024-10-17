@@ -26,7 +26,12 @@
 {
   NSImage *imageWeeks;
   NSImage *imageDays;
-  NSImage *imageDaysB;
+  NSImage *imageDaysH;
+
+  NSCalendarDate *currentDate;
+  NSUInteger numberOfDaysInMonth;
 }
+
+- (void)setDate:(NSCalendarDate *)date;
 
 @end
