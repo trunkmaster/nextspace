@@ -33,5 +33,6 @@
 }
 
 - (void)setDate:(NSCalendarDate *)date;
+- (NSCalendarDate *)date;
 
 @end
