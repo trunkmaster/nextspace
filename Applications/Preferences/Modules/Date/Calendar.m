@@ -34,11 +34,21 @@
   [super dealloc];
 }
 
-- (void)drawRect:(NSRect)calendar
+- (NSInteger)_startWeekDayOfMonth:(NSUInteger)month year:(NSUInteger)year
+{
+  NSCalendarDate *monthDate = [NSCalendarDate dateWithYear:year
+                                                     month:month
+                                                       day:1
+                                                      hour:0
+                                                    minute:0
+                                                    second:1
+                                                  timeZone:[NSTimeZone localTimeZone]];
+  return [monthDate dayOfWeek];  
+}
+
+- (void)drawRect:(NSRect)rect
 {
   NSBundle *bundle;
-  NSString *imagePath;
-  int startColumn = 0;
 
   bundle = [NSBundle bundleForClass:[self class]];
 
@@ -48,50 +58,56 @@
                                                                        ofType:@"tiff"]];
   imageDaysH = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"daysH"
                                                                         ofType:@"tiff"]];
-
-  {
-    NSInteger dow = [currentDate dayOfWeek];
-    NSInteger fullWeeks = [currentDate dayOfMonth] / 7;
-    startColumn = (dow + 1) - ([currentDate dayOfMonth] - (fullWeeks * 7));
-  }
   
   if (imageWeeks) {
-    unsigned dayDestOffset = 18;
-    unsigned daySourceOffset = 17;
-    unsigned weekDestOffset = 16;
-    unsigned weekSourceOffset = 13;
-    unsigned endDayOfWeek = 7;
-    int xSource, xDest, ySource, yDest;
+    NSInteger startDayOfWeek = [self _startWeekDayOfMonth:[currentDate monthOfYear] year:[currentDate yearOfCommonEra]] + 1;
+    short endDayOfWeek = 7;
+    CGFloat dayDestOffset = 18;
+    CGFloat daySourceOffset = 17;
+    CGFloat weekDestOffset = 16;
+    CGFloat weekSourceOffset = 13;
+    CGFloat xSource = 0;
+    CGFloat ySource = 91;
+    CGFloat xDest = ((startDayOfWeek - 1) * dayDestOffset) + 1;
+    CGFloat yDest = 82;
 
     [imageWeeks compositeToPoint:NSMakePoint(0, 0) operation:NSCompositeSourceOver];
 
-    xSource = 0;
-    ySource = 91;
-    xDest = (startColumn * dayDestOffset) + 1;
-    yDest = 82;
-    for (unsigned dom = 0; dom < numberOfDaysInMonth; dom += 7) {
-      if ((dom + 7) >= numberOfDaysInMonth) {
-        endDayOfWeek -= ((dom + 7) - numberOfDaysInMonth);
+    // for (unsigned dom = 0; dom < numberOfDaysInMonth; dom += 7) {
+    unsigned short dayOfMonth = 1;
+    while (dayOfMonth < numberOfDaysInMonth) {
+
+      if (endDayOfWeek == 7 && (dayOfMonth + 7) > numberOfDaysInMonth) {
+        endDayOfWeek -= ((dayOfMonth + 6) - numberOfDaysInMonth);
       }
-      for (unsigned dow = 0; dow < endDayOfWeek; dow++) {
-        if ([currentDate dayOfMonth] == (dom + 1 + dow)) {
+
+      for (unsigned dayOfWeek = startDayOfWeek; dayOfWeek <= endDayOfWeek; dayOfWeek++) {
+        if ([currentDate dayOfMonth] == dayOfMonth) {
           [imageDaysH drawAtPoint:NSMakePoint(xDest, yDest)
                         fromRect:NSMakeRect(xSource, ySource, 17, 13)
-                       operation:NSCompositeHighlight
+                       operation:NSCompositeSourceOver
                         fraction:1.0];
         } else {
           [imageDays drawAtPoint:NSMakePoint(xDest, yDest)
                         fromRect:NSMakeRect(xSource, ySource, 17, 13)
-                       operation:NSCompositeHighlight
+                       operation:NSCompositeSourceOver
                         fraction:1.0];
         }
         xDest += dayDestOffset;
-        xSource += daySourceOffset;
+        if (dayOfMonth % 7 == 0) {
+          xSource = 0;
+          ySource -= weekSourceOffset;
+        } else {
+          xSource += daySourceOffset;
+        }
+        dayOfMonth++;
       }
+      NSLog(@"Day of month: %i", dayOfMonth);
+      startDayOfWeek = 1;
+      endDayOfWeek = 7;
+      // New row on screen
       xDest = 1;
-      xSource = 0;
       yDest -= weekDestOffset;
-      ySource -= weekSourceOffset;
     }
   } else {
     [[NSColor redColor] set];
@@ -101,7 +117,7 @@
 
 - (void)setDate:(NSCalendarDate *)date
 {
-  currentDate = date;
+  ASSIGN(currentDate, date);
   numberOfDaysInMonth = [date lastDayOfGregorianMonth:[date monthOfYear] year:[date yearOfCommonEra]];
   [self setNeedsDisplay:YES];
 }

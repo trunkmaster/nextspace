@@ -111,27 +111,32 @@
   [defaults setBool:flag forKey:NXTClockView24HourFormat];
 }
 
-- (void)increaseFieldAction:(id)sender
+- (void)changeCalendarDate:(id)sender
 {
-}
+  NSCalendarDate *now = [calendarView date];
+  NSCalendarDate *then;
 
-- (void)decreaseFieldAction:(id)sender
-{
-}
-
-- (void)changeClockFaceAction:(id)sender
-{
+  switch ([sender tag]) {
+    case 0:
+      then = [now dateByAddingYears:0 months:-1 days:0 hours:0 minutes:0 seconds:0];
+      break;
+    case 1:
+      then = [now dateByAddingYears:-1 months:0 days:0 hours:0 minutes:0 seconds:0];
+      break;
+    case 2:
+      then = [now dateByAddingYears:0 months:1 days:0 hours:0 minutes:0 seconds:0];
+      break;
+    case 3:
+      then = [now dateByAddingYears:1 months:0 days:0 hours:0 minutes:0 seconds:0];
+      break;
+  }
+  
+  [monthField setStringValue:[then descriptionWithCalendarFormat:@"%B"]];
+  [yearField setStringValue:[then descriptionWithCalendarFormat:@"%Y"]];
+  [calendarView setDate:then];
 }
 
 - (void)selectRegionAction:(id)sender
-{
-}
-
-- (void)setTimeAction:(id)sender
-{
-}
-
-- (void)timeManuallyChangedAction:(id)sender
 {
 }
 

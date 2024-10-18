@@ -10,12 +10,8 @@
     Date = {
 	Actions = (
 	    "change24Hour:",
-	    "increaseFieldAction:",
-	    "decreaseFieldAction:",
-	    "changeClockFaceAction:",
 	    "selectRegionAction:",
-	    "setTimeAction:",
-	    "timeManuallyChangedAction:"
+	    "changeCalendarDate:"
 	);
 	Outlets = (
 	    window,
@@ -33,13 +29,9 @@
     };
     FirstResponder = {
 	Actions = (
-	    "changeClockFaceAction:",
 	    "change24Hour:",
-	    "decreaseFieldAction:",
-	    "increaseFieldAction:",
-	    "selectRegionAction:",
-	    "setTimeAction:",
-	    "timeManuallyChangedAction:"
+	    "changeCalendarDate:",
+	    "selectRegionAction:"
 	);
 	Super = NSObject;
     };

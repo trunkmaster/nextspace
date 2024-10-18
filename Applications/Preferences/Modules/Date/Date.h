@@ -44,13 +44,4 @@
   NXTDefaults	*defaults;
 }
 
-- (void)change24Hour:(id)sender;
-
-- (void)increaseFieldAction:(id)sender;
-- (void)decreaseFieldAction:(id)sender;
-- (void)changeClockFaceAction:(id)sender;
-- (void)selectRegionAction:(id)sender;
-- (void)setTimeAction:(id)sender;
-- (void)timeManuallyChangedAction:(id)sender;
-
 @end
