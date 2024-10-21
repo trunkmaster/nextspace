@@ -25,11 +25,13 @@
 @interface Calendar : NSView
 {
   NSImage *imageWeeks;
+  NSImage *imageWeeksMonday;
   NSImage *imageDays;
   NSImage *imageDaysH;
 
   NSCalendarDate *currentDate;
   NSUInteger numberOfDaysInMonth;
+  BOOL firstDayMonday;
 }
 
 - (void)setDate:(NSCalendarDate *)date;

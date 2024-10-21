@@ -36,6 +36,7 @@ $(BUNDLE_NAME)_RESOURCE_FILES = \
 	Resources/daysH.tiff \
 	Resources/world.tiff \
 	Resources/weeks.tiff \
+	Resources/weeksMonday.tiff \
 	Resources/clockbits.tiff \
 	Resources/bundle.registry
 

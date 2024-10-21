@@ -28,10 +28,19 @@
 - (void)dealloc
 {
   [imageWeeks release];
+  [imageWeeksMonday release];
   [imageDays release];
   [imageDaysH release];
 
   [super dealloc];
+}
+
+- (instancetype)initWithFrame:(NSRect)frameRect
+{
+  [super initWithFrame:frameRect];
+  NSLog(@"First weekday: %lu", [[NSCalendar currentCalendar] firstWeekday]);
+  firstDayMonday = NO;
+  return self;
 }
 
 - (NSInteger)_startWeekDayOfMonth:(NSUInteger)month year:(NSUInteger)year
@@ -43,7 +52,15 @@
                                                     minute:0
                                                     second:1
                                                   timeZone:[NSTimeZone localTimeZone]];
-  return [monthDate dayOfWeek];  
+  NSInteger dayOfWeek = [monthDate dayOfWeek] + 1;
+
+  if (firstDayMonday != NO) {
+    if (dayOfWeek == 1) {
+      dayOfWeek = 7;
+    }
+  }
+
+  return dayOfWeek;
 }
 
 - (void)drawRect:(NSRect)rect
@@ -54,13 +71,16 @@
 
   imageWeeks = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"weeks"
                                                                         ofType:@"tiff"]];
+  imageWeeksMonday = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"weeksMonday"
+                                                                              ofType:@"tiff"]];
   imageDays = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"days"
                                                                        ofType:@"tiff"]];
   imageDaysH = [[NSImage alloc] initWithContentsOfFile:[bundle pathForResource:@"daysH"
                                                                         ofType:@"tiff"]];
   
   if (imageWeeks) {
-    NSInteger startDayOfWeek = [self _startWeekDayOfMonth:[currentDate monthOfYear] year:[currentDate yearOfCommonEra]] + 1;
+    NSInteger startDayOfWeek = [self _startWeekDayOfMonth:[currentDate monthOfYear]
+                                                     year:[currentDate yearOfCommonEra]];
     short endDayOfWeek = 7;
     CGFloat dayDestOffset = 18;
     CGFloat daySourceOffset = 17;
@@ -72,6 +92,11 @@
     CGFloat yDest = 82;
 
     [imageWeeks compositeToPoint:NSMakePoint(0, 0) operation:NSCompositeSourceOver];
+    if (firstDayMonday != NO) {
+      xDest = ((startDayOfWeek - 1) * dayDestOffset) + 1;
+      [imageWeeksMonday compositeToPoint:NSMakePoint(0, imageWeeks.size.height - 15)
+                               operation:NSCompositeSourceOver];
+    }
 
     // for (unsigned dom = 0; dom < numberOfDaysInMonth; dom += 7) {
     unsigned short dayOfMonth = 1;
@@ -102,7 +127,6 @@
         }
         dayOfMonth++;
       }
-      NSLog(@"Day of month: %i", dayOfMonth);
       startDayOfWeek = 1;
       endDayOfWeek = 7;
       // New row on screen
