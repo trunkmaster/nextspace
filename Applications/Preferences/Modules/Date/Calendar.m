@@ -21,7 +21,6 @@
 //
 
 #import "Calendar.h"
-#include "Foundation/NSObjCRuntime.h"
 
 @implementation Calendar
 
@@ -38,15 +37,15 @@
 - (instancetype)initWithFrame:(NSRect)frameRect
 {
   [super initWithFrame:frameRect];
+  [self setDate:[NSCalendarDate now]];
   NSLog(@"First weekday: %lu", [[NSCalendar currentCalendar] firstWeekday]);
-  firstDayMonday = NO;
   return self;
 }
 
-- (NSInteger)_startWeekDayOfMonth:(NSUInteger)month year:(NSUInteger)year
+- (NSInteger)_startWeekdayOfMonth
 {
-  NSCalendarDate *monthDate = [NSCalendarDate dateWithYear:year
-                                                     month:month
+  NSCalendarDate *monthDate = [NSCalendarDate dateWithYear:[currentDate yearOfCommonEra]
+                                                     month:[currentDate monthOfYear]
                                                        day:1
                                                       hour:0
                                                     minute:0
@@ -54,9 +53,11 @@
                                                   timeZone:[NSTimeZone localTimeZone]];
   NSInteger dayOfWeek = [monthDate dayOfWeek] + 1;
 
-  if (firstDayMonday != NO) {
+  if ([[NSCalendar currentCalendar] firstWeekday] == 2) { // Monday
     if (dayOfWeek == 1) {
       dayOfWeek = 7;
+    } else {
+      dayOfWeek -= 1;
     }
   }
 
@@ -79,8 +80,7 @@
                                                                         ofType:@"tiff"]];
   
   if (imageWeeks) {
-    NSInteger startDayOfWeek = [self _startWeekDayOfMonth:[currentDate monthOfYear]
-                                                     year:[currentDate yearOfCommonEra]];
+    NSInteger startDayOfWeek = [self _startWeekdayOfMonth];
     short endDayOfWeek = 7;
     CGFloat dayDestOffset = 18;
     CGFloat daySourceOffset = 17;
@@ -92,10 +92,11 @@
     CGFloat yDest = 82;
 
     [imageWeeks compositeToPoint:NSMakePoint(0, 0) operation:NSCompositeSourceOver];
-    if (firstDayMonday != NO) {
+    if ([[NSCalendar currentCalendar] firstWeekday] == 2) {
       xDest = ((startDayOfWeek - 1) * dayDestOffset) + 1;
-      [imageWeeksMonday compositeToPoint:NSMakePoint(0, imageWeeks.size.height - 15)
-                               operation:NSCompositeSourceOver];
+      [imageWeeksMonday
+          compositeToPoint:NSMakePoint(0, imageWeeks.size.height - imageWeeksMonday.size.height)
+                 operation:NSCompositeSourceOver];
     }
 
     // for (unsigned dom = 0; dom < numberOfDaysInMonth; dom += 7) {

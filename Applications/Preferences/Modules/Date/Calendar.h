@@ -31,7 +31,6 @@
 
   NSCalendarDate *currentDate;
   NSUInteger numberOfDaysInMonth;
-  BOOL firstDayMonday;
 }
 
 - (void)setDate:(NSCalendarDate *)date;
