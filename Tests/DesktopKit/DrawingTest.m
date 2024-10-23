@@ -18,6 +18,7 @@
   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#import <AppKit/AppKit.h>
 #import "DrawingTest.h"
 
 @interface DrawingCanvas : NSView
@@ -55,11 +56,61 @@
   // [NSBezierPath strokeRect:NSMakeRect(0,0,480,380)];
   // DPSsetgray(ctxt, 0.0);
   // DPSsetlinewidth(ctxt, 1.0);
-  
+
   // DPSmoveto(ctxt, 2, 5);
   // DPSlineto(ctxt, 2, 100);
   // DPSstroke(ctxt);
+  {
+    NSImage *edgeLeft = [NSImage imageNamed:@"TabEdge_Left"];
+    NSImage *edgeRight = [NSImage imageNamed:@"TabEdge_Right"];
+    NSImage *interiorLeft = [NSImage imageNamed:@"TabInterior_Left"];
+    NSImage *interiorRight = [NSImage imageNamed:@"TabInterior_Right"];
 
+    NSLog(@"Interior left background color: %@", [interiorLeft backgroundColor]);
+    [interiorLeft drawAtPoint:NSMakePoint(100, 100)
+                     fromRect:NSMakeRect(0, 0, interiorLeft.size.width, interiorLeft.size.height)
+                    operation:NSCompositeSourceOver
+                     fraction:1.0];
+    [edgeLeft drawAtPoint:NSMakePoint(100, 100)
+                 fromRect:NSMakeRect(0, 0, interiorLeft.size.width, interiorLeft.size.height)
+                operation:NSCompositeSourceOver
+                 fraction:1.0];
+
+    // Fill text background
+    DPSsetgray(ctxt, 0.33);
+    DPSrectfill(ctxt, 100 + edgeLeft.size.width, 100, 40 - edgeLeft.size.width,
+                edgeLeft.size.height);
+
+    DPSsetgray(ctxt, 1.0);
+    DPSmoveto(ctxt, 100 + edgeLeft.size.width, 145);
+    DPSlineto(ctxt, 140, 145);
+    DPSstroke(ctxt);
+    
+    [edgeLeft drawAtPoint:NSMakePoint(140, 100)
+                 fromRect:NSMakeRect(0, 0, interiorLeft.size.width, interiorLeft.size.height)
+                operation:NSCompositeSourceOver
+                 fraction:1.0];
+
+    [interiorRight drawAtPoint:NSMakePoint(140, 100)
+                      fromRect:NSMakeRect(0, 0, interiorLeft.size.width, interiorLeft.size.height)
+                     operation:NSCompositeSourceAtop
+                      fraction:1.0];
+    [edgeRight drawAtPoint:NSMakePoint(140, 100)
+                 fromRect:NSMakeRect(0, 0, interiorLeft.size.width, interiorLeft.size.height)
+                operation:NSCompositeSourceAtop
+                 fraction:1.0];
+    
+    // // [interiorLeft setBackgroundColor:[NSColor darkGrayColor]];
+    // NSLog(@"Interior left background color: %@", [interiorLeft backgroundColor]);
+    // [interiorLeft drawAtPoint:NSMakePoint(140, 100)
+    //                  fromRect:NSMakeRect(0, 0, interiorLeft.size.width, interiorLeft.size.height)
+    //                 operation:NSCompositeXOR
+    //                  fraction:1.0];
+    // [edgeLeft drawAtPoint:NSMakePoint(140, 100)
+    //                  fromRect:NSMakeRect(0, 0, interiorLeft.size.width, interiorLeft.size.height)
+    //                 operation:NSCompositeSourceOver
+    //                  fraction:1.0];
+  }
 }
 
 @end
