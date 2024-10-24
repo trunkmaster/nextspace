@@ -29,6 +29,7 @@
 #import "TextTest.h"
 #import "DrawingTest.h"
 #import "ListViewTest.h"
+#import "TabViewTest.h"
 
 @interface AppController : NSObject
 {
@@ -46,6 +47,7 @@
 
   NXTAlert *alert;
   NSScrollView *consoleLog;
+  TabViewTest *tabViewTest;
 }
 
 @end

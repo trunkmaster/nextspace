@@ -51,7 +51,8 @@ $(APP_NAME)_OBJC_FILES += \
 	IconViewTest.m \
 	TextTest.m \
 	DrawingTest.m \
-	ListViewTest.m
+	ListViewTest.m \
+	TabViewTest.m
 
 #
 # Makefiles

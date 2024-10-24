@@ -319,6 +319,15 @@
   [drawingTest show];
 }
 
+- (void)showTabViewTest:(id)sender
+{
+  if (tabViewTest == nil) {
+    tabViewTest = [[TabViewTest alloc] init];
+  }
+  [tabViewTest show];
+}
+
+
 - (void)showHelpPanel:(id)sender
 {
   NXTHelpPanel *helpPanel;

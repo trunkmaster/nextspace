@@ -19,6 +19,7 @@
 */
 
 #import <AppKit/AppKit.h>
+#include "AppKit/NSGraphicsContext.h"
 #import "DrawingTest.h"
 
 @interface DrawingCanvas : NSView
@@ -26,102 +27,6 @@
 @end
 
 @implementation DrawingCanvas : NSView
-
-// `name` - Left or Right
-- (NSImage *)imageForSide:(NSString *)side backgroundColor:(NSColor *)color
-{
-  NSImage *image = [NSImage imageNamed:[NSString stringWithFormat:@"TabEdge_%@", side]];
-  NSArray *representations = [image representations];
-  NSBundle *bundle = [NSBundle mainBundle];
-  NSString *edgePath, *interiorPath;
-  NSBitmapImageRep *edgeRep, *interiorRep;
-  NSColor *edgeColor, *interiorColor;
-
-  edgePath = [bundle pathForResource:[NSString stringWithFormat:@"TabEdge_%@", side]
-                              ofType:@"tiff"];
-  edgeRep = (NSBitmapImageRep *)[image bestRepresentationForRect:NSMakeRect(100, 100, 10, 10)
-                                                         context:GSCurrentContext()
-                                                           hints:NULL];
-  if (edgeRep == nil) {
-    NSLog(@"ERROR: Can't find correct representation!");
-    return nil;
-  } else {
-    NSLog(@"Rep: %@", edgeRep);
-  }
-  // edgeRep = (NSBitmapImageRep *)[NSImageRep imageRepWithContentsOfFile:edgePath];
-  interiorPath = [bundle pathForResource:[NSString stringWithFormat:@"TabInterior_%@", side]
-                                  ofType:@"tiff"];
-  interiorRep = (NSBitmapImageRep *)[NSImageRep imageRepWithContentsOfFile:interiorPath];
-
-  NSLog(@"Image %@ - %@", [edgePath lastPathComponent], NSStringFromSize(edgeRep.size));
-
-  for (int x = 0; x < interiorRep.size.width; x++) {
-    for (int y = 0; y < interiorRep.size.height; y++) {
-      interiorColor = [interiorRep colorAtX:x y:y];
-      edgeColor = [edgeRep colorAtX:x y:y];
-      if ([interiorColor alphaComponent] == 1.0 && [edgeColor alphaComponent] == 0.0) {
-        [edgeRep setColor:color atX:x y:y];
-      }
-    }
-  }
-
-  NSLog(@"Edge rep: bitsPerSample: %li bitsPerPixel: %ld", [edgeRep bitsPerSample],
-        [edgeRep bitsPerSample]);
-
-  for (id rep in representations) {
-    if ([rep bitsPerSample] == 8) {
-      [image removeRepresentation:rep];
-    }
-  }
-  [image addRepresentation:edgeRep];
-
-  return image;
-}
-
-- (void)drawTabViewElements
-{
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  NSColor *selectedBackground = [NSColor lightGrayColor];
-  NSColor *unselectedBackground = [NSColor darkGrayColor];
-  NSImage *edgeLeft = [self imageForSide:@"Left" backgroundColor:selectedBackground];
-  NSImage *edgeRight = [self imageForSide:@"Right" backgroundColor:selectedBackground];
-
-  [edgeLeft drawAtPoint:NSMakePoint(100, 100)
-               fromRect:NSMakeRect(0, 0, edgeLeft.size.width, edgeLeft.size.height)
-              operation:NSCompositeSourceOver
-               fraction:1.0];
-
-  // Fill text background
-  DPSsetgray(ctxt, 0.66);
-  DPSrectfill(ctxt, 100 + edgeLeft.size.width, 100, 40 - edgeLeft.size.width, edgeLeft.size.height);
-
-  DPSsetgray(ctxt, 1.0);
-  DPSmoveto(ctxt, 100 + edgeLeft.size.width, 145);
-  DPSlineto(ctxt, 140, 145);
-  DPSstroke(ctxt);
-
-  edgeLeft = [self imageForSide:@"Left" backgroundColor:unselectedBackground];
-  [edgeLeft drawAtPoint:NSMakePoint(140, 100)
-               fromRect:NSMakeRect(0, 0, edgeLeft.size.width, edgeLeft.size.height)
-              operation:NSCompositeSourceOver
-               fraction:1.0];
-
-  [edgeRight drawAtPoint:NSMakePoint(140, 100)
-                fromRect:NSMakeRect(0, 0, edgeRight.size.width, edgeRight.size.height)
-               operation:NSCompositeSourceAtop
-                fraction:1.0];
-
-  // // [interiorLeft setBackgroundColor:[NSColor darkGrayColor]];
-  // NSLog(@"Interior left background color: %@", [interiorLeft backgroundColor]);
-  // [interiorLeft drawAtPoint:NSMakePoint(140, 100)
-  //                  fromRect:NSMakeRect(0, 0, interiorLeft.size.width, interiorLeft.size.height)
-  //                 operation:NSCompositeXOR
-  //                  fraction:1.0];
-  // [edgeLeft drawAtPoint:NSMakePoint(140, 100)
-  //                  fromRect:NSMakeRect(0, 0, interiorLeft.size.width, interiorLeft.size.height)
-  //                 operation:NSCompositeSourceOver
-  //                  fraction:1.0];
-}
 
 - (void)drawRect:(NSRect)rect
 {
@@ -156,8 +61,6 @@
   // DPSmoveto(ctxt, 2, 5);
   // DPSlineto(ctxt, 2, 100);
   // DPSstroke(ctxt);
-
-  [self drawTabViewElements];
 }
 
 @end
