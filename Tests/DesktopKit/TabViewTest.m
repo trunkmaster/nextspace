@@ -95,39 +95,17 @@
   // Fill view background
   DPSsetgray(ctxt, 0.33);
   DPSrectfill(ctxt, 0, 0, rect.size.width, rect.size.height);
+  // Fill tab view background
+  DPSsetgray(ctxt, 0.66);
+  DPSrectfill(ctxt, 0, 0, rect.size.width, rect.size.height - offset - tabHeight);
 
-  // // Fill text background
-  // DPSsetgray(ctxt, 0.66);
-  // DPSrectfill(ctxt, offset + edgeLeft.size.width, rect.size.height - offset,
-  //             40 - edgeLeft.size.width, tabHeight);
-
-  // DPSsetgray(ctxt, 1.0);
-  // DPSmoveto(ctxt, offset + edgeLeft.size.width, rect.size.height - offset);
-  // DPSlineto(ctxt, offset + edgeLeft.size.width + 40, rect.size.height - offset);
-  // DPSstroke(ctxt);
-
-
-  edgeLeft = [self imageForSide:@"Left" backgroundColor:selectedBackground];
-  [edgeLeft
-      drawAtPoint:NSMakePoint(0, rect.size.height - offset - tabHeight)
-         fromRect:NSMakeRect(0, edgeLeft.size.height - tabHeight, edgeLeft.size.width, tabHeight)
-        operation:NSCompositeSourceOver
-         fraction:1.0];
-  // Left white line
+  // White line between views and tabs
   DPSsetgray(ctxt, 0.95);
   DPSmoveto(ctxt, 0, (rect.size.height - offset - tabHeight) + 1);
-  DPSlineto(ctxt, offset + 2, (rect.size.height - offset - tabHeight) + 1);
-  // Fill text background
-  DPSsetgray(ctxt, 0.66);
-  DPSrectfill(ctxt, edgeLeft.size.width, rect.size.height - offset - tabHeight, tabWidth,
-              tabHeight);
-  // Top white line
-  DPSsetgray(ctxt, 1.0);
-  DPSmoveto(ctxt, edgeLeft.size.width, rect.size.height - offset);
-  DPSlineto(ctxt, edgeLeft.size.width + tabWidth, rect.size.height - offset);
+  DPSlineto(ctxt, rect.size.width, (rect.size.height - offset - tabHeight) + 1);
   DPSstroke(ctxt);
-  [edgeLeft release];
 
+  // Unselected
   edgeLeft = [self imageForSide:@"Left" backgroundColor:unselectedBackground];
   [edgeLeft
       drawAtPoint:NSMakePoint(edgeLeft.size.width + tabWidth,
@@ -137,6 +115,26 @@
          fraction:1.0];
   [edgeLeft release];
 
+  // Selected tab
+  edgeLeft = [self imageForSide:@"Left" backgroundColor:selectedBackground];
+  [edgeLeft
+      drawAtPoint:NSMakePoint(0, rect.size.height - offset - tabHeight)
+         fromRect:NSMakeRect(0, edgeLeft.size.height - tabHeight, edgeLeft.size.width, tabHeight)
+        operation:NSCompositeSourceOver
+         fraction:1.0];
+  // Fill text background
+  DPSsetgray(ctxt, 0.66);
+  DPSrectfill(ctxt, edgeLeft.size.width, rect.size.height - offset - tabHeight, tabWidth,
+              tabHeight);
+
+  // Top white line
+  DPSsetgray(ctxt, 1.0);
+  DPSmoveto(ctxt, edgeLeft.size.width, rect.size.height - offset);
+  DPSlineto(ctxt, edgeLeft.size.width + tabWidth, rect.size.height - offset);
+  DPSstroke(ctxt);
+
+  [edgeLeft release];
+
   edgeRight = [self imageForSide:@"Right" backgroundColor:selectedBackground];
   [edgeRight
       drawAtPoint:NSMakePoint(edgeRight.size.width + tabWidth,
@@ -144,7 +142,13 @@
          fromRect:NSMakeRect(0, edgeRight.size.height - tabHeight, edgeRight.size.width, tabHeight)
         operation:NSCompositeSourceAtop
          fraction:1.0];
+  // Right white line
+  // DPSsetgray(ctxt, 0.95);
+  // DPSmoveto(ctxt, tabWidth + (edgeRight.size.width * 2) - 8, (rect.size.height - offset - tabHeight) + 1);
+  // DPSlineto(ctxt, rect.size.width, (rect.size.height - offset - tabHeight) + 1);
+  // DPSstroke(ctxt);
   [edgeRight release];
+
 }
 
 @end
