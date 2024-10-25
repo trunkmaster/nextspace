@@ -35,7 +35,6 @@
   [super drawRect:rect];
 
   // [[NSColor blackColor] set];
-  // DPSsetrgbcolor(ctxt, 0.0, 0.0, 0.0);
   DPSsetgray(ctxt, 0.0);
   
   // [NSBezierPath strokeLineFromPoint:NSMakePoint(5, 5)
