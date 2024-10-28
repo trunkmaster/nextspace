@@ -28,7 +28,9 @@
 @implementation TabView : NSView
 
 // `name` - Left or Right
-- (NSImage *)imageForSide:(NSString *)side backgroundColor:(NSColor *)color
+- (NSImage *)imageForSide:(NSString *)side
+          backgroundColor:(NSColor *)color
+                 selected:(BOOL)isSelected
 {
   NSImage *image = nil;
   NSBundle *bundle = [NSBundle mainBundle];
@@ -64,6 +66,10 @@
                                                           ofColor:edgeColor];
           [edgeRep setColor:blendedColor atX:x y:y];
         }
+      } else if ([edgeColor alphaComponent] > 0) {
+        if (isSelected == NO && [side isEqualToString:@"Left"]) {
+          [edgeRep setColor:[edgeColor colorWithAlphaComponent:0.505] atX:x y:y];
+        }
       }
     }
   }
@@ -86,39 +92,37 @@
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSColor *background = isSelected ? [NSColor lightGrayColor] : [NSColor darkGrayColor];
-  NSImage *edgeLeft = [self imageForSide:@"Left" backgroundColor:background];
-  NSImage *edgeRight = [self imageForSide:@"Right" backgroundColor:background];
+  NSImage *edgeLeft = [self imageForSide:@"Left" backgroundColor:background selected:isSelected];
+  NSImage *edgeRight = [self imageForSide:@"Right" backgroundColor:background selected:isSelected];
   CGFloat titleWidth = rect.size.width - edgeLeft.size.width - edgeRight.size.width;
 
   // Fill text background
   if (isSelected == NO) {
-    DPSsetgray(ctxt, 0.67);
-  } else {
     DPSsetgray(ctxt, 0.33);
+  } else {
+    DPSsetgray(ctxt, 0.67);
   }
   // NSLog(@"Background black component: %f", [background blackComponent]);
-  // DPSsetgray(ctxt, [background whiteComponent]);
   DPSrectfill(ctxt, rect.origin.x + edgeLeft.size.width, rect.origin.y, titleWidth, rect.size.height - 1);
 
   // Top white line
   if (isSelected == NO) {
-    DPSsetgray(ctxt, 1.0);
+    DPSsetgray(ctxt, 0.67);
   } else {
-
+    DPSsetgray(ctxt, 1.0);
   }
-  DPSmoveto(ctxt, rect.origin.x + edgeLeft.size.width, rect.origin.y + rect.size.height);
-  DPSlineto(ctxt, rect.origin.x + edgeLeft.size.width + titleWidth,
+  DPSmoveto(ctxt, rect.origin.x + edgeLeft.size.width - 2, rect.origin.y + rect.size.height);
+  DPSlineto(ctxt, rect.origin.x + edgeLeft.size.width + titleWidth + 2,
             rect.origin.y + rect.size.height);
+  
   DPSstroke(ctxt);
 
-  // edgeLeft = [self imageForSide:@"Left" backgroundColor:background];
   [edgeLeft drawAtPoint:NSMakePoint(rect.origin.x, rect.origin.y)
                fromRect:NSMakeRect(0, edgeLeft.size.height - rect.size.height, edgeLeft.size.width,
                                    rect.size.height)
               operation:NSCompositeSourceOver
                fraction:1.0];
 
-  // edgeRight = [self imageForSide:@"Right" backgroundColor:background];
   [edgeRight drawAtPoint:NSMakePoint((rect.origin.x + rect.size.width) - edgeRight.size.width,
                                      rect.origin.y)
                 fromRect:NSMakeRect(0, edgeRight.size.height - rect.size.height,
@@ -137,10 +141,10 @@
   NSGraphicsContext *ctxt = GSCurrentContext();
   CGFloat tabHeight = 21;
   CGFloat offset = 6;
-  CGFloat tabWidth = floorf(rect.size.width / 4) + (22 - offset);
+  CGFloat tabWidth = floorf(rect.size.width / 4) + 20;
 
   // Fill view background
-  DPSsetgray(ctxt, 0.33);
+  DPSsetgray(ctxt, 0.333);
   DPSrectfill(ctxt, 0, 0, rect.size.width, rect.size.height);
 
   // Fill subview background
@@ -149,7 +153,7 @@
 
   // Draw unselected
   for (int i = 3; i > 0; i--) {
-    [self drawTabWithFrame:NSMakeRect((tabWidth - 22) * i, rect.size.height - offset - tabHeight,
+    [self drawTabWithFrame:NSMakeRect((tabWidth - 25) * i, rect.size.height - offset - tabHeight,
                                       tabWidth, tabHeight)
                      title:@"Unseleccted"
                   selected:NO];
