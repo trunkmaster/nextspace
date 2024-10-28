@@ -24,7 +24,6 @@
 @interface TabViewTest : NSObject
 {
   id window;
-  id tabView;
 }
 
 - (void)show;
