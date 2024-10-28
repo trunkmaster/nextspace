@@ -161,7 +161,7 @@
   CGFloat offset = 6;
   // CGFloat tabWidth = floorf([self frame].size.width / 5);
   int tabCount = 4;
-  CGFloat tabWidth = ([self frame].size.width / tabCount) + tabOverlap;
+  CGFloat tabWidth = (([self frame].size.width + (tabOverlap * (tabCount - 1))) / tabCount);
 
   NSLog(@"TabView frame: %@, Tab width: %f", NSStringFromRect([self frame]), tabWidth);
 
