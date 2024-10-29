@@ -89,42 +89,52 @@
   return image;
 }
 
+- (void)drawTabTitle:(NSString *)title
+           withFrame:(NSRect)titleRect
+          background:(NSColor *)background
+          foreground:(NSColor *)foreground
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPoint titlePosition;
+  NSDictionary *titleAttributes;
+  NSFont *textFont = [NSFont systemFontOfSize:12];
+
+  // Fill text background
+  DPSsetgray(ctxt, [background whiteComponent]);
+  DPSrectfill(ctxt, titleRect.origin.x, titleRect.origin.y, titleRect.size.width,
+              titleRect.size.height);
+
+  if (title) {
+    titlePosition = NSMakePoint(
+        titleRect.origin.x + (titleRect.size.width - [textFont widthOfString:title]) / 2,
+        titleRect.origin.y + (titleRect.size.height - [textFont defaultLineHeightForFont]) / 2);
+    titleAttributes =
+        @{NSForegroundColorAttributeName : foreground, NSFontAttributeName : textFont};
+    [title drawAtPoint:titlePosition withAttributes:titleAttributes];
+  }
+}
+
 // `rect` includes left and right image, white top line, title
 - (void)drawTabWithFrame:(NSRect)rect title:(NSString *)title selected:(BOOL)isSelected
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSColor *background = isSelected ? _selectedBackgroundColor : _unselectedBackgroundColor;
+  NSColor *textColor =
+      isSelected ? [NSColor blackColor] : [NSColor colorWithDeviceWhite:0.6 alpha:1.0];
   NSImage *edgeLeft = [self imageForSide:@"Left" backgroundColor:background selected:isSelected];
   NSImage *edgeRight = [self imageForSide:@"Right" backgroundColor:background selected:isSelected];
   CGFloat titleWidth = rect.size.width - edgeLeft.size.width - edgeRight.size.width;
 
-  NSLog(@"Draw tab with width: %f, left edge: %f, right edge: %f", rect.size.width,
-        edgeLeft.size.width, edgeRight.size.width);
+  // NSLog(@"Draw tab with width: %f, left edge: %f, right edge: %f", rect.size.width,
+  //       edgeLeft.size.width, edgeRight.size.width);
 
-  {
-    NSRect titleRect = NSMakeRect(rect.origin.x + edgeLeft.size.width, rect.origin.y, titleWidth,
-                                  rect.size.height);
-    NSPoint titlePosition;
-    NSFont *textFont = [NSFont systemFontOfSize:12];
-    NSColor *textColor = isSelected ? [NSColor blackColor] : [NSColor colorWithDeviceWhite:0.6 alpha:1.0];
+  [self drawTabTitle:title
+           withFrame:NSMakeRect(rect.origin.x + edgeLeft.size.width, rect.origin.y, titleWidth,
+                                rect.size.height)
+          background:background
+          foreground:textColor];
 
-    // Fill text background
-    DPSsetgray(ctxt, [background whiteComponent]);
-    DPSrectfill(ctxt, titleRect.origin.x, titleRect.origin.y, titleRect.size.width,
-                titleRect.size.height);
-
-    if (title) {
-      titlePosition = NSMakePoint(
-          titleRect.origin.x + (titleRect.size.width - [textFont widthOfString:title]) / 2,
-          titleRect.origin.y + (titleRect.size.height - [textFont defaultLineHeightForFont]) / 2);
-      [title drawAtPoint:titlePosition
-          withAttributes:@{
-            NSForegroundColorAttributeName : textColor,
-            NSFontAttributeName : textFont
-          }];
-    }
-  }
-
+  // Draw edges and top
   [edgeLeft drawAtPoint:NSMakePoint(rect.origin.x, rect.origin.y)
                fromRect:NSMakeRect(0, edgeLeft.size.height - rect.size.height, edgeLeft.size.width,
                                    rect.size.height)
@@ -160,10 +170,10 @@
   // NSLog(@"Selected background color: %@", _selectedBackgroundColor);
 
   NSGraphicsContext *ctxt = GSCurrentContext();
+  CGFloat subviewTopLineHeight = 1;
   CGFloat tabHeight = 21;
   CGFloat tabOverlap = 25;
   CGFloat offset = 6;
-  // CGFloat tabWidth = floorf([self frame].size.width / 5);
   int tabCount = 4;
   CGFloat tabWidth = roundf(([self frame].size.width + (tabOverlap * (tabCount - 1))) / tabCount);
 
@@ -177,8 +187,13 @@
   DPSsetgray(ctxt, [_selectedBackgroundColor whiteComponent]);
   DPSrectfill(ctxt, 0, 0, rect.size.width, rect.size.height - offset - tabHeight);
 
+  DPSstroke(ctxt);
+
   // Draw unselected
   NSString *title = nil;
+  NSRect tabRect = NSMakeRect(
+      0, (_frame.size.height - offset - tabHeight - subviewTopLineHeight),
+      tabWidth, tabHeight);
   for (int i = tabCount - 1; i > 0; i--) {
     switch (i) {
       case 3:
@@ -191,29 +206,17 @@
         title = @"Classes";
         break;
     }
-    [self drawTabWithFrame:NSMakeRect((tabWidth - tabOverlap) * i,
-                                      _frame.origin.y + (_frame.size.height - offset - tabHeight),
-                                      tabWidth, tabHeight)
-                     title:title
-                  selected:NO];
+    tabRect.origin.x = (tabWidth - tabOverlap) * i;
+    [self drawTabWithFrame:tabRect title:title selected:NO];
   }
 
   // White line between views and tabs
-  NSDrawButton(NSMakeRect(0, 0, _frame.size.width,
-                          _frame.origin.y + (_frame.size.height - offset - tabHeight)),
-               NSMakeRect(rect.origin.x, rect.origin.y, rect.size.width,
-                          (rect.size.height - offset - tabHeight)));
-  // DPSsetgray(ctxt, 1.0);
-  // DPSmoveto(ctxt, 0, (rect.size.height - offset - tabHeight) + 1);
-  // DPSlineto(ctxt, rect.size.width, (rect.size.height - offset - tabHeight) + 1);
-  DPSstroke(ctxt);
-
+  NSDrawButton(NSMakeRect(0, 0, _frame.size.width, (_frame.size.height - offset - tabHeight)),
+               rect);
 
   // Draw selected
-  [self drawTabWithFrame:NSMakeRect(0, _frame.origin.y + (_frame.size.height - offset - tabHeight), tabWidth,
-                                    tabHeight)
-                   title:@"Instances"
-                selected:YES];
+  tabRect.origin.x = 0;
+  [self drawTabWithFrame:tabRect title:@"Instances" selected:YES];
 }
 
 @end
@@ -233,9 +236,11 @@
   [window setDelegate:self];
 
   // TabView *tabView = [[TabView alloc] initWithFrame:NSMakeRect(0, 0, 355, 240)];
-  TabView *tabView = [[TabView alloc] initWithFrame:NSMakeRect(-1, -2, 359, 244)];
+  // TabView *tabView = [[TabView alloc] initWithFrame:NSMakeRect(2, 2, 351, 236)];
+  TabView *tabView = [[TabView alloc] initWithFrame:NSMakeRect(-1, -2, 359, 242)];
   tabView.unselectedBackgroundColor = [NSColor darkGrayColor];
   tabView.selectedBackgroundColor = [NSColor lightGrayColor];
+  [tabView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
   [[window contentView] addSubview:tabView];
 
   [window center];
