@@ -22,12 +22,12 @@
 #include "AppKit/NSColor.h"
 #import "TabViewTest.h"
 
-@interface TabView : NSView
+@interface TabView : NSTabView
 @property (readwrite, copy) NSColor *unselectedBackgroundColor;
 @property (readwrite, copy) NSColor *selectedBackgroundColor;
 @end
 
-@implementation TabView : NSView
+@implementation TabView
 
 // `name` - Left or Right
 - (NSImage *)imageForSide:(NSString *)side
@@ -97,7 +97,7 @@
   NSGraphicsContext *ctxt = GSCurrentContext();
   NSPoint titlePosition;
   NSDictionary *titleAttributes;
-  NSFont *textFont = [NSFont systemFontOfSize:12];
+  // NSFont *textFont = [NSFont systemFontOfSize:12];
 
   // Fill text background
   DPSsetgray(ctxt, [background whiteComponent]);
@@ -106,10 +106,10 @@
 
   if (title) {
     titlePosition = NSMakePoint(
-        titleRect.origin.x + (titleRect.size.width - [textFont widthOfString:title]) / 2,
-        titleRect.origin.y + (titleRect.size.height - [textFont defaultLineHeightForFont]) / 2);
+        titleRect.origin.x + (titleRect.size.width - [_font widthOfString:title]) / 2,
+        titleRect.origin.y + floorf((titleRect.size.height - [_font defaultLineHeightForFont]) / 2));
     titleAttributes =
-        @{NSForegroundColorAttributeName : foreground, NSFontAttributeName : textFont};
+        @{NSForegroundColorAttributeName : foreground, NSFontAttributeName : _font};
     [title drawAtPoint:titlePosition withAttributes:titleAttributes];
   }
 }
@@ -164,6 +164,24 @@
   [edgeRight release];  
 }
 
+#pragma mark - Overridings
+
+// - (instancetype)initWithFrame:(NSRect)frameRect
+// {
+//   [super initWithFrame:frameRect];
+//   return self;
+// }
+
+- (BOOL)isFlipped
+{
+  return NO;
+}
+
+- (NSSize)minimumSize
+{
+  return NSMakeSize(3, 21);
+}
+
 - (void)drawRect:(NSRect)rect
 {
   // NSLog(@"Unselected background color: %f", [_unselectedBackgroundColor whiteComponent]);
@@ -176,8 +194,10 @@
   CGFloat offset = 6;
   int tabCount = 4;
   CGFloat tabWidth = roundf(([self frame].size.width + (tabOverlap * (tabCount - 1))) / tabCount);
+  NSTabViewItem *item;
 
-  NSLog(@"TabView rect: %@, Tab width: %f", NSStringFromRect(rect), tabWidth);
+  NSLog(@"TabView rect: %@, Tab width: %f, Items: %lu", NSStringFromRect(rect), tabWidth,
+        [_items count]);
 
   // Fill top view background
   DPSsetgray(ctxt, [_unselectedBackgroundColor whiteComponent]);
@@ -191,32 +211,39 @@
 
   // Draw unselected
   NSString *title = nil;
-  NSRect tabRect = NSMakeRect(
-      0, (_frame.size.height - offset - tabHeight - subviewTopLineHeight),
-      tabWidth, tabHeight);
-  for (int i = tabCount - 1; i > 0; i--) {
-    switch (i) {
-      case 3:
-        title = @"Images";
-        break;
-      case 2:
-        title = @"Sounds";
-        break;
-      case 1:
-        title = @"Classes";
-        break;
+  NSRect tabRect = NSMakeRect(0, (_frame.size.height - offset - tabHeight - subviewTopLineHeight),
+                              tabWidth, tabHeight);
+  if ([_items count] > 0) {
+    for (int i = [_items count] - 1; i > 0; i--) {
+      tabRect.origin.x = (tabWidth - tabOverlap) * i;
+      [self drawTabWithFrame:tabRect title:title selected:NO];
     }
-    tabRect.origin.x = (tabWidth - tabOverlap) * i;
-    [self drawTabWithFrame:tabRect title:title selected:NO];
   }
-
   // White line between views and tabs
   NSDrawButton(NSMakeRect(0, 0, _frame.size.width, (_frame.size.height - offset - tabHeight)),
                rect);
 
   // Draw selected
-  tabRect.origin.x = 0;
-  [self drawTabWithFrame:tabRect title:@"Instances" selected:YES];
+  if ([_items count] > 0) {
+    tabRect.origin.x = 0;
+    [self drawTabWithFrame:tabRect title:@"Instances" selected:YES];
+  }
+
+  if ([_items count] == 0) {
+    // Draw "No Items" text at the center of view
+    NSString *message = @"No Tab View Items";
+    NSFont *msgFont = [NSFont systemFontOfSize:18];
+    CGFloat msgWidth = [msgFont widthOfString:message];
+    CGFloat msgHeight = [msgFont defaultLineHeightForFont];
+    NSPoint msgPoint = NSMakePoint((_frame.size.width - msgWidth) / 2,
+                                   (_frame.size.height - offset - tabHeight - msgHeight) / 2);
+    [message drawAtPoint:msgPoint
+        withAttributes:@{
+          NSForegroundColorAttributeName : [NSColor darkGrayColor],
+          NSFontAttributeName : msgFont
+        }];
+  }
+
 }
 
 @end
@@ -241,6 +268,24 @@
   tabView.unselectedBackgroundColor = [NSColor darkGrayColor];
   tabView.selectedBackgroundColor = [NSColor lightGrayColor];
   [tabView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+
+  NSTabViewItem *item;
+  item = [[NSTabViewItem alloc] initWithIdentifier:@"Instances"];
+  item.label = @"Instances";
+  [tabView addTabViewItem:item];
+
+  item = [[NSTabViewItem alloc] initWithIdentifier:@"Classes"];
+  item.label = @"Classes";
+  [tabView addTabViewItem:item];
+
+  item = [[NSTabViewItem alloc] initWithIdentifier:@"Sounds"];
+  item.label = @"Sounds";
+  [tabView addTabViewItem:item];
+
+  item = [[NSTabViewItem alloc] initWithIdentifier:@"Images"];
+  item.label = @"Images";
+  [tabView addTabViewItem:item];
+  
   [[window contentView] addSubview:tabView];
 
   [window center];
