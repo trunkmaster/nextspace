@@ -35,6 +35,8 @@ $(FRAMEWORK_NAME)_OBJC_FILES = \
 	NXTHelpPanel.m \
 	NXTListView.m \
 	NXTWorkspace.m \
+	NXTTabView.m \
+	NXTTabViewItem.m \
 	\
 	Utilities.m
 
@@ -62,6 +64,8 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXTHelpPanel.h \
 	NXTListView.h \
 	NXTWorkspace.h \
+	NXTTabView.h \
+	NXTTabViewItem.h \
 	\
 	Utilities.h
 
