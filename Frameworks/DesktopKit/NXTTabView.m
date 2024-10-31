@@ -98,18 +98,11 @@
   NSBitmapImageRep *edgeRep, *interiorRep;
   NSColor *edgeColor, *interiorColor;
 
-  edgePath = [bundle pathForResource:[NSString stringWithFormat:@"TabEdge_%@", side]
-                              ofType:@"tiff"];
-  image = [[NSImage alloc] initWithContentsOfFile:edgePath];
-  edgeRep = (NSBitmapImageRep *)[image bestRepresentationForRect:NSMakeRect(0, 0, 10, 10)
-                                                         context:GSCurrentContext()
-                                                           hints:NULL];
+  edgePath = [bundle pathForImageResource:[NSString stringWithFormat:@"TabEdge_%@", side]];
+  edgeRep = (NSBitmapImageRep *)[NSImageRep imageRepWithContentsOfFile:edgePath];
 
-  interiorPath = [bundle pathForResource:[NSString stringWithFormat:@"TabInterior_%@", side]
-                                  ofType:@"tiff"];
+  interiorPath = [bundle pathForImageResource:[NSString stringWithFormat:@"TabInterior_%@", side]];
   interiorRep = (NSBitmapImageRep *)[NSImageRep imageRepWithContentsOfFile:interiorPath];
-
-  // NSLog(@"Image %@ - %@", [edgePath lastPathComponent], NSStringFromSize(edgeRep.size));
 
   for (int x = 0; x < interiorRep.size.width; x++) {
     for (int y = 0; y < interiorRep.size.height; y++) {
@@ -134,13 +127,9 @@
     }
   }
 
-  // NSLog(@"Edge rep: bitsPerSample: %li bitsPerPixel: %ld", [edgeRep bitsPerSample],
-  //       [edgeRep bitsPerSample]);
-
+  image = [[NSImage alloc] initWithContentsOfFile:edgePath];
   for (id rep in [image representations]) {
-    if ([rep bitsPerSample] == 8) {
-      [image removeRepresentation:rep];
-    }
+    [image removeRepresentation:rep];
   }
   [image addRepresentation:edgeRep];
 
