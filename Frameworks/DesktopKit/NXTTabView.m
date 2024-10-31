@@ -20,6 +20,9 @@
 //
 
 #import "NXTTabView.h"
+#include "Foundation/NSObjCRuntime.h"
+
+#define TAB_OFFSET 6
 
 @implementation NXTTabView
 
@@ -33,6 +36,53 @@
 - (NSSize)minimumSize
 {
   return NSMakeSize(3, 21);
+}
+
+- (void)selectTabViewItem:(NSTabViewItem *)tabViewItem
+{
+  BOOL canSelect = YES;
+  NSView *selectedView = nil;
+
+  if ([_delegate respondsToSelector:@selector(tabView:shouldSelectTabViewItem:)]) {
+    canSelect = [_delegate tabView:self shouldSelectTabViewItem:tabViewItem];
+  }
+
+  if (canSelect) {
+    if ([_delegate respondsToSelector:@selector(tabView:willSelectTabViewItem:)]) {
+      [_delegate tabView:self willSelectTabViewItem:tabViewItem];
+    }
+
+    if (_selected != nil) {
+      [_selected _setTabState:NSBackgroundTab];
+      // NB: If [_selected view] is nil this does nothing, which is fine.
+      [[_selected view] removeFromSuperview];
+    }
+
+    _selected = tabViewItem;
+    selectedView = [_selected view];
+    [_selected _setTabState:NSSelectedTab];
+    if (selectedView != nil) {
+      NSView *firstResponder;
+
+      [self addSubview:selectedView];
+
+      firstResponder = [_selected initialFirstResponder];
+      if (firstResponder == nil) {
+        firstResponder = selectedView;
+        [_selected setInitialFirstResponder:firstResponder];
+        // [firstResponder _setUpKeyViewLoopWithNextKeyView:_original_nextKeyView];
+      }
+      [self setNextKeyView:firstResponder];
+      [_window makeFirstResponder:firstResponder];
+    }
+
+    // Will need to redraw tabs and content area.
+    [self setNeedsDisplay:YES];
+
+    if ([_delegate respondsToSelector:@selector(tabView:didSelectTabViewItem:)]) {
+      [_delegate tabView:self didSelectTabViewItem:_selected];
+    }
+  }
 }
 
 #pragma mark - Drawing
@@ -176,11 +226,11 @@
 - (void)drawRect:(NSRect)rect
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
+  CGFloat tabHeight = [_font defaultLineHeightForFont] + TAB_OFFSET;
   CGFloat subviewTopLineHeight = 1;
-  CGFloat tabHeight = 21;
   CGFloat tabOverlap = 25;
-  CGFloat offset = 6;
 
+  // NSLog(@"NXTabView: line height is: %f", [_font defaultLineHeightForFont]);
   // NSLog(@"TabView rect: %@, Tab width: %f, Items: %lu", NSStringFromRect(rect), tabWidth,
   //       [_items count]);
 
@@ -190,7 +240,7 @@
 
   // Fill subview background
   DPSsetgray(ctxt, [_selectedBackgroundColor whiteComponent]);
-  DPSrectfill(ctxt, 0, 0, rect.size.width, rect.size.height - offset - tabHeight);
+  DPSrectfill(ctxt, 0, 0, rect.size.width, rect.size.height - TAB_OFFSET - tabHeight);
 
   DPSstroke(ctxt);
 
@@ -198,10 +248,10 @@
   NSUInteger tabCount = [_items count];
   if (tabCount > 0) {
     CGFloat tabWidth = roundf(([self frame].size.width + (tabOverlap * (tabCount - 1))) / tabCount);
-    NSRect tabRect = NSMakeRect(0, (_frame.size.height - offset - tabHeight - subviewTopLineHeight),
+    NSRect tabRect = NSMakeRect(0, (_frame.size.height - TAB_OFFSET - tabHeight - subviewTopLineHeight),
                                 tabWidth, tabHeight);
     NXTTabViewItem *item;
-    int selectedTabIndex = 0;
+    NSUInteger selectedTabIndex = 0;
 
     for (int i = tabCount - 1; i >= 0; i--) {
       item = [_items objectAtIndex:i];
@@ -218,7 +268,7 @@
     }
 
     // White line between views and tabs
-    NSDrawButton(NSMakeRect(0, 0, _frame.size.width, (_frame.size.height - offset - tabHeight)),
+    NSDrawButton(NSMakeRect(0, 0, _frame.size.width, (_frame.size.height - TAB_OFFSET - tabHeight)),
                  rect);
     
     // Draw selected
@@ -236,9 +286,9 @@
     CGFloat msgWidth = [msgFont widthOfString:message];
     CGFloat msgHeight = [msgFont defaultLineHeightForFont];
     NSPoint msgPoint = NSMakePoint((_frame.size.width - msgWidth) / 2,
-                                   (_frame.size.height - offset - tabHeight - msgHeight) / 2);
+                                   (_frame.size.height - TAB_OFFSET - tabHeight - msgHeight) / 2);
     // White line between views and tabs
-    NSDrawButton(NSMakeRect(0, 0, _frame.size.width, (_frame.size.height - offset - tabHeight)),
+    NSDrawButton(NSMakeRect(0, 0, _frame.size.width, (_frame.size.height - TAB_OFFSET - tabHeight)),
                  rect);
     [message drawAtPoint:msgPoint
           withAttributes:@{
