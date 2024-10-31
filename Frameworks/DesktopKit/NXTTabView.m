@@ -19,8 +19,8 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
+#import <DesktopKit/Utilities.h>
 #import "NXTTabView.h"
-#include "Foundation/NSObjCRuntime.h"
 
 #define TAB_OFFSET 6
 
@@ -155,18 +155,23 @@
 {
   NSPoint titlePosition;
   NSDictionary *titleAttributes;
+  NSString *label = title;
 
   // Fill text background
   [background set];
   NSRectFill(titleRect);
 
   if (title) {
+    // TODO: `_trancated_label` is weird name. Use `_allowsTrancatedLabels` instead.
+    if (_truncated_label != NO) {
+      label = NXTShortenString(title, titleRect.size.width, _font, NXSymbolElement, NXTDotsAtRight);
+    }
     titlePosition = NSMakePoint(
-        titleRect.origin.x + (titleRect.size.width - [_font widthOfString:title]) / 2,
+        titleRect.origin.x + (titleRect.size.width - [_font widthOfString:label]) / 2,
         titleRect.origin.y + floorf((titleRect.size.height - [_font defaultLineHeightForFont]) / 2));
     titleAttributes =
         @{NSForegroundColorAttributeName : foreground, NSFontAttributeName : _font};
-    [title drawAtPoint:titlePosition withAttributes:titleAttributes];
+    [label drawAtPoint:titlePosition withAttributes:titleAttributes];
   }
 }
 

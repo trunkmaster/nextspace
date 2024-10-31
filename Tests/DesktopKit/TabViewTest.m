@@ -19,6 +19,7 @@
 */
 
 #import <AppKit/AppKit.h>
+#include "AppKit/NSTextField.h"
 #import <DesktopKit/NXTTabView.h>
 #import "TabViewTest.h"
 
@@ -41,31 +42,36 @@
   NXTTabView *tabView = [[NXTTabView alloc] initWithFrame:NSMakeRect(-1, -2, 359, 242)];
   tabView.unselectedBackgroundColor = [NSColor grayColor];
   tabView.selectedBackgroundColor = [NSColor lightGrayColor];
+  // [tabView setFont:[NSFont boldSystemFontOfSize:12]];
+  [tabView setAllowsTruncatedLabels:YES];
   [tabView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 
   NXTTabViewItem *item;
-  item = [[NXTTabViewItem alloc] initWithIdentifier:@"Model"];
-  item.label = @"Model";
+  item = [[NXTTabViewItem alloc] initWithIdentifier:@"0"];
+  item.label = @"Instances";
+  NSTextField *subview = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 100, (359 - 40), 21)];
+  [item setView:subview];
+  [subview release];
   [tabView addTabViewItem:item];
 
-  item = [[NXTTabViewItem alloc] initWithIdentifier:@"Repeat"];
-  item.label = @"Repeat";
+  item = [[NXTTabViewItem alloc] initWithIdentifier:@"1"];
+  item.label = @"Classes";
   [tabView addTabViewItem:item];
 
-  item = [[NXTTabViewItem alloc] initWithIdentifier:@"Layouts"];
-  item.label = @"Layouts";
+  item = [[NXTTabViewItem alloc] initWithIdentifier:@"2"];
+  item.label = @"Images";
   [tabView addTabViewItem:item];
 
-  item = [[NXTTabViewItem alloc] initWithIdentifier:@"Shortcuts"];
-  item.label = @"Shortcuts";
+  item = [[NXTTabViewItem alloc] initWithIdentifier:@"3"];
+  item.label = @"Sounds";
   [tabView addTabViewItem:item];
 
-  item = [[NXTTabViewItem alloc] initWithIdentifier:@"Keypad"];
-  item.label = @"Keypad";
+  item = [[NXTTabViewItem alloc] initWithIdentifier:@"4"];
+  item.label = @"LogngTitle";
   [tabView addTabViewItem:item];
 
-  item = [[NXTTabViewItem alloc] initWithIdentifier:@"Modifiers"];
-  item.label = @"Modifiers";
+  item = [[NXTTabViewItem alloc] initWithIdentifier:@"5"];
+  item.label = @"VeryLogngTitle";
   [tabView addTabViewItem:item];
 
   [[window contentView] addSubview:tabView];
