@@ -47,15 +47,33 @@
   [tabView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
 
   NXTTabViewItem *item;
+  NSView *subview;
   item = [[NXTTabViewItem alloc] initWithIdentifier:@"0"];
   item.label = @"Instances";
-  NSTextField *subview = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 100, (359 - 40), 21)];
+  subview = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 100, (359 - 40), 21)];
   [item setView:subview];
   [subview release];
   [tabView addTabViewItem:item];
 
   item = [[NXTTabViewItem alloc] initWithIdentifier:@"1"];
   item.label = @"Classes";
+  NSBox *box = [[NSBox alloc] initWithFrame:NSMakeRect(0, 0, 359, 242 - 27)];
+  NSScrollView *sv = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 359-1, 242 - 29)];
+
+  [box setBorderType:NSLineBorder];
+  [box setTitlePosition:NSNoTitle];
+  [box setContentViewMargins:NSMakeSize(0, 0)];
+  [box setAutoresizingMask:NSViewHeightSizable | NSViewWidthSizable];
+
+  [sv setHasVerticalScroller:YES];
+  [sv setHasHorizontalScroller:NO];
+  [sv setBackgroundColor:[NSColor whiteColor]];
+  [sv setAutoresizingMask:NSViewHeightSizable | NSViewWidthSizable];
+  [box addSubview:sv];
+  [sv release];
+
+  [item setView:box];
+  [box release];
   [tabView addTabViewItem:item];
 
   item = [[NXTTabViewItem alloc] initWithIdentifier:@"2"];
@@ -66,13 +84,13 @@
   item.label = @"Sounds";
   [tabView addTabViewItem:item];
 
-  item = [[NXTTabViewItem alloc] initWithIdentifier:@"4"];
-  item.label = @"LogngTitle";
-  [tabView addTabViewItem:item];
+  // item = [[NXTTabViewItem alloc] initWithIdentifier:@"4"];
+  // item.label = @"LogngTitle";
+  // [tabView addTabViewItem:item];
 
-  item = [[NXTTabViewItem alloc] initWithIdentifier:@"5"];
-  item.label = @"VeryLogngTitle";
-  [tabView addTabViewItem:item];
+  // item = [[NXTTabViewItem alloc] initWithIdentifier:@"5"];
+  // item.label = @"VeryLogngTitle";
+  // [tabView addTabViewItem:item];
 
   [[window contentView] addSubview:tabView];
 
