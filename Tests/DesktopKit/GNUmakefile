@@ -18,8 +18,7 @@ $(APP_NAME)_STANDARD_INSTALL = no
 # Resource files
 #
 $(APP_NAME)_RESOURCE_FILES = \
-	NEXTSPACE.tiff \
-	Resources/*.tiff
+	NEXTSPACE.tiff
 
 #
 # Localization
