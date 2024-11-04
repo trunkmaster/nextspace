@@ -8,6 +8,8 @@ _PWD=`pwd`
 # Operating system
 #----------------------------------------
 . /etc/os-release
+# OS type like "rhel"
+OS_LIKE=`echo ${ID_LIKE} | awk '{print $1}'`
 # OS name like "fedora"
 OS_ID=$ID
 _ID=`echo ${ID} | awk -F\" '{print $2}'`
@@ -142,7 +144,7 @@ else
   ${ECHO} "Using linker:\tGold"
 fi
 # Compiler
-if [ "$OS_ID" = "fedora" ] || [ "$OS_ID" = "debian" ] || [ "$OS_ID" = "ubuntu" ]; then
+if [ "$OS_LIKE" = "rhel" ] || [ "$OS_ID" = "debian" ] || [ "$OS_ID" = "ubuntu" ]; then
   which clang 2>&1 > /dev/null || `echo "No clang compiler found. Please install clang package."; exit 1`
   C_COMPILER=`which clang`
   which clang++ 2>&1 > /dev/null || `echo "No clang++ compiler found. Please install clang++ package."; exit 1`
@@ -208,24 +210,16 @@ prepare_environment()
                 rpm -q centos-release-scl-rh 2>&1 > /dev/null
                 if [ $? -eq 1 ]; then BUILD_TOOLS+=" centos-release-scl-rh"; fi
             fi
-            if [ $OS_VERSION == "9" ];then
-                # Could be "CentOS Linux" or "CentOS Stream"
-                if [ "$OS_ID" == "CentOS Stream" ]; then
-                    yum config-manager --set-enabled powertools
-                else
-                    yum config-manager --set-enabled PowerTools
-                fi
-                rpm -q epel-release 2>&1 > /dev/null
-                if [ $? -eq 1 ]; then BUILD_TOOLS+=" epel-release"; fi
-                rpm -q dnf-plugins-core 2>&1 > /dev/null
-                if [ $? -eq 1 ]; then BUILD_TOOLS+=" dnf-plugins-core"; fi
-                rpm -q git 2>&1 > /dev/null
-                if [ $? -eq 1 ]; then BUILD_TOOLS+=" git"; fi
-            fi
         fi
     else
-        print_H2 ">>>>> Can't find /etc/os-release - this OS is unsupported."
-        return 1
+	if [ "${OS_LIKE}" = "rhel" ] && [ "${OS_VERSION}" > "9" ];then
+            dnf -y install epel-release
+            dnf config-manager --set-enabled crb
+            dnf -y install clang
+        else
+           print_H2 ">>>>> Can't find /etc/os-release - this OS is unsupported."
+           return 1
+        fi
     fi
     
     if [ "${BUILD_TOOLS}" != "" ]; then

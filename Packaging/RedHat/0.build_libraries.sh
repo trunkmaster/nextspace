@@ -13,18 +13,11 @@ if [ $? -eq 1 ];then
     exit 1
 fi
 
-if [ "$OS_NAME" == "Rocky Linux" ] || [ "$OS_NAME" == "AlmaLinux" ] && [ $OS_VERSION = "8.8" ];then
-    dnf -y install epel-release
-    dnf config-manager --set-enabled powertools
-fi
-
 # Apple Grand Central Dispatch
-if [ "$OS_ID" == "centos" ];then
-    `dirname $0`/build_libdispatch.sh $1
-    if [ $? -eq 1 ]; then
-        echo "Aborting..."
-        exit 1
-    fi
+`dirname $0`/build_libdispatch.sh $1
+if [ $? -eq 1 ]; then
+    echo "Aborting..."
+    exit 1
 fi
 
 # Apple Core Foundation

@@ -54,11 +54,9 @@ Requires:	libXcomposite
 Requires:	libXrender
 Requires:	libXdamage
 Requires:	libexif
+Requires:	xkbcomp
+Requires:	xorg-x11-drivers
 Requires:	xorg-x11-drv-evdev
-%ifnarch aarch64
-Requires:	xorg-x11-drv-intel
-Requires:	xorg-x11-drv-vesa
-%endif
 Requires:	xorg-x11-drv-synaptics
 Requires:	xorg-x11-server-Xorg
 %if 0%{?el7}
@@ -66,7 +64,6 @@ Requires:	xorg-x11-drv-keyboard
 Requires:	xorg-x11-drv-mouse
 %endif
 %if 0%{?rhel} || 0%{?fedora} < 34
-Requires:	xorg-x11-xkb-utils
 Requires:	xorg-x11-server-utils
 %else
 Requires:	xrdb
