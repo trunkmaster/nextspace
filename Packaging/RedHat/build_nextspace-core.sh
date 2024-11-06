@@ -7,7 +7,6 @@ BUILD_RPM=1
 SPEC_FILE=${PROJECT_DIR}/Core/nextspace-core.spec
 
 print_H1 " Building of NEXTSPACE core components (nextspace-core) RPM..."
-
 print_H2 "===== Install nextspace-core build dependencies..."
 DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
 sudo yum -y install ${DEPS} 2>&1 > /dev/null

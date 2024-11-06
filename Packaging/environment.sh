@@ -8,6 +8,8 @@ _PWD=`pwd`
 # Operating system
 #----------------------------------------
 . /etc/os-release
+# OS type like "rhel"
+OS_LIKE=`echo ${ID_LIKE} | awk '{print $1}'`
 # OS name like "fedora"
 OS_ID=$ID
 _ID=`echo ${ID} | awk -F\" '{print $2}'`
@@ -32,22 +34,13 @@ fi
 #----------------------------------------
 # Library versions
 #----------------------------------------
-if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
-  libdispatch_version=5.4.2
-  libcorefoundation_version=5.4.2
-  gnustep_make_version=2_7_0
-  gnustep_base_version=1_28_0
-  gnustep_gui_version=0_29_0
-else
-  libdispatch_version=5.9.2
-  libcorefoundation_version=5.9.2
-  libcfnetwork_version=129.20
-  gnustep_make_version=2_9_2
-  gnustep_base_version=1_30_0
-  gnustep_gui_version=0_31_0
-fi
+libdispatch_version=5.9.2
+libcorefoundation_version=5.9.2
+libcfnetwork_version=129.20
 libobjc2_version=2.2.1
-#gnustep_back_version=0_30_0
+gnustep_make_version=2_9_2
+gnustep_base_version=1_30_0
+gnustep_gui_version=0_31_0
 
 gorm_version=1_4_0
 projectcenter_version=0_7_0
@@ -94,11 +87,7 @@ fi
 # Tools
 #----------------------------------------
 # Make
-if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
-  CMAKE_CMD=cmake3
-else
   CMAKE_CMD=cmake
-fi
 if type "gmake" 2>/dev/null >/dev/null ;then
   MAKE_CMD=gmake
 else
@@ -142,7 +131,7 @@ else
   ${ECHO} "Using linker:\tGold"
 fi
 # Compiler
-if [ "$OS_ID" = "fedora" ] || [ "$OS_ID" = "debian" ] || [ "$OS_ID" = "ubuntu" ]; then
+if [ "$OS_ID" = "fedora" ] || [ "$OS_LIKE" = "rhel" ] || [ "$OS_ID" = "debian" ] || [ "$OS_ID" = "ubuntu" ]; then
   which clang 2>&1 > /dev/null || `echo "No clang compiler found. Please install clang package."; exit 1`
   C_COMPILER=`which clang`
   which clang++ 2>&1 > /dev/null || `echo "No clang++ compiler found. Please install clang++ package."; exit 1`
@@ -197,35 +186,18 @@ prepare_environment()
     if [ $? -eq 1 ]; then BUILD_TOOLS+=" patch"; fi
 
     if [ -f /etc/os-release ]; then 
-        if [ $OS_ID == "centos" ];then
-            if [ $OS_VERSION == "7" ];then
-                yum repolist | grep "epel/" 2>&1 > /dev/null
-                if [ $? -eq 1 ]; then
-                    BUILD_TOOLS+=" https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm";
-                fi
-                rpm -q centos-release-scl 2>&1 > /dev/null
-                if [ $? -eq 1 ]; then BUILD_TOOLS+=" centos-release-scl"; fi
-                rpm -q centos-release-scl-rh 2>&1 > /dev/null
-                if [ $? -eq 1 ]; then BUILD_TOOLS+=" centos-release-scl-rh"; fi
-            fi
-            if [ $OS_VERSION == "9" ];then
-                # Could be "CentOS Linux" or "CentOS Stream"
-                if [ "$OS_ID" == "CentOS Stream" ]; then
-                    yum config-manager --set-enabled powertools
-                else
-                    yum config-manager --set-enabled PowerTools
-                fi
-                rpm -q epel-release 2>&1 > /dev/null
-                if [ $? -eq 1 ]; then BUILD_TOOLS+=" epel-release"; fi
-                rpm -q dnf-plugins-core 2>&1 > /dev/null
-                if [ $? -eq 1 ]; then BUILD_TOOLS+=" dnf-plugins-core"; fi
-                rpm -q git 2>&1 > /dev/null
-                if [ $? -eq 1 ]; then BUILD_TOOLS+=" git"; fi
-            fi
+	if [ "${OS_LIKE}" = "rhel" ] && [ "${OS_VERSION}" = "9" ];then
+            dnf -y install epel-release
+            dnf config-manager --set-enabled crb
+            dnf -y install clang
+        else
+	    if [ "$OS_ID" = "fedora" ];then
+                dnf -y install clang
+	    else
+		print_H2 ">>>>> Can't find /etc/os-release - this OS is unsupported."
+                return 1
+	    fi
         fi
-    else
-        print_H2 ">>>>> Can't find /etc/os-release - this OS is unsupported."
-        return 1
     fi
     
     if [ "${BUILD_TOOLS}" != "" ]; then

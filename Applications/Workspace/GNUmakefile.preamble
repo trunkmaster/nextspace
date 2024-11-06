@@ -14,7 +14,7 @@ ADDITIONAL_OBJCFLAGS += -Wall -Wno-unused-variable -Wno-typedef-redefinition
 #ADDITIONAL_CFLAGS +=
 
 # Additional flags to pass to the linker
-ADDITIONAL_LDFLAGS += `pkg-config --libs dbus-1 udisks2 upower-glib` -ldispatch -ldl -lbsd 
+ADDITIONAL_LDFLAGS += `pkg-config --libs dbus-1 udisks2 upower-glib` -ldispatch -ldl -lbsd -fuse-ld=gold
 
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS += -I./ `pkg-config --cflags dbus-1 udisks2 upower-glib`

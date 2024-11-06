@@ -10,15 +10,9 @@ License:        GPLv2
 URL:		http://www.github.com/trunkmaster/nextspace
 Source0:	nextspace-applications-%{version}.tar.gz
 
-%if 0%{?el7}
-BuildRequires:  cmake3
-%define CMAKE cmake3
-BuildRequires:  llvm-toolset-7.0-clang >= 7.0.1
-%else
 BuildRequires:  cmake
 %define CMAKE cmake
 BuildRequires:  clang >= 7.0.1
-%endif
 BuildRequires:	nextspace-frameworks-devel
 # Preferences
 # BuildRequires:
@@ -54,23 +48,15 @@ Requires:	libXcomposite
 Requires:	libXrender
 Requires:	libXdamage
 Requires:	libexif
+Requires:	xkbcomp
+Requires:	xorg-x11-drivers
 Requires:	xorg-x11-drv-evdev
-%ifnarch aarch64
-Requires:	xorg-x11-drv-intel
-Requires:	xorg-x11-drv-vesa
-%endif
 Requires:	xorg-x11-drv-synaptics
 Requires:	xorg-x11-server-Xorg
-%if 0%{?el7}
-Requires:	xorg-x11-drv-keyboard
-Requires:	xorg-x11-drv-mouse
-%endif
-%if 0%{?rhel} || 0%{?fedora} < 34
-Requires:	xorg-x11-xkb-utils
+%if 0%{?el9}
 Requires:	xorg-x11-server-utils
-%else
-Requires:	xrdb
 %endif
+Requires:	xrdb
 Requires:	xorg-x11-fonts-100dpi
 Requires:	xorg-x11-fonts-misc
 Requires:	mesa-dri-drivers
@@ -96,9 +82,6 @@ Header file for NextSpace core applications (Preferences, Workspace).
 # Build phase
 #
 %build
-%if 0%{?el7}
-source /opt/rh/llvm-toolset-7.0/enable
-%endif
 source /Developer/Makefiles/GNUstep.sh
 export CC=clang
 export CXX=clang++
@@ -160,6 +143,9 @@ if [ -f /usr/NextSpace/Preferences/Login ]; then
 fi
 
 %changelog
+* Tue Nov 5 2024 Andres Morales <armm77@icloud.com>
+  Support for CentOS 7 is being dropped.
+
 * Wed Jun 12 2024  Sergii Stoian <stoyan255@gmail.com> - 0.95-0
 - bump package version to 0.95 release.
 

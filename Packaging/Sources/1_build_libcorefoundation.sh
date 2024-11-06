@@ -20,41 +20,14 @@ fi
 #----------------------------------------
 # Download
 #----------------------------------------
-if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
-	CF_PKG_NAME=swift-corelibs-foundation-swift-${libcorefoundation_version}-RELEASE
-else
-	CF_PKG_NAME=apple-corefoundation-${libcorefoundation_version}
-	CFNET_PKG_NAME=apple-cfnetwork
-fi
+CF_PKG_NAME=apple-corefoundation-${libcorefoundation_version}
+CFNET_PKG_NAME=apple-cfnetwork
 
 if [ ! -d ${BUILD_ROOT}/${CF_PKG_NAME} ]; then
-	if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
-		curl -L https://github.com/apple/swift-corelibs-foundation/archive/swift-${libcorefoundation_version}-RELEASE.tar.gz -o ${BUILD_ROOT}/${CF_PKG_NAME}.tar.gz
-		cd ${BUILD_ROOT}
-		tar zxf ${CF_PKG_NAME}.tar.gz
-
-		cd ${CF_PKG_NAME}
-		SOURCES_DIR=${PROJECT_DIR}/Libraries/libcorefoundation
-		patch -p1 < ${SOURCES_DIR}/CF_shared_on_linux.patch
-		patch -p1 < ${SOURCES_DIR}/CF_centos7.patch
-		patch -p1 < ${SOURCES_DIR}/CFString_centos.patch
-		
-		cp ${SOURCES_DIR}/CFNotificationCenter.c CoreFoundation/AppServices.subproj/
-		patch -p1 < ${SOURCES_DIR}/CFNotificationCenter.patch
-
-		cp ${SOURCES_DIR}/CFFileDescriptor.h CoreFoundation/RunLoop.subproj/
-		cp ${SOURCES_DIR}/CFFileDescriptor.c CoreFoundation/RunLoop.subproj/
-		patch -p1 < ${SOURCES_DIR}/CFFileDescriptor.patch
-
-		cp CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h CoreFoundation/Base.subproj/
-
-		cd ../..
-	else
-		git clone --depth 1 https://github.com/trunkmaster/apple-corefoundation ${BUILD_ROOT}/${CF_PKG_NAME}
-	fi
+    git clone --depth 1 https://github.com/trunkmaster/apple-corefoundation ${BUILD_ROOT}/${CF_PKG_NAME}
 fi
 if [ ! -d ${BUILD_ROOT}/${CFNET_PKG_NAME} ]; then
-	git clone --depth 1 https://github.com/trunkmaster/apple-cfnetwork ${BUILD_ROOT}/${CFNET_PKG_NAME}
+    git clone --depth 1 https://github.com/trunkmaster/apple-cfnetwork ${BUILD_ROOT}/${CFNET_PKG_NAME}
 fi
 
 #----------------------------------------
@@ -66,9 +39,6 @@ rm -rf .build 2>/dev/null
 mkdir -p .build
 cd .build
 C_FLAGS="-I/usr/NextSpace/include -Wno-switch -Wno-enum-conversion"
-if [ "${OS_ID}" != "centos" ] || [ "${OS_VERSION}" != "7" ]; then
-	C_FLAGS="${C_FLAGS} -Wno-implicit-const-int-float-conversion"
-fi
 $CMAKE_CMD .. \
 	-DCMAKE_C_COMPILER=${C_COMPILER} \
 	-DCMAKE_C_FLAGS="${C_FLAGS}" \
@@ -94,16 +64,16 @@ if [ -n  "$libcfnetwork_version" ]; then
 	CFN_CFLAGS="-F../../${CF_PKG_NAME}/.build -I/usr/NextSpace/include"
 	CFN_LD_FLAGS="-L/usr/NextSpace/lib -L../../${CF_PKG_NAME}/.build/CoreFoundation.framework"
 	cmake .. \
-			-DCMAKE_C_COMPILER=${C_COMPILER} \
-			-DCMAKE_CXX_COMPILER=clang++ \
-			-DCFNETWORK_CFLAGS="${CFN_CFLAGS}" \
-			-DCFNETWORK_LDLAGS="${CFN_LD_FLAGS}" \
-			-DBUILD_SHARED_LIBS=YES \
-			-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
-			-DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
-			\
-			-DCMAKE_SKIP_RPATH=ON \
-			-DCMAKE_BUILD_TYPE=Debug
+		-DCMAKE_C_COMPILER=${C_COMPILER} \
+		-DCMAKE_CXX_COMPILER=clang++ \
+		-DCFNETWORK_CFLAGS="${CFN_CFLAGS}" \
+		-DCFNETWORK_LDLAGS="${CFN_LD_FLAGS}" \
+		-DBUILD_SHARED_LIBS=YES \
+		-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
+		-DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
+		\
+		-DCMAKE_SKIP_RPATH=ON \
+		-DCMAKE_BUILD_TYPE=Debug
 	$MAKE_CMD || exit 1
 fi
 

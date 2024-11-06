@@ -9,13 +9,8 @@ URL:      https://github.com/gnustep/libobjc2
 Source0:  https://github.com/gnustep/libobjc2/archive/v%{version}.tar.gz
 Source1:  https://github.com/Tessil/robin-map/archive/v1.2.1.tar.gz
 
-%if 0%{?el7}
-BuildRequires:	cmake3
-BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
-%else
 BuildRequires:	cmake
 BuildRequires:	clang >= 7.0.1
-%endif
 BuildRequires:	libtool
 BuildRequires:	libdispatch-devel >= 1.3
 
@@ -58,12 +53,7 @@ Development header files for libdispatch (includes kqueue and pthread_workqueue)
 %setup -n libobjc2-%{version} -a 1
 
 %build
-%if 0%{?el7}
-source /opt/rh/llvm-toolset-7.0/enable
-CMAKE_CMD=cmake3
-%else
 CMAKE_CMD=cmake
-%endif
 
 ${CMAKE_CMD} \
 	-DCMAKE_CXX_COMPILER=clang++ \
@@ -120,6 +110,9 @@ if [ -f /usr/NextSpace/include/Block-libdispatch.h ];then
 fi
 
 %changelog
+* Tue Nov 5 2024 Andres Morales <armm77@icloud.com>
+  Support for CentOS 7 is being dropped.
+
 * Thu Aug 27 2020 Sergii Stoian <stoyan255@gmail.com> - 2.1-0
 - Switch to new ObjC library realease - 2.1
 

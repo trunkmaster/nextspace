@@ -3,21 +3,13 @@
 # This script should be placed along with NSUser and NSDeveloper
 # directories.
 
-. ./install_environment.sh
+. ../install_environment.sh
 
 ENABLE_EPEL=""
 if [ -f /etc/os-release ]; then 
     source /etc/os-release
     export OS_NAME=$ID
-    export OS_VERSION=$VERSION_ID
-    if [ $ID == "centos" ]; then
-        if [ $VERSION_ID == "7" ]; then
-            EPEL_REPO=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-        else
-            EPEL_REPO=epel-release
-        fi
-        ENABLE_EPEL="--enablerepo=epel"
-    fi
+    export OS_VERSION=`echo ${VERSION_ID} | awk -F\. '{print $1}'`
 fi
 
 clear
@@ -46,8 +38,6 @@ if [ "$EPEL_REPO" != "" ]; then
     if [ $? -eq 1 ];then
         echo "Adding EPEL repository..."
         yum -y install $EPEL_REPO 2>&1 > /dev/null
-        echo "Updating system..."
-        yum -y update  2>&1 > /dev/null
     else
         echo -e -n "\e[32m"
         echo "yes"
@@ -76,7 +66,7 @@ echo "Installing NEXTSPACE User packages..."
 echo "==============================================================================="
 echo -e -n "\e[0m"
 echo -n "..."
-sudo yum -y -q install $ENABLE_EPEL NSUser/*.rpm 2>&1 > /dev/null || exit 1
+sudo yum -y -q install $ENABLE_EPEL $OS_NAME-$OS_VERSION/NSUser/*.rpm 2>&1 > /dev/null || exit 1
 sudo ldconfig
 echo -e -n "\e[32m"
 echo -e "\b\b\bDone. User packages were installed."
@@ -97,13 +87,7 @@ if [ "$YN" = "y" ]; then
     echo "==============================================================================="
     echo -e -n "\e[0m"
     echo -n "..."
-    if [ $OS_NAME == "centos" ]; then
-        if [ $VERSION_ID == "7" ]; then
-            sudo yum -y -q install centos-release-scl 2>&1 > /dev/null || exit 1
-            ENABLE_EPEL+=" --enablerepo=centos-sclo-sclo --enable-epo=centos-sclo-rh"
-        fi
-    fi
-    sudo yum -y -q install $ENABLE_EPEL NSDeveloper/*.rpm 2>&1 > /dev/null || exit 1
+    sudo yum -y -q install $ENABLE_EPEL $OS_NAME-$OS_VERSION/NSDeveloper/*.rpm 2>&1 > /dev/null || exit 1
     echo -e -n "\e[32m"
     echo -e "\b\b\bDone. Developer packages were installed."
     echo -e -n "\e[0m"
@@ -120,9 +104,6 @@ echo "==========================================================================
 echo -e -n "\e[0m"
 echo -n "..."
 X11_DRIVERS="xorg-x11-drivers xorg-x11-xinit"
-if [ $OS_NAME == "centos" ]; then
-    X11_DRIVERS+=" xorg-x11-utils"
-fi
 sudo yum -y -q install $X11_DRIVERS 2>&1 > /dev/null || exit 1
 echo -e -n "\e[32m"
 echo -e "\b\b\bDone. X11 drivers and utilities were installed."

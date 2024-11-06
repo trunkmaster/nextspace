@@ -35,9 +35,6 @@ Patch1:     pc.patch
 Patch2:     libs-gui_NSApplication.patch
 Patch3:     libs-gui_NSPopUpButton.patch
 Patch4:     libs-gui_GSThemeDrawing.patch
-%if 0%{?el7}
-Patch5:     libs-base_initialize.patch
-%endif
 
 # Build GNUstep libraries in one RPM package
 Provides:   gnustep-base-%{BASE_VERSION}
@@ -51,11 +48,7 @@ Conflicts:  gnustep-filesystem
 Conflicts:  gnustep-gui
 Conflicts:  gnustep-back
 
-%if 0%{?el7}
-BuildRequires:  llvm-toolset-7.0-clang >= 7.0.1
-%else
 BuildRequires:  clang >= 7.0.1
-%endif
 
 # gnustep-base
 BuildRequires:  libffi-devel
@@ -153,11 +146,6 @@ cd %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
 %patch -P2 -p1
 %patch -P3 -p1
 %patch -P4 -p1
-%if 0%{?el7}
-cp %{_sourcedir}/libs-base_initialize.patch %{_builddir}/nextspace-gnustep/libs-base-base-%{BASE_VERSION}/
-cd %{_builddir}/nextspace-gnustep/libs-base-base-%{BASE_VERSION}/
-%patch -P5 -p1
-%endif
 
 rm -rf %{buildroot}
 
@@ -165,9 +153,6 @@ rm -rf %{buildroot}
 # Build phase
 #
 %build
-%if 0%{?el7}
-source /opt/rh/llvm-toolset-7.0/enable
-%endif
 source /Developer/Makefiles/GNUstep.sh
 export CC=clang
 export CXX=clang++
@@ -310,6 +295,9 @@ if [ -d /usr/NextSpace/Preferences ]; then
 fi
 
 %changelog
+* Tue Nov 5 2024 Andres Morales <armm77@icloud.com>
+  Support for CentOS 7 is being dropped.
+
 * Thu Apr 30 2020 Sergii Stoian <stoyan255@gmail.com> - 1_27_0_nextspace-1
 - Switched to usage of RedHat Software Collection clang 7.0.
 - Source file should be downloaded with `spectool -g` command into

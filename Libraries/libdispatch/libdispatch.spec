@@ -8,17 +8,9 @@ Summary:	Grand Central Dispatch (GCD or libdispatch).
 License:	Apache 2.0
 URL:		https://github.com/apple/swift-corelibs-libdispatch
 Source0:	libdispatch-%{version}.tar.gz
-%if 0%{?el7}
-Patch0:		libdispatch-dispatch.h.patch
-%endif
 
-%if 0%{?el7}
-BuildRequires:	cmake3
-BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
-%else
 BuildRequires:	cmake
 BuildRequires:	clang >= 7.0.1
-%endif
 BuildRequires:	libtool
 BuildRequires:	libbsd-devel
 BuildRequires:	libstdc++-devel
@@ -53,19 +45,11 @@ Development header files for libdispatch (includes kqueue and pthread_workqueue)
 
 %prep
 %setup -n swift-corelibs-libdispatch-swift-%{version}-RELEASE
-%if 0%{?el7}
-%patch0 -p1
-%endif
 
 %build
 mkdir -p _build
 cd _build
-%if 0%{?el7}
-source /opt/rh/llvm-toolset-7.0/enable
-cmake3 .. \
-%else
 cmake .. \
-%endif
     -DCMAKE_C_COMPILER=clang \
     -DCMAKE_CXX_COMPILER=clang++ \
     -DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
@@ -102,6 +86,9 @@ ln -sf libdispatch.so.%{version} libdispatch.so.$SHORT_VER
 /usr/NextSpace/Documentation/man/man3/dispatch*
 
 %changelog
+* Tue Nov 5 2024 Andres Morales <armm77@icloud.com>
+  Support for CentOS 7 is being dropped.
+
 * Wed Sep 22 2021 Sergii Stoian <stoyan255@gmail.com> - 5.4.2-1
   Install man pages into Documentaion directory.
 

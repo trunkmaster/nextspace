@@ -20,9 +20,7 @@ cp ${PROJECT_DIR}/Libraries/gnustep/projectcenter-images.tar.gz ${RPM_SOURCES_DI
 cp ${PROJECT_DIR}/Libraries/gnustep/pc.patch ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/gorm.patch ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/libs-gui_* ${RPM_SOURCES_DIR}
-if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
-    cp ${PROJECT_DIR}/Libraries/gnustep/libs-base_* ${RPM_SOURCES_DIR}
-fi
+
 print_H1 " Downloading Local GNUstep Back..."
 tar zcf ${RPM_SOURCES_DIR}/back-art.tar.gz -C ${PROJECT_DIR}/Libraries/gnustep back-art
 

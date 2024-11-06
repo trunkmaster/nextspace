@@ -8,11 +8,7 @@
 if [ ${OS_ID} != "debian" ] && [ ${OS_ID} != "ubuntu" ]; then
 	${ECHO} ">>> Installing ${OS_ID} packages for ObjC 2.0 runtime build"
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
-	if [ "$OS_ID" == "centos" ];then
-		SPEC_FILE=${PROJECT_DIR}/Libraries/libobjc2/libobjc2.spec
-	else
-		SPEC_FILE=${PROJECT_DIR}/Libraries/libobjc2/libobjc2-centos.spec
-	fi
+	SPEC_FILE=${PROJECT_DIR}/Libraries/libobjc2/libobjc2.spec
 	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "libdispatch-devel" | awk -c '{print $1}'`
 	sudo yum -y install ${DEPS} || exit 1
 fi
@@ -21,13 +17,8 @@ fi
 # Download
 #----------------------------------------
 OBJC_PKG_NAME=libobjc2-${libobjc2_version}
-if [ "$OS_ID" = "centos" ];then
-	ROBIN_MAP_VERSION=757de829927489bee55ab02147484850c687b620
-	ROBIN_MAP_PKG_NAME=757de82.tar.gz
-else
-	ROBIN_MAP_VERSION=1.2.1
-	ROBIN_MAP_PKG_NAME=v${ROBIN_MAP_VERSION}.tar.gz
-fi
+ROBIN_MAP_VERSION=1.2.1
+ROBIN_MAP_PKG_NAME=v${ROBIN_MAP_VERSION}.tar.gz
 
 if [ ! -d ${BUILD_ROOT}/libobjc2-${libobjc2_version} ]; then
 	curl -L https://github.com/gnustep/libobjc2/archive/v${libobjc2_version}.tar.gz -o ${BUILD_ROOT}/libobjc2-${libobjc2_version}.tar.gz
