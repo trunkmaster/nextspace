@@ -57,25 +57,23 @@ cmake .. \
 
 make %{?_smp_mflags}
 
-%if !0%{?el7}
-	cd ../CFNetwork
-	mkdir -p .build
-	cd .build
-	CFN_CFLAGS="-F../../${CF_PKG_NAME}/.build -I/usr/NextSpace/include"
-	CFN_LD_FLAGS="-L/usr/NextSpace/lib -L../../${CF_PKG_NAME}/.build/CoreFoundation.framework"
-	cmake .. \
-			-DCMAKE_C_COMPILER=clang \
-			-DCMAKE_CXX_COMPILER=clang++ \
-			-DCFNETWORK_CFLAGS="${CFN_CFLAGS}" \
-			-DCFNETWORK_LDLAGS="${CFN_LD_FLAGS}" \
-			-DBUILD_SHARED_LIBS=YES \
-			-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
-			-DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
-			\
-			-DCMAKE_SKIP_RPATH=ON \
-			-DCMAKE_BUILD_TYPE=Debug
-	make
-%endif
+cd ../CFNetwork
+mkdir -p .build
+cd .build
+CFN_CFLAGS="-F../../${CF_PKG_NAME}/.build -I/usr/NextSpace/include"
+CFN_LD_FLAGS="-L/usr/NextSpace/lib -L../../${CF_PKG_NAME}/.build/CoreFoundation.framework"
+cmake .. \
+      -DCMAKE_C_COMPILER=clang \
+      -DCMAKE_CXX_COMPILER=clang++ \
+      -DCFNETWORK_CFLAGS="${CFN_CFLAGS}" \
+      -DCFNETWORK_LDLAGS="${CFN_LD_FLAGS}" \
+      -DBUILD_SHARED_LIBS=YES \
+      -DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
+      -DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
+      \
+      -DCMAKE_SKIP_RPATH=ON \
+      -DCMAKE_BUILD_TYPE=Debug
+make
 
 %install
 cd .build
@@ -146,6 +144,9 @@ ln -s ../Frameworks/CFNetwork.framework/Versions/${CFNET_VERSION}/libCFNetwork.s
 /bin/rm -rf /usr/NextSpace/Frameworks/CFNetwork.framework
 
 %changelog
+* Tue Nov 5 2024 Andres Morales <armm77@icloud.com>
+  Support for CentOS 7 is being dropped.
+
 * Tue Apr 9 2024 Sergii Stoian <stoyan255@gmail.com>
 - Leave only Fedora 39+ code here.
 

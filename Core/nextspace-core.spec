@@ -12,11 +12,7 @@ Source0:	nextspace-os_files-%{version}.tar.gz
 Source1:	https://github.com/gnustep/tools-make/archive/make-%{MAKE_VERSION}.tar.gz
 Source2:	nextspace.fsl
 
-%if 0%{?el7}
-BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
-%else
 BuildRequires:	clang >= 7.0.1
-%endif
 BuildRequires:	libdispatch-devel
 BuildRequires:	libobjc2-devel
 BuildRequires:	which
@@ -43,13 +39,7 @@ Summary:	Development header files for NextSpace core components.
 Requires:	%{name}%{?_isa} = %{version}-%{release}
 Requires:	libdispatch-devel
 Requires:	libobjc2-devel
-%if 0%{?el7}
-Requires:	centos-release-scl
-Requires:	centos-release-scl-rh
-Requires:	llvm-toolset-7.0-clang >= 7.0.1
-%else
 Requires:	clang >= 7.0.1
-%endif
 Requires:	make
 Requires:	git
 Requires:	patch
@@ -64,10 +54,6 @@ NextSpace environment.
 cp %{_sourcedir}/nextspace.fsl %{_builddir}/%{name}/tools-make-make-%{MAKE_VERSION}/FilesystemLayouts/nextspace
 
 %build
-%if 0%{?el7}
-source /opt/rh/llvm-toolset-7.0/enable
-export RUNTIME_VERSION="gnustep-1.8"
-%endif
 export CC=clang
 export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
@@ -153,6 +139,9 @@ if [ $1 -eq 0 ]; then
 fi
 
 %changelog
+* Tue Nov 5 2024 Andres Morales <armm77@icloud.com>
+  Support for CentOS 7 is being dropped.
+
 * Wed Sep 22 2021 Sergii Stoian <stoyan255@gmail.com> - 0.95-12
 - Fontconfig configuration was made systemwide (link in /etc/fonts/conf.d).
 

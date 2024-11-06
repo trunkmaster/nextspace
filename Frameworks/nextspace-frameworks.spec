@@ -13,12 +13,7 @@ Provides:	DesktopKit.so
 Provides:	SystemKit.so
 Provides:	SoundKit.so
 
-%if 0%{?el7}
-BuildRequires:	llvm-toolset-7.0-clang >= 7.0.1
-%else
 BuildRequires:	clang >= 7.0.1
-%endif
-
 BuildRequires:	nextspace-gnustep-devel
 # SystemKit
 BuildRequires:	file-devel
@@ -64,9 +59,6 @@ Header files for NextSpace core libraries (SystemKit, DesktopKit, SoundKit).
 # Build phase
 #
 %build
-%if 0%{?el7}
-source /opt/rh/llvm-toolset-7.0/enable
-%endif
 export CC=clang
 export CXX=clang++
 export GNUSTEP_MAKEFILES=/Developer/Makefiles
@@ -142,6 +134,9 @@ fi
 /sbin/ldconfig
 
 %changelog
+* Tue Nov 5 2024 Andres Morales <armm77@icloud.com>
+  Support for CentOS 7 is being dropped.
+
 * Wed Jun 12 2024  Sergii Stoian <stoyan255@gmail.com> - 0.95-0
 - bump package version to 0.95 release.
 

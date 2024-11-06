@@ -9,8 +9,6 @@ DISPATCH_VERSION=`rpm_version ${SPEC_FILE}`
 
 # libdispatch
 print_H1 " Building Grand Central Dispatch (libdispatch) package..."
-cp ${PROJECT_DIR}/Libraries/libdispatch/libdispatch-dispatch.h.patch ${RPM_SOURCES_DIR}
-
 print_H2 "===== Install libdispatch build dependencies..."
 DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
 sudo yum -y install ${DEPS}

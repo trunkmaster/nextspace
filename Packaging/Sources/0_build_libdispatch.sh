@@ -32,9 +32,6 @@ fi
 # Build
 #----------------------------------------
 cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
-if [ "${OS_ID}" = "centos" ] && [ "${OS_VERSION}" = "7" ]; then
-	patch -p1 < ${PROJECT_DIR}/Libraries/libdispatch/libdispatch-dispatch.h.patch
-fi
 rm -rf _build 2>/dev/null
 mkdir -p _build
 cd _build

@@ -10,11 +10,6 @@ if [ -f /etc/os-release ]; then
     source /etc/os-release
     export OS_NAME=$ID
     export OS_VERSION=`echo ${VERSION_ID} | awk -F\. '{print $1}'`
-    if [ $OS_NAME == "centos" ] && [ $OS_VERSION == "7" ]; then
-        EPEL_REPO=https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-        EPEL_REPO=epel-release
-        ENABLE_EPEL="--enablerepo=epel"
-    fi
 fi
 
 clear
@@ -92,10 +87,6 @@ if [ "$YN" = "y" ]; then
     echo "==============================================================================="
     echo -e -n "\e[0m"
     echo -n "..."
-    if [ $OS_NAME == "centos" ] && [ $OS_VERSION == "7" ]; then
-        sudo yum -y -q install centos-release-scl 2>&1 > /dev/null || exit 1
-        ENABLE_EPEL+=" --enablerepo=centos-sclo-sclo --enable-epo=centos-sclo-rh"
-    fi
     sudo yum -y -q install $ENABLE_EPEL $OS_NAME-$OS_VERSION/NSDeveloper/*.rpm 2>&1 > /dev/null || exit 1
     echo -e -n "\e[32m"
     echo -e "\b\b\bDone. Developer packages were installed."
@@ -113,9 +104,6 @@ echo "==========================================================================
 echo -e -n "\e[0m"
 echo -n "..."
 X11_DRIVERS="xorg-x11-drivers xorg-x11-xinit"
-if [ $OS_NAME == "centos" ] && [ $OS_VERSION == "7" ]; then
-    X11_DRIVERS+=" xorg-x11-utils"
-fi
 sudo yum -y -q install $X11_DRIVERS 2>&1 > /dev/null || exit 1
 echo -e -n "\e[32m"
 echo -e "\b\b\bDone. X11 drivers and utilities were installed."

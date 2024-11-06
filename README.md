@@ -21,7 +21,7 @@ NEXTSPACE is not just a set of applications tightly integrated to each other. It
 Unlike other 'real' and 'serious' projects, I have not yet defined a target audience for NEXTSPACE. I intentionally left aside modern UI design trends (fancy animations, shadows, gray blurry lines, flat controls, acid colors, transparency). I like the accurate, clear, grayish, and "boring" UI that helps, not hinder, to get my job done.
 
 ## Not planned
-* Porting to other Linux distributions and operating systems. For now, I want a fast, accurate, and stable version for RedHat-based Linux distributions. Currently these are CentOS 7, CentOS Stream and Fedora. However, NEXTSPACE was designed to be portable and thus this point may be changed in future.
+* Porting to other Linux distributions and operating systems. For now, I want a fast, accurate, and stable version for RedHat-based Linux distributions. Currently these are Fedora, CentOS Stream 9, Rocky Linux 9 and Alma Linux 9. However, NEXTSPACE was designed to be portable and thus this point may be changed in future.
 * GNOME, KDE, macOS rival in terms of visual effects, modern design principles, look and feel.
 * Implementing a macOS-like desktop paradigm. There is another good place for this -- see [Étoilé](http://etoileos.com).
 

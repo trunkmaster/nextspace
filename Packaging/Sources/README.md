@@ -13,8 +13,7 @@ Scripts assume that you preform run inside this directory as user. Scripts use `
 Build scripts were tested on:
 - Debian 12, Ubuntu 22.04
 - Fedora 35, 39
-
-It doesn't work on CentOS 7 because of specific clang compiler setup.
+- Rocky Linux 9, Alma Linux 9 and CentOS Stream 9
 
 ## Build and install each dependency
 
