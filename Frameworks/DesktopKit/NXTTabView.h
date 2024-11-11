@@ -23,6 +23,15 @@
 #import "NXTTabViewItem.h"
 
 @interface NXTTabView : NSTabView
+{
+  NSBox *_itemContentView;
+
+  CGFloat _tabHeight;
+  CGFloat _subviewTopLineHeight;
+  CGFloat _itemLeftOffset;
+  CGFloat _itemBottomOffset;
+}
+@property (readwrite) CGFloat topTabOffset;
 @property (readwrite, copy) NSColor *unselectedBackgroundColor;
 @property (readwrite, copy) NSColor *selectedBackgroundColor;
 @end

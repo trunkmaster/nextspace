@@ -22,11 +22,33 @@
 #import <DesktopKit/Utilities.h>
 #import "NXTTabView.h"
 
-#define TAB_OFFSET 6
-
 @implementation NXTTabView
 
 #pragma mark - Overridings
+
+- (id)initWithFrame:(NSRect)frameRect
+{
+  [super initWithFrame:frameRect];
+
+  _topTabOffset = 6;
+  _itemLeftOffset = 1;
+  _itemBottomOffset = 2;
+  _tabHeight = [_font defaultLineHeightForFont] + _topTabOffset;
+  _subviewTopLineHeight = 1;
+
+  frameRect.size.width -= 3;
+  frameRect.size.height -= (_topTabOffset + _tabHeight + _subviewTopLineHeight + _itemBottomOffset);
+  frameRect.origin = NSMakePoint(_itemLeftOffset, _itemBottomOffset);
+  _itemContentView = [[NSBox alloc] initWithFrame:frameRect];
+  [_itemContentView setTitlePosition:NSNoTitle];
+  [_itemContentView setBorderType:NSNoBorder];
+  [_itemContentView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  [_itemContentView setContentViewMargins:NSMakeSize(0, 0)];
+  [self addSubview:_itemContentView];
+  [_itemContentView release];
+
+  return self;
+}
 
 - (BOOL)isFlipped
 {
@@ -55,7 +77,7 @@
     if (_selected != nil) {
       [_selected _setTabState:NSBackgroundTab];
       // NB: If [_selected view] is nil this does nothing, which is fine.
-      [[_selected view] removeFromSuperview];
+      // [[_selected view] removeFromSuperview];
     }
 
     _selected = tabViewItem;
@@ -64,7 +86,8 @@
     if (selectedView != nil) {
       NSView *firstResponder;
 
-      [self addSubview:selectedView];
+      // [self addSubview:selectedView];
+      [_itemContentView setContentView:selectedView];
 
       firstResponder = [_selected initialFirstResponder];
       if (firstResponder == nil) {
@@ -220,8 +243,6 @@
 - (void)drawRect:(NSRect)rect
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  CGFloat tabHeight = [_font defaultLineHeightForFont] + TAB_OFFSET;
-  CGFloat subviewTopLineHeight = 1;
   CGFloat tabOverlap = 25;
 
   // NSLog(@"NXTabView: line height is: %f", [_font defaultLineHeightForFont]);
@@ -234,7 +255,7 @@
 
   // Fill subview background
   DPSsetgray(ctxt, [_selectedBackgroundColor whiteComponent]);
-  DPSrectfill(ctxt, 0, 0, rect.size.width, rect.size.height - TAB_OFFSET - tabHeight);
+  DPSrectfill(ctxt, 0, 0, rect.size.width, rect.size.height - _topTabOffset - _tabHeight);
 
   DPSstroke(ctxt);
 
@@ -242,8 +263,8 @@
   NSUInteger tabCount = [_items count];
   if (tabCount > 0) {
     CGFloat tabWidth = roundf(([self frame].size.width + (tabOverlap * (tabCount - 1))) / tabCount);
-    NSRect tabRect = NSMakeRect(0, (_frame.size.height - TAB_OFFSET - tabHeight - subviewTopLineHeight),
-                                tabWidth, tabHeight);
+    NSRect tabRect = NSMakeRect(0, (_frame.size.height - _topTabOffset - _tabHeight - _subviewTopLineHeight),
+                                tabWidth, _tabHeight);
     NXTTabViewItem *item;
     NSUInteger selectedTabIndex = 0;
 
@@ -262,7 +283,7 @@
     }
 
     // White line between views and tabs
-    NSDrawButton(NSMakeRect(0, 0, _frame.size.width, (_frame.size.height - TAB_OFFSET - tabHeight)),
+    NSDrawButton(NSMakeRect(0, 0, _frame.size.width, (_frame.size.height - _topTabOffset - _tabHeight)),
                  rect);
     
     // Draw selected
@@ -280,9 +301,9 @@
     CGFloat msgWidth = [msgFont widthOfString:message];
     CGFloat msgHeight = [msgFont defaultLineHeightForFont];
     NSPoint msgPoint = NSMakePoint((_frame.size.width - msgWidth) / 2,
-                                   (_frame.size.height - TAB_OFFSET - tabHeight - msgHeight) / 2);
+                                   (_frame.size.height - _topTabOffset - _tabHeight - msgHeight) / 2);
     // White line between views and tabs
-    NSDrawButton(NSMakeRect(0, 0, _frame.size.width, (_frame.size.height - TAB_OFFSET - tabHeight)),
+    NSDrawButton(NSMakeRect(0, 0, _frame.size.width, (_frame.size.height - _topTabOffset - _tabHeight)),
                  rect);
     [message drawAtPoint:msgPoint
           withAttributes:@{
