@@ -51,6 +51,7 @@
   item = [[NXTTabViewItem alloc] initWithIdentifier:@"0"];
   item.label = @"Instances";
   subview = [[NSTextField alloc] initWithFrame:NSMakeRect(20, 100, (359 - 40), 21)];
+  [subview setAutoresizingMask:NSViewWidthSizable];
   [item setView:subview];
   [subview release];
   [tabView addTabViewItem:item];
