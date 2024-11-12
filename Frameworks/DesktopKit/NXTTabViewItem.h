@@ -23,6 +23,9 @@
 
 @interface NXTTabViewItem : NSTabViewItem
 
+@property (readwrite) NSSize superviewOldSize;
+
 - (void)setTabRect:(NSRect)tabRect;
+- (void)resizeViewToSuperview:(NSView *)superView;
 
 @end

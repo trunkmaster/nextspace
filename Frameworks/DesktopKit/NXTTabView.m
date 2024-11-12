@@ -36,18 +36,27 @@
   _tabHeight = [_font defaultLineHeightForFont] + _topTabOffset;
   _subviewTopLineHeight = 1;
 
-  frameRect.size.width -= 3;
-  frameRect.size.height -= (_topTabOffset + _tabHeight + _subviewTopLineHeight + _itemBottomOffset);
-  frameRect.origin = NSMakePoint(_itemLeftOffset, _itemBottomOffset);
-  _itemContentView = [[NSBox alloc] initWithFrame:frameRect];
-  [_itemContentView setTitlePosition:NSNoTitle];
-  [_itemContentView setBorderType:NSNoBorder];
-  [_itemContentView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
-  [_itemContentView setContentViewMargins:NSMakeSize(0, 0)];
-  [self addSubview:_itemContentView];
-  [_itemContentView release];
+  // frameRect.size.width -= 3;
+  // frameRect.size.height -= (_topTabOffset + _tabHeight + _subviewTopLineHeight + _itemBottomOffset);
+  // frameRect.origin = NSMakePoint(_itemLeftOffset, _itemBottomOffset);
+  // _itemContentView = [[NSBox alloc] initWithFrame:frameRect];
+  // [_itemContentView setTitlePosition:NSNoTitle];
+  // [_itemContentView setBorderType:NSNoBorder];
+  // [_itemContentView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+  // [_itemContentView setContentViewMargins:NSMakeSize(0, 0)];
+  // [self addSubview:_itemContentView];
+  // [_itemContentView release];
 
   return self;
+}
+
+- (void)addTabViewItem:(NSTabViewItem *)tabViewItem
+{
+  NXTTabViewItem *item = (NXTTabViewItem *)tabViewItem;
+
+  [super addTabViewItem:tabViewItem];
+
+  item.superviewOldSize = [self frame].size;
 }
 
 - (BOOL)isFlipped
@@ -77,7 +86,7 @@
     if (_selected != nil) {
       [_selected _setTabState:NSBackgroundTab];
       // NB: If [_selected view] is nil this does nothing, which is fine.
-      // [[_selected view] removeFromSuperview];
+      [[_selected view] removeFromSuperview];
     }
 
     _selected = tabViewItem;
@@ -86,8 +95,9 @@
     if (selectedView != nil) {
       NSView *firstResponder;
 
-      // [self addSubview:selectedView];
-      [_itemContentView setContentView:selectedView];
+      [self addSubview:selectedView];
+      [(NXTTabViewItem *)_selected resizeViewToSuperview:self];
+      // [_itemContentView setContentView:selectedView];
 
       firstResponder = [_selected initialFirstResponder];
       if (firstResponder == nil) {

@@ -19,7 +19,6 @@
 */
 
 #import <AppKit/AppKit.h>
-#include "AppKit/NSTextField.h"
 #import <DesktopKit/NXTTabView.h>
 #import "TabViewTest.h"
 
@@ -37,8 +36,8 @@
   [window setReleasedWhenClosed:YES];
   [window setDelegate:self];
 
-  // TabView *tabView = [[TabView alloc] initWithFrame:NSMakeRect(0, 0, 355, 240)];
-  // TabView *tabView = [[TabView alloc] initWithFrame:NSMakeRect(2, 2, 351, 236)];
+  // NXTTabView *tabView = [[NXTTabView alloc] initWithFrame:NSMakeRect(0, 0, 355, 240)];
+  // NXTTabView *tabView = [[NXTTabView alloc] initWithFrame:NSMakeRect(2, 2, 351, 236)];
   NXTTabView *tabView = [[NXTTabView alloc] initWithFrame:NSMakeRect(-1, -2, 359, 242)];
   tabView.unselectedBackgroundColor = [NSColor grayColor];
   tabView.selectedBackgroundColor = [NSColor lightGrayColor];
@@ -58,8 +57,8 @@
 
   item = [[NXTTabViewItem alloc] initWithIdentifier:@"1"];
   item.label = @"Classes";
-  NSBox *box = [[NSBox alloc] initWithFrame:NSMakeRect(0, 0, 359, 242 - 27)];
-  NSScrollView *sv = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 359-1, 242 - 29)];
+  NSBox *box = [[NSBox alloc] initWithFrame:NSMakeRect(0, 1, 359-2, 242 - 28)];
+  NSScrollView *sv = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 359, 242 - 27)];
 
   [box setBorderType:NSLineBorder];
   [box setTitlePosition:NSNoTitle];

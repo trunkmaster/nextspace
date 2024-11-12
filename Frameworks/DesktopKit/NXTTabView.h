@@ -24,7 +24,7 @@
 
 @interface NXTTabView : NSTabView
 {
-  NSBox *_itemContentView;
+  // NSBox *_itemContentView;
 
   CGFloat _tabHeight;
   CGFloat _subviewTopLineHeight;
