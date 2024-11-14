@@ -20,8 +20,15 @@
 //
 
 #import "NXTTabViewItem.h"
+#include "Foundation/NSNotification.h"
 
 @implementation NXTTabViewItem
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [super dealloc];
+}
 
 - (instancetype)init
 {
@@ -33,6 +40,20 @@
 - (void)setTabRect:(NSRect)tabRect
 {
   _rect = tabRect;
+}
+
+- (void)setView:(NSView *)view
+{
+  [super setView:view];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(viewDidResize:)
+                                               name:NSViewFrameDidChangeNotification
+                                             object:view];
+}
+
+- (void)viewDidResize:(NSNotification *)aNotif
+{
+  _superviewOldSize = [[_view superview] frame].size;
 }
 
 - (void)resizeViewToSuperview:(NSView *)superView

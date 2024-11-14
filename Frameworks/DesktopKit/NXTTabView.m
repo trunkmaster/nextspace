@@ -56,7 +56,7 @@
 
   [super addTabViewItem:tabViewItem];
 
-  item.superviewOldSize = [self frame].size;
+  item.superviewOldSize = _frame.size;
 }
 
 - (BOOL)isFlipped
