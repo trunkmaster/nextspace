@@ -24,6 +24,8 @@
 
 @implementation NXTTabViewItem
 
+#pragma mark - Overridings
+
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -55,6 +57,8 @@
 {
   _superviewOldSize = [[_view superview] frame].size;
 }
+
+#pragma mark - Resizing
 
 - (void)resizeViewToSuperview:(NSView *)superView
 {
