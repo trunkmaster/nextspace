@@ -112,6 +112,7 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 /usr/share/icons/NextSpace
 /usr/share/plymouth/themes/nextspace
 /usr/share/plymouth/themes/plymouth-preview
+/usr/share/fontconfig/conf.avail
 /etc/dracut.conf.d/vboxvideo.conf
 
 %files devel
@@ -130,12 +131,14 @@ tuned-adm profile desktop
 if [ ! "`plymouth-set-default-theme`" = "nextspace" ]; then
   plymouth-set-default-theme -R nextspace
 fi
+ln -s /usr/share/fontconfig/conf.avail/50-nextspace.conf /etc/fonts/conf.d/50-nextspace.conf
 
 %preun
 if [ $1 -eq 0 ]; then
    # Package removal not upgrade
    useradd -D -b /home -s /bin/bash
    tuned-adm profile balanced
+   rm /etc/fonts/conf.d/50-nextspace.conf
 fi
 
 %changelog

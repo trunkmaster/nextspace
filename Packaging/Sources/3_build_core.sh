@@ -7,6 +7,9 @@
 #----------------------------------------
 CORE_SOURCES=${PROJECT_DIR}/Core/os_files
 
+# /.hidden
+$CP_CMD ${CORE_SOURCES}/dot_hidden /.hidden
+
 # Preferences
 $MKDIR_CMD $DEST_DIR/Library/Preferences
 $CP_CMD ${CORE_SOURCES}/Library/Preferences/* $DEST_DIR/Library/Preferences/
@@ -56,8 +59,9 @@ if ! [ -d $DEST_DIR/usr/NextSpace/bin ];then
 fi
 $CP_CMD ${CORE_SOURCES}/usr/NextSpace/bin/* $DEST_DIR/usr/NextSpace/bin/
 
-# Icons and Plymouth resources
+# Icons, Plymouth resources and fontconfig configuration
 if ! [ -d $DEST_DIR/usr/share ];then
 	$MKDIR_CMD -v $DEST_DIR/usr/share
 fi
 $CP_CMD ${CORE_SOURCES}/usr/share/* $DEST_DIR/usr/share/
+$LN_CMD /usr/share/fontconfig/conf.avail/50-nextspace.conf /etc/fonts/conf.d/50-nextspace.conf
