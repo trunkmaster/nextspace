@@ -20,7 +20,6 @@
 //
 
 #import "NXTTabViewItem.h"
-#include "Foundation/NSNotification.h"
 
 @implementation NXTTabViewItem
 
@@ -62,17 +61,16 @@
 
 - (void)resizeViewToSuperview:(NSView *)superView
 {
-  NSLog(@"Tab %@ OLD superview size %@", _label, NSStringFromSize(_superviewOldSize));
+  // NSLog(@"Tab %@ OLD superview size %@", _label, NSStringFromSize(_superviewOldSize));
   if (NSEqualSizes(_superviewOldSize, NSZeroSize)) {
     _superviewOldSize = superView.frame.size;
-    NSLog(@"Tab %@ INITIAL superview size is %@", _label, NSStringFromSize(superView.frame.size));
+    // NSLog(@"Tab %@ INITIAL superview size is %@", _label, NSStringFromSize(superView.frame.size));
     return;
   }
   if (NSEqualSizes(_superviewOldSize, superView.frame.size) == NO) {
-    NSLog(@"Tab %@ RESIZE to superview size %@ with old: %@", _label,
-          NSStringFromSize(superView.frame.size), NSStringFromSize(_superviewOldSize));
+    // NSLog(@"Tab %@ RESIZE to superview size %@ with old: %@", _label,
+    //       NSStringFromSize(superView.frame.size), NSStringFromSize(_superviewOldSize));
     [_view resizeWithOldSuperviewSize:_superviewOldSize];
-    _superviewOldSize = superView.frame.size;
   }
 }
 
