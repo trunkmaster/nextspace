@@ -46,4 +46,5 @@ $MAKE_CMD || exit 1
 $INSTALL_CMD
 if [ "$DEST_DIR" = "" ]; then
 	sudo ldconfig
+	$LN_CMD /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/25-nextspace-fonts.conf /etc/fonts/conf.d/25-nextspace-fonts.conf
 fi

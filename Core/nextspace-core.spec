@@ -92,11 +92,6 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 /.hidden
 /Library
 /Users
-/root/Library
-/root/.config
-/root/.emacs.nextspace
-/root/.gtkrc-2.0
-/root/.zshrc.nextspace
 /etc/ld.so.conf.d/nextspace.conf
 /etc/profile.d/nextspace.sh
 /etc/skel
@@ -112,7 +107,6 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 /usr/share/icons/NextSpace
 /usr/share/plymouth/themes/nextspace
 /usr/share/plymouth/themes/plymouth-preview
-/usr/share/fontconfig/conf.avail
 /etc/dracut.conf.d/vboxvideo.conf
 
 %files devel
@@ -131,14 +125,15 @@ tuned-adm profile desktop
 if [ ! "`plymouth-set-default-theme`" = "nextspace" ]; then
   plymouth-set-default-theme -R nextspace
 fi
-ln -s /usr/share/fontconfig/conf.avail/50-nextspace.conf /etc/fonts/conf.d/50-nextspace.conf
+# Populate /root directory
+cp -r /etc/skel/.config /root
+cp -r /etc/skel/Library /root
 
 %preun
 if [ $1 -eq 0 ]; then
    # Package removal not upgrade
    useradd -D -b /home -s /bin/bash
    tuned-adm profile balanced
-   rm /etc/fonts/conf.d/50-nextspace.conf
 fi
 
 %changelog

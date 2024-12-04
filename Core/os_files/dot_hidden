@@ -4,6 +4,8 @@ dev
 etc
 home
 lib
+lib32
+libx32
 lib64
 lost+found
 media

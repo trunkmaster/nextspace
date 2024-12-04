@@ -53,6 +53,10 @@ $CP_CMD ${CORE_SOURCES}/etc/skel/.emacs.d $DEST_DIR/etc/skel/
 $CP_CMD ${CORE_SOURCES}/etc/skel/.gtkrc-2.0 $DEST_DIR/etc/skel/
 $CP_CMD ${CORE_SOURCES}/etc/skel/.*.nextspace $DEST_DIR/etc/skel/
 
+# /root
+$CP_CMD ${CORE_SOURCES}/etc/skel/.config /root
+$CP_CMD ${CORE_SOURCES}/etc/skel/Library /root
+
 # Scripts
 if ! [ -d $DEST_DIR/usr/NextSpace/bin ];then
 	$MKDIR_CMD -v $DEST_DIR/usr/NextSpace/bin
@@ -64,4 +68,3 @@ if ! [ -d $DEST_DIR/usr/share ];then
 	$MKDIR_CMD -v $DEST_DIR/usr/share
 fi
 $CP_CMD ${CORE_SOURCES}/usr/share/* $DEST_DIR/usr/share/
-$LN_CMD /usr/share/fontconfig/conf.avail/50-nextspace.conf /etc/fonts/conf.d/50-nextspace.conf
