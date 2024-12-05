@@ -83,7 +83,6 @@ cp -vr ./Library %{buildroot}
 cp -vr ./etc %{buildroot}
 rm %{buildroot}/etc/X11/xorg.conf.d/20-intel.conf
 cp -vr ./usr %{buildroot}
-cp -vr ./root %{buildroot}
 cp -vr ./dot_hidden %{buildroot}/.hidden
 mkdir %{buildroot}/Users
 mkdir -p %{buildroot}/usr/NextSpace/etc
