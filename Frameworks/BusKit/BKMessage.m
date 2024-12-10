@@ -316,6 +316,7 @@ static NSArray *parseIterator(DBusMessageIter *iter)
         int current_type;
         DBusMessageIter subiter;
 
+        printf("array ");
         dbus_message_iter_recurse(iter, &subiter);
 
         current_type = dbus_message_iter_get_arg_type(&subiter);
@@ -326,12 +327,12 @@ static NSArray *parseIterator(DBusMessageIter *iter)
         while (current_type != DBUS_TYPE_INVALID) {
           NSArray *subiter_result;
 
-          dbus_message_iter_next(&subiter);
           subiter_result = parseIterator(&subiter);
           if (subiter_result) {
             [result addObject:subiter_result];
             [subiter_result release];
           }
+          dbus_message_iter_next(&subiter);
           current_type = dbus_message_iter_get_arg_type(&subiter);
         }
         break;
@@ -350,23 +351,25 @@ static NSArray *parseIterator(DBusMessageIter *iter)
       //   break;
       // }
 
-      // case DBUS_TYPE_STRUCT: {
-      //   int current_type;
-      //   DBusMessageIter subiter;
+      case DBUS_TYPE_STRUCT: {
+        int current_type;
+        DBusMessageIter subiter;
 
-      //   dbus_message_iter_recurse(iter, &subiter);
+        printf("struct ");
 
-      //   printf("struct {\n");
-      //   while ((current_type = dbus_message_iter_get_arg_type(&subiter)) != DBUS_TYPE_INVALID) {
-      //     print_iter(&subiter, literal, depth + 1);
-      //     dbus_message_iter_next(&subiter);
-      //     if (dbus_message_iter_get_arg_type(&subiter) != DBUS_TYPE_INVALID)
-      //       printf(",");
-      //   }
-      //   indent(0);
-      //   printf("}\n");
-      //   break;
-      // }
+        dbus_message_iter_recurse(iter, &subiter);
+        while ((current_type = dbus_message_iter_get_arg_type(&subiter)) != DBUS_TYPE_INVALID) {
+          NSArray *subiter_result;
+
+          subiter_result = parseIterator(&subiter);
+          if (subiter_result) {
+            [result addObject:subiter_result];
+            [subiter_result release];
+          }
+          dbus_message_iter_next(&subiter);
+        }
+        break;
+      }
 
 #ifdef DBUS_UNIX
       case DBUS_TYPE_UNIX_FD: {
@@ -391,6 +394,7 @@ static NSArray *parseIterator(DBusMessageIter *iter)
     }
   } while (dbus_message_iter_next(iter));
 
+  printf("\n");
   return result;
 }
 
