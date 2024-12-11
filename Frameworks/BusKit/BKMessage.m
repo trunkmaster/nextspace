@@ -313,238 +313,62 @@ static id parseIterator(DBusMessageIter *iter, id result)
     if (type == DBUS_TYPE_INVALID) {
       break;
     }
+
     if ((basicResult = getBasicType(iter)) != nil) {
       if (result != nil) {
         [result addObject:basicResult];
       } else {
-        return basicResult;
-        // result = basicResult;
+        result = basicResult;
+        break;
       }
       continue;
     }
 
-    switch (type) {
-      case DBUS_TYPE_VARIANT: {
-        DBusMessageIter subiter;
-        dbus_message_iter_recurse(iter, &subiter);
-        return parseIterator(&subiter, nil);
-        // result = parseIterator(&subiter, nil);
-        break;
-      }
+    if (type == DBUS_TYPE_VARIANT) {
+      DBusMessageIter subiter;
+      dbus_message_iter_recurse(iter, &subiter);
+      result = parseIterator(&subiter, nil);
+      break;
+    } else if (type == DBUS_TYPE_ARRAY || type == DBUS_TYPE_STRUCT) {
+      DBusMessageIter subiter;
+      NSMutableArray *subiter_result = [NSMutableArray array];
+      id object;
 
-      case DBUS_TYPE_ARRAY:
-      case DBUS_TYPE_STRUCT: {
-        DBusMessageIter subiter;
-        NSMutableArray *subiter_result = [NSMutableArray array];
-        id object;
+      // printf("array\n");
+      dbus_message_iter_recurse(iter, &subiter);
 
-        // printf("array\n");
-        dbus_message_iter_recurse(iter, &subiter);
-
-        while (dbus_message_iter_get_arg_type(&subiter) != DBUS_TYPE_INVALID) {
-          object = parseIterator(&subiter, nil);
-          if (object) {
-            [subiter_result addObject:object];
-          }
-          dbus_message_iter_next(&subiter);
-        }
-        if (result != nil) {
-          [result addObject:subiter_result];
-        } else {
-          return subiter_result;
-          // result = subiter_result;
-        }
-        break;
-      }
-
-      case DBUS_TYPE_DICT_ENTRY: {
-        DBusMessageIter subiter;
-        id key, object;
-
-        // printf("dict_entry\n");
-        dbus_message_iter_recurse(iter, &subiter);
-
-        key = getBasicType(&subiter);
-        dbus_message_iter_next(&subiter);
+      while (dbus_message_iter_get_arg_type(&subiter) != DBUS_TYPE_INVALID) {
         object = parseIterator(&subiter, nil);
-        return @{key : object};
-        // result = @{key : object};
+        if (object) {
+          [subiter_result addObject:object];
+        }
+        dbus_message_iter_next(&subiter);
+      }
+      if (result != nil) {
+        [result addObject:subiter_result];
+      } else {
+        result = subiter_result;
         break;
       }
+    } else if (type == DBUS_TYPE_DICT_ENTRY) {
+      DBusMessageIter subiter;
+      id key, object;
 
-      default:
-        printf(" (BusKit too dumb to decipher arg type '%c')\n", type);
-        break;
+      // printf("dict_entry\n");
+      dbus_message_iter_recurse(iter, &subiter);
+
+      key = getBasicType(&subiter);
+      dbus_message_iter_next(&subiter);
+      object = parseIterator(&subiter, nil);
+      result = @{key : object};
+      break;
+    } else {
+      NSLog(@"BusKit error: unknown D-Bus data type '%c'", type);
     }
   } while (dbus_message_iter_next(iter));
 
   return result;
 }
-
-// static void parseIterator(DBusMessageIter *iter, id result)
-// {
-//   do {
-//     int type = dbus_message_iter_get_arg_type(iter);
-
-//     if (type == DBUS_TYPE_INVALID)
-//       break;
-
-//     switch (type) {
-//       case DBUS_TYPE_STRING: {
-//         char *val;
-//         dbus_message_iter_get_basic(iter, &val);
-//         [result addObject:[NSString stringWithCString:val]];
-//         break;
-//       }
-
-//       case DBUS_TYPE_BYTE: {
-//         unsigned char val;
-//         dbus_message_iter_get_basic(iter, &val);
-//         [result addObject:[NSString stringWithFormat:@"%c", val]];
-//         break;
-//       }
-       
-//       case DBUS_TYPE_SIGNATURE: {
-//         char *val;
-//         dbus_message_iter_get_basic(iter, &val);
-//         [result addObject:[NSString stringWithCString:val]];
-//         break;
-//       }
-
-//       case DBUS_TYPE_OBJECT_PATH: {
-//         char *val;
-//         dbus_message_iter_get_basic(iter, &val);
-//         [result addObject:[NSString stringWithCString:val]];
-//         break;
-//       }
-
-//       case DBUS_TYPE_INT16: {
-//         dbus_int16_t val;
-//         dbus_message_iter_get_basic(iter, &val);
-//         [result addObject:[NSNumber numberWithInt:val]];
-//         break;
-//       }
-
-//       case DBUS_TYPE_UINT16: {
-//         dbus_uint16_t val;
-//         dbus_message_iter_get_basic(iter, &val);
-//         [result addObject:[NSNumber numberWithUnsignedInt:val]];
-//         break;
-//       }
-
-//       case DBUS_TYPE_INT32: {
-//         dbus_int32_t val;
-//         dbus_message_iter_get_basic(iter, &val);
-//         [result addObject:[NSNumber numberWithInt:val]];
-//         break;
-//       }
-
-//       case DBUS_TYPE_UINT32: {
-//         dbus_uint32_t val;
-//         dbus_message_iter_get_basic(iter, &val);
-//         [result addObject:[NSNumber numberWithUnsignedInt:val]];
-//         break;
-//       }
-
-//       case DBUS_TYPE_INT64: {
-//         dbus_int64_t val;
-//         dbus_message_iter_get_basic(iter, &val);
-//         [result addObject:[NSNumber numberWithUnsignedInt:val]];
-//         break;
-//       }
-
-//       case DBUS_TYPE_UINT64: {
-//         dbus_uint64_t val;
-//         dbus_message_iter_get_basic(iter, &val);
-//         [result addObject:[NSNumber numberWithUnsignedInt:val]];
-//         break;
-//       }
-
-//       case DBUS_TYPE_DOUBLE: {
-//         double val;
-//         dbus_message_iter_get_basic(iter, &val);
-//         [result addObject:[NSNumber numberWithDouble:val]];
-//         break;
-//       }
-
-//       case DBUS_TYPE_BOOLEAN: {
-//         dbus_bool_t val;
-//         dbus_message_iter_get_basic(iter, &val);
-//         [result addObject:[NSNumber numberWithInt:val]];
-//         break;
-//       }
-
-//       case DBUS_TYPE_VARIANT: {
-//         DBusMessageIter subiter;
-
-//         dbus_message_iter_recurse(iter, &subiter);
-//         parseIterator(&subiter, result);
-//         break;
-//       }
-//       case DBUS_TYPE_ARRAY: {
-//         int current_type;
-//         DBusMessageIter subiter;
-//         id subiter_result;
-
-//         printf("array ");
-//         dbus_message_iter_recurse(iter, &subiter);
-
-//         current_type = dbus_message_iter_get_arg_type(&subiter);
-//         // if (current_type == DBUS_TYPE_BYTE) {
-//         //   break;
-//         // }
-
-//         if (current_type == DBUS_TYPE_DICT_ENTRY) {
-//           subiter_result = [NSMutableDictionary dictionary];
-//         } else {
-//           subiter_result = [NSMutableArray array];
-//         }
-
-//         while (current_type != DBUS_TYPE_INVALID) {
-//           parseIterator(&subiter, subiter_result);
-//           [result addObject:subiter_result];
-//           dbus_message_iter_next(&subiter);
-
-//           current_type = dbus_message_iter_get_arg_type(&subiter);
-//         }
-//         break;
-//       }
-        
-//       case DBUS_TYPE_DICT_ENTRY: {
-//         DBusMessageIter subiter;
-
-//         dbus_message_iter_recurse(iter, &subiter);
-
-//         parseIterator(&subiter, result);
-//         dbus_message_iter_next(&subiter);
-//         parseIterator(&subiter, result);
-//         break;
-//       }
-
-//       case DBUS_TYPE_STRUCT: {
-//         int current_type;
-//         DBusMessageIter subiter;
-
-//         printf("struct ");
-
-//         dbus_message_iter_recurse(iter, &subiter);
-//         while ((current_type = dbus_message_iter_get_arg_type(&subiter)) != DBUS_TYPE_INVALID) {
-//           // NSArray *subiter_result;
-
-//           parseIterator(&subiter, result);
-//           dbus_message_iter_next(&subiter);
-//         }
-//         break;
-//       }
-
-//       default:
-//         printf(" (dbus-monitor too dumb to decipher arg type '%c')\n", type);
-//         break;
-//     }
-//   } while (dbus_message_iter_next(iter));
-
-//   // printf("\n");
-// }
 
 @implementation BKMessage
 
