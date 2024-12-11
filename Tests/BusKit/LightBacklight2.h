@@ -12,6 +12,7 @@
 }
 
 @property (readonly) NSArray *Get;
+@property (readonly) NSArray *GetManagedObjects;
 
 - (instancetype)initWithConnection:(BKConnection *)conn;
 

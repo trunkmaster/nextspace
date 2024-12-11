@@ -42,4 +42,19 @@
   return result;
 }
 
+- (NSArray *)GetManagedObjects
+{
+  BKMessage *message = [[BKMessage alloc] initWithObject:object_path
+                                               interface:"org.freedesktop.DBus.ObjectManager"
+                                                  method:"GetManagedObjects"
+                                                 service:service_name];
+  id result;
+
+  [message setMethodArguments:nil];
+  result = [message sendWithConnection:connection];
+  [message release];
+
+  return result;
+}
+
 @end

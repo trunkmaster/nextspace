@@ -19,9 +19,26 @@ void talkClightD(void)
   LightBacklight2 *backlight;
   backlight = [[LightBacklight2 alloc] initWithConnection:connection];
   NSLog(@"Backlight2.Get: %@", backlight.Get);
+  NSLog(@"Backlight2.GetManagedObjects: %@", backlight.GetManagedObjects);
   [backlight release];
   
   [connection release];
+}
+
+void talkUDisks2(void)
+{
+  BKConnection *connection = [[BKConnection alloc] init];
+  BKMessage *message = [[BKMessage alloc] initWithObject:"/org/freedesktop/UDisks2"
+                                               interface:"org.freedesktop.DBus.ObjectManager"
+                                                  method:"GetManagedObjects"
+                                                 service:"org.freedesktop.UDisks2"];
+  id result;
+
+  [message setMethodArguments:nil];
+  result = [message sendWithConnection:connection];
+  // NSLog(@"UDisks2 managed objects: %@", result);
+  [result writeToFile:@"UDisks2.result" atomically:NO];
+  [message release];
 }
 
 void talk(void)
@@ -65,7 +82,8 @@ void talkDBusKit(void)
 
 int main(int argc, char *argv[])
 {
-  talk();
-//   talkDBusKit();
-//   talkClightD();
+  // talk();
+  // talkDBusKit();
+  // talkClightD();
+  talkUDisks2();
 }
