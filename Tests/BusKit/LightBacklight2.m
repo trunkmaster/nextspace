@@ -35,7 +35,7 @@
                                                  service:service_name];
   id result;
 
-  [message setMethodArguments:nil];
+  [message setMethodArguments:nil withSignature:nil];
   result = [message sendWithConnection:connection];
   [message release];
 
@@ -50,11 +50,30 @@
                                                  service:service_name];
   id result;
 
-  [message setMethodArguments:nil];
+  [message setMethodArguments:nil withSignature:nil];
   result = [message sendWithConnection:connection];
   [message release];
 
   return result;
 }
+
+- (void)setTo:(NSNumber *)amount smoothStep:(NSNumber *)step smoothTimeout:(NSNumber *)timeout
+{
+  BKMessage *message = [[BKMessage alloc] initWithObject:object_path
+                                               interface:"org.clightd.clightd.Backlight2"
+                                                  method:"Set"
+                                                 service:service_name];
+
+  [message setMethodArguments:@[ amount, @[ step, timeout ] ] withSignature:@"d(du)"];
+  [message sendWithConnection:connection];
+  [message release];
+}
+
+// - (void)lowerBy:(double)amount smoothStep:(double)step smoothTimeout:(unsigned)timeout
+// {
+// }
+// - (void)raiseBy:(double)amount smoothStep:(double)step smoothTimeout:(unsigned)timeout
+// {
+// }
 
 @end

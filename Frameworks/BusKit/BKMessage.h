@@ -13,7 +13,8 @@
                      interface:(const char *)interface_path  // org.clightd.clightd.Backlight2
                         method:(const char *)method_name     // Get
                        service:(const char *)service_path;   // org.clightd.clightd
-- (void)setMethodArguments:(NSArray *)args;
+
+- (void)setMethodArguments:(NSArray *)args withSignature:(NSString *)signature;
 
 - (id)sendWithConnection:(BKConnection *)connection;
 
