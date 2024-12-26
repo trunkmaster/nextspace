@@ -38,9 +38,8 @@ typedef struct _XRRScreenResources {
 #include <X11/Xatom.h>
 
 #import <AppKit/NSGraphics.h>
-//#import <DesktopKit/NXTAlert.h>
-#import <SystemKit/OSEDefaults.h>
 
+#import "OSEDefaults.h"
 #import "OSEDisplay.h"
 #import "OSEScreen.h"
 #import "OSEPower.h"
