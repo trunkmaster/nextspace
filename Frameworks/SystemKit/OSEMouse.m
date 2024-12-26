@@ -42,7 +42,7 @@ NSString *OSEMouseCursorTheme = @"MouseCursorTheme";
   self = [super init];
   
   gsDefaults = [NSUserDefaults standardUserDefaults];
-  nxDefaults = [NXTDefaults globalUserDefaults];
+  nxDefaults = [OSEDefaults globalUserDefaults];
   
   wmdFormat = @"%@/Library/Preferences/.WindowMaker/WindowMaker";
   wmDefaultsPath = [[NSString alloc] initWithFormat:wmdFormat,
@@ -89,7 +89,7 @@ NSString *OSEMouseCursorTheme = @"MouseCursorTheme";
 {
   Display    *dpy;
   int        accel_numerator, accel_denominator, accel_threshold;
-  NXTDefaults *defs = [NXTDefaults globalUserDefaults];
+  OSEDefaults *defs = [OSEDefaults globalUserDefaults];
 
   dpy = XOpenDisplay(NULL);
   XGetPointerControl(dpy, &accel_numerator, &accel_denominator,
@@ -104,7 +104,7 @@ NSString *OSEMouseCursorTheme = @"MouseCursorTheme";
   NSInteger  accel_numerator, accel_denominator, threshold;
   BOOL       changeAcceleration = (speed > 0) ? YES : NO;
   BOOL       changeTreshold = (pixels > 0) ? YES : NO;
-  NXTDefaults *defs = [NXTDefaults globalUserDefaults];
+  OSEDefaults *defs = [OSEDefaults globalUserDefaults];
 
   XChangePointerControl(dpy, changeAcceleration, changeTreshold,
                         speed, 1, pixels);

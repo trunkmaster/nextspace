@@ -27,12 +27,12 @@
 */
 
 #import <Foundation/Foundation.h>
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 
 @interface OSEMouse : NSObject
 {
   NSUserDefaults	*gsDefaults;
-  NXTDefaults		*nxDefaults;
+  OSEDefaults		*nxDefaults;
   NSMutableDictionary	*wmDefaults;
   NSString		*wmDefaultsPath;
   

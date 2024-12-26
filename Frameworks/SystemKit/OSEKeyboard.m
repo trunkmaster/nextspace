@@ -33,7 +33,7 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
 
 @implementation OSEKeyboard : NSObject
 
-+ (void)configureWithDefaults:(NXTDefaults *)defs
++ (void)configureWithDefaults:(OSEDefaults *)defs
 {
   NSInteger	initialRepeat, repeatRate;
   OSEKeyboard	*keyb;

@@ -28,6 +28,8 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	SystemKit.h\
 	OSESystemInfo.h\
 	\
+	OSEDefaults.h \
+	OSEFileManager.h \
 	OSEFileSystem.h \
 	OSEFileSystemMonitor.h \
 	\
