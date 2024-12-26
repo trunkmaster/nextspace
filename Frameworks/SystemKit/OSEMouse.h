@@ -27,16 +27,17 @@
 */
 
 #import <Foundation/Foundation.h>
-#import <SystemKit/OSEDefaults.h>
+
+@class OSEDefaults;
 
 @interface OSEMouse : NSObject
 {
-  NSUserDefaults	*gsDefaults;
-  OSEDefaults		*nxDefaults;
-  NSMutableDictionary	*wmDefaults;
-  NSString		*wmDefaultsPath;
-  
-  NSInteger	acceleration;
+  NSUserDefaults *gsDefaults;
+  OSEDefaults *nxDefaults;
+  NSMutableDictionary *wmDefaults;
+  NSString *wmDefaultsPath;
+
+  NSInteger acceleration;
   NSInteger	threshold;
   NSInteger	doubleClickTime;
   NSInteger	wheelScrollLines;

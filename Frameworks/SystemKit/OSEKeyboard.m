@@ -19,7 +19,9 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
+#import "OSEDefaults.h"
 #import "OSEKeyboard.h"
+
 #include <X11/XKBlib.h>
 #include <X11/extensions/XKBrules.h>
 

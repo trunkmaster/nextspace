@@ -26,7 +26,8 @@
 */
 
 #import <Foundation/Foundation.h>
-#import <SystemKit/OSEDefaults.h>
+
+@class OSEDefaults;
 
 #define XKB_BASE_LST @"/usr/share/X11/xkb/rules/base.lst"
 
