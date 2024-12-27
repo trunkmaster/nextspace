@@ -21,9 +21,9 @@
 
 #ifdef WITH_UDISKS
 
-#import <SystemKit/OSEFileManager.h>
-#import <SystemKit/OSEUDisksDrive.h>
-#import <SystemKit/OSEUDisksVolume.h>
+#import "OSEFileManager.h"
+#import "OSEUDisksDrive.h"
+#import "OSEUDisksVolume.h"
 
 static NSNotificationCenter *notificationCenter;
 

@@ -23,7 +23,7 @@ endif
 ADDITIONAL_CFLAGS +=
 
 ### Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS += -I../
+ADDITIONAL_INCLUDE_DIRS += -I../ -Iderived_src
 
 ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
   ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags hal`

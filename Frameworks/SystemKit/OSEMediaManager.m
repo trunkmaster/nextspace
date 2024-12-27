@@ -19,13 +19,13 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <SystemKit/OSEMediaManager.h>
+#import "OSEMediaManager.h"
 
 #ifdef WITH_HAL
 #import <SystemKit/NXHALAdaptor.h>
 #endif
 #ifdef WITH_UDISKS
-#import <SystemKit/OSEUDisksAdaptor.h>
+#import "OSEUDisksAdaptor.h"
 #endif
 
 // Volume events
