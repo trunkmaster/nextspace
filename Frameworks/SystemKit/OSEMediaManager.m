@@ -19,7 +19,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import "OSEMediaManager.h"
+#import <SystemKit/OSEMediaManager.h>
 
 #ifdef WITH_HAL
 #import <SystemKit/NXHALAdaptor.h>
