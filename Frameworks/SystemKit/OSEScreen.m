@@ -1038,14 +1038,14 @@ static OSEScreen *systemScreen = nil;
 {
   NSSize       newPixSize;
   NSSize       mmSize;
-  OSEDisplay   *mainDisplay;
-  OSEDisplay   *lastActiveDisplay;
-  OSEDisplay   *display;
-  NSString     *displayName;
-  NSDictionary *gamma;
+  OSEDisplay   *mainDisplay = nil;
+  OSEDisplay   *lastActiveDisplay = nil;
+  OSEDisplay   *display = nil;
+  NSString     *displayName = nil;
+  NSDictionary *gamma = nil;
   NSRect       frame;
-  NSNumber     *frameRate;
-  NSDictionary *resolution;
+  NSNumber     *frameRate = nil;
+  NSDictionary *resolution = nil;
   NSPoint      origin;
 
   // Validate 'layout'
