@@ -308,7 +308,8 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
 - (void)lidDidChange:(NSNotification *)aNotif
 {
   OSEDisplay *builtinDisplay = nil;
-  OSEScreen  *screen = [OSEScreen new];
+  OSEScreen *screen = [OSEScreen new];
+  BOOL isVisible = [window isVisible];
 
   NSLog(@"lidDidChange:");
 
@@ -320,7 +321,9 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
   }
 
   if (builtinDisplay) {
-    [self setWindowVisible:NO];
+    if (isVisible != NO) {
+      [self setWindowVisible:NO];
+    }
     if (![systemPower isLidClosed] && ![builtinDisplay isActive]) {
       NSLog(@"activating display %@", [builtinDisplay outputName]);
       [screen activateDisplay:builtinDisplay];
@@ -329,7 +332,9 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
       NSLog(@"DEactivating display %@", [builtinDisplay outputName]);
       [screen deactivateDisplay:builtinDisplay];
     }
-    [self setWindowVisible:YES];
+    if (isVisible != NO) {
+      [self setWindowVisible:YES];
+    }
   }
   [screen release];
 }
