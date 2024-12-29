@@ -26,7 +26,8 @@
 */
 
 #import <Foundation/Foundation.h>
-#import <DesktopKit/NXTDefaults.h>
+
+@class OSEDefaults;
 
 #define XKB_BASE_LST @"/usr/share/X11/xkb/rules/base.lst"
 
@@ -38,7 +39,7 @@
   NSDictionary *optionDict;
 }
 
-+ (void)configureWithDefaults:(NXTDefaults *)defs;
++ (void)configureWithDefaults:(OSEDefaults *)defs;
 
 - (NSDictionary *)modelList;
 - (NSString *)model;

@@ -23,7 +23,8 @@
 
 #import <udisks/udisks.h>
 
-#import <SystemKit/OSEUDisksDrive.h>
+#import "OSEUDisksDrive.h"
+#import "OSEUDisksVolume.h"
 
 @implementation OSEUDisksDrive
 

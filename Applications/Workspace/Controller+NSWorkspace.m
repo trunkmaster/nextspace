@@ -41,6 +41,7 @@
 
 #import <SystemKit/OSEUDisksAdaptor.h>
 #import <SystemKit/OSEUDisksDrive.h>
+#import <SystemKit/OSEUDisksVolume.h>
 
 #import <DesktopKit/NXTAlert.h>
 #import <DesktopKit/NXTDefaults.h>

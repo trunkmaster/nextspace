@@ -30,7 +30,6 @@
 
 #import <SystemKit/OSEMediaManager.h>
 #import <SystemKit/OSEUDisksAdaptor.h>
-#import <SystemKit/OSEUDisksDrive.h>
 
 @class OSEUDisksDrive;
 

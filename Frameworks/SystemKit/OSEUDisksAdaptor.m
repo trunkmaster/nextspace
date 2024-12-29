@@ -21,9 +21,9 @@
 
 #ifdef WITH_UDISKS
 
-#import <DesktopKit/NXTFileManager.h>
-#import <SystemKit/OSEUDisksDrive.h>
-#import <SystemKit/OSEUDisksVolume.h>
+#import "OSEFileManager.h"
+#import "OSEUDisksDrive.h"
+#import "OSEUDisksVolume.h"
 
 static NSNotificationCenter *notificationCenter;
 
@@ -672,8 +672,7 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
   
   // Get list of UDisksObject (udisks object manager holds list of dbus objects
   // of this type)
-  objects =
-    g_dbus_object_manager_get_objects(udisks_client_get_object_manager(udisks_client));
+  objects = g_dbus_object_manager_get_objects(udisks_client_get_object_manager(udisks_client));
   for (l = objects; l != NULL; l = l->next)
     {
       [self _addUDisksObject:UDISKS_OBJECT(l->data) andNotify:NO];

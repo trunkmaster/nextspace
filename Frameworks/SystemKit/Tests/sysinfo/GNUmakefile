@@ -10,7 +10,7 @@ $(TOOL_NAME)_NEEDS_GUI = yes
 
 #ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags udisks2` `pkg-config --cflags dbus-1`
 #ADDITIONAL_OBJCFLAGS +=
-ADDITIONAL_LDFLAGS += -lSystemKit -lDesktopKit
+ADDITIONAL_LDFLAGS += -lSystemKit
 
 include $(GNUSTEP_MAKEFILES)/tool.make
 include $(GNUSTEP_MAKEFILES)/ctool.make

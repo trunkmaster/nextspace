@@ -28,7 +28,6 @@
 
 #import <SystemKit/OSEMediaManager.h>
 #import <SystemKit/OSEUDisksAdaptor.h>
-#import <SystemKit/OSEUDisksVolume.h>
 
 @class OSEUDisksVolume;
 

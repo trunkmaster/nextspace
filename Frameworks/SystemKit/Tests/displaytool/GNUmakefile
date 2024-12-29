@@ -10,7 +10,7 @@ $(TOOL_NAME)_NEEDS_GUI = yes
 
 ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags upower-glib`
 ADDITIONAL_OBJCFLAGS += -DWITH_UPOWER
-ADDITIONAL_LDFLAGS += -lSystemKit -lDesktopKit
+ADDITIONAL_LDFLAGS += -lSystemKit
 
 include $(GNUSTEP_MAKEFILES)/tool.make
 include $(GNUSTEP_MAKEFILES)/ctool.make

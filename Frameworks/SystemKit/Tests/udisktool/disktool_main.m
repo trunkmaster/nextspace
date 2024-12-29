@@ -5,8 +5,10 @@
 #include <stdio.h>
 
 #import <Foundation/Foundation.h>
+
 #import <SystemKit/OSEUDisksAdaptor.h>
 #import <SystemKit/OSEUDisksDrive.h>
+#import <SystemKit/OSEUDisksVolume.h>
 
 static NSComparisonResult sort(id dict1, id dict2, void *context)
 {

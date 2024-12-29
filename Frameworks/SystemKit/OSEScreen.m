@@ -33,13 +33,13 @@ typedef struct _XRRScreenResources {
 } XRRScreenResources;
 */
 
-#import <AppKit/NSGraphics.h>
 #include <X11/Xlib.h>
 #include <X11/X.h>
-#import <DesktopKit/NXTAlert.h>
-#import <DesktopKit/NXTDefaults.h>
 #include <X11/Xatom.h>
 
+#import <AppKit/NSGraphics.h>
+
+#import "OSEDefaults.h"
 #import "OSEDisplay.h"
 #import "OSEScreen.h"
 #import "OSEPower.h"
@@ -473,7 +473,7 @@ static OSEScreen *systemScreen = nil;
   NSDictionary	*dBack;
   BOOL		success = NO;
   
-  dBack = [[NXTDefaults globalUserDefaults]
+  dBack = [[OSEDefaults globalUserDefaults]
                                objectForKey:OSEDesktopBackgroundColor];
   if (dBack) {
     *redComponent = [dBack[@"Red"] floatValue];

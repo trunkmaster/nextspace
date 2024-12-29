@@ -25,7 +25,7 @@
 #import <SystemKit/NXHALAdaptor.h>
 #endif
 #ifdef WITH_UDISKS
-#import <SystemKit/OSEUDisksAdaptor.h>
+#import "OSEUDisksAdaptor.h"
 #endif
 
 // Volume events
