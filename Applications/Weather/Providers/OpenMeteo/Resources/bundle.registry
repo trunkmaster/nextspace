@@ -1,6 +1,0 @@
-﻿{
-  type = Weather;
-  mode = OpenMeteo;
-  class = OpenMeteoForecast;
-  priority = 1;
-}
