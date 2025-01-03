@@ -5,6 +5,12 @@ BUILD_RPM=1
 . `dirname $0`/../environment.sh
 . `dirname $0`/../functions.sh
 
+if [ "${OS_ID}" = "fedora" ]; then
+	${ECHO} "No need to build - installing 'libdispatch-devel' from Fedora repository..."
+	sudo dnf -y install libdispatch-devel || exit 1
+	exit 0
+fi
+
 SPEC_FILE=${PROJECT_DIR}/Libraries/libdispatch/libdispatch.spec
 DISPATCH_VERSION=`rpm_version ${SPEC_FILE}`
 
