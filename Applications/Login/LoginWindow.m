@@ -104,14 +104,14 @@
     NSLog(@"Screen size   : %4.0f x %4.0f", screenSize.width, screenSize.height);
   }
   
-  NSLog(@"Display frame : %4.0f x %4.0f  (%.0f, %.0f)",
+  NSLog(@"Display frame : %4.0f x %4.0f  (%4.0f, %4.0f)",
         displayRect.size.width, displayRect.size.height,
         displayRect.origin.x, displayRect.origin.y);
-  
-  NSLog(@"Window frame  : %4.0f, %4.0f (size: %.0f x %.0f)",
-        windowRect.origin.x, windowRect.origin.y,
-        windowRect.size.width, windowRect.size.height);
-  
+
+  NSLog(@"Window frame  : %4.0f x %4.0f  (%4.0f, %4.0f)",
+        windowRect.size.width, windowRect.size.height, 
+        windowRect.origin.x, windowRect.origin.y);
+
   // Calculate the new position of the window on display.
   newOrigin.x = displayRect.size.width/2 - windowRect.size.width/2;
   newOrigin.x += displayRect.origin.x;
@@ -120,7 +120,7 @@
   // displayRect is presented system(Xlib) coordiante system.
   // Convert newOrigin into OpenStep coordinate system (non-flipped).
   newOrigin.y = screenSize.height - (newOrigin.y + windowRect.size.height);
-  NSLog(@"New origin    : %4.0f, %4.0f", newOrigin.x, newOrigin.y);
+  NSLog(@"New origin    :              (%4.0f, %4.0f)", newOrigin.x, newOrigin.y);
 
   [self setFrameOrigin:newOrigin];
 }
