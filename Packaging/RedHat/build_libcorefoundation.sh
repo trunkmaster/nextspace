@@ -2,7 +2,8 @@
 # -*-Shell-script-*-
 
 BUILD_RPM=1
-. ../environment.sh
+. `dirname $0`/../environment.sh
+. `dirname $0`/../functions.sh
 
 SPEC_FILE=${PROJECT_DIR}/Libraries/libcorefoundation/libcorefoundation.spec
 CF_VERSION=`rpm_version ${SPEC_FILE}`

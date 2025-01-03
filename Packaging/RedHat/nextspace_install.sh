@@ -3,7 +3,8 @@
 # This script should be placed along with NSUser and NSDeveloper
 # directories.
 
-. ../install_environment.sh
+. `dirname $0`/../install_environment.sh
+. `dirname $0`/../functions.sh
 
 ENABLE_EPEL=""
 if [ -f /etc/os-release ]; then 
