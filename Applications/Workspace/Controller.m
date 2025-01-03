@@ -263,7 +263,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     }
   }
 
-  [[NXTDefaults userDefaults] setObject:windows forKey:@"SavedWindows"];
+  [[OSEDefaults userDefaults] setObject:windows forKey:@"SavedWindows"];
 
   [windows release];
   [fileViewers release];
@@ -274,7 +274,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_restoreWindows
 {
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
   NSArray *savedWindows = [df objectForKey:@"SavedWindows"];
   NSMutableArray *winViews = [NSMutableArray new];
   NSMutableDictionary *winViewInfo;
@@ -327,7 +327,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   }
 
   if (rootViewerWindow == nil) {
-    NXTDefaults *df = [NXTDefaults userDefaults];
+    OSEDefaults *df = [OSEDefaults userDefaults];
     NSString *preferredViewer = [df objectForKey:@"PreferredViewer"];
 
     if (!preferredViewer) {
@@ -365,14 +365,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_saveRunningApplications
 {
-  [[NXTDefaults userDefaults] setObject:[self _undockedApplicationsList]
+  [[OSEDefaults userDefaults] setObject:[self _undockedApplicationsList]
                                  forKey:@"SavedApplications"];
 }
 
 - (void)_startSavedApplications
 {
   NSArray *savedApps;
-  savedApps = [[NXTDefaults userDefaults] objectForKey:@"SavedApplications"];
+  savedApps = [[OSEDefaults userDefaults] objectForKey:@"SavedApplications"];
 
   for (NSDictionary *appInfo in savedApps) {
     if ([self _isApplicationRunning:[appInfo objectForKey:@"Name"]] == NO) {
@@ -445,7 +445,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   TEST_RELEASE(_iconMap);
   TEST_RELEASE(_launched);
   
-  [[NXTDefaults userDefaults] synchronize];
+  [[OSEDefaults userDefaults] synchronize];
 
   // Quit NSApplication runloop
   [NSApp stop:self];
@@ -598,7 +598,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (FileViewer *)openNewViewerIfNotExistRootedAt:(NSString *)path
 {
   FileViewer *fv;
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
 
   for (fv in fileViewers) {
     if ([[fv rootPath] isEqualToString:path]) {
@@ -621,7 +621,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (BOOL)application:(NSApplication *)app openFile:(NSString *)filename
 {
   FileViewer *fv;
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
 
   fv = [self newViewerRootedAt:filename viewer:[df objectForKey:@"PreferredViewer"] isRoot:NO];
 
@@ -986,7 +986,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   NSString *currentWorkspace;
 
-  if ([[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"] == NO) {
+  if ([[OSEDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"] == NO) {
     return;
   }
 
@@ -1015,7 +1015,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   NSDictionary *info = [aNotification userInfo];
   NSString *currentWorkspace;
 
-  if ([[NXTDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"] != NO) {
+  if ([[OSEDefaults userDefaults] boolForKey:@"ShowWorkspaceInDock"] != NO) {
     if (!workspaceBadge) {
       [self createWorkspaceBadge];
     } else {
@@ -1165,7 +1165,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)newViewer:(id)sender
 {
   FileViewer *fv;
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
 
   fv = [self newViewerRootedAt:@"/" viewer:[df objectForKey:@"PreferredViewer"] isRoot:NO];
   [[fv window] makeKeyAndOrderFront:self];
@@ -1472,7 +1472,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)ringBell
 {
   if (bellSound == nil) {
-    NXTDefaults *defs = [NXTDefaults globalUserDefaults];
+    OSEDefaults *defs = [OSEDefaults globalUserDefaults];
     NSString *bellPath = [defs objectForKey:@"NXSystemBeep"];
     if (bellPath == nil || [[NSFileManager defaultManager] fileExistsAtPath:bellPath] == NO) {
       bellPath = @"/usr/NextSpace/Sounds/Bonk.snd";

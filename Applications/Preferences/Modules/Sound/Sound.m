@@ -53,7 +53,7 @@
   
   self = [super init];
   
-  defaults = [NXTDefaults globalUserDefaults];
+  defaults = [OSEDefaults globalUserDefaults];
 
   bundle = [NSBundle bundleForClass:[self class]];
   imagePath = [bundle pathForResource:@"Sound" ofType:@"tiff"];

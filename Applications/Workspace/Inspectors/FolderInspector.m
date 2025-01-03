@@ -20,7 +20,7 @@
 //
 
 #import <DesktopKit/NXTBundle.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEFileManager.h>
 
 #import "FolderInspector.h"
 
@@ -65,7 +65,7 @@ static id dirInspector = nil;
     [c setRefusesFirstResponder:YES];
   }
 
-  wsDefaults = [NXTDefaults userDefaults];
+  wsDefaults = [OSEDefaults userDefaults];
 }
 
 - (BOOL)isLocalFile
@@ -133,7 +133,7 @@ static id dirInspector = nil;
 
   if (folderDefaults == nil) {
     ASSIGN(folderDefaults, [[NSMutableDictionary new] autorelease]);
-    sortType = [[NXTFileManager defaultManager] sortFilesBy];
+    sortType = [[OSEFileManager defaultManager] sortFilesBy];
     [folderDefaults setObject:[NSNumber numberWithInt:sortType] forKey:@"SortBy"];
   } else {
     sortType = [[folderDefaults objectForKey:@"SortBy"] intValue];

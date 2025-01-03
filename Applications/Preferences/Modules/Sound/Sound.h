@@ -20,14 +20,14 @@
 //
 
 #import <AppKit/NSImage.h>
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import <SoundKit/SoundKit.h>
 
 #import <Preferences.h>
 
 @interface Sound: NSObject <PrefsModule>
 {
-  NXTDefaults	*defaults;
+  OSEDefaults	*defaults;
   NSImage	*image;
   SNDServer	*soundServer;
   SNDOut	*soundOut;

@@ -20,10 +20,10 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import <DesktopKit/NXTAlert.h>
 #import <DesktopKit/NXTIconView.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEFileManager.h>
 
 #import <Viewers/FileViewer.h>
 #import <Viewers/PathIcon.h>
@@ -167,7 +167,7 @@
 
 - (void)findInDirectory:(NSString *)dirPath
 {
-  NXTFileManager *fm = [NXTFileManager defaultManager];
+  OSEFileManager *fm = [OSEFileManager defaultManager];
   BOOL isDir;
   NSArray *dirContents;
   NSString *itemPath;
@@ -277,7 +277,7 @@
 
 - (id)initWithFileViewer:(FileViewer *)fv
 {
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
   NSSize slotSize;
 
   if ((self = [super init]) == nil) {
@@ -380,7 +380,7 @@
 
 - (void)windowWillClose:(NSNotification *)notif
 {
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
 
   [df setObject:[shelf storableRepresentation] forKey:@"FinderShelfContents"];
   [df setObject:[self storableShelfSelection] forKey:@"FinderShelfSelection"];
@@ -475,7 +475,7 @@
 - (void)makeCompletion
 {
   NSString *enteredText = [findField stringValue];
-  NXTFileManager *fm = [NXTFileManager defaultManager];
+  OSEFileManager *fm = [OSEFileManager defaultManager];
   NSString *variant;
 
   [variantList removeAllObjects];
@@ -642,7 +642,7 @@
   NSArray *shelfSelection;
   PathIcon *icon;
 
-  aDict = [[NXTDefaults userDefaults] objectForKey:@"FinderShelfContents"];
+  aDict = [[OSEDefaults userDefaults] objectForKey:@"FinderShelfContents"];
   if (!aDict || ![aDict isKindOfClass:[NSDictionary class]]) {
     // Home
     icon = [shelf createIconForPaths:@[ NSHomeDirectory() ]];
@@ -661,7 +661,7 @@
     }
   }
 
-  shelfSelection = [[NXTDefaults userDefaults] objectForKey:@"FinderShelfSelection"];
+  shelfSelection = [[OSEDefaults userDefaults] objectForKey:@"FinderShelfSelection"];
   [self reconstructShelfSelection:shelfSelection];
 }
 
@@ -754,7 +754,7 @@
 {
   NSString *item, *path;
   NSSet *shelfIcons;
-  NXTFileManager *fm = [NXTFileManager defaultManager];
+  OSEFileManager *fm = [OSEFileManager defaultManager];
 
   if (sender != resultList)
     return;

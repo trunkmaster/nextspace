@@ -22,7 +22,7 @@
 #import <Foundation/Foundation.h>
 
 #import "NXTBundle.h"
-#import "NXTFileManager.h"
+#import <SystemKit/OSEFileManager.h>
 
 @implementation NXTBundle
 

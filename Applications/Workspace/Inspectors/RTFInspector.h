@@ -21,7 +21,7 @@
 
 //
 // The default file contents inspector.
-// Shows file description returned by NXTFileManager (libmagic functionality).
+// Shows file description returned by OSEFileManager (libmagic functionality).
 //
 
 #import <AppKit/AppKit.h>

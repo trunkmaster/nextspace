@@ -31,7 +31,7 @@
 #import <AppKit/NSMatrix.h>
 #import <AppKit/NSWindow.h>
 
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import <SystemKit/OSEKeyboard.h>
 
 #import "Keyboard.h"
@@ -39,13 +39,13 @@
 @implementation Keyboard
 
 static NSBundle    *bundle = nil;
-static NXTDefaults *defaults = nil;
+static OSEDefaults *defaults = nil;
 
 - (id)init
 {
   self = [super init];
   
-  defaults = [NXTDefaults globalUserDefaults];
+  defaults = [OSEDefaults globalUserDefaults];
 
   bundle = [NSBundle bundleForClass:[self class]];
   NSString *imagePath = [bundle pathForResource:@"Keyboard" ofType:@"tiff"];
@@ -294,7 +294,7 @@ static NXTDefaults *defaults = nil;
 
 - (BOOL)_setOption:(NSString *)option
 {
-  NXTDefaults		*defs = [NXTDefaults globalUserDefaults];
+  OSEDefaults		*defs = [OSEDefaults globalUserDefaults];
   NSMutableArray	*mOptions = [options mutableCopy];
   NSArray		*optComponents;
   NSString		*savedOption;
@@ -335,7 +335,7 @@ static NXTDefaults *defaults = nil;
 
 - (void)repeatAction:(id)sender
 {
-  NXTDefaults	*defs = [NXTDefaults globalUserDefaults];
+  OSEDefaults	*defs = [OSEDefaults globalUserDefaults];
   
   if (sender == initialRepeatMtrx)
     { // NXKeyboard-InitialKeyRepeat - delay in milliseconds before repeat
@@ -357,7 +357,7 @@ static NXTDefaults *defaults = nil;
 
 - (void)updateLayouts
 {
-  NXTDefaults *defs = [NXTDefaults globalUserDefaults];
+  OSEDefaults *defs = [OSEDefaults globalUserDefaults];
 
   if (layouts) {
     [layouts release];
@@ -473,7 +473,7 @@ static NXTDefaults *defaults = nil;
     [layoutShortcutBtn selectItemWithTitle:@"None"];
 
   // Refresh defaults with actual X11 settings
-  [[NXTDefaults globalUserDefaults] setObject:options forKey:OSEKeyboardOptions];
+  [[OSEDefaults globalUserDefaults] setObject:options forKey:OSEKeyboardOptions];
 }
 
 - (void)updateSwitchLayoutShortcuts
@@ -498,7 +498,7 @@ static NXTDefaults *defaults = nil;
 // Replaces "NXKeyboardOptions" array item that contains "grp:" substring.
 - (void)setLayoutShortcut:(id)sender
 {
-  NXTDefaults		*defs = [NXTDefaults globalUserDefaults];
+  OSEDefaults		*defs = [OSEDefaults globalUserDefaults];
   NSMutableArray	*mOptions = [options mutableCopy];
   id			selectedOption;
   BOOL			isOptionReplaced = NO;
@@ -577,7 +577,7 @@ static NXTDefaults *defaults = nil;
 
   NSInteger numLockState;
   
-  numLockState = [[NXTDefaults globalUserDefaults] integerForKey:OSEKeyboardNumLockState];
+  numLockState = [[OSEDefaults globalUserDefaults] integerForKey:OSEKeyboardNumLockState];
   [numLockStateMtrx selectCellWithTag:numLockState];
   if ([[numpadMtrx selectedCell] tag] != 2 )
     [keyboard setNumLockState:numLockState];
@@ -621,7 +621,7 @@ static NXTDefaults *defaults = nil;
 
 - (void)numLockMtrxClicked:(id)sender
 {
-  [[NXTDefaults globalUserDefaults] setInteger:[[sender selectedCell] tag]
+  [[OSEDefaults globalUserDefaults] setInteger:[[sender selectedCell] tag]
                                        forKey:OSEKeyboardNumLockState];
   [keyboard setNumLockState:[[sender selectedCell] tag]];
 }
@@ -872,7 +872,7 @@ static NXTDefaults *defaults = nil;
     [modelDescription setStringValue:model[modelKey]];
     // Save setting to NXGlobalDomain
     [keyboard setModel:modelKey];
-    [[NXTDefaults globalUserDefaults] setObject:modelKey
+    [[OSEDefaults globalUserDefaults] setObject:modelKey
                                          forKey:OSEKeyboardModel];
   }
   else {

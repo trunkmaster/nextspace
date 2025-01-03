@@ -25,7 +25,7 @@
 #import <Foundation/NSString.h>
 
 #import <DesktopKit/NXTAlert.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEFileManager.h>
 
 #include "CoreFoundationBridge.h"
 
@@ -365,7 +365,7 @@ static BOOL _workspaceQuitting = NO;
     appName = [NSString stringWithCString:wwin->wm_class];
     app_command = wGetCommandForWindow(wwin->client_win);
     if (app_command) {
-      appPath = [[NXTFileManager defaultManager]
+      appPath = [[OSEFileManager defaultManager]
           absolutePathForCommand:[NSString stringWithCString:app_command]];
     }
   }

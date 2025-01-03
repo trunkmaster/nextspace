@@ -30,7 +30,7 @@
 #import <AppKit/NSMatrix.h>
 #import <AppKit/NSSlider.h>
 
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import <DesktopKit/NXTNumericField.h>
 
 #import <SystemKit/OSEScreen.h>
@@ -336,7 +336,7 @@
   if ([systemScreen setBackgroundColorRed:[rgbColor redComponent]
                                     green:[rgbColor greenComponent]
                                      blue:[rgbColor blueComponent]] == YES) {
-    NXTDefaults   *defs = [NXTDefaults globalUserDefaults];
+    OSEDefaults   *defs = [OSEDefaults globalUserDefaults];
     NSDictionary *dBack;
 
     dBack = @{@"Red":   [NSNumber numberWithFloat:[color redComponent]],

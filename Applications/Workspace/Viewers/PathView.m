@@ -21,7 +21,7 @@
 
 #import <AppKit/AppKit.h>
 
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import <DesktopKit/NXTIcon.h>
 #import <DesktopKit/NXTIconLabel.h>
 
@@ -107,7 +107,7 @@
   NSSize size;
 
   size.height = PATH_VIEW_HEIGHT;
-  size.width = [[NXTDefaults userDefaults] floatForKey:@"BrowserViewerColumnWidth"];
+  size.width = [[OSEDefaults userDefaults] floatForKey:@"BrowserViewerColumnWidth"];
   if (size.width <= 0) {
     size.width = BROWSER_DEF_COLUMN_WIDTH;
   }

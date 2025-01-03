@@ -25,7 +25,7 @@
 #import <AppKit/NSTextField.h>
 #import <AppKit/NSImageView.h>
 
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 
 #import <Preferences.h>
 
@@ -47,8 +47,8 @@
   IBOutlet NSButton	*displayHostname;
   IBOutlet NSButton	*saveLastLoggedIn;
 
-  NXTDefaults           *defaults;
-  NXTDefaults           *systemDefaults;
+  OSEDefaults           *defaults;
+  OSEDefaults           *systemDefaults;
   BOOL                  isAdminUser;
 }
 

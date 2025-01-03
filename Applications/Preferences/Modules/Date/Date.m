@@ -35,7 +35,7 @@
   imagePath = [bundle pathForResource:@"Date" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
-  defaults = [NXTDefaults globalUserDefaults];
+  defaults = [OSEDefaults globalUserDefaults];
 
   return self;
 }

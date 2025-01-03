@@ -100,7 +100,7 @@
       
   self = [super init];
       
-  defaults = [[NXTDefaults alloc] initDefaultsWithPath:NSUserDomainMask
+  defaults = [[OSEDefaults alloc] initDefaultsWithPath:NSUserDomainMask
                                                 domain:@"Login"];
 
   bundle = [NSBundle bundleForClass:[self class]];
@@ -135,7 +135,7 @@
 
 - (void)awakeFromNib
 {
-  systemDefaults = [[NXTDefaults alloc]
+  systemDefaults = [[OSEDefaults alloc]
                      initDefaultsWithPath:NSSystemDomainMask
                                    domain:@"Login"];
 

@@ -14,8 +14,6 @@ $(FRAMEWORK_NAME)_DEPLOY_WITH_CURRENT_VERSION = yes
 # $(wildcard *.m)
 $(FRAMEWORK_NAME)_OBJC_FILES = \
 	NXTBundle.m \
-	NXTDefaults.m \
-	NXTFileManager.m \
 	\
 	NXTClockView.m \
 	NXTAlert.m \
@@ -44,8 +42,6 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	DesktopKit.h \
 	\
 	NXTBundle.h \
-	NXTDefaults.h \
-	NXTFileManager.h \
 	\
 	NXTAlert.h \
 	NXTClockView.h \

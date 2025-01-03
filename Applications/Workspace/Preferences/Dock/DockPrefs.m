@@ -20,7 +20,7 @@
 //
 
 #import "DockPrefs.h"
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import "Processes/ProcessManager.h"
 #import <Workspace+WM.h>
 #import <WMNotificationCenter.h>

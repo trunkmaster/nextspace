@@ -21,7 +21,7 @@
 
 #include <AppKit/AppKit.h>
 
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import <DesktopKit/Utilities.h>
 #import "FileToolsInspector.h"
 

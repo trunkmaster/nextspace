@@ -19,7 +19,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 
 #import "Operations/FileMover.h"
 #import "Processes/FileMoverUI.h"

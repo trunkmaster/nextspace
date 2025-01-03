@@ -2,7 +2,7 @@
 
 #import <DesktopKit/NXTIcon.h>
 #import <DesktopKit/NXTIconLabel.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEFileManager.h>
 
 #import "IconViewTest.h"
 
@@ -106,7 +106,7 @@
   // NSMutableArray	*icons;
   NSMutableSet		*selected = [[NSMutableSet new] autorelease];
   NSFileManager		*fm = [NSFileManager defaultManager];
-  NXTFileManager		*xfm = [NXTFileManager defaultManager];
+  OSEFileManager		*xfm = [OSEFileManager defaultManager];
   NSArray		*items;
   NSString              *path;
   NXTIcon                *anIcon;
@@ -204,7 +204,7 @@
   // NSMutableArray	*icons = [NSMutableArray array];
   NSMutableSet		*selected = [[NSMutableSet new] autorelease];
   // NSFileManager		*fm = [NSFileManager defaultManager];
-  NXTFileManager		*xfm = [NXTFileManager defaultManager];
+  OSEFileManager		*xfm = [OSEFileManager defaultManager];
   NSArray		*items;
   NSString		*path;
   NXTIcon		*anIcon;

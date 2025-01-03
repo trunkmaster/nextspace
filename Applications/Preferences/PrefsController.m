@@ -31,7 +31,7 @@
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSButton.h>
 
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import <DesktopKit/NXTBundle.h>
 
 #import "PrefsController.h"

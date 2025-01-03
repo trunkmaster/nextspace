@@ -33,7 +33,7 @@
 
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import <DesktopKit/NXTAlert.h>
 #import <SoundKit/NXTSound.h>
 #import <SystemKit/OSEScreen.h>
@@ -340,7 +340,7 @@ int WSRunAlertPanel(char *title, char *message, char *defaultButton, char *alter
 extern void wShakeWindow(WWindow *wwin);
 void WSRingBell(WWindow *wwin)
 {
-  NXTDefaults *defs = [NXTDefaults globalUserDefaults];
+  OSEDefaults *defs = [OSEDefaults globalUserDefaults];
   NSString *beepType = [defs objectForKey:@"NXSystemBeepType"];
 
   if (beepType && [beepType isEqualToString:@"Visual"]) {

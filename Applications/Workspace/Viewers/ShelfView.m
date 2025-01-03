@@ -23,8 +23,8 @@
 #import <math.h>
 #import <AppKit/AppKit.h>
 #import <GNUstepGUI/GSDragView.h>
-#import <DesktopKit/NXTDefaults.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEDefaults.h>
+#import <SystemKit/OSEFileManager.h>
 
 #import <Preferences/Shelf/ShelfPrefs.h>
 #import <Viewers/FileViewer.h>
@@ -248,7 +248,7 @@
 
 - (void)iconSlotWidthChanged:(NSNotification *)notif
 {
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
   NSSize size = [self slotSize];
   CGFloat width = 0.0;
 

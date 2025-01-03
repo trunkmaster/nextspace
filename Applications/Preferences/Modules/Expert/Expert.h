@@ -22,7 +22,7 @@
 #import <AppKit/NSImage.h>
 #import <Preferences.h>
 
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 
 @interface Expert: NSObject <PrefsModule>
 {
@@ -34,7 +34,7 @@
   id privateWindowServerBtn;
   id privateSoundServerBtn;
 
-  NXTDefaults	*defaults;
+  OSEDefaults	*defaults;
   NSImage	*image;
 }
 

@@ -23,7 +23,7 @@
 #import <AppKit/AppKit.h>
 
 #import <SystemKit/OSEScreen.h>
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 
 #import "Application.h"
 #import "Recycler.h"
@@ -160,7 +160,7 @@ int main(int argc, const char **argv)
     fprintf(stderr, "=== Window Manager initialized! ===\n");
 
     //--- Composer
-    NXTDefaults *defs = [[NXTDefaults alloc] initDefaultsWithPath:NSUserDomainMask
+    OSEDefaults *defs = [[OSEDefaults alloc] initDefaultsWithPath:NSUserDomainMask
                                                            domain:@"Workspace"];
     if ([defs boolForKey:@"ComposerEnabled"] != NO) {
       dispatch_queue_t composer_q = dispatch_queue_create("ns.workspace.composer", DISPATCH_QUEUE_CONCURRENT);

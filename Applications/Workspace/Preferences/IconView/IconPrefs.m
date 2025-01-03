@@ -23,7 +23,7 @@
 //
 
 #import "IconPrefs.h"
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 
 #define DEFAULT_LABEL_WIDTH 100
 
@@ -50,7 +50,7 @@ static inline NSRect IncrementedRect(NSRect r)
   NSRect frame;
   NSSize s = [[leftArr superview] frame].size;
   float width;
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
 
   if ([df objectForKey:@"IconSlotWidth"]) {
     width = [df floatForKey:@"IconSlotWidth"];
@@ -193,7 +193,7 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)arrowViewStoppedMoving:(NXTSizer *)sender
 {
-  [[NXTDefaults userDefaults] setFloat:[iconLabel frame].size.width forKey:@"IconSlotWidth"];
+  [[OSEDefaults userDefaults] setFloat:[iconLabel frame].size.width forKey:@"IconSlotWidth"];
 
   [[NSNotificationCenter defaultCenter] postNotificationName:@"IconSlotWidthDidChangeNotification"
                                                       object:self];
@@ -201,7 +201,7 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)revert:sender
 {
-  [[NXTDefaults userDefaults] setFloat:DEFAULT_LABEL_WIDTH forKey:@"IconSlotWidth"];
+  [[OSEDefaults userDefaults] setFloat:DEFAULT_LABEL_WIDTH forKey:@"IconSlotWidth"];
   [self setupArrows];
 
   [[NSNotificationCenter defaultCenter] postNotificationName:@"IconSlotWidthDidChangeNotification"

@@ -20,7 +20,7 @@
 //
 
 #import <DesktopKit/NXTBundle.h>
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 
 #import "ModuleLoader.h"
 #import "Viewers/Viewer.h"
@@ -110,7 +110,7 @@ static ModuleLoader *shared = nil;
 
 - (id<Viewer>)preferredViewer
 {
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
   NSString *preferredViewerType;
   id<Viewer> viewer;
 

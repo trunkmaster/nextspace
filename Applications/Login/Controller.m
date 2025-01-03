@@ -562,7 +562,7 @@ int ConversationFunction(int num_msg,
   [panelImageView setRefusesFirstResponder:YES];
 
   // Open preferences
-  prefs = [[NXTDefaults alloc] initWithSystemDefaults];
+  prefs = [[OSEDefaults alloc] initWithSystemDefaults];
 
   [hostnameField retain];
   [self displayHostname];

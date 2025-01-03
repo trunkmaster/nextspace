@@ -24,8 +24,8 @@
 #import <SystemKit/OSEMediaManager.h>
 
 #import "NXTPanelLoader.h"
-#import "NXTFileManager.h"
-#import "NXTDefaults.h"
+#import <SystemKit/OSEFileManager.h>
+#import <SystemKit/OSEDefaults.h>
 #import "NXTAlert.h"
 
 #import "NXTSavePanel.h"
@@ -88,7 +88,7 @@ static NXTSavePanel *_savePanel = nil;
        selector:@selector(_globalDefaultsChanged:)
            name:NXUserDefaultsDidChangeNotification
          object:@"NXGlobalDomain"];
-  _showsHiddenFiles = [[NXTFileManager defaultManager] isShowHiddenFiles];
+  _showsHiddenFiles = [[OSEFileManager defaultManager] isShowHiddenFiles];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_windowResized:)
                                                name:NSWindowDidResizeNotification
@@ -477,7 +477,7 @@ static NXTSavePanel *_savePanel = nil;
   BOOL             exists, isDir;
   NSBrowserCell    *cell;
   NSWorkspace      *ws;
-  NXTFileManager   *fm;
+  OSEFileManager   *fm;
   NSString         *fileType;
   /* We create lot of objects in this method, so we use a pool */
   NSAutoreleasePool *pool;
@@ -487,7 +487,7 @@ static NXTSavePanel *_savePanel = nil;
 
   pool = [NSAutoreleasePool new];
   ws = [NSWorkspace sharedWorkspace];
-  fm = [NXTFileManager defaultManager];
+  fm = [OSEFileManager defaultManager];
   path = [_browser pathToColumn:column];
   files = [fm directoryContentsAtPath:path
                               forPath:nil

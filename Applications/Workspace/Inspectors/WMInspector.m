@@ -24,7 +24,7 @@
 //
 
 #import <DesktopKit/NXTBundle.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEFileManager.h>
 
 #import <dispatch/dispatch.h>
 

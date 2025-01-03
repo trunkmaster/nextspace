@@ -20,7 +20,7 @@
 //
 
 #import <DesktopKit/NXTBundle.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEFileManager.h>
 
 #import "AppInspector.h"
 

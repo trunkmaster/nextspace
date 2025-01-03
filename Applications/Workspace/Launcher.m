@@ -21,7 +21,7 @@
 
 #import <AppKit/AppKit.h>
 #import <DesktopKit/NXTAlert.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEFileManager.h>
 #import "Launcher.h"
 
 @interface WMCommandField : NSTextField
@@ -237,7 +237,7 @@
 - (NSArray *)completionForCommand:(NSString *)command
 {
   NSMutableArray *variants = [[NSMutableArray alloc] init];
-  NXTFileManager *fm = [NXTFileManager defaultManager];
+  OSEFileManager *fm = [OSEFileManager defaultManager];
   NSString *absPath;
 
   if (!command || [command length] == 0 || [command isEqualToString:@""]) {
@@ -308,7 +308,7 @@
     } else {
       variant = [command stringByExpandingTildeInPath];
     }
-    if ([[NXTFileManager defaultManager] directoryExistsAtPath:variant] &&
+    if ([[OSEFileManager defaultManager] directoryExistsAtPath:variant] &&
         [variant characterAtIndex:[variant length] - 1] != '/') {
       if ([command characterAtIndex:0] == '~') {
         variant = [variant stringByAbbreviatingWithTildeInPath];
@@ -340,7 +340,7 @@
 
 - (void)updateButtonsState
 {
-  NXTFileManager *fm = [NXTFileManager defaultManager];
+  OSEFileManager *fm = [OSEFileManager defaultManager];
   BOOL isDir;
   NSString *text;
   BOOL isEnabled = YES;

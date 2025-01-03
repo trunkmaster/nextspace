@@ -25,8 +25,8 @@
 #include "Foundation/NSFileManager.h"
 #include "Foundation/NSArray.h"
 
-#import <DesktopKit/NXTDefaults.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEDefaults.h>
+#import <SystemKit/OSEFileManager.h>
 
 #import <Viewers/FileViewer.h>
 #import <Viewers/PathIcon.h>
@@ -313,8 +313,8 @@ static NSRect viewFrame;
   [iconView setDoubleAction:@selector(open:)];
   [iconView setAutoAdjustsToFitIcons:YES];
   iconSize = [NXTIconView defaultSlotSize];
-  if ([[NXTDefaults userDefaults] objectForKey:@"IconSlotWidth"]) {
-    iconSize.width = [[NXTDefaults userDefaults] floatForKey:@"IconSlotWidth"]; 
+  if ([[OSEDefaults userDefaults] objectForKey:@"IconSlotWidth"]) {
+    iconSize.width = [[OSEDefaults userDefaults] floatForKey:@"IconSlotWidth"]; 
     [iconView setSlotSize:iconSize];
   }
   [iconView registerForDraggedTypes:@[NSFilenamesPboardType]];
@@ -388,7 +388,7 @@ static NSRect viewFrame;
 
 - (CGFloat)columnWidth
 {
-  return [[NXTDefaults userDefaults] floatForKey:@"IconSlotWidth"];
+  return [[OSEDefaults userDefaults] floatForKey:@"IconSlotWidth"];
 }
 - (void)setColumnWidth:(CGFloat)width
 {
@@ -564,7 +564,7 @@ static NSRect viewFrame;
 // -- Notifications
 - (void)iconWidthDidChange:(NSNotification *)notification
 {
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
   NSSize     slotSize = [iconView slotSize];
 
   slotSize.width = [df floatForKey:@"IconSlotWidth"];

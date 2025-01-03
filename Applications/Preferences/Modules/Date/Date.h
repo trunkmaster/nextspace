@@ -22,7 +22,7 @@
 
 #import <AppKit/AppKit.h>
 #import <DesktopKit/NXTClockView.h>
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import <Preferences.h>
 #import "Calendar.h"
 
@@ -41,7 +41,7 @@
   NSImage *image;
   NSImage *handImage;
 
-  NXTDefaults	*defaults;
+  OSEDefaults	*defaults;
 }
 
 @end

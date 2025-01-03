@@ -20,7 +20,7 @@
 //
 
 #import "FileCopyPrefs.h"
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 
 @implementation FileCopyPrefs
 
@@ -46,7 +46,7 @@
   DESTROY(bogusWindow);
 
   // initialize button matrix state
-  action = [[NXTDefaults userDefaults] objectForKey:@"DefaultSymlinkAction"];
+  action = [[OSEDefaults userDefaults] objectForKey:@"DefaultSymlinkAction"];
   if ([action isEqualToString:@"ask"]) {
     tag = 0;
   } else if ([action isEqualToString:@"NEWLINK"]) {
@@ -111,7 +111,7 @@
       action = @"ask";
   }
 
-  [[NXTDefaults userDefaults] setObject:action forKey:@"DefaultSymlinkAction"];
+  [[OSEDefaults userDefaults] setObject:action forKey:@"DefaultSymlinkAction"];
 
   // Don't send notification. FileOperation always read setting from defaults.
 }

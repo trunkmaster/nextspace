@@ -24,8 +24,8 @@
 
 #import <DesktopKit/NXTIcon.h>
 #import <DesktopKit/NXTIconLabel.h>
-#import <DesktopKit/NXTFileManager.h>
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEFileManager.h>
+#import <SystemKit/OSEDefaults.h>
 
 #import "Controller.h"
 #import "RecyclerIcon.h"
@@ -90,7 +90,7 @@ static NSMutableArray *fileList = nil;
 - (void)main
 {
   NSMutableSet *selected = [[NSMutableSet new] autorelease];
-  NXTFileManager *fm = [NXTFileManager defaultManager];
+  OSEFileManager *fm = [OSEFileManager defaultManager];
   NSMutableArray *items;
   NSString *path;
   PathIcon *anIcon;
@@ -264,8 +264,8 @@ static NSMutableArray *fileList = nil;
   [filesView setDragAction:@selector(filesView:iconDragged:withEvent:)];
   [filesView setAutoAdjustsToFitIcons:NO];
   iconSize = [NXTIconView defaultSlotSize];
-  if ([[NXTDefaults userDefaults] objectForKey:@"IconSlotWidth"]) {
-    iconSize.width = [[NXTDefaults userDefaults] floatForKey:@"IconSlotWidth"];
+  if ([[OSEDefaults userDefaults] objectForKey:@"IconSlotWidth"]) {
+    iconSize.width = [[OSEDefaults userDefaults] floatForKey:@"IconSlotWidth"];
     [filesView setSlotSize:iconSize];
   }
 
@@ -578,7 +578,7 @@ static NSMutableArray *fileList = nil;
 // -- Notifications
 - (void)iconWidthDidChange:(NSNotification *)notification
 {
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
   NSSize slotSize = [filesView slotSize];
 
   slotSize.width = [df floatForKey:@"IconSlotWidth"];

@@ -21,7 +21,7 @@
 //
 
 #import "ShelfPrefs.h"
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 
 static inline NSRect IncrementedRect(NSRect r)
 {
@@ -46,7 +46,7 @@ static inline NSRect IncrementedRect(NSRect r)
   NSRect frame;
   NSSize s = [[leftArr superview] frame].size;
   float width;
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
 
   if ([df objectForKey:ShelfIconSlotWidth]) {
     width = [df floatForKey:ShelfIconSlotWidth];
@@ -108,7 +108,7 @@ static inline NSRect IncrementedRect(NSRect r)
   [iconImage setImage:[NSImage imageNamed:@"GNUstep48x48"]];
   [iconLabel setStringValue:@"Workspace.app"];
 
-  rState = [[NXTDefaults userDefaults] integerForKey:ShelfIsResizable];
+  rState = [[OSEDefaults userDefaults] integerForKey:ShelfIsResizable];
   NSDebugLLog(@"Preferences", @"ShelfPrefs: resizableSwitch state: %li", rState);
   [resizableSwitch setIntValue:rState];
   // if (rState == 0)
@@ -195,7 +195,7 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)arrowViewStoppedMoving:(NXTSizer *)sender
 {
-  [[NXTDefaults userDefaults] setFloat:[iconLabel frame].size.width forKey:ShelfIconSlotWidth];
+  [[OSEDefaults userDefaults] setFloat:[iconLabel frame].size.width forKey:ShelfIconSlotWidth];
 
   [[NSNotificationCenter defaultCenter] postNotificationName:ShelfIconSlotWidthDidChangeNotification
                                                       object:self];
@@ -205,7 +205,7 @@ static inline NSRect IncrementedRect(NSRect r)
 
 - (void)setResizable:sender
 {
-  [[NXTDefaults userDefaults] setInteger:[sender state] forKey:ShelfIsResizable];
+  [[OSEDefaults userDefaults] setInteger:[sender state] forKey:ShelfIsResizable];
   [[NSNotificationCenter defaultCenter]
       postNotificationName:ShelfResizableStateDidChangeNotification
                     object:self];
@@ -216,7 +216,7 @@ static inline NSRect IncrementedRect(NSRect r)
   if ([sender isEqualTo:button] == NO)
     return;
 
-  [[NXTDefaults userDefaults] setFloat:SHELF_LABEL_WIDTH forKey:ShelfIconSlotWidth];
+  [[OSEDefaults userDefaults] setFloat:SHELF_LABEL_WIDTH forKey:ShelfIconSlotWidth];
   [self _setupArrows];
 
   [[NSNotificationCenter defaultCenter] postNotificationName:ShelfIconSlotWidthDidChangeNotification

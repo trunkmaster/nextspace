@@ -20,7 +20,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEFileManager.h>
 
 #import "Expert.h"
 
@@ -30,7 +30,7 @@
 {
   self = [super init];
   
-  defaults = [NXTDefaults globalUserDefaults];
+  defaults = [OSEDefaults globalUserDefaults];
   NSBundle *bundle = [NSBundle bundleForClass:[self class]];
   NSString *imagePath = [bundle pathForResource:@"Expert" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
@@ -59,9 +59,9 @@
   [privateSoundServerBtn setRefusesFirstResponder:YES];
 
   [sortByBtn
-    selectItemWithTag:[[NXTFileManager defaultManager] sortFilesBy]];
+    selectItemWithTag:[[OSEFileManager defaultManager] sortFilesBy]];
   [showHiddenFilesBtn
-    setState:[[NXTFileManager defaultManager] isShowHiddenFiles]];
+    setState:[[OSEFileManager defaultManager] isShowHiddenFiles]];
 }
 
 - (NSView *)view
@@ -94,12 +94,12 @@
 
 - (void)setSortBy:(id)sender
 {
-  [[NXTFileManager defaultManager] setSortFilesBy:[[sender selectedItem] tag]];
+  [[OSEFileManager defaultManager] setSortFilesBy:[[sender selectedItem] tag]];
 }
 
 - (void)setShowHiddenFiles:(id)sender
 {
-  [[NXTFileManager defaultManager] setShowHiddenFiles:[sender state]];
+  [[OSEFileManager defaultManager] setShowHiddenFiles:[sender state]];
 }
 
 @end

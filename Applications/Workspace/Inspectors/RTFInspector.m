@@ -20,7 +20,7 @@
 //
 
 #import <DesktopKit/NXTBundle.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEFileManager.h>
 
 #import <dispatch/dispatch.h>
 
@@ -86,7 +86,7 @@ static inline NSUInteger numberOfLinesInString(NSString *string)
   [string release];
 
   // Meta information
-  [encodingField setStringValue:[[NXTFileManager defaultManager] mimeEncodingForFile:path]];
+  [encodingField setStringValue:[[OSEFileManager defaultManager] mimeEncodingForFile:path]];
 
   [linesField setStringValue:[NSString stringWithFormat:@"%lu/%lu", showedLines, allLines]];
 
@@ -148,7 +148,7 @@ static id contentsInspector = nil;
   NSSize size = NSZeroSize;
   CGFloat factor = 0.0;
   NSTextStorage *newTextStorage = nil;
-  NXTFileManager *fm = [NXTFileManager defaultManager];
+  OSEFileManager *fm = [OSEFileManager defaultManager];
 
   [self getSelectedPath:&selectedPath andFiles:&selectedFiles];
   filePath = [selectedPath stringByAppendingPathComponent:[selectedFiles objectAtIndex:0]];

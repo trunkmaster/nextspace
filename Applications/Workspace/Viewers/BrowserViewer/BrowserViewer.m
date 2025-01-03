@@ -25,8 +25,8 @@
 #include <dispatch/dispatch.h>
 
 #import <AppKit/AppKit.h>
-#import <DesktopKit/NXTDefaults.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEDefaults.h>
+#import <SystemKit/OSEFileManager.h>
 #import <DesktopKit/Utilities.h>
 
 #import <Workspace.h>
@@ -362,7 +362,7 @@
 
 - (CGFloat)columnWidth
 {
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
 
   columnWidth = [df floatForKey:BrowserViewerColumnWidth];
   if (columnWidth <= BROWSER_MIN_COLUMN_WIDTH) {

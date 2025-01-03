@@ -31,8 +31,8 @@
 //=============================================================================
 
 #import <DesktopKit/DesktopKit.h>
-#import <DesktopKit/NXTDefaults.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEDefaults.h>
+#import <SystemKit/OSEFileManager.h>
 
 #import <Workspace.h>
 
@@ -150,7 +150,7 @@
 
 - initRootedAtPath:(NSString *)aRootPath viewer:(NSString *)viewerType isRoot:(BOOL)isRoot
 {
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   NSString *relativePath = nil;
   NSSize aSize;
@@ -312,7 +312,7 @@
   //  NSRect       contentRect = NSMakeRect(100, 500, 522, 390);
   NSRect contentRect = NSMakeRect(100, 500, WIN_DEF_WIDTH, 390);
   NSSize wSize, sSize;
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
 
   // Create window
   if (isRootViewer) {
@@ -412,7 +412,7 @@
   [splitView setDelegate:self];
 
   {
-    NXTDefaults *df = [NXTDefaults userDefaults];
+    OSEDefaults *df = [OSEDefaults userDefaults];
     NSRect shelfFrame = [shelf frame];
     NSRect pathFrame = [[pathView enclosingScrollView] frame];
     NSSize windowMinSize = [window minSize];
@@ -607,12 +607,12 @@
 
 - (NSArray *)directoryContentsAtPath:(NSString *)relPath forPath:(NSString *)targetPath
 {
-  NXTFileManager *fm = [NXTFileManager defaultManager];
+  OSEFileManager *fm = [OSEFileManager defaultManager];
   NSString *path = [rootPath stringByAppendingPathComponent:relPath];
   NSDictionary *folderDefaults;
 
   // Get sorted directory contents
-  if ((folderDefaults = [[NXTDefaults userDefaults] objectForKey:path]) != nil) {
+  if ((folderDefaults = [[OSEDefaults userDefaults] objectForKey:path]) != nil) {
     sortFilesBy = [[folderDefaults objectForKey:@"SortBy"] intValue];
   } else {
     sortFilesBy = [fm sortFilesBy];
@@ -995,7 +995,7 @@
 
 - (void)restoreShelf
 {
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
   NSDictionary *shelfRep = nil;
   NSArray *paths = nil;
   PathIcon *icon = nil;
@@ -1168,7 +1168,7 @@
 
 - (void)windowWillClose:(NSNotification *)notif
 {
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString *file = nil;
 
@@ -1256,7 +1256,7 @@
 {
   NSInteger rState;
 
-  rState = [[NXTDefaults userDefaults] integerForKey:@"ShelfIsResizable"];
+  rState = [[OSEDefaults userDefaults] integerForKey:@"ShelfIsResizable"];
   [splitView setResizableState:rState];
 }
 
@@ -1445,7 +1445,7 @@
 
 - (void)globalUserPreferencesDidChange:(NSNotification *)aNotif
 {
-  NXTFileManager *fm = [NXTFileManager defaultManager];
+  OSEFileManager *fm = [OSEFileManager defaultManager];
   BOOL hidden = [fm isShowHiddenFiles];
   NXTSortType sort = [fm sortFilesBy];
 

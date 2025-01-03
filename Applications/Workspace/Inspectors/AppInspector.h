@@ -20,7 +20,7 @@
 //
 
 #import <AppKit/AppKit.h>
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import <Workspace.h>
 
 @interface AppInspector : WMInspector

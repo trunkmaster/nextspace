@@ -35,7 +35,7 @@
 #import <DesktopKit/NXTClockView.h>
 #import <DesktopKit/NXTNumericField.h>
 #import <DesktopKit/NXTBundle.h>
-#import <DesktopKit/NXTDefaults.h>
-#import <DesktopKit/NXTFileManager.h>
+#import <SystemKit/OSEDefaults.h>
+#import <SystemKit/OSEFileManager.h>
 #import <DesktopKit/NXTOpenPanel.h>
 #import <DesktopKit/Utilities.h>

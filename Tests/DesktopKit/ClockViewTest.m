@@ -21,7 +21,7 @@
 */
 
 #import "ClockViewTest.h"
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 
 @implementation ClockViewTest : NSObject
 
@@ -81,9 +81,9 @@
 
 - (void)set24Hour:(id)sender
 {
-  [[NXTDefaults globalUserDefaults] setBool:[sender state]
+  [[OSEDefaults globalUserDefaults] setBool:[sender state]
                                     forKey:@"NXTClockView24HourFormat"];
-  //  [[NXTDefaults globalUserDefaults] synchronize];
+  //  [[OSEDefaults globalUserDefaults] synchronize];
 }
 - (void)setShowYear:(id)sender
 {

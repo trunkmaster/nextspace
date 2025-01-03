@@ -19,7 +19,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import "AdvancedPrefs.h"
 #import <Workspace+WM.h>
 #import <dock.h>
@@ -61,7 +61,7 @@
 
 - (void)revert:(id)sender
 {
-  NXTDefaults *df = [NXTDefaults userDefaults];
+  OSEDefaults *df = [OSEDefaults userDefaults];
 
   [slideFromShelf setState:![df boolForKey:@"DontSlideIconsFromShelf"]];
   [slideWhenOpening setState:![df boolForKey:@"DontSlideIconsWhenOpening"]];
@@ -79,17 +79,17 @@
 
 - (void)setSlidesWhenChangingPath:(id)sender
 {
-  [[NXTDefaults userDefaults] setBool:![slideFromShelf state] forKey:@"DontSlideIconsFromShelf"];
+  [[OSEDefaults userDefaults] setBool:![slideFromShelf state] forKey:@"DontSlideIconsFromShelf"];
 }
 
 - (void)setSlidesBackOnBadOperation:(id)sender
 {
-  [[NXTDefaults userDefaults] setBool:![slideOnBadFop state] forKey:@"DontSlideIconBackOnBadFop"];
+  [[OSEDefaults userDefaults] setBool:![slideOnBadFop state] forKey:@"DontSlideIconBackOnBadFop"];
 }
 
 - (void)setSlidesWhenOpeningFile:(id)sender
 {
-  [[NXTDefaults userDefaults] setBool:![slideWhenOpening state]
+  [[OSEDefaults userDefaults] setBool:![slideWhenOpening state]
                                forKey:@"DontSlideIconsWhenOpening"];
 }
 

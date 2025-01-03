@@ -28,7 +28,7 @@
 #include <X11/extensions/Xrandr.h>
 
 #import <AppKit/NSApplication.h>
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEDisplay.h>
 #import <SystemKit/OSEPower.h>
@@ -36,7 +36,7 @@
 #import "Controller.h"
 
 static NSTask      *xorgTask = nil;
-static NXTDefaults *loginDefaults = nil;
+static OSEDefaults *loginDefaults = nil;
 
 //-----------------------------------------------------------------------------
 // --- Plymouth
@@ -218,9 +218,9 @@ static void handleSignal(int sig)
   [NSApp stop:nil];
 }
 
-NXTDefaults *getDefaults(NSString *appPath)
+OSEDefaults *getDefaults(NSString *appPath)
 {
-  NXTDefaults  *systemDefaults;
+  OSEDefaults  *systemDefaults;
   id           serverCommand;
   NSString     *defaultsPath;
   NSDictionary *defaults;
@@ -230,7 +230,7 @@ NXTDefaults *getDefaults(NSString *appPath)
     return loginDefaults;
   }
   
-  systemDefaults = [NXTDefaults systemDefaults];
+  systemDefaults = [OSEDefaults systemDefaults];
   serverCommand = [systemDefaults objectForKey:@"WindowServerCommand"];
 
   // User defaults is not correct

@@ -27,7 +27,7 @@
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <AppKit/AppKit.h>
 
-#import <DesktopKit/NXTDefaults.h>
+#import <SystemKit/OSEDefaults.h>
 #import <DesktopKit/NXTAlert.h>
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEPower.h>
@@ -72,7 +72,7 @@ extern LoginExitCode panelExitCode;
   OSEPower             *systemPower;
 
   // Preferences
-  NXTDefaults           *prefs;
+  OSEDefaults           *prefs;
 
   // User sessions
   NSArray              *mainThreadPorts;
