@@ -10,6 +10,11 @@ if [ "${OS_ID}" = "debian" ] || [ "${OS_ID}" = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -q -y ${BUILD_TOOLS} ${RUNTIME_DEPS} || exit 1
 else
+	if [ "${OS_ID}" = "fedora" ]; then
+		${ECHO} "No need to build - installing 'libdispatch-devel' from Fedora repository..."
+		sudo dnf -y install libdispatch-devel || exit 1
+		exit 0
+	fi
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Libraries/libdispatch/libdispatch.spec
 	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
