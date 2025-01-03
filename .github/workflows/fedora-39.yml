@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    container: amd64/fedora:39
+    container: amd64/fedora:41
 
     steps:
     - uses: actions/checkout@v3
