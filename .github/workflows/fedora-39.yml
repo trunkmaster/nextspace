@@ -1,4 +1,4 @@
-name: Fedora 39
+name: Fedora 41
 
 on:
   push:
