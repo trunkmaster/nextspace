@@ -98,7 +98,7 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 /etc/udev
 /etc/X11
 /etc/polkit-1/rules.d/10-udisks2.rules
-/usr/lib/systemd/logind.conf.d/lidswitch.conf
+/etc/systemd/lidswitch.conf
 /usr/NextSpace/Documentation/man/man1/open*.gz
 /usr/NextSpace/etc/
 /usr/NextSpace/bin/gnustep-services
