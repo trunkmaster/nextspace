@@ -1,6 +1,6 @@
 # NEXTSPACE
 
-[![Fedora 39](https://github.com/trunkmaster/nextspace/actions/workflows/fedora-39.yml/badge.svg)](https://github.com/trunkmaster/nextspace/actions/workflows/fedora-39.yml) [![Ubuntu 22.04](https://github.com/trunkmaster/nextspace/actions/workflows/sources_ubuntu.yml/badge.svg)](https://github.com/trunkmaster/nextspace/actions/workflows/sources_ubuntu.yml) [![Debian 12](https://github.com/trunkmaster/nextspace/actions/workflows/sources_debian.yml/badge.svg)](https://github.com/trunkmaster/nextspace/actions/workflows/sources_debian.yml)
+[![Fedora 39](https://github.com/trunkmaster/nextspace/actions/workflows/sources_fedora.yml/badge.svg)](https://github.com/trunkmaster/nextspace/actions/workflows/fedora-39.yml) [![Ubuntu 22.04](https://github.com/trunkmaster/nextspace/actions/workflows/sources_ubuntu.yml/badge.svg)](https://github.com/trunkmaster/nextspace/actions/workflows/sources_ubuntu.yml) [![Debian 12](https://github.com/trunkmaster/nextspace/actions/workflows/sources_debian.yml/badge.svg)](https://github.com/trunkmaster/nextspace/actions/workflows/sources_debian.yml)
 
 NEXTSPACE is a desktop environment that brings a [NeXTSTEP](https://en.wikipedia.org/wiki/NeXTSTEP) look and feel to Linux. I try to keep the user experience as close as possible to the original NeXT OS. It is developed according to the ["OpenStep User Interface Guidelines"](http://www.gnustep.org/resources/documentation/OpenStepUserInterfaceGuidelines.pdf).
 
