@@ -1,0 +1,55 @@
+name: Fedora 41
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    container: amd64/fedora:41
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install build tools
+      run: dnf -y install sudo git openssh-clients which binutils binutils-gold curl clang
+    - name: Build Apple libraries
+      run: |
+        cd Packaging/Sources
+        ./1_build_libcorefoundation.sh
+    - name: Build Objective-C runtime
+      run: |
+        cd Packaging/Sources
+        ./2_build_libobjc2.sh
+    - name: Build GNUstep build tools
+      run: |
+        cd Packaging/Sources
+        ./3_build_core.sh
+        ./3_build_tools-make.sh
+    - name: Build WRaster
+      run: |
+        cd Packaging/Sources
+        ./4_build_libwraster.sh
+    - name: Build GNUstep Foundation
+      run: |
+        cd Packaging/Sources
+        ./5_build_libs-base.sh
+    - name: Build GNUstep AppKit
+      run: |
+        cd Packaging/Sources
+        ./6_build_libs-gui.sh
+    - name: Build GNUstep Backend
+      run: |
+        cd Packaging/Sources
+        ./7_build_libs-back.sh
+    - name: Build Frameworks
+      run: |
+        cd Packaging/Sources
+        ./8_build_Frameworks.sh
+    - name: Build Applications
+      run: |
+        cd Packaging/Sources
+        ./9_build_Applications.sh
