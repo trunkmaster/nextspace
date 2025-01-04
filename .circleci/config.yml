@@ -5,11 +5,11 @@ workflows:
       - build:
           filters:
             branches:
-              only: master
+              only: nsworkspace
 jobs:
   build:
     docker:
-      - image: amd64/fedora:41
+      - image: amd64/fedora:39
     environment:
       BASH_ENV: /etc/profile.d/nextspace.sh
     steps:
