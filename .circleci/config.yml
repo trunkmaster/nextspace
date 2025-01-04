@@ -9,7 +9,7 @@ workflows:
 jobs:
   build:
     docker:
-      - image: amd64/fedora:39
+      - image: amd64/fedora:41
     environment:
       BASH_ENV: /etc/profile.d/nextspace.sh
     steps:
@@ -17,7 +17,7 @@ jobs:
           path: /root/nextspace
       - run:
           name: Install build tools
-          command: yum -y install sudo git openssh-clients which binutils clang
+          command: yum -y install sudo git openssh-clients which binutils binutils-gold clang
       - run:
           name: Install Libraries
           command: |
