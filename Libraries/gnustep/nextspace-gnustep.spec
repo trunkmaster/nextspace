@@ -1,7 +1,7 @@
 %global toolchain clang
 
 %define GS_REPO         https://github.com/gnustep
-%define BASE_VERSION    1_30_0
+%define BASE_VERSION    master
 %define GUI_VERSION     0_31_0
 %define BACK_VERSION    nextspace
 %define GORM_VERSION    1_4_0
