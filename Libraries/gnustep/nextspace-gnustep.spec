@@ -136,15 +136,15 @@ GNUstep Make installed with nextspace-core-devel package.
 
 %prep
 %setup -c -n nextspace-gnustep -a 0 -a 1 -a 2 -a 3 -a 4
-cp %{_sourcedir}/gorm.patch %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_TAG}/
-cd %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_TAG}/
+cp %{_sourcedir}/gorm.patch %{_builddir}/nextspace-gnustep/apps-gorm-%{GORM_TAG}/
+cd %{_builddir}/nextspace-gnustep/apps-gorm-%{GORM_TAG}/
 %patch -P0 -p1
-cp %{_sourcedir}/pc.patch %{_builddir}/nextspace-gnustep/apps-projectcenter-projectcenter-%{PC_TAG}/
-cd %{_builddir}/nextspace-gnustep/apps-projectcenter-projectcenter-%{PC_TAG}/
+cp %{_sourcedir}/pc.patch %{_builddir}/nextspace-gnustep/apps-projectcenter-%{PC_TAG}/
+cd %{_builddir}/nextspace-gnustep/apps-projectcenter-%{PC_TAG}/
 %patch -P1 -p1
-cp %{_sourcedir}/libs-gui_NSApplication.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_TAG}/
-cp %{_sourcedir}/libs-gui_NSPopUpButton.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_TAG}/
-cd %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_TAG}/
+cp %{_sourcedir}/libs-gui_NSApplication.patch %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
+cp %{_sourcedir}/libs-gui_NSPopUpButton.patch %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
+cd %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
 %patch -P2 -p1
 %patch -P3 -p1
 %patch -P4 -p1
