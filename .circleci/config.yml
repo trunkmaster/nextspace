@@ -5,7 +5,7 @@ workflows:
       - build:
           filters:
             branches:
-              only: nsworkspace
+              only: master
 jobs:
   build:
     docker:
