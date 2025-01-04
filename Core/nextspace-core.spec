@@ -86,6 +86,9 @@ cp -vr ./usr %{buildroot}
 cp -vr ./dot_hidden %{buildroot}/.hidden
 mkdir %{buildroot}/Users
 mkdir -p %{buildroot}/usr/NextSpace/etc
+%if 0%{?fedora} && 0%{?fedora} < 41
+rm %{buildroot}/etc/systemd/logind.conf
+%endif
 
 %files 
 /.hidden
@@ -98,7 +101,9 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 /etc/udev
 /etc/X11
 /etc/polkit-1/rules.d/10-udisks2.rules
+%if 0%{?fedora} && 0%{?fedora} > 40
 /etc/systemd/logind.conf
+%endif
 /usr/NextSpace/Documentation/man/man1/open*.gz
 /usr/NextSpace/etc/
 /usr/NextSpace/bin/gnustep-services
