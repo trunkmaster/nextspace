@@ -1,8 +1,13 @@
 %global toolchain clang
 
 %define GS_REPO       https://github.com/gnustep
+%if 0%{?fedora} && 0%{?fedora} > 40
 %define BASE_VERSION  master
 %define BASE_TAG      master
+%else
+%define BASE_VERSION  1.30.0
+%define BASE_TAG      base-1_30_0
+%endif
 %define GUI_VERSION   0.31.0
 %define GUI_TAG       gui-0_31_0
 %define BACK_VERSION  nextspace
