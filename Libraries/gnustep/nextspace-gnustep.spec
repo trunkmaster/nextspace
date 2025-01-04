@@ -1,14 +1,16 @@
 %global toolchain clang
 
 %define GS_REPO       https://github.com/gnustep
+%define BASE_VERSION  master
 %define BASE_TAG      master
+%define GUI_VERSION   0.31.0
 %define GUI_TAG       gui-0_31_0
 %define BACK_VERSION  nextspace
 %define GORM_TAG      gorm-1_4_0
 %define PC_TAG        projectcenter-0_7_0
 
 Name:       nextspace-gnustep
-Version:    %{BASE_TAG}_%{GUI_TAG}
+Version:    %{BASE_VERSION}_%{GUI_VERSION}
 Release:    1%{?dist}
 Summary:    GNUstep libraries.
 
