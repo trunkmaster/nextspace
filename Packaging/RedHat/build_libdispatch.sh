@@ -2,8 +2,8 @@
 # -*-Shell-script-*-
 
 BUILD_RPM=1
-. `dirname $0`/../environment.sh
 . `dirname $0`/../functions.sh
+. `dirname $0`/../environment.sh
 
 if [ "${OS_ID}" = "fedora" ]; then
 	${ECHO} "No need to build - installing 'libdispatch-devel' from Fedora repository..."

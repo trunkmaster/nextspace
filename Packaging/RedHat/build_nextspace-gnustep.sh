@@ -2,8 +2,8 @@
 # -*-Shell-script-*-
 
 BUILD_RPM=1
-. `dirname $0`/../environment.sh
 . `dirname $0`/../functions.sh
+. `dirname $0`/../environment.sh
 
 SPEC_FILE=${PROJECT_DIR}/Libraries/gnustep/nextspace-gnustep.spec
 GNUSTEP_VERSION=`rpm_version ${SPEC_FILE}`

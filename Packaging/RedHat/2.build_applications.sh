@@ -4,7 +4,8 @@
 #
 
 BUILD_RPM=1
-. ../environment.sh
+. `dirname $0`/../functions.sh
+. `dirname $0`/../environment.sh
 
 prepare_environment
 
