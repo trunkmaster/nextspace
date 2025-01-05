@@ -36,6 +36,10 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	OSEScreen.h \
 	OSEDisplay.h \
 	\
+	OSEBusConnection.h \
+	OSEBusMessage.h \
+	OSEBusService.h \
+	\
 	OSEDeviceManager.h \
 	OSEMediaManager.h \
 	OSEUDisksAdaptor.h \

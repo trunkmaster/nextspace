@@ -42,7 +42,6 @@ typedef struct _XRRScreenResources {
 #import "OSEDefaults.h"
 #import "OSEDisplay.h"
 #import "OSEScreen.h"
-#import "OSEPower.h"
 #import "OSEMouse.h"
 
 // NXGlobalDomain key
@@ -309,6 +308,8 @@ static OSEScreen *systemScreen = nil;
   background_pixmap = None;
   background_gc = None;
 
+  systemPower = [OSEPower new];
+
   // Workspace Manager notification sent as a reaction to XRRScreenChangeNotify
   [[NSDistributedNotificationCenter defaultCenter]
     addObserver:self
@@ -342,6 +343,7 @@ static OSEScreen *systemScreen = nil;
 
   [systemDisplays release];
   [updateScreenLock release];
+  [systemPower release];
 
   [super dealloc];
 }
@@ -896,7 +898,7 @@ static OSEScreen *systemScreen = nil;
     [d setObject:[resolution objectForKey:OSEDisplayRateKey]
           forKey:OSEDisplayFrameRateKey];
 
-    if ([display isBuiltin] && [OSEPower isLidClosed]) {
+    if ([display isBuiltin] && [systemPower isLidClosed]) {
       [d setObject:@"NO" forKey:OSEDisplayIsActiveKey];
       [d setObject:@"NO" forKey:OSEDisplayIsMainKey];
     }
@@ -924,7 +926,7 @@ static OSEScreen *systemScreen = nil;
     [layout addObject:d];
     [d release];
 
-    if (arrange && (![display isBuiltin] || ![OSEPower isLidClosed])) {
+    if (arrange && (![display isBuiltin] || ![systemPower isLidClosed])) {
       origin.x +=
         NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]).width;
     }
@@ -1085,7 +1087,7 @@ static OSEScreen *systemScreen = nil;
     // Set resolution to displays marked as active in layout
     if ([[displayLayout objectForKey:OSEDisplayIsActiveKey]
             isEqualToString:@"YES"]) {
-      if ([display isBuiltin] && [OSEPower isLidClosed]) {
+      if ([display isBuiltin] && [systemPower isLidClosed]) {
         // set 'frame' to preserve it in 'hiddenFrame' on deactivate
         frame = NSRectFromString([displayLayout
                                          objectForKey:OSEDisplayFrameKey]);

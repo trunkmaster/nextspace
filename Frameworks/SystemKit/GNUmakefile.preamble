@@ -16,7 +16,8 @@ ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
 endif
 
 ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-  ADDITIONAL_OBJCFLAGS += -DLINUX -DWITH_UDISKS -DWITH_UPOWER
+  ADDITIONAL_OBJCFLAGS += -DLINUX -DWITH_UDISKS 
+#  -DWITH_UPOWER
 endif
 
 ### Additional flags to pass to C compiler
@@ -30,7 +31,8 @@ ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
 endif
 
 ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-  ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags udisks2 dbus-1 upower-glib`
+#  ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags udisks2 dbus-1 upower-glib`
+  ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags udisks2 dbus-1`
   ADDITIONAL_INCLUDE_DIRS += -I/usr/include/gio-unix-2.0
 endif
 
@@ -41,7 +43,8 @@ ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
 endif
 
 ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-  ADDITIONAL_LDFLAGS += `pkg-config --libs udisks2 dbus-1 upower-glib`
+#  ADDITIONAL_LDFLAGS += `pkg-config --libs udisks2 dbus-1 upower-glib`
+  ADDITIONAL_LDFLAGS += `pkg-config --libs udisks2 dbus-1`
   ADDITIONAL_LDFLAGS += -ldispatch
 endif
 

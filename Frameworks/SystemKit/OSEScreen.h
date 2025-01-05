@@ -61,19 +61,22 @@
  - Providing mechanism to do various display manipulation: fading, switching
    to console, power management.
  */
+#include <X11/extensions/Xrandr.h>
 
 #import <Foundation/Foundation.h>
 #import <AppKit/NSColor.h>
 
-#import <X11/extensions/Xrandr.h>
+#import <SystemKit/OSEPower.h>
 
 @class OSEDisplay;
+
 
 @interface OSEScreen : NSObject
 {
  @private
   Display *xDisplay;
   Window xRootWindow;
+  OSEPower *systemPower;
 
   Pixmap background_pixmap;
   GC background_gc;

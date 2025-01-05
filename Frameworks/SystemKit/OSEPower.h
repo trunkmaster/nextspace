@@ -25,35 +25,34 @@
  * changing of power profile of system (tuned) and actions:
  * shutdown, restart, hibernate and sleep.
  */
-#ifdef WITH_UPOWER
 
-#import <Foundation/NSObject.h>
+#import <Foundation/Foundation.h>
 
-#include <upower.h>
+#import <SystemKit/OSEBusService.h>
 
-@class NSString;
-
-@interface OSEPower : NSObject
+@interface OSEPower : OSEBusService
 {
-  UpClient *upower_client;
 }
-// Battery information
-+ (unsigned int)batteryLife;
-+ (unsigned char)batteryPercent;
-+ (BOOL)isUsingBattery;
 
 // LID information
-+ (BOOL)hasLid;
+@property (readonly) BOOL isLidPresent;
+@property (readonly) BOOL isLidClosed;
+
 + (BOOL)isLidClosed;
-- (BOOL)hasLid;
-- (BOOL)isLidClosed;
-  
+
+// Battery information
+@property (readonly) BOOL isUsingBattery;
+- (unsigned int)batteryLife;
+- (unsigned char)batteryPercent;
+
 // Monitor for D-Bus messages
 - (void)startEventsMonitor;
 - (void)stopEventsMonitor;
 
 @end
 
+extern NSString *OSEPowerPropertiesDidChangeNotification;
 extern NSString *OSEPowerLidDidChangeNotification;
+extern NSString *OSEPowerDeviceDidAddNotification;
+extern NSString *OSEPowerDeviceDidRemoveNotification;
 
-#endif //WITH_UPOWER
