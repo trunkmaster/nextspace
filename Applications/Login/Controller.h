@@ -62,6 +62,8 @@ extern LoginExitCode panelExitCode;
   IBOutlet id          shutDownBtn;
   IBOutlet id          restartBtn;
 
+  BOOL isWindowActive;
+  
   // X resources
   Display              *xDisplay;
   Window               xRootWindow;

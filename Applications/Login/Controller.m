@@ -153,6 +153,7 @@ LoginExitCode panelExitCode;
     // implemented yet. Leave it for the future.
     if ([[userSessions allKeys] count] == 0) {
       if (exitStatus != ShutdownExitCode && exitStatus != RebootExitCode) {
+        isWindowActive = YES;
         [self setWindowVisible:YES];
       }
     }
@@ -309,9 +310,18 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
 {
   OSEDisplay *builtinDisplay = nil;
   OSEScreen *screen = [OSEScreen new];
-  BOOL isVisible = [window isVisible];
+  BOOL isLidClosed = NO;
+  
+  NSLog(@"lidDidChange: %@", aNotif.userInfo);
 
-  NSLog(@"lidDidChange:");
+  if (aNotif.userInfo) {
+    NSNumber *lidValue = aNotif.userInfo[@"LidIsClosed"];
+    if (lidValue) {
+      isLidClosed = [lidValue boolValue];
+    }
+  } else {
+    isLidClosed = [systemPower isLidClosed];
+  }
 
   for (OSEDisplay *d in [screen allDisplays]) {
     if ([d isBuiltin] != NO) {
@@ -321,21 +331,26 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
   }
 
   if (builtinDisplay) {
-    if (isVisible != NO) {
+    if (isWindowActive != NO && [window isVisible]) {
       [self setWindowVisible:NO];
     }
-    if (![systemPower isLidClosed] && ![builtinDisplay isActive]) {
+
+    if (isLidClosed == NO && ![builtinDisplay isActive]) {
       NSLog(@"activating display %@", [builtinDisplay outputName]);
       [screen activateDisplay:builtinDisplay];
-    }
-    else if ([systemPower isLidClosed] && [builtinDisplay isActive]) {
+    } else if (isLidClosed != NO && [builtinDisplay isActive]) {
       NSLog(@"DEactivating display %@", [builtinDisplay outputName]);
       [screen deactivateDisplay:builtinDisplay];
     }
-    if (isVisible != NO) {
+
+    NSLog(@"OSEScreen size: %.0f x %.0f", [screen sizeInPixels].width,
+          [screen sizeInPixels].height);
+
+    if (isWindowActive != NO && NSEqualSizes([screen sizeInPixels], NSZeroSize) == NO) {
       [self setWindowVisible:YES];
     }
   }
+
   [screen release];
 }
 
@@ -614,6 +629,7 @@ int ConversationFunction(int num_msg,
   NSLog(@"appDidFinishLaunch: before showWindow");
   // Show login window
   [self setWindowVisible:YES];
+  isWindowActive = YES;
 
   // Turn light on
   // for (OSEDisplay *display in [[OSEScreen sharedScreen] activeDisplays])
@@ -698,6 +714,7 @@ int ConversationFunction(int num_msg,
   if ([self authenticateUser:user] == YES) {
     [window shrinkPanel:xPanelWindow onDisplay:xDisplay];
     [self setWindowVisible:NO];
+    isWindowActive = NO;
     [self openSessionForUser:user];
   }
   else {
