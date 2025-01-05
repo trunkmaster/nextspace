@@ -1,11 +1,18 @@
 %global toolchain clang
 
-%define GS_REPO         https://github.com/gnustep
-%define BASE_VERSION    master
-%define GUI_VERSION     0_31_0
-%define BACK_VERSION    nextspace
-%define GORM_VERSION    1_4_0
-%define PC_VERSION      0_7_0
+%define GS_REPO       https://github.com/gnustep
+%if 0%{?fedora} && 0%{?fedora} > 40
+%define BASE_VERSION  master
+%define BASE_TAG      master
+%else
+%define BASE_VERSION  1.30.0
+%define BASE_TAG      base-1_30_0
+%endif
+%define GUI_VERSION   0.31.0
+%define GUI_TAG       gui-0_31_0
+%define BACK_VERSION  nextspace
+%define GORM_TAG      gorm-1_4_0
+%define PC_TAG        projectcenter-0_7_0
 
 Name:       nextspace-gnustep
 Version:    %{BASE_VERSION}_%{GUI_VERSION}
@@ -15,11 +22,11 @@ Summary:    GNUstep libraries.
 Group:      Libraries/NextSpace
 License:    GPLv3
 URL:        http://www.gnustep.org
-Source0:    %{GS_REPO}/libs-base/archive/base-%{BASE_VERSION}.tar.gz
-Source1:    %{GS_REPO}/libs-gui/archive/gui-%{GUI_VERSION}.tar.gz
+Source0:    %{GS_REPO}/libs-base/archive/%{BASE_TAG}.tar.gz
+Source1:    %{GS_REPO}/libs-gui/archive/%{GUI_TAG}.tar.gz
 Source2:    back-art.tar.gz
-Source3:    %{GS_REPO}/apps-gorm/archive/gorm-%{GORM_VERSION}.tar.gz
-Source4:    %{GS_REPO}/apps-projectcenter/archive/projectcenter-%{PC_VERSION}.tar.gz
+Source3:    %{GS_REPO}/apps-gorm/archive/%{GORM_TAG}.tar.gz
+Source4:    %{GS_REPO}/apps-projectcenter/archive/%{PC_TAG}.tar.gz
 Source5:    gdomap.interfaces
 Source6:    gdomap.service
 Source7:    gdnc.service
@@ -37,11 +44,11 @@ Patch3:     libs-gui_NSPopUpButton.patch
 Patch4:     libs-gui_GSThemeDrawing.patch
 
 # Build GNUstep libraries in one RPM package
-Provides:   gnustep-base-%{BASE_VERSION}
-Provides:   gnustep-gui-%{GUI_VERSION}
+Provides:   gnustep-base-%{BASE_TAG}
+Provides:   gnustep-gui-%{GUI_TAG}
 Provides:   gnustep-back-%{BACK_VERSION}
-Provides:   gorm-%{GORM_VERSION}
-Provides:   projectcenter-%{PC_VERSION}
+Provides:   gorm-%{GORM_TAG}
+Provides:   projectcenter-%{PC_TAG}
 
 Conflicts:  gnustep-base
 Conflicts:  gnustep-filesystem
@@ -134,15 +141,15 @@ GNUstep Make installed with nextspace-core-devel package.
 
 %prep
 %setup -c -n nextspace-gnustep -a 0 -a 1 -a 2 -a 3 -a 4
-cp %{_sourcedir}/gorm.patch %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
-cd %{_builddir}/nextspace-gnustep/apps-gorm-gorm-%{GORM_VERSION}/
+cp %{_sourcedir}/gorm.patch %{_builddir}/nextspace-gnustep/apps-gorm-%{GORM_TAG}/
+cd %{_builddir}/nextspace-gnustep/apps-gorm-%{GORM_TAG}/
 %patch -P0 -p1
-cp %{_sourcedir}/pc.patch %{_builddir}/nextspace-gnustep/apps-projectcenter-projectcenter-%{PC_VERSION}/
-cd %{_builddir}/nextspace-gnustep/apps-projectcenter-projectcenter-%{PC_VERSION}/
+cp %{_sourcedir}/pc.patch %{_builddir}/nextspace-gnustep/apps-projectcenter-%{PC_TAG}/
+cd %{_builddir}/nextspace-gnustep/apps-projectcenter-%{PC_TAG}/
 %patch -P1 -p1
-cp %{_sourcedir}/libs-gui_NSApplication.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
-cp %{_sourcedir}/libs-gui_NSPopUpButton.patch %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
-cd %{_builddir}/nextspace-gnustep/libs-gui-gui-%{GUI_VERSION}/
+cp %{_sourcedir}/libs-gui_NSApplication.patch %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
+cp %{_sourcedir}/libs-gui_NSPopUpButton.patch %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
+cd %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
 %patch -P2 -p1
 %patch -P3 -p1
 %patch -P4 -p1
@@ -160,7 +167,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/Nex
 unset CFLAGS
 
 # Foundation (relies on gnustep-make included in nextspace-core-devel)
-cd libs-base-base-%{BASE_VERSION}
+cd libs-base-%{BASE_TAG}
 ./configure
 make
 %{make_install}
@@ -171,7 +178,7 @@ export ADDITIONAL_LIB_DIRS=" -L%{buildroot}/Library/Libraries"
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 
 # Application Kit
-cd libs-gui-gui-%{GUI_VERSION}
+cd libs-gui-%{GUI_TAG}
 tar xzf %{_sourcedir}/gnustep-gui-panels.tar.gz
 sudo cp %{buildroot}/Developer/Makefiles/Additional/base.make /Developer/Makefiles/Additional/
 ./configure
@@ -194,13 +201,13 @@ cd ..
 # Build GORM
 export ADDITIONAL_OBJCFLAGS="-I%{buildroot}/Developer/Headers"
 export ADDITIONAL_LDFLAGS+="-L%{buildroot}/Library/Libraries -lgnustep-base -lgnustep-gui"
-cd apps-gorm-gorm-%{GORM_VERSION}
+cd apps-gorm-%{GORM_TAG}
 tar zxf %{_sourcedir}/gorm-images.tar.gz
 make
 cd ..
 
 # Build ProjectCenter
-cd apps-projectcenter-projectcenter-%{PC_VERSION}
+cd apps-projectcenter-%{PC_TAG}
 tar zxf %{_sourcedir}/projectcenter-images.tar.gz
 make
 cd ..
@@ -213,11 +220,11 @@ export GNUSTEP_MAKEFILES=/Developer/Makefiles
 export PATH+=":%{buildroot}/Library/bin:%{buildroot}/usr/NextSpace/bin"
 export QA_SKIP_BUILD_ROOT=1
 # Install Base
-cd libs-base-base-%{BASE_VERSION}
+cd libs-base-%{BASE_TAG}
 %{make_install}
 cd ..
 # Install GUI
-cd libs-gui-gui-%{GUI_VERSION}
+cd libs-gui-%{GUI_TAG}
 %{make_install}
 cd ..
 # Install Back
@@ -226,11 +233,11 @@ cd back-art
 cd ..
 # Install GORM
 export GNUSTEP_INSTALLATION_DOMAIN=NETWORK
-cd apps-gorm-gorm-%{GORM_VERSION}
+cd apps-gorm-%{GORM_TAG}
 %{make_install}
 cd ..
 # Install ProjectCenter
-cd apps-projectcenter-projectcenter-%{PC_VERSION}
+cd apps-projectcenter-%{PC_TAG}
 %{make_install}
 cd ..
 
