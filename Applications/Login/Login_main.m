@@ -139,6 +139,7 @@ void setupDisplays()
 {
   OSEScreen *screen = [OSEScreen sharedScreen];
   OSEDisplay *mainDisplay = nil;
+  OSEPower *systemPower = nil;
   NSArray *layout;
   Display *xDisplay;
   Window xRootWindow;
@@ -150,10 +151,12 @@ void setupDisplays()
   displays = [screen activeDisplays];
   for (OSEDisplay *display in displays) {
     if (display.isBuiltin) {
-      if (![OSEPower isLidClosed] && [displays count] > 1) {
+      systemPower = [OSEPower new];
+      if (![systemPower isLidClosed] && [displays count] > 1) {
         [screen setMainDisplay:display];
         mainDisplay = display;
       }
+      [systemPower release];
     } else if (mainDisplay == nil) {
       mainDisplay = display;
     }
