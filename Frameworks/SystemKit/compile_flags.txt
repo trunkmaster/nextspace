@@ -24,7 +24,7 @@
 -Wno-unused-variable
 -Wno-typedef-redefinition
 -g
--fobjc-runtime=gnustep-2.0
+-fobjc-runtime=gnustep-2.2
 -fblocks
 -fconstant-string-class=NSConstantString
 -Iderived_src
@@ -35,13 +35,13 @@
 -DLINUX
 -DWITH_UDISKS
 -F/usr/NextSpace/Frameworks
+-I/usr/lib64/dbus-1.0/include
+-I/usr/lib/x86_64-linux-gnu/dbus-1.0/include
 -I/usr/include/udisks2
 -I/usr/include/glib-2.0
 -I/usr/lib64/glib-2.0/include
+-I/usr/include/gio-unix-2.0
 -I/usr/include/sysprof-4
 -I/usr/include/libmount
 -I/usr/include/blkid
 -I/usr/include/dbus-1.0
--I/usr/lib64/dbus-1.0/include
--I/usr/include/libupower-glib
--I/usr/include/gio-unix-2.0

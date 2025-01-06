@@ -46,8 +46,20 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 
 - (void)dealloc
 {
+  NSDebugLLog(@"DBus", @"OSEBusConnection: dealloc");
+  [socketFileHandle release];
+  [signalFilters release];
   dbus_connection_unref(_dbus_connection);
   [super dealloc];
+}
+
+- (oneway void)release
+{
+  [super release];
+  NSDebugLLog(@"DBus", @"OSEBusConnection: retain count: %lu", [self retainCount]);
+  if ([self retainCount] == 1) {
+    [self dealloc];
+  }
 }
 
 - (instancetype)init
@@ -60,10 +72,10 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 
   dbus_error_init(&_dbus_error);
   _dbus_connection = dbus_bus_get(DBUS_BUS_SYSTEM, &_dbus_error);
-  dbus_bus_set_unique_name(_dbus_connection, "org.nextspace.dbus_talk");
+  // dbus_bus_set_unique_name(_dbus_connection, [[[NSProcessInfo processInfo] processName] cString]);
   dbus_connection_get_socket(_dbus_connection, &socketFileDescriptor);
 
-  NSLog(@"OSEBusConnection: initialized with socket FD: %i", socketFileDescriptor);
+  // NSLog(@"OSEBusConnection: initialized with socket FD: %i", socketFileDescriptor);
   socketFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:socketFileDescriptor];
 
   defaultConnection = self;
@@ -93,6 +105,9 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
   NSLog(@"<- Process connection data, end.");
 }
 
+//-------------------------------------------------------------------------------
+#pragma mark - Signal handling
+//-------------------------------------------------------------------------------
 - (void)addSignalObserver:(id)anObserver
                  selector:(SEL)aSelector
                    signal:(NSString *)signalName
@@ -154,7 +169,7 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
   for (NSDictionary *signal in objectSignals) {
     if ([signal[@"Signal"] isEqualToString:signalName] &&
         [signal[@"Interface"] isEqualToString:aInterface]) {
-      // NSLog(@"notification %@ was sent", signal[@"Notification"]);
+      NSDebugLLog(@"DBus", @"OSEBusConnection: notification %@ was sent", signal[@"Notification"]);
       [[NSNotificationCenter defaultCenter] postNotificationName:signal[@"Notification"]
                                                           object:self
                                                         userInfo:@{@"Message" : result}];

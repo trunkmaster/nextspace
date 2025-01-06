@@ -23,11 +23,18 @@
 #import "OSEBusMessage.h"
 #import "OSEPower.h"
 
+//-------------------------------------------------------------------------------
+#pragma mark - Notifications
+//-------------------------------------------------------------------------------
 NSString *OSEPowerPropertiesDidChangeNotification = @"OSEPowerPropertiesDidChangeNotification";
 NSString *OSEPowerLidDidChangeNotification = @"OSEPowerLidDidChangeNotification";
 NSString *OSEPowerDeviceDidAddNotification = @"OSEPowerDeviceDidAddNotification";
 NSString *OSEPowerDeviceDidRemoveNotification = @"OSEPowerDeviceDidRemoveNotification";
 
+
+//-------------------------------------------------------------------------------
+#pragma mark - OSEPower implementation
+//-------------------------------------------------------------------------------
 @implementation OSEPower (Private)
 
 - (id)_propertyValueWithName:(NSString *)propertyName ofClass:(Class)resultClass 
@@ -71,11 +78,12 @@ NSString *OSEPowerDeviceDidRemoveNotification = @"OSEPowerDeviceDidRemoveNotific
 
 - (void)dealloc
 {
+  NSDebugLLog(@"DBus", @"OSEPower: dealloc");
   [super dealloc];
 }
 
 //-------------------------------------------------------------------------------
-// Battery
+#pragma mark - Battery
 //-------------------------------------------------------------------------------
 // TODO
 - (unsigned int)batteryLife
@@ -102,16 +110,8 @@ NSString *OSEPowerDeviceDidRemoveNotification = @"OSEPowerDeviceDidRemoveNotific
 }
 
 //-------------------------------------------------------------------------------
-// Laptop lid
+#pragma mark - Laptop lid
 //-------------------------------------------------------------------------------
-+ (BOOL)isLidClosed
-{
-  OSEPower *power = [OSEPower new];
-  BOOL isLidClosed = [power isLidClosed];
-  [power release];
-  return isLidClosed;
-}
-
 - (BOOL)isLidPresent
 {
   BOOL isLidPresent = NO;
@@ -139,7 +139,7 @@ NSString *OSEPowerDeviceDidRemoveNotification = @"OSEPowerDeviceDidRemoveNotific
 }
 
 //-------------------------------------------------------------------------------
-// UPower D-Bus events
+#pragma mark - UPower D-Bus events
 //-------------------------------------------------------------------------------
 - (void)handleLidNotification:(NSNotification *)aNotif
 {

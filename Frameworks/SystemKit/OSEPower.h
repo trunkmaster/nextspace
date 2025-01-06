@@ -2,7 +2,7 @@
 //
 // Project: NEXTSPACE - SystemKit framework
 //
-// Copyright (C) 2014-2019 Sergii Stoian
+// Copyright (C) 2024-present Sergii Stoian
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
@@ -38,8 +38,6 @@
 @property (readonly) BOOL isLidPresent;
 @property (readonly) BOOL isLidClosed;
 
-+ (BOOL)isLidClosed;
-
 // Battery information
 @property (readonly) BOOL isUsingBattery;
 - (unsigned int)batteryLife;
@@ -51,6 +49,9 @@
 
 @end
 
+//-------------------------------------------------------------------------------
+#pragma mark - Notifications
+//-------------------------------------------------------------------------------
 extern NSString *OSEPowerPropertiesDidChangeNotification;
 extern NSString *OSEPowerLidDidChangeNotification;
 extern NSString *OSEPowerDeviceDidAddNotification;
