@@ -25,7 +25,7 @@
 @interface LoginWindow : NSWindow
 {
 }
-- (void)shakePanel:(Window)panel onDisplay:(Display*)dpy;
-- (void)shrinkPanel:(Window)panel onDisplay:(Display*)dpy;
+- (void)shakePanel:(Window)panel onDisplay:(Display *)dpy;
+- (void)shrinkPanel:(Window)panel onDisplay:(Display *)dpy;
 
 @end

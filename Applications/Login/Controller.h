@@ -40,10 +40,10 @@
 // 11 - shutdown
 // 12 - reboot
 typedef enum {
-  QuitExitCode     = 128,
+  QuitExitCode = 128,
   ShutdownExitCode = 129,
-  RebootExitCode   = 130,
-  UpdateExitCode   = 131
+  RebootExitCode = 130,
+  UpdateExitCode = 131
 } LoginExitCode;
 
 extern LoginExitCode panelExitCode;
@@ -53,43 +53,43 @@ extern LoginExitCode panelExitCode;
 @interface Controller : NSObject
 {
   IBOutlet LoginWindow *window;
-  IBOutlet id          hostnameField;
-  IBOutlet id          fieldsImage;
-  IBOutlet id          fieldsLabelImage;
-  IBOutlet id          panelImageView;
-  IBOutlet id          userName;
-  IBOutlet id          password;
-  IBOutlet id          shutDownBtn;
-  IBOutlet id          restartBtn;
+  IBOutlet id hostnameField;
+  IBOutlet id fieldsImage;
+  IBOutlet id fieldsLabelImage;
+  IBOutlet id panelImageView;
+  IBOutlet id userName;
+  IBOutlet id password;
+  IBOutlet id shutDownBtn;
+  IBOutlet id restartBtn;
 
   BOOL isWindowActive;
-  
+
   // X resources
-  Display              *xDisplay;
-  Window               xRootWindow;
-  int                  xScreen;
-  Window               xPanelWindow;
+  Display *xDisplay;
+  Window xRootWindow;
+  int xScreen;
+  Window xPanelWindow;
 
   // OSEScreen	       *screen;
-  OSEPower             *systemPower;
+  OSEPower *systemPower;
 
   // Preferences
-  OSEDefaults           *prefs;
+  OSEDefaults *prefs;
 
   // User sessions
-  NSArray              *mainThreadPorts;
-  NSMutableDictionary  *userSessions;
+  NSArray *mainThreadPorts;
+  NSMutableDictionary *userSessions;
 
-  pam_handle_t         *PAM_handle;
+  pam_handle_t *PAM_handle;
 
   // Error panel
   NXTAlert *alert;
   NSScrollView *consoleLogView;
 
   // Busy cursor
-  XcursorAnimate       *busy_cursor;
-  NSTimer              *busyTimer;
-  NSTimer              *rrTimer;
+  XcursorAnimate *busy_cursor;
+  NSTimer *busyTimer;
+  NSTimer *rrTimer;
 }
 
 - (void)displayHostname;
@@ -123,7 +123,7 @@ extern LoginExitCode panelExitCode;
 
 @interface Controller (Preferences)
 
-- (NSString*)lastLoggedInUser;
+- (NSString *)lastLoggedInUser;
 - (void)setLastLoggedInUser:(NSString *)username;
 
 @end
@@ -138,4 +138,3 @@ extern LoginExitCode panelExitCode;
 - (void)openSessionWithHandle:(pam_handle_t *)handle;
 
 @end
-
