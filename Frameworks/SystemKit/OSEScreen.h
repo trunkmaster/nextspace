@@ -66,7 +66,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/NSColor.h>
 
-#import <SystemKit/OSEPower.h>
+@class OSEPower;
 
 @class OSEDisplay;
 
