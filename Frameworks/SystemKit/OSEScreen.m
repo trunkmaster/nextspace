@@ -43,7 +43,6 @@ typedef struct _XRRScreenResources {
 #import "OSEDisplay.h"
 #import "OSEScreen.h"
 #import "OSEMouse.h"
-#import "OSEPower.h"
 
 // NXGlobalDomain key
 NSString *OSEDesktopBackgroundColor = @"DesktopBackgroundColor";

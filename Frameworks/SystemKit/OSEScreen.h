@@ -65,11 +65,9 @@
 
 #import <Foundation/Foundation.h>
 #import <AppKit/NSColor.h>
-
-@class OSEPower;
+#import <SystemKit/OSEPower.h>
 
 @class OSEDisplay;
-
 
 @interface OSEScreen : NSObject
 {
