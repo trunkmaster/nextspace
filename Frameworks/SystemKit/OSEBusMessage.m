@@ -49,22 +49,22 @@ static id getBasicType(DBusMessageIter *iter)
     case DBUS_TYPE_INT32: {
       dbus_int32_t val;
       dbus_message_iter_get_basic(iter, &val);
-      result = [NSNumber numberWithInt:val];
+      result = [NSNumber numberWithInteger:val];
     } break;
     case DBUS_TYPE_UINT32: {
       dbus_uint32_t val;
       dbus_message_iter_get_basic(iter, &val);
-      result = [NSNumber numberWithUnsignedInt:val];
+      result = [NSNumber numberWithUnsignedInteger:val];
     } break;
     case DBUS_TYPE_INT64: {
       dbus_int64_t val;
       dbus_message_iter_get_basic(iter, &val);
-      result = [NSNumber numberWithUnsignedInt:val];
+      result = [NSNumber numberWithUnsignedInteger:val];
     } break;
     case DBUS_TYPE_UINT64: {
       dbus_uint64_t val;
       dbus_message_iter_get_basic(iter, &val);
-      result = [NSNumber numberWithUnsignedInt:val];
+      result = [NSNumber numberWithUnsignedInteger:val];
     } break;
     case DBUS_TYPE_DOUBLE: {
       double val;
