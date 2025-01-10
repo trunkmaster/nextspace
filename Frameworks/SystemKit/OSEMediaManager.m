@@ -29,16 +29,16 @@
 #endif
 
 // Volume events
-NSString *OSEDiskAppeared = @"OSEDiskAppeared";
-NSString *OSEDiskDisappeared = @"OSEDiskDisappeared";
-NSString *NXVolumeAppeared = @"NXVolumeAppeared";
-NSString *NXVolumeDisappeared = @"NXVolumeDisappeared";
-NSString *NXVolumeMounted = @"NXVolumeMounted";
-NSString *NXVolumeUnmounted = @"NXVolumeUnmounted";
+NSString *OSEMediaDriveDidAddNotification = @"OSEMediaDriveDidAddNotification";
+NSString *OSEMediaDriveDidRemoveNotification = @"OSEMediaDriveDidRemoveNotification";
+NSString *OSEMediaVolumeDidAddNotification = @"OSEMediaVolumeDidAddNotification";
+NSString *OSEMediaVolumeDidRemoveNotification = @"OSEMediaVolumeDidRemoveNotification";
+NSString *OSEMediaVolumeDidMountNotification = @"OSEMediaVolumeDidMountNotification";
+NSString *OSEMediaVolumeDidUnmountNotification = @"OSEMediaVolumeDidUnmountNotification";
 // Operations
-NSString *OSEMediaOperationDidStart = @"OSEMediaOperationDidStart";
-NSString *OSEMediaOperationDidUpdate = @"OSEMediaOperationDidUpdate";
-NSString *OSEMediaOperationDidEnd = @"OSEMediaOperationDidEnd";
+NSString *OSEMediaOperationDidStartNotification = @"OSEMediaOperationDidStartNotification";
+NSString *OSEMediaOperationDidUpdateNotification = @"OSEMediaOperationDidUpdateNotification";
+NSString *OSEMediaOperationDidEndNotification = @"OSEMediaOperationDidEndNotification";
 
 //-----------------------------------------------------------------------
 static id<MediaManager> adaptor;

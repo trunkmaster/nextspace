@@ -712,19 +712,19 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // OSEMediaManager
   // For future use
-  [nc addObserver:self selector:@selector(diskDidAdd:) name:OSEDiskDisappeared object:mediaAdaptor];
+  [nc addObserver:self selector:@selector(diskDidAdd:) name:OSEMediaDriveDidRemoveNotification object:mediaAdaptor];
   [nc addObserver:self
          selector:@selector(diskDidEject:)
-             name:OSEDiskDisappeared
+             name:OSEMediaDriveDidRemoveNotification
            object:mediaAdaptor];
   // Operations
   [nc addObserver:self
          selector:@selector(mediaOperationDidStart:)
-             name:OSEMediaOperationDidStart
+             name:OSEMediaOperationDidStartNotification
            object:mediaAdaptor];
   [nc addObserver:self
          selector:@selector(mediaOperationDidEnd:)
-             name:OSEMediaOperationDidEnd
+             name:OSEMediaOperationDidEndNotification
            object:mediaAdaptor];
 
   [mediaAdaptor checkForRemovableMedia];

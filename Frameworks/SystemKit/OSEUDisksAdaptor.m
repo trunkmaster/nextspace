@@ -508,7 +508,7 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
 
       if (notify)
         {
-          [notificationCenter postNotificationName:OSEDiskAppeared
+          [notificationCenter postNotificationName:OSEMediaDriveDidAddNotification
                                             object:self
                                           userInfo:driveProps];
         }
@@ -527,12 +527,12 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
       
       if (notify)
         {
-          [notificationCenter postNotificationName:NXVolumeAppeared
+          [notificationCenter postNotificationName:OSEMediaVolumeDidAddNotification
                                             object:self
                                           userInfo:volumeProps];
           if ([volume isFilesystem])
             {
-              // Emits NXVolumeMounted notification
+              // Emits OSEMediaVolumeDidMountNotification notification
               // We are called by event of inserted device not during initial
               // registraion of objects.
               [volume mount:NO];
@@ -626,8 +626,8 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
                                  @"Info",       @"MessageType",
                                @"Eject Disk", @"MessageTitle",
                                message,       @"Message", nil];
-          // OSEDiskDisappeared notification
-          [notificationCenter postNotificationName:OSEDiskDisappeared
+          // OSEMediaDriveDidRemoveNotification notification
+          [notificationCenter postNotificationName:OSEMediaDriveDidRemoveNotification
                                             object:self
                                           userInfo:info];
         }
@@ -645,8 +645,8 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
           [drivesToCleanup addObject:[[volume drive] objectPath]];
         }
       
-      // NXVolumeDisappeared notification
-      [notificationCenter postNotificationName:NXVolumeDisappeared
+      // OSEMediaVolumeDidRemoveNotification notification
+      [notificationCenter postNotificationName:OSEMediaVolumeDidRemoveNotification
                                         object:self
                                       userInfo:[volume properties]];
 
@@ -716,7 +716,7 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
 
   if ([status isEqualToString:@"Started"])
     {
-      [notificationCenter postNotificationName:OSEMediaOperationDidStart
+      [notificationCenter postNotificationName:OSEMediaOperationDidStartNotification
                                         object:self
                                       userInfo:info];
     }
@@ -733,7 +733,7 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
           if ([name isEqualToString:@"Mount"] && !failed)
             {
               [info setObject:[object mountPoints] forKey:@"MountPoint"];
-              [notificationCenter postNotificationName:NXVolumeMounted
+              [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification
                                                 object:self
                                               userInfo:info];
             }
@@ -749,7 +749,7 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
                                     interface:FS_INTERFACE];
                 }
               [info setObject:mp forKey:@"MountPoint"];
-              [notificationCenter postNotificationName:NXVolumeUnmounted
+              [notificationCenter postNotificationName:OSEMediaVolumeDidUnmountNotification
                                                 object:self
                                               userInfo:info];
             }
@@ -757,7 +757,7 @@ static NSMutableDictionary *_dictionaryFromUDisksObject(UDisksObject *object)
 
       if ([status isEqualToString:@"Completed"])
         {
-          [notificationCenter postNotificationName:OSEMediaOperationDidEnd
+          [notificationCenter postNotificationName:OSEMediaOperationDidEndNotification
                                             object:self
                                           userInfo:info];
         }

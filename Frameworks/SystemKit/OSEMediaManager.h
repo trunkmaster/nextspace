@@ -29,16 +29,16 @@
 #import <Foundation/Foundation.h>
 
 // Events
-extern NSString *OSEDiskAppeared;
-extern NSString *OSEDiskDisappeared;
-extern NSString *NXVolumeAppeared;
-extern NSString *NXVolumeDisappeared;
-extern NSString *NXVolumeMounted;
-extern NSString *NXVolumeUnmounted;
+extern NSString *OSEMediaDriveDidAddNotification;
+extern NSString *OSEMediaDriveDidRemoveNotification;
+extern NSString *OSEMediaVolumeDidAddNotification;
+extern NSString *OSEMediaVolumeDidRemoveNotification;
+extern NSString *OSEMediaVolumeDidMountNotification;
+extern NSString *OSEMediaVolumeDidUnmountNotification;
 
-extern NSString *OSEMediaOperationDidStart;
-extern NSString *OSEMediaOperationDidUpdate;
-extern NSString *OSEMediaOperationDidEnd;
+extern NSString *OSEMediaOperationDidStartNotification;
+extern NSString *OSEMediaOperationDidUpdateNotification;
+extern NSString *OSEMediaOperationDidEndNotification;
 
 // Filesystem types
 typedef enum {

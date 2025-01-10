@@ -245,11 +245,11 @@
     // For updating views (Shelf, PathView, Viewer)
     [nc addObserver:self
            selector:@selector(volumeDidMount:)
-               name:NXVolumeMounted
+               name:OSEMediaVolumeDidMountNotification
              object:mediaManager];
     [nc addObserver:self
            selector:@selector(volumeDidUnmount:)
-               name:NXVolumeUnmounted
+               name:OSEMediaVolumeDidUnmountNotification
              object:mediaManager];
   }
 

@@ -387,7 +387,7 @@ NSLock *driveLock = nil;
   // 2.1 Subscribe to notifications
   [notificationCenter addObserver:self
                          selector:@selector(volumeDidUnmount:)
-                             name:NXVolumeUnmounted
+                             name:OSEMediaVolumeDidUnmountNotification
                            object:adaptor];
 
   // 3.

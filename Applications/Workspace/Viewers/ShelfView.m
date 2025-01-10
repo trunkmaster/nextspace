@@ -172,7 +172,7 @@
 
   for (NSString *mountPath in mountPoints) {
     info = [NSDictionary dictionaryWithObject:mountPath forKey:@"MountPoint"];
-    notif = [NSNotification notificationWithName:NXVolumeMounted object:mediaManager userInfo:info];
+    notif = [NSNotification notificationWithName:OSEMediaVolumeDidMountNotification object:mediaManager userInfo:info];
     [_owner volumeDidMount:notif];
   }
 }
