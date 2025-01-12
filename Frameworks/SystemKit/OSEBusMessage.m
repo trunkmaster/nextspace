@@ -1,4 +1,8 @@
+#include <CoreFoundation/CFBase.h>
+#include <string.h>
+#include "Foundation/NSError.h"
 #import "OSEBusConnection.h"
+#include "dbus/dbus-protocol.h"
 #import "OSEBusService.h"
 
 #import "OSEBusMessage.h"
@@ -175,11 +179,12 @@ static id decodeDBusMessage(DBusMessageIter *iter, id result)
 
 #pragma mark - Encoding to D-Bus wire format (marshalling)
 
-static dbus_bool_t append_arg(DBusMessageIter *iter, NSArray *arguments, const char *dbus_signature);
-static dbus_bool_t append_array(DBusMessageIter *master_iterator, NSArray *elements,
-                                const char *signature);
-static dbus_bool_t append_struct(DBusMessageIter *master_iterator, NSArray *elements,
-                                 const char *signature);
+static dbus_bool_t append_arg(DBusMessageIter *iter, id arguments, const char *dbus_signature);
+static dbus_bool_t append_array(DBusMessageIter *iter, NSArray *elements, const char *signature);
+static dbus_bool_t append_struct(DBusMessageIter *iter, NSArray *elements, const char *signature);
+static dbus_bool_t append_dict(DBusMessageIter *iter, NSDictionary *values, const char *signature);
+static dbus_bool_t append_variant(DBusMessageIter *iter, NSString *value);
+
 
 static void handle_oom(dbus_bool_t success)
 {
@@ -191,39 +196,41 @@ static void handle_oom(dbus_bool_t success)
     [exception raise];
   }
 }
-static dbus_bool_t append_array(DBusMessageIter *master_iterator, NSArray *elements,
-                                const char *signature)
+static dbus_bool_t append_array(DBusMessageIter *iter, NSArray *elements, const char *signature)
 {
   DBusMessageIter array_iterator;
   dbus_bool_t ret = false;
-  char elements_type = signature[0];
 
+  printf("0: append_array of element type: %c\n", signature[0]);
   // open container with sub-iterator
-  char dbus_signature[2];
-  dbus_signature[0] = elements_type;
-  dbus_signature[1] = '\0';
-  ret = dbus_message_iter_open_container(master_iterator, DBUS_TYPE_ARRAY, dbus_signature,
+  const char *dbus_signature;
+  if (signature[0] == DBUS_DICT_ENTRY_BEGIN_CHAR) {
+    dbus_signature = [[NSString stringWithFormat:@"{%c%c}", signature[1], signature[2]] cString];
+  } else {
+    dbus_signature = [[NSString stringWithFormat:@"%c", signature[0]] cString];
+  }
+  printf("1: append_array of element type: %s\n", dbus_signature);
+  ret = dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, dbus_signature,
                                          &array_iterator);
   handle_oom(ret);
 
   for (id value in elements) {
-    printf("append_array of element type: %c\n", elements_type);
+    printf("append_array of element type: %c\n", dbus_signature[0]);
     ret = append_arg(&array_iterator, value, signature);
   }
 
   // close sub-iterator
-  ret = dbus_message_iter_close_container(master_iterator, &array_iterator);
+  ret = dbus_message_iter_close_container(iter, &array_iterator);
 
   return ret;
 }
 // signature must point to the first element type of structure
-static dbus_bool_t append_struct(DBusMessageIter *master_iterator, NSArray *elements,
-                                 const char *signature)
+static dbus_bool_t append_struct(DBusMessageIter *iter, NSArray *elements, const char *signature)
 {
   DBusMessageIter struct_iterator;
   dbus_bool_t ret = false;
 
-  ret = dbus_message_iter_open_container(master_iterator, DBUS_TYPE_STRUCT, NULL, &struct_iterator);
+  ret = dbus_message_iter_open_container(iter, DBUS_TYPE_STRUCT, NULL, &struct_iterator);
   handle_oom(ret);
 
   for (int i = 0; signature[0] != DBUS_STRUCT_END_CHAR; i++) {
@@ -234,10 +241,53 @@ static dbus_bool_t append_struct(DBusMessageIter *master_iterator, NSArray *elem
   signature++;
 
   // close sub-iterator
-  ret = dbus_message_iter_close_container(master_iterator, &struct_iterator);
+  ret = dbus_message_iter_close_container(iter, &struct_iterator);
 
   return ret;
 }
+static dbus_bool_t append_dict(DBusMessageIter *iter, NSDictionary *values, const char *signature)
+{
+  dbus_bool_t ret = false;
+
+  NSLog(@"append_dict signature %s with values %@", signature, values);
+
+  for (NSString *key in values.allKeys) {
+    DBusMessageIter dict_subiter;
+
+    ret = dbus_message_iter_open_container(iter, DBUS_TYPE_DICT_ENTRY, NULL, &dict_subiter);
+    handle_oom(ret);
+
+    ret = append_arg(&dict_subiter, key, signature);
+    signature++;
+    ret = append_arg(&dict_subiter, values[key], signature);
+    signature++;
+
+    ret = dbus_message_iter_close_container(iter, &dict_subiter);
+    handle_oom(ret);
+  }
+  return ret;
+}
+
+static dbus_bool_t append_variant(DBusMessageIter *iter, NSString *value)
+{
+  dbus_bool_t ret = false;
+  DBusMessageIter subiter;
+  NSArray *valueComponents = [value componentsSeparatedByString:@":"];
+  const char *variant_type = [valueComponents.firstObject cString];
+  char dbus_signature[2] = "\0\0";
+  dbus_signature[0] = variant_type[0];
+
+  ret = dbus_message_iter_open_container(iter, DBUS_TYPE_VARIANT, dbus_signature, &subiter);
+  handle_oom(ret);
+
+  ret = append_arg(&subiter, [valueComponents objectAtIndex:1], variant_type);
+
+  dbus_message_iter_close_container(iter, &subiter);
+  handle_oom(ret);
+
+  return ret;
+}
+
 static dbus_bool_t append_arg(DBusMessageIter *iter, id argument, const char *dbus_signature)
 {
   const char *value = NULL;
@@ -289,6 +339,8 @@ static dbus_bool_t append_arg(DBusMessageIter *iter, id argument, const char *db
       dbus_bool_t boolean;
       if ([argument isKindOfClass:[NSNumber class]]) {
         boolean = [argument boolValue] ? TRUE : FALSE;
+      } else if ([argument isKindOfClass:[NSString class]]) {
+        boolean = [argument isEqualToString:@"true"] ? TRUE : FALSE;
       }
       ret = dbus_message_iter_append_basic(iter, DBUS_TYPE_BOOLEAN, &boolean);
     } break;
@@ -299,74 +351,38 @@ static dbus_bool_t append_arg(DBusMessageIter *iter, id argument, const char *db
     case DBUS_TYPE_OBJECT_PATH: {
       ret = dbus_message_iter_append_basic(iter, DBUS_TYPE_OBJECT_PATH, &value);
     } break;
+    case DBUS_TYPE_VARIANT: {
+      NSLog(@"DBUS_TYPE_VARIANT: %@", argument);
+      append_variant(iter, argument);
+      ret = true;
+    } break;
     case DBUS_TYPE_ARRAY: {
       dbus_signature++;
-      // NSLog(@"DBUS_TYPE_ARRAY: %@", argument);
+      NSLog(@"DBUS_TYPE_ARRAY: %@", argument);
       append_array(iter, argument, dbus_signature);
       ret = true;
     } break;
     case DBUS_STRUCT_BEGIN_CHAR: {
       dbus_signature++;
-      // NSLog(@"DBUS_TYPE_STRUCT: %@", argument);
+      NSLog(@"DBUS_TYPE_STRUCT: %@", argument);
       append_struct(iter, argument, dbus_signature);
       ret = true;
     } break;
+    case DBUS_DICT_ENTRY_BEGIN_CHAR: {
+      dbus_signature++;
+      NSLog(@"DBUS_TYPE_DICT: %@", argument);
+      append_dict(iter, argument, dbus_signature);
+      ret = true;
+    } break;
     default:
-      fprintf(stderr, "OSEBusessage: Unsupported data type specified %c\n", dbus_signature[0]);
+      fprintf(stderr, "OSEBusMessage: Unsupported data type specified %c\n", dbus_signature[0]);
       exit(1);
   }
   handle_oom(ret);
   return ret;
 }
 
-// static void append_variant(DBusMessageIter *iter, int type, const char *value)
-// {
-//   // DBusMessageIter subiter;
-//   // char sig[2] = "\0\0";
-//   // char *subtype = strdup(value);
-//   // char *c = NULL;
 
-//   // handle_oom(subtype != NULL);
-
-//   // c = strchr(subtype, ':');
-//   // if (!c) {
-//   //   fprintf(stderr, "BKMesage: missing variant subtype specifier\n");
-//   //   exit(1);
-//   // }
-//   // *c = '\0';
-//   // sig[0] = (char)type_from_name(subtype, TRUE);
-
-//   // handle_oom(dbus_message_iter_open_container(iter, DBUS_TYPE_VARIANT, sig, &subiter));
-//   // append_arg(&subiter, sig[0], c + 1);
-//   // free(subtype);
-//   // handle_oom(dbus_message_iter_close_container(iter, &subiter));
-// }
-
-// static void append_dict(DBusMessageIter *iter, int keytype, int valtype, const char *value)
-// {
-//   const char *val;
-//   char *dupval = strdup(value);
-
-//   handle_oom(dupval != NULL);
-
-//   val = strtok(dupval, ",");
-//   while (val != NULL) {
-//     DBusMessageIter subiter;
-
-//     handle_oom(dbus_message_iter_open_container(iter, DBUS_TYPE_DICT_ENTRY, NULL, &subiter));
-//     append_arg(&subiter, keytype, val);
-//     val = strtok(NULL, ",");
-//     if (val == NULL) {
-//       fprintf(stderr, "BKMessage: Malformed dictionary\n");
-//       exit(1);
-//     }
-//     append_arg(&subiter, valtype, val);
-//     handle_oom(dbus_message_iter_close_container(iter, &subiter));
-//     val = strtok(NULL, ",");
-//   }
-
-//   free(dupval);
-// }
 
 @implementation OSEBusMessage
 
@@ -383,7 +399,7 @@ static dbus_bool_t append_arg(DBusMessageIter *iter, id argument, const char *db
                          method:(NSString *)methodName
 {
   busService = service;
-  return [self initWithService:service.serviceName
+  return [self initWithServiceName:service.serviceName
                         object:service.objectPath
                      interface:interfacePath
                         method:methodName];
@@ -396,7 +412,7 @@ static dbus_bool_t append_arg(DBusMessageIter *iter, id argument, const char *db
                       signature:(NSString *)signature
 {
   busService = service;
-  return [self initWithService:service.serviceName
+  return [self initWithServiceName:service.serviceName
                         object:service.objectPath
                      interface:interfacePath
                         method:methodName
@@ -404,24 +420,24 @@ static dbus_bool_t append_arg(DBusMessageIter *iter, id argument, const char *db
                      signature:signature];
 }
 
-- (instancetype)initWithService:(NSString *)servicePath
-                         object:(NSString *)objectPath
-                      interface:(NSString *)interfacePath
-                         method:(NSString *)methodName
-                      arguments:(NSArray *)args
-                      signature:(NSString *)signature
+- (instancetype)initWithServiceName:(NSString *)servicePath
+                             object:(NSString *)objectPath
+                          interface:(NSString *)interfacePath
+                             method:(NSString *)methodName
+                          arguments:(NSArray *)args
+                          signature:(NSString *)signature
 {
-  [self initWithService:servicePath object:objectPath interface:interfacePath method:methodName];
+  [self initWithServiceName:servicePath object:objectPath interface:interfacePath method:methodName];
   [self setMethodArguments:args withSignature:signature];
 
   return self;
 }
 
 // designated
-- (instancetype)initWithService:(NSString *)servicePath
-                         object:(NSString *)objectPath
-                      interface:(NSString *)interfacePath
-                         method:(NSString *)methodName
+- (instancetype)initWithServiceName:(NSString *)servicePath
+                             object:(NSString *)objectPath
+                          interface:(NSString *)interfacePath
+                             method:(NSString *)methodName
 {
   [super init];
 
@@ -467,8 +483,12 @@ static dbus_bool_t append_arg(DBusMessageIter *iter, id argument, const char *db
   reply = dbus_connection_send_with_reply_and_block(connection.dbus_connection, dbus_message, -1,
                                                     &dbus_error);
   if (dbus_error_is_set(&dbus_error)) {
-    NSLog(@"OSEBusMessage Error %s: %s\n", dbus_error.name, dbus_error.message);
-    return nil;
+    NSString *errorDescrition = [NSString
+        stringWithFormat:@"OSEBusMessage Error %s: %s", dbus_error.name, dbus_error.message];
+    NSLog(@"%@", errorDescrition);
+    return [NSError errorWithDomain:NSOSStatusErrorDomain
+                               code:-1
+                           userInfo:@{@"Description" : errorDescrition}];
   }
   if (reply) {
     result = [NSMutableArray new];

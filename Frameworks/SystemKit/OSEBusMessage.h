@@ -24,17 +24,17 @@
                       arguments:(NSArray *)args
                       signature:(NSString *)signature;
 
-- (instancetype)initWithService:(NSString *)servicePath
-                         object:(NSString *)objectPath
-                      interface:(NSString *)interfacePath
-                         method:(NSString *)methodName
-                      arguments:(NSArray *)args
-                      signature:(NSString *)signature;
+- (instancetype)initWithServiceName:(NSString *)servicePath
+                             object:(NSString *)objectPath
+                          interface:(NSString *)interfacePath
+                             method:(NSString *)methodName
+                          arguments:(NSArray *)args
+                          signature:(NSString *)signature;
 
-- (instancetype)initWithService:(NSString *)servicePath    // org.clightd.clightd
-                         object:(NSString *)objectPath     // /org/clightd/clightd/Backlight2
-                      interface:(NSString *)interfacePath  // org.clightd.clightd.Backlight2
-                         method:(NSString *)methodName;    // Get
+- (instancetype)initWithServiceName:(NSString *)servicePath    // org.clightd.clightd
+                             object:(NSString *)objectPath     // /org/clightd/clightd/Backlight2
+                          interface:(NSString *)interfacePath  // org.clightd.clightd.Backlight2
+                             method:(NSString *)methodName;    // Get
 
 - (void)setMethodArguments:(NSArray *)args withSignature:(NSString *)signature;
 
