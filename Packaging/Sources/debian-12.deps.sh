@@ -40,17 +40,19 @@ WRASTER_DEPS="
     libxmu-dev
     libxext-dev
     libx11-dev
+    libgraphicsmagick1-dev
 "
 WRASTER_RUN_DEPS="
     libgif7
-    libjpeg8
-    libtiff5
+    libjpeg62-turbo
+    libtiff6
     libpng16-16
     libwebp7
     libxpm4
     libxmu6
     libxext6
-    libx11-6 
+    libx11-6
+    libgraphicsmagick-q16-3
 "
 #--- gnustep-base
 GNUSTEP_BASE_DEPS="
@@ -142,12 +144,12 @@ APPS_RUN_DEPS="
     libxrender1
     libxdamage1
     libexif12
+    xserver-xorg-video-vesa
     xserver-xorg-core
+    xinit
     xserver-xorg-input-evdev
     xserver-xorg-input-synaptics
     xfonts-100dpi
-    xserver-xorg-video-vmware
-    xserver-xorg-video-intel
     x11-xkb-utils
     x11-xserver-utils
 "
