@@ -17,6 +17,33 @@ else
 	sudo yum -y install ${DEPS} || exit 1
 fi
 
+#---------------------------------------------------------
+# Solving deprecated dependency
+# with libjpeg8 and libtiff5
+# in WRASTER_RUN_DEPS
+# Instead, libjpeg62(-turbo) and libtiff6 were installed
+#---------------------------------------------------------
+
+if [ ${OS_ID} = "debian" ];then
+	# libjpeg8 --> libjpeg62
+	if [ -f "/usr/lib/${MACHINE}-linux-gnu/libjpeg.so.62" ];then
+		sudo ln -s "/usr/lib/${MACHINE}-linux-gnu/libjpeg.so.8" "/usr/lib/${MACHINE}-linux-gnu/libjpeg.so.62"
+		${ECHO} "Symbolic link added for libjpeg.so.8"
+	else
+		${ECHO} "You need to find 'libjpeg.so.62' path fisrt !"
+		${ECHO} "Aborting building..."
+		exit 1
+	fi
+	# Libtiff5 --> Libtiff6
+	if [ -f "/usr/lib/${MACHINE}-linux-gnu/libtiff.so.6" ];then
+		sudo ln -s "/usr/lib/${MACHINE}-linux-gnu/libtiff.so.5" "/usr/lib/${MACHINE}-linux-gnu/libtiff.so.6"
+		${ECHO} "Symbolic link added for libtiff.so.5"
+	else
+		${ECHO} "You need to find 'libtiff.so.6' path first !"
+		${ECHO} "Aborting building..."
+		exit 1
+	fi
+fi
 
 #----------------------------------------
 # Download

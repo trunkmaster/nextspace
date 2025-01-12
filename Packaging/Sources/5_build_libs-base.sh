@@ -19,6 +19,27 @@ else
 fi
 
 #----------------------------------------
+# Solving the deprecated dependency
+# to libicu70
+# in GNUSTEP_BASE_RUN_DEPS
+#----------------------------------------
+
+if [ ${OS_ID} = "debian"];then
+	for ICUSUFFIXE in "data" "i18n" "io" "test" "tu" "uc"
+		do
+			if [ -f /usr/lib/${MACHINE}-linux-gnu/libicu${ICUSUFFIXE}.so.72 ];then
+				${ECHO} "Symbolic link created for libicu${ICUSUFFIXE}.so.70"
+				sudo ln -s /usr/lib/${MACHINE}-linux-gnu/libicu${ICUSUFFIXE}.so.70 /usr/lib/${MACHINE}-linux-gnu/libicu${ICUSUFFIXE}.so.72
+			else
+				${ECHO} "You must find libicu${ICUSUFFIXE}.so.72 path first !"
+				${ECHO} "Aborting building."
+				exit 1
+			fi
+		done
+fi
+
+
+#----------------------------------------
 # Download
 #----------------------------------------
 GIT_PKG_NAME=libs-base-base-${gnustep_base_version}

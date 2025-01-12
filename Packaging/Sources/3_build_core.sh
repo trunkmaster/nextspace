@@ -22,9 +22,21 @@ $CP_CMD -v ${CORE_SOURCES}/etc/ld.so.conf.d/nextspace.conf $DEST_DIR/etc/ld.so.c
 sudo ldconfig
 
 # X11
-#if ! [ -d $DEST_DIR/etc/X11/xorg.conf.d ];then
-#	$MKDIR_CMD -v $DEST_DIR/etc/X11/xorg.conf.d
-#fi
+if ! [ -d $DEST_DIR/etc/X11/xorg.conf.d ];then
+	$MKDIR_CMD -v $DEST_DIR/etc/X11/xorg.conf.d
+fi
+
+# To avoid Login.app flickering, we must set some resolution and frequency for arm machines (pi) SBC
+if [ ${MACHINE} = "aarch64" ];then
+	if ! [ -f $DEST_DIR/etc/X11/xorg.conf.d/20-monitor-pi.conf ];then
+		$CP_CMD ${CORE_SOURCES}/etc/X11/xorg.conf.d/20-monitor-pi.conf $DEST_DIR/etc/X11/xorg.conf.d/
+	fi
+	# This should already be there...
+	if ! [ -f $DEST_DIR/etc/X11/xorg.conf.d/99-v3d.conf ];then
+		$CP_CMD ${CORE_SOURCES}/etc/X11/xorg.conf.d/99-v3d.conf $DEST_DIR/etc/X11/xorg.conf.d/
+	fi
+fi
+
 #$CP_CMD ${CORE_SOURCES}/etc/X11/xorg.conf.d/*.conf $DEST_DIR/etc/X11/xorg.conf.d/
 $CP_CMD ${CORE_SOURCES}/etc/X11/Xresources.nextspace $DEST_DIR/etc/X11
 

@@ -27,6 +27,11 @@ OS_NAME=$NAME
 ${ECHO} "OS:\t\t${OS_ID}-${OS_VERSION}"
 
 #----------------------------------------
+# Machine
+#----------------------------------------
+MACHINE=$(uname -m)
+
+#----------------------------------------
 # Paths
 #----------------------------------------
 # Directory where nextspace GitHub repo resides
