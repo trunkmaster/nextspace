@@ -1,3 +1,31 @@
+# NEXTSPACE - on Pi400 - Debian 12
+
+## Why a fork ?
+
+- This Fork of Trunkmaster's NextSpace Desktop is an attempt to install it cleanly on a **Raspberrry pi400** within **Debian 12 (aarch64)** and to propose then Pull Requests.
+- It's a work in progress and buggy. Please, DO NOT fork this repository, instead wait to the PR to be validated on the original Trunkmaster's repository.
+- To follow the issues and the replies, again look at Trunkmaster's original repository in the "Issues" tab.
+
+## Why on a pi400 ?
+
+- This is a cheap kind of computer inside a keyboard, dedicated to code learning.
+- And as an old teacher, I believe that the community of young developpers on Raspberry pi, and maybe the teachers too, will have the opportunity to learn more than the python language.
+- And while learning C, Objective C (Cocoa) and OpenStep specifications, they could even contribute to GNUstep open source project... which brings to us so many rich and efficient tools to build apps available on GNU/linux, but also on BSD, MacOS, Ms-Windows...
+- Maybe, if this project is successful, We could propose an SD card img ready to install...
+
+## Choices
+
+- Appearance: I agree with Trunkmaster's choices : simple and efficient classic NeXT/OpenStep like Theme.
+- Graphic Server behind the scene : Not planning to port on Wayland, but staying on efficient Xorg.
+- The two major differences are :
+
+1) The machine/CPU : pi/arm (aarch64)
+2) The OS : Debian 12, because it is stable, more accurate now on this machine.
+
+## Original Readme of the Nexspace Project
+
+Above it begins...
+
 # NEXTSPACE
 
 [![Fedora 39](https://github.com/trunkmaster/nextspace/actions/workflows/sources_fedora.yml/badge.svg)](https://github.com/trunkmaster/nextspace/actions/workflows/fedora-39.yml) [![Ubuntu 22.04](https://github.com/trunkmaster/nextspace/actions/workflows/sources_ubuntu.yml/badge.svg)](https://github.com/trunkmaster/nextspace/actions/workflows/sources_ubuntu.yml) [![Debian 12](https://github.com/trunkmaster/nextspace/actions/workflows/sources_debian.yml/badge.svg)](https://github.com/trunkmaster/nextspace/actions/workflows/sources_debian.yml)
