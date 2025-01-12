@@ -1,4 +1,5 @@
 #import "OSEBusConnection.h"
+#include "dbus/dbus.h"
 #import "OSEBusMessage.h"
 
 static OSEBusConnection *defaultConnection = nil;
@@ -11,9 +12,9 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
   //        dbus_message_get_interface(message), dbus_message_get_member(message),
   //        dbus_message_get_sender(message));
 
-  if (dbus_message_is_signal(message, DBUS_INTERFACE_LOCAL, "Disconnected")) {
-    return DBUS_HANDLER_RESULT_HANDLED;
-  }
+  // if (dbus_message_is_signal(message, DBUS_INTERFACE_LOCAL, "Disconnected")) {
+  //   return DBUS_HANDLER_RESULT_HANDLED;
+  // }
 
   if (message != NULL) {
     OSEBusMessage *msg = [OSEBusMessage new];
@@ -29,6 +30,8 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
       [result release];
     }
     [msg release];
+  } else {
+    NSLog(@"OSEBusConnection signal handler warning: D-Bus message is NULL.");
   }
 
   return DBUS_HANDLER_RESULT_HANDLED;
@@ -82,7 +85,7 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
   signalFilters = [NSMutableDictionary new];
 
   // Setup signal handling
-  dbus_connection_read_write_dispatch(_dbus_connection, 10);
+  dbus_connection_read_write_dispatch(_dbus_connection, 1);
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(processSocketData:)
@@ -98,8 +101,12 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
   NSLog(@"-> Process connection data...");
 
   dbus_connection_read_write(_dbus_connection, 1);
-  dbus_connection_read_write_dispatch(_dbus_connection, 1);
-  
+  // dbus_connection_read_write_dispatch(_dbus_connection, 1);
+
+  while (dbus_connection_get_dispatch_status(_dbus_connection) == DBUS_DISPATCH_DATA_REMAINS) {
+    dbus_connection_dispatch(_dbus_connection);
+  }
+
   [socketFileHandle waitForDataInBackgroundAndNotify];
 
   NSLog(@"<- Process connection data, end.");
