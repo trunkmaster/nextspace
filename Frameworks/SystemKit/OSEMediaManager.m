@@ -23,8 +23,7 @@
 
 #ifdef WITH_HAL
 #import <SystemKit/NXHALAdaptor.h>
-#endif
-#ifdef WITH_UDISKS
+#else
 #import "OSEUDisksAdaptor.h"
 #endif
 
@@ -56,16 +55,13 @@ static id<MediaManager> adaptor;
 
 - (id)init
 {
-  if (!(self = [super init]))
-    {
-      return nil;
-    }
-  
+  if (!(self = [super init])) {
+    return nil;
+  }
+
 #ifdef WITH_HAL
   adaptor = [[NXHALAdaptor alloc] init];
-#endif
-
-#ifdef WITH_UDISKS
+#else
   adaptor = [[OSEUDisksAdaptor alloc] init];
 #endif
 
