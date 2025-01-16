@@ -20,50 +20,67 @@
 //
 
 /*
- * Provides integration with UDisks subsystem.
- * Construct network of objects: OSEUDisksDrive, OSEUDisksVolume.
+ * Provides integration with OSEUDisksAdaptor subsystem.
+ * Construct network of objects: OSEOSEUDisksDrive, OSEOSEUDisksVolume.
  */
 
-#ifdef WITH_UDISKS
-
 #import <Foundation/Foundation.h>
+
 #import <SystemKit/OSEMediaManager.h>
+#import <SystemKit/OSEBusConnection.h>
+#import <SystemKit/OSEBusService.h>
 
-#import <udisks/udisks.h>
-
+@class OSEUDisksDrive;
 @class OSEUDisksVolume;
 
-@interface OSEUDisksAdaptor : NSObject <MediaManager>
+typedef enum {
+  OSEUDisksUnknownObject = 0,
+  OSEOSEUDisksDriveObject,
+  OSEUDisksBlockObject,
+  OSEUDisksJobObject
+} OSEUDisksObject;
+
+// /org/freedesktop/UDisks2/drives/
+#define DRIVE_INTERFACE     @"org.freedesktop.UDisks2.Drive"
+#define DRIVE_ATA_INTERFACE @"org.freedesktop.UDisks2.Drive.Ata"
+// /org/freedesktop/UDisks2/block_devices/
+#define BLOCK_INTERFACE     @"org.freedesktop.UDisks2.Block"
+#define PARTITION_INTERFACE @"org.freedesktop.UDisks2.Partition"
+#define PTABLE_INTERFACE    @"org.freedesktop.UDisks2.PartitionTable"
+#define FS_INTERFACE @"org.freedesktop.UDisks2.Filesystem"
+// TODO
+#define LOOP_INTERFACE      @"org.freedesktop.UDisks2.Loop"
+// /org/freedesktop/UDisks2/jobs
+#define JOB_INTERFACE       @"org.freedesktop.UDisks2.Job"
+
+extern NSString *OSEUDisksPropertiesDidChangeNotification;
+extern NSString *OSEUDisksInterfacesDidAddNotification;
+extern NSString *OSEUDisksInterfacesDidRemoveNotification;
+
+@interface OSEUDisksAdaptor : OSEBusService <DBus_ObjectManager, MediaManager>
 {
+  // /org/freedesktop/UDisks2/block_devices/
+  NSMutableDictionary *udisksBlockDevicesCache;
+  // /org/freedesktop/UDisks2/drives/
+  NSMutableDictionary *OSEUDisksDrivesCache;
+  // List of /org/freedesktop/UDisks2/jobs objects
   NSMutableDictionary *jobsCache;
-
-  NSMutableDictionary *drives;
-  NSMutableDictionary *volumes;
-
-  NSMutableArray      *drivesToCleanup; // unsafely detached drives
   
-  NSTimer             *monitorTimer;
-}
+  // List of OSEOSEUDisksVolume objects with D-Bus object path as key
+  NSMutableDictionary *volumes;
+  // List of OSEOSEUDisksDrive objects with D-Bus object path as key
+  NSMutableDictionary *drives;
+  
+  NSMutableArray *drivesToCleanup;  // unsafely detached drives
 
-- (UDisksClient *)udisksClient;
+  NSNotificationCenter *notificationCenter;
+}
 
 - (NSDictionary *)availableDrives;
 - (NSDictionary *)availableVolumesForDrive:(NSString *)driveObjectPath;
-- (NSArray *)mountedVolumesForDrive:(NSString *)driveObjectPath;
+- (id)objectWithUDisksPath:(NSString *)objectPath;
+
 - (OSEUDisksVolume *)mountedVolumeForPath:(NSString *)filesystemPath;
-
-- (BOOL)setLoopToFileAtPath:(NSString *)imageFile;
-- (BOOL)unsetLoop:(NSString *)objectPath;
-
-@end
-
-@interface OSEUDisksAdaptor (Info)
-
-- (id)_objectWithUDisksPath:(const gchar *)object_path;
-
-- (void)_addUDisksObject:(UDisksObject *)object
-               andNotify:(BOOL)notify;
-- (void)_removeUDisksObjectWithPath:(const gchar *)object_path;
 
 - (void)operationWithName:(NSString *)name
                    object:(id)object
@@ -72,43 +89,28 @@
                     title:(NSString *)title
                   message:(NSString *)message;
 
-- (void)_updateJob:(const gchar *)job_path
-           objects:(const gchar *const *)job_objects
-            signal:(const gchar *)signal_name
-        parameters:(GVariant *)parameters;
-
-- (NSString *)descriptionForError:(GError *)error;
+// TODO
+// - (BOOL)setLoopToFileAtPath:(NSString *)imageFile;
+// - (BOOL)unsetLoop:(NSString *)objectPath;
 
 @end
 
-#define DRIVE_INTERFACE     @"org.freedesktop.UDisks2.Drive"
-#define ATA_INTERFACE       @"org.freedesktop.UDisks2.Drive.Ata"
+@protocol UDisksObject <NSObject>
 
-#define BLOCK_INTERFACE     @"org.freedesktop.UDisks2.Block"
-#define PARTITION_INTERFACE @"org.freedesktop.UDisks2.Partition"
-#define PTABLE_INTERFACE    @"org.freedesktop.UDisks2.PartitionTable"
-#define FS_INTERFACE        @"org.freedesktop.UDisks2.Filesystem"
-#define LOOP_INTERFACE      @"org.freedesktop.UDisks2.Loop"
+- (NSString *)objectPath;
+- (NSMutableDictionary *)properties;
 
-@protocol UDisksMedia <NSObject>
-
-- (id)initWithProperties:(NSDictionary *)props
-              objectPath:(NSString *)path
-                 adaptor:(OSEUDisksAdaptor *)udisksAdaptor;
-
+- (id)initWithProperties:(NSDictionary *)properties
+              objectPath:(NSString *)path;
 - (void)setProperty:(NSString *)property
               value:(NSString *)value
       interfaceName:(NSString *)interface;
-
 - (void)removeProperties:(NSArray *)properties
            interfaceName:(NSString *)interface;
-
-- (NSDictionary *)properties;
-- (NSString *)propertyForKey:(NSString *)key interface:(NSString *)interface;
+- (id)propertyForKey:(NSString *)key interface:(NSString *)interface;
 - (BOOL)boolPropertyForKey:(NSString *)key interface:(NSString *)interface;
 
-- (NSString *)objectPath;
+// This is for debug
+- (void)_dumpProperties;
 
 @end
-
-#endif //WITH_UDISKS

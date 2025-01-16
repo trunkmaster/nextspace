@@ -24,50 +24,45 @@
  * UDisks base path is: "/org/freedesktop/UDisks2/drives/<name of drive>".
  */
 
-#ifdef WITH_UDISKS
-
 #import <SystemKit/OSEMediaManager.h>
-#import <SystemKit/OSEUDisksAdaptor.h>
+#import "OSEUDisksAdaptor.h"
 
 @class OSEUDisksVolume;
 
-@interface OSEUDisksDrive : NSObject <UDisksMedia>
+@interface OSEUDisksDrive : NSObject <UDisksObject>
 {
-  OSEUDisksAdaptor      *adaptor;
-  NSMutableDictionary  *properties;
-  NSString             *objectPath;
-  
-  NSMutableDictionary  *volumes;
+  NSMutableArray *mountedVolumesToDetach;
+  BOOL needsDetach;
 
   NSNotificationCenter *notificationCenter;
-
-  NSMutableArray *mountedVolumesToDetach;
-  BOOL           needsDetach;
 }
 
+//--- Protocol
+@property (readonly) NSMutableDictionary *properties;
+@property (readonly) NSString *objectPath;
+
 //--- Object network
-- (NSDictionary *)volumes;
+@property (readwrite, assign) OSEUDisksAdaptor *udisksAdaptor;
+@property (readonly) NSMutableDictionary *volumes;
 - (void)addVolume:(OSEUDisksVolume *)volume withPath:(NSString *)volumePath;
 - (void)removeVolumeWithKey:(NSString *)key;
-- (NSString *)objectPath;
 
 //--- Attributes
-- (NSString *)UNIXDevice;
-- (NSString *)humanReadableName; // vendor, model
-- (BOOL)isRemovable;
-- (BOOL)isEjectable;
-- (BOOL)canPowerOff;
+@property (readonly) NSString *humanReadableName;  // vendor, model
+@property (readonly) BOOL isRemovable;
+@property (readonly) BOOL isEjectable;
+@property (readonly) BOOL canPowerOff;
 
 // valuable for optical disks
-- (BOOL)isOptical;
-- (BOOL)hasMedia;
-- (BOOL)isMediaRemovable;
-- (BOOL)isOpticalBlank;
-- (NSString *)numberOfAudioTracks;
-- (NSString *)numberOfDataTracks;
+@property (readonly) BOOL isOptical;
+@property (readonly) BOOL hasMedia;
+@property (readonly) BOOL isMediaRemovable;
+@property (readonly) BOOL isOpticalBlank;
+@property (readonly) NSNumber *numberOfAudioTracks;
+@property (readonly) NSNumber *numberOfDataTracks;
 
 //--- Actions
-- (NSArray *)mountedVolumes;
+@property (readonly) NSArray *mountedVolumes;
 - (NSArray *)mountVolumes:(BOOL)wait;
 - (BOOL)unmountVolumes:(BOOL)wait;
 - (void)unmountVolumesAndDetach;
@@ -75,5 +70,3 @@
 - (BOOL)powerOff:(BOOL)wait;
 
 @end
-
-#endif //WITH_UDISKS

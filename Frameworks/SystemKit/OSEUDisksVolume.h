@@ -20,54 +20,55 @@
 //
 
 /*
- * OSEUDisksVolume.h
- * 
+ * OSEOSEOSEUDisksVolume.h
+ *
  * Media object which treated by UDisks as 'block_devices' object.
  * Can contain filesystem, swap, extended partition, RAID volume.
  */
 
-#ifdef WITH_UDISKS
-
 #import <SystemKit/OSEMediaManager.h>
-#import <SystemKit/OSEUDisksAdaptor.h>
+#import "OSEUDisksAdaptor.h"
 
+@class OSEUDisksAdaptor;
 @class OSEUDisksDrive;
 
-@interface OSEUDisksVolume : NSObject <UDisksMedia>
+@interface OSEUDisksVolume : NSObject <UDisksObject>
 {
-  OSEUDisksAdaptor     *adaptor;
-  NSMutableDictionary *properties;
-  NSString            *objectPath;
-  OSEUDisksDrive       *drive;
-
   NSNotificationCenter *notificationCenter;
 }
 
-//--- Parent object
-- (OSEUDisksAdaptor *)adaptor;
-- (OSEUDisksDrive *)drive;
-- (void)setDrive:(OSEUDisksDrive *)driveObject;
+- (void)_dumpProperties;
+
+//--- Protocol
+@property (readonly) NSMutableDictionary *properties;
+@property (readonly) NSString *objectPath;
+
+//--- Parent objects
+@property (readwrite, assign) OSEUDisksAdaptor *udisksAdaptor;
+@property (readwrite, assign) OSEUDisksDrive *drive;
 - (OSEUDisksVolume *)masterVolume;
 - (NSString *)driveObjectPath;
 
 //--- Accessories
-- (NXTFSType)type;
-- (NSString *)UUID;
-- (NSString *)label;
-- (NSString *)size;
-- (NSString *)UNIXDevice;
-- (NSString *)mountPoints;
+@property (readonly) NSString *UUID;
+@property (readonly) NSString *UNIXDevice;
+@property (readonly) NSNumber *size;
+@property (readonly) BOOL isSystem;
 
-- (NSString *)partitionType;
-- (NSString *)partitionNumber;
-- (NSString *)partitionSize;
+@property (readonly) BOOL hasPartition;
+@property (readonly) NSString *partitionType;
+@property (readonly) NSNumber *partitionNumber;
+@property (readonly) NSNumber *partitionSize;
 
-- (BOOL)isFilesystem;
-- (BOOL)isMounted;
-- (BOOL)isWritable;
+@property (readonly) BOOL isFilesystem;
+@property (readonly) NXTFSType filesystemType;
+@property (readonly) NSString *filesystemName;
+@property (readonly) NSString *label;
+@property (readonly) NSArray *mountPoints;
+@property (readonly) BOOL isMounted;
+@property (readonly) BOOL isWritable;
 
-- (BOOL)isLoopVolume;
-- (BOOL)isSystem;
+@property (readonly) BOOL isLoopVolume;
 
 //--- Actions
 
@@ -78,5 +79,3 @@
 - (BOOL)unmount:(BOOL)wait;
 
 @end
-
-#endif // WITH_UDISKS
