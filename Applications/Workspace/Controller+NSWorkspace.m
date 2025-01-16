@@ -39,13 +39,13 @@
 #import <Foundation/Foundation.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
+#import <SystemKit/OSEDefaults.h>
+#import <SystemKit/OSEFileManager.h>
 #import <SystemKit/OSEUDisksAdaptor.h>
 #import <SystemKit/OSEUDisksDrive.h>
 #import <SystemKit/OSEUDisksVolume.h>
 
 #import <DesktopKit/NXTAlert.h>
-#import <SystemKit/OSEDefaults.h>
-#import <SystemKit/OSEFileManager.h>
 
 #import "Viewers/FileViewer.h"
 #import "WMNotificationCenter.h"
@@ -477,7 +477,7 @@ static NSLock *raceLock = nil;
   *writableFlag = volume.isWritable;
   *unmountableFlag = !volume.isSystem;
 
-  switch (volume.type) {
+  switch (volume.filesystemType) {
     case NXTFSTypeEXT:
       *fileSystemType = @"EXT";
       break;
