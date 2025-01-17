@@ -1,6 +1,24 @@
 #import "OSEBusConnection.h"
-#include "dbus/dbus.h"
 #import "OSEBusMessage.h"
+
+#ifdef CF_BUS_CONNECTION
+static void _runLoopHandleEvent(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
+{
+  OSEBusConnection *connection = info;
+  DBusConnection *dbus_connection = connection.dbus_connection;
+
+  NSLog(@"-> CFRunLoop event handler, info: %@", info);
+
+  dbus_connection_read_write(connection.dbus_connection, 1);
+
+  while (dbus_connection_get_dispatch_status(connection.dbus_connection) == DBUS_DISPATCH_DATA_REMAINS) {
+    dbus_connection_dispatch(connection.dbus_connection);
+  }
+
+  CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
+  NSLog(@"<- CFRunLoop event handler");
+}
+#endif
 
 static OSEBusConnection *defaultConnection = nil;
 
@@ -50,7 +68,10 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 - (void)dealloc
 {
   NSDebugLLog(@"DBus", @"OSEBusConnection: dealloc");
+#ifdef CF_BUS_CONNECTION
+#else
   [socketFileHandle release];
+#endif
   [signalFilters release];
   dbus_connection_unref(_dbus_connection);
   [super dealloc];
@@ -72,6 +93,9 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
   }
 
   [super init];
+  defaultConnection = self;
+
+  signalFilters = [NSMutableDictionary new];
 
   dbus_error_init(&_dbus_error);
   _dbus_connection = dbus_bus_get(DBUS_BUS_SYSTEM, &_dbus_error);
@@ -79,23 +103,53 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
   dbus_connection_get_socket(_dbus_connection, &socketFileDescriptor);
 
   // NSLog(@"OSEBusConnection: initialized with socket FD: %i", socketFileDescriptor);
-  socketFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:socketFileDescriptor];
-
-  defaultConnection = self;
-  signalFilters = [NSMutableDictionary new];
-
-  // Setup signal handling
   dbus_connection_read_write_dispatch(_dbus_connection, 1);
 
+#ifndef CF_BUS_CONNECTION
+  // Setup signal handling
+  socketFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:socketFileDescriptor];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(processSocketData:)
                                                name:NSFileHandleDataAvailableNotification
                                              object:socketFileHandle];
   [socketFileHandle waitForDataInBackgroundAndNotify];
+#endif
 
   return self;
 }
 
+#ifdef CF_BUS_CONNECTION
+- (void)run
+{
+  // CFRunLoopRef run_loop;
+  // CFFileDescriptorRef dbus_fd;
+  // CFRunLoopSourceRef runloop_fd_source;
+  CFFileDescriptorContext *fd_context = malloc(sizeof(CFFileDescriptorContext));
+  fd_context->info = self;
+
+  dbus_fd = CFFileDescriptorCreate(kCFAllocatorDefault, socketFileDescriptor, true,
+                                   _runLoopHandleEvent, fd_context);
+  // CFFileDescriptorGetContext(dbus_fd, &fd_context);
+  CFFileDescriptorEnableCallBacks(dbus_fd, kCFFileDescriptorReadCallBack);
+
+  run_loop = CFRunLoopGetCurrent();
+  runloop_fd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, dbus_fd, 0);
+  CFRunLoopAddSource(run_loop, runloop_fd_source, kCFRunLoopDefaultMode);
+  CFRelease(runloop_fd_source);
+  CFRelease(dbus_fd);
+
+  NSLog(@"--> Going into CFRunLoop...");
+
+  CFRunLoopRun();
+
+  CFFileDescriptorDisableCallBacks(dbus_fd, kCFFileDescriptorReadCallBack);
+  CFRunLoopRemoveSource(run_loop, runloop_fd_source, kCFRunLoopDefaultMode);
+  /* Do not call CFFileDescriptorInvalidate(xfd)!
+     This FD is a connection of Workspace application to X server. */
+
+  NSLog(@"<-- CFRunLoop finished.");
+}
+#else
 - (void)processSocketData:(NSNotification *)aNotif
 {
   NSLog(@"-> Process connection data...");
@@ -111,6 +165,7 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 
   NSLog(@"<- Process connection data, end.");
 }
+#endif
 
 //-------------------------------------------------------------------------------
 #pragma mark - Signal handling

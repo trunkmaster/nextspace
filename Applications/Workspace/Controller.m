@@ -686,7 +686,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // Init Workspace's tools
   mediaOperations = [[NSMutableDictionary alloc] init];
-  // [self mediaManager];
+  [self mediaManager];
   fileSystemMonitor = nil;
   console = nil;
   procPanel = nil;

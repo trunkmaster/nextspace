@@ -527,6 +527,12 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 
   notificationCenter = [NSNotificationCenter defaultCenter];
   [self setSignalsMonitoring];
+#ifdef CF_BUS_CONNECTION
+  dispatch_queue_t media_q = dispatch_queue_create("ns.workspace.media", DISPATCH_QUEUE_CONCURRENT);
+  dispatch_async(media_q, ^{
+    [self.connection run];
+  });
+#endif
 
   return self;
 }
@@ -614,6 +620,11 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   return volume;
 }
 
+- (void)postVolumeDidMountNotification:(NSDictionary *)info
+{
+  [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification object:self userInfo:info];
+}
+
 - (void)operationWithName:(NSString *)name
                    object:(id)object
                    failed:(BOOL)failed
@@ -643,15 +654,16 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     [notificationCenter postNotificationName:OSEMediaOperationDidStartNotification object:self userInfo:info];
   } else {
     // "Completed" - operation was started by framework methods.
-    // NXVolume* and OSEMediaOperation* notifications will be sent.
+    // OSEMediaVolume* and OSEMediaOperation* notifications will be sent.
     // "Occured" - operation was performed without framework methods (outside)
-    // of application. Only NXVolume* notification will be sent.
+    // of application. Only OSEMediaVolume* notification will be sent.
     if ([name isEqualToString:@"Mount"] || [name isEqualToString:@"Unmount"]) {
       [info setObject:[object UNIXDevice] forKey:@"UNIXDevice"];
 
       if ([name isEqualToString:@"Mount"] && !failed) {
         [info setObject:[object mountPoints] forKey:@"MountPoint"];
-        [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification object:self userInfo:info];
+        [self performSelectorOnMainThread:@selector(postVolumeDidMountNotification:) withObject:info waitUntilDone:YES];
+        // [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification object:self userInfo:info];
       } else if ([name isEqualToString:@"Unmount"] && !failed) {
         NSString *mp = [object mountPoints][0];
 
