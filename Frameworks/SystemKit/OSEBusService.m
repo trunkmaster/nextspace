@@ -5,15 +5,10 @@
 
 - (void)dealloc
 {
-  // NSLog(@"_objectPath retain count: %lu", [_objectPath retainCount]);
-  // if (_objectPath) {
-  //   NSLog(@"_objectPath release");
-  //   [_objectPath release];
-  // }
-  // if (_serviceName) {
-  //   [_serviceName release];
-  // }
-  NSDebugLLog(@"DBus", @"OSEBusService: connection retain count: %lu", [_connection retainCount]);
+  NSDebugLLog(@"DBus",
+              @"OSEBusService: -dealloc (retain count: %lu) (connection retain count: %lu)",
+              [self retainCount], [_connection retainCount]);
+  // OSEBusConnection will be released by AutoReleasePool
 
   [super dealloc];
 }

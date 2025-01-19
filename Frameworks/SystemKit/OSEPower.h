@@ -38,6 +38,8 @@
 @property (readonly) BOOL isLidPresent;
 @property (readonly) BOOL isLidClosed;
 
++ (id)sharedPower;
+
 // Battery information
 @property (readonly) BOOL isUsingBattery;
 - (unsigned int)batteryLife;

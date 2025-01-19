@@ -506,6 +506,20 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 //-------------------------------------------------------------------------------
 #pragma mark - Init
 //-------------------------------------------------------------------------------
+- (void)dealloc
+{
+  NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: dealloc (retain count: %lu)", [self retainCount]);
+
+  [udisksBlockDevicesCache release];
+  [OSEUDisksDrivesCache release];
+
+  [volumes release];
+  [drives release];
+  [jobsCache release];
+
+  [super dealloc];
+}
+
 - (id)init
 {
   [super init];
@@ -535,19 +549,6 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 #endif
 
   return self;
-}
-
-- (void)dealloc
-{
-  NSDebugLLog(@"OSEUDisksAdaptor", @"OSEUDisksAdaptor: dealloc");
-
-  [udisksBlockDevicesCache release];
-  [OSEUDisksDrivesCache release];
-
-  [volumes release];
-  [drives release];
-
-  [super dealloc];
 }
 
 //-------------------------------------------------------------------------------
@@ -651,7 +652,9 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   }
 
   if ([status isEqualToString:@"Started"]) {
-    [notificationCenter postNotificationName:OSEMediaOperationDidStartNotification object:self userInfo:info];
+    [notificationCenter postNotificationName:OSEMediaOperationDidStartNotification
+                                      object:self
+                                    userInfo:info];
   } else {
     // "Completed" - operation was started by framework methods.
     // OSEMediaVolume* and OSEMediaOperation* notifications will be sent.
@@ -662,8 +665,9 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 
       if ([name isEqualToString:@"Mount"] && !failed) {
         [info setObject:[object mountPoints] forKey:@"MountPoint"];
-        [self performSelectorOnMainThread:@selector(postVolumeDidMountNotification:) withObject:info waitUntilDone:YES];
-        // [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification object:self userInfo:info];
+        [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification
+                                          object:self
+                                        userInfo:info];
       } else if ([name isEqualToString:@"Unmount"] && !failed) {
         NSString *mp = [object mountPoints][0];
 
@@ -673,12 +677,16 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
           mp = [object propertyForKey:@"OldMountPoint" interface:FS_INTERFACE];
         }
         [info setObject:mp forKey:@"MountPoint"];
-        [notificationCenter postNotificationName:OSEMediaVolumeDidUnmountNotification object:self userInfo:info];
+        [notificationCenter postNotificationName:OSEMediaVolumeDidUnmountNotification
+                                          object:self
+                                        userInfo:info];
       }
     }
 
     if ([status isEqualToString:@"Completed"]) {
-      [notificationCenter postNotificationName:OSEMediaOperationDidEndNotification object:self userInfo:info];
+      [notificationCenter postNotificationName:OSEMediaOperationDidEndNotification
+                                        object:self
+                                      userInfo:info];
     }
   }
 }

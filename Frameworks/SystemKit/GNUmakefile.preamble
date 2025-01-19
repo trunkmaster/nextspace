@@ -16,7 +16,8 @@ ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
 endif
 
 ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-  ADDITIONAL_OBJCFLAGS += -DLINUX -DCF_BUS_CONNECTION
+  ADDITIONAL_OBJCFLAGS += -DLINUX 
+#  -DCF_BUS_CONNECTION
 #  -DWITH_UDISKS 
 #  -DWITH_UPOWER
 endif

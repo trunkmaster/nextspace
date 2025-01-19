@@ -31,10 +31,11 @@ NSString *OSEPowerLidDidChangeNotification = @"OSEPowerLidDidChangeNotification"
 NSString *OSEPowerDeviceDidAddNotification = @"OSEPowerDeviceDidAddNotification";
 NSString *OSEPowerDeviceDidRemoveNotification = @"OSEPowerDeviceDidRemoveNotification";
 
-
 //-------------------------------------------------------------------------------
 #pragma mark - OSEPower implementation
 //-------------------------------------------------------------------------------
+static OSEPower *systemPower = nil;
+
 @implementation OSEPower (Private)
 
 - (id)_propertyValueWithName:(NSString *)propertyName ofClass:(Class)resultClass 
@@ -66,8 +67,21 @@ NSString *OSEPowerDeviceDidRemoveNotification = @"OSEPowerDeviceDidRemoveNotific
 
 @implementation OSEPower
 
++ (id)sharedPower
+{
+  if (systemPower == nil) {
+    systemPower = [[OSEPower alloc] init];
+  }
+
+  return systemPower;
+}
+
 - (id)init
 {
+  if (systemPower != nil) {
+    return systemPower;
+  }
+
   [super init];
 
   self.objectPath = @"/org/freedesktop/UPower";
@@ -78,7 +92,8 @@ NSString *OSEPowerDeviceDidRemoveNotification = @"OSEPowerDeviceDidRemoveNotific
 
 - (void)dealloc
 {
-  NSDebugLLog(@"DBus", @"OSEPower: dealloc");
+  NSDebugLLog(@"DBus", @"OSEPower: -dealloc (retain count: %lu)", [self retainCount]);
+  systemPower = nil;
   [super dealloc];
 }
 

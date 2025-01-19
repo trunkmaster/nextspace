@@ -33,7 +33,7 @@
 -I/Developer/Headers
 -I/usr/NextSpace/include
 -DLINUX
--DCF_BUS_CONNECTION
+#-DCF_BUS_CONNECTION
 -F/usr/NextSpace/Frameworks
 -I/usr/lib64/dbus-1.0/include
 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include

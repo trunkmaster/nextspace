@@ -53,6 +53,15 @@ static id<MediaManager> adaptor;
   return adaptor;
 }
 
+- (void)dealloc
+{
+  NSDebugLLog(@"dealloc", @"OSEMediaManager: -dealloc (retain count: %lu)", [self retainCount]);
+
+  [adaptor release];
+  
+  [super dealloc];
+}
+
 - (id)init
 {
   if (!(self = [super init])) {
@@ -71,15 +80,6 @@ static id<MediaManager> adaptor;
 - (id<MediaManager>)adaptor
 {
   return adaptor;
-}
-
-- (void)dealloc
-{
-  NSLog(@"OSEMediaManager: dealloc");
-
-  [adaptor release];
-  
-  [super dealloc];
 }
 
 @end

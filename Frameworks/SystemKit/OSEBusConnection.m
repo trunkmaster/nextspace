@@ -67,23 +67,21 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 
 - (void)dealloc
 {
-  NSDebugLLog(@"DBus", @"OSEBusConnection: dealloc");
+  NSDebugLLog(@"DBus", @"OSEBusConnection: -dealloc (retain count: %lu)", [self retainCount]);
 #ifdef CF_BUS_CONNECTION
 #else
   [socketFileHandle release];
 #endif
   [signalFilters release];
   dbus_connection_unref(_dbus_connection);
+  defaultConnection = nil;
   [super dealloc];
 }
 
 - (oneway void)release
 {
+  NSDebugLLog(@"dealloc", @"OSEBusConnection: -release (retain count: %lu)", [self retainCount]);
   [super release];
-  NSDebugLLog(@"DBus", @"OSEBusConnection: retain count: %lu", [self retainCount]);
-  if ([self retainCount] == 1) {
-    [self dealloc];
-  }
 }
 
 - (instancetype)init

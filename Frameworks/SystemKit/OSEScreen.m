@@ -260,15 +260,42 @@ static OSEScreen *systemScreen = nil;
   return systemScreen;
 }
 
+- (void)dealloc
+{
+  NSDebugLLog(@"DBus", @"OSEScreen: -dealloc (retain count: %lu)", [self retainCount]);
+
+  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
+
+  XRRFreeScreenResources(screen_resources);
+  if (background_pixmap != None && backgroundPixmapOwner == self) {
+    XFree(&background_pixmap);
+  }
+  if (background_gc != None) {
+    XFreeGC(xDisplay, background_gc);
+  }
+
+  XCloseDisplay(xDisplay);
+
+  [systemDisplays release];
+  [updateScreenLock release];
+  // [systemPower release];
+  systemScreen = nil;
+
+  [super dealloc];
+}
+
 - (id)init
 {
   int event_base, error_base;
   int major_version, minor_version;
 
+  if (systemScreen != nil) {
+    return systemScreen;
+  }
+
   xDisplay = XOpenDisplay(getenv("DISPLAY"));
   if (!xDisplay) {
-    NSLog(@"Can't open Xorg display."
-          @" Please setup DISPLAY environment variable.");
+    NSLog(@"Can't open Xorg display. Please setup DISPLAY environment variable.");
     return nil;
   }
 
@@ -308,7 +335,7 @@ static OSEScreen *systemScreen = nil;
   background_pixmap = None;
   background_gc = None;
 
-  systemPower = [OSEPower new];
+  systemPower = [OSEPower sharedPower];
 
   // Workspace Manager notification sent as a reaction to XRRScreenChangeNotify
   [[NSDistributedNotificationCenter defaultCenter]
@@ -323,29 +350,6 @@ static OSEScreen *systemScreen = nil;
 - (void)setUseAutosave:(BOOL)yn
 {
   useAutosave = yn;
-}
-
-- (void)dealloc
-{
-  NSDebugLLog(@"dealloc", @"OSEScreen: -dealloc");
-  
-  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
-
-  XRRFreeScreenResources(screen_resources);
-  if (background_pixmap != None && backgroundPixmapOwner == self) {
-    XFree(&background_pixmap);
-  }
-  if (background_gc != None) {
-    XFreeGC(xDisplay, background_gc);
-  }
-
-  XCloseDisplay(xDisplay);
-
-  [systemDisplays release];
-  [updateScreenLock release];
-  [systemPower release];
-
-  [super dealloc];
 }
 
 //
