@@ -431,8 +431,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   [mediaOperations release];
 
   // NXTSystem objects declared in Workspace+WM.h
-  [systemPower stopEventsMonitor];
-  [systemPower release];
+  // [systemPower stopEventsMonitor];
+  // [systemPower release];
 
   // System Beep
   if (bellSound) {
@@ -656,8 +656,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // NSUpdateDynamicServices();
 
   // Detect lid close/open events
-  systemPower = [OSEPower new];
-  [systemPower startEventsMonitor];
+  // systemPower = [OSEPower sharedPower];
+  // [systemPower startEventsMonitor];
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   [nc addObserver:self
          selector:@selector(lidDidChange:)
@@ -1429,7 +1429,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)lidDidChange:(NSNotification *)aNotif
 {
   OSEDisplay *builtinDisplay = nil;
-  OSEScreen *screen = [OSEScreen new];
+  OSEScreen *screen = [OSEScreen sharedScreen];
 
   for (OSEDisplay *d in [screen connectedDisplays]) {
     if ([d isBuiltin]) {
@@ -1447,7 +1447,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
       [screen deactivateDisplay:builtinDisplay];
     }
   }
-  [screen release];
+  // [screen release];
 }
 
 //============================================================================

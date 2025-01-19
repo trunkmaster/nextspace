@@ -84,7 +84,7 @@
   NSLog(@"center");
 
   // Get NEXTSPACE display rect
-  screen = [[OSEScreen new] autorelease];
+  screen = [OSEScreen sharedScreen];
   if (screen != nil) {
     if ([[screen activeDisplays] count] > 0) {
       display = [screen mainDisplay];

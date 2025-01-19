@@ -139,19 +139,22 @@ int main(int argc, const char **argv)
 
   fprintf(stderr, "=== Starting Workspace ===\n");
   workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+  dispatch_sync(workspace_q, ^{
+    @autoreleasepool {
+      // Restore display layout
+      OSEScreen *screen = [OSEScreen sharedScreen];
+      [screen applySavedDisplayLayout];
+      [screen release];
+    }
+  });
   {
-    
     // DISPATCH_QUEUE_CONCURRENT is mandatory for CFRunLoop run.
-    dispatch_queue_t window_manager_q = dispatch_queue_create("ns.workspace.wm", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_queue_t window_manager_q = dispatch_queue_create("ns.workspace.wm",
+                                                              DISPATCH_QUEUE_CONCURRENT);
 
     //--- Initialize Window Manager
     fprintf(stderr, "=== Initializing Window Manager ===\n");
     dispatch_sync(window_manager_q, ^{
-      @autoreleasepool {
-        // Restore display layout
-        [[[OSEScreen new] autorelease] applySavedDisplayLayout];
-      }
-
       wInitialize(argc, (char **)argv);
       wStartUp(True);
 

@@ -151,12 +151,11 @@ void setupDisplays()
   displays = [screen activeDisplays];
   for (OSEDisplay *display in displays) {
     if (display.isBuiltin) {
-      systemPower = [OSEPower new];
+      systemPower = [OSEPower sharedPower];
       if (![systemPower isLidClosed] && [displays count] > 1) {
         [screen setMainDisplay:display];
         mainDisplay = display;
       }
-      [systemPower release];
     } else if (mainDisplay == nil) {
       mainDisplay = display;
     }

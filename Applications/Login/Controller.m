@@ -301,7 +301,7 @@ static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
 - (void)lidDidChange:(NSNotification *)aNotif
 {
   OSEDisplay *builtinDisplay = nil;
-  OSEScreen *screen = [OSEScreen new];
+  OSEScreen *screen = [OSEScreen sharedScreen];
   BOOL isLidClosed = NO;
 
   NSLog(@"lidDidChange: %@", aNotif.userInfo);
@@ -343,7 +343,7 @@ static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
     }
   }
 
-  [screen release];
+  // [screen release];
 }
 
 // --- Busy cursor
