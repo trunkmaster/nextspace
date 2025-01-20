@@ -302,7 +302,7 @@ NSLock *driveLock = nil;
 // Not implemented
 - (void)unmountVolumesAndDetach
 {
-  NSLog(@"OSEOSEUDisksDrive -unmountVolumesAndDetach is not implemented yet");
+  NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive -unmountVolumesAndDetach is not implemented yet");
   // 1.
   NSString *message;
   message = [NSString stringWithFormat:@"Ejecting %@...", [self humanReadableName]];
@@ -349,7 +349,7 @@ NSLock *driveLock = nil;
   }
 
   NSDebugLLog(@"udisks", @"Drive: Eject the Drive: %@", _objectPath);
-  NSLog(@"OSEOSEUDisksDrive: eject: %@", _objectPath);
+  NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive: eject: %@", _objectPath);
 
   message = [NSString stringWithFormat:@"Ejecting drive %@", [self humanReadableName]];
   [_udisksAdaptor operationWithName:@"Eject"
@@ -370,7 +370,7 @@ NSLock *driveLock = nil;
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
     [busMessage release];
 
-    NSLog(@"OSEUDisksVolume -eject result: %@", result);
+    NSDebugLLog(@"UDisks", @"OSEUDisksVolume -eject result: %@", result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
       [_udisksAdaptor operationWithName:@"Eject"
@@ -391,7 +391,7 @@ NSLock *driveLock = nil;
       return YES;
     }
   } else {
-    NSLog(@"Warning: Asynchronous volume mounting is not implemented!");
+    NSDebugLLog(@"UDisks", @"Warning: Asynchronous volume mounting is not implemented!");
   }
 
   return NO;
@@ -408,8 +408,7 @@ NSLock *driveLock = nil;
     return NO;
   }
 
-  NSDebugLLog(@"udisks", @"Drive: PowerOff the Drive: %@", _objectPath);
-  NSLog(@"OSEOSEUDisksDrive: powerOff: %@", _objectPath);
+  NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive: powerOff the drive %@", _objectPath);
 
   message = [NSString stringWithFormat:@"Power off the drive %@", [self humanReadableName]];
   [_udisksAdaptor operationWithName:@"PowerOff"
@@ -430,7 +429,7 @@ NSLock *driveLock = nil;
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
     [busMessage release];
 
-    NSLog(@"OSEUDisksVolume -eject result: %@", result);
+    NSDebugLLog(@"UDisks", @"OSEUDisksVolume -eject result: %@", result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
       [_udisksAdaptor operationWithName:@"PowerOff"
@@ -451,7 +450,7 @@ NSLock *driveLock = nil;
       return YES;
     }
   } else {
-    NSLog(@"Warning: Asynchronous volume mounting is not implemented!");
+    NSDebugLLog(@"UDisks", @"Warning: Asynchronous volume mounting is not implemented!");
   }
 
   return NO;

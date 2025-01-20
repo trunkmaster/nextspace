@@ -38,7 +38,8 @@
 
 - (void)handlePropertiesChangedSignal:(NSNotification *)aNotif
 {
-  NSLog(@"OSEUDisksAdaptor Volume \e[1mPropertiesChanged\e[0m: %@", aNotif.userInfo[@"Message"]);
+  NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor Volume \e[1mPropertiesChanged\e[0m: %@",
+             aNotif.userInfo[@"Message"]);
 }
 
 //-------------------------------------------------------------------------------
@@ -239,7 +240,7 @@
   // BOOL isFilesystem = [usage isEqualToString:@"filesystem"];
   BOOL isFilesystem = NO;
 
-  // NSLog(@"isFilesystem: %@ = %@", _objectPath, [_properties objectForKey:FS_INTERFACE]);
+  // NSDebugLLog(@"UDisks", @"isFilesystem: %@ = %@", _objectPath, [_properties objectForKey:FS_INTERFACE]);
 
   if (([_properties objectForKey:FS_INTERFACE] != nil) || ([usage isEqualToString:@"filesystem"] != NO)) {
     isFilesystem = YES;
@@ -335,8 +336,7 @@
     return nil;
   }
 
-  NSDebugLLog(@"udisks", @"OSEOSEUDisksVolume: mountVolume: %@", _objectPath);
-  NSLog(@"OSEOSEUDisksVolume: mount: %@", _objectPath);
+  NSDebugLLog(@"UDisks", @"OSEOSEUDisksVolume: mount: %@", _objectPath);
 
   message = [NSString stringWithFormat:@"Mounting volume %@", [self UNIXDevice]];
   [_udisksAdaptor operationWithName:@"Mount"
@@ -345,7 +345,7 @@
                              status:@"Started"
                               title:@"Mount"
                             message:message];
-
+    
   if (wait) {
     busMessage = [[OSEBusMessage alloc]
         initWithServiceName:_udisksAdaptor.serviceName
@@ -357,7 +357,7 @@
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
     [busMessage release];
 
-    NSLog(@"OSEUDisksVolume -mount result: %@", result);
+    NSDebugLLog(@"UDisks", @"OSEUDisksVolume -mount result: %@", result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
       [_udisksAdaptor operationWithName:@"Mount"
@@ -377,7 +377,14 @@
                                 message:message];
     }
   } else {
-    NSLog(@"Warning: Asynchronous volume mounting is not implemented!");
+    message = @"Asynchronous volume mounting is not implemented!";
+    NSDebugLLog(@"UDisks", @"Warning: %@", message);
+    [_udisksAdaptor operationWithName:@"Mount"
+                               object:self
+                               failed:NO
+                               status:@"Completed"
+                                title:@"Mount"
+                              message:message];
   }
 
   return nil;
@@ -393,8 +400,7 @@
     return NO;
   }
 
-  NSDebugLLog(@"udisks", @"OSEOSEUDisksVolume: unmount: %@", _objectPath);
-  NSLog(@"OSEOSEUDisksVolume: unmount: %@", _objectPath);
+  NSDebugLLog(@"UDisks", @"OSEOSEUDisksVolume: unmount: %@", _objectPath);
 
   message = [NSString stringWithFormat:@"Unmounting volume %@", [self UNIXDevice]];
   [_udisksAdaptor operationWithName:@"Unmount"
@@ -415,7 +421,7 @@
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
     [busMessage release];
 
-    NSLog(@"OSEUDisksVolume -unmount result: %@", result);
+    NSDebugLLog(@"UDisks", @"OSEUDisksVolume -unmount result: %@", result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
       [_udisksAdaptor operationWithName:@"Unmount"
@@ -436,8 +442,17 @@
       return YES;
     }
   } else {
-    NSLog(@"Warning: Asynchronous volume unmounting is not implemented!");
+    message = @"Asynchronous volume unmounting is not implemented!";
+    NSDebugLLog(@"UDisks", @"Warning: %@", message);
+    [_udisksAdaptor operationWithName:@"Unmount"
+                               object:self
+                               failed:NO
+                               status:@"Completed"
+                                title:@"Unmount"
+                              message:message];
+    return YES;
   }
+
 
   return NO;
 }

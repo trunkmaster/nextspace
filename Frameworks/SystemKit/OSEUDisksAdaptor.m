@@ -149,7 +149,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 
 - (void)_parseObject:(NSString *)objectPath withProperties:(NSArray *)objectProperties
 {
-  NSLog(@"Parsing '%@'", objectPath);
+  NSDebugLLog(@"UDisks", @"Parsing '%@'", objectPath);
   switch ([self _objectTypeForPath:objectPath]) {
     case OSEOSEUDisksDriveObject:
       [self _parseDrive:objectPath withProperties:objectProperties];
@@ -160,7 +160,9 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     case OSEUDisksJobObject:
       break;
     default:
-      NSLog(@"OSEUDisksAdaptor Warning: trying to append unknown object type with path '%@'", objectPath);
+      NSDebugLLog(@"UDisks",
+                 @"OSEUDisksAdaptor Warning: trying to append unknown object type with path '%@'",
+                 objectPath);
   }
 }
 
@@ -168,7 +170,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 
 - (void)_removeObject:(NSString *)objectPath andNotify:(BOOL)notify
 {
-  NSLog(@"Removing and unregistering '%@'", objectPath);
+  NSDebugLLog(@"UDisks", @"Removing and unregistering '%@'", objectPath);
   switch ([self _objectTypeForPath:objectPath]) {
     case OSEOSEUDisksDriveObject:
       // [OSEUDisksDrivesCache removeObjectForKey:objectPath];
@@ -193,7 +195,9 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
       [jobsCache removeObjectForKey:objectPath];
       break;
     default:
-      NSLog(@"OSEUDisksAdaptor Warning: trying to remove unknown object type with path %@", objectPath);
+      NSDebugLLog(@"UDisks",
+                 @"OSEUDisksAdaptor Warning: trying to remove unknown object type with path %@",
+                 objectPath);
   }
 }
 
@@ -232,11 +236,12 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   [udisksBlockDevicesCache removeObjectForKey:objectPath];
 
   drivePath = blockDevice[BLOCK_INTERFACE][@"Drive"];
-  // NSLog(@"_registerBlockDevice: %@", blockDevice);
+  // NSDebugLLog(@"UDisks", @"_registerBlockDevice: %@", blockDevice);
   drive = [drives objectForKey:drivePath];
   if (drive == nil) {
-    NSLog(@"OSEUDisksAdaptor Warning: no drive with path '%@' found for block device '%@'", drivePath,
-          objectPath);
+    NSDebugLLog(@"UDisks",
+               @"OSEUDisksAdaptor Warning: no drive with path '%@' found for block device '%@'",
+               drivePath, objectPath);
     return;
   }
   [drive addVolume:volumeInstance withPath:objectPath];
@@ -300,7 +305,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   mp = @"";
   for (OSEUDisksVolume *volume1 in [self mountedVolumes]) {
     mountPoint = [volume1 mountPoints][0];
-    // NSLog(@"LongestMP(%@): process MP: %@", filesystemPath, mountPoint);
+    // NSDebugLLog(@"UDisks", @"LongestMP(%@): process MP: %@", filesystemPath, mountPoint);
     mp1 = NXTIntersectionPath(filesystemPath, mountPoint);
     if ([mp1 isEqualToString:mountPoint] && ([mp1 length] >= [mp length])) {
       ASSIGN(mp, mp1);
@@ -373,12 +378,14 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 
 - (void)handlePropertiesChangedSignal:(NSNotification *)aNotif
 {
-  NSLog(@"OSEUDisksAdaptor \e[1mPropertiesChanged\e[0m: %@", aNotif.userInfo[@"Message"]);
+  NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor \e[1mPropertiesChanged\e[0m: %@",
+             aNotif.userInfo[@"Message"]);
 }
 
 - (void)handleInterfacesAdeddSignal:(NSNotification *)aNotif
 {
-  NSLog(@"OSEUDisksAdaptor \e[1mInterfacesAdded\e[0m: %@", aNotif.userInfo[@"Message"]);
+  NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor \e[1mInterfacesAdded\e[0m: %@",
+             aNotif.userInfo[@"Message"]);
 
   NSArray *message = aNotif.userInfo[@"Message"];
   NSString *objectPath = nil;
@@ -388,7 +395,8 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     objectPath = message[0];
     objectProperties = message[1];
   } else {
-    NSLog(@"OSEUDisksAdaptor error: message in InterfaceAdded notification is broken.");
+    NSDebugLLog(@"UDisks",
+               @"OSEUDisksAdaptor error: message in InterfaceAdded notification is broken.");
     return;
   }
 
@@ -450,18 +458,22 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
       [jobsCache setObject:properties forKey:objectPath];
     } break;
     default:
-      NSLog(@"OSEUDisksAdaptor Warning: trying to remove unknown object type with path %@", objectPath);
+      NSDebugLLog(@"UDisks",
+                 @"OSEUDisksAdaptor Warning: trying to remove unknown object type with path %@",
+                 objectPath);
   }
 }
 
 - (void)handleInterfacesRemovedSignal:(NSNotification *)aNotif
 {
-  NSLog(@"OSEUDisksAdaptor \e[1mInterfacesRemoved\e[0m: %@", aNotif.userInfo[@"Message"]);
+  NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor \e[1mInterfacesRemoved\e[0m: %@",
+             aNotif.userInfo[@"Message"]);
   NSArray *message = aNotif.userInfo[@"Message"];
   NSString *objectPath;
 
   if (message.count == 0) {
-    NSLog(@"OSEUDisksAdaptor InterfacesRemoved warning: no object path specified in message.");
+    NSDebugLLog(@"UDisks",
+               @"OSEUDisksAdaptor InterfacesRemoved warning: no object path specified in message.");
     return;
   } else {
     objectPath = message.firstObject;
@@ -484,7 +496,8 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
         [jobsCache removeObjectForKey:objectPath];
       } break;
       default:
-        NSLog(@"OSEUDisksAdaptor InterfacesRemoved warning: unknown object type was removed, skipping.");
+        NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor InterfacesRemoved warning: unknown object type "
+                              @"was removed, skipping.");
         break;
     }
     if (object != nil) {
@@ -595,7 +608,9 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
       object = [jobsCache objectForKey:objectPath];
       break;
     default:
-      NSLog(@"OSEUDisksAdaptor objectWithUDisksPath: unknow object for object path %@", objectPath);
+      NSDebugLLog(@"UDisks",
+                 @"OSEUDisksAdaptor objectWithUDisksPath: unknow object for object path %@",
+                 objectPath);
   }
   
   return object;
@@ -664,7 +679,9 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
       [info setObject:[object UNIXDevice] forKey:@"UNIXDevice"];
 
       if ([name isEqualToString:@"Mount"] && !failed) {
-        [info setObject:[object mountPoints] forKey:@"MountPoint"];
+        if ([object mountPoints].count > 0) {
+          [info setObject:[object mountPoints] forKey:@"MountPoint"];
+        }
         [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification
                                           object:self
                                         userInfo:info];
@@ -821,13 +838,13 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   } else {
     // 3. Get loop master volume
     loopMaster = [volume masterVolume];
-    NSLog(@"Eject loop volume: %@ (%@)", loopMaster, volume);
+    NSDebugLLog(@"UDisks", @"Eject loop volume: %@ (%@)", loopMaster, volume);
     // 4. Unmount all loop diskVolumes for that master
     if (loopMaster != volume) {
       for (OSEUDisksVolume *vol in [volumes allValues]) {
-        NSLog(@">>%@", [vol UNIXDevice]);
+        NSDebugLLog(@"UDisks", @">>%@", [vol UNIXDevice]);
         if ([vol masterVolume] == loopMaster) {
-          NSLog(@"Unmount volume %@", [vol UNIXDevice]);
+          NSDebugLLog(@"UDisks", @"Unmount volume %@", [vol UNIXDevice]);
           [vol unmount:NO];
         }
       }
