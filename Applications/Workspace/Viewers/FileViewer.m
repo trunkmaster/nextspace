@@ -1465,6 +1465,10 @@
   PathIcon *icon;
   NSString *iconPath;
 
+  if (mountPoint == nil) {
+    return;
+  }
+
   NSDebugLLog(@"FileViewer", @"Volume '%@' did mount at path: %@",
               [[notif userInfo] objectForKey:@"UNIXDevice"], mountPoint);
 
@@ -1494,6 +1498,10 @@
   PathIcon *icon;
   NSString *mountPoint = [[notif userInfo] objectForKey:@"MountPoint"];
   NSString *iconPath;
+
+  if (mountPoint == nil) {
+    return;
+  }
 
   NSDebugLLog(@"FileViewer", @"Volume '%@' mounted at '%@' did unmount",
               [[notif userInfo] objectForKey:@"UNIXDevice"], mountPoint);
