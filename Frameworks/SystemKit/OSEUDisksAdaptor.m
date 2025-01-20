@@ -422,7 +422,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
         [volume _dumpProperties];
         [properties release];
       }
-      [[volumes objectForKey:objectPath] mount:YES];
+      // [[volumes objectForKey:objectPath] mount:YES];
     } break;
     case OSEUDisksJobObject: {
       // TODO
@@ -494,7 +494,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
       if (object.properties.allKeys.count == 0) {
         [self _removeObject:objectPath andNotify:YES];
       }
-      [object _dumpProperties];
+      // [object _dumpProperties];
     }
   }
 }
