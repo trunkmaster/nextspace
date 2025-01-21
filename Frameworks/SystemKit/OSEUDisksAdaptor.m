@@ -430,7 +430,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
         [volume _dumpProperties];
         [properties release];
       }
-      // [[volumes objectForKey:objectPath] mount:YES];
+      [[volumes objectForKey:objectPath] mount:YES];
     } break;
     case OSEUDisksJobObject: {
       // TODO

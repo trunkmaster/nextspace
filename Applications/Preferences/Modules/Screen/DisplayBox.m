@@ -74,27 +74,21 @@
 {
   CGFloat red, green, blue;
   NSColor *color;
-  
-  if (active)
-    {
-      [[OSEScreen sharedScreen] savedBackgroundColorRed:&red
-                                                 green:&green
-                                                  blue:&blue];
-      color = [NSColor colorWithDeviceRed:red
-                                    green:green
-                                     blue:blue
-                                    alpha:1.0];
-      [nameField setTextColor:[NSColor whiteColor]];
-    }
-  else
-    {
-      color = [NSColor darkGrayColor];
-      [nameField setTextColor:[NSColor lightGrayColor]];
-    }
+
+  if (active) {
+    OSEScreen *screen = [OSEScreen new];
+    [screen savedBackgroundColorRed:&red green:&green blue:&blue];
+    [screen release];
+    color = [NSColor colorWithDeviceRed:red green:green blue:blue alpha:1.0];
+    [nameField setTextColor:[NSColor whiteColor]];
+  } else {
+    color = [NSColor darkGrayColor];
+    [nameField setTextColor:[NSColor lightGrayColor]];
+  }
   ASSIGN(bgColor, color);
-  
+
   isActiveDisplay = active;
-  
+
   [[self superview] setNeedsDisplay:YES];
 }
 

@@ -89,11 +89,12 @@
     [mouse release];
 
     NSLog(@"Configuring Desktop background...");
-    OSEScreen *screen = [OSEScreen sharedScreen];
+    OSEScreen *screen = [OSEScreen new];
     CGFloat red, green, blue;
     if ([screen savedBackgroundColorRed:&red green:&green blue:&blue] == YES) {
       [screen setBackgroundColorRed:red green:green blue:blue];
     }
+    [screen release];
   } else {
     [self showPreferencesWindow];
   }

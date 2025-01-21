@@ -239,14 +239,14 @@ static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
 
 - (void)setRootWindowBackground
 {
+  OSEScreen *screen = [OSEScreen new];
   XSetWindowAttributes winattrs;
 
   winattrs.cursor = XCreateFontCursor(xDisplay, XC_left_ptr);
   XChangeWindowAttributes(xDisplay, xRootWindow, CWCursor, &winattrs);
 
-  [[OSEScreen sharedScreen] setBackgroundColorRed:83.0 / 255.0
-                                            green:83.0 / 255.0
-                                             blue:116.0 / 255.0];
+  [screen setBackgroundColorRed:83.0 / 255.0 green:83.0 / 255.0 blue:116.0 / 255.0];
+  [screen release];
 }
 
 - (void)setWindowVisible:(BOOL)flag
@@ -301,7 +301,7 @@ static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
 - (void)lidDidChange:(NSNotification *)aNotif
 {
   OSEDisplay *builtinDisplay = nil;
-  OSEScreen *screen = [OSEScreen sharedScreen];
+  OSEScreen  *screen = [OSEScreen new];
   BOOL isLidClosed = NO;
 
   NSLog(@"lidDidChange: %@", aNotif.userInfo);
@@ -343,7 +343,7 @@ static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
     }
   }
 
-  // [screen release];
+  [screen release];
 }
 
 // --- Busy cursor
@@ -637,6 +637,12 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
              name:@"LoginDefaultsDidChangeNotification"
            object:@"Preferences"];
   NSLog(@"appDidFinishLaunch: end");
+}
+
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+{
+  NSLog(@"ApplicationShouldTerminate");
+  return NSTerminateNow;
 }
 
 - (void)defaultsDidChange:(NSNotification *)notif

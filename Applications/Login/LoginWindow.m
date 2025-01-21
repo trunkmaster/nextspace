@@ -84,7 +84,7 @@
   NSLog(@"center");
 
   // Get NEXTSPACE display rect
-  screen = [OSEScreen sharedScreen];
+  screen = [OSEScreen new];
   if (screen != nil) {
     if ([[screen activeDisplays] count] > 0) {
       display = [screen mainDisplay];
@@ -102,6 +102,7 @@
 
     NSLog(@"Screen size   : %4.0f x %4.0f", screenSize.width, screenSize.height);
   }
+  [screen release];
 
   NSLog(@"Display frame : %4.0f x %4.0f  (%4.0f, %4.0f)", displayRect.size.width,
         displayRect.size.height, displayRect.origin.x, displayRect.origin.y);

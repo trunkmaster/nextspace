@@ -71,7 +71,7 @@
                                         object:self.objectPath
                                      interface:@"org.freedesktop.DBus.Properties"
                                   notification:OSEUDisksPropertiesDidChangeNotification];
-
+  
   // [self _dumpProperties];
 
   return self;

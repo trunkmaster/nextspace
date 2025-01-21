@@ -137,7 +137,7 @@ int startWindowServer()
 
 void setupDisplays()
 {
-  OSEScreen *screen = [OSEScreen sharedScreen];
+  OSEScreen *screen = [OSEScreen new];
   OSEDisplay *mainDisplay = nil;
   OSEPower *systemPower = nil;
   NSArray *layout;
@@ -163,12 +163,12 @@ void setupDisplays()
   [screen applyDisplayLayout:layout];
   [screen setMainDisplay:mainDisplay];
 
-  // mainDisplay = [screen displayWithMouseCursor];
   xDisplay = XOpenDisplay(NULL);
   xRootWindow = RootWindow(xDisplay, DefaultScreen(xDisplay));
   XWarpPointer(xDisplay, None, xRootWindow, 0, 0, 0, 0, (int)mainDisplay.frame.origin.x + 50,
                (int)mainDisplay.frame.origin.y + 50);
   XCloseDisplay(xDisplay);
+  [screen release];
 }
 
 //-----------------------------------------------------------------------------
@@ -329,13 +329,13 @@ int main(int argc, const char **argv)
     plymouthQuit(YES);
 
     //--- StartupHook -----------------------------------------------------------
-    // StartupHook defined only system defaults (root user or app bundle)
-    startupHook = [loginDefaults objectForKey:@"StartupHook"];
-    if ([startupHook isEqualToString:@""] == NO) {
-      if (runCommand(startupHook, YES) != 0) {
-        NSLog(@"Warning: StartupHook run is not successful.");
-      }
-    }
+    // // StartupHook defined only system defaults (root user or app bundle)
+    // startupHook = [loginDefaults objectForKey:@"StartupHook"];
+    // if ([startupHook isEqualToString:@""] == NO) {
+    //   if (runCommand(startupHook, YES) != 0) {
+    //     NSLog(@"Warning: StartupHook run is not successful.");
+    //   }
+    // }
     //---------------------------------------------------------------------------
 
     //--- AppKit application ----------------------------------------------------
@@ -347,6 +347,8 @@ int main(int argc, const char **argv)
     [LoginApplication sharedApplication];
     NSApplicationMain(argc, argv);
     //---------------------------------------------------------------------------
+
+    NSLog(@"Application has quit RunLoop");
 
     // Stop Window Server
     if (xorgTask != nil) {
@@ -363,10 +365,10 @@ int main(int argc, const char **argv)
     plymouthStart(1);
 
     // Panel stopped it's execution - check exit code
-    exitCommand = commandForExitCode(panelExitCode);
-    if (exitCommand && [exitCommand isEqualToString:@""] == NO) {
-      runCommand(exitCommand, NO);
-    }
+    // exitCommand = commandForExitCode(panelExitCode);
+    // if (exitCommand && [exitCommand isEqualToString:@""] == NO) {
+    //   runCommand(exitCommand, NO);
+    // }
   } else {  // Xorg server start failed - cleanup
     NSLog(@"Unable to start Login Panel: no Window Server available.");
     plymouthQuit(YES);

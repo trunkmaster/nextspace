@@ -92,7 +92,8 @@ static OSEPower *systemPower = nil;
 
 - (void)dealloc
 {
-  NSDebugLLog(@"DBus", @"OSEPower: -dealloc (retain count: %lu)", [self retainCount]);
+  NSDebugLLog(@"dealloc", @"OSEPower: -dealloc (retain count: %lu) (connection retain count: %lu)",
+              [self retainCount], [self.connection retainCount]);
   systemPower = nil;
   [super dealloc];
 }

@@ -317,7 +317,7 @@
 
 - (void)sizeToFitScreen
 {
-  OSEScreen *screen = [[OSEScreen new] autorelease];
+  OSEScreen *screen = [OSEScreen new];
   [self sizeToFitScreenSize:[screen sizeInPixels]];
 }
 

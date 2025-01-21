@@ -69,7 +69,7 @@ NSString *OSEDisplayPropertiesKey = @"Properties";
 NSString *OSEScreenDidChangeNotification = @"OSEScreenDidChangeNotification";
 NSString *OSEScreenDidUpdateNotification = @"OSEScreenDidUpdateNotification";
 
-static OSEScreen *systemScreen = nil;
+// static OSEScreen *systemScreen = nil;
 
 @interface OSEScreen (Private)
 - (NSSize)_sizeInPixels;
@@ -251,35 +251,37 @@ static OSEScreen *systemScreen = nil;
 
 @implementation OSEScreen
 
-+ (id)sharedScreen
-{
-  if (systemScreen == nil) {
-    systemScreen = [[OSEScreen alloc] init];
-  }
+// + (id)sharedScreen
+// {
+//   if (systemScreen == nil) {
+//     systemScreen = [[OSEScreen alloc] init];
+//   }
 
-  return systemScreen;
-}
+//   return systemScreen;
+// }
 
 - (void)dealloc
 {
-  NSDebugLLog(@"DBus", @"OSEScreen: -dealloc (retain count: %lu)", [self retainCount]);
+  NSDebugLLog(@"dealloc", @"OSEScreen: -dealloc (retain count: %lu)", [self retainCount]);
 
   [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
 
-  XRRFreeScreenResources(screen_resources);
   if (background_pixmap != None && backgroundPixmapOwner == self) {
     XFree(&background_pixmap);
+    background_pixmap = None;
   }
   if (background_gc != None) {
     XFreeGC(xDisplay, background_gc);
+    background_gc = None;
   }
+  XRRFreeScreenResources(screen_resources);
 
   XCloseDisplay(xDisplay);
 
   [systemDisplays release];
   [updateScreenLock release];
-  // [systemPower release];
-  systemScreen = nil;
+  [systemPower release];
+  // systemScreen = nil;
 
   [super dealloc];
 }
@@ -289,9 +291,9 @@ static OSEScreen *systemScreen = nil;
   int event_base, error_base;
   int major_version, minor_version;
 
-  if (systemScreen != nil) {
-    return systemScreen;
-  }
+  // if (systemScreen != nil) {
+  //   return systemScreen;
+  // }
 
   xDisplay = XOpenDisplay(getenv("DISPLAY"));
   if (!xDisplay) {
@@ -641,41 +643,40 @@ static OSEScreen *systemScreen = nil;
 
 - (NSArray *)activeDisplays
 {
-  NSMutableArray *activeDL = [[NSMutableArray alloc] init];
+  NSMutableArray *activeDisplays = [[NSMutableArray alloc] init];
   
-  for (OSEDisplay *d in systemDisplays) {
-    if ([d isActive]) {
-      [activeDL addObject:d];
+  for (OSEDisplay *display in systemDisplays) {
+    if ([display isActive]) {
+      NSLog(@"Adding active display: %@", [display outputName]);
+      [activeDisplays addObject:display];
     }
   }
-
-  return [activeDL autorelease];
+  return [activeDisplays autorelease];
 }
 
 - (NSArray *)connectedDisplays
 {
-  NSMutableArray *connectedDL = [[NSMutableArray alloc] init];
+  NSMutableArray *connectedDisplays = [[NSMutableArray alloc] init];
 
-  for (OSEDisplay *d in systemDisplays) {
-      if ([d isConnected]) {
-        [connectedDL addObject:d];
+  for (OSEDisplay *display in systemDisplays) {
+      if ([display isConnected]) {
+        [connectedDisplays addObject:display];
       }
   }
-
-  return [connectedDL autorelease];
+  return [connectedDisplays autorelease];
 }
 
 //---
 
 - (OSEDisplay *)mainDisplay
 {
-  OSEDisplay *display;
+  OSEDisplay *display = nil;
   
-  for (display in systemDisplays) {
-    if ([display isActive] && [display isMain]) {
+  for (OSEDisplay *d in systemDisplays) {
+    if ([d isActive] && [d isMain]) {
+      display = d;
       break;
     }
-    display = nil;
   }
   
   return display;

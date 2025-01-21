@@ -159,17 +159,15 @@
   [setMainBtn setEnabled:(![sender isMain]&&[sender isActive])];
   
   [setStateBtn setTitle:[sender isActive] ? @"Disable" : @"Enable"];
-  
-  if (([sender isActive] &&
-       [[systemScreen activeDisplays] count] > 1) ||
-      (![sender isActive] && ![OSEPower isLidClosed]))
-    {
-      [setStateBtn setEnabled:YES];
-    }
-  else
-    {
-      [setStateBtn setEnabled:NO];
-    }  
+
+  OSEPower *systemPower = [OSEPower new];
+  if (([sender isActive] && [[systemScreen activeDisplays] count] > 1) ||
+      (![sender isActive] && ![systemPower isLidClosed])) {
+    [setStateBtn setEnabled:YES];
+  } else {
+    [setStateBtn setEnabled:NO];
+  }
+  [systemPower release];
 }
 
 - (void)setMainDisplay:(id)sender

@@ -25,10 +25,10 @@ static OSEBusConnection *defaultConnection = nil;
 static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, DBusMessage *message,
                                                    void *info)
 {
-  // printf("Signal arrived --> serial=%u path=%s; interface=%s; member=%s sender=%s\n",
-  //        dbus_message_get_serial(message), dbus_message_get_path(message),
-  //        dbus_message_get_interface(message), dbus_message_get_member(message),
-  //        dbus_message_get_sender(message));
+  printf("Signal arrived --> serial=%u path=%s; interface=%s; member=%s sender=%s\n",
+         dbus_message_get_serial(message), dbus_message_get_path(message),
+         dbus_message_get_interface(message), dbus_message_get_member(message),
+         dbus_message_get_sender(message));
 
   // if (dbus_message_is_signal(message, DBUS_INTERFACE_LOCAL, "Disconnected")) {
   //   return DBUS_HANDLER_RESULT_HANDLED;
@@ -60,14 +60,14 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 + (instancetype)defaultConnection
 {
   if (defaultConnection == nil) {
-    [[self alloc] init];
+    defaultConnection = [[OSEBusConnection alloc] init];
   }
   return defaultConnection;
 }
 
 - (void)dealloc
 {
-  NSDebugLLog(@"DBus", @"OSEBusConnection: -dealloc (retain count: %lu)", [self retainCount]);
+  NSDebugLLog(@"dealloc", @"OSEBusConnection: -dealloc (retain count: %lu)", [self retainCount]);
 #ifdef CF_BUS_CONNECTION
 #else
   [socketFileHandle release];
@@ -180,6 +180,7 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 
   rule = [NSString stringWithFormat:@"path='%@',interface='%@',member='%@',type='signal'",
                                     objectPath, aInterface, signalName];
+  NSDebugLLog(@"UDisks", @"OSEBusConnection: adding signal observer with rule: %@", rule);
   dbus_bus_add_match(_dbus_connection, [rule cString], &_dbus_error);
   if (dbus_error_is_set(&_dbus_error)) {
     NSLog(@"OSEBusConnection Error %s: %s", _dbus_error.name, _dbus_error.message);

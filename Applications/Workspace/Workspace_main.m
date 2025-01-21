@@ -142,7 +142,7 @@ int main(int argc, const char **argv)
   dispatch_sync(workspace_q, ^{
     @autoreleasepool {
       // Restore display layout
-      OSEScreen *screen = [OSEScreen sharedScreen];
+      OSEScreen *screen = [OSEScreen new];
       [screen applySavedDisplayLayout];
       [screen release];
     }
