@@ -267,8 +267,12 @@ NSString *OSEScreenDidUpdateNotification = @"OSEScreenDidUpdateNotification";
   [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
 
   if (background_pixmap != None && backgroundPixmapOwner == self) {
-    XFree(&background_pixmap);
+    // From XChangeProperty(3): "The lifetime of a property is not tied to the storing client.
+    // Properties remain until explicitly deleted, until the window is destroyed, or until the
+    // server resets.". So we don't need to free `background_pixmap` property.
+    //   XFree(&background_pixmap);
     background_pixmap = None;
+    backgroundPixmapOwner = nil;
   }
   if (background_gc != None) {
     XFreeGC(xDisplay, background_gc);
