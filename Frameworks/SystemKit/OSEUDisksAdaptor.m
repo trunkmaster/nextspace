@@ -206,7 +206,9 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   OSEUDisksDrive *driveInstance;
   NSDictionary *drive = OSEUDisksDrivesCache[objectPath];
 
-  driveInstance = [[OSEUDisksDrive alloc] initWithProperties:drive objectPath:objectPath];
+  driveInstance = [[OSEUDisksDrive alloc] initWithProperties:drive
+                                                  objectPath:objectPath
+                                                     adaptor:self];
   driveInstance.udisksAdaptor = self;
   [OSEUDisksDrivesCache removeObjectForKey:objectPath];
 
@@ -230,7 +232,9 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     // Ignored devices leaves in the cache
     return;
   }
-  volumeInstance = [[OSEUDisksVolume alloc] initWithProperties:blockDevice objectPath:objectPath];
+  volumeInstance = [[OSEUDisksVolume alloc] initWithProperties:blockDevice
+                                                    objectPath:objectPath
+                                                       adaptor:self];
   volumeInstance.udisksAdaptor = self;
   [volumes setObject:volumeInstance forKey:objectPath];
   [udisksBlockDevicesCache removeObjectForKey:objectPath];
@@ -354,12 +358,12 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 
 - (void)setSignalsMonitoring
 {
-  [self.connection addSignalObserver:self
-                            selector:@selector(handlePropertiesChangedSignal:)
-                              signal:@"PropertiesChanged"
-                              object:self.objectPath
-                           interface:@"org.freedesktop.DBus.Properties"
-                        notification:OSEUDisksPropertiesDidChangeNotification];
+  // [self.connection addSignalObserver:self
+  //                           selector:@selector(handlePropertiesChangedSignal:)
+  //                             signal:@"PropertiesChanged"
+  //                             object:self.objectPath
+  //                          interface:@"org.freedesktop.DBus.Properties"
+  //                       notification:OSEUDisksPropertiesDidChangeNotification];
   
   [self.connection addSignalObserver:self
                             selector:@selector(handleInterfacesAdeddSignal:)

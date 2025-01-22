@@ -54,12 +54,14 @@
 
 - (id)initWithProperties:(NSDictionary *)properties
               objectPath:(NSString *)path
+                 adaptor:(OSEUDisksAdaptor *)adaptor
 {
   self = [super init];
 
   _properties = [properties mutableCopy];
   _objectPath = [path copy];
   _volumes = [[NSMutableDictionary alloc] init];
+  self.udisksAdaptor = adaptor;
 
   notificationCenter = [NSNotificationCenter defaultCenter];
 

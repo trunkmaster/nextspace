@@ -101,7 +101,8 @@ extern NSString *OSEUDisksInterfacesDidRemoveNotification;
 - (NSMutableDictionary *)properties;
 
 - (id)initWithProperties:(NSDictionary *)properties
-              objectPath:(NSString *)path;
+              objectPath:(NSString *)path
+                 adaptor:(OSEUDisksAdaptor *)adaptor;
 - (void)setProperty:(NSString *)property
               value:(NSString *)value
       interfaceName:(NSString *)interface;

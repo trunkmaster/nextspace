@@ -38,8 +38,18 @@
 
 - (void)handlePropertiesChangedSignal:(NSNotification *)aNotif
 {
-  NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor Volume \e[1mPropertiesChanged\e[0m: %@",
-             aNotif.userInfo[@"Message"]);
+  NSDictionary *info = aNotif.userInfo;
+  id objectPath = info[@"ObjectPath"];
+
+  if ([objectPath isKindOfClass:[NSString class]] && [objectPath isEqualToString:_objectPath] == NO) {
+    NSDebugLLog(@"UDisks",
+                @"OSEUDisksVolume (%@) \e[1mPropertiesChanged\e[0m: not mine, skipping...",
+                _objectPath);
+    return;
+  }
+
+  NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) \e[1mPropertiesChanged\e[0m: %@", _objectPath,
+              aNotif.userInfo);
 }
 
 //-------------------------------------------------------------------------------
@@ -56,7 +66,9 @@
   [super dealloc];
 }
 
-- (id)initWithProperties:(NSDictionary *)properties objectPath:(NSString *)path
+- (id)initWithProperties:(NSDictionary *)properties
+              objectPath:(NSString *)path
+                 adaptor:(OSEUDisksAdaptor *)adaptor
 {
   self = [super init];
 
@@ -65,6 +77,7 @@
 
   notificationCenter = [NSNotificationCenter defaultCenter];
 
+  self.udisksAdaptor = adaptor;
   [_udisksAdaptor.connection addSignalObserver:self
                                       selector:@selector(handlePropertiesChangedSignal:)
                                         signal:@"PropertiesChanged"

@@ -226,14 +226,21 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
              message:(NSArray *)result
 {
   NSArray<NSDictionary *> *objectSignals = signalFilters[objectPath];
+  NSDictionary *info;
 
+  info = @{
+    @"ObjectPath" : objectPath,
+    // @"Signal" : signalName,
+    // @"Interface" : aInterface,
+    @"Message" : result
+  };
   for (NSDictionary *signal in objectSignals) {
     if ([signal[@"Signal"] isEqualToString:signalName] &&
         [signal[@"Interface"] isEqualToString:aInterface]) {
-      NSDebugLLog(@"DBus", @"OSEBusConnection: notification %@ was sent", signal[@"Notification"]);
       [[NSNotificationCenter defaultCenter] postNotificationName:signal[@"Notification"]
                                                           object:self
-                                                        userInfo:@{@"Message" : result}];
+                                                        userInfo:info];
+      NSDebugLLog(@"DBus", @"OSEBusConnection: notification %@ was sent", signal[@"Notification"]);
     }
   }
 }
