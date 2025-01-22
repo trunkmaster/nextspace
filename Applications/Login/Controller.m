@@ -684,6 +684,7 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
       return;
     } else if ([user isEqualToString:@"terminate"]) {
       NSLog(@"Application will quit");
+      panelExitCode = QuitExitCode;
       [NSApp terminate:self];  // Equivalent to "Quit" menu item
       return;
     } else if ([user isEqualToString:@"shake"]) {  // for testing

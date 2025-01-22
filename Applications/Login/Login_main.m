@@ -100,7 +100,7 @@ int startWindowServer()
     [xorgTask setArguments:serverArgs];
     [xorgTask setCurrentDirectoryPath:@"/"];
 
-    NSLog(@"================> Xorg is coming up <================");
+    NSLog(@"============> Xorg is coming up <==============");
     @try {
       [xorgTask launch];
     } @catch (NSException *e) {
@@ -128,7 +128,7 @@ int startWindowServer()
     XClearWindow(xDisplay, xRootWindow);
     XSync(xDisplay, false);
 
-    NSLog(@"================> Xorg is ready <================");
+    NSLog(@"==============> Xorg is ready <================");
     XCloseDisplay(xDisplay);
   }
 
@@ -329,20 +329,19 @@ int main(int argc, const char **argv)
     plymouthQuit(YES);
 
     //--- StartupHook -----------------------------------------------------------
-    // // StartupHook defined only system defaults (root user or app bundle)
-    // startupHook = [loginDefaults objectForKey:@"StartupHook"];
-    // if ([startupHook isEqualToString:@""] == NO) {
-    //   if (runCommand(startupHook, YES) != 0) {
-    //     NSLog(@"Warning: StartupHook run is not successful.");
-    //   }
-    // }
+    // StartupHook defined only system defaults (root user or app bundle)
+    startupHook = [loginDefaults objectForKey:@"StartupHook"];
+    if ([startupHook isEqualToString:@""] == NO) {
+      if (runCommand(startupHook, YES) != 0) {
+        NSLog(@"Warning: StartupHook run is not successful.");
+      }
+    }
     //---------------------------------------------------------------------------
 
     //--- AppKit application ----------------------------------------------------
     // Since there is no window manager running yet, we'll want to
     // do window decorations ourselves
     [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"GSX11HandlesWindowDecorations"];
-    // setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
     // Start our application without appicon
     [LoginApplication sharedApplication];
     NSApplicationMain(argc, argv);
@@ -362,13 +361,15 @@ int main(int argc, const char **argv)
     }
 
     // Show shutdown Plymouth splash screen
-    plymouthStart(1);
+    if (panelExitCode != QuitExitCode) {
+      plymouthStart(1);
+    }
 
     // Panel stopped it's execution - check exit code
-    // exitCommand = commandForExitCode(panelExitCode);
-    // if (exitCommand && [exitCommand isEqualToString:@""] == NO) {
-    //   runCommand(exitCommand, NO);
-    // }
+    exitCommand = commandForExitCode(panelExitCode);
+    if (exitCommand && [exitCommand isEqualToString:@""] == NO) {
+      runCommand(exitCommand, NO);
+    }
   } else {  // Xorg server start failed - cleanup
     NSLog(@"Unable to start Login Panel: no Window Server available.");
     plymouthQuit(YES);
