@@ -36,12 +36,16 @@
   [props release];
 }
 
-- (void)handlePropertiesChangedSignal:(NSNotification *)aNotif
+- (void)handlePropertiesChangedSignal:(NSDictionary *)info
 {
-  NSDictionary *info = aNotif.userInfo;
   id objectPath = info[@"ObjectPath"];
+  // sa{sv}as
+  NSArray *message = info[@"Message"];
 
-  if ([objectPath isKindOfClass:[NSString class]] && [objectPath isEqualToString:_objectPath] == NO) {
+  NSLog(@"OSEUDisksVolume - handlePropertiesChanged");
+
+  if ([objectPath isKindOfClass:[NSString class]] &&
+      [objectPath isEqualToString:_objectPath] == NO) {
     NSDebugLLog(@"UDisks",
                 @"OSEUDisksVolume (%@) \e[1mPropertiesChanged\e[0m: not mine, skipping...",
                 _objectPath);
@@ -49,7 +53,7 @@
   }
 
   NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) \e[1mPropertiesChanged\e[0m: %@", _objectPath,
-              aNotif.userInfo);
+              info);
 }
 
 //-------------------------------------------------------------------------------

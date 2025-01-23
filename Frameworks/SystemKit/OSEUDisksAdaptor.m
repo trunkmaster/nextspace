@@ -380,18 +380,16 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
                         notification:OSEUDisksInterfacesDidRemoveNotification];
 }
 
-- (void)handlePropertiesChangedSignal:(NSNotification *)aNotif
+- (void)handlePropertiesChangedSignal:(NSDictionary *)info
 {
-  NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor \e[1mPropertiesChanged\e[0m: %@",
-             aNotif.userInfo[@"Message"]);
+  NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor \e[1mPropertiesChanged\e[0m: %@", info[@"Message"]);
 }
 
-- (void)handleInterfacesAdeddSignal:(NSNotification *)aNotif
+- (void)handleInterfacesAdeddSignal:(NSDictionary *)info
 {
-  NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor \e[1mInterfacesAdded\e[0m: %@",
-             aNotif.userInfo[@"Message"]);
+  NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor \e[1mInterfacesAdded\e[0m: %@", info[@"Message"]);
 
-  NSArray *message = aNotif.userInfo[@"Message"];
+  NSArray *message = info[@"Message"];
   NSString *objectPath = nil;
   NSArray *objectProperties = nil;
 
@@ -468,11 +466,10 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   }
 }
 
-- (void)handleInterfacesRemovedSignal:(NSNotification *)aNotif
+- (void)handleInterfacesRemovedSignal:(NSDictionary *)info
 {
-  NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor \e[1mInterfacesRemoved\e[0m: %@",
-             aNotif.userInfo[@"Message"]);
-  NSArray *message = aNotif.userInfo[@"Message"];
+  NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor \e[1mInterfacesRemoved\e[0m: %@", info[@"Message"]);
+  NSArray *message = info[@"Message"];
   NSString *objectPath;
 
   if (message.count == 0) {
@@ -533,6 +530,9 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   [volumes release];
   [drives release];
   [jobsCache release];
+
+  // OSEUDisksAdaptor is the main owner of connection to UDisks2 D-Bus service (OSEBusConnection) - release it.
+  [self.connection release];
 
   [super dealloc];
 }
