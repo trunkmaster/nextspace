@@ -226,14 +226,13 @@
   selectedAttrs = @{NSBackgroundColorAttributeName:[NSColor controlLightHighlightColor]};
   [messageView setSelectedTextAttributes:selectedAttrs];
 
-  systemScreen = [OSEScreen new];
+  systemScreen = [OSEScreen sharedScreen];
 }
 
 - (void)dealloc
 {
   NSDebugLLog(@"Memory",@"NXTAlert: -dealloc");
   [buttons release];
-  [systemScreen release];
   [super dealloc];
 }
 
