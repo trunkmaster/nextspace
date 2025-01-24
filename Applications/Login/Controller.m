@@ -239,14 +239,12 @@ static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
 
 - (void)setRootWindowBackground
 {
-  OSEScreen *screen = [OSEScreen new];
   XSetWindowAttributes winattrs;
 
   winattrs.cursor = XCreateFontCursor(xDisplay, XC_left_ptr);
   XChangeWindowAttributes(xDisplay, xRootWindow, CWCursor, &winattrs);
 
-  [screen setBackgroundColorRed:83.0 / 255.0 green:83.0 / 255.0 blue:116.0 / 255.0];
-  [screen release];
+  [self.systemScreen setBackgroundColorRed:83.0 / 255.0 green:83.0 / 255.0 blue:116.0 / 255.0];
 }
 
 - (void)setWindowVisible:(BOOL)flag
@@ -301,7 +299,7 @@ static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
 - (void)lidDidChange:(NSNotification *)aNotif
 {
   OSEDisplay *builtinDisplay = nil;
-  OSEScreen  *screen = [OSEScreen new];
+  // OSEScreen  *screen = [OSEScreen new];
   BOOL isLidClosed = NO;
 
   NSLog(@"lidDidChange: %@", aNotif.userInfo);
@@ -312,10 +310,10 @@ static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
       isLidClosed = [lidValue boolValue];
     }
   } else {
-    isLidClosed = [systemPower isLidClosed];
+    isLidClosed = [self.systemPower isLidClosed];
   }
 
-  for (OSEDisplay *d in [screen allDisplays]) {
+  for (OSEDisplay *d in [self.systemScreen allDisplays]) {
     if ([d isBuiltin] != NO) {
       builtinDisplay = d;
       break;
@@ -329,21 +327,21 @@ static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
 
     if (isLidClosed == NO && ![builtinDisplay isActive]) {
       NSLog(@"activating display %@", [builtinDisplay outputName]);
-      [screen activateDisplay:builtinDisplay];
+      [self.systemScreen activateDisplay:builtinDisplay];
     } else if (isLidClosed != NO && [builtinDisplay isActive]) {
       NSLog(@"DEactivating display %@", [builtinDisplay outputName]);
-      [screen deactivateDisplay:builtinDisplay];
+      [self.systemScreen deactivateDisplay:builtinDisplay];
     }
 
-    NSLog(@"OSEScreen size: %.0f x %.0f", [screen sizeInPixels].width,
-          [screen sizeInPixels].height);
+    NSLog(@"OSEScreen size: %.0f x %.0f", [self.systemScreen sizeInPixels].width,
+          [self.systemScreen sizeInPixels].height);
 
-    if (isWindowActive != NO && NSEqualSizes([screen sizeInPixels], NSZeroSize) == NO) {
+    if (isWindowActive != NO && NSEqualSizes([self.systemScreen sizeInPixels], NSZeroSize) == NO) {
       [self setWindowVisible:YES];
     }
   }
 
-  [screen release];
+  // [screen release];
 }
 
 // --- Busy cursor
@@ -609,6 +607,9 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
   // Initialize X resources
   [self initXApp];
 
+   // Screen
+  _systemScreen = [OSEScreen sharedScreen];
+ 
   NSLog(@"appDidFinishLaunch: before showWindow");
   // Show login window
   [self setWindowVisible:YES];
@@ -623,12 +624,12 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
   // [conn registerName:@"loginwindow"];
 
   // Laptop lid events handling
-  systemPower = [OSEPower new];
-  [systemPower startEventsMonitor];
+  _systemPower = [OSEPower sharedPower];
+  [_systemPower startEventsMonitor];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(lidDidChange:)
                                                name:OSEPowerLidDidChangeNotification
-                                             object:systemPower];
+                                             object:_systemPower];
 
   // Defaults
   [[NSDistributedNotificationCenter notificationCenterForType:GSPublicNotificationCenterType]
@@ -642,6 +643,7 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
   NSLog(@"ApplicationShouldTerminate");
+  [_systemScreen release];
   return NSTerminateNow;
 }
 
@@ -680,7 +682,7 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
     } else if ([user isEqualToString:@"quit"]) {
       NSLog(@"Application will be stopped");
       panelExitCode = QuitExitCode;
-      [NSApp stop:self];  // Go out of run loop
+      [NSApp terminate:self];  // Go out of run loop
       return;
     } else if ([user isEqualToString:@"terminate"]) {
       NSLog(@"Application will quit");

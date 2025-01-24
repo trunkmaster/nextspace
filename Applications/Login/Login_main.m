@@ -137,9 +137,9 @@ int startWindowServer()
 
 void setupDisplays()
 {
+  NSLog(@"setupDisplays() - START");
   OSEScreen *screen = [OSEScreen new];
   OSEDisplay *mainDisplay = nil;
-  OSEPower *systemPower = nil;
   NSArray *layout;
   Display *xDisplay;
   Window xRootWindow;
@@ -151,8 +151,7 @@ void setupDisplays()
   displays = [screen activeDisplays];
   for (OSEDisplay *display in displays) {
     if (display.isBuiltin) {
-      systemPower = [OSEPower sharedPower];
-      if (![systemPower isLidClosed] && [displays count] > 1) {
+      if ([screen isLidClosed] == NO && [displays count] > 1) {
         [screen setMainDisplay:display];
         mainDisplay = display;
       }
@@ -169,6 +168,7 @@ void setupDisplays()
                (int)mainDisplay.frame.origin.y + 50);
   XCloseDisplay(xDisplay);
   [screen release];
+  NSLog(@"setupDisplays() - END");
 }
 
 //-----------------------------------------------------------------------------

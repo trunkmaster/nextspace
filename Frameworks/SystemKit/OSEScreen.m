@@ -69,7 +69,7 @@ NSString *OSEDisplayPropertiesKey = @"Properties";
 NSString *OSEScreenDidChangeNotification = @"OSEScreenDidChangeNotification";
 NSString *OSEScreenDidUpdateNotification = @"OSEScreenDidUpdateNotification";
 
-// static OSEScreen *systemScreen = nil;
+static OSEScreen *systemScreen = nil;
 
 @interface OSEScreen (Private)
 - (NSSize)_sizeInPixels;
@@ -251,14 +251,14 @@ NSString *OSEScreenDidUpdateNotification = @"OSEScreenDidUpdateNotification";
 
 @implementation OSEScreen
 
-// + (id)sharedScreen
-// {
-//   if (systemScreen == nil) {
-//     systemScreen = [[OSEScreen alloc] init];
-//   }
++ (id)sharedScreen
+{
+  if (systemScreen == nil) {
+    systemScreen = [[OSEScreen alloc] init];
+  }
 
-//   return systemScreen;
-// }
+  return systemScreen;
+}
 
 - (void)dealloc
 {
@@ -285,7 +285,7 @@ NSString *OSEScreenDidUpdateNotification = @"OSEScreenDidUpdateNotification";
   [systemDisplays release];
   [updateScreenLock release];
   [systemPower release];
-  // systemScreen = nil;
+  systemScreen = nil;
 
   [super dealloc];
 }
@@ -295,9 +295,9 @@ NSString *OSEScreenDidUpdateNotification = @"OSEScreenDidUpdateNotification";
   int event_base, error_base;
   int major_version, minor_version;
 
-  // if (systemScreen != nil) {
-  //   return systemScreen;
-  // }
+  if (systemScreen != nil) {
+    return systemScreen;
+  }
 
   xDisplay = XOpenDisplay(getenv("DISPLAY"));
   if (!xDisplay) {
@@ -344,11 +344,10 @@ NSString *OSEScreenDidUpdateNotification = @"OSEScreenDidUpdateNotification";
   systemPower = [OSEPower sharedPower];
 
   // Workspace Manager notification sent as a reaction to XRRScreenChangeNotify
-  [[NSDistributedNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(randrScreenDidChange:)
-           name:OSEScreenDidChangeNotification
-         object:nil];
+  [[NSDistributedNotificationCenter defaultCenter] addObserver:self
+                                                      selector:@selector(randrScreenDidChange:)
+                                                          name:OSEScreenDidChangeNotification
+                                                        object:nil];
 
   return self;
 }
@@ -356,6 +355,11 @@ NSString *OSEScreenDidUpdateNotification = @"OSEScreenDidUpdateNotification";
 - (void)setUseAutosave:(BOOL)yn
 {
   useAutosave = yn;
+}
+
+- (BOOL)isLidClosed
+{
+  return [systemPower isLidClosed];
 }
 
 //

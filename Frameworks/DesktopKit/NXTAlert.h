@@ -32,10 +32,12 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#include <AppKit/AppKit.h>
+#import <AppKit/AppKit.h>
+#import <SystemKit/OSEScreen.h>
 
 @interface NXTAlert : NSObject
 {
+  OSEScreen *systemScreen;
   NSPanel *panel;
 
   NSTextField *titleField;

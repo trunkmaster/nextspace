@@ -70,9 +70,6 @@ extern LoginExitCode panelExitCode;
   int xScreen;
   Window xPanelWindow;
 
-  // OSEScreen	       *screen;
-  OSEPower *systemPower;
-
   // Preferences
   OSEDefaults *prefs;
 
@@ -91,6 +88,9 @@ extern LoginExitCode panelExitCode;
   NSTimer *busyTimer;
   NSTimer *rrTimer;
 }
+
+@property (readonly) OSEScreen *systemScreen;
+@property (readonly) OSEPower *systemPower;
 
 - (void)displayHostname;
 - (void)clearFields;

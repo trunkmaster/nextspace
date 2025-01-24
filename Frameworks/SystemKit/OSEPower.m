@@ -19,6 +19,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
+#include "GNUstepBase/NSDebug+GNUstepBase.h"
 #import "OSEBusConnection.h"
 #import "OSEBusMessage.h"
 #import "OSEPower.h"
@@ -70,9 +71,13 @@ static OSEPower *systemPower = nil;
 + (id)sharedPower
 {
   if (systemPower == nil) {
-    systemPower = [[OSEPower alloc] init];
+    systemPower = [[self alloc] init];
+    // retainCount == 1
   }
+  NSDebugLLog(@"dealloc", @"OSEPower +shared: retain count %lu", [systemPower retainCount]);
 
+  // return [systemPower retain];
+  // retainCount == 2
   return systemPower;
 }
 
@@ -96,6 +101,18 @@ static OSEPower *systemPower = nil;
               [self retainCount], [self.connection retainCount]);
   systemPower = nil;
   [super dealloc];
+}
+
+- (oneway void)release
+{
+  NSDebugLLog(@"dealloc", @"OSEPower: -release(before): retain count %lu", [self retainCount]);
+  [super release];
+  // NSDebugLLog(@"dealloc", @"OSEPower: -release(after): retain count %lu", [self retainCount]);
+  // Each call to +shared or -init increment retain count.
+  // If retain count here is 1 - there's no use of this shared object left, so we should release it.
+  // if ([self retainCount] == 1) {
+  //   [self dealloc];
+  // }
 }
 
 //-------------------------------------------------------------------------------
@@ -157,12 +174,12 @@ static OSEPower *systemPower = nil;
 //-------------------------------------------------------------------------------
 #pragma mark - UPower D-Bus events
 //-------------------------------------------------------------------------------
-- (void)handleLidNotification:(NSNotification *)aNotif
+- (void)handleLidNotification:(NSDictionary *)info
 {
-  NSLog(@"UPower received notification with user info: %@", aNotif.userInfo);
+  NSLog(@"UPower received notification with user info: %@", info);
 
-  NSArray *message = aNotif.userInfo[@"Message"];  // s a{sv} as
-  NSArray *properties = message[1];                // a{sv}
+  NSArray *message = info[@"Message"];  // s a{sv} as
+  NSArray *properties = message[1];     // a{sv}
   id propertyValue;
 
   // NSLog(@"\t Properties has been changed for interface %@:", message[0]);
@@ -171,10 +188,9 @@ static OSEPower *systemPower = nil;
       // propertyValue = property[propertyName];
       // NSLog(@"\t\t %@ = %@", propertyName, propertyValue);
       if ([propertyName isEqualToString:@"LidIsClosed"]) {
-        [[NSNotificationCenter defaultCenter]
-            postNotificationName:OSEPowerLidDidChangeNotification
-                          object:self
-                        userInfo:property];
+        [[NSNotificationCenter defaultCenter] postNotificationName:OSEPowerLidDidChangeNotification
+                                                            object:self
+                                                          userInfo:property];
       }
     }
   }

@@ -74,7 +74,7 @@
 */
 - (void)center
 {
-  OSEScreen *screen;
+  OSEScreen *screen = [[NSApp delegate] systemScreen];
   OSEDisplay *display = nil;
   NSSize screenSize;
   NSRect displayRect;
@@ -84,7 +84,7 @@
   NSLog(@"center");
 
   // Get NEXTSPACE display rect
-  screen = [OSEScreen new];
+  // screen = [OSEScreen new];
   if (screen != nil) {
     if ([[screen activeDisplays] count] > 0) {
       display = [screen mainDisplay];
@@ -102,7 +102,7 @@
 
     NSLog(@"Screen size   : %4.0f x %4.0f", screenSize.width, screenSize.height);
   }
-  [screen release];
+  // [screen release];
 
   NSLog(@"Display frame : %4.0f x %4.0f  (%4.0f, %4.0f)", displayRect.size.width,
         displayRect.size.height, displayRect.origin.x, displayRect.origin.y);

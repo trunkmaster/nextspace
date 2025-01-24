@@ -24,7 +24,6 @@
 #import <AppKit/AppKitExceptions.h>
 #import <GNUstepGUI/GSDisplayServer.h>
 
-#import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEDisplay.h>
 #import <SystemKit/OSEMouse.h>
 #import "NXTAlert.h"
@@ -226,12 +225,15 @@
   
   selectedAttrs = @{NSBackgroundColorAttributeName:[NSColor controlLightHighlightColor]};
   [messageView setSelectedTextAttributes:selectedAttrs];
+
+  systemScreen = [OSEScreen new];
 }
 
 - (void)dealloc
 {
   NSDebugLLog(@"Memory",@"NXTAlert: -dealloc");
   [buttons release];
+  [systemScreen release];
   [super dealloc];
 }
 
@@ -317,8 +319,7 @@
 
 - (void)sizeToFitScreen
 {
-  OSEScreen *screen = [OSEScreen new];
-  [self sizeToFitScreenSize:[screen sizeInPixels]];
+  [self sizeToFitScreenSize:[systemScreen sizeInPixels]];
 }
 
 - (void)sizeToFitScreenSize:(NSSize)screenSize
@@ -353,9 +354,8 @@
   // Screen size possibly was changed after application start.
   // GNUstep information about screen size is obsolete. Adopt origin.y to
   // GNUstep screen coordinates.
-  OSEScreen  *screen = [[OSEScreen new] autorelease];
   OSEMouse   *mouse = [[OSEMouse new] autorelease];
-  OSEDisplay *display = [screen displayAtPoint:[mouse locationOnScreen]];
+  OSEDisplay *display = [systemScreen displayAtPoint:[mouse locationOnScreen]];
 
   if (display) {
     panelFrame.origin.x = display.frame.origin.x;

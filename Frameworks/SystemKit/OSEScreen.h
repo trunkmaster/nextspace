@@ -88,8 +88,10 @@
   NSSize sizeInPixels, sizeInMilimeters;
 }
 
-// + (id)sharedScreen;
++ (id)sharedScreen;
 - (void)setUseAutosave:(BOOL)yn;
+
+- (BOOL)isLidClosed;
 
 - (XRRScreenResources *)randrScreenResources;
 - (void)randrUpdateScreenResources;
