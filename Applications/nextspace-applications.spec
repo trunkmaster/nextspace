@@ -119,7 +119,7 @@ export CMAKE=%{CMAKE}
 %post
 if [ $1 -eq 1 ]; then
     # post-installation
-    systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
+    systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service
     systemctl set-default graphical.target
     ldconfig
 elif [ $1 -eq 2 ]; then
