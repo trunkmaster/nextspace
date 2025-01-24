@@ -1001,12 +1001,12 @@ static OSEScreen *systemScreen = nil;
 - (BOOL)validateLayout:(NSArray *)layout
 {
   NSDictionary	*gamma;
-  NSString	*dName;
+  // NSString	*dName;
   NSRect	dFrame;
   NSDictionary	*resolution;
   
   for (NSDictionary *d in layout) {
-    dName = [d objectForKey:OSEDisplayNameKey];
+    // dName = [d objectForKey:OSEDisplayNameKey];
 
     // ID
     if (![self displayWithID:[d objectForKey:OSEDisplayIDKey]]) {
