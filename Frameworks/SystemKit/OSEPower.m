@@ -19,7 +19,6 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#include "GNUstepBase/NSDebug+GNUstepBase.h"
 #import "OSEBusConnection.h"
 #import "OSEBusMessage.h"
 #import "OSEPower.h"
@@ -72,12 +71,10 @@ static OSEPower *systemPower = nil;
 {
   if (systemPower == nil) {
     systemPower = [[self alloc] init];
-    // retainCount == 1
   }
+
   NSDebugLLog(@"dealloc", @"OSEPower +shared: retain count %lu", [systemPower retainCount]);
 
-  // return [systemPower retain];
-  // retainCount == 2
   return systemPower;
 }
 
@@ -99,20 +96,9 @@ static OSEPower *systemPower = nil;
 {
   NSDebugLLog(@"dealloc", @"OSEPower: -dealloc (retain count: %lu) (connection retain count: %lu)",
               [self retainCount], [self.connection retainCount]);
+  // OSEBusConnection wil be released in parent class (OSEBusService)
   systemPower = nil;
   [super dealloc];
-}
-
-- (oneway void)release
-{
-  NSDebugLLog(@"dealloc", @"OSEPower: -release(before): retain count %lu", [self retainCount]);
-  [super release];
-  // NSDebugLLog(@"dealloc", @"OSEPower: -release(after): retain count %lu", [self retainCount]);
-  // Each call to +shared or -init increment retain count.
-  // If retain count here is 1 - there's no use of this shared object left, so we should release it.
-  // if ([self retainCount] == 1) {
-  //   [self dealloc];
-  // }
 }
 
 //-------------------------------------------------------------------------------
@@ -220,28 +206,34 @@ static OSEPower *systemPower = nil;
                             selector:@selector(handleLidNotification:)
                               signal:@"PropertiesChanged"
                               object:self.objectPath
-                           interface:@"org.freedesktop.DBus.Properties"
-                        notification:OSEPowerPropertiesDidChangeNotification];
+                           interface:@"org.freedesktop.DBus.Properties"];
 
   [self.connection addSignalObserver:self
                             selector:@selector(deviceAdded:)
                               signal:@"DeviceAdded"
                               object:self.objectPath
-                           interface:@"org.freedesktop.UPower"
-                        notification:OSEPowerDeviceDidAddNotification];
+                           interface:@"org.freedesktop.UPower"];
   [self.connection addSignalObserver:self
                             selector:@selector(deviceRemoved:)
                               signal:@"DeviceRemoved"
                               object:self.objectPath
-                           interface:@"org.freedesktop.UPower"
-                        notification:OSEPowerDeviceDidRemoveNotification];
+                           interface:@"org.freedesktop.UPower"];
 }
 
 - (void)stopEventsMonitor
 {
-  [self.connection removeSignalObserver:self name:OSEPowerPropertiesDidChangeNotification];
-  [self.connection removeSignalObserver:self name:OSEPowerDeviceDidAddNotification];
-  [self.connection removeSignalObserver:self name:OSEPowerDeviceDidRemoveNotification];
+  [self.connection removeSignalObserver:self
+                                 signal:@"PropertiesChanged"
+                                 object:self.objectPath
+                              interface:@"org.freedesktop.DBus.Properties"];
+  [self.connection removeSignalObserver:self
+                                 signal:@"DeviceAdded"
+                                 object:self.objectPath
+                              interface:@"org.freedesktop.UPower"];
+  [self.connection removeSignalObserver:self
+                                 signal:@"DeviceRemoved"
+                                 object:self.objectPath
+                              interface:@"org.freedesktop.UPower"];
 }
 
 @end

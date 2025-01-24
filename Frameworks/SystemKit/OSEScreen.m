@@ -284,7 +284,10 @@ static OSEScreen *systemScreen = nil;
 
   [systemDisplays release];
   [updateScreenLock release];
+
+  [systemPower stopEventsMonitor];
   [systemPower release];
+
   systemScreen = nil;
 
   [super dealloc];

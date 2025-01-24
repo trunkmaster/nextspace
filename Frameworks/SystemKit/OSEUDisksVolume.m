@@ -61,6 +61,10 @@
 //-------------------------------------------------------------------------------
 - (void)dealloc
 {
+  [_udisksAdaptor.connection removeSignalObserver:self
+                                           signal:@"PropertiesChanged"
+                                           object:self.objectPath
+                                        interface:@"org.freedesktop.DBus.Properties"];
   [_properties release];
   [_objectPath release];
 
@@ -86,8 +90,7 @@
                                       selector:@selector(handlePropertiesChangedSignal:)
                                         signal:@"PropertiesChanged"
                                         object:self.objectPath
-                                     interface:@"org.freedesktop.DBus.Properties"
-                                  notification:OSEUDisksPropertiesDidChangeNotification];
+                                     interface:@"org.freedesktop.DBus.Properties"];
   
   // [self _dumpProperties];
 

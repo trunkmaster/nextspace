@@ -60,7 +60,7 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 + (instancetype)defaultConnection
 {
   if (defaultConnection == nil) {
-    defaultConnection = [[OSEBusConnection alloc] init];
+    defaultConnection = [[self alloc] init];
   }
   return defaultConnection;
 }
@@ -71,6 +71,7 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 #ifdef CF_BUS_CONNECTION
 #else
   [socketFileHandle release];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 #endif
   // [signalFilters release];
   CFRelease(signalObservers);
@@ -79,11 +80,11 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
   [super dealloc];
 }
 
-- (oneway void)release
-{
-  NSDebugLLog(@"dealloc", @"OSEBusConnection: -release (retain count: %lu)", [self retainCount]);
-  [super release];
-}
+// - (oneway void)release
+// {
+//   NSDebugLLog(@"dealloc", @"OSEBusConnection: -release (retain count: %lu)", [self retainCount]);
+//   [super release];
+// }
 
 - (instancetype)init
 {
@@ -154,7 +155,7 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 #else
 - (void)processSocketData:(NSNotification *)aNotif
 {
-  NSDebugLLog(@"UDisks", @"-> Process connection data...");
+  NSDebugLLog(@"UDisks", @"OSEBusConnection -> Process connection data...");
 
   dbus_connection_read_write(_dbus_connection, 1);
   // dbus_connection_read_write_dispatch(_dbus_connection, 1);
@@ -165,89 +166,122 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 
   [socketFileHandle waitForDataInBackgroundAndNotify];
 
-  NSDebugLLog(@"UDisks", @"<- Process connection data, end.");
+  NSDebugLLog(@"UDisks", @"OSEBusConnection <- Process connection data, end.");
 }
 #endif
 
 //-------------------------------------------------------------------------------
 #pragma mark - Signal handling
 //-------------------------------------------------------------------------------
+- (void)_registerSignalObserver:(id)anObserver selector:(SEL)aSelector withKey:(NSString *)key
+{
+  CFMutableDictionaryRef observer;
+  CFStringRef observerKey;
+  CFMutableArrayRef objectsList;
+
+  // Try to find existing observers list
+  observerKey =
+      CFStringCreateWithCString(kCFAllocatorDefault, [key cString], kCFStringEncodingUTF8);
+  objectsList = (CFMutableArrayRef)CFDictionaryGetValue(signalObservers, observerKey);
+  if (objectsList == NULL) {
+    objectsList = CFArrayCreateMutable(kCFAllocatorDefault, 1, &kCFTypeArrayCallBacks);
+  }
+
+  // Create observer
+  observer =
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 2, &kCFCopyStringDictionaryKeyCallBacks, NULL);
+  CFDictionaryAddValue(observer, CFSTR("Observer"), anObserver);
+  CFDictionaryAddValue(observer, CFSTR("Selector"), aSelector);
+
+  // Add observer to list of observers
+  CFArrayAppendValue(objectsList, observer);
+
+  // Set observers list to registered observers
+  CFDictionaryAddValue(signalObservers, observerKey, objectsList);
+  CFRelease(observerKey);
+  CFRelease(observer);
+
+  // Check if observer responds to selector
+  id obs = CFDictionaryGetValue(observer, CFSTR("Observer"));
+  SEL sel = (SEL)CFDictionaryGetValue(observer, CFSTR("Selector"));
+  NSLog(@"Checking if object responds to selector...");
+  if ([obs respondsToSelector:sel]) {
+    NSLog(@"YES!!!");
+  } else {
+    NSLog(@"NO...");
+  }
+}
+
 - (void)addSignalObserver:(id)anObserver
                  selector:(SEL)aSelector
                    signal:(NSString *)signalName
                    object:(NSString *)objectPath
                 interface:(NSString *)aInterface
-             notification:(NSString *)notificationName
 {
   NSString *rule;
-  NSMutableArray<NSDictionary *> *objectSignals;
 
   rule = [NSString stringWithFormat:@"path='%@',interface='%@',member='%@',type='signal'",
                                     objectPath, aInterface, signalName];
-  NSDebugLLog(@"UDisks", @"OSEBusConnection: adding signal observer with rule: %@", rule);
+
+  NSLog(@"OSEBusConnection: adding signal observer with rule: %@", rule);
   dbus_bus_add_match(_dbus_connection, [rule cString], &_dbus_error);
   if (dbus_error_is_set(&_dbus_error)) {
     NSLog(@"OSEBusConnection Error %s: %s", _dbus_error.name, _dbus_error.message);
   }
-
-  if (!dbus_connection_add_filter(_dbus_connection, _dbus_signal_handler_func, notificationName,
-                                  NULL)) {
+  if (!dbus_connection_add_filter(_dbus_connection, _dbus_signal_handler_func, NULL, NULL)) {
     NSLog(@"OSEBusConnection Error: Couldn't add D-Bus filter to observe signal!");
     return;
   }
 
-  // Add registered filter
-  // objectPath = ({Interface = aInterface; Signal = signalName;, ...)
-  // objectSignals = signalFilters[objectPath];
-  // if (objectSignals == nil) {
-  //   objectSignals = [NSMutableArray array];
-  // }
-  // [objectSignals addObject:@{
-  //   @"Interface" : aInterface,
-  //   @"Signal" : signalName,
-  //   @"Notification" : notificationName
-  // }];
-  // [signalFilters setObject:objectSignals forKey:objectPath];
+  // identification: object path, interface, signal
+  // action: observer, selector
+  NSLog(@"Creating observer for %@ %@", objectPath, signalName);
+  NSString *observerKey = [NSString stringWithFormat:@"%s-%s-%s", [objectPath cString],
+                                                     [aInterface cString], [signalName cString]];
 
-  // Setup notification observer
-  // [[NSNotificationCenter defaultCenter] addObserver:anObserver
-  //                                          selector:aSelector
-  //                                              name:notificationName
-  //                                            object:self];
-  {
-    // identification: object path, interface, signal
-    // action: observer, selector
-    NSLog(@"Creating observer for %@", objectPath);
-    CFMutableDictionaryRef observer = CFDictionaryCreateMutable(
-        kCFAllocatorDefault, 2, &kCFCopyStringDictionaryKeyCallBacks, NULL);
-    CFDictionaryAddValue(observer, CFSTR("Observer"), anObserver);
-    CFDictionaryAddValue(observer, CFSTR("Selector"), aSelector);
-
-    CFStringRef observerKey =
-        CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s-%s-%s"), [objectPath cString],
-                                 [aInterface cString], [signalName cString]);
-    CFDictionaryAddValue(signalObservers, observerKey, observer);
-    CFRelease(observerKey);
-    CFRelease(observer);
-
-    id obs = CFDictionaryGetValue(observer, CFSTR("Observer"));
-    SEL sel = (SEL)CFDictionaryGetValue(observer, CFSTR("Selector"));
-    NSLog(@"Checking if object responds to selector...");
-    if ([obs respondsToSelector:sel]) {
-      NSLog(@"YES!!!");
-    } else {
-      NSLog(@"NO...");
-    }
-    NSLog(@"Observer for %@ created and released", objectPath);
-  }
+  [self _registerSignalObserver:anObserver selector:aSelector withKey:observerKey];
+  NSLog(@"Observer for %@ %@ created and released", objectPath, signalName);
 }
 
-- (void)removeSignalObserver:(id)anObserver name:(NSString *)notificationName
+- (void)removeSignalObserver:(id)anObserver
+                      signal:(NSString *)signalName
+                      object:(NSString *)objectPath
+                   interface:(NSString *)aInterface
 {
-  // TODO: remove D-Bus filter
-  [[NSNotificationCenter defaultCenter] removeObserver:anObserver
-                                                  name:notificationName
-                                                object:self];
+  CFStringRef observerKey;
+  CFMutableArrayRef objectsList;
+  CFIndex observersCount;
+  CFDictionaryRef observer;
+  id observerObject;
+
+  observerKey =
+      CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s-%s-%s"), [objectPath cString],
+                               [aInterface cString], [signalName cString]);
+  objectsList = (CFMutableArrayRef)CFDictionaryGetValue(signalObservers, observerKey);
+
+  if (objectsList != NULL && (observersCount = CFArrayGetCount(objectsList)) > 0) {
+    NSLog(@"Observers count for %s is %li",
+          CFStringGetCStringPtr(observerKey, kCFStringEncodingUTF8), observersCount);
+    for (CFIndex i = 0; i < observersCount; i++) {
+      observer = CFArrayGetValueAtIndex(objectsList, i);
+      observerObject = CFDictionaryGetValue(observer, CFSTR("Observer"));
+      if ([observerObject isEqualTo:anObserver]) {
+        CFArrayRemoveValueAtIndex(objectsList, i);
+      }
+    }
+  }
+
+  // If observers list is empty - remove D-Bus match and observers entry
+  if (objectsList != NULL && CFArrayGetCount(objectsList) == 0) {
+    NSLog(@"Obsevers array is empty for %s",
+          CFStringGetCStringPtr(observerKey, kCFStringEncodingUTF8));
+    
+    NSString *rule;
+    CFDictionaryRemoveValue(signalObservers, observerKey);
+    rule = [NSString stringWithFormat:@"path='%@',interface='%@',member='%@',type='signal'",
+                                      objectPath, aInterface, signalName];
+    dbus_bus_remove_match(_dbus_connection, [rule cString], &_dbus_error);
+  }
 }
 
 - (void)handleSignal:(NSString *)signalName
@@ -255,11 +289,11 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
            interface:(NSString *)aInterface
              message:(NSArray *)result
 {
-  // NSArray<NSDictionary *> *objectSignals = signalFilters[objectPath];
   NSDictionary *info;
-  CFStringRef observerKey =
-      CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s-%s-%s"), [objectPath cString],
-                               [aInterface cString], [signalName cString]);
+  CFStringRef observerKey;
+  CFArrayRef observersList;
+  CFIndex observersCount;
+  CFDictionaryRef observer;
 
   info = @{
     @"ObjectPath" : objectPath,
@@ -267,36 +301,34 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
     // @"Interface" : aInterface,
     @"Message" : result
   };
-  {
-    // Find observer-selector for signal-interface
-    observerKey =
-        CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s-%s-%s"), [objectPath cString],
-                                 [aInterface cString], [signalName cString]);
-    NSLog(@"Searching for %s observer", CFStringGetCStringPtr(observerKey, kCFStringEncodingUTF8));
-    CFDictionaryRef observer = CFDictionaryGetValue(signalObservers, observerKey);
-    if (observer != NULL) {
-      NSLog(@"Observer for %@ found!", objectPath);
-      id observerObject = CFDictionaryGetValue(observer, CFSTR("Observer"));
-      SEL observerSelector = (SEL)CFDictionaryGetValue(observer, CFSTR("Selector"));
-      NSLog(@"Checking if obsever responds to selector...");
-      if ([observerObject respondsToSelector:observerSelector]) {
-        NSLog(@"YES!!! Calling it...");
-        [observerObject performSelector:observerSelector withObject:info];
-      } else {
-        NSLog(@"NO...");
+
+  // Find observer-selector for signal-interface
+  observerKey =
+      CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s-%s-%s"), [objectPath cString],
+                               [aInterface cString], [signalName cString]);
+
+  NSLog(@"Searching for %s observer", CFStringGetCStringPtr(observerKey, kCFStringEncodingUTF8));
+  observersList = CFDictionaryGetValue(signalObservers, observerKey);
+
+  if (observersList != NULL & (observersCount = CFArrayGetCount(observersList)) > 0) {
+    NSLog(@"Observers count for %s is %li",
+          CFStringGetCStringPtr(observerKey, kCFStringEncodingUTF8), observersCount);
+    for (CFIndex i = 0; i < observersCount; i++) {
+      observer = CFArrayGetValueAtIndex(observersList, i);
+      if (observer != NULL) {
+        NSLog(@"Observer for %@ found!", objectPath);
+        id observerObject = CFDictionaryGetValue(observer, CFSTR("Observer"));
+        SEL observerSelector = (SEL)CFDictionaryGetValue(observer, CFSTR("Selector"));
+        NSLog(@"Checking if obsever responds to selector...");
+        if ([observerObject respondsToSelector:observerSelector]) {
+          NSLog(@"YES!!! Calling it...");
+          [observerObject performSelector:observerSelector withObject:info];
+        } else {
+          NSLog(@"NO...");
+        }
       }
     }
   }
-  // for (NSDictionary *signal in objectSignals) {
-  //   if ([signal[@"Signal"] isEqualToString:signalName] &&
-  //       [signal[@"Interface"] isEqualToString:aInterface]) {
-  //     [[NSNotificationCenter defaultCenter]
-  //     postNotificationName:signal[@"Notification"]
-  //                                                         object:self
-  //                                                       userInfo:info];
-  //     NSDebugLLog(@"DBus", @"OSEBusConnection: notification %@ was sent", signal[@"Notification"]);
-  //   }
-  // }
 }
 
 @end

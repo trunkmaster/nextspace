@@ -362,23 +362,39 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   //                           selector:@selector(handlePropertiesChangedSignal:)
   //                             signal:@"PropertiesChanged"
   //                             object:self.objectPath
-  //                          interface:@"org.freedesktop.DBus.Properties"
-  //                       notification:OSEUDisksPropertiesDidChangeNotification];
+  //                          interface:@"org.freedesktop.DBus.Properties"];
   
   [self.connection addSignalObserver:self
                             selector:@selector(handleInterfacesAdeddSignal:)
                               signal:@"InterfacesAdded"
                               object:self.objectPath
-                           interface:@"org.freedesktop.DBus.ObjectManager"
-                        notification:OSEUDisksInterfacesDidAddNotification];
+                           interface:@"org.freedesktop.DBus.ObjectManager"];
   
   [self.connection addSignalObserver:self
                             selector:@selector(handleInterfacesRemovedSignal:)
                               signal:@"InterfacesRemoved"
                               object:self.objectPath
-                           interface:@"org.freedesktop.DBus.ObjectManager"
-                        notification:OSEUDisksInterfacesDidRemoveNotification];
+                           interface:@"org.freedesktop.DBus.ObjectManager"];
 }
+
+- (void)removeSignalsMonitoring
+{
+  // [self.connection removeSignalObserver:self
+  //                                signal:@"PropertiesChanged"
+  //                                object:self.objectPath
+  //                             interface:@"org.freedesktop.DBus.Properties"];
+
+  [self.connection removeSignalObserver:self
+                                 signal:@"InterfacesAdded"
+                                 object:self.objectPath
+                              interface:@"org.freedesktop.DBus.ObjectManager"];
+
+  [self.connection removeSignalObserver:self
+                                 signal:@"InterfacesRemoved"
+                                 object:self.objectPath
+                              interface:@"org.freedesktop.DBus.ObjectManager"];
+}
+
 
 - (void)handlePropertiesChangedSignal:(NSDictionary *)info
 {
@@ -523,6 +539,8 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 - (void)dealloc
 {
   NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: dealloc (retain count: %lu)", [self retainCount]);
+
+  [self removeSignalsMonitoring];
 
   [udisksBlockDevicesCache release];
   [OSEUDisksDrivesCache release];

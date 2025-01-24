@@ -37,10 +37,12 @@
                  selector:(SEL)aSelector
                    signal:(NSString *)signalName
                    object:(NSString *)objectPath
-                interface:(NSString *)aInterface
-             notification:(NSString *)notificationName;
+                interface:(NSString *)aInterface;
 
-- (void)removeSignalObserver:(id)anObserver name:(NSString *)notificationName;
+- (void)removeSignalObserver:(id)anObserver
+                      signal:(NSString *)signalName
+                      object:(NSString *)objectPath
+                   interface:(NSString *)aInterface;
 
 - (void)handleSignal:(NSString *)signalName
               object:(NSString *)objectPath

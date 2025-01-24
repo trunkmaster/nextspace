@@ -195,54 +195,39 @@ void displayDetails(OSEDisplay *display)
 
 int main(int argc, char *argv[])
 {
-  NSAutoreleasePool	*pool = [NSAutoreleasePool new];
-  OSEScreen		*screen = [OSEScreen sharedScreen];
-  OSEDisplay		*display = nil;
-  BOOL			setMode, showDetails;
+  NSAutoreleasePool *pool = [NSAutoreleasePool new];
+  OSEScreen *screen = [OSEScreen sharedScreen];
+  OSEDisplay *display = nil;
+  BOOL setMode, showDetails;
 
-  if (argc == 1)
-    {
-      screenInfo(screen);
-      listDisplays([screen activeDisplays], @"Active displays");
+  if (argc == 1) {
+    screenInfo(screen);
+    listDisplays([screen activeDisplays], @"Active displays");
+  }
+
+  for (int i = 1; i < argc; i++) {
+    if (argv[i][0] == '-') {
+      if (strcmp(argv[i], "-listAll") == 0) {
+        listDisplays([screen allDisplays], @"All registered displays");
+      } else if (strcmp(argv[i], "-listActive") == 0) {
+        listDisplays([screen activeDisplays], @"Active displays");
+      } else if (strcmp(argv[i], "-details") == 0 && (i + 1 < argc)) {
+        displayDetails([screen displayWithName:[NSString stringWithCString:argv[++i]]]);
+      } else if (strcmp(argv[i], "-display") == 0) {
+        display = [screen displayWithName:[NSString stringWithCString:argv[++i]]];
+      } else {
+        fprintf(stderr, "Unknown parameter specified: %s\n", argv[i]);
+      }
+    } else {
+      fprintf(stderr, "No parameters specified.\n");
     }
-  
-  for (int i=1; i < argc; i++)
-    {
-      if (argv[i][0] == '-')
-        {
-          if (strcmp(argv[i], "-listAll") == 0)
-            {
-              listDisplays([screen allDisplays], @"All registered displays");
-            }
-          else if (strcmp(argv[i], "-listActive") == 0)
-            {
-              listDisplays([screen activeDisplays], @"Active displays");
-            }
-          else if (strcmp(argv[i], "-details") == 0 && (i+1 < argc))
-            {
-              displayDetails([screen displayWithName:[NSString stringWithCString:argv[++i]]]);
-            }
-          else if (strcmp(argv[i], "-display") == 0)
-            {
-              display = [screen displayWithName:[NSString stringWithCString:argv[++i]]];
-            }
-          else
-            {
-              fprintf(stderr, "Unknown parameter specified: %s\n", argv[i]);
-            }
-        }
-      else
-        {
-          fprintf(stderr, "No parameters specified.\n");
-        }
-    }
+  }
 
   // if (display)
   //   if (showDetails)
   //     displayDetails(display);
   //   else if (setMode)
   //     setMode()
-      
 
   [screen release];
   [pool release];
