@@ -61,6 +61,7 @@
 //-------------------------------------------------------------------------------
 - (void)dealloc
 {
+  NSDebugLLog(@"dealloc", @"OSEUDisksVolume -dealloc %@", self.objectPath);
   [_udisksAdaptor.connection removeSignalObserver:self
                                            signal:@"PropertiesChanged"
                                            object:self.objectPath

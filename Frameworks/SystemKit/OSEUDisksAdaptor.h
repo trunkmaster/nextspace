@@ -66,9 +66,9 @@ extern NSString *OSEUDisksInterfacesDidRemoveNotification;
   // List of /org/freedesktop/UDisks2/jobs objects
   NSMutableDictionary *jobsCache;
   
-  // List of OSEOSEUDisksVolume objects with D-Bus object path as key
+  // List of OSEUDisksVolume objects with D-Bus object path as key
   NSMutableDictionary *volumes;
-  // List of OSEOSEUDisksDrive objects with D-Bus object path as key
+  // List of OSEUDisksDrive objects with D-Bus object path as key
   NSMutableDictionary *drives;
   
   NSMutableArray *drivesToCleanup;  // unsafely detached drives

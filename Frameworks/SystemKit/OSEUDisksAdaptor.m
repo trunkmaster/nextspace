@@ -538,20 +538,22 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 //-------------------------------------------------------------------------------
 - (void)dealloc
 {
-  NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: dealloc (retain count: %lu)", [self retainCount]);
-
-  [self removeSignalsMonitoring];
+  NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc (retain count: %lu)", [self retainCount]);
 
   [udisksBlockDevicesCache release];
   [OSEUDisksDrivesCache release];
 
+  NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - `volumes` retain count %lu.", [volumes retainCount]);
   [volumes release];
   [drives release];
   [jobsCache release];
 
   // OSEUDisksAdaptor is the main owner of connection to UDisks2 D-Bus service (OSEBusConnection) - release it.
-  [self.connection release];
+  // [self.connection release];
 
+  [self removeSignalsMonitoring];
+
+  NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - end of routine.");
   [super dealloc];
 }
 

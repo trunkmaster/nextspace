@@ -254,6 +254,9 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
   CFDictionaryRef observer;
   id observerObject;
 
+  NSLog(@"Removing observer %@ for `%@` signal", [anObserver className],
+        [NSString stringWithFormat:@"%@-%@-%@", objectPath, aInterface, signalName]);
+
   observerKey =
       CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s-%s-%s"), [objectPath cString],
                                [aInterface cString], [signalName cString]);
@@ -273,7 +276,7 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 
   // If observers list is empty - remove D-Bus match and observers entry
   if (objectsList != NULL && CFArrayGetCount(objectsList) == 0) {
-    NSLog(@"Obsevers array is empty for %s",
+    NSLog(@"Obsevers array is empty for %s - removing D-Bus rule and observers array.",
           CFStringGetCStringPtr(observerKey, kCFStringEncodingUTF8));
     
     NSString *rule;
@@ -282,6 +285,8 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
                                       objectPath, aInterface, signalName];
     dbus_bus_remove_match(_dbus_connection, [rule cString], &_dbus_error);
   }
+  NSLog(@"Observer %@ for `%@` signal removed.", [anObserver className],
+        [NSString stringWithFormat:@"%@-%@-%@", objectPath, aInterface, signalName]);
 }
 
 - (void)handleSignal:(NSString *)signalName
