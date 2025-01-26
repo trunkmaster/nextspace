@@ -62,15 +62,10 @@
 - (void)dealloc
 {
   NSDebugLLog(@"dealloc", @"OSEUDisksVolume -dealloc %@", self.objectPath);
-  [_udisksAdaptor.connection removeSignalObserver:self
-                                           signal:@"PropertiesChanged"
-                                           object:self.objectPath
-                                        interface:@"org.freedesktop.DBus.Properties"];
+
+
   [_properties release];
   [_objectPath release];
-
-  // No need to release '_udisksAdaptor' and '_drive' they are declared as 'assign'
-  // properties and will be released by @autoreleasepool {}
 
   [super dealloc];
 }
@@ -84,18 +79,29 @@
   _properties = [properties mutableCopy];
   _objectPath = [path copy];
 
-  notificationCenter = [NSNotificationCenter defaultCenter];
-
   self.udisksAdaptor = adaptor;
+  [self setSignalsObserving];
+  
+  // [self _dumpProperties];
+
+  return self;
+}
+
+- (void)setSignalsObserving
+{
   [_udisksAdaptor.connection addSignalObserver:self
                                       selector:@selector(handlePropertiesChangedSignal:)
                                         signal:@"PropertiesChanged"
                                         object:self.objectPath
                                      interface:@"org.freedesktop.DBus.Properties"];
-  
-  // [self _dumpProperties];
+}
 
-  return self;
+- (void)removeSignalsObserving
+{
+  [_udisksAdaptor.connection removeSignalObserver:self
+                                           signal:@"PropertiesChanged"
+                                           object:self.objectPath
+                                        interface:@"org.freedesktop.DBus.Properties"];
 }
 
 // Change _properties
@@ -151,7 +157,7 @@
 
 - (void)removeProperties:(NSArray *)props interfaceName:(NSString *)interface
 {
-  NSDebugLLog(@"udisks", @"Volume: remove _properties: %@ for interface: %@", props, interface);
+  NSDebugLLog(@"UDisks", @"Volume: remove _properties: %@ for interface: %@", props, interface);
 }
 
 - (NSString *)propertyForKey:(NSString *)key interface:(NSString *)interface

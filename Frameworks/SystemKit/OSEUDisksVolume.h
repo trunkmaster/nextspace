@@ -34,7 +34,6 @@
 
 @interface OSEUDisksVolume : NSObject <UDisksObject>
 {
-  NSNotificationCenter *notificationCenter;
 }
 
 - (void)_dumpProperties;

@@ -103,6 +103,9 @@ extern NSString *OSEUDisksInterfacesDidRemoveNotification;
 - (id)initWithProperties:(NSDictionary *)properties
               objectPath:(NSString *)path
                  adaptor:(OSEUDisksAdaptor *)adaptor;
+- (void)setSignalsObserving;
+- (void)removeSignalsObserving;
+
 - (void)setProperty:(NSString *)property
               value:(NSString *)value
       interfaceName:(NSString *)interface;
@@ -110,6 +113,7 @@ extern NSString *OSEUDisksInterfacesDidRemoveNotification;
            interfaceName:(NSString *)interface;
 - (id)propertyForKey:(NSString *)key interface:(NSString *)interface;
 - (BOOL)boolPropertyForKey:(NSString *)key interface:(NSString *)interface;
+
 
 // This is for debug
 - (void)_dumpProperties;

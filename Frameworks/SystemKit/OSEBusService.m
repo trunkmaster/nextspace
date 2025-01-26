@@ -37,6 +37,8 @@
               @"OSEBusService: -dealloc (retain count: %lu) (connection retain count: %lu)",
               [self retainCount], [self.connection retainCount]);
 
+  [_objectPath release];
+  [_serviceName release];
   [_connection release];
   [super dealloc];
 }

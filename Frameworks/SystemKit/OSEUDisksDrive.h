@@ -44,8 +44,6 @@
 //--- Object network
 @property (readwrite, assign) OSEUDisksAdaptor *udisksAdaptor;
 @property (readonly) NSMutableDictionary *volumes;
-- (void)addVolume:(OSEUDisksVolume *)volume withPath:(NSString *)volumePath;
-- (void)removeVolumeWithKey:(NSString *)key;
 
 //--- Attributes
 @property (readonly) NSString *humanReadableName;  // vendor, model

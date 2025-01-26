@@ -20,6 +20,8 @@
 //
 
 #import <SystemKit/OSEFileManager.h>
+#include "GNUstepBase/GNUstep.h"
+#include "Foundation/NSString.h"
 #import <SystemKit/OSEBusMessage.h>
 
 #import "OSEUDisksDrive.h"
@@ -237,20 +239,19 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
                                                        adaptor:self];
   volumeInstance.udisksAdaptor = self;
   [volumes setObject:volumeInstance forKey:objectPath];
+  [volumeInstance release];
   [udisksBlockDevicesCache removeObjectForKey:objectPath];
 
   drivePath = blockDevice[BLOCK_INTERFACE][@"Drive"];
   // NSDebugLLog(@"UDisks", @"_registerBlockDevice: %@", blockDevice);
   drive = [drives objectForKey:drivePath];
-  if (drive == nil) {
+  if (drive != nil) {
+    volumeInstance.drive = drive;
+  } else {
     NSDebugLLog(@"UDisks",
                @"OSEUDisksAdaptor Warning: no drive with path '%@' found for block device '%@'",
                drivePath, objectPath);
-    return;
   }
-  [drive addVolume:volumeInstance withPath:objectPath];
-  volumeInstance.drive = drive;
-  [volumeInstance release];
 
   if (notify != NO) {
     [notificationCenter postNotificationName:OSEMediaVolumeDidAddNotification
@@ -296,73 +297,17 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   return YES;
 }
 
-// Returns volume dictionary which mounted at 'path'
-// 'path' is not necessary a mount point, it can be some path inside
-// mounted filesystem
-- (OSEUDisksVolume *)_mountedVolumeForPath:(NSString *)filesystemPath
-{
-  OSEUDisksVolume *volume = nil;
-  NSString *mp, *mp1;
-  NSString *mountPoint = nil;
-
-  // Find longest mount point for path
-  mp = @"";
-  for (OSEUDisksVolume *volume1 in [self mountedVolumes]) {
-    mountPoint = [volume1 mountPoints][0];
-    // NSDebugLLog(@"UDisks", @"LongestMP(%@): process MP: %@", filesystemPath, mountPoint);
-    mp1 = NXTIntersectionPath(filesystemPath, mountPoint);
-    if ([mp1 isEqualToString:mountPoint] && ([mp1 length] >= [mp length])) {
-      ASSIGN(mp, mp1);
-      ASSIGN(volume, volume1);
-    }
-  }
-
-  NSDebugLLog(@"udisks", @"Longest MP: %@ for path %@", [volume mountPoints], filesystemPath);
-
-  // if ([[volume mountPoints] isEqualToString:@"/"])
-  //   return nil;
-  // else
-  return [volume autorelease];
-}
-
-// Returns list of OSEOSEUDisksVolume objects.
-// Each object represents mounted volume (fixed and removable).
-// If path == nil, returns list of all mounted diskVolumes in system.
-- (NSArray *)_mountedVolumesForDrive:(NSString *)driveObjectPath
-{
-  NSMutableArray *mountedVolumes;
-  OSEUDisksDrive *drive;
-  NSArray *driveVolumes;
-
-  if (driveObjectPath) {
-    drive = [drives objectForKey:driveObjectPath];
-    return [drive mountedVolumes];
-  }
-
-  mountedVolumes = [NSMutableArray new];
-  // e = [[drives allValues] objectEnumerator];
-  // while ((drive = [e nextObject]) != nil) {
-  for (OSEUDisksDrive *drive in [drives allValues]) {
-    driveVolumes = [drive mountedVolumes];
-    if (driveVolumes && [driveVolumes count] > 0) {
-      [mountedVolumes addObjectsFromArray:driveVolumes];
-    }
-  }
-
-  return mountedVolumes;
-}
-
 @end
 
 @implementation OSEUDisksAdaptor (Signals)
 
 - (void)setSignalsMonitoring
 {
-  // [self.connection addSignalObserver:self
-  //                           selector:@selector(handlePropertiesChangedSignal:)
-  //                             signal:@"PropertiesChanged"
-  //                             object:self.objectPath
-  //                          interface:@"org.freedesktop.DBus.Properties"];
+  [self.connection addSignalObserver:self
+                            selector:@selector(handlePropertiesChangedSignal:)
+                              signal:@"PropertiesChanged"
+                              object:self.objectPath
+                           interface:@"org.freedesktop.DBus.Properties"];
   
   [self.connection addSignalObserver:self
                             selector:@selector(handleInterfacesAdeddSignal:)
@@ -379,10 +324,10 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 
 - (void)removeSignalsMonitoring
 {
-  // [self.connection removeSignalObserver:self
-  //                                signal:@"PropertiesChanged"
-  //                                object:self.objectPath
-  //                             interface:@"org.freedesktop.DBus.Properties"];
+  [self.connection removeSignalObserver:self
+                                 signal:@"PropertiesChanged"
+                                 object:self.objectPath
+                              interface:@"org.freedesktop.DBus.Properties"];
 
   [self.connection removeSignalObserver:self
                                  signal:@"InterfacesAdded"
@@ -394,7 +339,6 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
                                  object:self.objectPath
                               interface:@"org.freedesktop.DBus.ObjectManager"];
 }
-
 
 - (void)handlePropertiesChangedSignal:(NSDictionary *)info
 {
@@ -543,8 +487,21 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   [udisksBlockDevicesCache release];
   [OSEUDisksDrivesCache release];
 
-  NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - `volumes` retain count %lu.", [volumes retainCount]);
+  NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - `volumes` retain count %lu.",
+              [volumes retainCount]);
+  for (NSString *key in [volumes allKeys]) {
+    OSEUDisksVolume *vol = volumes[key];
+    NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - `Volume` - %@ retain count %lu.",
+                [vol objectPath], [vol retainCount]);
+    // [volumes removeObjectForKey:key];
+  }
   [volumes release];
+  for (NSString *key in [drives allKeys]) {
+    OSEUDisksDrive *drv = drives[key];
+    NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - `Drive` - %@ retain count %lu.",
+                [drv objectPath], [drv retainCount]);
+    // [volumes removeObjectForKey:key];
+  }
   [drives release];
   [jobsCache release];
 
@@ -655,14 +612,9 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     }
   }
 
-  NSDebugLLog(@"udisks", @"Longest MP: %@ for path %@", [volume mountPoints], filesystemPath);
+  NSDebugLLog(@"UDisks", @"Longest MP: %@ for path %@", [volume mountPoints], filesystemPath);
 
   return volume;
-}
-
-- (void)postVolumeDidMountNotification:(NSDictionary *)info
-{
-  [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification object:self userInfo:info];
 }
 
 - (void)operationWithName:(NSString *)name
@@ -730,6 +682,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
                                       userInfo:info];
     }
   }
+  [info release];
 }
 
 //-------------------------------------------------------------------------------
@@ -740,21 +693,47 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 - (NSArray *)mountedVolumes
 {
   NSMutableArray *mountedVolumes = [NSMutableArray new];
+  OSEUDisksVolume *volume;
 
-  for (OSEUDisksVolume *volume in [volumes allValues]) {
+  for (NSString *path in volumes.allKeys) {
+    volume = volumes[path];
     if ([volume isMounted]) {
       [mountedVolumes addObject:volume];
     }
   }
 
-  return mountedVolumes;
+  return [mountedVolumes autorelease];
+}
+
+// Returns list of pathnames to mount points of already mounted diskVolumes.
+// NSWorkspace
+- (NSArray *)mountedRemovableMedia
+{
+  NSArray *mountedVolumes = [self mountedVolumes];
+  NSMutableArray *mountPaths = [NSMutableArray array];
+
+  for (OSEUDisksVolume *volume in mountedVolumes) {
+    NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor: mountedRemovableMedia check: %@ (%@)",
+                [volume mountPoints],
+                [[[[volume drive] properties] objectForKey:@"org.freedesktop.UDisks2.Drive"]
+                    objectForKey:@"Id"]);
+
+    OSEUDisksDrive *drive = [volume drive];
+    if (volume.isFilesystem && (drive.isRemovable || (drive.isMediaRemovable && drive.hasMedia))) {
+      [mountPaths addObject:[volume mountPoints]];
+    }
+  }
+
+  NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor: mountedRemovableMedia: %@", mountPaths);
+
+  return mountPaths;
 }
 
 // 'path' is not necessary a mount point, it can be some path inside
 // mounted filesystem
 - (NXTFSType)filesystemTypeAtPath:(NSString *)filesystemPath
 {
-  OSEUDisksVolume *volume = [self _mountedVolumeForPath:filesystemPath];
+  OSEUDisksVolume *volume = [self mountedVolumeForPath:filesystemPath];
 
   if (volume == nil) {
     return -1;
@@ -767,7 +746,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 // mounted filesystem
 - (NSString *)mountPointForPath:(NSString *)filesystemPath
 {
-  return [[self _mountedVolumeForPath:filesystemPath] mountPoints][0];
+  return [[self mountedVolumeForPath:filesystemPath] mountPoints][0];
 }
 
 // Unmount filesystem mounted at subpath of 'path'.
@@ -775,7 +754,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 // Async - OK.
 - (void)unmountRemovableVolumeAtPath:(NSString *)path
 {
-  OSEUDisksVolume *volume = [self _mountedVolumeForPath:path];
+  OSEUDisksVolume *volume = [self mountedVolumeForPath:path];
 
   if (volume == nil) {
     return;
@@ -786,16 +765,20 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 
 - (NSArray *)_mountNewRemovableVolumesAndWait:(BOOL)wait
 {
-  NSMutableArray *mountPoints = [[NSMutableArray alloc] init];
+  NSMutableArray *mountPoints = [NSMutableArray new];
+  OSEUDisksDrive *drive;
+  OSEUDisksVolume *volume;
 
-  for (OSEUDisksDrive *drive in [drives allValues]) {
+  for (NSString *key in [drives allKeys]) {
+    drive = drives[key];
     if ([drive isRemovable]) {
       [mountPoints addObjectsFromArray:[drive mountVolumes:wait]];
     }
   }
 
   // Loop devices is always removable and have no drives
-  for (OSEUDisksVolume *volume in [volumes allValues]) {
+  for (NSString *key in [volumes allKeys]) {
+    volume = volumes[key];
     if ([volume isLoopVolume] && [volume isFilesystem]) {
       [volume mount:wait];
     }
@@ -820,39 +803,16 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   return [self _mountNewRemovableVolumesAndWait:YES];
 }
 
-// Returns list of pathnames to mount points of already mounted diskVolumes.
-// NSWorkspace
-- (NSArray *)mountedRemovableMedia
-{
-  NSArray *mountedVolumes = [self mountedVolumes];
-  NSMutableArray *mountPaths = [NSMutableArray new];
-
-  for (OSEUDisksVolume *volume in mountedVolumes) {
-    NSDebugLLog(@"udisks", @"OSEUDisksAdaptor: mountedRemovableMedia check: %@ (%@)", [volume mountPoints],
-                [[[[volume drive] properties] objectForKey:@"org.freedesktop.UDisks2.Drive"]
-                    objectForKey:@"Id"]);
-
-    if ([volume isFilesystem] &&
-        ([[volume drive] isRemovable] || [[volume drive] isMediaRemovable])) {
-      [mountPaths addObject:[volume mountPoints]];
-    }
-  }
-
-  NSDebugLLog(@"udisks", @"Adaptor: mountedRemovableMedia: %@", mountPaths);
-
-  return mountPaths;
-}
-
 // Unmounts and ejects device mounted at 'path'.
 // Async - OK.
 // NSWorkspace
 - (void)unmountAndEjectDeviceAtPath:(NSString *)path
 {
-  OSEUDisksVolume *volume, *loopMaster;
+  OSEUDisksVolume *volume, *loopMaster, *vol;
   OSEUDisksDrive *drive;
 
   // 1. Found volume mounted at subpath of 'path'
-  volume = [self _mountedVolumeForPath:path];
+  volume = [self mountedVolumeForPath:path];
 
   // 2. Found drive which contains volume
   if (![volume isLoopVolume]) {
@@ -865,7 +825,8 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     NSDebugLLog(@"UDisks", @"Eject loop volume: %@ (%@)", loopMaster, volume);
     // 4. Unmount all loop diskVolumes for that master
     if (loopMaster != volume) {
-      for (OSEUDisksVolume *vol in [volumes allValues]) {
+      for (NSString *key in [volumes allKeys]) {
+        vol = volumes[key];
         NSDebugLLog(@"UDisks", @">>%@", [vol UNIXDevice]);
         if ([vol masterVolume] == loopMaster) {
           NSDebugLLog(@"UDisks", @"Unmount volume %@", [vol UNIXDevice]);
@@ -889,15 +850,21 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 // Async - OK.
 - (void)ejectAllRemovables
 {
+  OSEUDisksDrive *drive;
+  OSEUDisksVolume *volume;
+
   // Loops first...
-  for (OSEUDisksVolume *volume in [volumes allValues]) {
-    if ([volume isLoopVolume]) {
-      [volume unmount:YES];
-    }
-  }
+  // for (NSString *key in [volumes allKeys]) {
+  //   volume = volumes[key];
+  //   if (volume.isLoopVolume && !volume.isSystem) {
+  //     NSLog(@"Unmount loop volume: %@", volume.objectPath);
+  //     [volume unmount:YES];
+  //   }
+  // }
 
   //...drives then
-  for (OSEUDisksDrive *drive in [drives allValues]) {
+  for (NSString *key in [drives allKeys]) {
+    drive = drives[key];
     if ([drive isRemovable]) {
       [drive unmountVolumesAndDetach];
     }

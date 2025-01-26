@@ -96,7 +96,6 @@ static OSEPower *systemPower = nil;
 {
   NSDebugLLog(@"dealloc", @"OSEPower: -dealloc (retain count: %lu) (connection retain count: %lu)",
               [self retainCount], [self.connection retainCount]);
-  // OSEBusConnection wil be released in parent class (OSEBusService)
   systemPower = nil;
   [super dealloc];
 }
@@ -162,7 +161,7 @@ static OSEPower *systemPower = nil;
 //-------------------------------------------------------------------------------
 - (void)handleLidNotification:(NSDictionary *)info
 {
-  NSLog(@"UPower received notification with user info: %@", info);
+  NSDebugLLog(@"UPower", @"UPower received notification with user info: %@", info);
 
   NSArray *message = info[@"Message"];  // s a{sv} as
   NSArray *properties = message[1];     // a{sv}
@@ -184,7 +183,7 @@ static OSEPower *systemPower = nil;
 
 - (void)deviceAdded:(NSNotification *)aNotif
 {
-  NSLog(@"UPower received notification DeviceAdded: %@", aNotif.userInfo);
+  NSDebugLLog(@"UPower", @"UPower received notification DeviceAdded: %@", aNotif.userInfo);
 
   [[NSNotificationCenter defaultCenter] postNotificationName:OSEPowerDeviceDidAddNotification
                                                       object:self
@@ -193,7 +192,7 @@ static OSEPower *systemPower = nil;
 
 - (void)deviceRemoved:(NSNotification *)aNotif
 {
-  NSLog(@"UPower received notification with object: %@", aNotif.userInfo);
+  NSDebugLLog(@"UPower", @"UPower received notification with object: %@", aNotif.userInfo);
 
   [[NSNotificationCenter defaultCenter] postNotificationName:OSEPowerDeviceDidRemoveNotification
                                                       object:self

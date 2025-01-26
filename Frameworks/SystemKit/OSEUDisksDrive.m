@@ -20,6 +20,7 @@
 //
 
 #import <SystemKit/OSEBusMessage.h>
+#include "Foundation/NSString.h"
 
 #import "OSEUDisksDrive.h"
 #import "OSEUDisksVolume.h"
@@ -45,6 +46,7 @@
 
 - (void)dealloc
 {
+  NSDebugLLog(@"dealloc", @"OSEUDisksDrive -dealloc %@", self.objectPath);
   [_properties release];
   [_objectPath release];
   [_volumes release];
@@ -70,6 +72,16 @@
   return self;
 }
 
+- (void)setSignalsObserving
+{
+  // Do nothing
+}
+
+- (void)removeSignalsObserving
+{
+  // Do nothing
+}
+
 - (void)setProperty:(NSString *)property value:(NSString *)value interfaceName:(NSString *)interface
 {
   NSMutableDictionary *interfaceDict;
@@ -87,7 +99,7 @@
 
 - (void)removeProperties:(NSArray *)props interfaceName:(NSString *)interface
 {
-  NSDebugLLog(@"udisks", @"Drive: remove properties: %@ for interface: %@", props, interface);
+  NSDebugLLog(@"UDisks", @"Drive: remove properties: %@ for interface: %@", props, interface);
 }
 
 - (id)propertyForKey:(NSString *)key interface:(NSString *)interface
@@ -114,21 +126,6 @@
     boolValue = [propertyValue boolValue];
   }
   return boolValue;
-}
-
-//-------------------------------------------------------------------------------
-#pragma mark - Object network
-//-------------------------------------------------------------------------------
-- (void)addVolume:(OSEUDisksVolume *)volume withPath:(NSString *)volumePath
-{
-  [_volumes setObject:volume forKey:volumePath];
-  [volume setDrive:self];
-  // [self _dumpProperties];
-}
-
-- (void)removeVolumeWithKey:(NSString *)key
-{
-  [_volumes removeObjectForKey:key];
 }
 
 //-------------------------------------------------------------------------------
@@ -199,41 +196,48 @@
 //-------------------------------------------------------------------------------
 - (NSArray *)mountedVolumes
 {
-  NSMutableArray *mountedVolumes = [[NSMutableArray alloc] init];
+  NSMutableArray *mountedVolumes = [NSMutableArray array];
+  OSEUDisksVolume *volume;
 
-  for (OSEUDisksVolume *volume in [_volumes allValues]) {
+  for (NSString *key in [_volumes allKeys]) {
+    volume = _volumes[key];
     if ([volume isMounted]) {
       [mountedVolumes addObject:volume];
     }
   }
 
-  NSDebugLLog(@"udisks", @"Drive: %@ mountedVolumes: %@", [_objectPath lastPathComponent],
+  NSDebugLLog(@"UDisks", @"Drive: %@ mountedVolumes: %@", [_objectPath lastPathComponent],
               mountedVolumes);
 
-  return [mountedVolumes autorelease];
+  return mountedVolumes;
 }
 
 - (NSArray *)mountVolumes:(BOOL)wait
 {
-  NSMutableArray *mountPoints = [[NSMutableArray alloc] init];
+  NSMutableArray *mountPoints = [NSMutableArray array];
+  OSEUDisksVolume *volume;
   NSString *mp;
 
-  NSDebugLLog(@"udisks", @"OSEOSEUDisksDrive: %@ mountVolumes: %@", _objectPath, _volumes);
+  NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive: %@ mountVolumes: %@", _objectPath, _volumes);
 
-  for (OSEUDisksVolume *volume in [_volumes allValues]) {
+  for (NSString *key in [_volumes allKeys]) {
+    volume = _volumes[key];
     if (volume != nil && (mp = [volume mount:wait]) != nil) {
       [mountPoints addObject:mp];
     }
   }
 
-  return [mountPoints autorelease];
+  return mountPoints;
 }
 
 - (BOOL)unmountVolumes:(BOOL)wait
 {
-  NSDebugLLog(@"udisks", @"Drive: unmount volumes: %@", _volumes);
+  OSEUDisksVolume *volume;
 
-  for (OSEUDisksVolume *volume in [_volumes allValues]) {
+  NSDebugLLog(@"UDisks", @"Drive: unmountVolumes: %@", _volumes);
+
+  for (NSString *key in [_volumes allKeys]) {
+    volume = _volumes[key];
     if (![volume unmount:wait]) {
       return NO;
     }
@@ -295,8 +299,8 @@ NSLock *driveLock = nil;
   [driveLock unlock];
 }
 
-// 1. Send OSEDiskOperationDidStart for drive.
-// 2. Put mountedVolumes into cache (needsDetachMountedVolumes). Set needsDetach = YES.
+// 1. Put mountedVolumes into cache (needsDetachMountedVolumes). Set needsDetach = YES.
+// 2. Send OSEDiskOperationDidStart for drive.
 // 3. Unmount volumes. Each volume sends DidStart/DidEnd for volume.
 // 4. Catch DidEnd for volume and remove volume from cache.
 // 5. When cache become empty proceed with eject: and powerOff:.
@@ -304,9 +308,22 @@ NSLock *driveLock = nil;
 // Not implemented
 - (void)unmountVolumesAndDetach
 {
-  NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive -unmountVolumesAndDetach is not implemented yet");
-  // 1.
   NSString *message;
+  NSArray *mountedVolumes;
+
+  NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive -unmountVolumesAndDetach: %@.",
+              self.humanReadableName);
+
+  // 1.
+  mountedVolumesToDetach = [[NSMutableArray alloc] initWithArray:[self mountedVolumes]];
+  if (mountedVolumesToDetach == nil || mountedVolumesToDetach.count == 0) {
+    NSDebugLLog(@"UDisks",
+                @"OSEOSEUDisksDrive -unmountVolumesAndDetach nothing to unmount and detach.");
+    return;
+  }
+  needsDetach = YES;
+
+  // 2.
   message = [NSString stringWithFormat:@"Ejecting %@...", [self humanReadableName]];
   [_udisksAdaptor operationWithName:@"Eject"
                              object:self
@@ -315,10 +332,6 @@ NSLock *driveLock = nil;
                               title:@"Disk Eject"
                             message:message];
 
-  // 2.
-  mountedVolumesToDetach = [[NSMutableArray alloc] initWithArray:[self mountedVolumes]];
-  needsDetach = YES;
-
   // 2.1 Subscribe to notification
   [notificationCenter addObserver:self
                          selector:@selector(volumeDidUnmount:)
@@ -326,7 +339,7 @@ NSLock *driveLock = nil;
                            object:_udisksAdaptor];
 
   // 3.
-  if (![self unmountVolumes:YES]) {
+  if ([self unmountVolumes:YES] == NO) {
     message = [NSString stringWithFormat:@"Failed to eject '%@'", [self humanReadableName]];
     [_udisksAdaptor operationWithName:@"Eject"
                                object:self
@@ -350,7 +363,6 @@ NSLock *driveLock = nil;
     return NO;
   }
 
-  NSDebugLLog(@"udisks", @"Drive: Eject the Drive: %@", _objectPath);
   NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive: eject: %@", _objectPath);
 
   message = [NSString stringWithFormat:@"Ejecting drive %@", [self humanReadableName]];
