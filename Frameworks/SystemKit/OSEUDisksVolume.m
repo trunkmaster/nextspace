@@ -344,9 +344,9 @@
 // OSEOSEUDisksVolume which represents mapped image file
 - (BOOL)isLoopVolume
 {
-  NSString *_drivePath = [self propertyForKey:@"Drive" interface:BLOCK_INTERFACE];
+  NSArray *loopProperties = [_properties objectForKey:LOOP_INTERFACE];
 
-  return [_drivePath isEqualToString:@"/"];
+  return (loopProperties != nil || loopProperties.count > 0);
 }
 
 //-------------------------------------------------------------------------------

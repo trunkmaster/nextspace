@@ -560,13 +560,12 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 // That's why we iterate registered diskVolumes.
 - (NSDictionary *)availableVolumesForDrive:(NSString *)driveObjectPath
 {
-  NSArray *volumePaths = [volumes allKeys];
   OSEUDisksVolume *volume;
-  NSMutableDictionary *driveVolumes = [NSMutableDictionary new];
+  NSMutableDictionary *driveVolumes = [NSMutableDictionary dictionary];
 
-  for (NSString *path in volumePaths) {
+  for (NSString *path in [volumes allKeys]) {
     volume = [volumes objectForKey:path];
-    if ([[volume driveObjectPath] isEqualToString:driveObjectPath]) {
+    if ([volume.drive.objectPath isEqualToString:driveObjectPath]) {
       [driveVolumes setObject:volume forKey:path];
     }
   }
