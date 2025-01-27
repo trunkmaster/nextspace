@@ -81,34 +81,32 @@
   NSRect windowRect = [self frame];
   NSPoint newOrigin;
 
-  NSLog(@"center");
+  NSDebugLLog(@"Screen", @"center");
 
   // Get NEXTSPACE display rect
-  // screen = [OSEScreen new];
   if (screen != nil) {
     if ([[screen activeDisplays] count] > 0) {
       display = [screen mainDisplay];
       if (!display) {
-        NSLog(@"No main display - using first active.");
+        NSDebugLLog(@"Screen", @"No main display - using first active.");
         display = [[screen activeDisplays] objectAtIndex:0];
       }
     } else if ([[screen connectedDisplays] count] > 0) {
-      NSLog(@"No active displays left - activating first connected.");
+      NSDebugLLog(@"Screen", @"No active displays left - activating first connected.");
       display = [[screen connectedDisplays] objectAtIndex:0];
       [screen activateDisplay:display];
     }
     screenSize = [screen sizeInPixels];
     displayRect = [display frame];
 
-    NSLog(@"Screen size   : %4.0f x %4.0f", screenSize.width, screenSize.height);
+    NSDebugLLog(@"Screen", @"Screen size   : %4.0f x %4.0f", screenSize.width, screenSize.height);
   }
-  // [screen release];
 
-  NSLog(@"Display frame : %4.0f x %4.0f  (%4.0f, %4.0f)", displayRect.size.width,
-        displayRect.size.height, displayRect.origin.x, displayRect.origin.y);
+  NSDebugLLog(@"Screen", @"Display frame : %4.0f x %4.0f  (%4.0f, %4.0f)", displayRect.size.width,
+              displayRect.size.height, displayRect.origin.x, displayRect.origin.y);
 
-  NSLog(@"Window frame  : %4.0f x %4.0f  (%4.0f, %4.0f)", windowRect.size.width,
-        windowRect.size.height, windowRect.origin.x, windowRect.origin.y);
+  NSDebugLLog(@"Screen", @"Window frame  : %4.0f x %4.0f  (%4.0f, %4.0f)", windowRect.size.width,
+              windowRect.size.height, windowRect.origin.x, windowRect.origin.y);
 
   // Calculate the new position of the window on display.
   newOrigin.x = displayRect.size.width / 2 - windowRect.size.width / 2;
@@ -118,7 +116,7 @@
   // displayRect is presented system(Xlib) coordiante system.
   // Convert newOrigin into OpenStep coordinate system (non-flipped).
   newOrigin.y = screenSize.height - (newOrigin.y + windowRect.size.height);
-  NSLog(@"New origin    :              (%4.0f, %4.0f)", newOrigin.x, newOrigin.y);
+  NSDebugLLog(@"Screen", @"New origin    :              (%4.0f, %4.0f)", newOrigin.x, newOrigin.y);
 
   [self setFrameOrigin:newOrigin];
 }

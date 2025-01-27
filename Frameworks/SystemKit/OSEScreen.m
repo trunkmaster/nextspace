@@ -347,6 +347,7 @@ static OSEScreen *systemScreen = nil;
   systemPower = [OSEPower sharedPower];
 
   // Workspace Manager notification sent as a reaction to XRRScreenChangeNotify
+  // Notification sent to active OSEScreen applications of current user.
   [[NSDistributedNotificationCenter defaultCenter] addObserver:self
                                                       selector:@selector(randrScreenDidChange:)
                                                           name:OSEScreenDidChangeNotification
@@ -375,9 +376,7 @@ static OSEScreen *systemScreen = nil;
 // XRRScreenResources update will generate OSEScreenDidUpdateNotification.
 - (void)randrScreenDidChange:(NSNotification *)aNotif
 {
-  NSDebugLLog(@"Screen",
-              @"OSEScreen: OSEScreenDidChangeNotification received.");
-  
+  NSDebugLLog(@"Screen", @"OSEScreen: OSEScreenDidChangeNotification received.");
   [self randrUpdateScreenResources];
 }
 
@@ -394,9 +393,8 @@ static OSEScreen *systemScreen = nil;
   OSEDisplay *display;
   
   if ([updateScreenLock tryLock] == NO) {
-    NSDebugLLog(@"Screen",
-                @"OSEScreen: update of XRandR screen"
-                @" resources was unsuccessful!");
+    NSDebugLLog(@"Screen", @"OSEScreen: update of XRandR screen"
+                           @" resources was unsuccessful!");
     return;
   }
     
@@ -418,12 +416,11 @@ static OSEScreen *systemScreen = nil;
 
   // Update displays info
   for (int i=0; i < screen_resources->noutput; i++) {
-    display = [[OSEDisplay alloc]
-                  initWithOutputInfo:screen_resources->outputs[i]
-                     screenResources:screen_resources
-                              screen:self
-                            xDisplay:xDisplay];
-    
+    display = [[OSEDisplay alloc] initWithOutputInfo:screen_resources->outputs[i]
+                                     screenResources:screen_resources
+                                              screen:self
+                                            xDisplay:xDisplay];
+
     [systemDisplays addObject:display];
     [display release];
   }
@@ -438,10 +435,9 @@ static OSEScreen *systemScreen = nil;
   [updateScreenLock unlock];
   
   NSDebugLLog(@"Screen", @"OSEScreen: randrUpdateScreenResources: END");
-  
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName:OSEScreenDidUpdateNotification
-                  object:self];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:OSEScreenDidUpdateNotification
+                                                      object:self];
 }
 
 - (RRCrtc)randrFindFreeCRTC
@@ -1101,28 +1097,23 @@ static OSEScreen *systemScreen = nil;
     display = [self displayWithName:displayName];
 
     // Set resolution to displays marked as active in layout
-    if ([[displayLayout objectForKey:OSEDisplayIsActiveKey]
-            isEqualToString:@"YES"]) {
+    if ([[displayLayout objectForKey:OSEDisplayIsActiveKey] isEqualToString:@"YES"]) {
       if ([display isBuiltin] && [systemPower isLidClosed]) {
         // set 'frame' to preserve it in 'hiddenFrame' on deactivate
-        frame = NSRectFromString([displayLayout
-                                         objectForKey:OSEDisplayFrameKey]);
+        frame = NSRectFromString([displayLayout objectForKey:OSEDisplayFrameKey]);
         display.frame = frame;
         // save 'frame' in 'hiddenFrame'
         [display setActive:NO];
         // deactivate
-        [display setResolution:[OSEDisplay zeroResolution]
-                      position:display.hiddenFrame.origin];
+        [display setResolution:[OSEDisplay zeroResolution] position:display.hiddenFrame.origin];
         continue;
       }
 
-      if ([[displayLayout objectForKey:OSEDisplayIsMainKey]
-                isEqualToString:@"YES"]) {
+      if ([[displayLayout objectForKey:OSEDisplayIsMainKey] isEqualToString:@"YES"]) {
         mainDisplay = display;
       }
 
-      frame = NSRectFromString([displayLayout
-                                     objectForKey:OSEDisplayFrameKey]);
+      frame = NSRectFromString([displayLayout objectForKey:OSEDisplayFrameKey]);
       frameRate = [displayLayout objectForKey:OSEDisplayFrameRateKey];
       resolution = [display resolutionWithWidth:frame.size.width
                                          height:frame.size.height
@@ -1131,10 +1122,8 @@ static OSEScreen *systemScreen = nil;
       XFlush(xDisplay);
 
       lastActiveDisplay = display;
-    }
-    else { // Setting zero resolution to display disables it.
-      [display setResolution:[OSEDisplay zeroResolution]
-                    position:[display hiddenFrame].origin];
+    } else {  // Setting zero resolution to display disables it.
+      [display setResolution:[OSEDisplay zeroResolution] position:[display hiddenFrame].origin];
     }
     gamma = [displayLayout objectForKey:OSEDisplayGammaKey];
     [display setGammaFromDescription:gamma];
@@ -1167,7 +1156,16 @@ static OSEScreen *systemScreen = nil;
   }
 
   [updateScreenLock unlock];
-  
+
+  // Send notification to other user's OSEScreen applications.
+  // We're don't listen to this notification beacuse it leads to user user's application crash.
+  NSLog(@"Screen: sending OSEScreenDidChangeNotification to GSPublicNotificationCenterType...");
+  [[NSDistributedNotificationCenter notificationCenterForType:GSPublicNotificationCenterType]
+      postNotificationName:OSEScreenDidChangeNotification
+                    object:nil
+                  userInfo:nil
+        deliverImmediately:YES];
+    
   return YES;
 }
 
@@ -1206,13 +1204,12 @@ static OSEScreen *systemScreen = nil;
 {
   NSArray *layout = [self savedDisplayLayout];
 
-  if (layout)
-    {
-      NSDebugLLog(@"Screen", @"OSEScreen: Apply display layout saved in %@",
-                  [self _displayConfigFileName]);
-      return [self applyDisplayLayout:layout];
-    }
-  
+  if (layout) {
+    NSDebugLLog(@"Screen", @"OSEScreen: Apply display layout saved in %@",
+                [self _displayConfigFileName]);
+    return [self applyDisplayLayout:layout];
+  }
+
   NSDebugLLog(@"Screen", @"OSEScreen: Apply automatic default display layout");
   return [self applyDisplayLayout:[self defaultLayout:YES]];
 }

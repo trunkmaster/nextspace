@@ -438,6 +438,8 @@
 {
   NSDebugLLog(@"Memory", @"FileViewer %@: dealloc", rootPath);
 
+  [[NSDistributedNotificationCenter notificationCenterForType:NSLocalNotificationCenterType]
+      removeObserver:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   // [viewer release];
