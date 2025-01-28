@@ -34,6 +34,7 @@
 {
   NSString *fileName;
   NSMutableDictionary *props = [_properties mutableCopy];
+  NSDictionary *_volumes = [_udisksAdaptor availableVolumesForDrive:_objectPath];
 
   fileName =
       [NSString stringWithFormat:@"Library/Workspace/Drive_%@", [_objectPath lastPathComponent]];
@@ -49,7 +50,7 @@
   NSDebugLLog(@"dealloc", @"OSEUDisksDrive -dealloc %@", self.objectPath);
   [_properties release];
   [_objectPath release];
-  [_volumes release];
+  // [_volumes release];
 
   [super dealloc];
 }
@@ -62,7 +63,7 @@
 
   _properties = [properties mutableCopy];
   _objectPath = [path copy];
-  _volumes = [[NSMutableDictionary alloc] init];
+  // _volumes = [[NSMutableDictionary alloc] init];
   self.udisksAdaptor = adaptor;
 
   notificationCenter = [NSNotificationCenter defaultCenter];
@@ -196,6 +197,7 @@
 //-------------------------------------------------------------------------------
 - (NSArray *)mountedVolumes
 {
+  NSDictionary *_volumes = [_udisksAdaptor availableVolumesForDrive:_objectPath];
   NSMutableArray *mountedVolumes = [NSMutableArray array];
   OSEUDisksVolume *volume;
 
@@ -214,6 +216,7 @@
 
 - (NSArray *)mountVolumes:(BOOL)wait
 {
+  NSDictionary *_volumes = [_udisksAdaptor availableVolumesForDrive:_objectPath];
   NSMutableArray *mountPoints = [NSMutableArray array];
   OSEUDisksVolume *volume;
   NSString *mp;
@@ -232,12 +235,13 @@
 
 - (BOOL)unmountVolumes:(BOOL)wait
 {
+  NSDictionary *volumes = [_udisksAdaptor availableVolumesForDrive:_objectPath];
   OSEUDisksVolume *volume;
 
-  NSDebugLLog(@"UDisks", @"Drive: unmountVolumes: %@", _volumes);
+  NSDebugLLog(@"UDisks", @"Drive: unmountVolumes: %@", volumes);
 
-  for (NSString *key in [_volumes allKeys]) {
-    volume = _volumes[key];
+  for (NSString *key in [volumes allKeys]) {
+    volume = volumes[key];
     if (![volume unmount:wait]) {
       return NO;
     }

@@ -43,7 +43,7 @@
 
 //--- Object network
 @property (readwrite, assign) OSEUDisksAdaptor *udisksAdaptor;
-@property (readonly) NSMutableDictionary *volumes;
+// @property (readonly) NSMutableDictionary *volumes;
 
 //--- Attributes
 @property (readonly) NSString *humanReadableName;  // vendor, model
