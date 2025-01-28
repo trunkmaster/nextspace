@@ -652,10 +652,9 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     // of application. Only OSEMediaVolume* notification will be sent.
     if ([name isEqualToString:@"Mount"] || [name isEqualToString:@"Unmount"]) {
       [info setObject:[object UNIXDevice] forKey:@"UNIXDevice"];
-
       if ([name isEqualToString:@"Mount"] && !failed) {
         if ([object mountPoints].count > 0) {
-          [info setObject:[object mountPoints] forKey:@"MountPoint"];
+          [info setObject:[object mountPoints].firstObject forKey:@"MountPoint"];
         }
         [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification
                                           object:self
@@ -719,7 +718,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 
     OSEUDisksDrive *drive = [volume drive];
     if (volume.isFilesystem && (drive.isRemovable || (drive.isMediaRemovable && drive.hasMedia))) {
-      [mountPaths addObject:[volume mountPoints]];
+      [mountPaths addObject:[volume mountPoints].firstObject];
     }
   }
 
