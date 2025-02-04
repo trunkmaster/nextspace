@@ -36,6 +36,23 @@
   [props release];
 }
 
+
+- (id)_propertyValueWithName:(NSString *)propertyName section:(NSString *)sectionName
+{
+  OSEBusMessage *message;
+  id result = nil;
+
+  message = [[OSEBusMessage alloc] initWithServiceName:_udisksAdaptor.serviceName
+                                                object:_objectPath
+                                             interface:@"org.freedesktop.DBus.Properties"
+                                                method:@"Get"
+                                             arguments:@[ sectionName, propertyName ]
+                                             signature:@"ss"];
+  result = [message sendWithConnection:_udisksAdaptor.connection];
+  [message release];
+  return result;
+}
+
 - (void)handlePropertiesChangedSignal:(NSDictionary *)info
 {
   id objectPath = info[@"ObjectPath"];
@@ -54,6 +71,40 @@
 
   NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) \e[1mPropertiesChanged\e[0m: %@", _objectPath,
               info);
+  {
+    // sa{sv}as
+    NSString *interface = message[0];  // s
+    NSArray *properties = message[1];  // a{sv}
+    NSArray *change = message[2];      // as
+    NSMutableDictionary *parsedProperties;
+
+    if (properties.count > 0) {
+      NSMutableDictionary *currInterfaceProperties = _properties[interface];
+      parsedProperties = [_udisksAdaptor _parsePropertiesSection:properties];
+      if (currInterfaceProperties != nil) {
+        // update properties
+        NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) updating properties for %@", _objectPath,
+                    interface);
+        for (NSString *propName in parsedProperties.allKeys) {
+          currInterfaceProperties[propName] = parsedProperties[propName];
+        }
+      } else {
+        // add interface with properties
+        NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) adding interface %@", _objectPath,
+                    interface);
+        _properties[interface] = parsedProperties;
+      }
+    }
+
+    // proceed with existing properties change
+    for (NSString *propName in change) {
+      id propValue = [self _propertyValueWithName:propName section:interface];
+      if (propValue != nil) {
+        _properties[interface][propName] = propValue;
+      }
+    }
+  }
+  [self _dumpProperties];
 }
 
 //-------------------------------------------------------------------------------
@@ -62,7 +113,6 @@
 - (void)dealloc
 {
   NSDebugLLog(@"dealloc", @"OSEUDisksVolume -dealloc %@", self.objectPath);
-
 
   [_properties release];
   [_objectPath release];
@@ -414,7 +464,7 @@
                               message:message];
   }
 
-  return nil;
+  return result;
 }
 
 - (BOOL)unmount:(BOOL)wait
