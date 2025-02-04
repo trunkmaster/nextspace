@@ -409,7 +409,16 @@ NSLock *driveLock = nil;
       return YES;
     }
   } else {
-    NSDebugLLog(@"UDisks", @"Warning: Asynchronous volume mounting is not implemented!");
+    NSDebugLLog(@"UDisks", @"Warning: Asynchronous drive ejecting is not implemented!");
+    message = [NSString stringWithFormat:@"Eject of %@ completed at mount point %@",
+                                         [self humanReadableName], result];
+    [_udisksAdaptor operationWithName:@"Eject"
+                               object:self
+                               failed:NO
+                               status:@"Completed"
+                                title:@"Eject"
+                              message:message];
+    return YES;
   }
 
   return NO;
