@@ -12,8 +12,8 @@
 {
  @private
   int socketFileDescriptor;
-  // NSMutableDictionary *signalFilters;
   CFMutableDictionaryRef signalObservers;
+  BOOL isSignalFilterDidSet;
 
 #ifdef CF_BUS_CONNECTION
   CFRunLoopRef run_loop;

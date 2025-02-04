@@ -25,14 +25,14 @@ static OSEBusConnection *defaultConnection = nil;
 static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, DBusMessage *message,
                                                    void *info)
 {
-  printf("Signal arrived --> serial=%u path=%s; interface=%s; member=%s sender=%s\n",
-         dbus_message_get_serial(message), dbus_message_get_path(message),
-         dbus_message_get_interface(message), dbus_message_get_member(message),
-         dbus_message_get_sender(message));
+  // fprintf(stderr, "Signal arrived --> serial=%u path=%s; interface=%s; member=%s sender=%s\n",
+  //         dbus_message_get_serial(message), dbus_message_get_path(message),
+  //         dbus_message_get_interface(message), dbus_message_get_member(message),
+  //         dbus_message_get_sender(message));
 
-  // if (dbus_message_is_signal(message, DBUS_INTERFACE_LOCAL, "Disconnected")) {
-  //   return DBUS_HANDLER_RESULT_HANDLED;
-  // }
+  if (dbus_message_is_signal(message, DBUS_INTERFACE_LOCAL, "Disconnected")) {
+    return DBUS_HANDLER_RESULT_HANDLED;
+  }
 
   if (message != NULL) {
     OSEBusMessage *msg = [OSEBusMessage new];
@@ -68,13 +68,16 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 - (void)dealloc
 {
   NSDebugLLog(@"dealloc", @"OSEBusConnection: -dealloc (retain count: %lu)", [self retainCount]);
+  if (isSignalFilterDidSet != NO) {
+    dbus_connection_remove_filter(_dbus_connection, _dbus_signal_handler_func, NULL);
+  }
+  CFRelease(signalObservers);
 #ifdef CF_BUS_CONNECTION
 #else
-  [socketFileHandle release];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [socketFileHandle release];
 #endif
   // [signalFilters release];
-  CFRelease(signalObservers);
   dbus_connection_unref(_dbus_connection);
   defaultConnection = nil;
   [super dealloc];
@@ -89,11 +92,6 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
   [super init];
   defaultConnection = self;
 
-  // signalFilters = [NSMutableDictionary new];
-  signalObservers =
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFCopyStringDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks);
-
   dbus_error_init(&_dbus_error);
   _dbus_connection = dbus_bus_get(DBUS_BUS_SYSTEM, &_dbus_error);
   // dbus_bus_set_unique_name(_dbus_connection, [[[NSProcessInfo processInfo] processName] cString]);
@@ -102,6 +100,18 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
   // NSLog(@"OSEBusConnection: initialized with socket FD: %i", socketFileDescriptor);
   dbus_connection_read_write_dispatch(_dbus_connection, 1);
 
+  // signals
+  signalObservers =
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFCopyStringDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks);
+
+  if (dbus_connection_add_filter(_dbus_connection, _dbus_signal_handler_func, NULL, NULL)) {
+    isSignalFilterDidSet = YES;
+  } else {
+    isSignalFilterDidSet = NO;
+    NSLog(@"OSEBusConnection Error: Couldn't add D-Bus filter to observe signal!");
+  }
+  
 #ifndef CF_BUS_CONNECTION
   // Setup signal handling
   socketFileHandle = [[NSFileHandle alloc] initWithFileDescriptor:socketFileDescriptor];
@@ -214,6 +224,11 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 {
   NSString *rule;
 
+  if (isSignalFilterDidSet == NO) {
+    NSLog(@"OSEBusConnection Warning: D-Bus filter has not been set - ignoring addSignalObserver::::: message!");
+    return;
+  }
+
   rule = [NSString stringWithFormat:@"path='%@',interface='%@',member='%@',type='signal'",
                                     objectPath, aInterface, signalName];
 
@@ -279,6 +294,9 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
     rule = [NSString stringWithFormat:@"path='%@',interface='%@',member='%@',type='signal'",
                                       objectPath, aInterface, signalName];
     dbus_bus_remove_match(_dbus_connection, [rule cString], &_dbus_error);
+    if (dbus_error_is_set(&_dbus_error)) {
+      NSLog(@"OSEBusConnection Error while removing match %s: %s", _dbus_error.name, _dbus_error.message);
+    }
   }
   NSDebugLLog(@"DBus", @"Observer %@ for `%@` signal removed.", [anObserver className],
               [NSString stringWithFormat:@"%@-%@-%@", objectPath, aInterface, signalName]);
