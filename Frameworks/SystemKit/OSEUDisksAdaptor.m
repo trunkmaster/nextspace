@@ -20,8 +20,6 @@
 //
 
 #import <SystemKit/OSEFileManager.h>
-#include "GNUstepBase/GNUstep.h"
-#include "Foundation/NSString.h"
 #import <SystemKit/OSEBusMessage.h>
 
 #import "OSEUDisksDrive.h"
@@ -34,21 +32,7 @@ NSString *OSEUDisksInterfacesDidAddNotification = @"OSEUDisksInterfacesDidAddNot
 NSString *OSEUDisksInterfacesDidRemoveNotification = @"OSEUDisksInterfacesDidRemoveNotification";
 NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidChangeNotification";
 
-@interface OSEUDisksAdaptor (Private)
-- (OSEUDisksObject)_objectTypeForPath:(NSString *)objectPath;
-
-- (void)_parseDrive:(NSString *)objectPath withProperties:(NSArray *)objectProperties;
-- (void)_parseBlockDevice:(NSString *)objectPath withProperties:(NSArray *)objectProperties;
-- (void)_parseObject:(NSString *)objectPath withProperties:(NSArray *)objectProperties;
-
-- (void)_removeObject:(NSString *)objectPath andNotify:(BOOL)notify;
-
-- (void)_registerDrive:(NSString *)objectPath andNotify:(BOOL)notify;
-- (void)_registerBlockDevice:(NSString *)objectPath andNotify:(BOOL)notify;
-- (void)_registerObjects;
-@end
-
-@implementation OSEUDisksAdaptor (Private)
+@implementation OSEUDisksAdaptor (Utility)
 
 - (OSEUDisksObject)_objectTypeForPath:(NSString *)objectPath
 {
@@ -490,17 +474,17 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - `volumes` retain count %lu.",
               [volumes retainCount]);
   for (NSString *key in [volumes allKeys]) {
-    OSEUDisksVolume *vol = volumes[key];
+    OSEUDisksVolume *volume = volumes[key];
     NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - `Volume` - %@ retain count %lu.",
-                [vol objectPath], [vol retainCount]);
-    // [volumes removeObjectForKey:key];
+                [volume objectPath], [volume retainCount]);
+    [volume removeSignalsObserving];
   }
   [volumes release];
   for (NSString *key in [drives allKeys]) {
-    OSEUDisksDrive *drv = drives[key];
+    OSEUDisksDrive *drive = drives[key];
     NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - `Drive` - %@ retain count %lu.",
-                [drv objectPath], [drv retainCount]);
-    // [volumes removeObjectForKey:key];
+                [drive objectPath], [drive retainCount]);
+    [drive removeSignalsObserving];
   }
   [drives release];
   [jobsCache release];
@@ -767,18 +751,27 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   OSEUDisksDrive *drive;
   OSEUDisksVolume *volume;
 
-  for (NSString *key in [drives allKeys]) {
-    drive = drives[key];
-    if ([drive isRemovable]) {
-      [mountPoints addObjectsFromArray:[drive mountVolumes:wait]];
-    }
-  }
+  // for (NSString *key in [drives allKeys]) {
+  //   drive = drives[key];
+  //   if ([drive isRemovable]) {
+  //     [mountPoints addObjectsFromArray:[drive mountVolumes:wait]];
+  //   }
+  // }
 
-  // Loop devices is always removable and have no drives
+  // // Loop devices is always removable and have no drives
+  // for (NSString *key in [volumes allKeys]) {
+  //   volume = volumes[key];
+  //   if ([volume isLoopVolume] && [volume isFilesystem]) {
+  //     [volume mount:wait];
+  //   }
+  // }
+
   for (NSString *key in [volumes allKeys]) {
     volume = volumes[key];
-    if ([volume isLoopVolume] && [volume isFilesystem]) {
-      [volume mount:wait];
+    drive = volume.drive;
+    if ([drive isRemovable] && [volume isFilesystem]) {
+      // [mountPoints addObjectsFromArray:[volume mount:wait]];
+      [mountPoints addObject:[volume mount:YES]];
     }
   }
 

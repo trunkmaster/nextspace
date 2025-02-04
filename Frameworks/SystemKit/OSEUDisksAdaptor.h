@@ -119,3 +119,20 @@ extern NSString *OSEUDisksInterfacesDidRemoveNotification;
 - (void)_dumpProperties;
 
 @end
+
+@interface OSEUDisksAdaptor (Utility)
+- (OSEUDisksObject)_objectTypeForPath:(NSString *)objectPath;
+
+- (NSMutableDictionary *)_parsePropertiesSection:(NSArray *)sectionProperties;
+- (NSMutableDictionary *)_parseDriveProperties:(NSArray *)objectProperties;
+
+- (void)_parseDrive:(NSString *)objectPath withProperties:(NSArray *)objectProperties;
+- (void)_parseBlockDevice:(NSString *)objectPath withProperties:(NSArray *)objectProperties;
+- (void)_parseObject:(NSString *)objectPath withProperties:(NSArray *)objectProperties;
+
+- (void)_removeObject:(NSString *)objectPath andNotify:(BOOL)notify;
+
+- (void)_registerDrive:(NSString *)objectPath andNotify:(BOOL)notify;
+- (void)_registerBlockDevice:(NSString *)objectPath andNotify:(BOOL)notify;
+- (void)_registerObjects;
+@end
