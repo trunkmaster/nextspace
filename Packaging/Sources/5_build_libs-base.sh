@@ -8,7 +8,7 @@
 # Install package dependecies
 #----------------------------------------
 ${ECHO} ">>> Installing ${OS_ID} packages for GNUstep Base (Foundation) build"
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ];then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -y ${GNUSTEP_BASE_DEPS} || exit 1
 else
@@ -24,7 +24,7 @@ fi
 # in GNUSTEP_BASE_RUN_DEPS
 #----------------------------------------
 
-if [ ${OS_ID} = "debian"];then
+if [ ${OS_ID} = "debian" ];then
 	for ICUSUFFIXE in "data" "i18n" "io" "test" "tu" "uc"
 		do
 			if [ -f /usr/lib/${MACHINE}-linux-gnu/libicu${ICUSUFFIXE}.so.72 ];then

@@ -136,22 +136,11 @@ APPS_BUILD_DEPS="
     libpam0g-dev
 "
 APPS_RUN_DEPS="
+    xorg
     fontconfig
     libfontconfig1
-    libxft2
-    libxinerama1
-    libxcomposite1
-    libxrender1
     libxdamage1
     libexif12
-    xserver-xorg-video-vesa
-    xserver-xorg-core
-    xinit
-    xserver-xorg-input-evdev
-    xserver-xorg-input-synaptics
-    xfonts-100dpi
-    x11-xkb-utils
-    x11-xserver-utils
 "
 #    libpam0g 
 #xserver-xorg-input-kbd

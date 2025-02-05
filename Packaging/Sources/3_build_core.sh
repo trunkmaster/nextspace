@@ -26,18 +26,16 @@ if ! [ -d $DEST_DIR/etc/X11/xorg.conf.d ];then
 	$MKDIR_CMD -v $DEST_DIR/etc/X11/xorg.conf.d
 fi
 
-# To avoid Login.app flickering, we must set some resolution and frequency for arm machines (pi) SBC
+# Do not set X11 configuration on a raspberry pi SBC
+# It is already set with kernel mod loading at boot
 if [ ${MACHINE} = "aarch64" ];then
-	if ! [ -f $DEST_DIR/etc/X11/xorg.conf.d/20-monitor-pi.conf ];then
-		$CP_CMD ${CORE_SOURCES}/etc/X11/xorg.conf.d/20-monitor-pi.conf $DEST_DIR/etc/X11/xorg.conf.d/
-	fi
-	# This should already be there...
-	if ! [ -f $DEST_DIR/etc/X11/xorg.conf.d/99-v3d.conf ];then
-		$CP_CMD ${CORE_SOURCES}/etc/X11/xorg.conf.d/99-v3d.conf $DEST_DIR/etc/X11/xorg.conf.d/
+	if [ -f $DEST_DIR/etc/X11/xorg.conf.d/99-v3d.conf ];then
+		${ECHO} "We do not set X11 on a pi machine. Already done.\n"
+	else
+		$CP_CMD ${CORE_SOURCES}/etc/X11/xorg.conf.d/*.conf $DEST_DIR/etc/X11/xorg.conf.d/
 	fi
 fi
 
-#$CP_CMD ${CORE_SOURCES}/etc/X11/xorg.conf.d/*.conf $DEST_DIR/etc/X11/xorg.conf.d/
 $CP_CMD ${CORE_SOURCES}/etc/X11/Xresources.nextspace $DEST_DIR/etc/X11
 
 # PolKit & udev

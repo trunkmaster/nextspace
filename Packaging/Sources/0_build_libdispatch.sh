@@ -21,6 +21,9 @@ else
 	sudo yum -y install ${DEPS} || exit 1
 fi
 
+### To avoid cmake error at Build stage above ###
+sudo ldconfig
+
 #----------------------------------------
 # Download
 #----------------------------------------

@@ -39,7 +39,7 @@ $ ./8_build_Frameworks.sh
 $ ./9_build_Applications.sh
 ```
 
-## Installing default profile and configuration
+## Installing default profile and configuration and Post-Install
 
 If you omit running `setup_user_home.sh` script at installation time, configartion files available at /etc/skel directory.
 
@@ -48,6 +48,16 @@ Before you can run NEXTSPACE, you need to make sure you install various scripts 
 $ sudo ./setup_user_home.sh
 $ ./setup_user_home.sh
 ```
+
+Before installing a display manager, you should test NeXTspace:
+
+`startx`
+
+If it is OK, logout the Workspace and install the Display Manager:
+```
+$ ./setup_display-manager.sh
+```
+
 Note that this is "minimal" startup configuration, which uses xinitrc script to start everything up (usually invoked as part of startx). If you want to use Login.app or start Workspace in any other way, you may have to create your own configuration.
 
 User home directory profile consists of the following components:

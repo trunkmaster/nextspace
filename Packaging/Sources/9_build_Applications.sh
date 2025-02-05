@@ -3,6 +3,7 @@
 . ../environment.sh
 . /etc/profile.d/nextspace.sh
 
+
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
@@ -73,30 +74,9 @@ $INSTALL_CMD || exit
 sudo ldconfig
 
 #----------------------------------------
-# Post install
+# Post install : go to external script
 #----------------------------------------
-if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
-	# Login
-	if [ ${OS_ID} = "debian" ];then
-		### Need to install xdm first
-		sudo apt-get install -y xdm
-		### And to disable it...
-		sudo systemctl stop xdm.service
-		sudo systemctl disable xdm.service
-	fi
 
-	${ECHO} "Setting up Login window service to run at system startup..."
-	sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
-	sudo systemctl set-default graphical.target
+### This section goes out to 11th stage
+# Because We need to have .xinitrc set before lauchning graphical.target...
 
-	# SELinux
-	if [ -f /etc/selinux/config ]; then
-		SELINUX_STATE=`grep "^SELINUX=.*" /etc/selinux/config | awk -F= '{print $2}'`
-		if [ "${SELINUX_STATE}" != "disabled" ]; then
-			${ECHO} -n "SELinux enabled - dissabling it..."
-			sudo sed -i -e ' s/SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
-			${ECHO} "done"
-			${ECHO} "Please reboot to apply changes."
-		fi
-	fi
-fi
