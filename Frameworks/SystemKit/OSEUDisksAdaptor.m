@@ -489,9 +489,6 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   [drives release];
   [jobsCache release];
 
-  // OSEUDisksAdaptor is the main owner of connection to UDisks2 D-Bus service (OSEBusConnection) - release it.
-  // [self.connection release];
-
   [self removeSignalsMonitoring];
 
   NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - end of routine.");
@@ -595,7 +592,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     }
   }
 
-  NSDebugLLog(@"UDisks", @"Longest MP: %@ for path %@", [volume mountPoints], filesystemPath);
+  // NSDebugLLog(@"UDisks", @"Longest MP: %@ for path %@", [volume mountPoints], filesystemPath);
 
   return volume;
 }
@@ -695,10 +692,10 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   NSMutableArray *mountPaths = [NSMutableArray array];
 
   for (OSEUDisksVolume *volume in mountedVolumes) {
-    NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor: mountedRemovableMedia check: %@ (%@)",
-                [volume mountPoints],
-                [[[[volume drive] properties] objectForKey:@"org.freedesktop.UDisks2.Drive"]
-                    objectForKey:@"Id"]);
+    // NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor: mountedRemovableMedia check: %@ (%@)",
+    //             [volume mountPoints],
+    //             [[[[volume drive] properties] objectForKey:@"org.freedesktop.UDisks2.Drive"]
+    //                 objectForKey:@"Id"]);
 
     OSEUDisksDrive *drive = [volume drive];
     if (volume.isFilesystem && (drive.isRemovable || (drive.isMediaRemovable && drive.hasMedia))) {
@@ -750,6 +747,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   NSMutableArray *mountPoints = [NSMutableArray new];
   OSEUDisksDrive *drive;
   OSEUDisksVolume *volume;
+  NSString *mountPoint;
 
   // for (NSString *key in [drives allKeys]) {
   //   drive = drives[key];
@@ -769,9 +767,11 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   for (NSString *key in [volumes allKeys]) {
     volume = volumes[key];
     drive = volume.drive;
-    if ([drive isRemovable] && [volume isFilesystem]) {
-      // [mountPoints addObjectsFromArray:[volume mount:wait]];
-      [mountPoints addObject:[volume mount:YES]];
+    if (drive && [drive isRemovable] && [volume isFilesystem]) {
+      mountPoint = [volume mount:wait];
+      if (mountPoint) {
+        [mountPoints addObject:mountPoint];
+      }
     }
   }
 

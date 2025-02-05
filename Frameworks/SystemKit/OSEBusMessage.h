@@ -40,6 +40,8 @@
 
 - (id)send;
 - (id)sendWithConnection:(OSEBusConnection *)connection;
+- (BOOL)sendAsync;
+- (BOOL)sendAsyncWithConnection:(OSEBusConnection *)connection;
 
 - (id)decodeDBusMessage:(DBusMessage *)message;
 

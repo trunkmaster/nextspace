@@ -55,56 +55,87 @@
 
 - (void)handlePropertiesChangedSignal:(NSDictionary *)info
 {
-  id objectPath = info[@"ObjectPath"];
+  id objectPath;
   // sa{sv}as
-  NSArray *message = info[@"Message"];
+  NSArray *message;
+  NSString *interface;  // s
+  NSArray *properties;  // a{sv}
+  NSArray *change;      // as
+  NSMutableDictionary *parsedProperties;
 
   NSLog(@"OSEUDisksVolume - handlePropertiesChanged");
 
+  // Sanity checks
+  objectPath = info[@"ObjectPath"];
   if ([objectPath isKindOfClass:[NSString class]] &&
       [objectPath isEqualToString:_objectPath] == NO) {
-    NSDebugLLog(@"UDisks",
-                @"OSEUDisksVolume (%@) \e[1mPropertiesChanged\e[0m: not mine, skipping...",
+    NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) PropertiesChanged: is not mine, skipping...",
                 _objectPath);
+    return;
+  }
+  message = info[@"Message"];
+  if (message == nil || message.count < 3) {
+    NSDebugLLog(@"UDisks",
+                @"OSEUDisksVolume (%@) PropertiesChanged: wrong number of elements inside "
+                @"`Message`. It's %lu must be 3.",
+                _objectPath, message.count);
     return;
   }
 
   NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) \e[1mPropertiesChanged\e[0m: %@", _objectPath,
               info);
-  {
-    // sa{sv}as
-    NSString *interface = message[0];  // s
-    NSArray *properties = message[1];  // a{sv}
-    NSArray *change = message[2];      // as
-    NSMutableDictionary *parsedProperties;
+  // sa{sv}as
+  interface = message[0];   // s
+  properties = message[1];  // a{sv}
+  change = message[2];      // as
 
-    if (properties.count > 0) {
-      NSMutableDictionary *currInterfaceProperties = _properties[interface];
-      parsedProperties = [_udisksAdaptor _parsePropertiesSection:properties];
-      if (currInterfaceProperties != nil) {
-        // update properties
-        NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) updating properties for %@", _objectPath,
-                    interface);
-        for (NSString *propName in parsedProperties.allKeys) {
-          currInterfaceProperties[propName] = parsedProperties[propName];
+  if (properties.count > 0) {
+    // Send notification first if needed
+    for (NSDictionary *prop in properties) {
+      for (NSString *key in prop.allKeys) {
+        if ([key isEqualToString:@"MountPoints"]) {
+          NSArray *mps = prop[key];
+          if (mps && [mps isKindOfClass:[NSArray class]] && mps.count > 0) {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationName:OSEMediaVolumeDidMountNotification
+                              object:_udisksAdaptor
+                            userInfo:@{@"MountPoint" : mps.firstObject}];
+          } else {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationName:OSEMediaVolumeDidUnmountNotification
+                              object:_udisksAdaptor
+                            userInfo:@{@"MountPoint" : [self mountPoints].firstObject}];
+          }
         }
-      } else {
-        // add interface with properties
-        NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) adding interface %@", _objectPath,
-                    interface);
-        _properties[interface] = parsedProperties;
       }
     }
-
-    // proceed with existing properties change
-    for (NSString *propName in change) {
-      id propValue = [self _propertyValueWithName:propName section:interface];
-      if (propValue != nil) {
-        _properties[interface][propName] = propValue;
+    // Update/add properties
+    NSMutableDictionary *currInterfaceProperties = _properties[interface];
+    parsedProperties = [_udisksAdaptor _parsePropertiesSection:properties];
+    if (currInterfaceProperties != nil) {
+      // update properties
+      NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) updating properties for %@: %@", _objectPath,
+                  interface, parsedProperties);
+      for (NSString *propName in parsedProperties.allKeys) {
+        currInterfaceProperties[propName] = parsedProperties[propName];
       }
+    } else {
+      // add interface with properties
+      NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) adding interface %@", _objectPath, interface);
+      _properties[interface] = parsedProperties;
     }
   }
+
+  // proceed with existing properties change
+  for (NSString *propName in change) {
+    id propValue = [self _propertyValueWithName:propName section:interface];
+    if (propValue != nil) {
+      _properties[interface][propName] = propValue;
+    }
+  }
+
   [self _dumpProperties];
+  NSDebugLLog(@"UDisks", @"OSEUDisksVolume - handlePropertiesChanged - END");
 }
 
 //-------------------------------------------------------------------------------
@@ -422,15 +453,15 @@
                              status:@"Started"
                               title:@"Mount"
                             message:message];
-    
+
+  busMessage = [[OSEBusMessage alloc]
+      initWithServiceName:_udisksAdaptor.serviceName
+                   object:_objectPath
+                interface:FS_INTERFACE
+                   method:@"Mount"
+                arguments:@[ @[ @{@"auth.no_user_interaction" : @"b:true"} ] ]
+                signature:@"a{sv}"];
   if (wait) {
-    busMessage = [[OSEBusMessage alloc]
-        initWithServiceName:_udisksAdaptor.serviceName
-                     object:_objectPath
-                  interface:FS_INTERFACE
-                     method:@"Mount"
-                  arguments:@[ @[ @{@"auth.no_user_interaction" : @"b:true"} ] ]
-                  signature:@"a{sv}"];
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
     [busMessage release];
 
@@ -454,7 +485,8 @@
                                 message:message];
     }
   } else {
-    message = @"Asynchronous volume mounting is not implemented!";
+    [busMessage sendAsyncWithConnection:_udisksAdaptor.connection];
+    message = @"Asynchronous volume mounting has been called!";
     NSDebugLLog(@"UDisks", @"Warning: %@", message);
     [_udisksAdaptor operationWithName:@"Mount"
                                object:self
@@ -487,17 +519,17 @@
                               title:@"Unmount"
                             message:message];
 
+  busMessage = [[OSEBusMessage alloc]
+      initWithServiceName:_udisksAdaptor.serviceName
+                   object:_objectPath
+                interface:FS_INTERFACE
+                   method:@"Unmount"
+                arguments:@[ @[ @{@"auth.no_user_interaction" : @"b:true"} ] ]
+                signature:@"a{sv}"];
+  
   if (wait) {
-    busMessage = [[OSEBusMessage alloc]
-        initWithServiceName:_udisksAdaptor.serviceName
-                     object:_objectPath
-                  interface:FS_INTERFACE
-                     method:@"Unmount"
-                  arguments:@[ @[ @{@"auth.no_user_interaction" : @"b:true"} ] ]
-                  signature:@"a{sv}"];
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
     [busMessage release];
-
     NSDebugLLog(@"UDisks", @"OSEUDisksVolume -unmount result: %@", result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
@@ -529,7 +561,6 @@
                               message:message];
     return YES;
   }
-
 
   return NO;
 }

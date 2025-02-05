@@ -505,6 +505,55 @@ static dbus_bool_t append_arg(DBusMessageIter *iter, id argument, const char *db
   return result;
 }
 
+- (BOOL)sendAsync
+{
+  if (busService) {
+    return [self sendAsyncWithConnection:busService.connection];
+  }
+  NSLog(@"OSBusMessage: called `send` without OSEBusService set. Return `nil`.");
+  return NO;
+}
+
+void async_call_notification(DBusPendingCall *pending, void *user_data)
+{
+  OSEBusMessage *busMessage = (OSEBusMessage *)user_data;
+  DBusMessageIter dbus_message_iterator;
+  DBusMessage *reply;
+  NSMutableArray *result = nil;
+
+  if ([busMessage isKindOfClass:[OSEBusMessage class]]) {
+    dbus_message_iterator = busMessage.dbus_message_iterator;
+  } else {
+    NSLog(@"Async call notification received, but `user_data` is not OSEBusMessage.");
+    return;
+  }
+
+  reply = dbus_pending_call_steal_reply(pending);
+  if (reply) {
+    result = [NSMutableArray new];
+
+    dbus_message_iter_init(reply, &dbus_message_iterator);
+    decodeDBusMessage(&dbus_message_iterator, result);
+    dbus_message_unref(reply);
+    NSLog(@"Async call notification received with result: %@", result);
+  } else {
+    NSLog(@"Async call notification received, but can't get reply.");
+  }
+  dbus_pending_call_unref(pending);
+}
+
+- (BOOL)sendAsyncWithConnection:(OSEBusConnection *)connection
+{
+  BOOL result = NO;
+  DBusPendingCall *pending;
+
+  result = dbus_connection_send_with_reply(connection.dbus_connection, dbus_message, &pending, -1);
+  dbus_pending_call_set_notify(pending, async_call_notification, self, NULL);
+  dbus_connection_flush(connection.dbus_connection);
+
+  return result;
+}
+
 - (id)decodeDBusMessage:(DBusMessage *)message
 {
   NSMutableArray *result = [NSMutableArray new];
