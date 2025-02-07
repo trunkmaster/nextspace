@@ -463,8 +463,6 @@
                 signature:@"a{sv}"];
   if (wait) {
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
-    [busMessage release];
-
     NSDebugLLog(@"UDisks", @"OSEUDisksVolume -mount result: %@", result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
@@ -484,6 +482,7 @@
                                   title:@"Mount"
                                 message:message];
     }
+  [busMessage release];
   } else {
     [busMessage sendAsyncWithConnection:_udisksAdaptor.connection];
     message = @"Asynchronous volume mounting has been called!";
@@ -494,6 +493,7 @@
                                status:@"Completed"
                                 title:@"Mount"
                               message:message];
+    // `busMessage` should not be released here beacuse of async operation.
   }
 
   return result;
@@ -526,10 +526,9 @@
                    method:@"Unmount"
                 arguments:@[ @[ @{@"auth.no_user_interaction" : @"b:true"} ] ]
                 signature:@"a{sv}"];
-  
+
   if (wait) {
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
-    [busMessage release];
     NSDebugLLog(@"UDisks", @"OSEUDisksVolume -unmount result: %@", result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
@@ -550,8 +549,10 @@
                                 message:message];
       return YES;
     }
+    [busMessage release];
   } else {
-    message = @"Asynchronous volume unmounting is not implemented!";
+    [busMessage sendAsyncWithConnection:_udisksAdaptor.connection];
+    message = @"Asynchronous volume un-mounting has been called!";
     NSDebugLLog(@"UDisks", @"Warning: %@", message);
     [_udisksAdaptor operationWithName:@"Unmount"
                                object:self
@@ -559,6 +560,7 @@
                                status:@"Completed"
                                 title:@"Unmount"
                               message:message];
+    // `busMessage` should not be released here beacuse of async operation.
     return YES;
   }
 

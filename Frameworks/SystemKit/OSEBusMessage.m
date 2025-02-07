@@ -170,7 +170,7 @@ static id decodeDBusMessage(DBusMessageIter *iter, id result)
 
       break;
     } else {
-      NSLog(@"BusKit error: unknown D-Bus data type '%c'", type);
+      NSLog(@"SystemKit error: unknown D-Bus data type '%c'", type);
     }
   } while (dbus_message_iter_next(iter));
 
@@ -201,7 +201,7 @@ static dbus_bool_t append_array(DBusMessageIter *iter, NSArray *elements, const 
   DBusMessageIter array_iterator;
   dbus_bool_t ret = false;
 
-  printf("0: append_array of element type: %c\n", signature[0]);
+  NSDebugLLog(@"DBus", @"0: append_array of element type: %c", signature[0]);
   // open container with sub-iterator
   const char *dbus_signature;
   if (signature[0] == DBUS_DICT_ENTRY_BEGIN_CHAR) {
@@ -209,13 +209,13 @@ static dbus_bool_t append_array(DBusMessageIter *iter, NSArray *elements, const 
   } else {
     dbus_signature = [[NSString stringWithFormat:@"%c", signature[0]] cString];
   }
-  printf("1: append_array of element type: %s\n", dbus_signature);
+  NSDebugLLog(@"DBus", @"1: append_array of element type: %s", dbus_signature);
   ret = dbus_message_iter_open_container(iter, DBUS_TYPE_ARRAY, dbus_signature,
                                          &array_iterator);
   handle_oom(ret);
 
   for (id value in elements) {
-    printf("append_array of element type: %c\n", dbus_signature[0]);
+    NSDebugLLog(@"DBus", @"append_array of element type: %c\n", dbus_signature[0]);
     ret = append_arg(&array_iterator, value, signature);
   }
 
@@ -234,7 +234,7 @@ static dbus_bool_t append_struct(DBusMessageIter *iter, NSArray *elements, const
   handle_oom(ret);
 
   for (int i = 0; signature[0] != DBUS_STRUCT_END_CHAR; i++) {
-    printf("append_struct of element type: %c\n", signature[0]);
+    NSDebugLLog(@"DBus", @"append_struct of element type: %c", signature[0]);
     ret = append_arg(&struct_iterator, elements[i], signature);
     signature++;
   }
@@ -249,7 +249,7 @@ static dbus_bool_t append_dict(DBusMessageIter *iter, NSDictionary *values, cons
 {
   dbus_bool_t ret = false;
 
-  NSLog(@"append_dict signature %s with values %@", signature, values);
+  NSDebugLLog(@"DBus", @"append_dict signature %s with values %@", signature, values);
 
   for (NSString *key in values.allKeys) {
     DBusMessageIter dict_subiter;
@@ -352,30 +352,30 @@ static dbus_bool_t append_arg(DBusMessageIter *iter, id argument, const char *db
       ret = dbus_message_iter_append_basic(iter, DBUS_TYPE_OBJECT_PATH, &value);
     } break;
     case DBUS_TYPE_VARIANT: {
-      NSLog(@"DBUS_TYPE_VARIANT: %@", argument);
+      NSDebugLLog(@"DBus", @"DBUS_TYPE_VARIANT: %@", argument);
       append_variant(iter, argument);
       ret = true;
     } break;
     case DBUS_TYPE_ARRAY: {
       dbus_signature++;
-      NSLog(@"DBUS_TYPE_ARRAY: %@", argument);
+      NSDebugLLog(@"DBus", @"DBUS_TYPE_ARRAY: %@", argument);
       append_array(iter, argument, dbus_signature);
       ret = true;
     } break;
     case DBUS_STRUCT_BEGIN_CHAR: {
       dbus_signature++;
-      NSLog(@"DBUS_TYPE_STRUCT: %@", argument);
+      NSDebugLLog(@"DBus", @"DBUS_TYPE_STRUCT: %@", argument);
       append_struct(iter, argument, dbus_signature);
       ret = true;
     } break;
     case DBUS_DICT_ENTRY_BEGIN_CHAR: {
       dbus_signature++;
-      NSLog(@"DBUS_TYPE_DICT: %@", argument);
+      NSDebugLLog(@"DBus", @"DBUS_TYPE_DICT: %@", argument);
       append_dict(iter, argument, dbus_signature);
       ret = true;
     } break;
     default:
-      fprintf(stderr, "OSEBusMessage: Unsupported data type specified %c\n", dbus_signature[0]);
+      NSDebugLLog(@"DBus", @"OSEBusMessage: Unsupported data type specified %c", dbus_signature[0]);
       exit(1);
   }
   handle_oom(ret);
@@ -470,7 +470,7 @@ static dbus_bool_t append_arg(DBusMessageIter *iter, id argument, const char *db
   if (busService) {
     return [self sendWithConnection:busService.connection];
   }
-  NSLog(@"OSBusMessage: called `send` without OSEBusService set. Return `nil`.");
+  NSDebugLLog(@"DBus", @"OSBusMessage: called `send` without OSEBusService set. Return `nil`.");
   return nil;
 }
 
@@ -485,7 +485,7 @@ static dbus_bool_t append_arg(DBusMessageIter *iter, id argument, const char *db
   if (dbus_error_is_set(&dbus_error)) {
     NSString *errorDescrition = [NSString
         stringWithFormat:@"OSEBusMessage Error %s: %s", dbus_error.name, dbus_error.message];
-    NSLog(@"%@", errorDescrition);
+    NSDebugLLog(@"DBus", @"%@", errorDescrition);
     return [NSError errorWithDomain:NSOSStatusErrorDomain
                                code:-1
                            userInfo:@{@"Description" : errorDescrition}];
@@ -510,7 +510,7 @@ static dbus_bool_t append_arg(DBusMessageIter *iter, id argument, const char *db
   if (busService) {
     return [self sendAsyncWithConnection:busService.connection];
   }
-  NSLog(@"OSBusMessage: called `send` without OSEBusService set. Return `nil`.");
+  NSDebugLLog(@"DBus", @"OSBusMessage: called `send` without OSEBusService set. Return `nil`.");
   return NO;
 }
 
@@ -521,10 +521,10 @@ void async_call_notification(DBusPendingCall *pending, void *user_data)
   DBusMessage *reply;
   NSMutableArray *result = nil;
 
-  if ([busMessage isKindOfClass:[OSEBusMessage class]]) {
+  if (busMessage && [busMessage isKindOfClass:[OSEBusMessage class]]) {
     dbus_message_iterator = busMessage.dbus_message_iterator;
   } else {
-    NSLog(@"Async call notification received, but `user_data` is not OSEBusMessage.");
+    NSDebugLLog(@"DBus", @"Async call notification received, but `user_data` is not OSEBusMessage.");
     return;
   }
 
@@ -535,9 +535,9 @@ void async_call_notification(DBusPendingCall *pending, void *user_data)
     dbus_message_iter_init(reply, &dbus_message_iterator);
     decodeDBusMessage(&dbus_message_iterator, result);
     dbus_message_unref(reply);
-    NSLog(@"Async call notification received with result: %@", result);
+    NSDebugLLog(@"DBus", @"Async call notification received with result: %@", result);
   } else {
-    NSLog(@"Async call notification received, but can't get reply.");
+    NSDebugLLog(@"DBus", @"Async call notification received, but can't get reply.");
   }
   dbus_pending_call_unref(pending);
 }

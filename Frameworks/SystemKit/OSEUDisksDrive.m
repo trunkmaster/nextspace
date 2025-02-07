@@ -289,12 +289,12 @@ NSLock *driveLock = nil;
                                                [self humanReadableName]];
         }
       }
-      [_udisksAdaptor operationWithName:@"Eject"
-                                 object:self
-                                 failed:NO
-                                 status:@"Completed"
-                                  title:@"Disk Eject"
-                                message:message];
+      // [_udisksAdaptor operationWithName:@"Eject"
+      //                            object:self
+      //                            failed:NO
+      //                            status:@"Completed"
+      //                             title:@"Disk Eject"
+      //                           message:message];
       [[NSNotificationCenter defaultCenter] removeObserver:self];
       needsDetach = NO;
       [mountedVolumesToDetach release];
@@ -351,6 +351,15 @@ NSLock *driveLock = nil;
                                status:@"Completed"
                                 title:@"Disk Eject"
                               message:message];
+  } else {
+    message = [NSString stringWithFormat:@"Ejecting of '%@' completed", [self humanReadableName]];
+    [_udisksAdaptor operationWithName:@"Eject"
+                               object:self
+                               failed:NO
+                               status:@"Completed"
+                                title:@"Disk Eject"
+                              message:message];
+
   }
 
   // // 4. & 5. are in [self volumeDidUnmount:].
