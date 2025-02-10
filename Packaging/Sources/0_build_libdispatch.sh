@@ -10,7 +10,7 @@ if [ "${OS_ID}" = "debian" ] || [ "${OS_ID}" = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -q -y ${BUILD_TOOLS} ${RUNTIME_DEPS} || exit 1
 else
-	if [ "${OS_ID}" = "fedora" ]; then
+	if [ "${OS_ID}" = "fedora" ] || [ "$OS_ID" = "ultramarine" ]; then
 		${ECHO} "No need to build - installing 'libdispatch-devel' from Fedora repository..."
 		sudo dnf -y install libdispatch-devel || exit 1
 		exit 0
@@ -21,8 +21,6 @@ else
 	sudo yum -y install ${DEPS} || exit 1
 fi
 
-### To avoid cmake error at Build stage above ###
-sudo ldconfig
 
 #----------------------------------------
 # Download
