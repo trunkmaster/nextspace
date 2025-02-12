@@ -180,10 +180,13 @@
 
 - (void)removeSignalsObserving
 {
-  [_udisksAdaptor.connection removeSignalObserver:self
-                                           signal:@"PropertiesChanged"
-                                           object:self.objectPath
-                                        interface:@"org.freedesktop.DBus.Properties"];
+  // UDisksAdaptor could be deallocated first
+  if (_udisksAdaptor) {
+    [_udisksAdaptor.connection removeSignalObserver:self
+                                             signal:@"PropertiesChanged"
+                                             object:self.objectPath
+                                          interface:@"org.freedesktop.DBus.Properties"];
+  }
 }
 
 // Change _properties
@@ -483,7 +486,7 @@
                                   title:@"Mount"
                                 message:message];
     }
-  [busMessage release];
+    [busMessage release];
   } else {
     [busMessage sendAsyncWithConnection:_udisksAdaptor.connection];
     message = @"Asynchronous volume mounting has been called!";
