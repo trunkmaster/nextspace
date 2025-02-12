@@ -145,6 +145,7 @@
 {
   NSDebugLLog(@"dealloc", @"OSEUDisksVolume -dealloc %@", self.objectPath);
 
+  [self removeSignalsObserving];
   [_properties release];
   [_objectPath release];
 
