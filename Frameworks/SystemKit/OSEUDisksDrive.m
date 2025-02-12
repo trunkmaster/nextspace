@@ -20,6 +20,7 @@
 //
 
 #import <SystemKit/OSEBusMessage.h>
+#include "Foundation/NSArray.h"
 #include "Foundation/NSString.h"
 
 #import "OSEUDisksDrive.h"
@@ -235,13 +236,9 @@
 
 - (BOOL)unmountVolumes:(BOOL)wait
 {
-  NSDictionary *volumes = [_udisksAdaptor availableVolumesForDrive:_objectPath];
-  OSEUDisksVolume *volume;
+  NSArray *mountedVolumes = [self mountedVolumes];
 
-  NSDebugLLog(@"UDisks", @"Drive: unmountVolumes: %@", volumes);
-
-  for (NSString *key in [volumes allKeys]) {
-    volume = volumes[key];
+  for (OSEUDisksVolume *volume in mountedVolumes) {
     if (![volume unmount:wait]) {
       return NO;
     }
@@ -258,6 +255,7 @@ NSLock *driveLock = nil;
   }
 
   if ([driveLock tryLock] == NO) {
+    NSLog(@"OSEUDisksDrive-volumeDidUnmount - failed to get lock!");
     return;
   }
 
@@ -273,32 +271,6 @@ NSLock *driveLock = nil;
     }
 
     // NSLog(@"OSEOSEUDisksDrive: mounted volumes to detach: %@", mountedVolumesToDetach);
-
-    // All volumes unounted proceed with eject & powerOff.
-    if ([mountedVolumesToDetach count] <= 0) {
-      NSString *message = @"";
-
-      if (![self isEjectable] && ![self canPowerOff]) {
-        message = [NSString stringWithFormat:@"You can safely remove the card '%@' now.",
-                                             [self humanReadableName]];
-      } else {
-        [self eject:YES];
-        [self powerOff:YES];
-        if (![self isOptical] && [self hasMedia]) {
-          message = [NSString stringWithFormat:@"You can safely disconnect the disk '%@' now.",
-                                               [self humanReadableName]];
-        }
-      }
-      // [_udisksAdaptor operationWithName:@"Eject"
-      //                            object:self
-      //                            failed:NO
-      //                            status:@"Completed"
-      //                             title:@"Disk Eject"
-      //                           message:message];
-      [[NSNotificationCenter defaultCenter] removeObserver:self];
-      needsDetach = NO;
-      [mountedVolumesToDetach release];
-    }
   }
   [driveLock unlock];
 }
@@ -312,29 +284,30 @@ NSLock *driveLock = nil;
 // Not implemented
 - (void)unmountVolumesAndDetach
 {
-  NSString *message;
   NSArray *mountedVolumes;
+  NSString *message;
+  NSString *driveName;
 
   NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive -unmountVolumesAndDetach: %@.",
               self.humanReadableName);
 
   // 1.
-  mountedVolumesToDetach = [[NSMutableArray alloc] initWithArray:[self mountedVolumes]];
-  if (mountedVolumesToDetach == nil || mountedVolumesToDetach.count == 0) {
-    NSDebugLLog(@"UDisks",
-                @"OSEOSEUDisksDrive -unmountVolumesAndDetach nothing to unmount and detach.");
+  mountedVolumes = [self mountedVolumes];
+  if (mountedVolumes == nil || mountedVolumes.count == 0) {
+    NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive -unmountVolumesAndDetach nothing to unmount.");
     return;
   }
+  mountedVolumesToDetach = [[NSMutableArray alloc] initWithArray:mountedVolumes];
   needsDetach = YES;
 
   // 2.
-  message = [NSString stringWithFormat:@"Ejecting %@...", [self humanReadableName]];
-  [_udisksAdaptor operationWithName:@"Eject"
-                             object:self
-                             failed:NO
-                             status:@"Started"
-                              title:@"Disk Eject"
-                            message:message];
+  // message = [NSString stringWithFormat:@"Ejecting %@...", [self humanReadableName]];
+  // [_udisksAdaptor operationWithName:@"Eject"
+  //                            object:self
+  //                            failed:NO
+  //                            status:@"Started"
+  //                             title:@"Disk Eject"
+  //                           message:message];
 
   // 2.1 Subscribe to notification
   [notificationCenter addObserver:self
@@ -343,24 +316,34 @@ NSLock *driveLock = nil;
                            object:_udisksAdaptor];
 
   // 3.
-  if ([self unmountVolumes:YES] == NO) {
-    message = [NSString stringWithFormat:@"Failed to eject '%@'", [self humanReadableName]];
-    [_udisksAdaptor operationWithName:@"Eject"
-                               object:self
-                               failed:YES
-                               status:@"Completed"
-                                title:@"Disk Eject"
-                              message:message];
-  } else {
-    message = [NSString stringWithFormat:@"Ejecting of '%@' completed", [self humanReadableName]];
+  [self unmountVolumes:YES];
+  if ([mountedVolumesToDetach count] <= 0) {
+    if ([self isEjectable] != NO || [self hasMedia]) {
+      [self eject:YES];
+    }
+    if ([self canPowerOff] != NO) {
+      [self powerOff:YES];
+    }
+
+    driveName = [self humanReadableName];
+    message = [NSString
+        stringWithFormat:@"You can safely disconnect '%@' ejected successfuly .", [self humanReadableName]];
+    if ([self isEjectable] == NO && [self canPowerOff] == NO) {
+      message = [NSString stringWithFormat:@"You can safely remove the card '%@' now.", driveName];
+    } else if (![self isOptical] && [self hasMedia]) {
+      message = [NSString stringWithFormat:@"You can safely disconnect '%@' now.", driveName];
+    }
     [_udisksAdaptor operationWithName:@"Eject"
                                object:self
                                failed:NO
                                status:@"Completed"
                                 title:@"Disk Eject"
                               message:message];
-
   }
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  needsDetach = NO;
+  [mountedVolumesToDetach release];
 
   // // 4. & 5. are in [self volumeDidUnmount:].
 }
@@ -397,7 +380,7 @@ NSLock *driveLock = nil;
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
     [busMessage release];
 
-    NSDebugLLog(@"UDisks", @"OSEUDisksVolume -eject result: %@", result);
+    NSDebugLLog(@"UDisks", @"OSEUDisksDrive -eject result: %@", result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
       [_udisksAdaptor operationWithName:@"Eject"
@@ -446,7 +429,7 @@ NSLock *driveLock = nil;
 
   NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive: powerOff the drive %@", _objectPath);
 
-  message = [NSString stringWithFormat:@"Power off the drive %@", [self humanReadableName]];
+  message = [NSString stringWithFormat:@"Powering off the drive %@", [self humanReadableName]];
   [_udisksAdaptor operationWithName:@"PowerOff"
                              object:self
                              failed:NO
@@ -459,13 +442,13 @@ NSLock *driveLock = nil;
         initWithServiceName:_udisksAdaptor.serviceName
                      object:_objectPath
                   interface:DRIVE_INTERFACE
-                     method:@"Eject"
+                     method:@"PowerOff"
                   arguments:@[ @[ @{@"auth.no_user_interaction" : @"b:true"} ] ]
                   signature:@"a{sv}"];
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
     [busMessage release];
 
-    NSDebugLLog(@"UDisks", @"OSEUDisksVolume -eject result: %@", result);
+    NSDebugLLog(@"UDisks", @"OSEUDisksDrive -poweroff result: %@", result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
       [_udisksAdaptor operationWithName:@"PowerOff"
@@ -475,8 +458,8 @@ NSLock *driveLock = nil;
                                   title:@"PowerOff"
                                 message:message];
     } else {
-      message = [NSString stringWithFormat:@"PowerOff of %@ completed at mount point %@",
-                                           [self humanReadableName], result];
+      message = [NSString
+          stringWithFormat:@"Drive `%@` Power Off completed successfuly.", [self humanReadableName]];
       [_udisksAdaptor operationWithName:@"PowerOff"
                                  object:self
                                  failed:NO
@@ -486,7 +469,7 @@ NSLock *driveLock = nil;
       return YES;
     }
   } else {
-    NSDebugLLog(@"UDisks", @"Warning: Asynchronous volume mounting is not implemented!");
+    NSDebugLLog(@"UDisks", @"Warning: Asynchronous Drive PowerOff is not implemented!");
   }
 
   return NO;

@@ -425,7 +425,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
                        failed:NO
                        status:@"Started"
                         title:@"Operation has been started."
-                      message:@"---"];
+                      message:@"UDisks Job was added."];
     } break;
     default:
       NSDebugLLog(@"UDisks",
@@ -464,13 +464,18 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
       case OSEUDisksJobObject: {
         NSDictionary *properties = jobsCache[objectPath];
         NSArray *objects = properties[@"Objects"];
+        id<UDisksObject> obj = [self objectWithUDisksPath:objects.firstObject];
         NSLog(@"Removing Job %@ - %@", objectPath, properties);
-        [self operationWithName:[self _operationNameForJobInfo:properties]
-                         object:[self objectWithUDisksPath:objects.firstObject]
-                         failed:NO
-                         status:@"Completed"
-                          title:@"Operation has been completed."
-                        message:@"---"];
+        [self
+            operationWithName:[self _operationNameForJobInfo:properties]
+                       object:obj
+                       failed:NO
+                       status:@"Completed"
+                        title:@"Operation has been completed."
+                      message:[NSString stringWithFormat:
+                                            @"UDisks Job was removed.\nOperation: %@ \nObject: %@",
+                                            [self _operationNameForJobInfo:properties],
+                                            obj.objectPath]];
         [jobsCache removeObjectForKey:objectPath];
       } break;
       default:
@@ -510,14 +515,16 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     OSEUDisksVolume *volume = volumes[key];
     NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - `Volume` - %@ retain count %lu.",
                 [volume objectPath], [volume retainCount]);
-    [volume removeSignalsObserving];
+    volume.udisksAdaptor = nil;
+    // [volume removeSignalsObserving];
   }
   [volumes release];
   for (NSString *key in [drives allKeys]) {
     OSEUDisksDrive *drive = drives[key];
     NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - `Drive` - %@ retain count %lu.",
                 [drive objectPath], [drive retainCount]);
-    [drive removeSignalsObserving];
+    drive.udisksAdaptor = nil;
+    // [drive removeSignalsObserving];
   }
   [drives release];
   [jobsCache release];
@@ -625,7 +632,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     }
   }
 
-  // NSDebugLLog(@"UDisks", @"Longest MP: %@ for path %@", [volume mountPoints], filesystemPath);
+  NSDebugLLog(@"UDisks", @"Longest MP: %@ for path %@", [volume mountPoints], filesystemPath);
 
   return volume;
 }
@@ -643,12 +650,13 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   [info setObject:name forKey:@"Operation"];
   [info setObject:title forKey:@"Title"];
   [info setObject:message forKey:@"Message"];
-  if ([name isEqualToString:@"Mount"] || [name isEqualToString:@"Unmount"]) {
+  // UNIXDevice
+  if ([object isKindOfClass:[OSEUDisksVolume class]]) {
     [info setObject:[object UNIXDevice] forKey:@"UNIXDevice"];
-  } else if ([name isEqualToString:@"Eject"]) {
+  } else {
     [info setObject:[object humanReadableName] forKey:@"UNIXDevice"];
   }
-
+  // Success
   if (failed) {
     [info setObject:@"false" forKey:@"Success"];
   } else {
@@ -664,23 +672,22 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     // OSEMediaVolume* and OSEMediaOperation* notifications will be sent.
     // "Occured" - operation was performed without framework methods (outside)
     // of application. Only OSEMediaVolume* notification will be sent.
-    if ([name isEqualToString:@"Mount"] || [name isEqualToString:@"Unmount"]) {
-      [info setObject:[object UNIXDevice] forKey:@"UNIXDevice"];
-      if ([name isEqualToString:@"Mount"] && !failed) {
+    if (failed == NO) {
+      if ([name isEqualToString:@"Mount"]) {
         if ([object mountPoints].count > 0) {
           [info setObject:[object mountPoints].firstObject forKey:@"MountPoint"];
         }
         [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification
                                           object:self
                                         userInfo:info];
-      } else if ([name isEqualToString:@"Unmount"] && !failed) {
+      } else if ([name isEqualToString:@"Unmount"]) {
         NSArray *mountPoints = [object mountPoints];
         NSString *mp = nil;
 
         if (mountPoints && mountPoints.count > 0) {
           mp = mountPoints.firstObject;
         }
-        // If "MountPoint" property of NX*Volume already updated
+        // If "MountPoint" property of OSEUDisksVolume already has been updated
         // get value saved into "OldMountPoint" property
         if (!mp || [mp isEqualToString:@""]) {
           mp = [object propertyForKey:@"OldMountPoint" interface:FS_INTERFACE];
@@ -843,6 +850,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 
   // 1. Found volume mounted at subpath of 'path'
   volume = [self mountedVolumeForPath:path];
+  NSLog(@"unmountAndEjectDeviceAtPath: mounted volume at path: %@", [volume UNIXDevice]);
 
   // 2. Found drive which contains volume
   if (![volume isLoopVolume]) {

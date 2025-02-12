@@ -467,7 +467,7 @@
                 signature:@"a{sv}"];
   if (wait) {
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
-    NSDebugLLog(@"UDisks", @"OSEUDisksVolume -mount result: %@", result);
+    NSDebugLLog(@"UDisks", @"OSEUDisksVolume -mount %@ result: %@", _objectPath, result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
       [_udisksAdaptor operationWithName:@"Mount"
@@ -513,7 +513,7 @@
     return NO;
   }
 
-  NSDebugLLog(@"UDisks", @"OSEOSEUDisksVolume: unmount: %@", _objectPath);
+  NSDebugLLog(@"UDisks", @"OSEUDisksVolume: unmount: %@", _objectPath);
 
   message = [NSString stringWithFormat:@"Unmounting volume %@", [self UNIXDevice]];
   [_udisksAdaptor operationWithName:@"Unmount"
@@ -533,7 +533,7 @@
 
   if (wait) {
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
-    NSDebugLLog(@"UDisks", @"OSEUDisksVolume -unmount result: %@", result);
+    NSDebugLLog(@"UDisks", @"OSEUDisksVolume -unmount %@ result: %@", _objectPath, result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
       [_udisksAdaptor operationWithName:@"Unmount"
