@@ -20,6 +20,7 @@
 //
 
 #import <SystemKit/OSEFileManager.h>
+#include "Foundation/NSDictionary.h"
 #import <SystemKit/OSEBusMessage.h>
 
 #import "OSEUDisksDrive.h"
@@ -888,8 +889,9 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 // Async - OK.
 - (void)ejectAllRemovables
 {
+  NSDictionary *_drives;
   OSEUDisksDrive *drive;
-  OSEUDisksVolume *volume;
+  // OSEUDisksVolume *volume;
 
   // Loops first...
   // for (NSString *key in [volumes allKeys]) {
@@ -900,13 +902,15 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
   //   }
   // }
 
-  //...drives then
-  for (NSString *key in [drives allKeys]) {
+  //...drives then. Drives could disappear during eject/poweroff so copy
+  _drives = [drives copy];
+  for (NSString *key in [_drives allKeys]) {
     drive = drives[key];
     if ([drive isRemovable]) {
       [drive unmountVolumesAndDetach];
     }
   }
+  [_drives release];
 }
 
 - (BOOL)mountImageMediaFileAtPath:(NSString *)imageFile
