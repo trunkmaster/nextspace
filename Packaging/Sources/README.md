@@ -53,12 +53,20 @@ Before installing a display manager, you should test NeXTspace:
 
 `startx`
 
-If it is OK, logout the Workspace and install the Display Manager:
+Maybe Your Screen is "flickering" due to a bad resolution:
+1) Try open `Preferences.app` (double click on the clock inside the Dock)
+2) In the tab "Display Preferences", choose another resolution that works.
+3) Note this: i.e.: "1680x1050"
+4) Logout the Workspace.
+5) Then edit and set the resolution in the field "Modes" inside:
+  `nextspace/Core/os_files/etc/X11/xorg.conf.d/screen.resolution.conf`
+
+Install the Display Manager.
+
 ```
-$ ./setup_display-manager.sh
+$ ./setup_display_manager.sh
 ```
 
-Note that this is "minimal" startup configuration, which uses xinitrc script to start everything up (usually invoked as part of startx). If you want to use Login.app or start Workspace in any other way, you may have to create your own configuration.
 
 User home directory profile consists of the following components:
 - ~/Library contents contains NEXTSPACE and GNUstep specific data (configuration, caches, fonts and so on)
