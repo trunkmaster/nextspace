@@ -383,6 +383,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 - (void)_finishTerminateProcess
 {
+  // Hide Dock
+  wDockHideIcons(wDefaultScreen()->dock);
+  if (recycler) {
+    [[recycler appIcon] close];
+    [recycler release];
+  }
+  [workspaceBadge release];
+
   // Remove monitored paths and associated data (NSWorkspace)
   for (NSString *dirPath in _appDirs) {
     [fileSystemMonitor removePath:dirPath];
@@ -405,6 +413,12 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     [fileSystemMonitor terminate];
   }
 
+  // Media and media manager
+  // NSDebugLLog(@"Controller", @"OSEMediaManager RC:%lu", [mediaManager retainCount]);
+  [mediaAdaptor ejectAllRemovables];
+  [mediaManager release];  //  mediaAdaptor released also
+  [mediaOperations release];
+
   // We don't need to handle events on quit.
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   // Not need to remove observers explicitely for NSWorkspaceCenter.
@@ -415,20 +429,6 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
   // Quit Window Manager - stop runloop and make cleanup
   // wShutdown(WMExitMode);
-
-  // Hide Dock
-  wDockHideIcons(wDefaultScreen()->dock);
-  if (recycler) {
-    [[recycler appIcon] close];
-    [recycler release];
-  }
-  [workspaceBadge release];
-
-  // Media and media manager
-  // NSDebugLLog(@"Controller", @"OSEMediaManager RC:%lu", [mediaManager retainCount]);
-  [mediaAdaptor ejectAllRemovables];
-  [mediaManager release];  //  mediaAdaptor released also
-  [mediaOperations release];
 
   // NXTSystem objects declared in Workspace+WM.h
   // [systemPower stopEventsMonitor];
@@ -1389,8 +1389,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     NXTRunAlertPanel([info objectForKey:@"Title"], [info objectForKey:@"Message"], nil, nil, nil);
   } else {
     Mounter *bgop = [[Mounter alloc] initWithInfo:info];
+    NSString *operationKey = [NSString stringWithFormat:@"%@-%@", info[@"Operation"], info[@"ID"]];
 
-    [mediaOperations setObject:bgop forKey:[bgop source]];
+    [mediaOperations setObject:bgop forKey:operationKey];
     [bgop release];
 
     NSDebugLLog(@"Controller", @"[Contoller media-start] <%@> %@ [%@]", [info objectForKey:@"Title"],
@@ -1402,19 +1403,23 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 {
   NSDictionary *info = [notif userInfo];
   NSString *source = [info objectForKey:@"UNIXDevice"];
-  Mounter *bgop = [mediaOperations objectForKey:source];
+  NSString *operation = info[@"Operation"];
+  NSString *operationKey = [NSString stringWithFormat:@"%@-%@", operation, info[@"ID"]];
+  Mounter *bgop = [mediaOperations objectForKey:operationKey];
 
-  if ([[info objectForKey:@"Success"] isEqualToString:@"false"] && bgop) {
-    [bgop destroyOperation:info];
-  } else if (bgop) {
-    if (_isQuitting) {
+  NSLog(@"[Controller] media operation completed successfuly. INFO: %@", info);
+  if (bgop) {
+    if ([[info objectForKey:@"Success"] isEqualToString:@"false"]) {
       [bgop destroyOperation:info];
     } else {
-      [bgop finishOperation:info];
+      if (_isQuitting) {
+        [bgop destroyOperation:info];
+      } else {
+        [bgop finishOperation:info];
+      }
     }
-    [mediaOperations removeObjectForKey:source];
-  } else  // probably disk ejected without unmounting
-  {
+    [mediaOperations removeObjectForKey:operationKey];
+  } else {
     [NSApp activateIgnoringOtherApps:YES];
     NXTRunAlertPanel([info objectForKey:@"Title"], [info objectForKey:@"Message"], nil, nil, nil);
   }
