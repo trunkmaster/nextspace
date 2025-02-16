@@ -622,20 +622,18 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 {
   OSEUDisksVolume *volume = nil;
   NSString *commonPath = nil;
-  NSString *longestPath = nil;
+  NSString *mp;
 
   // Find longest mount point for path
   for (OSEUDisksVolume *vol in [self mountedVolumes]) {
-    for (NSString *mp in [vol mountPoints]) {
-      commonPath = NXTIntersectionPath(filesystemPath, mp);
-      if ([commonPath isEqualToString:mp] && ([commonPath length] >= [longestPath length])) {
-        volume = vol;
-        longestPath = [NSString stringWithString:mp];
-      }
+    mp = [vol mountPoint];
+    commonPath = NXTIntersectionPath(filesystemPath, mp);
+    if ([commonPath isEqualToString:mp] && ([mp length] >= [[volume mountPoint] length])) {
+      volume = vol;
     }
   }
 
-  NSDebugLLog(@"UDisks", @"Longest MP: %@ for path %@", [volume mountPoints], filesystemPath);
+  NSDebugLLog(@"UDisks", @"Longest MP: %@ for path %@", [volume mountPoint], filesystemPath);
 
   return volume;
 }
@@ -676,27 +674,20 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     // "Occured" - operation was performed without framework methods (outside)
     // of application. Only OSEMediaVolume* notification will be sent.
     if (failed == NO) {
-      if ([name isEqualToString:@"Mount"]) {
-        if ([object mountPoints].count > 0) {
-          [info setObject:[object mountPoints].firstObject forKey:@"MountPoint"];
-        }
-        [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification
-                                          object:self
-                                        userInfo:info];
+      if ([name isEqualToString:@"Mount"] && [object mountPoint]) {
+          [info setObject:[object mountPoint] forKey:@"MountPoint"];
+          [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification
+                                            object:self
+                                          userInfo:info];
       } else if ([name isEqualToString:@"Unmount"]) {
-        NSArray *mountPoints = [object mountPoints];
-        NSString *mp = nil;
-
-        if (mountPoints && mountPoints.count > 0) {
-          mp = mountPoints.firstObject;
-        }
+        NSString *mountPoint = [object mountPoint];
         // If "MountPoint" property of OSEUDisksVolume already has been updated
         // get value saved into "OldMountPoint" property
-        if (!mp || [mp isEqualToString:@""]) {
-          mp = [object propertyForKey:@"OldMountPoint" interface:FS_INTERFACE];
+        if (!mountPoint || [mountPoint isEqualToString:@""]) {
+          mountPoint = [object propertyForKey:@"OldMountPoint" interface:FS_INTERFACE];
         }
-        if (mp) {
-          [info setObject:mp forKey:@"MountPoint"];
+        if (mountPoint) {
+          [info setObject:mountPoint forKey:@"MountPoint"];
         }
         [notificationCenter postNotificationName:OSEMediaVolumeDidUnmountNotification
                                           object:self
@@ -742,13 +733,13 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 
   for (OSEUDisksVolume *volume in mountedVolumes) {
     // NSDebugLLog(@"UDisks", @"OSEUDisksAdaptor: mountedRemovableMedia check: %@ (%@)",
-    //             [volume mountPoints],
+    //             [volume mountPoint],
     //             [[[[volume drive] properties] objectForKey:@"org.freedesktop.UDisks2.Drive"]
     //                 objectForKey:@"Id"]);
 
     OSEUDisksDrive *drive = [volume drive];
     if (volume.isFilesystem && (drive.isRemovable || (drive.isMediaRemovable && drive.hasMedia))) {
-      [mountPaths addObject:[volume mountPoints].firstObject];
+      [mountPaths addObject:[volume mountPoint]];
     }
   }
 
@@ -774,7 +765,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 // mounted filesystem
 - (NSString *)mountPointForPath:(NSString *)filesystemPath
 {
-  return [[self mountedVolumeForPath:filesystemPath] mountPoints][0];
+  return [[self mountedVolumeForPath:filesystemPath] mountPoint];
 }
 
 // Unmount filesystem mounted at subpath of 'path'.

@@ -63,7 +63,7 @@
 @property (readonly) NXTFSType filesystemType;
 @property (readonly) NSString *filesystemName;
 @property (readonly) NSString *label;
-@property (readonly) NSArray *mountPoints;
+@property (readonly) NSString *mountPoint;
 @property (readonly) BOOL isMounted;
 @property (readonly) BOOL isWritable;
 

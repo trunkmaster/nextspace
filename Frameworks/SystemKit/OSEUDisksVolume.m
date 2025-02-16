@@ -20,6 +20,7 @@
 //
 
 #import <SystemKit/OSEBusMessage.h>
+#include "Foundation/NSArray.h"
 
 #import "OSEUDisksDrive.h"
 #import "OSEUDisksVolume.h"
@@ -408,17 +409,23 @@
   return [self propertyForKey:@"IdLabel" interface:BLOCK_INTERFACE];
 }
 
-- (NSArray *)mountPoints
+- (NSString *)mountPoint
 {
-  return [self propertyForKey:@"MountPoints" interface:FS_INTERFACE];
+  NSArray *points = [self propertyForKey:@"MountPoints" interface:FS_INTERFACE];
+
+  if (points && points.count > 0) {
+    return points.firstObject;
+  }
+
+  return nil;
 }
 
 - (BOOL)isMounted
 {
-  NSArray *mountPoints = [self mountPoints];
+  NSString *mountPoint = [self mountPoint];
 
   // Don't call [self isFilesystem] because CD has IdUsage=""
-  if (mountPoints == nil || mountPoints.count == 0 || [mountPoints[0] isEqualToString:@""]) {
+  if (mountPoint == nil || [mountPoint isEqualToString:@""]) {
     return NO;
   }
 
