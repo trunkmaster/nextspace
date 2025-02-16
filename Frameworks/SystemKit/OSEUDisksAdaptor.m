@@ -338,11 +338,11 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     return @"Mount";
   } else if ([operation isEqualToString:@"filesystem-unmount"]) {
     return @"Unmount";
-  } else {
+  } else if ([operation isEqualToString:@"drive-eject"]) {
     return @"Eject";
   }
 
-  return nil;
+  return operation;
 }
 
 - (void)handleInterfacesAdeddSignal:(NSDictionary *)info
@@ -421,12 +421,12 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
       NSLog(@"Adding Job %@", objectPath);
       [jobsCache setObject:properties forKey:objectPath];
       NSArray *objects = properties[@"Objects"];
-      [self operationWithName:[self _operationNameForJobInfo:properties]
-                       object:[self objectWithUDisksPath:objects.firstObject]
-                       failed:NO
-                       status:@"Started"
-                        title:@"Operation has been started."
-                      message:@"UDisks Job was added."];
+      // [self operationWithName:[self _operationNameForJobInfo:properties]
+      //                  object:[self objectWithUDisksPath:objects.firstObject]
+      //                  failed:NO
+      //                  status:@"Started"
+      //                   title:@"Operation has been started."
+      //                 message:@"UDisks Job was added."];
     } break;
     default:
       NSDebugLLog(@"UDisks",
@@ -467,16 +467,16 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
         NSArray *objects = properties[@"Objects"];
         id<UDisksObject> obj = [self objectWithUDisksPath:objects.firstObject];
         NSLog(@"Removing Job %@ - %@", objectPath, properties);
-        [self
-            operationWithName:[self _operationNameForJobInfo:properties]
-                       object:obj
-                       failed:NO
-                       status:@"Completed"
-                        title:@"Operation has been completed."
-                      message:[NSString stringWithFormat:
-                                            @"UDisks Job was removed.\nOperation: %@ \nObject: %@",
-                                            [self _operationNameForJobInfo:properties],
-                                            obj.objectPath]];
+        // [self
+        //     operationWithName:[self _operationNameForJobInfo:properties]
+        //                object:obj
+        //                failed:NO
+        //                status:@"Completed"
+        //                 title:@"Operation has been completed."
+        //               message:[NSString stringWithFormat:
+        //                                     @"UDisks Job was removed.\nOperation: %@ \nObject: %@",
+        //                                     [self _operationNameForJobInfo:properties],
+        //                                     obj.objectPath]];
         [jobsCache removeObjectForKey:objectPath];
       } break;
       default:
@@ -647,7 +647,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 {
   NSMutableDictionary *info = [NSMutableDictionary new];
 
-  [info setObject:object forKey:@"ID"];
+  [info setObject:[object objectPath] forKey:@"ID"];
   [info setObject:name forKey:@"Operation"];
   [info setObject:title forKey:@"Title"];
   [info setObject:message forKey:@"Message"];

@@ -50,6 +50,11 @@
                                              signature:@"ss"];
   result = [message sendWithConnection:_udisksAdaptor.connection];
   [message release];
+
+  if ([result isKindOfClass:[NSError class]]) {
+    return nil;
+  }
+
   return result;
 }
 
@@ -62,8 +67,6 @@
   NSArray *properties;  // a{sv}
   NSArray *change;      // as
   NSMutableDictionary *parsedProperties;
-
-  NSLog(@"OSEUDisksVolume - handlePropertiesChanged");
 
   // Sanity checks
   objectPath = info[@"ObjectPath"];
@@ -90,6 +93,22 @@
   change = message[2];      // as
 
   if (properties.count > 0) {
+    // Update/add properties
+    NSMutableDictionary *currInterfaceProperties = _properties[interface];
+    parsedProperties = [_udisksAdaptor _parsePropertiesSection:properties];
+    if (currInterfaceProperties != nil) {
+      // update properties
+      NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) updating properties for %@: %@", _objectPath,
+                  interface, parsedProperties);
+      for (NSString *propName in parsedProperties.allKeys) {
+        currInterfaceProperties[propName] = parsedProperties[propName];
+      }
+    } else {
+      // add interface with properties
+      NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) adding interface %@", _objectPath, interface);
+      _properties[interface] = parsedProperties;
+    }
+
     // Send notification first if needed
     for (NSDictionary *prop in properties) {
       for (NSString *key in prop.allKeys) {
@@ -108,21 +127,6 @@
           }
         }
       }
-    }
-    // Update/add properties
-    NSMutableDictionary *currInterfaceProperties = _properties[interface];
-    parsedProperties = [_udisksAdaptor _parsePropertiesSection:properties];
-    if (currInterfaceProperties != nil) {
-      // update properties
-      NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) updating properties for %@: %@", _objectPath,
-                  interface, parsedProperties);
-      for (NSString *propName in parsedProperties.allKeys) {
-        currInterfaceProperties[propName] = parsedProperties[propName];
-      }
-    } else {
-      // add interface with properties
-      NSDebugLLog(@"UDisks", @"OSEUDisksVolume (%@) adding interface %@", _objectPath, interface);
-      _properties[interface] = parsedProperties;
     }
   }
 
@@ -508,6 +512,7 @@
   NSString *message;
   OSEBusMessage *busMessage;
   id result = nil;
+  BOOL isFailed = NO;
 
   if (!self.isFilesystem || !self.isMounted || self.isSystem) {
     return NO;
@@ -533,42 +538,32 @@
 
   if (wait) {
     result = [busMessage sendWithConnection:_udisksAdaptor.connection];
+    [busMessage release];
     NSDebugLLog(@"UDisks", @"OSEUDisksVolume -unmount %@ result: %@", _objectPath, result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
-      [_udisksAdaptor operationWithName:@"Unmount"
-                                 object:self
-                                 failed:YES
-                                 status:@"Completed"
-                                  title:@"Unmount"
-                                message:message];
+      isFailed = YES;
     } else {
       message =
           [NSString stringWithFormat:@"Unmount of %@ completed successfully.", [self UNIXDevice]];
-      [_udisksAdaptor operationWithName:@"Unmount"
-                                 object:self
-                                 failed:NO
-                                 status:@"Completed"
-                                  title:@"Unmount"
-                                message:message];
-      return YES;
     }
-    [busMessage release];
   } else {
     [busMessage sendAsyncWithConnection:_udisksAdaptor.connection];
     message = @"Asynchronous volume un-mounting has been called!";
     NSDebugLLog(@"UDisks", @"Warning: %@", message);
+    // `busMessage` should not be released here beacuse of async operation.
+  }
+
+  if (message) {
     [_udisksAdaptor operationWithName:@"Unmount"
                                object:self
-                               failed:NO
+                               failed:isFailed
                                status:@"Completed"
                                 title:@"Unmount"
                               message:message];
-    // `busMessage` should not be released here beacuse of async operation.
-    return YES;
   }
 
-  return NO;
+  return !isFailed;
 }
 
 @end

@@ -285,7 +285,7 @@ NSLock *driveLock = nil;
 - (void)unmountVolumesAndDetach
 {
   NSArray *mountedVolumes;
-  NSString *message;
+  NSString *message = nil;
   NSString *driveName;
 
   NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive -unmountVolumesAndDetach: %@.",
@@ -297,53 +297,50 @@ NSLock *driveLock = nil;
     NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive -unmountVolumesAndDetach nothing to unmount.");
     return;
   }
-  mountedVolumesToDetach = [[NSMutableArray alloc] initWithArray:mountedVolumes];
-  needsDetach = YES;
-
-  // 2.
-  // message = [NSString stringWithFormat:@"Ejecting %@...", [self humanReadableName]];
-  // [_udisksAdaptor operationWithName:@"Eject"
-  //                            object:self
-  //                            failed:NO
-  //                            status:@"Started"
-  //                             title:@"Disk Eject"
-  //                           message:message];
+  // mountedVolumesToDetach = [[NSMutableArray alloc] initWithArray:mountedVolumes];
+  // needsDetach = YES;
 
   // 2.1 Subscribe to notification
-  [notificationCenter addObserver:self
-                         selector:@selector(volumeDidUnmount:)
-                             name:OSEMediaVolumeDidUnmountNotification
-                           object:_udisksAdaptor];
+  // [notificationCenter addObserver:self
+  //                        selector:@selector(volumeDidUnmount:)
+  //                            name:OSEMediaVolumeDidUnmountNotification
+  //                          object:_udisksAdaptor];
 
   // 3.
-  [self unmountVolumes:YES];
-  if ([mountedVolumesToDetach count] <= 0) {
+  // [self unmountVolumes:YES];
+  // if ([mountedVolumesToDetach count] <= 0) {
+  if ([self unmountVolumes:YES] != NO) {
+    BOOL canPowerOff = [self canPowerOff];
+
+    // NSLog(@"%@ - Ejectable: %@, CanPowerOff: %@", [self humanReadableName],
+    //       [self isEjectable] ? @"Yes" : @"No", canPowerOff ? @"Yes" : @"No");
     if ([self isEjectable] != NO || [self hasMedia]) {
       [self eject:YES];
     }
-    if ([self canPowerOff] != NO) {
+    if (canPowerOff != NO) {
       [self powerOff:YES];
     }
 
     driveName = [self humanReadableName];
-    message = [NSString
-        stringWithFormat:@"You can safely disconnect '%@' ejected successfuly .", [self humanReadableName]];
     if ([self isEjectable] == NO && [self canPowerOff] == NO) {
       message = [NSString stringWithFormat:@"You can safely remove the card '%@' now.", driveName];
-    } else if (![self isOptical] && [self hasMedia]) {
+    } else if ([self isOptical] == NO) {
       message = [NSString stringWithFormat:@"You can safely disconnect '%@' now.", driveName];
     }
-    [_udisksAdaptor operationWithName:@"Eject"
-                               object:self
-                               failed:NO
-                               status:@"Completed"
-                                title:@"Disk Eject"
-                              message:message];
+    if (message) {
+      // No background operations at this point but we notify Workspace about media detach.
+      [_udisksAdaptor operationWithName:@"Detach"
+                                 object:self
+                                 failed:NO
+                                 status:@"Completed"
+                                  title:@"Eject"
+                                message:message];
+    }
   }
 
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  needsDetach = NO;
-  [mountedVolumesToDetach release];
+  // [[NSNotificationCenter defaultCenter] removeObserver:self];
+  // needsDetach = NO;
+  // [mountedVolumesToDetach release];
 
   // // 4. & 5. are in [self volumeDidUnmount:].
 }
@@ -354,8 +351,9 @@ NSLock *driveLock = nil;
   NSString *message;
   OSEBusMessage *busMessage;
   id result = nil;
+  BOOL isFailed = NO;
 
-  if (![self isEjectable] || ![self hasMedia]) {
+  if ([self isEjectable] == NO) {
     return NO;
   }
 
@@ -383,37 +381,25 @@ NSLock *driveLock = nil;
     NSDebugLLog(@"UDisks", @"OSEUDisksDrive -eject result: %@", result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
-      [_udisksAdaptor operationWithName:@"Eject"
-                                 object:self
-                                 failed:YES
-                                 status:@"Completed"
-                                  title:@"Eject"
-                                message:message];
+      isFailed = YES;
     } else {
-      message = [NSString
-          stringWithFormat:@"Eject of %@ completed at mount point %@", [self humanReadableName], result];
-      [_udisksAdaptor operationWithName:@"Eject"
-                                 object:self
-                                 failed:NO
-                                 status:@"Completed"
-                                  title:@"Eject"
-                                message:message];
-      return YES;
+      message = [NSString stringWithFormat:@"Eject of %@ completed [OSEUDisksDrive eject:]",
+                                           [self humanReadableName]];
     }
   } else {
     NSDebugLLog(@"UDisks", @"Warning: Asynchronous drive ejecting is not implemented!");
-    message = [NSString stringWithFormat:@"Eject of %@ completed at mount point %@",
-                                         [self humanReadableName], result];
-    [_udisksAdaptor operationWithName:@"Eject"
-                               object:self
-                               failed:NO
-                               status:@"Completed"
-                                title:@"Eject"
-                              message:message];
-    return YES;
+    message = [NSString stringWithFormat:@"Eject of %@ completed successfuly [OSEUDisksDrive eject:]",
+                                         [self humanReadableName]];
   }
 
-  return NO;
+  [_udisksAdaptor operationWithName:@"Eject"
+                             object:self
+                             failed:isFailed
+                             status:@"Completed"
+                              title:@"Eject"
+                            message:message];
+
+  return !isFailed;
 }
 
 // Not implemented
@@ -422,6 +408,7 @@ NSLock *driveLock = nil;
   NSString *message;
   OSEBusMessage *busMessage;
   id result = nil;
+  BOOL isFailed = NO;
 
   if (![self canPowerOff]) {
     return NO;
@@ -436,7 +423,7 @@ NSLock *driveLock = nil;
                              status:@"Started"
                               title:@"PowerOff"
                             message:message];
-
+  
   if (wait) {
     busMessage = [[OSEBusMessage alloc]
         initWithServiceName:_udisksAdaptor.serviceName
@@ -451,28 +438,23 @@ NSLock *driveLock = nil;
     NSDebugLLog(@"UDisks", @"OSEUDisksDrive -poweroff result: %@", result);
     if ([result isKindOfClass:[NSError class]]) {
       message = [(NSError *)result userInfo][@"Description"];
-      [_udisksAdaptor operationWithName:@"PowerOff"
-                                 object:self
-                                 failed:YES
-                                 status:@"Completed"
-                                  title:@"PowerOff"
-                                message:message];
+      isFailed = YES;
     } else {
       message = [NSString
-          stringWithFormat:@"Drive `%@` Power Off completed successfuly.", [self humanReadableName]];
-      [_udisksAdaptor operationWithName:@"PowerOff"
-                                 object:self
-                                 failed:NO
-                                 status:@"Completed"
-                                  title:@"PowerOff"
-                                message:message];
-      return YES;
+          stringWithFormat:@"Drive `%@` Power Off completed successfuly [OSEUDisksDrive powerOff:].", [self humanReadableName]];
     }
   } else {
     NSDebugLLog(@"UDisks", @"Warning: Asynchronous Drive PowerOff is not implemented!");
   }
 
-  return NO;
+  [_udisksAdaptor operationWithName:@"PowerOff"
+                             object:self
+                             failed:isFailed
+                             status:@"Completed"
+                              title:@"PowerOff"
+                            message:message];
+
+  return !isFailed;
 }
 
 @end
