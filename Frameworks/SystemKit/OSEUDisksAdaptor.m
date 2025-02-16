@@ -622,13 +622,15 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 {
   OSEUDisksVolume *volume = nil;
   NSString *commonPath = nil;
+  NSString *longestPath = nil;
 
   // Find longest mount point for path
   for (OSEUDisksVolume *vol in [self mountedVolumes]) {
     for (NSString *mp in [vol mountPoints]) {
       commonPath = NXTIntersectionPath(filesystemPath, mp);
-      if ([commonPath isEqualToString:mp] && ([commonPath length] >= [mp length])) {
+      if ([commonPath isEqualToString:mp] && ([commonPath length] >= [longestPath length])) {
         volume = vol;
+        longestPath = [NSString stringWithString:mp];
       }
     }
   }
