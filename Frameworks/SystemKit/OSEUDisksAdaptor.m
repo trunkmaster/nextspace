@@ -159,24 +159,30 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
 {
   NSDebugLLog(@"UDisks", @"Removing and unregistering '%@'", objectPath);
   switch ([self _objectTypeForPath:objectPath]) {
-    case OSEOSEUDisksDriveObject:
+    case OSEOSEUDisksDriveObject: {
       // [OSEUDisksDrivesCache removeObjectForKey:objectPath];
+      OSEUDisksDrive *drive = drives[objectPath];
+      [drive removeSignalsObserving];
+      drive.udisksAdaptor = nil;
       [drives removeObjectForKey:objectPath];
       if (notify != NO) {
         [notificationCenter postNotificationName:OSEMediaDriveDidRemoveNotification
                                           object:self
                                         userInfo:@{@"ObjectPath" : objectPath}];
       }
-      break;
-    case OSEUDisksBlockObject:
+    } break;
+    case OSEUDisksBlockObject: {
       // [udisksBlockDevicesCache removeObjectForKey:objectPath];
+      OSEUDisksVolume *volume = volumes[objectPath];
+      [volume removeSignalsObserving];
+      volume.udisksAdaptor = nil;
       [volumes removeObjectForKey:objectPath];
       if (notify != NO) {
         [notificationCenter postNotificationName:OSEMediaVolumeDidRemoveNotification
                                           object:self
                                         userInfo:@{@"ObjectPath" : objectPath}];
       }
-      break;
+    } break;
     case OSEUDisksJobObject:
       // TODO
       [jobsCache removeObjectForKey:objectPath];
@@ -516,16 +522,16 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
     OSEUDisksVolume *volume = volumes[key];
     NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - `Volume` - %@ retain count %lu.",
                 [volume objectPath], [volume retainCount]);
+    [volume removeSignalsObserving];
     volume.udisksAdaptor = nil;
-    // [volume removeSignalsObserving];
   }
   [volumes release];
   for (NSString *key in [drives allKeys]) {
     OSEUDisksDrive *drive = drives[key];
     NSDebugLLog(@"dealloc", @"OSEUDisksAdaptor: -dealloc - `Drive` - %@ retain count %lu.",
                 [drive objectPath], [drive retainCount]);
+    [drive removeSignalsObserving];
     drive.udisksAdaptor = nil;
-    // [drive removeSignalsObserving];
   }
   [drives release];
   [jobsCache release];
