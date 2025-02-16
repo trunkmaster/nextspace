@@ -83,6 +83,7 @@
 - (void)destroyOperation:(id)object
 {
   NSDictionary *info = nil;
+  BOOL showAlert = NO;
 
   if (object && [object isKindOfClass:[NSTimer class]]) {
     info = [object userInfo];
@@ -94,13 +95,11 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:WMOperationWillDestroyNotification
                                                       object:self];
 
-  if (info)
-    if (([[info objectForKey:@"Operation"] isEqualToString:@"Eject"] ||
-         [[info objectForKey:@"Success"] isEqualToString:@"false"]) &&
-        ![[info objectForKey:@"Message"] isEqualToString:@""]) {
-      [NSApp activateIgnoringOtherApps:YES];
-      NXTRunAlertPanel([info objectForKey:@"Title"], [info objectForKey:@"Message"], nil, nil, nil);
-    }
+  if (info && [[info objectForKey:@"Message"] isEqualToString:@""] == NO &&
+      ([[info objectForKey:@"Success"] isEqualToString:@"false"] != NO)) {
+    [NSApp activateIgnoringOtherApps:YES];
+    NXTRunAlertPanel([info objectForKey:@"Title"], [info objectForKey:@"Message"], nil, nil, nil);
+  }
 }
 
 - (void)finishOperation:(NSDictionary *)userInfo
