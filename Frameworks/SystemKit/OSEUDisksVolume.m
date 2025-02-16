@@ -123,7 +123,7 @@
             [[NSNotificationCenter defaultCenter]
                 postNotificationName:OSEMediaVolumeDidUnmountNotification
                               object:_udisksAdaptor
-                            userInfo:@{@"MountPoint" : [self mountPoints].firstObject}];
+                            userInfo:@{}];
           }
         }
       }
