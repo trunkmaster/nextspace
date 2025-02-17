@@ -75,6 +75,7 @@ sudo ldconfig
 #----------------------------------------
 # Post install
 #----------------------------------------
+
 if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 	# Login
 	${ECHO} "Setting up Login window service to run at system startup..."
@@ -92,3 +93,5 @@ if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 		fi
 	fi
 fi
+
+. ./rpi_info.sh
