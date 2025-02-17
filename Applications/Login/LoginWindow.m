@@ -85,6 +85,7 @@
 
   // Get NEXTSPACE display rect
   if (screen != nil) {
+    [screen randrUpdateScreenResources];
     if ([[screen activeDisplays] count] > 0) {
       display = [screen mainDisplay];
       if (!display) {
