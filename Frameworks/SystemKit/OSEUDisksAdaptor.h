@@ -53,10 +53,6 @@ typedef enum {
 // /org/freedesktop/UDisks2/jobs
 #define JOB_INTERFACE       @"org.freedesktop.UDisks2.Job"
 
-extern NSString *OSEUDisksPropertiesDidChangeNotification;
-extern NSString *OSEUDisksInterfacesDidAddNotification;
-extern NSString *OSEUDisksInterfacesDidRemoveNotification;
-
 @interface OSEUDisksAdaptor : OSEBusService <DBus_ObjectManager, MediaManager>
 {
   // /org/freedesktop/UDisks2/block_devices/

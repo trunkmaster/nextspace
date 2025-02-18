@@ -28,11 +28,6 @@
 
 #import "OSEUDisksAdaptor.h"
 
-// Signals
-NSString *OSEUDisksInterfacesDidAddNotification = @"OSEUDisksInterfacesDidAddNotification";
-NSString *OSEUDisksInterfacesDidRemoveNotification = @"OSEUDisksInterfacesDidRemoveNotification";
-NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidChangeNotification";
-
 @implementation OSEUDisksAdaptor (Utility)
 
 - (OSEUDisksObject)_objectTypeForPath:(NSString *)objectPath
@@ -424,7 +419,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
       // NSString *objectPath = message[0];
       // NSArray *jobProperties = message[1];
       properties = [self _parsePropertiesSection:objectProperties.firstObject[JOB_INTERFACE]];
-      NSLog(@"Adding Job %@", objectPath);
+      NSDebugLLog(@"UDisks", @"Adding Job %@", objectPath);
       [jobsCache setObject:properties forKey:objectPath];
       NSArray *objects = properties[@"Objects"];
       // [self operationWithName:[self _operationNameForJobInfo:properties]
@@ -472,7 +467,7 @@ NSString *OSEUDisksPropertiesDidChangeNotification = @"OSEUDisksPropertiesDidCha
         NSDictionary *properties = jobsCache[objectPath];
         NSArray *objects = properties[@"Objects"];
         id<UDisksObject> obj = [self objectWithUDisksPath:objects.firstObject];
-        NSLog(@"Removing Job %@ - %@", objectPath, properties);
+        NSDebugLLog(@"UDisks", @"Removing Job %@ - %@", objectPath, properties);
         // [self
         //     operationWithName:[self _operationNameForJobInfo:properties]
         //                object:obj
