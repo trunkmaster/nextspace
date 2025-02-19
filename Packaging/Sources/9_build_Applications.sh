@@ -3,6 +3,8 @@
 . ../environment.sh
 . /etc/profile.d/nextspace.sh
 
+_PWD=`pwd`
+
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
@@ -79,9 +81,21 @@ sudo ldconfig
 if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 	# Login
 	${ECHO} "Setting up Login window service to run at system startup..."
+	systemctl --quiet is-active display-manager.service
+	if [ $? -eq 0 ];then
+		${ECHO} "A Display Manager is already running: we must stop it now."
+		sudo systemctl stop display-manager.service
+	fi
+
+	systemctl --quiet is-enabled display-manager.service
+	if [ $? -eq 0 ];then
+		${ECHO} "A display Manager is already set: we must disable it now."
+		sudo systemctl disable display-manager.service
+	fi
+	${ECHO} "Setting up Login window service..."
 	sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
 	sudo systemctl set-default graphical.target
-	
+
 	# SELinux
 	if [ -f /etc/selinux/config ]; then
 		SELINUX_STATE=`grep "^SELINUX=.*" /etc/selinux/config | awk -F= '{print $2}'`
@@ -94,4 +108,8 @@ if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 	fi
 fi
 
-. ./rpi_info.sh
+cd ${_PWD} || exit 1
+
+if [ -f ${_PWD}/rpi_info.sh ];then
+	. "${_PWD}/rpi_info.sh"
+fi
