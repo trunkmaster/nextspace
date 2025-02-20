@@ -225,8 +225,8 @@ extern struct wm_global_variables {
     wprog_state signal_state;
   } program;
 
-  /* locale to use. NULL==POSIX or C */
-  const char *locale;
+  // /* locale to use. NULL==POSIX or C */
+  // const char *locale;
 
   /* Tracking of X events timestamps */
   struct {

@@ -789,30 +789,30 @@ void wInitialize(int argc, char **argv)
   wPreferences.flags.noclip = 1;
   wPreferences.flags.nodrawer = 1;
 
-  setlocale(LC_ALL, "");
+  // setlocale(LC_ALL, "");
 
-  if (w_global.locale) {
-    setenv("LANG", w_global.locale, 1);
-  } else {
-    w_global.locale = getenv("LC_ALL");
-    if (!w_global.locale) {
-      w_global.locale = getenv("LANG");
-    }
-  }
+  // if (w_global.locale) {
+  //   setenv("LANG", w_global.locale, 1);
+  // } else {
+  //   w_global.locale = getenv("LC_ALL");
+  //   if (!w_global.locale) {
+  //     w_global.locale = getenv("LANG");
+  //   }
+  // }
 
-  setlocale(LC_ALL, "");
+  // setlocale(LC_ALL, "");
 
-  if (!w_global.locale || strcmp(w_global.locale, "C") == 0 ||
-      strcmp(w_global.locale, "POSIX") == 0) {
-    w_global.locale = NULL;
-  } else {
-    char *ptr;
+  // if (!w_global.locale || strcmp(w_global.locale, "C") == 0 ||
+  //     strcmp(w_global.locale, "POSIX") == 0) {
+  //   w_global.locale = NULL;
+  // } else {
+  //   char *ptr;
 
-    w_global.locale = wstrdup(w_global.locale);
-    ptr = strchr(w_global.locale, '.');
-    if (ptr)
-      *ptr = 0;
-  }
+  //   w_global.locale = wstrdup(w_global.locale);
+  //   ptr = strchr(w_global.locale, '.');
+  //   if (ptr)
+  //     *ptr = 0;
+  // }
 
   /* open display */
   dpy = XOpenDisplay(DisplayName);
@@ -837,8 +837,8 @@ void wInitialize(int argc, char **argv)
     wSetWVisualID(0, (int)DefaultVisual(dpy, DefaultScreen(dpy))->visualid);
   }
 
-  DisplayName = XDisplayName(DisplayName);
-  setenv("DISPLAY", DisplayName, 1);
+  // DisplayName = XDisplayName(DisplayName);
+  // setenv("DISPLAY", DisplayName, 1);
 
   wXModifierInitialize();
 }
