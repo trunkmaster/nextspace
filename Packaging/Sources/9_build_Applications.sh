@@ -110,6 +110,12 @@ fi
 
 cd ${_PWD} || exit 1
 
-if [ -f ${_PWD}/rpi_info.sh ];then
-	. "${_PWD}/rpi_info.sh"
+#---------------------------------------
+# Inform about the RPI flickering issue
+#---------------------------------------
+
+if [ "$MACHINE" = "aarch64" ] && [ "$MODEL" = "Raspberry" ] && [ "$GPU" = "bcm2711" ];then
+	if [ -f ${_PWD}/rpi_info.sh ];then
+		. "${_PWD}/rpi_info.sh"
+	fi
 fi
