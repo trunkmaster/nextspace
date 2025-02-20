@@ -133,7 +133,7 @@ prepare_environment()
             sudo dnf config-manager --set-enabled crb
             sudo dnf -y install clang
         else
-            if [ "$OS_ID" = "fedora" ];then
+            if [ "$OS_ID" = "fedora" ] || [ "$OS_ID" = "ultramarine" ];then
                 sudo dnf -y install clang
             else
                 print_H2 ">>>>> Can't find /etc/os-release - this OS is unsupported."
