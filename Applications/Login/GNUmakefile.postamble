@@ -12,13 +12,15 @@
 # before-install::
   
 # Things to do after installing
-# after-install::
+after-install::
+	@ cp Resources/loginwindow.service /usr/NextSpace/lib/systemd
 
 # Things to do before uninstalling
 # before-uninstall::
 
 # Things to do after uninstalling
-# after-uninstall::
+after-uninstall::
+	@ /usr/NextSpace/lib/systemd/loginwindow.service
 
 # Things to do before cleaning
 # before-clean::

@@ -244,11 +244,13 @@ NSString *OSEFileSystemChangedAtPath = @"OSEFileSystemChangedAtPath";
 // Otherwise NSRunLoop blocked until all events will be handled.
 - (void)handleEvent:(NSDictionary *)event
 {
-  NSDebugLLog(@"OSEFileSystemMonitor",
-              @"OSEFileSystemMonitor: FS events %@ occured at path %@",
-              [event objectForKey:@"Operations"],
-              [event objectForKey:@"ChangedPath"]);
-      
+  NSDebugLLog(@"OSEFileSystemMonitor", @"OSEFileSystemMonitor: FS events %@ occured at path %@",
+              [event objectForKey:@"Operations"], [event objectForKey:@"ChangedPath"]);
+
+  if (monitorThreadPaused != NO || monitorThreadStopped != NO || monitorThreadTerminated != NO) {
+    return;
+  }
+
   [[NSNotificationCenter defaultCenter] 
         postNotificationName:@"OSEFileSystemChangedAtPath"
                       object:self

@@ -27,7 +27,7 @@
 #import <sys/ioctl.h>
 
 #ifdef __FreeBSD__
-#import <sys/consio.h> // for changing VT
+#import <sys/consio.h>  // for changing VT
 #endif
 
 #import <SystemKit/OSEDisplay.h>
@@ -91,14 +91,12 @@ LoginExitCode panelExitCode;
     return;
   }
 
-  session = [[UserSession alloc] initWithOwner:self
-                                           name:user
-                                       defaults:(NSDictionary *)prefs];
+  session = [[UserSession alloc] initWithOwner:self name:user defaults:(NSDictionary *)prefs];
   [session readSessionScript];
   [session addObserver:self
-             forKeyPath:@"isRunning"
-                options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
-                context:session];
+            forKeyPath:@"isRunning"
+               options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+               context:session];
   [userSessions setObject:session forKey:user];  // remember user session
   [session release];
 
@@ -148,11 +146,12 @@ LoginExitCode panelExitCode;
   if (session.isRunning == NO) {
     [userSessions removeObjectForKey:session.userName];
     pam_end(PAM_handle, 0);
-  
+
     // TODO: actually this doesn't make sense because no multiple session handling
     // implemented yet. Leave it for the future.
     if ([[userSessions allKeys] count] == 0) {
       if (exitStatus != ShutdownExitCode && exitStatus != RebootExitCode) {
+        isWindowActive = YES;
         [self setWindowVisible:YES];
       }
     }
@@ -225,16 +224,13 @@ LoginExitCode panelExitCode;
 //=============================================================================
 @implementation Controller (XWindowSystem)
 
-static int catchXErrors(Display* dpy, XErrorEvent* event)
-{
-  return 0;
-}
+static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
 
 // --- General
 - (void)initXApp
 {
   GSDisplayServer *xServer = GSCurrentServer();
-  
+
   xDisplay = [xServer serverDevice];
   xScreen = DefaultScreen(xDisplay);
   xRootWindow = RootWindow(xDisplay, xScreen);
@@ -247,10 +243,8 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
 
   winattrs.cursor = XCreateFontCursor(xDisplay, XC_left_ptr);
   XChangeWindowAttributes(xDisplay, xRootWindow, CWCursor, &winattrs);
-  
-  [[OSEScreen sharedScreen] setBackgroundColorRed:83.0 / 255.0
-                                            green:83.0 / 255.0
-                                             blue:116.0 / 255.0];
+
+  [self.systemScreen setBackgroundColorRed:83.0 / 255.0 green:83.0 / 255.0 blue:116.0 / 255.0];
 }
 
 - (void)setWindowVisible:(BOOL)flag
@@ -261,14 +255,11 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
     [window center];
     [window makeKeyAndOrderFront:self];
 
-    XSetInputFocus(xDisplay, xPanelWindow, RevertToPointerRoot, 
-                   CurrentTime);
-    XGrabKeyboard(xDisplay, xPanelWindow, False, GrabModeAsync, 
-                  GrabModeAsync, CurrentTime);
-  }
-  else {
+    XSetInputFocus(xDisplay, xPanelWindow, RevertToPointerRoot, CurrentTime);
+    XGrabKeyboard(xDisplay, xPanelWindow, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+  } else {
     XUngrabKeyboard(xDisplay, CurrentTime);
-    [window orderOut:self]; // to prevent altert panels to show window
+    [window orderOut:self];  // to prevent altert panels to show window
     XWithdrawWindow(xDisplay, xPanelWindow, xScreen);
   }
   XFlush(xDisplay);
@@ -276,10 +267,10 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
 
 - (void)closeAllXClients
 {
-  Window            dummywindow;
-  Window*           children;
-  unsigned int      nchildren = 0;
-  unsigned int      i;
+  Window dummywindow;
+  Window *children;
+  unsigned int nchildren = 0;
+  unsigned int i;
   XWindowAttributes attr;
 
   XSync(xDisplay, 0);
@@ -308,12 +299,21 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
 - (void)lidDidChange:(NSNotification *)aNotif
 {
   OSEDisplay *builtinDisplay = nil;
-  OSEScreen *screen = [OSEScreen new];
-  BOOL isVisible = [window isVisible];
+  // OSEScreen  *screen = [OSEScreen new];
+  BOOL isLidClosed = NO;
 
-  NSLog(@"lidDidChange:");
+  NSLog(@"lidDidChange: %@", aNotif.userInfo);
 
-  for (OSEDisplay *d in [screen allDisplays]) {
+  if (aNotif.userInfo) {
+    NSNumber *lidValue = aNotif.userInfo[@"LidIsClosed"];
+    if (lidValue) {
+      isLidClosed = [lidValue boolValue];
+    }
+  } else {
+    isLidClosed = [self.systemPower isLidClosed];
+  }
+
+  for (OSEDisplay *d in [self.systemScreen allDisplays]) {
     if ([d isBuiltin] != NO) {
       builtinDisplay = d;
       break;
@@ -321,22 +321,27 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
   }
 
   if (builtinDisplay) {
-    if (isVisible != NO) {
+    if (isWindowActive != NO && [window isVisible]) {
       [self setWindowVisible:NO];
     }
-    if (![systemPower isLidClosed] && ![builtinDisplay isActive]) {
+
+    if (isLidClosed == NO && ![builtinDisplay isActive]) {
       NSLog(@"activating display %@", [builtinDisplay outputName]);
-      [screen activateDisplay:builtinDisplay];
-    }
-    else if ([systemPower isLidClosed] && [builtinDisplay isActive]) {
+      [self.systemScreen activateDisplay:builtinDisplay];
+    } else if (isLidClosed != NO && [builtinDisplay isActive]) {
       NSLog(@"DEactivating display %@", [builtinDisplay outputName]);
-      [screen deactivateDisplay:builtinDisplay];
+      [self.systemScreen deactivateDisplay:builtinDisplay];
     }
-    if (isVisible != NO) {
+
+    NSLog(@"OSEScreen size: %.0f x %.0f", [self.systemScreen sizeInPixels].width,
+          [self.systemScreen sizeInPixels].height);
+
+    if (isWindowActive != NO && NSEqualSizes([self.systemScreen sizeInPixels], NSZeroSize) == NO) {
       [self setWindowVisible:YES];
     }
   }
-  [screen release];
+
+  // [screen release];
 }
 
 // --- Busy cursor
@@ -365,15 +370,13 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
 - (void)destroyBusyCursor
 {
   Cursor arrow_cursor;
-  
-  if (busyTimer != nil &&
-      [busyTimer isKindOfClass:[NSTimer class]] &&
-      [busyTimer isValid]) {
+
+  if (busyTimer != nil && [busyTimer isKindOfClass:[NSTimer class]] && [busyTimer isValid]) {
     [busyTimer invalidate];
   }
   XcursorAnimateDestroy(busy_cursor);
   busy_cursor = NULL;
-  
+
   arrow_cursor = XCreateFontCursor(xDisplay, XC_left_ptr);
   XDefineCursor(xDisplay, xRootWindow, arrow_cursor);
   XDefineCursor(xDisplay, xPanelWindow, arrow_cursor);
@@ -385,10 +388,10 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
   Cursor xcursor = XcursorAnimateNext(busy_cursor);
 
   fprintf(stderr, "[Animate] cursor %i\n", busy_cursor->sequence);
-  
+
   XDefineCursor(xDisplay, xRootWindow, xcursor);
   XDefineCursor(xDisplay, xPanelWindow, xcursor);
-  
+
   XFlush(xDisplay);
 }
 
@@ -404,13 +407,12 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
   if ([[prefs objectForKey:@"RememberLastLoggedInUser"] integerValue] == 1) {
     return [prefs objectForKey:@"LastLoggedInUser"];
   }
-  
+
   return nil;
 }
 
 - (void)setLastLoggedInUser:(NSString *)username
 {
-  
   [prefs setObject:username == nil ? @"" : [NSString stringWithString:username]
             forKey:@"LastLoggedInUser"];
 }
@@ -422,10 +424,8 @@ static int catchXErrors(Display* dpy, XErrorEvent* event)
 //=============================================================================
 @implementation Controller (PAMAuth)
 
-int ConversationFunction(int num_msg, 
-    			 const struct pam_message ** msg, 
-    			 struct pam_response ** resp, 
-    			 void * appdata_ptr)
+int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam_response **resp,
+                         void *appdata_ptr)
 {
   if (num_msg != 1) {
     NSLog(@"PAM: 0 messages was sent to conversation function.");
@@ -437,11 +437,10 @@ int ConversationFunction(int num_msg,
   if (!*resp) {
     NSLog(@"PAM: out of memory, terminating");
     exit(0);
-  }
-  else {
+  } else {
     memset(*resp, 0, sizeof(struct pam_response));
   }
-  
+
   (*resp)[0].resp = strdup([[[NSApp delegate] password] cString]);
   (*resp)[0].resp_retcode = 0;
 
@@ -457,21 +456,21 @@ int ConversationFunction(int num_msg,
     NSLog(@"Failed to initialize PAM");
     return NO;
   }
-  
+
   NS_DURING
-    {
-      [self authenticateWithHandle:PAM_handle];
-      [self establishAccountManagementWithHandle:PAM_handle];
-      [self establishCredentialsWithHandle:PAM_handle];
-      [self setLastLoggedInUser:user];
-      [self openSessionWithHandle:PAM_handle];
-      return YES;
-    }
+  {
+    [self authenticateWithHandle:PAM_handle];
+    [self establishAccountManagementWithHandle:PAM_handle];
+    [self establishCredentialsWithHandle:PAM_handle];
+    [self setLastLoggedInUser:user];
+    [self openSessionWithHandle:PAM_handle];
+    return YES;
+  }
   NS_HANDLER
-    {
-      pam_end(PAM_handle, 0);
-      return NO;
-    }
+  {
+    pam_end(PAM_handle, 0);
+    return NO;
+  }
   NS_ENDHANDLER
 }
 
@@ -484,7 +483,7 @@ int ConversationFunction(int num_msg,
 - (void)authenticateWithHandle:(pam_handle_t *)handle
 {
   int ret;
-  
+
   if ((ret = pam_authenticate(handle, 0)) != PAM_SUCCESS) {
     NSLog(@"PAM error: %s", pam_strerror(handle, ret));
     [NSException raise:PAMAuthenticationException format:nil];
@@ -493,8 +492,7 @@ int ConversationFunction(int num_msg,
 
 - (void)establishAccountManagementWithHandle:(pam_handle_t *)handle
 {
-  switch (pam_acct_mgmt(handle, 0))
-    {
+  switch (pam_acct_mgmt(handle, 0)) {
     case PAM_ACCT_EXPIRED:
       NSLog(@"PAM: Account expired.");
       [NSException raise:PAMAccountExpiredException format:nil];
@@ -507,13 +505,13 @@ int ConversationFunction(int num_msg,
       NSLog(@"PAM: Permission denied.");
       [NSException raise:PAMPermissionDeniedException format:nil];
       break;
-    case PAM_USER_UNKNOWN: // hide the fact that the user is unknown
+    case PAM_USER_UNKNOWN:  // hide the fact that the user is unknown
       NSLog(@"PAM: User unknown.");
       [NSException raise:PAMAuthenticationException format:nil];
       break;
     default:
       break;
-    }
+  }
 }
 
 - (void)establishCredentialsWithHandle:(pam_handle_t *)handle
@@ -538,7 +536,7 @@ int ConversationFunction(int num_msg,
 
 - (void)awakeFromNib
 {
-  NSRect   rect;
+  NSRect rect;
   NSString *user;
 
   if (userSessions) {
@@ -554,7 +552,7 @@ int ConversationFunction(int num_msg,
   rect = [window frame];
   rect.size = [[panelImageView image] size];
   [window setFrame:rect display:NO];
-  
+
   [shutDownBtn setRefusesFirstResponder:YES];
   [restartBtn setRefusesFirstResponder:YES];
   [fieldsImage setRefusesFirstResponder:YES];
@@ -573,7 +571,6 @@ int ConversationFunction(int num_msg,
   }
 
   [password setEchosBullets:NO];
-            
 
   panelExitCode = 0;
   NSLog(@"awakeFromNib: end");
@@ -581,13 +578,13 @@ int ConversationFunction(int num_msg,
 
 - (void)displayHostname
 {
-  char     hostname[256], displayname[256];
-  int      namelen = 256, index = 0;
+  char hostname[256], displayname[256];
+  int namelen = 256, index = 0;
   NSString *host_name = nil;
 
   // Initialize hostname
-  gethostname( hostname, namelen );
-  for(index = 0; index < 256 && hostname[index] != '.'; index++) {
+  gethostname(hostname, namelen);
+  for (index = 0; index < 256 && hostname[index] != '.'; index++) {
     displayname[index] = hostname[index];
   }
   displayname[index] = 0;
@@ -598,8 +595,7 @@ int ConversationFunction(int num_msg,
     if ([hostnameField superview] != nil) {
       [hostnameField removeFromSuperview];
     }
-  }
-  else if ([hostnameField superview] == nil) {
+  } else if ([hostnameField superview] == nil) {
     [panelImageView addSubview:hostnameField];
   }
 }
@@ -610,10 +606,14 @@ int ConversationFunction(int num_msg,
 
   // Initialize X resources
   [self initXApp];
-  
+
+   // Screen
+  _systemScreen = [OSEScreen sharedScreen];
+ 
   NSLog(@"appDidFinishLaunch: before showWindow");
   // Show login window
   [self setWindowVisible:YES];
+  isWindowActive = YES;
 
   // Turn light on
   // for (OSEDisplay *display in [[OSEScreen sharedScreen] activeDisplays])
@@ -622,24 +622,29 @@ int ConversationFunction(int num_msg,
   //   }
   // NSConnection *conn = [NSConnection defaultConnection];
   // [conn registerName:@"loginwindow"];
-  
+
   // Laptop lid events handling
-  systemPower = [OSEPower new];
-  [systemPower startEventsMonitor];
-  [[NSNotificationCenter defaultCenter]
-                  addObserver:self
-                     selector:@selector(lidDidChange:)
-                         name:OSEPowerLidDidChangeNotification
-                       object:systemPower];
+  _systemPower = [OSEPower sharedPower];
+  [_systemPower startEventsMonitor];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(lidDidChange:)
+                                               name:OSEPowerLidDidChangeNotification
+                                             object:_systemPower];
 
   // Defaults
-  [[NSDistributedNotificationCenter
-     notificationCenterForType:GSPublicNotificationCenterType]
-    addObserver:self
-       selector:@selector(defaultsDidChange:)
-           name:@"LoginDefaultsDidChangeNotification"
-         object:@"Preferences"];
+  [[NSDistributedNotificationCenter notificationCenterForType:GSPublicNotificationCenterType]
+      addObserver:self
+         selector:@selector(defaultsDidChange:)
+             name:@"LoginDefaultsDidChangeNotification"
+           object:@"Preferences"];
   NSLog(@"appDidFinishLaunch: end");
+}
+
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+{
+  NSLog(@"ApplicationShouldTerminate");
+  [_systemScreen release];
+  return NSTerminateNow;
 }
 
 - (void)defaultsDidChange:(NSNotification *)notif
@@ -658,7 +663,7 @@ int ConversationFunction(int num_msg,
   NSString *user = [[NSString alloc] initWithString:[userName stringValue]];
 
   // [self setBusyCursor];
-  
+
   NSLog(@"[Controller authenticate:] userName: %@", user);
 
   if (sender == userName) {
@@ -677,19 +682,17 @@ int ConversationFunction(int num_msg,
     } else if ([user isEqualToString:@"quit"]) {
       NSLog(@"Application will be stopped");
       panelExitCode = QuitExitCode;
-      [NSApp stop:self]; // Go out of run loop
+      [NSApp terminate:self];  // Go out of run loop
       return;
-    }
-    else if ([user isEqualToString:@"terminate"]) {
+    } else if ([user isEqualToString:@"terminate"]) {
       NSLog(@"Application will quit");
-      [NSApp terminate:self]; // Equivalent to "Quit" menu item
+      panelExitCode = QuitExitCode;
+      [NSApp terminate:self];  // Equivalent to "Quit" menu item
       return;
-    }
-    else if ([user isEqualToString:@"shake"]) { // for testing
+    } else if ([user isEqualToString:@"shake"]) {  // for testing
       [window shakePanel:xPanelWindow onDisplay:xDisplay];
       return;
-    }
-    else {
+    } else {
       [window makeFirstResponder:password];
       return;
     }
@@ -698,12 +701,12 @@ int ConversationFunction(int num_msg,
   if ([self authenticateUser:user] == YES) {
     [window shrinkPanel:xPanelWindow onDisplay:xDisplay];
     [self setWindowVisible:NO];
+    isWindowActive = NO;
     [self openSessionForUser:user];
-  }
-  else {
+  } else {
     [window shakePanel:xPanelWindow onDisplay:xDisplay];
   }
-  
+
   [self clearFields];
   // [self destroyBusyCursor];
   [user release];
@@ -714,22 +717,20 @@ int ConversationFunction(int num_msg,
   NSInteger alertResult;
 
   NSLog(@"[Controller restart] initial exit code: %d", panelExitCode);
-  
+
   // No need to ask user if exit code already defined.
   if (panelExitCode == 0) {
-    alertResult = NXTRunAlertPanel(_(@"Restart"),
-                                   _(@"Do you really want to restart the computer?"),
+    alertResult = NXTRunAlertPanel(_(@"Restart"), _(@"Do you really want to restart the computer?"),
                                    _(@"Restart"), _(@"Cancel"), nil);
-  
+
     if (alertResult == NSAlertDefaultReturn) {
       panelExitCode = RebootExitCode;
     }
   }
 
   if (panelExitCode == RebootExitCode) {
-    NSLog(@"[Controller] restart: application will be stopped with exit code: %d",
-          panelExitCode);
-    [NSApp stop:self]; // Go out of run loop
+    NSLog(@"[Controller] restart: application will be stopped with exit code: %d", panelExitCode);
+    [NSApp stop:self];  // Go out of run loop
   }
 }
 
@@ -738,22 +739,20 @@ int ConversationFunction(int num_msg,
   NSInteger alertResult;
 
   NSLog(@"[Controller shutDown] initial exit code: %d", panelExitCode);
-  
+
   // Ask user to verify his choice
   if (panelExitCode == 0) {
-    alertResult = NXTRunAlertPanel(_(@"Power"),
-                                   _(@"Do you really want to turn off the computer?"),
+    alertResult = NXTRunAlertPanel(_(@"Power"), _(@"Do you really want to turn off the computer?"),
                                    _(@"Turn it off"), _(@"Cancel"), nil);
-  
+
     if (alertResult == NSAlertDefaultReturn) {
       panelExitCode = ShutdownExitCode;
     }
   }
-  
+
   if (panelExitCode == ShutdownExitCode) {
-    NSLog(@"[Controller] shutDown: application will be stopped with exit code: %d",
-          panelExitCode);
-    [NSApp stop:self]; // Go out of run loop
+    NSLog(@"[Controller] shutDown: application will be stopped with exit code: %d", panelExitCode);
+    [NSApp stop:self];  // Go out of run loop
   }
 }
 
@@ -762,16 +761,14 @@ int ConversationFunction(int num_msg,
   NSString *user = [self lastLoggedInUser];
 
   [password setStringValue:@""];
-  
-  if (user && [user length] > 0) {  
+
+  if (user && [user length] > 0) {
     [userName setStringValue:user];
     [window makeFirstResponder:password];
-  }
-  else {
+  } else {
     [userName setStringValue:@""];
     [window makeFirstResponder:userName];
   }
 }
 
 @end
-

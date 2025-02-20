@@ -245,11 +245,11 @@
     // For updating views (Shelf, PathView, Viewer)
     [nc addObserver:self
            selector:@selector(volumeDidMount:)
-               name:NXVolumeMounted
+               name:OSEMediaVolumeDidMountNotification
              object:mediaManager];
     [nc addObserver:self
            selector:@selector(volumeDidUnmount:)
-               name:NXVolumeUnmounted
+               name:OSEMediaVolumeDidUnmountNotification
              object:mediaManager];
   }
 
@@ -438,6 +438,8 @@
 {
   NSDebugLLog(@"Memory", @"FileViewer %@: dealloc", rootPath);
 
+  [[NSDistributedNotificationCenter notificationCenterForType:NSLocalNotificationCenterType]
+      removeObserver:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   // [viewer release];
@@ -1465,6 +1467,10 @@
   PathIcon *icon;
   NSString *iconPath;
 
+  if (mountPoint == nil) {
+    return;
+  }
+
   NSDebugLLog(@"FileViewer", @"Volume '%@' did mount at path: %@",
               [[notif userInfo] objectForKey:@"UNIXDevice"], mountPoint);
 
@@ -1494,6 +1500,10 @@
   PathIcon *icon;
   NSString *mountPoint = [[notif userInfo] objectForKey:@"MountPoint"];
   NSString *iconPath;
+
+  if (mountPoint == nil) {
+    return;
+  }
 
   NSDebugLLog(@"FileViewer", @"Volume '%@' mounted at '%@' did unmount",
               [[notif userInfo] objectForKey:@"UNIXDevice"], mountPoint);

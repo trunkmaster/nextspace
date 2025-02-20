@@ -19,177 +19,131 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#ifdef WITH_UDISKS
-
-#import <udisks/udisks.h>
+#import <SystemKit/OSEBusMessage.h>
+#include "Foundation/NSArray.h"
+#include "Foundation/NSString.h"
 
 #import "OSEUDisksDrive.h"
 #import "OSEUDisksVolume.h"
 
 @implementation OSEUDisksDrive
 
+//-------------------------------------------------------------------------------
+#pragma mark - UDisksMedia protocol
+//-------------------------------------------------------------------------------
 - (void)_dumpProperties
 {
   NSString *fileName;
-  NSMutableDictionary *props = [properties mutableCopy];
+  NSMutableDictionary *props = [_properties mutableCopy];
+  NSDictionary *_volumes = [_udisksAdaptor availableVolumesForDrive:_objectPath];
 
-  fileName = [NSString stringWithFormat:@"Library/Workspace/Drive_%@",
-                       [objectPath lastPathComponent]];
-  if (volumes)
-    {
-      [props setObject:volumes forKey:@"_VolumeObjects"];
-    }
+  fileName =
+      [NSString stringWithFormat:@"Library/Workspace/Drive_%@", [_objectPath lastPathComponent]];
+  if (_volumes) {
+    [props setObject:_volumes forKey:@"_VolumeObjects"];
+  }
   [props writeToFile:fileName atomically:YES];
   [props release];
 }
 
-//-------------------------------------------------------------------------------
-//--- UDisksMedia protocol
-//-------------------------------------------------------------------------------
-- (id)initWithProperties:(NSDictionary *)props
+- (void)dealloc
+{
+  NSDebugLLog(@"dealloc", @"OSEUDisksDrive -dealloc %@", self.objectPath);
+  [_properties release];
+  [_objectPath release];
+  // [_volumes release];
+
+  [super dealloc];
+}
+
+- (id)initWithProperties:(NSDictionary *)properties
               objectPath:(NSString *)path
-                 adaptor:(OSEUDisksAdaptor *)udisksAdaptor
+                 adaptor:(OSEUDisksAdaptor *)adaptor
 {
   self = [super init];
-  
-  adaptor = udisksAdaptor;
-  
-  properties = [props mutableCopy];
-  objectPath = [path copy];
 
-  volumes = [[NSMutableDictionary alloc] init];
+  _properties = [properties mutableCopy];
+  _objectPath = [path copy];
+  // _volumes = [[NSMutableDictionary alloc] init];
+  self.udisksAdaptor = adaptor;
 
   notificationCenter = [NSNotificationCenter defaultCenter];
 
-  // Collect missed volumes
-  [volumes addEntriesFromDictionary:[adaptor availableVolumesForDrive:objectPath]];
-  // Set myself as drive to volumes
-  for (OSEUDisksVolume *volume in [volumes allValues])
-    {
-      [volume setDrive:self];
-    }
-  
   // [self _dumpProperties];
 
   return self;
 }
 
-- (void)setProperty:(NSString *)property
-              value:(NSString *)value
-      interfaceName:(NSString *)interface
+- (void)setSignalsObserving
+{
+  // Do nothing
+}
+
+- (void)removeSignalsObserving
+{
+  // Do nothing
+}
+
+- (void)setProperty:(NSString *)property value:(NSString *)value interfaceName:(NSString *)interface
 {
   NSMutableDictionary *interfaceDict;
 
   // Get dictionary which contains changed property
-  interfaceDict = [[properties objectForKey:interface] mutableCopy];
-  
+  interfaceDict = [[_properties objectForKey:interface] mutableCopy];
+
   // Update property
   [interfaceDict setObject:value forKey:property];
-  [properties setObject:interfaceDict forKey:interface];
+  [_properties setObject:interfaceDict forKey:interface];
   [interfaceDict release];
-  
+
   // [self _dumpProperties];
 }
 
-- (void)removeProperties:(NSArray *)props
-           interfaceName:(NSString *)interface
+- (void)removeProperties:(NSArray *)props interfaceName:(NSString *)interface
 {
-  NSDebugLLog(@"udisks", @"Drive: remove properties: %@ for interface: %@",
-              props, interface);
+  NSDebugLLog(@"UDisks", @"Drive: remove properties: %@ for interface: %@", props, interface);
 }
 
-- (NSDictionary *)properties
-{
-  return properties;
-}
-
-- (NSString *)propertyForKey:(NSString *)key interface:(NSString *)interface
+- (id)propertyForKey:(NSString *)key interface:(NSString *)interface
 {
   NSDictionary *interfaceDict;
-  NSString     *value;
-  NSArray      *arrayValue;
+  id value;
 
-  if (interface)
-    {
-      interfaceDict = [properties objectForKey:interface];
-      value = [interfaceDict objectForKey:key];
-    }
-  else
-    {
-      value = [properties objectForKey:key];
-    }
-
-  if ((arrayValue = [value componentsSeparatedByString:@"\n"]))
-    {
-      if ([arrayValue count] > 1)
-        value = [arrayValue componentsJoinedByString:@","];
-      else
-        value = [arrayValue objectAtIndex:0];
-    }
+  if (interface) {
+    interfaceDict = [_properties objectForKey:interface];
+    value = [interfaceDict objectForKey:key];
+  } else {
+    value = [_properties objectForKey:key];
+  }
 
   return value;
 }
 
 - (BOOL)boolPropertyForKey:(NSString *)key interface:(NSString *)interface
 {
-  if ([[self propertyForKey:key interface:interface] isEqualToString:@"true"])
-    return YES;
-  else
-    return NO;
-}
+  id propertyValue = [self propertyForKey:key interface:interface];
+  BOOL boolValue = NO;
 
-- (void)dealloc
-{
-  [properties release];
-  [objectPath release];
-  [volumes release];
-  
-  [super dealloc];
+  if ([propertyValue isKindOfClass:[NSNumber class]]) {
+    boolValue = [propertyValue boolValue];
+  }
+  return boolValue;
 }
 
 //-------------------------------------------------------------------------------
-//--- Object network
+#pragma mark - Attributes
 //-------------------------------------------------------------------------------
-- (NSDictionary *)volumes
-{
-  return volumes;
-}
-
-- (void)addVolume:(OSEUDisksVolume *)volume withPath:(NSString *)volumePath
-{
-  [volumes setObject:volume forKey:volumePath];
-  // [self _dumpProperties];
-}
-
-- (void)removeVolumeWithKey:(NSString *)key
-{
-  [volumes removeObjectForKey:key];
-}
-
-- (NSString *)objectPath
-{
-  return objectPath;
-}
-
-//-------------------------------------------------------------------------------
-//--- Attributes
-//-------------------------------------------------------------------------------
-- (NSString *)UNIXDevice
-{
-  return nil;
-}
 
 // vendor, model
 - (NSString *)humanReadableName
 {
   NSString *name;
 
-  name = [self propertyForKey:@"Media" interface:DRIVE_INTERFACE];
-  if (!name || [name isEqualToString:@""])
-    {
-      name = [self propertyForKey:@"Model" interface:DRIVE_INTERFACE];
-    }
-    
+  // name = [self propertyForKey:@"Media" interface:DRIVE_INTERFACE];
+  // if (!name || [name isEqualToString:@""]) {
+    name = [self propertyForKey:@"Model" interface:DRIVE_INTERFACE];
+  // }
+
   return name;
 }
 
@@ -208,15 +162,15 @@
   return [self boolPropertyForKey:@"CanPowerOff" interface:DRIVE_INTERFACE];
 }
 
+- (BOOL)hasMedia
+{
+  return [self boolPropertyForKey:@"MediaAvailable" interface:DRIVE_INTERFACE];
+}
+
 // valuable for optical disks
 - (BOOL)isOptical
 {
   return [self boolPropertyForKey:@"Optical" interface:DRIVE_INTERFACE];
-}
-
-- (BOOL)hasMedia
-{
-  return [self boolPropertyForKey:@"MediaAvailable" interface:DRIVE_INTERFACE];
 }
 
 - (BOOL)isMediaRemovable
@@ -229,73 +183,66 @@
   return [self boolPropertyForKey:@"OpticalBlank" interface:DRIVE_INTERFACE];
 }
 
-- (NSString *)numberOfAudioTracks
+- (NSNumber *)numberOfAudioTracks
 {
   return [self propertyForKey:@"OpticalNumAudioTracks" interface:DRIVE_INTERFACE];
 }
 
-- (NSString *)numberOfDataTracks
+- (NSNumber *)numberOfDataTracks
 {
   return [self propertyForKey:@"OpticalNumDataTracks" interface:DRIVE_INTERFACE];
 }
 
 //-------------------------------------------------------------------------------
-//--- Actions
+#pragma mark - Actions
 //-------------------------------------------------------------------------------
 - (NSArray *)mountedVolumes
 {
-  NSMutableArray *mountedVolumes = [[NSMutableArray alloc] init];
-  NSEnumerator   *e = [[volumes allValues] objectEnumerator];
+  NSDictionary *_volumes = [_udisksAdaptor availableVolumesForDrive:_objectPath];
+  NSMutableArray *mountedVolumes = [NSMutableArray array];
   OSEUDisksVolume *volume;
 
-  while ((volume = [e nextObject]) != nil)
-    {
-      if ([volume isMounted])
-        {
-          [mountedVolumes addObject:volume];
-        }
+  for (NSString *key in [_volumes allKeys]) {
+    volume = _volumes[key];
+    if ([volume isMounted]) {
+      [mountedVolumes addObject:volume];
     }
-    
-  NSDebugLLog(@"udisks", @"Drive: %@ mountedVolumes: %@",
-              [objectPath lastPathComponent], mountedVolumes);
-  
-  return [mountedVolumes autorelease];
+  }
+
+  NSDebugLLog(@"UDisks", @"Drive: %@ mountedVolumes: %@", [_objectPath lastPathComponent],
+              mountedVolumes);
+
+  return mountedVolumes;
 }
 
 - (NSArray *)mountVolumes:(BOOL)wait
 {
-  NSMutableArray *mountPoints = [[NSMutableArray alloc] init];
-  NSEnumerator   *e = [[volumes allValues] objectEnumerator];
+  NSDictionary *_volumes = [_udisksAdaptor availableVolumesForDrive:_objectPath];
+  NSMutableArray *mountPoints = [NSMutableArray array];
   OSEUDisksVolume *volume;
-  NSString       *mp;
+  NSString *mp;
 
-  NSDebugLLog(@"udisks", @"OSEUDisksDrive: %@ mountVolumes: %@", objectPath, volumes);
-  
-  while ((volume = [e nextObject]) != nil)
-    {
-      if ((mp = [volume mount:wait]) != nil)
-        {
-          [mountPoints addObject:mp];
-        }
+  NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive: %@ mountVolumes: %@", _objectPath, _volumes);
+
+  for (NSString *key in [_volumes allKeys]) {
+    volume = _volumes[key];
+    if (volume != nil && (mp = [volume mount:wait]) != nil) {
+      [mountPoints addObject:mp];
     }
+  }
 
-  return [mountPoints autorelease];
+  return mountPoints;
 }
 
 - (BOOL)unmountVolumes:(BOOL)wait
 {
-  NSEnumerator   *e = [[volumes allValues] objectEnumerator];
-  OSEUDisksVolume *volume;
+  NSArray *mountedVolumes = [self mountedVolumes];
 
-  NSDebugLLog(@"udisks", @"Drive: unmount volumes: %@", volumes);
-  
-  while ((volume = [e nextObject]) != nil)
-    {
-      if (![volume unmount:wait])
-        {
-          return NO;
-        }
+  for (OSEUDisksVolume *volume in mountedVolumes) {
+    if (![volume unmount:wait]) {
+      return NO;
     }
+  }
 
   return YES;
 }
@@ -303,181 +250,211 @@
 NSLock *driveLock = nil;
 - (void)volumeDidUnmount:(NSNotification *)notif
 {
-  if (!driveLock)
+  if (!driveLock) {
     driveLock = [[NSLock alloc] init];
+  }
 
-  if ([driveLock tryLock] == NO)
+  if ([driveLock tryLock] == NO) {
+    NSLog(@"OSEUDisksDrive-volumeDidUnmount - failed to get lock!");
     return;
-  
-  if (needsDetach)
-    {
-      NSString *volumeDevice = [[notif userInfo] objectForKey:@"UNIXDevice"];
-      for (OSEUDisksVolume *volume in mountedVolumesToDetach)
-        {
-          // NSLog(@"Volume2Detach: %@", [volume UNIXDevice]);
-          if ([[volume UNIXDevice] isEqualToString:volumeDevice])
-            {
-              // NSLog(@"Volume detached: %@", [volume UNIXDevice]);
-              [mountedVolumesToDetach removeObject:volume];
-              break;
-            }
-        }
+  }
 
-      // NSLog(@"OSEUDisksDrive: mounted volumes to detach: %@", mountedVolumesToDetach);
-
-      // All volumes unounted proceed with eject & powerOff.
-      if ([mountedVolumesToDetach count] <= 0)
-        {
-          NSString *message = @"";
-          
-          if (![self isEjectable] && ![self canPowerOff])
-            {
-      
-              message = [NSString stringWithFormat:@"You can safely remove the card"
-                                  " '%@' now.", [self humanReadableName]];
-            }
-          else
-            {
-              [self eject:YES];
-              [self powerOff:YES];
-              if (![self isOptical] && [self hasMedia])
-                {
-                  message = [NSString stringWithFormat:@"You can safely disconnect"
-                                      " the disk '%@' now.", [self humanReadableName]];
-                }
-            }
-          [adaptor operationWithName:@"Eject"
-                              object:self
-                              failed:NO
-                              status:@"Completed"
-                               title:@"Disk Eject"
-                             message:message];
-          [[NSNotificationCenter defaultCenter] removeObserver:self];
-          needsDetach = NO;
-          [mountedVolumesToDetach release];
-        }
+  if (needsDetach) {
+    NSString *volumeDevice = [[notif userInfo] objectForKey:@"UNIXDevice"];
+    for (OSEUDisksVolume *volume in mountedVolumesToDetach) {
+      // NSLog(@"Volume2Detach: %@", [volume UNIXDevice]);
+      if ([[volume UNIXDevice] isEqualToString:volumeDevice]) {
+        // NSLog(@"Volume detached: %@", [volume UNIXDevice]);
+        [mountedVolumesToDetach removeObject:volume];
+        break;
+      }
     }
+
+    // NSLog(@"OSEOSEUDisksDrive: mounted volumes to detach: %@", mountedVolumesToDetach);
+  }
   [driveLock unlock];
 }
 
-// 1. Send OSEDiskOperationDidStart for drive.
-// 2. Put mountedVolumes into cache (needsDetachMountedVolumes). Set needsDetach = YES.
+// 1. Put mountedVolumes into cache (needsDetachMountedVolumes). Set needsDetach = YES.
+// 2. Send OSEDiskOperationDidStart for drive.
 // 3. Unmount volumes. Each volume sends DidStart/DidEnd for volume.
 // 4. Catch DidEnd for volume and remove volume from cache.
 // 5. When cache become empty proceed with eject: and powerOff:.
 // Sync - OK.
+// Not implemented
 - (void)unmountVolumesAndDetach
 {
+  NSArray *mountedVolumes;
+  NSString *message = nil;
+  NSString *driveName;
+
+  NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive -unmountVolumesAndDetach: %@.",
+              self.humanReadableName);
+
   // 1.
-  NSString *message;
-  message = [NSString stringWithFormat:@"Ejecting %@...",
-                      [self humanReadableName]];
-  [adaptor operationWithName:@"Eject"
-                      object:self
-                      failed:NO
-                      status:@"Started"
-                       title:@"Disk Eject"
-                     message:message];
+  mountedVolumes = [self mountedVolumes];
+  if (mountedVolumes == nil || mountedVolumes.count == 0) {
+    NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive -unmountVolumesAndDetach nothing to unmount.");
+    return;
+  }
+  // mountedVolumesToDetach = [[NSMutableArray alloc] initWithArray:mountedVolumes];
+  // needsDetach = YES;
 
-  // 2.
-  mountedVolumesToDetach = [[NSMutableArray alloc]
-                             initWithArray:[self mountedVolumes]];
-  needsDetach = YES;
-
-  // 2.1 Subscribe to notifications
-  [notificationCenter addObserver:self
-                         selector:@selector(volumeDidUnmount:)
-                             name:NXVolumeUnmounted
-                           object:adaptor];
+  // 2.1 Subscribe to notification
+  // [notificationCenter addObserver:self
+  //                        selector:@selector(volumeDidUnmount:)
+  //                            name:OSEMediaVolumeDidUnmountNotification
+  //                          object:_udisksAdaptor];
 
   // 3.
-  if (![self unmountVolumes:YES])
-    {
-      message = [NSString stringWithFormat:@"Failed to eject '%@'",
-                          [self humanReadableName]];
-      [adaptor operationWithName:@"Eject"
-                          object:self
-                          failed:YES
-                          status:@"Completed"
-                           title:@"Disk Eject"
-                         message:message];
+  // [self unmountVolumes:YES];
+  // if ([mountedVolumesToDetach count] <= 0) {
+  if ([self unmountVolumes:YES] != NO) {
+    BOOL canPowerOff = [self canPowerOff];
+
+    // NSLog(@"%@ - Ejectable: %@, CanPowerOff: %@", [self humanReadableName],
+    //       [self isEjectable] ? @"Yes" : @"No", canPowerOff ? @"Yes" : @"No");
+    if ([self isEjectable] != NO || [self hasMedia]) {
+      [self eject:YES];
+    }
+    if (canPowerOff != NO) {
+      [self powerOff:YES];
     }
 
-  // 4. & 5. are in [self volumeDidUnmount:].
+    driveName = [self humanReadableName];
+    if ([self isEjectable] == NO && [self canPowerOff] == NO) {
+      message = [NSString stringWithFormat:@"You can safely remove the card '%@' now.", driveName];
+    } else if ([self isOptical] == NO) {
+      message = [NSString stringWithFormat:@"You can safely disconnect '%@' now.", driveName];
+    }
+    if (message) {
+      // No background operations at this point but we notify Workspace about media detach.
+      [_udisksAdaptor operationWithName:@"Detach"
+                                 object:self
+                                 failed:NO
+                                 status:@"Completed"
+                                  title:@"Eject"
+                                message:message];
+    }
+  }
+
+  // [[NSNotificationCenter defaultCenter] removeObserver:self];
+  // needsDetach = NO;
+  // [mountedVolumesToDetach release];
+
+  // // 4. & 5. are in [self volumeDidUnmount:].
 }
 
+// Not implemented
 - (BOOL)eject:(BOOL)wait
 {
-  UDisksObject *ud_object;
-  UDisksDrive  *ud_drive;
-  gboolean      ud_result = 0;
+  NSString *message;
+  OSEBusMessage *busMessage;
+  id result = nil;
+  BOOL isFailed = NO;
 
-  if (![self isEjectable] || ![self hasMedia])
+  if ([self isEjectable] == NO) {
     return NO;
+  }
 
-  ud_object = udisks_client_get_object([adaptor udisksClient],
-                                       [objectPath cString]);
-  ud_drive = udisks_object_peek_drive(ud_object);
+  NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive: eject: %@", _objectPath);
 
-  NSDebugLLog(@"udisks", @"Drive: Eject the Drive: %@", objectPath);
-  
-  if (wait)
-    {
-      ud_result =
-        udisks_drive_call_eject_sync(ud_drive,
-                                     g_variant_new("a{sv}", NULL),
-                                     NULL,            // GCancellable *
-                                     NULL);           // GError **
+  message = [NSString stringWithFormat:@"Ejecting drive %@", [self humanReadableName]];
+  [_udisksAdaptor operationWithName:@"Eject"
+                             object:self
+                             failed:NO
+                             status:@"Started"
+                              title:@"Eject"
+                            message:message];
+
+  if (wait) {
+    busMessage = [[OSEBusMessage alloc]
+        initWithServiceName:_udisksAdaptor.serviceName
+                     object:_objectPath
+                  interface:DRIVE_INTERFACE
+                     method:@"Eject"
+                  arguments:@[ @[ @{@"auth.no_user_interaction" : @"b:true"} ] ]
+                  signature:@"a{sv}"];
+    result = [busMessage sendWithConnection:_udisksAdaptor.connection];
+    [busMessage release];
+
+    NSDebugLLog(@"UDisks", @"OSEUDisksDrive -eject result: %@", result);
+    if ([result isKindOfClass:[NSError class]]) {
+      message = [(NSError *)result userInfo][@"Description"];
+      isFailed = YES;
+    } else {
+      message = [NSString stringWithFormat:@"Eject of %@ completed [OSEUDisksDrive eject:]",
+                                           [self humanReadableName]];
     }
-  else
-    {
-      // udisks_drive_call_eject(ud_drive,
-      //                         g_variant_new("a{sv}", NULL),
-      //                         NULL,             // GCancellable *
-      //                         eject_callback, // GAsyncReadyCallback
-      //                         NULL);            // gpointer user_data
-    }
-  
-  g_object_unref(ud_object);
-  
-  return ud_result;
+  } else {
+    NSDebugLLog(@"UDisks", @"Warning: Asynchronous drive ejecting is not implemented!");
+    message = [NSString stringWithFormat:@"Eject of %@ completed successfuly [OSEUDisksDrive eject:]",
+                                         [self humanReadableName]];
+  }
+
+  [_udisksAdaptor operationWithName:@"Eject"
+                             object:self
+                             failed:isFailed
+                             status:@"Completed"
+                              title:@"Eject"
+                            message:message];
+
+  return !isFailed;
 }
 
+// Not implemented
 - (BOOL)powerOff:(BOOL)wait
 {
-  UDisksObject *ud_object;
-  UDisksDrive  *ud_drive;
-  gboolean      ud_result = 0;
+  NSString *message;
+  OSEBusMessage *busMessage;
+  id result = nil;
+  BOOL isFailed = NO;
 
-  if (![self canPowerOff])
+  if (![self canPowerOff]) {
     return NO;
+  }
 
-  ud_object = udisks_client_get_object([adaptor udisksClient], [objectPath cString]);
-  ud_drive = udisks_object_peek_drive(ud_object);
+  NSDebugLLog(@"UDisks", @"OSEOSEUDisksDrive: powerOff the drive %@", _objectPath);
 
-  NSDebugLLog(@"udisks", @"NXUDA: Power Off the Drive: %@", objectPath);
-
-  if (wait)
-    {
-      ud_result = udisks_drive_call_power_off_sync(ud_drive,
-                                                   g_variant_new("a{sv}", NULL),
-                                                   NULL,            // GCancellable *
-                                                   NULL);           // GError **
-    }
-  else
-    {
-      // udisks_drive_call_power_off(ud_drive,
-      //                             g_variant_new("a{sv}", NULL),
-      //                             NULL,             // GCancellable *
-      //                             unmount_callback, // GAsyncReadyCallback
-      //                             NULL);            // gpointer user_data
-    }
+  message = [NSString stringWithFormat:@"Powering off the drive %@", [self humanReadableName]];
+  [_udisksAdaptor operationWithName:@"PowerOff"
+                             object:self
+                             failed:NO
+                             status:@"Started"
+                              title:@"PowerOff"
+                            message:message];
   
-  g_object_unref(ud_object);
-  
-  return ud_result;
+  if (wait) {
+    busMessage = [[OSEBusMessage alloc]
+        initWithServiceName:_udisksAdaptor.serviceName
+                     object:_objectPath
+                  interface:DRIVE_INTERFACE
+                     method:@"PowerOff"
+                  arguments:@[ @[ @{@"auth.no_user_interaction" : @"b:true"} ] ]
+                  signature:@"a{sv}"];
+    result = [busMessage sendWithConnection:_udisksAdaptor.connection];
+    [busMessage release];
+
+    NSDebugLLog(@"UDisks", @"OSEUDisksDrive -poweroff result: %@", result);
+    if ([result isKindOfClass:[NSError class]]) {
+      message = [(NSError *)result userInfo][@"Description"];
+      isFailed = YES;
+    } else {
+      message = [NSString
+          stringWithFormat:@"Drive `%@` Power Off completed successfuly [OSEUDisksDrive powerOff:].", [self humanReadableName]];
+    }
+  } else {
+    NSDebugLLog(@"UDisks", @"Warning: Asynchronous Drive PowerOff is not implemented!");
+  }
+
+  [_udisksAdaptor operationWithName:@"PowerOff"
+                             object:self
+                             failed:isFailed
+                             status:@"Completed"
+                              title:@"PowerOff"
+                            message:message];
+
+  return !isFailed;
 }
 
 @end
-
-#endif //WITH_UDISKS

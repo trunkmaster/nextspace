@@ -38,9 +38,9 @@
 // It was neccesary to override this method to get the borderless
 // window since it is not available from InterfaceBuilder.
 - (id)initWithContentRect:(NSRect)contentRect
-		styleMask:(NSUInteger)styleMask
-		  backing:(NSBackingStoreType)bufferingType
-		    defer:(BOOL)flag
+                styleMask:(NSUInteger)styleMask
+                  backing:(NSBackingStoreType)bufferingType
+                    defer:(BOOL)flag
 {
   return [super initWithContentRect:contentRect
                           styleMask:NSBorderlessWindowMask
@@ -55,72 +55,69 @@
 
 - (BOOL)canBecomeMainWindow
 {
-  // If set to YES login window appears regrdless of 
+  // If set to YES login window appears regrdless of
   // "Visible at launch time" bit set
   return NO;
 }
 
-/* 
-   This method is a temporary solution. GNUstep doesn't count screen size and 
+/*
+   This method is a temporary solution. GNUstep doesn't count screen size and
    display laying out to each other on multi-display setups. For example, if 2
-   displays stacked side-by-side with top edges aligned by the Y axis 
-   (deafult layout) we need to add bottom side offset to point.y because GNUstep 
-   coordinate system starts at bottom left corner. If displays aligned by bottom 
-   edge - no offset have to be added. 
+   displays stacked side-by-side with top edges aligned by the Y axis
+   (deafult layout) we need to add bottom side offset to point.y because GNUstep
+   coordinate system starts at bottom left corner. If displays aligned by bottom
+   edge - no offset have to be added.
    The worst case is when displays are not aligned along some edge(s).
-   In this case XRandR screen dimensions increase while GNUstep is not aware of 
-   such changes. We need to adjust `point` to be correct in GNUstep coordinate 
+   In this case XRandR screen dimensions increase while GNUstep is not aware of
+   such changes. We need to adjust `point` to be correct in GNUstep coordinate
    system and screen dimensions.
 */
 - (void)center
 {
-  OSEScreen  *screen;
+  OSEScreen *screen = [[NSApp delegate] systemScreen];
   OSEDisplay *display = nil;
-  NSSize     screenSize;
-  NSRect     displayRect;
-  NSRect     windowRect = [self frame];
-  NSPoint    newOrigin;
+  NSSize screenSize;
+  NSRect displayRect;
+  NSRect windowRect = [self frame];
+  NSPoint newOrigin;
 
-  NSLog(@"center");
+  NSDebugLLog(@"Screen", @"center");
 
   // Get NEXTSPACE display rect
-  screen = [[OSEScreen new] autorelease];
   if (screen != nil) {
+    [screen randrUpdateScreenResources];
     if ([[screen activeDisplays] count] > 0) {
       display = [screen mainDisplay];
       if (!display) {
-        NSLog(@"No main display - using first active.");
+        NSDebugLLog(@"Screen", @"No main display - using first active.");
         display = [[screen activeDisplays] objectAtIndex:0];
       }
-    }
-    else if ([[screen connectedDisplays] count] > 0) {
-      NSLog(@"No active displays left - activating first connected.");
+    } else if ([[screen connectedDisplays] count] > 0) {
+      NSDebugLLog(@"Screen", @"No active displays left - activating first connected.");
       display = [[screen connectedDisplays] objectAtIndex:0];
       [screen activateDisplay:display];
     }
     screenSize = [screen sizeInPixels];
     displayRect = [display frame];
-    
-    NSLog(@"Screen size   : %4.0f x %4.0f", screenSize.width, screenSize.height);
-  }
-  
-  NSLog(@"Display frame : %4.0f x %4.0f  (%4.0f, %4.0f)",
-        displayRect.size.width, displayRect.size.height,
-        displayRect.origin.x, displayRect.origin.y);
 
-  NSLog(@"Window frame  : %4.0f x %4.0f  (%4.0f, %4.0f)",
-        windowRect.size.width, windowRect.size.height, 
-        windowRect.origin.x, windowRect.origin.y);
+    NSDebugLLog(@"Screen", @"Screen size   : %4.0f x %4.0f", screenSize.width, screenSize.height);
+  }
+
+  NSDebugLLog(@"Screen", @"Display frame : %4.0f x %4.0f  (%4.0f, %4.0f)", displayRect.size.width,
+              displayRect.size.height, displayRect.origin.x, displayRect.origin.y);
+
+  NSDebugLLog(@"Screen", @"Window frame  : %4.0f x %4.0f  (%4.0f, %4.0f)", windowRect.size.width,
+              windowRect.size.height, windowRect.origin.x, windowRect.origin.y);
 
   // Calculate the new position of the window on display.
-  newOrigin.x = displayRect.size.width/2 - windowRect.size.width/2;
+  newOrigin.x = displayRect.size.width / 2 - windowRect.size.width / 2;
   newOrigin.x += displayRect.origin.x;
-  newOrigin.y = displayRect.size.height/2 - windowRect.size.height/2;
+  newOrigin.y = displayRect.size.height / 2 - windowRect.size.height / 2;
   newOrigin.y += displayRect.origin.y;
   // displayRect is presented system(Xlib) coordiante system.
   // Convert newOrigin into OpenStep coordinate system (non-flipped).
   newOrigin.y = screenSize.height - (newOrigin.y + windowRect.size.height);
-  NSLog(@"New origin    :              (%4.0f, %4.0f)", newOrigin.x, newOrigin.y);
+  NSDebugLLog(@"Screen", @"New origin    :              (%4.0f, %4.0f)", newOrigin.x, newOrigin.y);
 
   [self setFrameOrigin:newOrigin];
 }
@@ -129,32 +126,31 @@
 
 - (NSPoint)windowScreenOrigin
 {
-  NSRect  allScreensFrame;
-  NSRect  frame = [self frame];
+  NSRect allScreensFrame;
+  NSRect frame = [self frame];
   NSPoint origin = frame.origin;
-  
+
   for (NSScreen *scr in [NSScreen screens]) {
     allScreensFrame = NSUnionRect(allScreensFrame, [scr frame]);
   }
-  
+
   origin.y = NSMaxY(allScreensFrame) - NSMaxY(frame);
 
-  NSLog(@"[screen origin] Y -> Xlib: %.0f Max: %.0f Screen: %.0f (Max: %.0f)",
-        origin.y, NSMaxY(frame),
-        allScreensFrame.origin.y, NSMaxY(allScreensFrame));
-  
+  NSLog(@"[screen origin] Y -> Xlib: %.0f Max: %.0f Screen: %.0f (Max: %.0f)", origin.y,
+        NSMaxY(frame), allScreensFrame.origin.y, NSMaxY(allScreensFrame));
+
   return origin;
 }
 
-- (void)shakePanel:(Window)panel onDisplay:(Display*)dpy
+- (void)shakePanel:(Window)panel onDisplay:(Display *)dpy
 {
   NSPoint origin = [self windowScreenOrigin];
-  int     x, initial_x, y;
-  int     i, j, num_steps, num_shakes;
+  int x, initial_x, y;
+  int i, j, num_steps, num_shakes;
 
   initial_x = x = (int)origin.x;
   y = (int)origin.y;
-    
+
   num_steps = 4;
   num_shakes = 14;
   for (i = 0; i < num_shakes; i++) {
@@ -164,7 +160,7 @@
       XSync(dpy, false);
       usleep(ANIMATION_DELAY);
     }
-    for (j = 0; j < num_steps*2; j++) {
+    for (j = 0; j < num_steps * 2; j++) {
       x -= 10;
       XMoveWindow(dpy, panel, x, y);
       XSync(dpy, false);
@@ -185,12 +181,12 @@
 
 - (void)shrinkPanel:(Window)panel onDisplay:(Display *)dpy
 {
-  NSRect  windowRect = [self frame];
+  NSRect windowRect = [self frame];
   NSPoint origin = [self windowScreenOrigin];
-  GC      gc;
-  Pixmap  pixmap;
-  XImage  *windowSnap;
-  int     x, y, width, height, initial_x, initial_width;
+  GC gc;
+  Pixmap pixmap;
+  XImage *windowSnap;
+  int x, y, width, height, initial_x, initial_width;
 
   initial_x = x = (int)origin.x;
   y = (int)origin.y;
@@ -199,17 +195,16 @@
 
   pixmap = XCreatePixmap(dpy, panel, width, height, 24);
   gc = XCreateGC(dpy, pixmap, 0, NULL);
-    
+
   windowSnap = XGetImage(dpy, panel, 0, 0, width, height, AllPlanes, XYPixmap);
   XPutImage(dpy, pixmap, gc, windowSnap, 0, 0, 0, 0, width, height);
-    
+
   while ((width - SHRINK_FACTOR) > 0) {
-    x += SHRINK_FACTOR/2;
+    x += SHRINK_FACTOR / 2;
     width -= SHRINK_FACTOR;
-    
+
     XMoveResizeWindow(dpy, panel, x, y, width, height);
-    XCopyArea(dpy, pixmap, pixmap, gc,
-              SHRINK_FACTOR/2, 0, width, height, 0, 0);
+    XCopyArea(dpy, pixmap, pixmap, gc, SHRINK_FACTOR / 2, 0, width, height, 0, 0);
     XSetWindowBackgroundPixmap(dpy, panel, pixmap);
     XSync(dpy, False);
     usleep(ANIMATION_DELAY);
@@ -219,7 +214,7 @@
   // panel before XMoveResizeWindow results will  made visible.
   XMoveResizeWindow(dpy, panel, initial_x, y, initial_width, height);
   XSync(dpy, False);
-  
+
   XFree(windowSnap);
   XFreeGC(dpy, gc);
   XFreePixmap(dpy, pixmap);

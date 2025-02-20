@@ -24,7 +24,7 @@ After=rc-local.service plymouth-start.service systemd-user-sessions.service
 OnFailure=plymouth-quit.service
 
 [Service]
-ExecStart=/usr/NextSpace/Apps/Login.app/Login
+ExecStart=/usr/NextSpace/Apps/Login.app/Login --GNU-Debug=dealloc
 ExecStartPost=-/bin/bash -c "TERM=linux /usr/bin/clear > /dev/tty1"
 KillMode=process
 KillSignal=SIGQUIT

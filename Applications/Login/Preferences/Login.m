@@ -290,13 +290,12 @@
   [systemDefaults setObject:[NSNumber numberWithInteger:[sender state]]
                      forKey:@"RememberLastLoggedInUser"];
   [systemDefaults synchronize];
-  
-  [[NSDistributedNotificationCenter
-     notificationCenterForType:GSPublicNotificationCenterType]
-    postNotificationName:@"LoginDefaultsDidChangeNotification"
-                  object:@"Preferences"
-                userInfo:nil
-      deliverImmediately:YES];
+
+  [[NSDistributedNotificationCenter notificationCenterForType:GSPublicNotificationCenterType]
+      postNotificationName:@"LoginDefaultsDidChangeNotification"
+                    object:@"Preferences"
+                  userInfo:nil
+        deliverImmediately:YES];
 }
 - (IBAction)setDisplayHostName:(id)sender
 {
@@ -305,13 +304,12 @@
   [systemDefaults setObject:[NSNumber numberWithInteger:[sender state]]
                      forKey:@"DisplayHostName"];
   [systemDefaults synchronize];
-  
-  [[NSDistributedNotificationCenter
-     notificationCenterForType:GSPublicNotificationCenterType]
-    postNotificationName:@"LoginDefaultsDidChangeNotification"
-                  object:@"Preferences"
-                userInfo:nil
-      deliverImmediately:YES];
+
+  [[NSDistributedNotificationCenter notificationCenterForType:GSPublicNotificationCenterType]
+      postNotificationName:@"LoginDefaultsDidChangeNotification"
+                    object:@"Preferences"
+                  userInfo:nil
+        deliverImmediately:YES];
 }
 
 @end

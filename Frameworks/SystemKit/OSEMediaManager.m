@@ -23,22 +23,21 @@
 
 #ifdef WITH_HAL
 #import <SystemKit/NXHALAdaptor.h>
-#endif
-#ifdef WITH_UDISKS
+#else
 #import "OSEUDisksAdaptor.h"
 #endif
 
 // Volume events
-NSString *OSEDiskAppeared = @"OSEDiskAppeared";
-NSString *OSEDiskDisappeared = @"OSEDiskDisappeared";
-NSString *NXVolumeAppeared = @"NXVolumeAppeared";
-NSString *NXVolumeDisappeared = @"NXVolumeDisappeared";
-NSString *NXVolumeMounted = @"NXVolumeMounted";
-NSString *NXVolumeUnmounted = @"NXVolumeUnmounted";
+NSString *OSEMediaDriveDidAddNotification = @"OSEMediaDriveDidAddNotification";
+NSString *OSEMediaDriveDidRemoveNotification = @"OSEMediaDriveDidRemoveNotification";
+NSString *OSEMediaVolumeDidAddNotification = @"OSEMediaVolumeDidAddNotification";
+NSString *OSEMediaVolumeDidRemoveNotification = @"OSEMediaVolumeDidRemoveNotification";
+NSString *OSEMediaVolumeDidMountNotification = @"OSEMediaVolumeDidMountNotification";
+NSString *OSEMediaVolumeDidUnmountNotification = @"OSEMediaVolumeDidUnmountNotification";
 // Operations
-NSString *OSEMediaOperationDidStart = @"OSEMediaOperationDidStart";
-NSString *OSEMediaOperationDidUpdate = @"OSEMediaOperationDidUpdate";
-NSString *OSEMediaOperationDidEnd = @"OSEMediaOperationDidEnd";
+NSString *OSEMediaOperationDidStartNotification = @"OSEMediaOperationDidStartNotification";
+NSString *OSEMediaOperationDidUpdateNotification = @"OSEMediaOperationDidUpdateNotification";
+NSString *OSEMediaOperationDidEndNotification = @"OSEMediaOperationDidEndNotification";
 
 //-----------------------------------------------------------------------
 static id<MediaManager> adaptor;
@@ -54,18 +53,24 @@ static id<MediaManager> adaptor;
   return adaptor;
 }
 
+- (void)dealloc
+{
+  NSDebugLLog(@"dealloc", @"OSEMediaManager: -dealloc (retain count: %lu)", [self retainCount]);
+
+  [adaptor release];
+  
+  [super dealloc];
+}
+
 - (id)init
 {
-  if (!(self = [super init]))
-    {
-      return nil;
-    }
-  
+  if (!(self = [super init])) {
+    return nil;
+  }
+
 #ifdef WITH_HAL
   adaptor = [[NXHALAdaptor alloc] init];
-#endif
-
-#ifdef WITH_UDISKS
+#else
   adaptor = [[OSEUDisksAdaptor alloc] init];
 #endif
 
@@ -75,15 +80,6 @@ static id<MediaManager> adaptor;
 - (id<MediaManager>)adaptor
 {
   return adaptor;
-}
-
-- (void)dealloc
-{
-  NSLog(@"OSEMediaManager: dealloc");
-
-  [adaptor release];
-  
-  [super dealloc];
 }
 
 @end

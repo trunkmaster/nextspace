@@ -1,8 +1,10 @@
 /* -*- mode: objc -*- */
 //
-// Project: NEXTSPACE - Login application
+// Project: NEXTSPACE - SystemKit framework
 //
-// Copyright (C) 2014-2019 Sergii Stoian
+// Description: Represents connection to specific D-Bus service.
+//
+// Copyright (C) 2025- Sergii Stoian
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
@@ -19,13 +21,14 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#import <X11/Xlib.h>
-#import <AppKit/AppKit.h>
+#import <Foundation/Foundation.h>
 
-@interface LoginWindow : NSWindow
-{
-}
-- (void)shakePanel:(Window)panel onDisplay:(Display *)dpy;
-- (void)shrinkPanel:(Window)panel onDisplay:(Display *)dpy;
+@class OSEBusConnection;
+
+@interface OSEBusService : NSObject
+
+@property (readonly, assign, nonnull) OSEBusConnection *connection;
+@property (readwrite, retain, nonnull) NSString *objectPath;
+@property (readwrite, retain, nonnull) NSString *serviceName;
 
 @end

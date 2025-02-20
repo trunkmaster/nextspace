@@ -2,7 +2,7 @@
 //
 // Project: NEXTSPACE - SystemKit framework
 //
-// Copyright (C) 2014-2019 Sergii Stoian
+// Copyright (C) 2024-present Sergii Stoian
 //
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
@@ -25,35 +25,37 @@
  * changing of power profile of system (tuned) and actions:
  * shutdown, restart, hibernate and sleep.
  */
-#ifdef WITH_UPOWER
 
-#import <Foundation/NSObject.h>
+#import <Foundation/Foundation.h>
 
-#include <upower.h>
+#import <SystemKit/OSEBusService.h>
 
-@class NSString;
-
-@interface OSEPower : NSObject
+@interface OSEPower : OSEBusService
 {
-  UpClient *upower_client;
 }
-// Battery information
-+ (unsigned int)batteryLife;
-+ (unsigned char)batteryPercent;
-+ (BOOL)isUsingBattery;
 
 // LID information
-+ (BOOL)hasLid;
-+ (BOOL)isLidClosed;
-- (BOOL)hasLid;
-- (BOOL)isLidClosed;
-  
+@property (readonly) BOOL isLidPresent;
+@property (readonly) BOOL isLidClosed;
+
++ (id)sharedPower;
+
+// Battery information
+@property (readonly) BOOL isUsingBattery;
+- (unsigned int)batteryLife;
+- (unsigned char)batteryPercent;
+
 // Monitor for D-Bus messages
 - (void)startEventsMonitor;
 - (void)stopEventsMonitor;
 
 @end
 
+//-------------------------------------------------------------------------------
+#pragma mark - Notifications
+//-------------------------------------------------------------------------------
+extern NSString *OSEPowerPropertiesDidChangeNotification;
 extern NSString *OSEPowerLidDidChangeNotification;
+extern NSString *OSEPowerDeviceDidAddNotification;
+extern NSString *OSEPowerDeviceDidRemoveNotification;
 
-#endif //WITH_UPOWER

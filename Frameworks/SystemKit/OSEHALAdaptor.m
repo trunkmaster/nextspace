@@ -167,12 +167,12 @@ watch_toggled(DBusWatch *watch,
     {
       if ([self _deviceWithUDI:UDI hasCapability:@"volume"])
         {
-          // NXVolumeAppeared
+          // OSEMediaVolumeDidAddNotification
           if ((description = [self _volumeDescriptionForUDI:UDI]) == nil)
             {
               return;
             }
-          [notificationCenter postNotificationName:NXVolumeAppeared
+          [notificationCenter postNotificationName:OSEMediaVolumeDidAddNotification
                                             object:deviceManager
                                           userInfo:description];
           // mount appeared volume
@@ -183,9 +183,9 @@ watch_toggled(DBusWatch *watch,
     {
       if ([self _deviceWithUDI:UDI hasCapability:@"volume"])
         {
-          // NXVolumeDisappeared
+          // OSEMediaVolumeDidRemoveNotification
           description = [self _volumeDescriptionForUDI:UDI];
-          [notificationCenter postNotificationName:NXVolumeDisappeared
+          [notificationCenter postNotificationName:OSEMediaVolumeDidRemoveNotification
                                             object:deviceManager
                                           userInfo:description];
         }
@@ -204,13 +204,13 @@ watch_toggled(DBusWatch *watch,
            description = [self _volumeDescriptionForUDI:UDI];
            if ([propVal boolValue])
              {
-               [notificationCenter postNotificationName:NXVolumeMounted
+               [notificationCenter postNotificationName:OSEMediaVolumeDidMountNotification
                                                  object:deviceManager
                                                userInfo:description];
              }
            else
              {
-               [notificationCenter postNotificationName:NXVolumeUnmounted
+               [notificationCenter postNotificationName:OSEMediaVolumeDidUnmountNotification
                                                  object:deviceManager
                                                userInfo:description];
              }

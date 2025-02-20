@@ -19,151 +19,220 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#ifdef WITH_UPOWER
-
-#import <Foundation/NSArray.h>
-// #import <Foundation/NSBundle.h>
-#import <Foundation/NSString.h>
-#import <Foundation/NSTimer.h>
-#import <Foundation/NSNotification.h>
-
+#import "OSEBusConnection.h"
+#import "OSEBusMessage.h"
 #import "OSEPower.h"
 
+//-------------------------------------------------------------------------------
+#pragma mark - Notifications
+//-------------------------------------------------------------------------------
+NSString *OSEPowerPropertiesDidChangeNotification = @"OSEPowerPropertiesDidChangeNotification";
 NSString *OSEPowerLidDidChangeNotification = @"OSEPowerLidDidChangeNotification";
+NSString *OSEPowerDeviceDidAddNotification = @"OSEPowerDeviceDidAddNotification";
+NSString *OSEPowerDeviceDidRemoveNotification = @"OSEPowerDeviceDidRemoveNotification";
 
-static NSTimer   *monitorTimer;
-static GMainLoop *glib_mainloop;
-static OSEPower   *power;
+//-------------------------------------------------------------------------------
+#pragma mark - OSEPower implementation
+//-------------------------------------------------------------------------------
+static OSEPower *systemPower = nil;
+
+@implementation OSEPower (Private)
+
+- (id)_propertyValueWithName:(NSString *)propertyName ofClass:(Class)resultClass 
+{
+  OSEBusMessage *message;
+  id result = nil;
+
+  message = [[OSEBusMessage alloc] initWithService:self
+                                         interface:@"org.freedesktop.DBus.Properties"
+                                            method:@"Get"
+                                         arguments:@[ @"org.freedesktop.UPower", propertyName ]
+                                         signature:@"ss"];
+  result = [message send];
+  [message release];
+
+  if (result != nil) {
+    if ([result isKindOfClass:resultClass]) {
+      return result;
+    } else {
+      [result release];
+      result = nil;
+    }
+  }
+
+  return result;
+}
+
+@end
 
 @implementation OSEPower
 
++ (id)sharedPower
+{
+  if (systemPower == nil) {
+    systemPower = [[self alloc] init];
+  }
+
+  NSDebugLLog(@"dealloc", @"OSEPower +shared: retain count %lu", [systemPower retainCount]);
+
+  return systemPower;
+}
+
 - (id)init
 {
-  power = self = [super init];
-  
+  if (systemPower != nil) {
+    return systemPower;
+  }
+
+  [super init];
+
+  self.objectPath = @"/org/freedesktop/UPower";
+  self.serviceName = @"org.freedesktop.UPower";
+
   return self;
 }
 
 - (void)dealloc
 {
-  if ([monitorTimer isValid])
-    {
-      [self stopEventsMonitor];
-    }
-
-  g_object_unref(upower_client);
-  
+  NSDebugLLog(@"dealloc", @"OSEPower: -dealloc (retain count: %lu) (connection retain count: %lu)",
+              [self retainCount], [self.connection retainCount]);
+  systemPower = nil;
   [super dealloc];
 }
 
 //-------------------------------------------------------------------------------
-// Battery
+#pragma mark - Battery
 //-------------------------------------------------------------------------------
-+ (unsigned int)batteryLife
+// TODO
+- (unsigned int)batteryLife
+{
+  return 0;
+}
+// TODO
+- (unsigned char)batteryPercent
 {
   return 0;
 }
 
-+ (unsigned char)batteryPercent
+- (BOOL)isUsingBattery
 {
-  return 0;
-}
+  BOOL isOnBattery = NO;
+  NSNumber *result = [self _propertyValueWithName:@"OnBattery" ofClass:[NSNumber class]];
 
-+ (BOOL)isUsingBattery
-{
-  return NO;
+  if (result != nil) {
+    isOnBattery = [result boolValue];
+    [result release];
+  }
+
+  return isOnBattery;
 }
 
 //-------------------------------------------------------------------------------
-// Laptop lid
+#pragma mark - Laptop lid
 //-------------------------------------------------------------------------------
-+ (BOOL)hasLid
+- (BOOL)isLidPresent
 {
-  UpClient *up_client = up_client_new();
-  BOOL     yn = up_client_get_lid_is_present(up_client);
+  BOOL isLidPresent = NO;
+  NSNumber *result = [self _propertyValueWithName:@"LidIsPresent" ofClass:[NSNumber class]];
 
-  g_object_unref(up_client);
-    
-  return yn;
-}
+  if (result != nil) {
+    isLidPresent = [result boolValue];
+    [result release];
+  }
 
-+ (BOOL)isLidClosed
-{
-  UpClient *up_client = up_client_new();
-  BOOL     yn = up_client_get_lid_is_closed(up_client);
-
-  g_object_unref(up_client);
-    
-  return yn;
-}
-
-- (BOOL)hasLid
-{
-  return up_client_get_lid_is_present(upower_client);
+  return isLidPresent;
 }
 
 - (BOOL)isLidClosed
 {
-  return up_client_get_lid_is_closed(upower_client);
+  BOOL isLidClosed = NO;
+  NSNumber *result = [self _propertyValueWithName:@"LidIsClosed" ofClass:[NSNumber class]];
+
+  if (result != nil) {
+    isLidClosed = [result boolValue];
+    [result release];
+  }
+
+  return isLidClosed;
 }
 
 //-------------------------------------------------------------------------------
-// UPower D-Bus events
+#pragma mark - UPower D-Bus events
 //-------------------------------------------------------------------------------
+- (void)handleLidNotification:(NSDictionary *)info
+{
+  NSDebugLLog(@"UPower", @"UPower received notification with user info: %@", info);
 
-static void
-up_device_added_cb(UpClient *client, UpDevice *device, gpointer user_data)
-{
-  NSLog(@"OSEPower: device %s added", up_device_to_text(device));
-}
-static void
-up_device_removed_cb(UpClient *client, UpDevice *device, gpointer user_data)
-{
-  // NSLog(@"OSEPower: device %s removed", up_device_to_text(device));
-  NSLog(@"OSEPower: some device was removed");
-}
-static void
-up_lid_closed_cb(UpClient *client, gpointer user_data)
-{
-  NSLog(@"OSEPower: LidClosed property changed");
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName:OSEPowerLidDidChangeNotification
-                  object:power];
+  NSArray *message = info[@"Message"];  // s a{sv} as
+  NSArray *properties = message[1];     // a{sv}
+  id propertyValue;
+
+  // NSLog(@"\t Properties has been changed for interface %@:", message[0]);
+  for (NSDictionary *property in properties) {
+    for (NSString *propertyName in [property allKeys]) {
+      // propertyValue = property[propertyName];
+      // NSLog(@"\t\t %@ = %@", propertyName, propertyValue);
+      if ([propertyName isEqualToString:@"LidIsClosed"]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:OSEPowerLidDidChangeNotification
+                                                            object:self
+                                                          userInfo:property];
+      }
+    }
+  }
 }
 
-// Timer selector
-- (void)_glibRunLoopIterate
+- (void)deviceAdded:(NSNotification *)aNotif
 {
-  g_main_context_iteration(g_main_loop_get_context(glib_mainloop), FALSE);
+  NSDebugLLog(@"UPower", @"UPower received notification DeviceAdded: %@", aNotif.userInfo);
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:OSEPowerDeviceDidAddNotification
+                                                      object:self
+                                                    userInfo:aNotif.userInfo];
+}
+
+- (void)deviceRemoved:(NSNotification *)aNotif
+{
+  NSDebugLLog(@"UPower", @"UPower received notification with object: %@", aNotif.userInfo);
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:OSEPowerDeviceDidRemoveNotification
+                                                      object:self
+                                                    userInfo:aNotif.userInfo];
 }
 
 - (void)startEventsMonitor
 {
-  upower_client = up_client_new();
+  [self.connection addSignalObserver:self
+                            selector:@selector(handleLidNotification:)
+                              signal:@"PropertiesChanged"
+                              object:self.objectPath
+                           interface:@"org.freedesktop.DBus.Properties"];
 
-  // Set events monitoring callbacks
-  g_signal_connect(upower_client, "device-added",
-                   G_CALLBACK(up_device_added_cb), NULL);
-  g_signal_connect(upower_client, "device-removed",
-                   G_CALLBACK(up_device_removed_cb), NULL);
-  g_signal_connect(upower_client, "notify::lid-is-closed",
-                   G_CALLBACK(up_lid_closed_cb), NULL);
-
-  glib_mainloop = g_main_loop_new(NULL, TRUE);
-  
-  monitorTimer = [NSTimer
-                   scheduledTimerWithTimeInterval:1.0
-                                           target:self
-                                         selector:@selector(_glibRunLoopIterate)
-                                         userInfo:nil
-                                          repeats:YES];
+  [self.connection addSignalObserver:self
+                            selector:@selector(deviceAdded:)
+                              signal:@"DeviceAdded"
+                              object:self.objectPath
+                           interface:@"org.freedesktop.UPower"];
+  [self.connection addSignalObserver:self
+                            selector:@selector(deviceRemoved:)
+                              signal:@"DeviceRemoved"
+                              object:self.objectPath
+                           interface:@"org.freedesktop.UPower"];
 }
 
 - (void)stopEventsMonitor
 {
-  [monitorTimer invalidate];
+  [self.connection removeSignalObserver:self
+                                 signal:@"PropertiesChanged"
+                                 object:self.objectPath
+                              interface:@"org.freedesktop.DBus.Properties"];
+  [self.connection removeSignalObserver:self
+                                 signal:@"DeviceAdded"
+                                 object:self.objectPath
+                              interface:@"org.freedesktop.UPower"];
+  [self.connection removeSignalObserver:self
+                                 signal:@"DeviceRemoved"
+                                 object:self.objectPath
+                              interface:@"org.freedesktop.UPower"];
 }
 
 @end
-
-#endif //WITH_UPOWER

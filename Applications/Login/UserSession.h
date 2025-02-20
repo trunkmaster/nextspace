@@ -28,8 +28,8 @@
 
 @interface UserSession : NSObject
 {
-  Controller     *appController;
-  NSDictionary   *appDefaults;
+  Controller *appController;
+  NSDictionary *appDefaults;
   NSMutableArray *sessionScript;
 }
 
@@ -47,9 +47,7 @@
 
 // ---
 
-- (int)launchCommand:(NSArray *)command
-           logAppend:(BOOL)append
-                wait:(BOOL)isWait;
+- (int)launchCommand:(NSArray *)command logAppend:(BOOL)append wait:(BOOL)isWait;
 
 @end
 
@@ -57,4 +55,3 @@
 - (void)readSessionScript;
 - (void)launchSessionScript;
 @end
-

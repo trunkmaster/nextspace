@@ -61,11 +61,11 @@
  - Providing mechanism to do various display manipulation: fading, switching
    to console, power management.
  */
+#include <X11/extensions/Xrandr.h>
 
 #import <Foundation/Foundation.h>
 #import <AppKit/NSColor.h>
-
-#import <X11/extensions/Xrandr.h>
+#import <SystemKit/OSEPower.h>
 
 @class OSEDisplay;
 
@@ -74,6 +74,7 @@
  @private
   Display *xDisplay;
   Window xRootWindow;
+  OSEPower *systemPower;
 
   Pixmap background_pixmap;
   GC background_gc;
@@ -89,6 +90,8 @@
 
 + (id)sharedScreen;
 - (void)setUseAutosave:(BOOL)yn;
+
+- (BOOL)isLidClosed;
 
 - (XRRScreenResources *)randrScreenResources;
 - (void)randrUpdateScreenResources;

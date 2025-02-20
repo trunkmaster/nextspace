@@ -248,7 +248,7 @@ void WSUpdateScreenInfo(WScreen *scr)
   XUnlockDisplay(dpy);
 
   NSDebugLLog(@"Screen", @"Sending OSEScreenDidChangeNotification...");
-  // Send notification to active OSEScreen applications.
+  // Send notification to active OSEScreen applications of current user.
   [[NSDistributedNotificationCenter defaultCenter]
       postNotificationName:OSEScreenDidChangeNotification
                     object:nil];

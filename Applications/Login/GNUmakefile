@@ -29,13 +29,12 @@ Preferences
 # Resource files
 #
 Login_RESOURCE_FILES = \
-Resources/Login.gorm \
-Resources/ConsoleLog.gorm \
-Resources/loginwindow.tiff \
-Resources/Login \
-Resources/Login.user \
-Resources/loginwindow.service \
-Preferences/Login.preferences
+	Resources/Login.gorm \
+	Resources/ConsoleLog.gorm \
+	Resources/loginwindow.tiff \
+	Resources/Login \
+	Resources/Login.user \
+	Preferences/Login.preferences
 
 
 #
