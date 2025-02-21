@@ -93,7 +93,7 @@ if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 		sudo systemctl disable display-manager.service
 	fi
 	${ECHO} "Setting up Login window service..."
-	sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
+	sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service
 	sudo systemctl set-default graphical.target
 
 	# SELinux
