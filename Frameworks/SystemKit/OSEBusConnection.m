@@ -275,10 +275,10 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
     NSDebugLLog(@"DBus", @"Observers count for %s is %li",
                 CFStringGetCStringPtr(observerKey, kCFStringEncodingUTF8), observersCount);
     for (CFIndex i = 0; i < observersCount; i++) {
-      observer = CFArrayGetValueAtIndex(objectsList, i);
+      observer = CFArrayGetValueAtIndex(objectsList, 0);
       observerObject = CFDictionaryGetValue(observer, CFSTR("Observer"));
       if ([observerObject isEqualTo:anObserver]) {
-        CFArrayRemoveValueAtIndex(objectsList, i);
+        CFArrayRemoveValueAtIndex(objectsList, 0);
       }
     }
   }
