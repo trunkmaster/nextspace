@@ -26,6 +26,22 @@ fi
 OS_NAME=$NAME
 ${ECHO} "OS:\t\t${OS_ID}-${OS_VERSION}"
 
+#---------------------------------------
+# Machine
+#---------------------------------------
+MACHINE=`uname -m`
+if [ -f /proc/device-tree/model ];then
+	MODEL=`cat /proc/device-tree/model | awk '{print $1}'`
+else
+	MODEL="unkown"
+fi
+
+if [ -f /proc/device-tree/compatible ];then
+	GPU=`tr -d '\0' < /proc/device-tree/compatible | awk -F, '{print $3}'`
+else
+	GPU="unknown"
+fi
+
 #----------------------------------------
 # Paths
 #----------------------------------------
