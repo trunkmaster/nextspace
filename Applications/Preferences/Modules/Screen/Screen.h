@@ -43,7 +43,6 @@
   NSImage *image;
 
   OSEScreen *systemScreen;
-  OSEPower  *power;
  
   NSMutableArray *displayBoxList;
   DisplayBox     *selectedBox;

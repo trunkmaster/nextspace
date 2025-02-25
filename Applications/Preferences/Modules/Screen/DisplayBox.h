@@ -23,7 +23,7 @@
 
 #import <AppKit/AppKit.h>
 
-#import <Screen.h>
+#import "Screen.h"
 
 @interface DisplayBox : NSBox
 {

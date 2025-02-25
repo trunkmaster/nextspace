@@ -76,9 +76,7 @@
   NSColor *color;
 
   if (active) {
-    OSEScreen *screen = [OSEScreen new];
-    [screen savedBackgroundColorRed:&red green:&green blue:&blue];
-    [screen release];
+    [[OSEScreen sharedScreen] savedBackgroundColorRed:&red green:&green blue:&blue];
     color = [NSColor colorWithDeviceRed:red green:green blue:blue alpha:1.0];
     [nameField setTextColor:[NSColor whiteColor]];
   } else {

@@ -22,7 +22,7 @@
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEPower.h>
 
-#import <Screen.h>
+#import "Screen.h"
 
 @interface ScreenCanvas : NSBox
 {
@@ -37,3 +37,5 @@
 - (void)mouseDown:(NSEvent *)theEvent
             inBox:(DisplayBox *)box;
 @end
+
+extern NSString *DisplayBoxPositionDidChangeNotification;

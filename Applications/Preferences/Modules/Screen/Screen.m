@@ -50,11 +50,11 @@
 {
   NSString *imagePath;
   NSBundle *bundle;
-  
+
   self = [super init];
-  
+
   bundle = [NSBundle bundleForClass:[self class]];
-  
+
   imagePath = [bundle pathForResource:@"Screen" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
@@ -64,7 +64,7 @@
   appIconYardImage = [[NSImage alloc] initWithContentsOfFile:imagePath];
   imagePath = [bundle pathForResource:@"iconyard" ofType:@"tiff"];
   iconYardImage = [[NSImage alloc] initWithContentsOfFile:imagePath];
-      
+
   return self;
 }
 
@@ -72,17 +72,16 @@
 {
   NSLog(@"Screen: -dealloc");
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  
+
   [image release];
   [dockImage release];
   [appIconYardImage release];
   [iconYardImage release];
-  
-  if (displayBoxList) [displayBoxList release];
-  if (systemScreen) [systemScreen release];
-  if (power) [power release];
-  if (view) [view release];
-  
+
+  [displayBoxList release];
+  [systemScreen release];
+  [view release];
+
   [super dealloc];
 }
 
@@ -91,46 +90,39 @@
   [view retain];
   [window release];
 
-  systemScreen = [OSEScreen new];
+  systemScreen = [OSEScreen sharedScreen];
   [systemScreen setUseAutosave:YES];
-  
+
   // Get info about monitors and layout
   displayBoxList = [[NSMutableArray alloc] init];
   [self updateDisplayBoxList];
 
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(screenDidUpdate:)
-           name:OSEScreenDidUpdateNotification
-         object:systemScreen];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(screenDidUpdate:)
+                                               name:OSEScreenDidUpdateNotification
+                                             object:systemScreen];
 
   // Open/close lid events
-  power = [OSEPower new];
-  [power startEventsMonitor];
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(lidDidChange:)
-           name:OSEPowerLidDidChangeNotification
-         object:power];
-  
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(displayBoxPositionDidChange:)
-           name:@"DisplayBoxPositionDidChange"
-         object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(lidDidChange:)
+                                               name:OSEPowerLidDidChangeNotification
+                                             object:nil];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(displayBoxPositionDidChange:)
+                                               name:DisplayBoxPositionDidChangeNotification
+                                             object:nil];
 }
 
 - (NSView *)view
 {
-  if (view == nil)
-    {
-      if (![NSBundle loadNibNamed:@"Screen" owner:self])
-        {
-          NSLog (@"Screen.preferences: Could not load NIB, aborting.");
-          return nil;
-        }
+  if (view == nil) {
+    if (![NSBundle loadNibNamed:@"Screen" owner:self]) {
+      NSLog(@"Screen.preferences: Could not load NIB, aborting.");
+      return nil;
     }
-  
+  }
+
   return view;
 }
 
@@ -151,29 +143,27 @@
 {
   [sender setSelected:YES];
   selectedBox = sender;
-  for (DisplayBox *db in displayBoxList)
-    {
-      if (db != sender) [db setSelected:NO];
-    }
+  for (DisplayBox *db in displayBoxList) {
+    if (db != sender)
+      [db setSelected:NO];
+  }
 
-  [setMainBtn setEnabled:(![sender isMain]&&[sender isActive])];
-  
+  [setMainBtn setEnabled:(![sender isMain] && [sender isActive])];
+
   [setStateBtn setTitle:[sender isActive] ? @"Disable" : @"Enable"];
 
-  OSEPower *systemPower = [OSEPower new];
   if (([sender isActive] && [[systemScreen activeDisplays] count] > 1) ||
-      (![sender isActive] && ![systemPower isLidClosed])) {
+      (![sender isActive] && ![systemScreen isLidClosed])) {
     [setStateBtn setEnabled:YES];
   } else {
     [setStateBtn setEnabled:NO];
   }
-  [systemPower release];
 }
 
 - (void)setMainDisplay:(id)sender
 {
   OSEDisplay *display;
-  
+
   display = [systemScreen displayWithName:selectedBox.displayName];
   // [OSEDisplay setMain:] will generate OSEScreenDidChangeNotification.
   [systemScreen setMainDisplay:display];
@@ -182,35 +172,30 @@
 - (void)setDisplayState:(id)sender
 {
   OSEDisplay *display;
-  
+
   display = [systemScreen displayWithName:selectedBox.displayName];
-  
-  if ([[sender title] isEqualToString:@"Disable"])
-    {
-      [systemScreen deactivateDisplay:display];
-    }
-  else
-    {
-      [systemScreen activateDisplay:display];
-    }
+
+  if ([[sender title] isEqualToString:@"Disable"]) {
+    [systemScreen deactivateDisplay:display];
+  } else {
+    [systemScreen activateDisplay:display];
+  }
 }
 
 - (void)revertArrangement:(id)sender
 {
   [systemScreen applyDisplayLayout:[systemScreen arrangedDisplayLayout]];
   [self updateDisplayBoxList];
-  
+
   [revertBtn setEnabled:NO];
   [applyBtn setEnabled:NO];
 }
 
-NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
-                                       DisplayBox *displayB,
-                                       void *context)
+NSComparisonResult compareDisplayBoxes(DisplayBox *displayA, DisplayBox *displayB, void *context)
 {
   NSPoint aPoint = displayA.frame.origin;
   NSPoint bPoint = displayB.frame.origin;
-  BOOL    aIsActive, bIsActive;
+  BOOL aIsActive, bIsActive;
 
   aIsActive = [displayA.display isActive];
   bIsActive = [displayB.display isActive];
@@ -230,86 +215,78 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
 {
   NSLog(@"Convert DisplayBox positions and set to OSEDisplay.");
 
-  NSArray		*dbList;
-  NSArray		*layout = [systemScreen currentLayout];
-  NSMutableArray	*newLayout = [NSMutableArray new];
-  NSMutableDictionary	*displayDesc;
-  NSRect		boxGroupRect = [canvas boxGroupRect];
-  NSRect		boxFrame, boxLastFrame;
-  NSRect		displayFrame, displayLastFrame;
-  CGFloat		xOffset = .0, yOffset = .0;
+  NSArray *dbList;
+  NSArray *layout = [systemScreen currentLayout];
+  NSMutableArray *newLayout = [NSMutableArray new];
+  NSMutableDictionary *displayDesc;
+  NSRect boxGroupRect = [canvas boxGroupRect];
+  NSRect boxFrame, boxLastFrame;
+  NSRect displayFrame, displayLastFrame;
+  CGFloat xOffset = .0, yOffset = .0;
 
-  dbList = [displayBoxList sortedArrayUsingFunction:compareDisplayBoxes
-                                            context:NULL];
-  displayLastFrame = NSMakeRect(0,0,0,0);
-  for (DisplayBox *db in dbList)
-    {
-      // 1. Get frame of OSEDisplay
-      displayFrame = db.display.frame;
+  dbList = [displayBoxList sortedArrayUsingFunction:compareDisplayBoxes context:NULL];
+  displayLastFrame = NSMakeRect(0, 0, 0, 0);
+  for (DisplayBox *db in dbList) {
+    // 1. Get frame of OSEDisplay
+    displayFrame = db.display.frame;
 
-      // 2. Calculate NSPoint for OSEDisplay
-      boxFrame = db.frame;
+    // 2. Calculate NSPoint for OSEDisplay
+    boxFrame = db.frame;
 
-      if (NSIsEmptyRect(displayLastFrame) &&
-          boxFrame.origin.x == boxGroupRect.origin.x)
-        displayFrame.origin.x = 0;
-      else if (NSMinX(boxFrame) == NSMinX(boxLastFrame)) // top|bottom: left aligned
-        displayFrame.origin.x = displayLastFrame.origin.x;
-      else if (NSMaxX(boxFrame) == NSMaxX(boxLastFrame)) // top|bottom: right aligned
-        displayFrame.origin.x = NSMaxX(displayLastFrame) - NSWidth(displayFrame);
-      else if (NSMaxX(boxFrame) > NSMaxX(boxLastFrame))  // right
-        displayFrame.origin.x = displayLastFrame.size.width;
-      else                                         // left - starts new row of displays
-        displayFrame.origin.x = NSMinX(displayLastFrame) - NSWidth(displayFrame);
-      
-      if (displayFrame.origin.x < xOffset)
-        xOffset = fabs(displayFrame.origin.x);
+    if (NSIsEmptyRect(displayLastFrame) && boxFrame.origin.x == boxGroupRect.origin.x)
+      displayFrame.origin.x = 0;
+    else if (NSMinX(boxFrame) == NSMinX(boxLastFrame))  // top|bottom: left aligned
+      displayFrame.origin.x = displayLastFrame.origin.x;
+    else if (NSMaxX(boxFrame) == NSMaxX(boxLastFrame))  // top|bottom: right aligned
+      displayFrame.origin.x = NSMaxX(displayLastFrame) - NSWidth(displayFrame);
+    else if (NSMaxX(boxFrame) > NSMaxX(boxLastFrame))  // right
+      displayFrame.origin.x = displayLastFrame.size.width;
+    else  // left - starts new row of displays
+      displayFrame.origin.x = NSMinX(displayLastFrame) - NSWidth(displayFrame);
 
-      if (NSIsEmptyRect(displayLastFrame) &&
-          boxFrame.origin.y == boxGroupRect.origin.y)
-        displayFrame.origin.y = 0;
-      else if (NSMinY(boxFrame) == NSMinY(boxLastFrame)) // right|left: bottom aligned
-        displayFrame.origin.y = displayLastFrame.origin.y;
-      else if (NSMaxY(boxFrame) == NSMaxY(boxLastFrame)) // right|left: top aligned
-        displayFrame.origin.y = NSMaxY(displayLastFrame) - NSHeight(displayFrame);
-      else if (NSMaxY(boxFrame) > NSMaxY(boxLastFrame))  // top
-        displayFrame.origin.y = NSHeight(displayLastFrame);
-      else // bottom - should never be called
-        displayFrame.origin.y = NSMinY(displayLastFrame) - NSHeight(displayFrame);
-      
-      if (displayFrame.origin.y < yOffset)
-        yOffset = fabs(displayFrame.origin.y);
-      
-      displayLastFrame = displayFrame;
-      boxLastFrame = boxFrame;
-      
-      // 3. Change frame origin of OSEDisplay in layout description
-      displayDesc = [[systemScreen descriptionOfDisplay:db.display
-                                               inLayout:layout] mutableCopy];
-      [displayDesc setObject:NSStringFromRect(displayFrame)
-                      forKey:OSEDisplayFrameKey];
-      NSLog(@"Set frame for %@: %@", db.displayName, NSStringFromRect(displayFrame));
-      [newLayout addObject:displayDesc];
-      [displayDesc release];
+    if (displayFrame.origin.x < xOffset)
+      xOffset = fabs(displayFrame.origin.x);
+
+    if (NSIsEmptyRect(displayLastFrame) && boxFrame.origin.y == boxGroupRect.origin.y)
+      displayFrame.origin.y = 0;
+    else if (NSMinY(boxFrame) == NSMinY(boxLastFrame))  // right|left: bottom aligned
+      displayFrame.origin.y = displayLastFrame.origin.y;
+    else if (NSMaxY(boxFrame) == NSMaxY(boxLastFrame))  // right|left: top aligned
+      displayFrame.origin.y = NSMaxY(displayLastFrame) - NSHeight(displayFrame);
+    else if (NSMaxY(boxFrame) > NSMaxY(boxLastFrame))  // top
+      displayFrame.origin.y = NSHeight(displayLastFrame);
+    else  // bottom - should never be called
+      displayFrame.origin.y = NSMinY(displayLastFrame) - NSHeight(displayFrame);
+
+    if (displayFrame.origin.y < yOffset)
+      yOffset = fabs(displayFrame.origin.y);
+
+    displayLastFrame = displayFrame;
+    boxLastFrame = boxFrame;
+
+    // 3. Change frame origin of OSEDisplay in layout description
+    displayDesc = [[systemScreen descriptionOfDisplay:db.display inLayout:layout] mutableCopy];
+    [displayDesc setObject:NSStringFromRect(displayFrame) forKey:OSEDisplayFrameKey];
+    NSLog(@"Set frame for %@: %@", db.displayName, NSStringFromRect(displayFrame));
+    [newLayout addObject:displayDesc];
+    [displayDesc release];
+  }
+
+  if (xOffset > 0 || yOffset > 0) {
+    for (NSMutableDictionary *d in newLayout) {
+      displayFrame = NSRectFromString([d objectForKey:OSEDisplayFrameKey]);
+      displayFrame.origin.x += xOffset;
+      displayFrame.origin.y += yOffset;
+      NSLog(@"Adjust frame for %@: %@", [d objectForKey:OSEDisplayNameKey],
+            NSStringFromRect(displayFrame));
+      [d setObject:NSStringFromRect(displayFrame) forKey:OSEDisplayFrameKey];
     }
-
-  if (xOffset > 0 || yOffset > 0)
-    {
-      for (NSMutableDictionary *d in newLayout)
-        {
-          displayFrame = NSRectFromString([d objectForKey:OSEDisplayFrameKey]);
-          displayFrame.origin.x += xOffset;
-          displayFrame.origin.y += yOffset;
-          NSLog(@"Adjust frame for %@: %@", [d objectForKey:OSEDisplayNameKey],
-                NSStringFromRect(displayFrame));
-          [d setObject:NSStringFromRect(displayFrame) forKey:OSEDisplayFrameKey];
-        }
-    }
+  }
 
   [systemScreen applyDisplayLayout:newLayout];
   // [newLayout writeToFile:@"PreferencesDisplays.config" atomically:YES];
   [newLayout release];
-  
+
   [revertBtn setEnabled:NO];
   [applyBtn setEnabled:NO];
 }
@@ -321,16 +298,13 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
 - (void)selectFirstEnabledMonitor
 {
   DisplayBox *db = nil;
-  
-  for (db in displayBoxList)
-    {
-      // if ([[db display] isActive])
-      if ([[systemScreen displayWithName:db.displayName] isActive])
-        {
-          [db setSelected:YES];
-          break;
-        }
+
+  for (db in displayBoxList) {
+    if ([[systemScreen displayWithName:db.displayName] isActive]) {
+      [db setSelected:YES];
+      break;
     }
+  }
 
   [self displayBoxClicked:db];
 }
@@ -339,69 +313,59 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
 - (void)updateDisplayBoxList
 {
   NSArray *displays;
-  NSRect  canvasRect = [[canvas contentView] frame];
-  NSRect  displayRect, dBoxRect;
+  NSRect canvasRect = [[canvas contentView] frame];
+  NSRect displayRect, dBoxRect;
   CGFloat dMaxWidth = 0.0, dMaxHeight = 0.0;
   CGFloat scaleWidth, scaleHeight;
   DisplayBox *dBox;
 
-  //NSLog(@"Screen: update display box list.");
+  // NSLog(@"Screen: update display box list.");
 
   // Clear view and array
-  for (dBox in displayBoxList)
-    {
-      [dBox removeFromSuperview];
-    }
+  for (dBox in displayBoxList) {
+    [dBox removeFromSuperview];
+  }
   [displayBoxList removeAllObjects];
-  
+
   displays = [systemScreen connectedDisplays];
-  
+
   // Calculate scale factor
-  for (OSEDisplay *d in displays)
-    {
-      displayRect = [d frame];
-      if (dMaxWidth < displayRect.size.width ||
-          dMaxHeight < displayRect.size.height)
-        {
-          dMaxWidth = displayRect.size.width;
-          dMaxHeight = displayRect.size.height;
-        }
+  for (OSEDisplay *d in displays) {
+    displayRect = [d frame];
+    if (dMaxWidth < displayRect.size.width || dMaxHeight < displayRect.size.height) {
+      dMaxWidth = displayRect.size.width;
+      dMaxHeight = displayRect.size.height;
     }
-  scaleWidth = (canvasRect.size.width/dMaxWidth) / 3;
-  scaleHeight = (canvasRect.size.height/dMaxHeight) / 3;
+  }
+  scaleWidth = (canvasRect.size.width / dMaxWidth) / 3;
+  scaleHeight = (canvasRect.size.height / dMaxHeight) / 3;
   scaleFactor = (scaleWidth < scaleHeight) ? scaleWidth : scaleHeight;
 
   // Create and add display boxes
-  for (OSEDisplay *d in displays)
-    {
-      if ([d isActive] == NO)
-        displayRect = d.hiddenFrame;
-      else
-        displayRect = d.frame;
-      
-      dBoxRect.origin.x = floor(displayRect.origin.x*scaleFactor);
-      dBoxRect.origin.y = floor(displayRect.origin.y*scaleFactor);
-      dBoxRect.size.width = floor(displayRect.size.width*scaleFactor);
-      dBoxRect.size.height = floor(displayRect.size.height*scaleFactor);
+  for (OSEDisplay *d in displays) {
+    if ([d isActive] == NO)
+      displayRect = d.hiddenFrame;
+    else
+      displayRect = d.frame;
 
-      dBox = [[DisplayBox alloc] initWithFrame:dBoxRect display:d owner:self];
-      dBox.displayFrame = displayRect;
-      dBox.displayName = [d outputName];
-      [dBox setActive:[d isActive]];
-      [dBox setMain:[d isMain]];
-      if ([displays indexOfObject:d] != 0)
-        {
-          [canvas addSubview:dBox
-                  positioned:NSWindowAbove
-                  relativeTo:[displayBoxList lastObject]];
-        }
-      else
-        {
-          [canvas addSubview:dBox];
-        }
-      [displayBoxList addObject:dBox];
-      [dBox release];
+    dBoxRect.origin.x = floor(displayRect.origin.x * scaleFactor);
+    dBoxRect.origin.y = floor(displayRect.origin.y * scaleFactor);
+    dBoxRect.size.width = floor(displayRect.size.width * scaleFactor);
+    dBoxRect.size.height = floor(displayRect.size.height * scaleFactor);
+
+    dBox = [[DisplayBox alloc] initWithFrame:dBoxRect display:d owner:self];
+    dBox.displayFrame = displayRect;
+    dBox.displayName = [d outputName];
+    [dBox setActive:[d isActive]];
+    [dBox setMain:[d isMain]];
+    if ([displays indexOfObject:d] != 0) {
+      [canvas addSubview:dBox positioned:NSWindowAbove relativeTo:[displayBoxList lastObject]];
+    } else {
+      [canvas addSubview:dBox];
     }
+    [displayBoxList addObject:dBox];
+    [dBox release];
+  }
 
   [(ScreenCanvas *)canvas centerBoxes];
   [self selectFirstEnabledMonitor];
@@ -421,35 +385,28 @@ NSComparisonResult compareDisplayBoxes(DisplayBox *displayA,
   OSEDisplay *builtinDisplay = nil;
 
   // for (DisplayBox *db in displayBoxList)
-  for (OSEDisplay *d in [systemScreen connectedDisplays])
-    {
-      if ([d isBuiltin])
-        {
-          builtinDisplay = d;
-          break;
-        }
+  for (OSEDisplay *d in [systemScreen connectedDisplays]) {
+    if ([d isBuiltin]) {
+      builtinDisplay = d;
+      break;
     }
-  
-  if (builtinDisplay)
-    {
-      if (![[aNotif object] isLidClosed] && ![builtinDisplay isActive])
-        {
-          NSLog(@"Screen: activating display %@", [builtinDisplay outputName]);
-          [systemScreen activateDisplay:builtinDisplay];
-        }
-      else if ([[aNotif object] isLidClosed] && [builtinDisplay isActive])
-        {
-          NSLog(@"Screen: DEactivating display %@",
-                [builtinDisplay outputName]);
-          [systemScreen deactivateDisplay:builtinDisplay];
-        }
+  }
+
+  if (builtinDisplay) {
+    if (![[aNotif object] isLidClosed] && ![builtinDisplay isActive]) {
+      NSLog(@"Screen: activating display %@", [builtinDisplay outputName]);
+      [systemScreen activateDisplay:builtinDisplay];
+    } else if ([[aNotif object] isLidClosed] && [builtinDisplay isActive]) {
+      NSLog(@"Screen: DEactivating display %@", [builtinDisplay outputName]);
+      [systemScreen deactivateDisplay:builtinDisplay];
     }
+  }
 }
 
 - (void)displayBoxPositionDidChange:(NSNotification *)aNotif
 {
   [revertBtn setEnabled:YES];
-  [applyBtn setEnabled:YES];  
+  [applyBtn setEnabled:YES];
 }
 
 @end
