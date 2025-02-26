@@ -1,8 +1,4 @@
-#include <CoreFoundation/CFBase.h>
-#include <string.h>
-#include "Foundation/NSError.h"
 #import "OSEBusConnection.h"
-#include "dbus/dbus-protocol.h"
 #import "OSEBusService.h"
 
 #import "OSEBusMessage.h"
