@@ -254,11 +254,17 @@ static OSEScreen *systemScreen = nil;
 + (id)sharedScreen
 {
   if (systemScreen == nil) {
-    systemScreen = [[OSEScreen alloc] init];
+    systemScreen = [[[OSEScreen alloc] init] autorelease];
   }
 
   return systemScreen;
 }
+
+// - (oneway void)release
+// {
+//   NSDebugLLog(@"dealloc", @"OSEScreen: reatin count: %lu", [self retainCount]);
+//   [super release];
+// }
 
 - (void)dealloc
 {
@@ -344,7 +350,7 @@ static OSEScreen *systemScreen = nil;
   background_pixmap = None;
   background_gc = None;
 
-  systemPower = [OSEPower sharedPower];
+  systemPower = [[OSEPower sharedPower] retain];
 
   // Workspace Manager notification sent as a reaction to XRRScreenChangeNotify
   // Notification sent to active OSEScreen applications of current user.

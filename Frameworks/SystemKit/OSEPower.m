@@ -70,10 +70,10 @@ static OSEPower *systemPower = nil;
 + (id)sharedPower
 {
   if (systemPower == nil) {
-    systemPower = [[self alloc] init];
+    systemPower = [[[self alloc] init] autorelease];
   }
 
-  NSDebugLLog(@"dealloc", @"OSEPower +shared: retain count %lu", [systemPower retainCount]);
+  // NSDebugLLog(@"dealloc", @"OSEPower +shared: retain count %lu", [systemPower retainCount]);
 
   return systemPower;
 }
