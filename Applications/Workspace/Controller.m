@@ -1434,7 +1434,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)lidDidChange:(NSNotification *)aNotif
 {
   OSEDisplay *builtinDisplay = nil;
-  OSEScreen *screen = [OSEScreen new];
+  OSEScreen *screen = [[OSEScreen sharedScreen] retain];
 
   for (OSEDisplay *d in [screen connectedDisplays]) {
     if ([d isBuiltin]) {
