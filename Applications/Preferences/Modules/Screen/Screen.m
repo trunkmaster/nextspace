@@ -91,6 +91,7 @@
   [window release];
 
   systemScreen = [OSEScreen sharedScreen];
+  [systemScreen retain];
   [systemScreen setUseAutosave:YES];
 
   // Get info about monitors and layout

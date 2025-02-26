@@ -79,6 +79,7 @@
   [window release];
 
   systemScreen = [OSEScreen sharedScreen];
+  [systemScreen retain];
   [systemScreen setUseAutosave:YES];
 
   // Setup NXNumericField float constraints
