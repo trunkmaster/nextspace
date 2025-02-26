@@ -5,6 +5,21 @@ ECHO="/usr/bin/echo -e"
 _PWD=`pwd`
 
 #----------------------------------------
+# Libraries and applications
+#----------------------------------------
+# Apple
+libdispatch_version=5.9.2
+libcorefoundation_version=5.9.2
+libcfnetwork_version=129.20
+# GNUstep
+libobjc2_version=2.2.1
+gnustep_make_version=2_9_2
+gnustep_base_version=1_31_0
+gnustep_gui_version=0_32_0
+gorm_version=1_5_0
+projectcenter_version=0_7_0
+
+#----------------------------------------
 # Operating system
 #----------------------------------------
 . /etc/os-release
@@ -89,23 +104,6 @@ if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 else
     prepare_environment
 fi
-
-#----------------------------------------
-# Library versions
-#----------------------------------------
-libdispatch_version=5.9.2
-libcorefoundation_version=5.9.2
-libcfnetwork_version=129.20
-libobjc2_version=2.2.1
-gnustep_make_version=2_9_2
-gnustep_base_version=1_30_0
-gnustep_gui_version=0_31_0
-
-gorm_version=1_4_0
-projectcenter_version=0_7_0
-
-roboto_mono_version=0.2020.05.08
-roboto_mono_checkout=master
 
 #----------------------------------------
 # Tools
