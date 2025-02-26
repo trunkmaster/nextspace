@@ -74,7 +74,6 @@
  @private
   Display *xDisplay;
   Window xRootWindow;
-  // OSEPower *systemPower;
 
   Pixmap background_pixmap;
   GC background_gc;
