@@ -47,7 +47,7 @@
 {
   [super init];
 
-  _connection = [OSEBusConnection defaultConnection];
+  _connection = [[OSEBusConnection defaultConnection] retain];
 
   return self;
 }

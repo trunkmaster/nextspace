@@ -60,7 +60,7 @@ static DBusHandlerResult _dbus_signal_handler_func(DBusConnection *connection, D
 + (instancetype)defaultConnection
 {
   if (defaultConnection == nil) {
-    defaultConnection = [[self alloc] init];
+    defaultConnection = [[[self alloc] init] autorelease];
   }
   return defaultConnection;
 }
