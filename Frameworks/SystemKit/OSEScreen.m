@@ -291,8 +291,8 @@ static OSEScreen *systemScreen = nil;
   [systemDisplays release];
   [updateScreenLock release];
 
-  [systemPower stopEventsMonitor];
-  [systemPower release];
+  [_systemPower stopEventsMonitor];
+  [_systemPower release];
 
   systemScreen = nil;
 
@@ -350,7 +350,7 @@ static OSEScreen *systemScreen = nil;
   background_pixmap = None;
   background_gc = None;
 
-  systemPower = [[OSEPower sharedPower] retain];
+  _systemPower = [[OSEPower sharedPower] retain];
 
   // Workspace Manager notification sent as a reaction to XRRScreenChangeNotify
   // Notification sent to active OSEScreen applications of current user.
@@ -369,7 +369,7 @@ static OSEScreen *systemScreen = nil;
 
 - (BOOL)isLidClosed
 {
-  return [systemPower isLidClosed];
+  return [_systemPower isLidClosed];
 }
 
 //
@@ -916,7 +916,7 @@ static OSEScreen *systemScreen = nil;
     [d setObject:[resolution objectForKey:OSEDisplayRateKey]
           forKey:OSEDisplayFrameRateKey];
 
-    if ([display isBuiltin] && [systemPower isLidClosed]) {
+    if ([display isBuiltin] && [_systemPower isLidClosed]) {
       [d setObject:@"NO" forKey:OSEDisplayIsActiveKey];
       [d setObject:@"NO" forKey:OSEDisplayIsMainKey];
     }
@@ -944,7 +944,7 @@ static OSEScreen *systemScreen = nil;
     [layout addObject:d];
     [d release];
 
-    if (arrange && (![display isBuiltin] || ![systemPower isLidClosed])) {
+    if (arrange && (![display isBuiltin] || ![_systemPower isLidClosed])) {
       origin.x +=
         NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]).width;
     }
@@ -1104,7 +1104,7 @@ static OSEScreen *systemScreen = nil;
 
     // Set resolution to displays marked as active in layout
     if ([[displayLayout objectForKey:OSEDisplayIsActiveKey] isEqualToString:@"YES"]) {
-      if ([display isBuiltin] && [systemPower isLidClosed]) {
+      if ([display isBuiltin] && [_systemPower isLidClosed]) {
         // set 'frame' to preserve it in 'hiddenFrame' on deactivate
         frame = NSRectFromString([displayLayout objectForKey:OSEDisplayFrameKey]);
         display.frame = frame;

@@ -74,7 +74,7 @@
  @private
   Display *xDisplay;
   Window xRootWindow;
-  OSEPower *systemPower;
+  // OSEPower *systemPower;
 
   Pixmap background_pixmap;
   GC background_gc;
@@ -87,6 +87,8 @@
   NSMutableArray *systemDisplays;
   NSSize sizeInPixels, sizeInMilimeters;
 }
+
+@property (readonly) OSEPower *systemPower;
 
 + (id)sharedScreen;
 - (void)setUseAutosave:(BOOL)yn;
