@@ -90,7 +90,6 @@ extern LoginExitCode panelExitCode;
 }
 
 @property (readonly) OSEScreen *systemScreen;
-@property (readonly) OSEPower *systemPower;
 
 - (void)displayHostname;
 - (void)clearFields;

@@ -299,7 +299,6 @@ static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
 - (void)lidDidChange:(NSNotification *)aNotif
 {
   OSEDisplay *builtinDisplay = nil;
-  // OSEScreen  *screen = [OSEScreen new];
   BOOL isLidClosed = NO;
 
   NSLog(@"lidDidChange: %@", aNotif.userInfo);
@@ -310,7 +309,7 @@ static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
       isLidClosed = [lidValue boolValue];
     }
   } else {
-    isLidClosed = [self.systemPower isLidClosed];
+    isLidClosed = [self.systemScreen isLidClosed];
   }
 
   for (OSEDisplay *d in [self.systemScreen allDisplays]) {
@@ -340,8 +339,6 @@ static int catchXErrors(Display *dpy, XErrorEvent *event) { return 0; }
       [self setWindowVisible:YES];
     }
   }
-
-  // [screen release];
 }
 
 // --- Busy cursor
@@ -608,8 +605,8 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
   [self initXApp];
 
    // Screen
-  _systemScreen = [OSEScreen sharedScreen];
- 
+  _systemScreen = [[OSEScreen sharedScreen] retain];
+
   NSLog(@"appDidFinishLaunch: before showWindow");
   // Show login window
   [self setWindowVisible:YES];
@@ -624,12 +621,10 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
   // [conn registerName:@"loginwindow"];
 
   // Laptop lid events handling
-  _systemPower = [OSEPower sharedPower];
-  [_systemPower startEventsMonitor];
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(lidDidChange:)
                                                name:OSEPowerLidDidChangeNotification
-                                             object:_systemPower];
+                                             object:_systemScreen.systemPower];
 
   // Defaults
   [[NSDistributedNotificationCenter notificationCenterForType:GSPublicNotificationCenterType]
