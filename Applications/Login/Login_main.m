@@ -138,15 +138,18 @@ int startWindowServer()
 void setupDisplays()
 {
   NSLog(@"setupDisplays() - START");
-  OSEScreen *screen = [OSEScreen new];
+  OSEScreen *screen;
   OSEDisplay *mainDisplay = nil;
-  NSArray *layout;
+  // NSArray *layout;
   Display *xDisplay;
   Window xRootWindow;
   NSArray *displays;
 
+  screen = [OSEScreen new];
+
   // Get layout with monitors aligned horizontally
-  layout = [screen defaultLayout:YES];
+  // layout = [screen defaultLayout:YES];
+  // [screen applyDisplayLayout:layout];
 
   displays = [screen activeDisplays];
   for (OSEDisplay *display in displays) {
@@ -159,7 +162,6 @@ void setupDisplays()
       mainDisplay = display;
     }
   }
-  [screen applyDisplayLayout:layout];
   [screen setMainDisplay:mainDisplay];
 
   xDisplay = XOpenDisplay(NULL);
@@ -167,6 +169,7 @@ void setupDisplays()
   XWarpPointer(xDisplay, None, xRootWindow, 0, 0, 0, 0, (int)mainDisplay.frame.origin.x + 50,
                (int)mainDisplay.frame.origin.y + 50);
   XCloseDisplay(xDisplay);
+  
   [screen release];
   NSLog(@"setupDisplays() - END");
 }
