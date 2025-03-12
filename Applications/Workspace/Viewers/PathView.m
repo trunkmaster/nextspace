@@ -427,7 +427,7 @@
 }
 
 //=============================================================================
-// NXTIconView delegate
+#pragma mark - NXTIconView delegate
 //=============================================================================
 - (void)iconDragged:sender event:(NSEvent *)ev
 {
@@ -463,7 +463,7 @@
 }
 
 //=============================================================================
-// Drag and drop
+#pragma mark - Drag and drop
 //=============================================================================
 - (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 {
@@ -471,7 +471,7 @@
 }
 
 //=============================================================================
-// Scroller delegate
+#pragma mark - Scroller delegate
 //=============================================================================
 
 // Called when user drag scroller's knob
