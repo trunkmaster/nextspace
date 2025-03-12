@@ -137,7 +137,7 @@
     // to decrease retain count on FileViwer.
     // Example: [self windowWillClose:]
     [[viewer view] removeFromSuperview];
-    [viewer autorelease];
+    [viewer release];
   }
 }
 @end
@@ -145,7 +145,7 @@
 @implementation FileViewer
 
 //=============================================================================
-// Create and destroy
+#pragma mark - Create and destroy
 //=============================================================================
 
 - initRootedAtPath:(NSString *)aRootPath viewer:(NSString *)viewerType isRoot:(BOOL)isRoot
@@ -462,7 +462,7 @@
 }
 
 //=============================================================================
-// Accessories
+#pragma mark - Accessories
 //=============================================================================
 
 - (BOOL)isRootViewer
@@ -499,7 +499,7 @@
 }
 
 //=============================================================================
-// Path manipulations
+#pragma mark - Path manipulations
 //=============================================================================
 // displayedPath - relative path which displayed in PathView and Viewer
 // relativePath == displayedPath == path
@@ -540,7 +540,7 @@
   if ([pathType isEqualToString:NSDirectoryFileType] ||
       [pathType isEqualToString:NSFilesystemFileType]) {
     ASSIGN(displayedPath, [self pathFromAbsolutePath:absolutePath]);
-    ASSIGN(selection, nil);
+    ASSIGN(selection, (id)nil);
   } else {
     // Set file selection ivar
     filename = [absolutePath lastPathComponent];
@@ -629,7 +629,7 @@
 }
 
 //=============================================================================
-// Actions
+#pragma mark - Actions
 //=============================================================================
 
 - (NSArray *)checkSelection:(NSArray *)filenames atPath:(NSString *)relativePath
@@ -992,7 +992,7 @@
 }
 
 //=============================================================================
-// Shelf
+#pragma mark - Shelf
 //=============================================================================
 
 - (void)restoreShelf
@@ -1032,7 +1032,7 @@
 }
 
 //=============================================================================
-// Viewer delegate (BrowserViewer, IconViewer, ListViewer, etc.)
+#pragma mark - Viewer delegate (BrowserViewer, IconViewer, ListViewer, etc.)
 //=============================================================================
 
 // Called when viewer contains NXTIcons with editable label (IconViewer)
@@ -1047,7 +1047,7 @@
 }
 
 //=============================================================================
-// Splitview delegate
+#pragma mark - Splitview delegate
 //=============================================================================
 - (void)splitView:(NSSplitView *)sender resizeSubviewsWithOldSize:(NSSize)oldSize
 {
@@ -1112,7 +1112,7 @@
 }
 
 //=============================================================================
-// NXTIconLabel delegate
+#pragma mark - NXTIconLabel delegate
 //=============================================================================
 
 // Called by icon in PathView or IconViewer
@@ -1143,7 +1143,7 @@
 }
 
 //=============================================================================
-// Window
+#pragma mark - Window
 //=============================================================================
 - (void)_updateFocusInWindow
 {
@@ -1206,6 +1206,8 @@
 
   // unset viewer to decrease retain count on FileViewer
   [self useViewer:nil];
+  // AppKit will try to send notifications DidBecomeKey, DidBecomeMain to deallocated window (BUG?)
+  [window setDelegate:nil];
 
   [[NSApp delegate] closeViewer:self];
 }
@@ -1252,7 +1254,7 @@
 }
 
 //=============================================================================
-// Notifications
+#pragma mark - Notifications
 //=============================================================================
 - (void)shelfResizableStateChanged:(NSNotification *)notif
 {
@@ -1537,7 +1539,7 @@
 }
 
 //=============================================================================
-// Dragging
+#pragma mark - Dragging
 //   FileViewer is delegate for PathView (with PathIcon),
 //   ShelfView (with PathIcon).
 //
@@ -1556,6 +1558,7 @@
   NSString *parentPath;
   NSDragOperation mask;
 
+  NSLog(@"draggingSourceOperationMaskForPaths: %@", paths);
   if ([paths count] == 0) {
     return NSDragOperationNone;
   }
@@ -1582,11 +1585,12 @@
     }
   }
 
+  NSLog(@"draggingSourceOperationMaskForPaths: %@ - %lu", paths, mask);
   return mask;
 }
 
 //=============================================================================
-// Workspace menu
+#pragma mark - Workspace menu
 //=============================================================================
 
 //--- Menu actions
