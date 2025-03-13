@@ -24,6 +24,7 @@
 #import <SystemKit/OSEDefaults.h>
 #import <DesktopKit/Utilities.h>
 #import "FileToolsInspector.h"
+#import "Controller+NSWorkspace.h"
 
 static inline void AddAppToMatrix(NSString *appName, NSMatrix *matrix)
 {

@@ -210,8 +210,8 @@ WTexGradient *wTextureMakeGradient(WScreen *scr, int style, const RColor *from, 
   return texture;
 }
 
-WTexIGradient *wTextureMakeIGradient(WScreen *scr, int thickness1, const RColor colors1[2],
-                                     int thickness2, const RColor colors2[2])
+WTexIGradient *wTextureMakeIGradient(WScreen *scr, int thickness1, const RColor colors1[],
+                                     int thickness2, const RColor colors2[])
 {
   WTexIGradient *texture;
   XGCValues gcv;

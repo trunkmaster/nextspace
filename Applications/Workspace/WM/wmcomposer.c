@@ -1702,9 +1702,9 @@ void wComposerRunLoop()
     } while (QLength(dpy));
 
     if (allDamage && !autoRedirect) {
-      static int paint;
+      // static int paint;
       paint_all(dpy, allDamage);
-      paint++;
+      // paint++;
       XSync(dpy, False);
       allDamage = None;
       is_clip_changed = False;

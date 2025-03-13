@@ -121,7 +121,7 @@ static id dirInspector = nil;
   NSArray *files = nil;
   NXTSortType sortType;
 
-  ASSIGN(folderDefaults, nil);
+  DESTROY(folderDefaults);
 
   [self getSelectedPath:&path andFiles:&files];
 

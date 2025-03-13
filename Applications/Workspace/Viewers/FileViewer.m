@@ -689,15 +689,15 @@
   while (![fm fileExistsAtPath:fullPath isDirectory:&isDir]) {
     if ([path isEqualToString:@"/"]) {
       if (!isRootViewer) {
-        ASSIGN(*filenames, nil);
-        ASSIGN(*relativePath, nil);
+        DESTROY(*filenames);
+        DESTROY(*relativePath);
         [window close];
       }
       return;
     }
     path = [path stringByDeletingLastPathComponent];
     fullPath = [rootPath stringByAppendingPathComponent:path];
-    ASSIGN(*filenames, nil);
+    DESTROY(*filenames);
     NSDebugLLog(@"FileViewer", @"Stripped down to %@", path);
   }
 
