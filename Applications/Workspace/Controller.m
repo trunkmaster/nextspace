@@ -62,16 +62,13 @@
 
 static NSString *WorkspaceVersion = @"0.8";
 
-//============================================================================
-// Notifications
-//============================================================================
-
-// Inspectors
+// Inspector notifications
 #import "Workspace.h"
 NSString *WMFolderSortMethodDidChangeNotification = @"WMFolderSortMethodDidChangeNotification";
 NSString *WMFilePermissionsDidChangeNotification = @"WMFilePermissionsDidChangeNotification";
 NSString *WMFileOwnerDidChangeNotification = @"WMFileOwnerDidChangeNotification";
 
+// Workspace Notifications
 static NSString *WMSessionShouldFinishNotification = @"WMSessionShouldFinishNotification";
 static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNotification";
 
@@ -573,6 +570,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 
 @implementation Controller
 
+//============================================================================
+#pragma mark - Creation
+//============================================================================
 - (FileViewer *)newViewerRootedAt:(NSString *)path viewer:(NSString *)viewerType isRoot:(BOOL)root
 {
   NSFileManager *fm = [NSFileManager defaultManager];
@@ -615,7 +615,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 //============================================================================
-// NSApplication delegate
+#pragma mark - NSApplication delegate
 //============================================================================
 
 - (BOOL)application:(NSApplication *)app openFile:(NSString *)filename
@@ -887,6 +887,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 //============================================================================
+#pragma mark - NSApp related
 // Access to Workspace data via NSApp
 //============================================================================
 - (FileViewer *)rootViewer
@@ -983,7 +984,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 //============================================================================
-// Appicon badges
+#pragma mark - Appicon badges
 //============================================================================
 - (void)createWorkspaceBadge
 {
@@ -1070,7 +1071,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 //============================================================================
-// Application menu
+#pragma mark - Application menu
 //============================================================================
 
 - (void)hideOtherApplications:(id)sender
@@ -1368,7 +1369,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 }
 
 //============================================================================
-// OSEMediaManager events (alert panels, Processes-Background updates).
+#pragma mark - OSEMediaManager events
+// alert panels, Processes-Background updates
 //============================================================================
 - (void)diskDidAdd:(NSNotification *)notif
 {
