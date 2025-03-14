@@ -454,7 +454,7 @@
 
   // Processes holds list of labels for FileViewers.
   // This message removes local copy of label from Processes' list
-  if ([operationInfo retainCount] > 1) {
+  if ([operationInfo retainCount] > 1 && [rootPath isEqualToString:@"/"] == NO) {
     [processManager releaseBackInfoLabel:operationInfo];
   }
   TEST_RELEASE(lock);
