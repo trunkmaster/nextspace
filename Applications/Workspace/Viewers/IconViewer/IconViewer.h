@@ -53,10 +53,6 @@
                 update:(BOOL)toUpdate
                animate:(BOOL)isDrawAnimation;
 
-- (void)setPath:(NSString *)dirPath
-       contents:(NSArray *)dirContents
-      selection:(NSArray *)filenames;
-
 @end
 
 @interface IconViewer : NSObject <Viewer>

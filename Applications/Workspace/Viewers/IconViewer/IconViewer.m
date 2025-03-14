@@ -5,7 +5,7 @@
 // Description: Icon Viewer.
 //
 // Copyright (C) 2018 Sergii Stoian
-//     
+//
 // This application is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public
 // License as published by the Free Software Foundation; either
@@ -43,7 +43,7 @@
                animate:(BOOL)isDrawAnimation
 {
   [super init];
-  
+
   if (self != nil) {
     iconView = view;
     directoryPath = [[NSString alloc] initWithString:dirPath];
@@ -56,30 +56,18 @@
   return self;
 }
 
-- (void)setPath:(NSString *)dirPath contents:(NSArray *)dirContents selection:(NSArray *)filenames
-{
-  [directoryPath release];
-  directoryPath = [[NSString alloc] initWithString:dirPath];
-  [directoryContents release];
-  directoryContents = [dirContents mutableCopy];
-  [selectedFiles release];
-  selectedFiles = [[NSArray alloc] initWithArray:filenames];
-}
-
 - (void)_updateItems:(NSMutableArray *)items fileView:(WMIconView *)view
 {
-  NXTIcon         *icon;
+  NXTIcon *icon;
   NSMutableArray *itemsCopy = [items mutableCopy];
-  NSArray        *iconsCopy = [[view icons] copy];
+  NSArray *iconsCopy = [[view icons] copy];
 
   NSDebugLLog(@"IconViewer", @"_updateItems: %lu", [items count]);
 
   // Remove non-existing items
   for (NXTIcon *icon in iconsCopy) {
     if ([items indexOfObject:[[icon label] text]] == NSNotFound) {
-      [view performSelectorOnMainThread:@selector(removeIcon:)
-                             withObject:icon
-                          waitUntilDone:YES];
+      [view performSelectorOnMainThread:@selector(removeIcon:) withObject:icon waitUntilDone:YES];
     }
   }
 
@@ -96,10 +84,10 @@
 
 - (void)main
 {
-  NSString       *path;
-  PathIcon       *anIcon;
-  NSUInteger     x, y, slotsWide, slotsTallVisible;
-  NSMutableSet   *selectedIcons = [NSMutableSet new];
+  NSString *path;
+  PathIcon *anIcon;
+  NSUInteger x, y, slotsWide, slotsTallVisible;
+  NSMutableSet *selectedIcons = [NSMutableSet new];
   NSMutableArray *iconsToAdd = [NSMutableArray new];
 
   if (isAnimate != NO) {
@@ -108,7 +96,8 @@
                             waitUntilDone:NO];
   }
 
-  NSDebugLLog(@"IconViewer", @"IconView: Begin path loading... %@ [%@]", directoryPath, selectedFiles);
+  NSDebugLLog(@"IconViewer", @"IconView: Begin path loading... %@ [%@]", directoryPath,
+              selectedFiles);
 
   x = y = 0;
   slotsWide = [iconView slotsWide];
@@ -117,7 +106,7 @@
   if (isUpdate != NO) {
     [self _updateItems:directoryContents fileView:iconView];
   }
-  
+
   selectedIcons = [NSMutableSet new];
   iconsToAdd = [NSMutableArray new];
 
@@ -172,7 +161,7 @@
   NSDebugLLog(@"IconViewer", @"IconView: End path loading...");
   [selectedIcons release];
   [iconsToAdd release];
-  
+
   [directoryPath release];
   [directoryContents release];
   [selectedFiles release];
@@ -192,39 +181,34 @@ static NSRect boxRect;
 static NSRect viewFrame;
 @implementation WMIconView
 
-- (id)validRequestorForSendType:(NSString *)st
-                     returnType:(NSString *)rt
+- (id)validRequestorForSendType:(NSString *)st returnType:(NSString *)rt
 {
   NSString *currentPath = [[[self delegate] selectedPaths] firstObject];
-  
+
   if (currentPath && [st isEqual:NSStringPboardType])
     return self;
   else
     return nil;
 }
 
-- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pb
-                             types:(NSArray *)types
+- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pb types:(NSArray *)types
 {
   NSString *currentPath = [[[self delegate] selectedPaths] firstObject];
-  
+
   if (currentPath) {
     [pb declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
     [pb setString:currentPath forType:NSStringPboardType];
     return YES;
-  }
-  else {
+  } else {
     return NO;
   }
 }
-
 
 - (void)drawRect:(NSRect)r
 {
   if (isDrawOpenAnimation) {
     NSFrameRect(boxRect);
-  }
-  else {
+  } else {
     [super drawRect:r];
   }
 }
@@ -238,13 +222,13 @@ static NSRect viewFrame;
   viewFrame = [self frame];
   // viewFrame = [[[self enclosingScrollView] contentView] frame];
 
-  while (boxRect.size.width < viewFrame.size.width ||
-         boxRect.size.height < viewFrame.size.height) {
-      
+  while (boxRect.size.width < viewFrame.size.width || boxRect.size.height < viewFrame.size.height) {
     boxRect.origin.x -= step * power;
-    if (boxRect.origin.x < 0 ) boxRect.origin.x = 0;
+    if (boxRect.origin.x < 0)
+      boxRect.origin.x = 0;
     boxRect.origin.y -= step * power;
-    if (boxRect.origin.y < 0 ) boxRect.origin.y = 0;
+    if (boxRect.origin.y < 0)
+      boxRect.origin.y = 0;
 
     boxRect.size.width += (step * power) * 2;
     if (boxRect.size.width > viewFrame.size.width)
@@ -254,15 +238,11 @@ static NSRect viewFrame;
       boxRect.size.height = viewFrame.size.height;
     power++;
 
-    [self displayRect:NSMakeRect(boxRect.origin.x, boxRect.origin.y,
-                                 boxRect.size.width, 1)];
-    [self displayRect:NSMakeRect(boxRect.origin.x, boxRect.origin.y,
-                                 1, boxRect.size.height)];
-    [self displayRect:NSMakeRect(boxRect.origin.x + boxRect.size.width - 1,
-                                 boxRect.origin.y,
-                                 1, boxRect.size.height)];
-    [self displayRect:NSMakeRect(boxRect.origin.x,
-                                 boxRect.origin.y + boxRect.size.height - 1,
+    [self displayRect:NSMakeRect(boxRect.origin.x, boxRect.origin.y, boxRect.size.width, 1)];
+    [self displayRect:NSMakeRect(boxRect.origin.x, boxRect.origin.y, 1, boxRect.size.height)];
+    [self displayRect:NSMakeRect(boxRect.origin.x + boxRect.size.width - 1, boxRect.origin.y, 1,
+                                 boxRect.size.height)];
+    [self displayRect:NSMakeRect(boxRect.origin.x, boxRect.origin.y + boxRect.size.height - 1,
                                  boxRect.size.width, 1)];
   }
 
@@ -286,11 +266,13 @@ static NSRect viewFrame;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   if (itemsLoader != nil) {
-    [itemsLoader cancel];
+    if ([itemsLoader isFinished] == NO) {
+      [itemsLoader cancel];
+    }
     [itemsLoader removeObserver:self forKeyPath:@"isFinished"];
     [itemsLoader release];
   }
-  
+
   TEST_RELEASE(_owner);
   TEST_RELEASE(rootPath);
   TEST_RELEASE(currentPath);
@@ -298,13 +280,14 @@ static NSRect viewFrame;
 
   TEST_RELEASE(view);
 
+  NSDebugLLog(@"Memory", @"[IconViewer](%@) -dealloc - END", rootPath);
   [super dealloc];
 }
 
 - init
 {
   NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
-  NSSize         iconSize;
+  NSSize iconSize;
 
   [super init];
 
@@ -319,10 +302,10 @@ static NSRect viewFrame;
   [iconView setAutoAdjustsToFitIcons:YES];
   iconSize = [NXTIconView defaultSlotSize];
   if ([[OSEDefaults userDefaults] objectForKey:@"IconSlotWidth"]) {
-    iconSize.width = [[OSEDefaults userDefaults] floatForKey:@"IconSlotWidth"]; 
+    iconSize.width = [[OSEDefaults userDefaults] floatForKey:@"IconSlotWidth"];
     [iconView setSlotSize:iconSize];
   }
-  [iconView registerForDraggedTypes:@[NSFilenamesPboardType]];
+  [iconView registerForDraggedTypes:@[ NSFilenamesPboardType ]];
 
   // ScrollView
   view = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 300, 300)];
@@ -332,25 +315,24 @@ static NSRect viewFrame;
 
   [view setDocumentView:iconView];
   [iconView setFrame:NSMakeRect(0, 0, [[view contentView] frame].size.width, 0)];
-  [iconView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
-  
+  [iconView setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+
   // Operation
   operationQ = [[NSOperationQueue alloc] init];
   itemsLoader = nil;
   doAnimation = NO;
-  
-  [[NSNotificationCenter defaultCenter]
-          addObserver:self
-             selector:@selector(iconWidthDidChange:)
-                 name:@"IconSlotWidthDidChangeNotification"
-               object:nil];
-  
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(iconWidthDidChange:)
+                                               name:@"IconSlotWidthDidChangeNotification"
+                                             object:nil];
+
   currentPath = nil;
   selection = nil;
   rootPath = @"/";
-  
+
   [iconView release];
-  
+
   return self;
 }
 
@@ -405,7 +387,7 @@ static NSRect viewFrame;
 }
 - (void)setColumnCount:(NSUInteger)num
 {
-  // 
+  //
 }
 - (NSInteger)numberOfEmptyColumns
 {
@@ -419,8 +401,8 @@ static NSRect viewFrame;
 - (NSArray *)selectedPaths
 {
   NSMutableArray *pathList;
-  NSString       *pathPrefix;
-  
+  NSString *pathPrefix;
+
   if (!currentPath)
     return nil;
 
@@ -433,11 +415,10 @@ static NSRect viewFrame;
       [pathList addObject:path];
     }
     return pathList;
-  }
-  else {
+  } else {
     [pathList addObject:currentPath];
   }
-  
+
   return pathList;
 }
 
@@ -446,45 +427,41 @@ static NSRect viewFrame;
 //=============================================================================
 - (void)displayPath:(NSString *)dirPath selection:(NSArray *)filenames
 {
-  NSArray  *dirContents;
+  NSArray *dirContents;
   NSString *path;
 
   if (!dirPath || [dirPath isEqualToString:@""])
     return;
-  
+
   if ([currentPath isEqualToString:dirPath]) {
     updateOnDisplay = YES;
   }
-  
+
+  if (itemsLoader != nil && [itemsLoader isFinished] == NO) {
+    [itemsLoader cancel];
+  }
+
   if (updateOnDisplay == NO) {
     ASSIGN(currentPath, dirPath);
+    [iconView removeAllIcons];
   }
   ASSIGN(selection, filenames);
 
-
-  path = [rootPath stringByAppendingPathComponent:dirPath];
   NSDebugLLog(@"IconViewer", @"[IconViewer(%@)]: display path: %@ updateOnDisplay:%i", rootPath,
               dirPath, updateOnDisplay);
-
-  if (updateOnDisplay == NO) {
-    [iconView removeAllIcons];
-    // [iconView display];
-  }
+  
+  path = [rootPath stringByAppendingPathComponent:dirPath];
   dirContents = [_owner directoryContentsAtPath:dirPath forPath:nil];
-  if (itemsLoader != nil) {
-    [itemsLoader cancel];
-    [itemsLoader setPath:path contents:dirContents selection:filenames];
-    // [itemsLoader release];
-  } else {
-    itemsLoader = [[ViewerItemsLoader alloc] initWithIconView:iconView
-                                                         path:path
-                                                     contents:dirContents
-                                                    selection:filenames
-                                                       update:updateOnDisplay
-                                                      animate:doAnimation];
-    [itemsLoader addObserver:self forKeyPath:@"isFinished" options:0 context:self];
-    [operationQ addOperation:itemsLoader];
-  }
+
+  itemsLoader = [[ViewerItemsLoader alloc] initWithIconView:iconView
+                                                       path:path
+                                                   contents:dirContents
+                                                  selection:filenames
+                                                     update:updateOnDisplay
+                                                    animate:doAnimation];
+  [itemsLoader addObserver:self forKeyPath:@"isFinished" options:0 context:self];
+  [operationQ addOperation:itemsLoader];
+
   [_owner setWindowEdited:YES];
 }
 - (void)reloadPathWithSelection:(NSString *)relativePath
@@ -512,7 +489,7 @@ static NSRect viewFrame;
 }
 - (void)open:sender
 {
-  NSSet    *selected = [iconView selectedIcons];
+  NSSet *selected = [iconView selectedIcons];
   NSString *path, *fullPath;
   NSString *appName, *fileType;
 
@@ -520,13 +497,10 @@ static NSRect viewFrame;
 
   if ([selected count] == 0) {
     [_owner displayPath:currentPath selection:nil sender:self];
-  }
-  else if ([selected count] == 1) {
+  } else if ([selected count] == 1) {
     path = [currentPath stringByAppendingPathComponent:[selection objectAtIndex:0]];
     fullPath = [rootPath stringByAppendingPathComponent:path];
-    [(NSWorkspace *)[NSApp delegate] getInfoForFile:fullPath
-                                        application:&appName
-                                               type:&fileType];
+    [(NSWorkspace *)[NSApp delegate] getInfoForFile:fullPath application:&appName type:&fileType];
 
     if ([fileType isEqualToString:NSDirectoryFileType] ||
         [fileType isEqualToString:NSFilesystemFileType]) {
@@ -534,8 +508,7 @@ static NSRect viewFrame;
       boxRect = [[[iconView selectedIcons] anyObject] frame];
       [self displayPath:path selection:nil];
       [_owner displayPath:path selection:nil sender:self];
-    }
-    else {
+    } else {
       [_owner open:sender];
     }
   }
@@ -569,7 +542,7 @@ static NSRect viewFrame;
 - (void)iconWidthDidChange:(NSNotification *)notification
 {
   OSEDefaults *df = [OSEDefaults userDefaults];
-  NSSize     slotSize = [iconView slotSize];
+  NSSize slotSize = [iconView slotSize];
 
   slotSize.width = [df floatForKey:@"IconSlotWidth"];
   [iconView setSlotSize:slotSize];
@@ -582,15 +555,16 @@ static NSRect viewFrame;
                        context:(void *)context
 {
   NXTIconLabel *iconLabel;
-  
-  NSDebugLLog(@"IconViewer", @"IconView: Observer `%@` of '%@' was called.", [self className], keyPath);
+
+  NSDebugLLog(@"IconViewer", @"IconView: Observer `%@` of '%@' was called.", [self className],
+              keyPath);
   for (NXTIcon *icon in [iconView icons]) {
     [icon setEditable:YES];
     [icon setDelegate:self];
     [icon setTarget:self];
     [icon setDoubleAction:@selector(open:)];
     [icon setDragAction:@selector(iconDragged:withEvent:)];
-    [icon registerForDraggedTypes:@[NSFilenamesPboardType]];
+    [icon registerForDraggedTypes:@[ NSFilenamesPboardType ]];
     iconLabel = [icon label];
     [iconLabel setNextKeyView:iconView];
     [iconLabel setIconLabelDelegate:_owner];
@@ -615,7 +589,7 @@ static NSRect viewFrame;
 - (void)iconView:(NXTIconView *)anIconView didChangeSelectionTo:(NSSet *)selectedIcons
 {
   NSMutableArray *selected = [NSMutableArray array];
-  BOOL           showsExpanded = ([selectedIcons count] == 1) ? YES : NO;
+  BOOL showsExpanded = ([selectedIcons count] == 1) ? YES : NO;
 
   if (anIconView != iconView)
     return;
@@ -625,7 +599,8 @@ static NSRect viewFrame;
     [selected addObject:[icon labelString]];
   }
 
-  NSDebugLLog(@"IconViewer", @"[IconViewer(%@)]: selection did change to: %@.", currentPath, selected);
+  NSDebugLLog(@"IconViewer", @"[IconViewer(%@)]: selection did change to: %@.", currentPath,
+              selected);
 
   ASSIGN(selection, [selected copy]);
 
@@ -634,23 +609,22 @@ static NSRect viewFrame;
 
 - (void)keyDown:(NSEvent *)ev
 {
-  NSString   *characters = [ev characters];
+  NSString *characters = [ev characters];
   NSUInteger charsLength = [characters length];
-  unichar    ch = 0;
+  unichar ch = 0;
   NSUInteger modifierFlags = [ev modifierFlags];
 
   if (charsLength > 0) {
     ch = [characters characterAtIndex:0];
   }
-  
+
   NSDebugLLog(@"IconViewer", @"[IconViewer] keyDown: %c", ch);
 
   if ((ch == NSUpArrowFunctionKey) && (modifierFlags & NSCommandKeyMask)) {
     [self displayPath:[currentPath stringByDeletingLastPathComponent]
-            selection:@[[currentPath lastPathComponent]]];
+            selection:@[ [currentPath lastPathComponent] ]];
     return;
-  }
-  else if ((ch == NSDownArrowFunctionKey) && modifierFlags & NSCommandKeyMask) {
+  } else if ((ch == NSDownArrowFunctionKey) && modifierFlags & NSCommandKeyMask) {
     [self open:nil];
     return;
   }
@@ -772,11 +746,11 @@ static NSRect viewFrame;
 // NXTIconView delegate
 - (void)iconDragged:(PathIcon *)sender withEvent:(NSEvent *)ev
 {
-  NSArray      *paths;
+  NSArray *paths;
   NSPasteboard *pb = [NSPasteboard pasteboardWithName:NSDragPboard];
-  NSRect       iconFrame = [sender frame];
-  NSPoint      iconLocation;
-  PathIcon     *icon = [[iconView icons] lastObject];
+  NSRect iconFrame = [sender frame];
+  NSPoint iconLocation;
+  PathIcon *icon = [[iconView icons] lastObject];
 
   _dragSource = self;
   _dragIcon = sender;
@@ -790,7 +764,7 @@ static NSRect viewFrame;
   paths = [_dragIcon paths];
   _dragMask = [_owner draggingSourceOperationMaskForPaths:paths];
 
-  [pb declareTypes:@[NSFilenamesPboardType] owner:nil];
+  [pb declareTypes:@[ NSFilenamesPboardType ] owner:nil];
   [pb setPropertyList:paths forType:NSFilenamesPboardType];
 
   [iconView dragImage:[_dragIcon iconImage]
@@ -808,9 +782,7 @@ static NSRect viewFrame;
   return _dragMask;
 }
 
-- (void)draggedImage:(NSImage*)image
-             endedAt:(NSPoint)screenPoint
-           deposited:(BOOL)didDeposit
+- (void)draggedImage:(NSImage *)image endedAt:(NSPoint)screenPoint deposited:(BOOL)didDeposit
 {
   [_dragIcon setSelected:YES];
   [_dragIcon setDimmed:NO];
