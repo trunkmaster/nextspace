@@ -22,9 +22,6 @@
 //
 
 #import <DesktopKit/DesktopKit.h>
-#include "Foundation/NSFileManager.h"
-#include "Foundation/NSArray.h"
-
 #import <SystemKit/OSEDefaults.h>
 #import <SystemKit/OSEFileManager.h>
 
@@ -34,7 +31,7 @@
 #import "IconViewer.h"
 
 //=============================================================================
-// ViewerItemLoader implementation
+#pragma mark - ViewerItemLoader implementation
 //=============================================================================
 @implementation ViewerItemsLoader
 
@@ -59,8 +56,17 @@
   return self;
 }
 
-- (void)_updateItems:(NSMutableArray *)items
-            fileView:(WMIconView *)view
+- (void)setPath:(NSString *)dirPath contents:(NSArray *)dirContents selection:(NSArray *)filenames
+{
+  [directoryPath release];
+  directoryPath = [[NSString alloc] initWithString:dirPath];
+  [directoryContents release];
+  directoryContents = [dirContents mutableCopy];
+  [selectedFiles release];
+  selectedFiles = [[NSArray alloc] initWithArray:filenames];
+}
+
+- (void)_updateItems:(NSMutableArray *)items fileView:(WMIconView *)view
 {
   NXTIcon         *icon;
   NSMutableArray *itemsCopy = [items mutableCopy];
@@ -114,7 +120,7 @@
   
   selectedIcons = [NSMutableSet new];
   iconsToAdd = [NSMutableArray new];
-  
+
   for (NSString *filename in directoryContents) {
     path = [directoryPath stringByAppendingPathComponent:filename];
 
@@ -150,10 +156,8 @@
                             waitUntilDone:YES];
     [iconsToAdd removeAllObjects];
   }
-  
-  if ((isUpdate != NO) &&
-      selectedFiles &&
-      ([selectedFiles count] != [selectedIcons count])) {
+
+  if ((isUpdate != NO) && selectedFiles && ([selectedFiles count] != [selectedIcons count])) {
     NXTIcon *icon;
     for (NSString *filename in selectedFiles) {
       if ((icon = [iconView iconWithLabelString:filename])) {
@@ -164,7 +168,7 @@
   [iconView performSelectorOnMainThread:@selector(selectIcons:)
                              withObject:selectedIcons
                           waitUntilDone:YES];
-  
+
   NSDebugLLog(@"IconViewer", @"IconView: End path loading...");
   [selectedIcons release];
   [iconsToAdd release];
@@ -182,7 +186,7 @@
 @end
 
 //=============================================================================
-// WMIconView implementation
+#pragma mark - WMIconView implementation
 //=============================================================================
 static NSRect boxRect;
 static NSRect viewFrame;
@@ -272,7 +276,7 @@ static NSRect viewFrame;
 @end
 
 //=============================================================================
-// IconViewer implementation
+#pragma mark - IconViewer implementation
 //=============================================================================
 @implementation IconViewer
 
@@ -283,6 +287,7 @@ static NSRect viewFrame;
 
   if (itemsLoader != nil) {
     [itemsLoader cancel];
+    [itemsLoader removeObserver:self forKeyPath:@"isFinished"];
     [itemsLoader release];
   }
   
@@ -350,7 +355,7 @@ static NSRect viewFrame;
 }
 
 //=============================================================================
-// <Viewer> protocol methods
+#pragma mark - Viewer protocol methods
 //=============================================================================
 + (NSString *)viewerType
 {
@@ -437,7 +442,7 @@ static NSRect viewFrame;
 }
 
 //=============================================================================
-// Actions
+#pragma mark - Actions
 //=============================================================================
 - (void)displayPath:(NSString *)dirPath selection:(NSArray *)filenames
 {
@@ -456,10 +461,6 @@ static NSRect viewFrame;
   }
   ASSIGN(selection, filenames);
 
-  if (itemsLoader != nil) {
-    [itemsLoader cancel];
-    [itemsLoader release];
-  }
 
   path = [rootPath stringByAppendingPathComponent:dirPath];
   NSDebugLLog(@"IconViewer", @"[IconViewer(%@)]: display path: %@ updateOnDisplay:%i", rootPath,
@@ -470,17 +471,20 @@ static NSRect viewFrame;
     // [iconView display];
   }
   dirContents = [_owner directoryContentsAtPath:dirPath forPath:nil];
-  itemsLoader = [[ViewerItemsLoader alloc] initWithIconView:iconView
-                                                       path:path
-                                                   contents:dirContents
-                                                  selection:filenames
-                                                     update:updateOnDisplay
-                                                    animate:doAnimation];
-  [itemsLoader addObserver:self
-                forKeyPath:@"isFinished"
-                   options:0
-                   context:self];
-  [operationQ addOperation:itemsLoader];
+  if (itemsLoader != nil) {
+    [itemsLoader cancel];
+    [itemsLoader setPath:path contents:dirContents selection:filenames];
+    // [itemsLoader release];
+  } else {
+    itemsLoader = [[ViewerItemsLoader alloc] initWithIconView:iconView
+                                                         path:path
+                                                     contents:dirContents
+                                                    selection:filenames
+                                                       update:updateOnDisplay
+                                                      animate:doAnimation];
+    [itemsLoader addObserver:self forKeyPath:@"isFinished" options:0 context:self];
+    [operationQ addOperation:itemsLoader];
+  }
   [_owner setWindowEdited:YES];
 }
 - (void)reloadPathWithSelection:(NSString *)relativePath
@@ -603,7 +607,7 @@ static NSRect viewFrame;
 }
 
 //=============================================================================
-// Local
+#pragma mark - Local
 //=============================================================================
 //
 // --- NXTIconView delegate
@@ -763,7 +767,7 @@ static NSRect viewFrame;
 }
 
 //=============================================================================
-// Drag and Drop
+#pragma mark - Drag and Drop
 //=============================================================================
 // NXTIconView delegate
 - (void)iconDragged:(PathIcon *)sender withEvent:(NSEvent *)ev
