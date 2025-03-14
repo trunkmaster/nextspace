@@ -65,8 +65,6 @@
 
   int setEditedStateCount;
 
-  //  PathViewScroller *scroller;
-  id<Viewer> viewer;
   NSLock *lock;
 
   NSTimer *checkTimer;
@@ -79,6 +77,8 @@
   NXTIconView *draggedSource;
   PathIcon *draggedIcon;
 }
+
+@property (readwrite, retain) id<Viewer> viewer;
 
 - initRootedAtPath:(NSString *)aRootPath viewer:(NSString *)viewerType isRoot:(BOOL)isRoot;
 

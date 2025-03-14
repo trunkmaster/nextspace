@@ -106,7 +106,7 @@
 
 @interface FileViewer (Private)
 - (id)dotDirObjectForKey:(NSString *)key;
-- (void)useViewer:(id<Viewer>)aViewer;
+- (void)useViewerType:(NSString *)viewerType;
 @end
 
 @implementation FileViewer (Private)
@@ -123,21 +123,24 @@
 
   return nil;
 }
-- (void)useViewer:(id<Viewer>)aViewer
-{
-  if (aViewer) {
-    ASSIGN(viewer, aViewer);
 
-    [viewer setOwner:self];
-    [viewer setRootPath:rootPath];
-    [(NSBox *)box setContentView:[viewer view]];
-    [viewer displayPath:displayedPath selection:selection];
+- (void)useViewerType:(NSString *)viewerType
+{
+  if (viewerType) {
+    id<Viewer> newViewer = [[ModuleLoader shared] viewerForType:viewerType];
+    if (newViewer) {
+      [newViewer setOwner:self];
+      [newViewer setRootPath:rootPath];
+      [(NSBox *)box setContentView:[newViewer view]];
+      [newViewer displayPath:displayedPath selection:selection];
+      self.viewer = newViewer;
+    }
   } else {
     // Use this for case when aViewer set to 'nil'
     // to decrease retain count on FileViwer.
     // Example: [self windowWillClose:]
-    [[viewer view] removeFromSuperview];
-    [viewer release];
+    [[self.viewer view] removeFromSuperview];
+    [self.viewer release];
   }
 }
 @end
@@ -219,7 +222,7 @@
     viewerType = @"Browser";
   }
   // Load the viewer
-  [self useViewer:[[ModuleLoader shared] viewerForType:viewerType]];
+  [self useViewerType:viewerType];
 
   // Resize window to just loaded viewer columns and
   // defined window frame (setFrameAutosaveName, setFrame)
@@ -488,11 +491,6 @@
   return [shelf storableRepresentation];
 }
 
-- (id<Viewer>)viewer
-{
-  return viewer;
-}
-
 - (PathView *)pathView
 {
   return pathView;
@@ -746,8 +744,8 @@
   ASSIGN(selection, filenames);
 
   // Viewer
-  if (viewer && sender != viewer) {
-    [viewer displayPath:displayedPath selection:selection];
+  if (_viewer && sender != _viewer) {
+    [_viewer displayPath:displayedPath selection:selection];
   }
 
   // Path View
@@ -842,8 +840,8 @@
   // column width and column count.
   columnWidth = [pathView slotSize].width;
   columnCount = roundf((frame.size.width - WINDOW_INNER_OFFSET) / columnWidth);
-  [viewer setColumnCount:columnCount];
-  [viewer setColumnWidth:columnWidth];
+  [_viewer setColumnCount:columnCount];
+  [_viewer setColumnWidth:columnWidth];
   NSDebugLLog(@"FileViewer", @"[FileViewer updateWindowWidth]: column count: %lu (width = %.0f)",
               columnCount, columnWidth);
 
@@ -946,7 +944,7 @@
 
   // Leave this for a specific cases when viewer's missed the change.
   if (updateViewer) {
-    [viewer currentSelectionRenamedTo:[self pathFromAbsolutePath:newFullPath]];
+    [_viewer currentSelectionRenamedTo:[self pathFromAbsolutePath:newFullPath]];
   }
 
   return YES;
@@ -1152,7 +1150,7 @@
   if (inspector != nil) {
     [inspector revert:self];
   }
-  [window makeFirstResponder:[viewer keyView]];
+  [window makeFirstResponder:[_viewer keyView]];
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification
@@ -1195,7 +1193,7 @@
     [[NSApp delegate] getInfoForFile:rootPath application:&appName type:&fileType];
     if (fileType != NSPlainFileType && fileType != NSApplicationFileType) {
       fvdf = [NSMutableDictionary new];
-      [fvdf setObject:[[viewer class] viewerType] forKey:@"ViewerType"];
+      [fvdf setObject:[[_viewer class] viewerType] forKey:@"ViewerType"];
       [fvdf setObject:[displayedPath stringByAppendingPathComponent:file] forKey:@"ViewerPath"];
       [fvdf setObject:NSStringFromRect([window frame]) forKey:@"ViewerWindow"];
       [fvdf setObject:[shelf storableRepresentation] forKey:@"ShelfContents"];
@@ -1205,7 +1203,7 @@
   }
 
   // unset viewer to decrease retain count on FileViewer
-  [self useViewer:nil];
+  [self useViewerType:nil];
   // AppKit will try to send notifications DidBecomeKey, DidBecomeMain to deallocated window (BUG?)
   [window setDelegate:nil];
 
@@ -1215,7 +1213,7 @@
 - (void)windowDidResize:(NSNotification *)notif
 {
   NSDebugLLog(@"FileViewer", @"[FileViewer windowDidResize:] viewer column count: %lu",
-              [(NSBrowser *)[viewer view] numberOfVisibleColumns]);
+              [(NSBrowser *)[_viewer view] numberOfVisibleColumns]);
 
   // Update column attributes here.
   // Call to updateWindowWidth: leads to segfault because of active
@@ -1267,7 +1265,7 @@
 - (void)browserColumnWidthChanged:(NSNotification *)notif
 {
   [pathView updateSlotSize];
-  [self updateWindowWidth:viewer];
+  [self updateWindowWidth:_viewer];
 }
 
 - (void)updateDiskInfo
@@ -1385,7 +1383,7 @@
       // Optimization: do not use [self displayPath:selection:sender:] - just
       // set values for particular parts of FileViewer
       [pathView setPath:[self pathFromAbsolutePath:newFullPath] selection:nil];
-      [viewer currentSelectionRenamedTo:[self pathFromAbsolutePath:newFullPath]];
+      [_viewer currentSelectionRenamedTo:[self pathFromAbsolutePath:newFullPath]];
       [self setPathFromAbsolutePath:newFullPath];
       // Update Inspector
       if ([window isMainWindow] == YES) {
@@ -1399,7 +1397,7 @@
       NSDebugLLog(@"FileViewer", @"Selected dir contents changed");
       // Reload column in browser for changed directory contents
       ASSIGN(selection, [self checkSelection:selection atPath:displayedPath]);
-      [viewer reloadPath:displayedPath];
+      [_viewer reloadPath:displayedPath];
     } else if ([commonPath isEqualToString:changedFullPath]) {
       selectedPath = [selectedPath stringByReplacingOccurrencesOfString:commonPath
                                                              withString:newFullPath];
@@ -1411,7 +1409,7 @@
       NSDebugLLog(@"FileViewer", @"One of not selected (but displayed) row name changed");
       // One of not selected (but displayed) row name changed
       // Reload column in browser for changed directory contents
-      [viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
+      [_viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
     }
   } else if (([operations indexOfObject:@"Write"] != NSNotFound)) {
     // Write - monitored object was changed (Create, Delete)
@@ -1423,10 +1421,10 @@
     // Check selection before path will be reloaded
     ASSIGN(selection, [self checkSelection:selection atPath:displayedPath]);
     // Reload changed directory contents without changing path
-    [viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
+    [_viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
 
     // Check existance of path components and update ivars, other views
-    [self displayPath:displayedPath selection:selection sender:viewer];
+    [self displayPath:displayedPath selection:selection sender:_viewer];
   } else if (([operations indexOfObject:@"Attributes"] != NSNotFound)) {
     NSDebugLLog(@"FileViewer",
                 @"[FileViewer] OSEFileSystem: 'Attributes' "
@@ -1441,7 +1439,7 @@
   NSString *changedPath = [aNotif object];
 
   if ([[self absolutePath] isEqualToString:changedPath] == YES) {
-    [viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
+    [_viewer reloadPath:[self pathFromAbsolutePath:changedPath]];
   }
 }
 
@@ -1454,7 +1452,7 @@
   NXTSortType sort = [fm sortFilesBy];
 
   if ((showHiddenFiles != hidden) || (sortFilesBy != sort)) {
-    [viewer displayPath:[self displayedPath] selection:selection];
+    [_viewer displayPath:[self displayedPath] selection:selection];
   }
 
   NSDebugLLog(@"FileViewer", @"[Workspace]: NXGlobalDomain was changed.");
@@ -1599,19 +1597,15 @@
 - (void)setViewerType:(id)sender
 {
   NSString *viewerType = [sender title];
-  id<Viewer> aViewer;
 
-  if ([[[viewer class] viewerType] isEqualToString:viewerType])
+  if (!viewerType) {
     return;
-
-  aViewer = [[ModuleLoader shared] viewerForType:viewerType];
-
-  if (aViewer != nil) {
-    [self useViewer:aViewer];
-  } else {
-    [NSException raise:NSInternalInconsistencyException
-                format:_(@"Failed to initialize viewer of type %@"), viewerType];
   }
+
+  if ([[[_viewer class] viewerType] isEqualToString:viewerType]) {
+    return;
+  }
+  [self useViewerType:viewerType];
 }
 
 // Edit
