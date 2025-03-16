@@ -112,15 +112,26 @@
 
 + (NSString *)cpuName
 {
-  NSString *cpuInfo = [NSString stringWithContentsOfFile:@"/proc/cpuinfo"];
+  NSString *result = @"Unknown";
+  NSString *cpuInfo;
+  NSRange  modelRange;
   NSString *modelName;
-  NSRange  modelRange = [cpuInfo rangeOfString:@"model name"];
-  NSRange  modelLineRange = [cpuInfo lineRangeForRange:modelRange];
+  NSRange modelLineRange;
 
-  modelLineRange.length--; // drop EOL
-  modelName = [cpuInfo substringWithRange:modelLineRange];
-
-  return [[modelName componentsSeparatedByString:@":"] objectAtIndex:1];
+  cpuInfo = [NSString stringWithContentsOfFile:@"/proc/cpuinfo"];
+  if (cpuInfo) {
+    modelRange = [cpuInfo rangeOfString:@"model name"];
+    if (modelRange.location != NSNotFound) {
+      modelLineRange = [cpuInfo lineRangeForRange:modelRange];
+      if (modelLineRange.length > 0) {
+        modelLineRange.length--;  // drop EOL
+        modelName = [cpuInfo substringWithRange:modelLineRange];
+        result = [[modelName componentsSeparatedByString:@":"] objectAtIndex:1];
+      }
+    }
+  }
+  
+  return result;
 }
 
 + (NSString *)_releaseFileValueForField:(NSString *)fieldName
