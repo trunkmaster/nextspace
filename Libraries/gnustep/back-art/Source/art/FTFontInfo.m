@@ -71,12 +71,6 @@ static int subpixel_text;
 @interface FTFontInfo_subpixel : FTFontInfo
 @end
 
-static FT_Library ft_library;
-static FTC_Manager ftc_manager;
-static FTC_ImageCache ftc_imagecache;
-static FTC_SBitCache ftc_sbitcache;
-static FTC_CMapCache ftc_cmapcache;
-
 /*
  * Helper method used inside of FTC_Manager to create an FT_FACE.
  */
@@ -110,6 +104,74 @@ static FT_Error ft_get_face(FTC_FaceID fid, FT_Library lib, FT_Pointer data, FT_
 
 @implementation FTFontInfo
 
+static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65536 / 9,
+                             2 * 65536 / 9, 1 * 65536 / 9, 0 * 65536 / 9},
+                            {0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65536 / 9,
+                             2 * 65536 / 9, 1 * 65536 / 9, 0 * 65536 / 9},
+                            {0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65536 / 9,
+                             2 * 65536 / 9, 1 * 65536 / 9, 0 * 65536 / 9}};
+
++ (void)initializeBackend
+{
+  [GSFontEnumerator setDefaultClass:[FTFontEnumerator class]];
+  [GSFontInfo setDefaultClass:[FTFontInfo class]];
+}
+
+- (void)_initFontCaches
+{
+  if (FT_Init_FreeType(&ft_library))
+    NSLog(@"FT_Init_FreeType failed");
+  if (FTC_Manager_New(ft_library, 0, 0, 4096 * 24, ft_get_face, 0, &ftc_manager))
+    NSLog(@"FTC_Manager_New failed");
+  if (FTC_SBitCache_New(ftc_manager, &ftc_sbitcache))
+    NSLog(@"FTC_SBitCache_New failed");
+  if (FTC_ImageCache_New(ftc_manager, &ftc_imagecache))
+    NSLog(@"FTC_ImageCache_New failed");
+  if (FTC_CMapCache_New(ftc_manager, &ftc_cmapcache))
+    NSLog(@"FTC_CMapCache_New failed");
+}
+
+- (void)_initFontFilters
+{
+  NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+  NSString *s;
+  NSArray *a;
+  int i;
+
+  subpixel_text = [ud integerForKey:@"back-art-subpixel-text"];
+
+  /* To make it easier to find an optimal (or at least good) filter,
+  the filters are configurable (for now). */
+  for (i = 0; i < 3; i++) {
+    s = [ud stringForKey:[NSString stringWithFormat:@"back-art-subpixel-filter-%i", i]];
+    if (s) {
+      int j, c, sum, v;
+      a = [s componentsSeparatedByString:@" "];
+      c = [a count];
+      if (!c)
+        continue;
+      if (!(c & 1) || c > 7) {
+        NSLog(@"invalid number of components in filter (must be odd number, 1<=n<=7)");
+        continue;
+      }
+      memset(filters[i], 0, sizeof(filters[0]));
+      sum = 0;
+      for (j = 0; j < c; j++) {
+        v = [[a objectAtIndex:j] intValue];
+        sum += v;
+        filters[i][j + (7 - c) / 2] = v * 65536;
+      }
+      if (sum) {
+        for (j = 0; j < 7; j++) {
+          filters[i][j] /= sum;
+        }
+      }
+      NSLog(@"filter %i: %04x %04x %04x %04x %04x %04x %04x", i, filters[i][0], filters[i][1],
+            filters[i][2], filters[i][3], filters[i][4], filters[i][5], filters[i][6]);
+    }
+  }
+}
+
 - (id)initWithFontName:(NSString *)name
                 matrix:(const CGFloat *)fmatrix
             screenFont:(BOOL)p_screenFont
@@ -126,6 +188,9 @@ static FT_Error ft_get_face(FTC_FaceID fid, FT_Library lib, FT_Pointer data, FT_
   self = [super init];
   if (!self)
     return nil;
+
+  [self _initFontCaches];
+  [self _initFontFilters];
 
   screenFont = p_screenFont;
 
@@ -1881,70 +1946,6 @@ add code to avoid loading bitmaps for glyphs */
 
   if (count) {
     [path moveToPoint:NSMakePoint(ftdelta.x / 64.0, ftdelta.y / 64.0)];
-  }
-}
-
-static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65536 / 9,
-                             2 * 65536 / 9, 1 * 65536 / 9, 0 * 65536 / 9},
-                            {0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65536 / 9,
-                             2 * 65536 / 9, 1 * 65536 / 9, 0 * 65536 / 9},
-                            {0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65536 / 9,
-                             2 * 65536 / 9, 1 * 65536 / 9, 0 * 65536 / 9}};
-
-+ (void)initializeBackend
-{
-  [GSFontEnumerator setDefaultClass:[FTFontEnumerator class]];
-  [GSFontInfo setDefaultClass:[FTFontInfo class]];
-
-  if (FT_Init_FreeType(&ft_library))
-    NSLog(@"FT_Init_FreeType failed");
-  if (FTC_Manager_New(ft_library, 0, 0, 4096 * 24, ft_get_face, 0, &ftc_manager))
-    NSLog(@"FTC_Manager_New failed");
-  if (FTC_SBitCache_New(ftc_manager, &ftc_sbitcache))
-    NSLog(@"FTC_SBitCache_New failed");
-  if (FTC_ImageCache_New(ftc_manager, &ftc_imagecache))
-    NSLog(@"FTC_ImageCache_New failed");
-  if (FTC_CMapCache_New(ftc_manager, &ftc_cmapcache))
-    NSLog(@"FTC_CMapCache_New failed");
-
-  {
-    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
-    NSString *s;
-    NSArray *a;
-    int i;
-
-    subpixel_text = [ud integerForKey:@"back-art-subpixel-text"];
-
-    /* To make it easier to find an optimal (or at least good) filter,
-    the filters are configurable (for now). */
-    for (i = 0; i < 3; i++) {
-      s = [ud stringForKey:[NSString stringWithFormat:@"back-art-subpixel-filter-%i", i]];
-      if (s) {
-        int j, c, sum, v;
-        a = [s componentsSeparatedByString:@" "];
-        c = [a count];
-        if (!c)
-          continue;
-        if (!(c & 1) || c > 7) {
-          NSLog(@"invalid number of components in filter (must be odd number, 1<=n<=7)");
-          continue;
-        }
-        memset(filters[i], 0, sizeof(filters[0]));
-        sum = 0;
-        for (j = 0; j < c; j++) {
-          v = [[a objectAtIndex:j] intValue];
-          sum += v;
-          filters[i][j + (7 - c) / 2] = v * 65536;
-        }
-        if (sum) {
-          for (j = 0; j < 7; j++) {
-            filters[i][j] /= sum;
-          }
-        }
-        NSLog(@"filter %i: %04x %04x %04x %04x %04x %04x %04x", i, filters[i][0], filters[i][1],
-              filters[i][2], filters[i][3], filters[i][4], filters[i][5], filters[i][6]);
-      }
-    }
   }
 }
 

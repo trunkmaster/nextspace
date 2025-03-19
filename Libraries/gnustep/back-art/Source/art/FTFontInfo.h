@@ -103,7 +103,13 @@
 
 @interface FTFontInfo : GSFontInfo <FTFontInfo>
 {
-@public
+  FT_Library ft_library;
+  FTC_Manager ftc_manager;
+  FTC_ImageCache ftc_imagecache;
+  FTC_SBitCache ftc_sbitcache;
+  FTC_CMapCache ftc_cmapcache;
+  
+ @public
   int pix_width, pix_height;
 
   FTC_FaceID faceId;
