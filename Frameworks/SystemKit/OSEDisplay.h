@@ -27,8 +27,7 @@
 
 @class OSEScreen;
 
-struct _NXGammaValue
-{
+struct _NXGammaValue {
   CGFloat red;
   CGFloat green;
   CGFloat blue;
@@ -38,28 +37,28 @@ typedef struct _NXGammaValue NXGammaValue;
 // Physical device
 @interface OSEDisplay : NSObject
 {
-  Display		*xDisplay;
-  OSEScreen		*screen;
-  XRRScreenResources	*screen_resources;
-  RROutput		output_id;
+  Display *xDisplay;
+  OSEScreen *screen;
+  XRRScreenResources *screen_resources;
+  RROutput output_id;
 
-  Connection     	connectionState;	// RandR connection state
-  NSMutableArray 	*allResolutions;	// width, height, rate
-  
-  CGFloat  		dpiValue;		// calculated DPI
+  Connection connectionState;      // RandR connection state
+  NSMutableArray *allResolutions;  // width, height, rate
 
-  NXGammaValue		gammaValue;
-  CGFloat		gammaBrightness;
+  CGFloat dpiValue;  // calculated DPI
 
-  NSMutableDictionary	*properties;
-  
-  BOOL			isMain;
+  NXGammaValue gammaValue;
+  CGFloat gammaBrightness;
+
+  NSMutableDictionary *properties;
+
+  BOOL isMain;
   // BOOL			isActive;
 }
 
 @property (readonly) NSString *outputName;  // LVDS, VGA, DVI, HDMI
-@property (readonly) NSSize physicalSize;  // in milimetres
-@property (readonly) BOOL isBuiltin;  // determined by outputName
+@property (readonly) NSSize physicalSize;   // in milimetres
+@property (readonly) BOOL isBuiltin;        // determined by outputName
 
 + (NSDictionary *)zeroResolution;
 
@@ -68,28 +67,25 @@ typedef struct _NXGammaValue NXGammaValue;
                   screen:(OSEScreen *)scr
                 xDisplay:(Display *)x_display;
 
-- (CGFloat)dpi;           // calculated from frame and phys. size
+- (CGFloat)dpi;  // calculated from frame and phys. size
 
 //------------------------------------------------------------------------------
 //--- Resolution, refresh rate
 //------------------------------------------------------------------------------
 //--- Getters for resolutions supported by display
-- (NSArray *)allResolutions;    // Supported resolutions (W x H @ R)
+- (NSArray *)allResolutions;  // Supported resolutions (W x H @ R)
 - (NSDictionary *)bestResolution;
 - (BOOL)isSupportedResolution:(NSDictionary *)resolution;
-- (NSDictionary *)resolutionWithWidth:(CGFloat)width
-                               height:(CGFloat)height
-                                 rate:(CGFloat)refresh;
+- (NSDictionary *)resolutionWithWidth:(CGFloat)width height:(CGFloat)height rate:(CGFloat)refresh;
 
 //--- Active (visible to user) resolution of display
 // These values may only be changed with -setResolution:position: method.
 @property (readonly) NSDictionary *activeResolution;  // {Size=; Rate=}
-@property (readonly) CGFloat activeRate;  // Refresh rate for resolution
+@property (readonly) CGFloat activeRate;              // Refresh rate for resolution
 @property (readonly) NSPoint activePosition;
 
 //--- Setter
-- (void)setResolution:(NSDictionary *)resolution
-             position:(NSPoint)position;
+- (void)setResolution:(NSDictionary *)resolution position:(NSPoint)position;
 
 //------------------------------------------------------------------------------
 //--- Properties which aimed to process requests by OSEScreen
@@ -102,14 +98,14 @@ typedef struct _NXGammaValue NXGammaValue;
 //               or display already deactivated.
 // When display is deactivated resolution and origin values are set to 0.
 //------------------------------------------------------------------------------
-@property NSRect frame;  // logical rect of monitor
+@property NSRect frame;        // logical rect of monitor
 @property NSRect hiddenFrame;  // logical rect for inactive monitor
 
 //------------------------------------------------------------------------------
 //--- Monitor state
 //------------------------------------------------------------------------------
-- (BOOL)isConnected;      // output has connected monitor
-- (BOOL)isActive;         // is online and visible
+- (BOOL)isConnected;  // output has connected monitor
+- (BOOL)isActive;     // is online and visible
 - (void)setActive:(BOOL)active;
 - (BOOL)isMain;
 - (void)setMain:(BOOL)yn;
@@ -131,8 +127,7 @@ typedef struct _NXGammaValue NXGammaValue;
               green:(CGFloat)gammaGreen
                blue:(CGFloat)gammaBlue
          brightness:(CGFloat)brightness;
-- (void)setGamma:(CGFloat)gammaValue
-      brightness:(CGFloat)gammaBrightness;
+- (void)setGamma:(CGFloat)gammaValue brightness:(CGFloat)gammaBrightness;
 - (void)setGamma:(CGFloat)value;
 - (void)setGammaBrightness:(CGFloat)brightness;
 
@@ -140,9 +135,9 @@ typedef struct _NXGammaValue NXGammaValue;
 - (void)fadeToBlack:(CGFloat)brightness;
 - (void)fadeToNormal:(CGFloat)brightness;
 // TODO
-- (void)fadeTo:(NSInteger)mode      // 0 - to black, 1 - to normal
-      interval:(CGFloat)seconds     // in seconds, mininmum 0.1
-    brightness:(CGFloat)brightness; // original brightness
+- (void)fadeTo:(NSInteger)mode       // 0 - to black, 1 - to normal
+      interval:(CGFloat)seconds      // in seconds, mininmum 0.1
+    brightness:(CGFloat)brightness;  // original brightness
 
 //------------------------------------------------------------------------------
 //--- Display properties
