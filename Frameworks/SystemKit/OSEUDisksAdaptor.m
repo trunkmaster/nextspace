@@ -268,7 +268,7 @@
   NSArray *managedObjects = [self GetManagedObjects];
   NSString *objectPath;
 
-  [managedObjects writeToFile:@"_ManagedObjects.result" atomically:NO];
+  // [managedObjects writeToFile:@"_ManagedObjects.result" atomically:NO];
 
   [udisksBlockDevicesCache removeAllObjects];
   [OSEUDisksDrivesCache removeAllObjects];
@@ -551,10 +551,10 @@
   volumes = [NSMutableDictionary new];
   jobsCache = [NSMutableDictionary new];
 
-  if ([self _updateObjectsList] != NO) {
-    [OSEUDisksDrivesCache writeToFile:@"_UDisks.drives.result" atomically:YES];
-    [udisksBlockDevicesCache writeToFile:@"_UDisks.block_devices.result" atomically:YES];
-  }
+  // if ([self _updateObjectsList] != NO) {
+  //   [OSEUDisksDrivesCache writeToFile:@"_UDisks.drives.result" atomically:YES];
+  //   [udisksBlockDevicesCache writeToFile:@"_UDisks.block_devices.result" atomically:YES];
+  // }
 
   notificationCenter = [NSNotificationCenter defaultCenter];
   [self setSignalsMonitoring];
