@@ -60,8 +60,9 @@ NSString *OSEDisplayNameKey = @"Name";
 NSString *OSEDisplayFrameKey = @"Frame";
 NSString *OSEDisplayHiddenFrameKey = @"FrameHidden";
 NSString *OSEDisplayFrameRateKey = @"FrameRate";
-NSString *OSEDisplaySizeKey = @"Size";
-NSString *OSEDisplayRateKey = @"Rate";
+NSString *OSEDisplayResolutionNameKey = @"ResolutionName";
+NSString *OSEDisplayResolutionSizeKey = @"ResolutionSize";
+NSString *OSEDisplayResolutionRateKey = @"ResolutionRate";
 NSString *OSEDisplayPhSizeKey = @"PhysicalSize";
 NSString *OSEDisplayPropertiesKey = @"Properties";
 
@@ -831,7 +832,7 @@ static OSEScreen *systemScreen = nil;
   NSRect  frame = display.frame;
   NSArray *newLayout;
 
-  frame.size = NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]);
+  frame.size = NSSizeFromString([resolution objectForKey:OSEDisplayResolutionSizeKey]);
   display.frame = frame;
   
   [self applyDisplayLayout:[self arrangedDisplayLayout]];
@@ -906,14 +907,14 @@ static OSEScreen *systemScreen = nil;
     // Preferred resolution always at first position.
     resolution = [display bestResolution];
     frame = NSZeroRect;
-    frame.size = NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]);
+    frame.size = NSSizeFromString([resolution objectForKey:OSEDisplayResolutionSizeKey]);
     frame.origin = origin;
       
     [d setObject:NSStringFromRect(frame)
           forKey:OSEDisplayFrameKey];
     [d setObject:NSStringFromRect(NSZeroRect)
           forKey:OSEDisplayHiddenFrameKey];
-    [d setObject:[resolution objectForKey:OSEDisplayRateKey]
+    [d setObject:[resolution objectForKey:OSEDisplayResolutionRateKey]
           forKey:OSEDisplayFrameRateKey];
 
     if ([display isBuiltin] && [_systemPower isLidClosed]) {
@@ -946,7 +947,7 @@ static OSEScreen *systemScreen = nil;
 
     if (arrange && (![display isBuiltin] || ![_systemPower isLidClosed])) {
       origin.x +=
-        NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]).width;
+        NSSizeFromString([resolution objectForKey:OSEDisplayResolutionSizeKey]).width;
     }
   }
 
@@ -978,7 +979,7 @@ static OSEScreen *systemScreen = nil;
             forKey:OSEDisplayFrameKey];
       [d setObject:NSStringFromRect([display hiddenFrame])
             forKey:OSEDisplayHiddenFrameKey];
-      [d setObject:[display.activeResolution objectForKey:OSEDisplayRateKey]
+      [d setObject:[display.activeResolution objectForKey:OSEDisplayResolutionRateKey]
             forKey:OSEDisplayFrameRateKey];
 
       [d setObject:([display isActive]) ? @"YES" : @"NO"

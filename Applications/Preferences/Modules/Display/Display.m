@@ -43,6 +43,10 @@
 
 @implementation DisplayPrefs
 
+//
+#pragma mark - Init & protocol
+//
+
 - (id)init
 {
   NSBundle *bundle;
@@ -135,30 +139,43 @@
 }
 
 //
-// Helper methods
+#pragma mark - Helper methods
 //
 - (void)fillRateButton
 {
   NSString *resBtnTitle = [resolutionBtn titleOfSelectedItem];
   NSArray *m = [selectedDisplay allResolutions];
-  NSString *rateString;
+  NSString *rateTitle;
+  NSString *resolutionTitle;
   NSDictionary *res;
-  NSString *resTitle;
-  NSSize size;
+  float rateValue = 0.0;
+  NSString *rateFormat = @"%.2f Hz";
 
+  // [m writeToFile:[NSString stringWithFormat:@"%@.displayResolutions", [selectedDisplay outputName]]
+  //     atomically:NO];
   [rateBtn removeAllItems];
-  for (NSInteger i = 0; i < [m count]; i++) {
-    res = [m objectAtIndex:i];
-    size = NSSizeFromString([res objectForKey:@"Size"]);
-    resTitle = [NSString stringWithFormat:@"%.0fx%.0f", size.width, size.height];
-    if ([resTitle isEqualToString:resBtnTitle]) {
-      rateString = [NSString stringWithFormat:@"%.1f Hz", [[res objectForKey:@"Rate"] floatValue]];
-      [rateBtn addItemWithTitle:rateString];
-      [[rateBtn itemWithTitle:rateString] setRepresentedObject:res];
+
+  // Fill the buttion with items
+  for (res in m) {
+    resolutionTitle = [res objectForKey:OSEDisplayResolutionNameKey];
+    if ([resolutionTitle isEqualToString:resBtnTitle]) {
+      rateValue = [[res objectForKey:OSEDisplayResolutionRateKey] floatValue];
+      rateTitle = [NSString stringWithFormat:rateFormat, rateValue];
+      [rateBtn addItemWithTitle:rateTitle];
+      [[rateBtn itemWithTitle:rateTitle] setRepresentedObject:res];
     }
   }
 
-  [rateBtn setEnabled:([[rateBtn itemArray] count] == 1) ? NO : YES];
+  if ([[rateBtn itemArray] count] == 1) {
+    [rateBtn setEnabled:NO];
+  } else {
+    // Select actual value of selected resolution
+    res = [selectedDisplay activeResolution];
+    rateValue = [[res objectForKey:OSEDisplayResolutionRateKey] floatValue];
+    rateTitle = [NSString stringWithFormat:rateFormat, rateValue];
+    [rateBtn selectItemWithTitle:rateTitle];
+    [rateBtn setEnabled:YES];
+  }
 }
 
 - (void)setResolution
@@ -191,12 +208,11 @@
 }
 
 //
-// Action methods
+#pragma mark - Action methods
 //
 - (IBAction)monitorsListClicked:(id)sender
 {
   NSArray *m;
-  NSSize size;
   NSString *resolution;
   NSDictionary *r;
 
@@ -207,13 +223,11 @@
   // Resolution
   [resolutionBtn removeAllItems];
   for (NSDictionary *res in m) {
-    size = NSSizeFromString([res objectForKey:@"Size"]);
-    resolution = [NSString stringWithFormat:@"%.0fx%.0f", size.width, size.height];
+    resolution = [res objectForKey:OSEDisplayResolutionNameKey];
     [resolutionBtn addItemWithTitle:resolution];
   }
   r = [selectedDisplay activeResolution];
-  size = NSSizeFromString([r objectForKey:@"Size"]);
-  resolution = [NSString stringWithFormat:@"%.0fx%.0f", size.width, size.height];
+  resolution = [r objectForKey:OSEDisplayResolutionNameKey];
   [resolutionBtn selectItemWithTitle:resolution];
   // Rate button filled here. Items tagged with resolution description
   // object in [NSDisplay allModes] array
@@ -244,7 +258,7 @@
 - (IBAction)resolutionClicked:(id)sender
 {
   [self fillRateButton];
-  NSLog(@"resolutionClicked: Selected resolution: %@", [[rateBtn selectedCell] representedObject]);
+  // NSLog(@"resolutionClicked: Selected resolution: %@", [[rateBtn selectedCell] representedObject]);
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
@@ -319,7 +333,7 @@
 }
 
 //
-// Browser (list of monitors) delegate methods
+#pragma mark - Browser delegate (monitors list)
 //
 - (NSString *)browser:(NSBrowser *)sender titleOfColumn:(NSInteger)column
 {
@@ -350,7 +364,7 @@
 }
 
 //
-// TextField Delegate methods
+#pragma mark - TextField Delegate
 //
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification
 {

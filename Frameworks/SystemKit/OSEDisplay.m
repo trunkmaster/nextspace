@@ -89,8 +89,8 @@
   NSString *zeroSizeString = NSStringFromSize(NSMakeSize(0, 0));
   NSNumber *zeroRate = [NSNumber numberWithFloat:0.0];
 
-  return [NSDictionary dictionaryWithObjectsAndKeys:zeroSizeString, OSEDisplaySizeKey, zeroRate,
-                                                    OSEDisplayRateKey, nil];
+  return [NSDictionary dictionaryWithObjectsAndKeys:zeroSizeString, OSEDisplayResolutionSizeKey, zeroRate,
+                                                    OSEDisplayResolutionRateKey, nil];
 }
 
 //------------------------------------------------------------------------------
@@ -120,7 +120,7 @@
 
   output_info = XRRGetOutputInfo(xDisplay, scr_resources, output_id);
 
-  resDims = NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]);
+  resDims = NSSizeFromString([resolution objectForKey:OSEDisplayResolutionSizeKey]);
 
   for (int i = 0; i < output_info->nmode; i++) {
     mode_info = [self _modeInfoForMode:output_info->modes[i]];
@@ -145,9 +145,9 @@
   CGFloat r;
 
   for (res in allResolutions) {
-    resSize = NSSizeFromString([res objectForKey:OSEDisplaySizeKey]);
+    resSize = NSSizeFromString([res objectForKey:OSEDisplayResolutionSizeKey]);
     if (resSize.width == mode_info.width && resSize.height == mode_info.height &&
-        [[res objectForKey:OSEDisplayRateKey] floatValue] == _activeRate) {
+        [[res objectForKey:OSEDisplayResolutionRateKey] floatValue] == _activeRate) {
       break;
     } else {
       res = nil;
@@ -214,9 +214,12 @@
     mode_info = [self _modeInfoForMode:output_info->modes[i]];
     rSize = NSMakeSize((CGFloat)mode_info.width, (CGFloat)mode_info.height);
     rRate = (CGFloat)mode_info.dotClock / mode_info.hTotal / mode_info.vTotal;
-    res = [NSDictionary dictionaryWithObjectsAndKeys:NSStringFromSize(rSize), OSEDisplaySizeKey,
-                                                     [NSNumber numberWithFloat:rRate],
-                                                     OSEDisplayRateKey, nil];
+    res = @{
+      OSEDisplayResolutionNameKey : [NSString stringWithCString:mode_info.name],
+      OSEDisplayResolutionSizeKey : NSStringFromSize(rSize),
+      OSEDisplayResolutionRateKey : [NSNumber numberWithDouble:rRate],
+    };
+
     [allResolutions addObject:res];
   }
 
@@ -249,7 +252,7 @@
     ASSIGN(_activeResolution, [OSEDisplay zeroResolution]);
     _activePosition = NSMakePoint(0, 0);
     _hiddenFrame.origin = _activePosition;
-    _hiddenFrame.size = NSSizeFromString([[self bestResolution] objectForKey:OSEDisplaySizeKey]);
+    _hiddenFrame.size = NSSizeFromString([[self bestResolution] objectForKey:OSEDisplayResolutionSizeKey]);
   }
 
   XRRFreeOutputInfo(output_info);
@@ -307,7 +310,7 @@
 
 - (BOOL)isSupportedResolution:(NSDictionary *)resolution
 {
-  NSSize dSize = NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]);
+  NSSize dSize = NSSizeFromString([resolution objectForKey:OSEDisplayResolutionSizeKey]);
 
   if (dSize.width == 0 &&
       dSize.height == 0) {  // resolution 0x0 used for display deactivation - accept it
@@ -324,8 +327,8 @@
   CGFloat resRate, max_rate = 0.0;
 
   for (res in allResolutions) {
-    resSize = NSSizeFromString([res objectForKey:OSEDisplaySizeKey]);
-    resRate = [[res objectForKey:OSEDisplayRateKey] floatValue];
+    resSize = NSSizeFromString([res objectForKey:OSEDisplayResolutionSizeKey]);
+    resRate = [[res objectForKey:OSEDisplayResolutionRateKey] floatValue];
     if (resSize.width == width && resSize.height == height) {
       // 'rate' was specified, search for exact resolution
       if (refresh) {
@@ -352,8 +355,8 @@
     NSNumber *rRate = [NSNumber numberWithFloat:refresh];
 
     resolution =
-        [NSDictionary dictionaryWithObjectsAndKeys:NSStringFromSize(rSize), OSEDisplaySizeKey,
-                                                   rRate, OSEDisplayRateKey, nil];
+        [NSDictionary dictionaryWithObjectsAndKeys:NSStringFromSize(rSize), OSEDisplayResolutionSizeKey,
+                                                   rRate, OSEDisplayResolutionRateKey, nil];
     [allResolutions insertObject:resolution atIndex:0];
   }
 
@@ -378,7 +381,7 @@
   output_info = XRRGetOutputInfo(xDisplay, screen_resources, output_id);
 
   NSDebugLLog(@"Screen", @"%s: Set resolution %@ and origin %@", output_info->name,
-              [resolution objectForKey:OSEDisplaySizeKey], NSStringFromPoint(position));
+              [resolution objectForKey:OSEDisplayResolutionSizeKey], NSStringFromPoint(position));
 
   rr_crtc = output_info->crtc;
   if (!rr_crtc) {
@@ -397,10 +400,10 @@
     crtc_info = XRRGetCrtcInfo(xDisplay, screen_resources, rr_crtc);
   }
 
-  resolutionSize = NSSizeFromString([resolution objectForKey:OSEDisplaySizeKey]);
+  resolutionSize = NSSizeFromString([resolution objectForKey:OSEDisplayResolutionSizeKey]);
 
   NSLog(@"[OSEDisplay] %s reoslutionSize: %@ frame: %@", output_info->name,
-        [resolution objectForKey:OSEDisplaySizeKey], [resolution objectForKey:OSEDisplayFrameKey]);
+        [resolution objectForKey:OSEDisplayResolutionSizeKey], [resolution objectForKey:OSEDisplayFrameKey]);
 
   if (resolutionSize.width == 0 || resolutionSize.height == 0) {
     rr_mode = None;
@@ -426,7 +429,7 @@
 
   // Save values which represent current monitor state
   ASSIGN(_activeResolution, resolution);
-  _activeRate = [[resolution objectForKey:OSEDisplayRateKey] floatValue];
+  _activeRate = [[resolution objectForKey:OSEDisplayResolutionRateKey] floatValue];
   _activePosition = position;
 
   XRRFreeCrtcInfo(crtc_info);
@@ -458,7 +461,7 @@
       _frame = _hiddenFrame;
       _hiddenFrame = NSZeroRect;
     } else {
-      _frame.size = NSSizeFromString([[self bestResolution] objectForKey:OSEDisplaySizeKey]);
+      _frame.size = NSSizeFromString([[self bestResolution] objectForKey:OSEDisplayResolutionSizeKey]);
     }
     resolution = [self resolutionWithWidth:_frame.size.width height:_frame.size.height rate:0.0];
   } else  // deactivation

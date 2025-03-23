@@ -167,8 +167,9 @@ extern NSString *OSEDisplayNameKey;
 extern NSString *OSEDisplayFrameKey;
 extern NSString *OSEDisplayHiddenFrameKey;
 extern NSString *OSEDisplayFrameRateKey;
-extern NSString *OSEDisplaySizeKey;
-extern NSString *OSEDisplayRateKey;
+extern NSString *OSEDisplayResolutionNameKey;
+extern NSString *OSEDisplayResolutionSizeKey;
+extern NSString *OSEDisplayResolutionRateKey;
 extern NSString *OSEDisplayPhSizeKey;
 extern NSString *OSEDisplayPropertiesKey;
 
