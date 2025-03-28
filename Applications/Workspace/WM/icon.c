@@ -118,6 +118,9 @@ static void _iconSettingsObserver(CFNotificationCenterRef center,
      * stuff */
     XClearArea(dpy, icon->core->window, 0, 0, icon->core->width, icon->core->height, True);
   } else if (CFStringCompare(name, WMDidChangeIconTileSettings, 0) == 0) {
+    if (icon->owner && icon->owner->wm_instance && !strcmp(icon->owner->wm_instance, "Workspace")) {
+      return;
+    }
     update_icon_pixmap(icon);
     XClearArea(dpy, icon->core->window, 0, 0, 1, 1, True);
   }
