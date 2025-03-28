@@ -27,6 +27,7 @@
 
 #import "Recycler.h"
 #import "RecyclerIcon.h"
+#import "WMNotificationCenter.h"
 
 #include <core/util.h>
 #include <core/string_utils.h>
@@ -393,7 +394,18 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
                 name:NSApplicationDidChangeScreenParametersNotification
               object:NSApp];
 
+  [[WMNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(wmDidChangeTile:)
+             name:CF_NOTIFICATION(WMDidChangeIconTileSettings)
+           object:nil];
+
   return self;
+}
+
+- (void)wmDidChangeTile:(NSNotification *)aNotif
+{
+  [[self contentView] setNeedsDisplay:YES];
 }
 
 - (BOOL)canBecomeMainWindow
