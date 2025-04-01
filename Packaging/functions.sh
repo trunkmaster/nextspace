@@ -113,7 +113,7 @@ print_help()
     printf "\n"
 }
 
-prepare_environment() 
+prepare_redhat_environment() 
 {
     print_H1 " Prepare build environment"
     print_H2 "===== Install RPM build tools..."
@@ -134,7 +134,7 @@ prepare_environment()
             sudo dnf -y install clang
         else
             if [ "$OS_ID" = "fedora" ] || [ "$OS_ID" = "ultramarine" ];then
-                sudo dnf -y install clang
+                sudo dnf -y install clang binutils-gold
             else
                 print_H2 ">>>>> Can't find /etc/os-release - this OS is unsupported."
                 return 1

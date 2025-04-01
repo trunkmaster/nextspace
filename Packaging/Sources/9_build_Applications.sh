@@ -77,24 +77,33 @@ sudo ldconfig
 #----------------------------------------
 # Post install
 #----------------------------------------
-
 if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 	# Login
-	${ECHO} "Setting up Login window service to run at system startup..."
-	systemctl --quiet is-active display-manager.service
+	systemctl --quiet is-active loginwindow.service
 	if [ $? -eq 0 ];then
-		${ECHO} "A Display Manager is already running: we must stop it now."
-		sudo systemctl stop display-manager.service
+		${ECHO} "A Login panel is already running: refresh systemd unit info."
+		sudo systemctl daemon-reload
+	else
+		print_H2 "Setting up Login window service to run at system startup..."
+		systemctl --quiet is-active display-manager.service
+		if [ $? -eq 0 ];then
+			if [ -z $DISPLAY ];then
+				print_H2 "A session manager is already running: we must stop it now."
+				sudo systemctl stop display-manager.service
+			else
+				print_H1 "You're in graphical session.\nTo enable Login panel you need to execute the following commands in console:\n  $ sudo systemctl stop display-manager.service\n  $ sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service"
+			fi
+		else
+			systemctl --quiet is-enabled display-manager.service
+			if [ $? -eq 0 ];then
+				print_H2 "A session manager is already set: we must disable it now."
+				sudo systemctl disable display-manager.service
+			fi
+			${ECHO} "Setting up Login window service..."
+			sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service
+			sudo systemctl set-default graphical.target
+		fi
 	fi
-
-	systemctl --quiet is-enabled display-manager.service
-	if [ $? -eq 0 ];then
-		${ECHO} "A display Manager is already set: we must disable it now."
-		sudo systemctl disable display-manager.service
-	fi
-	${ECHO} "Setting up Login window service..."
-	sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service
-	sudo systemctl set-default graphical.target
 
 	# SELinux
 	if [ -f /etc/selinux/config ]; then
@@ -106,6 +115,7 @@ if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 			${ECHO} "Please reboot to apply changes."
 		fi
 	fi
+
 fi
 
 cd ${_PWD} || exit 1
