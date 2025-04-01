@@ -1,32 +1,22 @@
 {
 	Faces = (
-	{
-		Files = (
-			Helvetica-Medium.ttf
-		);
-		Name = Medium;
-		PostScriptName = Helvetica-Medium;
-	},
-	{
-		Files = (
-			Helvetica-Bold.ttf
-		);
-		Name = Bold;
-		PostScriptName = Helvetica-Bold;
-	},
-	{
-		Files = (
-			Helvetica-Oblique.ttf
-		);
-		Name = Oblique;
-		PostScriptName = Helvetica-Oblique;
-	},
-	{
-		Files = (
-			Helvetica-BoldOblique.ttf
-		);
-		Name = "Bold Oblique";
-		PostScriptName = Helvetica-BoldOblique;
-	}
+		{
+			Name = Medium;
+			PostScriptName = Helvetica-Medium;
+			Files = (Helvetica-Medium.ttf);
+			RenderHints_hack = 0x010000;
+		},
+		{
+			Name = Bold;
+			PostScriptName = Helvetica-Bold;
+			Files = (Helvetica-Bold.ttf);
+			RenderHints_hack = 0x010000;
+		},
+		{
+			Name = Oblique;
+			PostScriptName = Helvetica-Oblique;
+			Files = (Helvetica-Oblique.ttf);
+			RenderHints_hack = 0x010000;
+		}
 	);
 }
