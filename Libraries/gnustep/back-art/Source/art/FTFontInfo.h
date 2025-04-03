@@ -17,19 +17,30 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with this library; see the file COPYING.LIB.
-   If not, see <http://www.gnu.org/licenses/> or write to the 
-   Free Software Foundation, 51 Franklin Street, Fifth Floor, 
+   If not, see <http://www.gnu.org/licenses/> or write to the
+   Free Software Foundation, 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
 
 #ifndef ftfont_h
 #define ftfont_h
 
+#import "AppKit/NSFont.h"
+#import "CoreFoundation/CFCGTypes.h"
 #import "blit.h"
+
+#import <ft2build.h>
+#import FT_CACHE_H
+
+#import <GNUstepGUI/GSFontInfo.h>
+#import "FTFaceInfo.h"
 
 @class NSAffineTransform;
 
 @protocol FTFontInfo
+
++ (void)initializeBackend;
+
 - (void)drawString:(const char *)s
                 at:(int)x
                   :(int)y
@@ -90,14 +101,7 @@
 
 - (void)outlineString:(const char *)s at:(CGFloat)x :(CGFloat)y gstate:(void *)func_param;
 
-+(void) initializeBackend;
 @end
-
-#import <ft2build.h>
-#import FT_CACHE_H
-
-#import <GNUstepGUI/GSFontInfo.h>
-#import "FTFaceInfo.h"
 
 #define CACHE_SIZE 257
 
@@ -108,7 +112,7 @@
   FTC_ImageCache ftc_imagecache;
   FTC_SBitCache ftc_sbitcache;
   FTC_CMapCache ftc_cmapcache;
-  
+
  @public
   int pix_width, pix_height;
 
@@ -123,9 +127,9 @@
   FT_Size ft_size;
 
   /*
-  Profiling (2003-11-14) shows that calls to -advancementForGlyph: accounted
-  for roughly 20% of layout time. This cache reduces it to (currently)
-  insignificant levels.
+    Profiling (2003-11-14) shows that calls to -advancementForGlyph: accounted
+    for roughly 20% of layout time. This cache reduces it to (currently)
+    insignificant levels.
   */
   unsigned int cachedGlyph[CACHE_SIZE];
   NSSize cachedSize[CACHE_SIZE];
