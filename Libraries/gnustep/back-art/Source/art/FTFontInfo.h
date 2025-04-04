@@ -23,7 +23,6 @@
 */
 
 #import "AppKit/NSFont.h"
-#import "CoreFoundation/CFCGTypes.h"
 #import "blit.h"
 
 #import <ft2build.h>
