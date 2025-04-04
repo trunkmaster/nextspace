@@ -22,9 +22,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef ftfont_h
-#define ftfont_h
-
 #import "AppKit/NSFont.h"
 #import "CoreFoundation/CFCGTypes.h"
 #import "blit.h"
@@ -116,14 +113,14 @@
  @public
   int pix_width, pix_height;
 
-  FTC_FaceID faceId;
-  FTC_ImageTypeRec imageType;
-  FTC_ScalerRec scaler;
+  FTC_FaceID ftc_faceid;
+  FTC_ImageTypeRec ftc_imagetype;
+  FTC_ScalerRec ftc_scaler;
   int unicodeCmap;
 
-  BOOL screenFont;
+  BOOL isScreenFont;
 
-  FTFaceInfo *face_info;
+  FTFaceInfo *faceInfo;
   FT_Size ft_size;
 
   /*
@@ -137,5 +134,3 @@
   CGFloat lineHeight;
 }
 @end
-
-#endif

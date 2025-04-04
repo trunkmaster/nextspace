@@ -66,7 +66,7 @@
    1: subpixel, rgb
    2: subpixel, bgr
 */
-static int subpixel_text;
+static BOOL useAntiAlias;
 
 /*
  * Helper method used inside of FTC_Manager to create an FT_FACE.
@@ -171,13 +171,14 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
                 matrix:(const CGFloat *)fmatrix
             screenFont:(BOOL)p_screenFont
 {
-  NSArray *rfi;
-  FTFaceInfo *font_entry;
+  NSArray *fontFiles;
+  FTFaceInfo *fontEntry;
   FT_Error error;
 
+  useAntiAlias = [[NSUserDefaults standardUserDefaults] boolForKey:@"GSFontAntiAlias"];
+
 #if 0  
-  subpixel_text = [[NSUserDefaults standardUserDefaults] integerForKey:@"back-art-subpixel-text"];
-  if (subpixel_text) {
+  if (useAntiAlias) {
     [self release];
     self = [FTFontInfo_subpixel alloc];
   }
@@ -191,68 +192,65 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
   // TODO: do we need filters if Freetype is quite good?
   // [self _initFontFilters];
 
-  screenFont = p_screenFont;
-
   NSDebugLLog(@"ftfont", @"[%@ -initWithFontName: %@  matrix: (%g %g %g %g %g %g)] %i", self, name,
               fmatrix[0], fmatrix[1], fmatrix[2], fmatrix[3], fmatrix[4], fmatrix[5], p_screenFont);
 
-  font_entry = [FTFontEnumerator fontWithName:name];
-  if (!font_entry) {
+  fontEntry = [FTFontEnumerator fontWithName:name];
+  if (!fontEntry) {
     RELEASE(self);
     return nil;
   }
 
-  face_info = font_entry;
+  faceInfo = fontEntry;
 
-  weight = font_entry->weight;
-  traits = font_entry->traits;
+  weight = fontEntry->weight;
+  traits = fontEntry->traits;
 
   fontName = [name copy];
-  familyName = [face_info->familyName copy];
+  familyName = [faceInfo->familyName copy];
   memcpy(matrix, fmatrix, sizeof(matrix));
 
-  /* Using utf8 is a bit ugly, but it works.  Besides, the bulk of the text
-     comes as glyphs anyway.  */
+  // Using UTF8 is a bit ugly, but it works. Besides, the bulk of the text comes as glyphs anyway.
   mostCompatibleStringEncoding = NSUTF8StringEncoding;
   encodingScheme = @"iso10646-1";
 
-  if (screenFont) {
+  isScreenFont = p_screenFont;
+  if (isScreenFont) {
     /* Round up; makes the text more legible.  */
     matrix[0] = ceil(matrix[0]);
-    if (matrix[3] < 0.0)
+    if (matrix[3] < 0.0) {
       matrix[3] = floor(matrix[3]);
-    else
+    } else {
       matrix[3] = ceil(matrix[3]);
+    }
   }
 
   pix_width = fabs(matrix[0]);
   pix_height = fabs(matrix[3]);
 
-  rfi = font_entry->files;
-  if (screenFont && font_entry->num_sizes && pix_width == pix_height) {
-    int i;
-
-    for (i = 0; i < font_entry->num_sizes; i++) {
-      if (font_entry->sizes[i].pixel_size == pix_width) {
-        rfi = font_entry->sizes[i].files;
+  fontFiles = fontEntry->files;
+  if (isScreenFont && fontEntry->num_sizes && pix_width == pix_height) {
+    for (int i = 0; i < fontEntry->num_sizes; i++) {
+      if (fontEntry->sizes[i].pixel_size == pix_width) {
+        fontFiles = fontEntry->sizes[i].files;
         break;
       }
     }
   }
 
-  faceId = (FTC_FaceID)rfi;
+  ftc_faceid = (FTC_FaceID)fontFiles;
 
-  imageType.face_id = faceId;
-  imageType.width = pix_width;
-  imageType.height = pix_height;
+  ftc_imagetype.face_id = ftc_faceid;
+  ftc_imagetype.width = pix_width;
+  ftc_imagetype.height = pix_height;
   /* TODO: Flags? */
 
-  scaler.face_id = faceId;
-  scaler.width = pix_width;
-  scaler.height = pix_height;
-  scaler.pixel = 1;
+  ftc_scaler.face_id = ftc_faceid;
+  ftc_scaler.width = pix_width;
+  ftc_scaler.height = pix_height;
+  ftc_scaler.pixel = 1;
 
-  if ((error = FTC_Manager_LookupSize(ftc_manager, &scaler, &ft_size))) {
+  if ((error = FTC_Manager_LookupSize(ftc_manager, &ftc_scaler, &ft_size))) {
     NSLog(@"FTC_Manager_LookupSize() failed for '%@', error %08x!", name, error);
     RELEASE(self);
     return nil;
@@ -269,22 +267,20 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
   fontBBox = NSMakeRect(0, -descender, maximumAdvancement.width, ascender + descender);
   descender = -descender;
 
-  /*        printf("(%@) h=%g  a=%g d=%g  max=(%g %g)  (%g %g)+(%g %g)\n",name,
-                  xHeight, ascender, descender,
-                  maximumAdvancement.width, maximumAdvancement.height,
-                  fontBBox.origin.x, fontBBox.origin.y,
-                  fontBBox.size.width, fontBBox.size.height);*/
+  // printf("(%@) h=%g  a=%g d=%g  max=(%g %g)  (%g %g)+(%g %g)\n", name, xHeight, ascender, descender,
+  //        maximumAdvancement.width, maximumAdvancement.height, fontBBox.origin.x, fontBBox.origin.y,
+  //        fontBBox.size.width, fontBBox.size.height);
 
   if (ft_size->face != nil) {
-    FT_Face face = ft_size->face;
-    FT_CharMap cmap;
-    FT_Encoding e;
+    FT_Face ft_face = ft_size->face;
+    FT_CharMap ft_charmap;
+    FT_Encoding ft_encoding;
     unicodeCmap = -1;
 
-    for (int i = 0; i < face->num_charmaps; i++) {
-      cmap = face->charmaps[i];
-      e = cmap->encoding;
-      if (e == FT_ENCODING_UNICODE) {
+    for (int i = 0; i < ft_face->num_charmaps; i++) {
+      ft_charmap = ft_face->charmaps[i];
+      ft_encoding = ft_charmap->encoding;
+      if (ft_encoding == FT_ENCODING_UNICODE) {
         unicodeCmap = i;
         break;
       }
@@ -295,39 +291,15 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
     return nil;
   }
 
-  if (screenFont) {
-    int flags;
-
-    if (pix_width == pix_height && pix_width < 16 && pix_height >= 8) {
-      int rh = face_info->render_hints_hack;
-
-      if (rh & 0x10000) {
-        NSLog(@"%@ = FT_LOAD_TARGET_LIGHT", name);
-        flags = FT_LOAD_TARGET_LIGHT;
-        rh = (rh >> 8) & 0xff;
-      } else {
-        NSLog(@"%@ = FT_LOAD_TARGET_MONO", name);
-        flags = FT_LOAD_TARGET_MONO;
-        rh = rh & 0xff;
-      }
-      // if (rh & 1) {
-      //   NSLog(@"%@ + FT_LOAD_FORCE_AUTOHINT", name);
-      //   flags |= FT_LOAD_FORCE_AUTOHINT;
-      // }
-      // if (!(rh & 2)) {
-      //   NSLog(@"%@ + FT_LOAD_NO_HINTING 1", name);
-      //   flags |= FT_LOAD_NO_HINTING;
-      // }
-    } else if (pix_width < 8) {
-      flags = FT_LOAD_TARGET_NORMAL | FT_LOAD_NO_HINTING;
+  /* Set rendering flags */
+  if (isScreenFont) {
+    if (useAntiAlias == NO || pix_width <= 9) {
+      ftc_imagetype.flags = FT_LOAD_TARGET_MONO;
     } else {
-      flags = FT_LOAD_TARGET_NORMAL;
+      ftc_imagetype.flags = FT_LOAD_TARGET_LIGHT | FT_LOAD_NO_BITMAP;
     }
-    imageType.flags = flags;
-  } else {
-    // NSLog(@"%@ = FT_LOAD_TARGET_LIGHT | FT_LOAD_NO_HINTING", name);
-    imageType.flags = FT_LOAD_TARGET_LIGHT;
-    // imageType.flags |= FT_LOAD_NO_HINTING;
+  } else { // isScreenFont == NO
+    ftc_imagetype.flags = FT_LOAD_TARGET_LIGHT;
   }
 
   /*
@@ -344,7 +316,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
 
 - (NSString *)displayName
 {
-  return face_info->displayName;
+  return faceInfo->displayName;
 }
 
 - (void)set
@@ -362,7 +334,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
     FT_UInt glyphindex;
     FT_Size size;
 
-    if (FTC_Manager_LookupSize(ftc_manager, &scaler, &size))
+    if (FTC_Manager_LookupSize(ftc_manager, &ftc_scaler, &size))
       return nil;
     face = size->face;
 
@@ -494,7 +466,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
 
     /* If we're drawing 'normal' text (unscaled, unrotated, reasonable
        size), we can and should use the sbit cache for screen fonts. */
-    if (screenFont && fabs(xx - ((int)xx)) < 0.01 && fabs(yy - ((int)yy)) < 0.01 &&
+    if (isScreenFont && fabs(xx - ((int)xx)) < 0.01 && fabs(yy - ((int)yy)) < 0.01 &&
         fabs(xy) < 0.01 && fabs(yx) < 0.01 && xx < 72 && yy < 72 && xx > 0.5 && yy > 0.5) {
       use_sbit = 1;
     } else {
@@ -519,7 +491,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
         f = 1.0;
       f = (int)f;
 
-      scaler.width = scaler.height = f;
+      ftc_scaler.width = ftc_scaler.height = f;
       ftmatrix.xx = xx / f * 65536.0;
       ftmatrix.xy = xy / f * 65536.0;
       ftmatrix.yx = yx / f * 65536.0;
@@ -568,14 +540,14 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
     }
 #undef ADD_UTF_BYTE
 
-    glyph = FTC_CMapCache_Lookup(ftc_cmapcache, faceId, unicodeCmap, uch);
+    glyph = FTC_CMapCache_Lookup(ftc_cmapcache, ftc_faceid, unicodeCmap, uch);
 
     if (use_sbit) {
-      if ((error = FTC_SBitCache_Lookup(ftc_sbitcache, &imageType, glyph, &sbit, NULL))) {
+      if ((error = FTC_SBitCache_Lookup(ftc_sbitcache, &ftc_imagetype, glyph, &sbit, NULL))) {
         NSLog(@"FTC_SBitCache_Lookup() failed with error %08x "
               @"(%08x, %08x, %ix%i, %08x)",
-              error, glyph, (unsigned)imageType.face_id, imageType.width, imageType.height,
-              imageType.flags);
+              error, glyph, (unsigned)ftc_imagetype.face_id, ftc_imagetype.width, ftc_imagetype.height,
+              ftc_imagetype.flags);
         continue;
       }
 
@@ -723,7 +695,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
       FT_Size size;
       FT_BitmapGlyph gb;
 
-      if ((error = FTC_Manager_LookupSize(ftc_manager, &scaler, &size))) {
+      if ((error = FTC_Manager_LookupSize(ftc_manager, &ftc_scaler, &size))) {
         NSLog(@"FTC_Manager_Lookup_Size() failed with error %08x", error);
         continue;
       }
@@ -896,7 +868,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
 
     /* If we're drawing 'normal' text (unscaled, unrotated, reasonable
        size), we can and should use the sbit cache for screen fonts. */
-    if (screenFont && fabs(xx - ((int)xx)) < 0.01 && fabs(yy - ((int)yy)) < 0.01 &&
+    if (isScreenFont && fabs(xx - ((int)xx)) < 0.01 && fabs(yy - ((int)yy)) < 0.01 &&
         fabs(xy) < 0.01 && fabs(yx) < 0.01 && xx < 72 && yy < 72 && xx > 0.5 && yy > 0.5) {
       use_sbit = 1;
     } else {
@@ -910,7 +882,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
         f = 1.0;
       f = (int)f;
 
-      scaler.width = scaler.height = f;
+      ftc_scaler.width = ftc_scaler.height = f;
       ftmatrix.xx = xx / f * 65536.0;
       ftmatrix.xy = xy / f * 65536.0;
       ftmatrix.yx = yx / f * 65536.0;
@@ -926,11 +898,11 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
     glyph = *glyphs - 1;
 
     if (use_sbit) {
-      if ((error = FTC_SBitCache_Lookup(ftc_sbitcache, &imageType, glyph, &sbit, NULL))) {
+      if ((error = FTC_SBitCache_Lookup(ftc_sbitcache, &ftc_imagetype, glyph, &sbit, NULL))) {
         NSLog(@"FTC_SBitCache_Lookup() failed with error %08x "
               @"(%08x, %08x, %ix%i, %08x)",
-              error, glyph, (unsigned)imageType.face_id, imageType.width, imageType.height,
-              imageType.flags);
+              error, glyph, (unsigned)ftc_imagetype.face_id, ftc_imagetype.width, ftc_imagetype.height,
+              ftc_imagetype.flags);
         continue;
       }
 
@@ -1032,7 +1004,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
       FT_Glyph gl;
       FT_BitmapGlyph gb;
 
-      if ((error = FTC_Manager_LookupSize(ftc_manager, &scaler, &size))) {
+      if ((error = FTC_Manager_LookupSize(ftc_manager, &ftc_scaler, &size))) {
         NSLog(@"FTC_Manager_Lookup_Size() failed with error %08x", error);
         continue;
       }
@@ -1177,7 +1149,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
 
     /* If we're drawing 'normal' text (unscaled, unrotated, reasonable
        size), we can and should use the sbit cache for screen fonts. */
-    if (screenFont && fabs(xx - ((int)xx)) < 0.01 && fabs(yy - ((int)yy)) < 0.01 &&
+    if (isScreenFont && fabs(xx - ((int)xx)) < 0.01 && fabs(yy - ((int)yy)) < 0.01 &&
         fabs(xy) < 0.01 && fabs(yx) < 0.01 && xx < 72 && yy < 72 && xx > 0.5 && yy > 0.5) {
       use_sbit = 1;
     } else {
@@ -1191,7 +1163,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
         f = 1.0;
       f = (int)f;
 
-      scaler.width = scaler.height = f;
+      ftc_scaler.width = ftc_scaler.height = f;
       ftmatrix.xx = xx / f * 65536.0;
       ftmatrix.xy = xy / f * 65536.0;
       ftmatrix.yx = yx / f * 65536.0;
@@ -1207,11 +1179,11 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
     glyph = *glyphs - 1;
 
     if (use_sbit) {
-      if ((error = FTC_SBitCache_Lookup(ftc_sbitcache, &imageType, glyph, &sbit, NULL))) {
+      if ((error = FTC_SBitCache_Lookup(ftc_sbitcache, &ftc_imagetype, glyph, &sbit, NULL))) {
         if (glyph != 0xffffffff)
           NSLog(@"FTC_SBitCache_Lookup() failed with error %08x (%08x, %08x, %ix%i, %08x)", error,
-                glyph, (unsigned)imageType.face_id, imageType.width, imageType.height,
-                imageType.flags);
+                glyph, (unsigned)ftc_imagetype.face_id, ftc_imagetype.width, ftc_imagetype.height,
+                ftc_imagetype.flags);
         continue;
       }
 
@@ -1311,7 +1283,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
       FT_Glyph gl;
       FT_BitmapGlyph gb;
 
-      if ((error = FTC_Manager_LookupSize(ftc_manager, &scaler, &size))) {
+      if ((error = FTC_Manager_LookupSize(ftc_manager, &ftc_scaler, &size))) {
         NSLog(@"FTC_Manager_Lookup_Size() failed with error %08x", error);
         continue;
       }
@@ -1401,7 +1373,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
   FT_Error error;
 
   glyph--;
-  if ((error = FTC_Manager_LookupSize(ftc_manager, &scaler, &size))) {
+  if ((error = FTC_Manager_LookupSize(ftc_manager, &ftc_scaler, &size))) {
     NSLog(@"FTC_Manager_Lookup_Size() failed with error %08x", error);
     return NO;
   }
@@ -1424,16 +1396,16 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
 
   if (glyph != NSNullGlyph)
     glyph--;
-  if (screenFont) {
+  if (isScreenFont) {
     int entry = glyph % CACHE_SIZE;
     FTC_SBit sbit;
 
     if (cachedGlyph[entry] == glyph)
       return cachedSize[entry];
 
-    if ((error = FTC_SBitCache_Lookup(ftc_sbitcache, &imageType, glyph, &sbit, NULL))) {
+    if ((error = FTC_SBitCache_Lookup(ftc_sbitcache, &ftc_imagetype, glyph, &sbit, NULL))) {
       NSLog(@"FTC_SBitCache_Lookup() failed with error %08x (%08x, %08x, %ix%i, %08x)", error,
-            glyph, (unsigned)imageType.face_id, imageType.width, imageType.height, imageType.flags);
+            glyph, (unsigned)ftc_imagetype.face_id, ftc_imagetype.width, ftc_imagetype.height, ftc_imagetype.flags);
       return NSZeroSize;
     }
 
@@ -1464,7 +1436,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
     ftmatrix.yy = matrix[3] / f * 65536.0;
     ftdelta.x = ftdelta.y = 0;
 
-    if (FTC_Manager_LookupSize(ftc_manager, &scaler, &size))
+    if (FTC_Manager_LookupSize(ftc_manager, &ftc_scaler, &size))
       return NSZeroSize;
     face = size->face;
 
@@ -1493,7 +1465,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
 
   glyph--;
   /* TODO: this is ugly */
-  if ((error = FTC_ImageCache_Lookup(ftc_imagecache, &imageType, glyph, &g, NULL))) {
+  if ((error = FTC_ImageCache_Lookup(ftc_imagecache, &ftc_imagetype, glyph, &g, NULL))) {
     NSLog(@"FTC_ImageCache_Lookup() failed with error %08x", error);
     //                NSLog(@"boundingRectForGlyph: %04x -> %i", aGlyph, glyph);
     return fontBBox;
@@ -1525,7 +1497,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
   g--;
   prev--;
 
-  if (FTC_Manager_LookupSize(ftc_manager, &scaler, &size))
+  if (FTC_Manager_LookupSize(ftc_manager, &ftc_scaler, &size))
     return NSZeroPoint;
   face = size->face;
 
@@ -1562,11 +1534,11 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
   total = 0;
   for (i = 0; i < c; i++) {
     ch = [string characterAtIndex:i];
-    glyph = FTC_CMapCache_Lookup(ftc_cmapcache, faceId, unicodeCmap, ch);
+    glyph = FTC_CMapCache_Lookup(ftc_cmapcache, ftc_faceid, unicodeCmap, ch);
 
     /* TODO: shouldn't use sbit cache for this */
     if (1) {
-      if (FTC_SBitCache_Lookup(ftc_sbitcache, &imageType, glyph, &sbit, NULL))
+      if (FTC_SBitCache_Lookup(ftc_sbitcache, &ftc_imagetype, glyph, &sbit, NULL))
         continue;
 
       total += sbit->xadvance;
@@ -1583,7 +1555,7 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
   FT_Size size;
   NSGlyph g;
 
-  if (FTC_Manager_LookupSize(ftc_manager, &scaler, &size))
+  if (FTC_Manager_LookupSize(ftc_manager, &ftc_scaler, &size))
     return NSNullGlyph;
   face = size->face;
 
@@ -1924,7 +1896,7 @@ add code to avoid loading bitmaps for glyphs */
 
     glyph = *glyphs - 1;
 
-    if (FTC_Manager_LookupSize(ftc_manager, &scaler, &size))
+    if (FTC_Manager_LookupSize(ftc_manager, &ftc_scaler, &size))
       continue;
 
     face = size->face;
@@ -1958,7 +1930,7 @@ add code to avoid loading bitmaps for glyphs */
 {
   NSGlyph g;
 
-  g = FTC_CMapCache_Lookup(ftc_cmapcache, faceId, unicodeCmap, ch);
+  g = FTC_CMapCache_Lookup(ftc_cmapcache, ftc_faceid, unicodeCmap, ch);
   if (g)
     return g + 1;
   else
@@ -1985,7 +1957,7 @@ add code to avoid loading bitmaps for glyphs */
   FT_Face face;
 
   g--;
-  if (FTC_Manager_LookupSize(ftc_manager, &scaler, &size))
+  if (FTC_Manager_LookupSize(ftc_manager, &ftc_scaler, &size))
     return ".notdef";
   face = size->face;
 
