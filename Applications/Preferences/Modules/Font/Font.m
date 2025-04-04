@@ -104,7 +104,6 @@ static NSMutableDictionary *defaultValues(void)
 	[NSString stringWithFormat:@"%g", 12.0],@"NSUserFixedPitchFontSize",
 
 	@"NO", @"GSFontAntiAlias",
-	@"NO", @"back-art-subpixel-text",
 	nil];
     }
   return dict;
@@ -127,6 +126,7 @@ static void setBoolDefault(BOOL aBool, NSString *name)
 {
   [domain setObject:(aBool ? @"YES" : @"NO") forKey:name];
   [defaults setPersistentDomain:domain forName:NSGlobalDomain];
+  [defaults synchronize];
 }
 
 static NSString *getStringDefault(NSMutableDictionary *dict, NSString *name)
@@ -167,17 +167,16 @@ static int getIntDefault(NSMutableDictionary *dict, NSString *name)
 {
   NSString *sNum = [domain objectForKey:name];
 
-  if (!sNum)
+  if (!sNum) {
     sNum = [defaultValues() objectForKey:name];
-
+  }
   [dict setObject:sNum forKey:name];
 
   return [sNum intValue];
 }
 static void setIntDefault(int anInt, NSString *name)
 {
-  [domain setObject:[NSString stringWithFormat:@"%d", anInt]
-             forKey:name];
+  [domain setObject:[NSString stringWithFormat:@"%d", anInt] forKey:name];
   [defaults setPersistentDomain:domain forName:NSGlobalDomain];
 }
 
@@ -380,7 +379,6 @@ NSString *WWMDefaultsPath(void)
 {
   // GS
   setBoolDefault([sender intValue], @"GSFontAntiAlias");
-  setIntDefault(0, @"back-art-subpixel-text");
 
   // WM
   [self setWMPreference:([sender intValue] ? @"YES" : @"NO") forKey:@"UseAntialiasedText"];
