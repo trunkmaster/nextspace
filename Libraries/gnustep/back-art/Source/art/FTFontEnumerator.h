@@ -22,17 +22,12 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef FTFontEnumerator_h
-#define FTFontEnumerator_h
-
-#include <GNUstepGUI/GSFontInfo.h>
+#import <GNUstepGUI/GSFontInfo.h>
 
 @class FTFaceInfo;
 
 @interface FTFontEnumerator : GSFontEnumerator
 
-+ (FTFaceInfo *) fontWithName: (NSString *)name;
++ (FTFaceInfo *)fontWithName:(NSString *)name;
 
 @end
-
-#endif
