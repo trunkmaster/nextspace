@@ -545,8 +545,8 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
     if (use_sbit) {
       if ((error = FTC_SBitCache_Lookup(ftc_sbitcache, &ftc_imagetype, glyph, &sbit, NULL))) {
         NSLog(@"FTC_SBitCache_Lookup() failed with error %08x "
-              @"(%08x, %08x, %ix%i, %08x)",
-              error, glyph, (unsigned)ftc_imagetype.face_id, ftc_imagetype.width, ftc_imagetype.height,
+              @"(%08x, %08lu, %ix%i, %08x)",
+              error, glyph, (unsigned long)ftc_imagetype.face_id, ftc_imagetype.width, ftc_imagetype.height,
               ftc_imagetype.flags);
         continue;
       }
@@ -900,8 +900,8 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
     if (use_sbit) {
       if ((error = FTC_SBitCache_Lookup(ftc_sbitcache, &ftc_imagetype, glyph, &sbit, NULL))) {
         NSLog(@"FTC_SBitCache_Lookup() failed with error %08x "
-              @"(%08x, %08x, %ix%i, %08x)",
-              error, glyph, (unsigned)ftc_imagetype.face_id, ftc_imagetype.width, ftc_imagetype.height,
+              @"(%08x, %08lu, %ix%i, %08x)",
+              error, glyph, (unsigned long)ftc_imagetype.face_id, ftc_imagetype.width, ftc_imagetype.height,
               ftc_imagetype.flags);
         continue;
       }
@@ -1181,8 +1181,8 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
     if (use_sbit) {
       if ((error = FTC_SBitCache_Lookup(ftc_sbitcache, &ftc_imagetype, glyph, &sbit, NULL))) {
         if (glyph != 0xffffffff)
-          NSLog(@"FTC_SBitCache_Lookup() failed with error %08x (%08x, %08x, %ix%i, %08x)", error,
-                glyph, (unsigned)ftc_imagetype.face_id, ftc_imagetype.width, ftc_imagetype.height,
+          NSLog(@"FTC_SBitCache_Lookup() failed with error %08x (%08x, %08lu, %ix%i, %08x)", error,
+                glyph, (unsigned long)ftc_imagetype.face_id, ftc_imagetype.width, ftc_imagetype.height,
                 ftc_imagetype.flags);
         continue;
       }
@@ -1404,8 +1404,9 @@ static int filters[3][7] = {{0 * 65536 / 9, 1 * 65536 / 9, 2 * 65536 / 9, 3 * 65
       return cachedSize[entry];
 
     if ((error = FTC_SBitCache_Lookup(ftc_sbitcache, &ftc_imagetype, glyph, &sbit, NULL))) {
-      NSLog(@"FTC_SBitCache_Lookup() failed with error %08x (%08x, %08x, %ix%i, %08x)", error,
-            glyph, (unsigned)ftc_imagetype.face_id, ftc_imagetype.width, ftc_imagetype.height, ftc_imagetype.flags);
+      NSLog(@"FTC_SBitCache_Lookup() failed with error %08x (%08x, %08lu, %ix%i, %08x)", error,
+            glyph, (unsigned long)ftc_imagetype.face_id, ftc_imagetype.width, ftc_imagetype.height,
+            ftc_imagetype.flags);
       return NSZeroSize;
     }
 
