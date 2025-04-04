@@ -22,8 +22,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <Foundation/NSString.h>
-#include "FTFaceInfo.h"
+#import<Foundation/NSString.h>
+#import "FTFaceInfo.h"
 
 @implementation FTFaceInfo
 

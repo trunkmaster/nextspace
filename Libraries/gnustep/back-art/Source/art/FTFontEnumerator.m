@@ -65,10 +65,6 @@ static NSMutableDictionary *fcfg_allFontFamilies;
 static NSMutableDictionary *fcfg_all_fonts;
 static NSMutableSet *families_seen, *families_pending;
 
-static BOOL anti_alias_by_default;
-
-
-
 static int traits_from_string(NSString *s, unsigned int *traits, unsigned int *weight)
 {
 static struct
@@ -288,17 +284,6 @@ static void add_face(NSString *family, int family_weight,
   traits |= family_traits;
   fi->traits = traits;
 
-  if ([d objectForKey: @"RenderHints_hack"])
-    fi->render_hints_hack
-      = strtol([[d objectForKey: @"RenderHints_hack"] cString], NULL, 0);
-  else
-    {
-      if (anti_alias_by_default)
-        fi->render_hints_hack = 0x10202;
-      else
-        fi->render_hints_hack = 0x00202;
-    }
-
   NSDebugLLog(@"ftfont", @"adding '%@' '%@'", fontName, fi);
 
   [fcfg_all_fonts setObject: fi forKey: fontName];
@@ -336,11 +321,6 @@ static void load_font_configuration(void)
   NSDictionary *d;
   NSArray *faces;
   NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
-
-  if ([ud objectForKey: @"GSFontAntiAlias"])
-    anti_alias_by_default = [ud boolForKey: @"GSFontAntiAlias"];
-  else
-    anti_alias_by_default = YES;
 
   fcfg_all_fonts = [[NSMutableDictionary alloc] init];
   fcfg_allFontFamilies = [[NSMutableDictionary alloc] init];
