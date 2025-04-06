@@ -403,7 +403,11 @@ NSString *WWMDefaultsPath(void)
   [self setWMFont:font forKey:@"MenuTextFont"];
   [self setWMFont:[NSFont fontWithName:fontName size:fontSize - 3.0] forKey:@"IconTitleFont"];
   [self setWMFont:[NSFont fontWithName:fontName size:fontSize * 2.0] forKey:@"LargeDisplayFont"];
-  
+
+  [[NSDistributedNotificationCenter defaultCenter]
+      postNotificationName:WMDidChangeAppearanceSettingsNotification
+                    object:@"GSWorkspaceNotification"];
+
   [self updateUI];
 }
 
