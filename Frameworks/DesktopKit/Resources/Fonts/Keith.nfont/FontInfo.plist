@@ -3,7 +3,7 @@
   Foundry = "NextSpace";
   Faces = (
     {
-      PostScriptName = "Keith";
+      PostScriptName = "Keith-Medium";
       Name = "Medium";
       Files = (Keith-Medium.ttf);
     },
