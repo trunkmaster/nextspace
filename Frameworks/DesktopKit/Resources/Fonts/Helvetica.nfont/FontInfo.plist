@@ -4,19 +4,21 @@
 			Name = Medium;
 			PostScriptName = Helvetica-Medium;
 			Files = (Helvetica-Medium.ttf);
-			RenderHints_hack = 0x010000;
 		},
 		{
 			Name = Bold;
 			PostScriptName = Helvetica-Bold;
 			Files = (Helvetica-Bold.ttf);
-			RenderHints_hack = 0x010000;
 		},
 		{
 			Name = Oblique;
 			PostScriptName = Helvetica-Oblique;
 			Files = (Helvetica-Oblique.ttf);
-			RenderHints_hack = 0x010000;
+		},
+		{
+			Name = "Bold Oblique";
+			PostScriptName = Helvetica-BoldOblique;
+			Files = (Helvetica-BoldOblique.ttf);
 		}
 	);
 }

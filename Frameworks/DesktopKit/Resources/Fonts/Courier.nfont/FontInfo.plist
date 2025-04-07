@@ -3,22 +3,30 @@
 	{
 	    Files = (cour.ttf);
 	    Name = Medium;
-	    PostScriptName = Courier;
+	    // PostScriptName = CourierNew-Medium;
+	    PostScriptName = CourierNewPSMT;
+	    RenderHints_hack = 0x010000;
 	},
 	{
 	    Files = (courbd.ttf);
 	    Name = Bold;
-	    PostScriptName = Courier-Bold;
+	    // PostScriptName = CourierNew-Bold;
+	    PostScriptName = CourierNewPS-BoldMT;
+	    RenderHints_hack = 0x010000;
 	},
 	{
 	    Files = (courbi.ttf);
 	    Name = BoldOblique;
-	    PostScriptName = Courier-BoldOblique;
+	    // PostScriptName = CourierNew-BoldItalic;
+	    PostScriptName = CourierNewPS-BoldItalicMT;
+	    RenderHints_hack = 0x010000;
 	},
 	{
 	    Files = (couri.ttf);
 	    Name = Oblique;
-	    PostScriptName = Courier-Oblique;
+	    // PostScriptName = CourierNew-Italic;
+	    PostScriptName = CourierNewPS-ItalicMT;
+	    RenderHints_hack = 0x010000;
 	}
     );
     Description = "Designed as a typewriter face for IBM, Courier was redrawn by Adrian Frutiger for IBM Selectric series.  A typical fixed pitch design, monotone in weight and slab serif in concept.  Used to emulate typewriter output for reports, tabular work and technical documentation.";
