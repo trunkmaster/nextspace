@@ -1,24 +1,24 @@
 ﻿{
     Faces = (
         {
-            Files = (arial.ttf);
-            Name = Medium;
-            PostScriptName = Arial;
+            Files = (Arial-Regular.ttf);
+            Name = Regular;
+            PostScriptName = Arial-Regular;
         },
         {
-            Files = (arialbd.ttf);
+            Files = (Arial-Bold.ttf);
             Name = Bold;
             PostScriptName = Arial-Bold;
         },
         {
-            Files = (arialbi.ttf);
-            Name = BoldOblique;
-            PostScriptName = Arial-BoldOblique;
+            Files = (Arial-BoldItalic.ttf);
+            Name = "Bold Italic";
+            PostScriptName = Arial-BoldItalic;
         },
         {
-            Files = (ariali.ttf);
-            Name = Oblique;
-            PostScriptName = Arial-Oblique;
+            Files = (Arial-Italic.ttf);
+            Name = Italic;
+            PostScriptName = Arial-Italic;
         }
     );
     Description = "Contemporary sans serif design, Arial contains more humanist characteristics than many of its predecessors and as such is more in tune with the mood of the last decades of the twentieth century. The overall treatment of curves is softer and fuller than in most industrial style sans serif faces.  Terminal strokes are cut on the diagonal which helps to give the face a less mechanical appearance.  Arial is an extremely versatile family of typefaces which can be used with equal success for text setting in reports, presentations, magazines etc, and for display use in newspapers, advertising and promotions.";
