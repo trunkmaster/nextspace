@@ -1,24 +1,24 @@
 {
     Faces = (
 	{
-	    Files = (times.ttf);
-	    Name = Roman;
+	    Name = Regular;
 	    PostScriptName = "Times";
+	    Files = (Times.ttf);
 	},
 	{
-	    Files = (timesbd.ttf);
 	    Name = Bold;
 	    PostScriptName = "Times-Bold";
+	    Files = (Times-Bold.ttf);
 	},
 	{
-	    Files = (timesbi.ttf);
 	    Name = BoldItalic;
 	    PostScriptName = "Times-BoldItalic";
+	    Files = (Times-BoldItalic.ttf);
 	},
 	{
-	    Files = (timesi.ttf);
 	    Name = Italic;
 	    PostScriptName = "Times-Italic";
+	    Files = (Times-Italic.ttf);
 	}
     );
     Description = "This remarkable typeface first appeared in 1932 in The Times of London newspaper, for which it was designed.  It has subsequently become one of the worlds most successful type creations.  The original drawings were made under Stanley Morison's direction by Victor Lardent at The Times.  It then went through an extensive iterative process involving further work in Monotype's Type Drawing Office.  Based on experiments Morison had conducted using Perpetua and Plantin, it has many old style characteristics but was adapted to give excellent legibility coupled with good economy.  Widely used in books and magazines, for reports, office documents and also for display and advertising.";
