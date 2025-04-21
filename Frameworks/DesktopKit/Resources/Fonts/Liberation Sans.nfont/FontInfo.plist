@@ -1,32 +1,24 @@
 {
     Faces = (
 	{
-	    Files = (
-		LiberationSans-Regular.ttf
-	    );
-	    Name = Regular;
-	    PostScriptName = "Liberation Sans";
+	    Name = Book;
+	    PostScriptName = "LiberationSans";
+	    Files = (LiberationSans.ttf);
 	},
 	{
-	    Files = (
-		LiberationSans-Bold.ttf
-	    );
 	    Name = Bold;
-	    PostScriptName = "Liberation Sans-Bold";
+	    PostScriptName = "LiberationSans-Bold";
+	    Files = (LiberationSans-Bold.ttf);
 	},
 	{
-	    Files = (
-		LiberationSans-Italic.ttf
-	    );
 	    Name = Italic;
-	    PostScriptName = "Liberation Sans-Italic";
+	    PostScriptName = "LiberationSans-Italic";
+	    Files = (LiberationSans-Italic.ttf);
 	},
 	{
-	    Files = (
-		LiberationSans-BoldItalic.ttf
-	    );
 	    Name = BoldItalic;
-	    PostScriptName = "Liberation Sans-BoldItalic";
+	    PostScriptName = "LiberationSans-BoldItalic";
+	    Files = (LiberationSans-BoldItalic.ttf);
 	}
     );
 }

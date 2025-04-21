@@ -1,32 +1,24 @@
 {
     Faces = (
 	{
-	    Files = (
-		LiberationSerif-Regular.ttf
-	    );
 	    Name = Regular;
-	    PostScriptName = "Liberation Serif";
+	    PostScriptName = "LiberationSerif";
+	    Files = (LiberationSerif.ttf);
 	},
 	{
-	    Files = (
-		LiberationSerif-Bold.ttf
-	    );
 	    Name = Bold;
-	    PostScriptName = "Liberation Serif-Bold";
+	    PostScriptName = "LiberationSerif-Bold";
+	    Files = (LiberationSerif-Bold.ttf);
 	},
 	{
-	    Files = (
-		LiberationSerif-Italic.ttf
-	    );
 	    Name = Italic;
-	    PostScriptName = "Liberation Serif-Italic";
+	    PostScriptName = "LiberationSerif-Italic";
+	    Files = (LiberationSerif-Italic.ttf);
 	},
 	{
-	    Files = (
-		LiberationSerif-BoldItalic.ttf
-	    );
 	    Name = BoldItalic;
-	    PostScriptName = "Liberation Serif-BoldItalic";
+	    PostScriptName = "LiberationSerif-BoldItalic";
+	    Files = (LiberationSerif-BoldItalic.ttf);
 	}
     );
 }

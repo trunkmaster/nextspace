@@ -1,7 +1,7 @@
 {
     Faces = (
 	{
-	    Name = Regular;
+	    Name = "Book";
 	    PostScriptName = "Times";
 	    Files = (Times.ttf);
 	},
@@ -11,7 +11,7 @@
 	    Files = (Times-Bold.ttf);
 	},
 	{
-	    Name = BoldItalic;
+	    Name = "Bold Italic";
 	    PostScriptName = "Times-BoldItalic";
 	    Files = (Times-BoldItalic.ttf);
 	},
