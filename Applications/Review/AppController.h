@@ -15,6 +15,7 @@
   PrefController *preferences;
   //Info -> Info Panel
   id infoPanel;
+  NSPopUpButton *saveAsTypes;
 }
 
 + (void)initialize;

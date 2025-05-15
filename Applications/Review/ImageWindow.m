@@ -7,7 +7,7 @@
 #import "Inspector.h"
 #import <AppKit/PSOperators.h>
 
-@interface RScrollView : NSScrollView
+@interface ImageScrollView : NSScrollView
 {
   NSView *scaleBtn;
 }
@@ -15,7 +15,7 @@
 
 @end
 
-@implementation RScrollView
+@implementation ImageScrollView
 
 - (void)setScaleView:(NSView *)scale
 {
@@ -73,7 +73,7 @@
 
   if ((self = [super init])) {
     NSRect frame = NSMakeRect(0, 0, 0, 0);
-    RScrollView *scrollView = nil;
+    ImageScrollView *scrollView = nil;
     NSImageView *imageView = nil;
     NSImage *image;
     NSArray *array;
@@ -115,7 +115,7 @@
                                  hasHorizontalScroller:YES
                                    hasVerticalScroller:YES
                                             borderType:NSNoBorder];
-    scrollView = [[RScrollView alloc] initWithFrame:frame];
+    scrollView = [[ImageScrollView alloc] initWithFrame:frame];
     [scrollView setHasVerticalScroller:YES];
     [scrollView setHasHorizontalScroller:YES];
     [scrollView setBorderType:NSNoBorder];

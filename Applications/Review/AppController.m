@@ -82,40 +82,61 @@
 {
   ImageWindow *win = [[ImageWindow alloc] initWithContentsOfFile:path];
 
-  if (win)
-    {
-      [win setDelegate:self];
-      [images addObject:win];
-      return YES;
-    }
+  if (win) {
+    [win setDelegate:self];
+    [images addObject:win];
+    return YES;
+  }
   return NO;
 }
 
 - (void)openImage:(id)sender
 {
-  int          result;
-  NSArray      *fileTypes = [NSImage imageFileTypes];
+  int result;
+  NSArray *fileTypes = [NSImage imageFileTypes];
   NXTOpenPanel *openPanel = [NXTOpenPanel openPanel];
-  NSString     *pth = [[NSUserDefaults standardUserDefaults]
-                        objectForKey:@"OpenDir"];
+  NSString *pth = [[NSUserDefaults standardUserDefaults] objectForKey:@"OpenDir"];
 
   [openPanel setCanChooseDirectories:NO];
   [openPanel setAllowsMultipleSelection:NO];
-  result = [openPanel runModalForDirectory:pth
-                                      file:nil
-                                     types:fileTypes];
+  result = [openPanel runModalForDirectory:pth file:nil types:fileTypes];
 
   if (result == NSOKButton) {
-    [[NSUserDefaults standardUserDefaults] setObject:[openPanel directory]
-                                              forKey:@"OpenDir"];
-    
+    [[NSUserDefaults standardUserDefaults] setObject:[openPanel directory] forKey:@"OpenDir"];
+
     for (NSString *imageFile in [openPanel filenames]) {
       if (![self openImageAtPath:imageFile]) {
-        NXTRunAlertPanel(@"Error when opening file", 
-                         @"Couldn't open %@", @"OK", nil, nil,imageFile);
+        NXTRunAlertPanel(@"Error when opening file", @"Couldn't open %@", @"OK", nil, nil,
+                         imageFile);
       }
     }
-  }  
+  }
+}
+
+- (void)saveImageAs:(id)sender
+{
+  NXTSavePanel *savePanel = [NXTSavePanel new];
+  NSString *fileName;
+
+  if (savePanel) {
+    // [openPanel setDirectory:NSHomeDirectory()];
+    [savePanel runModal];
+    fileName = [savePanel filename];
+    if (fileName && [fileName length] > 0) {
+      NSString *pathExtension = [fileName pathExtension];
+      NSLog(@"SavePanel: file name entered %@, path extension: `%@`", fileName, [fileName pathExtension]);
+      if (pathExtension.length == 0) {
+        NSLog(@"Path extension is empty. Appending TIFF: %@", [fileName stringByAppendingPathExtension:@"tiff"]);
+      } else {
+        if ([[NSBitmapImageRep imageUnfilteredFileTypes] containsObject:pathExtension]) {
+          NSLog(@"%@ is supported by NSBitmapImageRep!", pathExtension);
+          
+        }
+      }
+    }
+    [savePanel release];
+    savePanel = nil;
+  }
 }
 
 - (void)imageWindowWillClose:(id)sender
