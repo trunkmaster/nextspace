@@ -24,6 +24,8 @@
   NSBox         *box;
 }
 
+@property (readonly) NSImage *image;
+
 - (id)initWithContentsOfFile:(NSString *)path;
 
 - (id)delegate;

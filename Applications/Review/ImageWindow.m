@@ -7,6 +7,8 @@
 #import "Inspector.h"
 #import <AppKit/PSOperators.h>
 
+#pragma mark - Custom ScrollView
+
 @interface ImageScrollView : NSScrollView
 {
   NSView *scaleBtn;
@@ -64,7 +66,8 @@
 
 @end
 
-//------------------------------------------------------------------------
+#pragma mark - Image window
+
 @implementation ImageWindow
 
 - (id)initWithContentsOfFile:(NSString *)path
@@ -75,7 +78,7 @@
     NSRect frame = NSMakeRect(0, 0, 0, 0);
     ImageScrollView *scrollView = nil;
     NSImageView *imageView = nil;
-    NSImage *image;
+    // NSImage *image;
     NSArray *array;
     int wMask = (NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask |
                  NSResizableWindowMask);
@@ -85,15 +88,14 @@
 
     // Image loading
     imagePath = [path copy];
-    if (!(image = [[NSImage alloc] initWithContentsOfFile:path])) {
-      NSRunAlertPanel(@"Open file", @"File %@ doesn't contain image %@", @"Dismiss", nil, nil, path,
-                      image);
+    if (!(_image = [[NSImage alloc] initWithContentsOfFile:path])) {
+      NSRunAlertPanel(@"Open file", @"File %@ doesn't contain image.", @"Dismiss", nil, nil, path);
       return nil;
     }
 
     // Image
-    [image setBackgroundColor:[NSColor lightGrayColor]];
-    array = [image representations];
+    [_image setBackgroundColor:[NSColor lightGrayColor]];
+    array = [_image representations];
     reps = [array count];
     rep = [array objectAtIndex:0];
 
@@ -102,14 +104,14 @@
     }
     [rep retain];
 
-    imageSize = [image size];
+    imageSize = [_image size];
     frame.size = imageSize;
 
     // ImageView and ScrollView
     imageView = [[NSImageView alloc] initWithFrame:frame];
     [imageView setEditable:NO];
-    [imageView setImage:image];
-    RELEASE(image);
+    [imageView setImage:_image];
+    // RELEASE(_image);
 
     frame.size = [NSScrollView frameSizeForContentSize:[imageView frame].size
                                  hasHorizontalScroller:YES
