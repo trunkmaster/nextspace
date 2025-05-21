@@ -13,14 +13,15 @@
 
 @interface ImageWindow : NSObject <ImageShowing>
 {
-  id            delegate;
-  NSString      *imagePath;
-  NSDictionary  *attr;
-  NSSize        imageSize;
-  NSImageRep    *rep;
-  int           repCount;
+  id delegate;
+  NSString *imagePath;
+  NSSize imageSize;
+  NSDictionary *attr;
+  NSImageRep *rep;
+  int repCount;
   NSPopUpButton *scalePopup;
-  NSBox         *box;
+  NSBox *box;
+  BOOL isMultipage;
 }
 
 @property (readonly) NSWindow *window;

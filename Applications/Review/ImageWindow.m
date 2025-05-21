@@ -11,18 +11,14 @@
 
 @interface ImageScrollView : NSScrollView
 {
-  NSView *scaleBtn;
 }
-- (void)setScaleView:(NSView *)scale;
+@property (readwrite, assign) NSView *scaleView;
+@property (readwrite, assign) NSView *pageUpButton;
+@property (readwrite, assign) NSView *pageDownButton;
 
 @end
 
 @implementation ImageScrollView
-
-- (void)setScaleView:(NSView *)scale
-{
-  scaleBtn = scale;
-}
 
 - (void)tile
 {
@@ -31,8 +27,12 @@
 
   [super tile];
 
+  if (_pageUpButton && _pageDownButton) {
+    
+  }
+
   hsFrame = [hScroller frame];
-  hsFrame.size.width -= [scaleBtn frame].size.width + 2;
+  hsFrame.size.width -= [_scaleView frame].size.width + 2;
   [hScroller setFrame:hsFrame];
 }
 
@@ -154,7 +154,7 @@
     [scalePopup addItemWithTitle:@"700%"];
     [scalePopup setAutoresizingMask:(NSViewMaxYMargin | NSViewMinXMargin)];
     [scalePopup selectItemWithTitle:@"100%"];
-    [scrollView setScaleView:scalePopup];
+    scrollView.scaleView = scalePopup;
     [scrollView tile];
 
     [box addSubview:scrollView];

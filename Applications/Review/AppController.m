@@ -120,7 +120,7 @@
 
   if (savePanel) {
     NSWindow *keyWindow = [NSApp keyWindow];
-    
+
     [savePanel runModal];
     fileName = [savePanel filename];
     if (fileName && [fileName length] > 0) {
@@ -135,9 +135,13 @@
 
     for (ImageWindow *win in imageWindows) {
       if (win.window == keyWindow) {
-        NSData *data = [win.image TIFFRepresentation];
+        // NSData *data = [win.image TIFFRepresentation];
+        NSBitmapImageRep *imgRep = [[win.image representations] objectAtIndex:0];
+        NSData *data = [imgRep representationUsingType:NSPNGFileType properties:nil];
         if (data) {
           [data writeToFile:fileName atomically:NO];
+        } else {
+          NSLog(@"Can't save image - no data found!");
         }
         break;
       }
