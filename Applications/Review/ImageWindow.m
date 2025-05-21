@@ -96,7 +96,7 @@
     // Image
     [_image setBackgroundColor:[NSColor lightGrayColor]];
     array = [_image representations];
-    reps = [array count];
+    repCount = [array count];
     rep = [array objectAtIndex:0];
 
     if (rep == nil) {
@@ -175,23 +175,23 @@
     if (frame.size.height < 100)
       frame.size.height = 100;
 
-    window = [[NSWindow alloc] initWithContentRect:frame
+    _window = [[NSWindow alloc] initWithContentRect:frame
                                          styleMask:wMask
                                            backing:NSBackingStoreRetained
                                              defer:YES];
-    [window setReleasedWhenClosed:YES];
-    [window setDelegate:self];
-    [window setFrame:frame display:YES];
-    [window setMaxSize:frame.size];
-    [window setMinSize:NSMakeSize(100, 100)];
-    [window setContentView:box];
+    [_window setReleasedWhenClosed:YES];
+    [_window setDelegate:self];
+    [_window setFrame:frame display:YES];
+    [_window setMaxSize:frame.size];
+    [_window setMinSize:NSMakeSize(100, 100)];
+    [_window setContentView:box];
     RELEASE(box);
-    [window setTitleWithRepresentedFilename:path];
-    [window setReleasedWhenClosed:YES];
+    [_window setTitleWithRepresentedFilename:path];
+    [_window setReleasedWhenClosed:YES];
 
-    [window center];
-    [window makeKeyAndOrderFront:nil];
-    [window display];
+    [_window center];
+    [_window makeKeyAndOrderFront:nil];
+    [_window display];
   }
 
   return self;
@@ -199,7 +199,7 @@
 
 - (void)dealloc
 {
-  RELEASE(window);
+  RELEASE(_window);
   RELEASE(imagePath);
   RELEASE(attr);
   RELEASE(rep);
@@ -219,18 +219,18 @@
 
 - (void)windowWillClose:(NSNotification *)notif
 {
-  if ([[notif object] isEqual:window]) {
+  if ([[notif object] isEqual:_window]) {
     if (delegate && [delegate respondsToSelector:@selector(imageWindowWillClose:)]) {
       [delegate imageWindowWillClose:self];
-      [window setDelegate:nil];
-      window = nil;
+      [_window setDelegate:nil];
+      _window = nil;
     }
   }
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
 {
-  if ([[aNotification object] isEqual:window]) {
+  if ([[aNotification object] isEqual:_window]) {
     [[Inspector sharedInspector] imageWindowDidBecomeActive:self];
   }
 }
@@ -305,7 +305,7 @@
 
 - (NSString *)imageReps
 {
-  return [NSString stringWithFormat:@"%d", reps];
+  return [NSString stringWithFormat:@"%d", repCount];
 }
 
 @end

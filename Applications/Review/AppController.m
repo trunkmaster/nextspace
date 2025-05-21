@@ -24,14 +24,14 @@
 {
   if ((self = [super init]))
     {
-      images = [[NSMutableArray alloc] init];
+      imageWindows = [[NSMutableArray alloc] init];
     }
   return self;
 }
 
 - (void)dealloc
 {
-  RELEASE(images);
+  RELEASE(imageWindows);
 
   [super dealloc];
 }
@@ -84,7 +84,7 @@
 
   if (win) {
     [win setDelegate:self];
-    [images addObject:win];
+    [imageWindows addObject:win];
     return YES;
   }
   return NO;
@@ -119,21 +119,30 @@
   NSString *fileName;
 
   if (savePanel) {
-    // [openPanel setDirectory:NSHomeDirectory()];
+    NSWindow *keyWindow = [NSApp keyWindow];
+    
     [savePanel runModal];
     fileName = [savePanel filename];
     if (fileName && [fileName length] > 0) {
       NSString *pathExtension = [fileName pathExtension];
-      NSLog(@"SavePanel: file name entered %@, path extension: `%@`", fileName, [fileName pathExtension]);
       if (pathExtension.length == 0) {
-        NSLog(@"Path extension is empty. Appending TIFF: %@", [fileName stringByAppendingPathExtension:@"tiff"]);
+        fileName = [fileName stringByAppendingPathExtension:@"tiff"];
       } else {
-        if ([[NSBitmapImageRep imageUnfilteredFileTypes] containsObject:pathExtension]) {
-          NSLog(@"%@ is supported by NSBitmapImageRep!", pathExtension);
-          
-        }
+        fileName =
+            [[fileName stringByDeletingPathExtension] stringByAppendingPathExtension:@"tiff"];
       }
     }
+
+    for (ImageWindow *win in imageWindows) {
+      if (win.window == keyWindow) {
+        NSData *data = [win.image TIFFRepresentation];
+        if (data) {
+          [data writeToFile:fileName atomically:NO];
+        }
+        break;
+      }
+    }
+
     [savePanel release];
     savePanel = nil;
   }
@@ -143,7 +152,7 @@
 {
   if (sender)
     {
-      [images removeObject:sender];
+      [imageWindows removeObject:sender];
       AUTORELEASE(sender);
     }
 }

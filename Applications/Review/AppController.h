@@ -9,7 +9,7 @@
 
 @interface AppController : NSObject
 {
-  NSMutableArray *images;
+  NSMutableArray *imageWindows;
 
   Inspector      *inspector;
   PrefController *preferences;

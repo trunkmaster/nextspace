@@ -14,16 +14,16 @@
 @interface ImageWindow : NSObject <ImageShowing>
 {
   id            delegate;
-  NSWindow      *window;
   NSString      *imagePath;
   NSDictionary  *attr;
   NSSize        imageSize;
   NSImageRep    *rep;
-  int           reps;
+  int           repCount;
   NSPopUpButton *scalePopup;
   NSBox         *box;
 }
 
+@property (readonly) NSWindow *window;
 @property (readonly) NSImage *image;
 
 - (id)initWithContentsOfFile:(NSString *)path;
