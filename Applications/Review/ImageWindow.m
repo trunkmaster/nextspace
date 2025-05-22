@@ -22,18 +22,31 @@
 
 - (void)tile
 {
-  NSScroller *hScroller = [self horizontalScroller];
-  NSRect hsFrame;
-
   [super tile];
 
   if (_pageUpButton && _pageDownButton) {
-    
+    NSScroller *vScroller = [self verticalScroller];
+    NSRect vsFrame = [vScroller frame];
+    NSPoint vsOrigin = vsFrame.origin;
+    CGFloat pageButtonsHeight = _pageUpButton.frame.size.height + _pageDownButton.frame.size.height;
+
+    vsFrame.size.height -= pageButtonsHeight;
+    vsFrame.origin.y += pageButtonsHeight;
+
+    [_pageDownButton setFrameOrigin:vsOrigin];
+    vsOrigin.y += _pageDownButton.frame.size.height;
+    [_pageUpButton setFrameOrigin:vsOrigin];
+
+    [vScroller setFrame:vsFrame];
   }
 
-  hsFrame = [hScroller frame];
-  hsFrame.size.width -= [_scaleView frame].size.width + 2;
-  [hScroller setFrame:hsFrame];
+  if (_scaleView) {
+    NSScroller *hScroller = [self horizontalScroller];
+    NSRect hsFrame = [hScroller frame];
+
+    hsFrame.size.width -= _scaleView.frame.size.width + 2;
+    [hScroller setFrame:hsFrame];
+  }
 }
 
 - (void)drawRect:(NSRect)rect
@@ -156,6 +169,10 @@
     [scalePopup selectItemWithTitle:@"100%"];
     scrollView.scaleView = scalePopup;
     [scrollView tile];
+
+    NSButton *pageUpButton, *pageDownButton;
+    pageUpButton = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 16, 16)];
+    [pageUpButton setImage:[NSImage imageNamed:@"pageup"]];
 
     [box addSubview:scrollView];
     RELEASE(scrollView);
