@@ -20,6 +20,8 @@ Review_APPLICATION_ICON = Review.tiff
 # Resource files
 #
 Review_RESOURCE_FILES = \
+Resources/pageup.tiff \
+Resources/pagedown.tiff \
 Resources/GenericImage.tiff \
 Resources/GIFImage.tiff \
 Resources/JPEGImage.tiff \

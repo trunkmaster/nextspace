@@ -30,12 +30,10 @@
     NSPoint vsOrigin = vsFrame.origin;
     CGFloat pageButtonsHeight = _pageUpButton.frame.size.height + _pageDownButton.frame.size.height;
 
-    vsFrame.size.height -= pageButtonsHeight;
-    vsFrame.origin.y += pageButtonsHeight;
+    vsFrame.size.height -= pageButtonsHeight + 2;
 
-    [_pageDownButton setFrameOrigin:vsOrigin];
-    vsOrigin.y += _pageDownButton.frame.size.height;
-    [_pageUpButton setFrameOrigin:vsOrigin];
+    [_pageUpButton setFrameOrigin:NSMakePoint(1, pageButtonsHeight / 2 + 2)];
+    [_pageDownButton setFrameOrigin:NSMakePoint(1, 1)];
 
     [vScroller setFrame:vsFrame];
   }
@@ -75,6 +73,13 @@
   DPSmoveto(ctxt, lineStart.x, lineStart.y);
   DPSlineto(ctxt, lineEnd.x, lineEnd.y);
   DPSstroke(ctxt);
+
+  if (_pageUpButton && _pageDownButton) {
+    CGFloat pageButtonsHeight = _pageUpButton.frame.size.height + _pageDownButton.frame.size.height;
+    DPSmoveto(ctxt, 18, 0);
+    DPSlineto(ctxt, 18, pageButtonsHeight + 3);
+    DPSstroke(ctxt);
+  }
 }
 
 @end
@@ -168,15 +173,29 @@
     [scalePopup setAutoresizingMask:(NSViewMaxYMargin | NSViewMinXMargin)];
     [scalePopup selectItemWithTitle:@"100%"];
     scrollView.scaleView = scalePopup;
-    [scrollView tile];
 
     NSButton *pageUpButton, *pageDownButton;
     pageUpButton = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 16, 16)];
+    [pageUpButton setButtonType:NSMomentaryLightButton];
+    [pageUpButton setImagePosition:NSImageOnly];
+    [pageUpButton setRefusesFirstResponder:YES];
     [pageUpButton setImage:[NSImage imageNamed:@"pageup"]];
+    scrollView.pageUpButton = pageUpButton;
+
+    pageDownButton = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 16, 16)];
+    [pageDownButton setButtonType:NSMomentaryLightButton];
+    [pageDownButton setImagePosition:NSImageOnly];
+    [pageDownButton setRefusesFirstResponder:YES];
+    [pageDownButton setImage:[NSImage imageNamed:@"pagedown"]];
+    scrollView.pageDownButton = pageDownButton;
+
+    [scrollView tile];
 
     [box addSubview:scrollView];
     RELEASE(scrollView);
     [box addSubview:scalePopup];
+    [box addSubview:pageUpButton];
+    [box addSubview:pageDownButton];
     RELEASE(scalePopup);
 
     // Window
