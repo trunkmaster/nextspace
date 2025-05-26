@@ -13,8 +13,7 @@
 {
 }
 @property (readwrite, assign) NSView *scaleView;
-@property (readwrite, assign) NSView *pageUpButton;
-@property (readwrite, assign) NSView *pageDownButton;
+@property (readwrite, assign) NSView *multipageView;
 
 @end
 
@@ -24,16 +23,12 @@
 {
   [super tile];
 
-  if (_pageUpButton && _pageDownButton) {
+  if (_multipageView) {
     NSScroller *vScroller = [self verticalScroller];
     NSRect vsFrame = [vScroller frame];
-    NSPoint vsOrigin = vsFrame.origin;
-    CGFloat pageButtonsHeight = _pageUpButton.frame.size.height + _pageDownButton.frame.size.height;
+    // NSPoint vsOrigin = vsFrame.origin;
 
-    vsFrame.size.height -= pageButtonsHeight + 2;
-
-    [_pageUpButton setFrameOrigin:NSMakePoint(1, pageButtonsHeight / 2 + 2)];
-    [_pageDownButton setFrameOrigin:NSMakePoint(1, 1)];
+    vsFrame.size.height -= _multipageView.frame.size.height;
 
     [vScroller setFrame:vsFrame];
   }
@@ -42,7 +37,7 @@
     NSScroller *hScroller = [self horizontalScroller];
     NSRect hsFrame = [hScroller frame];
 
-    hsFrame.size.width -= _scaleView.frame.size.width + 2;
+    hsFrame.size.width -= _scaleView.frame.size.width + 3;
     [hScroller setFrame:hsFrame];
   }
 }
@@ -74,14 +69,51 @@
   DPSlineto(ctxt, lineEnd.x, lineEnd.y);
   DPSstroke(ctxt);
 
-  if (_pageUpButton && _pageDownButton) {
-    CGFloat pageButtonsHeight = _pageUpButton.frame.size.height + _pageDownButton.frame.size.height;
-    DPSmoveto(ctxt, 18, 0);
-    DPSlineto(ctxt, 18, pageButtonsHeight + 3);
-    DPSstroke(ctxt);
-  }
 }
 
+@end
+
+#pragma mark - Multipage controls
+
+@interface ImageMultipageView : NSView
+@end
+
+@implementation ImageMultipageView
+
+- (instancetype)initWithFrame:(NSRect)rect
+{
+  [super initWithFrame:rect];
+
+  NSButton *pageUpButton, *pageDownButton;
+  pageUpButton = [[NSButton alloc] initWithFrame:NSMakeRect(1, 18, 16, 16)];
+  [pageUpButton setButtonType:NSMomentaryChangeButton];
+  [pageUpButton setImagePosition:NSImageOnly];
+  [pageUpButton setRefusesFirstResponder:YES];
+  [pageUpButton setImage:[NSImage imageNamed:@"PageUp"]];
+  [pageUpButton setAlternateImage:[NSImage imageNamed:@"PageUpH"]];
+  [self addSubview:pageUpButton];
+
+  pageDownButton = [[NSButton alloc] initWithFrame:NSMakeRect(1, 1, 16, 16)];
+  [pageDownButton setButtonType:NSMomentaryChangeButton];
+  [pageDownButton setImagePosition:NSImageOnly];
+  [pageDownButton setRefusesFirstResponder:YES];
+  [pageDownButton setImage:[NSImage imageNamed:@"PageDown"]];
+  [pageDownButton setAlternateImage:[NSImage imageNamed:@"PageDownH"]];
+  [self addSubview:pageDownButton];
+
+  return self;
+}
+
+- (void)drawRect:(NSRect)rect
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  [super drawRect:rect];
+
+  DPSmoveto(ctxt, 18, 0);
+  DPSlineto(ctxt, 18, self.frame.size.height);
+  DPSstroke(ctxt);
+}
 @end
 
 #pragma mark - Image window
@@ -96,7 +128,6 @@
     NSRect frame = NSMakeRect(0, 0, 0, 0);
     ImageScrollView *scrollView = nil;
     NSImageView *imageView = nil;
-    // NSImage *image;
     NSArray *array;
     int wMask = (NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask |
                  NSResizableWindowMask);
@@ -126,8 +157,12 @@
     frame.size = imageSize;
 
     // ImageView and ScrollView
+    if (imageSize.width < 200 || imageSize.height < 200) {
+      frame.size = NSMakeSize(200,200);
+    }
     imageView = [[NSImageView alloc] initWithFrame:frame];
     [imageView setEditable:NO];
+    [imageView setImageAlignment:NSImageAlignCenter];
     [imageView setImage:_image];
     // RELEASE(_image);
 
@@ -152,7 +187,7 @@
 
     // Popup
     scalePopup =
-        [[NSPopUpButton alloc] initWithFrame:NSMakeRect([box frame].size.width - 57, 0, 57, 17)];
+        [[NSPopUpButton alloc] initWithFrame:NSMakeRect([box frame].size.width - 58, 1, 57, 16)];
     [scalePopup setRefusesFirstResponder:YES];
     [scalePopup addItemWithTitle:@"10%"];
     [scalePopup addItemWithTitle:@"20%"];
@@ -174,29 +209,19 @@
     [scalePopup selectItemWithTitle:@"100%"];
     scrollView.scaleView = scalePopup;
 
-    NSButton *pageUpButton, *pageDownButton;
-    pageUpButton = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 16, 16)];
-    [pageUpButton setButtonType:NSMomentaryLightButton];
-    [pageUpButton setImagePosition:NSImageOnly];
-    [pageUpButton setRefusesFirstResponder:YES];
-    [pageUpButton setImage:[NSImage imageNamed:@"pageup"]];
-    scrollView.pageUpButton = pageUpButton;
-
-    pageDownButton = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 16, 16)];
-    [pageDownButton setButtonType:NSMomentaryLightButton];
-    [pageDownButton setImagePosition:NSImageOnly];
-    [pageDownButton setRefusesFirstResponder:YES];
-    [pageDownButton setImage:[NSImage imageNamed:@"pagedown"]];
-    scrollView.pageDownButton = pageDownButton;
+    // Multipage controls
+    ImageMultipageView *multipageView =
+        [[ImageMultipageView alloc] initWithFrame:NSMakeRect(0, 0, 19, 34)];
+    scrollView.multipageView = multipageView;
 
     [scrollView tile];
 
     [box addSubview:scrollView];
     RELEASE(scrollView);
     [box addSubview:scalePopup];
-    [box addSubview:pageUpButton];
-    [box addSubview:pageDownButton];
     RELEASE(scalePopup);
+    [box addSubview:multipageView];
+    RELEASE(multipageView);
 
     // Window
     frame = [NSWindow frameRectForContentRect:frame styleMask:wMask];
@@ -219,7 +244,7 @@
     [_window setDelegate:self];
     [_window setFrame:frame display:YES];
     [_window setMaxSize:frame.size];
-    [_window setMinSize:NSMakeSize(100, 100)];
+    [_window setMinSize:NSMakeSize(200, 200)];
     [_window setContentView:box];
     RELEASE(box);
     [_window setTitleWithRepresentedFilename:path];
