@@ -196,7 +196,6 @@
     imageView = [[NSImageView alloc] initWithFrame:frame];
     [imageView setEditable:NO];
     [imageView setImageAlignment:NSImageAlignCenter];
-    // [imageView setImage:_image];
     // Image
     [_image setBackgroundColor:[NSColor lightGrayColor]];
     representations = [_image representations];
@@ -294,7 +293,7 @@
     [_window setMaxSize:frame.size];
     [_window setMinSize:NSMakeSize(200, 200)];
     [_window setContentView:box];
-    // RELEASE(box);
+    RELEASE(box);
     [_window setTitleWithRepresentedFilename:path];
     [_window setReleasedWhenClosed:YES];
 
