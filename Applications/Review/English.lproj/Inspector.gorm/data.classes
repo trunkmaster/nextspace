@@ -9,7 +9,7 @@
 	    fileSizeField,
 	    formatField,
 	    heightField,
-	    bytesPerRow,
+	    bytesPerRowField,
 	    numberOfPlanesField,
 	    samplesPerPixelField,
 	    widthField
