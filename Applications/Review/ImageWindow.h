@@ -16,12 +16,13 @@
   id delegate;
   NSString *imagePath;
   NSSize imageSize;
+  NSArray *representations;
+  NSImageRep *visibleRep;
+  NSUInteger visibleRepIndex;
+  NSImageView *imageView;
   NSDictionary *attr;
-  NSImageRep *rep;
-  int repCount;
   NSPopUpButton *scalePopup;
   NSBox *box;
-  BOOL isMultipage;
 }
 
 @property (readonly) NSWindow *window;

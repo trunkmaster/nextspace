@@ -81,6 +81,9 @@
 @implementation ImageMultipageView
 
 - (instancetype)initWithFrame:(NSRect)rect
+                       target:(id)targetObject
+                   nextAction:(SEL)nextSelector
+                   prevAction:(SEL)prevSelector
 {
   [super initWithFrame:rect];
 
@@ -91,6 +94,8 @@
   [pageUpButton setRefusesFirstResponder:YES];
   [pageUpButton setImage:[NSImage imageNamed:@"PageUp"]];
   [pageUpButton setAlternateImage:[NSImage imageNamed:@"PageUpH"]];
+  [pageUpButton setTarget:targetObject];
+  [pageUpButton setAction:prevSelector];
   [self addSubview:pageUpButton];
 
   pageDownButton = [[NSButton alloc] initWithFrame:NSMakeRect(1, 1, 16, 16)];
@@ -99,6 +104,8 @@
   [pageDownButton setRefusesFirstResponder:YES];
   [pageDownButton setImage:[NSImage imageNamed:@"PageDown"]];
   [pageDownButton setAlternateImage:[NSImage imageNamed:@"PageDownH"]];
+  [pageDownButton setTarget:targetObject];
+  [pageDownButton setAction:nextSelector];
   [self addSubview:pageDownButton];
 
   return self;
@@ -120,6 +127,45 @@
 
 @implementation ImageWindow
 
+- (BOOL)_displayRepresentationAtIndex:(NSUInteger)index
+{
+  visibleRepIndex = index;
+  if (visibleRep) {
+    [visibleRep release];
+  }
+  visibleRep = [representations objectAtIndex:visibleRepIndex];
+
+  if (visibleRep == nil) {
+    NSLog(@"Failed to get representation at index %lu", index);
+    return NO;
+  } else {
+    [visibleRep retain];
+    if ([visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+      // [_image release];
+      _image = [[NSImage alloc] initWithData:[(NSBitmapImageRep *)visibleRep TIFFRepresentation]];
+      [imageView setImage:_image];
+    } else {
+      return NO;
+    }
+  }
+  return YES;
+}
+
+- (void)displayNextRpresentation:(id)sender
+{
+  NSLog(@"Display Next Representation");
+  if (visibleRepIndex < [representations count] - 1) {
+    [self _displayRepresentationAtIndex:visibleRepIndex + 1];
+  }
+}
+- (void)displayPrevRpresentation:(id)sender
+{
+  NSLog(@"Display Previous Representation");
+  if (visibleRepIndex > 0) {
+    [self _displayRepresentationAtIndex:visibleRepIndex - 1];
+  }
+}
+
 - (id)initWithContentsOfFile:(NSString *)path
 {
   NSAssert(path, @"No path specified!");
@@ -127,8 +173,7 @@
   if ((self = [super init])) {
     NSRect frame = NSMakeRect(0, 0, 0, 0);
     ImageScrollView *scrollView = nil;
-    NSImageView *imageView = nil;
-    NSArray *array;
+
     int wMask = (NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask |
                  NSResizableWindowMask);
 
@@ -142,30 +187,25 @@
       return nil;
     }
 
-    // Image
-    [_image setBackgroundColor:[NSColor lightGrayColor]];
-    array = [_image representations];
-    repCount = [array count];
-    rep = [array objectAtIndex:0];
-
-    if (rep == nil) {
-      return nil;
-    }
-    [rep retain];
-
     imageSize = [_image size];
     frame.size = imageSize;
-
-    // ImageView and ScrollView
+    // ImageView
     if (imageSize.width < 200 || imageSize.height < 200) {
       frame.size = NSMakeSize(200,200);
     }
     imageView = [[NSImageView alloc] initWithFrame:frame];
     [imageView setEditable:NO];
     [imageView setImageAlignment:NSImageAlignCenter];
-    [imageView setImage:_image];
-    // RELEASE(_image);
+    // [imageView setImage:_image];
+    // Image
+    [_image setBackgroundColor:[NSColor lightGrayColor]];
+    representations = [_image representations];
+    [representations retain];
+    if ([self _displayRepresentationAtIndex:0] == NO) {
+      return nil;
+    }
 
+    // ScrollView
     frame.size = [NSScrollView frameSizeForContentSize:[imageView frame].size
                                  hasHorizontalScroller:YES
                                    hasVerticalScroller:YES
@@ -177,6 +217,7 @@
     [scrollView setDocumentView:imageView];
     RELEASE(imageView);
     [scrollView setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+
     // Content view
     box = [[NSBox alloc] init];
     [box setTitlePosition:NSNoTitle];
@@ -209,19 +250,26 @@
     [scalePopup selectItemWithTitle:@"100%"];
     scrollView.scaleView = scalePopup;
 
-    // Multipage controls
-    ImageMultipageView *multipageView =
-        [[ImageMultipageView alloc] initWithFrame:NSMakeRect(0, 0, 19, 34)];
-    scrollView.multipageView = multipageView;
-
-    [scrollView tile];
-
     [box addSubview:scrollView];
     RELEASE(scrollView);
     [box addSubview:scalePopup];
     RELEASE(scalePopup);
-    [box addSubview:multipageView];
-    RELEASE(multipageView);
+
+    // Multipage controls
+    if ([representations count] > 1) {
+      ImageMultipageView *multipageView;
+
+      multipageView =
+          [[ImageMultipageView alloc] initWithFrame:NSMakeRect(0, 0, 19, 34)
+                                             target:self
+                                         nextAction:@selector(displayNextRpresentation:)
+                                         prevAction:@selector(displayPrevRpresentation:)];
+      scrollView.multipageView = multipageView;
+      [box addSubview:multipageView];
+      RELEASE(multipageView);
+    }
+
+    [scrollView tile];
 
     // Window
     frame = [NSWindow frameRectForContentRect:frame styleMask:wMask];
@@ -246,7 +294,7 @@
     [_window setMaxSize:frame.size];
     [_window setMinSize:NSMakeSize(200, 200)];
     [_window setContentView:box];
-    RELEASE(box);
+    // RELEASE(box);
     [_window setTitleWithRepresentedFilename:path];
     [_window setReleasedWhenClosed:YES];
 
@@ -261,9 +309,9 @@
 - (void)dealloc
 {
   RELEASE(_window);
+  RELEASE(_image);
   RELEASE(imagePath);
   RELEASE(attr);
-  RELEASE(rep);
 
   [super dealloc];
 }
@@ -351,22 +399,22 @@
 
 - (NSString *)bitsPerSample
 {
-  return [NSString stringWithFormat:@"%ld", [rep bitsPerSample]];
+  return [NSString stringWithFormat:@"%ld", [visibleRep bitsPerSample]];
 }
 
 - (NSString *)colorSpaceName
 {
-  return [rep colorSpaceName];
+  return [visibleRep colorSpaceName];
 }
 
 - (NSString *)hasAlpha
 {
-  return [NSString stringWithFormat:@"%@", [rep hasAlpha] ? @"Yes" : @"No"];
+  return [NSString stringWithFormat:@"%@", [visibleRep hasAlpha] ? @"Yes" : @"No"];
 }
 
 - (NSString *)imageReps
 {
-  return [NSString stringWithFormat:@"%d", repCount];
+  return [NSString stringWithFormat:@"%lu", [representations count]];
 }
 
 @end
