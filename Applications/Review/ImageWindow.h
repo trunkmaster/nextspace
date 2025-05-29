@@ -17,7 +17,6 @@
   NSString *imagePath;
   NSSize imageSize;
   NSArray *representations;
-  NSImageRep *visibleRep;
   NSUInteger visibleRepIndex;
   NSImageView *imageView;
   NSDictionary *attr;
@@ -27,6 +26,7 @@
 
 @property (readonly) NSWindow *window;
 @property (readonly) NSImage *image;
+@property (readonly) NSImageRep *visibleRep;
 
 - (id)initWithContentsOfFile:(NSString *)path;
 
@@ -39,16 +39,26 @@
 - (NSString *)path;
 - (NSString *)imagePath;
 - (NSString *)imageName;
+
 - (NSString *)imageType;
-- (NSString *)imageSize;
+- (NSString *)imageFileSize;
 - (NSString *)imageFileModificationDate;
 - (NSString *)imageFilePermissions;
 - (NSString *)imageFileOwner;
-- (NSString *)imageResolution;
-- (NSString *)bitsPerSample;
+
+- (NSString *)imageWidth;
+- (NSString *)imageHeight;
+- (NSString *)imageBitsPerPixel;
+- (NSString *)imageBitsPerSample;
+- (NSString *)imageNumberOfPlanes;
+- (NSString *)imageBytesPerPlane;
+- (NSString *)imageBytesPerRow;
+
 - (NSString *)colorSpaceName;
 - (NSString *)hasAlpha;
-- (NSString *)imageReps;
+
+- (NSString *)compressionType;
+- (NSString *)compressionFactor;
 
 @end
 

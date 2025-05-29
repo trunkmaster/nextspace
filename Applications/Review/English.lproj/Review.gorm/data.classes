@@ -5,7 +5,8 @@
 	    "showPrefPanel:",
 	    "openImage:",
 	    "showInfoPanel:",
-	    "saveImageAs:"
+	    "saveImageAs:",
+	    "showInspector:"
 	);
 	Outlets = (
 	    infoPanel
@@ -14,9 +15,10 @@
     };
     FirstResponder = {
 	Actions = (
-	    "saveImageAs:",
+	    "showInspector:",
 	    "openImage:",
 	    "orderFrontFontPanel:",
+	    "saveImageAs:",
 	    "showInfoPanel:",
 	    "showPrefPanel:"
 	);

@@ -130,19 +130,19 @@
 - (BOOL)_displayRepresentationAtIndex:(NSUInteger)index
 {
   visibleRepIndex = index;
-  if (visibleRep) {
-    [visibleRep release];
+  if (_visibleRep) {
+    [_visibleRep release];
   }
-  visibleRep = [representations objectAtIndex:visibleRepIndex];
+  _visibleRep = [representations objectAtIndex:visibleRepIndex];
 
-  if (visibleRep == nil) {
+  if (_visibleRep == nil) {
     NSLog(@"Failed to get representation at index %lu", index);
     return NO;
   } else {
-    [visibleRep retain];
-    if ([visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+    [_visibleRep retain];
+    if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
       // [_image release];
-      _image = [[NSImage alloc] initWithData:[(NSBitmapImageRep *)visibleRep TIFFRepresentation]];
+      _image = [[NSImage alloc] initWithData:[(NSBitmapImageRep *)_visibleRep TIFFRepresentation]];
       [imageView setImage:_image];
     } else {
       return NO;
@@ -153,16 +153,16 @@
 
 - (void)displayNextRpresentation:(id)sender
 {
-  NSLog(@"Display Next Representation");
   if (visibleRepIndex < [representations count] - 1) {
     [self _displayRepresentationAtIndex:visibleRepIndex + 1];
+    [[Inspector sharedInspector] imageWindowDidBecomeActive:self];
   }
 }
 - (void)displayPrevRpresentation:(id)sender
 {
-  NSLog(@"Display Previous Representation");
   if (visibleRepIndex > 0) {
     [self _displayRepresentationAtIndex:visibleRepIndex - 1];
+    [[Inspector sharedInspector] imageWindowDidBecomeActive:self];
   }
 }
 
@@ -360,10 +360,15 @@
 
 - (NSString *)imageType
 {
-  return [imagePath pathExtension];
+  NSString *ext = [imagePath pathExtension];
+  if (ext) {
+    return ext;
+  }
+
+  return @"";
 }
 
-- (NSString *)imageSize
+- (NSString *)imageFileSize
 {
   int bytes = [[attr objectForKey:@"NSFileSize"] intValue];
 
@@ -391,29 +396,109 @@
   return owner;
 }
 
-- (NSString *)imageResolution
+- (NSString *)imageWidth
 {
-  return [NSString stringWithFormat:@"%.1f x %.1f", imageSize.width, imageSize.height];
+  return [NSString stringWithFormat:@"%ld", _visibleRep.pixelsWide];
 }
 
-- (NSString *)bitsPerSample
+- (NSString *)imageHeight
 {
-  return [NSString stringWithFormat:@"%ld", [visibleRep bitsPerSample]];
+  return [NSString stringWithFormat:@"%ld", _visibleRep.pixelsHigh];
+}
+
+- (NSString *)imageBitsPerPixel
+{
+  if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)_visibleRep;
+    return [NSString stringWithFormat:@"%ld", rep.bitsPerPixel];
+  }
+  return @"-";
+}
+
+- (NSString *)imageBitsPerSample
+{
+  return [NSString stringWithFormat:@"%ld", _visibleRep.bitsPerSample];
+}
+- (NSString *)imageNumberOfPlanes
+{
+  if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)_visibleRep;
+    return [NSString stringWithFormat:@"%ld", rep.numberOfPlanes];
+  }
+  return @"-";
+}
+
+- (NSString *)imageBytesPerPlane
+{
+  if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)_visibleRep;
+    return [NSString stringWithFormat:@"%ld", rep.bytesPerPlane];
+  }
+  return @"-";
+}
+
+- (NSString *)imageBytesPerRow
+{
+  if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)_visibleRep;
+    return [NSString stringWithFormat:@"%ld", rep.bytesPerRow];
+  }
+  return @"-";
 }
 
 - (NSString *)colorSpaceName
 {
-  return [visibleRep colorSpaceName];
+  return [_visibleRep colorSpaceName];
 }
 
 - (NSString *)hasAlpha
 {
-  return [NSString stringWithFormat:@"%@", [visibleRep hasAlpha] ? @"Yes" : @"No"];
+  return [NSString stringWithFormat:@"%@", [_visibleRep hasAlpha] ? @"Yes" : @"No"];
 }
 
-- (NSString *)imageReps
+- (NSString *)compressionType
 {
-  return [NSString stringWithFormat:@"%lu", [representations count]];
+  NSString *type = @"None";
+
+  if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)_visibleRep;
+    NSNumber *compression = [rep valueForProperty:NSImageCompressionMethod];
+
+    switch (compression.integerValue) {
+      case NSTIFFCompressionCCITTFAX3:
+        type = @"CCITT Groups 3";
+        break;
+      case NSTIFFCompressionCCITTFAX4:
+        type = @"CCITT Groups 4";
+        break;
+      case NSTIFFCompressionLZW:
+        type = @"LZW";
+        break;
+      case NSTIFFCompressionJPEG:
+        type = @"JPEG";
+        break;
+      case NSTIFFCompressionNEXT:
+        type = @"NeXT";
+        break;
+      case NSTIFFCompressionPackBits:
+        type = @"Pack Bits";
+        break;
+      case NSTIFFCompressionOldJPEG:
+        type = @"Old JPEG";
+        break;
+      }
+  }
+  return type;
+}
+
+- (NSString *)compressionFactor
+{
+  if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)_visibleRep;
+    NSNumber *compression = [rep valueForProperty:NSImageCompressionFactor];
+    return [NSString stringWithFormat:@"%.1f", compression.floatValue];
+  }
+  return @"0";
 }
 
 @end

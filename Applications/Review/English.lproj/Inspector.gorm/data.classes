@@ -4,7 +4,7 @@
 	Actions = (
 	);
 	Outlets = (
-	    bitsPerPiixelField,
+	    bitsPerPixelField,
 	    bytesPerPlaneField,
 	    fileSizeField,
 	    formatField,
@@ -12,7 +12,11 @@
 	    bytesPerRowField,
 	    numberOfPlanesField,
 	    samplesPerPixelField,
-	    widthField
+	    widthField,
+	    compressionField,
+	    compressionFactorField,
+	    panel,
+	    fileModificationField
 	);
 	Super = NSObject;
     };
