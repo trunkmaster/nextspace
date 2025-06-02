@@ -143,6 +143,7 @@
     if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
       // [_image release];
       _image = [[NSImage alloc] initWithData:[(NSBitmapImageRep *)_visibleRep TIFFRepresentation]];
+      [_image setSize:NSMakeSize(_visibleRep.pixelsWide, _visibleRep.pixelsHigh)];
       [imageView setImage:_image];
     } else {
       return NO;
@@ -151,14 +152,14 @@
   return YES;
 }
 
-- (void)displayNextRpresentation:(id)sender
+- (void)displayNextRepresentation:(id)sender
 {
   if (visibleRepIndex < [representations count] - 1) {
     [self _displayRepresentationAtIndex:visibleRepIndex + 1];
     [[Inspector sharedInspector] imageWindowDidBecomeActive:self];
   }
 }
-- (void)displayPrevRpresentation:(id)sender
+- (void)displayPrevRepresentation:(id)sender
 {
   if (visibleRepIndex > 0) {
     [self _displayRepresentationAtIndex:visibleRepIndex - 1];
@@ -186,9 +187,14 @@
       NSRunAlertPanel(@"Open file", @"File %@ doesn't contain image.", @"Dismiss", nil, nil, path);
       return nil;
     }
+    [_image setBackgroundColor:[NSColor lightGrayColor]];
 
-    imageSize = [_image size];
+    representations = [_image representations];
+    [representations retain];
+    _visibleRep = representations[0];
+    imageSize = NSMakeSize(_visibleRep.pixelsWide, _visibleRep.pixelsHigh);
     frame.size = imageSize;
+    
     // ImageView
     if (imageSize.width < 200 || imageSize.height < 200) {
       frame.size = NSMakeSize(200,200);
@@ -196,10 +202,8 @@
     imageView = [[NSImageView alloc] initWithFrame:frame];
     [imageView setEditable:NO];
     [imageView setImageAlignment:NSImageAlignCenter];
-    // Image
-    [_image setBackgroundColor:[NSColor lightGrayColor]];
-    representations = [_image representations];
-    [representations retain];
+
+    // [_image setBackgroundColor:[NSColor lightGrayColor]];
     if ([self _displayRepresentationAtIndex:0] == NO) {
       return nil;
     }
@@ -261,8 +265,8 @@
       multipageView =
           [[ImageMultipageView alloc] initWithFrame:NSMakeRect(0, 0, 19, 34)
                                              target:self
-                                         nextAction:@selector(displayNextRpresentation:)
-                                         prevAction:@selector(displayPrevRpresentation:)];
+                                         nextAction:@selector(displayNextRepresentation:)
+                                         prevAction:@selector(displayPrevRepresentation:)];
       scrollView.multipageView = multipageView;
       [box addSubview:multipageView];
       RELEASE(multipageView);
@@ -271,6 +275,10 @@
     [scrollView tile];
 
     // Window
+    NSLog(@"ImageWindow: loading image with size %.0f x %.0f.", imageSize.width, imageSize.height);
+    for (NSImageRep *rep in _image.representations) {
+      NSLog(@"Representaion: %li x %li", rep.pixelsWide, rep.pixelsHigh);
+    }
     frame = [NSWindow frameRectForContentRect:frame styleMask:wMask];
     if (imageSize.width > ([[NSScreen mainScreen] frame].size.width - 64)) {
       frame.size.width = [[NSScreen mainScreen] frame].size.width - 164;
@@ -495,10 +503,58 @@
 {
   if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
     NSBitmapImageRep *rep = (NSBitmapImageRep *)_visibleRep;
-    NSNumber *compression = [rep valueForProperty:NSImageCompressionFactor];
-    return [NSString stringWithFormat:@"%.1f", compression.floatValue];
+    NSNumber *value = [rep valueForProperty:NSImageCompressionFactor];
+    return [NSString stringWithFormat:@"%.1f", value.floatValue];
   }
-  return @"0";
+  return @"-";
+}
+
+- (NSString *)imageFrameCount
+{
+  if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)_visibleRep;
+    NSNumber *value = [rep valueForProperty:NSImageFrameCount];
+    return [NSString stringWithFormat:@"%i", value.intValue];
+  }
+  return @"-";
+}
+
+- (NSString *)imageCurrentFrame
+{
+  if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)_visibleRep;
+    NSNumber *value = [rep valueForProperty:NSImageCurrentFrame];
+    return [NSString stringWithFormat:@"%i", value.intValue];
+  }
+  return @"-";
+}
+- (NSString *)imageCurrentFrameDuration
+{
+  if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)_visibleRep;
+    NSNumber *value = [rep valueForProperty:NSImageCurrentFrameDuration];
+    return [NSString stringWithFormat:@"%.1f", value.floatValue];
+  }
+  return @"-";
+}
+//
+- (NSString *)imageGamma
+{
+  if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)_visibleRep;
+    NSNumber *value = [rep valueForProperty:NSImageGamma];
+    return [NSString stringWithFormat:@"%.1f", value.floatValue];
+  }
+  return @"-";
+}
+- (NSString *)imageProgressive
+{
+  if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
+    NSBitmapImageRep *rep = (NSBitmapImageRep *)_visibleRep;
+    NSNumber *value = [rep valueForProperty:NSImageProgressive];
+    return [NSString stringWithFormat:@"%@", value.boolValue ? @"Yes" : @"No"];
+  }
+  return @"-";
 }
 
 @end

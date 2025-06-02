@@ -155,6 +155,10 @@
     [imageWindows removeObject:sender];
     AUTORELEASE(sender);
   }
+
+  if (imageWindows.count == 0) {
+    [inspector imageWindowDidBecomeActive:nil];
+  }
 }
 
 - (void)servicesOpenFileOrDirectory:(NSPasteboard *)pb

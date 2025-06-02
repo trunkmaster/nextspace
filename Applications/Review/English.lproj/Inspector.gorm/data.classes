@@ -16,7 +16,11 @@
 	    compressionField,
 	    compressionFactorField,
 	    panel,
-	    fileModificationField
+	    currentFrameField,
+	    fileModificationField,
+	    frameCountField,
+	    gammaField,
+	    progressiveField
 	);
 	Super = NSObject;
     };

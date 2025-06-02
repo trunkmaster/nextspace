@@ -57,8 +57,15 @@
 - (NSString *)colorSpaceName;
 - (NSString *)hasAlpha;
 
+// TIFF and JPEG
 - (NSString *)compressionType;
 - (NSString *)compressionFactor;
+// GIF
+- (NSString *)imageFrameCount;
+- (NSString *)imageCurrentFrame;
+//
+- (NSString *)imageGamma;
+- (NSString *)imageProgressive;
 
 @end
 

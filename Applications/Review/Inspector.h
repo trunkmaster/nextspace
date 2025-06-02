@@ -23,6 +23,12 @@
 
   IBOutlet id compressionField;
   IBOutlet id compressionFactorField;
+
+  IBOutlet id frameCountField;
+  IBOutlet id currentFrameField;
+  
+  IBOutlet id gammaField;
+  IBOutlet id progressiveField;
 }
 
 + (Inspector *)sharedInspector;
