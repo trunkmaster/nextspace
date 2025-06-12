@@ -561,7 +561,7 @@ void wApplicationActivate(WApplication *wapp)
 
   wApplicationMakeFirst(wapp);
 
-  if (!wapp->flags.is_gnustep && !wapp->app_menu->flags.mapped) {
+  if (!wapp->flags.is_gnustep && wapp->app_menu && !wapp->app_menu->flags.mapped) {
     if (wapp->menus_state && !wapp->app_menu->flags.restored) {
       wApplicationMenuRestoreFromState(wapp->app_menu, wapp->menus_state);
       wapp->app_menu->flags.restored = 1;

@@ -679,12 +679,16 @@ WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp)
 
 void wApplicationMenuDestroy(WApplication *wapp)
 {
-  WMenu *windows_menu = _submenuWithTitle(wapp->app_menu, "Windows");
-  
-  CFNotificationCenterRemoveEveryObserver(wapp->main_wwin->screen->notificationCenter,
-                                          windows_menu);
-  wMenuUnmap(wapp->app_menu);
-  wMenuDestroy(wapp->app_menu, True);
+  if (wapp->app_menu) {
+    WMenu *windows_menu = _submenuWithTitle(wapp->app_menu, "Windows");
+
+    CFNotificationCenterRemoveEveryObserver(wapp->main_wwin->screen->notificationCenter,
+                                            windows_menu);
+    if (!wapp->app_menu->flags.hidden) {
+      wMenuUnmap(wapp->app_menu);
+    }
+    wMenuDestroy(wapp->app_menu, True);
+  }
 }
 
 void wApplicationMenuOpen(WApplication *wapp, int x, int y)
