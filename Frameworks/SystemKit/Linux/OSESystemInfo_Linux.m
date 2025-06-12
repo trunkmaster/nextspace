@@ -77,37 +77,45 @@
   return atol([[lineComps objectAtIndex:[lineComps count]-2] cString])*1024;
 }
 
++ (NSString *)_cpuMHz
+{
+  NSString *result = @"0.0";
+  NSString *cpuInfo;
+  NSRange  modelRange;
+  NSString *modelName;
+  NSRange modelLineRange;
+
+  cpuInfo = [NSString stringWithContentsOfFile:@"/proc/cpuinfo"];
+  if (cpuInfo) {
+    modelRange = [cpuInfo rangeOfString:@"cpu MHz"];
+    if (modelRange.location != NSNotFound) {
+      modelLineRange = [cpuInfo lineRangeForRange:modelRange];
+      if (modelLineRange.length > 0) {
+        modelLineRange.length--;  // drop EOL
+        modelName = [cpuInfo substringWithRange:modelLineRange];
+        result = [[modelName componentsSeparatedByString:@":"] objectAtIndex:1];
+      }
+    }
+  }
+  
+  return result;
+}
+
 + (unsigned int)cpuMHzSpeed
 {
-  NSString     *name = [self cpuName];
-  NSRange      speedSeparator = [name rangeOfString:@"@"];
-  char         unit[2];
-  double       speedValue;
+  NSString *cpuMHz = [self _cpuMHz];
+  double speedValue;
 
   // If this isn't a format we recognise, give up.
-  if (speedSeparator.location == NSNotFound)
-    {
-      return 0;
-    }
+  if (cpuMHz.length <= 0) {
+    return 0;
+  }
 
-  name = [name substringFromIndex:speedSeparator.location + 2];
- 
-  // We are expecting this string to contain xGHz.  If it doesn't,
-  // then we don't know what to do with it, so give up
-  if (sscanf ([name UTF8String]," %lf%cHz", &speedValue, unit) != 2)
-    {
-      return 0;
-    }
+  if (sscanf([cpuMHz UTF8String], " %lf", &speedValue) != 1) {
+    return 0;
+  }
 
-  switch (unit[0])
-    {
-    case 'M':
-      return (unsigned int) speedValue;
-    case 'G':
-      return (unsigned int) (speedValue * 1000.0);
-    default:
-      return 0;
-    }
+  return (unsigned int)speedValue;
 }
 
 + (NSString *)cpuName
