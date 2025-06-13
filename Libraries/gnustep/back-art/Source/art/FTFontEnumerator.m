@@ -402,6 +402,11 @@ static void load_font_configuration(void)
 
   face = [fcfg_all_fonts objectForKey:name];
   if (!face) {
+    // Try "Family-Typeface" pattern instead of "Typeface Pattern"
+    name = [name stringByReplacingOccurrencesOfString:@" " withString:@"-"];
+    face = [fcfg_all_fonts objectForKey:name];
+  }
+  if (!face) {
     NSLog(@"Font not found %@", name);
   }
   return face;
