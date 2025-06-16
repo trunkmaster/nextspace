@@ -97,8 +97,12 @@
   if (window == nil) {
     [NSBundle loadNibNamed:@"Launcher" owner:self];
   } else {
+    NSString *fieldValue = [commandField stringValue];
     [completionList reloadColumn:0];
-    // [completionList setTitle:@"History" ofColumn:0];
+    [completionList setTitle:@"History" ofColumn:0];
+    if (fieldValue.length > 0) {
+      [completionList selectRow:[historyList indexOfObject:fieldValue] inColumn:0];
+    }
   }
 
   [commandField selectText:nil];
@@ -158,9 +162,13 @@
   } @catch (NSException *exception) {
     NXTRunAlertPanel(@"Run Command", @"Run command failed with exception: \'%@\'", @"Close", nil,
                      nil, [exception reason]);
-  } @finally {
-    [window close];
+    [window makeKeyAndOrderFront:self];
+    return;
   }
+  // @finally {
+  //   [window close];
+  // }
+  [window close];
 }
 
 - (void)runInTerminal:(id)sender
@@ -445,6 +453,7 @@
 {
   NSInteger selRow;
   NSString *absPath;
+  NSString *fieldValue = [commandField stringValue];
   id object;
 
   if (sender != completionList)
@@ -455,7 +464,7 @@
   if (absPath == nil) {
     absPath = [completionSource objectAtIndex:completionIndex];
   }
-  if ([[commandField stringValue] characterAtIndex:0] == '~') {
+  if (fieldValue && fieldValue.length > 0 && [fieldValue characterAtIndex:0] == '~') {
     absPath = [absPath stringByAbbreviatingWithTildeInPath];
   }
 

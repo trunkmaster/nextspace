@@ -26,7 +26,7 @@
   id window;
   id commandField;
   id runInTerminal;
-  id completionList;
+  IBOutlet NSBrowser *completionList;
   id runButton;
 
   NSArray *searchPaths;
