@@ -165,9 +165,6 @@
     [window makeKeyAndOrderFront:self];
     return;
   }
-  // @finally {
-  //   [window close];
-  // }
   [window close];
 }
 
