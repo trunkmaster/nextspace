@@ -31,21 +31,22 @@
 @interface Font : NSObject <PrefsModule>
 {
   IBOutlet NSPopUpButton *fontCategoryPopUp;
-  IBOutlet NSButton      *fontSetButton;
-  IBOutlet NSTextField   *fontNameTextField;
-  IBOutlet NSScrollView  *fontExampleScrollView;
-  IBOutlet NSTextView    *fontExampleTextView;
-  IBOutlet NSButton      *enableAntiAliasingButton;
-  IBOutlet NSButton      *enableSubpixelButton;
-  IBOutlet NSButton      *subpixelModeButton;
+  IBOutlet NSButton *fontSetButton;
+  IBOutlet NSTextField *fontNameTextField;
+  IBOutlet NSScrollView *fontExampleScrollView;
+  IBOutlet NSTextView *fontExampleTextView;
+  IBOutlet NSButton *enableAntiAliasingButton;
+  IBOutlet NSButton *enableSubpixelButton;
+  IBOutlet NSButton *subpixelModeButton;
 
-  IBOutlet NSWindow      *window;
-  IBOutlet id            view;
+  IBOutlet NSWindow *window;
+  IBOutlet id view;
 
-  NSDictionary		 *fontCategories;
+  NSDictionary *defaultValues;
+  NSDictionary *fontCategories;
 
-  NSImage		 *image;
-  NSString		 *exampleString;
+  NSImage *image;
+  NSString *exampleString;
 }
 
 - (IBAction)fontCategoryChanged:(id)sender;
