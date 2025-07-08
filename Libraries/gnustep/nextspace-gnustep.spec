@@ -1,17 +1,18 @@
 %global toolchain clang
+%global _hardened_build 0
 
 %define GS_REPO       https://github.com/gnustep
 %if 0%{?fedora} && 0%{?fedora} > 40
-%define BASE_VERSION  master
-%define BASE_TAG      master
+%define BASE_VERSION  1.31.1
+%define BASE_TAG      base-1_31_1
 %else
 %define BASE_VERSION  1.30.0
 %define BASE_TAG      base-1_30_0
 %endif
-%define GUI_VERSION   0.31.0
-%define GUI_TAG       gui-0_31_0
+%define GUI_VERSION   0.32.0
+%define GUI_TAG       gui-0_32_0
 %define BACK_VERSION  nextspace
-%define GORM_TAG      gorm-1_4_0
+%define GORM_TAG      gorm-1_5_0
 %define PC_TAG        projectcenter-0_7_0
 
 Name:       nextspace-gnustep
@@ -39,9 +40,7 @@ Source13:   gnustep-gui-panels.tar.gz
 
 Patch0:     gorm.patch
 Patch1:     pc.patch
-Patch2:     libs-gui_NSApplication.patch
-Patch3:     libs-gui_NSPopUpButton.patch
-Patch4:     libs-gui_GSThemeDrawing.patch
+Patch2:     libs-gui_NSPopUpButton.patch
 
 # Build GNUstep libraries in one RPM package
 Provides:   gnustep-base-%{BASE_TAG}
@@ -151,8 +150,6 @@ cp %{_sourcedir}/libs-gui_NSApplication.patch %{_builddir}/nextspace-gnustep/lib
 cp %{_sourcedir}/libs-gui_NSPopUpButton.patch %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
 cd %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
 %patch -P2 -p1
-%patch -P3 -p1
-%patch -P4 -p1
 
 rm -rf %{buildroot}
 
@@ -165,6 +162,7 @@ export CC=clang
 export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 unset CFLAGS
+unset LDFLAGS
 
 # Foundation (relies on gnustep-make included in nextspace-core-devel)
 cd libs-base-%{BASE_TAG}

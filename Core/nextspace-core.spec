@@ -1,6 +1,7 @@
 %global debug_package %{nil}
+%global _hardened_build 0
 
-%define MAKE_VERSION    2_9_1
+%define MAKE_VERSION    2_9_2
 
 Name:		nextspace-core
 Version:	0.95
@@ -32,7 +33,7 @@ Includes several components:
   /etc/skel: user home dir skeleton, tuned and logind settings);
 - GNUstep helper script: /usr/NextSpace/bin/gnustep-services.
 - Plymouth `nextspace` theme.
-- `NextsSpace` mouse cursor theme.
+- `NextSpace` mouse cursor theme.
 
 %package devel
 Summary:	Development header files for NextSpace core components.
@@ -58,8 +59,8 @@ export CC=clang
 export CXX=clang++
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"%{buildroot}/Library/Libraries:/usr/NextSpace/lib"
 export CFLAGS="-F/usr/NextSpace/Frameworks"
-export CXXFLAGS=""
-export LDFLAGS=""
+unset CXXFLAGS
+unset LDFLAGS
 
 # Build gnustep-make to include in -devel package
 cd tools-make-make-%{MAKE_VERSION}

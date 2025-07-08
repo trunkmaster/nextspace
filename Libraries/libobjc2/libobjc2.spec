@@ -1,4 +1,5 @@
 %global toolchain clang
+%global _hardened_build 0
 
 Name:	libobjc2
 Version:  2.2.1
@@ -54,6 +55,9 @@ Development header files for libdispatch (includes kqueue and pthread_workqueue)
 
 %build
 CMAKE_CMD=cmake
+unset CFLAGS
+unset CXXFLAGS
+unset LDFLAGS
 
 ${CMAKE_CMD} \
 	-DCMAKE_CXX_COMPILER=clang++ \

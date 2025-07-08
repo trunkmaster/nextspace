@@ -13,14 +13,15 @@
   
 # Things to do after installing
 after-install::
-	@ cp Resources/loginwindow.service /usr/NextSpace/lib/systemd
+	@ mkdir -p $(DESTDIR)/$(GNUSTEP_SYSTEM_LIBRARIES)/systemd
+	@ cp Resources/loginwindow.service $(DESTDIR)/$(GNUSTEP_SYSTEM_LIBRARIES)/systemd
 
 # Things to do before uninstalling
 # before-uninstall::
 
 # Things to do after uninstalling
 after-uninstall::
-	@ /usr/NextSpace/lib/systemd/loginwindow.service
+	@ $(DESTDIR)/$(GNUSTEP_SYSTEM_LIBRARIES)/systemd/loginwindow.service
 
 # Things to do before cleaning
 # before-clean::
