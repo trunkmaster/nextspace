@@ -40,7 +40,8 @@ Source13:   gnustep-gui-panels.tar.gz
 
 Patch0:     gorm.patch
 Patch1:     pc.patch
-Patch2:     libs-gui_NSPopUpButton.patch
+Patch2:     libs-gui_NSApplication.patch
+Patch3:     libs-gui_NSPopUpButton.patch
 
 # Build GNUstep libraries in one RPM package
 Provides:   gnustep-base-%{BASE_TAG}
@@ -150,6 +151,7 @@ cp %{_sourcedir}/libs-gui_NSApplication.patch %{_builddir}/nextspace-gnustep/lib
 cp %{_sourcedir}/libs-gui_NSPopUpButton.patch %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
 cd %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
 %patch -P2 -p1
+%patch -P3 -p1
 
 rm -rf %{buildroot}
 
