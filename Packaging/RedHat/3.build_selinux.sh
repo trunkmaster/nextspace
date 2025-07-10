@@ -13,8 +13,8 @@ if [ $# -eq 0 ];then
     exit 1
 fi
 
-prepare_environment
-if [ $? -eq 1 ];then
+prepare_redhat_environment
+if [ $? -ne 0 ];then
     print_ERR "Failed to setup building environment. Exiting..."
     exit 1
 fi
@@ -23,7 +23,7 @@ REPO_DIR=$1
 
 # NextSpace SELinux
 `dirname $0`/build_nextspace-selinux.sh $1
-if [ $? -eq 1 ]; then
+if [ $? -ne 0 ]; then
     echo "Aborting..."
     exit 1
 fi

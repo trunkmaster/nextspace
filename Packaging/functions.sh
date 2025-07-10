@@ -52,7 +52,7 @@ install_rpm()
     else
         INST_CMD=reinstall
     fi
-    sudo yum -y $INST_CMD $2
+    sudo yum -y $INST_CMD $2 || exit 1
 }
 
 # Bold
