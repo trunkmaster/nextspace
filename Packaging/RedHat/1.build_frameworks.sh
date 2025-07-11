@@ -7,7 +7,11 @@ BUILD_RPM=1
 . `dirname $0`/../functions.sh
 . `dirname $0`/../environment.sh
 
-prepare_environment
+prepare_redhat_environment
+if [ $? -ne 0 ];then
+    print_ERR "Failed to setup building environment. Exiting..."
+    exit 1
+fi
 
 LOG_FILE=${CWD}/frameworks_build.log
 SPEC_FILE=${PROJECT_DIR}/Frameworks/nextspace-frameworks.spec

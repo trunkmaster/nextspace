@@ -36,7 +36,7 @@ fi
 if [ "$EPEL_REPO" != "" ]; then
     echo -n "Checking for EPEL repository installed..."
     yum repolist | grep "epel" 2>&1 > /dev/null
-    if [ $? -eq 1 ];then
+    if [ $? -ne 0 ];then
         echo "Adding EPEL repository..."
         yum -y install $EPEL_REPO 2>&1 > /dev/null
     else
