@@ -555,7 +555,6 @@ static BOOL _workspaceQuitting = NO;
       [appPIDList removeObject:pidString];
     }
   }
-  [_appPIDList release];
 
   if ([[NSApp delegate] processesPanel]) {
     [[[NSApp delegate] processesPanel] updateAppList];

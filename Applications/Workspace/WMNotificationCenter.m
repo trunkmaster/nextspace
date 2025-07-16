@@ -122,7 +122,9 @@ static void _handleCFNotification(CFNotificationCenterRef center, void *observer
   [_windowManagerCenter postNotificationName:nsName object:nsObject userInfo:nsUserInfo];
 
   [nsObject release];
-  [nsUserInfo release];
+  if (nsUserInfo) {
+    [nsUserInfo release];
+  }
 }
 
 // Global notifications

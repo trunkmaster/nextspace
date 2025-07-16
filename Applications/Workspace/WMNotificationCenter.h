@@ -38,7 +38,7 @@
 
 // This is Objective-C type to hold WM objects (WApplication*, WWin* etc).
 @interface CFObject : NSObject
-@property (readwrite) const void *object;
+@property (readwrite, assign) const void *object;
 @end
 
 #define CF_NOTIFICATION(X) \
