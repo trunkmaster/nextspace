@@ -1444,7 +1444,7 @@ static void handleKeyPress(XEvent *event)
     // send it to GNUstep application. For example, Alternate-x
     // pressed over Terminal window which runs Emacs should result in
     // appearing 'M-x' prompt in Emacs.
-    if (wwin && wwin->flags.is_gnustep) {
+    if (wwin) {
       XSendEvent(dpy, wwin->client_win, True, KeyPress, event);
     }
     return;
