@@ -72,6 +72,7 @@
 #include "iconyard.h"
 #include "application.h"
 #include "appmenu.h"
+#include "xmodifier.h"
 
 #ifdef USE_MWM_HINTS
 #include "motif.h"
@@ -2574,9 +2575,8 @@ void wWindowSetKeyGrabs(WWindow *wwin)
       XGrabKey(dpy, key->keycode, key->modifier | LockMask, wwin->frame->core->window, True,
                GrabModeAsync, GrabModeAsync);
 #ifdef NUMLOCK_HACK
-      /* Also grab all modifier combinations possible that include,
-       * LockMask, ScrollLockMask and NumLockMask, so that keygrabs
-       * work even if the NumLock/ScrollLock key is on.
+      /* Also grab all modifier combinations possible that include, LockMask, ScrollLockMask and
+       * NumLockMask, so that keygrabs work even if the NumLock/ScrollLock key is on.
        */
       wHackedGrabKey(key->keycode, key->modifier, wwin->frame->core->window, True, GrabModeAsync,
                      GrabModeAsync);
@@ -2586,15 +2586,7 @@ void wWindowSetKeyGrabs(WWindow *wwin)
              GrabModeAsync);
   }
 
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_L), AnyModifier, wwin->client_win, True,
-           GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Super_R), AnyModifier, wwin->client_win, True,
-           GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Alt_L), AnyModifier, wwin->client_win, True, GrabModeAsync,
-           GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XK_Alt_R), AnyModifier, wwin->client_win, True, GrabModeAsync,
-           GrabModeAsync);
-  /* wApplicationMenuSetKeyGrabs(wwin); */
+  wApplicationMenuSetKeyGrabs(wwin);
 }
 
 void wWindowResetMouseGrabs(WWindow *wwin)

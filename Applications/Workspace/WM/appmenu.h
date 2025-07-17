@@ -24,6 +24,7 @@
 #include "screen.h"
 #include "menu.h"
 #include "application.h"
+#include "window.h"
 
 WMenu *wApplicationMenuCreate(WScreen *scr, WApplication *wapp);
 void wApplicationMenuDestroy(WApplication *wapp);
@@ -36,4 +37,5 @@ void wApplicationMenuRestoreFromState(WMenu *menu, CFArrayRef state);
 
 WMenuItem *wMenuItemWithTitle(WMenu *menu, char *title);
 
+void wApplicationMenuSetKeyGrabs(WWindow *wwin);
 Bool wApplicationMenuHandleKeyPress(struct WWindow *focused_window, XEvent *event);

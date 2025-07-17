@@ -1389,22 +1389,24 @@ static void handleKeyPress(XEvent *event)
   /* ignore CapsLock */
   modifiers = event->xkey.state & w_global.shortcut.modifiers_mask;
 
-  WMLogInfo("handleKeyPress: %i state: %i modifiers: %i", event->xkey.keycode, event->xkey.state,
-            modifiers);
+  // WMLogInfo("handleKeyPress: %i state: %i modifiers: %i", event->xkey.keycode, event->xkey.state,
+  //           modifiers);
+  fprintf(stderr, "handleKeyPress: %i state: %i modifiers: %i\n", event->xkey.keycode,
+          event->xkey.state, modifiers);
 
   /* Handle Alternate button press to change miniaturize button image at titlebar */
-  if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
-       (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
-      modifiers == 0) {
-    if (wwin &&
-        wwin->client_win /* != scr->no_focus_win && event->xkey.window != event->xkey.root */) {
-      scr->flags.modifier_pressed = 1;
-      wWindowUpdateButtonImages(wwin);
-    }
-  } else if (event->xkey.window != event->xkey.root && event->xkey.window != scr->no_focus_win) {
-    scr->flags.modifier_pressed = 0;
-    wWindowUpdateButtonImages(wwin);
-  }
+  // if (((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
+  //      (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) &&
+  //     modifiers == 0) {
+  //   if (wwin &&
+  //       wwin->client_win /* != scr->no_focus_win && event->xkey.window != event->xkey.root */) {
+  //     scr->flags.modifier_pressed = 1;
+  //     wWindowUpdateButtonImages(wwin);
+  //   }
+  // } else if (event->xkey.window != event->xkey.root && event->xkey.window != scr->no_focus_win) {
+  //   scr->flags.modifier_pressed = 0;
+  //   wWindowUpdateButtonImages(wwin);
+  // }
 
   /* Pass key press to application menu of non-GNUstep applications.
      If application menu has such shortcut function returns `True` */
@@ -1542,18 +1544,22 @@ static void handleKeyRelease(XEvent *event)
   if (event->xkey.window == event->xkey.root || event->xkey.window == scr->no_focus_win) {
     return;
   }
+  if (wwin) {
+    scr->flags.modifier_pressed = 0;
+    XSendEvent(dpy, wwin->client_win, True, KeyRelease, event);
+  }
   /* WMLogInfo("handleKeyRelease: %i state: %i mask: %i", */
   /*         event->xkey.keycode, event->xkey.state, MOD_MASK); */
-  if ((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
-      (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) {
-    if (wwin) {
-      scr->flags.modifier_pressed = 0;
-      wWindowUpdateButtonImages(wwin);
-      if (wwin->flags.is_gnustep) {
-        XSendEvent(dpy, scr->focused_window->client_win, True, KeyRelease, event);
-      }
-    }
-  }
+  // if ((event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_L)) ||
+  //     (event->xkey.keycode == XKeysymToKeycode(dpy, XK_Super_R))) {
+  //   if (wwin) {
+  //     scr->flags.modifier_pressed = 0;
+  //     wWindowUpdateButtonImages(wwin);
+  //     // if (wwin->flags.is_gnustep) {
+  //       XSendEvent(dpy, scr->focused_window->client_win, True, KeyRelease, event);
+  //     // }
+  //   }
+  // }
 }
 
 static void handleMotionNotify(XEvent *event)
