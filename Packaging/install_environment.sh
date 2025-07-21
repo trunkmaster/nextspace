@@ -146,17 +146,17 @@ setup_loginwindow()
     read YN
     if [ "$YN" = "y" ]; then
         sudo systemctl disable $DM_UNIT_FILE
-        sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
+        sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service
         IS_CONFIGURED=1
     else
         $ECHO "Your answer is 'No'. Got it."
         $ECHO "You may later enable NEXTSPACE login panel with commands:"
         $ECHO "    $ sudo systemctl disable $DM_UNIT_FILE"
-        $ECHO "    $ sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service"
-        $ECHO "To return to your current setup after that use the following commands:"
-        $ECHO "    $ sudo systemctl disable loginwindow.service"
-        $ECHO "    $ sudo systemctl enable $DM_UNIT"
+        $ECHO "    $ sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service"
     fi
+    $ECHO "To return to your current setup after that use the following commands:"
+    $ECHO "    $ sudo systemctl disable loginwindow.service"
+    $ECHO "    $ sudo systemctl enable $DM_UNIT"
 
     if [ $IS_CONFIGURED = 1 ]; then
         # Default boot target

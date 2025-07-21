@@ -164,7 +164,7 @@ $ECHO -n "Checking for Login panel: "
 systemctl is-enabled loginwindow
 if [ $? -ne 0 ];then
     $ECHO "Enabling Login panel service..."
-    sudo systemctl enable /usr/NextSpace/Apps/Login.app/Resources/loginwindow.service
+    sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service
 fi
 $ECHO
 
