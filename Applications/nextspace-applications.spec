@@ -134,9 +134,6 @@ if [ $1 -eq 0 ]; then
     systemctl stop loginwindow.service
     systemctl disable loginwindow.service
     systemctl set-default multi-user.target
-    if [ -z "$SSH_CLIENT" ]; then
-        chvt 02
-    fi
 fi
 
 %postun
