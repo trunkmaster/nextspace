@@ -684,9 +684,12 @@ void wApplicationMenuDestroy(WApplication *wapp)
 {
   if (wapp->app_menu) {
     WMenu *windows_menu = _submenuWithTitle(wapp->app_menu, "Windows");
+    WMenu *desktops_menu = _submenuWithTitle(windows_menu, "Move Window To");
 
     CFNotificationCenterRemoveEveryObserver(wapp->main_wwin->screen->notificationCenter,
                                             windows_menu);
+    CFNotificationCenterRemoveEveryObserver(wapp->main_wwin->screen->notificationCenter,
+                                            desktops_menu);
     if (!wapp->app_menu->flags.hidden) {
       wMenuUnmap(wapp->app_menu);
     }
