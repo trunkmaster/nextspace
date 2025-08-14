@@ -143,20 +143,18 @@
 //
 - (void)fillRateButton
 {
-  NSString *resBtnTitle = [resolutionBtn titleOfSelectedItem];
-  NSArray *m = [selectedDisplay allResolutions];
+  NSString *resBtnTitle;
   NSString *rateTitle;
   NSString *resolutionTitle;
   NSDictionary *res;
   float rateValue = 0.0;
   NSString *rateFormat = @"%.2f Hz";
 
-  // [m writeToFile:[NSString stringWithFormat:@"%@.displayResolutions", [selectedDisplay outputName]]
-  //     atomically:NO];
   [rateBtn removeAllItems];
 
   // Fill the buttion with items
-  for (res in m) {
+  resBtnTitle = [resolutionBtn titleOfSelectedItem];
+  for (res in [selectedDisplay allResolutions]) {
     resolutionTitle = [res objectForKey:OSEDisplayResolutionNameKey];
     if ([resolutionTitle isEqualToString:resBtnTitle]) {
       rateValue = [[res objectForKey:OSEDisplayResolutionRateKey] floatValue];
@@ -165,24 +163,37 @@
       [[rateBtn itemWithTitle:rateTitle] setRepresentedObject:res];
     }
   }
+}
+
+- (void)updateRateButton
+{
+  NSString *rateFormat = @"%.2f Hz";
+  NSString *rateTitle;
 
   if ([[rateBtn itemArray] count] == 1) {
     [rateBtn setEnabled:NO];
   } else {
     // Select actual value of selected resolution
-    res = [selectedDisplay activeResolution];
-    rateValue = [[res objectForKey:OSEDisplayResolutionRateKey] floatValue];
-    rateTitle = [NSString stringWithFormat:rateFormat, rateValue];
+    NSLog(@"%s - resoltion rate %f", __func__, selectedDisplay.activeRate);
+    rateTitle = [NSString stringWithFormat:rateFormat, selectedDisplay.activeRate];
+    NSLog(@"%s - rate title %@", __func__, rateTitle);
     [rateBtn selectItemWithTitle:rateTitle];
     [rateBtn setEnabled:YES];
-  }
+  }  
 }
 
 - (void)setResolution
 {
+  NSDictionary *resolution = [[rateBtn selectedCell] representedObject];
+  if (resolution == nil) {
+    NSLog(@"%s - resolution dictionary is nil! Resolution button is %@", __func__,
+          [resolutionBtn title]);
+    return;
+  }
   // Set resolution only to active display.
   // Display activating implemented in 'Screen' Preferences' module.
   if ([selectedDisplay isActive]) {
+    NSLog(@"%s - %@", __func__, [[rateBtn selectedCell] representedObject]);
     [systemScreen setDisplay:selectedDisplay resolution:[[rateBtn selectedCell] representedObject]];
   }
 }
@@ -257,12 +268,11 @@
 
 - (IBAction)resolutionClicked:(id)sender
 {
-  [self fillRateButton];
-  // NSLog(@"resolutionClicked: Selected resolution: %@", [[rateBtn selectedCell] representedObject]);
-
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
+  [self fillRateButton];
   [self setResolution];
+  [self updateRateButton];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(screenDidUpdate:)
@@ -273,8 +283,6 @@
 - (IBAction)rateClicked:(id)sender
 {
   [self setResolution];
-
-  NSLog(@"rateClicked: Selected resolution: %@", [[rateBtn selectedCell] representedObject]);
 }
 
 - (IBAction)sliderMoved:(id)sender
@@ -393,13 +401,9 @@
 // Notifications
 - (void)screenDidUpdate:(NSNotification *)aNotif
 {
-  NSLog(@"Display: XRandR screen resources was updated, refreshing...");
+  NSLog(@"%s: XRandR screen resources was updated, refreshing...", __func__);
   [monitorsList reloadColumn:0];
   [self selectFirstEnabledMonitor];
 }
-
-//
-// Utility methods
-//
 
 @end
