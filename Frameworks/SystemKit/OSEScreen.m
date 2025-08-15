@@ -829,9 +829,16 @@ static OSEScreen *systemScreen = nil;
 - (void)setDisplay:(OSEDisplay *)display
         resolution:(NSDictionary *)resolution
 {
-  NSRect  frame = display.frame;
-  NSArray *newLayout;
+  NSRect frame;
 
+  if (display == nil) {
+    NSLog(@"%s: error - display is not correct (nil)!", __func__);
+  }
+  if (display == nil || resolution == nil) {
+    NSLog(@"%s: error - resolution is incorrect (nil)!", __func__);
+    return;
+  }
+  frame = display.frame;
   frame.size = NSSizeFromString([resolution objectForKey:OSEDisplayResolutionSizeKey]);
   display.frame = frame;
   
@@ -1124,7 +1131,7 @@ static OSEScreen *systemScreen = nil;
       frameRate = [displayLayout objectForKey:OSEDisplayFrameRateKey];
       resolution = [display resolutionWithWidth:frame.size.width
                                          height:frame.size.height
-                                           rate:[frameRate floatValue]];
+                                           rate:[frameRate doubleValue]];
       [display setResolution:resolution position:frame.origin];
       XFlush(xDisplay);
 
