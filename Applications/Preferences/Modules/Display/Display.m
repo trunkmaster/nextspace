@@ -147,7 +147,7 @@
   NSString *rateTitle;
   NSString *resolutionTitle;
   NSDictionary *res;
-  float rateValue = 0.0;
+  double rateValue = 0.0;
   NSString *rateFormat = @"%.2f Hz";
 
   [rateBtn removeAllItems];
@@ -157,7 +157,7 @@
   for (res in [selectedDisplay allResolutions]) {
     resolutionTitle = [res objectForKey:OSEDisplayResolutionNameKey];
     if ([resolutionTitle isEqualToString:resBtnTitle]) {
-      rateValue = [[res objectForKey:OSEDisplayResolutionRateKey] floatValue];
+      rateValue = [[res objectForKey:OSEDisplayResolutionRateKey] doubleValue];
       rateTitle = [NSString stringWithFormat:rateFormat, rateValue];
       [rateBtn addItemWithTitle:rateTitle];
       [[rateBtn itemWithTitle:rateTitle] setRepresentedObject:res];
@@ -169,15 +169,32 @@
 {
   NSString *rateFormat = @"%.2f Hz";
   NSString *rateTitle;
+  NSDictionary *resoltionDesc;
+  CGFloat rateValue, activeRateValue;
 
   if ([[rateBtn itemArray] count] == 1) {
     [rateBtn setEnabled:NO];
   } else {
     // Select actual value of selected resolution
-    NSLog(@"%s - resoltion rate %f", __func__, selectedDisplay.activeRate);
-    rateTitle = [NSString stringWithFormat:rateFormat, selectedDisplay.activeRate];
+    NSLog(@"%s - active resoltion %@", __func__, selectedDisplay.activeResolution);
+    NSLog(@"%s - resoltion rate %f", __func__,
+          [selectedDisplay.activeResolution[OSEDisplayResolutionRateKey] doubleValue]);
+    // rateTitle = [NSString stringWithFormat:rateFormat, selectedDisplay.activeRate];
+    rateTitle = [NSString
+        stringWithFormat:rateFormat, [selectedDisplay.activeResolution[OSEDisplayResolutionRateKey]
+                                         doubleValue]];
     NSLog(@"%s - rate title %@", __func__, rateTitle);
-    [rateBtn selectItemWithTitle:rateTitle];
+    // [rateBtn selectItemWithTitle:rateTitle];
+    for (NSMenuItem *item in [rateBtn itemArray]) {
+      activeRateValue = [selectedDisplay.activeResolution[OSEDisplayResolutionRateKey] doubleValue];
+      resoltionDesc = [item representedObject];
+      rateValue = [[resoltionDesc objectForKey:OSEDisplayResolutionRateKey] doubleValue];
+      NSLog(@"%s - checking resoltion %@", __func__, resoltionDesc);
+      NSLog(@"%s - checking if %f == %f", __func__, rateValue, activeRateValue);
+      if (rateValue == activeRateValue) {
+        [rateBtn selectItem:item];
+      }
+    }
     [rateBtn setEnabled:YES];
   }  
 }
@@ -223,26 +240,24 @@
 //
 - (IBAction)monitorsListClicked:(id)sender
 {
-  NSArray *m;
   NSString *resolution;
-  NSDictionary *r;
+  NSDictionary *resolutionDesc;
 
   selectedDisplay = [[sender selectedCell] representedObject];
-  m = [selectedDisplay allResolutions];
   // NSLog(@"Display.preferences: selected monitor with title: %@", mName);
 
   // Resolution
   [resolutionBtn removeAllItems];
-  for (NSDictionary *res in m) {
+  for (NSDictionary *res in [selectedDisplay allResolutions]) {
     resolution = [res objectForKey:OSEDisplayResolutionNameKey];
     [resolutionBtn addItemWithTitle:resolution];
   }
-  r = [selectedDisplay activeResolution];
-  resolution = [r objectForKey:OSEDisplayResolutionNameKey];
+  resolutionDesc = [selectedDisplay activeResolution];
+  resolution = [resolutionDesc objectForKey:OSEDisplayResolutionNameKey];
   [resolutionBtn selectItemWithTitle:resolution];
-  // Rate button filled here. Items tagged with resolution description
-  // object in [NSDisplay allModes] array
+  // Rate button filled here. Items tagged with resolution description object
   [self fillRateButton];
+  [self updateRateButton];
 
   if ([selectedDisplay isGammaSupported] == YES) {
     [gammaSlider setEnabled:YES];
@@ -268,16 +283,16 @@
 
 - (IBAction)resolutionClicked:(id)sender
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  // [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   [self fillRateButton];
   [self setResolution];
   [self updateRateButton];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(screenDidUpdate:)
-                                               name:OSEScreenDidUpdateNotification
-                                             object:systemScreen];
+  // [[NSNotificationCenter defaultCenter] addObserver:self
+                                          //  selector:@selector(screenDidUpdate:)
+                                          //      name:OSEScreenDidUpdateNotification
+                                          //    object:systemScreen];
 }
 
 - (IBAction)rateClicked:(id)sender
