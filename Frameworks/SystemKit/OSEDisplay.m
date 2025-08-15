@@ -429,7 +429,7 @@
 
   // Save values which represent current monitor state
   ASSIGN(_activeResolution, resolution);
-  _activeRate = [[resolution objectForKey:OSEDisplayResolutionRateKey] floatValue];
+  _activeRate = [[resolution objectForKey:OSEDisplayResolutionRateKey] doubleValue];
   _activePosition = position;
 
   XRRFreeCrtcInfo(crtc_info);
