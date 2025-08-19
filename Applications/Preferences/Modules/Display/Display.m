@@ -167,34 +167,13 @@
 
 - (void)updateRateButton
 {
-  NSString *rateFormat = @"%.2f Hz";
   NSString *rateTitle;
-  NSDictionary *resoltionDesc;
-  CGFloat rateValue, activeRateValue;
 
   if ([[rateBtn itemArray] count] == 1) {
     [rateBtn setEnabled:NO];
   } else {
-    // Select actual value of selected resolution
-    // NSLog(@"%s - active resoltion %@", __func__, selectedDisplay.activeResolution);
-    // NSLog(@"%s - resoltion rate %f", __func__,
-    //       [selectedDisplay.activeResolution[OSEDisplayResolutionRateKey] doubleValue]);
-    rateTitle = [NSString stringWithFormat:rateFormat, selectedDisplay.activeRate];
-    // rateTitle = [NSString
-    //     stringWithFormat:rateFormat, [selectedDisplay.activeResolution[OSEDisplayResolutionRateKey]
-    //                                      doubleValue]];
-    // NSLog(@"%s - rate title %@", __func__, rateTitle);
+    rateTitle = [NSString stringWithFormat:@"%.2f Hz", selectedDisplay.activeRate];
     [rateBtn selectItemWithTitle:rateTitle];
-    // for (NSMenuItem *item in [rateBtn itemArray]) {
-    //   activeRateValue = [selectedDisplay.activeResolution[OSEDisplayResolutionRateKey] doubleValue];
-    //   resoltionDesc = [item representedObject];
-    //   rateValue = [[resoltionDesc objectForKey:OSEDisplayResolutionRateKey] doubleValue];
-    //   // NSLog(@"%s - checking resoltion %@", __func__, resoltionDesc);
-    //   // NSLog(@"%s - checking if %f == %f", __func__, rateValue, activeRateValue);
-    //   if (rateValue == activeRateValue) {
-    //     [rateBtn selectItem:item];
-    //   }
-    // }
     [rateBtn setEnabled:YES];
   }  
 }
