@@ -369,15 +369,15 @@ static NSPanel *fontPanel = nil;
   fontName = [defaults objectForKey:@"NSBoldFont"];
   fontSize = [[defaults objectForKey:@"NSBoldFontSize"] floatValue];
   font = [NSFont fontWithName:fontName size:fontSize];
-  [self setWMFont:font forKey:@"MenuTitleFont"];
-  [self setWMFont:font forKey:@"WindowTitleFont"];
+  [self _setWMFont:font forKey:@"MenuTitleFont"];
+  [self _setWMFont:font forKey:@"WindowTitleFont"];
 
   fontName = [defaults objectForKey:@"NSFont"];
   fontSize = [[defaults objectForKey:@"NSFontSize"] floatValue];
   font = [NSFont fontWithName:fontName size:fontSize];
-  [self setWMFont:font forKey:@"MenuTextFont"];
-  [self setWMFont:[NSFont fontWithName:fontName size:fontSize - 3.0] forKey:@"IconTitleFont"];
-  [self setWMFont:[NSFont fontWithName:fontName size:fontSize * 2.0] forKey:@"LargeDisplayFont"];
+  [self _setWMFont:font forKey:@"MenuTextFont"];
+  [self _setWMFont:[NSFont fontWithName:fontName size:fontSize - 3.0] forKey:@"IconTitleFont"];
+  [self _setWMFont:[NSFont fontWithName:fontName size:fontSize * 2.0] forKey:@"LargeDisplayFont"];
 
   [[NSDistributedNotificationCenter defaultCenter]
       postNotificationName:WMDidChangeAppearanceSettingsNotification
@@ -428,9 +428,9 @@ static NSPanel *fontPanel = nil;
     [self _setFloatDefault:fontSize - 3.0 forName:@"NSMiniFontSize"];
     [self _setFloatDefault:fontSize - 2.0 forName:@"NSSmallFontSize"];
     // WM
-    [self setWMFont:font forKey:@"MenuTextFont"];
-    [self setWMFont:[NSFont fontWithName:fontName size:fontSize - 3.0] forKey:@"IconTitleFont"];
-    [self setWMFont:[NSFont fontWithName:fontName size:fontSize * 2.0] forKey:@"LargeDisplayFont"];
+    [self _setWMFont:font forKey:@"MenuTextFont"];
+    [self _setWMFont:[NSFont fontWithName:fontName size:fontSize - 3.0] forKey:@"IconTitleFont"];
+    [self _setWMFont:[NSFont fontWithName:fontName size:fontSize * 2.0] forKey:@"LargeDisplayFont"];
     [[NSDistributedNotificationCenter defaultCenter]
         postNotificationName:WMDidChangeAppearanceSettingsNotification
                       object:@"GSWorkspaceNotification"];
@@ -447,8 +447,8 @@ static NSPanel *fontPanel = nil;
     [self _setStringDefault:fontName forName:@"NSPaletteFont"];
     [self _setFloatDefault:fontSize forName:@"NSPaletteFontSize"];
     // WM
-    [self setWMFont:font forKey:@"MenuTitleFont"];
-    [self setWMFont:font forKey:@"WindowTitleFont"];
+    [self _setWMFont:font forKey:@"MenuTitleFont"];
+    [self _setWMFont:font forKey:@"WindowTitleFont"];
     [[NSDistributedNotificationCenter defaultCenter]
         postNotificationName:WMDidChangeAppearanceSettingsNotification
                       object:@"GSWorkspaceNotification"];
