@@ -20,12 +20,15 @@
 */
 
 #import "DesktopsPrefs.h"
+
 #import <SystemKit/OSEDefaults.h>
 #import <Workspace+WM.h>
 #import <Controller.h>
+#import <WMNotificationCenter.h>
 
 #include <core/wuserdefaults.h>
 #include <desktop.h>
+#include <screen.h>
 
 @interface DesktopsPrefs (Private)
 - (NSString *)_wmPreferencesPathForName:(NSString *)fileName;
@@ -328,6 +331,12 @@
   [wmDefaults setObject:[NSString stringWithFormat:@"%@+Left", prefix] forKey:@"PrevWorkspaceKey"];
   [wmDefaults writeToFile:[self _wmPreferencesPathForName:@"WM"] atomically:YES];
   [wmDefaults release];
+
+  // Specify notification name as string to omit redefinition confusion
+  [[WMNotificationCenter defaultCenter]
+      postNotificationName:@"WMDidChangeAppearanceSettingsNotification"
+                    object:@"GSWorkspaceNotification"
+                  userInfo:nil];
 }
 - (void)setDirectSwitchShortcut:(id)sender
 {
