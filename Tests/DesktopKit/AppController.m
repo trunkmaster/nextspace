@@ -152,7 +152,7 @@
                                  defaultButton:@"Agree"
                                alternateButton:@"Deny"
                                    otherButton:@"Dismiss"];
-  customAlert.countDownPeriod = 5;
+  [customAlert setCountDownPeriod:5];
   [customAlert runModal];
   // dispatch_queue_t alert_q = dispatch_queue_create("kit.desktop.ns", DISPATCH_QUEUE_CONCURRENT);
   // dispatch_async(alert_q, ^{
