@@ -51,7 +51,8 @@ $(APP_NAME)_OBJC_FILES += \
 	TextTest.m \
 	DrawingTest.m \
 	ListViewTest.m \
-	TabViewTest.m
+	TabViewTest.m \
+	NXTCountdownAlert.m
 
 #
 # Makefiles
