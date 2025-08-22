@@ -17,6 +17,7 @@ $(FRAMEWORK_NAME)_OBJC_FILES = \
 	\
 	NXTClockView.m \
 	NXTAlert.m \
+	NXTCountdownAlert.m \
 	NXTIcon.m \
 	NXTIconLabel.m \
 	NXTIconView.m \
@@ -44,6 +45,7 @@ $(FRAMEWORK_NAME)_HEADER_FILES = \
 	NXTBundle.h \
 	\
 	NXTAlert.h \
+	NXTCountdownAlert.h \
 	NXTClockView.h \
 	NXTIcon.h \
 	NXTIconLabel.h \
