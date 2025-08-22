@@ -32,6 +32,7 @@
 
 #import <SystemKit/OSEDefaults.h>
 #import <DesktopKit/NXTNumericField.h>
+#import <DesktopKit/NXTCountdownAlert.h>
 
 #import <SystemKit/OSEScreen.h>
 #import <SystemKit/OSEDisplay.h>
@@ -181,6 +182,7 @@
 - (void)setResolution
 {
   NSDictionary *resolution = [[rateBtn selectedCell] representedObject];
+      
   if (resolution == nil) {
     NSLog(@"%s - resolution dictionary is nil! Resolution button is %@", __func__,
           [resolutionBtn title]);
@@ -395,9 +397,26 @@
 // Notifications
 - (void)screenDidUpdate:(NSNotification *)aNotif
 {
+  NXTCountdownAlert *alert;
+  NSInteger result;
+
   NSLog(@"%s: XRandR screen resources was updated, refreshing...", __func__);
   [monitorsList reloadColumn:0];
   [self selectFirstEnabledMonitor];
+
+  alert =
+      [[NXTCountdownAlert alloc] initWithTitle:@"Display resolution"
+                                       message:@"Do you want to keep current display resolution?\n"
+                                                "Resolution will be reverted in %i seconds."
+                                 defaultButton:@"Revert"
+                               alternateButton:@"Keep"
+                                   otherButton:nil];
+  [alert setCountDownPeriod:5];
+  result = [alert runModal];
+  [alert release];
+  // switch (result) {
+  //   case NSDef
+  // }
 }
 
 @end

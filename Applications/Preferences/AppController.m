@@ -79,16 +79,16 @@
   if ([NSApp isActive] == NO) {
     OSEDefaults *defs = [OSEDefaults globalUserDefaults];
 
-    NSLog(@"Configuring Keyboard...");
+    // NSLog(@"Configuring Keyboard...");
     [OSEKeyboard configureWithDefaults:defs];
 
-    NSLog(@"Configuring Mouse...");
+    // NSLog(@"Configuring Mouse...");
     OSEMouse *mouse = [OSEMouse new];
     [mouse setAcceleration:[defs integerForKey:OSEMouseAcceleration]
                  threshold:[defs integerForKey:OSEMouseThreshold]];
     [mouse release];
 
-    NSLog(@"Configuring Desktop background...");
+    // NSLog(@"Configuring Desktop background...");
     OSEScreen *screen = [OSEScreen new];
     CGFloat red, green, blue;
     if ([screen savedBackgroundColorRed:&red green:&green blue:&blue] == YES) {
