@@ -197,7 +197,8 @@
   NSPoint repPoint = repFrame.origin;
   NSButton *rep;
 
-  repPoint.x = (boxWidth - repsWidth) / 2;
+  repPoint.x = floorf((boxWidth - repsWidth) / 2);
+  repPoint.y = floorf(repPoint.y);
   for (int i = 0; i < desktopsCount; i++) {
     rep = [desktopReps objectAtIndex:i];
     [rep setFrameOrigin:repPoint];
