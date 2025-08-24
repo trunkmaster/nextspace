@@ -65,7 +65,7 @@
   if (countDownPeriod <= 0 || [countDownTimer isValid] == NO) {
     [countDownTimer invalidate];
     [panel orderOut:self];
-    [NSApp stopModalWithCode:0];
+    [NSApp stopModalWithCode:NSAlertDefaultReturn];
   } else {
     [messageView setText:[NSString stringWithFormat:messageTextFormat, countDownPeriod]];
     countDownPeriod--;
