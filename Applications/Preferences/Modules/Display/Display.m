@@ -398,7 +398,6 @@
 - (void)screenDidUpdate:(NSNotification *)aNotif
 {
   NXTCountdownAlert *alert;
-  NSInteger result;
 
   NSLog(@"%s: XRandR screen resources was updated, refreshing...", __func__);
   [monitorsList reloadColumn:0];
@@ -412,11 +411,13 @@
                                alternateButton:@"Keep"
                                    otherButton:nil];
   [alert setCountDownPeriod:5];
-  result = [alert runModal];
+
+  if ([alert runModal] == NSAlertDefaultReturn) {
+    NSLog(@"Revert resoltuion to previous.");
+  } else {
+    NSLog(@"Keep current resoltuion.");
+  }
   [alert release];
-  // switch (result) {
-  //   case NSDef
-  // }
 }
 
 @end
