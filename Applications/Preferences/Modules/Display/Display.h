@@ -23,6 +23,9 @@
 #import <AppKit/NSColorWell.h>
 #import <Preferences.h>
 
+@class OSEScreen;
+@class OSEDisplay;
+
 @interface DisplayPrefs : NSObject <PrefsModule>
 {
   id view;
@@ -45,6 +48,8 @@
   OSEDisplay *selectedDisplay;
   NSColor    *desktopBackground;
 
+  // "Display output name" = {<Resolution disctonary>}
+  NSMutableDictionary *lastGoodResolution;
   NSTimer    *saveConfigTimer;
 }
 

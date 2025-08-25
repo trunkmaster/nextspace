@@ -59,6 +59,8 @@
   imagePath = [bundle pathForResource:@"Monitor" ofType:@"tiff"];
   image = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
+  lastGoodResolution = [NSMutableDictionary new];
+
   return self;
 }
 
@@ -67,14 +69,16 @@
   NSLog(@"DisplayPrefs -dealloc");
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[NSDistributedNotificationCenter notificationCenterForType:GSPublicNotificationCenterType] removeObserver:self];
 
   [image release];
 
   [view release];
   [systemScreen release];
-  if (saveConfigTimer)
+  if (saveConfigTimer) {
     [saveConfigTimer release];
-
+  }
+  [lastGoodResolution release];
   [super dealloc];
 }
 
@@ -115,6 +119,11 @@
                                            selector:@selector(screenDidUpdate:)
                                                name:OSEScreenDidUpdateNotification
                                              object:systemScreen];
+  [[NSDistributedNotificationCenter notificationCenterForType:GSPublicNotificationCenterType]
+      addObserver:self
+         selector:@selector(screenDidChange:)
+             name:OSEScreenDidChangeNotification
+           object:nil];
 }
 
 - (NSView *)view
@@ -181,17 +190,27 @@
 
 - (void)setResolution
 {
-  NSDictionary *resolution = [[rateBtn selectedCell] representedObject];
-      
-  if (resolution == nil) {
+  NSDictionary *activeResolution;
+  NSString *resolution;
+  NSDictionary *targetResolution = [[rateBtn selectedCell] representedObject];
+
+  if (targetResolution == nil) {
     NSLog(@"%s - resolution dictionary is nil! Resolution button is %@", __func__,
           [resolutionBtn title]);
     return;
   }
+
+  // Save current resolution
+  activeResolution = [selectedDisplay activeResolution];
+  resolution = [activeResolution objectForKey:OSEDisplayResolutionNameKey];
+  NSLog(@"%s: saving last good resolution - %@", __func__, resolution);
+  [lastGoodResolution setObject:[selectedDisplay activeResolution]
+                         forKey:[selectedDisplay outputName]];
+        
   // Set resolution only to active display.
   // Display activating implemented in 'Screen' Preferences' module.
   if ([selectedDisplay isActive]) {
-    NSLog(@"%s - %@", __func__, [[rateBtn selectedCell] representedObject]);
+    // NSLog(@"%s - %@", __func__, [[rateBtn selectedCell] representedObject]);
     [systemScreen setDisplay:selectedDisplay resolution:[[rateBtn selectedCell] representedObject]];
   }
 }
@@ -264,16 +283,9 @@
 
 - (IBAction)resolutionClicked:(id)sender
 {
-  // [[NSNotificationCenter defaultCenter] removeObserver:self];
-
   [self fillRateButton];
   [self setResolution];
   [self updateRateButton];
-
-  // [[NSNotificationCenter defaultCenter] addObserver:self
-                                          //  selector:@selector(screenDidUpdate:)
-                                          //      name:OSEScreenDidUpdateNotification
-                                          //    object:systemScreen];
 }
 
 - (IBAction)rateClicked:(id)sender
@@ -397,12 +409,17 @@
 // Notifications
 - (void)screenDidUpdate:(NSNotification *)aNotif
 {
-  NXTCountdownAlert *alert;
-
   NSLog(@"%s: XRandR screen resources was updated, refreshing...", __func__);
   [monitorsList reloadColumn:0];
   [self selectFirstEnabledMonitor];
+}
 
+- (void)screenDidChange:(NSNotification *)aNotif
+{
+  NXTCountdownAlert *alert;
+
+  NSLog(@"%s: Received ScreenDidChange notification ", __func__);
+  
   alert =
       [[NXTCountdownAlert alloc] initWithTitle:@"Display resolution"
                                        message:@"Do you want to keep current display resolution?\n"
@@ -419,5 +436,6 @@
   }
   [alert release];
 }
+
 
 @end
