@@ -191,8 +191,10 @@
 - (void)setResolution
 {
   NSDictionary *activeResolution;
-  NSString *resolution;
+  // NSString *resolutionTitle;
   NSDictionary *targetResolution = [[rateBtn selectedCell] representedObject];
+  NSString *targetResolutionTitle = nil;
+  NSString *lastGoodResolutionTitle = nil;
 
   if (targetResolution == nil) {
     NSLog(@"%s - resolution dictionary is nil! Resolution button is %@", __func__,
@@ -200,13 +202,23 @@
     return;
   }
 
+  targetResolutionTitle = [targetResolution objectForKey:OSEDisplayResolutionNameKey];
+  if (lastGoodResolution) {
+    lastGoodResolutionTitle = [lastGoodResolution objectForKey:OSEDisplayResolutionNameKey];
+  }
+  if (lastGoodResolution && [lastGoodResolutionTitle isEqualToString:targetResolutionTitle] &&
+      [lastGoodResolution objectForKey:OSEDisplayResolutionRateKey] ==
+          [targetResolution objectForKey:OSEDisplayResolutionRateKey]) {
+    return;
+  }
+
   // Save current resolution
   activeResolution = [selectedDisplay activeResolution];
-  resolution = [activeResolution objectForKey:OSEDisplayResolutionNameKey];
-  NSLog(@"%s: saving last good resolution - %@", __func__, resolution);
+  NSLog(@"%s: saving last good resolution - %@", __func__,
+        [activeResolution objectForKey:OSEDisplayResolutionNameKey]);
   [lastGoodResolution setObject:[selectedDisplay activeResolution]
                          forKey:[selectedDisplay outputName]];
-        
+
   // Set resolution only to active display.
   // Display activating implemented in 'Screen' Preferences' module.
   if ([selectedDisplay isActive]) {
@@ -240,21 +252,40 @@
 //
 - (IBAction)monitorsListClicked:(id)sender
 {
-  NSString *resolution;
-  NSDictionary *resolutionDesc;
+  NSString *resolutionTitle;
+  NSDictionary *activeResolution;
 
+  // Check if really new selection was made
   selectedDisplay = [[sender selectedCell] representedObject];
-  // NSLog(@"Display.preferences: selected monitor with title: %@", mName);
+  if (selectedDisplayName &&
+      [selectedDisplayName isEqualToString:[selectedDisplay outputName]] != NO) {
+    return;
+  }
+  selectedDisplayName = [selectedDisplay outputName];
+  // if (selectedDisplay == nil) {
+  //   selectedDisplay = [[sender selectedCell] representedObject];
+  //   selectedDisplayName = [selectedDisplay outputName];
+  //   [lastGoodResolution setObject:[selectedDisplay activeResolution] forKey:selectedDisplayName];
+  // } else {
+  //   selectedDisplay = [[sender selectedCell] representedObject];
+  //   if ([selectedDisplayName isEqualToString:[selectedDisplay outputName]] == NO) {
+  //     selectedDisplayName = [selectedDisplay outputName];
+  //     [lastGoodResolution setObject:[selectedDisplay activeResolution] forKey:selectedDisplayName];
+  //   }
+  // }
+  NSLog(@"%s: selected monitor with title: %@", __func__, [selectedDisplay outputName]);
 
   // Resolution
   [resolutionBtn removeAllItems];
   for (NSDictionary *res in [selectedDisplay allResolutions]) {
-    resolution = [res objectForKey:OSEDisplayResolutionNameKey];
-    [resolutionBtn addItemWithTitle:resolution];
+    resolutionTitle = [res objectForKey:OSEDisplayResolutionNameKey];
+    [resolutionBtn addItemWithTitle:resolutionTitle];
   }
-  resolutionDesc = [selectedDisplay activeResolution];
-  resolution = [resolutionDesc objectForKey:OSEDisplayResolutionNameKey];
-  [resolutionBtn selectItemWithTitle:resolution];
+  activeResolution = [selectedDisplay activeResolution];
+  resolutionTitle = [activeResolution objectForKey:OSEDisplayResolutionNameKey];
+  [resolutionBtn selectItemWithTitle:resolutionTitle];
+  [lastGoodResolution setObject:activeResolution forKey:selectedDisplayName];
+
   // Rate button filled here. Items tagged with resolution description object
   [self fillRateButton];
   [self updateRateButton];
@@ -430,7 +461,13 @@
   [alert setCountDownPeriod:5];
 
   if ([alert runModal] == NSAlertDefaultReturn) {
-    NSLog(@"Revert resoltuion to previous.");
+    NSLog(@"Revert resoltuion to previous - %@.",
+          [lastGoodResolution objectForKey:OSEDisplayResolutionNameKey]);
+    if (lastGoodResolution) {
+      [systemScreen setDisplay:selectedDisplay resolution:lastGoodResolution];
+    } else {
+      NSLog(@"%s: PROBLEM: can't revert to previous resolution - it's nil", __func__);
+    }
   } else {
     NSLog(@"Keep current resoltuion.");
   }

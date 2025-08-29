@@ -43,14 +43,15 @@
   id reflectionBtn;
   NSColorWell *colorBtn;
 
-  NSImage    *image;
-  OSEScreen  *systemScreen;
+  NSImage *image;
+  OSEScreen *systemScreen;
   OSEDisplay *selectedDisplay;
-  NSColor    *desktopBackground;
+  NSString *selectedDisplayName;
+  NSColor *desktopBackground;
 
   // "Display output name" = {<Resolution disctonary>}
   NSMutableDictionary *lastGoodResolution;
-  NSTimer    *saveConfigTimer;
+  NSTimer *saveConfigTimer;
 }
 
 //
