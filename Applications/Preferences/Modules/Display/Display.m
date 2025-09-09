@@ -213,11 +213,11 @@
   }
 
   // Save current resolution
-  activeResolution = [selectedDisplay activeResolution];
-  NSLog(@"%s: saving last good resolution - %@", __func__,
-        [activeResolution objectForKey:OSEDisplayResolutionNameKey]);
-  [lastGoodResolution setObject:[selectedDisplay activeResolution]
-                         forKey:[selectedDisplay outputName]];
+  // activeResolution = [selectedDisplay activeResolution];
+  // NSLog(@"%s: saving last good resolution - %@", __func__,
+  //       [activeResolution objectForKey:OSEDisplayResolutionNameKey]);
+  // [lastGoodResolution setObject:[selectedDisplay activeResolution]
+  //                        forKey:[selectedDisplay outputName]];
 
   // Set resolution only to active display.
   // Display activating implemented in 'Screen' Preferences' module.
@@ -285,6 +285,7 @@
   resolutionTitle = [activeResolution objectForKey:OSEDisplayResolutionNameKey];
   [resolutionBtn selectItemWithTitle:resolutionTitle];
   [lastGoodResolution setObject:activeResolution forKey:selectedDisplayName];
+  NSLog(@"%s: last good reolution: %@", __func__, resolutionTitle);
 
   // Rate button filled here. Items tagged with resolution description object
   [self fillRateButton];
@@ -448,23 +449,32 @@
 - (void)screenDidChange:(NSNotification *)aNotif
 {
   NXTCountdownAlert *alert;
+  NSDictionary *oldResolution = [lastGoodResolution objectForKey:[selectedDisplay outputName]];
+  NSDictionary *activeResolution = [selectedDisplay activeResolution];
 
-  NSLog(@"%s: Received ScreenDidChange notification ", __func__);
-  
-  alert =
-      [[NXTCountdownAlert alloc] initWithTitle:@"Display resolution"
-                                       message:@"Do you want to keep current display resolution?\n"
-                                                "Resolution will be reverted in %i seconds."
-                                 defaultButton:@"Revert"
-                               alternateButton:@"Keep"
-                                   otherButton:nil];
+  NSLog(@"%s: Received ScreenDidChange notification", __func__);
+
+  if ([[activeResolution objectForKey:OSEDisplayResolutionNameKey]
+          isEqualToString:[oldResolution objectForKey:OSEDisplayResolutionNameKey]] != NO) {
+    NSLog(@"%s: Resolution has been reverted to last good. Keep it!", __func__);
+    return;
+  }
+
+    alert = [[NXTCountdownAlert alloc]
+          initWithTitle:@"Display resolution"
+                message:@"Do you want to keep current display resolution?\n"
+                         "Resolution will be reverted in %i seconds."
+          defaultButton:@"Revert"
+        alternateButton:@"Keep"
+            otherButton:nil];
   [alert setCountDownPeriod:5];
 
   if ([alert runModal] == NSAlertDefaultReturn) {
-    NSLog(@"Revert resoltuion to previous - %@.",
-          [lastGoodResolution objectForKey:OSEDisplayResolutionNameKey]);
-    if (lastGoodResolution) {
-      [systemScreen setDisplay:selectedDisplay resolution:lastGoodResolution];
+    NSDictionary *goodResolution = [lastGoodResolution objectForKey:[selectedDisplay outputName]];
+    NSLog(@"%s: %@ goodResolution: %@", __func__, [selectedDisplay outputName], lastGoodResolution);
+    if (goodResolution) {
+      NSLog(@"Revert resoltuion to previous - %@.", goodResolution);
+      [systemScreen setDisplay:selectedDisplay resolution:goodResolution];
     } else {
       NSLog(@"%s: PROBLEM: can't revert to previous resolution - it's nil", __func__);
     }
