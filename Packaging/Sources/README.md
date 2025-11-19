@@ -52,5 +52,5 @@ Note that this is "minimal" startup configuration, which uses xinitrc script to 
 
 User home directory profile consists of the following components:
 - ~/Library contents contains NEXTSPACE and GNUstep specific data (configuration, caches, fonts and so on)
-- ~/.config/fontconfig/fonts.conf - X11-specific fonts handling settings. Adds /Library/Fouts and ~/Library/Fonts to font path - make .nfont packages contents available to non-GNUstep applications
+- ~/.config/fontconfig/fonts.conf - X11-specific fonts handling settings. Adds /Library/Fonts and ~/Library/Fonts to font path - make .nfont packages contents available to non-GNUstep applications
 - ~/.config/pulse - PulseAudio-specific settings
