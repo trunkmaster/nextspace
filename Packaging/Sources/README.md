@@ -41,7 +41,7 @@ $ ./9_build_Applications.sh
 
 ## Installing default profile and configuration
 
-If you omit running `setup_user_home.sh` script at installation time, configartion files available at /etc/skel directory.
+If you omit running `setup_user_home.sh` script at installation time, configuration files available at /etc/skel directory.
 
 Before you can run NEXTSPACE, you need to make sure you install various scripts and configurations that the NEXTSPACE depends on at runtime. Some stuff is system-wide and it need to be installed by root, other is installed in user's home directory. For this reason you should run the following installation script twice. 
 ```
@@ -52,5 +52,5 @@ Note that this is "minimal" startup configuration, which uses xinitrc script to 
 
 User home directory profile consists of the following components:
 - ~/Library contents contains NEXTSPACE and GNUstep specific data (configuration, caches, fonts and so on)
-- ~/.config/fontconfig/fonts.conf - X11-specific fonts handling settings. Adds /Library/Fouts and ~/Library/Fonts to font path - make .nfont packages contents available to non-GNUstep applications
+- ~/.config/fontconfig/fonts.conf - X11-specific fonts handling settings. Adds /Library/Fonts and ~/Library/Fonts to font path - make .nfont packages contents available to non-GNUstep applications
 - ~/.config/pulse - PulseAudio-specific settings
