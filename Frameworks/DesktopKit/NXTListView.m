@@ -46,10 +46,10 @@
   if (_selected != NO) {
     [[NSColor darkGrayColor] set];
     PSnewpath();
-    PSmoveto(cellFrame.origin.x, cellFrame.origin.y);
-    PSlineto(NSMaxX(cellFrame), cellFrame.origin.y);
-    PSmoveto(cellFrame.origin.x, NSMaxY(cellFrame)-1);
-    PSlineto(NSMaxX(cellFrame), NSMaxY(cellFrame)-1);
+    PSmoveto(cellFrame.origin.x, cellFrame.origin.y + 0.5);
+    PSlineto(NSMaxX(cellFrame), cellFrame.origin.y + 0.5);
+    PSmoveto(cellFrame.origin.x, NSMaxY(cellFrame) - 0.5);
+    PSlineto(NSMaxX(cellFrame), NSMaxY(cellFrame) - 0.5);
     PSstroke();
   }      
 }
