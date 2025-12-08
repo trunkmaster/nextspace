@@ -1,17 +1,24 @@
 diff --git a/Source/GSThemeDrawing.m b/Source/GSThemeDrawing.m
-index a87fe7458..a88e7ab30 100644
+index ab420059c..130acbffd 100644
 --- a/Source/GSThemeDrawing.m
 +++ b/Source/GSThemeDrawing.m
-@@ -3320,9 +3320,9 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
- 
-     if (selectionColor == nil)
-       {
--	selectionColor = [NSColor colorWithCalibratedRed: 0.86
--						   green: 0.92
--						    blue: 0.99
-+	selectionColor = [NSColor colorWithCalibratedRed: 1.0
-+						   green: 1.0
-+						    blue: 1.0
- 						   alpha: 1.0];
-       }
-     [selectionColor set];
+@@ -2781,6 +2781,10 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
+                            columnSize.height + hScrollerWidth + 2);
+ 	      p2 = NSMakePoint((columnSize.width * i) + 2 + (i-1),
+ 			       hScrollerWidth + 2);
++              // Pixel alignment fix
++	      p2.x = p1.x += 0.5;
++	      p1.y += 0.5;
++	      p2.y -= 0.5;
+ 	      [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+ 	    }
+ 	  
+@@ -2789,6 +2793,8 @@ static NSDictionary *titleTextAttributes[3] = {nil, nil, nil};
+ 	    {
+ 	      p1 = NSMakePoint(2, hScrollerWidth + 2);
+ 	      p2 = NSMakePoint(rect.size.width - 2, hScrollerWidth + 2);
++	      // Pixel alignment fix
++	      p2.y = p1.y -= 0.5;
+ 	      [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
+ 	    }
+ 	}
