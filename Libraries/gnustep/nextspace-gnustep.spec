@@ -42,6 +42,7 @@ Patch0:     gorm.patch
 Patch1:     pc.patch
 Patch2:     libs-gui_NSApplication.patch
 Patch3:     libs-gui_NSPopUpButton.patch
+Patch4:     libs-gui_GSThemeDrawing.patch
 
 # Build GNUstep libraries in one RPM package
 Provides:   gnustep-base-%{BASE_TAG}
@@ -149,9 +150,11 @@ cd %{_builddir}/nextspace-gnustep/apps-projectcenter-%{PC_TAG}/
 %patch -P1 -p1
 cp %{_sourcedir}/libs-gui_NSApplication.patch %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
 cp %{_sourcedir}/libs-gui_NSPopUpButton.patch %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
+cp %{_sourcedir}/libs-gui_GSThemeDrawing.patch %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
 cd %{_builddir}/nextspace-gnustep/libs-gui-%{GUI_TAG}/
 %patch -P2 -p1
 %patch -P3 -p1
+%patch -P4 -p1
 
 rm -rf %{buildroot}
 

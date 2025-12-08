@@ -25,8 +25,8 @@ if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
 	# Patches
 	cd ${BUILD_ROOT}/${GIT_PKG_NAME}
 	patch -p1 < ${SOURCES_DIR}/libs-gui_NSApplication.patch
-#	patch -p1 < ${SOURCES_DIR}/libs-gui_GSThemeDrawing.patch
 	patch -p1 < ${SOURCES_DIR}/libs-gui_NSPopUpButton.patch
+	patch -p1 < ${SOURCES_DIR}/libs-gui_GSThemeDrawing.patch
 	cd Images
 	tar zxf ${SOURCES_DIR}/gnustep-gui-images.tar.gz
 fi
