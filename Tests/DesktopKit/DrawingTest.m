@@ -60,6 +60,10 @@
   // DPSmoveto(ctxt, 2, 5);
   // DPSlineto(ctxt, 2, 100);
   // DPSstroke(ctxt);
+
+  NSImage *patternImage = [NSImage imageNamed:@"ScrollerPattern"];
+  [ctxt GSSetPatterColor:patternImage];
+  DPSrectfill(ctxt, 6, 6, 16, 369);
 }
 
 @end
