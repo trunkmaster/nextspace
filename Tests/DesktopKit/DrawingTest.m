@@ -61,8 +61,41 @@
   // DPSlineto(ctxt, 2, 100);
   // DPSstroke(ctxt);
 
-  NSImage *patternImage = [NSImage imageNamed:@"ScrollerPattern"];
-  [ctxt GSSetPatterColor:patternImage];
+  NSImage *grayAlpha = [NSImage imageNamed:@"SharedGrayAlpha"];
+  NSImage *knobSlotPattern = [[NSImage alloc] initWithSize:NSMakeSize(12, 12)];
+  NSBitmapImageRep *rep;
+
+  NSLog(@"knb slot pattern representations: %lu", [[knobSlotPattern representations] count]);
+  rep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
+                                                pixelsWide:12
+                                                pixelsHigh:12
+                                             bitsPerSample:8
+                                           samplesPerPixel:4
+                                                  hasAlpha:YES
+                                                  isPlanar:NO
+                                            colorSpaceName:NSDeviceRGBColorSpace
+                                               bytesPerRow:48
+                                              bitsPerPixel:32];
+  [knobSlotPattern addRepresentation:rep];
+  NSLog(@"rep was added - slot pattern representations: %lu", [[knobSlotPattern representations] count]);
+
+  NSGraphicsContext *ctx = [NSGraphicsContext graphicsContextWithBitmapImageRep:rep];
+  [NSGraphicsContext saveGraphicsState];
+  [NSGraphicsContext setCurrentContext:ctx];
+  // [knobSlotPattern lockFocus];
+  [grayAlpha drawAtPoint:NSZeroPoint
+                fromRect:NSMakeRect(49, 121, 12, 12)
+               operation:NSCompositeCopy
+                fraction:1.0];
+  // [knobSlotPattern unlockFocus];
+  [ctx flushGraphics];
+  [NSGraphicsContext restoreGraphicsState];
+  [[knobSlotPattern TIFFRepresentation] writeToFile:@"KnobSlotPattern" atomically:NO];
+
+  
+  // NSImage *patternImage = [NSImage imageNamed:@"ScrollerPattern"];
+  // [ctxt GSSetPatterColor:patternImage];
+  [ctxt GSSetPatterColor:knobSlotPattern];
   DPSrectfill(ctxt, 6, 6, 16, 369);
 }
 
