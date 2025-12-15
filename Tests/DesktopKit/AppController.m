@@ -24,8 +24,8 @@
 #import <DesktopKit/NXTSavePanel.h>
 #import <DesktopKit/NXTOpenPanel.h>
 #import <DesktopKit/NXTHelpPanel.h>
+#import <DesktopKit/NXTCountdownAlert.h>
 #import "AppController.h"
-#import "NXTCountdownAlert.h"
 
 @implementation AppController : NSObject
 
@@ -148,10 +148,11 @@
 {
   NXTCountdownAlert *customAlert =
       [[NXTCountdownAlert alloc] initWithTitle:@"Countdown Alert"
-                                       message:@"Here should be countdown number - %i."
-                                 defaultButton:@"Agree"
-                               alternateButton:@"Deny"
-                                   otherButton:@"Dismiss"];
+                                       message:@"Do you want to keep current resolution?\n\n"
+                                                "Resolution will be reverted in %i seconds."
+                                 defaultButton:@"Revert"
+                               alternateButton:@"Keep"
+                                   otherButton:nil];
   [customAlert setCountDownPeriod:5];
   [customAlert runModal];
   // dispatch_queue_t alert_q = dispatch_queue_create("kit.desktop.ns", DISPATCH_QUEUE_CONCURRENT);
