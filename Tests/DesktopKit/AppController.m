@@ -370,4 +370,13 @@
   [listViewTest show];
 }
 
+- (void)showCursorsTest:(id)sender
+{
+  if (slidersTest == nil) {
+    slidersTest = [SlidersTest new];
+  }
+  [slidersTest show];
+}
+
+
 @end

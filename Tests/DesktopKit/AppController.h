@@ -30,19 +30,21 @@
 #import "DrawingTest.h"
 #import "ListViewTest.h"
 #import "TabViewTest.h"
+#import "SlidersTest.h"
 
 @interface AppController : NSObject
 {
   NumericFieldTest *numericFieldTest;
-  ClockViewTest    *clockViewTest;
-  CursorsTest      *cursorsTest;
-  IconViewTest     *iconViewTest;
-  TextTest         *textTest;
-  DrawingTest      *drawingTest;
-  ListViewTest     *listViewTest;
+  ClockViewTest *clockViewTest;
+  CursorsTest *cursorsTest;
+  IconViewTest *iconViewTest;
+  TextTest *textTest;
+  DrawingTest *drawingTest;
+  ListViewTest *listViewTest;
+  SlidersTest *slidersTest;
 
-  NXTSavePanel     *savePanel;
-  NXTOpenPanel     *openPanel;
+  NXTSavePanel *savePanel;
+  NXTOpenPanel *openPanel;
   NSBox *accessoryView;
 
   NXTAlert *alert;

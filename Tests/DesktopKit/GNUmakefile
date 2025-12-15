@@ -36,7 +36,8 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 	PanelOptions.gorm \
 	ListView.gorm \
 	ConsoleLog.gorm \
-	Autoresize.gorm
+	Autoresize.gorm \
+	Sliders.gorm
 #	Help \
 #	HelpTemplate
 #
@@ -52,7 +53,8 @@ $(APP_NAME)_OBJC_FILES += \
 	TextTest.m \
 	DrawingTest.m \
 	ListViewTest.m \
-	TabViewTest.m
+	TabViewTest.m \
+	SlidersTest.m
 
 #
 # Makefiles

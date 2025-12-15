@@ -1,0 +1,25 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    AppController = {
+	Actions = (
+	);
+	Outlets = (
+	    consoleLog
+	);
+	Super = NSObject;
+    };
+    SlidersTest = {
+	Actions = (
+	);
+	Outlets = (
+	    bezelBorderH,
+	    bezelBorderV,
+	    lineBorderH,
+	    lineBorderV,
+	    window,
+	    noBorderH,
+	    noBorderV
+	);
+	Super = NSObject;
+    };
+}
