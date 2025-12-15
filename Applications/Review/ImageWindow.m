@@ -52,8 +52,10 @@
 
   if ([self isFlipped] != NO) {
     lineStart.x = hsFrame.origin.x + hsFrame.size.width;
+    lineStart.x += 0.5;
     lineStart.y = hsFrame.origin.y - 1;
     lineEnd.y = lineStart.y + hsFrame.size.height + 1;
+    lineStart.y += 0.5;
   }
 
   DPSsetgray(ctxt, 0.0);
