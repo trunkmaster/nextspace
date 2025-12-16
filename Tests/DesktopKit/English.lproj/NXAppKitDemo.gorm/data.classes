@@ -16,7 +16,8 @@
 	    "showListViewTest:",
 	    "showCustomAlert:",
 	    "openAutoresizeTest:",
-	    "showTabViewTest:"
+	    "showTabViewTest:",
+	    "showSlidersTest:"
 	);
 	Outlets = (
 	    integerTextField,
@@ -27,7 +28,7 @@
     };
     FirstResponder = {
 	Actions = (
-	    "showTabViewTest:",
+	    "showSlidersTest:",
 	    "openAutoresizeTest:",
 	    "openOpenPanel:",
 	    "openSavePanel:",
@@ -42,6 +43,7 @@
 	    "showListViewTest:",
 	    "showMultilineAlert:",
 	    "showSinglelineAlert:",
+	    "showTabViewTest:",
 	    "showTextFieldsDemo:",
 	    "showTextTest:"
 	);

@@ -370,7 +370,7 @@
   [listViewTest show];
 }
 
-- (void)showCursorsTest:(id)sender
+- (void)showSlidersTest:(id)sender
 {
   if (slidersTest == nil) {
     slidersTest = [SlidersTest new];
