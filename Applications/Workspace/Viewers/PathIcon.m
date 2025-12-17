@@ -154,10 +154,10 @@ static NSDragOperation savedMask;
   appIcon = wAppIconCreateForDock(wScreen, [commandPath cString], [wmInstance cString],
                                   [wmClass cString], TILE_NORMAL);
 
-  r_image = WSLoadRasterImage([iconPath cString], wScreen);
+  r_image = WSCreateRasterImage([iconPath cString], wScreen);
   if (!r_image) {
     iconPath = [[NSBundle mainBundle] pathForImageResource:@"NXApplication.tiff"];
-    r_image = WSLoadRasterImage([iconPath cString], wScreen);
+    r_image = WSCreateRasterImage([iconPath cString], wScreen);
   }
 
   if (r_image) {

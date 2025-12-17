@@ -343,7 +343,7 @@ static RImage *get_texture_image(WScreen *scr, const char *pixmap_file)
     WMLogWarning(_("image file \"%s\" used as texture could not be found."), pixmap_file);
     return NULL;
   }
-  image = WSLoadRasterImage(file, scr);
+  image = WSCreateRasterImage(file, scr);
   if (!image) {
     WMLogWarning(_("could not load texture pixmap \"%s\":%s"), file, RMessageForError(RErrorCode));
     wfree(file);

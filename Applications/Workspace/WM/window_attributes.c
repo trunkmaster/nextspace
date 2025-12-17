@@ -436,7 +436,7 @@ RImage *get_rimage_from_file(WScreen *scr, const char *file_name, int max_size)
     return NULL;
   }
 
-  image = WSLoadRasterImage(file_name, scr);
+  image = WSCreateRasterImage(file_name, scr);
   if (!image) {
     WMLogWarning(_("error loading image file \"%s\": %s"), file_name, RMessageForError(RErrorCode));
   }

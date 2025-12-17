@@ -90,10 +90,12 @@ static NSBitmapImageRep *_getBestRepresentationFromImage(NSImage *image)
   return imageRepresentations[bestRepIndex];
 }
 
-RImage *WSLoadRasterImage(const char *file_path, WScreen *scr)
+RImage *WSCreateRasterImage(const char *file_path, WScreen *scr)
 {
   NSImage *image = nil;
   RImage *raster_image = NULL;
+
+  // NSLog(@"%s: %s", __func__, file_path);
 
   raster_image = RLoadImage(scr->rcontext, file_path, 0);
   if (!raster_image) {
