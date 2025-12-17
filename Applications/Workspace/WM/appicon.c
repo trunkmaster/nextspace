@@ -1149,12 +1149,10 @@ static Window _createIconForSliding(WScreen *scr, int x, int y, const char *imag
                             scr->w_depth, CopyFromParent, scr->w_visual, vmask, &attribs);
 
   // Image
-  // rimage = RLoadImage(scr->rcontext, image_path, 0);
-  rimage = WSLoadRasterImage(image_path);
+  rimage = WSLoadRasterImage(image_path, scr);
   if (!rimage) {
     image_path = WMAbsolutePathForFile(wPreferences.image_paths, "NXApplication.tiff");
-    // rimage = RLoadImage(scr->rcontext, image_path, 0);
-    rimage = WSLoadRasterImage(image_path);
+    rimage = WSLoadRasterImage(image_path, scr);
   }
   if (rimage) {
     RConvertImageMask(scr->rcontext, rimage, &pixmap, &mask, 158);

@@ -90,38 +90,42 @@ static NSBitmapImageRep *_getBestRepresentationFromImage(NSImage *image)
   return imageRepresentations[bestRepIndex];
 }
 
-RImage *WSLoadRasterImage(const char *file_path)
+RImage *WSLoadRasterImage(const char *file_path, WScreen *scr)
 {
-  NSImage *image = [[NSImage alloc] initWithContentsOfFile:[NSString stringWithCString:file_path]];
+  NSImage *image = nil;
   RImage *raster_image = NULL;
 
-  if (image) {
-    NSSize imageSize;
-    NSBitmapImageRep *imageRep, *convertedRep;
-    BOOL isAlpha;
-    int width, height, samplesPerPixel;
+  raster_image = RLoadImage(scr->rcontext, file_path, 0);
+  if (!raster_image) {
+    image = [[NSImage alloc] initWithContentsOfFile:[NSString stringWithCString:file_path]];
+    if (image) {
+      NSSize imageSize;
+      NSBitmapImageRep *imageRep, *convertedRep;
+      BOOL hasAlpha;
+      int width, height, samplesPerPixel;
 
-    imageRep = _getBestRepresentationFromImage(image);
+      imageRep = _getBestRepresentationFromImage(image);
 
-    imageSize = [imageRep size];
-    width = ceil(imageSize.width);
-    height = ceil(imageSize.height);
-    isAlpha = [imageRep hasAlpha];
-    samplesPerPixel = [imageRep hasAlpha] ? 4 : 3;
+      imageSize = [imageRep size];
+      width = ceil(imageSize.width);
+      height = ceil(imageSize.height);
+      hasAlpha = [imageRep hasAlpha];
+      samplesPerPixel = [imageRep hasAlpha] ? 4 : 3;
 
-    convertedRep = [imageRep _convertToFormatBitsPerSample:8
-                                           samplesPerPixel:samplesPerPixel
-                                                  hasAlpha:isAlpha
-                                                  isPlanar:NO
-                                            colorSpaceName:NSCalibratedRGBColorSpace
-                                              bitmapFormat:[imageRep bitmapFormat]
-                                               bytesPerRow:0
-                                              bitsPerPixel:0];
+      convertedRep = [imageRep _convertToFormatBitsPerSample:8
+                                             samplesPerPixel:samplesPerPixel
+                                                    hasAlpha:hasAlpha
+                                                    isPlanar:NO
+                                              colorSpaceName:NSDeviceRGBColorSpace
+                                                bitmapFormat:[imageRep bitmapFormat]
+                                                 bytesPerRow:0
+                                                bitsPerPixel:hasAlpha ? 32 : 24];
 
-    raster_image = RCreateImage(width, height, isAlpha);
-    memcpy(raster_image->data, [convertedRep bitmapData],
-           width * height * sizeof(unsigned char) * samplesPerPixel);
-    [image release];
+      raster_image = RCreateImage(width, height, hasAlpha);
+      memcpy(raster_image->data, [convertedRep bitmapData],
+             width * height * sizeof(unsigned char) * samplesPerPixel);
+      [image release];
+    }
   }
 
   return raster_image;

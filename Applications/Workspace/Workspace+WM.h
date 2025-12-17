@@ -71,7 +71,7 @@ NSImage *WSImageForRasterImage(RImage *r_image);
 // Workspace callbacks for use inside Window Manager.
 //-----------------------------------------------------------------------------
 
-RImage *WSLoadRasterImage(const char *file_path);
+RImage *WSLoadRasterImage(const char *file_path, WScreen *scr);
 
 char *WSSaveRasterImageAsTIFF(RImage *r_image, char *file_path);
 
