@@ -829,6 +829,15 @@ void wIconPaint(WIcon *icon)
   if (!icon || !icon->core || !icon->core->screen_ptr)
     return;
 
+  // Don't paint Recycler icon
+  if (icon->core->window) {
+    XClassHint *class_hint = XAllocClassHint();
+    XGetClassHint(dpy, icon->core->window, class_hint);
+    if (class_hint->res_name != NULL && !strcmp(class_hint->res_name, "Recycler")) {
+      return;
+    }
+  }
+
   WScreen *scr = icon->core->screen_ptr;
 
   XClearWindow(dpy, icon->core->window);

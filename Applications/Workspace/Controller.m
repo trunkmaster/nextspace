@@ -739,6 +739,8 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   // Show Dock
   wDockShowIcons(wDefaultScreen()->dock);
 
+  [recycler updateIconImage];
+
   // Start docked applications with `AutoLaunch = Yes`
   wDockDoAutoLaunch(wDefaultScreen()->dock, 0);
 
@@ -1270,6 +1272,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     }
   } else {
     wDockShowIcons(scr->dock);
+    [recycler updateIconImage];
     wScreenUpdateUsableArea(scr);
     if (scr->dock->mapped) {
       [sender setTitle:@"Hide"];
@@ -1287,6 +1290,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     }
   } else {
     wDockUncollapse(scr->dock);
+    [recycler updateIconImage];
     if (!scr->dock->collapsed) {
       [sender setTitle:@"Collapse"];
     }
