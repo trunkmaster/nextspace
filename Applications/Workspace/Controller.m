@@ -1336,12 +1336,21 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   } else if ([menuTitle isEqualToString:@"Dock"]) {
     if ([[menuItem title] isEqualToString:@"Collapse"] ||
         [[menuItem title] isEqualToString:@"Uncollapse"]) {
+      if (wDefaultScreen()->dock->collapsed) {
+        [menuItem setTitle:@"Uncollapse"];
+      } else {
+        [menuItem setTitle:@"Collapse"];
+      }
       if (!wDefaultScreen()->dock->mapped) {
         return NO;
       }
     }
-    if ([[menuItem title] isEqualToString:@"Hide"] && !wDefaultScreen()->dock->mapped) {
-      [menuItem setTitle:@"Show"];
+    if ([[menuItem title] isEqualToString:@"Hide"] || [[menuItem title] isEqualToString:@"Show"]) {
+      if (wDefaultScreen()->dock->mapped) {
+        [menuItem setTitle:@"Hide"];
+      } else {
+        [menuItem setTitle:@"Show"];
+      }
     }
   } else if ([menuTitle isEqualToString:@"Icon Yard"]) {
     if ([[menuItem title] isEqualToString:@"Hide"] && !wDefaultScreen()->flags.icon_yard_mapped) {
