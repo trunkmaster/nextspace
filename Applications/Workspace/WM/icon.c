@@ -834,8 +834,10 @@ void wIconPaint(WIcon *icon)
     XClassHint *class_hint = XAllocClassHint();
     XGetClassHint(dpy, icon->core->window, class_hint);
     if (class_hint->res_name != NULL && !strcmp(class_hint->res_name, "Recycler")) {
+      XFree(class_hint);
       return;
     }
+    XFree(class_hint);
   }
 
   WScreen *scr = icon->core->screen_ptr;

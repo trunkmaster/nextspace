@@ -25,6 +25,7 @@
 #import <Processes/ProcessManager.h>
 #import <Viewers/ShelfView.h>
 
+#import "Controller.h"
 #import "Recycler.h"
 #import "RecyclerIcon.h"
 #import "WMNotificationCenter.h"
@@ -224,6 +225,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   WAppIcon *aicon = desc->parent;
   NSInteger clickCount = 1;
 
+  NSLog(@"%s", __func__);
   XUngrabPointer(dpy, CurrentTime);
 
   if (event->xbutton.button == Button1) {
@@ -258,6 +260,11 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   }
 }
 
+void _recyclerExpose(WObjDescriptor *desc, XEvent *event)
+{
+  [[[NSApp delegate] recycler] updateIconImage];
+}
+
 @implementation RecyclerIcon
 
 // Search for position in Dock for new Recycler
@@ -289,6 +296,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   btn->dnd_command = NULL;
   btn->paste_command = NULL;
   btn->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
+  btn->icon->core->descriptor.handle_expose = _recyclerExpose;
 
   return btn;
 }
@@ -335,6 +343,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   } else {
     // Recycler icon can be restored from state file
     btn->icon->core->descriptor.handle_mousedown = _recyclerMouseDown;
+    btn->icon->core->descriptor.handle_expose = _recyclerExpose;
   }
 
   return rec_btn;
@@ -386,6 +395,8 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
 
 - (id)initWithWindowRef:(void *)xWindow recycler:(Recycler *)theRecycler
 {
+  Window *win = (Window *)xWindow;
+  NSLog(@"%s: 0x%lX", __func__, *win);
   self = [super initWithWindowRef:xWindow];
   recycler = theRecycler;
 
