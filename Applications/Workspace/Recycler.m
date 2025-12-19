@@ -332,6 +332,7 @@ static NSMutableArray *fileList = nil;
   [panelItems setStringValue:iconLabel];
 
   if (itemsLoader != nil) {
+    [itemsLoader removeObserver:self forKeyPath:@"isFinished"];
     [itemsLoader cancel];
     [itemsLoader release];
   }
