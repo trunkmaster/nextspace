@@ -1556,7 +1556,8 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
 
   oapp = wApplicationOf(wwin->main_window);
 
-  if (wasFocused) {
+  // `wasFocused` doesn't guarantee that `new_focused_window` isn't NULL.
+  if (wasFocused && new_focused_window != NULL) {
     WApplication *napp = wApplicationOf(new_focused_window->main_window);
 
     if (owner && new_focused_window != owner) {
