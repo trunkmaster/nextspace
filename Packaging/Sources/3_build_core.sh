@@ -1,6 +1,17 @@
 #!/bin/sh
 
-. ../environment.sh
+. `dirname $0`/../environment.sh
+
+#----------------------------------------
+# Install package dependecies
+#----------------------------------------
+if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+   sudo apt-get install -y ${RUNTIME_RUN_DEPS} || exit 1
+else
+   SPEC_FILE=${PROJECT_DIR}/Core/nextspace-core.spec
+   DEPS=`rpmspec -q --requires ${SPEC_FILE} | grep -v libobjc2 | grep -v libdispatch | grep -v nextspace-core | grep -v git | grep -v clang | awk -c '{print $1}'`
+   sudo yum -y install ${DEPS} || exit 1
+fi
 
 #----------------------------------------
 # Install system configuration files

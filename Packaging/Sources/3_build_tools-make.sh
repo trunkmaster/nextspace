@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ../environment.sh
+. `dirname $0`/../environment.sh
 
 #----------------------------------------
 # Install package dependecies

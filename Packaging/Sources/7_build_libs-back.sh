@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ../environment.sh
+. `dirname $0`/../environment.sh
 . /etc/profile.d/nextspace.sh
 
 #----------------------------------------
@@ -8,7 +8,7 @@
 #----------------------------------------
 if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} ">>> Installing packages for GNUstep GUI Backend (ART) build"
-	sudo apt-get install -y ${BACK_ART_DEPS}
+	sudo apt-get install -y ${BACK_ART_DEPS} ${BACK_ART_RUN_DEPS} || exit 1
 fi
 
 #----------------------------------------

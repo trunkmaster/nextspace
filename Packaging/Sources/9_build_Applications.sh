@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ../environment.sh
+. `dirname $0`/../environment.sh
 . /etc/profile.d/nextspace.sh
 
 _PWD=`pwd`
@@ -11,8 +11,8 @@ _PWD=`pwd`
 ${ECHO} ">>> Installing ${OS_ID} packages for NextSpace applications build"
 if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
-	sudo apt-get install -y ${APPS_BUILD_DEPS}
-	sudo apt-get install -y ${APPS_RUN_DEPS}
+	sudo apt-get install -y ${APPS_BUILD_DEPS} || exit 1
+	sudo apt-get install -y ${APPS_RUN_DEPS} || exit 1
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Applications/nextspace-applications.spec
@@ -84,19 +84,19 @@ if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 		${ECHO} "A Login panel is already running: refresh systemd unit info."
 		sudo systemctl daemon-reload
 	else
-		print_H2 "Setting up Login window service to run at system startup..."
+		${ECHO} "Setting up Login window service to run at system startup..."
 		systemctl --quiet is-active display-manager.service
 		if [ $? -eq 0 ];then
 			if [ -z $DISPLAY ];then
-				print_H2 "A session manager is already running: we must stop it now."
+				${ECHO} "A session manager is already running: we must stop it now."
 				sudo systemctl stop display-manager.service
 			else
-				print_H1 "You're in graphical session.\nTo enable Login panel you need to execute the following commands in console:\n  $ sudo systemctl stop display-manager.service\n  $ sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service"
+				${ECHO} "You're in graphical session.\nTo enable Login panel you need to execute the following commands in console:\n  $ sudo systemctl stop display-manager.service\n  $ sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service"
 			fi
 		else
 			systemctl --quiet is-enabled display-manager.service
 			if [ $? -eq 0 ];then
-				print_H2 "A session manager is already set: we must disable it now."
+				${ECHO} "A session manager is already set: we must disable it now."
 				sudo systemctl disable display-manager.service
 			fi
 			${ECHO} "Setting up Login window service..."

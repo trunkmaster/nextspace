@@ -8,7 +8,7 @@ _PWD=`pwd`
 # Libraries and applications
 #----------------------------------------
 # Apple
-libdispatch_version=5.9.2
+libdispatch_version=6.0.2
 libcorefoundation_version=5.9.2
 libcfnetwork_version=129.20
 # GNUstep
@@ -101,6 +101,7 @@ fi
 #----------------------------------------
 if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
     . ./${OS_ID}-${OS_VERSION}.deps.sh || exit 1
+    install_packages $BUILD_TOOLS
 else
     prepare_redhat_environment
 fi

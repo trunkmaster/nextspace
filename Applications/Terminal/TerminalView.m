@@ -20,7 +20,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <termio.h>
+#include <termios.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>

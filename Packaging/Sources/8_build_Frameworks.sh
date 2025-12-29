@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ../environment.sh
+. `dirname $0`/../environment.sh
 . /etc/profile.d/nextspace.sh
 
 #----------------------------------------
@@ -9,8 +9,8 @@
 ${ECHO} ">>> Installing ${OS_ID} packages for NextSpace frameworks build"
 if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
-	sudo apt-get install -y ${FRAMEWORKS_BUILD_DEPS}
-	sudo apt-get install -y ${FRAMEWORKS_RUN_DEPS}
+	sudo apt-get install -y ${FRAMEWORKS_BUILD_DEPS} || exit 1
+	sudo apt-get install -y ${FRAMEWORKS_RUN_DEPS} || exit 1
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Frameworks/nextspace-frameworks.spec

@@ -1,4 +1,4 @@
-name: Fedora 41 RPM
+name: Fedora 43 RPM
 
 on:
   workflow_dispatch:
@@ -8,12 +8,12 @@ on:
         required: true
         default: 'warning'
       tags:
-        description: 'Build RPMs on Fedora 41'
+        description: 'Build RPMs on Fedora 43'
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
-    container: amd64/fedora:41
+    runs-on: ubuntu-24.04
+    container: amd64/fedora:43
 
     steps:
     - uses: actions/checkout@v3
