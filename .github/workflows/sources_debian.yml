@@ -1,4 +1,4 @@
-name: Debian 12
+name: Debian 13
 
 on:
   push:
@@ -9,8 +9,8 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-22.04
-    container: amd64/debian:12
+    runs-on: ubuntu-24.04
+    container: amd64/debian:13
 
     steps:
     - uses: actions/checkout@v3
