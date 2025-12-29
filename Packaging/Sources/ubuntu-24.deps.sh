@@ -1,4 +1,4 @@
-# Works for Debian 13 and Ubuntu 22.04
+# Works for Ubuntu 24.04
 
 BUILD_TOOLS="
     sudo
