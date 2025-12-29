@@ -20,26 +20,26 @@ jobs:
     - name: Build core libraries
       run: |
         cd Packaging/Sources
-        ./0_build_libdispatch.sh
-        ./1_build_libcorefoundation.sh
-        ./2_build_libobjc2.sh
-        ./3_build_core.sh
-        ./3_build_tools-make.sh
-        ./4_build_libwraster.sh
+        sudo ./0_build_libdispatch.sh
+        sudo ./1_build_libcorefoundation.sh
+        sudo ./2_build_libobjc2.sh
+        sudo ./3_build_core.sh
+        sudo ./3_build_tools-make.sh
+        sudo ./4_build_libwraster.sh
         
     - name: Build GNUstep
       run: |
         cd Packaging/Sources
-        ./5_build_libs-base.sh
-        ./6_build_libs-gui.sh
-        ./7_build_libs-back.sh
+        sudo ./5_build_libs-base.sh
+        sudo ./6_build_libs-gui.sh
+        sudo ./7_build_libs-back.sh
 
     - name: Build NextSpace frameworks
       run: |
         cd Packaging/Sources
-        ./8_build_Frameworks.sh
+        sudo ./8_build_Frameworks.sh
 
     - name: Build NextSpace applications
       run: |
         cd Packaging/Sources
-        ./9_build_Applications.sh
+        sudo ./9_build_Applications.sh
