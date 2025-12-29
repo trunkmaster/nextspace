@@ -100,10 +100,18 @@ add_user()
     $ECHO -e -n "\e[0m"
     read YN
     if [ "$YN" = "y" ]; then
+        if [ ! -d "/Users" ]; then
+           sudo mkdir -p /Users
+           sudo chmod 755 /Users
+        fi
         $ECHO -n "Please enter username: "
         read USERNAME
         $ECHO "Adding username $USERNAME"
-        sudo adduser -b /Users -s /bin/zsh -G audio,wheel $USERNAME
+	if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+	   sudo useradd -m -b /Users -s /bin/zsh -G audio $USERNAME
+	else
+	   sudo adduser -b /Users -s /bin/zsh -G audio,wheel $USERNAME
+	fi
         $ECHO "Setting up password..."
         sudo passwd $USERNAME
         $ECHO "Updating SELinux file contexts..."

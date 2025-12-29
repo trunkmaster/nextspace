@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ../environment.sh
+. `dirname $0`/../environment.sh
 
 #----------------------------------------
 # Install package dependecies
@@ -41,7 +41,9 @@ rm -rf _build 2>/dev/null
 mkdir -p _build
 cd _build
 
-C_FLAGS="-Wno-error=unused-but-set-variable"
+#C_FLAGS="-Wno-error=unused-but-set-variable"
+C_FLAGS="-Wno-error=cast-function-type-mismatch"
+CXX_FLAGS="-Wno-error=cast-function-type-mismatch"
 $CMAKE_CMD .. \
 	-DCMAKE_C_COMPILER=${C_COMPILER} \
 	-DCMAKE_CXX_COMPILER=${CXX_COMPILER} \

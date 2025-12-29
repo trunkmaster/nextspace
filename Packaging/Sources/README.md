@@ -11,8 +11,8 @@ Each script preform the following actions:
 Scripts assume that you preform run inside this directory as user. Scripts use `sudo` to install build resultsa and ask you for the password when it's needed.
 
 Build scripts were tested on:
-- Debian 12, Ubuntu 22.04
-- Fedora 35, 39
+- Debian 13, Ubuntu 24.04
+- Fedora 42, 43
 - Rocky Linux 9, Alma Linux 9 and CentOS Stream 9
 
 ## Build and install each dependency

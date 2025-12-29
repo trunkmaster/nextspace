@@ -2,8 +2,16 @@
 # It is a helper script for automated install of NEXTSPACE which has been built
 # with scripts. Should be placed next to binary build hierarchy.
 
-. ./install_environment.sh
-. ./debian-12.deps.sh
+. `dirname $0`/../functions.sh
+. `dirname $0`/../environment.sh
+. `dirname $0`/../install_environment.sh
+
+if [ ${OS_ID} = "debian" ]; then
+. `dirname $0`/./debian-13.deps.sh
+else
+. `dirname $0`/./ubuntu-24.deps.sh
+fi
+
 clear
 
 #===============================================================================
@@ -30,9 +38,12 @@ $ECHO "=========================================================================
 $ECHO "Installing system packages needed for NextSpace..."
 $ECHO "========================================================================="
 $ECHO -e -n "\e[0m"
-sudo apt-get install ${RUNTIME_RUN_DEPS} ${WRASTER_RUN_DEPS} ${GNUSTEP_BASE_RUN_DEPS} \
-                 ${GNUSTEP_GUI_RUN_DEPS} ${BACK_ART_RUN_DEPS} ${FRAMEWORKS_RUN_DEPS} \
-                 ${APPS_RUN_DEPS} 2>&1 > /dev/null
+if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+   sudo apt-get -y install ${RUNTIME_DEPS} ${WRASTER_DEPS} ${RUNTIME_RUN_DEPS} ${WRASTER_RUN_DEPS} ${GNUSTEP_BASE_RUN_DEPS} \
+                   ${GNUSTEP_GUI_DEPS} ${GNUSTEP_GUI_RUN_DEPS} ${BACK_ART_DEPS} ${BACK_ART_RUN_DEPS} ${FRAMEWORKS_RUN_DEPS} \
+                   ${FRAMEWORKS_BUILD_DEPS} ${APPS_BUILD_DEPS} ${APPS_RUN_DEPS} 2>&1 > /dev/null
+fi
+
 $ECHO -e "\e[32m Done! \e[0m"
 
 #===============================================================================
@@ -43,75 +54,21 @@ $ECHO "=========================================================================
 $ECHO "Installing NextSpace..."
 $ECHO "========================================================================="
 $ECHO -e -n "\e[0m"
-$ECHO "Populating /etc..."
-CORE_SOURCES="."
-DEST_DIR=""
-{
-    # Preferences
-    $MKDIR_CMD $DEST_DIR/Library/Preferences
-    $CP_CMD ${CORE_SOURCES}/Library/Preferences/* $DEST_DIR/Library/Preferences/
+DIR="$(cd "$(dirname "$0")" && pwd)"
 
-    # Linker cache
-    if ! [ -d $DEST_DIR/etc/ld.so.conf.d ];then
-        $MKDIR_CMD -v $DEST_DIR/etc/ld.so.conf.d
-    fi
-    $CP_CMD ${CORE_SOURCES}/etc/ld.so.conf.d/nextspace.conf $DEST_DIR/etc/ld.so.conf.d/
-    sudo ldconfig
+"$DIR/0_build_libdispatch.sh" && \
+"$DIR/1_build_libcorefoundation.sh" && \
+"$DIR/2_build_libobjc2.sh" && \
+"$DIR/3_build_core.sh" && \
+"$DIR/3_build_tools-make.sh" && \
+"$DIR/4_build_libwraster.sh" && \
+"$DIR/5_build_libs-base.sh" && \
+"$DIR/6_build_libs-gui.sh" && \
+"$DIR/7_build_libs-back.sh" && \
+"$DIR/8_build_Frameworks.sh" && \
+"$DIR/9_build_Applications.sh"
 
-    # X11
-    if ! [ -d $DEST_DIR/etc/X11/xorg.conf.d ];then
-        $MKDIR_CMD -v $DEST_DIR/etc/X11/xorg.conf.d
-    fi
-    $CP_CMD ${CORE_SOURCES}/etc/X11/Xresources.nextspace $DEST_DIR/etc/X11
-    $CP_CMD ${CORE_SOURCES}/etc/X11/xorg.conf.d/*.conf $DEST_DIR/etc/X11/xorg.conf.d/
-
-    # PolKit & udev
-    if ! [ -d $DEST_DIR/etc/polkit-1/rules.d ];then
-        $MKDIR_CMD -v $DEST_DIR/etc/polkit-1/rules.d
-    fi
-    $CP_CMD ${CORE_SOURCES}/etc/polkit-1/rules.d/*.rules $DEST_DIR/etc/polkit-1/rules.d/
-    if ! [ -d $DEST_DIR/etc/udev/rules.d ];then
-        $MKDIR_CMD -v $DEST_DIR/etc/udev/rules.d
-    fi
-    $CP_CMD ${CORE_SOURCES}/etc/udev/rules.d/*.rules $DEST_DIR/etc/udev/rules.d/
-
-    # User environment
-    if ! [ -d $DEST_DIR/etc/profile.d ];then
-        $MKDIR_CMD -v $DEST_DIR/etc/profile.d
-    fi
-    $CP_CMD ${CORE_SOURCES}/etc/profile.d/nextspace.sh $DEST_DIR/etc/profile.d/
-
-    if ! [ -d $DEST_DIR/etc/skel ];then
-        $MKDIR_CMD -v $DEST_DIR/etc/skel
-    fi
-    $CP_CMD ${CORE_SOURCES}/etc/skel/Library $DEST_DIR/etc/skel/
-    $CP_CMD ${CORE_SOURCES}/etc/skel/.config $DEST_DIR/etc/skel/
-    $CP_CMD ${CORE_SOURCES}/etc/skel/.emacs.d $DEST_DIR/etc/skel/
-    $CP_CMD ${CORE_SOURCES}/etc/skel/.gtkrc-2.0 $DEST_DIR/etc/skel/
-    $CP_CMD ${CORE_SOURCES}/etc/skel/.*.nextspace $DEST_DIR/etc/skel/
-
-    # Scripts
-    if ! [ -d $DEST_DIR/usr/NextSpace/bin ];then
-        $MKDIR_CMD -v $DEST_DIR/usr/NextSpace/bin
-    fi
-    $CP_CMD ${CORE_SOURCES}/usr/NextSpace/bin/* $DEST_DIR/usr/NextSpace/bin/
-
-    # Icons and Plymouth resources
-    if ! [ -d $DEST_DIR/usr/share ];then
-        $MKDIR_CMD -v $DEST_DIR/usr/share
-    fi
-    $CP_CMD ${CORE_SOURCES}/usr/share/* $DEST_DIR/usr/share/
-
-    $ECHO "Copying /Applications..."
-    $CP_CMD Applications /
-    $ECHO "Copying /Developer..."
-    $CP_CMD Developer /
-    $ECHO "Copying /Library..."
-    $CP_CMD Library /
-    $ECHO "Copying /usr/NextSpace..."
-    $CP_CMD usr/NextSpace /usr
-}
-sudo ldconfig
+$ECHO -e "\e[32m Done! \e[0m"
 
 #===============================================================================
 # More X drivers. Workaround until NextSpace RPMs include them as dependencies
@@ -121,7 +78,9 @@ $ECHO "=========================================================================
 $ECHO "Installing X11 drivers and utilities..."
 $ECHO "========================================================================="
 $ECHO -e -n "\e[0m"
-sudo apt-get install xserver-xorg-input-all xserver-xorg-video-all 2>&1 > /dev/null
+if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+   sudo apt-get -y install xserver-xorg-input-all xserver-xorg-video-all 2>&1 > /dev/null
+fi
 $ECHO -e "\e[32m Done! \e[0m"
 
 $ECHO -e "\e[1m"
@@ -129,6 +88,7 @@ $ECHO "=========================================================================
 $ECHO "Performing system check and configuration..."
 $ECHO "========================================================================="
 $ECHO -e -n "\e[0m"
+
 #===============================================================================
 # Hostname in /etc/hosts
 #===============================================================================
@@ -184,7 +144,6 @@ add_user
 
 # Setting up Login Panel
 setup_loginwindow
-
 
 $ECHO -e "\e[32m"
 $ECHO "========================================================================="

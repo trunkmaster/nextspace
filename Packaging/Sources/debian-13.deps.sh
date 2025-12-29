@@ -1,16 +1,20 @@
-# Works for Debian 12 and Ubuntu 22.04
+# Works for Debian 13 and Ubuntu 22.04
 
 BUILD_TOOLS="
+    sudo
     curl
     clang
     cmake
     git
+    binutils-gold
 "
 #--- libdispatch, libcorefoundation, libobjc2
 RUNTIME_DEPS="
     libbsd-dev
+    libxml2-dev
+    libicu-dev
     uuid-dev
-    libcurl4-gnutls-dev
+    libcurl4-openssl-dev
     libavahi-compat-libdnssd-dev
 "
 #--- gnustep-make
@@ -43,8 +47,8 @@ WRASTER_DEPS="
 "
 WRASTER_RUN_DEPS="
     libgif7
-    libjpeg8
-    libtiff5
+    libjpeg62-turbo
+    libtiff6
     libpng16-16
     libwebp7
     libxpm4
@@ -55,7 +59,6 @@ WRASTER_RUN_DEPS="
 #--- gnustep-base
 GNUSTEP_BASE_DEPS="
     libffi-dev
-    libxml2-dev
     libxslt1-dev
     libavahi-client-dev
     libcups2-dev
@@ -66,8 +69,7 @@ GNUSTEP_BASE_RUN_DEPS="
     libavahi-client3
     libxml2
     libxslt1.1
-    libicu70
-    libicu-dev
+    libicu76
     libgnutls30
     libcups2
 "
@@ -75,6 +77,7 @@ GNUSTEP_BASE_RUN_DEPS="
 GNUSTEP_GUI_DEPS="
     libao-dev
     libsndfile1-dev
+    libmagic-dev
 "
 GNUSTEP_GUI_RUN_DEPS="
     libao4
@@ -107,6 +110,7 @@ FRAMEWORKS_BUILD_DEPS="
     libxcursor-dev
     libxrandr-dev
     libpulse-dev
+    libxkbfile-dev
 "
 FRAMEWORKS_RUN_DEPS="
     libmagic1

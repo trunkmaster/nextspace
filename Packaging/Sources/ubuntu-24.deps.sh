@@ -1,0 +1,160 @@
+# Works for Debian 13 and Ubuntu 22.04
+
+BUILD_TOOLS="
+    sudo
+    curl
+    clang
+    cmake
+    git
+    binutils-gold
+"
+#--- libdispatch, libcorefoundation, libobjc2
+RUNTIME_DEPS="
+    libbsd-dev
+    libxml2-dev
+    libicu-dev
+    uuid-dev
+    libcurl4-openssl-dev
+    libavahi-compat-libdnssd-dev
+"
+#--- gnustep-make
+GNUSTEP_MAKE_DEPS="
+    zsh
+    plymouth
+    plymouth-label
+"
+RUNTIME_RUN_DEPS="
+    libbsd0
+    libuuid1
+    libcurl4
+    libcurl3-gnutls
+    libavahi-compat-libdnssd1
+    zsh
+    plymouth
+    plymouth-label
+"
+#--- libwraster
+WRASTER_DEPS="
+    libgif-dev
+    libjpeg-dev
+    libpng-dev
+    libtiff-dev
+    libwebp-dev
+    libxpm-dev
+    libxmu-dev
+    libxext-dev
+    libx11-dev
+"
+WRASTER_RUN_DEPS="
+    libgif7
+    libjpeg-turbo8
+    libtiff6
+    libpng16-16t64
+    libwebp7
+    libxpm4
+    libxmu6
+    libxext6
+    libx11-6 
+"
+#--- gnustep-base
+GNUSTEP_BASE_DEPS="
+    libffi-dev
+    libxslt1-dev
+    libavahi-client-dev
+    libcups2-dev
+    libgnutls28-dev
+"
+GNUSTEP_BASE_RUN_DEPS="
+    libffi8
+    libavahi-client3
+    libxml2
+    libxslt1.1
+    libicu74
+    libgnutls30t64
+    libcups2t64
+"
+#--- gnustep-gui
+GNUSTEP_GUI_DEPS="
+    libao-dev
+    libsndfile1-dev
+    libmagic-dev
+"
+GNUSTEP_GUI_RUN_DEPS="
+    libao4
+    libsndfile1
+"
+#--- back-art
+BACK_ART_DEPS="
+    libart-2.0-dev
+    libfreetype-dev
+    libxcursor-dev
+    libxfixes-dev
+    libxt-dev
+    libxrandr-dev
+"
+BACK_ART_RUN_DEPS="
+    libart-2.0-2
+    libfreetype6
+    libxcursor1
+    libxfixes3
+    libxt6t64
+    libxrandr2
+"
+#--- Frameworks
+FRAMEWORKS_BUILD_DEPS="
+    libmagic-dev
+    libudisks2-dev
+    libdbus-1-dev
+    libupower-glib-dev
+    libxkbfile-dev
+    libxcursor-dev
+    libxrandr-dev
+    libpulse-dev
+    libxkbfile-dev
+"
+FRAMEWORKS_RUN_DEPS="
+    libmagic1
+    libglib2.0-0
+    dbus
+    libdbus-1-3
+    udisks2
+    libudisks2-0
+    libupower-glib3
+    libxkbfile1
+    libxrandr2
+    pulseaudio
+    libpulse0
+    upower
+"
+#--- Applications
+APPS_BUILD_DEPS="
+    libfontconfig-dev
+    libxft-dev
+    libxinerama-dev
+    libxcomposite-dev
+    libxrender-dev
+    libxdamage-dev
+    libexif-dev
+    libpam0g-dev
+"
+APPS_RUN_DEPS="
+    fontconfig
+    libfontconfig1
+    libxft2
+    libxinerama1
+    libxcomposite1
+    libxrender1
+    libxdamage1
+    libexif12
+    xserver-xorg-core
+    xserver-xorg-input-evdev
+    xserver-xorg-input-synaptics
+    xfonts-100dpi
+    xserver-xorg-video-vmware
+    xserver-xorg-video-intel
+    x11-xkb-utils
+    x11-xserver-utils
+"
+#    libpam0g 
+#xserver-xorg-input-kbd
+#xserver-xorg-input-mouse

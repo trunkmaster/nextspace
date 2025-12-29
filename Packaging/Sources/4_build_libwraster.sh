@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ../environment.sh
+. `dirname $0`/../environment.sh
 . /etc/profile.d/nextspace.sh
 
 #----------------------------------------
@@ -9,7 +9,7 @@
 ${ECHO} ">>> Installing ${OS_ID} packages for WRaster library build"
 if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
-	sudo apt-get install -y ${WRASTER_DEPS} || exit 1
+	sudo apt-get install -y ${WRASTER_DEPS} ${WRASTER_RUN_DEPS} || exit 1
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Libraries/libwraster/libwraster.spec

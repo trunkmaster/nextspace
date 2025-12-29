@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ../environment.sh
+. `dirname $0`/../environment.sh
 . /Developer/Makefiles/GNUstep.sh
 . /etc/profile.d/nextspace.sh
 
@@ -10,7 +10,7 @@
 ${ECHO} ">>> Installing ${OS_ID} packages for GNUstep Base (Foundation) build"
 if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
-	sudo apt-get install -y ${GNUSTEP_BASE_DEPS} || exit 1
+	sudo apt-get install -y ${GNUSTEP_BASE_DEPS} ${GNUSTEP_BASE_RUN_DEPS} || exit 1
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Libraries/gnustep/nextspace-gnustep.spec
