@@ -278,7 +278,7 @@ if [ $1 -eq 1 ]; then
     systemctl enable /usr/NextSpace/lib/systemd/gdnc.service;
     systemctl enable /usr/NextSpace/lib/systemd/gdnc-local.service;
     systemctl enable /usr/NextSpace/lib/systemd/gpbs.service;
-    systemctl start gdomap gdnc gpbs;
+    systemctl start gdomap gdnc gpbs || /bin/true;
 elif [ $1 -eq 2 ]; then
     # post-upgrade
     systemctl daemon-reload;
