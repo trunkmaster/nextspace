@@ -1,7 +1,15 @@
+. ../functions.sh
+
 ###############################################################################
 # Variables
 ###############################################################################
-ECHO="/usr/bin/echo -e"
+#ECHO="/usr/bin/echo -e"
+# print_echo()
+# {
+#   printf "$1 \n"
+# }
+# ECHO='print_echo'
+ECHO="printf %s\n"
 _PWD=`pwd`
 
 #----------------------------------------
@@ -22,24 +30,31 @@ projectcenter_version=0_7_0
 #----------------------------------------
 # Operating system
 #----------------------------------------
-. /etc/os-release
-# OS type like "rhel"
-OS_LIKE=`echo ${ID_LIKE} | awk '{print $1}'`
-# OS name like "fedora"
-OS_ID=$ID
-_ID=`echo ${ID} | awk -F\" '{print $2}'`
-if [ -n "${_ID}" ] && [ "${_ID}" != " " ]; then
-  OS_ID=${_ID}
+OS_TYPE=`uname -s`
+if [ ${OS_TYPE} = "FreeBSD" ]; then
+  OS_ID="freebsd"
+  BSD_RELEASE=`uname -r`
+  OS_VERSION=`echo ${BSD_RELEASE} | awk -F. '{print $1}'`
+else
+  . /etc/os-release
+  # OS type like "rhel"
+  OS_LIKE=`echo ${ID_LIKE} | awk '{print $1}'`
+  # OS name like "fedora"
+  OS_ID=$ID
+  _ID=`echo ${ID} | awk -F\" '{print $2}'`
+  if [ -n "${_ID}" ] && [ "${_ID}" != " " ]; then
+    OS_ID=${_ID}
+  fi
+  # OS version like "39"
+  OS_VERSION=$VERSION_ID
+  _VER=`echo ${VERSION_ID} | awk -F\. '{print $1}'`
+  if [ -n "${_VER}" ] && [ "${_VER}" != " " ]; then
+    OS_VERSION=$_VER
+  fi
+  # Name like "Fedora Linux"
+  OS_NAME=$NAME
 fi
-# OS version like "39"
-OS_VERSION=$VERSION_ID
-_VER=`echo ${VERSION_ID} | awk -F\. '{print $1}'`
-if [ -n "${_VER}" ] && [ "${_VER}" != " " ]; then
-  OS_VERSION=$_VER
-fi
-# Name like "Fedora Linux"
-OS_NAME=$NAME
-${ECHO} "OS:\t\t${OS_ID}-${OS_VERSION}"
+printf "OS:\t\t${OS_ID}-${OS_VERSION}\n"
 
 #---------------------------------------
 # Machine
@@ -63,7 +78,7 @@ fi
 # Directory where nextspace GitHub repo resides
 cd ../..
 PROJECT_DIR=`pwd`
-${ECHO} "NextSpace repo:\t${PROJECT_DIR}"
+printf "NextSpace repo:\t${PROJECT_DIR}\n"
 cd ${_PWD}
 
 if [ -z $BUILD_RPM ]; then
@@ -71,11 +86,11 @@ if [ -z $BUILD_RPM ]; then
   if [ ! -d ${BUILD_ROOT} ]; then
     mkdir ${BUILD_ROOT}
   fi
-  ${ECHO} "Build in:\t${BUILD_ROOT}"
+  printf "Build in:\t${BUILD_ROOT}\n"
 
   if [ "$1" != "" ];then
     DEST_DIR=${1}
-    ${ECHO} "Install in:\t${1}"
+    printf "Install in:\t${1}\n"
   else
     DEST_DIR=""
   fi
@@ -92,15 +107,17 @@ else
   mkdir -p $RPM_SOURCES_DIR
   mkdir -p $RPM_SPECS_DIR
 
-  ${ECHO} "RPMs directory:\t$RPMS_DIR"
+  printf "RPMs directory:\t$RPMS_DIR\n"
 fi
 
-. ../functions.sh
+#. ../functions.sh
 #----------------------------------------
 # Package dependencies
 #----------------------------------------
 if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
-    . ./${OS_ID}-${OS_VERSION}.deps.sh || exit 1
+  . ./${OS_ID}-${OS_VERSION}.deps.sh || exit 1
+elif [ ${OS_ID} = "freebsd" ]; then
+  . ./${OS_ID}-${OS_VERSION}.deps.sh || exit 1
 else
     prepare_redhat_environment
 fi
@@ -138,24 +155,27 @@ else
 fi
 
 # Linker
-ld -v | grep "gold" 2>&1 > /dev/null
-if [ "$?" = "1" ]; then
-  ${ECHO} "Setting up Gold linker..."
-  sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.gold 100
-  sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.bfd 10
-  sudo update-alternatives --auto ld
+if [ ${OS_ID} != "freebsd" ]; then
   ld -v | grep "gold" 2>&1 > /dev/null
   if [ "$?" = "1" ]; then
-    ${ECHO} "Failed to setup Gold linker"
-    exit 1
+    ${ECHO} "Setting up Gold linker..."
+    sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.gold 100
+    sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.bfd 10
+    sudo update-alternatives --auto ld
+    ld -v | grep "gold" 2>&1 > /dev/null
+    if [ "$?" = "1" ]; then
+      ${ECHO} "Failed to setup Gold linker"
+      exit 1
+    fi
+  else
+    ${ECHO} "Using linker:\tGold"
   fi
-else
-  ${ECHO} "Using linker:\tGold"
 fi
+
 # Compiler
-if [ "$OS_ID" = "fedora" ] || [ "$OS_LIKE" = "rhel" ] || [ "$OS_ID" = "debian" ] || [ "$OS_ID" = "ubuntu" ] || [ "$OS_ID" = "ultramarine" ]; then
-  which clang 2>&1 > /dev/null || { echo "No clang compiler found. Please install clang package."; exit 1; }
-  C_COMPILER=`which clang`
-  which clang++ 2>&1 > /dev/null || { echo "No clang++ compiler found. Please install clang++ package."; exit 1; }
-  CXX_COMPILER=`which clang++`
-fi
+#if [ "$OS_ID" = "fedora" ] || [ "$OS_LIKE" = "rhel" ] || [ "$OS_ID" = "debian" ] || [ "$OS_ID" = "ubuntu" ] || [ "$OS_ID" = "ultramarine" ]; then
+which clang 2>&1 > /dev/null || { echo "No clang compiler found. Please install clang package."; exit 1; }
+C_COMPILER=`which clang`
+which clang++ 2>&1 > /dev/null || { echo "No clang++ compiler found. Please install clang++ package."; exit 1; }
+CXX_COMPILER=`which clang++`
+#fi
