@@ -1,12 +1,14 @@
 #!/bin/sh
 
 . ../environment.sh
-
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
 ${ECHO} ">>> Installing ${OS_ID} packages for CoreFoundation library build"
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+if [ ${OS_ID} = "freebsd" ]; then
+	${ECHO} "FreeBSD: calling 'pkg install'."
+	sudo pkg install ${CORE_SYSTEM_DEPS}
+elif [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -y ${RUNTIME_DEPS} || exit 1
 else
@@ -38,7 +40,7 @@ cd ${BUILD_ROOT}/${CF_PKG_NAME} || exit 1
 rm -rf .build 2>/dev/null
 mkdir -p .build
 cd .build
-C_FLAGS="-I/usr/NextSpace/include -Wno-switch -Wno-enum-conversion"
+C_FLAGS="-I/usr/local/include -I/usr/NextSpace/include -Wno-switch -Wno-enum-conversion"
 $CMAKE_CMD .. \
 	-DCMAKE_C_COMPILER=${C_COMPILER} \
 	-DCMAKE_C_FLAGS="${C_FLAGS}" \
@@ -61,7 +63,7 @@ if [ -n  "$libcfnetwork_version" ]; then
 	rm -rf .build 2>/dev/null
 	mkdir -p .build
 	cd .build
-	CFN_CFLAGS="-F../../${CF_PKG_NAME}/.build -I/usr/NextSpace/include"
+	CFN_CFLAGS="-F../../${CF_PKG_NAME}/.build -I/usr/local/include -I/usr/NextSpace/include"
 	CFN_LD_FLAGS="-L/usr/NextSpace/lib -L../../${CF_PKG_NAME}/.build/CoreFoundation.framework"
 	cmake .. \
 		-DCMAKE_C_COMPILER=${C_COMPILER} \
@@ -76,6 +78,8 @@ if [ -n  "$libcfnetwork_version" ]; then
 		-DCMAKE_BUILD_TYPE=Debug
 	$MAKE_CMD || exit 1
 fi
+
+exit 0
 
 #----------------------------------------
 # Install
