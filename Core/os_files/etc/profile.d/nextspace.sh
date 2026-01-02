@@ -7,7 +7,7 @@ NS_PATH="/usr/NextSpace/bin:/Library/bin:/usr/NextSpace/sbin:/Library/sbin"
 export PATH=$NS_PATH:$PATH
 export MANPATH=:/Library/Documentation/man:/usr/NextSpace/Documentation/man
 # Only user home lib dir here. Others in /etc/ld.so.conf.d/nextspace.conf
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/Library/Libraries"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/Library/Libraries:/Library/Libraries:/usr/NextSpace/lib"
 export GNUSTEP_PATHLIST="$HOME:/:/usr/NextSpace:/Network"
 export INFOPATH="$HOME/Library/Documentation/info:/Library/Documentation/info:/usr/NextSpace/Documentation/info"
 
