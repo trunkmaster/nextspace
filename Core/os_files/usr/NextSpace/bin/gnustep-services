@@ -14,17 +14,29 @@ case "$1" in
 
 start)
 	printf "Starting GNUstep services:"
+    if [ "$UID" = "0" ];then
+        gdomap -p -a /usr/NextSpace/etc/gdomap.interfaces &
+        printf " Distributed Objects"
+        gdnc --daemon -GSPublic YES &
+        printf ", Distributed Notification Center"
+    else
+	    gpbs --daemon &
+	    printf ", Pasteboard"
+    fi
 	gdnc --daemon &
-	printf " Notification Center"
-	gpbs --daemon &
-	printf ", Pasteboard"
+	printf ", Notification Center"
 	printf ".\n"
 	;;  
 stop)
 	printf "Stopping GNUstep services:"
-	pkill -U $USER -9 gpbs
-	printf " Pasteboard"
-	pkill -U $USER -9 gdnc
+    if [ "$UID" = "0" ];then
+        pkill -9 gdomap
+        printf " Distributed Objects"
+    else 
+	    pkill -9 -U $USER gpbs
+	    printf ", Pasteboard"
+    fi
+	pkill -9 -U $USER gdnc
 	printf ", Notification Center"
 	printf ".\n"
 	;;
