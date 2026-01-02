@@ -7,7 +7,10 @@
 # Install package dependecies
 #----------------------------------------
 ${ECHO} ">>> Installing ${OS_ID} packages for WRaster library build"
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+if [ ${OS_ID} = "freebsd" ]; then
+	${ECHO} "FreeBSD: calling 'pkg install'..."
+	sudo pkg install --yes --quiet ${WRASTER_DEPS}
+elif [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -y ${WRASTER_DEPS} || exit 1
 else

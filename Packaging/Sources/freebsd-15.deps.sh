@@ -15,19 +15,15 @@ CORE_SYSTEM_DEPS="
     pkgconf
 "
 
-RUNTIME_DEPS="
-    xorg
-    xrandr
-"
-
+# libwraster
 WRASTER_DEPS="
   giflib
+  jpeg-turbo
   png
-  jbigkit
   tiff
   webp
   libXpm
-  tiff
+  libXmu
 "
 
 GNUSTEP_GUI_DEPS="libsndfile"

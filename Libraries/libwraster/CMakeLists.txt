@@ -36,13 +36,15 @@ check_include_files("stdnoreturn.h" HAVE_STDNORETURN)
 
 check_include_files("stdio.h;jpeglib.h" USE_JPEG)
 
-find_package(GraphicsMagick COMPONENTS MagickWand)
-if (GraphicsMagick_FOUND)
-  set(USE_MAGICK 1)
-  set(MAGICK_INCLUDES -I${GraphicsMagick_INCLUDE_DIRS})
-  set(MAGICK_LIBS -l${GraphicsMagick_LIBRARIES})
-endif()
+# find_package(GraphicsMagick COMPONENTS MagickWand)
+# if (GraphicsMagick_FOUND)
+#   set(USE_MAGICK 1)
+#   set(MAGICK_INCLUDES -I${GraphicsMagick_INCLUDE_DIRS})
+#   set(MAGICK_LIBS -l${GraphicsMagick_LIBRARIES})
+# endif()
 
+set(CMAKE_C_FLAGS "-I/usr/local/include")
+set(CMAKE_EXE_LINKER_FLAGS "-L/usr/local/lib")
 check_include_files("png.h" USE_PNG)
 
 check_include_files("gif_lib.h" HAVE_GIF)
