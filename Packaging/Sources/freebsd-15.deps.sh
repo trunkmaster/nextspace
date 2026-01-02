@@ -1,7 +1,8 @@
 BUILD_TOOLS="
-    cmake
     git
-    sudo
+    cmake
+    gmake
+    zsh
 "
 
 CORE_SYSTEM_DEPS="
