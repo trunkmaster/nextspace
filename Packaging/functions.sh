@@ -141,3 +141,13 @@ prepare_redhat_environment()
         sudo dnf -y install ${BUILD_TOOLS}
     fi
 }
+
+prepare_freebsd_environment()
+{
+   	pkg info --quiet sudo
+	if [ $? = 1 ];then
+		print_ERR "There's no 'sudo' package installed. Please run 'pkg install sudo' command as root."
+		exit 1
+	fi
+    sudo pkg install --yes --quiet ${BUILD_TOOLS}
+}

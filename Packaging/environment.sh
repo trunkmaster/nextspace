@@ -118,6 +118,10 @@ if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
   . ./${OS_ID}-${OS_VERSION}.deps.sh || exit 1
 elif [ ${OS_ID} = "freebsd" ]; then
   . ./${OS_ID}-${OS_VERSION}.deps.sh || exit 1
+  prepare_freebsd_environment
+  if [ $? = 1];then
+    exit 1
+  fi
 else
     prepare_redhat_environment
 fi
