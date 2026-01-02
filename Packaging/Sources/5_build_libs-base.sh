@@ -8,7 +8,10 @@
 # Install package dependecies
 #----------------------------------------
 ${ECHO} ">>> Installing ${OS_ID} packages for GNUstep Base (Foundation) build"
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+if [ ${OS_ID} = "freebsd" ]; then
+	${ECHO} "FreeBSD: calling 'pkg install'..."
+	sudo pkg install --yes --quiet ${GNUSTEP_BASE_DEPS}
+elif [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -y ${GNUSTEP_BASE_DEPS} || exit 1
 else
@@ -50,19 +53,24 @@ cd ${_PWD}
 # Install services
 #----------------------------------------
 SOURCES_DIR=${PROJECT_DIR}/Libraries/gnustep
-
 $MKDIR_CMD $DEST_DIR/usr/NextSpace/etc
 $CP_CMD ${SOURCES_DIR}/gdomap.interfaces $DEST_DIR/usr/NextSpace/etc/
-$MKDIR_CMD $DEST_DIR/usr/NextSpace/lib/systemd
-$CP_CMD ${SOURCES_DIR}/gdomap.service $DEST_DIR/usr/NextSpace/lib/systemd
-$CP_CMD ${SOURCES_DIR}/gdnc.service $DEST_DIR/usr/NextSpace/lib/systemd
-$CP_CMD ${SOURCES_DIR}/gdnc-local.service $DEST_DIR/usr/NextSpace/lib/systemd
 
-if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
-	sudo ldconfig
-	sudo systemctl daemon-reload
-	systemctl status gdomap || sudo systemctl enable /usr/NextSpace/lib/systemd/gdomap.service;
-	systemctl status gdnc || sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc.service;
-	sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc-local.service;
-	sudo systemctl start gdomap gdnc
+if [ ${OS_ID} = "freebsd" ]; then
+	${ECHO} "TODO: make FreeBSD services for GNUstep daemons..."
+	sudo /usr/NextSpace/bin/gnustep-services start
+else
+	$MKDIR_CMD $DEST_DIR/usr/NextSpace/lib/systemd
+	$CP_CMD ${SOURCES_DIR}/gdomap.service $DEST_DIR/usr/NextSpace/lib/systemd
+	$CP_CMD ${SOURCES_DIR}/gdnc.service $DEST_DIR/usr/NextSpace/lib/systemd
+	$CP_CMD ${SOURCES_DIR}/gdnc-local.service $DEST_DIR/usr/NextSpace/lib/systemd
+
+	if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
+		sudo ldconfig
+		sudo systemctl daemon-reload
+		systemctl status gdomap || sudo systemctl enable /usr/NextSpace/lib/systemd/gdomap.service;
+		systemctl status gdnc || sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc.service;
+		sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc-local.service;
+		sudo systemctl start gdomap gdnc
+	fi
 fi

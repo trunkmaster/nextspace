@@ -26,6 +26,16 @@ WRASTER_DEPS="
   libXmu
 "
 
+# GNUstep Base
+GNUSTEP_BASE_DEPS="
+    libffi
+    libxml2
+    libxslt
+    avahi-libdns
+    cups
+    gnutls
+"
+
 GNUSTEP_GUI_DEPS="libsndfile"
 
 BACK_ART_DEPS="
