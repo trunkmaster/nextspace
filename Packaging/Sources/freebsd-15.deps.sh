@@ -2,16 +2,16 @@ BUILD_TOOLS="
     git
     cmake
     gmake
-    zsh
+    bash
 "
 
+# CoreFoundation
 CORE_SYSTEM_DEPS="
     libdispatch
+    libxml2
     icu
     curl
     libuuid
-    libinotify
-    libxml2
     pkgconf
 "
 
