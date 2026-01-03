@@ -6,7 +6,7 @@
 ADDITIONAL_CPPFLAGS += 
 
 # Additional flags to pass to Objective C compiler
-ADDITIONAL_OBJCFLAGS += -DHAVE_PAM -DWITH_UPOWER -Wno-typedef-redefinition -fno-objc-arc
+ADDITIONAL_OBJCFLAGS += -DHAVE_PAM -Wno-typedef-redefinition -fno-objc-arc
 
 # Additional flags to pass to C compiler
 ADDITIONAL_CFLAGS += 
@@ -16,8 +16,8 @@ ADDITIONAL_LDFLAGS += -lpam -lX11 -lXcursor -lXrandr -ldispatch -lSystemKit -lDe
 #-lXmu -lXxf86vm 
 
 # Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags upower-glib`
+#ADDITIONAL_INCLUDE_DIRS +=
 
 # Additional library directories the linker should search
-ADDITIONAL_LIB_DIRS += -L/usr/X11R6/lib 
+#ADDITIONAL_LIB_DIRS += 
 
