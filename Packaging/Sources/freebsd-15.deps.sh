@@ -52,7 +52,7 @@ FRAMEWORKS_DEPS="
   dbus
   upower
   libudisks
-  xkbfile
+  libxkbfile
   pulseaudio
 "
 
