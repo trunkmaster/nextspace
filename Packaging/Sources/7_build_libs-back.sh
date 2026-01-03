@@ -9,6 +9,9 @@
 if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} ">>> Installing packages for GNUstep GUI Backend (ART) build"
 	sudo apt-get install -y ${BACK_ART_DEPS}
+elif [ ${OS_ID} = "freebsd" ]; then
+	${ECHO} "FreeBSD: calling 'pkg install'..."
+	sudo pkg install --yes --quiet ${BACK_ART_DEPS}
 fi
 
 #----------------------------------------

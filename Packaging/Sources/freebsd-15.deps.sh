@@ -40,6 +40,11 @@ GNUSTEP_GUI_DEPS="libsndfile"
 
 BACK_ART_DEPS="
   libart_lgpl
+  libXfixes
+  libXcursor
+  libXrandr
+  freetype2
+  libXft
 "
 
 APPS_RUN_DEPS="
