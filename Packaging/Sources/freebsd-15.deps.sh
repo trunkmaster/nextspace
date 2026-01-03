@@ -57,9 +57,12 @@ FRAMEWORKS_DEPS="
 "
 
 
-APPS_RUN_DEPS="
- icu
- urwfonts
- noto-basic
- noto-emoji
+APPLICATIONS_DEPS="
+  libinotify
+  libiconv
+  libXcomposite
+  libXdamage
+  xorg-server
+  xf86-input-keyboard
+  xf86-input-evdev
 "

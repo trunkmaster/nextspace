@@ -36,8 +36,9 @@ int la_read(unsigned long long *times)
 
 #include <sys/types.h>
 #include <sys/errno.h>
-#include <sys/resource.h>	// CPUSTATES
-#include <sys/sysctl.h>		// sysctlbyname()
+#include <sys/resource.h>       // CPUSTATES
+#include <sys/sysctl.h>         // sysctlbyname()
+#include <string.h>
           
 int la_read(unsigned long long *times)
 {

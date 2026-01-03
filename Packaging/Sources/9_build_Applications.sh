@@ -13,6 +13,9 @@ if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -y ${APPS_BUILD_DEPS}
 	sudo apt-get install -y ${APPS_RUN_DEPS}
+elif [ ${OS_ID} = "freebsd" ]; then
+	${ECHO} "FreeBSD: calling 'pkg install'..."
+	sudo pkg install --yes --quiet ${APPLICATIONS_DEPS}
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Applications/nextspace-applications.spec
@@ -77,7 +80,7 @@ sudo ldconfig
 #----------------------------------------
 # Post install
 #----------------------------------------
-if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
+if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ] && [ ${OS_ID} != "freebsd" ]; then
 	# Login
 	systemctl --quiet is-active loginwindow.service
 	if [ $? -eq 0 ];then

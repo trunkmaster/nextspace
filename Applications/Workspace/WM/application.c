@@ -24,6 +24,9 @@
 
 #include <X11/Xlib.h>
 #include <string.h>
+#if defined (__FreeBSD__)
+#include <libgen.h>
+#endif
 
 #include <CoreFoundation/CFString.h>
 

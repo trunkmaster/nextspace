@@ -66,6 +66,9 @@ ADDITIONAL_OBJCFLAGS += -Wall -D$(subst -,_,$(GNUSTEP_HOST_OS)) -Wno-pointer-sig
 #	-Wnested-externs -Wno-unused-parameter
 
 Terminal_LDFLAGS = -lutil -lDesktopKit -lSystemKit -lX11 -ldispatch
+ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+Terminal_LDFLAGS += -liconv
+endif
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make
 include $(GNUSTEP_MAKEFILES)/application.make

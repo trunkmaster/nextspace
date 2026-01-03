@@ -14,7 +14,10 @@ ADDITIONAL_OBJCFLAGS += -Wall -Wno-unused-variable -Wno-typedef-redefinition
 #ADDITIONAL_CFLAGS +=
 
 # Additional flags to pass to the linker
-ADDITIONAL_LDFLAGS += `pkg-config --libs dbus-1` -ldispatch -ldl -lbsd
+ADDITIONAL_LDFLAGS += `pkg-config --libs dbus-1` -ldispatch -ldl 
+ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
+	ADDITIONAL_LDFLAGS += -lbsd
+endif
 
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS += -I./ `pkg-config --cflags dbus-1`
@@ -29,7 +32,8 @@ ADDITIONAL_GUI_LIBS += -lSystemKit -lDesktopKit -lSoundKit -lX11 -lCoreFoundatio
 # Window manager addons
 #
 ADDITIONAL_CFLAGS += -DHAVE_CONFIG_H -DWITH_GNUSTEP -fno-strict-aliasing -fblocks
-ADDITIONAL_CFLAGS += -DNDEBUG -D_XOPEN_SOURCE=600 -D_GNU_SOURCE
+ADDITIONAL_CFLAGS += -DNDEBUG -D_GNU_SOURCE
+#-D_XOPEN_SOURCE=600 
 ADDITIONAL_INCLUDE_DIRS += -I./$(WM_DIR) -I./$(WM_DIR)/core
 ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags fontconfig`
 ADDITIONAL_GUI_LIBS += -lfontconfig -lXft -lwraster -lXext -lXrandr -lXfixes -lXcursor
