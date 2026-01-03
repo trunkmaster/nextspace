@@ -16,7 +16,7 @@ $CP_CMD ${CORE_SOURCES}/Library/Preferences/* $DEST_DIR/Library/Preferences/
 
 # Linker cache
 if [ ${OS_ID} = "freebsd" ]; then
-	cat ${CORE_SOURCES}/etc/ld.so.conf.d/nextspace.conf >> /etc/ld-elf.so.conf
+	sude cat ${CORE_SOURCES}/etc/ld.so.conf.d/nextspace.conf >> /etc/ld-elf.so.conf
 else
 	if ! [ -d $DEST_DIR/etc/ld.so.conf.d ];then
 		$MKDIR_CMD -v $DEST_DIR/etc/ld.so.conf.d
