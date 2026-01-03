@@ -258,7 +258,7 @@
   XRRFreeOutputInfo(output_info);
 
   // Initialize properties
-  properties = nil;
+  displayProperties = nil;
   [self parseProperties];
 
   // Set initial values to gammaValue and gammaBrightness
@@ -275,7 +275,7 @@
   //       outputName, [allResolutions count], [allResolutions retainCount]);
   // [allResolutions release];
 
-  [properties release];
+  [displayProperties release];
   [_outputName release];
 
   [super dealloc];
@@ -918,8 +918,8 @@ id property_value(Display *dpy, int value_format, /* 8, 16, 32 */
   NSMutableArray *value;
   NSMutableArray *variants;
 
-  if (properties == nil) {
-    properties = [[NSMutableDictionary alloc] init];
+  if (displayProperties == nil) {
+    displayProperties = [[NSMutableDictionary alloc] init];
   }
 
   output_props = XRRListOutputProperties(xDisplay, output_id, &nprops);
@@ -943,7 +943,7 @@ id property_value(Display *dpy, int value_format, /* 8, 16, 32 */
     atom_name = XGetAtomName(xDisplay, output_props[k]);
 
     if (!strcmp(atom_name, "EDID") && nitems > 1) {
-      [properties setObject:[NSData dataWithBytes:prop length:128] forKey:@"EDID"];
+      [displayProperties setObject:[NSData dataWithBytes:prop length:128] forKey:@"EDID"];
     } else {
       valueDict = [[NSMutableDictionary alloc] init];
 
@@ -990,7 +990,7 @@ id property_value(Display *dpy, int value_format, /* 8, 16, 32 */
         [variants release];
       }
 
-      [properties setObject:valueDict forKey:[NSString stringWithCString:(char *)atom_name]];
+      [displayProperties setObject:valueDict forKey:[NSString stringWithCString:(char *)atom_name]];
       [valueDict release];
       free(prop_info);
     }
@@ -1001,12 +1001,12 @@ id property_value(Display *dpy, int value_format, /* 8, 16, 32 */
 
 - (NSDictionary *)properties
 {
-  return properties;
+  return displayProperties;
 }
 
 - (id)uniqueID
 {
-  id displayID = [properties objectForKey:@"EDID"];
+  id displayID = [displayProperties objectForKey:@"EDID"];
 
   if ([displayID length] < 1) {
     displayID = _outputName;

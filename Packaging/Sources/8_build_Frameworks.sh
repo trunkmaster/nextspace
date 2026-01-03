@@ -11,6 +11,9 @@ if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -y ${FRAMEWORKS_BUILD_DEPS}
 	sudo apt-get install -y ${FRAMEWORKS_RUN_DEPS}
+elif [ ${OS_ID} = "freebsd" ]; then
+	${ECHO} "FreeBSD: calling 'pkg install'..."
+	sudo pkg install --yes --quiet ${FRAMEWORKS_DEPS}
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Frameworks/nextspace-frameworks.spec
@@ -46,5 +49,9 @@ $MAKE_CMD || exit 1
 $INSTALL_CMD
 if [ "$DEST_DIR" = "" ]; then
 	sudo ldconfig
-	$LN_CMD /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/25-nextspace-fonts.conf /etc/fonts/conf.d/25-nextspace-fonts.conf
+	if [ ${OS_ID} = "freebsd" ]; then
+		$LN_CMD /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/25-nextspace-fonts.conf /usr/local/etc/fonts/conf.d/25-nextspace-fonts.conf
+	else
+		$LN_CMD /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/25-nextspace-fonts.conf /etc/fonts/conf.d/25-nextspace-fonts.conf
+	fi
 fi

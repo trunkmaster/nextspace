@@ -38,6 +38,7 @@ GNUSTEP_BASE_DEPS="
 
 GNUSTEP_GUI_DEPS="libsndfile"
 
+# back-art
 BACK_ART_DEPS="
   libart_lgpl
   libXfixes
@@ -46,6 +47,15 @@ BACK_ART_DEPS="
   freetype2
   libXft
 "
+
+FRAMEWORKS_DEPS="
+  dbus
+  upower
+  libudisks
+  xkbfile
+  pulseaudio
+"
+
 
 APPS_RUN_DEPS="
  icu
