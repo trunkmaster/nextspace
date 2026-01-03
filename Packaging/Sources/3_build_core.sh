@@ -15,28 +15,33 @@ $MKDIR_CMD $DEST_DIR/Library/Preferences
 $CP_CMD ${CORE_SOURCES}/Library/Preferences/* $DEST_DIR/Library/Preferences/
 
 # Linker cache
-if ! [ -d $DEST_DIR/etc/ld.so.conf.d ];then
-	$MKDIR_CMD -v $DEST_DIR/etc/ld.so.conf.d
+if [ ${OS_ID} = "freebsd" ]; then
+	cat ${CORE_SOURCES}/etc/ld.so.conf.d/nextspace.conf >> /etc/ld-elf.so.conf
+else
+	if ! [ -d $DEST_DIR/etc/ld.so.conf.d ];then
+		$MKDIR_CMD -v $DEST_DIR/etc/ld.so.conf.d
+	fi
+	$CP_CMD -v ${CORE_SOURCES}/etc/ld.so.conf.d/nextspace.conf $DEST_DIR/etc/ld.so.conf.d/
+
+	# X11
+	#if ! [ -d $DEST_DIR/etc/X11/xorg.conf.d ];then
+	#	$MKDIR_CMD -v $DEST_DIR/etc/X11/xorg.conf.d
+	#fi
+	#$CP_CMD ${CORE_SOURCES}/etc/X11/xorg.conf.d/*.conf $DEST_DIR/etc/X11/xorg.conf.d/
+	$CP_CMD ${CORE_SOURCES}/etc/X11/Xresources.nextspace $DEST_DIR/etc/X11
+
+	# PolKit & udev
+	if ! [ -d $DEST_DIR/etc/polkit-1/rules.d ];then
+		$MKDIR_CMD -v $DEST_DIR/etc/polkit-1/rules.d
+	fi
+	$CP_CMD ${CORE_SOURCES}/etc/polkit-1/rules.d/*.rules $DEST_DIR/etc/polkit-1/rules.d/
+	if ! [ -d $DEST_DIR/etc/udev/rules.d ];then
+		$MKDIR_CMD -v $DEST_DIR/etc/udev/rules.d
+	fi
+	$CP_CMD ${CORE_SOURCES}/etc/udev/rules.d/*.rules $DEST_DIR/etc/udev/rules.d/
 fi
-$CP_CMD -v ${CORE_SOURCES}/etc/ld.so.conf.d/nextspace.conf $DEST_DIR/etc/ld.so.conf.d/
 sudo ldconfig
 
-# X11
-#if ! [ -d $DEST_DIR/etc/X11/xorg.conf.d ];then
-#	$MKDIR_CMD -v $DEST_DIR/etc/X11/xorg.conf.d
-#fi
-#$CP_CMD ${CORE_SOURCES}/etc/X11/xorg.conf.d/*.conf $DEST_DIR/etc/X11/xorg.conf.d/
-$CP_CMD ${CORE_SOURCES}/etc/X11/Xresources.nextspace $DEST_DIR/etc/X11
-
-# PolKit & udev
-if ! [ -d $DEST_DIR/etc/polkit-1/rules.d ];then
-	$MKDIR_CMD -v $DEST_DIR/etc/polkit-1/rules.d
-fi
-$CP_CMD ${CORE_SOURCES}/etc/polkit-1/rules.d/*.rules $DEST_DIR/etc/polkit-1/rules.d/
-if ! [ -d $DEST_DIR/etc/udev/rules.d ];then
-	$MKDIR_CMD -v $DEST_DIR/etc/udev/rules.d
-fi
-$CP_CMD ${CORE_SOURCES}/etc/udev/rules.d/*.rules $DEST_DIR/etc/udev/rules.d/
 
 # User environment
 if ! [ -d $DEST_DIR/etc/profile.d ];then
