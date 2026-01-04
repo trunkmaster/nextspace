@@ -34,6 +34,7 @@
 -I/Users/me/Library/Headers
 -I/Developer/Headers
 -I/usr/NextSpace/include
+-I/usr/local/include
 -IWM
 -IWM/core
 -I/usr/include/freetype2
