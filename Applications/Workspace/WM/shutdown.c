@@ -107,7 +107,9 @@ void wShutdown(WMShutdownMode mode)
       scr->notificationCenter = NULL;
 
       // Stop events processing inside Window Decorator
-      CFRunLoopStop(wm_runloop);
+      if (wm_runloop) {
+        CFRunLoopStop(wm_runloop);
+      }
       WCHANGE_STATE(WSTATE_EXITING);
 
       wScreenSaveState(scr);
