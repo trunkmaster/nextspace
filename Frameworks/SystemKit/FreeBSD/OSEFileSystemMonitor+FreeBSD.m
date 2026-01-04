@@ -67,10 +67,7 @@ NSMutableDictionary *_pathFDList = nil;
   if (kq_fd < 0) {
     // Creates a new kernel event queue and returns a descriptor.
     if ((kq_fd = kqueue()) < 0) {
-      fprintf(stderr,
-              "OSEFileSystem(thread): Could not open kernel queue."
-              "Error: %s.\n",
-              strerror(errno));
+      NSLog(@"%s: Could not open kernel queue. Error: %s.\n", __func__, strerror(errno));
     }
   }
 
@@ -123,30 +120,27 @@ NSMutableDictionary *_pathFDList = nil;
 //     LinkCount = 2;
 //   }
 // }
-- (void)_addEventMonitorPath:(NSString *)absolutePath
+- (void)_addPath:(NSString *)absolutePath
 {
   NSString *pathString;
   char *path;
   int path_fd = -1, stdin_fd;
   int i, count, link_count;
   NSNumber *pathFD;
-
   NSDictionary *pathDict;
 
   // Sanity checks
   if (kq_fd < 0) {
-    NSLog(@"OSEFileSystem(thread): ERROR trying to add path"
-          @" without opened kernel queue!");
+    NSLog(@"%s: ERROR trying to add path without opened kernel queue!", __func__);
     return;
   }
 
   if (absolutePath == nil || [absolutePath isEqualToString:@""]) {
-    NSLog(@"OSEFileSystem(thread): ERROR trying to add empty path!");
+    NSLog(@"%s: ERROR trying to add empty path!", __func__);
     return;
   }
 
   // Main code
-  // pathString = [[NSString alloc] initWithString:absolutePath];
   pathString = [NSString stringWithString:absolutePath];
 
   if ((pathDict = [_pathFDList objectForKey:pathString]) == nil) {
@@ -158,10 +152,8 @@ NSMutableDictionary *_pathFDList = nil;
     close(stdin_fd);
 
     if (path_fd < 0) {
-      fprintf(stderr,
-              "OSEFileSystem(thread): The file %s could not be"
-              " opened for monitoring. Error was %s.\n",
-              path, strerror(errno));
+      NSLog(@"%s: The file %s could not be opened for monitoring. Error was %s.\n", __func__, path,
+            strerror(errno));
       return;
     }
 
@@ -179,16 +171,13 @@ NSMutableDictionary *_pathFDList = nil;
 
   [_pathFDList setObject:pathDict forKey:pathString];
 
-  // NSLog(@"OSEFileSystem(thread): addEventMonitorPath: %@ -- %@",
-  //        pathString, _pathFDList);
-
-  // [pathString release];
+  NSLog(@"%s: %@ -- %@", __func__, pathString, _pathFDList);
 
   // Update filter with new file descriptor.
   [self _updateKQInfo];
 }
 
-- (void)_removeEventMonitorPath:(NSString *)absolutePath
+- (void)_removePath:(NSString *)absolutePath
 {
   NSDictionary *pathDict;
   unsigned int path_fd;
@@ -196,21 +185,18 @@ NSMutableDictionary *_pathFDList = nil;
 
   // Validate conditions
   if (kq_fd < 0) {
-    NSLog(@"OSEFileSystem(thread): ERROR trying to remove path without"
-           " opened kernel queue!");
+    NSLog(@"%s: ERROR trying to remove path without opened kernel queue!", __func__);
     return;
   }
 
   if (absolutePath == nil || [absolutePath isEqualToString:@""]) {
-    NSLog(@"OSEFileSystem(thread): ERROR trying to remove empty path!");
+    NSLog(@"%s: ERROR trying to remove empty path!", __func__);
     return;
   }
 
   // Get path descriptor
   if ((pathDict = [_pathFDList objectForKey:absolutePath]) == nil) {
-    NSLog(@"OSEFileSystem(thread): ERROR no info for monitor"
-           " at path %@ found!",
-          absolutePath);
+    NSLog(@"%s: ERROR no info for monitor at path %@ found!", __func__, absolutePath);
     return;
   }
   path_fd = [[pathDict objectForKey:@"Descriptor"] intValue];
@@ -224,7 +210,7 @@ NSMutableDictionary *_pathFDList = nil;
   }
 
   if (i == count) {
-    NSLog(@"OSEFileSystem(thread): ERROR: kevent structure not found for %@!", absolutePath);
+    NSLog(@"%s: ERROR: kevent structure not found for %@!", __func__, absolutePath);
     return;
   }
 
@@ -251,33 +237,33 @@ NSMutableDictionary *_pathFDList = nil;
   [self _updateKQInfo];
 }
 
-- (oneway void)_startEventMonitorThread
+- (oneway void)_startThread
 {
-  NSLog(@"OSEFileSystem(thread): startEventMonitorThread: kqueue %i", kq_fd);
+  NSLog(@"%s: kqueue %i", __func__, kq_fd);
 
   // Start checking for events
   [threadDict setValue:[NSNumber numberWithBool:YES] forKey:@"ThreadShouldCheckForEvents"];
 }
 
-- (oneway void)_stopEventMonitorThread
+- (oneway void)_stopThread
 {
-  NSLog(@"OSEFileSystem(thread): stopEventMonitorThread: kqueue %i", kq_fd);
+  NSLog(@"%s: kqueue %i", __func__, kq_fd);
 
   // Stop checking for events
   [threadDict setValue:[NSNumber numberWithBool:NO] forKey:@"ThreadShouldCheckForEvents"];
 }
 
-- (oneway void)_cancelEventMonitorThread
+- (oneway void)_terminateThread
 {
   NSEnumerator *e;
   NSString *pathString;
 
-  [self _stopEventMonitorThread];
+  [self _stopThread];
 
   // Close all opened descriptors
   e = [[_pathFDList allKeys] objectEnumerator];
   while ((pathString = [e nextObject]) != nil) {
-    [self _removeEventMonitorPath:pathString];
+    [self _removePath:pathString];
   }
 
   // Close kernel queue descriptor
@@ -360,7 +346,16 @@ char *flags_to_string(int flags)
   return operations;
 }
 
-- (void)checkForFSEvents
+// struct kevent {
+//   uintptr_t ident; /* identifier for this event */
+//   short filter;    /* filter for event */
+//   u_short flags;   /* action flags for kqueue */
+//   u_int fflags;    /* filter flag value */
+//   int64_t data;    /* filter data value */
+//   void *udata;     /* opaque user data identifier */
+//   uint64_t ext[4]; /* extensions */
+// };
+- (void)checkForEvents
 {
   struct timespec timeout;
   int event_count, i;
@@ -380,23 +375,23 @@ char *flags_to_string(int flags)
 
   if ((event_count < 0) /*|| (event_data.flags == EV_ERROR)*/) {
     // An error occurred.
-    fprintf(stderr,
-            "An error occurred (event count %d).  "
-            "The error was %i: %s.\n",
-            event_count, errno, strerror(errno));
+    NSLog(@"%s: An error occurred (event count %d). The error was %i: %s.\n", __func__, event_count,
+          errno, strerror(errno));
     return;
   }
 
-  if (event_count > 0) {
+  {
     NSString *pathString;
     NSString *flagsString;
     NSArray *opsList;
 
     for (i = 0; i < event_count; i++) {
-      if (event_data[i].flags & EV_DELETE)
+      if (event_data[i].flags & EV_DELETE) {
         continue;
-      if (event_data[i].udata == 0)
+      }
+      if (event_data[i].udata == 0) {
         continue;
+      }
 
       flagsString = [NSString stringWithCString:flags_to_string(event_data[i].fflags)];
       //	  NSLog(@"[OSEFileSystem -checkFSEvents] event flags %@ on ident %i", flagsString,
@@ -405,20 +400,80 @@ char *flags_to_string(int flags)
       pathString = (NSString *)event_data[i].udata;
       // Check for path specified in event data
       if (pathString == nil || [pathString isEqualToString:@""]) {
-        NSLog(@"FS event with unknown path occured!");
+        NSLog(@"%s: FS event with unknown path occured!", __func__);
         continue;
       }
 
       opsList = [flagsString componentsSeparatedByString:@"|"];
 
       // Process event occured
-      fprintf(stderr,
-              "Event %" PRIdPTR " occurred.  Filter %d, flags %d, "
-              "filter flags %s, filter data %" PRIdPTR ", path '%s'\n",
-              event_data[i].ident, event_data[i].filter, event_data[i].flags, [flagsString cString],
-              event_data[i].data, [pathString cString]);
+      NSLog(@"%s: Event %" PRIdPTR
+             " occurred.  Filter %d, flags %d, filter flags %s, filter data %" PRIdPTR
+             ", path '%s', operations: %@",
+            __func__, event_data[i].ident, event_data[i].filter, event_data[i].flags,
+            [flagsString cString], event_data[i].data, [pathString cString], opsList);
 
-      // [monitorOwner fileSystemEventsOccured:[self operationsFromEvents:opsList] atPath:pathString];
+      // eventList
+      // 3 = // file descriptor
+      // {
+      //   Operations = (Rename);
+      //   ChangedPath = "/Users/me";
+      //   ChangedFile = "111.txt";
+      //   ChangedPathTo = "222.txt"; // only for rename
+      // };
+      NSMutableDictionary *eventList = [[NSMutableDictionary alloc] init];
+      NSMutableDictionary *eventInfo = nil;
+      NSString *path = (NSString *)event_data[i].udata;
+      NSString *file = [path lastPathComponent];
+      NSString *watchDescriptor = [NSString stringWithFormat:@"%lu", event_data[i].ident];
+      NSArray *operations = nil, *existingOperations = nil;
+
+      if ((eventInfo = [eventList objectForKey:watchDescriptor]) != nil) {
+        existingOperations = [eventInfo objectForKey:@"Operations"];
+      } else {
+        eventInfo = [NSMutableDictionary new];
+      }
+
+      if (event_data[i].flags & NOTE_WRITE) {
+        operations = [NSArray arrayWithObjects:@"Write", @"Create", nil];
+        [eventInfo setObject:path forKey:@"ChangedPath"];
+        [eventInfo setObject:file forKey:@"ChangedFile"];
+
+        // fprintf(stderr, ">>> The %s was created.\n", event->name);
+      } else if (event_data[i].flags & NOTE_DELETE) {
+        operations = [NSArray arrayWithObjects:@"Write", @"Delete", nil];
+        [eventInfo setObject:path forKey:@"ChangedPath"];
+        [eventInfo setObject:file forKey:@"ChangedFile"];
+
+        // fprintf(stderr, ">>> The %s was deleted.\n", event->name);
+      } else if (event_data[i].flags & NOTE_ATTRIB) {
+        operations = [NSArray arrayWithObjects:@"Attributes", nil];
+        [eventInfo setObject:path forKey:@"ChangedPath"];
+        [eventInfo setObject:file forKey:@"ChangedFile"];
+
+        // fprintf(stderr, ">>> The %s attributes was modified.\n", event->name);
+      } else if (event_data[i].flags & NOTE_RENAME) {
+        operations = [NSArray arrayWithObjects:@"Rename", nil];
+        [eventInfo setObject:path forKey:@"ChangedPath"];
+        [eventInfo setObject:file forKey:@"ChangedFile"];
+
+        // fprintf(stderr, ">>> The %s was moved from.\n", event->name);
+      }
+
+      if (existingOperations) {
+        operations = [existingOperations arrayByAddingObjectsFromArray:operations];
+      }
+      [eventInfo setObject:operations forKey:@"Operations"];
+      [eventList setObject:eventInfo forKey:watchDescriptor];
+
+      // Now we have an eventList dictionary which contains information about
+      // all read file system events
+      if (eventList && [[eventList allKeys] count] > 0) {
+        // NSDebugLLog(@"OSEFileSystemMonitor", @"[NXFSM_Linux] send eventList: %@", eventList);
+        for (NSString *wd in [eventList allKeys]) {
+          [monitorOwner handleEvent:[eventList objectForKey:wd]];
+        }
+      }
     }
   }
 }
