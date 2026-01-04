@@ -32,6 +32,7 @@
 -I/Users/me/Library/Headers
 -I/Developer/Headers
 -I/usr/NextSpace/include
+-I/usr/local/include
 -DLINUX
 #-DCF_BUS_CONNECTION
 -F/usr/NextSpace/Frameworks
