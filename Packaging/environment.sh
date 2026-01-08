@@ -81,6 +81,14 @@ PROJECT_DIR=`pwd`
 printf "NextSpace repo:\t${PROJECT_DIR}\n"
 cd ${_PWD}
 
+# NextSpace installation root
+if [ ${OS_ID} = "freebsd" ]; then
+  NEXTSPACE_ROOT="/usr/local/NextSpace"
+else
+  NEXTSPACE_ROOT="/usr/NextSpace"
+fi
+printf "Install root:\t${NEXTSPACE_ROOT}\n"
+
 if [ -z $BUILD_RPM ]; then
   BUILD_ROOT="${_PWD}/BUILD_ROOT"
   if [ ! -d ${BUILD_ROOT} ]; then
