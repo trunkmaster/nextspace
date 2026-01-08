@@ -135,5 +135,11 @@ if [ ${OS_ID} != "freebsd" ]; then
 fi
 
 if [ "$DEST_DIR" = "" ]; then
-	${PRIV_CMD} ldconfig
+	if [ ${OS_ID} = "freebsd" ]; then
+		${ECHO} "Configuring ldconfig for NextSpace libraries..."
+		echo "/usr/NextSpace/lib" | ${PRIV_CMD} tee /usr/local/libdata/ldconfig/nextspace > /dev/null
+		${PRIV_CMD} ldconfig -R
+	else
+		${PRIV_CMD} ldconfig
+	fi
 fi
