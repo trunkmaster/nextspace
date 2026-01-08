@@ -163,7 +163,14 @@ fi
 if [ "$1" != "" ];then
   INSTALL_CMD="${MAKE_CMD} install DESTDIR=${1}"
 else
-  INSTALL_CMD="sudo -E ${MAKE_CMD} install"
+  if [ -z "$PRIV_CMD" ]; then
+    # Running as root
+    INSTALL_CMD="${MAKE_CMD} install"
+  elif [ ${OS_ID} = "freebsd" ]; then
+    INSTALL_CMD="${PRIV_CMD} ${MAKE_CMD} install"
+  else
+    INSTALL_CMD="${PRIV_CMD} -E ${MAKE_CMD} install"
+  fi
 fi
 
 # Utilities
@@ -174,11 +181,11 @@ if [ "$1" != "" ];then
   CP_CMD="cp -R"
   MKDIR_CMD="mkdir -p"
 else
-  RM_CMD="sudo rm"
-  LN_CMD="sudo ln -sf"
-  MV_CMD="sudo mv -v"
-  CP_CMD="sudo cp -R"
-  MKDIR_CMD="sudo mkdir -p"
+  RM_CMD="${PRIV_CMD} rm"
+  LN_CMD="${PRIV_CMD} ln -sf"
+  MV_CMD="${PRIV_CMD} mv -v"
+  CP_CMD="${PRIV_CMD} cp -R"
+  MKDIR_CMD="${PRIV_CMD} mkdir -p"
 fi
 
 # Linker
