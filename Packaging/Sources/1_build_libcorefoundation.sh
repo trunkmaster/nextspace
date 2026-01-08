@@ -40,16 +40,16 @@ cd ${BUILD_ROOT}/${CF_PKG_NAME} || exit 1
 rm -rf .build 2>/dev/null
 mkdir -p .build
 cd .build
-C_FLAGS="-I/usr/local/include -I/usr/NextSpace/include -Wno-switch -Wno-enum-conversion"
+C_FLAGS="-I/usr/local/include -I${NEXTSPACE_ROOT}/include -Wno-switch -Wno-enum-conversion"
 $CMAKE_CMD .. \
 	-DCMAKE_C_COMPILER=${C_COMPILER} \
 	-DCMAKE_C_FLAGS="${C_FLAGS}" \
-	-DCMAKE_SHARED_LINKER_FLAGS="-L/usr/local/lib -L/usr/NextSpace/lib -luuid" \
+	-DCMAKE_SHARED_LINKER_FLAGS="-L/usr/local/lib -L${NEXTSPACE_ROOT}/lib -luuid" \
 	-DCF_DEPLOYMENT_SWIFT=NO \
 	-DBUILD_SHARED_LIBS=YES \
-	-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
-	-DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
-	-DCMAKE_LIBRARY_PATH=/usr/NextSpace/lib \
+	-DCMAKE_INSTALL_PREFIX=${NEXTSPACE_ROOT} \
+	-DCMAKE_INSTALL_LIBDIR=${NEXTSPACE_ROOT}/lib \
+	-DCMAKE_LIBRARY_PATH=${NEXTSPACE_ROOT}/lib \
 	\
 	-DCMAKE_SKIP_RPATH=ON \
 	-DCMAKE_BUILD_TYPE=Debug \
@@ -65,16 +65,16 @@ if [ ${OS_ID} != "freebsd" ]; then
 		rm -rf .build 2>/dev/null
 		mkdir -p .build
 		cd .build
-		CFN_CFLAGS="-F../../${CF_PKG_NAME}/.build -I/usr/local/include -I/usr/NextSpace/include"
-		CFN_LD_FLAGS="-L/usr/NextSpace/lib -L../../${CF_PKG_NAME}/.build/CoreFoundation.framework"
+		CFN_CFLAGS="-F../../${CF_PKG_NAME}/.build -I/usr/local/include -I${NEXTSPACE_ROOT}/include"
+		CFN_LD_FLAGS="-L${NEXTSPACE_ROOT}/lib -L../../${CF_PKG_NAME}/.build/CoreFoundation.framework"
 		cmake .. \
 			-DCMAKE_C_COMPILER=${C_COMPILER} \
 			-DCMAKE_CXX_COMPILER=clang++ \
 			-DCFNETWORK_CFLAGS="${CFN_CFLAGS}" \
 			-DCFNETWORK_LDLAGS="${CFN_LD_FLAGS}" \
 			-DBUILD_SHARED_LIBS=YES \
-			-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
-			-DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
+			-DCMAKE_INSTALL_PREFIX=${NEXTSPACE_ROOT} \
+			-DCMAKE_INSTALL_LIBDIR=${NEXTSPACE_ROOT}/lib \
 			\
 			-DCMAKE_SKIP_RPATH=ON \
 			-DCMAKE_BUILD_TYPE=Debug
@@ -90,7 +90,7 @@ fi
 cd ${BUILD_ROOT}/${CF_PKG_NAME}/.build || exit 1
 $INSTALL_CMD
 
-CF_DIR=${DEST_DIR}/usr/NextSpace/Frameworks/CoreFoundation.framework
+CF_DIR=${DEST_DIR}${NEXTSPACE_ROOT}/Frameworks/CoreFoundation.framework
 
 $MKDIR_CMD ${CF_DIR}/Versions/${libcorefoundation_version}
 cd $CF_DIR
@@ -114,7 +114,7 @@ if [ ${OS_ID} != "freebsd" ]; then
 		cd ${BUILD_ROOT}/${CFNET_PKG_NAME}/.build || exit 1
 		$INSTALL_CMD
 
-		CFNET_DIR=${DEST_DIR}/usr/NextSpace/Frameworks/CFNetwork.framework
+		CFNET_DIR=${DEST_DIR}${NEXTSPACE_ROOT}/Frameworks/CFNetwork.framework
 
 		$MKDIR_CMD $CFNET_DIR/Versions/${libcfnetwork_version}
 		cd $CFNET_DIR
@@ -137,7 +137,7 @@ fi
 if [ "$DEST_DIR" = "" ]; then
 	if [ ${OS_ID} = "freebsd" ]; then
 		${ECHO} "Configuring ldconfig for NextSpace libraries..."
-		echo "/usr/NextSpace/lib" | ${PRIV_CMD} tee /usr/local/libdata/ldconfig/nextspace > /dev/null
+		echo "${NEXTSPACE_ROOT}/lib" | ${PRIV_CMD} tee /usr/local/libdata/ldconfig/nextspace > /dev/null
 		${PRIV_CMD} ldconfig -R
 	else
 		${PRIV_CMD} ldconfig
