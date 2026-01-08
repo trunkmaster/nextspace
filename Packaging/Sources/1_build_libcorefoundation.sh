@@ -7,7 +7,7 @@
 ${ECHO} ">>> Installing ${OS_ID} packages for CoreFoundation library build"
 if [ ${OS_ID} = "freebsd" ]; then
 	${ECHO} "FreeBSD: calling 'pkg install'..."
-	sudo pkg install --yes --quiet ${CORE_SYSTEM_DEPS}
+	${PRIV_CMD} pkg install --yes --quiet ${CORE_SYSTEM_DEPS}
 elif [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -y ${RUNTIME_DEPS} || exit 1
@@ -135,5 +135,5 @@ if [ ${OS_ID} != "freebsd" ]; then
 fi
 
 if [ "$DEST_DIR" = "" ]; then
-	sudo ldconfig
+	${PRIV_CMD} ldconfig
 fi
