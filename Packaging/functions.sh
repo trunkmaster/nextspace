@@ -155,10 +155,28 @@ prepare_redhat_environment()
 
 prepare_freebsd_environment()
 {
-   	pkg info --quiet sudo
-	if [ $? = 1 ];then
-		print_ERR "There's no 'sudo' package installed. Please run 'pkg install sudo' command as root."
-		exit 1
+	# If running as root, no privilege escalation needed
+	if [ "$(id -u)" = "0" ]; then
+		pkg install --yes --quiet ${BUILD_TOOLS}
+		return 0
 	fi
-    sudo pkg install --yes --quiet ${BUILD_TOOLS}
+
+	# Not root, try doas or sudo
+	local pkg_cmd=""
+   	if pkg info --quiet doas; then
+		if doas -C /usr/local/etc/doas.conf 2>/dev/null; then
+			pkg_cmd="doas"
+		fi
+	fi
+
+	if [ -z "$pkg_cmd" ] && pkg info --quiet sudo; then
+		pkg_cmd="sudo"
+	fi
+
+	if [ -n "$pkg_cmd" ]; then
+		$pkg_cmd pkg install --yes --quiet ${BUILD_TOOLS}
+	else
+		print_ERR "Not running as root and no working doas/sudo found. Install and configure doas or sudo."
+		return 1
+	fi
 }
