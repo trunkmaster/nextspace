@@ -20,7 +20,7 @@ ADDITIONAL_CPPFLAGS +=
 # Additional flags to pass to Objective C compiler
 ADDITIONAL_OBJCFLAGS += -fblocks
 # Additional flags to pass to C compiler
-ADDITIONAL_CFLAGS += -Wall -fblocks
+ADDITIONAL_CFLAGS += -Wall -fblocks  -Wno-unused-function
 # Additional flags to pass to the linker
 ADDITIONAL_LDFLAGS = -lCoreFoundation -lX11 -ldispatch -lobjc
 # Additional include directories the compiler should search
