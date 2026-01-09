@@ -57,6 +57,17 @@ fi
 printf "OS:\t\t${OS_ID}-${OS_VERSION}\n"
 
 #---------------------------------------
+# Privilege escalation command
+#---------------------------------------
+if [ "$(id -u)" = "0" ]; then
+  PRIV_CMD=""
+elif [ ${OS_ID} = "freebsd" ] && command -v doas >/dev/null 2>&1; then
+  PRIV_CMD="doas"
+else
+  PRIV_CMD="sudo"
+fi
+
+#---------------------------------------
 # Machine
 #---------------------------------------
 MACHINE=`uname -m`
@@ -80,6 +91,14 @@ cd ../..
 PROJECT_DIR=`pwd`
 printf "NextSpace repo:\t${PROJECT_DIR}\n"
 cd ${_PWD}
+
+# NextSpace installation root
+if [ ${OS_ID} = "freebsd" ]; then
+  NEXTSPACE_ROOT="/usr/local/NextSpace"
+else
+  NEXTSPACE_ROOT="/usr/NextSpace"
+fi
+printf "Install root:\t${NEXTSPACE_ROOT}\n"
 
 if [ -z $BUILD_RPM ]; then
   BUILD_ROOT="${_PWD}/BUILD_ROOT"
@@ -133,11 +152,15 @@ if type "gmake" 2>/dev/null >/dev/null ;then
 else
   MAKE_CMD=make
 fi
-#
+
 if [ "$1" != "" ];then
   INSTALL_CMD="${MAKE_CMD} install DESTDIR=${1}"
 else
-  INSTALL_CMD="sudo -E ${MAKE_CMD} install"
+  if [ "$PRIV_CMD" = "sudo" ]; then
+    INSTALL_CMD="${PRIV_CMD} -E ${MAKE_CMD} install"
+  else
+    INSTALL_CMD="${PRIV_CMD} ${MAKE_CMD} install"
+  fi
 fi
 
 # Utilities
@@ -148,11 +171,11 @@ if [ "$1" != "" ];then
   CP_CMD="cp -R"
   MKDIR_CMD="mkdir -p"
 else
-  RM_CMD="sudo rm"
-  LN_CMD="sudo ln -sf"
-  MV_CMD="sudo mv -v"
-  CP_CMD="sudo cp -R"
-  MKDIR_CMD="sudo mkdir -p"
+  RM_CMD="${PRIV_CMD} rm"
+  LN_CMD="${PRIV_CMD} ln -sf"
+  MV_CMD="${PRIV_CMD} mv -v"
+  CP_CMD="${PRIV_CMD} cp -R"
+  MKDIR_CMD="${PRIV_CMD} mkdir -p"
 fi
 
 # Linker
