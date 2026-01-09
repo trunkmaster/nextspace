@@ -156,13 +156,10 @@ fi
 if [ "$1" != "" ];then
   INSTALL_CMD="${MAKE_CMD} install DESTDIR=${1}"
 else
-  if [ -z "$PRIV_CMD" ]; then
-    # Running as root
-    INSTALL_CMD="${MAKE_CMD} install"
-  elif [ ${OS_ID} = "freebsd" ]; then
-    INSTALL_CMD="${PRIV_CMD} ${MAKE_CMD} install"
-  else
+  if [ "$PRIV_CMD" = "sudo" ]; then
     INSTALL_CMD="${PRIV_CMD} -E ${MAKE_CMD} install"
+  else
+    INSTALL_CMD="${PRIV_CMD} ${MAKE_CMD} install"
   fi
 fi
 
