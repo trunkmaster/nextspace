@@ -57,6 +57,17 @@ fi
 printf "OS:\t\t${OS_ID}-${OS_VERSION}\n"
 
 #---------------------------------------
+# Privilege escalation command
+#---------------------------------------
+if [ "$(id -u)" = "0" ]; then
+  PRIV_CMD=""
+elif [ ${OS_ID} = "freebsd" ] && command -v doas >/dev/null 2>&1; then
+  PRIV_CMD="doas"
+else
+  PRIV_CMD="sudo"
+fi
+
+#---------------------------------------
 # Machine
 #---------------------------------------
 MACHINE=`uname -m`
@@ -140,15 +151,6 @@ if type "gmake" 2>/dev/null >/dev/null ;then
   MAKE_CMD=gmake
 else
   MAKE_CMD=make
-fi
-#
-# Privilege escalation command
-if [ "$(id -u)" = "0" ]; then
-  PRIV_CMD=""
-elif [ ${OS_ID} = "freebsd" ] && command -v doas >/dev/null 2>&1; then
-  PRIV_CMD="doas"
-else
-  PRIV_CMD="sudo"
 fi
 
 if [ "$1" != "" ];then
