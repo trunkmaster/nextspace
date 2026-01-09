@@ -144,27 +144,10 @@ fi
 #
 # Privilege escalation command
 if [ "$(id -u)" = "0" ]; then
-  # Running as root
   PRIV_CMD=""
-elif [ ${OS_ID} = "freebsd" ]; then
-  # FreeBSD: prefer doas, fall back to sudo
-  if pkg info --quiet doas >/dev/null 2>&1; then
-    if doas -C /usr/local/etc/doas.conf >/dev/null 2>&1; then
-      PRIV_CMD="doas"
-    elif pkg info --quiet sudo >/dev/null 2>&1; then
-      PRIV_CMD="sudo"
-    else
-      printf "Warning: doas found but not configured, and no sudo available\n"
-      PRIV_CMD="doas"
-    fi
-  elif pkg info --quiet sudo >/dev/null 2>&1; then
-    PRIV_CMD="sudo"
-  else
-    printf "Warning: no privilege escalation command found\n"
-    PRIV_CMD="doas"
-  fi
+elif [ ${OS_ID} = "freebsd" ] && command -v doas >/dev/null 2>&1; then
+  PRIV_CMD="doas"
 else
-  # Linux: use sudo
   PRIV_CMD="sudo"
 fi
 
