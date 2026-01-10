@@ -183,9 +183,10 @@ int main(int argc, const char **argv)
     dispatch_async(window_manager_q, ^{
       WMRunLoop_V0();
     });
-    // dispatch_async(window_manager_q, ^{
-    //   WMRunLoop_V1();
-    // });
+    dispatch_async(window_manager_q, ^{
+        //	CFRunLoopRun();
+        WMRunLoop_V1();
+    });
   }
 
   //--- Workspace (GNUstep) queue ---------------------------------------

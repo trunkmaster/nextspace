@@ -21,6 +21,8 @@
 #include "file_utils.h"
 #include "defaults.h"
 #include "wuserdefaults.h"
+// New CF
+#include <sys/param.h>
 
 // ---[ Location ] --------------------------------------------------------------------------------
 

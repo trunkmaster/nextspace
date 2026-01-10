@@ -319,7 +319,8 @@ void WMRunLoop_V0()
   XEvent event;
 
   WMLogError("WMRunLoop_V0: handling events while run loop is warming up.");
-  while (wm_runloop == NULL) {
+//  while (wm_runloop == NULL) {
+  while (1) {
     WMNextEvent(dpy, &event);
     WMHandleEvent(&event);
   }

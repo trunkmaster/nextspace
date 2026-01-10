@@ -32,6 +32,7 @@
 #include <sys/wait.h>
 #ifdef __FreeBSD__
 #include <sys/signal.h>
+#include <fcntl.h>
 #endif
 
 #include <X11/Xlib.h>
