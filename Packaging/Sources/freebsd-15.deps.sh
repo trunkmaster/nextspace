@@ -13,6 +13,7 @@ CORE_SYSTEM_DEPS="
     curl
     libuuid
     pkgconf
+    cmake
 "
 
 # libwraster
