@@ -21,8 +21,10 @@
 #include "file_utils.h"
 #include "defaults.h"
 #include "wuserdefaults.h"
-// New CF
+
+#if defined(__FreeBSD__)
 #include <sys/param.h>
+#endif
 
 // ---[ Location ] --------------------------------------------------------------------------------
 

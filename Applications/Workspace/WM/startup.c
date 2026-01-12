@@ -30,7 +30,8 @@
 #include <errno.h>
 #include <signal.h>
 #include <sys/wait.h>
-#ifdef __FreeBSD__
+
+#if defined (__FreeBSD__)
 #include <sys/signal.h>
 #include <fcntl.h>
 #endif
