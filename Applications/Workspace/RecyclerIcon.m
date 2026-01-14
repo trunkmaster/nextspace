@@ -396,7 +396,7 @@ void _recyclerExpose(WObjDescriptor *desc, XEvent *event)
 - (id)initWithWindowRef:(void *)xWindow recycler:(Recycler *)theRecycler
 {
   Window *win = (Window *)xWindow;
-  NSLog(@"%s: 0x%lX", __func__, *win);
+  NSDebugLLog(@"Recycler", @"%s: 0x%lX", __func__, *win);
   self = [super initWithWindowRef:xWindow];
   recycler = theRecycler;
 
