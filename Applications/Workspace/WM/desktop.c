@@ -36,6 +36,8 @@
 #include <time.h>
 #include <sys/time.h>
 
+#include <dispatch/dispatch.h>
+
 #include <CoreFoundation/CFRunLoop.h>
 #include <CoreFoundation/CFNotificationCenter.h>
 #include <CoreFoundation/CFNumber.h>

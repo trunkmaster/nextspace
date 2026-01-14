@@ -21,6 +21,7 @@
 #include "file_utils.h"
 #include "defaults.h"
 #include "wuserdefaults.h"
+#include <sys/param.h>
 
 // ---[ Location ] --------------------------------------------------------------------------------
 
