@@ -175,8 +175,13 @@ void wWindowDestroy(WWindow *wwin)
   int i, win_count;
   CFIndex idx;
 
-  if (wwin->screen->cmap_window == wwin)
+  if (!wwin || !wwin->screen) {
+    return;
+  }
+
+  if (wwin->screen->cmap_window && wwin->screen->cmap_window == wwin) {
     wwin->screen->cmap_window = NULL;
+  }
 
   if (wwin->screen->notificationCenter) {
     CFNotificationCenterRemoveObserver(wwin->screen->notificationCenter, wwin,
@@ -211,38 +216,39 @@ void wWindowDestroy(WWindow *wwin)
       XFlush(dpy);
     }
   }
-
-  if (wwin->normal_hints)
+  if (wwin->normal_hints) {
     XFree(wwin->normal_hints);
-
-  if (wwin->wm_hints)
+  }
+  if (wwin->wm_hints) {
     XFree(wwin->wm_hints);
-
-  if (wwin->wm_instance)
+  }
+  if (wwin->wm_instance) {
     XFree(wwin->wm_instance);
-
-  if (wwin->wm_class)
+  }
+  if (wwin->wm_class) {
     XFree(wwin->wm_class);
-
-  if (wwin->wm_gnustep_attr)
+  }
+  if (wwin->wm_gnustep_attr) {
     wfree(wwin->wm_gnustep_attr);
-
-  if (wwin->cmap_windows)
+  }
+  if (wwin->cmap_windows) {
     XFree(wwin->cmap_windows);
-
-  XDeleteContext(dpy, wwin->client_win, w_global.context.client_win);
-
-  if (wwin->frame)
+  }
+  if (wwin->client_win) {
+    XDeleteContext(dpy, wwin->client_win, w_global.context.client_win);
+  }
+  if (wwin->frame) {
     wFrameWindowDestroy(wwin->frame);
-
+  }
   if (wwin->icon) {
     RemoveFromStackList(wwin->icon->core);
     wIconDestroy(wwin->icon);
     if (wPreferences.auto_arrange_icons)
       wArrangeIcons(wwin->screen, True);
   }
-  if (wwin->net_icon_image)
+  if (wwin->net_icon_image) {
     RReleaseImage(wwin->net_icon_image);
+  }
 
   wrelease(wwin);
 }
