@@ -15,7 +15,7 @@ if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	sudo apt-get install -y ${APPS_RUN_DEPS}
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
-	SPEC_FILE=${PROJECT_DIR}/Applications/nextspace-applications.spec
+	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-applications.spec
 	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "nextspace" | grep -v "corefoundation" | awk -c '{print $1}'`
 	sudo yum -y install ${DEPS} || exit 1
 	DEPS=`rpmspec -q --requires ${SPEC_FILE} | grep -v corefoundation | grep -v nextspace`

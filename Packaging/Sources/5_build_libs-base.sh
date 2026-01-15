@@ -13,7 +13,7 @@ if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	sudo apt-get install -y ${GNUSTEP_BASE_DEPS} || exit 1
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
-	SPEC_FILE=${PROJECT_DIR}/Libraries/gnustep/nextspace-gnustep.spec
+	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-gnustep.spec
 	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v libobjc2 | awk -c '{print $1}'`
 	sudo yum -y install ${DEPS} || exit 1
 fi

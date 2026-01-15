@@ -12,7 +12,7 @@ if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 else
 	${ECHO} ">>> Installing ${OS_ID} packages for CoreFoundation build"
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
-	SPEC_FILE=${PROJECT_DIR}/Libraries/libcorefoundation/libcorefoundation.spec
+	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/libcorefoundation.spec
 	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
 	sudo yum -y install ${DEPS} git || exit 1
 fi

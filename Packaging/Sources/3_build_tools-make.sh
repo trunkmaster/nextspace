@@ -11,7 +11,7 @@ if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	sudo apt-get install -y ${GNUSTEP_MAKE_DEPS} || exit 1
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
-	SPEC_FILE=${PROJECT_DIR}/Core/nextspace-core.spec
+	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-core.spec
 	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v libobjc2 | grep -v "libdispatch-devel" | awk -c '{print $1}'`
 	sudo yum -y install ${DEPS} || exit 1
 fi
