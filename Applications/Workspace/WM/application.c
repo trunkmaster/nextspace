@@ -494,7 +494,7 @@ void wApplicationDestroy(WApplication *wapp)
     WMUserDefaultsWrite(wapp->appState, wapp->appName);
     CFRelease(wapp->menus_state);
   }
-  if (!wapp->flags.is_gnustep) {
+  if (!wapp->flags.is_gnustep && wapp->appState) {
     CFRelease(wapp->appState);
   }
   CFRelease(wapp->appName);
