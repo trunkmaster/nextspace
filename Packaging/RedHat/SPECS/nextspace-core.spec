@@ -81,14 +81,10 @@ cd ..
 
 cd nextspace-os_files-%{version}
 cp -vr ./etc %{buildroot}
-rm %{buildroot}/etc/X11/xorg.conf.d/20-intel.conf
 cp -vr ./usr %{buildroot}
 cp -vr ./dot_hidden %{buildroot}/.hidden
 mkdir %{buildroot}/Users
 mkdir -p %{buildroot}/usr/NextSpace/etc
-%if 0%{?fedora} && 0%{?fedora} < 41
-rm %{buildroot}/etc/systemd/logind.conf
-%endif
 
 %files 
 /.hidden
@@ -97,13 +93,9 @@ rm %{buildroot}/etc/systemd/logind.conf
 /etc/ld.so.conf.d/nextspace.conf
 /etc/profile.d/nextspace.sh
 /etc/skel
-/etc/tuned
 /etc/udev
 /etc/X11
 /etc/polkit-1/rules.d/10-udisks2.rules
-%if 0%{?fedora} && 0%{?fedora} > 40
-/etc/systemd/logind.conf
-%endif
 /usr/NextSpace/Documentation/man/man1/open*.gz
 /usr/NextSpace/etc/
 /usr/NextSpace/bin/gnustep-services
@@ -111,7 +103,6 @@ rm %{buildroot}/etc/systemd/logind.conf
 /usr/share/icons/NextSpace
 /usr/share/plymouth/themes/nextspace
 /usr/share/plymouth/themes/plymouth-preview
-/etc/dracut.conf.d/vboxvideo.conf
 
 %files devel
 /Developer

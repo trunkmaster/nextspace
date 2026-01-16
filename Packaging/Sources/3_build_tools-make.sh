@@ -20,8 +20,6 @@ fi
 # Download
 #----------------------------------------
 GIT_PKG_NAME=tools-make-make-${gnustep_make_version}
-CORE_SOURCES=${PROJECT_DIR}/Core
-
 if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
 	curl -L https://github.com/gnustep/tools-make/archive/make-${gnustep_make_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
 	cd ${BUILD_ROOT}
@@ -41,7 +39,7 @@ export CXX=clang++
 export CFLAGS="-F/usr/NextSpace/Frameworks"
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"/usr/NextSpace/lib"
 
-cp ${CORE_SOURCES}/nextspace.fsl ${BUILD_ROOT}/tools-make-make-${gnustep_make_version}/FilesystemLayouts/nextspace
+cp ${PROJECT_DIR}/Libraries/gnustep/nextspace.fsl ${BUILD_ROOT}/tools-make-make-${gnustep_make_version}/FilesystemLayouts/nextspace
 ./configure \
 	--prefix=/ \
 	--with-config-file=/Library/Preferences/GNUstep.conf \
