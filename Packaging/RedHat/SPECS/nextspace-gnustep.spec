@@ -96,7 +96,7 @@ Requires:   nss-softokn-freebl >= 3.16.2
 Requires:   xz-libs >= 1.5.2
 
 # gnustep-back
-#BuildRequires:  libart_lgpl-devel
+BuildRequires:  libart_lgpl-devel
 BuildRequires:  cairo-devel
 BuildRequires:  freetype-devel
 BuildRequires:  mesa-libGL-devel
@@ -108,7 +108,7 @@ BuildRequires:  libXmu-devel
 BuildRequires:  libXt-devel
 BuildRequires:  libXrandr-devel
 #
-#Requires:   libart_lgpl
+Requires:   libart_lgpl
 Requires:   cairo
 Requires:   freetype
 Requires:   mesa-libGL >= 10.6.5
