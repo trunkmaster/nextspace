@@ -16,16 +16,19 @@ cp ${PROJECT_DIR}/Libraries/gnustep/gdnc.service ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/gdomap.interfaces ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/gdomap.service ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/gpbs.service ${RPM_SOURCES_DIR}
-cp ${PROJECT_DIR}/Libraries/gnustep/gnustep-gui-images.tar.gz ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/gnustep-gui-panels.tar.gz ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/gorm-images.tar.gz ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/projectcenter-images.tar.gz ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/pc.patch ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/gorm.patch ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/libs-gui_* ${RPM_SOURCES_DIR}
+#cp ${PROJECT_DIR}/Libraries/gnustep/gnustep-gui-images.tar.gz ${RPM_SOURCES_DIR}
 
-print_H1 " Downloading Local GNUstep Back..."
-tar zcf ${RPM_SOURCES_DIR}/back-art.tar.gz -C ${PROJECT_DIR}/Libraries/gnustep back-art
+print_H1 " Preparing GNUstep Back..."
+tar zcf ${RPM_SOURCES_DIR}/gnustep-back.tar.gz -C ${PROJECT_DIR}/Libraries/gnustep back
+
+print_H1 " Preparing NextSpace theme..."
+tar zcf ${RPM_SOURCES_DIR}/nextspace-theme.tar.gz -C ${PROJECT_DIR}/Libraries/gnustep nextspace-theme
 
 print_H2 "===== Install GNUstep build dependencies..."
 DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`

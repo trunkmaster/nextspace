@@ -11,7 +11,7 @@
 %endif
 %define GUI_VERSION   0.32.0
 %define GUI_TAG       gui-0_32_0
-%define BACK_VERSION  nextspace
+%define BACK_VERSION  0.32.0
 %define GORM_TAG      gorm-1_5_0
 %define PC_TAG        projectcenter-0_7_0
 
@@ -25,7 +25,7 @@ License:    GPLv3
 URL:        http://www.gnustep.org
 Source0:    %{GS_REPO}/libs-base/archive/%{BASE_TAG}.tar.gz
 Source1:    %{GS_REPO}/libs-gui/archive/%{GUI_TAG}.tar.gz
-Source2:    back-art.tar.gz
+Source2:    gnustep-back.tar.gz
 Source3:    %{GS_REPO}/apps-gorm/archive/%{GORM_TAG}.tar.gz
 Source4:    %{GS_REPO}/apps-projectcenter/archive/%{PC_TAG}.tar.gz
 Source5:    gdomap.interfaces
@@ -37,6 +37,7 @@ Source10:   projectcenter-images.tar.gz
 Source11:   gorm-images.tar.gz
 Source12:   gnustep-gui-images.tar.gz
 Source13:   gnustep-gui-panels.tar.gz
+Source14:   nextspace-theme.tar.gz
 
 Patch0:     gorm.patch
 Patch1:     pc.patch
@@ -99,8 +100,9 @@ Requires:   cups-libs >= 1.6.3
 Requires:   nss-softokn-freebl >= 3.16.2
 Requires:   xz-libs >= 1.5.2
 
-# gnustep-back art
-BuildRequires:  libart_lgpl-devel
+# gnustep-back
+#BuildRequires:  libart_lgpl-devel
+BuildRequires:  cairo-devel
 BuildRequires:  freetype-devel
 BuildRequires:  mesa-libGL-devel
 BuildRequires:  libX11-devel
@@ -111,7 +113,8 @@ BuildRequires:  libXmu-devel
 BuildRequires:  libXt-devel
 BuildRequires:  libXrandr-devel
 #
-Requires:   libart_lgpl
+#Requires:   libart_lgpl
+Requires:   cairo
 Requires:   freetype
 Requires:   mesa-libGL >= 10.6.5
 Requires:   libX11 >= 1.6.3
@@ -141,7 +144,7 @@ OpenStep Application Kit, Foundation Kit and GNUstep extensions header files.
 GNUstep Make installed with nextspace-core-devel package.
 
 %prep
-%setup -c -n nextspace-gnustep -a 0 -a 1 -a 2 -a 3 -a 4
+%setup -c -n nextspace-gnustep -a 0 -a 1 -a 2 -a 3 -a 4 -a 14
 cp %{_sourcedir}/gorm.patch %{_builddir}/nextspace-gnustep/apps-gorm-%{GORM_TAG}/
 cd %{_builddir}/nextspace-gnustep/apps-gorm-%{GORM_TAG}/
 %patch -P0 -p1
@@ -190,15 +193,20 @@ make
 sudo rm /Developer/Makefiles/Additional/base.make
 cd ..
 
-# Build ART GUI backend
-cd back-art
+# Build GUI backend
+cd back
 export ADDITIONAL_TOOL_LIBS="-lgnustep-gui -lgnustep-base"
 ./configure \
     --enable-server=x11 \
-    --enable-graphics=art \
-    --with-name=art
+    --enable-graphics=cairo \
+    --with-name=cairo
 make
 unset ADDITIONAL_TOOL_LIBS
+cd ..
+
+# Build NextSpace theme
+cd nextspace-theme
+make
 cd ..
 
 # Build GORM
@@ -230,8 +238,12 @@ cd ..
 cd libs-gui-%{GUI_TAG}
 %{make_install}
 cd ..
+# Install theme
+cd nextspace-theme
+%{make_install}
+cd ..
 # Install Back
-cd back-art
+cd back
 %{make_install} fonts=no
 cd ..
 # Install GORM
@@ -245,8 +257,8 @@ cd apps-projectcenter-%{PC_TAG}
 cd ..
 
 # Replace cursor images
-cd %{buildroot}/Library/Images
-tar zxf %{_sourcedir}/gnustep-gui-images.tar.gz
+# cd %{buildroot}/Library/Images
+# tar zxf %{_sourcedir}/gnustep-gui-images.tar.gz
 
 # systemd service files and config of gdomap
 mkdir -p %{buildroot}/usr/NextSpace/etc
