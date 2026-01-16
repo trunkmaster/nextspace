@@ -49,10 +49,10 @@ $MAKE_CMD || exit 1
 # Install
 #----------------------------------------
 $INSTALL_CMD || exit 1
-# libwraster ccrashes on loading default GNUstep common_Tile.tiff.
-# Replace it in case when NextSpace theme will be diabled.
-print_H2 "Replacing /Libraries/Images/common_Tile.tiff..."
-$CP_CMD ${SOURCES_DIR}/nextspace-theme/Resources/ThemeImages/common_Tile.tiff /Library/Images || exit 1
+# libwraster crashes on loading default GNUstep common_Tile.tiff.
+# Replace it in case when NextSpace theme will be disabled.
+print_H2 "Replacing /Library/Images/common_Tile.tiff..."
+$CP_CMD -f -v ${SOURCES_DIR}/nextspace-theme/Resources/ThemeImages/common_Tile.tiff /Library/Images || exit 1
 
 #----------------------------------------
 # Download theme
@@ -68,7 +68,8 @@ cp -R ${THEME_SOURCES_DIR} ${BUILD_ROOT} || exit 1
 #----------------------------------------
 # Build and install theme
 #----------------------------------------
-$MAKE_CMD || exit
+cd ${BUILD_DIR} || exit 1
+$MAKE_CMD || exit 1
 $INSTALL_CMD || exit 1
 
 #----------------------------------------
