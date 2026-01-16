@@ -14,7 +14,7 @@ if [ $? -ne 0 ];then
 fi
 
 LOG_FILE=/dev/null
-SPEC_FILE=${PROJECT_DIR}/Applications/nextspace-applications.spec
+SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-applications.spec
 
 print_H1 " Building NEXTSPACE Applications package..."
 

@@ -14,7 +14,7 @@ if [ $? -ne 0 ];then
 fi
 
 LOG_FILE=${CWD}/frameworks_build.log
-SPEC_FILE=${PROJECT_DIR}/Frameworks/nextspace-frameworks.spec
+SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-frameworks.spec
 
 print_H1 " Building NEXTSPACE Frameworks package..."
 
