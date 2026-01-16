@@ -5,7 +5,7 @@ BUILD_RPM=1
 . `dirname $0`/../functions.sh
 . `dirname $0`/../environment.sh
 
-SPEC_FILE=${PROJECT_DIR}/Libraries/libobjc2/libobjc2.spec
+SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/libobjc2.spec
 OBJC2_VERSION=`rpm_version ${SPEC_FILE}`
 
 print_H1 " Building Objective-C Runtime(libobjc2) package..."

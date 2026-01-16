@@ -5,7 +5,7 @@ BUILD_RPM=1
 . `dirname $0`/../functions.sh
 . `dirname $0`/../environment.sh
 
-SPEC_FILE=${PROJECT_DIR}/Core/nextspace-core.spec
+SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-core.spec
 
 print_H1 " Building of NEXTSPACE core components (nextspace-core) RPM..."
 print_H2 "===== Install nextspace-core build dependencies..."

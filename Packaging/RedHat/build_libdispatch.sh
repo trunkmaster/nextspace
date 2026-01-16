@@ -11,7 +11,7 @@ if [ "${OS_ID}" = "fedora" ]; then
 	exit 0
 fi
 
-SPEC_FILE=${PROJECT_DIR}/Libraries/libdispatch/libdispatch.spec
+SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/libdispatch.spec
 DISPATCH_VERSION=`rpm_version ${SPEC_FILE}`
 
 # libdispatch

@@ -7,7 +7,7 @@ BUILD_RPM=1
 . /Developer/Makefiles/GNUstep.sh
 . /etc/profile.d/nextspace.sh
 
-SPEC_FILE=${PROJECT_DIR}/Libraries/gnustep/nextspace-gnustep.spec
+SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-gnustep.spec
 GNUSTEP_VERSION=`rpm_version ${SPEC_FILE}`
 
 print_H1 " Building NEXTSPACE GNUstep (nextspace-gnustep) package..."

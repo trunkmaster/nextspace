@@ -7,7 +7,7 @@ BUILD_RPM=1
 . /Developer/Makefiles/GNUstep.sh
 . /etc/profile.d/nextspace.sh
 
-SPEC_FILE=${PROJECT_DIR}/Libraries/libwraster/libwraster.spec
+SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/libwraster.spec
 
 print_H1 " Building Raster graphics library (libwraster) RPM..."
 

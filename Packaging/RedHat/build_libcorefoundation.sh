@@ -5,7 +5,7 @@ BUILD_RPM=1
 . `dirname $0`/../functions.sh
 . `dirname $0`/../environment.sh
 
-SPEC_FILE=${PROJECT_DIR}/Libraries/libcorefoundation/libcorefoundation.spec
+SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/libcorefoundation.spec
 CF_VERSION=`rpm_version ${SPEC_FILE}`
 
 print_H1 " Building Core Foundation (libcorefoundation) package..."

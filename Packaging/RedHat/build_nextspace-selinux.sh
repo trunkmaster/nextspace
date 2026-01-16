@@ -7,7 +7,7 @@ BUILD_RPM=1
 . /Developer/Makefiles/GNUstep.sh
 . /etc/profile.d/nextspace.sh
 
-SPEC_FILE=${PROJECT_DIR}/Libraries/selinux/nextspace-selinux.spec
+SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-selinux.spec
 
 print_H1 " Building of NEXTSPACE SELinux components (nextspace-selinux) RPM..."
 
