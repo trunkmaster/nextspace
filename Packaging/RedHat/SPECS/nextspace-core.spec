@@ -80,7 +80,6 @@ rm %{buildroot}/usr/NextSpace/bin/opentool
 cd ..
 
 cd nextspace-os_files-%{version}
-cp -vr ./Library %{buildroot}
 cp -vr ./etc %{buildroot}
 rm %{buildroot}/etc/X11/xorg.conf.d/20-intel.conf
 cp -vr ./usr %{buildroot}

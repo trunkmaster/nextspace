@@ -17,13 +17,13 @@ CORE_VERSION=`rpmspec -q --qf "%{version}:" ${SPEC_FILE} | awk -F: '{print $1}'`
 cd /tmp 
 rm -rf ./nextspace-os_files-${CORE_VERSION}
 mkdir -p /tmp/nextspace-os_files-${CORE_VERSION}
-cp -R ${PROJECT_DIR}/Core/os_files/* ./nextspace-os_files-${CORE_VERSION}/
+cp -R ${PROJECT_DIR}/OS/Linux/* ./nextspace-os_files-${CORE_VERSION}/
 rm ./nextspace-os_files-${CORE_VERSION}/GNUmakefile
 tar zcf ${RPM_SOURCES_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz nextspace-os_files-${CORE_VERSION}
 cd $CWD
 
 CORE_VERSION=`rpm_version ${SPEC_FILE}`
-cp ${PROJECT_DIR}/Core/nextspace.fsl ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraies/gnustep/nextspace.fsl ${RPM_SOURCES_DIR}
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building NEXTSPACE core components (nextspace-core) RPM..."
