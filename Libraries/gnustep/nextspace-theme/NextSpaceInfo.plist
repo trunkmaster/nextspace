@@ -1,0 +1,11 @@
+{
+    GSThemeAuthors = (
+	    "Sergii Stoian <stoyan255@gmail.com>"
+    );
+    GSThemeDetails = "NEXTSPACE touch ups to GNUstep GUI library.";
+    GSThemeDomain = {
+        GSThemeVersion = "0.95";
+        GSThemeIcon = "NeXT.tiff";
+        GSThemePreview = "ThemePreview.png";
+    };
+}

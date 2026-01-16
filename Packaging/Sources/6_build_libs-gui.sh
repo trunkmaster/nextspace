@@ -48,7 +48,37 @@ $MAKE_CMD || exit 1
 #----------------------------------------
 # Install
 #----------------------------------------
-$INSTALL_CMD
+$INSTALL_CMD || exit 1
+# libwraster ccrashes on loading default GNUstep common_Tile.tiff.
+# Replace it in case when NextSpace theme will be diabled.
+print_H2 "Replacing /Libraries/Images/common_Tile.tiff..."
+$CP_CMD ${SOURCES_DIR}/nextspace-theme/Resources/ThemeImages/common_Tile.tiff /Library/Images || exit 1
+
+#----------------------------------------
+# Download theme
+#----------------------------------------
+THEME_SOURCES_DIR=${SOURCES_DIR}/nextspace-theme
+BUILD_DIR=${BUILD_ROOT}/nextspace-theme
+
+if [ -d ${BUILD_DIR} ]; then
+	rm -rf ${BUILD_DIR} || exit 1
+fi
+cp -R ${THEME_SOURCES_DIR} ${BUILD_ROOT} || exit 1
+
+#----------------------------------------
+# Build and install theme
+#----------------------------------------
+$MAKE_CMD || exit
+$INSTALL_CMD || exit 1
+
+#----------------------------------------
+# Install global defaults
+#----------------------------------------
+print_H2 "Installing /Libraries/Preferences/GlobalDefaults.plist..."
+if ! [ -d $DEST_DIR/Library/Preferences ];then
+	$MKDIR_CMD -v $DEST_DIR/Library/Preferences || exit 1
+fi
+$CP_CMD ${SOURCES_DIR}/GlobalDefaults.plist $DEST_DIR/Library/Preferences || exit 1
 
 #----------------------------------------
 # Install services

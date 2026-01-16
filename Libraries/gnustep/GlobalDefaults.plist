@@ -3,7 +3,9 @@
 <plist version="0.9">
 <dict>
     <key>GSBackend</key>
-    <string>art</string>
+    <string>cairo</string>
+    <key>GSTheme</key>
+    <string>NextSpace</string>
     <key>GSWorkspaceApplication</key>
     <string>Workspace</string>
     <key>GSCommandKeyString</key>
