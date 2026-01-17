@@ -1620,7 +1620,9 @@ void wUnmanageWindow(WWindow *wwin, Bool restore, Bool destroyed)
 
   wNETCleanupFrameExtents(wwin);
 
-  wWindowDestroy(wwin);
+  if (!wwin->flags.destroyed) {
+    wWindowDestroy(wwin);
+  }
   XFlush(dpy);
 }
 
