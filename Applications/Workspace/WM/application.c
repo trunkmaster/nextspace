@@ -266,7 +266,7 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
   WWindow *awin;
 
   /* Application could be already destroyed */
-  if (wapp == NULL || wapp->windows == NULL || wwin == NULL)
+  if (wapp == NULL || wapp->windows == NULL || wwin == NULL || wapp->refcount == 0)
     return;
 
   window_count = CFArrayGetCount(wapp->windows);
