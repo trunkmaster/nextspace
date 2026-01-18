@@ -253,6 +253,10 @@ cd apps-projectcenter-%{PC_TAG}
 %{make_install}
 cd ..
 
+# libwraster crashes on loading default GNUstep common_Tile.tiff.
+# Replace it in case when NextSpace theme will be disabled.
+cp -f ${buildroot}/Library/Themes/NextSpace.theme/Resources/ThemeImages/common_Tile.tiff %{buildroot}/Library/Images
+
 # Replace cursor images
 # cd %{buildroot}/Library/Images
 # tar zxf %{_sourcedir}/gnustep-gui-images.tar.gz
