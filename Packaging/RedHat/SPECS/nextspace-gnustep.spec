@@ -188,15 +188,17 @@ make
 sudo rm /Developer/Makefiles/Additional/base.make
 cd ..
 
+# --- From this point additional compile flags needed to find  yet not installed GNUstep libraries.
+export ADDITIONAL_OBJCFLAGS="-I%{buildroot}/Developer/Headers"
+export ADDITIONAL_LDFLAGS="-lgnustep-gui -lgnustep-base"
+
 # Build GUI backend
 cd back
-export ADDITIONAL_TOOL_LIBS="-lgnustep-gui -lgnustep-base"
 ./configure \
     --enable-server=x11 \
     --enable-graphics=cairo \
     --with-name=cairo
 make
-unset ADDITIONAL_TOOL_LIBS
 cd ..
 
 # Build NextSpace theme
@@ -205,8 +207,8 @@ make
 cd ..
 
 # Build GORM
-export ADDITIONAL_OBJCFLAGS="-I%{buildroot}/Developer/Headers"
-export ADDITIONAL_LDFLAGS+="-L%{buildroot}/Library/Libraries -lgnustep-base -lgnustep-gui"
+#export ADDITIONAL_OBJCFLAGS="-I%{buildroot}/Developer/Headers"
+#export ADDITIONAL_LDFLAGS+="-L%{buildroot}/Library/Libraries -lgnustep-base -lgnustep-gui"
 cd apps-gorm-%{GORM_TAG}
 tar zxf %{_sourcedir}/gorm-images.tar.gz
 make
