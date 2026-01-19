@@ -815,6 +815,9 @@ WScreen *wScreenInit(int screen_number)
 
   createInternalWindows(scr);
 
+  /* Center for notifications inside WM. */
+  scr->notificationCenter = CFNotificationCenterGetLocalCenter();
+
   wNETWMInitStuff(scr);
 
   /* create initial workspace */
