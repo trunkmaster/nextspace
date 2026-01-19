@@ -269,8 +269,11 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
   if (wapp == NULL || wapp->windows == NULL || wwin == NULL || wapp->refcount == 0) {
     return;
   }
-  
+
   window_count = CFArrayGetCount(wapp->windows);
+  if (window_count < 1) {
+    return;
+  }
   // CFLog(kCFLogLevelInfo, CFSTR("%s: application refcount == %i, windows # == %i"), __func__,
   //       wapp->refcount, window_count);
 
