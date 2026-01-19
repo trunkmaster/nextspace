@@ -172,6 +172,23 @@ void PropSetWMakerProtocols(Window root)
                   (unsigned char *)protocols, count);
 }
 
+void PropSetWMName(WScreen *scr, char *name, char *class)
+{
+  static Atom wm_name_atom = 0;
+  static Atom wm_class_atom = 0;
+  
+  if (scr->info_window == None)
+    return;
+
+  wm_name_atom = XInternAtom(dpy, "_NET_WM_NAME", False);
+  XChangeProperty(dpy, scr->info_window, wm_name_atom, XA_STRING, 8, PropModeReplace,
+                  (unsigned char *)name, strlen(name));
+  wm_class_atom = XInternAtom(dpy, "WM_CLASS", False);
+  XChangeProperty(dpy, scr->info_window, wm_class_atom, XA_STRING, 8, PropModeReplace,
+                  (unsigned char *)class, strlen(class));
+}
+
+#if 0
 void PropSetIconTileHint(WScreen *scr, RImage *image)
 {
   static Atom imageAtom = 0;
@@ -220,6 +237,7 @@ void PropSetIconTileHint(WScreen *scr, RImage *image)
                   PropModeReplace, tmp, image->width * image->height * 4 + 4);
   wfree(tmp);
 }
+#endif
 
 Window PropGetClientLeader(Window window)
 {

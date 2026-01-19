@@ -2446,7 +2446,7 @@ static int setIconTile(WScreen * scr, WDefaultEntry * entry, void *tdata, void *
   scr->icon_tile = img;
 
   /* put the icon in the noticeboard hint */
-  PropSetIconTileHint(scr, img);
+  // PropSetIconTileHint(scr, img);
 
   if (!wPreferences.flags.noclip || wPreferences.flags.clip_merged_in_dock) {
     if (scr->clip_tile) {
@@ -2513,14 +2513,14 @@ static int setMiniwindowTile(WScreen *scr, WDefaultEntry *entry, void *tdata, vo
   scr->miniwindow_tile = img;
 
   /* put the icon in the noticeboard hint */
-  /* PropSetIconTileHint(scr, img); */
+  // PropSetIconTileHint(scr, img);
 
-  /* scr->icon_tile_pixmap = pixmap; */
+  // scr->icon_tile_pixmap = pixmap;
 
   /* icon back color for shadowing */
-  /*  if (scr->icon_back_texture)
-      wTextureDestroy(scr, (WTexture *) scr->icon_back_texture);
-      scr->icon_back_texture = wTextureMakeSolid(scr, &((*texture)->any.color));*/
+  // if (scr->icon_back_texture)
+  //   wTextureDestroy(scr, (WTexture *)scr->icon_back_texture);
+  // scr->icon_back_texture = wTextureMakeSolid(scr, &((*texture)->any.color));
 
   /* Free the texture as nobody else will use it, nor refer to it.  */
   if (!entry->addr)

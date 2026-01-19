@@ -254,6 +254,7 @@ static Bool replace_existing_wm(WScreen *scr)
 
   /* for our window manager info notice board and the selection owner */
   scr->info_window = XCreateSimpleWindow(dpy, scr->root_win, 0, 0, 10, 10, 0, 0, 0);
+  PropSetWMName(scr, "WorkspaceManager", "NextSpace");
 
 #ifdef USE_ICCCM_WMREPLACE
   /* Try to acquire the selection */
