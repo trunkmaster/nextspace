@@ -266,10 +266,13 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
   WWindow *awin;
 
   /* Application could be already destroyed */
-  if (wapp == NULL || wapp->windows == NULL || wwin == NULL || wapp->refcount == 0)
+  if (wapp == NULL || wapp->windows == NULL || wwin == NULL || wapp->refcount == 0) {
     return;
-
+  }
+  
   window_count = CFArrayGetCount(wapp->windows);
+  // CFLog(kCFLogLevelInfo, CFSTR("%s: application refcount == %i, windows # == %i"), __func__,
+  //       wapp->refcount, window_count);
 
   WMLogInfo("REMOVE window: %lu name: %s WApplication refcount=%i", wwin->client_win,
             wwin->wm_instance, wapp->refcount);
@@ -283,6 +286,10 @@ void wApplicationRemoveWindow(WApplication *wapp, WWindow *wwin)
       wapp->refcount--;
       break;
     }
+  }
+
+  if (wapp->flags.is_gnustep == 0 && wapp->refcount == 1) {
+    wApplicationDeactivate(wapp);
   }
 }
 
