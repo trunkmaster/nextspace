@@ -257,6 +257,9 @@ cd ..
 # Replace it in case when NextSpace theme will be disabled.
 cp -f %{buildroot}/Library/Themes/NextSpace.theme/Resources/ThemeImages/common_Tile.tiff %{buildroot}/Library/Images
 
+# Put global defaults on place
+cp %{_sourcedir}/GlobalDefaults.plist %{buildroot}/Library/Preferences
+
 # Replace cursor images
 # cd %{buildroot}/Library/Images
 # tar zxf %{_sourcedir}/gnustep-gui-images.tar.gz
