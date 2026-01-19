@@ -678,6 +678,7 @@ void wNETWMInitStuff(WScreen *scr)
   updateClientListStacking(scr, NULL);
   updateDesktopCount(scr);
   updateDesktopNames(scr);
+  updateCurrentDesktop(scr);
   updateShowDesktop(scr, False);
 
   wScreenUpdateUsableArea(scr);
