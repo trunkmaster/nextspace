@@ -644,7 +644,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
     return NULL;
   }
 
-  wm_state = PropGetWindowState(window);
+  wm_state = wPropertiesGetWindowState(window);
 
   /* if it's startup and the window is unmapped, don't manage it */
   if (scr->flags.startup && wm_state < 0 && wattribs.map_state == IsUnmapped) {
@@ -676,7 +676,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 #endif
 
   /* Get hints and other information in properties */
-  PropGetWMClass(window, &wwin->wm_class, &wwin->wm_instance);
+  wPropertiesGetWMClass(window, &wwin->wm_class, &wwin->wm_instance);
 
   /* setup descriptor */
   wwin->client_win = window;
@@ -694,7 +694,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
   if (wwin->wm_class != NULL && strcmp(wwin->wm_class, "GNUstep") == 0)
     wwin->flags.is_gnustep = 1;
 
-  if (!PropGetGNUstepWMAttr(window, &wwin->wm_gnustep_attr))
+  if (!wPropertiesGetGNUstepWMAttr(window, &wwin->wm_gnustep_attr))
     wwin->wm_gnustep_attr = NULL;
 
   if (wwin->wm_class != NULL && strcmp(wwin->wm_class, "DockApp") == 0) {
@@ -702,7 +702,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
     withdraw = True;
   }
 
-  wwin->client_leader = PropGetClientLeader(window);
+  wwin->client_leader = wPropertiesGetClientLeader(window);
   if (wwin->client_leader != None)
     wwin->main_window = wwin->client_leader;
 
@@ -734,7 +734,7 @@ WWindow *wManageWindow(WScreen *scr, Window window)
     wwin->group_id = None;
   }
 
-  PropGetProtocols(window, &wwin->protocols);
+  wPropGetProtocols(window, &wwin->protocols);
 
   if (!XGetTransientForHint(dpy, window, &wwin->transient_for)) {
     wwin->transient_for = None;
@@ -797,8 +797,8 @@ WWindow *wManageWindow(WScreen *scr, Window window)
 
 #define ADEQUATE(x) ((x) != None && (x) != wwin->client_win && (x) != fPtr->leader)
 
-    /* // only enter here if PropGetWMClass() succeds */
-    PropGetWMClass(wwin->main_window, &class, &instance);
+    /* // only enter here if wPropertiesGetWMClass() succeds */
+    wPropertiesGetWMClass(wwin->main_window, &class, &instance);
     buffer = wstrconcatdot(instance, class);
 
     for (CFIndex i = 0; i < CFArrayGetCount(scr->fakeGroupLeaders); i++) {
@@ -2705,7 +2705,7 @@ WMagicNumber wWindowGetSavedState(Window win)
   if (!command)
     return NULL;
 
-  if (PropGetWMClass(win, &class, &instance)) {
+  if (wPropertiesGetWMClass(win, &class, &instance)) {
     while (wstate) {
       if (is_same(instance, wstate->instance) && is_same(class, wstate->class) &&
           is_same(command, wstate->command)) {

@@ -189,7 +189,7 @@ static WWindow *makeMainWindow(WScreen *scr, Window window)
   wwin->main_window = window;
   wwin->wm_hints = XGetWMHints(dpy, window);
 
-  PropGetWMClass(window, &wwin->wm_class, &wwin->wm_instance);
+  wPropertiesGetWMClass(window, &wwin->wm_class, &wwin->wm_instance);
   if (wwin->wm_class != NULL && strcmp(wwin->wm_class, "GNUstep") == 0)
     wwin->flags.is_gnustep = 1;
 

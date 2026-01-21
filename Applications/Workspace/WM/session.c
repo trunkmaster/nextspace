@@ -171,7 +171,7 @@ static CFTypeRef makeWindowState(WWindow *wwin, WApplication *wapp)
   if (!command)
     return NULL;
 
-  if (PropGetWMClass(win, &class, &instance)) {
+  if (wPropertiesGetWMClass(win, &class, &instance)) {
     if (class && instance) {
       name = CFStringCreateWithFormat(kCFAllocatorDefault, 0, CFSTR("%s.%s"), instance, class);
     } else if (instance) {

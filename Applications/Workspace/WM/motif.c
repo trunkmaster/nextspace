@@ -169,7 +169,7 @@ static int getMWMHints(Window window, MWMHints *mwmhints)
   if (!_XA_MOTIF_WM_HINTS)
     _XA_MOTIF_WM_HINTS = XInternAtom(dpy, "_MOTIF_WM_HINTS", False);
 
-  data = (unsigned long *)PropGetCheckProperty(window, _XA_MOTIF_WM_HINTS, _XA_MOTIF_WM_HINTS, 32,
+  data = (unsigned long *)wPropertiesGetWindowProperty(window, _XA_MOTIF_WM_HINTS, _XA_MOTIF_WM_HINTS, 32,
                                                0, &count);
 
   if (!data)

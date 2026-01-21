@@ -27,6 +27,7 @@
 #include <X11/Xatom.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <core/util.h>
 #include <core/log_utils.h>
@@ -36,7 +37,7 @@
 #include "GNUstep.h"
 #include "properties.h"
 
-int PropGetNormalHints(Window window, XSizeHints *size_hints, int *pre_iccm)
+int wPropertiesGetNormalHints(Window window, XSizeHints *size_hints, int *pre_iccm)
 {
   long supplied_hints;
 
@@ -52,7 +53,7 @@ int PropGetNormalHints(Window window, XSizeHints *size_hints, int *pre_iccm)
   return True;
 }
 
-int PropGetWMClass(Window window, char **wm_class, char **wm_instance)
+int wPropertiesGetWMClass(Window window, char **wm_class, char **wm_instance)
 {
   XClassHint *class_hint;
 
@@ -73,7 +74,7 @@ int PropGetWMClass(Window window, char **wm_class, char **wm_instance)
   return True;
 }
 
-void PropGetProtocols(Window window, WProtocols *prots)
+void wPropGetProtocols(Window window, WProtocols *prots)
 {
   Atom *protocols;
   int count, i;
@@ -97,7 +98,7 @@ void PropGetProtocols(Window window, WProtocols *prots)
   XFree(protocols);
 }
 
-unsigned char *PropGetCheckProperty(Window window, Atom hint, Atom type, int format, int count,
+unsigned char *wPropertiesGetWindowProperty(Window window, Atom hint, Atom type, int format, int count,
                                     int *retCount)
 {
   Atom type_ret;
@@ -129,11 +130,11 @@ unsigned char *PropGetCheckProperty(Window window, Atom hint, Atom type, int for
   return data;
 }
 
-int PropGetGNUstepWMAttr(Window window, GNUstepWMAttributes **attr)
+int wPropertiesGetGNUstepWMAttr(Window window, GNUstepWMAttributes **attr)
 {
   unsigned long *data;
 
-  data = (unsigned long *)PropGetCheckProperty(window, w_global.atom.gnustep.wm_attr,
+  data = (unsigned long *)wPropertiesGetWindowProperty(window, w_global.atom.gnustep.wm_attr,
                                                w_global.atom.gnustep.wm_attr, 32, 9, NULL);
 
   if (!data)
@@ -159,23 +160,25 @@ int PropGetGNUstepWMAttr(Window window, GNUstepWMAttributes **attr)
   return True;
 }
 
-void PropSetWMakerProtocols(Window root)
+void wPropertiesSetWMakerProtocols(Window root)
 {
-  Atom protocols[3];
+  // Atom protocols[3];
+  Atom protocols[1];
   int count = 0;
 
-  protocols[count++] = w_global.atom.wmaker.menu;
+  // protocols[count++] = w_global.atom.wmaker.menu;
+  // protocols[count++] = w_global.atom.wmaker.noticeboard;
   protocols[count++] = w_global.atom.wmaker.wm_function;
-  protocols[count++] = w_global.atom.wmaker.noticeboard;
 
   XChangeProperty(dpy, root, w_global.atom.wmaker.wm_protocols, XA_ATOM, 32, PropModeReplace,
                   (unsigned char *)protocols, count);
 }
 
-void PropSetWMName(WScreen *scr, char *name, char *class)
+void wPropertiesSetWMName(WScreen *scr, char *name, char *class)
 {
   static Atom wm_name_atom = 0;
   static Atom wm_class_atom = 0;
+  static Atom wm_pid_atom = 0;
   
   if (scr->info_window == None)
     return;
@@ -186,6 +189,12 @@ void PropSetWMName(WScreen *scr, char *name, char *class)
   wm_class_atom = XInternAtom(dpy, "WM_CLASS", False);
   XChangeProperty(dpy, scr->info_window, wm_class_atom, XA_STRING, 8, PropModeReplace,
                   (unsigned char *)class, strlen(class));
+  wm_pid_atom = XInternAtom(dpy, "_NET_WM_PID", False);
+
+  unsigned long pid = getpid();
+  CFLog(kCFLogLevelInfo, CFSTR("WorkspaceManager PID: %i"), pid);
+  XChangeProperty(dpy, scr->info_window, wm_pid_atom, XA_CARDINAL, 32, PropModeReplace,
+                  (unsigned char *)&pid, 1L);
 }
 
 #if 0
@@ -239,12 +248,12 @@ void PropSetIconTileHint(WScreen *scr, RImage *image)
 }
 #endif
 
-Window PropGetClientLeader(Window window)
+Window wPropertiesGetClientLeader(Window window)
 {
   Window *win;
   Window leader;
 
-  win = (Window *)PropGetCheckProperty(window, w_global.atom.wm.client_leader, XA_WINDOW, 32, 1,
+  win = (Window *)wPropertiesGetWindowProperty(window, w_global.atom.wm.client_leader, XA_WINDOW, 32, 1,
                                        NULL);
 
   if (!win)
@@ -256,12 +265,12 @@ Window PropGetClientLeader(Window window)
   return leader;
 }
 
-int PropGetWindowState(Window window)
+int wPropertiesGetWindowState(Window window)
 {
   long *data;
   long state;
 
-  data = (long *)PropGetCheckProperty(window, w_global.atom.wm.state, w_global.atom.wm.state, 32, 1,
+  data = (long *)wPropertiesGetWindowProperty(window, w_global.atom.wm.state, w_global.atom.wm.state, 32, 1,
                                       NULL);
 
   if (!data)
@@ -273,9 +282,9 @@ int PropGetWindowState(Window window)
   return state;
 }
 
-void PropCleanUp(Window root)
+void wPropertiesCleanUp(Window root)
 {
+  // XDeleteProperty(dpy, root, w_global.atom.wmaker.noticeboard);
   XDeleteProperty(dpy, root, w_global.atom.wmaker.wm_protocols);
-  XDeleteProperty(dpy, root, w_global.atom.wmaker.noticeboard);
   XDeleteProperty(dpy, root, XA_WM_ICON_SIZE);
 }

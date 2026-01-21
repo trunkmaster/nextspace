@@ -549,7 +549,7 @@ void wClientCheckProperty(WWindow *wwin, XPropertyEvent *event)
 
     default:
       if (event->atom == w_global.atom.wm.protocols) {
-        PropGetProtocols(wwin->client_win, &wwin->protocols);
+        wPropGetProtocols(wwin->client_win, &wwin->protocols);
 
         // WM_TAKE_FOCUS
         if (wwin->protocols.TAKE_FOCUS)
@@ -612,7 +612,7 @@ void wClientCheckProperty(WWindow *wwin, XPropertyEvent *event)
         }
       } else if (event->atom == w_global.atom.gnustep.wm_attr) {
         GNUstepWMAttributes *attr;
-        if (PropGetGNUstepWMAttr(wwin->client_win, &attr) != False) {
+        if (wPropertiesGetGNUstepWMAttr(wwin->client_win, &attr) != False) {
           wWindowUpdateGNUstepAttr(wwin, attr);
           XFree(attr);
         }
@@ -643,7 +643,7 @@ void wClientGetNormalHints(WWindow *wwin, XWindowAttributes *wattribs, Bool geom
   if (!wwin->normal_hints)
     wwin->normal_hints = XAllocSizeHints();
 
-  if (!PropGetNormalHints(wwin->client_win, wwin->normal_hints, &pre_icccm)) {
+  if (!wPropertiesGetNormalHints(wwin->client_win, wwin->normal_hints, &pre_icccm)) {
     wwin->normal_hints->flags = 0;
   }
   *x = wattribs->x;

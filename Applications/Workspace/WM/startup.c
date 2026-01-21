@@ -460,7 +460,7 @@ static void _initializeAtoms(void)
   w_global.atom.wmaker.state = XInternAtom(dpy, "_WINDOWMAKER_STATE", False);
   w_global.atom.wmaker.wm_protocols = XInternAtom(dpy, "_WINDOWMAKER_WM_PROTOCOLS", False);
   w_global.atom.wmaker.wm_function = XInternAtom(dpy, "_WINDOWMAKER_WM_FUNCTION", False);
-  w_global.atom.wmaker.noticeboard = XInternAtom(dpy, "_WINDOWMAKER_NOTICEBOARD", False);
+  // w_global.atom.wmaker.noticeboard = XInternAtom(dpy, "_WINDOWMAKER_NOTICEBOARD", False);
   w_global.atom.wmaker.command = XInternAtom(dpy, "_WINDOWMAKER_COMMAND", False);
   w_global.atom.wmaker.icon_size = XInternAtom(dpy, "_WINDOWMAKER_ICON_SIZE", False);
   w_global.atom.wmaker.icon_tile = XInternAtom(dpy, "_WINDOWMAKER_ICON_TILE", False);

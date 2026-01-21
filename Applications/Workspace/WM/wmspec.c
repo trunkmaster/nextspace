@@ -394,7 +394,7 @@ int wNETWMGetCurrentDesktopFromHint(WScreen *scr)
   int count;
   unsigned char *prop;
 
-  prop = PropGetCheckProperty(scr->root_win, net_current_desktop, XA_CARDINAL, 0, 1, &count);
+  prop = wPropertiesGetWindowProperty(scr->root_win, net_current_desktop, XA_CARDINAL, 0, 1, &count);
   if (prop) {
     int desktop = *(long *)prop;
     XFree(prop);
@@ -1790,7 +1790,7 @@ char *wNETWMGetWindowName(Window window)
   char *ret;
   int size;
 
-  name = (char *)PropGetCheckProperty(window, net_wm_name, utf8_string, 0, 0, &size);
+  name = (char *)wPropertiesGetWindowProperty(window, net_wm_name, utf8_string, 0, 0, &size);
   if (name) {
     ret = wstrndup(name, size);
     XFree(name);
@@ -1807,7 +1807,7 @@ char *wNETWMGetIconName(Window window)
   char *ret;
   int size;
 
-  name = (char *)PropGetCheckProperty(window, net_wm_icon_name, utf8_string, 0, 0, &size);
+  name = (char *)wPropertiesGetWindowProperty(window, net_wm_icon_name, utf8_string, 0, 0, &size);
   if (name) {
     ret = wstrndup(name, size);
     XFree(name);
@@ -1824,7 +1824,7 @@ void wNETRequestFrameExtents(Window window, WScreen *scr)
   GNUstepWMAttributes *gs_attrs;
   Bool has_border = False, has_titlebar = False, has_resizebar = False;
 
-  if (!PropGetGNUstepWMAttr(window, &gs_attrs)) {
+  if (!wPropertiesGetGNUstepWMAttr(window, &gs_attrs)) {
     Atom type_ret;
     int fmt_ret;
     unsigned long nitems_ret, bytes_after_ret;

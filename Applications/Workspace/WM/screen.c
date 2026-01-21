@@ -254,7 +254,7 @@ static Bool replace_existing_wm(WScreen *scr)
 
   /* for our window manager info notice board and the selection owner */
   scr->info_window = XCreateSimpleWindow(dpy, scr->root_win, 0, 0, 10, 10, 0, 0, 0);
-  PropSetWMName(scr, "WorkspaceManager", "NextSpace");
+  wPropertiesSetWMName(scr, "WorkspaceManager", "NextSpace");
 
 #ifdef USE_ICCCM_WMREPLACE
   /* Try to acquire the selection */
@@ -837,13 +837,13 @@ WScreen *wScreenInit(int screen_number)
   XSetIconSizes(dpy, scr->root_win, icon_size, 1);
 
   /* setup WM protocols property in the root window */
-  PropSetWMakerProtocols(scr->root_win);
+  wPropertiesSetWMakerProtocols(scr->root_win);
 
   /* setup our noticeboard */
-  XChangeProperty(dpy, scr->info_window, w_global.atom.wmaker.noticeboard, XA_WINDOW, 32,
-                  PropModeReplace, (unsigned char *)&scr->info_window, 1);
-  XChangeProperty(dpy, scr->root_win, w_global.atom.wmaker.noticeboard, XA_WINDOW, 32,
-                  PropModeReplace, (unsigned char *)&scr->info_window, 1);
+  // XChangeProperty(dpy, scr->info_window, w_global.atom.wmaker.noticeboard, XA_WINDOW, 32,
+  //                 PropModeReplace, (unsigned char *)&scr->info_window, 1);
+  // XChangeProperty(dpy, scr->root_win, w_global.atom.wmaker.noticeboard, XA_WINDOW, 32,
+  //                 PropModeReplace, (unsigned char *)&scr->info_window, 1);
 
 #ifdef BALLOON_TEXT
   /* initialize balloon text stuff */

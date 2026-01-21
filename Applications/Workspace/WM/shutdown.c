@@ -112,7 +112,7 @@ void wShutdown(WMShutdownMode mode)
 
       wScreenSaveState(scr);
       wNETWMCleanup(scr);         /* Delete _NET_* Atoms */
-      PropCleanUp(scr->root_win); /* WM specific properties */
+      wPropertiesCleanUp(scr->root_win); /* WM specific properties */
       XDeleteProperty(dpy, scr->root_win, XInternAtom(dpy, "_XROOTPMAP_ID", False));
       RShutdown();                /* wraster clean exit */
 #if HAVE_SYSLOG_H
@@ -187,7 +187,7 @@ void wRestoreDesktop(WScreen *scr)
   XUngrabServer(dpy);
   XSetInputFocus(dpy, PointerRoot, RevertToParent, CurrentTime);
   wColormapInstallForWindow(scr, NULL);
-  PropCleanUp(scr->root_win);
+  wPropertiesCleanUp(scr->root_win);
   wNETWMCleanup(scr);
   XSync(dpy, 0);
 }

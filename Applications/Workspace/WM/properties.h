@@ -27,21 +27,21 @@
 #include "GNUstep.h"
 #include "window.h"
 
-unsigned char *PropGetCheckProperty(Window window, Atom hint, Atom type, int format, int count,
+unsigned char *wPropertiesGetWindowProperty(Window window, Atom hint, Atom type, int format, int count,
                                     int *retCount);
 
-int PropGetWindowState(Window window);
+int wPropertiesGetWindowState(Window window);
 
-int PropGetNormalHints(Window window, XSizeHints *size_hints, int *pre_iccm);
-void PropGetProtocols(Window window, WProtocols *prots);
-int PropGetWMClass(Window window, char **wm_class, char **wm_instance);
-int PropGetGNUstepWMAttr(Window window, GNUstepWMAttributes **attr);
+int wPropertiesGetNormalHints(Window window, XSizeHints *size_hints, int *pre_iccm);
+void wPropGetProtocols(Window window, WProtocols *prots);
+int wPropertiesGetWMClass(Window window, char **wm_class, char **wm_instance);
+int wPropertiesGetGNUstepWMAttr(Window window, GNUstepWMAttributes **attr);
 
-void PropSetWMakerProtocols(Window root);
-void PropCleanUp(Window root);
-void PropSetWMName(WScreen *scr, char *name, char *class);
+void wPropertiesSetWMakerProtocols(Window root);
+void wPropertiesCleanUp(Window root);
+void wPropertiesSetWMName(WScreen *scr, char *name, char *class);
 // void PropSetIconTileHint(WScreen *scr, RImage *image);
 
-Window PropGetClientLeader(Window window);
+Window wPropertiesGetClientLeader(Window window);
 
 #endif /* __WORKSPACE_WM_PROPERTIES__ */
