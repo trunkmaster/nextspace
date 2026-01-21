@@ -8,7 +8,7 @@ Version:	0.95
 Release:	12%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
-URL:		http://github.com/trunkmaster/nextspace
+URL:		  http://github.com/trunkmaster/nextspace
 Source0:	nextspace-os_files-%{version}.tar.gz
 Source1:	https://github.com/gnustep/tools-make/archive/make-%{MAKE_VERSION}.tar.gz
 Source2:	nextspace.fsl
@@ -88,7 +88,7 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 
 %files 
 /.hidden
-/Library
+/Library/Preferences/GNUstep.conf
 /Users
 /etc/ld.so.conf.d/nextspace.conf
 /etc/profile.d/nextspace.sh
