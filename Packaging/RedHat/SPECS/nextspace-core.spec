@@ -88,7 +88,7 @@ mkdir -p %{buildroot}/usr/NextSpace/etc
 
 %files 
 /.hidden
-/Library/Preferences/GNUstep.conf
+/Library
 /Users
 /etc/ld.so.conf.d/nextspace.conf
 /etc/profile.d/nextspace.sh

@@ -258,6 +258,7 @@ cd ..
 cp -f %{buildroot}/Library/Themes/NextSpace.theme/Resources/ThemeImages/common_Tile.tiff %{buildroot}/Library/Images
 
 # Put global defaults on place
+mkdir -p %{buildroot}/Library/Preferences
 cp %{_sourcedir}/GlobalDefaults.plist %{buildroot}/Library/Preferences
 
 # Replace cursor images
