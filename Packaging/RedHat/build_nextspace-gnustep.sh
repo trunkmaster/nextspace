@@ -22,6 +22,7 @@ cp ${PROJECT_DIR}/Libraries/gnustep/projectcenter-images.tar.gz ${RPM_SOURCES_DI
 cp ${PROJECT_DIR}/Libraries/gnustep/pc.patch ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/gorm.patch ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/gnustep/libs-gui_* ${RPM_SOURCES_DIR}
+cp ${PROJECT_DIR}/Libraries/gnustep/GlobalDefaults.plist ${RPM_SOURCES_DIR}
 #cp ${PROJECT_DIR}/Libraries/gnustep/gnustep-gui-images.tar.gz ${RPM_SOURCES_DIR}
 
 print_H1 " Preparing GNUstep Back..."
