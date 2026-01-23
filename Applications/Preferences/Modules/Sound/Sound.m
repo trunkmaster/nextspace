@@ -68,9 +68,8 @@
     [defaults setObject:defaultSound forKey:@"NXSystemBeep"];
   }
 
-  soundsList = [[NSDictionary alloc]
-                 initWithDictionary:[self loadSoundList]];
-      
+  soundsList = [[NSDictionary alloc] initWithDictionary:[self loadSoundList]];
+
   return self;
 }
 
@@ -104,18 +103,17 @@
 - (void)awakeFromNib
 {
   NSString *beepType;
-  
+
   [view retain];
   [window release];
 
   // 1. Connect to PulseAudio on locahost
   soundServer = [SNDServer sharedServer];
   // 2. Wait for server to be ready
-  [[NSNotificationCenter defaultCenter]
-    addObserver:self
-       selector:@selector(serverStateChanged:)
-           name:SNDServerStateDidChangeNotification
-         object:soundServer];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(serverStateChanged:)
+                                               name:SNDServerStateDidChangeNotification
+                                             object:soundServer];
   // 3. Create connection to PulseAudio server
   if (soundServer.status == SNDServerNoConnnectionState) {
     [soundServer connect];
@@ -125,14 +123,13 @@
   [beepBrowser loadColumnZero];
   if (defSoundRow >= 0) {
     [beepBrowser selectRow:defSoundRow inColumn:0];
-    [beepBrowser scrollRowToVisible:defSoundRow+3 inColumn:0];
+    [beepBrowser scrollRowToVisible:defSoundRow + 3 inColumn:0];
   }
 
   [[beepAudioRadio cellWithTag:0] setRefusesFirstResponder:YES];
   [[beepAudioRadio cellWithTag:1] setRefusesFirstResponder:YES];
   beepType = [defaults objectForKey:@"NXSystemBeepType"];
-  [beepAudioRadio
-    selectCellWithTag:([beepType isEqualToString:@"Audio"] == NO)];
+  [beepAudioRadio selectCellWithTag:([beepType isEqualToString:@"Audio"] == NO)];
 }
 
 // --- Protocol
@@ -163,11 +160,14 @@
                              soundServer.name, soundServer.version,
                              soundServer.userName, soundServer.hostName];
   [soundInfo setStringValue:info];
+
   if (soundOut) {
     [muteButton setEnabled:YES];
     [volumeLevel setEnabled:YES];
     [volumeBalance setEnabled:YES];
     [muteButton setState:[soundOut isMute]];
+    NSLog(@"soundOut volume: %lu", [soundOut volume]);
+    // [soundOut printDescription];
     [volumeLevel setIntegerValue:[soundOut volume]];
     [volumeBalance setFloatValue:[soundOut balance]];
   }
@@ -202,12 +202,14 @@
   if (soundServer.status == SNDServerReadyState) {
     soundOut = [[soundServer defaultOutput] retain];
     soundIn = [[soundServer defaultInput] retain];
-    
+
     if (soundOut) {
-      [volumeLevel setMaxValue:[soundOut volumeSteps]-1];
+      [volumeLevel setMaxValue:PA_VOLUME_NORM];
+      [volumeLevel setIntValue:soundOut.volume];
     }
     if (soundIn) {
-      [micLevel setMaxValue:[soundIn volumeSteps]-1];
+      [micLevel setMaxValue:PA_VOLUME_NORM];
+      [micLevel setIntValue:soundIn.volume];
     }
     [[NSNotificationCenter defaultCenter]
         addObserver:self
