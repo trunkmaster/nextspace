@@ -126,6 +126,8 @@ int WSApplicationMain(int argc, const char **argv)
 
 int main(int argc, const char **argv)
 {
+  OSEDefaults *defs;
+
   if (_isWindowServerReady() == NO) {
     fprintf(stderr, "[Workspace] X Window server is not ready on display '%s'\n",
             getenv("DISPLAY"));
@@ -138,14 +140,15 @@ int main(int argc, const char **argv)
   }
 
   fprintf(stderr, "=== Starting Workspace ===\n");
+  defs = [[OSEDefaults alloc] initDefaultsWithPath:NSUserDomainMask domain:@"Workspace"];
   workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
-  dispatch_sync(workspace_q, ^{
-    @autoreleasepool {
+  if ([defs boolForKey:@"RestoreDisplayLayout"] != NO) {
+    dispatch_sync(workspace_q, ^{
       // Restore display layout
       OSEScreen *screen = [OSEScreen sharedScreen];
       [screen applySavedDisplayLayout];
-    }
-  });
+    });
+  }
   {
     // DISPATCH_QUEUE_CONCURRENT is mandatory for CFRunLoop run.
     dispatch_queue_t window_manager_q = dispatch_queue_create("ns.workspace.wm",
@@ -162,8 +165,6 @@ int main(int argc, const char **argv)
     fprintf(stderr, "=== Window Manager initialized! ===\n");
 
     //--- Composer
-    OSEDefaults *defs = [[OSEDefaults alloc] initDefaultsWithPath:NSUserDomainMask
-                                                           domain:@"Workspace"];
     if ([defs boolForKey:@"ComposerEnabled"] != NO) {
       dispatch_queue_t composer_q = dispatch_queue_create("ns.workspace.composer", DISPATCH_QUEUE_CONCURRENT);
       dispatch_async(composer_q, ^{
