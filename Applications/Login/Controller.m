@@ -145,6 +145,7 @@ LoginExitCode panelExitCode;
   // Session will be restarted in GCD queue (openSessionForUser:)
   if (session.isRunning == NO) {
     [userSessions removeObjectForKey:session.userName];
+    pam_close_session(PAM_handle, 0);
     pam_end(PAM_handle, 0);
 
     // TODO: actually this doesn't make sense because no multiple session handling
@@ -454,6 +455,9 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
     return NO;
   }
 
+  pam_putenv(PAM_handle, "XDG_SESSION_TYPE=x11");
+  pam_putenv(PAM_handle, "XDG_SESSION_CLASS=user");
+
   NS_DURING
   {
     [self authenticateWithHandle:PAM_handle];
@@ -525,6 +529,12 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
     NSLog(@"PAM: Failed to open PAM session.");
     [NSException raise:PAMSessionOpeningException format:nil];
   }
+  int i;
+  char **pam_env = pam_getenvlist(handle);
+  for (i = 0; pam_env && pam_env[i]; i++) {
+    NSLog(@"PAM env[%i]: %s", i, pam_env[i]);
+    putenv(pam_env[i]);
+  };
 }
 
 @end
