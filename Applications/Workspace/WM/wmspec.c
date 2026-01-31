@@ -227,7 +227,7 @@ static atomitem_t atomNames[] = {
 #define _NET_WM_STATE_ADD 1
 #define _NET_WM_STATE_TOGGLE 2
 
-#if 0
+#if 1
 /*
  * These constant provide information on the kind of window move/resize when
  * it is initiated by the application instead of by WindowMaker. They are
@@ -235,13 +235,6 @@ static atomitem_t atomNames[] = {
  * FreeDesktop wm-spec standard:
  *   http://standards.freedesktop.org/wm-spec/1.5/ar01s04.html
  *
- * Today, WindowMaker does not support this at all (the corresponding Atom
- * is not added to the list in setSupportedHints), probably because there is
- * nothing it needs to do about it, the application is assumed to know what
- * it is doing, and WindowMaker won't get in the way.
- *
- * The definition of the constants (taken from the standard) are disabled to
- * avoid a spurious warning (-Wunused-macros).
  */
 #define _NET_WM_MOVERESIZE_SIZE_TOPLEFT 0
 #define _NET_WM_MOVERESIZE_SIZE_TOP 1
@@ -254,6 +247,7 @@ static atomitem_t atomNames[] = {
 #define _NET_WM_MOVERESIZE_MOVE 8           /* movement only */
 #define _NET_WM_MOVERESIZE_SIZE_KEYBOARD 9  /* size via keyboard */
 #define _NET_WM_MOVERESIZE_MOVE_KEYBOARD 10 /* move via keyboard */
+#define _NET_WM_MOVERESIZE_CANCEL 11        /* cancel operation */
 #endif
 
 static void windowObserver(CFNotificationCenterRef center, void *observer, CFNotificationName name,
@@ -512,6 +506,12 @@ static void updateIconImage(WWindow *wwin)
 
   /* Save the icon in the X11 icon */
   wwin->net_icon_image = get_window_image_from_x11(wwin->client_win);
+  if (wwin->net_icon_image) {
+    fprintf(stderr, "%s: window %s icon size: %i x %i\n", __func__, wwin->wm_class,
+            wwin->net_icon_image->width, wwin->net_icon_image->height);
+  } else {
+    fprintf(stderr, "%s: window %s has no icon.\n", __func__, wwin->wm_class);
+  }
 
   /* Refresh the Window Icon */
   if (wwin->icon)
@@ -1724,6 +1724,74 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
       wWindowChangeDesktop(wwin, desktop);
     }
     return True;
+  }
+
+  /*
+      Move and resize
+   */
+  if (event->message_type == net_moveresize_window) {
+    // _NET_MOVERESIZE_WINDOW
+    //   window = window to be moved or resized
+    //   message_type = _NET_MOVERESIZE_WINDOW
+    //   format = 32
+    //   data.l[0] = gravity and flags
+    //   data.l[1] = x
+    //   data.l[2] = y
+    //   data.l[3] = width
+    //   data.l[4] = height
+    fprintf(stderr, "%s: _NET_MOVERESIZE_WINDOW: %li, %li | %li x %li\n", __func__, event->data.l[1],
+            event->data.l[2], event->data.l[3], event->data.l[4]);
+  } else if (event->message_type == net_wm_moveresize) {
+    // _NET_WM_MOVERESIZE
+    //   window = window to be moved or resized
+    //   message_type = _NET_WM_MOVERESIZE
+    //   format = 32
+    //   data.l[0] = x_root
+    //   data.l[1] = y_root
+    //   data.l[2] = direction
+    //   data.l[3] = button
+    //   data.l[4] = source indication
+    fprintf(
+        stderr,
+        "%s: _NET_WM_MOVERESIZE: %li, %li | direction: %li, button: %li, source direction: %li\n",
+        __func__, event->data.l[0], event->data.l[1], event->data.l[2], event->data.l[3],
+        event->data.l[4]);
+
+    WWindow *wwin = NULL;
+    XEvent x_event;
+    x_event.xmotion.x_root = event->data.l[0];
+    x_event.xmotion.y_root = event->data.l[1];
+    x_event.xmotion.window = event->window;
+    x_event.xbutton.button = Button1;
+
+    switch (event->data.l[2]) {               // direction
+      case _NET_WM_MOVERESIZE_SIZE_TOPLEFT:   // usupported by design
+      case _NET_WM_MOVERESIZE_SIZE_TOP:       // usupported by design
+      case _NET_WM_MOVERESIZE_SIZE_TOPRIGHT:  // usupported by design
+        break;
+      case _NET_WM_MOVERESIZE_MOVE:  // move only - titlebar
+        wwin = wWindowFor(event->window);
+        if (wwin &&
+            XGrabPointer(dpy, event->window, False,
+                         ButtonMotionMask | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
+                         GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
+          wMouseMoveWindow(wwin, &x_event);
+          XUngrabPointer(dpy, CurrentTime);
+        } else {
+          fprintf(stderr, "%s: window is not found for _NET_WM_MOVERESIZE_MOVE!\n", __func__);
+        }
+        break;
+      case _NET_WM_MOVERESIZE_SIZE_RIGHT:
+        break;
+      case _NET_WM_MOVERESIZE_SIZE_BOTTOMRIGHT:
+        break;
+      case _NET_WM_MOVERESIZE_SIZE_BOTTOM:
+        break;
+      case _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT:
+        break;
+      case _NET_WM_MOVERESIZE_SIZE_LEFT:
+        break;
+    }
   }
 
   return False;
