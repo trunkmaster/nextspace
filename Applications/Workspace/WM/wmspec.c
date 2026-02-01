@@ -505,12 +505,6 @@ static void updateIconImage(WWindow *wwin)
 
   /* Save the icon in the X11 icon */
   wwin->net_icon_image = get_window_image_from_x11(wwin->client_win);
-  if (wwin->net_icon_image) {
-    fprintf(stderr, "%s: window %s icon size: %i x %i\n", __func__, wwin->wm_class,
-            wwin->net_icon_image->width, wwin->net_icon_image->height);
-  } else {
-    fprintf(stderr, "%s: window %s has no icon.\n", __func__, wwin->wm_class);
-  }
 
   /* Refresh the Window Icon */
   if (wwin->icon)
