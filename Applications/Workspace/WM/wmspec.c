@@ -471,9 +471,9 @@ RImage *get_window_image_from_x11(Window window)
 
   /* Get the icon from X11 Window */
   if (XGetWindowProperty(dpy, window, net_wm_icon, 0L, LONG_MAX, False, XA_CARDINAL, &type, &format,
-                         &items, &rest, (unsigned char **)&property) != Success ||
-      !property)
+                         &items, &rest, (unsigned char **)&property) != Success || !property) {
     return NULL;
+  }
 
   if (type != XA_CARDINAL || format != 32 || items < 2) {
     XFree(property);
@@ -483,8 +483,7 @@ RImage *get_window_image_from_x11(Window window)
   /* Find the best icon */
   data = findBestIcon(property, items);
   if (!data) {
-    XFree(property);
-    return NULL;
+    data = &property[0];
   }
 
   /* Save the best icon in the X11 icon */
@@ -493,7 +492,7 @@ RImage *get_window_image_from_x11(Window window)
   XFree(property);
 
   /* Resize the image to the correct value */
-  image = wIconValidateIconSize(image, wPreferences.icon_size);
+  image = wIconValidateIconSize(image, wPreferences.icon_size * 0.80);
 
   return image;
 }
