@@ -15,7 +15,7 @@ export INFOPATH="$HOME/Library/Documentation/info:/Library/Documentation/info:/u
 # Localization
 #
 # Initialize time zone to system time zone, but only if not yet set.
-if [ -x /Library/bin/defautls ];then
+if [ -x /Library/bin/defaults ];then
     defaults read NSGlobalDomain "Local Time Zone" 2>&1 > /dev/null
     if [ $? -ne 0 ]; then
         echo "Updating 'Local Time Zone' preference..."
