@@ -79,6 +79,9 @@ static NSLock *browserLock = nil;
 {
   [cardDescription setTextColor:[NSColor darkGrayColor]];
   [window setFrameAutosaveName:@"Mixer"];
+
+  [appVolumeSlider setMaxValue:PA_VOLUME_NORM];
+  [deviceVolumeSlider setMaxValue:PA_VOLUME_NORM];
   
   [[NSNotificationCenter defaultCenter]
     addObserver:self
