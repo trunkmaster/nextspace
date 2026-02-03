@@ -47,6 +47,6 @@ char *wNETWMGetWindowName(Window window);
 void wNETRequestFrameExtents(Window window, WScreen *scr);
 void wNETFrameExtents(WWindow *wwin);
 void wNETCleanupFrameExtents(WWindow *wwin);
-RImage *get_window_image_from_x11(Window window);
+RImage *wNETWMImageFromWindow(Window window);
 
 #endif /* __WORKSPACE_WM_WMSPEC__ */

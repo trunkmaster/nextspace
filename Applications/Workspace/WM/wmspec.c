@@ -468,8 +468,7 @@ static RImage *makeRImageFromARGBData(unsigned long *data)
   return image;
 }
 
-// wNETWMMImageFromWindow(Window window)
-RImage *get_window_image_from_x11(Window window)
+RImage *wNETWMImageFromWindow(Window window)
 {
   RImage *image;
   Atom type;
@@ -512,7 +511,7 @@ static void updateIconImage(WWindow *wwin)
     RReleaseImage(wwin->net_icon_image);
 
   /* Save the icon in the X11 icon */
-  wwin->net_icon_image = get_window_image_from_x11(wwin->client_win);
+  wwin->net_icon_image = wNETWMImageFromWindow(wwin->client_win);
 
   /* Refresh the Window Icon */
   if (wwin->icon)
@@ -523,7 +522,7 @@ static void updateIconImage(WWindow *wwin)
   if (app && app->app_icon) {
     WWindow *app_owner = app->app_icon->icon->owner;
     if (app_owner && !app_owner->net_icon_image) {
-      app_owner->net_icon_image = get_window_image_from_x11(wwin->client_win);
+      app_owner->net_icon_image = wNETWMImageFromWindow(wwin->client_win);
       wIconUpdate(app->app_icon->icon);
       wAppIconPaint(app->app_icon);
     }

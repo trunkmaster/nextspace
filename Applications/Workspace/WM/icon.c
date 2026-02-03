@@ -731,7 +731,7 @@ static void get_rimage_icon_from_icon_win(WIcon *icon)
   RImage *image;
 
   /* Create the new RImage */
-  image = get_window_image_from_x11(icon->icon_win);
+  image = wNETWMImageFromWindow(icon->icon_win);
 
   /* Free the icon info */
   unset_icon_image(icon);
