@@ -410,23 +410,30 @@ int wNETWMGetCurrentDesktopFromHint(WScreen *scr)
  */
 static unsigned long *findBestIcon(unsigned long *data, unsigned long items)
 {
-  int size, wanted, d;
+  int width, height, size;
+  int wanted_width, wanted_height, wanted_size;
   unsigned long i, distance;
-  unsigned long *icon;
+  unsigned long *icon = NULL;
 
   /* Use only 75% of icon_size. For 64x64 this means 48x48.
    * This leaves room around the icon for the miniwindow title and
    * results in better overall aesthetics -Dan */
-  wanted = (wPreferences.icon_size * 0.75) * (wPreferences.icon_size * 0.75);
+  wanted_width = wanted_height = wPreferences.icon_size * 0.75;
+  distance = wanted_size = wanted_width * wanted_height;
 
-  for (icon = NULL, distance = wanted, i = 0L; i < items - 1;) {
-    size = data[i] * data[i + 1];
-    if (size == 0)
+  for (i = 0L; i < items - 1;) {
+    width = data[i];
+    height = data[i + 1];
+    size = width * height;
+    if (size == 0) {
       break;
-    d = wanted - size;
-    if (d >= 0 && d <= distance && (i + size + 2) <= items) {
-      distance = d;
+    }
+    distance = abs(wanted_size - size);
+    if (distance >= 0 && (i + size + 2) <= items) {
       icon = &data[i];
+    }
+    if (width >= wanted_height || height >= wanted_height) {
+      break;
     }
     i += size + 2;
   }
@@ -461,6 +468,7 @@ static RImage *makeRImageFromARGBData(unsigned long *data)
   return image;
 }
 
+// wNETWMMImageFromWindow(Window window)
 RImage *get_window_image_from_x11(Window window)
 {
   RImage *image;
@@ -492,7 +500,7 @@ RImage *get_window_image_from_x11(Window window)
   XFree(property);
 
   /* Resize the image to the correct value */
-  image = wIconValidateIconSize(image, wPreferences.icon_size * 0.80);
+  image = wIconValidateIconSize(image, wPreferences.icon_size * 0.75);
 
   return image;
 }
