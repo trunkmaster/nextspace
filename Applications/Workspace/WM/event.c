@@ -113,7 +113,7 @@ static void handleMotionNotify(XEvent *event);
 static void handleVisibilityNotify(XEvent *event);
 static void handle_selection_request(XSelectionRequestEvent *event);
 static void handle_selection_clear(XSelectionClearEvent *event);
-static void wdelete_death_handler(WMagicNumber id);
+static void _deleteDeathHandler(WMagicNumber id);
 
 #ifdef USE_XSHAPE
 static void handleShapeNotify(XEvent *event);
@@ -164,7 +164,7 @@ WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler *callback, void *cdata)
   return handler;
 }
 
-static void wdelete_death_handler(WMagicNumber id)
+static void _deleteDeathHandler(WMagicNumber id)
 {
   DeathHandler *handler = (DeathHandler *)id;
   CFIndex idx;
@@ -476,9 +476,25 @@ static void handleDeadProcess(void)
 
       if (tmp->pid == deadProcesses[deadProcessPtr].pid) {
         (*tmp->callback)(tmp->pid, deadProcesses[deadProcessPtr].exit_status, tmp->client_data);
-        wdelete_death_handler(tmp);
+        _deleteDeathHandler(tmp);
       }
     }
+  }
+
+  // Check for other processes which have registered death handlers.
+  if (deathHandlers) {
+    for (i = CFArrayGetCount(deathHandlers) - 1; i >= 0; i--) {
+      tmp = (DeathHandler *)CFArrayGetValueAtIndex(deathHandlers, i);
+      if (!tmp) {
+        continue;
+      }
+      CFLog(kCFLogLevelInfo, CFSTR("%s: check if process %i exists."), __func__, tmp->pid);
+      if (kill(tmp->pid, 0) != 0) {
+        (*tmp->callback)(tmp->pid, 0, tmp->client_data);
+        _deleteDeathHandler(tmp);
+      }
+    }
+    return;
   }
 }
 

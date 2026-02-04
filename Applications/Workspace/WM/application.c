@@ -52,6 +52,9 @@
 #include "appmenu.h"
 #include "stacking.h"
 
+#include "wmspec.h"
+#include "event.h"
+
 #include <Workspace+WM.h>
 
 /******** Notification observers ********/
@@ -330,6 +333,16 @@ void wApplicationSwitchWindow(WWindow *wwin, Bool forward)
     }
 }
 
+static void _applicationProcessHandler(pid_t pid, unsigned int status, void *client_data)
+{
+  WApplication *wapp = (WApplication *)client_data;
+  
+  CFLog(kCFLogLevelInfo, CFSTR("%s: application PID == %i"), __func__, pid);
+
+  wApplicationDestroy(wapp);
+}
+
+
 WApplication *wApplicationCreate(WWindow *wwin)
 {
   WScreen *scr = wwin->screen;
@@ -355,8 +368,8 @@ WApplication *wApplicationCreate(WWindow *wwin)
     return wapp;
   }
 
-  WMLogInfo("CREATE for window: %lu level:%i name: %s", wwin->client_win, WINDOW_LEVEL(wwin),
-            wwin->wm_instance);
+  WMLogInfo("CREATE for window: %lu main_window: %lu level:%i name: %s", wwin->client_win,
+            main_window, WINDOW_LEVEL(wwin), wwin->wm_instance);
 
   wapp = wmalloc(sizeof(WApplication));
 
@@ -402,14 +415,26 @@ WApplication *wApplicationCreate(WWindow *wwin)
 
   create_appicon_for_application(wapp, wwin);
 
-  /* Application menu */
+  /* Application menu and death handler */
   if (!wapp->flags.is_gnustep) {
+    // Application menu
     wapp->app_menu = wApplicationMenuCreate(scr, wapp);
     wapp->appState = (CFMutableDictionaryRef)WMUserDefaultsRead(wapp->appName, false);
     if (wapp->appState) {
       CFRetain(wapp->appState);
       wapp->menus_state =
           (CFMutableArrayRef)CFDictionaryGetValue(wapp->appState, CFSTR("MenusState"));
+    }
+    // Death handler
+    // Some applications doesn't destroy main window after exit - for example Steam Client.
+    int pid = wNETWMGetPidForWindow(wwin->client_win);
+    if (pid > 0) {
+      wAddDeathHandler(wNETWMGetPidForWindow(wwin->client_win), _applicationProcessHandler, wapp);
+      CFLog(kCFLogLevelInfo,
+            CFSTR("%s: Created death handler for X11 application PID == %i"), __func__, pid);
+    } else {
+      CFLog(kCFLogLevelWarning,
+            CFSTR("%s: Failed to add death handler for X11 application. PID == %i"), __func__, pid);
     }
   }
 
