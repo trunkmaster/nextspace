@@ -496,15 +496,14 @@ void wApplicationDestroy(WApplication *wapp)
   WWindow *wwin;
   WScreen *scr;
 
-  if (!wapp)
+  if (!wapp || wapp->refcount != 1) {
     return;
+  }
+  
+  wapp->refcount--;
 
   WMLogInfo("DESTROY main window:%lu name:%s windows #:%li refcount:%i", wapp->main_window,
             wapp->app_icon->wm_instance, CFArrayGetCount(wapp->windows), wapp->refcount);
-
-  wapp->refcount--;
-  if (wapp->refcount > 0)
-    return;
 
   scr = wapp->main_wwin->screen;
   
