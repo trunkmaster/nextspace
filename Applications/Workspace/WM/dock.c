@@ -2823,7 +2823,7 @@ static pid_t execCommand(WAppIcon *btn, const char *command, WSavedState *state)
     }
     wWindowAddSavedState(btn->wm_instance, btn->wm_class, cmdline, pid, state);
     if (strcmp(btn->wm_class, "GNUstep")) {
-      wAddDeathHandler(pid, (WDeathHandler *)trackDeadProcess, btn->dock);
+      wAddExitHandler(pid, (WExitHandler *)trackDeadProcess, btn->dock);
     }
   } else if (state) {
     wfree(state);

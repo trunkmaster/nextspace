@@ -33,7 +33,8 @@
 #include <stdnoreturn.h>
 #endif
 
-typedef void(WDeathHandler)(pid_t pid, unsigned int status, void *cdata);
+typedef void(WExitHandler)(pid_t pid, unsigned int status, void *cdata);
+WMagicNumber wAddExitHandler(pid_t pid, WExitHandler *callback, void *cdata);
 
 void WMRunLoop_V0(void);
 void WMRunLoop_V1(void);
@@ -41,10 +42,9 @@ void WMRunLoop_V1(void);
 void DispatchEvent(XEvent *event);
 void ProcessPendingEvents(void);
 
-WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler *callback, void *cdata);
 Bool IsDoubleClick(WScreen *scr, XEvent *event);
 
 /* called from the signal handler */
-void NotifyDeadProcess(pid_t pid, unsigned char status);
+// void NotifyDeadProcess(pid_t pid, unsigned char status);
 
 #endif /* __WORKSPACE_WM_EVENT__ */

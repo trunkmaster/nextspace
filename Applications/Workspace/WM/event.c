@@ -116,7 +116,6 @@ static void _handleMotionNotify(XEvent *event);
 static void _handleVisibilityNotify(XEvent *event);
 static void _handleSelectionRequest(XSelectionRequestEvent *event);
 static void _handleSelectionClear(XSelectionClearEvent *event);
-static void _deleteDeathHandler(WMagicNumber id);
 
 #ifdef USE_XSHAPE
 static void _handleShapeNotify(XEvent *event);
@@ -130,30 +129,31 @@ static void _handleXkbStateNotify(XkbEvent *event);
 #pragma mark - Processes
 
 /* real dead process handler */
-static void handleDeadProcess(void);
+static void _handleApplicationProcess(void);
+static void _deleteExitHandler(WMagicNumber id);
 
-typedef struct DeadProcesses {
-  pid_t pid;
-  unsigned char exit_status;
-} DeadProcesses;
+// typedef struct DeadProcesses {
+//   pid_t pid;
+//   unsigned char exit_status;
+// } DeadProcesses;
 
 /* stack of dead processes */
-static DeadProcesses deadProcesses[MAX_DEAD_PROCESSES];
-static int deadProcessPtr = 0;
+// static DeadProcesses deadProcesses[MAX_DEAD_PROCESSES];
+// static int deadProcessPtr = 0;
 
-typedef struct DeathHandler {
-  WDeathHandler *callback;
+typedef struct ExitHandler {
+  WExitHandler *callback;
   pid_t pid;
   void *client_data;
-} DeathHandler;
+} AppExitHandler;
 
-static CFMutableArrayRef deathHandlers = NULL;
+static CFMutableArrayRef appExitHandlers = NULL;
 
-WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler *callback, void *cdata)
+WMagicNumber wAddExitHandler(pid_t pid, WExitHandler *callback, void *cdata)
 {
-  DeathHandler *handler;
+  AppExitHandler *handler;
 
-  handler = malloc(sizeof(DeathHandler));
+  handler = malloc(sizeof(AppExitHandler));
   if (!handler)
     return 0;
 
@@ -161,56 +161,57 @@ WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler *callback, void *cdata)
   handler->callback = callback;
   handler->client_data = cdata;
 
-  if (!deathHandlers)
-    deathHandlers = CFArrayCreateMutable(kCFAllocatorDefault, 8, NULL);
+  if (!appExitHandlers)
+    appExitHandlers = CFArrayCreateMutable(kCFAllocatorDefault, 8, NULL);
 
-  CFArrayAppendValue(deathHandlers, handler);
+  CFArrayAppendValue(appExitHandlers, handler);
 
   return handler;
 }
 
-static void _deleteDeathHandler(WMagicNumber id)
+static void _deleteExitHandler(WMagicNumber id)
 {
-  DeathHandler *handler = (DeathHandler *)id;
+  AppExitHandler *handler = (AppExitHandler *)id;
   CFIndex idx;
 
-  if (!handler || !deathHandlers)
+  if (!handler || !appExitHandlers)
     return;
 
-  idx = CFArrayGetFirstIndexOfValue(deathHandlers, CFRangeMake(0, CFArrayGetCount(deathHandlers)),
+  idx = CFArrayGetFirstIndexOfValue(appExitHandlers, CFRangeMake(0, CFArrayGetCount(appExitHandlers)),
                                     handler);
   if (idx != kCFNotFound) {
-    CFArrayRemoveValueAtIndex(deathHandlers, idx);
+    CFArrayRemoveValueAtIndex(appExitHandlers, idx);
     free(handler);
   }
 }
 
-void NotifyDeadProcess(pid_t pid, unsigned char status)
-{
-  if (deadProcessPtr >= MAX_DEAD_PROCESSES - 1) {
-    WMLogWarning("stack overflow: too many dead processes");
-    return;
-  }
-  /* stack the process to be handled later,
-   * as this is called from the signal handler */
-  deadProcesses[deadProcessPtr].pid = pid;
-  deadProcesses[deadProcessPtr].exit_status = status;
-  deadProcessPtr++;
-}
+// void NotifyDeadProcess(pid_t pid, unsigned char status)
+// {
+//   CFLog(kCFLogLevelInfo, CFSTR("%s: PID == %i, exit status == %c"), __func__, pid, status);
+//   // if (deadProcessPtr >= MAX_DEAD_PROCESSES - 1) {
+//   //   WMLogWarning("stack overflow: too many dead processes");
+//   //   return;
+//   // }
+//   // /* stack the process to be handled later,
+//   //  * as this is called from the signal handler */
+//   // deadProcesses[deadProcessPtr].pid = pid;
+//   // deadProcesses[deadProcessPtr].exit_status = status;
+//   // deadProcessPtr++;
+// }
 
-static void handleDeadProcess(void)
+static void _handleApplicationProcess(void)
 {
-  DeathHandler *tmp;
+  AppExitHandler *tmp;
   int i;
 
-  for (i = 0; i < deadProcessPtr; i++) {
-    wWindowDeleteSavedStatesForPID(deadProcesses[i].pid);
-  }
+  // for (i = 0; i < deadProcessPtr; i++) {
+  //   wWindowDeleteSavedStatesForPID(deadProcesses[i].pid);
+  // }
 
-  if (!deathHandlers) {
-    deadProcessPtr = 0;
-    return;
-  }
+  // if (!deathHandlers) {
+  //   deadProcessPtr = 0;
+  //   return;
+  // }
 
   /* get the pids on the queue and call handlers */
   // while (deadProcessPtr > 0) {
@@ -229,16 +230,16 @@ static void handleDeadProcess(void)
   // }
 
   // Check for other processes which have registered death handlers.
-  if (deathHandlers) {
-    for (i = CFArrayGetCount(deathHandlers) - 1; i >= 0; i--) {
-      tmp = (DeathHandler *)CFArrayGetValueAtIndex(deathHandlers, i);
+  if (appExitHandlers) {
+    for (i = CFArrayGetCount(appExitHandlers) - 1; i >= 0; i--) {
+      tmp = (AppExitHandler *)CFArrayGetValueAtIndex(appExitHandlers, i);
       if (!tmp) {
         continue;
       }
       // CFLog(kCFLogLevelInfo, CFSTR("%s: check if process %i exists."), __func__, tmp->pid);
       if (kill(tmp->pid, 0) != 0) {
         (*tmp->callback)(tmp->pid, 0, tmp->client_data);
-        _deleteDeathHandler(tmp);
+        _deleteExitHandler(tmp);
       }
     }
     return;
@@ -247,8 +248,8 @@ static void handleDeadProcess(void)
 
 void DispatchEvent(XEvent *event)
 {
-  if (deathHandlers)
-    handleDeadProcess();
+  if (appExitHandlers)
+    _handleApplicationProcess();
 
   if (WCHECK_STATE(WSTATE_NEED_EXIT) || WCHECK_STATE(WSTATE_EXITING)) {
     /* WCHANGE_STATE(WSTATE_EXITING); */

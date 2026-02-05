@@ -823,7 +823,7 @@ void wExecuteShellCommand(WScreen *scr, const char *command)
     data->scr = scr;
     data->command = wstrdup(command);
 
-    wAddDeathHandler(pid, _shellCommandHandler, data);
+    wAddExitHandler(pid, _shellCommandHandler, data);
   }
 }
 
@@ -876,7 +876,7 @@ Bool wRelaunchWindow(WWindow *wwin)
     data->command = wtokenjoin(argv, argc);
 
     /* not actually a shell command */
-    wAddDeathHandler(pid, _shellCommandHandler, data);
+    wAddExitHandler(pid, _shellCommandHandler, data);
 
     XFreeStringList(argv);
   }

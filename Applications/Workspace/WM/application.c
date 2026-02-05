@@ -429,7 +429,7 @@ WApplication *wApplicationCreate(WWindow *wwin)
     // Some applications doesn't destroy main window after exit - for example Steam Client.
     int pid = wNETWMGetPidForWindow(wwin->client_win);
     if (pid > 0) {
-      wAddDeathHandler(wNETWMGetPidForWindow(wwin->client_win), _applicationProcessHandler, wapp);
+      wAddExitHandler(wNETWMGetPidForWindow(wwin->client_win), _applicationProcessHandler, wapp);
       CFLog(kCFLogLevelInfo,
             CFSTR("%s: Created death handler for X11 application PID == %i"), __func__, pid);
     } else {

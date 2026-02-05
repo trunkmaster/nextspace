@@ -258,35 +258,35 @@ static RETSIGTYPE _handleSig(int sig)
   /* wAbort(0); */
 }
 
-static RETSIGTYPE _buryChild(int foo)
-{
-  pid_t pid;
-  int status;
-  int save_errno = errno;
-  sigset_t sigs;
+// static RETSIGTYPE _buryChild(int foo)
+// {
+//   pid_t pid;
+//   int status;
+//   int save_errno = errno;
+//   sigset_t sigs;
 
-  /* Parameter not used, but tell the compiler that it is ok */
-  (void)foo;
+//   /* Parameter not used, but tell the compiler that it is ok */
+//   (void)foo;
 
-  sigfillset(&sigs);
-  /* Block signals so that NotifyDeadProcess() doesn't get fux0red */
-  sigprocmask(SIG_BLOCK, &sigs, NULL);
+//   sigfillset(&sigs);
+//   /* Block signals so that NotifyDeadProcess() doesn't get fux0red */
+//   sigprocmask(SIG_BLOCK, &sigs, NULL);
 
-  /* R.I.P. */
-  /* If 2 or more kids exit in a small time window, before this handler gets
-   * the chance to get invoked, the SIGCHLD signals will be merged and only
-   * one SIGCHLD signal will be sent to us. We use a while loop to get all
-   * exited child status because we can't count on the number of SIGCHLD
-   * signals to know exactly how many kids have exited. -Dan
-   */
-  while ((pid = waitpid(-1, &status, WNOHANG)) > 0 || (pid < 0 && errno == EINTR)) {
-    NotifyDeadProcess(pid, WEXITSTATUS(status));
-  }
+//   /* R.I.P. */
+//   /* If 2 or more kids exit in a small time window, before this handler gets
+//    * the chance to get invoked, the SIGCHLD signals will be merged and only
+//    * one SIGCHLD signal will be sent to us. We use a while loop to get all
+//    * exited child status because we can't count on the number of SIGCHLD
+//    * signals to know exactly how many kids have exited. -Dan
+//    */
+//   while ((pid = waitpid(-1, &status, WNOHANG)) > 0 || (pid < 0 && errno == EINTR)) {
+//     NotifyDeadProcess(pid, WEXITSTATUS(status));
+//   }
 
-  sigprocmask(SIG_UNBLOCK, &sigs, NULL);
+//   sigprocmask(SIG_UNBLOCK, &sigs, NULL);
 
-  errno = save_errno;
-}
+//   errno = save_errno;
+// }
 
 static void _setupSignalHandling(void)
 {
@@ -321,9 +321,9 @@ static void _setupSignalHandling(void)
   sigaction(SIGPIPE, &sig_action, NULL);
 
   /* handle dead children */
-  sig_action.sa_handler = _buryChild;
-  sig_action.sa_flags = SA_NOCLDSTOP | SA_RESTART;
-  sigaction(SIGCHLD, &sig_action, NULL);
+  // sig_action.sa_handler = _buryChild;
+  // sig_action.sa_flags = SA_NOCLDSTOP | SA_RESTART;
+  // sigaction(SIGCHLD, &sig_action, NULL);
 
   /* Now we unblock all signals, that may have been blocked by the parent
    * who exec()-ed us. This can happen for example if Window Maker crashes
