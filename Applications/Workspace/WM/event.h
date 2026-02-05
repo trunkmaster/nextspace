@@ -37,9 +37,10 @@ typedef void(WDeathHandler)(pid_t pid, unsigned int status, void *cdata);
 
 void WMRunLoop_V0(void);
 void WMRunLoop_V1(void);
-noreturn void EventLoop(void);
+
 void DispatchEvent(XEvent *event);
 void ProcessPendingEvents(void);
+
 WMagicNumber wAddDeathHandler(pid_t pid, WDeathHandler *callback, void *cdata);
 Bool IsDoubleClick(WScreen *scr, XEvent *event);
 
