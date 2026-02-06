@@ -49,7 +49,7 @@
 
 // Define behaviour of double click.
 - (void)setDoubleClickPassesClick:(BOOL)isPass;
-- (BOOL)isDoubleClickPassesClick;
+- (BOOL)wEventIsDoubleClickPassesClick;
 
 // NSDraggingDestination
 - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender;

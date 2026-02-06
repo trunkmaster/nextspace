@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <math.h>
 #include <limits.h>
+#include <sys/wait.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -115,8 +116,8 @@ static CFStringRef dClip = CFSTR("Clip");
 
 static void dockIconPaint(CFRunLoopTimerRef timer, void *data);
 static void iconMouseDown(WObjDescriptor *desc, XEvent *event);
-static pid_t execCommand(WAppIcon *btn, const char *command, WSavedState *state);
-static void trackDeadProcess(pid_t pid, unsigned char status, WDock *dock);
+static pid_t _dockExecCommand(WAppIcon *btn, const char *command, WSavedState *state);
+static void _dockHandleProcessExit(pid_t pid, unsigned char status, WDock *dock);
 static int getClipButton(int px, int py);
 static void toggleLowered(WDock *dock);
 static void toggleCollapsed(WDock *dock);
@@ -807,7 +808,7 @@ static void launchDockedApplication(WAppIcon *btn, Bool withSelection)
     btn->flags.drop_launch = 0;
     btn->flags.paste_launch = withSelection;
     scr->last_dock = btn->dock;
-    btn->pid = execCommand(btn, (withSelection ? btn->paste_command : btn->command), NULL);
+    btn->pid = _dockExecCommand(btn, (withSelection ? btn->paste_command : btn->command), NULL);
     if (btn->pid > 0) {
       if (btn->flags.buggy_app) {
         /* give feedback that the app was launched */
@@ -1741,7 +1742,7 @@ void wDockLaunchWithState(WAppIcon *btn, WSavedState *state)
     btn->flags.drop_launch = 0;
     btn->flags.paste_launch = 0;
 
-    btn->pid = execCommand(btn, btn->command, state);
+    btn->pid = _dockExecCommand(btn, btn->command, state);
 
     if (btn->pid > 0) {
       if (!btn->flags.forced_dock && !btn->flags.buggy_app) {
@@ -1862,7 +1863,7 @@ int wDockReceiveDNDDrop(WScreen *scr, XEvent *event)
     btn->flags.paste_launch = 0;
     btn->flags.drop_launch = 1;
     scr->last_dock = dock;
-    btn->pid = execCommand(btn, btn->dnd_command, NULL);
+    btn->pid = _dockExecCommand(btn, btn->dnd_command, NULL);
     if (btn->pid > 0) {
       dockIconPaint(NULL, btn);
     } else {
@@ -2754,7 +2755,53 @@ static void swapDock(WDock *dock)
   wScreenUpdateUsableArea(scr);
 }
 
-static pid_t execCommand(WAppIcon *btn, const char *command, WSavedState *state)
+static void _dockHandleProcessExit(pid_t pid, unsigned char status, WDock *dock)
+{
+  WAppIcon *icon;
+  int i;
+
+  CFLog(kCFLogLevelInfo, CFSTR("%s: PID == %i, exit status == %i"), __func__, pid, status);
+
+  for (i = 0; i < dock->max_icons; i++) {
+    icon = dock->icon_array[i];
+    if (!icon)
+      continue;
+
+    if (icon->flags.launching && icon->pid == pid) {
+      if (!icon->flags.relaunching) {
+        icon->flags.running = 0;
+        icon->main_window = None;
+      }
+      wDockFinishLaunch(icon);
+      icon->pid = 0;
+      if (status != 0) {
+        char msg[PATH_MAX];
+        char *cmd;
+        char *message;
+
+#ifdef USE_DOCK_XDND
+        if (icon->flags.drop_launch)
+          cmd = icon->dnd_command;
+        else
+#endif
+            if (icon->flags.paste_launch)
+          cmd = icon->paste_command;
+        else
+          cmd = icon->command;
+
+        snprintf(msg, sizeof(msg), _("Could not execute command \"%s\"\n%s"), cmd, strerror(errno));
+        message = wstrdup(msg);
+        dispatch_sync(workspace_q, ^{
+          WSRunAlertPanel(_("Workspace Dock"), message, _("Got It"), NULL, NULL);
+          wfree(message);
+        });
+      }
+      break;
+    }
+  }
+}
+
+static pid_t _dockExecCommand(WAppIcon *btn, const char *command, WSavedState *state)
 {
   WScreen *scr = btn->icon->core->screen_ptr;
   pid_t pid;
@@ -2805,8 +2852,13 @@ static pid_t execCommand(WAppIcon *btn, const char *command, WSavedState *state)
     sigprocmask(SIG_UNBLOCK, &sigs, NULL);
 
     args[argc] = NULL;
-    execvp(argv[0], args);
-    exit(111);
+    int ret;
+    ret = execvp(argv[0], args);
+    if (ret < 0) {
+      CFLog(kCFLogLevelError, CFSTR("%s: return %i error #%i -- %s"), __func__, ret, errno,
+            strerror(errno));
+    }
+    exit(ret);
   }
   wtokenfree(argv, argc);
 
@@ -2822,9 +2874,9 @@ static pid_t execCommand(WAppIcon *btn, const char *command, WSavedState *state)
         state->desktop = scr->current_desktop;
     }
     wWindowAddSavedState(btn->wm_instance, btn->wm_class, cmdline, pid, state);
-    if (strcmp(btn->wm_class, "GNUstep")) {
-      wAddExitHandler(pid, (WExitHandler *)trackDeadProcess, btn->dock);
-    }
+    // if (strcmp(btn->wm_class, "GNUstep")) {
+    wAddExitHandler(pid, (WExitHandler *)_dockHandleProcessExit, btn->dock);
+    // }
   } else if (state) {
     wfree(state);
   }
@@ -3153,50 +3205,6 @@ void wClipUpdateForDesktopChange(WScreen *scr, int desktop)
         old_clip->collapsed = 1;
       }
       wDockShowIcons(scr->desktops[desktop]->clip);
-    }
-  }
-}
-
-static void trackDeadProcess(pid_t pid, unsigned char status, WDock *dock)
-{
-  WAppIcon *icon;
-  int i;
-
-  for (i = 0; i < dock->max_icons; i++) {
-    icon = dock->icon_array[i];
-    if (!icon)
-      continue;
-
-    if (icon->flags.launching && icon->pid == pid) {
-      if (!icon->flags.relaunching) {
-        icon->flags.running = 0;
-        icon->main_window = None;
-      }
-      wDockFinishLaunch(icon);
-      icon->pid = 0;
-      if (status == 111) {
-        char msg[PATH_MAX];
-        char *cmd;
-        char *message;
-
-#ifdef USE_DOCK_XDND
-        if (icon->flags.drop_launch)
-          cmd = icon->dnd_command;
-        else
-#endif
-            if (icon->flags.paste_launch)
-          cmd = icon->paste_command;
-        else
-          cmd = icon->command;
-
-        snprintf(msg, sizeof(msg), _("Could not execute command \"%s\""), cmd);
-        message = wstrdup(msg);
-        dispatch_async(workspace_q, ^{
-          WSRunAlertPanel(_("Workspace Dock"), message, _("Got It"), NULL, NULL);
-          wfree(message);
-        });
-      }
-      break;
     }
   }
 }
@@ -3783,7 +3791,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
   if (dock->menu->flags.mapped)
     wMenuUnmap(dock->menu);
 
-  if (IsDoubleClick(scr, event)) {
+  if (wEventIsDoubleClick(scr, event)) {
     /* double-click was not on the main Dock or Clip icon */
     /*    || getClipButton(event->xbutton.x, event->xbutton.y) == CLIP_IDLE) { */
     if (dock->type == WM_DOCK && aicon->yindex != 0) {

@@ -1132,7 +1132,7 @@ static void titlebarMouseDown(WObjDescriptor *desc, XEvent *event)
   WFrameWindow *fwin = desc->parent;
   WCoreWindow *titlebar = desc->self;
 
-  if (IsDoubleClick(fwin->core->screen_ptr, event)) {
+  if (wEventIsDoubleClick(fwin->core->screen_ptr, event)) {
     if (fwin->on_dblclick_titlebar)
       (*fwin->on_dblclick_titlebar)(titlebar, fwin->child, event);
   } else {
@@ -1161,7 +1161,7 @@ static void buttonMouseDown(WObjDescriptor *desc, XEvent *event)
   unsigned long pixel;
   int clickButton = event->xbutton.button;
 
-  if (IsDoubleClick(fwin->core->screen_ptr, event)) {
+  if (wEventIsDoubleClick(fwin->core->screen_ptr, event)) {
     if (button == fwin->right_button && fwin->on_dblclick_right)
       (*fwin->on_dblclick_right)(button, fwin->child, event);
 

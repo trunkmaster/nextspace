@@ -42,9 +42,9 @@ void WMRunLoop_V1(void);
 void DispatchEvent(XEvent *event);
 void ProcessPendingEvents(void);
 
-Bool IsDoubleClick(WScreen *scr, XEvent *event);
+Bool wEventIsDoubleClick(WScreen *scr, XEvent *event);
 
 /* called from the signal handler */
-// void NotifyDeadProcess(pid_t pid, unsigned char status);
+void wNotifyProcessExit(pid_t pid, int status);
 
 #endif /* __WORKSPACE_WM_EVENT__ */

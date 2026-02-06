@@ -660,7 +660,7 @@ static NSDragOperation savedMask;
   doubleClickPassesClick = isPass;
 }
 
-- (BOOL)isDoubleClickPassesClick
+- (BOOL)wEventIsDoubleClickPassesClick
 {
   return doubleClickPassesClick;
 }

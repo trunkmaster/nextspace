@@ -153,17 +153,19 @@ WMagicNumber wAddExitHandler(pid_t pid, WExitHandler *callback, void *cdata)
 {
   AppExitHandler *handler;
 
-  handler = malloc(sizeof(AppExitHandler));
-  if (!handler)
-    return 0;
+  CFLog(kCFLogLevelInfo, CFSTR("%s: PID == %i"), __func__, pid);
 
+  handler = malloc(sizeof(AppExitHandler));
+  if (!handler) {
+    return 0;
+  }
   handler->pid = pid;
   handler->callback = callback;
   handler->client_data = cdata;
 
-  if (!appExitHandlers)
+  if (!appExitHandlers) {
     appExitHandlers = CFArrayCreateMutable(kCFAllocatorDefault, 8, NULL);
-
+  }
   CFArrayAppendValue(appExitHandlers, handler);
 
   return handler;
@@ -185,66 +187,112 @@ static void _deleteExitHandler(WMagicNumber id)
   }
 }
 
-// void NotifyDeadProcess(pid_t pid, unsigned char status)
-// {
-//   CFLog(kCFLogLevelInfo, CFSTR("%s: PID == %i, exit status == %c"), __func__, pid, status);
-//   // if (deadProcessPtr >= MAX_DEAD_PROCESSES - 1) {
-//   //   WMLogWarning("stack overflow: too many dead processes");
-//   //   return;
-//   // }
-//   // /* stack the process to be handled later,
-//   //  * as this is called from the signal handler */
-//   // deadProcesses[deadProcessPtr].pid = pid;
-//   // deadProcesses[deadProcessPtr].exit_status = status;
-//   // deadProcessPtr++;
-// }
+void wNotifyProcessExit(pid_t pid, int status)
+{
+  AppExitHandler *tmp;
+
+  CFLog(kCFLogLevelInfo, CFSTR("%s: PID == %i, exit status == %i"), __func__, pid, status);
+  if (!appExitHandlers) {
+    return;
+  }
+  
+  for (int i = CFArrayGetCount(appExitHandlers) - 1; i >= 0; i--) {
+    tmp = (AppExitHandler *)CFArrayGetValueAtIndex(appExitHandlers, i);
+    if (tmp && tmp->pid == pid) {
+      (*tmp->callback)(tmp->pid, status, tmp->client_data);
+      _deleteExitHandler(tmp);
+    }
+  }
+}
 
 static void _handleApplicationProcess(void)
 {
   AppExitHandler *tmp;
-  int i;
 
-  // for (i = 0; i < deadProcessPtr; i++) {
-  //   wWindowDeleteSavedStatesForPID(deadProcesses[i].pid);
-  // }
-
-  // if (!deathHandlers) {
-  //   deadProcessPtr = 0;
-  //   return;
-  // }
-
-  /* get the pids on the queue and call handlers */
-  // while (deadProcessPtr > 0) {
-  //   deadProcessPtr--;
-
-  //   for (i = CFArrayGetCount(deathHandlers) - 1; i >= 0; i--) {
-  //     tmp = (DeathHandler *)CFArrayGetValueAtIndex(deathHandlers, i);
-  //     if (!tmp)
-  //       continue;
-
-  //     if (tmp->pid == deadProcesses[deadProcessPtr].pid) {
-  //       (*tmp->callback)(tmp->pid, deadProcesses[deadProcessPtr].exit_status, tmp->client_data);
-  //       _deleteDeathHandler(tmp);
-  //     }
-  //   }
-  // }
-
-  // Check for other processes which have registered death handlers.
-  if (appExitHandlers) {
-    for (i = CFArrayGetCount(appExitHandlers) - 1; i >= 0; i--) {
-      tmp = (AppExitHandler *)CFArrayGetValueAtIndex(appExitHandlers, i);
-      if (!tmp) {
-        continue;
-      }
-      // CFLog(kCFLogLevelInfo, CFSTR("%s: check if process %i exists."), __func__, tmp->pid);
-      if (kill(tmp->pid, 0) != 0) {
-        (*tmp->callback)(tmp->pid, 0, tmp->client_data);
-        _deleteExitHandler(tmp);
-      }
-    }
+  if (!appExitHandlers) {
     return;
   }
+
+  // Check for other processes which have registered death handlers.
+  for (int i = CFArrayGetCount(appExitHandlers) - 1; i >= 0; i--) {
+    tmp = (AppExitHandler *)CFArrayGetValueAtIndex(appExitHandlers, i);
+    // CFLog(kCFLogLevelInfo, CFSTR("%s: check if process %i exists."), __func__, tmp->pid);
+    if (tmp && (kill(tmp->pid, 0) != 0)) {
+      (*tmp->callback)(tmp->pid, 0, tmp->client_data);
+      _deleteExitHandler(tmp);
+    }
+  }
 }
+
+#pragma mark - Run loop
+
+static void _runLoopHandleEvent(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
+{
+  XEvent event;
+
+  /* WMLogError("1. _processXEvent() - %i", XPending(dpy)); */
+  while (XPending(dpy) > 0) {
+    XNextEvent(dpy, &event);
+    WMHandleEvent(&event);
+  }
+  /* WMLogError("2. _processXEvent() - %i", XPending(dpy)); */
+  CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
+}
+
+void WMRunLoop_V0()
+{
+  XEvent event;
+
+  WMLogError("WMRunLoop_V0: handling events while run loop is warming up.");
+  while (wm_runloop == NULL) {
+    WMNextEvent(dpy, &event);
+    WMHandleEvent(&event);
+  }
+  WMLogError("WMRunLoop_V0: run loop V1 is ready.");
+
+#ifdef HAVE_INOTIFY
+  /* Track some defaults files for changes */
+  w_global.inotify.fd_event_queue = -1;
+  wDefaultsShouldTrackChanges(w_global.domain.window_attrs, true);
+#else
+  /* Setup defaults files polling */
+  if (!wPreferences.flags.noupdates) {
+    WMAddTimerHandler(DEFAULTS_CHECK_INTERVAL, wDefaultsCheckDomains, NULL);
+  }
+#endif
+}
+
+void WMRunLoop_V1()
+{
+  CFRunLoopRef run_loop = CFRunLoopGetCurrent();
+  CFFileDescriptorRef xfd;
+  CFRunLoopSourceRef xfd_source;
+
+  WMLogError("WMRunLoop_V1: Entering WM runloop with X connection: %i", ConnectionNumber(dpy));
+
+  // X connection file descriptor
+  xfd = CFFileDescriptorCreate(kCFAllocatorDefault, ConnectionNumber(dpy), true,
+                               _runLoopHandleEvent, NULL);
+  CFFileDescriptorEnableCallBacks(xfd, kCFFileDescriptorReadCallBack);
+
+  xfd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, xfd, 0);
+  CFRunLoopAddSource(run_loop, xfd_source, kCFRunLoopDefaultMode);
+  CFRelease(xfd_source);
+  CFRelease(xfd);
+
+  WMLogError("WMRunLoop_V1: Going into CFRunLoop...");
+
+  wm_runloop = run_loop;
+  CFRunLoopRun();
+  CFFileDescriptorDisableCallBacks(xfd, kCFFileDescriptorReadCallBack);
+  CFRunLoopRemoveSource(run_loop, xfd_source, kCFRunLoopDefaultMode);
+  /* Do not call CFFileDescriptorInvalidate(xfd)!
+     This FD is a connection of Workspace application to X server. */
+
+  WMLogError("V1: CFRunLoop finished.");
+}
+
+#pragma mark - Events handling
 
 void DispatchEvent(XEvent *event)
 {
@@ -367,76 +415,6 @@ void DispatchEvent(XEvent *event)
   }
 }
 
-#pragma mark - Run loop
-
-static void _runLoopHandleEvent(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
-{
-  XEvent event;
-
-  /* WMLogError("1. _processXEvent() - %i", XPending(dpy)); */
-  while (XPending(dpy) > 0) {
-    XNextEvent(dpy, &event);
-    WMHandleEvent(&event);
-  }
-  /* WMLogError("2. _processXEvent() - %i", XPending(dpy)); */
-  CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
-}
-
-void WMRunLoop_V0()
-{
-  XEvent event;
-
-  WMLogError("WMRunLoop_V0: handling events while run loop is warming up.");
-  while (wm_runloop == NULL) {
-    WMNextEvent(dpy, &event);
-    WMHandleEvent(&event);
-  }
-  WMLogError("WMRunLoop_V0: run loop V1 is ready.");
-
-#ifdef HAVE_INOTIFY
-  /* Track some defaults files for changes */
-  w_global.inotify.fd_event_queue = -1;
-  wDefaultsShouldTrackChanges(w_global.domain.window_attrs, true);
-#else
-  /* Setup defaults files polling */
-  if (!wPreferences.flags.noupdates) {
-    WMAddTimerHandler(DEFAULTS_CHECK_INTERVAL, wDefaultsCheckDomains, NULL);
-  }
-#endif
-}
-
-void WMRunLoop_V1()
-{
-  CFRunLoopRef run_loop = CFRunLoopGetCurrent();
-  CFFileDescriptorRef xfd;
-  CFRunLoopSourceRef xfd_source;
-
-  WMLogError("WMRunLoop_V1: Entering WM runloop with X connection: %i", ConnectionNumber(dpy));
-
-  // X connection file descriptor
-  xfd = CFFileDescriptorCreate(kCFAllocatorDefault, ConnectionNumber(dpy), true,
-                               _runLoopHandleEvent, NULL);
-  CFFileDescriptorEnableCallBacks(xfd, kCFFileDescriptorReadCallBack);
-
-  xfd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, xfd, 0);
-  CFRunLoopAddSource(run_loop, xfd_source, kCFRunLoopDefaultMode);
-  CFRelease(xfd_source);
-  CFRelease(xfd);
-
-  WMLogError("WMRunLoop_V1: Going into CFRunLoop...");
-
-  wm_runloop = run_loop;
-  CFRunLoopRun();
-  CFFileDescriptorDisableCallBacks(xfd, kCFFileDescriptorReadCallBack);
-  CFRunLoopRemoveSource(run_loop, xfd_source, kCFRunLoopDefaultMode);
-  /* Do not call CFFileDescriptorInvalidate(xfd)!
-     This FD is a connection of Workspace application to X server. */
-
-  WMLogError("V1: CFRunLoop finished.");
-}
-
-#pragma mark - Events handling
-
 /*
  *----------------------------------------------------------------------
  * ProcessPendingEvents --
@@ -470,7 +448,7 @@ void ProcessPendingEvents(void)
   }
 }
 
-Bool IsDoubleClick(WScreen *scr, XEvent *event)
+Bool wEventIsDoubleClick(WScreen *scr, XEvent *event)
 {
   if ((scr->last_click_time > 0) &&
       (event->xbutton.time - scr->last_click_time <= wPreferences.dblclick_time) &&

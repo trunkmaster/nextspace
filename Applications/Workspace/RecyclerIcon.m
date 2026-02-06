@@ -229,7 +229,7 @@ void _recyclerMouseDown(WObjDescriptor *desc, XEvent *event)
   XUngrabPointer(dpy, CurrentTime);
 
   if (event->xbutton.button == Button1) {
-    if (IsDoubleClick(wDefaultScreen(), event)) {
+    if (wEventIsDoubleClick(wDefaultScreen(), event)) {
       clickCount = 2;
     }
 

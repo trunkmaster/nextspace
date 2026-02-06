@@ -539,7 +539,7 @@ void appIconMouseDown(WObjDescriptor *desc, XEvent *event)
   if (aicon->flags.editing || WCHECK_STATE(WSTATE_MODAL))
     return;
 
-  if (IsDoubleClick(scr, event)) {
+  if (wEventIsDoubleClick(scr, event)) {
     /* Middle or right mouse actions were handled on first click */
     WMLogInfo("[appicon.c] Appicon Double-click\n");
     if (event->xbutton.button == Button1)
