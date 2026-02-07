@@ -379,9 +379,12 @@ static void _setSupportedHints(WScreen *scr)
   atom[i++] = net_workarea;
   atom[i++] = net_supporting_wm_check;
   atom[i++] = net_showing_desktop;
+
 #if 0
-  atom[i++] = net_wm_moveresize;
+  atom[i++] = net_moveresize_window;
 #endif
+  atom[i++] = net_wm_moveresize;
+
   atom[i++] = net_request_frame_extents;
   atom[i++] = net_wm_desktop;
   atom[i++] = net_wm_window_type;
@@ -1689,6 +1692,7 @@ static void _handleDesktopNames(WScreen *scr)
 
 Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
 {
+  static unsigned long last_serial = 0;
   WScreen *scr;
   WWindow *wwin;
 
@@ -1844,11 +1848,15 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
     //   data.l[2] = direction
     //   data.l[3] = button
     //   data.l[4] = source indication
-    fprintf(
-        stderr,
-        "%s: _NET_WM_MOVERESIZE: %li, %li | direction: %li, button: %li, source direction: %li\n",
-        __func__, event->data.l[0], event->data.l[1], event->data.l[2], event->data.l[3],
-        event->data.l[4]);
+    if (last_serial == event->serial) {
+      return False;
+    }
+    last_serial = event->serial;
+    fprintf(stderr,
+            "%s: _NET_WM_MOVERESIZE: %li, %li | direction: %li, button: %li, source direction: %li "
+            "serial: %lu event type: %i\n",
+            __func__, event->data.l[0], event->data.l[1], event->data.l[2], event->data.l[3],
+            event->data.l[4], event->serial, event->type);
 
     WWindow *wwin = NULL;
     XEvent x_event;
@@ -1870,6 +1878,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
                          GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
           wMouseMoveWindow(wwin, &x_event);
           XUngrabPointer(dpy, CurrentTime);
+          fprintf(stderr, "%s: _NET_WM_MOVERESIZE_MOVE finished\n", __func__);
         } else {
           fprintf(stderr, "%s: window is not found for _NET_WM_MOVERESIZE_MOVE!\n", __func__);
         }
@@ -1885,6 +1894,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
       case _NET_WM_MOVERESIZE_SIZE_LEFT:
         break;
     }
+    return True;
   }
 
   return False;
