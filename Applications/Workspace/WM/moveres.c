@@ -166,10 +166,11 @@ static void showPosition(WWindow *wwin, int x, int y)
   WScreen *scr = wwin->screen;
 
   if (wPreferences.move_display == WDIS_TITLEBAR) {
-    char buffer[64];
-
-    snprintf(buffer, sizeof(buffer), "%+i, %+i", x, y);
-    wWindowUpdateName(wwin, buffer);
+    if (wwin->frame->titlebar) {
+      char buffer[64];
+      snprintf(buffer, sizeof(buffer), "%+i, %+i", x, y);
+      wWindowUpdateName(wwin, buffer);
+    }
   } else if (wPreferences.move_display == WDIS_NEW) {
 #if 0
     int width = wwin->frame->core->width;
@@ -2218,7 +2219,7 @@ MouseBarriers wMouseSetResizeBarriers(WWindow *wwin, int x_root, int y_root, int
   return barriers;
 }
 
-void wMouseResizeWindow(WWindow *wwin, XEvent *ev)
+void wMouseResizeWindow(WWindow *wwin, XEvent *ev, int opaqueResize)
 {
   XEvent event;
   WScreen *scr = wwin->screen;
@@ -2245,7 +2246,6 @@ void wMouseResizeWindow(WWindow *wwin, XEvent *ev)
   int head =
       ((wPreferences.auto_arrange_icons && wScreenHeads(scr) > 1) ? wGetHeadForWindow(wwin)
                                                                   : scr->xrandr_info.primary_head);
-  int opaqueResize = wPreferences.opaque_resize;
   Cursor cursor;
   MouseBarriers barriers;
   Cursor new_cursor;

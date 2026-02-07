@@ -53,7 +53,7 @@ WWindow *wNextWindowToFocus(WWindow *wwin);
 void wSetFocusTo(WScreen *scr, WWindow *wwin);
 
 int wMouseMoveWindow(WWindow *wwin, XEvent *ev);
-void wMouseResizeWindow(WWindow *wwin, XEvent *ev);
+void wMouseResizeWindow(WWindow *wwin, XEvent *ev, int opaqueResize);
 int wKeyboardMoveResizeWindow(WWindow *wwin);
 
 void wShadeWindow(WWindow *wwin);

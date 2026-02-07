@@ -1692,7 +1692,6 @@ static void _handleDesktopNames(WScreen *scr)
 
 Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
 {
-  static unsigned long last_serial = 0;
   WScreen *scr;
   WWindow *wwin;
 
@@ -1743,7 +1742,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
 
   /*
      Application Window properties messages
-  */
+   */
 
   /* Window could (and often is) not unmanaged at this point */
   if (event->message_type == net_request_frame_extents) {
@@ -1848,50 +1847,52 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
     //   data.l[2] = direction
     //   data.l[3] = button
     //   data.l[4] = source indication
-    if (last_serial == event->serial) {
+    static unsigned long last_event_serial = 0;
+    XEvent xevent;
+
+    if (last_event_serial == event->serial) {
       return False;
     }
-    last_serial = event->serial;
+    last_event_serial = event->serial;
+
     fprintf(stderr,
             "%s: _NET_WM_MOVERESIZE: %li, %li | direction: %li, button: %li, source direction: %li "
             "serial: %lu event type: %i\n",
             __func__, event->data.l[0], event->data.l[1], event->data.l[2], event->data.l[3],
             event->data.l[4], event->serial, event->type);
 
-    WWindow *wwin = NULL;
-    XEvent x_event;
-    x_event.xmotion.x_root = event->data.l[0];
-    x_event.xmotion.y_root = event->data.l[1];
-    x_event.xmotion.window = event->window;
-    x_event.xbutton.button = Button1;
+    xevent.xmotion.x_root = event->data.l[0];
+    xevent.xmotion.y_root = event->data.l[1];
+    xevent.xmotion.window = event->window;
+    xevent.xbutton.button = Button1;
 
-    switch (event->data.l[2]) {               // direction
-      case _NET_WM_MOVERESIZE_SIZE_TOPLEFT:   // usupported by design
-      case _NET_WM_MOVERESIZE_SIZE_TOP:       // usupported by design
-      case _NET_WM_MOVERESIZE_SIZE_TOPRIGHT:  // usupported by design
+    switch (event->data.l[2]) {  // direction
+      case _NET_WM_MOVERESIZE_CANCEL:
         break;
       case _NET_WM_MOVERESIZE_MOVE:  // move only - titlebar
-        wwin = wWindowFor(event->window);
-        if (wwin &&
-            XGrabPointer(dpy, event->window, False,
+        if (XGrabPointer(dpy, event->window, False,
                          ButtonMotionMask | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
                          GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
-          wMouseMoveWindow(wwin, &x_event);
+          wMouseMoveWindow(wwin, &xevent);
           XUngrabPointer(dpy, CurrentTime);
           fprintf(stderr, "%s: _NET_WM_MOVERESIZE_MOVE finished\n", __func__);
-        } else {
-          fprintf(stderr, "%s: window is not found for _NET_WM_MOVERESIZE_MOVE!\n", __func__);
         }
         break;
+      case _NET_WM_MOVERESIZE_SIZE_TOPLEFT:
+      case _NET_WM_MOVERESIZE_SIZE_TOP:
+      case _NET_WM_MOVERESIZE_SIZE_TOPRIGHT:
       case _NET_WM_MOVERESIZE_SIZE_RIGHT:
-        break;
       case _NET_WM_MOVERESIZE_SIZE_BOTTOMRIGHT:
-        break;
       case _NET_WM_MOVERESIZE_SIZE_BOTTOM:
-        break;
       case _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT:
-        break;
       case _NET_WM_MOVERESIZE_SIZE_LEFT:
+        if (XGrabPointer(dpy, event->window, False,
+                         ButtonMotionMask | ButtonReleaseMask | ButtonPressMask, GrabModeAsync,
+                         GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
+          wMouseResizeWindow(wwin, &xevent, 1);
+          XUngrabPointer(dpy, CurrentTime);
+          fprintf(stderr, "%s: _NET_WM_MOVERESIZE_BOTTOMRIGHT finished\n", __func__);
+        }
         break;
     }
     return True;

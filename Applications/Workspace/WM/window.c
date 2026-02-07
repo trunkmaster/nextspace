@@ -2939,7 +2939,7 @@ static void frameMouseDown(WObjDescriptor *desc, XEvent *event)
       return;
     }
     if (event->xbutton.button == Button3) {
-      wMouseResizeWindow(wwin, event);
+      wMouseResizeWindow(wwin, event, wPreferences.opaque_resize);
     } else if (event->xbutton.button == Button4) {
       new_height = wwin->client.height - resize_height_increment;
       wWindowConstrainSize(wwin, &wwin->client.width, &new_height);

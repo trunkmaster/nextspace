@@ -1559,7 +1559,7 @@ static void _handleMotionNotify(XEvent *event)
         /* move the window */
         wMouseMoveWindow(wwin, event);
       } else if (IS_RESIZABLE(wwin) && event->xmotion.window == wwin->frame->resizebar->window) {
-        wMouseResizeWindow(wwin, event);
+        wMouseResizeWindow(wwin, event, wPreferences.opaque_resize);
       }
       XUngrabPointer(dpy, CurrentTime);
     }
