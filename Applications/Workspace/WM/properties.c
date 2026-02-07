@@ -192,7 +192,7 @@ void wPropertiesSetWMName(WScreen *scr, char *name, char *class)
   wm_pid_atom = XInternAtom(dpy, "_NET_WM_PID", False);
 
   unsigned long pid = getpid();
-  CFLog(kCFLogLevelInfo, CFSTR("WorkspaceManager PID: %i"), pid);
+  // CFLog(kCFLogLevelInfo, CFSTR("WorkspaceManager PID: %i"), pid);
   XChangeProperty(dpy, scr->info_window, wm_pid_atom, XA_CARDINAL, 32, PropModeReplace,
                   (unsigned char *)&pid, 1L);
 }
