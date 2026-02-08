@@ -2774,6 +2774,7 @@ static void _dockHandleProcessExit(pid_t pid, unsigned char status, WDock *dock)
       }
       wDockFinishLaunch(icon);
       icon->pid = 0;
+
       if (status != 0) {
         char msg[PATH_MAX];
         char *cmd;
@@ -2789,7 +2790,7 @@ static void _dockHandleProcessExit(pid_t pid, unsigned char status, WDock *dock)
         else
           cmd = icon->command;
 
-        snprintf(msg, sizeof(msg), _("Could not execute command \"%s\"\n%s"), cmd, strerror(errno));
+        snprintf(msg, sizeof(msg), _("Could not execute command \"%s\"\n%s"), cmd, strerror(status));
         message = wstrdup(msg);
         dispatch_sync(workspace_q, ^{
           WSRunAlertPanel(_("Workspace Dock"), message, _("Got It"), NULL, NULL);
@@ -2829,6 +2830,8 @@ static pid_t _dockExecCommand(WAppIcon *btn, const char *command, WSavedState *s
     return 0;
   }
 
+  // Forked process return `errno` if exit code will be <= 0.
+  // It's intentional to make possible to process show error description later by process exit handler .
   pid = fork();
   if (pid == 0) {
     char **args;
@@ -2855,8 +2858,9 @@ static pid_t _dockExecCommand(WAppIcon *btn, const char *command, WSavedState *s
     int ret;
     ret = execvp(argv[0], args);
     if (ret < 0) {
-      CFLog(kCFLogLevelError, CFSTR("%s: return %i error #%i -- %s"), __func__, ret, errno,
-            strerror(errno));
+      // CFLog(kCFLogLevelError, CFSTR("%s: return %i error #%i -- %s"), __func__, ret, errno,
+      //       strerror(errno));
+      exit(errno);
     }
     exit(ret);
   }

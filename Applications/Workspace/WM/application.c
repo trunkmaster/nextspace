@@ -430,11 +430,6 @@ WApplication *wApplicationCreate(WWindow *wwin)
     int pid = wNETWMGetPidForWindow(wwin->client_win);
     if (pid > 0) {
       wAddExitHandler(wNETWMGetPidForWindow(wwin->client_win), _applicationProcessHandler, wapp);
-      CFLog(kCFLogLevelInfo,
-            CFSTR("%s: Created death handler for X11 application PID == %i"), __func__, pid);
-    } else {
-      CFLog(kCFLogLevelWarning,
-            CFSTR("%s: Failed to add death handler for X11 application. PID == %i"), __func__, pid);
     }
   }
 

@@ -266,7 +266,7 @@ static RETSIGTYPE _childExitHandler(int foo)
   sigset_t sigs;
 
   sigfillset(&sigs);
-  /* Block signals so that NotifyDeadProcess() doesn't get fux0red */
+  /* Block signals so that wNotifyProcessExit() doesn't get fux0red */
   sigprocmask(SIG_BLOCK, &sigs, NULL);
 
   /* If 2 or more kids exit in a small time window, before this handler gets
@@ -275,8 +275,11 @@ static RETSIGTYPE _childExitHandler(int foo)
    * exited child status because we can't count on the number of SIGCHLD
    * signals to know exactly how many kids have exited. -Dan
    */
+  // CFLog(kCFLogLevelError, CFSTR("%s: error #%i -- saved_errno %i"), __func__, errno, save_errno);
+
   while ((pid = waitpid(-1, &status, WNOHANG)) > 0 || (pid < 0 && errno == EINTR)) {
-    wNotifyProcessExit(pid, WEXITSTATUS(status));
+    // CFLog(kCFLogLevelError, CFSTR("%s: PID == %i exit status == %i"), __func__, pid, WEXITSTATUS(status));
+    wNotifyProcessExit(pid, status);
   }
 
   sigprocmask(SIG_UNBLOCK, &sigs, NULL);

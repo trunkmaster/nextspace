@@ -1855,11 +1855,11 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
     }
     last_event_serial = event->serial;
 
-    fprintf(stderr,
-            "%s: _NET_WM_MOVERESIZE: %li, %li | direction: %li, button: %li, source direction: %li "
-            "serial: %lu event type: %i\n",
-            __func__, event->data.l[0], event->data.l[1], event->data.l[2], event->data.l[3],
-            event->data.l[4], event->serial, event->type);
+    // fprintf(stderr,
+    //         "%s: _NET_WM_MOVERESIZE: %li, %li | direction: %li, button: %li, source direction: %li "
+    //         "serial: %lu event type: %i\n",
+    //         __func__, event->data.l[0], event->data.l[1], event->data.l[2], event->data.l[3],
+    //         event->data.l[4], event->serial, event->type);
 
     xevent.xmotion.x_root = event->data.l[0];
     xevent.xmotion.y_root = event->data.l[1];
@@ -1875,7 +1875,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
                          GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
           wMouseMoveWindow(wwin, &xevent);
           XUngrabPointer(dpy, CurrentTime);
-          fprintf(stderr, "%s: _NET_WM_MOVERESIZE_MOVE finished\n", __func__);
+          // fprintf(stderr, "%s: _NET_WM_MOVERESIZE_MOVE finished\n", __func__);
         }
         break;
       case _NET_WM_MOVERESIZE_SIZE_TOPLEFT:
@@ -1891,7 +1891,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
                          GrabModeAsync, None, None, CurrentTime) == GrabSuccess) {
           wMouseResizeWindow(wwin, &xevent, 1);
           XUngrabPointer(dpy, CurrentTime);
-          fprintf(stderr, "%s: _NET_WM_MOVERESIZE_BOTTOMRIGHT finished\n", __func__);
+          // fprintf(stderr, "%s: _NET_WM_MOVERESIZE_BOTTOMRIGHT finished\n", __func__);
         }
         break;
     }

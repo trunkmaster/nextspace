@@ -132,15 +132,6 @@ static void _handleXkbStateNotify(XkbEvent *event);
 static void _handleApplicationProcess(void);
 static void _deleteExitHandler(WMagicNumber id);
 
-// typedef struct DeadProcesses {
-//   pid_t pid;
-//   unsigned char exit_status;
-// } DeadProcesses;
-
-/* stack of dead processes */
-// static DeadProcesses deadProcesses[MAX_DEAD_PROCESSES];
-// static int deadProcessPtr = 0;
-
 typedef struct ExitHandler {
   WExitHandler *callback;
   pid_t pid;
@@ -151,22 +142,34 @@ static CFMutableArrayRef appExitHandlers = NULL;
 
 WMagicNumber wAddExitHandler(pid_t pid, WExitHandler *callback, void *cdata)
 {
-  AppExitHandler *handler;
-
-  CFLog(kCFLogLevelInfo, CFSTR("%s: PID == %i"), __func__, pid);
-
-  handler = malloc(sizeof(AppExitHandler));
-  if (!handler) {
-    return 0;
-  }
-  handler->pid = pid;
-  handler->callback = callback;
-  handler->client_data = cdata;
+  AppExitHandler *handler = NULL;
 
   if (!appExitHandlers) {
     appExitHandlers = CFArrayCreateMutable(kCFAllocatorDefault, 8, NULL);
+  } else {
+    for (int i = CFArrayGetCount(appExitHandlers) - 1; i >= 0; i--) {
+      handler = (AppExitHandler *)CFArrayGetValueAtIndex(appExitHandlers, i);
+      if (handler->pid == pid) {
+        break;
+      } else {
+        handler = NULL;
+      }
+    }
   }
-  CFArrayAppendValue(appExitHandlers, handler);
+
+  if (handler == NULL) {
+    // CFLog(kCFLogLevelInfo, CFSTR("%s: PID == %i"), __func__, pid);
+
+    handler = malloc(sizeof(AppExitHandler));
+    if (!handler) {
+      return 0;
+    }
+    handler->pid = pid;
+    handler->callback = callback;
+    handler->client_data = cdata;
+
+    CFArrayAppendValue(appExitHandlers, handler);
+  }
 
   return handler;
 }
@@ -191,15 +194,16 @@ void wNotifyProcessExit(pid_t pid, int status)
 {
   AppExitHandler *tmp;
 
-  CFLog(kCFLogLevelInfo, CFSTR("%s: PID == %i, exit status == %i"), __func__, pid, status);
+  // CFLog(kCFLogLevelInfo, CFSTR("%s: PID == %i, exit status == %i"), __func__, pid,
+  //       WEXITSTATUS(status));
   if (!appExitHandlers) {
     return;
   }
-  
+
   for (int i = CFArrayGetCount(appExitHandlers) - 1; i >= 0; i--) {
     tmp = (AppExitHandler *)CFArrayGetValueAtIndex(appExitHandlers, i);
     if (tmp && tmp->pid == pid) {
-      (*tmp->callback)(tmp->pid, status, tmp->client_data);
+      (*tmp->callback)(tmp->pid, WEXITSTATUS(status), tmp->client_data);
       _deleteExitHandler(tmp);
     }
   }
