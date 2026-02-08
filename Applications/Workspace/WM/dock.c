@@ -399,21 +399,25 @@ static void omnipresentCallback(WMenu *menu, WMenuItem *entry)
   }
   CFRelease(selectedIcons);
   if (failed > 1) {
-    WSRunAlertPanel(_("Dock: Warning"),
-                    _("Some icons cannot be made omnipresent. "
+    dispatch_async(workspace_q, ^{
+      WSRunAlertPanel("Dock: Warning",
+                      "Some icons cannot be made omnipresent. "
                       "Please make sure that no other icon is "
                       "docked in the same positions on the other "
                       "desktops and the Clip is not full in "
-                      "some desktop."),
-                    _("OK"), NULL, NULL);
+                      "some desktop.",
+                      "OK", NULL, NULL);
+    });
   } else if (failed == 1) {
-    WSRunAlertPanel(_("Dock: Warning"),
-                    _("Icon cannot be made omnipresent. "
+    dispatch_async(workspace_q, ^{
+      WSRunAlertPanel("Dock: Warning",
+                      "Icon cannot be made omnipresent. "
                       "Please make sure that no other icon is "
                       "docked in the same position on the other "
                       "desktops and the Clip is not full in "
-                      "some desktop."),
-                    _("OK"), NULL, NULL);
+                      "some desktop.",
+                      "OK", NULL, NULL);
+    });
   }
 }
 
@@ -1894,9 +1898,11 @@ Bool wDockAttachIcon(WDock *dock, WAppIcon *icon, int x, int y, Bool update_icon
     if (command) {
       icon->command = command;
     } else {
-      WSRunAlertPanel("Desktop Dock",
-                      "Application icon without command set cannot be attached to Dock.", _("OK"),
-                      NULL, NULL);
+      dispatch_async(workspace_q, ^{
+        WSRunAlertPanel("Desktop Dock",
+                        "Application icon without command set cannot be attached to Dock.", _("OK"),
+                        NULL, NULL);
+      });
       return False;
     }
   }
@@ -2019,9 +2025,11 @@ Bool wDockMoveIconBetweenDocks(WDock *src, WDock *dest, WAppIcon *icon, int x, i
     if (command) {
       icon->command = command;
     } else {
-      WSRunAlertPanel("Desktop Dock",
-                      "Application icon without command set cannot be attached to Dock.", _("OK"),
-                      NULL, NULL);
+      dispatch_async(workspace_q, ^{
+        WSRunAlertPanel("Desktop Dock",
+                        "Application icon without command set cannot be attached to Dock.", _("OK"),
+                        NULL, NULL);
+      });
       return False;
     }
   }
