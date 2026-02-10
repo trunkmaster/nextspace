@@ -34,6 +34,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <string.h>
+#include <sys/time.h>
 
 #include <core/WMcore.h>
 #include <core/util.h>
@@ -1847,13 +1848,16 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
     //   data.l[2] = direction
     //   data.l[3] = button
     //   data.l[4] = source indication
-    static unsigned long last_event_serial = 0;
+    static struct timeval prev_time = {.tv_sec = 0L, .tv_usec = 0L};
+    struct timeval cur_time = {.tv_sec = 0L, .tv_usec = 0L};
     XEvent xevent;
 
-    if (last_event_serial == event->serial) {
+    gettimeofday(&cur_time, NULL);
+    // fprintf(stderr, "%s: elapsed %li seconds since last XClientMessageEvent.\n", __func__,
+    //         cur_time.tv_sec - prev_time.tv_sec);
+    if (prev_time.tv_sec > 0L && (cur_time.tv_sec - prev_time.tv_sec) < 1L) {
       return False;
     }
-    last_event_serial = event->serial;
 
     // fprintf(stderr,
     //         "%s: _NET_WM_MOVERESIZE: %li, %li | direction: %li, button: %li, source direction: %li "
@@ -1895,6 +1899,7 @@ Bool wNETWMProcessClientMessage(XClientMessageEvent *event)
         }
         break;
     }
+    gettimeofday(&prev_time, NULL);
     return True;
   }
 
