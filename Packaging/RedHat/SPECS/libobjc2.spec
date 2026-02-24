@@ -1,9 +1,10 @@
 %global toolchain clang
+%{!?release:%global release 0}
 %global _hardened_build 0
 
 Name:	libobjc2
 Version:  2.2.1
-Release:  0%{?dist}
+Release:  %{release}%{?dist}
 Summary:  GNUstep Objecttive-C runtime library.
 License:  GPL v2.0
 URL:      https://github.com/gnustep/libobjc2

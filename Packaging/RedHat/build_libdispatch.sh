@@ -12,7 +12,7 @@ if [ "${OS_ID}" = "fedora" ]; then
 fi
 
 SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/libdispatch.spec
-DISPATCH_VERSION=`rpm_version ${SPEC_FILE}`
+DISPATCH_VERSION=`rpm_version ${SPEC_FILE} "$@"`
 
 # libdispatch
 print_H1 " Building Grand Central Dispatch (libdispatch) package..."
@@ -26,7 +26,7 @@ curl -L https://github.com/apple/swift-corelibs-libdispatch/archive/swift-${VER}
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building libdispatch package..."
-rpmbuild -bb ${SPEC_FILE}
+run_rpmbuild ${SPEC_FILE} "$@"
 STATUS=$?
 if [ $STATUS -eq 0 ]; then 
     print_OK " Building of Grand Central Dispatch library RPM SUCCEEDED!"

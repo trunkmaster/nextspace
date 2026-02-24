@@ -1,8 +1,9 @@
 %global toolchain clang
+%{!?release:%global release 0}
 
 Name:           nextspace-frameworks
 Version:        0.95
-Release:        0%{?dist}
+Release:        %{release}%{?dist}
 Summary:        NextSpace core libraries.
 Group:          Libraries/NextSpace
 License:        GPLv2

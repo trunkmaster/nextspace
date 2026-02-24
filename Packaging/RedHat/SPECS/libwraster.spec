@@ -1,9 +1,10 @@
 %global toolchain clang
+%{!?release:%global release 0}
 %define WRASTER_VERSION 7.0.1
 
 Name:           libwraster
 Version:        %{WRASTER_VERSION}
-Release:        0%{?dist}
+Release:        %{release}%{?dist}
 Summary:        Raster graphics library.
 Group:          Libraries/NextSpace
 License:        GPLv3

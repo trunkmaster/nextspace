@@ -1,10 +1,11 @@
 %global toolchain clang
+%{!?release:%global release 1}
 %define CFNET_VERSION 129.20
 
 Name:       libcorefoundation
 Version:    5.9.2
 Epoch:      0
-Release:    1%{?dist}
+Release:    %{release}%{?dist}
 Summary:    Apple CoreFoundation framework.
 License:    Apache 2.0
 URL:        https://github.com/trunkmaster/apple-corefoundation

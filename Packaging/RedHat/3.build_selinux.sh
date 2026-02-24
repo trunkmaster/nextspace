@@ -8,25 +8,10 @@ BUILD_RPM=1
 . `dirname $0`/../functions.sh
 . `dirname $0`/../environment.sh
 
-if [ $# -eq 0 ];then
-    print_help
-    exit 1
-fi
-
-prepare_redhat_environment
-if [ $? -ne 0 ];then
-    print_ERR "Failed to setup building environment. Exiting..."
-    exit 1
-fi
-
-REPO_DIR=$1
+prepare_redhat_environment || error_exit "Failed to setup building environment. Exiting..."
 
 # NextSpace SELinux
-`dirname $0`/build_nextspace-selinux.sh $1
-if [ $? -ne 0 ]; then
-    echo "Aborting..."
-    exit 1
-fi
+`dirname $0`/build_nextspace-selinux.sh "$@" || abort_with_message
 
 print_OK " Build and install of NEXTSPACE SELinux SUCCEEDED!"
 

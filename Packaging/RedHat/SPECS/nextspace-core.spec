@@ -1,11 +1,12 @@
 %global debug_package %{nil}
+%{!?release:%global release 12}
 %global _hardened_build 0
 
 %define MAKE_VERSION    2_9_2
 
 Name:		nextspace-core
 Version:	0.95
-Release:	12%{?dist}
+Release:	%{release}%{?dist}
 Summary:	NextSpace filesystem hierarchy and system files.
 License:	GPLv2
 URL:		  http://github.com/trunkmaster/nextspace

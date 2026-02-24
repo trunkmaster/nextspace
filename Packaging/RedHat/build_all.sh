@@ -8,36 +8,18 @@ BUILD_RPM=1
 . `dirname $0`/../functions.sh
 . `dirname $0`/../environment.sh
 
-if [ $# -eq 0 ];then
-    print_help
-    exit 1
-fi
+NEXTSPACE_DIR="$(cd "$(dirname "$0")/../.."; pwd)"
 
-prepare_redhat_environment
-if [ $? -ne 0 ];then
-    print_ERR "Failed to setup building environment. Exiting..."
-    exit 1
-fi
+test -d "${NEXTSPACE_DIR}" || errorExit "Invalid NEXTSPACE directory: '${NEXTSPACE_DIR}'."
+prepare_redhat_environment || error_exit "Failed to setup building environment. Exiting..."
 
 rm -rf ~/rpmbuild/SOURCES/*
 rm -rf ~/rpmbuild/BUILD/*
 rm -rf ~/rpmbuild/BUILDROOT/*
-rm -rf $1/Packaging/RedHat/$OS_ID-$OS_VERSION/NSDeveloper/*
-rm -rf $1/Packaging/RedHat/$OS_ID-$OS_VERSION/NSUser/*
+rm -rf "${NEXTSPACE_DIR}/Packaging/RedHat/$OS_ID-$OS_VERSION/NSDeveloper"/*
+rm -rf "${NEXTSPACE_DIR}/Packaging/RedHat/$OS_ID-$OS_VERSION/NSUser"/*
 
-`dirname $0`/0.build_libraries.sh $1
-if [ $? -ne 0 ]; then
-    echo "Aborting..."
-    exit 1
-fi
-`dirname $0`/1.build_frameworks.sh $1
-if [ $? -ne 0 ]; then
-    echo "Aborting..."
-    exit 1
-fi
-`dirname $0`/2.build_applications.sh $1
-if [ $? -ne 0 ]; then
-    echo "Aborting..."
-    exit 1
-fi
+`dirname $0`/0.build_libraries.sh "$@" || abort_with_message
+`dirname $0`/1.build_frameworks.sh "$@" || abort_with_message
+`dirname $0`/2.build_applications.sh "$@" || abort_with_message
 

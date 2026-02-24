@@ -7,11 +7,7 @@ BUILD_RPM=1
 . `dirname $0`/../functions.sh
 . `dirname $0`/../environment.sh
 
-prepare_redhat_environment
-if [ $? -ne 0 ];then
-    print_ERR "Failed to setup building environment. Exiting..."
-    exit 1
-fi
+prepare_redhat_environment || error_exit "Failed to setup building environment. Exiting..."
 
 LOG_FILE=/dev/null
 SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-applications.spec
@@ -36,12 +32,12 @@ mv ${PROJECT_DIR}/nextspace-applications-${APPLICATIONS_VERSION}.tar.gz ${RPM_SO
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building nextspace-applications package..."
-rpmbuild -bb ${SPEC_FILE}
+run_rpmbuild ${SPEC_FILE} "$@"
 STATUS=$?
 if [ $STATUS -eq 0 ]; then 
     print_OK " Building of NEXTSPACE Applications RPM SUCCEEDED!"
     print_H2 "===== Installing nextspace-applications RPMs..."
-    APPLICATIONS_VERSION=`rpm_version ${SPEC_FILE}`
+    APPLICATIONS_VERSION=`rpm_version ${SPEC_FILE} "$@"`
 
     install_rpm nextspace-applications ${RPMS_DIR}/nextspace-applications-${APPLICATIONS_VERSION}.rpm
     mv ${RPMS_DIR}/nextspace-applications-${APPLICATIONS_VERSION}.rpm ${RELEASE_USR}

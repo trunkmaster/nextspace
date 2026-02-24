@@ -24,10 +24,10 @@ mv ${PROJECT_DIR}/Libraries/libwraster-${WRASTER_VERSION}.tar.gz ${RPM_SOURCES_D
 
 spectool -g -R ${SPEC_FILE}
 print_H2 "===== Building libwraster RPM..."
-rpmbuild -bb ${SPEC_FILE}
+run_rpmbuild ${SPEC_FILE} "$@"
 STATUS=$?
 if [ $STATUS -eq 0 ]; then 
-    WRASTER_VERSION=`rpm_version ${SPEC_FILE}`
+    WRASTER_VERSION=`rpm_version ${SPEC_FILE} "$@"`
     print_OK " Building libwraster RPM SUCCEEDED!"
 
     install_rpm libwraster ${RPMS_DIR}/libwraster-${WRASTER_VERSION}.rpm
