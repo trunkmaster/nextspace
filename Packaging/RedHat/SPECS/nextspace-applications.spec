@@ -137,7 +137,7 @@ if [ $1 -eq 0 ]; then
 fi
 
 %postun
-if [ -f /usr/NextSpace/Preferences/Login ]; then
+if [ $1 -eq 0 -a -f /usr/NextSpace/Preferences/Login ]; then
     rm /usr/NextSpace/Preferences/Login
 fi
 

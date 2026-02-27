@@ -108,7 +108,7 @@ if [ -f /usr/NextSpace/include/Block.h ];then
 fi
 
 %postun devel
-if [ -f /usr/NextSpace/include/Block-libdispatch.h ];then
+if [ $1 -eq 0 -a -f /usr/NextSpace/include/Block-libdispatch.h ];then
 	mv /usr/NextSpace/include/Block-libdispatch.h /usr/NextSpace/include/Block.h
 	rm /usr/NextSpace/include/Block.h
 fi

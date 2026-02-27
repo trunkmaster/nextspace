@@ -129,8 +129,11 @@ fi
 #%preun
 
 %postun
-/bin/rm -rf /usr/NextSpace/Frameworks/DesktopKit.framework
-/bin/rm /etc/fonts/conf.d/25-nextspace-fonts.conf
+if [ $1 -eq 0 ]; then
+    # full uninstall:
+    /bin/rm -rf /usr/NextSpace/Frameworks/DesktopKit.framework
+    /bin/rm /etc/fonts/conf.d/25-nextspace-fonts.conf
+fi
 /sbin/ldconfig
 
 %changelog
