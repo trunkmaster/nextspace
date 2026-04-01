@@ -81,6 +81,7 @@
 #include "dock.h"
 #include "application.h"
 #include "wmcomposer.h"
+#include "systemtray.h"
 
 /****** Global ******/
 Display *dpy;
@@ -739,19 +740,22 @@ void wStartUp(Bool defaultScreenOnly)
   scr->last_desktop = 0;
   wDesktopForceChange(scr, 0, NULL);
 
+  
   if (!wPreferences.flags.noclip) {
     wDockShowIcons(scr->desktops[scr->current_desktop]->clip);
   }
-
+  
   /* restore saved menus */
   wMenuRestoreState(scr);
-
+  
+  wSystemTrayInit();
+  
   /* If we're not restarting, restore session */
   if (!wPreferences.flags.norestore) {
     int lastDesktop = wNETWMGetCurrentDesktopFromHint(scr);
-
+    
     wSessionRestoreState(scr);
-
+    
     /* go to desktop where we were before restart */
     if (lastDesktop >= 0) {
       wDesktopForceChange(scr, lastDesktop, NULL);

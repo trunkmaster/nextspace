@@ -82,6 +82,7 @@
 #include "iconyard.h"
 #include "application.h"
 #include "appmenu.h"
+#include "systemtray.h"
 
 #include <Workspace+WM.h>
 
@@ -300,8 +301,9 @@ void WMRunLoop_V1()
 
 void DispatchEvent(XEvent *event)
 {
-  if (appExitHandlers)
+  if (appExitHandlers) {
     _handleApplicationProcess();
+  }
 
   if (WCHECK_STATE(WSTATE_NEED_EXIT) || WCHECK_STATE(WSTATE_EXITING)) {
     /* WCHANGE_STATE(WSTATE_EXITING); */
@@ -324,6 +326,11 @@ void DispatchEvent(XEvent *event)
     return;
 
   _saveTimestamp(event);
+
+  if (wSystemTrayHandleEvent(event) == True) {
+    return;
+  }
+
   switch (event->type) {
     case MapRequest:
       _handleMapRequest(event);

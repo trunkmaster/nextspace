@@ -12,6 +12,7 @@
 #include <X11/extensions/shape.h>
 #include <X11/Xmu/SysUtil.h>
 
+#include "core/log_utils.h"
 #include "systemtray.h"
 
 #pragma mark - Definitions
@@ -358,7 +359,7 @@ static void _sendXEembedNotify(Window w, Window parent)
 
 static void _handleDockRequest(Window w)
 {
-  // warn(DEBUG_INFO, "SystemTray: Dock request for window %lx", w);
+  // WMLogInfo("SystemTray: Dock request for window %lx", w);
   int *data = malloc(sizeof(int));
   if (!data) {
     // warn(DEBUG_ERROR, "memory allocation failed");
@@ -393,6 +394,7 @@ static Bool _handleTrayPropertyNotify(XEvent *ev)
   if (!icon) {
     return False;
   }
+  WMLogInfo("SystemTray: PropertyNotify for icon window %lx", ev->xproperty.window);
   v = setBadWindowErrorsHandler();
   Bool map = isIconMapped(icon->w);
   if (removeBadWindowErrorsHandler(v)) {
@@ -497,9 +499,9 @@ Bool _handleClientMessage(XEvent *ev)
   return False;
 }
 
-Bool _handleTrayEvent(XEvent *ev)
+Bool wSystemTrayHandleEvent(XEvent *ev)
 {
-  if (exitapp == True) {
+  if (exitapp == True || selectionWindow == 0) {
     return False;
   }
 
@@ -544,7 +546,7 @@ Bool _handleTrayEvent(XEvent *ev)
 //   XEvent ev;
 //   int fd;
 //   fd_set rfds;
-
+//
 //   // warn(DEBUG_DEBUG, "Entering main loop");
 //   while (!exitapp) {
 //     while (XPending(dpy)) {
@@ -557,7 +559,7 @@ Bool _handleTrayEvent(XEvent *ev)
 //         case MapRequest:
 //           need_update = True;
 //           break;
-
+// 
 //         case MapNotify: {
 //           icon = trayIconFind(ev.xmap.window);
 //           if (icon && !icon->visible) {
@@ -566,7 +568,7 @@ Bool _handleTrayEvent(XEvent *ev)
 //             need_update = True;
 //           }
 //         } break;
-
+//
 //         case UnmapNotify: {
 //           icon = trayIconFind(ev.xunmap.window);
 //           if (icon && icon->visible) {
@@ -575,7 +577,7 @@ Bool _handleTrayEvent(XEvent *ev)
 //             need_update = True;
 //           }
 //         } break;
-
+//
 //         case DestroyNotify: {
 //           if (exitapp)
 //             break;
@@ -588,7 +590,7 @@ Bool _handleTrayEvent(XEvent *ev)
 //             exitapp = 1;
 //           }
 //         } break;
-
+//
 //         case ButtonPress:
 //           // switch (ev.xbutton.button) {
 //           //   case 1:
@@ -624,7 +626,7 @@ Bool _handleTrayEvent(XEvent *ev)
 //           //     break;
 //           // }
 //           break;
-
+//
 //         case ButtonRelease:
 //           // switch (ev.xbutton.button) {
 //           //   case 1:
@@ -650,7 +652,7 @@ Bool _handleTrayEvent(XEvent *ev)
 //           //     break;
 //           // }
 //           break;
-
+//
 //         case ClientMessage:
 //           if (ev.xclient.message_type == wm_atoms.wm_protocols && ev.xclient.format == 32) {
 //             if (ev.xclient.data.l[0] == wm_atoms.net_wm_ping) {
@@ -687,11 +689,12 @@ Bool _handleTrayEvent(XEvent *ev)
 
 #pragma mark - Init and quit
 
-Bool initTray()
+Bool wSystemTrayInit()
 {
   char buf[50];
   XEvent ev;
 
+  root = RootWindow(dpy, 0);
   // Create selection window
   selectionWindow = XCreateSimpleWindow(dpy, root, -1, -1, 1, 1, 0, 0, 0);
   XSelectInput(dpy, selectionWindow, selwindow_mask);
@@ -747,7 +750,7 @@ Bool initTray()
   return True;
 }
 
-static void quitApp()
+void wSystemTrayQuit()
 {
   // warn(DEBUG_INFO, "Free selection");
   if (XGetSelectionOwner(dpy, tray_atoms.net_system_tray_s) == selectionWindow) {

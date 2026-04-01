@@ -30,6 +30,10 @@ struct tray_atoms {
 
 typedef enum TrayFillStyle { TrayFillHorizontal, TrayFillVertical } TrayFillStyle;
 
+Bool wSystemTrayInit();
+void wSystemTrayQuit();
+Bool wSystemTrayHandleEvent(XEvent *ev);
+
 /*
  * X functions
  */
