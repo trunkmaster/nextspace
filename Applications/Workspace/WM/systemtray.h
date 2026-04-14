@@ -4,6 +4,8 @@
 #include <signal.h>
 #include <X11/Xlib.h>
 
+#include "screen.h"
+
 /*
  * Structs
  */
@@ -30,7 +32,7 @@ struct tray_atoms {
 
 typedef enum TrayFillStyle { TrayFillHorizontal, TrayFillVertical } TrayFillStyle;
 
-Bool wSystemTrayInit();
+Bool wSystemTrayInit(WScreen *scr);
 void wSystemTrayQuit();
 Bool wSystemTrayHandleEvent(XEvent *ev);
 

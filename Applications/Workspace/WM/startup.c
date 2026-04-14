@@ -748,7 +748,7 @@ void wStartUp(Bool defaultScreenOnly)
   /* restore saved menus */
   wMenuRestoreState(scr);
   
-  wSystemTrayInit();
+  wSystemTrayInit(scr);
   
   /* If we're not restarting, restore session */
   if (!wPreferences.flags.norestore) {

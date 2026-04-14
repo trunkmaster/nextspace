@@ -41,6 +41,7 @@
 #include "wmspec.h"
 #include "colormap.h"
 #include "shutdown.h"
+#include "systemtray.h"
 
 #import <Workspace+WM.h>
 
@@ -110,6 +111,7 @@ void wShutdown(WMShutdownMode mode)
       CFRunLoopStop(wm_runloop);
       WCHANGE_STATE(WSTATE_EXITING);
 
+      wSystemTrayQuit();
       wScreenSaveState(scr);
       wNETWMCleanup(scr);         /* Delete _NET_* Atoms */
       wPropertiesCleanUp(scr->root_win); /* WM specific properties */

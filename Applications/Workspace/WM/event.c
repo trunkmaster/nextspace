@@ -322,15 +322,16 @@ void DispatchEvent(XEvent *event)
 
   /* for the case that all that is wanted to be dispatched is
    * the stuff above */
-  if (!event)
+  if (!event) {
     return;
+  }
 
-  _saveTimestamp(event);
-
+  // Check for SystemTray events
   if (wSystemTrayHandleEvent(event) == True) {
     return;
   }
 
+  _saveTimestamp(event);
   switch (event->type) {
     case MapRequest:
       _handleMapRequest(event);

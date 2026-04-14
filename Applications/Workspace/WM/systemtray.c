@@ -24,8 +24,7 @@ volatile sig_atomic_t sigusr = 0;
 int iconsize = 16;
 Bool need_update = False;
 
-int screen = 0;
-Window root = None;
+WScreen *screen = NULL;
 Window selectionWindow = None;
 static Time selectionTime;
 
@@ -148,7 +147,7 @@ void _removeTrayIconWindow(struct trayIcon *icon)
   void *v = setBadWindowErrorsHandler();
   XSelectInput(dpy, icon->w, NoEventMask);
   XUnmapWindow(dpy, icon->w);
-  XReparentWindow(dpy, icon->w, root, 0, 0);
+  XReparentWindow(dpy, icon->w, screen->root_win, 0, 0);
   removeBadWindowErrorsHandler(v);
   free(icon->data);
 }
@@ -366,7 +365,7 @@ static void _handleDockRequest(Window w)
     return;
   }
   void *v = setBadWindowErrorsHandler();
-  XWithdrawWindow(dpy, w, screen);
+  XWithdrawWindow(dpy, w, screen->screen);
   XSelectInput(dpy, w, StructureNotifyMask | PropertyChangeMask);
   Bool isMapped = isIconMapped(w);
   if (removeBadWindowErrorsHandler(v)) {
@@ -689,14 +688,16 @@ Bool wSystemTrayHandleEvent(XEvent *ev)
 
 #pragma mark - Init and quit
 
-Bool wSystemTrayInit()
+Bool wSystemTrayInit(WScreen *scr)
 {
   char buf[50];
   XEvent ev;
 
-  root = RootWindow(dpy, 0);
+  screen = scr;
+  // TODO: create selection window with WM - WMCreateWindow())
+
   // Create selection window
-  selectionWindow = XCreateSimpleWindow(dpy, root, -1, -1, 1, 1, 0, 0, 0);
+  selectionWindow = XCreateSimpleWindow(dpy, scr->root_win, -1, -1, 1, 1, 0, 0, 0);
   XSelectInput(dpy, selectionWindow, selwindow_mask);
   // XSetClassHint(dpy, selectionWindow, classHint);
   // XSetWMProtocols(dpy, selectionWindow, wmProtocols, 2);
@@ -710,7 +711,7 @@ Bool wSystemTrayInit()
   //                 (unsigned char *)&pid, 1);
 
   // Get the necessary atoms
-  snprintf(buf, sizeof(buf), "_NET_SYSTEM_TRAY_S%d", screen);
+  snprintf(buf, sizeof(buf), "_NET_SYSTEM_TRAY_S%d", screen->screen);
   tray_atoms.net_system_tray_s = XInternAtom(dpy, buf, False);
   tray_atoms.net_system_tray_opcode = XInternAtom(dpy, "_NET_SYSTEM_TRAY_OPCODE", False);
   tray_atoms.net_system_tray_message_data = XInternAtom(dpy, "_NET_SYSTEM_TRAY_MESSAGE_DATA", False);
@@ -737,7 +738,7 @@ Bool wSystemTrayInit()
 
   // Notify anyone who cares that we are now accepting tray icons
   ev.type = ClientMessage;
-  ev.xclient.window = root;
+  ev.xclient.window = screen->root_win;
   ev.xclient.message_type = tray_atoms.manager;
   ev.xclient.format = 32;
   ev.xclient.data.l[0] = selectionTime;
@@ -745,7 +746,7 @@ Bool wSystemTrayInit()
   ev.xclient.data.l[2] = selectionWindow;
   ev.xclient.data.l[3] = 0;
   ev.xclient.data.l[4] = 0;
-  XSendEvent(dpy, root, False, StructureNotifyMask, &ev);
+  XSendEvent(dpy, screen->root_win, False, StructureNotifyMask, &ev);
 
   return True;
 }
