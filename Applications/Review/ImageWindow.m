@@ -253,6 +253,8 @@
     [scalePopup addItemWithTitle:@"700%"];
     [scalePopup setAutoresizingMask:(NSViewMaxYMargin | NSViewMinXMargin)];
     [scalePopup selectItemWithTitle:@"100%"];
+    [scalePopup setTarget:self];
+    [scalePopup setAction:@selector(scaleImageFromPopup:)];
     scrollView.scaleView = scalePopup;
 
     [box addSubview:scrollView];
@@ -313,6 +315,24 @@
   }
 
   return self;
+}
+
+- (void)scaleImageFromPopup:(id)sender
+{
+  NSString *title = [scalePopup titleOfSelectedItem];
+  /* Parse the percentage value — strip the trailing '%' */
+  double percent = [[title substringToIndex:[title length] - 1] doubleValue];
+  double factor  = percent / 100.0;
+
+  NSSize baseSize = NSMakeSize(_visibleRep.pixelsWide, _visibleRep.pixelsHigh);
+  NSSize scaledSize = NSMakeSize(round(baseSize.width  * factor),
+                                 round(baseSize.height * factor));
+
+  /* Resize the image to the scaled size — NSImageView will stretch it */
+  [_image setSize:scaledSize];
+  [imageView setFrameSize:scaledSize];
+  [imageView setImage:nil];   /* force redraw */
+  [imageView setImage:_image];
 }
 
 - (void)dealloc
