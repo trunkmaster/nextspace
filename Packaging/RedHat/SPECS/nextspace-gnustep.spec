@@ -317,7 +317,7 @@ elif  [ $1 -eq 1 ]; then
 fi
 
 %postun
-if [ -d /usr/NextSpace/Preferences ]; then
+if [ $1 -eq 0 -a -d /usr/NextSpace/Preferences ]; then
   rm -rf /usr/NextSpace/Preferences
 fi
 

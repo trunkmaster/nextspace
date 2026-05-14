@@ -140,8 +140,11 @@ ln -s ../Frameworks/CFNetwork.framework/Versions/${CFNET_VERSION}/libCFNetwork.s
 /usr/NextSpace/Frameworks/CFNetwork.framework/Headers
 
 %postun
-/bin/rm -rf /usr/NextSpace/Frameworks/CoreFoundation.framework
-/bin/rm -rf /usr/NextSpace/Frameworks/CFNetwork.framework
+if [ $1 -eq 0 ]; then
+    # full uninstall:
+    /bin/rm -rf /usr/NextSpace/Frameworks/CoreFoundation.framework
+    /bin/rm -rf /usr/NextSpace/Frameworks/CFNetwork.framework
+fi
 
 %changelog
 * Tue Nov 5 2024 Andres Morales <armm77@icloud.com>
