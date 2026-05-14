@@ -6,7 +6,7 @@ BUILD_RPM=1
 . `dirname $0`/../environment.sh
 
 SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/libcorefoundation.spec
-CF_VERSION=`rpm_version ${SPEC_FILE}`
+CF_VERSION=`rpm_version ${SPEC_FILE} "$@"`
 
 print_H1 " Building Core Foundation (libcorefoundation) package..."
 print_H2 "===== Install Core Foundation build dependencies..."
@@ -20,7 +20,7 @@ curl -L https://github.com/trunkmaster/apple-corefoundation/archive/refs/tags/${
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building CoreFoundation package..."
-rpmbuild -bb ${SPEC_FILE}
+run_rpmbuild ${SPEC_FILE} "$@"
 STATUS=$?
 if [ $STATUS -eq 0 ]; then 
     print_OK " Building of Core Foundation library RPM SUCCEEDED!"

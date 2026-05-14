@@ -1,9 +1,10 @@
 %global toolchain clang
+%{!?release:%global release 1}
 
 Name:		libdispatch
 Epoch:		1
 Version:	5.9.2
-Release:	1%{?dist}
+Release:	%{release}%{?dist}
 Summary:	Grand Central Dispatch (GCD or libdispatch).
 License:	Apache 2.0
 URL:		https://github.com/apple/swift-corelibs-libdispatch

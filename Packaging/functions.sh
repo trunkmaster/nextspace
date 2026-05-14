@@ -30,7 +30,21 @@ uninstall_packages() {
 
 rpm_version()
 {
-    echo `rpmspec -q --qf "%{version}-%{release}.%{arch}:" $1 | awk -F: '{print $1}'`
+    SPEC_FILE=$1
+    shift
+    RELEASE=""
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --release) shift; RELEASE="$1"; test -n "$RELEASE" || error_exit "Missing argument to '--release'.";;
+            *) error_exit "Unsupported argument: '$1'.";;
+        esac
+        shift
+    done
+    if [ -n "$RELEASE" ]; then
+        rpmspec --define "release $RELEASE" -q --qf "%{version}-%{release}.%{arch}:" ${SPEC_FILE} | awk -F: '{print $1}'
+    else
+        rpmspec -q --qf "%{version}-%{release}.%{arch}:" ${SPEC_FILE} | awk -F: '{print $1}'
+    fi
 }
 
 # $1 - path to spec file
@@ -40,7 +54,29 @@ build_rpm()
     spectool -g -R ${SPEC_FILE}
     DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | awk -c '{print $1}'`
     sudo yum -y install ${DEPS}
-    rpmbuild -bb ${SPEC_FILE}
+    run_rpmbuild ${SPEC_FILE}
+}
+
+# $1 - path to spec file, optional: $2, $3, ... - rpm build flags
+run_rpmbuild()
+{
+    SPEC_FILE=$1
+    shift
+    RELEASE=""
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --release) shift; RELEASE="$1"; test -n "$RELEASE" || error_exit "Missing argument to '--release'.";;
+            *) error_exit "Unsupported argument: '$1'.";;
+        esac
+        shift
+    done
+    if [ -n "$RELEASE" ]; then
+        echo "rpmbuild --define \"release $RELEASE\" -bb ${SPEC_FILE}"
+        rpmbuild --define "release $RELEASE" -bb ${SPEC_FILE}
+    else
+        echo "rpmbuild -bb ${SPEC_FILE}"
+        rpmbuild -bb ${SPEC_FILE}
+    fi
 }
 
 # $1 - package name, $2 - rpm file path
@@ -99,20 +135,6 @@ print_ERR()
     echo -e -n "\e[0m"
 }
 
-print_help()
-{
-    SCRIPT_NAME=`basename $0`
-    print_ERR " ERROR: No NEXTSPACE directory specified."
-    printf "\n"
-    print_H2 "You have to specify directory where NEXTSPACE git clone resides."
-    print_H2 "For example, consider this scenario:"
-    printf "\n"
-    print_H2 "$ git clone https://github.com/trunkmaster/nextspace"
-    print_H2 "$ cd nextspace"
-    print_H2 "$ ./scripts/$SCRIPT_NAME ~/nextspace"
-    printf "\n"
-}
-
 prepare_redhat_environment() 
 {
     print_H1 " Prepare build environment"
@@ -145,4 +167,14 @@ prepare_redhat_environment()
     if [ "${BUILD_TOOLS}" != "" ]; then
         sudo dnf -y install ${BUILD_TOOLS}
     fi
+}
+
+error_exit() {
+    print_ERR "*** $*"
+    exit 1
+}
+
+abort_with_message() {
+    echo "Aborting..."
+    exit 1
 }

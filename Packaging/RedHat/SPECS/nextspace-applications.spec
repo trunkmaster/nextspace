@@ -1,8 +1,9 @@
 %global toolchain clang
+%{!?release:%global release 0}
 
 Name:           nextspace-applications
 Version:        0.95
-Release:        0%{?dist}
+Release:        %{release}%{?dist}
 Summary:        NextSpace desktop core applications.
 
 Group:          Libraries/NextSpace

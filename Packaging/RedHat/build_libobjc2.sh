@@ -6,7 +6,7 @@ BUILD_RPM=1
 . `dirname $0`/../environment.sh
 
 SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/libobjc2.spec
-OBJC2_VERSION=`rpm_version ${SPEC_FILE}`
+OBJC2_VERSION=`rpm_version ${SPEC_FILE} "$@"`
 
 print_H1 " Building Objective-C Runtime(libobjc2) package..."
 print_H2 "===== Install libobjc2 build dependencies..."
@@ -17,7 +17,7 @@ print_H2 "===== Downloading libobjc2 sources..."
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building libobjc2 package..."
-rpmbuild -bb ${SPEC_FILE}
+run_rpmbuild ${SPEC_FILE} "$@"
 STATUS=$?
 if [ $STATUS -eq 0 ]; then 
     print_OK " Building of Objective-C Runtime RPM SUCCEEDED!"

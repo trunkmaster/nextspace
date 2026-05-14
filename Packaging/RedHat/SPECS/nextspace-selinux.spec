@@ -1,9 +1,10 @@
 %global selinux_variants mls targeted
 %global selinux_modules ns-core ns-gdomap ns-gpbs ns-gdnc ns-Login
+%{!?release:%global release 0}
 
 Name:		nextspace-selinux
 Version:	0.91
-Release:	0%{?dist}
+Release:	%{release}%{?dist}
 Summary:	SELinux policies for NEXTSPACE components.
 
 Group:		Libraries/NextSpace

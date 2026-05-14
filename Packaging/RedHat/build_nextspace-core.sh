@@ -22,12 +22,12 @@ rm ./nextspace-os_files-${CORE_VERSION}/GNUmakefile
 tar zcf ${RPM_SOURCES_DIR}/nextspace-os_files-${CORE_VERSION}.tar.gz nextspace-os_files-${CORE_VERSION}
 cd $CWD
 
-CORE_VERSION=`rpm_version ${SPEC_FILE}`
+CORE_VERSION=`rpm_version ${SPEC_FILE} "$@"`
 cp ${PROJECT_DIR}/Libraries/gnustep/nextspace.fsl ${RPM_SOURCES_DIR}
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building NEXTSPACE core components (nextspace-core) RPM..."
-rpmbuild -bb ${SPEC_FILE}
+run_rpmbuild ${SPEC_FILE} "$@"
 STATUS=$?
 if [ $STATUS -eq 0 ]; then 
     print_OK " Building of NEXTSPACE Core RPM SUCCEEDED!"

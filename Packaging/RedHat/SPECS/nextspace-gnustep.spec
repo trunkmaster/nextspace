@@ -1,4 +1,5 @@
 %global toolchain clang
+%{!?release:%global release 1}
 %global _hardened_build 0
 
 %define GS_REPO       https://github.com/gnustep
@@ -12,7 +13,7 @@
 
 Name:       nextspace-gnustep
 Version:    %{BASE_VERSION}_%{GUI_VERSION}
-Release:    1%{?dist}
+Release:    %{release}%{?dist}
 Summary:    GNUstep libraries.
 
 Group:      Libraries/NextSpace

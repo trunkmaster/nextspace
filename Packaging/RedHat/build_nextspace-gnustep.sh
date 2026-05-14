@@ -8,7 +8,7 @@ BUILD_RPM=1
 . /etc/profile.d/nextspace.sh
 
 SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-gnustep.spec
-GNUSTEP_VERSION=`rpm_version ${SPEC_FILE}`
+GNUSTEP_VERSION=`rpm_version ${SPEC_FILE} "$@"`
 
 print_H1 " Building NEXTSPACE GNUstep (nextspace-gnustep) package..."
 cp ${PROJECT_DIR}/Libraries/gnustep/gdnc-local.service ${RPM_SOURCES_DIR}
@@ -39,7 +39,7 @@ print_H2 "===== Downloading GNUstep sources..."
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building GNUstep package..."
-rpmbuild -bb ${SPEC_FILE}
+run_rpmbuild ${SPEC_FILE} "$@"
 STATUS=$?
 if [ $STATUS -eq 0 ]; then 
     print_OK " Building of NEXTSPACE GNUstep RPM SUCCEEDED!"

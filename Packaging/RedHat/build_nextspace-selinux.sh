@@ -33,11 +33,11 @@ cp ${PROJECT_DIR}/Libraries/selinux/ns-gpbs.fc ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/selinux/ns-gpbs.if ${RPM_SOURCES_DIR}
 cp ${PROJECT_DIR}/Libraries/selinux/ns-gpbs.te ${RPM_SOURCES_DIR}
 
-SELINUX_VERSION=`rpm_version ${SPEC_FILE}`
+SELINUX_VERSION=`rpm_version ${SPEC_FILE} "$@"`
 spectool -g -R ${SPEC_FILE}
 
 print_H2 "===== Building NEXTSPACE SELinux components (nextspace-selinux) RPM..."
-rpmbuild -bb ${SPEC_FILE}
+run_rpmbuild ${SPEC_FILE} "$@"
 STATUS=$?
 if [ $STATUS -eq 0 ]; then 
     print_OK " Building of NEXTSPACE SELinux RPM SUCCEEDED!"
