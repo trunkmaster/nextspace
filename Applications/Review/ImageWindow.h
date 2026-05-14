@@ -67,6 +67,8 @@
 - (NSString *)imageGamma;
 - (NSString *)imageProgressive;
 
+- (void)scaleImageFromPopup:(id)sender;
+
 @end
 
 @interface NSObject (ImageWindowDelegates)
