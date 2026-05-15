@@ -1,3 +1,0 @@
-usr/NextSpace/Apps/Login.app/Resources/loginwindow.service lib/systemd/system
-usr/NextSpace/Apps/Login.app/*
-usr/NextSpace/bin/Login
