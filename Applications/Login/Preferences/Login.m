@@ -42,6 +42,7 @@
 #import <AppKit/NSApplication.h>
 
 #import <DesktopKit/NXTAlert.h>
+#import <DesktopKit/NXTOpenPanel.h>
 
 #import "Login.h"
 
@@ -212,18 +213,15 @@
   NSLog(@"Set LogIn Hook: %@", [sender className]);
   if ([sender isKindOfClass:[NSTextField class]] != NO) {
     hookPath = [sender stringValue];
-  }
-  else if ([sender isKindOfClass:[NSButton class]] != NO) {
-    NSOpenPanel *panel = [NSOpenPanel openPanel];
+  } else if ([sender isKindOfClass:[NSButton class]] != NO) {
+    NXTOpenPanel *panel = [NXTOpenPanel openPanel];
 
     [panel setCanChooseDirectories:NO];
     [panel setAllowsMultipleSelection:NO];
     [panel setTitle:@"Set Login Hook"];
     [panel setShowsHiddenFiles:NO];
 
-    if ([panel runModalForDirectory:NSHomeDirectory()
-                               file:@""
-                              types:nil] == NSOKButton) {
+    if ([panel runModalForDirectory:NSHomeDirectory() file:@"" types:nil] == NSOKButton) {
       hookPath = [panel filename];
     }
   }
@@ -233,8 +231,7 @@
     if ([sender isKindOfClass:[NSTextField class]] != NO) {
       [loginHookField setStringValue:@""];
     }
-  }
-  else {
+  } else {
     if ([sender isKindOfClass:[NSTextField class]] == NO) {
       [loginHookField setStringValue:hookPath];
     }
@@ -245,23 +242,20 @@
 - (IBAction)setLogoutHook:(id)sender
 {
   NSString *hookPath = nil;
-  
+
   NSLog(@"Set LogOut Hook: %@", [sender className]);
-  
+
   if ([sender isKindOfClass:[NSTextField class]] != NO) {
     hookPath = [sender stringValue];
-  }
-  else if ([sender isKindOfClass:[NSButton class]] != NO) {
-    NSOpenPanel *panel = [NSOpenPanel openPanel];
+  } else if ([sender isKindOfClass:[NSButton class]] != NO) {
+    NXTOpenPanel *panel = [NXTOpenPanel openPanel];
 
     [panel setCanChooseDirectories:NO];
     [panel setAllowsMultipleSelection:NO];
     [panel setTitle:@"Set Logout Hook"];
     [panel setShowsHiddenFiles:NO];
 
-    if ([panel runModalForDirectory:NSHomeDirectory()
-                               file:@""
-                              types:nil] == NSOKButton) {
+    if ([panel runModalForDirectory:NSHomeDirectory() file:@"" types:nil] == NSOKButton) {
       hookPath = [panel filename];
     }
   }
@@ -269,12 +263,11 @@
   // Clear textfield with wrong
   if ([self _hookIsValid:hookPath] == NO) {
     if ([sender isKindOfClass:[NSTextField class]] != NO) {
-      [loginHookField setStringValue:@""];
+      [logoutHookField setStringValue:@""];
     }
-  }
-  else {
+  } else {
     if ([sender isKindOfClass:[NSTextField class]] == NO) {
-      [loginHookField setStringValue:hookPath];
+      [logoutHookField setStringValue:hookPath];
     }
     [defaults setObject:hookPath forKey:@"LogoutHook"];
     if ([(NSControl *)[logoutHookField nextKeyView] isEnabled] != NO)
