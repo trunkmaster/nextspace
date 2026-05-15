@@ -6,7 +6,9 @@
 	    "openImage:",
 	    "showInfoPanel:",
 	    "saveImageAs:",
-	    "showInspector:"
+	    "showInspector:",
+	    "zoomIn:",
+	    "zoomOut:"
 	);
 	Outlets = (
 	    infoPanel

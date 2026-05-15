@@ -68,6 +68,8 @@
 - (NSString *)imageProgressive;
 
 - (void)scaleImageFromPopup:(id)sender;
+- (void)zoomIn;
+- (void)zoomOut;
 
 @end
 

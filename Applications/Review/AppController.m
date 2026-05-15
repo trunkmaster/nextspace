@@ -37,6 +37,25 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
 {
+  NSMenu *mainMenu = [NSApp mainMenu];
+  NSMenuItem *displayItem = (NSMenuItem *)[mainMenu itemWithTitle:@"Display"];
+  if (displayItem) {
+    NSMenu *displayMenu = [displayItem submenu];
+    NSMenuItem *zoomInItem  = (NSMenuItem *)[displayMenu itemWithTitle:@"Zoom In"];
+    NSMenuItem *zoomOutItem = (NSMenuItem *)[displayMenu itemWithTitle:@"Zoom Out"];
+    if (zoomInItem) {
+      [zoomInItem setTarget:self];
+      [zoomInItem setAction:@selector(zoomIn:)];
+      [zoomInItem setKeyEquivalent:@"="];
+      [zoomInItem setKeyEquivalentModifierMask:NSCommandKeyMask];
+    }
+    if (zoomOutItem) {
+      [zoomOutItem setTarget:self];
+      [zoomOutItem setAction:@selector(zoomOut:)];
+      [zoomOutItem setKeyEquivalent:@"-"];
+      [zoomOutItem setKeyEquivalentModifierMask:NSCommandKeyMask];
+    }
+  }
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
@@ -146,6 +165,40 @@
 
     [savePanel release];
     savePanel = nil;
+  }
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+  if ([menuItem action] == @selector(zoomIn:) || [menuItem action] == @selector(zoomOut:)) {
+    NSWindow *keyWindow = [NSApp keyWindow];
+    for (ImageWindow *win in imageWindows) {
+      if (win.window == keyWindow) return YES;
+    }
+    return NO;
+  }
+  return YES;
+}
+
+- (void)zoomIn:(id)sender
+{
+  NSWindow *keyWindow = [NSApp keyWindow];
+  for (ImageWindow *win in imageWindows) {
+    if (win.window == keyWindow) {
+      [win zoomIn];
+      return;
+    }
+  }
+}
+
+- (void)zoomOut:(id)sender
+{
+  NSWindow *keyWindow = [NSApp keyWindow];
+  for (ImageWindow *win in imageWindows) {
+    if (win.window == keyWindow) {
+      [win zoomOut];
+      return;
+    }
   }
 }
 

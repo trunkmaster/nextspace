@@ -284,11 +284,12 @@
       NSLog(@"Representaion: %li x %li", rep.pixelsWide, rep.pixelsHigh);
     }
     frame = [NSWindow frameRectForContentRect:frame styleMask:wMask];
-    if (imageSize.width > ([[NSScreen mainScreen] frame].size.width - 64)) {
-      frame.size.width = [[NSScreen mainScreen] frame].size.width - 164;
-    }
-    if (imageSize.height > ([[NSScreen mainScreen] frame].size.height - 64)) {
-      frame.size.height = [[NSScreen mainScreen] frame].size.height - 64;
+    {
+      NSRect sf = [[NSScreen mainScreen] visibleFrame];
+      CGFloat maxW = floor(sf.size.width  * 0.70);
+      CGFloat maxH = floor(sf.size.height * 0.70);
+      if (frame.size.width  > maxW) frame.size.width  = maxW;
+      if (frame.size.height > maxH) frame.size.height = maxH;
     }
     if (frame.size.width < 100)
       frame.size.width = 100;
@@ -302,7 +303,13 @@
     [_window setReleasedWhenClosed:YES];
     [_window setDelegate:self];
     [_window setFrame:frame display:YES];
-    [_window setMaxSize:frame.size];
+    {
+      NSRect sf = [[NSScreen mainScreen] visibleFrame];
+      NSSize maxContent = NSMakeSize(floor(sf.size.width * 0.70), floor(sf.size.height * 0.70));
+      NSSize maxWinSize = [NSWindow frameRectForContentRect:NSMakeRect(0, 0, maxContent.width, maxContent.height)
+                                                 styleMask:wMask].size;
+      [_window setMaxSize:maxWinSize];
+    }
     [_window setMinSize:NSMakeSize(200, 200)];
     [_window setContentView:box];
     RELEASE(box);
@@ -317,6 +324,35 @@
   return self;
 }
 
+- (void)_resizeWindowForImageSize:(NSSize)scaledSize
+{
+  NSScreen *screen = [_window screen];
+  if (!screen) screen = [NSScreen mainScreen];
+  NSRect sf = [screen visibleFrame];
+
+  CGFloat maxW = floor(sf.size.width  * 0.70);
+  CGFloat maxH = floor(sf.size.height * 0.70);
+
+  NSSize contentSize;
+  contentSize.width  = MAX(200.0, MIN(scaledSize.width,  maxW));
+  contentSize.height = MAX(200.0, MIN(scaledSize.height, maxH));
+
+  NSRect newFrame = [NSWindow frameRectForContentRect:NSMakeRect(0, 0, contentSize.width, contentSize.height)
+                                           styleMask:[_window styleMask]];
+
+  NSRect cur = [_window frame];
+  newFrame.origin.x = NSMidX(cur) - newFrame.size.width  / 2.0;
+  newFrame.origin.y = NSMidY(cur) - newFrame.size.height / 2.0;
+
+  // Clamp so window stays on screen
+  if (newFrame.origin.x < sf.origin.x) newFrame.origin.x = sf.origin.x;
+  if (newFrame.origin.y < sf.origin.y) newFrame.origin.y = sf.origin.y;
+  if (NSMaxX(newFrame) > NSMaxX(sf)) newFrame.origin.x = NSMaxX(sf) - newFrame.size.width;
+  if (NSMaxY(newFrame) > NSMaxY(sf)) newFrame.origin.y = NSMaxY(sf) - newFrame.size.height;
+
+  [_window setFrame:newFrame display:YES];
+}
+
 - (void)scaleImageFromPopup:(id)sender
 {
   NSString *title = [scalePopup titleOfSelectedItem];
@@ -328,11 +364,39 @@
   NSSize scaledSize = NSMakeSize(round(baseSize.width  * factor),
                                  round(baseSize.height * factor));
 
-  /* Resize the image to the scaled size — NSImageView will stretch it */
   [_image setSize:scaledSize];
-  [imageView setFrameSize:scaledSize];
+
+  /* Resize window first so the scroll view has its final content area size */
+  [self _resizeWindowForImageSize:scaledSize];
+
+  /* Size imageView to at least fill the visible area so NSImageAlignCenter
+     keeps the image centered when it is smaller than the scroll view */
+  NSScrollView *sv = [imageView enclosingScrollView];
+  NSSize contentSize = sv ? [sv contentSize] : scaledSize;
+  NSSize viewSize = NSMakeSize(MAX(scaledSize.width,  contentSize.width),
+                               MAX(scaledSize.height, contentSize.height));
+
+  [imageView setFrameSize:viewSize];
   [imageView setImage:nil];   /* force redraw */
   [imageView setImage:_image];
+}
+
+- (void)zoomIn
+{
+  NSInteger idx = [scalePopup indexOfSelectedItem];
+  if (idx < [scalePopup numberOfItems] - 1) {
+    [scalePopup selectItemAtIndex:idx + 1];
+    [self scaleImageFromPopup:scalePopup];
+  }
+}
+
+- (void)zoomOut
+{
+  NSInteger idx = [scalePopup indexOfSelectedItem];
+  if (idx > 0) {
+    [scalePopup selectItemAtIndex:idx - 1];
+    [self scaleImageFromPopup:scalePopup];
+  }
 }
 
 - (void)dealloc
