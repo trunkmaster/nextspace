@@ -28,11 +28,11 @@ $CP_CMD ${CORE_SOURCES}/etc/X11/Xresources.nextspace $DEST_DIR/etc/X11
 if ! [ -d $DEST_DIR/etc/polkit-1/rules.d ];then
 	$MKDIR_CMD -v $DEST_DIR/etc/polkit-1/rules.d
 fi
-$CP_CMD ${CORE_SOURCES}/etc/polkit-1/rules.d/*.rules $DEST_DIR/etc/polkit-1/rules.d/
-if ! [ -d $DEST_DIR/etc/udev/rules.d ];then
-	$MKDIR_CMD -v $DEST_DIR/etc/udev/rules.d
-fi
-$CP_CMD ${CORE_SOURCES}/etc/udev/rules.d/*.rules $DEST_DIR/etc/udev/rules.d/
+#$CP_CMD ${CORE_SOURCES}/etc/polkit-1/rules.d/*.rules $DEST_DIR/etc/polkit-1/rules.d/
+#if ! [ -d $DEST_DIR/etc/udev/rules.d ];then
+#	$MKDIR_CMD -v $DEST_DIR/etc/udev/rules.d
+#fi
+#$CP_CMD ${CORE_SOURCES}/etc/udev/rules.d/*.rules $DEST_DIR/etc/udev/rules.d/
 
 # User environment
 if ! [ -d $DEST_DIR/etc/profile.d ];then
@@ -45,7 +45,6 @@ if ! [ -d $DEST_DIR/etc/skel ];then
 fi
 $CP_CMD ${CORE_SOURCES}/etc/skel/Library $DEST_DIR/etc/skel/
 $CP_CMD ${CORE_SOURCES}/etc/skel/.config $DEST_DIR/etc/skel/
-$CP_CMD ${CORE_SOURCES}/etc/skel/.emacs.d $DEST_DIR/etc/skel/
 $CP_CMD ${CORE_SOURCES}/etc/skel/.gtkrc-2.0 $DEST_DIR/etc/skel/
 $CP_CMD ${CORE_SOURCES}/etc/skel/.*.nextspace $DEST_DIR/etc/skel/
 
