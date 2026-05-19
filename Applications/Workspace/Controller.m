@@ -369,11 +369,17 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 - (void)_startSavedApplications
 {
   NSArray *savedApps;
+  NSString *appName;
+  NSString *command;
   savedApps = [[OSEDefaults userDefaults] objectForKey:@"SavedApplications"];
 
   for (NSDictionary *appInfo in savedApps) {
-    if ([self _isApplicationRunning:[appInfo objectForKey:@"Name"]] == NO) {
-      [self _executeCommand:[appInfo objectForKey:@"Command"]];
+    appName = [appInfo objectForKey:@"Name"];
+    if (appName && [self _isApplicationRunning:appName] == NO) {
+      command = appInfo[@"Command"];
+      if ([command isAbsolutePath] != NO) {
+        [self _executeCommand:command];
+      }
     }
   }
 }
