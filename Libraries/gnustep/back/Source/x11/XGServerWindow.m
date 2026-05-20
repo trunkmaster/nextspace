@@ -47,6 +47,9 @@
 #include <unistd.h>
 #endif
 
+// For WM_CLIENT_MACHINE
+#include <X11/Xmu/SysUtil.h>
+
 #include "wraster.h"
 
 // For X_HAVE_UTF8_STRING
@@ -762,21 +765,39 @@ Bool _get_next_prop_new_event(Display *display, XEvent *event, char *arg) {
    * of type 'long' or 'unsigned long' even on machines where those types
    * hold 64bit values.
    */
-  XChangeProperty(dpy, window->ident, generic._GNUSTEP_WM_ATTR_ATOM,
-                  generic._GNUSTEP_WM_ATTR_ATOM, 32, PropModeReplace,
-                  (unsigned char *)&window->win_attrs,
+  XChangeProperty(dpy, window->ident, generic._GNUSTEP_WM_ATTR_ATOM, generic._GNUSTEP_WM_ATTR_ATOM,
+                  32, PropModeReplace, (unsigned char *)&window->win_attrs,
                   sizeof(GNUstepWMAttributes) / sizeof(CARD32));
+
+  // Set EWMH properties
+  if ((generic.wm & XGWM_EWMH) != 0) {
+    char hostname[256];
+    XTextProperty machineName;
+    long pid;
+
+    // _NET_WM_PID
+    pid = (long)getpid();
+    XChangeProperty(dpy, window->ident, generic._NET_WM_PID_ATOM, XA_CARDINAL, 32, PropModeReplace,
+                    (unsigned char *)&pid, 1);
+
+    // WM_CLIENT_MACHINE
+    hostname[0] = '\0';
+    machineName.encoding = XA_STRING;
+    machineName.format = 8;
+    machineName.nitems = XmuGetHostname(hostname, sizeof(hostname));
+    machineName.value = (unsigned char *)hostname;
+    if (hostname[0] != '\0') {
+      XChangeProperty(dpy, window->ident, XA_WM_CLIENT_MACHINE, XA_STRING, 8, PropModeReplace,
+                      (unsigned char *)hostname, (int)strlen(hostname));
+    }
+
+    // _NET_WM_ICON
+    [self _setNetWMIconFor:window->ident];
+  }
 
   // send to the WM window style hints
   if ((generic.wm & XGWM_WINDOWMAKER) == 0) {
-    setWindowHintsForStyle(dpy, window->ident, style,
-                           generic._MOTIF_WM_HINTS_ATOM);
-  }
-
-  // For window managers supporting EWMH, but not Window Maker,
-  // where we use a different solution, set the window icon.
-  if ((generic.wm & XGWM_EWMH) != 0) {
-    [self _setNetWMIconFor:window->ident];
+    setWindowHintsForStyle(dpy, window->ident, style, generic._MOTIF_WM_HINTS_ATOM);
   }
 
   // Use the globally active input mode
