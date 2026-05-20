@@ -3,24 +3,32 @@
     AppController = {
 	Actions = (
 	    "showPrefPanel:",
+	    "showInspector:",
 	    "openImage:",
+	    "imageWindowWillClose:",
+	    "setDefaultSize:",
 	    "showInfoPanel:",
-	    "saveImageAs:",
-	    "showInspector:"
+	    "zoomIn:",
+	    "zoomOut:"
 	);
 	Outlets = (
+	    infoPanel,
 	    infoPanel
 	);
 	Super = NSObject;
     };
     FirstResponder = {
 	Actions = (
-	    "showInspector:",
+	    "imageWindowWillClose:",
 	    "openImage:",
 	    "orderFrontFontPanel:",
 	    "saveImageAs:",
+	    "setDefaultSize:",
 	    "showInfoPanel:",
-	    "showPrefPanel:"
+	    "showInspector:",
+	    "showPrefPanel:",
+	    "zoomIn:",
+	    "zoomOut:"
 	);
 	Super = NSObject;
     };
