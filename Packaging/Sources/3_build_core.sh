@@ -63,3 +63,8 @@ if ! [ -d $DEST_DIR/usr/share ];then
 	$MKDIR_CMD -v $DEST_DIR/usr/share
 fi
 $CP_CMD ${CORE_SOURCES}/usr/share/* $DEST_DIR/usr/share/
+
+# Set the NEXTSPACE theme as the default for Plymouth
+if [ ! "`plymouth-set-default-theme`" = "nextspace" ]; then
+  plymouth-set-default-theme -R nextspace
+fi
