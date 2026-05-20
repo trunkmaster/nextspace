@@ -335,6 +335,24 @@
   [imageView setImage:_image];
 }
 
+- (void)zoomIn
+{
+  NSInteger idx = [scalePopup indexOfSelectedItem];
+  if (idx < [scalePopup numberOfItems] - 1) {
+    [scalePopup selectItemAtIndex:idx + 1];
+    [self scaleImageFromPopup:scalePopup];
+  }
+}
+
+- (void)zoomOut
+{
+  NSInteger idx = [scalePopup indexOfSelectedItem];
+  if (idx > 0) {
+    [scalePopup selectItemAtIndex:idx - 1];
+    [self scaleImageFromPopup:scalePopup];
+  }
+}
+
 - (void)dealloc
 {
   RELEASE(_window);

@@ -45,4 +45,7 @@
 - (void)setDefaultSize:(id)sender;
 //Info Panel
 - (void)showInfoPanel:(id)sender;
+
+- (void)zoomIn:(id)sender;
+- (void)zoomOut:(id)sender;
 @end

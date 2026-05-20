@@ -149,6 +149,40 @@
   }
 }
 
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+  if ([menuItem action] == @selector(zoomIn:) || [menuItem action] == @selector(zoomOut:)) {
+    NSWindow *keyWindow = [NSApp keyWindow];
+    for (ImageWindow *win in imageWindows) {
+      if (win.window == keyWindow) return YES;
+    }
+    return NO;
+  }
+  return YES;
+}
+
+- (void)zoomIn:(id)sender
+{
+  NSWindow *keyWindow = [NSApp keyWindow];
+  for (ImageWindow *win in imageWindows) {
+    if (win.window == keyWindow) {
+      [win zoomIn];
+      return;
+    }
+  }
+}
+
+- (void)zoomOut:(id)sender
+{
+  NSWindow *keyWindow = [NSApp keyWindow];
+  for (ImageWindow *win in imageWindows) {
+    if (win.window == keyWindow) {
+      [win zoomOut];
+      return;
+    }
+  }
+}
+
 - (void)imageWindowWillClose:(id)sender
 {
   if (sender) {
