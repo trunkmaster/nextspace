@@ -1,6 +1,17 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-. ../environment.sh
+. `dirname $0`/../environment.sh
+
+#----------------------------------------
+# Install package dependecies
+#----------------------------------------
+if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+   sudo apt-get install -q -y ${RUNTIME_RUN_DEPS} ${GNUSTEP_MAKE_DEPS} || exit 1
+else
+   SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-core.spec
+   DEPS=`rpmspec -q --requires ${SPEC_FILE} | grep -v libobjc2 | grep -v libdispatch | grep -v nextspace-core | grep -v git | grep -v clang | awk -c '{print $1}'`
+   sudo yum -y install ${DEPS} || exit 1
+fi
 
 #----------------------------------------
 # Install system configuration files
@@ -63,8 +74,3 @@ if ! [ -d $DEST_DIR/usr/share ];then
 	$MKDIR_CMD -v $DEST_DIR/usr/share
 fi
 $CP_CMD ${CORE_SOURCES}/usr/share/* $DEST_DIR/usr/share/
-
-# Set the NEXTSPACE theme as the default for Plymouth
-if [ ! "`plymouth-set-default-theme`" = "nextspace" ]; then
-  plymouth-set-default-theme -R nextspace
-fi
