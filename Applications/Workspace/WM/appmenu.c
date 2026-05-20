@@ -506,9 +506,12 @@ static WMenu *_createWindowsMenu(WApplication *wapp)
 static void _switchDesktopCallback(WMenu *menu, WMenuItem *entry)
 {
   WWindow *wwin = menu->frame->screen_ptr->focused_window;
+  WApplication *wapp = wApplicationForWindow(wwin);
 
-  wSelectWindow(wwin, False);
-  wWindowChangeDesktop(wwin, entry->index);
+  if (wapp && (wapp == menu->app)) {
+    wSelectWindow(wwin, False);
+    wWindowChangeDesktop(wwin, entry->index);
+  }
 }
 
 static void _updateDesktopsMenu(WMenu *desktops_menu)
