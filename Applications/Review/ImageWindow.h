@@ -22,6 +22,8 @@
   NSDictionary *attr;
   NSPopUpButton *scalePopup;
   NSBox *box;
+  NSScrollView *_scrollView;
+  NSImage *_displayImage;
 }
 
 @property (readonly) NSWindow *window;
@@ -35,6 +37,7 @@
 
 - (void)windowWillClose:(NSNotification *)notif;
 - (void)windowDidBecomeKey:(NSNotification *)aNotification;
+- (void)windowDidResize:(NSNotification *)aNotification;
 
 - (NSString *)path;
 - (NSString *)imagePath;

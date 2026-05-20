@@ -143,10 +143,29 @@
   } else {
     [_visibleRep retain];
     if ([_visibleRep isKindOfClass:[NSBitmapImageRep class]]) {
-      // [_image release];
-      _image = [[NSImage alloc] initWithData:[(NSBitmapImageRep *)_visibleRep TIFFRepresentation]];
-      [_image setSize:NSMakeSize(_visibleRep.pixelsWide, _visibleRep.pixelsHigh)];
-      [imageView setImage:_image];
+      if (_displayImage) {
+        [_displayImage release];
+      }
+      _displayImage = [[NSImage alloc] initWithData:[(NSBitmapImageRep *)_visibleRep TIFFRepresentation]];
+
+      /* Preserve the current zoom: read the active percentage from the popup
+         and apply it to the new representation instead of resetting to 100% */
+      NSString *currentTitle = [scalePopup titleOfSelectedItem];
+      double currentPercent  = currentTitle
+          ? [[currentTitle substringToIndex:[currentTitle length] - 1] doubleValue]
+          : 100.0;
+      double factor     = currentPercent / 100.0;
+      NSSize scaledSize = NSMakeSize(round(_visibleRep.pixelsWide  * factor),
+                                     round(_visibleRep.pixelsHigh * factor));
+      [_displayImage setSize:scaledSize];
+      [imageView setImage:_displayImage];
+
+      /* Sync imageView frame so centering stays correct */
+      NSSize visibleSize = [_scrollView contentSize];
+      NSSize frameSize;
+      frameSize.width  = MAX(scaledSize.width,  visibleSize.width);
+      frameSize.height = MAX(scaledSize.height, visibleSize.height);
+      [imageView setFrameSize:frameSize];
     } else {
       return NO;
     }
@@ -198,8 +217,8 @@
     frame.size = imageSize;
     
     // ImageView
-    if (imageSize.width < 200 || imageSize.height < 200) {
-      frame.size = NSMakeSize(200,200);
+    if (imageSize.width < 100 || imageSize.height < 100) {
+      frame.size = NSMakeSize(100,100);
     }
     imageView = [[NSImageView alloc] initWithFrame:frame];
     [imageView setEditable:NO];
@@ -222,6 +241,7 @@
     [scrollView setDocumentView:imageView];
     RELEASE(imageView);
     [scrollView setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+    _scrollView = scrollView;
 
     // Content view
     box = [[NSBox alloc] init];
@@ -284,41 +304,145 @@
       NSLog(@"Representaion: %li x %li", rep.pixelsWide, rep.pixelsHigh);
     }
     frame = [NSWindow frameRectForContentRect:frame styleMask:wMask];
-    if (imageSize.width > ([[NSScreen mainScreen] frame].size.width - 64)) {
-      frame.size.width = [[NSScreen mainScreen] frame].size.width - 164;
-    }
-    if (imageSize.height > ([[NSScreen mainScreen] frame].size.height - 64)) {
-      frame.size.height = [[NSScreen mainScreen] frame].size.height - 64;
-    }
-    if (frame.size.width < 100)
-      frame.size.width = 100;
-    if (frame.size.height < 100)
-      frame.size.height = 100;
 
-    _window = [[NSWindow alloc] initWithContentRect:frame
-                                         styleMask:wMask
-                                           backing:NSBackingStoreRetained
-                                             defer:YES];
-    [_window setReleasedWhenClosed:YES];
-    [_window setDelegate:self];
-    [_window setFrame:frame display:YES];
-    [_window setMaxSize:frame.size];
-    [_window setMinSize:NSMakeSize(200, 200)];
-    [_window setContentView:box];
-    RELEASE(box);
-    [_window setTitleWithRepresentedFilename:path];
-    [_window setReleasedWhenClosed:YES];
+    NSSize screenSize = [[NSScreen mainScreen] visibleFrame].size;
+    BOOL fitsOnScreen = (imageSize.width  <= screenSize.width  - 64 &&
+                         imageSize.height <= screenSize.height - 64);
 
-    [_window center];
-    [_window makeKeyAndOrderFront:nil];
-    [_window display];
+    if (fitsOnScreen) {
+      /* Small image: open at 100% zoom, window sized to the image */
+      if (frame.size.width < 100)
+        frame.size.width = 100;
+      if (frame.size.height < 100)
+        frame.size.height = 100;
+
+      _window = [[NSWindow alloc] initWithContentRect:frame
+                                           styleMask:wMask
+                                             backing:NSBackingStoreRetained
+                                               defer:YES];
+      [_window setReleasedWhenClosed:YES];
+      [_window setDelegate:self];
+      [_window setFrame:frame display:YES];
+      [_window setMaxSize:[[NSScreen mainScreen] visibleFrame].size];
+      [_window setMinSize:NSMakeSize(100, 100)];
+      [_window setContentView:box];
+      RELEASE(box);
+      [_window setTitleWithRepresentedFilename:path];
+
+      [_window center];
+      [_window makeKeyAndOrderFront:nil];
+      [_window display];
+
+      /* Image already at 100% — just update the imageView frame for centering */
+      [_image setSize:imageSize];
+      NSSize visibleSize = [_scrollView contentSize];
+      NSSize frameSize;
+      frameSize.width  = MAX(imageSize.width,  visibleSize.width);
+      frameSize.height = MAX(imageSize.height, visibleSize.height);
+      [imageView setFrameSize:frameSize];
+      [imageView setImage:nil];
+      [imageView setImage:_image];
+      [scalePopup selectItemWithTitle:@"100%"];
+
+    } else {
+      /* Large image: clamp window to screen and scale proportionally */
+      if (imageSize.width > screenSize.width - 64)
+        frame.size.width = screenSize.width - 164;
+      if (imageSize.height > screenSize.height - 64)
+        frame.size.height = screenSize.height - 64;
+      if (frame.size.width < 100)
+        frame.size.width = 100;
+      if (frame.size.height < 100)
+        frame.size.height = 100;
+
+      _window = [[NSWindow alloc] initWithContentRect:frame
+                                           styleMask:wMask
+                                             backing:NSBackingStoreRetained
+                                               defer:YES];
+      [_window setReleasedWhenClosed:YES];
+      [_window setDelegate:self];
+      [_window setFrame:frame display:YES];
+      [_window setMaxSize:[[NSScreen mainScreen] visibleFrame].size];
+      [_window setMinSize:NSMakeSize(100, 100)];
+      [_window setContentView:box];
+      RELEASE(box);
+      [_window setTitleWithRepresentedFilename:path];
+
+      [_window center];
+      [_window makeKeyAndOrderFront:nil];
+      [_window display];
+      [self _updateImageViewFrame];
+    }
   }
 
   return self;
 }
 
+- (void)_removeDynamicPopupItemIfNeeded
+{
+  /* Guard against empty popup */
+  if ([scalePopup numberOfItems] == 0) return;
+
+  /* The dynamic item (if present) is always the last one and has a tag of 1 */
+  NSMenuItem *last = [[scalePopup menu] itemAtIndex:[scalePopup numberOfItems] - 1];
+  if ([last tag] == 1) {
+    [[scalePopup menu] removeItem:last];
+  }
+}
+
+- (void)_updateImageViewFrame
+{
+  NSSize visibleSize = [_scrollView contentSize];
+  NSSize baseSize    = NSMakeSize(_visibleRep.pixelsWide, _visibleRep.pixelsHigh);
+
+  /* Compute the scale factor that fits the image proportionally in the visible area */
+  double factorX = visibleSize.width  / baseSize.width;
+  double factorY = visibleSize.height / baseSize.height;
+  double factor  = MIN(factorX, factorY);
+
+  /* Cap at 600% maximum */
+  if (factor > 6.0) factor = 6.0;
+
+  NSSize scaledSize = NSMakeSize(round(baseSize.width  * factor),
+                                 round(baseSize.height * factor));
+
+  /* Update the image size */
+  [_image setSize:scaledSize];
+
+  /* Expand imageView to fill visible area so NSImageAlignCenter works */
+  NSSize frameSize;
+  frameSize.width  = MAX(scaledSize.width,  visibleSize.width);
+  frameSize.height = MAX(scaledSize.height, visibleSize.height);
+  [imageView setFrameSize:frameSize];
+  [imageView setImage:nil];
+  [imageView setImage:_image];
+
+  /* Update popup: remove old dynamic item, insert exact percentage */
+  [self _removeDynamicPopupItemIfNeeded];
+  NSInteger percent = (NSInteger)round(factor * 100.0);
+  NSString *label   = [NSString stringWithFormat:@"%ld%%", (long)percent];
+
+  /* Only add a dynamic item if the percentage isn't already in the fixed list */
+  NSInteger existingIdx = [scalePopup indexOfItemWithTitle:label];
+  if (existingIdx >= 0) {
+    [scalePopup selectItemAtIndex:existingIdx];
+  } else {
+    NSMenuItem *dynItem = [[NSMenuItem alloc] initWithTitle:label
+                                                     action:@selector(scaleImageFromPopup:)
+                                              keyEquivalent:@""];
+    [dynItem setTarget:self];
+    [dynItem setTag:1]; /* mark as dynamic so we can remove it later */
+    [[scalePopup menu] addItem:dynItem];
+    RELEASE(dynItem);
+    [scalePopup selectItemWithTitle:label];
+  }
+}
+
 - (void)scaleImageFromPopup:(id)sender
 {
+  /* Remove dynamic item before reading the selection, so indices are stable */
+  [self _removeDynamicPopupItemIfNeeded];
+
   NSString *title = [scalePopup titleOfSelectedItem];
   /* Parse the percentage value — strip the trailing '%' */
   double percent = [[title substringToIndex:[title length] - 1] doubleValue];
@@ -330,25 +454,65 @@
 
   /* Resize the image to the scaled size — NSImageView will stretch it */
   [_image setSize:scaledSize];
-  [imageView setFrameSize:scaledSize];
+
+  /* Expand imageView to fill visible area so NSImageAlignCenter works */
+  NSSize visibleSize = [_scrollView contentSize];
+  NSSize frameSize;
+  frameSize.width  = MAX(scaledSize.width,  visibleSize.width);
+  frameSize.height = MAX(scaledSize.height, visibleSize.height);
+  [imageView setFrameSize:frameSize];
   [imageView setImage:nil];   /* force redraw */
   [imageView setImage:_image];
 }
 
 - (void)zoomIn
 {
-  NSInteger idx = [scalePopup indexOfSelectedItem];
-  if (idx < [scalePopup numberOfItems] - 1) {
-    [scalePopup selectItemAtIndex:idx + 1];
+  /* Capture current percentage before removing any dynamic item */
+  NSString *currentTitle = [scalePopup titleOfSelectedItem];
+  if (!currentTitle) return;
+  double currentPercent  = [[currentTitle substringToIndex:[currentTitle length] - 1] doubleValue];
+
+  [self _removeDynamicPopupItemIfNeeded];
+
+  /* Find the first fixed item strictly greater than the current percentage */
+  NSInteger target = -1;
+  for (NSInteger i = 0; i < [scalePopup numberOfItems]; i++) {
+    NSString *title   = [[scalePopup itemAtIndex:i] title];
+    double itemPercent = [[title substringToIndex:[title length] - 1] doubleValue];
+    if (itemPercent > currentPercent) {
+      target = i;
+      break;
+    }
+  }
+
+  if (target >= 0) {
+    [scalePopup selectItemAtIndex:target];
     [self scaleImageFromPopup:scalePopup];
   }
 }
 
 - (void)zoomOut
 {
-  NSInteger idx = [scalePopup indexOfSelectedItem];
-  if (idx > 0) {
-    [scalePopup selectItemAtIndex:idx - 1];
+  /* Capture current percentage before removing any dynamic item */
+  NSString *currentTitle = [scalePopup titleOfSelectedItem];
+  if (!currentTitle) return;
+  double currentPercent  = [[currentTitle substringToIndex:[currentTitle length] - 1] doubleValue];
+
+  [self _removeDynamicPopupItemIfNeeded];
+
+  /* Find the last fixed item strictly less than the current percentage */
+  NSInteger target = -1;
+  for (NSInteger i = [scalePopup numberOfItems] - 1; i >= 0; i--) {
+    NSString *title    = [[scalePopup itemAtIndex:i] title];
+    double itemPercent = [[title substringToIndex:[title length] - 1] doubleValue];
+    if (itemPercent < currentPercent) {
+      target = i;
+      break;
+    }
+  }
+
+  if (target >= 0) {
+    [scalePopup selectItemAtIndex:target];
     [self scaleImageFromPopup:scalePopup];
   }
 }
@@ -357,6 +521,7 @@
 {
   RELEASE(_window);
   RELEASE(_image);
+  RELEASE(_displayImage);
   RELEASE(imagePath);
   RELEASE(attr);
 
@@ -388,6 +553,13 @@
 {
   if ([[aNotification object] isEqual:_window]) {
     [[Inspector sharedInspector] imageWindowDidBecomeActive:self];
+  }
+}
+
+- (void)windowDidResize:(NSNotification *)aNotification
+{
+  if ([[aNotification object] isEqual:_window]) {
+    [self _updateImageViewFrame];
   }
 }
 
