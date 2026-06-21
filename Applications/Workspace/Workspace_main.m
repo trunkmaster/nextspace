@@ -142,7 +142,8 @@ int main(int argc, const char **argv)
   fprintf(stderr, "=== Starting Workspace ===\n");
   defs = [[OSEDefaults alloc] initDefaultsWithPath:NSUserDomainMask domain:@"Workspace"];
   workspace_q = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
-  if ([defs boolForKey:@"RestoreDisplayLayout"] != NO) {
+  if ([defs objectForKey:@"RestoreDisplayLayout"] == nil ||
+      [defs boolForKey:@"RestoreDisplayLayout"] == YES) {
     dispatch_sync(workspace_q, ^{
       // Restore display layout
       OSEScreen *screen = [OSEScreen sharedScreen];
