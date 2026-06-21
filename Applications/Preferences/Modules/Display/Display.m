@@ -457,6 +457,12 @@
   if ([[activeResolution objectForKey:OSEDisplayResolutionNameKey]
           isEqualToString:[oldResolution objectForKey:OSEDisplayResolutionNameKey]] != NO) {
     NSLog(@"%s: Resolution has been reverted to last good. Keep it!", __func__);
+    // The display was reverted (Revert pressed or countdown expired). The
+    // resolution popup still shows the rejected resolution, so sync it and the
+    // refresh-rate popup back to the now-active resolution.
+    [resolutionBtn selectItemWithTitle:[activeResolution objectForKey:OSEDisplayResolutionNameKey]];
+    [self fillRateButton];
+    [self updateRateButton];
     return;
   }
 
@@ -480,6 +486,10 @@
     }
   } else {
     NSLog(@"Keep current resoltuion.");
+    // Remember the kept resolution as the new "last good" so a subsequent
+    // revert returns here instead of to the resolution that was active before
+    // this change.
+    [lastGoodResolution setObject:activeResolution forKey:[selectedDisplay outputName]];
   }
   [alert release];
 }
