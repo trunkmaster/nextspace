@@ -1091,17 +1091,22 @@ static OSEScreen *systemScreen = nil;
 
   [updateScreenLock lock];
   
-  /* If new screen size is BIGGER - set new screen size here
-     Example: current size is 1440x900, new size 1280x960. Height is bigger
-     but width is smaller. In VirtualBox this leads to - X Error: 
-     BadMatch (invalid parameter attributes). */
-  if (newPixSize.width > sizeInPixels.width &&
+  /* If either dimension GROWS, enlarge the framebuffer up front to the
+     per-axis maximum of the current and new sizes, so the new CRTC mode
+     always fits. Growing only when BOTH dimensions increase left the
+     framebuffer too narrow/short when just one dimension changed (e.g.
+     1400x1050 -> 1680x1050): XRRSetCrtcConfig then failed with BadMatch and
+     the display showed a black band. Using the union (not newPixSize) keeps
+     the framebuffer large enough for the still-current layout during the
+     transition. */
+  if (newPixSize.width > sizeInPixels.width ||
       newPixSize.height > sizeInPixels.height) {
-    NSDebugLLog(@"Screen", @"OSEScreen: set new BIGGER screen size: START");
+    NSDebugLLog(@"Screen", @"OSEScreen: grow screen size to union: START");
     XRRSetScreenSize(xDisplay, xRootWindow,
-                     (int)newPixSize.width, (int)newPixSize.height,
+                     (int)MAX(newPixSize.width, sizeInPixels.width),
+                     (int)MAX(newPixSize.height, sizeInPixels.height),
                      (int)mmSize.width, (int)mmSize.height);
-    NSDebugLLog(@"Screen", @"OSEScreen: set new BIGGER screen size: END");
+    NSDebugLLog(@"Screen", @"OSEScreen: grow screen size to union: END");
   }
   
   // Set resolution and gamma to displays
@@ -1143,14 +1148,16 @@ static OSEScreen *systemScreen = nil;
     [display setGammaFromDescription:gamma];
   }
 
-  // If new screen size is SMALLER - set new screen size here
-  if (newPixSize.width < sizeInPixels.width ||
-      newPixSize.height < sizeInPixels.height) {
-    NSDebugLLog(@"Screen", @"OSEScreen: set new SMALLER screen size: START");
+  // All CRTCs are now placed within the (possibly grown) framebuffer, so set
+  // it to the exact final size. This shrinks it back when growing only one
+  // dimension or when the new layout is smaller.
+  if (newPixSize.width != sizeInPixels.width ||
+      newPixSize.height != sizeInPixels.height) {
+    NSDebugLLog(@"Screen", @"OSEScreen: set final screen size: START");
     XRRSetScreenSize(xDisplay, xRootWindow,
                      (int)newPixSize.width, (int)newPixSize.height,
                      (int)mmSize.width, (int)mmSize.height);
-    NSDebugLLog(@"Screen", @"OSEScreen: set new SMALLER screen size: END");
+    NSDebugLLog(@"Screen", @"OSEScreen: set final screen size: END");
   }
   
   sizeInPixels = newPixSize;
