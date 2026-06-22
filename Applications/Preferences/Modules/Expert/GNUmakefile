@@ -18,7 +18,10 @@ $(BUNDLE_NAME)_HEADERS= \
 
 $(BUNDLE_NAME)_RESOURCE_FILES = \
 	Resources/Expert.tiff \
-	Resources/bundle.registry
+	Resources/bundle.registry \
+	Resources/PermYes.tiff \
+	Resources/PermNo.tiff \
+	Resources/PermNoChange.tiff
 
 $(BUNDLE_NAME)_LANGUAGES = \
 	English

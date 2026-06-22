@@ -34,6 +34,8 @@
   id privateWindowServerBtn;
   id privateSoundServerBtn;
 
+  id permissionsView;
+
   OSEDefaults	*defaults;
   NSImage	*image;
 }

@@ -21,9 +21,11 @@
 #import <errno.h>
 #import <string.h>
 #import <sys/utsname.h>
+#import <sys/stat.h>
 
 #import <GNUstepGUI/GSDisplayServer.h>
 #import <X11/Xlib.h>
+#import <Foundation/NSDistributedNotificationCenter.h>
 
 #include <core/log_utils.h>
 #include <core/string_utils.h>
@@ -674,6 +676,34 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
          selector:@selector(applicationDidChangeScreenParameters:)
              name:NSApplicationDidChangeScreenParametersNotification
            object:NSApp];
+
+  // File creation mask (umask): apply the saved value to this session leader
+  // now, and re-apply it live whenever the Preferences Expert module changes
+  // it, so the setting takes effect without re-logging in.
+  [self applyFileCreationMask];
+  [[NSDistributedNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(fileCreationMaskDidChange:)
+               name:@"NXFileCreationMaskDidChangeNotification"
+             object:@"Preferences"];
+}
+
+// Read the saved file-creation umask from the global defaults and apply it to
+// the Workspace process. Folders/files created by the File Viewer and every
+// application Workspace launches afterwards inherit this umask. Already
+// running applications keep the umask they inherited at their own launch.
+- (void)applyFileCreationMask
+{
+  OSEDefaults *defs = [OSEDefaults globalUserDefaults];
+
+  if ([defs objectForKey:@"NXFileCreationMask"] != nil) {
+    umask((mode_t)[defs integerForKey:@"NXFileCreationMask"]);
+  }
+}
+
+- (void)fileCreationMaskDidChange:(NSNotification *)aNotif
+{
+  [self applyFileCreationMask];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notif
