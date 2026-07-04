@@ -1,15 +1,21 @@
 # Works for Debian 12 and Ubuntu 22.04
 
+APT_INSTALL_OPTIONS="-y -o Dpkg::Progress-Fancy=1"
+
 BUILD_TOOLS="
     curl
     clang
+    binutils
     cmake
     git
+    pkg-config
 "
 #--- libdispatch, libcorefoundation, libobjc2
 RUNTIME_DEPS="
     libbsd-dev
     uuid-dev
+    libxml2-dev
+    libicu-dev
     libcurl4-gnutls-dev
     libavahi-compat-libdnssd-dev
 "
@@ -83,17 +89,27 @@ GNUSTEP_GUI_RUN_DEPS="
 #--- back-art
 BACK_ART_DEPS="
     libart-2.0-dev
+    libcairo2-dev
+    libfontconfig1-dev
     libfreetype-dev
+    libgl-dev
     libxcursor-dev
     libxfixes-dev
+    libxft-dev
+    libxrender-dev
     libxt-dev
     libxrandr-dev
 "
 BACK_ART_RUN_DEPS="
     libart-2.0-2
+    libcairo2
+    libfontconfig1
     libfreetype6
+    libgl1
     libxcursor1
     libxfixes3
+    libxft2
+    libxrender1
     libxt6
     libxrandr2
 "
@@ -146,8 +162,7 @@ APPS_RUN_DEPS="
     xserver-xorg-input-evdev
     xserver-xorg-input-synaptics
     xfonts-100dpi
-    xserver-xorg-video-vmware
-    xserver-xorg-video-intel
+    xserver-xorg-video-all
     x11-xkb-utils
     x11-xserver-utils
 "

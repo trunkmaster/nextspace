@@ -7,17 +7,15 @@
 # Install package dependecies
 #----------------------------------------
 ${ECHO} ">>> Installing ${OS_ID} packages for NextSpace frameworks build"
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+if is_debian_like; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
-	sudo apt-get install -y ${FRAMEWORKS_BUILD_DEPS}
-	sudo apt-get install -y ${FRAMEWORKS_RUN_DEPS}
+	install_apt_packages ${FRAMEWORKS_BUILD_DEPS}
+	install_apt_packages ${FRAMEWORKS_RUN_DEPS}
 else
-	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
+	${ECHO} "RedHat-based Linux distribution: calling 'sudo ${RPM_PACKAGE_MANAGER} -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-frameworks.spec
-	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "nextspace" | awk -c '{print $1}'`
-	sudo yum -y install ${DEPS} || exit 1
-	DEPS=`rpmspec -q --requires ${SPEC_FILE} | grep -v corefoundation | grep -v nextspace | awk -c '{print $1}'`
-	sudo yum -y install ${DEPS} || exit 1
+	install_rpm_spec_buildrequires "${SPEC_FILE}" "nextspace"
+	install_rpm_spec_requires "${SPEC_FILE}" "corefoundation" "nextspace"
 fi
 
 #----------------------------------------
@@ -26,10 +24,7 @@ fi
 SOURCES_DIR=${PROJECT_DIR}/Frameworks
 BUILD_DIR=${BUILD_ROOT}/Frameworks
 
-if [ -d ${BUILD_DIR} ]; then
-	rm -rf ${BUILD_DIR}
-fi
-cp -R ${SOURCES_DIR} ${BUILD_ROOT}
+copy_clean_build_tree "${SOURCES_DIR}" "${BUILD_DIR}"
 
 #----------------------------------------
 # Build
@@ -43,8 +38,8 @@ $MAKE_CMD || exit 1
 #----------------------------------------
 # Install
 #----------------------------------------
-$INSTALL_CMD
+run_install
 if [ "$DEST_DIR" = "" ]; then
-	sudo ldconfig
+	refresh_ldconfig
 	$LN_CMD /usr/NextSpace/Frameworks/DesktopKit.framework/Resources/25-nextspace-fonts.conf /etc/fonts/conf.d/25-nextspace-fonts.conf
 fi

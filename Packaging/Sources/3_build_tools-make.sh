@@ -6,14 +6,13 @@
 # Install package dependecies
 #----------------------------------------
 ${ECHO} ">>> Installing ${OS_ID} packages for GNUstep Make build"
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+if is_debian_like; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
-	sudo apt-get install -y ${GNUSTEP_MAKE_DEPS} || exit 1
+	install_apt_packages ${GNUSTEP_MAKE_DEPS}
 else
-	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
+	${ECHO} "RedHat-based Linux distribution: calling 'sudo ${RPM_PACKAGE_MANAGER} -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-core.spec
-	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v libobjc2 | grep -v "libdispatch-devel" | awk -c '{print $1}'`
-	sudo yum -y install ${DEPS} || exit 1
+	install_rpm_spec_buildrequires "${SPEC_FILE}" "libobjc2" "libdispatch-devel"
 fi
 
 #----------------------------------------
@@ -21,10 +20,10 @@ fi
 #----------------------------------------
 GIT_PKG_NAME=tools-make-make-${gnustep_make_version}
 if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
-	curl -L https://github.com/gnustep/tools-make/archive/make-${gnustep_make_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
-	cd ${BUILD_ROOT}
-	tar zxf ${GIT_PKG_NAME}.tar.gz || exit 1
-	cd ..
+	download_tarball_once \
+		"https://github.com/gnustep/tools-make/archive/make-${gnustep_make_version}.tar.gz" \
+		"${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz" \
+		"${BUILD_ROOT}/${GIT_PKG_NAME}"
 fi
 
 #----------------------------------------
@@ -51,5 +50,5 @@ cp ${PROJECT_DIR}/Libraries/gnustep/nextspace.fsl ${BUILD_ROOT}/tools-make-make-
 #----------------------------------------
 # Install
 #----------------------------------------
-$INSTALL_CMD || exit 1
+run_install || exit 1
 cd ${_PWD}

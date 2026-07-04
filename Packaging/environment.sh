@@ -1,14 +1,15 @@
 ###############################################################################
 # Variables
 ###############################################################################
-ECHO="/usr/bin/echo -e"
+ECHO="printf %b\n"
+ECHO_N="printf %b"
 _PWD=`pwd`
 
 #----------------------------------------
 # Libraries and applications
 #----------------------------------------
 # Apple
-libdispatch_version=5.9.2
+libdispatch_version=6.0.2
 libcorefoundation_version=5.9.2
 libcfnetwork_version=129.20
 # GNUstep
@@ -24,16 +25,16 @@ projectcenter_version=0_7_0
 #----------------------------------------
 . /etc/os-release
 # OS type like "rhel"
-OS_LIKE=`echo ${ID_LIKE} | awk '{print $1}'`
+OS_LIKE=`echo "${ID_LIKE}" | awk '{print $1}'`
 # OS name like "fedora"
-OS_ID=$ID
-_ID=`echo ${ID} | awk -F\" '{print $2}'`
+OS_ID="$ID"
+_ID=`echo "${ID}" | awk -F\" '{print $2}'`
 if [ -n "${_ID}" ] && [ "${_ID}" != " " ]; then
   OS_ID=${_ID}
 fi
 # OS version like "39"
-OS_VERSION=$VERSION_ID
-_VER=`echo ${VERSION_ID} | awk -F\. '{print $1}'`
+OS_VERSION="$VERSION_ID"
+_VER=`echo "${VERSION_ID}" | awk -F\. '{print $1}'`
 if [ -n "${_VER}" ] && [ "${_VER}" != " " ]; then
   OS_VERSION=$_VER
 fi
@@ -66,7 +67,7 @@ PROJECT_DIR=`pwd`
 ${ECHO} "NextSpace repo:\t${PROJECT_DIR}"
 cd ${_PWD}
 
-if [ -z $BUILD_RPM ]; then
+if [ -z "$BUILD_RPM" ]; then
   BUILD_ROOT="${_PWD}/BUILD_ROOT"
   if [ ! -d ${BUILD_ROOT} ]; then
     mkdir ${BUILD_ROOT}
@@ -99,8 +100,13 @@ fi
 #----------------------------------------
 # Package dependencies
 #----------------------------------------
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
-    . ./${OS_ID}-${OS_VERSION}.deps.sh || exit 1
+if [ "${OS_ID}" = "debian" ] || [ "${OS_ID}" = "ubuntu" ]; then
+    DEPS_FILE="./${OS_ID}-${OS_VERSION}.deps.sh"
+    if [ ! -f "${DEPS_FILE}" ]; then
+      echo "Unsupported ${OS_ID}-${OS_VERSION}: missing ${DEPS_FILE}"
+      exit 1
+    fi
+    . "${DEPS_FILE}" || exit 1
 else
     prepare_redhat_environment
 fi
@@ -122,6 +128,20 @@ else
   INSTALL_CMD="sudo -E ${MAKE_CMD} install"
 fi
 
+run_install()
+{
+  _install_log="${BUILD_ROOT}/install-$RANDOM.log"
+  if [ "$DEST_DIR" != "" ];then
+    ${MAKE_CMD} install DESTDIR=${DEST_DIR} "$@" > "${_install_log}" 2>&1
+  else
+    sudo -E ${MAKE_CMD} install "$@" > "${_install_log}" 2>&1
+  fi
+  _install_status=$?
+  sed "/Nothing to be done for 'install'\./d" "${_install_log}"
+  rm -f "${_install_log}"
+  return ${_install_status}
+}
+
 # Utilities
 if [ "$1" != "" ];then
   RM_CMD="rm"
@@ -138,24 +158,37 @@ else
 fi
 
 # Linker
-ld -v | grep "gold" 2>&1 > /dev/null
-if [ "$?" = "1" ]; then
-  ${ECHO} "Setting up Gold linker..."
-  sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.gold 100
-  sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.bfd 10
-  sudo update-alternatives --auto ld
-  ld -v | grep "gold" 2>&1 > /dev/null
-  if [ "$?" = "1" ]; then
-    ${ECHO} "Failed to setup Gold linker"
-    exit 1
+LD_GOLD_FLAG=""
+if [ -x /usr/bin/ld.gold ]; then
+  LD_GOLD_FLAG="-fuse-ld=/usr/bin/ld.gold"
+fi
+
+if command -v ld >/dev/null 2>&1; then
+  if ld -v 2>/dev/null | grep "gold" >/dev/null 2>&1; then
+    ${ECHO} "Using linker:\tGold"
+  else
+    ${ECHO} "Using linker:\t`ld -v 2>&1 | head -n 1`"
   fi
 else
-  ${ECHO} "Using linker:\tGold"
+  ${ECHO} "Linker not found yet; build scripts will install binutils via BUILD_TOOLS."
 fi
+
 # Compiler
 if [ "$OS_ID" = "fedora" ] || [ "$OS_LIKE" = "rhel" ] || [ "$OS_ID" = "debian" ] || [ "$OS_ID" = "ubuntu" ] || [ "$OS_ID" = "ultramarine" ]; then
-  which clang 2>&1 > /dev/null || { echo "No clang compiler found. Please install clang package."; exit 1; }
-  C_COMPILER=`which clang`
-  which clang++ 2>&1 > /dev/null || { echo "No clang++ compiler found. Please install clang++ package."; exit 1; }
-  CXX_COMPILER=`which clang++`
+  if [ -n "${CC:-}" ]; then
+    C_COMPILER="${CC}"
+  elif command -v clang >/dev/null 2>&1; then
+    C_COMPILER=`command -v clang`
+  else
+    ${ECHO} "clang not found yet; build scripts will install it via BUILD_TOOLS."
+    C_COMPILER=clang
+  fi
+  if [ -n "${CXX:-}" ]; then
+    CXX_COMPILER="${CXX}"
+  elif command -v clang++ >/dev/null 2>&1; then
+    CXX_COMPILER=`command -v clang++`
+  else
+    ${ECHO} "clang++ not found yet; build scripts will install it via BUILD_TOOLS."
+    CXX_COMPILER=clang++
+  fi
 fi
