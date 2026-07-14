@@ -1,0 +1,30 @@
+BasedOnStyle: Google
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllConstructorInitializersOnNextLine: false
+AlwaysBreakBeforeMultilineStrings: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterEnum: false
+  AfterFunction: true
+  AfterObjCDeclaration: true
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeWhile: false
+  IndentBraces: false
+ObjCSpaceAfterProperty: true
+ObjCSpaceBeforeProtocolList: true
+AllowAllArgumentsOnNextLine: false
+PointerAlignment: Right
+ColumnLimit: 150
+SortIncludes: Never
+AlignConsecutiveBitFields: AcrossEmptyLinesAndComments
+AlignTrailingComments: true
+AlignEscapedNewlines: Left
+AlignOperands: Align
