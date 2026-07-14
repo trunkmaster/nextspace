@@ -58,6 +58,8 @@ COMMON="-enable-kvm -cpu host -smp ${CPUS} -m ${MEM}
     -drive file=${DISK},if=virtio
     -cdrom ${IMAGES}/seed.iso
     -nic user,model=virtio-net-pci,hostfwd=tcp:127.0.0.1:${SSH_PORT}-:22
+    -audiodev pipewire,id=snd0 -device intel-hda -device hda-duplex,audiodev=snd0
+    -device qemu-xhci,id=xhci
     -monitor unix:${MONITOR},server,nowait
     -pidfile ${PIDFILE}"
 
