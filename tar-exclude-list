@@ -1,0 +1,4 @@
+CVS
+*.svn
+*.git
+*.hg

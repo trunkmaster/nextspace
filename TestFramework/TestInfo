@@ -1,0 +1,16 @@
+# The presence of this file identifies the directory as one in which the
+# regression testing framework should attempt to find and run testcases.
+# This is sourced by the shell script running the tests and may be used
+# to set up the environment variables for the test etc.
+# Special variable declarations are used by the regression testing:
+# PARALLEL may be used to specify a space separated list of tests to be
+# executed concurrently.
+# SEQUENCE may be used to specify a space separated list of tests to be
+# executed sequentially.
+# The SEQUENCE tests are executed before the PARALLEL tests.
+# Any occurrence of an asterisk in either variable is expanded to a space
+# delimited list of all the available tests in the directory.
+# If neither variable is specified the system assumes SEQUENCE="*" so that
+# all available tests are executed sequentially.
+# Test names may occur more than once, in which case those tests will be
+# executed more than once.
