@@ -1,0 +1,11 @@
+Building on Windows
+===================
+
+The runtime can build on Windows with Ninja:
+
+```
+> mkdir build
+> cd build
+> cmake .. -G Ninja -DCMAKE_C_COMPILER=path/to/clang.exe -DCMAKE_CXX_COMPILER=path/to/clang.exe
+> ninja
+```
