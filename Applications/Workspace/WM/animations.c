@@ -544,16 +544,18 @@ static void animateResizeFlip(WScreen *scr, int x, int y, int w, int h, int fx, 
     points[2].y = midy + dch;
     points[3].x = cx - dx;
     points[3].y = points[2].y;
+  /* ArchSTEP: no XGrabServer around animation frames. Freezing the whole
+   * server per frame deadlocks Workspace against its own AppKit X
+   * connection (5-10s UI hangs) and stalls every other client for pure
+   * decoration. Worst case without it: an outline frame flickers. */
     points[4].x = points[0].x;
     points[4].y = points[0].y;
 
-    XGrabServer(dpy);
     XDrawLines(dpy, scr->root_win, scr->frame_gc, points, 5, CoordModeOrigin);
     XFlush(dpy);
     wusleep(MINIATURIZE_ANIMATION_DELAY_F);
 
     XDrawLines(dpy, scr->root_win, scr->frame_gc, points, 5, CoordModeOrigin);
-    XUngrabServer(dpy);
     cx += xstep;
     cy += ystep;
     cw += wstep;
@@ -608,13 +610,11 @@ static void animateResizeTwist(WScreen *scr, int x, int y, int w, int h, int fx,
     points[3].y = cy + sinf(angle + a + (float)WM_PI) * d;
     points[4].x = cx + cosf(angle - a) * d;
     points[4].y = cy + sinf(angle - a) * d;
-    XGrabServer(dpy);
     XDrawLines(dpy, scr->root_win, scr->frame_gc, points, 5, CoordModeOrigin);
     XFlush(dpy);
     wusleep(MINIATURIZE_ANIMATION_DELAY_T);
 
     XDrawLines(dpy, scr->root_win, scr->frame_gc, points, 5, CoordModeOrigin);
-    XUngrabServer(dpy);
     cx += xstep;
     cy += ystep;
     cw += wstep;
@@ -645,7 +645,6 @@ static void animateResizeZoom(WScreen *scr, int x, int y, int w, int h, int fx, 
     cw[j] = (float)w;
     ch[j] = (float)h;
   }
-  XGrabServer(dpy);
   for (i = 0; i < steps; i++) {
     for (j = 0; j < FRAMES; j++) {
       XDrawRectangle(dpy, scr->root_win, scr->frame_gc, (int)cx[j], (int)cy[j], (int)cw[j],
@@ -681,7 +680,6 @@ static void animateResizeZoom(WScreen *scr, int x, int y, int w, int h, int fx, 
     XDrawRectangle(dpy, scr->root_win, scr->frame_gc, (int)cx[j], (int)cy[j], (int)cw[j],
                    (int)ch[j]);
 
-  XUngrabServer(dpy);
 }
 
 #undef FRAMES
