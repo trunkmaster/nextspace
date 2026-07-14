@@ -1,3 +1,36 @@
+2025-01-10  Richard Frith-Macdonald <rfm@gnu.org>
+
+        * ANNOUNCE:
+	* NEWS:
+	* RELEASENOTES:
+	* Documentation/news.texi:
+	* Documentation/releasenotes.texi:
+	Update announcement and release notes for 2.9.3.
+	* Version: Bump version to 2.9.3.
+
+2024-11-20  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* common.make: when building with the address/leak sanitizer
+	(-asan=yes on command line or GNUSTEP_WITH_ASAN=1 in the environment)
+	we add -DGNUSTEP_WITH_ASAN=1 for the preprocessor so that compiled
+	code can take this into account.
+
+2024-08-20  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* TestFramework/gnustep-tests.in: Only return plain files when
+	looking for test cases.
+
+2024-07-31  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* TestFramework/gnustep-tests.in: Fix 'Failed build' detection in
+	Summary.sh by recording build failures in tests.sum and test.log
+
+2024-05-31  Yavor Doganov  <yavor@gnu.org>
+
+	* GNUmakefile.in (install): Remove $(srcdir) from GNUstep-reset.sh
+	since it is now a generated file.  Fixes out-of-tree builds where
+	builddir != srcdir.
+
 2024-05-26  Richard Frith-Macdonald <rfm@gnu.org>
 
         * ANNOUNCE:

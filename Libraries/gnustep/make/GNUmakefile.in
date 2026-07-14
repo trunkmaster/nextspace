@@ -216,7 +216,7 @@ install: generated-files
 	  $(INSTALL_DATA) GNUstep.csh "$(makedir)"; \
 	  $(INSTALL_DATA) filesystem.sh "$(makedir)"; \
 	  $(INSTALL_DATA) filesystem.csh "$(makedir)"; \
-	  $(INSTALL_DATA) "$(srcdir)/GNUstep-reset.sh" "$(makedir)"; \
+	  $(INSTALL_DATA) GNUstep-reset.sh "$(makedir)"; \
 	  $(INSTALL_PROGRAM) -m 755 fixpath.sh "$(makedir)"; \
 	  $(INSTALL_PROGRAM) -m 755 openapp "$(tooldir)"; \
 	  $(INSTALL_PROGRAM) -m 755 "$(srcdir)/debugapp" "$(tooldir)"; \

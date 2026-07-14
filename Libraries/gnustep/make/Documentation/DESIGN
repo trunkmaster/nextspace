@@ -52,11 +52,11 @@ it's not possible to have an application compiled for NeXT PDO that
 runs with gnustep-base or vice-versa. To summarize, an application can
 be compiled for these combinations:
 
-Objective-C runtime: NeXT, GNU
+Objective-C runtime: NeXT, GNU, GNUstep/Apple
 Foundation library: NeXT, PDO, gnustep-base, libFoundation
 GUI library: NeXT, gnustep-gui
 
-Objective-C runtime: nx (for NeXT), gnu (for GNU)
+Objective-C runtime: nx (for NeXT), gnu (for GNU), ng (for Next Generation (GNUstep or Apple for ObjC-2) 
 Foundation library: nx (for NeXT), pdo (for PDO), gnu (for gnustep-base),
 		fd (for libFoundation)
 GUI library: nx (for NeXT), gnu (for gnustep-gui)
@@ -80,6 +80,7 @@ ObjC runtime	Foundation	GUI
     gnu		    gnu		gnu
     nx		    fd		gnu
     gnu		    fd		gnu
+    ng              gnu         gnu
 
 Note that one can choose his/her own packages to build; it is not
 required to have all the packages installed on the system. Not having
@@ -339,15 +340,20 @@ if the target needs to be built as a shared library. On systems that support
 shared libraries this is the default; the user has to explicitly specify
 shared=no in the command line.
 
+* asan
+
+When this variable is yes, an address and leak sanitized version of the target
+is built. The default is no.
+
 * profile
 
 When this variable is yes, a profile version of the target is built. The
 default is no.
 
 For example if you want to build a shared library with debug information
-enabled but no profile information, the command line would be:
+and sanitization enabled but no profile information, the command line would be:
 
-  $ make shared=yes debug=yes profile=no
+  $ make shared=yes debug=yes asan=yes profile=no
 
 The last argument is not necessary because the default is to build a version
 without profile information.
@@ -357,62 +363,6 @@ profile is turned on the output directory would be shared_profile_debug_obj.
 
 Of course you also have to specify the library combo if it's different than the
 default.
-
-Naming conventions of the libraries
-===================================
-
-Sometimes you need to have different versions of a library compiled with
-different options. Suppose you want to compile a library with profiling
-information enabled so that you can profile your code. But you don't want to
-overwrite your existing installed library so that only some of the applications
-will work with the profile library, the rest will still use the normal library.
-
-The makefile package supports such a schema by having different names for
-different types of the same library. This works by appending an underscore
-after the name of the library followed by a letter which indicates the type of
-the library:
-
-'s' for a static library
-'p' for a profile library
-'d' for a debug library
-
-So for example if you have the library 'example' compiled with debug
-information as a shared library it would be named libexample_d.so. If the same
-library is compiled as a static library its name would be named
-libexample_sd.a. The reason why the 's' letter for the static library appears
-in name of the library is for systems where the extensions of libraries don't
-matter.
-
-It is possible to compile a library with whatever combination of flags you
-want. The letters are appended in the order specified above, so if you compile
-the library as a static library, with profile and debug information enabled,
-the library name will have the _spd suffix appended.
-
-How a library is chosen
-=======================
-
-What happens if you compile an application with profile enabled and you don't
-have a library compiled with profile info into it, but you do have a normal
-library installed? It would be great if the normal library is chosen instead.
-This is a problem because the library that should be chosen has a different
-name than the profile library.
-
-We do support this schema by requiring the libraries to be specified using the
-short name, without any suffix appended to it. The `example' library in our
-case should be passed to the linker using -lexample, and not using -lexample_p.
-Based upon the shared, profile and debug variables, the makefile package will
-identify which are the libraries that exist on the system and it will come with
-the correct names when linking.
-
-The search order of libraries depending on what type of library is required is
-as follows. First of all an exact match is searched; if one is found it is
-returned. If either debug or profile are required, a library that matches at
-least one of these attributes is returned. For example if there is a
-profile+debug version of a library but only debug is required this library will
-match. If a static version is required but no static versions of the library
-exist, then no library is chosen; in this case the system simply prints out the
-name of the library, assuming a static library is somewhere else in the
-libraries search path of the linker.
 
 Building applications
 =====================
@@ -428,15 +378,7 @@ the application wrapper and it contains the binaries for various architectures
 and resources needed by the application.
 
 The name of the application wrapper is taken to be the name of the application
-with the following extensions:
-
-.profile - if the application has been built with profile enabled
-.debug - if the application has been built with debug enabled
-.app - if the application has been built without debug or profile enabled
-
-If both debug and profile are enabled, the application extension will simply
-have the .profile extension. This is different from libraries were both options
-are reflected into the library's name. 
+with the .app extension.
 
 The structure of makefiles
 ==========================
@@ -483,4 +425,4 @@ The makefile package is installed under $(GNUSTEP_SYSTEM_ROOT)/Library/Makefiles
 
 Ovidiu Predescu
 
-Last updated: April, 2001
+Last updated: Jan, 2025

@@ -97,7 +97,9 @@ static inline void testIndent(void)
 
 /* A variable set whenever a test macro is executed.  This contains
  * the exception which terminated the test macro, or nil if no exception
- * was raised.
+ * was raised.  This is destroyed at the end of a set (to avoid leaking)
+ * but if you run tests outside sets you should explicitly destroy it
+ * when finished.
  */
 static NSException *testRaised __attribute__((unused)) = nil;
 
@@ -556,6 +558,7 @@ static void testStart()
     fprintf(stderr, "%s:%d ... %s\n", __FILE__, __LINE__, _save_set); \
     free(_save_set); \
     testHopeful = _save_hopeful; \
+    DESTROY(testRaised); \
   }
 
 /* The NEED macro takes a test macro as an argument and breaks out of a set

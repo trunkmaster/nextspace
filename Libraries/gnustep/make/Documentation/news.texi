@@ -9,6 +9,18 @@
 The currently released version is @samp{@value{GNUSTEP-MAKE-VERSION}}.
 @end ifclear
 
+@section Changes in version @samp{2.9.3}
+
+@itemize
+
+@item  Added support for ASAN/LSAN builds
+
+@item  Various minor bugfixes.
+
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Changes in version @samp{2.9.2}
 
 @itemize
@@ -18,8 +30,6 @@ The currently released version is @samp{@value{GNUSTEP-MAKE-VERSION}}.
 @item  Various minor bugfixes.
 
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Changes in version @samp{2.9.1}
 

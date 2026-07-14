@@ -769,6 +769,31 @@ ifeq ($(GNUSTEP_TARGET_OS), windows)
   endif
 endif
 
+# Sanitization must be enabled explicitly and shall _not_ be used in
+# production, as it may leak sensitive info or result in privilege
+# escalation due to unchecked use of variables
+# (https://www.openwall.com/lists/oss-security/2016/02/17/9).
+
+# Enable using '-asan yes' in command line or GNUSTEP_WITH_ASAN=1 in
+# in the environment.
+
+ifeq ($(GNUSTEP_WITH_ASAN), 1)
+  asan = yes
+endif
+ifeq ($(asan), yes)
+  # We tell the complier to build with the sanitiser and define a preprocessor
+  # flag so that the compuked code can conditionally handle that specially.
+  ADDITIONAL_FLAGS += -fsanitize=address -DGNUSTEP_WITH_ASAN=1
+  # We use the clang or gcc to drive the linking process. The driver will
+  # add the required runtime libraries for address sanitizer.
+  INTERNAL_LDFLAGS += -fsanitize=address
+
+  # Not omitting the frame pointer results in more readable stack traces
+  ifneq ($(filter -fno-omit-frame-pointer, $(ADDITIONAL_FLAGS)), -fno-omit-frame-pointer)
+    ADDITIONAL_FLAGS += -fno-omit-frame-pointer
+  endif
+endif
+
 ifeq ($(warn), no)
   ADDITIONAL_FLAGS += -UGSWARN
 else
