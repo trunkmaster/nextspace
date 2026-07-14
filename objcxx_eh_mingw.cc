@@ -44,7 +44,6 @@ extern "C"
 OBJC_PUBLIC
 void objc_exception_throw(id object)
 {
-#ifdef __GLIBCXX__
 	// Don't bother with a mutex here.  It doesn't matter if two threads set
 	// these values at the same time.
 	if (!done_setup)
@@ -63,17 +62,12 @@ void objc_exception_throw(id object)
 
 		done_setup = true;
 	}
-#endif
 
 	id *exc = (id *)__cxa_allocate_exception(sizeof(id));
 	*exc = object;
 	objc_retain(object);
 	DEBUG_LOG("objc_exception_throw: Throwing 0x%x\n", *exc);
 
-#ifndef __GLIBCXX__
-	// At the moment, only libstdc++ exposes __cxa_init_primary_exception.
-	__cxa_throw(exc, & __objc_id_type_info, eh_cleanup);
-#else
 	__cxa_eh_globals *globals = __cxa_get_globals ();
 	globals->uncaughtExceptions += 1;
 	__cxa_refcounted_exception *header =
@@ -90,7 +84,6 @@ void objc_exception_throw(id object)
 	}
 	DEBUG_LOG("Throw returned %d\n",(int) err);
 	abort();
-#endif
 }
 
 OBJC_PUBLIC extern objc_uncaught_exception_handler objc_setUncaughtExceptionHandler(objc_uncaught_exception_handler handler)

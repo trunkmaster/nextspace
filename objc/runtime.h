@@ -2,6 +2,7 @@
 #pragma clang system_header
 #endif
 #include "objc-visibility.h"
+#include "objc-config.h"
 
 #ifndef __LIBOBJC_RUNTIME_H_INCLUDED__
 #define __LIBOBJC_RUNTIME_H_INCLUDED__

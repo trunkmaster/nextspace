@@ -24,6 +24,7 @@
  *  OTHER DEALINGS IN THE SOFTWARE.
  */
 #import "objc/blocks_runtime.h"
+#include "objc/blocks_private.h"
 #import "objc/runtime.h"
 #import "objc/objc-arc.h"
 #include "blocks_runtime.h"
@@ -59,10 +60,6 @@ OBJC_PUBLIC const char * _Block_signature(void *b)
 		return ((struct Block_descriptor_basic*)block->descriptor)->encoding;
 	}
 	return block->descriptor->encoding;
-}
-OBJC_PUBLIC const char *block_getType_np(const void *b)
-{
-	return _Block_signature((void*)b);
 }
 
 static int increment24(int *ref)
@@ -296,8 +293,32 @@ OBJC_PUBLIC void _Block_release(const void *src)
 	}
 }
 
-PRIVATE void* block_load_weak(void *block)
+OBJC_PUBLIC bool _Block_isDeallocating(const void* arg)
 {
-	struct Block_layout *self = block;
-	return (self->reserved) > 0 ? block : 0;
+	struct Block_layout *block = (struct Block_layout*)arg;
+	int *refCountPtr = &((struct Block_layout*)arg)->reserved;
+	int refCount = __sync_fetch_and_add(refCountPtr, 0);
+	return refCount == 0;
+}
+
+OBJC_PUBLIC bool _Block_tryRetain(const void* arg)
+{
+	/* This is used by the weak reference management in ARC. The implementation
+	 * follows the reasoning of `retain_fast()` in arc.mm: We want to abandon the
+	 * retain operation if another thread has started deallocating the object between
+	 * loading the weak pointer and executing the retain operation.
+	 */
+	struct Block_layout *block = (struct Block_layout*)arg;
+	int *refCountPtr = &block->reserved;
+	int refCountVal = __sync_fetch_and_add(refCountPtr, 0);
+	int newVal = refCountVal;
+	do {
+		refCountVal = newVal;
+		if (refCountVal <= 0)
+		{
+			return false;
+		}
+		newVal = __sync_val_compare_and_swap(refCountPtr, refCountVal, newVal + 1);
+	} while (newVal != refCountVal);
+	return true;
 }

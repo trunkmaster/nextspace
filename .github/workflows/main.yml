@@ -18,30 +18,29 @@ jobs:
     strategy:
       matrix:
         # Build each combination of OS and release/debug variants
-        os: [ "ubuntu-22.04", "ubuntu-20.04" ]
+        os: [ "ubuntu-24.04", "ubuntu-22.04" ]
         build-type: [ Release, Debug ]
+        blocks-runtime: [ "EMBEDDED", "swift-6.1.2-RELEASE" ]
         cxxlib: [ "libc++", "libstdc++" ]
-        llvm-version: [10, 11, 12, 13, 14, 15]
+        llvm-version: [13, 14, 15, 16, 17, 18]
         # Don't bother testing the LLVM versions that aren't in the default image for the different platforms
         exclude:
-          - os: "ubuntu-22.04"
-            llvm-version: 10
-          - os: "ubuntu-22.04"
-            llvm-version: 11
-          - os: "ubuntu-22.04"
-            llvm-version: 12
-          - os: "ubuntu-20.04"
-            llvm-version: 11
-          - os: "ubuntu-20.04"
-            llvm-version: 13
-          - os: "ubuntu-20.04"
-            llvm-version: 14
-          - os: "ubuntu-20.04"
+          - os: "ubuntu-24.04"
             llvm-version: 15
+          - os: "ubuntu-24.04"
+            llvm-version: 14
+          - os: "ubuntu-24.04"
+            llvm-version: 13
+          - os: "ubuntu-22.04"
+            llvm-version: 16
+          - os: "ubuntu-22.04"
+            llvm-version: 17
+          - os: "ubuntu-22.04"
+            llvm-version: 18
       # Don't abort runners if a single one fails
       fail-fast: false
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.os }} ${{ matrix.build-type }} LLVM-${{ matrix.llvm-version }} ${{ matrix.cxxlib }}
+    name: ${{ matrix.os }} ${{ matrix.build-type }} LLVM-${{ matrix.llvm-version }} ${{ matrix.cxxlib }} BlocksRuntime-${{ matrix.blocks-runtime }}
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies 
@@ -53,11 +52,24 @@ jobs:
             sudo apt install libc++-${{matrix.llvm-version}}-dev libc++abi-${{matrix.llvm-version}}-dev 
             sudo apt install libunwind-${{matrix.llvm-version}}-dev || true
           fi
+          if [ "${{ matrix.blocks-runtime }}" != "EMBEDDED" ]; then
+            git clone --depth 1 --branch "${{ matrix.blocks-runtime }}" https://github.com/apple/swift-corelibs-libdispatch.git ${{github.workspace}}/swift-corelibs-libdispatch
+            cmake -B ${{github.workspace}}/swift-corelibs-libdispatch/build -G Ninja -DINSTALL_PRIVATE_HEADERS=ON -DCMAKE_C_COMPILER=clang-${{matrix.llvm-version}} -DCMAKE_CXX_COMPILER=clang++-${{matrix.llvm-version}} -S ${{github.workspace}}/swift-corelibs-libdispatch
+            pushd ${{github.workspace}}/swift-corelibs-libdispatch/build
+            ninja
+            sudo ninja install
+            popd
+          fi
       - name: Configure CMake
         run: |
           export LDFLAGS=-L/usr/lib/llvm-${{ matrix.llvm-version }}/lib/
+          if [ "${{ matrix.blocks-runtime }}" != "EMBEDDED" ]; then
+            export EMBEDDED_BLOCKS_RUNTIME=OFF
+          else
+            export EMBEDDED_BLOCKS_RUNTIME=ON
+          fi
           ls -lahR /usr/lib/llvm-${{ matrix.llvm-version }}/lib/
-          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build-type}} -G Ninja -DTESTS=ON -DCMAKE_C_COMPILER=clang-${{matrix.llvm-version}} -DCMAKE_OBJC_COMPILER=clang-${{matrix.llvm-version}} -DCMAKE_ASM_COMPILER=clang-${{matrix.llvm-version}} -DCMAKE_CXX_COMPILER=clang++-${{matrix.llvm-version}} -DCMAKE_OBJCXX_COMPILER=clang++-${{matrix.llvm-version}} -DCMAKE_CXX_FLAGS="-stdlib=${{matrix.cxxlib}}"
+          cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{matrix.build-type}} -G Ninja -DTESTS=ON -DEMBEDDED_BLOCKS_RUNTIME=$EMBEDDED_BLOCKS_RUNTIME -DCMAKE_C_COMPILER=clang-${{matrix.llvm-version}} -DCMAKE_OBJC_COMPILER=clang-${{matrix.llvm-version}} -DCMAKE_ASM_COMPILER=clang-${{matrix.llvm-version}} -DCMAKE_CXX_COMPILER=clang++-${{matrix.llvm-version}} -DCMAKE_OBJCXX_COMPILER=clang++-${{matrix.llvm-version}} -DCMAKE_CXX_FLAGS="-stdlib=${{matrix.cxxlib}}"
         # Build with a nice ninja status line
       - name: Build
         working-directory: ${{github.workspace}}/build
@@ -72,7 +84,7 @@ jobs:
     strategy:
       matrix:
         build-type: [ Release, Debug ]
-        llvm-version: [13, 14, 15]
+        llvm-version: [16, 17, 18]
         arch:
           - name: armhf
             system-processor: arm
@@ -92,14 +104,11 @@ jobs:
             system-processor: powerpc64le
             triple: powerpc64le-linux-gnu
             rtld: ld64.so.2
-        # lld versions prior to 15 do not support R_RISCV_ALIGN relocations
         exclude:
-          - llvm-version: 13
+          # FIXME(hugo): Hangs while executing tests.
+          - llvm-version: 18
             arch:
-              name: riscv64
-          - llvm-version: 14
-            arch:
-              name: riscv64
+              name: ppc64el
       # Don't abort runners if a single one fails
       fail-fast: false
     runs-on: ubuntu-latest
@@ -141,7 +150,7 @@ jobs:
     strategy:
       matrix:
         # Build each combination of OS and release/debug variants
-        os: [ windows-2022, windows-2019 ]
+        os: [ windows-2025 ]
         build-type: [ Release, Debug ]
         arch: [ x64_x86, x64 ]
         include:
@@ -149,10 +158,7 @@ jobs:
             flags: -m32
           - arch: x64
             flags: -m64
-          - os: windows-2022
-            vspath: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build
-          - os: windows-2019
-            vspath: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build
+          - vspath: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build
       # Don't abort runners if a single one fails
       fail-fast: false
     runs-on: ${{ matrix.os }}
@@ -196,9 +202,10 @@ jobs:
     strategy:
       matrix:
         # Build each combination of OS and release/debug variants
-        os: [ windows-2019 ]
+        os: [ windows-2025 ]
         msystem: [ ucrt64, mingw64, clang64 ]
         build-type: [ Release, Debug ]
+        strict-apple-compatibility: [ ON, OFF ]
         include:
           - msystem: ucrt64
             package-prefix: ucrt-x86_64
@@ -209,11 +216,10 @@ jobs:
           - msystem: clang64
             package-prefix: clang-x86_64
             cmake-flags: LDFLAGS="-lc++"
-            ctest-flags: -E UnexpectedException*
       # Don't abort runners if a single one fails
       fail-fast: false
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.os }} ${{ matrix.msystem }} ${{ matrix.build-type}}
+    name: ${{ matrix.os }} ${{ matrix.msystem }} ${{ matrix.build-type}} (Strict Apple compatibility ${{ matrix.strict-apple-compatibility }})
     defaults:
       run:
         shell: msys2 {0}
@@ -228,7 +234,7 @@ jobs:
       run: |        
         mkdir build
         cd build
-        ${{ matrix.cmake-flags }} cmake .. -DTESTS=ON -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
+        ${{ matrix.cmake-flags }} cmake .. -DTESTS=ON -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -DSTRICT_APPLE_COMPATIBILITY=${{ matrix.strict-apple-compatibility }}
     - name: Build
       working-directory: build
       run: |
@@ -243,8 +249,105 @@ jobs:
         cmake --install . --prefix=../dist
     - uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.msystem }}-${{ matrix.build-type }}
+        name: ${{matrix.os}}-${{ matrix.msystem }}-${{ matrix.build-type }}-compat-${{ matrix.strict-apple-compatibility }}
         path: dist/
+
+  android:
+    strategy:
+      matrix:
+        # Build each combination of OS and release/debug variants
+        os: [ ubuntu-24.04 ]
+        build-type: [ Release, Debug ]
+        # TODO(hugo): Add AArch64 configuration when GitHub AArch64 CI runners are available.
+        arch:
+          - os: ubuntu-24.04
+            name: x86_64
+            triple: x86_64-linux-android
+            emu-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        # Include the oldest Android version still receiving security update
+        # and the latest version. 
+        api-level: [ 31, 35 ]
+        # Don't abort runners if a single one fails
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    name: Android ${{ matrix.build-type }} ${{ matrix.arch.name }} API-${{ matrix.api-level }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install patchelf ninja-build -y
+    - name: Enable KVM
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+    - name: AVD cache
+      uses: actions/cache@v4
+      id: avd-cache
+      with:
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: avd-${{ matrix.os }}-${{ matrix.api-level }}-${{matrix.arch.name}}
+    - name: Create AVD and Snapshot for Caching
+      if: steps.avd-cache.outputs.cache-hit != 'true'
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ matrix.api-level }}
+        arch: ${{ matrix.arch.name }}
+        force-avd-creation: false
+        emulator-options: ${{ matrix.arch.emu-options }}
+        disable-animations: true
+        script: echo "Generated AVD snapshot for caching."
+    # We are using the default NDK from the GitHub Actions runner.
+    - name: Configure CMake
+      run: |
+        export TOOLCHAIN=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64
+        export CCPREFIX=$TOOLCHAIN/bin/${{ matrix.arch.triple }}${{ matrix.api-level }}
+        export CC="$CCPREFIX-clang"
+        export CXX="$CCPREFIX-clang++"
+        export OBJC="$CCPREFIX-clang"
+        export OBJCXX="$CCPREFIX-clang++"
+        export AS="$CCPREFIX-clang"
+        export LD="$TOOLCHAIN/bin/ld.lld"
+        export AR="$TOOLCHAIN/bin/llvm-ar"
+        export RANLIB="$TOOLCHAIN/bin/llvm-ranlib"
+        export STRIP="$TOOLCHAIN/bin/llvm-strip"
+        export NM="$TOOLCHAIN/bin/llvm-nm"
+        export OBJDUMP="$TOOLCHAIN/bin/llvm-objdump"
+        export LDFLAGS="-fuse-ld=lld"
+        export LIBS="-lc++_shared"
+
+        cmake -B ${{github.workspace}}/build \
+          -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
+          -DANDROID_ABI=${{ matrix.arch.name }} \
+          -DANDROID_NDK=$ANDROID_NDK_HOME \
+          -DANDROID_STL=c++_shared \
+          -DCMAKE_FIND_USE_CMAKE_PATH=false \
+          -DCMAKE_C_COMPILER=$CC \
+          -DCMAKE_CXX_COMPILER=$CXX \
+          -DCMAKE_ASM_COMPILER=$AS \
+          -DCMAKE_BUILD_TYPE=${{matrix.build-type}} \
+          -DTESTS=ON \
+          -DANDROID_PLATFORM=android-${{ matrix.api-level }} \
+          -G Ninja
+    - name: Build
+      working-directory: ${{github.workspace}}/build
+      run: |
+        NINJA_STATUS="%p [%f:%s/%t] %o/s, %es" ninja -v
+    - name: Test
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ matrix.api-level }}
+        arch: ${{ matrix.arch.name }}
+        force-avd-creation: false
+        emulator-options: ${{ matrix.arch.emu-options }}
+        disable-animations: true
+        target: default
+        script: |
+          ${{github.workspace}}/.github/scripts/android_test_main.sh ${{github.workspace}}/build ${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/sysroot ${{ matrix.arch.triple }}
+
 
   # Fake check that can be used as a branch-protection rule.
   all-checks:

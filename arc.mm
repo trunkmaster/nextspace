@@ -10,14 +10,19 @@
 #include <tsl/robin_map.h>
 #import "lock.h"
 #import "objc/runtime.h"
+#ifdef EMBEDDED_BLOCKS_RUNTIME
+#import "objc/blocks_private.h"
 #import "objc/blocks_runtime.h"
+#else
+#include <Block.h>
+#include <Block_private.h>
+#endif
 #import "nsobject.h"
 #import "class.h"
 #import "selector.h"
 #import "visibility.h"
 #import "objc/hooks.h"
 #import "objc/objc-arc.h"
-#import "objc/blocks_runtime.h"
 #include "objc/message.h"
 
 /**
@@ -75,12 +80,16 @@ static inline arc_tls_key_t arc_tls_key_create(arc_cleanup_function_t cleanupFun
 arc_tls_key_t ARCThreadKey;
 #endif
 
+#ifndef HAVE_BLOCK_USE_RR2
 extern "C"
 {
 	extern struct objc_class _NSConcreteMallocBlock;
 	extern struct objc_class _NSConcreteStackBlock;
 	extern struct objc_class _NSConcreteGlobalBlock;
+	extern struct objc_class _NSConcreteAutoBlock;
+	extern struct objc_class _NSConcreteFinalizingBlock;
 }
+#endif
 
 @interface NSAutoreleasePool
 + (Class)class;
@@ -315,8 +324,7 @@ static inline id retain(id obj, BOOL isWeak)
 {
 	if (isPersistentObject(obj)) { return obj; }
 	Class cls = obj->isa;
-	if ((Class)&_NSConcreteMallocBlock == cls ||
-	    (Class)&_NSConcreteStackBlock == cls)
+	if (UNLIKELY(objc_test_class_flag(cls, objc_class_flag_is_block)))
 	{
 		return Block_copy(obj);
 	}
@@ -376,13 +384,13 @@ static inline void release(id obj)
 {
 	if (isPersistentObject(obj)) { return; }
 	Class cls = obj->isa;
-	if (cls == static_cast<Class>(&_NSConcreteMallocBlock))
+	if (UNLIKELY(objc_test_class_flag(cls, objc_class_flag_is_block)))
 	{
+		if (cls == static_cast<void*>(&_NSConcreteStackBlock))
+		{
+			return;
+		}
 		_Block_release(obj);
-		return;
-	}
-	if (cls == static_cast<Class>(&_NSConcreteStackBlock))
-	{
 		return;
 	}
 	if (objc_test_class_flag(cls, objc_class_flag_fast_arc))
@@ -702,11 +710,23 @@ mutex_t weakRefLock;
 
 }
 
+#ifdef HAVE_BLOCK_USE_RR2
+static const struct Block_callbacks_RR blocks_runtime_callbacks = {
+		sizeof(Block_callbacks_RR),
+		(void (*)(const void*))objc_retain,
+		(void (*)(const void*))objc_release,
+		(void (*)(const void*))objc_delete_weak_refs
+	};
+#endif
+
 PRIVATE extern "C" void init_arc(void)
 {
 	INIT_LOCK(weakRefLock);
 #ifdef arc_tls_store
 	ARCThreadKey = arc_tls_key_create((arc_cleanup_function_t)cleanupPools);
+#endif
+#ifdef HAVE_BLOCK_USE_RR2
+	_Block_use_RR2(&blocks_runtime_callbacks);
 #endif
 }
 
@@ -818,8 +838,9 @@ extern "C" OBJC_PUBLIC id objc_storeWeak(id *addr, id obj)
 	WeakRef *oldRef;
 	id old;
 	loadWeakPointer(addr, &old, &oldRef);
-	// If the old and new values are the same, then we don't need to do anything.
-	if (old == obj)
+	// If the old and new values are the same, then we don't need to do anything
+	// unless we are deleting the weak reference by storing NULL to it.
+	if ((old == obj) && ((obj != NULL) || (NULL == oldRef)))
 	{
 		return obj;
 	}
@@ -843,9 +864,18 @@ extern "C" OBJC_PUBLIC id objc_storeWeak(id *addr, id obj)
 		*addr = obj;
 		return obj;
 	}
-	// If the object is being deallocated return nil.
-	if (object_getRetainCount_np(obj) == 0)
+	Class cls = classForObject(obj);
+	if (UNLIKELY(objc_test_class_flag(cls, objc_class_flag_is_block)))
 	{
+		// Check whether the block is being deallocated and return nil if so
+		if (_Block_isDeallocating(obj)) {
+			*addr = nil;
+			return nil;
+		}
+	}
+	else if (object_getRetainCount_np(obj) == 0)
+	{
+		// If the object is being deallocated return nil.
 		*addr = nil;
 		return nil;
 	}
@@ -916,19 +946,31 @@ extern "C" OBJC_PUBLIC id objc_loadWeakRetained(id* addr)
 		return nil;
 	}
 	Class cls = classForObject(obj);
-	if (static_cast<Class>(&_NSConcreteMallocBlock) == cls)
-	{
-		obj = static_cast<id>(block_load_weak(obj));
-	}
-	else if (objc_test_class_flag(cls, objc_class_flag_permanent_instances))
+	if (objc_test_class_flag(cls, objc_class_flag_permanent_instances))
 	{
 		return obj;
+	}
+	else if (UNLIKELY(objc_test_class_flag(cls, objc_class_flag_is_block)))
+	{
+		obj = static_cast<id>(block_load_weak(obj));
+		if (obj == nil)
+		{
+			return nil;
+		}
+		// This is a defeasible retain operation that protects against another thread concurrently
+		// starting to deallocate the block.
+		if (_Block_tryRetain(obj))
+		{
+			return obj;
+		}
+		return nil;
+
 	}
 	else if (!objc_test_class_flag(cls, objc_class_flag_fast_arc))
 	{
 		obj = _objc_weak_load(obj);
 	}
-	// block_load_weak() or _objc_weak_load() can return nil
+	// _objc_weak_load() can return nil
 	if (obj == nil) { return nil; }
 	return retain(obj, YES);
 }

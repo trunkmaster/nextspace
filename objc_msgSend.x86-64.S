@@ -7,6 +7,7 @@
 #	define FIRST_ARGUMENT %rcx
 #	define SECOND_ARGUMENT %rdx
 #	define THIRD_ARGUMENT %r8
+#	define FOURTH_ARGUMENT %r9
 #else
 #	define START_PROC(x) .cfi_startproc
 #	define END_PROC(x) .cfi_endproc
@@ -15,6 +16,7 @@
 #	define FIRST_ARGUMENT %rdi
 #	define SECOND_ARGUMENT %rsi
 #	define THIRD_ARGUMENT %rdx
+#	define FOURTH_ARGUMENT %rcx
 #endif
 
 .macro MSGSEND fnname receiver, sel
@@ -209,7 +211,7 @@
 5:                                       # slowSend:
 	push  %rax                           # We need to preserve all registers that may contain arguments:
 	push  %rbx
-	push  %rcx
+	push  FOURTH_ARGUMENT
 	push  %r8
 	push  %r9
 	
@@ -258,7 +260,7 @@
 
 	pop   %r9
 	pop   %r8
-	pop   %rcx
+	pop   FOURTH_ARGUMENT
 	pop   %rbx
 	pop   %rax
 	jmp   7b

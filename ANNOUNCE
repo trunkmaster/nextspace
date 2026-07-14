@@ -1,28 +1,42 @@
-GNUstep Objective-C Runtime 2.2.1
+GNUstep Objective-C Runtime 2.3
 =================================
 
-This a bugfix release for the second update to the second major release of
-the GNUstep Objective-C runtime (a.k.a.  libobjc2).  This runtime was designed
-to support the features of modern dialects of Objective-C for use with GNUstep and
-other Objective-C programs.
+This is the third update to the second major release of the GNUstep
+Objective-C runtime (a.k.a. libobjc2). This runtime was designed to support
+the features of modern dialects of Objective-C for use with GNUstep and other
+Objective-C programs.
 
 Highlights of this release include:
 
-- Various improvements for building and using libobjc2 on MinGW.
-- Improved support for the PowerPC architecture.
-- A fix for the detection of the tls-robin-map dependency.
+- The blocks runtime from swift-corelibs-libdispatch can now be used instead of
+  the runtime included in libobjc2.
+- The blocks runtime is now capable of selecting block trampolines based on the
+  current page size at runtime. It now supports AArch64 targets with 16 KiB
+  page sizes, fixing a segmentation fault on Asahi Linux and Android 15 devices
+  with 16 KiB page sizes. For PowerPC64, the trampoline page size was adjusted to
+  64 KiB.
+- Implemented the method_getTypedSelector_np function.
+- The AArch64 objc_msgSend implementation now conforms to the Visual Studio
+  ABI's sret mechanism for non-trivial data types.
+- Differences in the x86_64 calling convention have been addressed in the
+  objc_msgSend implementation.
+- The robin map dependency was updated to version 1.4.0.
+- Associated objects are now properly retained and autoreleased.
+- Several bug fixes in the fast-path code.
+- Built-in classes no longer rely on load order.
+- Various memory leaks have been fixed.
 
-You may obtain the code for this release from git and use the 2.2.1 branch:
+You may obtain the code for this release from git and use the 2.3 branch:
 
 https://github.com/gnustep/libobjc2.git
 
 Alternatively, a tarball is available from:
 
-https://github.com/gnustep/libobjc2/archive/v2.2.1.zip
-https://github.com/gnustep/libobjc2/archive/v2.2.1.tar.gz
+https://github.com/gnustep/libobjc2/archive/v2.3.zip
+https://github.com/gnustep/libobjc2/archive/v2.3.tar.gz
 
 The runtime library is responsible for implementing the core features of the
-object model, as well as exposing introspection features to the user.  The
+object model, as well as exposing introspection features to the user. The
 GNUstep runtime implements a superset of Apple's Objective-C Runtime APIs.
 
 If you come across any problems, please file them in the issue tracker:

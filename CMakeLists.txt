@@ -28,6 +28,7 @@ endif ()
 
 INCLUDE (CheckCXXSourceCompiles)
 INCLUDE (FetchContent)
+INCLUDE (CheckSymbolExists)
 
 set(libobjc_VERSION 4.6)
 
@@ -41,23 +42,10 @@ if (MSVC)
 	set(objc_LINK_FLAGS "/DEBUG /INCREMENTAL:NO ${objc_LINK_FLAGS}")
 endif()
 
-# Get Architecture without relying on CMake
-try_compile(
-    COMPILE_SUCCESS
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_SOURCE_DIR}/CMake/detect_arch.c
-    OUTPUT_VARIABLE COMPILE_OUTPUT
-)
-
-if(NOT COMPILE_SUCCESS)
-    string(REGEX MATCH "(aarch64|arm|i386|x86_64|powerpc64|powerpc|unknown)" ARCHITECTURE ${COMPILE_OUTPUT})
-endif()
-
-set(ARCHITECTURE ${ARCHITECTURE} CACHE STRING "Architecture Type")
-message(STATUS "Architecture: ${ARCHITECTURE}")
+message(STATUS "Architecture as detected by CMake: ${CMAKE_SYSTEM_PROCESSOR}")
 
 # Build configuration
-add_compile_definitions(GNUSTEP __OBJC_RUNTIME_INTERNAL__=1)
+add_compile_definitions(GNUSTEP __OBJC_RUNTIME_INTERNAL__=1 __OBJC_BOOL)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -69,13 +57,13 @@ set(libobjc_OBJCXX_SRCS
 	)
 set(libobjc_OBJC_SRCS 
 	NSBlocks.m
-	Protocol2.m
 	associate.m
-	blocks_runtime.m
+	blocks_runtime_np.m
 	properties.m)
 set(libobjc_C_SRCS 
 	alias_table.c
 	block_to_imp.c
+	builtin_classes.c
 	caps.c
 	category_loader.c
 	class_table.c
@@ -96,8 +84,6 @@ set(libobjc_HDRS
 	objc/Availability.h
 	objc/Object.h
 	objc/Protocol.h
-	objc/blocks_private.h
-	objc/blocks_runtime.h
 	objc/capabilities.h
 	objc/developer.h
 	objc/encoding.h
@@ -113,11 +99,9 @@ set(libobjc_HDRS
 	objc/objc.h
 	objc/runtime-deprecated.h
 	objc/runtime.h
-	objc/slot.h)
-set(libBlocksRuntime_COMPATIBILITY_HDRS
-	Block.h
-	Block_private.h
-	)
+	objc/slot.h
+	${PROJECT_BINARY_DIR}/objc/objc-config.h)
+
 set(libobjc_CXX_SRCS
 	selector_table.cc
 	)
@@ -134,7 +118,7 @@ if (NOT tsl-robin-map_FOUND)
 	FetchContent_Declare(
 		robinmap
 		GIT_REPOSITORY https://github.com/Tessil/robin-map/
-		GIT_TAG        v1.2.1)
+		GIT_TAG        v1.4.0)
 
 	FetchContent_MakeAvailable(robinmap)
 endif()
@@ -156,7 +140,8 @@ option(DEBUG_ARC_COMPAT
 	"Log warnings for classes that don't hit ARC fast paths" OFF)
 option(ENABLE_OBJCXX "Enable support for Objective-C++" ON)
 option(TESTS "Enable building the tests")
-
+option(EMBEDDED_BLOCKS_RUNTIME "Include an embedded blocks runtime, rather than relying on libBlocksRuntime to supply it" ON)
+option(STRICT_APPLE_COMPATIBILITY "Use strict Apple compatibility, always defining BOOL as signed char" OFF)
 
 # For release builds, we disable spamming the terminal with warnings about
 # selector type mismatches
@@ -164,6 +149,10 @@ add_compile_definitions($<$<CONFIG:Release>:NO_SELECTOR_MISMATCH_WARNINGS>)
 add_compile_definitions($<$<BOOL:${TYPE_DEPENDENT_DISPATCH}>:TYPE_DEPENDENT_DISPATCH>)
 add_compile_definitions($<$<BOOL:${ENABLE_TRACING}>:WITH_TRACING=1>)
 add_compile_definitions($<$<BOOL:${DEBUG_ARC_COMPAT}>:DEBUG_ARC_COMPAT>)
+add_compile_definitions($<$<BOOL:${STRICT_APPLE_COMPATIBILITY}>:STRICT_APPLE_COMPATIBILITY>)
+
+configure_file(objc/objc-config.h.in objc/objc-config.h @ONLY)
+include_directories("${PROJECT_BINARY_DIR}/objc/")
 
 if (OLDABI_COMPAT)
 	list(APPEND libobjc_C_SRCS legacy.c abi_version.c statics_loader.c)
@@ -188,7 +177,7 @@ add_compile_options($<$<STREQUAL:${CMAKE_SYSTEM_PROCESSOR},i686>:-march=i586>)
 # which is used in safe caching.
 # You must also update the guard in objc/runtime.h, when updating
 # this macro.
-if (ARCHITECTURE STREQUAL "powerpc")
+if (CMAKE_SYSTEM_PROCESSOR STREQUAL "ppc" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "ppcle")
 	add_definitions(-DNO_SAFE_CACHING)
 endif()
 
@@ -230,7 +219,7 @@ elseif (MINGW)
 	message(STATUS "Using MinGW-compatible exception model")
 	list(APPEND libobjc_CXX_SRCS objcxx_eh.cc objcxx_eh_mingw.cc)
 else ()
-	separate_arguments(EH_PERSONALITY_FLAGS NATIVE_COMMAND ${CMAKE_CXX_FLAGS})
+	set(EH_PERSONALITY_FLAGS "")
 	if (CMAKE_CXX_COMPILER_TARGET)
 		list(APPEND EH_PERSONALITY_FLAGS "${CMAKE_CXX_COMPILE_OPTIONS_TARGET}${CMAKE_CXX_COMPILER_TARGET}")
 	endif ()
@@ -243,20 +232,45 @@ else ()
 	find_library(M_LIBRARY m)
 endif ()
 
+if (EMBEDDED_BLOCKS_RUNTIME)
+	set(libBlocksRuntime_COMPATIBILITY_HDRS
+		Block.h
+		Block_private.h
+		)
+	list(APPEND libobjc_OBJC_SRCS blocks_runtime.m)
+	list(APPEND libobjc_HDRS objc/blocks_private.h)
+	list(APPEND libobjc_HDRS objc/blocks_runtime.h)
+	add_definitions(-DEMBEDDED_BLOCKS_RUNTIME)
+else ()
+	find_library(BLOCKS_RUNTIME_LIBRARY BlocksRuntime)
+	if (BLOCKS_RUNTIME_LIBRARY)
+		set(CMAKE_REQUIRED_LIBRARIES ${BLOCKS_RUNTIME_LIBRARY})
+		check_symbol_exists(_Block_use_RR2 "Block_private.h" HAVE_BLOCK_USE_RR2)
+		if (HAVE_BLOCK_USE_RR2)
+			add_definitions(-DHAVE_BLOCK_USE_RR2)
+		else ()
+			message(FATAL_ERROR "libBlocksRuntime does not contain _Block_use_RR2(). Enable EMBEDDED_BLOCKS_RUNTIME to use the built-in blocks runtime.")
+		endif ()
+		unset(CMAKE_REQUIRED_LIBRARIES)
+	else ()
+		message(FATAL_ERROR "libBlocksRuntime not found. Enable EMBEDDED_BLOCKS_RUNTIME to use the built-in blocks runtime.")
+	endif ()
+endif ()
+
 add_library(objc SHARED ${libobjc_C_SRCS} ${libobjc_ASM_SRCS} ${libobjc_OBJC_SRCS} ${libobjc_OBJCXX_SRCS} ${libobjc_ASM_OBJS})
-target_compile_options(objc PRIVATE "$<$<OR:$<COMPILE_LANGUAGE:OBJC>,$<COMPILE_LANGUAGE:OBJCXX>>:-Wno-deprecated-objc-isa-usage;-Wno-objc-root-class;-fobjc-runtime=gnustep-2.0>$<$<COMPILE_LANGUAGE:C>:-Xclang;-fexceptions>")
+target_compile_options(objc PRIVATE "$<$<OR:$<COMPILE_LANGUAGE:OBJC>,$<COMPILE_LANGUAGE:OBJCXX>>:-Wno-gnu-folding-constant;-Wno-deprecated-objc-isa-usage;-Wno-objc-root-class;-fobjc-runtime=gnustep-2.0>$<$<COMPILE_LANGUAGE:C>:-Xclang;-fexceptions;-Wno-gnu-folding-constant>")
 
 list(APPEND libobjc_CXX_SRCS ${libobjcxx_CXX_SRCS})
 target_sources(objc PRIVATE ${libobjc_CXX_SRCS})
 
 include(FindThreads)
-target_link_libraries(objc Threads::Threads)
+target_link_libraries(objc PUBLIC Threads::Threads)
 # Link against ntdll.dll for RtlRaiseException
 if (WIN32 AND NOT MINGW)
-	target_link_libraries(objc ntdll.dll)
+	target_link_libraries(objc PUBLIC ntdll.dll)
 endif()
 
-target_link_libraries(objc tsl::robin_map)
+target_link_libraries(objc PRIVATE tsl::robin_map)
 
 set_target_properties(objc PROPERTIES
 	LINKER_LANGUAGE C
@@ -278,7 +292,11 @@ endif ()
 
 # Explicitly link libm, as an implicit dependency of the C++ runtime
 if (M_LIBRARY)
-	target_link_libraries(objc ${M_LIBRARY})
+	target_link_libraries(objc PUBLIC ${M_LIBRARY})
+endif ()
+
+if (BLOCKS_RUNTIME_LIBRARY)
+	target_link_libraries(objc PUBLIC ${BLOCKS_RUNTIME_LIBRARY})
 endif ()
 
 # Make weak symbols work on OS X
@@ -296,9 +314,11 @@ endif ()
 
 find_program(GNUSTEP_CONFIG gnustep-config)
 if (GNUSTEP_CONFIG)
-	EXEC_PROGRAM(gnustep-config
-		ARGS "--installation-domain-for=libobjc2"
-		OUTPUT_VARIABLE DEFAULT_INSTALL_TYPE)
+	execute_process(
+        COMMAND ${GNUSTEP_CONFIG} --installation-domain-for=libobjc2
+		OUTPUT_VARIABLE DEFAULT_INSTALL_TYPE
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
 endif ()
 
 
@@ -327,27 +347,44 @@ if (${GNUSTEP_INSTALL_TYPE} STREQUAL "NONE")
 	SET(HEADER_INSTALL_PATH "include")
 	SET(PC_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
 else ()
-	EXEC_PROGRAM(gnustep-config
-		ARGS "--variable=GNUSTEP_${GNUSTEP_INSTALL_TYPE}_LIBRARIES"
-		OUTPUT_VARIABLE LIB_INSTALL_PATH)
-	EXEC_PROGRAM(gnustep-config
-		ARGS "--variable=GNUSTEP_${GNUSTEP_INSTALL_TYPE}_LIBRARIES"
-		OUTPUT_VARIABLE BIN_INSTALL_PATH)
-	EXEC_PROGRAM(gnustep-config
-		ARGS "--variable=GNUSTEP_${GNUSTEP_INSTALL_TYPE}_HEADERS"
-		OUTPUT_VARIABLE HEADER_INSTALL_PATH)
+	execute_process(
+        COMMAND ${GNUSTEP_CONFIG} --variable=GNUSTEP_${GNUSTEP_INSTALL_TYPE}_LIBRARIES
+		OUTPUT_VARIABLE LIB_INSTALL_PATH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    execute_process(
+        COMMAND ${GNUSTEP_CONFIG} --variable=GNUSTEP_${GNUSTEP_INSTALL_TYPE}_LIBRARIES
+		OUTPUT_VARIABLE BIN_INSTALL_PATH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    execute_process(
+        COMMAND ${GNUSTEP_CONFIG} --variable=GNUSTEP_${GNUSTEP_INSTALL_TYPE}_HEADERS
+		OUTPUT_VARIABLE HEADER_INSTALL_PATH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
 	SET(PC_INSTALL_PREFIX "/")
 endif ()
 message(STATUS "GNUstep install type set to ${GNUSTEP_INSTALL_TYPE}")
 
+target_include_directories(
+	objc
+	INTERFACE
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+	$<INSTALL_INTERFACE:include>)
 install(TARGETS ${INSTALL_TARGETS}
+	EXPORT libobjcTargets
 	RUNTIME DESTINATION ${BIN_INSTALL_PATH}
 	LIBRARY DESTINATION ${LIB_INSTALL_PATH}
 	ARCHIVE DESTINATION ${LIB_INSTALL_PATH})
+
 install(FILES ${libobjc_HDRS}
 	DESTINATION "${HEADER_INSTALL_PATH}/${INCLUDE_DIRECTORY}")
-install(FILES ${libBlocksRuntime_COMPATIBILITY_HDRS}
-	DESTINATION "${HEADER_INSTALL_PATH}")
+
+if (EMBEDDED_BLOCKS_RUNTIME)
+	install(FILES ${libBlocksRuntime_COMPATIBILITY_HDRS}
+		DESTINATION "${HEADER_INSTALL_PATH}")
+endif ()
+
 
 set(CPACK_GENERATOR TGZ CACHE STRING
 	"Installer types to generate.  Sensible options include TGZ, RPM and DEB")
@@ -366,11 +403,34 @@ if (UNIX)
 endif ()
 include (CPack)
 
+# CMake Configuration File
+
+install(EXPORT libobjcTargets
+	FILE libobjcTargets.cmake
+	DESTINATION ${LIB_INSTALL_PATH}/cmake/libobjc)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
+	"${CMAKE_CURRENT_BINARY_DIR}/libobjcConfig.cmake"
+	INSTALL_DESTINATION "${LIB_INSTALL_PATH}/cmake/libobjc"
+	NO_SET_AND_CHECK_MACRO
+	NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+write_basic_package_version_file(
+	"${CMAKE_CURRENT_BINARY_DIR}/libobjcConfigVersion.cmake"
+	VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}"
+	COMPATIBILITY AnyNewerVersion)
+install(FILES
+	${CMAKE_CURRENT_BINARY_DIR}/libobjcConfig.cmake
+	${CMAKE_CURRENT_BINARY_DIR}/libobjcConfigVersion.cmake
+	DESTINATION ${LIB_INSTALL_PATH}/cmake/libobjc)
+
 # pkg-config descriptor
 
 set(PC_LIBS_PRIVATE ${CMAKE_CXX_IMPLICIT_LINK_LIBRARIES})
 if (M_LIBRARY)
 	list(APPEND PC_LIBS_PRIVATE ${M_LIBRARY})
+endif ()
+if (BLOCKS_RUNTIME_LIBRARY)
+	list(APPEND PC_LIBS_PRIVATE ${BLOCKS_RUNTIME_LIBRARY})
 endif ()
 list(REMOVE_DUPLICATES PC_LIBS_PRIVATE)
 string(REPLACE  ";" " -l" PC_LIBS_PRIVATE "${PC_LIBS_PRIVATE}")

@@ -41,9 +41,11 @@ int main(void)
 
 	object = [Associated new];
 	holder = [Test new];
+	size_t rc = object_getRetainCount_np(object);
 	for (uintptr_t i = 1; i <= 20; ++i)
 	{
 		objc_setAssociatedObject(holder, (void*)i, object, OBJC_ASSOCIATION_RETAIN);
+		assert(rc + i == object_getRetainCount_np(object));
 	}
 	int lost = 0;
 	for (uintptr_t i = 1; i <= 20; ++i)
@@ -53,6 +55,7 @@ int main(void)
 			fprintf(stderr, "lost object %" PRIuPTR "\n", i);
 			++lost;
 		}
+		assert(rc + 20 + i == object_getRetainCount_np(object));
 	}
 	[holder release];
 	[object release];

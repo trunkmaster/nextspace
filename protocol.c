@@ -31,6 +31,8 @@ static int protocol_hash(const struct objc_protocol *protocol)
 static protocol_table *known_protocol_table;
 mutex_t protocol_table_lock;
 
+
+
 PRIVATE void init_protocol_table(void)
 {
 	protocol_initialize(&known_protocol_table, 128);
@@ -47,68 +49,14 @@ struct objc_protocol *protocol_for_name(const char *name)
 	return protocol_table_get(known_protocol_table, name);
 }
 
-static id incompleteProtocolClass(void)
-{
-	static id IncompleteProtocolClass = 0;
-	if (IncompleteProtocolClass == nil)
-	{
-		IncompleteProtocolClass = objc_getClass("__IncompleteProtocol");
-	}
-	return IncompleteProtocolClass;
-}
-
-/**
- * Class used for legacy GCC protocols (`ProtocolGCC`).
- */
-static id protocol_class_gcc;
-/**
- * Class used for legacy GNUstep V1 ABI  protocols (`ProtocolGSv1`).
- */
-static id protocol_class_gsv1;
-/**
- * Class used for protocols (`Protocol`).
- */
-static id protocol_class_gsv2;
-
-static BOOL init_protocol_classes(void)
-{
-	if (nil == protocol_class_gcc)
-	{
-		protocol_class_gcc = objc_getClass("ProtocolGCC");
-	}
-	if (nil == protocol_class_gsv1)
-	{
-		protocol_class_gsv1 = objc_getClass("ProtocolGSv1");
-	}
-	if (nil == protocol_class_gsv2)
-	{
-		protocol_class_gsv2 = objc_getClass("Protocol");
-	}
-	if ((nil == protocol_class_gcc) ||
-	    (nil == protocol_class_gsv1) ||
-	    (nil == protocol_class_gsv2))
-	{
-		return NO;
-	}
-	return YES;
-}
-
 static BOOL protocol_hasClassProperties(struct objc_protocol *p)
 {
-	if (!init_protocol_classes())
-	{
-		return NO;
-	}
-	return p->isa == protocol_class_gsv2;
+	return p->isa == (id)&_OBJC_CLASS_Protocol;
 }
 
 static BOOL protocol_hasOptionalMethodsAndProperties(struct objc_protocol *p)
 {
-	if (!init_protocol_classes())
-	{
-		return NO;
-	}
-	if (p->isa == protocol_class_gcc)
+	if (p->isa == (id)&_OBJC_CLASS_ProtocolGCC)
 	{
 		return NO;
 	}
@@ -198,18 +146,13 @@ static struct objc_protocol *unique_protocol(struct objc_protocol *aProto)
 
 static BOOL init_protocols(struct objc_protocol_list *protocols)
 {
-	if (!init_protocol_classes())
-	{
-		return NO;
-	}
-
 	for (unsigned i=0 ; i<protocols->count ; i++)
 	{
 		struct objc_protocol *aProto = protocols->list[i];
 		// Don't initialise a protocol twice
-		if ((aProto->isa == protocol_class_gcc) ||
-		    (aProto->isa == protocol_class_gsv1) ||
-		    (aProto->isa == protocol_class_gsv2))
+		if ((aProto->isa == (id)&_OBJC_CLASS_ProtocolGCC) ||
+		    (aProto->isa == (id)&_OBJC_CLASS_ProtocolGSv1) ||
+		    (aProto->isa == (id)&_OBJC_CLASS_Protocol))
 		{
 			continue;
 		}
@@ -226,19 +169,19 @@ static BOOL init_protocols(struct objc_protocol_list *protocols)
 #ifdef OLDABI_COMPAT
 			case protocol_version_gcc:
 				protocols->list[i] = objc_upgrade_protocol_gcc((struct objc_protocol_gcc *)aProto);
-				assert(aProto->isa == protocol_class_gcc);
-				assert(protocols->list[i]->isa == protocol_class_gsv2);
+				assert(aProto->isa == (id)&_OBJC_CLASS_ProtocolGCC);
+				assert(protocols->list[i]->isa == (id)&_OBJC_CLASS_Protocol);
 				aProto = protocols->list[i];
 				break;
 			case protocol_version_gsv1:
 				protocols->list[i] = objc_upgrade_protocol_gsv1((struct objc_protocol_gsv1 *)aProto);
-				assert(aProto->isa == protocol_class_gsv1);
-				assert(protocols->list[i]->isa == protocol_class_gsv2);
+				assert(aProto->isa == (id)&_OBJC_CLASS_ProtocolGSv1);
+				assert(protocols->list[i]->isa == (id)&_OBJC_CLASS_Protocol);
 				aProto = protocols->list[i];
 				break;
 #endif
 			case protocol_version_gsv2:
-				aProto->isa = protocol_class_gsv2;
+				aProto->isa = (id)&_OBJC_CLASS_Protocol;
 				break;
 		}
 		// Initialize all of the protocols that this protocol refers to
@@ -573,6 +516,10 @@ Protocol*__unsafe_unretained* objc_copyProtocolList(unsigned int *outCount)
 	{
 		p[count++] = next;
 	}
+	if (NULL != e)
+	{
+		free(e);
+	}
 	if (NULL != outCount)
 	{
 		*outCount = total;
@@ -585,8 +532,7 @@ Protocol *objc_allocateProtocol(const char *name)
 {
 	if (objc_getProtocol(name) != NULL) { return NULL; }
 	// Create this as an object and add extra space at the end for the properties.
-	Protocol *p = (Protocol*)class_createInstance((Class)incompleteProtocolClass(),
-			sizeof(struct objc_protocol) - sizeof(id));
+	Protocol *p = (Protocol*)class_createInstance(&_OBJC_CLASS___IncompleteProtocol, 0);
 	p->name = strdup(name);
 	return p;
 }
@@ -595,16 +541,14 @@ void objc_registerProtocol(Protocol *proto)
 	if (NULL == proto) { return; }
 	LOCK_FOR_SCOPE(&protocol_table_lock);
 	if (objc_getProtocol(proto->name) != NULL) { return; }
-	if (incompleteProtocolClass() != proto->isa) { return; }
-	init_protocol_classes();
-	proto->isa = protocol_class_gsv2;
+	if (proto->isa != (id)&_OBJC_CLASS___IncompleteProtocol) { return; }
+	proto->isa = (id)&_OBJC_CLASS_Protocol;
 	protocol_table_insert(proto);
 }
 PRIVATE void registerProtocol(Protocol *proto)
 {
-	init_protocol_classes();
 	LOCK_FOR_SCOPE(&protocol_table_lock);
-	proto->isa = protocol_class_gsv2;
+	proto->isa = (id)&_OBJC_CLASS_Protocol;
 	if (protocol_for_name(proto->name) == NULL)
 	{
 		protocol_table_insert(proto);
@@ -617,7 +561,7 @@ void protocol_addMethodDescription(Protocol *aProtocol,
                                    BOOL isInstanceMethod)
 {
 	if ((NULL == aProtocol) || (NULL == name) || (NULL == types)) { return; }
-	if (incompleteProtocolClass() != aProtocol->isa) { return; }
+	if (aProtocol->isa != (id)(id)&_OBJC_CLASS___IncompleteProtocol) { return; }
 	struct objc_protocol_method_description_list **listPtr;
 	if (isInstanceMethod)
 	{
@@ -663,7 +607,7 @@ void protocol_addMethodDescription(Protocol *aProtocol,
 void protocol_addProtocol(Protocol *aProtocol, Protocol *addition)
 {
 	if ((NULL == aProtocol) || (NULL == addition)) { return; }
-	if (incompleteProtocolClass() != aProtocol->isa) { return; }
+	if (aProtocol->isa != (id)&_OBJC_CLASS___IncompleteProtocol) { return; }
 	if (NULL == aProtocol->protocol_list)
 	{
 		aProtocol->protocol_list = calloc(1, sizeof(struct objc_property_list) + sizeof(Protocol*));
@@ -685,7 +629,7 @@ void protocol_addProperty(Protocol *aProtocol,
                           BOOL isInstanceProperty)
 {
 	if ((NULL == aProtocol) || (NULL == name)) { return; }
-	if (incompleteProtocolClass() != aProtocol->isa) { return; }
+	if (aProtocol->isa != (id)&_OBJC_CLASS___IncompleteProtocol) { return; }
 	if (!isInstanceProperty) { return; }
 	struct objc_property_list **listPtr = 
 	    isInstanceProperty ?

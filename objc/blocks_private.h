@@ -3,7 +3,14 @@
 #if defined(__clang__) && !defined(__OBJC_RUNTIME_INTERNAL__)
 #pragma clang system_header
 #endif
+#ifdef __cplusplus
+#define BLOCKS_EXPORT extern "C"
+#else
+#define BLOCKS_EXPORT extern
+#endif
 
+#include <stdbool.h>
+#include "Availability.h"
 
 /*
  * This header file exposes some implementation details of the blocks runtime
@@ -37,6 +44,23 @@ struct Block_descriptor
 	 */
 	const char *encoding;
 };
+
+/** 
+  * Checks whether the block is currently being deallocated.
+  *
+  * Used by ARC weak reference management. Only call this after the weak
+  * reference lock is acquired. 
+  */
+OBJC_PUBLIC BLOCKS_EXPORT bool _Block_isDeallocating(const void *aBlock);
+/**
+ *  Atomically increments the reference count of the block.
+ *  Returns true if the block was retained, and false if it is already 
+ *  being deallocated.
+ *
+ * Used by ARC weak reference management. Only call this after the weak
+ * reference lock is acquired.
+ */
+OBJC_PUBLIC BLOCKS_EXPORT bool _Block_tryRetain(const void *aBlock);
 
 // Helper structure
 struct Block_layout

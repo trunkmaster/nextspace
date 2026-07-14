@@ -1,4 +1,4 @@
-#if __clang_major__ < 18
+#if __clang_major__ < 18 || (__clang_major__ == 18 && __clang_minor__ < 1)
 // Skip this test if clang is too old to support it.
 int main(void)
 {
@@ -20,6 +20,8 @@ typedef struct _NSZone NSZone;
 @interface NoAlloc : Test @end
 @interface NoInit : Test @end
 @interface NoInit2 : NoInit @end
+
+@interface ShouldInitSubclassed : NoInit @end
 
 @implementation ShouldAlloc
 + (instancetype)alloc
@@ -91,6 +93,18 @@ typedef struct _NSZone NSZone;
 }
 @end
 
+@implementation ShouldInitSubclassed
++ (instancetype) alloc
+{
+	return [ShouldInit alloc];
+}
+@end
+
+Class getClassNamed(char *name)
+{
+	return nil;
+}
+
 int main(void)
 {
 	called = NO;
@@ -110,6 +124,10 @@ int main(void)
 	assert(called);
 
 	called = NO;
+	[[ShouldInitSubclassed alloc] init];
+	assert(called);
+
+	called = NO;
 	[NoAlloc alloc];
 	assert(!called);
 
@@ -124,6 +142,11 @@ int main(void)
 	called = NO;
 	[[NoInit2 alloc] init];
 	assert(!called);
+
+	// Look up a non-existing class to test if fast-path
+	// implementations can handle receivers that are nil
+	[getClassNamed("flibble") alloc];
+	[[getClassNamed("flibble") alloc] init];
 }
 
 #endif

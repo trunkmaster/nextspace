@@ -137,6 +137,7 @@ PRIVATE Class class_table_next(void **e)
 			(struct class_table_internal_table_enumerator**)e);
 }
 
+PRIVATE BOOL objc_resolve_class(Class cls);
 PRIVATE void init_class_tables(void)
 {
 	class_table_internal_initialize(&class_table, 4096);
@@ -516,6 +517,7 @@ int objc_getClassList(Class *buffer, int bufferLen)
 	{
 		buffer[count++] = next;
 	}
+	free(e);
 	return count;
 }
 Class *objc_copyClassList(unsigned int *outCount)

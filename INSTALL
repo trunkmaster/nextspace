@@ -79,6 +79,20 @@ this configuration, we provide a separate libobjcxx.so, which avoids the need
 for the Objective-C runtime to depend on the STL implementation just to be able
 to interoperate with C++ exceptions.
 
+Blocks Runtime Integration
+--------------------------
+
+libobjc2 ships with a runtime for the blocks C extension (i.e. closures/lambdas) and
+will install compatibility headers for the libBlocksRuntime library that ships with
+LLVM's compiler-rt or Swift's libdispatch. Alternatively, libobjc2 can be built without
+the embedded blocks runtime and utilise the one from libdispatch instead. This can be
+enabled by adding `-DEMBEDDED_BLOCKS_RUNTIME=OFF` to the `cmake` command. It's required
+that your version of libBlocksRuntime provides the `Blocks_private.h` header.
+(enabled with `-DINSTALL_PRIVATE_HEADERS=ON` when building libdispatch from source)
+
+Regardless of the chosen blocks runtime implementation, blocks will be fully integrated
+into the Objective-C runtime.
+
 Installation Location
 ---------------------
 
