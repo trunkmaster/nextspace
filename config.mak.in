@@ -1,0 +1,91 @@
+#
+# Extra make variables for base library
+#
+# Copyright (C) 2005-2010 Free Software Foundation
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.
+
+WHOAMI=@WHOAMI@
+
+DYNAMIC_LINKER=@DYNAMIC_LINKER@
+
+HAVE_LIBXML=@HAVE_LIBXML@
+HAVE_GNUTLS=@HAVE_GNUTLS@
+HAVE_BLOCKS=@HAVE_BLOCKS@
+HAVE_DOT=@HAVE_DOT@
+
+WITH_FFI=@WITH_FFI@
+
+NX_CONST_STRING_CLASS=@NX_CONST_STRING_CLASS@
+OBJCFLAGS+=@OBJCFLAGS@
+OBJC2RUNTIME=@OBJC2RUNTIME@
+OBJCSYNC=@OBJCSYNC@
+WARN_FLAGS=@WARN_FLAGS@
+
+HAVE_INET_PTON=@HAVE_INET_PTON@
+HAVE_INET_NTOP=@HAVE_INET_NTOP@
+HAVE_OBJC_SYNC_ENTER=@HAVE_OBJC_SYNC_ENTER@
+
+CONFIG_SYSTEM_INCL += @INCLUDE_FLAGS@
+ifeq ($(shared),yes)
+  CONFIG_SYSTEM_LIBS += @LIBS@
+  CONFIG_SYSTEM_LIB_DIR += @LDIR_FLAGS@
+endif
+
+GNUSTEP_INSTALL_GDOMAP_AS_SETUID=@GNUSTEP_INSTALL_GDOMAP_AS_SETUID@
+GNUSTEP_GDOMAP_PORT_OVERRIDE=@GNUSTEP_GDOMAP_PORT_OVERRIDE@
+
+GNUSTEP_BASE_HAVE_AVAHI=@HAVE_AVAHI@
+GNUSTEP_BASE_HAVE_GNUTLS=@HAVE_GNUTLS@
+GNUSTEP_BASE_HAVE_ICU=@HAVE_ICU@
+GNUSTEP_BASE_HAVE_LIBCURL=@HAVE_LIBCURL@
+GNUSTEP_BASE_HAVE_LIBDISPATCH=@HAVE_LIBDISPATCH@
+GNUSTEP_BASE_HAVE_LIBDISPATCH_RUNLOOP=@HAVE_LIBDISPATCH_RUNLOOP@
+GNUSTEP_BASE_HAVE_LIBXML=@HAVE_LIBXML@
+GNUSTEP_BASE_HAVE_MDNS=@HAVE_MDNS@
+
+# Default to building only -baseadd
+# on non *-gnu-* library combos
+ifneq ($(FOUNDATION_LIB),gnu)
+add=yes
+base=no
+endif
+
+GNUSTEP_BASE_DOMAIN=@GNUSTEP_BASE_DOMAIN@
+GNUSTEP_BASE_RELATIVE_PATHS=@GNUSTEP_BASE_RELATIVE_PATHS@
+
+# Any global prefprocessor defines can be added here
+DEFS=
+
+ifeq ($(GNUSTEP_BASE_RELATIVE_PATHS), yes)
+ifneq ($(GNUSTEP_BASE_DOMAIN), $(GNUSTEP_INSTALLATION_DOMAIN))
+$(warning "Error: GNUSTEP_INSTALLATION_DOMAIN does not match GNUSTEP_BASE_DOMAIN")
+$(warning " ")
+$(warning "You can install gnustep-base in one of the four domains: SYSTEM, LOCAL, NETWORK or USER.")
+$(warning " ")
+$(warning "gnustep-base was configured to be installed into: $(GNUSTEP_BASE_DOMAIN)")
+$(warning "but it would now being installed into: $(GNUSTEP_INSTALLATION_DOMAIN)")
+$(warning "That's not right: they must match.")
+$(warning " ")
+$(warning "If you want to install into $(GNUSTEP_BASE_DOMAIN), please use")
+$(warning " ")
+$(warning "   make install GNUSTEP_INSTALLATION_DOMAIN=$(GNUSTEP_BASE_DOMAIN) [plus any other options you need]")
+$(warning " ")
+$(warning "Instead, if you want to install into $(GNUSTEP_INSTALLATION_DOMAIN), please reconfigure")
+$(warning "gnustep-base by doing")
+$(warning " ")
+$(warning "   ./configure --with-installation-domain=$(GNUSTEP_INSTALLATION_DOMAIN) [plus any other options you need]")
+$(warning " ")
+$(warning "and then recompile and reinstall.")
+
+# We used to automatically rerun configure here.  Unfortunately we
+# don't know if the right domain that we should be installing into is
+# GNUSTEP_BASE_DOMAIN (specified or automatically picked up by
+# configure) or GNUSTEP_INSTALLATION_DOMAIN (specified or
+# automatically picked up by make install) so the user really has to
+# spend two minutes checking this and fixing it herself.
+
+$(error "Please fix the installation domain then try again.  If you are stuck, contact discuss-gnustep@gnu.org for help.")
+endif
+endif

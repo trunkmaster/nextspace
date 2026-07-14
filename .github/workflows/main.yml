@@ -1,0 +1,378 @@
+name: CI
+run-name: >-
+  ${{
+    join(fromJSON(format('["{0}", "{1}", "{2}"]',
+      ((inputs.tools_make_branch != '' && inputs.tools_make_branch != 'master') || inputs.tools_windows_msvc_branch != '') && github.workflow || '',
+      (inputs.tools_make_branch != '' && inputs.tools_make_branch != 'master') && format('tools-make: {0}', inputs.tools_make_branch) || '',
+      inputs.tools_windows_msvc_branch != '' && format('tools-windows-msvc: {0}', inputs.tools_windows_msvc_branch) || ''
+    )), ' ')
+  }}
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      tools_make_branch:
+        description: "tools-make branch"
+        default: "master"
+        required: true
+      tools_windows_msvc_branch:
+        description: "tools-windows-msvc branch (leave empty to use latest pre-built release)"
+        required: false
+
+env:
+  APT_PACKAGES: >-
+    git
+    cmake
+    clang
+    pkg-config
+    libgnutls28-dev
+    libffi-dev
+    libicu-dev
+    libxml2-dev
+    libxslt1-dev
+    libssl-dev
+    libavahi-client-dev
+    zlib1g-dev
+    gnutls-bin
+    libcurl4-gnutls-dev
+
+  # packages for GCC Objective-C runtime
+  APT_PACKAGES_gcc: >-
+    libobjc-10-dev
+    libblocksruntime-dev
+    gobjc
+
+  # packages for libobjc2 / libdispatch
+  APT_PACKAGES_clang: >-
+    libpthread-workqueue-dev
+
+  RPM_PACKAGES: >-
+    which
+    gzip
+    git
+    cmake
+    clang
+    lld
+    pkg-config
+    gnutls-devel
+    gnutls-utils
+    libcurl-devel
+    libffi-devel
+    libicu-devel
+    libxml2-devel
+    libxslt-devel
+    glibc-gconv-extra
+
+  # GNUstep Windows MSVC toolchain release tag to be used (keep up to date with latest release):
+  # https://github.com/gnustep/tools-windows-msvc/releases
+  TOOLS_WINDOWS_MSVC_RELEASE_TAG: release-20231228
+
+jobs:
+  ########### Linux ###########
+  linux:
+    name: ${{ matrix.name }}
+    container: ${{ matrix.container }}
+    runs-on: ubuntu-latest
+    # don't run pull requests from local branches twice
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Ubuntu x64 GCC
+            container: ubuntu:22.04
+            library-combo: gnu-gnu-gnu
+            CC: gcc
+            CXX: g++
+            libdir: lib
+
+          - name: Ubuntu x64 Clang gnustep-2.0
+            container: ubuntu:22.04
+            library-combo: ng-gnu-gnu
+            runtime-version: gnustep-2.0
+            CC: clang
+            CXX: clang++
+            libdir: lib
+
+          - name: Rocky Linux x64 Clang gnustep-2.0
+            container: rockylinux:9
+            library-combo: ng-gnu-gnu
+            runtime-version: gnustep-2.0
+            CC: clang
+            CXX: clang++
+            libdir: lib64
+
+    env:
+      SRC_PATH: ${{ github.workspace }}/source
+      DEPS_PATH: ${{ github.workspace }}/dependencies
+      INSTALL_PATH: ${{ github.workspace }}/build
+      CC: ${{ matrix.CC }}
+      CXX: ${{ matrix.CXX }}
+      LIBRARY_COMBO: ${{ matrix.library-combo }}
+      RUNTIME_VERSION: ${{ matrix.runtime-version }}
+      LIBDIR: ${{ matrix.libdir }}
+
+    defaults:
+      run:
+        working-directory: ${{ env.SRC_PATH }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: ${{ env.SRC_PATH }}
+
+      - name: Install apt packages
+        run: |
+          apt-get -q -y update
+          apt-get -q -y install $APT_PACKAGES $APT_PACKAGES_${{ matrix.library-combo == 'ng-gnu-gnu' && 'clang' || 'gcc' }}
+
+          # gnustep-2.0 runtime requires ld.gold or lld
+          if [ "$RUNTIME_VERSION" = "gnustep-2.0" ]; then
+            update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 10
+          fi
+        if: ${{ startsWith(matrix.container, 'ubuntu') }}
+
+      - name: Install rpm packages
+        run: |
+          yum install -y $RPM_PACKAGES
+
+          # gnustep-2.0 runtime requires ld.gold or lld
+          if [ "$RUNTIME_VERSION" = "gnustep-2.0" ]; then
+            update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/lld" 10
+          fi
+        if: ${{ startsWith(matrix.container, 'rockylinux') }}
+
+      - name: Install dependencies
+        env:
+          TOOLS_MAKE_BRANCH: ${{github.event.inputs.tools_make_branch}}
+        run: ./.github/scripts/dependencies.sh
+
+      - name: Build source
+        run: |
+          . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+          ./configure
+          make -j$(nproc) && make install
+
+      - name: Run tests
+        run: |
+          . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+          make check
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Logs - ${{ matrix.name }}
+          path: |
+            source/config.log
+            source/Tests/tests.log
+
+  ########### Windows ###########
+  windows:
+    name: ${{ matrix.name }}
+    runs-on: windows-2022
+    # don't run pull requests from local branches twice
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows x64 MinGW GCC
+            arch: x86_64
+            msystem: MINGW64
+            library-combo: gnu-gnu-gnu
+            CC: gcc
+            CXX: g++
+
+          - name: Windows x64 MinGW Clang gnustep-2.0
+            arch: x86_64
+            msystem: MINGW64
+            library-combo: ng-gnu-gnu
+            runtime-version: gnustep-2.0
+            CC: clang
+            CXX: clang
+            LDFLAGS: -fuse-ld=lld -lstdc++ -lgcc_s
+
+          - name: Windows x64 MSVC Clang gnustep-2.0
+            arch: x64
+            host: x86_64-pc-windows
+            library-combo: ng-gnu-gnu
+            runtime-version: gnustep-2.0
+            configure-opts: --disable-tls
+            CC: clang -m64
+            CXX: clang++ -m64
+            LDFLAGS: -fuse-ld=lld
+
+    env:
+      SRC_PATH: ${{ github.workspace }}\source
+      DEPS_PATH: ${{ github.workspace }}\dependencies
+      INSTALL_PATH: ${{ github.workspace }}\build
+      IS_WINDOWS_MINGW: ${{ startsWith(matrix.msystem, 'MINGW') }}
+      IS_WINDOWS_MSVC: ${{ endsWith(matrix.host, '-pc-windows') }}
+      CC: ${{ matrix.CC }}
+      CXX: ${{ matrix.CXX }}
+      LDFLAGS: ${{ matrix.LDFLAGS }}
+      HOST: ${{ matrix.host }}
+      ARCH: ${{ matrix.arch }}
+      LIBRARY_COMBO: ${{ matrix.library-combo }}
+      RUNTIME_VERSION: ${{ matrix.runtime-version }}
+      CONFIGURE_OPTS: ${{ matrix.configure-opts }}
+      # MSYS2: disable conversion to native-form paths when configuring GNUstep Make
+      # https://www.msys2.org/wiki/Porting/#filesystem-namespaces
+      MSYS2_ARG_CONV_EXCL: --prefix=
+      # provide GitHub token to scripts to prevent rate limit errors when accessing GitHub
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      LIBDIR: lib
+
+    defaults:
+      run:
+        shell: msys2 {0}
+        working-directory: ${{ env.SRC_PATH }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: ${{ env.SRC_PATH }}
+
+      - name: Set up MSYS2 (MinGW)
+        uses: msys2/setup-msys2@v2
+        if: env.IS_WINDOWS_MINGW == 'true'
+        with:
+          msystem: ${{ matrix.msystem }}
+          install: >
+            git
+            make
+            pkg-config
+            libxml2-devel
+            libxslt-devel
+            libffi-devel
+            libgnutls-devel
+            libcurl-devel
+            icu-devel
+            mingw-w64-${{matrix.arch}}-pkg-config
+            mingw-w64-${{matrix.arch}}-libxml2
+            mingw-w64-${{matrix.arch}}-libxslt
+            mingw-w64-${{matrix.arch}}-libffi
+            mingw-w64-${{matrix.arch}}-gnutls
+            mingw-w64-${{matrix.arch}}-curl
+            mingw-w64-${{matrix.arch}}-icu
+
+      - name: Set up MSYS2 (gcc)
+        uses: msys2/setup-msys2@v2
+        if: env.CC == 'gcc'
+        with:
+          msystem: ${{ matrix.msystem }}
+          update: true
+          install: >
+            mingw-w64-${{matrix.arch}}-gcc-objc
+
+      - name: Set up MSYS2 (clang)
+        uses: msys2/setup-msys2@v2
+        if: env.CC == 'clang'
+        with:
+          msystem: ${{ matrix.msystem }}
+          update: true
+          install: >
+            mingw-w64-${{matrix.arch}}-libobjc2
+            mingw-w64-${{matrix.arch}}-clang
+            mingw-w64-${{matrix.arch}}-lld
+
+      - name: Set up MSYS2 (MSVC)
+        uses: msys2/setup-msys2@v2
+        if: env.IS_WINDOWS_MSVC == 'true'
+        with:
+          msystem: MSYS
+          install: make autoconf automake libtool pkg-config
+          # make Windows packages like Clang available in MSYS
+          path-type: inherit
+      
+      - name: Remove Perl Strawberry installation and MinGW gmake (MSVC)
+        if: env.IS_WINDOWS_MSVC == 'true'
+        # C:\Strawberry contains various MinGW libraries and binaries like pkg-config
+        # that can get picked up by configure/CMake and don't necessarily behave
+        # correctly when not using a MinGW environment, and more specifically we cannot
+        # use MinGW gmake but must use MSYS make for correctly handling of Windows paths,
+        # so we delete everything that could mess up our builds
+        run: rmdir /S /Q C:\Strawberry
+        shell: cmd
+
+      - name: Install Windows packages (MSVC)
+        if: env.IS_WINDOWS_MSVC == 'true'
+        shell: cmd
+        run: choco install ninja
+
+      - name: Set up VS Developer Command Prompt (MSVC)
+        if: env.IS_WINDOWS_MSVC == 'true'
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Build dependencies (MSVC)
+        if: env.IS_WINDOWS_MSVC == 'true' && github.event.inputs.tools_windows_msvc_branch
+        shell: cmd
+        run: |
+          mkdir %DEPS_PATH% & cd %DEPS_PATH%
+          git clone -q -b ${{github.event.inputs.tools_windows_msvc_branch}} https://github.com/gnustep/tools-windows-msvc.git || exit /b 1
+          cd tools-windows-msvc
+          :: use msys2.cmd from setup-msys2 as Bash shell, as it doesn't have msys2_shell.cmd used normally by build.bat
+          set "BASH=msys2 -c"
+          build.bat --prefix=%INSTALL_PATH% --type Release --only-dependencies
+
+      - name: Install pre-built dependencies (MSVC)
+        if: env.IS_WINDOWS_MSVC == 'true' && !github.event.inputs.tools_windows_msvc_branch
+        shell: cmd
+        run: |
+          mkdir %INSTALL_PATH% & cd %INSTALL_PATH%
+          echo Downloading pre-built release...
+          curl --silent --show-error --fail-with-body --header "Authorization: Bearer $GITHUB_TOKEN" --location -o GNUstep-Windows-MSVC.zip ^
+            https://github.com/gnustep/tools-windows-msvc/releases/download/${{env.TOOLS_WINDOWS_MSVC_RELEASE_TAG}}/GNUstep-Windows-MSVC-${{matrix.arch}}-Release.zip || exit /b 1
+          echo Extracting pre-built release... (dependencies only excluding debug build and GNUstep components)
+          tar -xvf GNUstep-Windows-MSVC.zip --strip 1 --exclude Debug --exclude "**/gnustep*" --exclude "**/GNUstep*" --exclude Foundation --exclude CoreFoundation || exit /b 1
+          del /Q GNUstep-Windows-MSVC.zip
+
+      - name: Set environment variables
+        run: |
+          # MSVC: update install path to include [x86|x64]/Release subdir used by build.bat above
+          if [ "$IS_WINDOWS_MSVC" = "true" ]; then
+            INSTALL_PATH=$INSTALL_PATH\\$ARCH\\Release
+          fi
+          # convert Windows paths to Unix paths for MSYS2 shell
+          echo "INSTALL_PATH=`cygpath -u $INSTALL_PATH`" >> $GITHUB_ENV
+          echo "DEPS_PATH=`cygpath -u $DEPS_PATH`" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        env:
+          TOOLS_MAKE_BRANCH: ${{github.event.inputs.tools_make_branch}}
+        run: ./.github/scripts/dependencies.sh
+
+      - name: Build source
+        run: |
+          . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+          if [ -n "$HOST" ]; then
+            CONFIGURE_OPTS="$CONFIGURE_OPTS --host=$HOST"
+          fi
+          ./configure $CONFIGURE_OPTS
+          make && make install
+
+      - name: Run tests
+        continue-on-error: ${{ matrix.allow-test-failures || false }}
+        run: |
+          . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+          # MSVC: build tests for release to match CRT of DLLs
+          if [ "$IS_WINDOWS_MSVC" = "true" ]; then
+            sed -i -e 's/debug=yes//g' `which gnustep-tests`
+          fi
+          make check
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Logs - ${{ matrix.name }}
+          path: |
+            source/config.log
+            source/Tests/tests.log
