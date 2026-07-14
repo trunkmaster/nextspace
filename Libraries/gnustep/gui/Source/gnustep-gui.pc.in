@@ -1,0 +1,6 @@
+Name: gnustep-gui
+Description: The GNUstep gui library is a library of graphical user interface classes written completely in the Objective-C language; the classes are based upon Apple's Cocoa framework (which came from the OpenStep specification).
+Version: @GNUSTEP_GUI_VERSION@
+URL: https://github.com/gnustep/libs-gui/
+Libs: @GUILIBS@
+Cflags:  @GUIFLAGS@

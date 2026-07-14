@@ -1,0 +1,14 @@
+MISSING HEADERS ( * = difficult, - = quick, + = placeholder, x = won't do )
+---
+> NSATSTypesetter.h +
+> NSDiffableDataSource.h *
+> NSDraggingItem.h -
+> NSDraggingSession.h -
+> NSFilePromiseProvider.h -
+> NSFilePromiseReceiver.h -
+> NSItemProvider.h + 
+> NSOpenGLLayer.h +
+> NSTypesetter.h +
+> NSUserActivity.h -
+> NSWindowTab.h +
+> NSWindowTabGroup.h +
