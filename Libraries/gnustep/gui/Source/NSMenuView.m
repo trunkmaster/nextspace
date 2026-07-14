@@ -406,6 +406,12 @@ static float menuBarHeight = 0.0;
 
   // Set ivar to new index.
   _highlightedItemIndex = index;
+  // Do not highlight first item for pulldown popup button's menu
+  if ([_attachedMenu _ownedByPopUp] && index == 0 &&
+      [[_attachedMenu _owningPopUp] pullsDown])
+    {
+      _highlightedItemIndex = -1;
+    }
 
   // Highlight new
   if (_highlightedItemIndex != -1) 
@@ -1051,13 +1057,6 @@ static float menuBarHeight = 0.0;
       [self sizeToFit];
     } 
 
-  // The first item of a pull down menu holds its title and isn't displayed
-  if (index == 0 && [_attachedMenu _ownedByPopUp] &&
-      [[_attachedMenu _owningPopUp] pullsDown])
-    {
-      return NSZeroRect;
-    }
-
   if (_horizontal == YES)
     {
       GSCellRect aRect;
@@ -1215,37 +1214,6 @@ static float menuBarHeight = 0.0;
   if (_needsSizing)
     [self sizeToFit];
 
-  /* FIXME: Perhaps all of this belongs into NSPopupButtonCell and
-     should be used to determine the proper screenRect to pass on into
-     this method.
-   */
-  /* certain style of pulldowns don't want sizing on the _cellSize.height */
-  if ([_attachedMenu _ownedByPopUp])
-    {
-      NSPopUpButtonCell *bcell;
-
-      bcell = [_attachedMenu _owningPopUp];
-      if ([bcell pullsDown])
-        {
-          if ([bcell isBordered] == NO)
-            {
-              growHeight = NO;
-            }
-          else
-            {
-              switch ([bcell bezelStyle])
-                {
-                  case NSRegularSquareBezelStyle:
-                  case NSShadowlessSquareBezelStyle:
-                    growHeight = NO;
-                    break;
-                  default:
-                    break;
-                }
-            }
-        }
-    }
-
   cellFrame = screenRect;
 
   /*
@@ -1299,19 +1267,8 @@ static float menuBarHeight = 0.0;
           popUpFrame.size.width += borderOffsetInBaseCoords;
           popUpFrame.origin.x -= borderOffsetInBaseCoords;
 
-	  // If the menu is a pull down menu the first item, which would
-	  // appear at the top of the menu, holds the title and is omitted
-	  if ([_attachedMenu _ownedByPopUp])
-	    {
-	      if ([[_attachedMenu _owningPopUp] pullsDown])
-		{
-		  popUpFrame.size.height -= cellFrame.size.height;
-		  popUpFrame.origin.y += cellFrame.size.height;
-		}
-	    }
-
           // Compute position for popups, if needed
-          if (selectedItemIndex != -1) 
+           if (selectedItemIndex != -1 && [[_attachedMenu _owningPopUp] pullsDown] == NO)
             {
               popUpFrame.origin.y
                   += cellFrame.size.height * selectedItemIndex;
@@ -1322,18 +1279,8 @@ static float menuBarHeight = 0.0;
           f = cellFrame.size.width * (items - 1);
           popUpFrame.size.width += f;
 
-	  // If the menu is a pull down menu the first item holds the
-	  // title and is omitted
-	  if ([_attachedMenu _ownedByPopUp])
-	    {
-	      if ([[_attachedMenu _owningPopUp] pullsDown])
-		{
-		  popUpFrame.size.width -= cellFrame.size.width;
-		}
-	    }
-
           // Compute position for popups, if needed
-          if (selectedItemIndex != -1) 
+          if (selectedItemIndex != -1 && [[_attachedMenu _owningPopUp] pullsDown] == NO)
             {
               popUpFrame.origin.x -= cellFrame.size.width * selectedItemIndex;
             }
@@ -1341,7 +1288,7 @@ static float menuBarHeight = 0.0;
     }  
   
   // Update position, if needed, using the preferredEdge
-  if (selectedItemIndex == -1)
+  if (selectedItemIndex == -1 && [[_attachedMenu _owningPopUp] pullsDown] == NO)
     {
       NSRect screenFrame;
 

@@ -31,6 +31,30 @@
 
 @implementation GormDocumentController
 
+- (id)init
+{
+  if ((self = [super init]))
+    {
+      NSString *file;
+
+      file = [[NSBundle mainBundle] pathForResource:@"GormInfo"
+        ofType:@"plist"];
+
+      infoDict = [NSDictionary dictionaryWithContentsOfFile:file];
+      RETAIN(infoDict);
+
+      if ([NSBundle loadNibNamed:@"Info" owner:self] == NO)
+        {
+          return nil;
+        }
+      [versionField setStringValue:[NSString stringWithFormat:@"Version %@", [infoDict objectForKey:@"ApplicationRelease"]]];
+      [copyrightField setStringValue:[infoDict objectForKey:@"Copyright"]];
+      [infoWindow center];
+    }
+
+  return self;
+}
+
 - (id) currentDocument
 {
   NSArray  *documents = [self documents];
@@ -206,4 +230,17 @@
 {
   return  [self openDocumentWithContentsOfURL:url display:YES];
 }
+
+- (void)showInfoPanel:(id)sender
+{
+  if (!infoPanel) {
+     if (![NSBundle loadNibNamed:@"InfoPanel" owner:self]) {
+        NSLog (@"Failed to load InfoPanel.gorm");
+        return;
+      }
+     [infoPanel center];
+   }
+ [infoPanel makeKeyAndOrderFront:nil];
+}
+
 @end

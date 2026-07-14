@@ -2544,6 +2544,12 @@ image.</p><p>See Also: -applicationIconImage</p>
                   [_hidden addObject: win];
                   [win orderOut: self];
                 }
+                /*
+                 * On hiding we also deactivate the application which will make
+                 * the menus go away too.
+                 */
+                [self deactivate];
+                _unhide_on_activation = YES;	  
 	    }
 	  menuItem = [sender isKindOfClass:[NSMenuItem class]]
 		       ? sender
@@ -2551,9 +2557,8 @@ image.</p><p>See Also: -applicationIconImage</p>
 	  if (menuItem)
 	    {
 	      [menuItem setAction:@selector(unhide:)];
-	      [menuItem setTitle:_(@"Show")];
-	    }
-
+	      [menuItem setTitle:_(@"Unhide")];
+            }
 	  _app_is_hidden = YES;
 	  
 	  if (YES == [[NSUserDefaults standardUserDefaults]
@@ -2575,13 +2580,6 @@ image.</p><p>See Also: -applicationIconImage</p>
 	    {
 	      [[_app_icon_window contentView] setNeedsDisplay: YES];
 	    }
-	  
-	  /*
-	   * On hiding we also deactivate the application which will make the menus
-	   * go away too.
-	   */
-	  [self deactivate];
-	  _unhide_on_activation = YES;
 	  
 	  info = [self _notificationUserInfo];
 	  [nc postNotificationName: NSApplicationDidHideNotification
@@ -2618,7 +2616,7 @@ image.</p><p>See Also: -applicationIconImage</p>
 {
   id<NSMenuItem> menuItem = [sender isKindOfClass:[NSMenuItem class]]
 			      ? sender
-			      : [_main_menu itemWithTitle:_(@"Show")];
+			      : [_main_menu itemWithTitle:_(@"Unhide")];
   if (menuItem)
     {
       [menuItem setAction:@selector(hide:)];

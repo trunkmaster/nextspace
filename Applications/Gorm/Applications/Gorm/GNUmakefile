@@ -148,6 +148,7 @@ Gorm_RESOURCE_FILES = \
 Gorm_LOCALIZED_RESOURCE_FILES = \
 	Gorm.gorm \
 	GormLanguageViewController.gorm \
+	InfoPanel.gorm \
 	Gorm.rtfd
 
 Gorm_LANGUAGES = \

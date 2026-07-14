@@ -30,6 +30,7 @@
 	    "remove:",
 	    "selectAllItems:",
 	    "setName:",
+	    "showInfoPanel:",
 	    "testinterface:",
 	    "translate:",
 	    "ungroup:"
@@ -120,8 +121,10 @@
     };
     GormDocumentController = {
 	Actions = (
+	    "showInfoPanel:"
 	);
 	Outlets = (
+	    infoPanel
 	);
 	Super = NSDocumentController;
     };

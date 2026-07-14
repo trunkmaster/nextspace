@@ -45,6 +45,13 @@ Images/Build.tiff \
 Images/Clean.tiff \
 Images/Debug.tiff \
 Images/Files.tiff \
+Images/FileH.tiff \
+Images/FileHH.tiff \
+Images/FileC.tiff \
+Images/FileCH.tiff \
+Images/FileMH.tiff \
+Images/FileM.tiff \
+Images/FileMM.tiff \
 Images/Find.tiff \
 Images/Inspector.tiff \
 Images/Install.tiff \

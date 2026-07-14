@@ -41,10 +41,16 @@ typedef enum
 
 @interface GormDocumentController : NSDocumentController
 {
+  id infoPanel;
+  id infoWindow;
+  IBOutlet NSTextField* versionField;
+  IBOutlet NSTextField* copyrightField;
+  NSDictionary *infoDict;
 }
 
 - (void) buildDocumentForType: (GormDocumentType)documentType;
 - (id) openDocumentWithContentsOfURL:(NSURL *)url;
+- (void) showInfoPanel:(id)sender;
 
 @end
 

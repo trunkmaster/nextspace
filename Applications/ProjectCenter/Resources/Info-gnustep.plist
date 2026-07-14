@@ -29,6 +29,7 @@
       NSName = GSPCProjectFileType;
       NSRole = Editor;
       NSUnixExtensions = ( project );
+      NSDOSExtensions = ( project );
     },
     {
       NSDocumentClass = PCProjectDocument;
@@ -37,6 +38,7 @@
       NSName = GSPCProjectFileType;
       NSRole = Editor;
       NSUnixExtensions = ( pcproj );
+      NSDOSExtensions = ( pcproj );
     },
     {
       NSDocumentClass = PCClassDocument;
@@ -45,6 +47,7 @@
       NSName = GSClassType;
       NSRole = Editor;
       NSUnixExtensions = ( m );
+      NSDOSExtensions = ( m );
     },
     {
       NSDocumentClass = PCClassDocument;
@@ -53,7 +56,8 @@
       NSName = GSClassType;
       NSRole = Editor;
       NSUnixExtensions = ( mm );
-    },    
+      NSDOSExtensions = ( mm ); 
+    },
     {
       NSDocumentClass = PCHeaderDocument;
       NSHumanReadableName = "C or Objective C header file";
@@ -61,14 +65,52 @@
       NSName = GSPCHeaderType;
       NSRole = Editor;
       NSUnixExtensions = ( h );
+      NSDOSExtensions = ( h ); 
     },
     {
       NSDocumentClass = PCCDocument;
-      NSHumanReadableName = "C file";
+      NSHumanReadableName = "C or C++ file";
       NSIcon = ProjectCenter.editor/Resources/FileC.tiff;
       NSName = GSPCCType;
       NSRole = Editor;
       NSUnixExtensions = ( c, C, cp, cpp, c++ );
+      NSDOSExtensions = ( c, C, cp, cpp, c++ );
+    },
+    {
+      NSName = "C-C++";
+      NSHumanReadableName = "C or C++ file";
+      NSIcon = "FileC.tiff";
+      NSUnixExtensions = ( c, C, cp, cpp, c++ );
+      NSDOSExtensions = ( c, C, cp, cpp, c++ );
+      NSRole = Editor;
+      NSDocumentClass = PCCDocument;
+    },
+    {
+      NSName = "C-Header";
+      NSHumanReadableName = "C or Objective C header file";
+      NSIcon = "FileH.tiff";
+      NSUnixExtensions = ( h );
+      NSDOSExtensions = ( h );
+      NSRole = Editor;
+      NSDocumentClass = PCCDocument;
+    },
+    {
+      NSName = "ObjC";
+      NSHumanReadableName = "Objective C class file";
+      NSIcon = "FileM.tiff";
+      NSUnixExtensions = ( m );
+      NSDOSExtensions = ( m );
+      NSRole = Editor;
+      NSDocumentClass = PCCDocument;
+    },
+    {
+      NSName = "ObjC++";
+      NSHumanReadableName = "Objective C++ class file";
+      NSIcon = "FileMM.tiff";
+      NSUnixExtensions = ( mm );
+      NSDOSExtensions = ( mm );
+      NSRole = Editor;
+      NSDocumentClass = PCCDocument;
     }
   );
   URL = "See http://www.gnustep.org/";

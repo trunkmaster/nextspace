@@ -1684,7 +1684,7 @@ static void _perform(void* info)
 
 static void* _legacyStreamRunLoop_workThread(void* arg)
 {
-    _CFThreadSetName(pthread_self(), "com.apple.CFStream.LegacyThread");
+    pthread_setname_np(pthread_self(), "com.apple.CFStream.LegacyThread");
     sLegacyRL = CFRunLoopGetCurrent();
 
 #if defined(LOG_STREAM)
