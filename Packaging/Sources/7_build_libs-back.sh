@@ -6,10 +6,7 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
-	${ECHO} ">>> Installing packages for GNUstep GUI Backend build"
-	sudo apt-get install -y ${BACK_ART_DEPS}
-fi
+install_packages ${BACK_ART_DEPS}
 
 #----------------------------------------
 # Download

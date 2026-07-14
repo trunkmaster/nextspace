@@ -20,101 +20,52 @@ gorm_version=1_5_0
 projectcenter_version=0_7_0
 
 #----------------------------------------
-# Operating system
+# Operating system: Arch Linux only
 #----------------------------------------
 . /etc/os-release
-# OS type like "rhel"
-OS_LIKE=`echo ${ID_LIKE} | awk '{print $1}'`
-# OS name like "fedora"
 OS_ID=$ID
-_ID=`echo ${ID} | awk -F\" '{print $2}'`
-if [ -n "${_ID}" ] && [ "${_ID}" != " " ]; then
-  OS_ID=${_ID}
-fi
-# OS version like "39"
-OS_VERSION=$VERSION_ID
-_VER=`echo ${VERSION_ID} | awk -F\. '{print $1}'`
-if [ -n "${_VER}" ] && [ "${_VER}" != " " ]; then
-  OS_VERSION=$_VER
-fi
-# Name like "Fedora Linux"
 OS_NAME=$NAME
-${ECHO} "OS:\t\t${OS_ID}-${OS_VERSION}"
+if [ "${OS_ID}" != "arch" ] && [ "${ID_LIKE}" != "arch" ]; then
+  ${ECHO} "ArchSTEP builds on Arch Linux only (detected: ${OS_NAME:-unknown})."
+  exit 1
+fi
+${ECHO} "OS:\t\t${OS_NAME} (rolling)"
 
-#---------------------------------------
-# Machine
-#---------------------------------------
 MACHINE=`uname -m`
-if [ -f /proc/device-tree/model ];then
-	MODEL=`cat /proc/device-tree/model | awk '{print $1}'`
-else
-	MODEL="unkown"
-fi
-
-if [ -f /proc/device-tree/compatible ];then
-	GPU=`tr -d '\0' < /proc/device-tree/compatible | awk -F, '{print $3}'`
-else
-	GPU="unknown"
-fi
 
 #----------------------------------------
 # Paths
 #----------------------------------------
-# Directory where nextspace GitHub repo resides
+# Directory where the ArchSTEP repo resides
 cd ../..
 PROJECT_DIR=`pwd`
-${ECHO} "NextSpace repo:\t${PROJECT_DIR}"
+${ECHO} "ArchSTEP repo:\t${PROJECT_DIR}"
 cd ${_PWD}
 
-if [ -z $BUILD_RPM ]; then
-  BUILD_ROOT="${_PWD}/BUILD_ROOT"
-  if [ ! -d ${BUILD_ROOT} ]; then
-    mkdir ${BUILD_ROOT}
-  fi
-  ${ECHO} "Build in:\t${BUILD_ROOT}"
+BUILD_ROOT="${_PWD}/BUILD_ROOT"
+if [ ! -d ${BUILD_ROOT} ]; then
+  mkdir ${BUILD_ROOT}
+fi
+${ECHO} "Build in:\t${BUILD_ROOT}"
 
-  if [ "$1" != "" ];then
-    DEST_DIR=${1}
-    ${ECHO} "Install in:\t${1}"
-  else
-    DEST_DIR=""
-  fi
+if [ "$1" != "" ];then
+  DEST_DIR=${1}
+  ${ECHO} "Install in:\t${1}"
 else
-  print_H2 "===== Create rpmbuild directories..."
-  RELEASE_USR="$_PWD/$OS_ID-$OS_VERSION/NSUser"
-  RELEASE_DEV="$_PWD/$OS_ID-$OS_VERSION/NSDeveloper"
-  mkdir -p ${RELEASE_USR}
-  mkdir -p ${RELEASE_DEV}
-
-  RPM_SOURCES_DIR=~/rpmbuild/SOURCES
-  RPM_SPECS_DIR=~/rpmbuild/SPECS
-  RPMS_DIR=~/rpmbuild/RPMS/`uname -m`
-  mkdir -p $RPM_SOURCES_DIR
-  mkdir -p $RPM_SPECS_DIR
-
-  ${ECHO} "RPMs directory:\t$RPMS_DIR"
+  DEST_DIR=""
 fi
 
 . ../functions.sh
 #----------------------------------------
-# Package dependencies
+# Package dependencies (pacman names)
 #----------------------------------------
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
-    . ./${OS_ID}-${OS_VERSION}.deps.sh || exit 1
-else
-    prepare_redhat_environment
-fi
+. ./arch.deps.sh || exit 1
 
 #----------------------------------------
 # Tools
 #----------------------------------------
-# Make
-  CMAKE_CMD=cmake
-if type "gmake" 2>/dev/null >/dev/null ;then
-  MAKE_CMD=gmake
-else
-  MAKE_CMD=make
-fi
+CMAKE_CMD=cmake
+MAKE_CMD=make
 #
 if [ "$1" != "" ];then
   INSTALL_CMD="${MAKE_CMD} install DESTDIR=${1}"
@@ -137,25 +88,11 @@ else
   MKDIR_CMD="sudo mkdir -p"
 fi
 
-# Linker
-ld -v | grep "gold" 2>&1 > /dev/null
-if [ "$?" = "1" ]; then
-  ${ECHO} "Setting up Gold linker..."
-  sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.gold 100
-  sudo update-alternatives --install /usr/bin/ld ld /usr/bin/ld.bfd 10
-  sudo update-alternatives --auto ld
-  ld -v | grep "gold" 2>&1 > /dev/null
-  if [ "$?" = "1" ]; then
-    ${ECHO} "Failed to setup Gold linker"
-    exit 1
-  fi
-else
-  ${ECHO} "Using linker:\tGold"
-fi
-# Compiler
-if [ "$OS_ID" = "fedora" ] || [ "$OS_LIKE" = "rhel" ] || [ "$OS_ID" = "debian" ] || [ "$OS_ID" = "ubuntu" ] || [ "$OS_ID" = "ultramarine" ]; then
-  which clang 2>&1 > /dev/null || { echo "No clang compiler found. Please install clang package."; exit 1; }
-  C_COMPILER=`which clang`
-  which clang++ 2>&1 > /dev/null || { echo "No clang++ compiler found. Please install clang++ package."; exit 1; }
-  CXX_COMPILER=`which clang++`
-fi
+# Compiler: clang is the only supported compiler
+which clang 2>&1 > /dev/null || { echo "No clang compiler found. Run: pacman -S clang"; exit 1; }
+C_COMPILER=`which clang`
+which clang++ 2>&1 > /dev/null || { echo "No clang++ compiler found. Run: pacman -S clang"; exit 1; }
+CXX_COMPILER=`which clang++`
+
+# Linker: Arch's default linker. If link problems surface, try gold or lld
+# via LDFLAGS=-fuse-ld=gold / -fuse-ld=lld here.

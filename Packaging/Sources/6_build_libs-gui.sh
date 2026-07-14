@@ -7,10 +7,7 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
-  	${ECHO} ">>> Installing packages for GNUstep GUI (AppKit) build"
-	sudo apt-get install -q -y ${GNUSTEP_GUI_DEPS}
-fi
+install_packages ${GNUSTEP_GUI_DEPS}
 
 #----------------------------------------
 # Download
@@ -38,11 +35,8 @@ cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
 if [ -d obj ]; then
 	$MAKE_CMD clean
 fi
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
-	./configure --disable-icu-config || exit 1
-else
-	./configure || exit 1
-fi
+# Arch's ICU no longer ships icu-config; pkg-config is used instead.
+./configure --disable-icu-config || exit 1
 $MAKE_CMD || exit 1
 
 #----------------------------------------

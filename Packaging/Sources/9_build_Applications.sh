@@ -8,19 +8,8 @@ _PWD=`pwd`
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-${ECHO} ">>> Installing ${OS_ID} packages for NextSpace applications build"
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
-	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
-	sudo apt-get install -y ${APPS_BUILD_DEPS}
-	sudo apt-get install -y ${APPS_RUN_DEPS}
-else
-	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
-	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-applications.spec
-	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "nextspace" | grep -v "corefoundation" | awk -c '{print $1}'`
-	sudo yum -y install ${DEPS} || exit 1
-	DEPS=`rpmspec -q --requires ${SPEC_FILE} | grep -v corefoundation | grep -v nextspace`
-	sudo yum -y install ${DEPS} || exit 1
-fi
+${ECHO} ">>> Installing packages for NextSpace applications build"
+install_packages ${APPS_BUILD_DEPS} ${APPS_RUN_DEPS}
 
 #----------------------------------------
 # Download
@@ -105,27 +94,6 @@ if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 		fi
 	fi
 
-	# SELinux
-	if [ -f /etc/selinux/config ]; then
-		SELINUX_STATE=`grep "^SELINUX=.*" /etc/selinux/config | awk -F= '{print $2}'`
-		if [ "${SELINUX_STATE}" != "disabled" ]; then
-			${ECHO} -n "SELinux enabled - dissabling it..."
-			sudo sed -i -e ' s/SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
-			${ECHO} "done"
-			${ECHO} "Please reboot to apply changes."
-		fi
-	fi
-
 fi
 
 cd ${_PWD} || exit 1
-
-#---------------------------------------
-# Inform about the RPI flickering issue
-#---------------------------------------
-
-if [ "$MACHINE" = "aarch64" ] && [ "$MODEL" = "Raspberry" ] && [ "$GPU" = "bcm2711" ];then
-	if [ -f ${_PWD}/rpi_info.sh ];then
-		. "${_PWD}/rpi_info.sh"
-	fi
-fi

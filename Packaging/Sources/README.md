@@ -1,26 +1,20 @@
-# Building NEXTSPACE from sources
+# Building ArchSTEP from sources
 
-The scripts in this directory should make it easier to build NEXTSPACE and libraries it depends on from source. 
-Versions of components are the same as in .spec files located in respective source directories.
+The scripts in this directory build ArchSTEP and the libraries it depends on from source, on **Arch Linux only** (`environment.sh` refuses anything else).
 
-Each script preform the following actions:
-- installs package which are required for build;
-- download or copy sorces into build directory (BUILD_ROOT);
-- runs build and install of component;
+Each script performs the following actions:
+- installs the pacman packages required for the build (see `arch.deps.sh`);
+- downloads or copies sources into the build directory (`BUILD_ROOT`);
+- builds and installs the component.
 
-Scripts assume that you preform run inside this directory as user. Scripts use `sudo` to install build resultsa and ask you for the password when it's needed.
-
-Build scripts were tested on:
-- Debian 12, Ubuntu 22.04
-- Fedora 35, 39
-- Rocky Linux 9, Alma Linux 9 and CentOS Stream 9
+Run the scripts from inside this directory as a regular user. They use `sudo` for package installation and `make install`, and will ask for your password when needed.
 
 ## Build and install each dependency
 
-Dependencies have to be built and installed in predetermined order like this:
+Dependencies have to be built and installed in this order:
 ```
 $ ./0_build_libdispatch.sh
-$ ./1_build_licorefoundation.sh
+$ ./1_build_libcorefoundation.sh
 $ ./2_build_libobjc2.sh
 $ ./3_build_core.sh
 $ ./3_build_tools-make.sh
@@ -29,11 +23,10 @@ $ ./5_build_libs-base.sh
 $ ./6_build_libs-gui.sh
 $ ./7_build_libs-back.sh
 ```
-Once you install everything for the very first time, you can more selective as to what to build.
+Once everything is installed for the first time, you can be more selective about what to rebuild.
 
-## Build and install NEXTSPACE itself
+## Build and install ArchSTEP itself
 
-Building NEXTSPACE will simply use this source tree.
 ```
 $ ./8_build_Frameworks.sh
 $ ./9_build_Applications.sh
@@ -41,16 +34,16 @@ $ ./9_build_Applications.sh
 
 ## Installing default profile and configuration
 
-If you omit running `setup_user_home.sh` script at installation time, configuration files available at /etc/skel directory.
+If you omit running `setup_user_home.sh` at installation time, configuration files are available in /etc/skel.
 
-Before you can run NEXTSPACE, you need to make sure you install various scripts and configurations that the NEXTSPACE depends on at runtime. Some stuff is system-wide and it need to be installed by root, other is installed in user's home directory. For this reason you should run the following installation script twice. 
+Before you can run ArchSTEP, various scripts and configurations need to be installed at runtime. Some are system-wide (installed by root), some go in the user's home directory — so run the script twice:
 ```
 $ sudo ./setup_user_home.sh
 $ ./setup_user_home.sh
 ```
-Note that this is "minimal" startup configuration, which uses xinitrc script to start everything up (usually invoked as part of startx). If you want to use Login.app or start Workspace in any other way, you may have to create your own configuration.
+Note that this is a "minimal" startup configuration which uses an xinitrc script to start everything (usually invoked via startx). To use Login.app as the display manager instead, enable its systemd unit (see roadmap M3) — preferably in a VM first.
 
 User home directory profile consists of the following components:
-- ~/Library contents contains NEXTSPACE and GNUstep specific data (configuration, caches, fonts and so on)
-- ~/.config/fontconfig/fonts.conf - X11-specific fonts handling settings. Adds /Library/Fonts and ~/Library/Fonts to font path - make .nfont packages contents available to non-GNUstep applications
-- ~/.config/pulse - PulseAudio-specific settings
+- `~/Library` — ArchSTEP and GNUstep specific data (configuration, caches, fonts and so on)
+- `~/.config/fontconfig/fonts.conf` — X11 font handling; adds /Library/Fonts and ~/Library/Fonts to the font path so .nfont package contents are available to non-GNUstep applications
+- `~/.config/pulse` — PulseAudio-protocol settings (served by pipewire-pulse on Arch)

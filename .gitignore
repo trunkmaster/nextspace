@@ -23,3 +23,11 @@
 *.dir
 *~
 .build
+
+# ArchSTEP: local-only docs and build/VM artifacts
+docs/
+BUILD_ROOT/
+vm/images/
+vm/keys/
+*.qcow2
+*.iso

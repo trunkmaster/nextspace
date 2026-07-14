@@ -6,19 +6,8 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-${ECHO} ">>> Installing ${OS_ID} packages for NextSpace frameworks build"
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
-	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
-	sudo apt-get install -y ${FRAMEWORKS_BUILD_DEPS}
-	sudo apt-get install -y ${FRAMEWORKS_RUN_DEPS}
-else
-	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
-	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-frameworks.spec
-	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "nextspace" | awk -c '{print $1}'`
-	sudo yum -y install ${DEPS} || exit 1
-	DEPS=`rpmspec -q --requires ${SPEC_FILE} | grep -v corefoundation | grep -v nextspace | awk -c '{print $1}'`
-	sudo yum -y install ${DEPS} || exit 1
-fi
+${ECHO} ">>> Installing packages for NextSpace frameworks build"
+install_packages ${FRAMEWORKS_BUILD_DEPS} ${FRAMEWORKS_RUN_DEPS}
 
 #----------------------------------------
 # Download
