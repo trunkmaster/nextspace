@@ -64,7 +64,7 @@ fi
 SERIAL="-chardev socket,id=ser0,path=${IMAGES}/serial.sock,server=on,wait=off,logfile=${IMAGES}/console.log
     -serial chardev:ser0"
 
-COMMON="-enable-kvm -cpu host -smp ${CPUS} -m ${MEM}
+COMMON="-enable-kvm -machine q35 -cpu host -smp ${CPUS} -m ${MEM}
     -drive file=${DISK},if=virtio
     -cdrom ${IMAGES}/seed.iso
     -nic user,model=virtio-net-pci,hostfwd=tcp:127.0.0.1:${SSH_PORT}-:22
