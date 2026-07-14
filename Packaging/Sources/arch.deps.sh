@@ -18,6 +18,7 @@ RUNTIME_DEPS="
     avahi
     icu
     libxml2
+    robin-map
 "
 #--- gnustep-make
 GNUSTEP_MAKE_DEPS="
