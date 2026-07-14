@@ -1,0 +1,142 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      tools_make_branch:
+        description: "tools-make branch"
+        default: "master"
+        required: true
+      libs_base_branch:
+        description: "libs-base branch"
+        default: "master"
+        required: true
+      libs_back_branch:
+        description: "libs-back branch"
+        default: "master"
+        required: true
+
+env:
+  APT_PACKAGES: >-
+    pkg-config
+    libgnutls28-dev
+    libffi-dev
+    libicu-dev
+    libxml2-dev
+    libxslt1-dev
+    libssl-dev
+    libavahi-client-dev
+    zlib1g-dev
+    gnutls-bin
+    libcurl4-gnutls-dev
+    libgmp-dev
+    libcairo2-dev
+    libjpeg-dev
+    libtiff-dev
+    libpng-dev
+    libicns-dev
+
+  # packages for GCC Objective-C runtime
+  APT_PACKAGES_gcc: >-
+    libobjc-10-dev
+    libblocksruntime-dev
+    gobjc
+
+  # packages for libobjc2 / libdispatch
+  APT_PACKAGES_clang: >-
+    libpthread-workqueue-dev
+
+jobs:
+  ########### Linux ###########
+  linux:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    # don't run pull requests from local branches twice
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Ubuntu x64 GCC
+            library-combo: gnu-gnu-gnu
+            CC: gcc
+            CXX: g++
+
+          - name: Ubuntu x64 Clang gnustep-1.9
+            library-combo: ng-gnu-gnu
+            runtime-version: gnustep-1.9
+            CC: clang
+            CXX: clang++
+
+          - name: Ubuntu x64 Clang gnustep-2.0
+            library-combo: ng-gnu-gnu
+            runtime-version: gnustep-2.0
+            CC: clang
+            CXX: clang++
+
+    env:
+      SRC_PATH: ${{ github.workspace }}/source
+      DEPS_PATH: ${{ github.workspace }}/dependencies
+      INSTALL_PATH: ${{ github.workspace }}/build
+      CC: ${{ matrix.CC }}
+      CXX: ${{ matrix.CXX }}
+      LIBRARY_COMBO: ${{ matrix.library-combo }}
+      RUNTIME_VERSION: ${{ matrix.runtime-version }}
+
+    defaults:
+      run:
+        working-directory: ${{ env.SRC_PATH }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: ${{ env.SRC_PATH }}
+
+      - name: Install packages
+        run: |
+          sudo apt-get -q -y update
+          sudo apt-get -q -y install $APT_PACKAGES $APT_PACKAGES_${{ matrix.library-combo == 'ng-gnu-gnu' && 'clang' || 'gcc' }}
+
+          # gnustep-2.0 runtime requires ld.gold or lld
+          if [ "$RUNTIME_VERSION" = "gnustep-2.0" ]; then
+            sudo update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 10
+          fi
+
+      - name: Install dependencies
+        env:
+          TOOLS_MAKE_BRANCH: ${{github.event.inputs.tools_make_branch}}
+          LIBS_BASE_BRANCH: ${{github.event.inputs.libs_base_branch}}
+        run: ./.github/scripts/dependencies.sh
+
+      - name: Build source
+        run: |
+          . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+          ./configure
+          make && make install
+
+### Building libs-back is disabled due to various test failures. Re-enable when fixed.
+#      - name: Build libs-back # required by some tests
+#        working-directory: ${{env.DEPS_PATH}}
+#        run: |
+#          . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+#          git clone -q -b ${LIBS_BACK_BRANCH:-master} https://github.com/gnustep/libs-back.git
+#          cd libs-back
+#          ./configure
+#          make && make install
+
+      - name: Run tests
+        run: |
+          . $INSTALL_PATH/share/GNUstep/Makefiles/GNUstep.sh
+          make check
+
+      - name: Upload logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Logs - ${{ matrix.name }}
+          path: |
+            ${{ env.SRC_PATH }}/config.log
+            ${{ env.SRC_PATH }}/Tests/tests.log

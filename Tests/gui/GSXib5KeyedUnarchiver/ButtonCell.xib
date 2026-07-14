@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="NSApplication"/>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+
+        <matrix id="matrix">
+            <!-- GNUstep requires a prototype (leaving it out results in a segfault); macOS does not -->
+            <buttonCell key="prototype"/>
+            <cells>
+                <column>
+                    <buttonCell type="push" title="Cell" id="cell1">
+                        <modifierMask key="keyEquivalentModifierMask" shift="YES"/>
+                    </buttonCell>
+                    <buttonCell type="push" title="Cell" id="cell2">
+                        <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                    </buttonCell>
+                    <buttonCell type="push" title="Cell" id="cell3">
+                        <modifierMask key="keyEquivalentModifierMask" />
+                    </buttonCell>
+                    <buttonCell type="push" title="Cell" id="cell4"/>
+                </column>
+            </cells>
+        </matrix>
+
+        <window title="Demo" animationBehavior="default" id="QvC-M9-y7g"/>
+    </objects>
+</document>
