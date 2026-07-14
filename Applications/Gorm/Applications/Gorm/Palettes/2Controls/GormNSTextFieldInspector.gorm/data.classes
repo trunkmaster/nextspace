@@ -1,0 +1,21 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormTextFieldInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    alignMatrix,
+	    backgroundColor,
+	    borderMatrix,
+	    drawsBackground,
+	    tagForm,
+	    textColor,
+	    editableSwitch,
+	    scrollableSwitch,
+	    selectableSwitch,
+	    sendActionMatrix,
+	    singleLineMode
+	);
+	Super = IBInspector;
+    };
+}

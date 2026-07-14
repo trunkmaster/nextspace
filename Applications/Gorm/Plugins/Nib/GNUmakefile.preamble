@@ -1,0 +1,19 @@
+# Additional include directories the compiler should search
+ADDITIONAL_INCLUDE_DIRS += -I../../
+
+ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+ADDITIONAL_LIB_DIRS += \
+        -L../../InterfaceBuilder/$(GNUSTEP_OBJ_DIR) \
+        -L../../GormObjCHeaderParser/$(GNUSTEP_OBJ_DIR) \
+        -L../../GormCore/GormCore.framework
+
+ADDITIONAL_GUI_LIBS += -lInterfaceBuilder -lGormCore
+endif
+ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+ADDITIONAL_LIB_DIRS += \
+        -L../../InterfaceBuilder/$(GNUSTEP_OBJ_DIR) \
+        -L../../GormObjCHeaderParser/$(GNUSTEP_OBJ_DIR) \
+        -L../../GormCore/GormCore.framework
+
+$(BUNDLE_NAME)_LIBRARIES_DEPEND_UPON += -lInterfaceBuilder -lGormCore
+endif

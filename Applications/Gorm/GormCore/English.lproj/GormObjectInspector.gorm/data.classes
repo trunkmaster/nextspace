@@ -1,0 +1,20 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "update:"
+	);
+	Super = NSObject;
+    };
+    GormObjectInspector = {
+	Actions = (
+	    "update:"
+	);
+	Outlets = (
+	    browser,
+	    label,
+	    value
+	);
+	Super = IBInspector;
+    };
+}

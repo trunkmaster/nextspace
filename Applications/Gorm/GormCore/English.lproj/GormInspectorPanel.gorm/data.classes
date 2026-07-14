@@ -1,0 +1,30 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setCurrentInspector:"
+	);
+	Super = NSObject;
+    };
+    GormInspectorsManager = {
+	Actions = (
+	    "setCurrentInspector:"
+	);
+	Outlets = (
+	    panel,
+	    popup,
+	    selectionView,
+	    inspectorView
+	);
+	Super = IBInspectorManager;
+    };
+    IBInspectorManager = {
+	Actions = (
+	);
+	Outlets = (
+	    currentMode,
+	    selectedObject
+	);
+	Super = NSObject;
+    };
+}

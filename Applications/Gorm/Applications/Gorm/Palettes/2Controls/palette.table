@@ -1,0 +1,11 @@
+{
+  NibFile = "ControlsPalette";
+  Class = "ControlsPalette";
+  Icon = "ControlsPalette";
+  ExportClasses = ();
+  ExportImages = ();
+  SubstituteClasses = {
+    GormNSPopUpButton = NSPopUpButton;
+    GormNSPopUpButtonCell = NSPopUpButtonCell;
+  };
+}

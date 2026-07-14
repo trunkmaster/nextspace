@@ -1,0 +1,23 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "okButton:",
+	    "browserAction:"
+	);
+	Super = NSObject;
+    };
+    GormClassPanelController = {
+	Actions = (
+	    "okButton:",
+	    "browserAction:"
+	);
+	Outlets = (
+	    okButton,
+	    classBrowser,
+	    panel,
+	    classNameForm
+	);
+	Super = NSObject;
+    };
+}

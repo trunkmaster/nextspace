@@ -1,0 +1,11 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormDummyInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    button
+	);
+	Super = IBInspector;
+    };
+}

@@ -1,0 +1,36 @@
+@c -*-texinfo-*-
+
+@ifset TEXT-ONLY
+@include version.texi
+@end ifset
+
+@subsection Required software
+
+You need to have the GNUstep core libraries installed in order to compile
+and use Gorm. The core packages are, at a minimum:
+
+@itemize @bullet
+@item gnustep-make
+@item gnustep-base
+@item gnustep-gui
+@item gnustep-back
+@end itemize
+
+See @url{http://www.gnustep.org/} for further information.
+
+@subsection Build and Install
+
+Steps to build:
+
+@itemize
+@item make && make install 
+@end itemize
+
+Please note that GormLib must be installed for Gorm.app to run.
+
+@subsection Trouble
+
+Give us feedback!  Tell us what you like; tell us what you think
+could be better.  Send bug reports and patches to @email{bug-gnustep@@gnu.org}.
+
+

@@ -1,0 +1,37 @@
+1 Introduction
+==============
+
+Read the NEWS file for the latest user visible changes.  Read the
+INSTALL file for installation instructions.
+
+   Gorm is an acronym for Graphic Object Relationship modeler (or
+perhaps GNUstep Object Relationship Modeler).
+
+   Gorm is a clone of the Cocoa (OpenStep/NeXTSTEP) 'Interface Builder'
+application for GNUstep.
+
+   Gorm is part of the GNUstep project, and is copyrighted by the Free
+Software Foundation.
+
+   Gorm is released under the GPL - see the file 'COPYING' for details.
+
+   Documentation for Gorm is located in the Documentation directory.
+It's also available on the wiki at
+http://wiki.gnustep.org/index.php/Gorm_Manual.
+
+2 Status
+========
+
+Gorm is usable and stable.  Please report bugs to bug-gnustep@gnu.org
+
+   Known problems (things to do) -
+
+  1. Support for IB 3.0 functionality.
+  2. More palettes.
+
+3 Acknowledgements
+==================
+
+  1. Icons - Mostly by Andrew Lindsay.  Gorm application icon by Jesse
+     Ross.
+  2. Code - GormViewKnobs.m adapted from code by Gerrit van Dyk.

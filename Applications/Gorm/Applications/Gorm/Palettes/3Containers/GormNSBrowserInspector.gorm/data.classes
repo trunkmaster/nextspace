@@ -1,0 +1,19 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormBrowserAttributesInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    minColumnWidthField,
+	    tagForm,
+	    branchSelectionSwitch,
+	    displayTitlesSwitch,
+	    emptySelectionSwitch,
+	    multipleSelectionSwitch,
+	    horizontalScrollerSwitch,
+	    separateColumnsSwitch,
+	    maxVisibleColumnsField
+	);
+	Super = IBInspector;
+    };
+}

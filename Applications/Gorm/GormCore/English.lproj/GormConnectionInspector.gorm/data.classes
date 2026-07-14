@@ -1,0 +1,19 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "_internalCall:"
+	);
+	Super = NSObject;
+    };
+    GormConnectionInspector = {
+	Actions = (
+	    "_internalCall:"
+	);
+	Outlets = (
+	    newBrowser,
+	    oldBrowser
+	);
+	Super = IBInspector;
+    };
+}

@@ -1,0 +1,22 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormFormInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    backgroundColorWell,
+	    drawsBackgroundSwitch,
+	    tagForm,
+	    textMatrix,
+	    titleMatrix,
+	    cellPositionSwitch,
+	    editableSwitch,
+	    scrollableSwitch,
+	    selectableSwitch,
+	    autosizeSwitch,
+	    dimensionsForm,
+	    numberStepper
+	);
+	Super = IBInspector;
+    };
+}

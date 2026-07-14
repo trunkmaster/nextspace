@@ -1,0 +1,20 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormNumberFormatterInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    formatTable,
+	    detachButton,
+	    addThousandSeparatorSwitch,
+	    commaPointSwitch,
+	    formatForm,
+	    localizeSwitch,
+	    negativeField,
+	    negativeRedSwitch,
+	    positiveField,
+	    zeroField
+	);
+	Super = IBInspector;
+    };
+}

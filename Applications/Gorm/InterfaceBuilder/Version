@@ -1,0 +1,15 @@
+
+# This file is included in various Makefile's to get version information.
+# Compatible with Bourne shell syntax, so it can included there too.
+
+# The gcc version required to compile the library.
+GNUSTEP_GCC=3.1.0
+
+# GNUstep version required
+GNUSTEP_CORE_VERSION=0.11.0
+
+# The version number of this release.
+MAJOR_VERSION=1
+MINOR_VERSION=1
+SUBMINOR_VERSION=0
+VERSION=${MAJOR_VERSION}.${MINOR_VERSION}.${SUBMINOR_VERSION}

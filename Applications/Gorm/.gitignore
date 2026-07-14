@@ -1,0 +1,9 @@
+*.app
+*.debug
+*.profile
+*.palette
+*.plugin
+.gdbinit
+obj
+derived_src
+*.framework

@@ -1,0 +1,21 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:",
+	    "setObject:"
+	);
+	Super = NSObject;
+    };
+    GormMenuAttributesInspector = {
+	Actions = (
+	    "setObject:"
+	);
+	Outlets = (
+	    titleText,
+	    menuType,
+	    autoenable
+	);
+	Super = IBInspector;
+    };
+}

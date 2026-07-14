@@ -1,0 +1,11 @@
+{
+  NOTE = "Automatically generated, do not edit!";
+  NibFile = "";
+  Class = "ContainersPalette";
+  Icon = "ContainersPalette";
+  SubstituteClasses = {
+    GormNSBrowser = NSBrowser;
+    GormNSTableView = NSTableView;
+    GormNSOutlineView = NSOutlineView;
+  };
+}

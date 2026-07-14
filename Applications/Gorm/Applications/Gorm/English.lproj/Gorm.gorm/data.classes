@@ -1,0 +1,128 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "addAttributeToClass:",
+	    "alignSelectedObjects:",
+	    "arrangeSelectedObjects:",
+	    "createClassFiles:",
+	    "createSubclass:",
+	    "endTesting:",
+	    "exportStrings:",
+	    "exportXLIFFDocument:",
+	    "groupSelectionInBox:",
+	    "groupSelectionInMatrix:",
+	    "groupSelectionInScrollView:",
+	    "groupSelectionInSplitView:",
+	    "groupSelectionInView:",
+	    "guideline:",
+	    "importXLIFFDocument:",
+	    "inspector:",
+	    "instantiateClass:",
+	    "loadClass:",
+	    "loadImage:",
+	    "loadPalette:",
+	    "loadSound:",
+	    "newAction:",
+	    "orderFrontFontPanel:",
+	    "palettes:",
+	    "preferencesPanel:",
+	    "remove:",
+	    "selectAllItems:",
+	    "setName:",
+	    "testinterface:",
+	    "translate:",
+	    "ungroup:"
+	);
+	Super = NSObject;
+    };
+    Gorm = {
+	Actions = (
+	    "editClass:",
+	    "createSubclass:",
+	    "testInterface:",
+	    "setName:",
+	    "selectAllItems:",
+	    "paste:",
+	    "palettes:",
+	    "loadSound:",
+	    "loadPalette:",
+	    "inspector:",
+	    "infoPanel:",
+	    "endTesting:",
+	    "delete:",
+	    "cut:",
+	    "copy:",
+	    "close:",
+	    "miniaturize:",
+	    "debug:",
+	    "loadImage:",
+	    "orderFrontFontPanel:",
+	    "ungroup:",
+	    "groupSelectionInScrollView:",
+	    "groupSelectionInBox:",
+	    "groupSelectionInSplitView:",
+	    "remove:",
+	    "addAttributeToClass:",
+	    "instantiateClass:",
+	    "createClassFiles:",
+	    "loadClass:",
+	    "preferencesPanel:",
+	    "guideline:",
+	    "print:",
+	    "groupSelectionInView:",
+	    "groupSelectionInMatrix:"
+	);
+	Outlets = (
+	    gormMenu,
+	    guideLineMenuItem
+	);
+	Super = NSApplication;
+    };
+    GormAppDelegate = {
+	Actions = (
+	    "copy:",
+	    "cut:",
+	    "delete:",
+	    "endTesting:",
+	    "groupSelectionInBox:",
+	    "groupSelectionInSplitView:",
+	    "inspector:",
+	    "loadImage:",
+	    "loadSound:",
+	    "ungroup:",
+	    "palettes:",
+	    "paste:",
+	    "preferencesPanel:",
+	    "selectAllItems:",
+	    "setName:",
+	    "testinterface:",
+	    "loadPalette:",
+	    "createClassFiles:",
+	    "createSubclass:",
+	    "groupSelectionInScrollView:",
+	    "groupSelectionInView:",
+	    "guideline:",
+	    "instantiateClass:",
+	    "loadClass:",
+	    "addAttributeToClass:",
+	    "remove:",
+	    "exportXLIFFDocument:",
+	    "importXLIFFDocument:",
+	    "exportStrings:",
+	    "translate:"
+	);
+	Outlets = (
+	    gormMenu,
+	    guideLineMenuItem
+	);
+	Super = NSObject;
+    };
+    GormDocumentController = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSDocumentController;
+    };
+}

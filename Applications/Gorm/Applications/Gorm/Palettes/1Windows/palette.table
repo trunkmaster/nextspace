@@ -1,0 +1,10 @@
+{
+  NOTE = "Automatically generated, do not edit!";
+  NibFile = "";
+  Class = "WindowsPalette";
+  Icon = "WindowsPalette";
+  SubstituteClasses = {
+    GormNSWindow = NSWindow;
+    GormNSPanel = NSPanel;
+  };
+}

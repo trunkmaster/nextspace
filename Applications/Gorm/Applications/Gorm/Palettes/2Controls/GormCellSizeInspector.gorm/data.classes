@@ -1,0 +1,26 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "revert:",
+	    "setObject:",
+	    "touch:"
+	);
+	Super = NSObject;
+    };
+    GormCellSizeInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    width,
+	    height
+	);
+	Super = IBInspector;
+    };
+    IBInspector = {
+	Actions = (
+	    "setObject:"
+	);
+	Super = NSObject;
+    };
+}

@@ -1,0 +1,73 @@
+#
+#   Makefile.postamble
+#
+#   Project specific makefile rules
+#
+#   Uncomment the targets you want.
+#   The double colons (::) are important, do not make them single colons
+#   otherwise the normal makefile rules will not be performed.
+#
+
+include ../Version
+
+# Things to do before compiling
+before-all:: version.texi 
+	autogsdoc -MakeFrames YES \
+		  -DocumentationDirectory InterfaceBuilder \
+		  -Declared InterfaceBuilder \
+		  ../InterfaceBuilder/*.h 2> /dev/null
+	autogsdoc -MakeFrames YES \
+		  -DocumentationDirectory GormCore \
+		  -Declared GormCore \
+		  ../GormCore/*.h 2> /dev/null
+	autogsdoc -MakeFrames YES \
+		  -DocumentationDirectory GormObjCHeaderParser \
+		  -Declared GormObjCHeaderParser \
+		  ../GormObjCHeaderParser/*.h 2> /dev/null
+
+# Things to do after compiling
+# after-all::
+
+# Things to do before installing
+# before-install::
+
+# Things to do after installing
+# after-install::
+
+# Things to do before uninstalling
+# before-uninstall::
+
+# Things to do after uninstalling
+# after-uninstall::
+
+# Things to do before cleaning
+# before-clean::
+
+# Things to do after cleaning
+after-clean::
+	rm -f *.bak *.cl *.fns *.pr *.log
+	rm -f version.texi
+
+# Things to do before distcleaning
+# before-distclean::
+
+# Things to do after distcleaning
+# after-distclean::
+
+# Things to do before checking
+# before-check::
+
+# Things to do after checking
+# after-check::
+
+version.texi: ../Version
+	rm -f version.texi
+	echo '@set GNUSTEP-VERSION' $(GNUSTEP_CORE_VERSION) \
+		> version.texi
+	echo '@set GNUSTEP-GCC $(GNUSTEP_GCC)' \
+		>> version.texi
+	echo '@set GORM-VERSION $(VERSION)' \
+		>> version.texi
+
+regenerate:
+	mv ANNOUNCE README INSTALL NEWS ..
