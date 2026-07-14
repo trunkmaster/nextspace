@@ -580,7 +580,9 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
     [userName setStringValue:user];
   }
 
-  [password setEchosBullets:NO];
+  // Authentic NeXT echoed nothing here; dots give typing feedback and cost
+  // no restraint. (ArchSTEP)
+  [password setEchosBullets:YES];
 
   panelExitCode = 0;
   NSLog(@"awakeFromNib: end");
