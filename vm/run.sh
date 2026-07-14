@@ -14,9 +14,33 @@ MEM=8192
 CPUS=8
 
 if [ "$1" = "--stop" ]; then
-    [ -S "${MONITOR}" ] || { echo "No monitor socket - VM not running?"; exit 1; }
+    PID=""
+    [ -f "${PIDFILE}" ] && PID=$(cat "${PIDFILE}")
+    if [ -z "${PID}" ] || ! kill -0 "${PID}" 2>/dev/null; then
+        echo "VM not running."
+        exit 0
+    fi
+    # 1. ACPI power button - ignored when an active desktop session
+    #    inhibits it (logind defers to the session)
     echo system_powerdown | nc -U -q1 "${MONITOR}" > /dev/null
-    echo "Sent ACPI powerdown."
+    echo "Sent ACPI powerdown, waiting..."
+    for i in $(seq 1 10); do
+        kill -0 "${PID}" 2>/dev/null || { echo "VM stopped."; exit 0; }
+        sleep 1
+    done
+    # 2. Clean shutdown over ssh
+    echo "Guest ignored ACPI (active session?); trying ssh poweroff..."
+    ssh -p 2222 -i "${VM_DIR}/keys/archstep_ed25519" \
+        -o StrictHostKeyChecking=accept-new \
+        -o UserKnownHostsFile="${IMAGES}/known_hosts" \
+        -o ConnectTimeout=5 arch@127.0.0.1 'sudo poweroff' 2>/dev/null
+    for i in $(seq 1 20); do
+        kill -0 "${PID}" 2>/dev/null || { echo "VM stopped."; exit 0; }
+        sleep 1
+    done
+    # 3. Last resort: kill QEMU (unclean for the guest filesystem)
+    echo "Still alive; hard-stopping QEMU."
+    echo quit | nc -U -q1 "${MONITOR}" > /dev/null
     exit 0
 fi
 

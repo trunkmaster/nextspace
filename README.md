@@ -11,7 +11,7 @@ Two commitments define the fork (see [docs/VISION.md](docs/VISION.md)):
 1. **Arch Linux only.** One distro, one toolchain, one package manager. Everything that existed upstream to support RedHat/Debian-family distributions has been deleted, not maintained.
 2. **NeXTSTEP, re-envisioned for 2026.** Quiet, fast, spatially trustworthy, legible. Modern capability (HiDPI, real compositing, accessibility, current hardware) without modern spectacle — no transition animations, no blur, no engagement mechanics. The restraint is the identity.
 
-The upstream introduction to the core applications (Login, Workspace, Preferences, Terminal, …) is [here](Applications.md).
+The upstream introduction to the core applications (Login, Workspace, Preferences, Terminal, …) is [here](Applications.md). To put a third-party app (Signal, other Electron/X11 apps) in the Dock, see [Docking Third-Party Apps](Documentation/Docking%20Third-Party%20Apps.md).
 
 ## Status
 
