@@ -1,5 +1,5 @@
 [Unit]
-Description=NEXTSPACE Login Panel
+Description=ArchSTEP Login Panel
 
 # Dependencies to GNUstep services
 Requires=gdnc.service gdnc-local.service
@@ -9,19 +9,7 @@ Conflicts=getty@tty1.service
 After=getty@tty1.service
 After=gdnc.service gdnc-local.service
 
-# replaces plymouth-quit since it quits plymouth on its own
-Conflicts=plymouth-quit.service
-After=plymouth-quit.service
-
-# Needs all the dependencies of the services it's replacing
-# pulled from getty@.service and plymouth-quit.service
-# (except for plymouth-quit-wait.service since it waits until
-# plymouth is quit, which we do)
-After=rc-local.service plymouth-start.service systemd-user-sessions.service
-
-# GDM takes responsibility for stopping plymouth, so if it fails
-# for any reason, make sure plymouth still stops
-OnFailure=plymouth-quit.service
+After=rc-local.service systemd-user-sessions.service
 
 [Service]
 ExecStart=/usr/NextSpace/Apps/Login.app/Login
@@ -30,9 +18,8 @@ KillMode=process
 KillSignal=SIGQUIT
 Restart=on-success
 RestartSec=2s
-#Restart=always
 IgnoreSIGPIPE=no
-StandardOutput=syslog
+StandardOutput=journal
 StandardError=inherit
 SyslogLevel=info
 
