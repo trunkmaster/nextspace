@@ -8,7 +8,7 @@ ExecStart=/Library/bin/gpbs --daemon
 ExecStop=/bin/kill -INT $MAINPID
 KillMode=process
 Restart=on-failure
-RestartSec=42s
+RestartSec=2s
 
 [Install]
 WantedBy=multi-user.target
