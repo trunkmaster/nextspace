@@ -88,11 +88,10 @@ else
   MKDIR_CMD="sudo mkdir -p"
 fi
 
-# Compiler: clang is the only supported compiler
-which clang 2>&1 > /dev/null || { echo "No clang compiler found. Run: pacman -S clang"; exit 1; }
-C_COMPILER=`which clang`
-which clang++ 2>&1 > /dev/null || { echo "No clang++ compiler found. Run: pacman -S clang"; exit 1; }
-CXX_COMPILER=`which clang++`
+# Compiler: clang is the only supported compiler; bootstrap it if missing
+command -v clang > /dev/null || install_packages ${BUILD_TOOLS}
+C_COMPILER=`command -v clang`
+CXX_COMPILER=`command -v clang++`
 
 # Linker: Arch's default linker. If link problems surface, try gold or lld
 # via LDFLAGS=-fuse-ld=gold / -fuse-ld=lld here.
