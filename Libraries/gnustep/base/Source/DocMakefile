@@ -1,0 +1,346 @@
+#
+#  Makefile for GNUstep Base Library documentation.
+#  
+#  Copyright (C) 2002 Free Software Foundation, Inc.
+#
+#  Written by:	Richard Frith-Macdonald <rfm.gnu.org>
+#
+#  This file is part of the GNUstep Base Library.
+#
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+#  Library General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free
+#  Software Foundation, Inc., 31 Milk Street #960789 Boston, MA 02196 USA
+#
+
+MAKEFILE_NAME = DocMakefile
+
+include $(GNUSTEP_MAKEFILES)/common.make
+include ../config.mak
+
+DOCUMENT_NAME = Base BaseAdditions
+
+Base_DOC_INSTALL_DIR = Developer
+BaseAdditions_DOC_INSTALL_DIR = Developer
+
+Base_AGSDOC_FILES = \
+../Documentation/Base.gsdoc \
+../GNUstepBase/GSVersionMacros.h \
+FoundationErrors.h \
+Foundation.h \
+FoundationLegacySwiftCompatibility.h \
+NSAffineTransform.h \
+NSAppleEventDescriptor.h \
+NSAppleEventManager.h \
+NSAppleScript.h \
+NSArchiver.h \
+NSArray.h \
+NSAttributedString.h \
+NSAutoreleasePool.h \
+NSBackgroundActivityScheduler.h \
+NSBundle.h \
+NSByteCountFormatter.h \
+NSByteOrder.h \
+NSCache.h \
+NSCalendarDate.h \
+NSCalendar.h \
+NSCharacterSet.h \
+NSClassDescription.h \
+NSCoder.h \
+NSComparisonPredicate.h \
+NSCompoundPredicate.h \
+NSConnection.h \
+NSData.h \
+NSDateComponentsFormatter.h \
+NSDateFormatter.h \
+NSDate.h \
+NSDateIntervalFormatter.h \
+NSDateInterval.h \
+NSDebug.h \
+NSDecimal.h \
+NSDecimalNumber.h \
+NSDictionary.h \
+NSDistantObject.h \
+NSDistributedLock.h \
+NSDistributedNotificationCenter.h \
+NSEnergyFormatter.h \
+NSEnumerator.h \
+NSError.h \
+NSErrorRecoveryAttempting.h \
+NSException.h \
+NSExpression.h \
+NSExtensionContext.h \
+NSExtensionItem.h \
+NSExtensionRequestHandling.h \
+NSFileCoordinator.h \
+NSFileHandle.h \
+NSFileManager.h \
+NSFilePresenter.h \
+NSFileVersion.h \
+NSFileWrapper.h \
+NSFormatter.h \
+NSGarbageCollector.h \
+NSGeometry.h \
+NSHashTable.h \
+NSHFSFileTypes.h \
+NSHost.h \
+NSHTTPCookie.h \
+NSHTTPCookieStorage.h \
+NSIndexPath.h \
+NSIndexSet.h \
+NSInvocation.h \
+NSInvocationOperation.h \
+NSISO8601DateFormatter.h \
+NSItemProvider.h \
+NSItemProviderReadingWriting.h \
+NSJSONSerialization.h \
+NSKeyedArchiver.h \
+NSKeyValueCoding.h \
+NSKeyValueObserving.h \
+NSLengthFormatter.h \
+NSLinguisticTagger.h \
+NSLocale.h \
+NSLock.h \
+NSMapTable.h \
+NSMassFormatter.h \
+NSMeasurementFormatter.h \
+NSMeasurement.h \
+NSMetadataAttributes.h \
+NSMetadata.h \
+NSMethodSignature.h \
+NSNetServices.h \
+NSNotification.h \
+NSNotificationQueue.h \
+NSNull.h \
+NSNumberFormatter.h \
+NSObjCRuntime.h \
+NSObject.h \
+NSObjectScripting.h \
+NSOperation.h \
+NSOrderedSet.h \
+NSOrthography.h \
+NSPathUtilities.h \
+NSPersonNameComponentsFormatter.h \
+NSPersonNameComponents.h \
+NSPointerArray.h \
+NSPointerFunctions.h \
+NSPortCoder.h \
+NSPort.h \
+NSPortMessage.h \
+NSPortNameServer.h \
+NSPredicate.h \
+NSProcessInfo.h \
+NSProgress.h \
+NSPropertyList.h \
+NSProtocolChecker.h \
+NSProxy.h \
+NSRange.h \
+NSRegularExpression.h \
+NSRunLoop.h \
+NSScanner.h \
+NSScriptClassDescription.h \
+NSScriptCoercionHandler.h \
+NSScriptCommandDescription.h \
+NSScriptCommand.h \
+NSScriptExecutionContext.h \
+NSScriptKeyValueCoding.h \
+NSScriptObjectSpecifiers.h \
+NSScriptStandardSuiteCommands.h \
+NSScriptSuiteRegistry.h \
+NSScriptWhoseTests.h \
+NSSerialization.h \
+NSSet.h \
+NSSortDescriptor.h \
+NSSpellServer.h \
+NSStream.h \
+NSString.h \
+NSTask.h \
+NSTextCheckingResult.h \
+NSThread.h \
+NSTimer.h \
+NSTimeZone.h \
+NSUbiquitousKeyValueStore.h \
+NSUndoManager.h \
+NSUnit.h \
+NSURLAuthenticationChallenge.h \
+NSURLCache.h \
+NSURLConnection.h \
+NSURLCredential.h \
+NSURLCredentialStorage.h \
+NSURLDownload.h \
+NSURLError.h \
+NSURL.h \
+NSURLHandle.h \
+NSURLProtectionSpace.h \
+NSURLProtocol.h \
+NSURLRequest.h \
+NSURLResponse.h \
+NSURLSession.h \
+NSUserActivity.h \
+NSUserDefaults.h \
+NSUserNotification.h \
+NSUserScriptTask.h \
+NSUtilities.h \
+NSUUID.h \
+NSValue.h \
+NSValueTransformer.h \
+NSXMLDocument.h \
+NSXMLDTD.h \
+NSXMLDTDNode.h \
+NSXMLElement.h \
+NSXMLNode.h \
+NSXMLNodeOptions.h \
+NSXMLParser.h \
+NSXPCConnection.h \
+NSZone.h
+
+BaseAdditions_AGSDOC_FILES = \
+../Documentation/BaseAdditions.gsdoc \
+GNUstep.h \
+GCObject.h \
+GSBlocks.h \
+GSVersionMacros.h \
+GSObjCRuntime.h \
+GSUnion.h \
+GSIArray.h \
+GSIMap.h \
+GSLocale.h \
+GSFunctions.h \
+GSMime.h \
+GSTLS.h \
+GSXML.h \
+NSArray+GNUstepBase.h \
+NSAttributedString+GNUstepBase.h \
+NSBundle+GNUstepBase.h \
+NSCalendarDate+GNUstepBase.h \
+NSData+GNUstepBase.h \
+NSDebug+GNUstepBase.h \
+NSFileHandle+GNUstepBase.h \
+NSMutableString+GNUstepBase.h \
+NSNumber+GNUstepBase.h \
+NSObject+GNUstepBase.h \
+NSProcessInfo+GNUstepBase.h \
+NSString+GNUstepBase.h \
+NSTask+GNUstepBase.h \
+NSThread+GNUstepBase.h \
+NSURL+GNUstepBase.h \
+Unicode.h \
+GCObject.h \
+
+
+#
+# Hack ... using the -DocumentationDirectory flag overrides the value
+# used by the make package, and puts our output in the documentation
+# directory.
+#
+Base_AGSDOC_FLAGS = \
+	-MakeFrames NO \
+	-IndexFile Base \
+	-DocumentationDirectory ../Documentation/Base \
+	-HeaderDirectory ../Headers/Foundation \
+	-Declared Foundation \
+	-Standards YES \
+	-DTDs ../Tools \
+	-ConstantsTemplate TypesAndConstants \
+	-FunctionsTemplate Functions \
+	-MacrosTemplate Functions \
+	-TypedefsTemplate TypesAndConstants \
+	-VariablesTemplate TypesAndConstants \
+	-WordMap '{\
+	}' -Up Base
+
+BaseAdditions_AGSDOC_FLAGS = \
+	-MakeFrames NO \
+	-IndexFile BaseAdditions \
+	-DocumentationDirectory ../Documentation/BaseAdditions \
+	-HeaderDirectory ../Headers/GNUstepBase \
+	-Declared GNUstepBase \
+	-Standards YES \
+	-DTDs ../Tools \
+	-ConstantsTemplate TypesAndConstants \
+	-FunctionsTemplate Functions \
+	-MacrosTemplate Functions \
+	-TypedefsTemplate TypesAndConstants \
+	-VariablesTemplate TypesAndConstants \
+	-WordMap '{\
+	}' -Up BaseAdditions
+
+# Use local version of autogsdoc in case it is not installed
+AUTOGSDOC=../Tools/$(GNUSTEP_OBJ_DIR_NAME)/autogsdoc
+
+# Fool make into thinking we are installed even if we are not
+BASE_MAKE_LOADED=yes
+
+include $(GNUSTEP_MAKEFILES)/documentation.make
+
+#
+# Ensure that our destination subdirectory exists in the Documentation
+# directory, and temporarily copy the base source file here for autogsdoc
+# to use.
+#
+before-all::	../Documentation/Base \
+	../Documentation/Base/Functions.gsdoc \
+	../Documentation/Base/TypesAndConstants.gsdoc \
+	../Documentation/BaseAdditions \
+	../Documentation/BaseAdditions/Functions.gsdoc \
+	../Documentation/BaseAdditions/TypesAndConstants.gsdoc
+	cp ../Documentation/Base.gsdoc .
+	cp ../Documentation/BaseAdditions.gsdoc .
+
+../Documentation/Base:
+	$(MKDIRS) ../Documentation/Base
+
+../Documentation/Base/Functions.gsdoc: ../Documentation/Functions.gsdoc
+	cp ../Documentation/Functions.gsdoc ../Documentation/Base
+
+../Documentation/Base/TypesAndConstants.gsdoc: \
+	../Documentation/TypesAndConstants.gsdoc
+	cp ../Documentation/TypesAndConstants.gsdoc ../Documentation/Base
+
+../Documentation/BaseAdditions:
+	$(MKDIRS) ../Documentation/BaseAdditions
+
+../Documentation/BaseAdditions/Functions.gsdoc: \
+	../Documentation/Functions.gsdoc
+	cp ../Documentation/Functions.gsdoc ../Documentation/BaseAdditions
+
+../Documentation/BaseAdditions/TypesAndConstants.gsdoc: \
+	../Documentation/TypesAndConstants.gsdoc
+	cp ../Documentation/TypesAndConstants.gsdoc \
+	../Documentation/BaseAdditions
+
+#
+# Work around our screwy doc generation implementation, sigh...
+#
+before-clean::
+	if [ -e obj ]; then \
+	  mv obj obj-save-link; \
+	fi
+
+#
+# Clean up temporary files used while generating documentation.
+#
+after-clean::
+	$(RM) Base.gsdoc
+	$(RM) BaseAdditions.gsdoc
+	if [ -d Base ]; then \
+	  $(RM) Base/stamp; \
+	  $(RM) Base/dependencies; \
+	  rmdir Base; \
+	  $(RM) BaseAdditions/stamp; \
+	  $(RM) BaseAdditions/dependencies; \
+	  rmdir BaseAdditions; \
+	fi
+	if [ -e obj-save-link ]; then \
+	  mv obj-save-link obj; \
+	fi
+

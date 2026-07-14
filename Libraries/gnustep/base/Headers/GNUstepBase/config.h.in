@@ -1,0 +1,1102 @@
+/* Headers/GNUstepBase/config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* Define if building universal (internal helper macro) */
+#undef AC_APPLE_UNIVERSAL_BUILD
+
+/* The normal alignment of `CONDITION_VARIABLE', in bytes. */
+#undef ALIGNOF_CONDITION_VARIABLE
+
+/* The normal alignment of `gs_mutex_t', in bytes. */
+#undef ALIGNOF_GS_MUTEX_T
+
+/* The normal alignment of `objc_object', in bytes. */
+#undef ALIGNOF_OBJC_OBJECT
+
+/* The normal alignment of `pthread_cond_t', in bytes. */
+#undef ALIGNOF_PTHREAD_COND_T
+
+/* The normal alignment of `pthread_mutex_t', in bytes. */
+#undef ALIGNOF_PTHREAD_MUTEX_T
+
+/* The normal alignment of `SRWLOCK', in bytes. */
+#undef ALIGNOF_SRWLOCK
+
+/* Define if SO_REUSEADDR is broken on this system */
+#undef BROKEN_SO_REUSEADDR
+
+/* Define if your system terminates the final argument in /proc/$$/cmdline */
+#undef CMDLINE_TERMINATED
+
+/* Define if constructors are automatically loaded */
+#undef CON_AUTOLOAD
+
+/* Built in default value for GNUstep config file */
+#undef GNUSTEP_TARGET_CONFIG_FILE
+
+/* Built in default value for GNUstep local apps */
+#undef GNUSTEP_TARGET_LOCAL_ADMIN_APPS
+
+/* Built in default value for GNUstep local tools */
+#undef GNUSTEP_TARGET_LOCAL_ADMIN_TOOLS
+
+/* Built in default value for GNUstep local apps */
+#undef GNUSTEP_TARGET_LOCAL_APPS
+
+/* Built in default value for GNUstep local documentation */
+#undef GNUSTEP_TARGET_LOCAL_DOC
+
+/* Built in default value for GNUstep local info documentation */
+#undef GNUSTEP_TARGET_LOCAL_DOC_INFO
+
+/* Built in default value for GNUstep local manpages documentation */
+#undef GNUSTEP_TARGET_LOCAL_DOC_MAN
+
+/* Built in default value for GNUstep local headers */
+#undef GNUSTEP_TARGET_LOCAL_HEADERS
+
+/* Built in default value for GNUstep local libraries */
+#undef GNUSTEP_TARGET_LOCAL_LIBRARIES
+
+/* Built in default value for GNUstep local library */
+#undef GNUSTEP_TARGET_LOCAL_LIBRARY
+
+/* Built in default value for GNUstep local tools */
+#undef GNUSTEP_TARGET_LOCAL_TOOLS
+
+/* Built in default value for GNUstep Local Users directory */
+#undef GNUSTEP_TARGET_LOCAL_USERS_DIR
+
+/* Built in default value for GNUstep local web apps */
+#undef GNUSTEP_TARGET_LOCAL_WEB_APPS
+
+/* Built in default value for GNUstep Makefiles */
+#undef GNUSTEP_TARGET_MAKEFILES
+
+/* Built in default value for GNUstep network apps */
+#undef GNUSTEP_TARGET_NETWORK_ADMIN_APPS
+
+/* Built in default value for GNUstep system tools */
+#undef GNUSTEP_TARGET_NETWORK_ADMIN_TOOLS
+
+/* Built in default value for GNUstep network apps */
+#undef GNUSTEP_TARGET_NETWORK_APPS
+
+/* Built in default value for GNUstep network documentation */
+#undef GNUSTEP_TARGET_NETWORK_DOC
+
+/* Built in default value for GNUstep network info documentation */
+#undef GNUSTEP_TARGET_NETWORK_DOC_INFO
+
+/* Built in default value for GNUstep network manpages documentation */
+#undef GNUSTEP_TARGET_NETWORK_DOC_MAN
+
+/* Built in default value for GNUstep network headers */
+#undef GNUSTEP_TARGET_NETWORK_HEADERS
+
+/* Built in default value for GNUstep network libraries */
+#undef GNUSTEP_TARGET_NETWORK_LIBRARIES
+
+/* Built in default value for GNUstep network library */
+#undef GNUSTEP_TARGET_NETWORK_LIBRARY
+
+/* Built in default value for GNUstep network tools */
+#undef GNUSTEP_TARGET_NETWORK_TOOLS
+
+/* Built in default value for GNUstep Network Users directory */
+#undef GNUSTEP_TARGET_NETWORK_USERS_DIR
+
+/* Built in default value for GNUstep network web apps */
+#undef GNUSTEP_TARGET_NETWORK_WEB_APPS
+
+/* Built in default value for GNUstep system apps */
+#undef GNUSTEP_TARGET_SYSTEM_ADMIN_APPS
+
+/* Built in default value for GNUstep system tools */
+#undef GNUSTEP_TARGET_SYSTEM_ADMIN_TOOLS
+
+/* Built in default value for GNUstep system apps */
+#undef GNUSTEP_TARGET_SYSTEM_APPS
+
+/* Built in default value for GNUstep system documentation */
+#undef GNUSTEP_TARGET_SYSTEM_DOC
+
+/* Built in default value for GNUstep system info documentation */
+#undef GNUSTEP_TARGET_SYSTEM_DOC_INFO
+
+/* Built in default value for GNUstep system manpages documentation */
+#undef GNUSTEP_TARGET_SYSTEM_DOC_MAN
+
+/* Built in default value for GNUstep system headers */
+#undef GNUSTEP_TARGET_SYSTEM_HEADERS
+
+/* Built in default value for GNUstep system libraries */
+#undef GNUSTEP_TARGET_SYSTEM_LIBRARIES
+
+/* Built in default value for GNUstep system library */
+#undef GNUSTEP_TARGET_SYSTEM_LIBRARY
+
+/* Built in default value for GNUstep system tools */
+#undef GNUSTEP_TARGET_SYSTEM_TOOLS
+
+/* Built in default value for GNUstep System Users directory */
+#undef GNUSTEP_TARGET_SYSTEM_USERS_DIR
+
+/* Built in default value for GNUstep web apps */
+#undef GNUSTEP_TARGET_SYSTEM_WEB_APPS
+
+/* Built in default value for GNUstep user config file */
+#undef GNUSTEP_TARGET_USER_CONFIG_FILE
+
+/* Built in default value for GNUstep user defaults directory */
+#undef GNUSTEP_TARGET_USER_DEFAULTS_DIR
+
+/* Built in default value for GNUstep user_dir admin apps */
+#undef GNUSTEP_TARGET_USER_DIR_ADMIN_APPS
+
+/* Built in default value for GNUstep user_dir tools */
+#undef GNUSTEP_TARGET_USER_DIR_ADMIN_TOOLS
+
+/* Built in default value for GNUstep user_dir apps */
+#undef GNUSTEP_TARGET_USER_DIR_APPS
+
+/* Built in default value for GNUstep user_dir documentation */
+#undef GNUSTEP_TARGET_USER_DIR_DOC
+
+/* Built in default value for GNUstep user_dir info documentation */
+#undef GNUSTEP_TARGET_USER_DIR_DOC_INFO
+
+/* Built in default value for GNUstep user_dir manpages documentation */
+#undef GNUSTEP_TARGET_USER_DIR_DOC_MAN
+
+/* Built in default value for GNUstep user_dir headers */
+#undef GNUSTEP_TARGET_USER_DIR_HEADERS
+
+/* Built in default value for GNUstep user_dir libraries */
+#undef GNUSTEP_TARGET_USER_DIR_LIBRARIES
+
+/* Built in default value for GNUstep user_dir library */
+#undef GNUSTEP_TARGET_USER_DIR_LIBRARY
+
+/* Built in default value for GNUstep user_dir tools */
+#undef GNUSTEP_TARGET_USER_DIR_TOOLS
+
+/* Built in default value for GNUstep user_dir web apps */
+#undef GNUSTEP_TARGET_USER_DIR_WEB_APPS
+
+/* Define to 1 if you have the <alloca.h> header file. */
+#undef HAVE_ALLOCA_H
+
+/* Define to 1 if you have the <avahi-client/client.h> header file. */
+#undef HAVE_AVAHI_CLIENT_CLIENT_H
+
+/* Define to 1 if you have the `backtrace' function. */
+#undef HAVE_BACKTRACE
+
+/* Define to 1 if you have the <bfd.h> header file. */
+#undef HAVE_BFD_H
+
+/* Have bfd_section_vma */
+#undef HAVE_BFD_SECTION_VMA
+
+/* Define to 1 if you have the <callback.h> header file. */
+#undef HAVE_CALLBACK_H
+
+/* Define to 1 if you have the `closefrom' function. */
+#undef HAVE_CLOSEFROM
+
+/* Define to 1 if you have the `ctime' function. */
+#undef HAVE_CTIME
+
+/* Define to 1 if you have the <curl/curl.h> header file. */
+#undef HAVE_CURL_CURL_H
+
+/* Define if you have currency_symbol field in struct lconv */
+#undef HAVE_CURRENCY_SYMBOL_IN_LCONV
+
+/* Define to 1 if you have the <dbghelp.h> header file. */
+#undef HAVE_DBGHELP_H
+
+/* Define to 1 if you have the declaration of `strerror_r', and to 0 if you
+   don't. */
+#undef HAVE_DECL_STRERROR_R
+
+/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_DIRENT_H
+
+/* Define to 1 if you have the `dispatch_cancel' function. */
+#undef HAVE_DISPATCH_CANCEL
+
+/* Define to 1 if you have the <dispatch/dispatch.h> header file. */
+#undef HAVE_DISPATCH_DISPATCH_H
+
+/* Define to 1 if you have the `dispatch_get_main_queue_handle_np' function.
+   */
+#undef HAVE_DISPATCH_GET_MAIN_QUEUE_HANDLE_NP
+
+/* Define to 1 if you have the <dispatch.h> header file. */
+#undef HAVE_DISPATCH_H
+
+/* Define to 1 if you have the `dispatch_main_queue_drain_np' function. */
+#undef HAVE_DISPATCH_MAIN_QUEUE_DRAIN_NP
+
+/* Define to 1 if you have the <dispatch/private.h> header file. */
+#undef HAVE_DISPATCH_PRIVATE_H
+
+/* Define to 1 if you have the `dispatch_queue_create_with_target' function.
+   */
+#undef HAVE_DISPATCH_QUEUE_CREATE_WITH_TARGET
+
+/* Define to 1 if you have the `dladdr' function. */
+#undef HAVE_DLADDR
+
+/* Define to 1 if you have the <dns_sd.h> header file. */
+#undef HAVE_DNS_SD_H
+
+/* Define to 1 if you have the <execinfo.h> header file. */
+#undef HAVE_EXECINFO_H
+
+/* Define to 1 if you have the <fcntl.h> header file. */
+#undef HAVE_FCNTL_H
+
+/* Define to 1 if you have the `ffi_prep_closure_loc' function. */
+#undef HAVE_FFI_PREP_CLOSURE_LOC
+
+/* Define to 1 if you have the <float.h> header file. */
+#undef HAVE_FLOAT_H
+
+/* Define if libobjc has the __objc_msg_forward2 function */
+#undef HAVE_FORWARD2
+
+/* Define to 1 if fseeko (and presumably ftello) exists and is declared. */
+#undef HAVE_FSEEKO
+
+/* Define to 1 if you have the `getaddrinfo' function. */
+#undef HAVE_GETADDRINFO
+
+/* Define to 1 if you have the `getcwd' function. */
+#undef HAVE_GETCWD
+
+/* Define to 1 if you have the `geteuid' function. */
+#undef HAVE_GETEUID
+
+/* Define to 1 if you have the `getgrgid' function. */
+#undef HAVE_GETGRGID
+
+/* Define to 1 if you have the `getgrgid_r' function. */
+#undef HAVE_GETGRGID_R
+
+/* Define to 1 if you have the `getgrnam' function. */
+#undef HAVE_GETGRNAM
+
+/* Define to 1 if you have the `getgrnam_r' function. */
+#undef HAVE_GETGRNAM_R
+
+/* Define to 1 if you have the `gethostbyaddr_r' function. */
+#undef HAVE_GETHOSTBYADDR_R
+
+/* Define to 1 if you have the `gethostbyname' function. */
+#undef HAVE_GETHOSTBYNAME
+
+/* Define to 1 if you have the `getlogin' function. */
+#undef HAVE_GETLOGIN
+
+/* Define to 1 if you have the `getopt' function. */
+#undef HAVE_GETOPT
+
+/* Define to 1 if you have the <getopt.h> header file. */
+#undef HAVE_GETOPT_H
+
+/* Define to 1 if you have the `getpwnam' function. */
+#undef HAVE_GETPWNAM
+
+/* Define to 1 if you have the `getpwnam_r' function. */
+#undef HAVE_GETPWNAM_R
+
+/* Define to 1 if you have the `getpwuid' function. */
+#undef HAVE_GETPWUID
+
+/* Define to 1 if you have the `getpwuid_r' function. */
+#undef HAVE_GETPWUID_R
+
+/* Define if you have gettid() */
+#undef HAVE_GETTID
+
+/* Define if you have this function */
+#undef HAVE_GICONV
+
+/* Define to 1 if you have the <gmp.h> header file. */
+#undef HAVE_GMP_H
+
+/* Define if libgnutls available */
+#undef HAVE_GNUTLS
+
+/* Define to 1 if you have the `gnutls_transport_set_errno' function. */
+#undef HAVE_GNUTLS_TRANSPORT_SET_ERRNO
+
+/* Define to 1 if you have the `gnutls_x509_privkey_import2' function. */
+#undef HAVE_GNUTLS_X509_PRIVKEY_IMPORT2
+
+/* Define to 1 if you have the `grantpt' function. */
+#undef HAVE_GRANTPT
+
+/* Define to 1 if you have the <grp.h> header file. */
+#undef HAVE_GRP_H
+
+/* Define if you have this function */
+#undef HAVE_ICONV
+
+/* Define to 1 if you have the <icu.h> header file. */
+#undef HAVE_ICU_H
+
+/* Define to 1 if you have the `inet_aton' function. */
+#undef HAVE_INET_ATON
+
+/* Define to 1 if you have the `inet_ntop' function. */
+#undef HAVE_INET_NTOP
+
+/* Define to 1 if you have the `inet_pton' function. */
+#undef HAVE_INET_PTON
+
+/* Define if libobjc has thread-safe +initialize support */
+#undef HAVE_INITIALIZE
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `killpg' function. */
+#undef HAVE_KILLPG
+
+/* Define if you can access the kernel via kvm_open */
+#undef HAVE_KVM_ENV
+
+/* Define if you have <langinfo.h> and nl_langinfo(CODESET). */
+#undef HAVE_LANGINFO_CODESET
+
+/* Define to 1 if you have the <langinfo.h> header file. */
+#undef HAVE_LANGINFO_H
+
+/* Define to 1 if you have the `bfd' library (-lbfd). */
+#undef HAVE_LIBBFD
+
+/* Define to 1 if you have the <libc.h> header file. */
+#undef HAVE_LIBC_H
+
+/* Define to 1 if you have the `dl' library (-ldl). */
+#undef HAVE_LIBDL
+
+/* Define to 1 if you have the `iberty' library (-liberty). */
+#undef HAVE_LIBIBERTY
+
+/* Define to 1 if you have the `intl' library (-lintl). */
+#undef HAVE_LIBINTL
+
+/* Define to 1 if you have the `kvm' library (-lkvm). */
+#undef HAVE_LIBKVM
+
+/* Define to 1 if you have the `m' library (-lm). */
+#undef HAVE_LIBM
+
+/* Define to 1 if you have the `rt' library (-lrt). */
+#undef HAVE_LIBRT
+
+/* Define to 1 if you have the `socket' library (-lsocket). */
+#undef HAVE_LIBSOCKET
+
+/* Define if libxml available */
+#undef HAVE_LIBXML
+
+/* Define to 1 if you have the <libxml/SAX2.h> header file. */
+#undef HAVE_LIBXML_SAX2_H
+
+/* Define if libxslt available */
+#undef HAVE_LIBXSLT
+
+/* Define to 1 if you have the <libxslt/xslt.h> header file. */
+#undef HAVE_LIBXSLT_XSLT_H
+
+/* Define to 1 if you have the `z' library (-lz). */
+#undef HAVE_LIBZ
+
+/* Define to 1 if you have the `zstd' library (-lzstd). */
+#undef HAVE_LIBZSTD
+
+/* Define to 1 if you have the <limits.h> header file. */
+#undef HAVE_LIMITS_H
+
+/* Define to 1 if you have the `link' function. */
+#undef HAVE_LINK
+
+/* Define if your Obj-C compiler calls +load methods before main */
+#undef HAVE_LOAD_METHOD
+
+/* Define to 1 if you have the <locale.h> header file. */
+#undef HAVE_LOCALE_H
+
+/* Define to 1 if you have the <malloc.h> header file. */
+#undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the `malloc_usable_size' function. */
+#undef HAVE_MALLOC_USABLE_SIZE
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <minix/config.h> header file. */
+#undef HAVE_MINIX_CONFIG_H
+
+/* Define to 1 if you have the `mkstemp' function. */
+#undef HAVE_MKSTEMP
+
+/* Define to 1 if you have the `mmap' function. */
+#undef HAVE_MMAP
+
+/* Define to 1 if you have the `mprotect' function. */
+#undef HAVE_MPROTECT
+
+/* Define to 1 if you have the `nanosleep' function. */
+#undef HAVE_NANOSLEEP
+
+/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
+#undef HAVE_NDIR_H
+
+/* Define to 1 if you have the <netinet/in.h> header file. */
+#undef HAVE_NETINET_IN_H
+
+/* Define if objc-api.h defines this function */
+#undef HAVE_OBJC_GET_UNINSTALLED_DTABLE
+
+/* Define to 1 if you have the <objc/objc.h> header file. */
+#undef HAVE_OBJC_OBJC_H
+
+/* Says whether the objc_root_class attribute works */
+#undef HAVE_OBJC_ROOT_CLASS_ATTRIBUTE
+
+/* Define to 1 if you have the <objc/runtime.h> header file. */
+#undef HAVE_OBJC_RUNTIME_H
+
+/* Define to 1 if you have the `objc_setProperty' function. */
+#undef HAVE_OBJC_SETPROPERTY
+
+/* Define to 1 if you have the `objc_sync_enter' function. */
+#undef HAVE_OBJC_SYNC_ENTER
+
+/* Define to 1 if you have the `poll' function. */
+#undef HAVE_POLL
+
+/* Define if poll is NOT emulated via select */
+#undef HAVE_POLL_F
+
+/* Define to 1 if you have the <poll.h> header file. */
+#undef HAVE_POLL_H
+
+/* Define to 1 if you have the `posix_memalign' function. */
+#undef HAVE_POSIX_MEMALIGN
+
+/* Define if system supports the /proc filesystem */
+#undef HAVE_PROCFS
+
+/* Define to 1 if you have the <procfs.h> header file. */
+#undef HAVE_PROCFS_H
+
+/* Define if system supports reading psinfo from /proc */
+#undef HAVE_PROCFS_PSINFO
+
+/* Define if your Lib C defines program_invocation_name */
+#undef HAVE_PROGRAM_INVOCATION_NAME
+
+/* Define to 1 if you have the `pthread_getthreadid_np' function. */
+#undef HAVE_PTHREAD_GETTHREADID_NP
+
+/* Define to 1 if you have the <pthread.h> header file. */
+#undef HAVE_PTHREAD_H
+
+/* Define to 1 if you have the `pthread_main_np' function. */
+#undef HAVE_PTHREAD_MAIN_NP
+
+/* Define if you have pthread_mutex_t.__data.__owner */
+#undef HAVE_PTHREAD_MUTEX_OWNER
+
+/* Define to 1 if you have the <pthread_np.h> header file. */
+#undef HAVE_PTHREAD_NP_H
+
+/* Define to 1 if you have the `pthread_spin_lock' function. */
+#undef HAVE_PTHREAD_SPIN_LOCK
+
+/* Define this if you work on sysv */
+#undef HAVE_PTS_STREAM_MODULES
+
+/* Define to 1 if you have the <pwd.h> header file. */
+#undef HAVE_PWD_H
+
+/* Define if you have pw_gecos field in struct passwd */
+#undef HAVE_PW_GECOS_IN_PASSWD
+
+/* Define to 1 if you have the `readlink' function. */
+#undef HAVE_READLINK
+
+/* Define to 1 if you have the `realpath' function. */
+#undef HAVE_REALPATH
+
+/* Define if you have the register_printf_function function */
+#undef HAVE_REGISTER_PRINTF_FUNCTION
+
+/* Define to 1 if you have the `register_printf_specifier' function. */
+#undef HAVE_REGISTER_PRINTF_SPECIFIER
+
+/* Define to 1 if you have the `rint' function. */
+#undef HAVE_RINT
+
+/* Define if your system has variable length network addresses */
+#undef HAVE_SA_LEN
+
+/* Define to 1 if you have the `setpgid' function. */
+#undef HAVE_SETPGID
+
+/* Define to 1 if you have the `setpgrp' function. */
+#undef HAVE_SETPGRP
+
+/* Define to 1 if you have the `setrlimit' function. */
+#undef HAVE_SETRLIMIT
+
+/* Define to 1 if you have the `setsid' function. */
+#undef HAVE_SETSID
+
+/* Define if libobjc has the objc_setUncaughtExceptionHandler() function */
+#undef HAVE_SET_UNCAUGHT_EXCEPTION_HANDLER
+
+/* Define if libobjc has the objc_set_unexpected() function */
+#undef HAVE_SET_UNEXPECTED
+
+/* Define to 1 if you have the `shmctl' function. */
+#undef HAVE_SHMCTL
+
+/* Define to 1 if you have the `sigaction' function. */
+#undef HAVE_SIGACTION
+
+/* Define to 1 if you have the <signal.h> header file. */
+#undef HAVE_SIGNAL_H
+
+/* Define to 1 if you have the `sigsetjmp' function. */
+#undef HAVE_SIGSETJMP
+
+/* Define to 1 if you have the `Sleep' function. */
+#undef HAVE_SLEEP
+
+/* Define to 1 if you have the `slogf' function. */
+#undef HAVE_SLOGF
+
+/* Define to 1 if you have the `snprintf' function. */
+#undef HAVE_SNPRINTF
+
+/* Define to 1 if the system has the type `socklen_t'. */
+#undef HAVE_SOCKLEN_T
+
+/* Define to 1 if you have the `statvfs' function. */
+#undef HAVE_STATVFS
+
+/* Define to 1 if you have the <stdbool.h> header file. */
+#undef HAVE_STDBOOL_H
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the `strerror' function. */
+#undef HAVE_STRERROR
+
+/* Define if you have `strerror_r'. */
+#undef HAVE_STRERROR_R
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* if struct sockaddr_storage is defined */
+#undef HAVE_STRUCT_SOCKADDR_STORAGE
+
+/* Define to 1 if `st_birthtimespec' is a member of `struct stat64'. */
+#undef HAVE_STRUCT_STAT64_ST_BIRTHTIMESPEC
+
+/* Define to 1 if `st_birthtim' is a member of `struct stat'. */
+#undef HAVE_STRUCT_STAT_ST_BIRTHTIM
+
+/* Define to 1 if `st_birthtime' is a member of `struct stat'. */
+#undef HAVE_STRUCT_STAT_ST_BIRTHTIME
+
+/* Define to 1 if `st_birthtimespec' is a member of `struct stat'. */
+#undef HAVE_STRUCT_STAT_ST_BIRTHTIMESPEC
+
+/* Define to 1 if `st_mtim' is a member of `struct stat'. */
+#undef HAVE_STRUCT_STAT_ST_MTIM
+
+/* Define to 1 if you have the `symlink' function. */
+#undef HAVE_SYMLINK
+
+/* Define to 1 if you have the `sysctlbyname' function. */
+#undef HAVE_SYSCTLBYNAME
+
+/* Define to 1 if you have the `syslog' function. */
+#undef HAVE_SYSLOG
+
+/* Define to 1 if you have the <syslog.h> header file. */
+#undef HAVE_SYSLOG_H
+
+/* Define to 1 if you have the <sys/cdefs.h> header file. */
+#undef HAVE_SYS_CDEFS_H
+
+/* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_SYS_DIR_H
+
+/* Define to 1 if you have the <sys/fcntl.h> header file. */
+#undef HAVE_SYS_FCNTL_H
+
+/* Define to 1 if you have the <sys/file.h> header file. */
+#undef HAVE_SYS_FILE_H
+
+/* Define to 1 if you have the <sys/filio.h> header file. */
+#undef HAVE_SYS_FILIO_H
+
+/* Define to 1 if you have the <sys/inttypes.h> header file. */
+#undef HAVE_SYS_INTTYPES_H
+
+/* Define to 1 if you have the <sys/ioctl.h> header file. */
+#undef HAVE_SYS_IOCTL_H
+
+/* Define to 1 if you have the <sys/mman.h> header file. */
+#undef HAVE_SYS_MMAN_H
+
+/* Define to 1 if you have the <sys/mount.h> header file. */
+#undef HAVE_SYS_MOUNT_H
+
+/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_SYS_NDIR_H
+
+/* Define to 1 if you have the <sys/param.h> header file. */
+#undef HAVE_SYS_PARAM_H
+
+/* Define to 1 if you have the <sys/resource.h> header file. */
+#undef HAVE_SYS_RESOURCE_H
+
+/* Define to 1 if you have the <sys/rusage.h> header file. */
+#undef HAVE_SYS_RUSAGE_H
+
+/* Define to 1 if you have the <sys/signal.h> header file. */
+#undef HAVE_SYS_SIGNAL_H
+
+/* Define to 1 if you have the <sys/slogcodes.h> header file. */
+#undef HAVE_SYS_SLOGCODES_H
+
+/* Define to 1 if you have the <sys/slog.h> header file. */
+#undef HAVE_SYS_SLOG_H
+
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#undef HAVE_SYS_SOCKET_H
+
+/* Define to 1 if you have the <sys/statfs.h> header file. */
+#undef HAVE_SYS_STATFS_H
+
+/* Define to 1 if you have the <sys/statvfs.h> header file. */
+#undef HAVE_SYS_STATVFS_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/stropts.h> header file. */
+#undef HAVE_SYS_STROPTS_H
+
+/* Define to 1 if you have the <sys/sysctl.h> header file. */
+#undef HAVE_SYS_SYSCTL_H
+
+/* Define to 1 if you have the <sys/syslimits.h> header file. */
+#undef HAVE_SYS_SYSLIMITS_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <sys/utsname.h> header file. */
+#undef HAVE_SYS_UTSNAME_H
+
+/* Define to 1 if you have the <sys/vfs.h> header file. */
+#undef HAVE_SYS_VFS_H
+
+/* Define to 1 if you have the <sys/wait.h> header file. */
+#undef HAVE_SYS_WAIT_H
+
+/* Define to 1 if you have the `time' function. */
+#undef HAVE_TIME
+
+/* Define to 1 if you have the `times' function. */
+#undef HAVE_TIMES
+
+/* Define to 1 if you have the <time.h> header file. */
+#undef HAVE_TIME_H
+
+/* Define to 1 if you have the <tzfile.h> header file. */
+#undef HAVE_TZFILE_H
+
+/* Define to 1 if you have the `tzset' function. */
+#undef HAVE_TZSET
+
+/* Define to 1 if you have the <ucbinclude/sys/resource.h> header file. */
+#undef HAVE_UCBINCLUDE_SYS_RESOURCE_H
+
+/* Define to 1 if the system has the type `uintmax_t'. */
+#undef HAVE_UINTMAX_T
+
+/* Define if libobjc has the _objc_unexpected_exception callback */
+#undef HAVE_UNEXPECTED
+
+/* Define to 1 if you have the <unicode/ubrk.h> header file. */
+#undef HAVE_UNICODE_UBRK_H
+
+/* Define to 1 if you have the <unicode/ucal.h> header file. */
+#undef HAVE_UNICODE_UCAL_H
+
+/* Define to 1 if you have the <unicode/ucnv.h> header file. */
+#undef HAVE_UNICODE_UCNV_H
+
+/* Define to 1 if you have the <unicode/ucol.h> header file. */
+#undef HAVE_UNICODE_UCOL_H
+
+/* Define to 1 if you have the <unicode/ucurr.h> header file. */
+#undef HAVE_UNICODE_UCURR_H
+
+/* Define to 1 if you have the <unicode/udatpg.h> header file. */
+#undef HAVE_UNICODE_UDATPG_H
+
+/* Define to 1 if you have the <unicode/udat.h> header file. */
+#undef HAVE_UNICODE_UDAT_H
+
+/* Define to 1 if you have the <unicode/ulocdata.h> header file. */
+#undef HAVE_UNICODE_ULOCDATA_H
+
+/* Define to 1 if you have the <unicode/uloc.h> header file. */
+#undef HAVE_UNICODE_ULOC_H
+
+/* Define to 1 if you have the <unicode/unorm2.h> header file. */
+#undef HAVE_UNICODE_UNORM2_H
+
+/* Define to 1 if you have the <unicode/unum.h> header file. */
+#undef HAVE_UNICODE_UNUM_H
+
+/* Define to 1 if you have the <unicode/uregex.h> header file. */
+#undef HAVE_UNICODE_UREGEX_H
+
+/* Define to 1 if you have the <unicode/usearch.h> header file. */
+#undef HAVE_UNICODE_USEARCH_H
+
+/* Define to 1 if you have the <unicode/ustring.h> header file. */
+#undef HAVE_UNICODE_USTRING_H
+
+/* Define to 1 if you have the <unicode/utext.h> header file. */
+#undef HAVE_UNICODE_UTEXT_H
+
+/* Define to 1 if you have the <unicode/utypes.h> header file. */
+#undef HAVE_UNICODE_UTYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the <unwind.h> header file. */
+#undef HAVE_UNWIND_H
+
+/* Define to 1 if you have the `usleep' function. */
+#undef HAVE_USLEEP
+
+/* Define to 1 if you have the `utimensat' function. */
+#undef HAVE_UTIMENSAT
+
+/* Define to 1 if you have the <utime.h> header file. */
+#undef HAVE_UTIME_H
+
+/* Define to 1 if you have the `valloc' function. */
+#undef HAVE_VALLOC
+
+/* Define to 1 if you have the `vasprintf' function. */
+#undef HAVE_VASPRINTF
+
+/* Says whether the visibility attribute works */
+#undef HAVE_VISIBILITY_ATTRIBUTE
+
+/* Define to 1 if you have the `vsnprintf' function. */
+#undef HAVE_VSNPRINTF
+
+/* Define to 1 if you have the `vsprintf' function. */
+#undef HAVE_VSPRINTF
+
+/* Define to 1 if you have the <wchar.h> header file. */
+#undef HAVE_WCHAR_H
+
+/* Define if register_printf_function supports wide characters */
+#undef HAVE_WIDE_PRINTF_FUNCTION
+
+/* Define to 1 if you have the <windows.h> header file. */
+#undef HAVE_WINDOWS_H
+
+/* Define to 1 if you have the <ws2tcpip.h> header file. */
+#undef HAVE_WS2TCPIP_H
+
+/* Define to 1 if you have the <zlib.h> header file. */
+#undef HAVE_ZLIB_H
+
+/* Define to 1 if you have the `_Block_copy' function. */
+#undef HAVE__BLOCK_COPY
+
+/* Define to 1 if you have the `_dispatch_get_main_queue_handle_4CF' function.
+   */
+#undef HAVE__DISPATCH_GET_MAIN_QUEUE_HANDLE_4CF
+
+/* Define to 1 if you have the `_dispatch_main_queue_callback_4CF' function.
+   */
+#undef HAVE__DISPATCH_MAIN_QUEUE_CALLBACK_4CF
+
+/* Define to 1 if you have the `_Unwind_GetIP' function. */
+#undef HAVE__UNWIND_GETIP
+
+/* Define to 1 if you have the `__builtin_extract_return_address' function. */
+#undef HAVE___BUILTIN_EXTRACT_RETURN_ADDRESS
+
+/* Define if your system needs to have short/int word aligned */
+#undef NEED_WORD_ALIGNMENT
+
+/* Disable GNUSTEP_CONFIG_FILE environment variable */
+#undef OPTION_NO_ENVIRONMENT
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Define as the link to exe of process in /proc filesystem. */
+#undef PROCFS_EXE_LINK
+
+/* Description: Define getname function for pthread with two args (generic
+   style) */
+#undef PTHREAD_GETNAME
+
+/* Description: Define setname function for pthread with three args */
+#undef PTHREAD_SETNAME
+
+/* Define to 1 if the `setpgrp' function requires zero arguments. */
+#undef SETPGRP_VOID
+
+/* The size of `CONDITION_VARIABLE', as computed by sizeof. */
+#undef SIZEOF_CONDITION_VARIABLE
+
+/* The size of `double', as computed by sizeof. */
+#undef SIZEOF_DOUBLE
+
+/* The size of `float', as computed by sizeof. */
+#undef SIZEOF_FLOAT
+
+/* The size of `gs_mutex_t', as computed by sizeof. */
+#undef SIZEOF_GS_MUTEX_T
+
+/* The size of `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
+/* The size of `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
+/* The size of `long long', as computed by sizeof. */
+#undef SIZEOF_LONG_LONG
+
+/* The size of `pthread_cond_t', as computed by sizeof. */
+#undef SIZEOF_PTHREAD_COND_T
+
+/* The size of `pthread_mutex_t', as computed by sizeof. */
+#undef SIZEOF_PTHREAD_MUTEX_T
+
+/* The size of `short', as computed by sizeof. */
+#undef SIZEOF_SHORT
+
+/* The size of `SRWLOCK', as computed by sizeof. */
+#undef SIZEOF_SRWLOCK
+
+/* The size of `void*', as computed by sizeof. */
+#undef SIZEOF_VOIDP
+
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
+#undef STDC_HEADERS
+
+/* Define to 1 if strerror_r returns char *. */
+#undef STRERROR_R_CHAR_P
+
+/* Define if the compiler provides builtins for atomic operations */
+#undef USE_ATOMIC_BUILTINS
+
+/* Define to use bfd library for stack traces */
+#undef USE_BFD
+
+/* Define if using the ffcall library for invocations */
+#undef USE_FFCALL
+
+/* Define if using the libffi library for invocations */
+#undef USE_LIBFFI
+
+/* Enable extensions on AIX 3, Interix.  */
+#ifndef _ALL_SOURCE
+# undef _ALL_SOURCE
+#endif
+/* Enable general extensions on macOS.  */
+#ifndef _DARWIN_C_SOURCE
+# undef _DARWIN_C_SOURCE
+#endif
+/* Enable general extensions on Solaris.  */
+#ifndef __EXTENSIONS__
+# undef __EXTENSIONS__
+#endif
+/* Enable GNU extensions on systems that have them.  */
+#ifndef _GNU_SOURCE
+# undef _GNU_SOURCE
+#endif
+/* Enable X/Open compliant socket functions that do not require linking
+   with -lxnet on HP-UX 11.11.  */
+#ifndef _HPUX_ALT_XOPEN_SOCKET_API
+# undef _HPUX_ALT_XOPEN_SOCKET_API
+#endif
+/* Identify the host operating system as Minix.
+   This macro does not affect the system headers' behavior.
+   A future release of Autoconf may stop defining this macro.  */
+#ifndef _MINIX
+# undef _MINIX
+#endif
+/* Enable general extensions on NetBSD.
+   Enable NetBSD compatibility extensions on Minix.  */
+#ifndef _NETBSD_SOURCE
+# undef _NETBSD_SOURCE
+#endif
+/* Enable OpenBSD compatibility extensions on NetBSD.
+   Oddly enough, this does nothing on OpenBSD.  */
+#ifndef _OPENBSD_SOURCE
+# undef _OPENBSD_SOURCE
+#endif
+/* Define to 1 if needed for POSIX-compatible behavior.  */
+#ifndef _POSIX_SOURCE
+# undef _POSIX_SOURCE
+#endif
+/* Define to 2 if needed for POSIX-compatible behavior.  */
+#ifndef _POSIX_1_SOURCE
+# undef _POSIX_1_SOURCE
+#endif
+/* Enable POSIX-compatible threading on Solaris.  */
+#ifndef _POSIX_PTHREAD_SEMANTICS
+# undef _POSIX_PTHREAD_SEMANTICS
+#endif
+/* Enable extensions specified by ISO/IEC TS 18661-5:2014.  */
+#ifndef __STDC_WANT_IEC_60559_ATTRIBS_EXT__
+# undef __STDC_WANT_IEC_60559_ATTRIBS_EXT__
+#endif
+/* Enable extensions specified by ISO/IEC TS 18661-1:2014.  */
+#ifndef __STDC_WANT_IEC_60559_BFP_EXT__
+# undef __STDC_WANT_IEC_60559_BFP_EXT__
+#endif
+/* Enable extensions specified by ISO/IEC TS 18661-2:2015.  */
+#ifndef __STDC_WANT_IEC_60559_DFP_EXT__
+# undef __STDC_WANT_IEC_60559_DFP_EXT__
+#endif
+/* Enable extensions specified by ISO/IEC TS 18661-4:2015.  */
+#ifndef __STDC_WANT_IEC_60559_FUNCS_EXT__
+# undef __STDC_WANT_IEC_60559_FUNCS_EXT__
+#endif
+/* Enable extensions specified by ISO/IEC TS 18661-3:2015.  */
+#ifndef __STDC_WANT_IEC_60559_TYPES_EXT__
+# undef __STDC_WANT_IEC_60559_TYPES_EXT__
+#endif
+/* Enable extensions specified by ISO/IEC TR 24731-2:2010.  */
+#ifndef __STDC_WANT_LIB_EXT2__
+# undef __STDC_WANT_LIB_EXT2__
+#endif
+/* Enable extensions specified by ISO/IEC 24747:2009.  */
+#ifndef __STDC_WANT_MATH_SPEC_FUNCS__
+# undef __STDC_WANT_MATH_SPEC_FUNCS__
+#endif
+/* Enable extensions on HP NonStop.  */
+#ifndef _TANDEM_SOURCE
+# undef _TANDEM_SOURCE
+#endif
+/* Enable X/Open extensions.  Define to 500 only if necessary
+   to make mbstate_t available.  */
+#ifndef _XOPEN_SOURCE
+# undef _XOPEN_SOURCE
+#endif
+
+
+/* Define if vasprintf returns the length printed */
+#undef VASPRINTF_RETURNS_LENGTH
+
+/* Define if vsprintf returns the length printed */
+#undef VSPRINTF_RETURNS_LENGTH
+
+/* Have and use Unwind library */
+#undef WITH_UNWIND
+
+/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
+   significant byte first (like Motorola and SPARC, unlike Intel). */
+#if defined AC_APPLE_UNIVERSAL_BUILD
+# if defined __BIG_ENDIAN__
+#  define WORDS_BIGENDIAN 1
+# endif
+#else
+# ifndef WORDS_BIGENDIAN
+#  undef WORDS_BIGENDIAN
+# endif
+#endif
+
+/* Number of bits in a file offset, on hosts where this is settable. */
+#undef _FILE_OFFSET_BITS
+
+/* Define to 1 to make fseeko visible on some hosts (e.g. glibc 2.2). */
+#undef _LARGEFILE_SOURCE
+
+/* Define for large files, on AIX-style hosts. */
+#undef _LARGE_FILES
+
+/* Define to `__inline__' or `__inline' if that's what the C compiler
+   calls it, or to nothing if 'inline' is not supported under any name.  */
+#ifndef __cplusplus
+#undef inline
+#endif
+
+/* Define to `long int' if <sys/types.h> does not define. */
+#undef off_t
+
+/* Define to `unsigned int' if <sys/types.h> does not define. */
+#undef size_t
+
+
+/* Define `fseeko' to `fseek' if the former is missing.
+   Likewise for `ftello'.  */
+#if !HAVE_FSEEKO
+# define fseeko fseek
+# define ftello ftell
+#endif
+

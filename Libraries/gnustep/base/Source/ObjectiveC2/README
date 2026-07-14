@@ -1,0 +1,6 @@
+ObjectiveC2 framework implements the new Apple runtime APIs, introduced with
+OS X 10.5 (and later) on top of the GCC Objective-C runtime.  Much code has
+been merged into the GNUstep Objective-C-2.0 runtime, which is used when 
+compiling with clang (svn://svn.gna.org/svn/gnustep/libs/libobjc2/trunk).
+Somewhat recent versions of the GNU runtime implement much of the newer Apple
+APIs.

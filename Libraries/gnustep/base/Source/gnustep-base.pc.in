@@ -1,0 +1,6 @@
+Name: gnustep-base
+Description: The GNUstep Base Library is a library of general-purpose, non-graphical Objective C objects.
+Version: @VERSION@
+URL: https://github.com/gnustep/libs-base/
+Libs: @BASELIBS@
+Cflags: @BASEFLAGS@

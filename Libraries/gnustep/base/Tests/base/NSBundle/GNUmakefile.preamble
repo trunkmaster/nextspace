@@ -1,0 +1,20 @@
+
+ADDITIONAL_INCLUDE_DIRS += -I../GenericTests/ -I../../..
+ADDITIONAL_OBJCFLAGS += -Wall
+
+
+# OR operation to determine whether we are running on Windows, or MinGW.
+# Windows does not support the concept of a run-time search path.
+ifneq (,$(filter $(GNUSTEP_TARGET_OS),windows mingw32))
+else
+resources2_LDFLAGS += -Wl,-rpath -Wl,$(CURDIR)/Resources/TestFramework.framework/Versions/Current/$(GNUSTEP_TARGET_LDIR)
+resources2_LIB_DIRS += -L./Resources/TestFramework.framework/$(GNUSTEP_TARGET_LDIR)
+resources2_TOOL_LIBS += -lTestFramework
+endif
+
+$(GNUSTEP_INSTANCE)_SUBPROJECTS = ../GenericTests
+
+SUBPROJECTS = ../GenericTests Resources
+
+include $(GNUSTEP_MAKEFILES)/aggregate.make
+
