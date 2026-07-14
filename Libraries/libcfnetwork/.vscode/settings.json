@@ -1,0 +1,11 @@
+{
+    "cmake.configureSettings": {
+        "CFNETWORK_CFLAGS": "-F/usr/NextSpace/Frameworks -I/usr/NextSpace/include",
+        "CFNETWORK_LDLAGS": "-L/usr/NextSpace/lib",
+        "BUILD_SHARED_LIBS": "YES",
+        "CMAKE_INSTALL_PREFIX": "/usr/NextSpace",
+        "CMAKE_INSTALL_LIBDIR": "/usr/NextSpace/lib",
+        "CMAKE_SKIP_RPATH": "ON",
+        "CMAKE_BUILD_TYPE": "Debug"
+    }
+}
