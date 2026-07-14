@@ -50,6 +50,16 @@ if [ -f "${PIDFILE}" ] && kill -0 "$(cat "${PIDFILE}")" 2>/dev/null; then
     exit 0
 fi
 
+# Audio: route guest HDA to whatever the host actually runs;
+# fall back to a silent backend so the guest still gets a sound card.
+if pactl info >/dev/null 2>&1; then
+    AUDIO_BACKEND=pa
+elif [ -S "${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/pipewire-0" ]; then
+    AUDIO_BACKEND=pipewire
+else
+    AUDIO_BACKEND=none
+fi
+
 # Serial console: interactive via unix socket, mirrored to console.log
 SERIAL="-chardev socket,id=ser0,path=${IMAGES}/serial.sock,server=on,wait=off,logfile=${IMAGES}/console.log
     -serial chardev:ser0"
@@ -58,7 +68,7 @@ COMMON="-enable-kvm -cpu host -smp ${CPUS} -m ${MEM}
     -drive file=${DISK},if=virtio
     -cdrom ${IMAGES}/seed.iso
     -nic user,model=virtio-net-pci,hostfwd=tcp:127.0.0.1:${SSH_PORT}-:22
-    -audiodev pipewire,id=snd0 -device intel-hda -device hda-duplex,audiodev=snd0
+    -audiodev ${AUDIO_BACKEND},id=snd0 -device intel-hda -device hda-duplex,audiodev=snd0
     -device qemu-xhci,id=xhci
     -monitor unix:${MONITOR},server,nowait
     -pidfile ${PIDFILE}"
