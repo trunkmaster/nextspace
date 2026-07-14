@@ -1,0 +1,46 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "addOutlet:",
+	    "clickOnClass:",
+	    "selectOutlet:",
+	    "orderFrontFontPanel:",
+	    "removeOutlet:",
+	    "searchForClass:",
+	    "selectAction:",
+	    "selectClass:"
+	);
+	Super = NSObject;
+    };
+    GormClassInspector = {
+	Actions = (
+	    "select:",
+	    "removeAction:",
+	    "addAction:",
+	    "removeOutlet:",
+	    "addOutlet:",
+	    "selectClass:",
+	    "searchForClass:",
+	    "clickOnClass:",
+	    "changeClassName:",
+	    "selectOutlet:",
+	    "selectAction:"
+	);
+	Outlets = (
+	    "_classField",
+	    "_tabView",
+	    "_removeOutlet",
+	    "_addAction",
+	    "_actionTable",
+	    "_outletTable",
+	    "_removeAction",
+	    "_addOutlet",
+	    "_selectClass",
+	    "_parentClass",
+	    "_search",
+	    "_searchText"
+	);
+	Super = IBInspector;
+    };
+}

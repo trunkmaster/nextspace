@@ -1,0 +1,32 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:",
+	    "removeAction:",
+	    "addAction:"
+	);
+	Super = NSObject;
+    };
+    GormPalettesPref = {
+	Actions = (
+	    "removeAction:",
+	    "addAction:"
+	);
+	Outlets = (
+	    _view,
+	    window,
+	    removeButton,
+	    addButton,
+	    table
+	);
+	Super = NSObject;
+    };
+    PaletteDataSource = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSObject;
+    };
+}

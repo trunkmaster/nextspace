@@ -1,0 +1,15 @@
+Summary: The GNUstep graphical interface builder
+Release: 1
+Copyright: GPL
+Group: Development/Tools
+Source: ftp://ftp.gnustep.org/pub/gnustep/dev-apps/%{gs_name}-%{gs_version}.tar.gz
+Requires: gnustep-gui
+
+%description 
+Gorm is an acronym for GNUstep/Graphical Object Relationship Modeler.  
+It is a clone of the NeXTstep `Interface Builder' application for GNUstep.
+With Gorm, a developer can build an interface very quickly and easily with
+no code. 
+
+
+

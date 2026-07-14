@@ -1,0 +1,40 @@
+@c -*-texinfo-*-
+
+@ifset TEXT-ONLY
+@include version.texi
+@end ifset
+
+@section Introduction
+
+Read the NEWS file for the latest user visible changes. Read the INSTALL
+file for installation instructions.
+
+Gorm is an acronym for Graphic Object Relationship modeler (or perhaps
+GNUstep Object Relationship Modeler).
+
+Gorm is a clone of the Cocoa (OpenStep/NeXTSTEP) `Interface Builder' application for GNUstep.
+
+Gorm is part of the GNUstep project, and is copyrighted by the Free Software
+Foundation.
+
+Gorm is released under the GPL - see the file `COPYING' for details.
+
+Documentation for Gorm is located in the Documentation directory.  It's also available on the wiki at http://wiki.gnustep.org/index.php/Gorm_Manual.
+
+@section Status
+
+Gorm is usable and stable.  Please report bugs to bug-gnustep@@gnu.org
+
+Known problems (things to do) -
+
+@enumerate
+@item Support for IB 3.0 functionality.
+@item More palettes.
+@end enumerate
+
+@section Acknowledgements
+
+@enumerate
+@item Icons - Mostly by Andrew Lindsay.   Gorm application icon by Jesse Ross.
+@item Code -  GormViewKnobs.m adapted from code by Gerrit van Dyk.
+@end enumerate

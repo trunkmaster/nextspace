@@ -1,0 +1,22 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormSoundInspector = {
+	Actions = (
+	    "record:",
+	    "pause:",
+	    "play:",
+	    "stop:"
+	);
+	Outlets = (
+	    soundView
+	);
+	Super = IBInspector;
+    };
+    GormSoundView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+}

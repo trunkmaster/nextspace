@@ -1,0 +1,32 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "archiveAction:",
+	    "classesAction:",
+	    "consistencyAction:",
+	    "orderFrontFontPanel:"
+	);
+	Super = NSObject;
+    };
+    GormGeneralPref = {
+	Actions = (
+	    "palettesAction:",
+	    "inspectorAction:",
+	    "backupAction:",
+	    "archiveAction:",
+	    "classesAction:",
+	    "consistencyAction:"
+	);
+	Outlets = (
+	    window,
+	    palettesButton,
+	    inspectorButton,
+	    backupButton,
+	    archiveMatrix,
+	    interfaceMatrix,
+	    checkConsistency
+	);
+	Super = NSObject;
+    };
+}

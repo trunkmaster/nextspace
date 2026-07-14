@@ -1,0 +1,20 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:"
+	);
+	Super = NSObject;
+    };
+    GormColorWellInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    borderedSwitch,
+	    disabledSwitch,
+	    initialColorWell,
+	    tagField
+	);
+	Super = IBInspector;
+    };
+}

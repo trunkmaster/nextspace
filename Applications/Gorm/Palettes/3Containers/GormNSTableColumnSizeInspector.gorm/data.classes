@@ -1,0 +1,11 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormTableColumnSizeInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    widthForm
+	);
+	Super = IBInspector;
+    };
+}

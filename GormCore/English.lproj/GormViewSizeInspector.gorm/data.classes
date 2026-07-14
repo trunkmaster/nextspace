@@ -1,0 +1,18 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormViewSizeInpector = {
+	Actions = (
+	    "setAutosize:"
+	);
+	Outlets = (
+	    bottom,
+	    height,
+	    left,
+	    right,
+	    sizeForm,
+	    top,
+	    width
+	);
+	Super = IBInspector;
+    };
+}

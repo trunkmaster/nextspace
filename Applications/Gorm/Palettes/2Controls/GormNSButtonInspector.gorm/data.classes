@@ -1,0 +1,23 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormButtonInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    alignMatrix,
+	    iconMatrix,
+	    keyForm,
+	    optionMatrix,
+	    tagForm,
+	    titleForm,
+	    typeButton,
+	    keyEquiv,
+	    altMod,
+	    ctrlMod,
+	    shiftMod,
+	    cmdMod,
+	    bezelButton
+	);
+	Super = IBInspector;
+    };
+}

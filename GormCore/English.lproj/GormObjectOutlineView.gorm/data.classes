@@ -1,0 +1,25 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "iconView:",
+	    "editorButton:",
+	    "outlineView:"
+	);
+	Super = NSObject;
+    };
+    GormObjectViewController = {
+	Actions = (
+	    "iconView:",
+	    "outlineView:",
+	    "editorButton:"
+	);
+	Outlets = (
+	    displayView,
+	    iconButton,
+	    outlineButton,
+	    editorButton
+	);
+	Super = NSViewController;
+    };
+}

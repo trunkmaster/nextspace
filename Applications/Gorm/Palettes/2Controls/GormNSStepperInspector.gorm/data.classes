@@ -1,0 +1,19 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormStepperAttributesInspector = {
+	Actions = (
+	    "ok:",
+	    "revert:"
+	);
+	Outlets = (
+	    autorepeatButton,
+	    incrementValueField,
+	    maximumValueField,
+	    minimumValueField,
+	    valueField,
+	    valueWrapsButton,
+	    window
+	);
+	Super = IBInspector;
+    };
+}

@@ -1,0 +1,43 @@
+1 ANNOUNCE
+**********
+
+This is version 1.5.0 of Gorm.
+
+1.1 What is Gorm?
+=================
+
+Gorm is an acronym for Graphic Object Relationship modeler (or perhaps
+GNUstep Object Relationship Modeler).
+
+   Gorm is a clone of the Cocoa (OpenStep/NeXTSTEP) 'Interface Builder'
+application for GNUstep.
+
+1.2 Noteworthy changes in version '1.5.0'
+=========================================
+
+   * Add outline view that shows object structure.
+   * Enhance parser to handle prpperties.
+
+1.3 How can I get support for this software?
+============================================
+
+You may wish to use the GNUstep discussion mailing list for general
+questions and discussion.  Look at the GNUstep Web Pages for more
+information regarding GNUstep resources <http://www.gnustep.org/>
+
+1.4 Where can you get it? How can you compile it?
+=================================================
+
+You can download sources and rpms (for some machines) from
+<ftp://ftp.gnustep.org/pub/gnustep/dev-apps>.
+
+1.5 Where do I send bug reports?
+================================
+
+Bug reports can be sent to <bug-gnustep@gnu.org>.
+
+1.6 Obtaining GNU Software
+==========================
+
+Check out the GNUstep web site.  (<http://www.gnustep.org/>), and the
+GNU web site.  (<http://www.gnu.org/>)

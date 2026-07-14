@@ -1,0 +1,21 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:",
+	    "selectFont:"
+	);
+	Super = NSObject;
+    };
+    GormFontViewController = {
+	Actions = (
+	    "selectFont:"
+	);
+	Outlets = (
+	    view,
+	    fontSelector,
+	    encodeButton
+	);
+	Super = NSObject;
+    };
+}

@@ -1,0 +1,74 @@
+{
+    "GNUstep gui-0.9.3" = {
+	GSNibContainer = {
+	    comment = "Will not properly store any non-UI objects which have been dragged into the objects view.";
+	    version = 0;
+	};
+	NSTextFieldCell = {
+	    comment = "Will store the old default settings in the action mask field.";
+	    version = 1;
+	};
+	GSWindowTemplate = {
+	    comment = "Will not store autoposition mask information.";
+	    version = 0;
+	};
+	NSButtonCell = {
+	    comment = "NSEvent masks are not compatible with Mac OS X.";
+	    version = 0;
+	};
+    };
+    "GNUstep gui-0.9.5" = {
+	GSNibContainer = {
+	    comment = "Not compatible with GNUstep gui-0.9.3 or earlier.";
+	    version = 1;
+	};
+	NSTextFieldCell = {
+	    comment = "Change the default behavior defined in the action mask, this will not be useable under older versions.";
+	    version = 2;
+	};
+	GSWindowTemplate = {
+	    comment = "Will not store autoposition mask information.";
+	    version = 0;
+	};
+	NSButtonCell = {
+	    comment = "NSEvent masks are not compatible with Mac OS X.";
+	    version = 1;
+	};
+    };
+    "GNUstep gui-0.10.3" = {
+	GSNibContainer = {
+	    comment = "Not compatible with GNUstep gui-0.9.5 or earlier.";
+	    version = 1;
+	};
+	NSTextFieldCell = {
+	    comment = "Change the default behavior defined in the action mask, this will not be useable under older versions.";
+	    version = 2;
+	};
+	GSWindowTemplate = {
+	    comment = "New attribute to store auto-position mask.  Not compatible with 0.9.5 or earlier.";
+	    version = 1;
+	};
+	NSButtonCell = {
+	    comment = "NSEvent masks are not compatible with Mac OS X.";
+	    version = 2;
+	};
+    };
+    "Latest Version" = {
+	GSNibContainer = {
+	    comment = "Not compatible with GNUstep gui-0.10.3 or earlier.";
+	    version = 2;
+	};
+	NSTextFieldCell = {
+	    comment = "Change the default behavior defined in the action mask, this will not be useable under older versions.";
+	    version = 2;
+	};
+	GSWindowTemplate = {
+	    comment = "New attribute to store auto-position mask.  Not compatible with 0.9.5 or earlier.";
+	    version = 1;
+	};
+	NSButtonCell = {
+	    comment = "Not compatible with GNUstep gui-0.10.3 or earlier.";
+	    version = 3;
+	};
+    };
+}

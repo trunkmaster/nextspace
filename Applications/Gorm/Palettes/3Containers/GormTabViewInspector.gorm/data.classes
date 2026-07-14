@@ -1,0 +1,18 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormTabViewInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    typeMatrix,
+	    numberOfItemsField,
+	    allowtruncate,
+	    itemLabel,
+	    itemStepper,
+	    itemIdentifier,
+	    itemPrevious,
+	    itemNext
+	);
+	Super = IBInspector;
+    };
+}

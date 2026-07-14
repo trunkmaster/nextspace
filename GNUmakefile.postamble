@@ -1,0 +1,8 @@
+# GNUmakefile -- copy all plugins
+
+after-all::
+	echo "Copying Plugins..."
+	cp -r Plugins/GModel/*.plugin GormCore/GormCore.framework/Resources
+	cp -r Plugins/Gorm/*.plugin GormCore/GormCore.framework/Resources
+	cp -r Plugins/Nib/*.plugin GormCore/GormCore.framework/Resources
+	cp -r Plugins/Xib/*.plugin GormCore/GormCore.framework/Resources

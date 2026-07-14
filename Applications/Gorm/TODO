@@ -1,0 +1,35 @@
+TO DO:
+
+This is a DO list based on feature requests that are being made by
+users of Gorm.   Currently a number of requests are on the
+table which seem intersting:
+
+* Create an xml output format for Gorm files so that they can be used
+  on both MOSX and on GNUstep.   This will be done w/ an extension
+  library. (Working on this)
+
+* Add a way for the user to edit the spacing used by the guidelines. Also
+  make it so that we can save the settings and retrieve them from 
+  external files so that users can distribute thier own preferred 
+  spacing for different frameworks. (Done, added a way to do this.  Sets
+  a preference with the value.)
+
+* Add an autosave feature to Gorm which will save the document at
+  regular intervals.
+ 
+* We should able to edit Window name directly 
+
+* Add Feature to allow to create its own Palettes (Template)
+
+* Add Feature for creating more inteligent [mh] file  (for ex. 
+  delegate/dataSource method if needs ...)
+
+Usability features:
+1) Add outlet/action editing feature to advance the cursor to the next
+outlet/action automatically after the user finishes editing the current
+one. 
+
+2) image sharing between project and gorm/nib files so that images from the proj
+ect can be loaded into Gorm's interfaces.
+
+3) Add code to keep scrollview setHasVerticalScroller/HasHorizontalScroller in sync with Horiz/Vert resizable in textView object.

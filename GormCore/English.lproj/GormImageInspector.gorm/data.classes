@@ -1,0 +1,20 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:"
+	);
+	Super = NSObject;
+    };
+    GormImageInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    height,
+	    width,
+	    imageView,
+	    name
+	);
+	Super = IBInspector;
+    };
+}

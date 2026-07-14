@@ -1,0 +1,670 @@
+1 Noteworthy changes in version '1.5.0'
+=======================================
+
+   * Add outline view that shows object structure.
+   * Enhance parser to handle prpperties.
+
+2 Noteworthy changes in version '1.4.0'
+=======================================
+
+   * Fix issue with saving a gorm from a nib file.
+   * Fix issue with saving a gorm file from a xib.
+   * Add XLIF support for language translation.
+   * Add capability to generate XIB file.
+   * Add gormtool command-line tool.  Allows some gorm work without the
+     gui
+   * Fixes and some improvements to structure Gorm as framework/app.
+
+3 Noteworthy changes in version '1.3.1'
+=======================================
+
+   * Fix issue with cells appearing in top level editor
+   * Make nibs read only since saving is unstable
+   * Add XIB reading so that they can be loaded by Gorm
+   * Add storyboard file to list of supported files so that an icon is
+     displayed, does not support reading yet.
+   * Fix testing model mode
+   * Bug fixes in GormClassManager, GormDocument, etc.
+
+4 Noteworthy changes in version '1.2.28'
+========================================
+
+   * Improved NSScrollView handling.
+   * Added NSMatrix to Group menu to make it easier to create NSMatrix
+     objects
+   * Improved inspector for NSMatrix.  Added ability to add rows/columns
+   * Fixed NSMatrix selection problems when grouped in an NSScrollView
+   * Fixes and other improvements to inspectors.  Corrected issue where
+     Gorm's menu stays present during testing mode.
+
+5 Noteworthy changes in version '1.2.26'
+========================================
+
+   * Refactoring of palettes by Sergii Stoian to correct usability
+     issues in Gorm.
+   * Refactoring of handling and rearrangment of controls in inspectors
+     for usuability.
+   * Stability fixes to make Gorm easier to use.
+   * Autosizing of views corrected in many inspectors
+   * Improvements in error handling.
+
+6 Noteworthy changes in version '1.2.24'
+========================================
+
+   * Fix for issue where Gorm was referencing private variables.  This
+     caused a crash when built with clang.
+
+7 Noteworthy changes in version '1.2.23'
+========================================
+
+   * Fix for issue where NSPanel was being saved as an NSWindow in some
+     cases.
+
+8 Noteworthy changes in version '1.2.22'
+========================================
+
+   * Fix for bug#45040: Fix allows Gorm custom class functionality to
+     work normally on OpenBSD/NetBSD/FreeBSD.
+   * Fixes for Solaris
+   * Memory leak fixes.
+   * Objective-C parser improvements.
+
+9 Noteworthy changes in version '1.2.20'
+========================================
+
+   * Bug fixes #28643, #32827
+   * Corrected issues with updating document when there is a change.
+   * Add cells as objects to the document so they can be properly
+     edited.
+   * Changes to prevent recursive frame change notifications.
+
+10 Noteworthy changes in version '1.2.18'
+=========================================
+
+   * Code cleanup, removal of warnings when building with clang.
+   * Removal of use of call to objc_poseAs(..)  which was preventing
+     building with newer runtimes.
+   * Stability improvements.
+
+11 Noteworthy changes in version '1.2.16'
+=========================================
+
+   * XIB reading.
+   * Bug fixes for standalone views.
+   * Stability changes.
+
+12 Noteworthy changes in version '1.2.12'
+=========================================
+
+Requires: gnustep-base-1.20.0, gnustep-gui-0.18.0.  Reason: Parts of the
+runtime which Gorm used were refactored and it was necessary to make
+corresponding changes in Gorm to use it.
+
+   * Correction for bugs #27295, 28643, 29085.
+   * Added a DO server which allows modification of internal data
+     structures using a simple interface.
+   * Tooltips now show the object name and the object type for
+     informational purposes.
+   * Opens default document when using NSWindows95InterfaceStyle.
+
+13 Noteworthy changes in version '1.2.10'
+=========================================
+
+   * Correction for bug #25401
+   * Correction for some nib loading issues.
+   * Limited support for standalone views.
+   * Fixes for various bugs.
+
+14 Noteworthy changes in version '1.2.8'
+========================================
+
+Requires: gnustep-gui-0.16.0.  It will not compile without this version
+of the library.  Reason: Nib and Gorm loading were moved to a more
+sensible file structure.  Additionally, Nib loading was refactored.
+
+   * Correction for bug#25001.
+   * Correction for bug#25111.
+   * Fixes for nib encoding to use the proper template class instances.
+   * Changes to use new headers.
+
+15 Noteworthy changes in version '1.2.6'
+========================================
+
+   * Corrections to allow Gorm to build and run properly on the Darwin
+     operating system.
+   * Corrected sizing of Controls Palette.
+   * Added preliminary support for IBPlugin API.
+   * Added preferences panel to add plugins dynamically.
+   * Moved load/save logic for gorm, gmodel, and nib to plugins.  This
+     change should allow plugins for virtually any format to be
+     read/written by Gorm.
+   * Correction for bug#24146, bug#23889.
+
+16 Noteworthy changes in version '1.2.4'
+========================================
+
+Requires: gnustep-gui-0.13.2.  Reason: Due to changes in popupbutton
+controller logic.
+
+   * Corrected bug#'s 19640, 21845, 19792, 15637, 17892, 18171.
+   * Added error panel to show the detected inconsistencies in a file.
+   * Added preference setting to turn on or off the gorm file repair
+     logic.
+   * Added capability to repair logic to fix window level issue.
+   * Added ruler switch to scroll view inspector.
+
+17 Noteworthy changes in version '1.2.2'
+========================================
+
+Requires: gnustep-gui-0.13.0.
+
+   * Moved to GPLv3
+   * Added text field to NSTableColumn inspector to allow editing of
+     table column title.
+   * Corrected issue with selection.
+   * Added button modifiers for special keys to button inspectors.
+   * Corrected issue with loading of older gorm files.
+   * Fix to allow Gorm's menus to be Mac-style, but not the one being
+     edited.
+   * Other miscellaneous bug corrections.
+
+18 Noteworthy changes in version '1.2.1'
+========================================
+
+   * Minor corrections to previous release.
+
+19 Noteworthy changes in version '1.2.0'
+========================================
+
+   * Corrections to some editors to not change selection if connection
+     is in progress.
+   * Force menu style to NSNextStepInterfaceStyle for editing purposes.
+   * Correction for memory issue when closing document.
+   * Minor bug fixes.
+
+20 Noteworthy changes in version '1.1.0'
+========================================
+
+   * Changed Gorm architecture to use NSDocument classes.
+   * Abstracted model loading mechanism.  This was done by implementing
+     a set of "Loader" and "Builder" classes which handle filling in the
+     data structures in Gorm and exporting them to external formats.
+   * Implemented GormNibWrapperLoader and GormNibWrapperBuilder for
+     reading and writing Cocoa NIB files.
+   * Implemented GormGormWrapperLoader and GormGormWrapperBuilder for
+     reading and writing GNUstep Gorm files
+   * Implemented GormGModelWrapperLoader for reading GNUstep gmodel
+     files.
+   * Updated icon
+   * A number of bugs have been addressed in this release.
+
+21 Noteworthy changes in version '1.0.8'
+========================================
+
+This is a bugfix release.
+
+   * Correction for bug#16587.
+   * Correction for handling non-string identifiers in tableviews.
+
+22 Noteworthy changes in version '1.0.6'
+========================================
+
+This is a bugfix release.
+
+   * Entirely new icon set, for palettes, gorm, gmodel, nib and the
+     application.
+   * Replaced some of the images for the inspectors.
+   * Corrected the following bugs since the last release: #16049,
+     #16050, #15988, #16049, #15989, #15987, #15817, #15780, #15642,
+     #15556.
+   * Changed formatting in some of the inspectors so that they are
+     easier to navigate.
+
+23 Noteworthy changes in version '1.0.4'
+========================================
+
+This is a bugfix release.
+
+   * Corrected some bug#15236 with window style mask settings.
+   * Corrected bug#15236, which caused window fields in the inspector
+     not to update when the field was being edited and a new window is
+     selected.
+   * Corrected bug #15178.
+   * Corrected problem with standalone views
+
+24 Noteworthy changes in version '1.0.2'
+========================================
+
+This is a bugfix release.
+
+   * Fixed some bugs with table column selection.
+   * Corrected a minor problem in the custom class inspector.
+
+25 Noteworthy changes in version '1.0.0'
+========================================
+
+PLEASE NOTE: This version of Gorm requires base 1.11.1 and gui 0.10.1 to
+be installed (gnustep-startup-0.13.0).
+
+   * All inspectors are now modeled in .gorm files.
+   * Added autosizing to form attributes inspector.
+   * Utilize and maintain parent/child data structure more pervasively
+   * Reorganized code in palettes for cleaner implementation.
+   * Removed code to check for user bundles, since bugs in Camaelon
+     which prompted those changes were fixed long ago.
+   * Added documentation to GormCore
+
+26 Noteworthy changes in version '0.11.0'
+=========================================
+
+   * Improved implementation of canSubstituteForClass: the default
+     implementation of this method tests the classes to see if
+     initWithCoder: or encodeWithCoder: is implemented on a subclass to
+     determine automatically if that class has the same encoding
+     signature as the original class, if it does, it can be substituted.
+   * Improved handling of classes which use cell classes in the custom
+     class inspector.  The inspector now autmatically replaces the cell
+     class with the appropriate one when the user selects a given
+     subclass.
+   * Browser based class editor in document panel.  This interface is
+     more like the one on OSX. The user now has a choice in preferences
+     to determine which view they would like to use.
+   * Translation tools.  The Document->Translate menu allows the user to
+     export string and import strings in the strings format, so that
+     someone can easily translate just the strings in the file and
+     doesn't need to directly edit anything in Gorm.  The strings file
+     can then be loaded back into Gorm and all of the relevant strings
+     are updated.
+   * Alignment tools.  In the new Layout menu there are options to align
+     views, center views, bring views to front or push them to the back
+     of the view layers.
+   * Implementation of IBViewResourceDraggingDelegate.  This allows
+     updating of the pull down in the inspectors panel dynamically.  It
+     requires the developer of a palette to implement some code to
+     enable this, as on OSX.
+   * Lots of bugfixes and usability changes are also included in this
+     release.
+
+27 Noteworthy changes in version '0.9.10'
+=========================================
+
+   * Gorm now has a full implementation of canSubstituteForClass: which
+     is used to determine if a class can be substituted in the custom
+     class inspector.  This allows classes added in palettes to say
+     whether or not they can be used as a subsitute for a kit class.
+   * Better separation of Gorm into libraries.  As well as the ability
+     to compile on windows with a simple: "make install"
+   * Implementation of IBResourceManager class.  This class is used by
+     palettes to register drag types to be considered by the top level
+     editors in the document window: object, sound, image, class.
+   * Gorm now is able to switch views in the document window when you
+     drag a file into it.  If it's an image it will switch to the image
+     view, if it's a sound, the sound view, an object the object view
+     etc or if it's a class (a .h file) it will switch to the classes
+     view.
+   * Drag and drop parsing of header files (if you hadn't gathered from
+     the previous item).
+   * Better support for standalone views.  while the user cannot
+     instantiate from the classes view (there were too many problems
+     with this approach).  They can now drag any view from the palette
+     into the objects view and have it work.
+   * A myriad of bug fixes.
+
+28 Noteworthy changes in version '0.9.2'
+========================================
+
+NOTE: This is mainly a bugfix release.
+
+   * Some improvements to the procedure for removing connections.
+   * Corrected various issues with header parsing.
+   * Now closes windows which were opened during interface testing such
+     as font panels, info panels, etc.
+   * Minor corrections to background color for a number of inspectors.
+   * Improvements to gmodel importation.
+   * Better detection of when the user is utilizing a user bundle.  Gorm
+     will now warn the user with a panel.
+   * Various improvements in documentation
+
+29 Noteworthy changes in version '0.9.0'
+========================================
+
+   * Images/Sounds can now be dragged into a matrix cell.
+   * Fully implemented date and number formatter inspectors (these
+     classes still need work in GUI).
+   * Added warning panel if the user attempts to edit a .gorm file
+     created with a newer version of Gorm
+   * Modified data.classes format so that only those actions
+     specifically added to FirstResponder are listed.
+   * Greatly improved gmodel importation.  (experimental)
+   * It's now possible to add methods to classes which are not custom.
+     This allows the user to add actions which may have been added to
+     those classes by categories.
+   * Completely new header parser implemented.
+   * Improved cut/paste.  It's now possible to use cut/paste from almost
+     anywhere.  The class editor now fully supports it.
+   * Improved implementation of some of the InterfaceBuilder framework
+     classes.
+   * Object editor will now remove all instances of a class that has
+     been deleted from the class editor.
+   * The class inspector and the classes view will now apply stricter
+     rules to names of actions and outlets to ensure that they are
+     properly entered.
+   * All inspectors work perfectly with customized colors.
+   * Fixed a number of bugs.
+
+30 Noteworthy changes in version '0.8.0'
+========================================
+
+PLEASE NOTE: It is important for this release that you upgrade to Gorm
+0.8.0 when using Gorm with the new GNUstep libraries (base-1.10.0 and
+gui-0.9.4).  This version of Gorm contains some features which are
+reliant on changes made in those versions of the libraries.  It is
+stated in Gorm's documentation (the Gorm.texi file) that this is
+required, but I felt it important enough to also mention it here so that
+it is known beyond a reasonable doubt.
+
+   * New gorm file version.
+   * Full custom palette support
+   * Palette preferences panel to allow the user to configure palettes
+     to load
+   * Experimental: Standalone views.  This feature is to allow the use
+     of a view without the need of a containing window.  This allows
+     developers to treat these views as they would any other top level
+     object in the .gorm file.  This is experimental functionality.
+   * Improved NSTableColumn inspector.  The new inspector allows the
+     user to change the data cell used for a given column.  This allows
+     the user to select from a list of cell subclasses and set the
+     appropriate custom or non-custom one they want to appear in that
+     column of the table.
+   * Improved layout of some of the inspectors.
+   * Removed old class parser.  The parser was somewhat buggy and was
+     actually causing some issues.  A new parser will be available in
+     the next version of Gorm.  For now users will need to use the class
+     inspector or the outline view to enter classes into Gorm.
+   * Experimental: "File" section.  This is essentially a per-file
+     preference which allows the user to control which version of
+     GNUstep a given file will be compatible with.  It also lists the
+     potential compatibility issues with the selected version.
+   * Improved controls palette.  New items for some of the standard font
+     replace the old "Title" widget which was a System-14 font.  The new
+     widgets use a selection of the standard System font to allow the
+     user to easily build a gui using these and reducing the amount of
+     time the user needs to spend fiddling with the font panel.
+
+31 Noteworthy changes in version '0.7.7'
+========================================
+
+   * Important bugfixes in editor classes.
+   * Rearranged some of the editor classes to be in the palettes which
+     contain the classes they are responsible for editing
+     (GormButtonEditor & GormTabViewEditor).
+   * Image and Sound editors will now display system default images or
+     sounds if they are available.
+   * Document window now uses an NSToolbar (experimental).
+   * Improved the layout of some of the inspectors.
+   * Corrected some minor issues in the inspectors
+   * Added code to allow NSTableView and NSOutlineView to show some data
+     during testing
+   * Gorm will now show an alert panel when a model fails to load or
+     test properly.
+
+32 Noteworthy changes in version '0.7.6'
+========================================
+
+This release is mainly a bugfix release for 0.7.5.
+
+   * Improved .gmodel support
+   * Corrections to previous repair feature.
+   * Important bugfixes for Menu editing.
+   * Important bugfixes for class inspector.
+
+33 Noteworthy changes in version '0.7.5'
+========================================
+
+   * The 'reparent' feature in the class inspector.  This allows the
+     user to change the class hierarchy from within Gorm.
+   * Some important bugfixes
+   * a property 'GormRepairFileOnLoad' (untested) which should repaire
+     old .gorm files...  It is HIGHLY recommended that Gorm not be run
+     with this on constantly and that you back up any files which you
+     want to repair before opening them with this option turned on.
+   * A shelf inspector in prefs that lets you expand the size of the
+     names in the object view..
+   * Support for NSFontManager
+   * A way to restore a complete NSMenu if it's deleted (a new palette
+     entry for NSMenu, not just an item)
+
+34 Noteworthy changes in version '0.6.0'
+========================================
+
+   * Several major bugs corrected.
+   * Clarified some of the inspectors
+   * Menu items are now properly enabled/disabled when appropriate
+   * More descriptive title displayed when a class is being edited.
+
+35 Noteworthy changes in version '0.5.0'
+========================================
+
+   * Enabled defer in NSWindow inspector.
+   * Added code to the connection inspector to prevent erroneous
+     connections.
+   * Added support for upgrading of old .gorm files using the older
+     template mechanism
+   * Grouping with an NSSplitView now operates using the relative
+     positions of the views in the window.
+   * Custom Class inspector now shows all subclasses, not just direct
+     custom subclasses.
+   * Bug fixes, eliminated memory leak, code cleanup, etc.
+
+36 Noteworthy changes in version '0.4.0'
+========================================
+
+   * New Menu and Menu Item inspectors.
+   * User can now specify the Services and Windows menus in the menu
+     inspector.
+   * User can specify a non-custom subclass as well as a custom one to
+     replace the class when the .gorm is unarchived.  This can be used
+     to turn a NSTextField into NSSecureTextField and etc.
+   * New set name panel.
+   * New switch control on the font panel to allow the user to specify
+     if a font is encoded with its default size or not.
+   * Added NSStepper and NSStepperCell to the class list to allow
+     creation of custom subclasses.
+   * Windows and Services menus now function correctly.
+
+37 Noteworthy changes in version '0.3.1'
+========================================
+
+   * New custom class system.
+   * Images now persist correctly when added to a button or view.
+   * Fixed DND
+   * Various bugfixes
+
+38 Noteworthy changes in version '0.3.0'
+========================================
+
+   * Preferences added.
+   * User can now enable and disable guidlines for easier editing.
+   * Refactored code into GormLib which is a clone of the
+     InterfaceBuilder framework.  This facilitates creating palettes and
+     inspectors outside of Gorm.
+   * Added class inspector for easier editing of classes.  This gives
+     the user the option to use either the outline view or the inspector
+     to edit new classes.
+   * Added inspectors for the following: NSScrollView,
+     NSProgressIndicator, NSColorWell, GormImageInspector (for images
+     added to .gorm files).
+   * Improved look of NSTabView inspector.
+   * Removed all warnings from the code.
+   * various bug fixes.
+
+39 Noteworthy changes in version '0.2.5'.
+=========================================
+
+Many fixes and improvements to make the app work better.
+
+   * Better parsing of headers
+   * Interface code redone as gorm files.
+   * Re-add multiple selection via mouse drag.
+
+40 Noteworthy changes in version '0.2.0' snapshot.
+==================================================
+
+Gobs of improvements, mostly due to the hard work of Gregory John
+Casamento and Pierre-Yves Rivaille.  Thanks guys!
+
+   * Custom class support/translations implemented.
+   * Added NSScrollView, NSPopupButton, NSOutlineView, NSTableView
+     editing.
+   * Improved test mode support.
+   * Improved drag n' drop support on many items.
+   * Intelligent placement hints.
+   * Read gmodel files.
+   * More inspectors.
+   * Sound and Image support.
+   * gorm files were changed to directory wrappers for more flexibility.
+
+41 Noteworthy changes in version '0.1.0'
+========================================
+
+   * load/parses class files for entry into class list.
+   * Pallete/inspectors for date and number formatters
+   * Pallete/Inspectors for browsers and tableViews
+   * NSStepper, NSForm, NSPopupButton pallete item and inspector
+   * Most inspectors greatly improved and fleshed out.
+   * Custom views added.
+   * Ability to edit cells in a matrix.
+   * Ability to change the font of some objects.
+
+42 Noteworthy changes in version '0.0.3'
+========================================
+
+   * Create stub .m and .h files from new classes
+   * Works better with ProjectCenter.
+   * Handle Ctrl-Drag and Alt-Drag of objects - automatic conversion to
+     matrices and/or increase decrease rows and cols.
+   * Edit NSForms titles in place.
+   * Edit NSBoxes and add subviews.
+   * Support for custom objects.
+
+43 Noteworthy changes in version '0.0.2'
+========================================
+
+   * Add popup and pulldown menu controls
+   * Menu support
+   * More inspectors
+   * Some support for connections
+   * Much more fleshed out - too numerous to mention.
+
+44 Noteworthy changes in version '0.0.1'
+========================================
+
+   * 8th December 1999
+
+        * Save/Load 'nib' documents (binary archived data)
+
+          This works so far as it can be tested - but that's just
+          archives containing windows or panels so far.
+
+        * Load palettes
+
+          Loading of palettes works.  You can load palettes from the
+          'Tools' menu.  Gorm automatically loads all the palettes from
+          its Resources directory.
+
+        * Basic framework
+
+          So far, the app provides a basic framework that needs fleshing
+          out.
+             * It has a palettes manager object that allows you to
+               select a palette and drag items from the palette into
+               your document.
+
+             * It has a special per-document editor object, which keeps
+               track of a matrix of icons representing the top-level
+               objects in the document.
+
+             * It has an inspector manager class, which updates the
+               inspector panel when the selected object is changed by an
+               editor.
+
+             * It has special inspectors for handling an empty selection
+               or a multiple selection.
+
+        * Palettes
+
+          Four palettes (three of which are empty at present) are built
+          and installed in the apps Resources directory.
+
+          The Window palette is more fully fleshed out than the other
+          palettes.  It permits windows and panels to be created in
+          Gorm.  If provides the start of a window attributes inspector.
+
+   * 18 December 1999
+
+        * You can drag views from a palette into a window or panel.
+        * You can select views in a window by clicking on them,
+          shift-clicking (for multiple selection), or click-drag on the
+          window background to select views in a box.
+        * You can delete/cut/copy/paste views betwen windows.
+        * You can move views in a window by clicking on them and
+          dragging.
+        * You can resize views by clicking on their knobs and dragging.
+        * You can control-drag to mark source and destination views for
+          a connection.
+
+        * Next task - inspectors.
+
+          The connection inspector needs to be implemented to complete
+          the process of establishing connections.  The size inspector
+          needs to be implemented to set autosizing parameters for a
+          view.
+
+          Once these are done, the object editor needs to be made to
+          support connections so that we can connect between objects
+          other than views, then we need to write a menu editor.
+
+   * 22 December 1999
+
+        * Connections inspector is now working - but it needs some
+          effort to tidy it up.
+        * Class info (outlets and actions) is specified in
+          'ClassInformation.plist' and needs to be present so that the
+          app knows what outlets/actions an object has (and therefore
+          what connections can be made).
+
+        * The view size inspector is working - allowing you to set the
+          size of the subviews within a window.
+
+        * The attributes inspector for 'FilesOwner' is working, so you
+          can define the class of the files owner (it defaults to
+          NSApplication).
+
+        * There is a crude panel for setting the name of the selected
+          object.
+
+        * I've created a couple of new images and got rid of the two
+          NeXT images that were lurking in there.
+
+        * There is a Testing directory, with a GormTest application that
+          lets you load a nib for testing - it assumes that the nib will
+          set its FilesOwners delegate to point to a window, and makes
+          that window the key window ...
+
+   * 23 December 1999
+
+     Last work before christmas ...
+
+     Various bits of tidying up plus -
+
+     Added an evil hack of a generic attributes inspector ...  This
+     looks through all the methods of the selected object to find those
+     taking a single argument and beginning with 'set'.  It makes all
+     these setting methods (whose argument is a simple scalar type or an
+     object) available for you to invoke from the inspector panel.
+
+     This makes it possible to set pretty much any attribute of any
+     object, but you do need to have the GNUstep header files to hand,
+     so you can tell what numeric values to enter to achieve a desired
+     result.
+

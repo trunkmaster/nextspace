@@ -1,0 +1,20 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormGormWrapperLoader = {
+	Actions = (
+	);
+	Outlets = (
+	    message,
+	    textField,
+	    panel
+	);
+	Super = GormWrapperLoader;
+    };
+    GormWrapperLoader = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSObject;
+    };
+}

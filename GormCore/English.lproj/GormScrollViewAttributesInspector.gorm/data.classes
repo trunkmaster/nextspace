@@ -1,0 +1,36 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "borderSelected:",
+	    "colorSelected:",
+	    "horizontalRuler:",
+	    "horizontalSelected:",
+	    "verticalRuler:",
+	    "orderFrontFontPanel:",
+	    "verticalSelected:"
+	);
+	Super = NSObject;
+    };
+    GormScrollViewAttributesInspector = {
+	Actions = (
+	    "borderSelected:",
+	    "horizontalSelected:",
+	    "verticalSelected:",
+	    "colorSelected:",
+	    "horizontalRuler:",
+	    "verticalRuler:"
+	);
+	Outlets = (
+	    borderMatrix,
+	    horizontalScroll,
+	    verticalScroll,
+	    color,
+	    lineAmount,
+	    pageContext,
+	    horizontalRuler,
+	    verticalRuler
+	);
+	Super = IBInspector;
+    };
+}

@@ -1,0 +1,14 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormPrefController = {
+	Actions = (
+	    "popupAction:"
+	);
+	Outlets = (
+	    popup,
+	    prefBox,
+	    panel
+	);
+	Super = NSObject;
+    };
+}

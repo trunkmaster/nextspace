@@ -1,0 +1,9 @@
+{
+  NibFile = "";
+  Class = "MenusPalette";
+  Icon = "MenusPalette";
+  SubstituteClasses = {
+    GormNSMenu = NSMenu;
+    GormNSMenuView = NSMenuView;
+  };
+}

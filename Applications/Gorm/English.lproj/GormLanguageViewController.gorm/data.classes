@@ -1,0 +1,21 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "updateTargetLanguage:",
+	    "updateSourceLanguage:"
+	);
+	Super = NSObject;
+    };
+    GormLanguageViewController = {
+	Actions = (
+	    "updateTargetLanguage:",
+	    "updateSourceLanguage:"
+	);
+	Outlets = (
+	    targetLanguage,
+	    sourceLanguage
+	);
+	Super = NSViewController;
+    };
+}

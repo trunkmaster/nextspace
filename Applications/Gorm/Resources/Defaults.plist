@@ -1,0 +1,35 @@
+{
+    AllowUserBundles = YES;
+    ArchiveType = Typed;
+    BuiltinPalettes = (
+	0Menus.palette,
+	1Windows.palette,
+	2Controls.palette,
+	3Containers.palette,
+	4Data.palette
+    );
+    BuiltinPlugins = (
+	Gorm.plugin,
+	Nib.plugin,
+	GModel.plugin
+    );
+    CellSizeWidth = 72;
+    ClassViewType = Browser;
+    GuideColor = {
+	alpha = 1;
+	blue = 0;
+	green = 0;
+	red = 1;
+    };
+    GuideSpacing = 10;
+    HeaderList = (
+    );
+    PreloadHeaders = NO;
+    ShowInspectors = YES;
+    ShowPalettes = YES;
+    UserPalettes = (
+    );
+   "NSWindow Frame Inspector" = "663 15 274 452 0 0  960 768 ";
+   "NSWindow Frame Palettes" = "663 470 274 298 0 0  960 768 ";
+   "NSWindow Frame Preferences" = "336 200 352 368 0 0  960 768 ";
+}

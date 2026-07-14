@@ -1,0 +1,18 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    ControlsPalette = {
+	Actions = (
+	);
+	Outlets = (
+	    "_prototypePopUp"
+	);
+	Super = IBPalette;
+    };
+    GormNSPopUpButton = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSPopUpButton;
+    };
+}

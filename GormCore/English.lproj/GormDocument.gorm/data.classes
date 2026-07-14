@@ -1,0 +1,61 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "createClassFiles:",
+	    "createSubclass:",
+	    "instantiateClass:",
+	    "loadClass:",
+	    "remove:",
+	    "selectArchiveType:"
+	);
+	Super = NSObject;
+    };
+    GSNibContainer = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSObject;
+    };
+    GormDocument = {
+	Actions = (
+	    "createSubclass:",
+	    "loadClass:",
+	    "createClassFiles:",
+	    "instantiateClass:",
+	    "remove:"
+	);
+	Outlets = (
+	    selectionBox,
+	    filePrefsView,
+	    filePrefsManager,
+	    filePrefsWindow
+	);
+	Super = NSDocument;
+    };
+    GormDocumentWindow = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSWindow;
+    };
+    GormFilePrefsManager = {
+	Actions = (
+	    "showIncompatibilities:",
+	    "selectTargetVersion:",
+	    "selectArchiveType:"
+	);
+	Outlets = (
+	    showIncompatibilities,
+	    targetVersion,
+	    gormAppVersion,
+	    archiveType,
+	    iwindow,
+	    itable,
+	    fileType
+	);
+	Super = NSObject;
+    };
+}

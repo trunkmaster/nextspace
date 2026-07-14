@@ -1,0 +1,40 @@
+@c -*- texinfo -*-
+@chapter ANNOUNCE
+@ifset TEXT-ONLY
+@include version.texi
+@end ifset
+
+This is version @value{GORM-VERSION} of Gorm.
+
+@section What is Gorm?
+
+Gorm is an acronym for Graphic Object Relationship modeler (or perhaps
+GNUstep Object Relationship Modeler).
+
+Gorm is a clone of the Cocoa (OpenStep/NeXTSTEP) `Interface Builder' application for GNUstep.
+
+@set ANNOUNCE-ONLY
+@include news.texi
+@clear ANNOUNCE-ONLY
+
+@section How can I get support for this software?
+
+You may wish to use the GNUstep
+discussion mailing list for general questions and discussion.  Look at
+the GNUstep Web Pages for more information regarding GNUstep resources
+@url{http://www.gnustep.org/}
+
+@section Where can you get it?  How can you compile it?
+
+You can download sources and rpms (for some machines) from
+@url{ftp://ftp.gnustep.org/pub/gnustep/dev-apps}.
+
+@section Where do I send bug reports?
+
+Bug reports can be sent to 
+@email{bug-gnustep@@gnu.org}.
+
+@section Obtaining GNU Software
+
+Check out the GNUstep web site. (@url{http://www.gnustep.org/}), and
+the GNU web site. (@url{http://www.gnu.org/})

@@ -1,0 +1,22 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormTableViewAttributesInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    contentsAlignmentMatrix,
+	    editableSwitch,
+	    identifierTextField,
+	    resizableSwitch,
+	    titleAlignmentMatrix,
+	    cellTable,
+	    defaultButton,
+	    setButton,
+	    columnTitle,
+	    sortOrder,
+	    sortKey,
+	    sortSelector
+	);
+	Super = IBInspector;
+    };
+}

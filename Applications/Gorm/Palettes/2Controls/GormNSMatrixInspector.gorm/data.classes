@@ -1,0 +1,23 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    GormMatrixAttributesInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    autosizeSwitch,
+	    autotagSwitch,
+	    backgroundColorWell,
+	    drawsBackgroundSwitch,
+	    modeMatrix,
+	    propagateSwitch,
+	    prototypeMatrix,
+	    selRectSwitch,
+	    tagForm,
+	    rowsForm,
+	    colsStepper,
+	    rowsStepper,
+	    colsForm
+	);
+	Super = IBInspector;
+    };
+}

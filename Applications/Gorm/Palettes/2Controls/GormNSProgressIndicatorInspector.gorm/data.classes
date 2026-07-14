@@ -1,0 +1,29 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "indeterminateSelected:",
+	    "revert:",
+	    "orderFrontFontPanel:"
+	);
+	Super = NSObject;
+    };
+    GormProgressIndicatorInspector = {
+	Actions = (
+	);
+	Outlets = (
+	    vertical,
+	    maxValue,
+	    minValue,
+	    indeterminate
+	);
+	Super = IBInspector;
+    };
+    NSBox = {
+	Actions = (
+	    "revert:",
+	    "ok:"
+	);
+	Super = NSView;
+    };
+}

@@ -1,0 +1,101 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    ArrResizer = {
+	Actions = (
+	    "initForController:"
+	);
+	Outlets = (
+	);
+	Super = NSView;
+    };
+    FirstResponder = {
+	Actions = (
+	    "alignCenter:",
+	    "alignLeft:",
+	    "arrangeInFront:",
+	    "capitalizeWord:",
+	    "changeFont:",
+	    "close:",
+	    "copy:",
+	    "copyRuler:",
+	    "delete:",
+	    "deleteForward:",
+	    "deleteToBeginningOfParagraph:",
+	    "deleteToEndOfParagraph:",
+	    "deleteWordBackward:",
+	    "deminiaturize:",
+	    "fax:",
+	    "hideOtherApplications:",
+	    "loosenKerning:",
+	    "lowercaseWord:",
+	    "miniaturize:",
+	    "moveBackward:",
+	    "moveDown:",
+	    "moveForward:",
+	    "moveLeft:",
+	    "moveToBeginningOfDocument:",
+	    "moveToBeginningOfParagraph:",
+	    "moveToEndOfLine:",
+	    "moveUp:",
+	    "moveWordBackward:",
+	    "moveWordForward:",
+	    "newDocument:",
+	    "openDocument:",
+	    "orderFront:",
+	    "orderFrontDataLinkPanel:",
+	    "orderFrontFontPanel:",
+	    "orderFrontStandardAboutPanel:",
+	    "orderOut:",
+	    "pageUp:",
+	    "pasteAsPlainText:",
+	    "pasteFont:",
+	    "performClose:",
+	    "performZoom:",
+	    "raiseBaseline:",
+	    "runPageLayout:",
+	    "saveAllDocuments:",
+	    "saveDocumentAs:",
+	    "scrollLineDown:",
+	    "scrollPageDown:",
+	    "scrollViaScroller:",
+	    "selectLine:",
+	    "selectParagraph:",
+	    "selectToMark:",
+	    "selectWord:",
+	    "showGuessPanel:",
+	    "showWindow:",
+	    "subscript:",
+	    "swapWithMark:",
+	    "takeFloatValueFrom:",
+	    "takeObjectValueFrom:",
+	    "terminate:",
+	    "toggle:",
+	    "toggleRuler:",
+	    "toggleTraditionalCharacterShape:",
+	    "transposeWords:",
+	    "turnOffLigatures:",
+	    "unhide:",
+	    "unscript:",
+	    "useAllLigatures:",
+	    "useStandardLigatures:",
+	    "zoom:"
+	);
+	Super = NSObject;
+    };
+    GormShelfPref = {
+	Actions = (
+	    "setDefaultWidth:"
+	);
+	Outlets = (
+	    win,
+	    prefbox,
+	    iconbox,
+	    imView,
+	    leftResBox,
+	    rightResBox,
+	    nameField,
+	    setButt
+	);
+	Super = NSObject;
+    };
+}

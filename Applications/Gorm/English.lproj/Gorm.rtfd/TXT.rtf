@@ -1,0 +1,779 @@
+{\rtf1\ansi\ansicpg1252\cocoartf102{\fonttbl\f0\fnil DejaVu Sans;}
+\pard\ql\f0\fs48\b * Gorm: The GNUstep Graphical Object Relationship Modeler\fs24\b0 \par
+\par
+\par
+This file documents the features and implementation of the Gorm\par
+application.\par
+\par
+Copyright (C) 1999,2000,2009,2010 Free Software Foundation, Inc.\par
+\par
+Permission is granted to make and distribute verbatim copies of\par
+this manual provided the copyright notice and this permission notice\par
+are preserved on all copies.\par
+\par
+Permission is granted to process this file through @TeX\{\} and print the\par
+results, provided the printed document carries copying permission\par
+notice identical to this one except for the removal of this paragraph\par
+(this paragraph not being relevant to the printed manual).\par
+\par
+Permission is granted to copy and distribute modified versions of this\par
+manual under the conditions for verbatim copying, provided also that the\par
+section entitled \lquote \lquote GNU Library General Public License\rquote \rquote  is included exactly as\par
+in the original, and provided that the entire resulting derived work is\par
+distributed under the terms of a permission notice identical to this one.\par
+\par
+Permission is granted to copy and distribute translations of this manual\par
+into another language, under the above conditions for modified versions,\par
+except that the section entitled \lquote \lquote GNU Library General Public License\rquote \rquote  and\par
+this permission notice may be included in translations approved by the\par
+Free Software Foundation instead of in the original English.\par
+\par
+\par
+\fs48\b Guide to the\par
+Gorm application\par
+\par
+\fs24\b0 \par
+ Gregory John Casamento <greg_casamento@@yahoo.com>\par
+ Richard Frith-Macdonald <richard@@brainstorm.co.uk>\par
+\par
+Copyright @copyright\{\} 1999,2000 Free Software Foundation, Inc.\par
+\par
+\par
+Permission is granted to make and distribute verbatim copies of\par
+this manual provided the copyright notice and this permission notice\par
+are preserved on all copies.\par
+\par
+Permission is granted to copy and distribute modified versions of this\par
+manual under the conditions for verbatim copying, provided also that the\par
+section entitled \lquote \lquote GNU Library General Public License\rquote \rquote  is included exactly as\par
+in the original, and provided that the entire resulting derived work is\par
+distributed under the terms of a permission notice identical to this one.\par
+\par
+Permission is granted to copy and distribute translations of this manual\par
+into another language, under the above conditions for modified versions,\par
+except that the section entitled \lquote \lquote GNU Library General Public License\rquote \rquote  may be\par
+included in a translation approved by the author instead of in the original\par
+English.\par
+\par
+@strong\{Note: You will be performing a valuable service if you report any bugs you encounter.\}\par
+@strong\{The full gorm manual is available at http://wiki.gnustep.org/index.php/Gorm_Manual.\}\par
+ titlepage\par
+\par
+@contents\par
+\par
+ Top, Copying, , \par
+\par
+@menu\par
+* Copying::\tab     GNU Public License says how you can copy\par
+                    and share Gorm.\par
+* Contributors::    People who have contributed to Gorm.\par
+* Installation::    How to build and install Gorm.\par
+* News::\tab     The latest changes to Gorm.\par
+\par
+* Overview::        Gorm in brief.\par
+* Usage::\tab     How Gorm is used.\par
+* Implementation::  Implementation notes.\par
+\par
+* Concept Index::\par
+ menu\par
+\par
+ Copying, Contributors, Top, Top\par
+@unnumbered Copying\par
+\par
+See the file \{COPYING\}.\par
+\par
+ Contributors, Installation, Copying, Top\par
+@unnumbered Contributors to Gorm\par
+\par
+Gregory John Casamento <greg_casamento@@yahoo.com> Is the\par
+current maintaner of Gorm.   Has implemented lots of new\par
+features and rewritten large portions of the existing code.\par
+\par
+Richard Frith-Macdonald <richard@@brainstorm.co.uk> wrote\par
+the original version of Gorm as part of the GNUstep project.\par
+\par
+Pierre-Yves Rivaille <gnustep@@rivaille.net> Is also a \par
+major contributor to the Gorm application.\par
+ itemize\par
+\par
+ Installation, News, Contributors, Top\par
+ Installing Gorm\par
+\par
+@include install.texi\par
+\par
+ News, Overview, Installation, Top\par
+ News\par
+\par
+@include news.texi\par
+\par
+ To Do\par
+\par
+ize @bullet\par
+\par
+ Debug and stabilize existing code.\par
+\par
+ itemize\par
+\par
+ Overview, Usage, News, Top\par
+ Overview\par
+\par
+Gorm is an application for creating the user interface (and possibly entire\par
+applications) for a GNUstep application.  Initially a close clone of the old\par
+NeXTstep 3.3 Interface Builder application, I expect that Gorm will mutate\par
+beyond the capabilities of that app.\par
+\par
+GNUstep is an object-oriented programming framework and a collection of tools\par
+developed for or using the GNUstep libraries.\par
+\par
+You can find out more about GNUstep at\par
+@url\{http://www.gnustep.org\}@*\par
+\par
+The basic idea behind Gorm is simple - it provides a graphical user interface\par
+with which to connect together objects from the GNUstep libraries (as well as\par
+custom-written objects) and set their attributes in an easy to use manner.\par
+\par
+The collection of objects is then saved as a document which can either be\par
+re-loaded into Gorm for further editing, or can be loaded into a running\par
+GNUstep application in order to provide that application with a user\par
+interface or some subsystem.\par
+\par
+ What You Must Know To Understand This Manual\par
+\par
+This manual assumes a working knowledge of Objective-C and C.  These are \par
+necessary prerequisites to understanding some of the technical details and \par
+examples given here.\par
+\par
+ Major features\par
+ features\par
+\par
+ize @bullet\par
+ Drag-and-drop creation of GUI elements from palettes.\par
+ Run-time loading of additional palettes that may be written using an API\par
+very similar to that of Apple/NeXTs interface Builder palette API.\par
+ Direct on-screen manipulation of GUI elements\par
+ Manipulation and examination of objects via inspectors.\par
+ Drag-and-drop creation of connections between objects.\par
+ Interactive test mode for interfaces/object-networks under development.\par
+ Saving data in a format loadable by GNUstep applications.\par
+ itemize\par
+\par
+ About this Manual\par
+\par
+This manual is ment to cover basic operation of the Gorm application.  It is not\par
+meant to be a complete tutorial on GNUstep programming. \par
+\par
+ Usage, Implementation, Overview, Top\par
+ Usage\par
+\par
+Here is a description of the menu structure and what each menu does -\par
+\par
+ize @bullet\par
+ Info @*\par
+The \{Info\} menu item produces a submenu ...\par
+ize @bullet\par
+ Info Panel @*\par
+A panel giving very limited information about Gorm\par
+ Preferences  @*\par
+A panel allowing you to set preferences about how Gorm operates\par
+ Help (not implemented) @*\par
+A panel providing general help on using Gorm\par
+ itemize\par
+\par
+ Document @*\par
+The \{Document\} menu item produces a submenu ...\par
+ize @bullet\par
+ Open @*\par
+This produces an open panel that lets you open a Gorm document.\par
+You use this if you want to use Gorm to edit an exisiting document.\par
+ New Application @*\par
+This creates a new application document within Gorm, you may then use the\par
+Palettes panel to drag new objects into the document.\par
+ New Module @*\par
+Contains a submenu, which also contains:\par
+\par
+ize @bullet\par
+ New Empty @* \par
+produces an empty document with only NSFirst and NSOwner.\par
+ New Inspector @* \par
+produces a document with NSOwner, NSFirst and a window which is the correct size for an Inspector.\par
+ New Palette @* \par
+produces a document which is like the one by \{New Inspector\}, but it\rquote s window is the right size for a Palette. \par
+ itemize\par
+\par
+ Save @*\par
+This saves the current document\par
+ Save As @*\par
+This saves the current document to a new file and changes the document name\par
+to match the new name on disk.\par
+ Save All @*\par
+This saves all documents currently being edited by Gorm.\par
+ Revert To Saved @*\par
+This removes all changes made to the document sunce the last save, or since\par
+the document was opened.\par
+ Test Interface @*\par
+This provides interactive testing of the active document.  To end testing, you\par
+need to select the \{quit\} menu item.\par
+ Translate @*\par
+Contains a submenu, which also contains:\par
+\par
+ize @bullet\par
+ Load Strings @* \par
+Load a string file. This file contains the strings to translate. \par
+ Export Strings @*\par
+Export a strings file. TODO\par
+ itemize\par
+\par
+\par
+ Miniaturize @*\par
+This miniaturises the active document (or whatever panel is currently key).\par
+ Close @*\par
+This closes the currenly active document.\par
+ Debug @*\par
+Prints some useful internal information.\par
+ Load Sound @*\par
+Loads a sound into the .gorm file.\par
+ Image @*\par
+Loads an image into the .gorm file.\par
+ itemize\par
+\par
+ Edit @*\par
+In addition to the usual Cut, Copy, Paste, Delete Select All, this menu also contains:\par
+\par
+ Set Name @*\par
+This allows the user to set a name for a given object in the Objects view in the main document window.\par
+\par
+ize @bullet\par
+ Group @*\par
+Which produces a submenu\par
+ize @bullet\par
+ In Splitview @*\par
+Groups views into an NSSplitView.   Gorm does this based on the relative positions of the views being grouped.  It determines the orientation and the order of th views and then groups them either vertically or horizontally in the order they appear on the screen.\par
+ In Box @*\par
+Simply groups all of the views into one NSBox.\par
+ In ScrollView @*\par
+Simply groups all of the views into one NSScrollView.\par
+ Ungroup @*\par
+Ungroups the contained views.\par
+ itemize\par
+\par
+ Disable Guideline @*\par
+This item toggles between Enable Guideline and Disable Guideline.  This allows the user to turn on or off the guides which appear when placing views in a window or view in Gorm.\par
+\par
+ Font Panel\par
+The Font Panel allow you to modify fonts of your views.\par
+\par
+ itemize\par
+\par
+ Classes @*\par
+Contains menus for working with classes.\par
+ize @bullet\par
+ Create Subclass @*\par
+Creates a subclass of the currently selected class in the current document classes view.\par
+ Load Class @*\par
+Loads a class from a .h file into the current document.\par
+ Create Class Files @*\par
+Generates a .h and .m file from the currently selected class in the current document classes view.\par
+ Instantiate @*\par
+Creates an instance of the selected class in the current document classes view.\par
+ Add Outlet/Action @*\par
+Adds an outlet or an action depending on what is selected in the document classes view.  If the outlet icon is selected, it will add an outlet, if it the action icon is selected it will add an action.\par
+ Remove @*\par
+Removes the currently selected outlet, action or class.\par
+ itemize\par
+\par
+ Tools @*\par
+Contains the inspector and the palette menus\par
+ize @bullet\par
+ Inspector @*\par
+Shows the inspector\par
+ Palette @*\par
+Shows the palette\par
+ Load Palette @*\par
+Opens a file panel and allows the user to load a palette into Gorm.\par
+ itemize\par
+\par
+ Layout @*\par
+Contains a menu for working with alignement and layout of you views\par
+ize @bullet\par
+ Alignement\par
+Wich produces a submenu \par
+ize @bullet\par
+ Center Vertically @*\par
+Center Vertically two or more views. TODO :explain what is the reference view\par
+ Center Horizontally @*\par
+Center Horizontally two or more views. TODO :explain what is the reference view\par
+ Left Edges @*\par
+TODO\par
+ Right Edges @*\par
+TODO\par
+ Top Edges @*\par
+TODO\par
+ Bottom Edges @* \par
+TODO\par
+ itemize\par
+\par
+ Bring to Front @*\par
+Bring to front the selected view\par
+ Send to Back @*\par
+Send to back the selected view\par
+\par
+ itemize\par
+\par
+ Windows @*\par
+Shows currently open windows.\par
+\par
+ Services @*\par
+Shows currently available services.\par
+\par
+ Hide @*\par
+Hides the application.\par
+\par
+ Quit @*\par
+Quits the application.\par
+\par
+ itemize\par
+\par
+ Implementation, Concept Index, Usage, Top\par
+ Implementation\par
+\par
+@menu\par
+* Preferences::\par
+ menu\par
+\par
+ Notes on implementation\par
+\par
+The IB documentation on how object selection is managed and how editors and\par
+inspectors are used is unclear ... so I\rquote ve gone my own way.\par
+\par
+1. When a document is loaded, the document object creates an editor attached\par
+to each top-level object in the user interface (NSMenu and NSWindow objects).\par
+\par
+These editors must be aware of their edited objects being clicked upon, and\par
+clicking on one of these should cause the corresponding editor to become the\par
+active editor.\par
+\par
+The active editor is responsible for handling selection of the edited object\par
+(and any objects below it in the object hierarchy).  Upon change of selection,\par
+the editor is responsible for sending an IBSelectionChangedNotification with\par
+the selection owner (normally the editor itsself) as the notification owner.\par
+\par
+The main application watches for these notifications in order to keep track\par
+of who has the selection.\par
+\par
+ Connections\par
+\par
+The connection API is the same as that for IB, but with the extension that the\par
+document object must implement [-windowAndRect:forObject:] to return the\par
+window in which the object is being displayed, and the rectangle enclosing\par
+the object (in window base coordinates).\par
+\par
+This information is needed by Gorm so that it can mark the connection.\par
+\par
+The editors mananging the drag-and-drop operation for a connection must call\par
+\{[NSApp -displayConnectionBetween:and:]\} to tell Gorm to update its display.  This method sets the values currently returned by \{[NSApp -connectSource]\} and \{[NSApp -connectDestination]\}.\par
+\par
+ Preferences, , Implementation, Implementation\par
+ Preferences\par
+ preferences\par
+ defaults\par
+\par
+The preferences panel contains a number of useful customizable options which can be used to modify the behavior of Gorm.\par
+\par
+Some of these defaults can be safely modified from the command line by the user.\par
+ize @bullet\par
+\par
+ PreloadHeaders @*\par
+The user can define a set of headers to load when Gorm starts creation of a new .gorm file.   \par
+This is useful when the user is building a framework or a set of interfaces for a large \par
+application.\par
+\par
+ ShowInspectors @*\par
+Controls whether the inspector shows when Gorm is started.\par
+\par
+ ShowPalettes @*\par
+Controls whether the palettes window shows when Gorm is started.\par
+\par
+ BackupFile @*\par
+Determines if the old .gorm is moved to .gorm~ when the modified version is saved.\par
+ AllowUserBundles @*\par
+If the user sets this to YES, they will still get a warning, but Gorm won\rquote t quit.  \par
+ itemize\par
+\par
+ Basic Concepts\par
+\par
+This chapter will explain some of the basic things you need to understand before starting work on a new application.\par
+\par
+ Getting Started\par
+\par
+First you need to understand a few basic concepts.   Gorm\rquote s main window includes a few standard entries which must be explained before we can proceed.\par
+\par
+They are:\par
+\par
+ NSOwner\par
+ NSFirst\par
+ NSFont\par
+\par
+ize @bullet\par
+\par
+ NSOwner\par
+\par
+ NSFirst\par
+\par
+ NSFont\par
+\par
+ itemize\par
+\par
+ What is NSOwner?\par
+\par
+NSOwner is the class which \lquote \lquote owns\rquote \rquote  the interface.  This is, by default, NSApplication, but it can be any class you like.   You can change it by selecting NSOwner in the document window and going to the \lquote \lquote Custom Class\rquote \rquote  inspector in the inspectors window.  From there, you should see all of the classes which the NSOwner can assume.   We\rquote ll discuss more about this later when we go over how to create a new application\par
+\par
+ What is NSFirst?\par
+\par
+NSFirst is your interface to the responder chain.  NSFirst is representative of the current \lquote \lquote first responder\rquote \rquote  in the application.  When you want a message, such as a changeFont: message, to go to the current first responder from, say, a menu, you connect the menu item to the NSFirst object in the document window.  By doing this, it means that whichever object has first responder status at that time in the application will become the reciever of the \lquote \lquote changeFont:\rquote \rquote  message. \par
+\par
+ Responders\par
+ NSResponder\par
+\par
+A responder is any subclass of NSResponder.  This includes NSWindow, NSView and all of the NSControl subclasses.\par
+\par
+ The Responder Chain\par
+ Responder Chain\par
+\par
+The responder chain is a sequence of objects which are called to determine where a message sent to the first responder will go.   A message invoked on the first responder will be invoked on the first object in the responder chain which responds to that message.\par
+\par
+The object which this message will be called on is determined in the method [NSApplication targetForAction:].  The call sequence is as follows, it will only proceed to the next step in each case if the current step fails to respond to the message which was invoked:\par
+\par
+ The firstResponder of the keyWindow, if one exists. \par
+ Iterates through all responders by pulling each in the linked list of responders for the key window.   \par
+ It then tries the keyWindow.\par
+ Then the keyWindow\rquote s delegate\par
+ if the application is document based it tries the document controller object for the key window.\par
+ then it tries the mainWindow\rquote s list of responders (as above)\par
+ the mainWindow\rquote s delegate\par
+ if the app is document based, it tries the document controller for the main window\par
+ and finally, it tries the NSApplication delegate.\par
+\par
+ itemize\par
+\par
+If all of the options in this list are exhausted, it then gives up and returns nil for the object which is to respond.\par
+\par
+ What is NSFont?\par
+\par
+NSFont represents the NSFontManager object for the application.  This object is a shared singleton.   This means that, for any given app, there should be only one instance of the object.   This object is generally added to the document window when another objec, such as a Font menu item, is added to the interface, which, in turn, requires that this object be added to the document.\par
+\par
+ The awakeFromNib method\par
+\par
+This method is called on any custom object which is unarchived from a nib/gorm file.   This method is called on all objects after the entire archive has been loaded into memory and all connections have been made.   Given all of this, you should not make any assumptions at all about which objects have been called and which have not.  You should not release any objects in this method.\par
+\par
+ Creating an Application\par
+\par
+If you have ProjectCenter, you need to open it and create an \lquote \lquote Application\rquote \rquote  project.   Create it with the name \lquote \lquote FirstApp\rquote \rquote .   From there you can open the MainMenu.gorm by clicking on interfaces and selecting MainMenu.gorm.   If Gorm.app is properly installed, you Gorm should start up.\par
+\par
+If you don\rquote t have ProjectCenter, you can create the Gorm file by hand.    First you need to start Gorm.  You can either do this by doing \{gopen -a Gorm.app\} from a command line prompt, or you can invoke it from the Dock or from the workspace\rquote s file viewer.\par
+ \par
+You then need to select the \{Document\} menu, and then \{New Application\}.  This should produce a new document window, with a menu and an empty window.  This should be the same as with the ProjectCenter gorm file since this is the basic starting point for an application.\par
+\par
+For the sections below...  only do one or the other, not both. \par
+\par
+ Creating A Class In Gorm\par
+ Creating Classes\par
+\par
+There are two ways to do this next operation.  I will take you through each step by step.  First click on the classes icon in the toolbar on the top of the Gorm document window.   You should see the view below change to an outline view containing a list of class names.   Once this happens we\rquote re ready to create a class.\par
+Select the class you wish to subclass in the outline view.  For our example we will use the simplest: NSObject.  Select it by clicking on the class name once.  Then go to the Classes menu in the main menu and select Create Subclass (you can also type Alt-Shift-c, which will do this as well.  The new class will be created in the list with the name \lquote \lquote NewClass\rquote \rquote .\par
+\par
+ Using The Outline View\par
+ Classes Outline View\par
+\par
+From here double click on the subclass name to make it editable.  Type the name of the class and hit enter.  For our example, please use the class name MyController.  When you hit enter an alert panel will appear and warn you about breaking connections, simply select OK and continue.\par
+\par
+This method of inputting the classes was inspired by IB in OPENSTEP 4.2/Mach which had functionality very similar to this.  For users of that the transition to Gorm will be seamless.\par
+\par
+ Adding Outlets In The Outline View\par
+\par
+Too add an outlet, select the round icon with the two horizontal lines in it (it sort of looks like a wall outlet.   This should become depressed.  Here you need to go to the Gorm Menu, under Classes select \lquote \lquote Add Outlet/Action\rquote \rquote .  Each time you press this menu item another outlet will be added with a name similar to newOutlet, as you add more the number at the end will increase.  For now add only one outlet.\par
+\par
+To rename the outlet simply double click it and change it\rquote s name like you did the class above to \lquote \lquote value\rquote \rquote  for the sake of our example.\par
+\par
+ Adding Actions In the Outline View\par
+\par
+The procedure to add on action is precisely the same as adding an outlet, except you must click on the button which looks like a target (a circle with a + inside).   Add an action and name it \lquote \lquote buttonPressed:\rquote \rquote  for the sake of our example.\par
+\par
+ Using The Class Edit Inspector\par
+ Class Edit Inspector\par
+\par
+This way is much more inline with the \lquote \lquote OPENSTEP/GNUstep\rquote \rquote  philosophy.   For each object there is an inspector, even for Class objects.\par
+\par
+Once you have created the class as described in the previous section \lquote \lquote Creating a Class In Gorm\rquote \rquote , you must skip to this section to use the inspector.   In the Gorm main menu select Tools and then select \lquote \lquote Inspectors\rquote \rquote .  This will make certain that the inspectors window is being displayed.   Once the inspectors window is up move the pulldown on the top to \lquote \lquote Attributes\rquote \rquote  and select the class you created which should, at this point, have the name \lquote \lquote NewClass\rquote \rquote .  You\rquote ll notice that the \lquote \lquote Class\rquote \rquote  field at the top which shows the name\rquote s background color has turned white, instead of grey.  This indicates that this class name is editable.   Erase \lquote \lquote NewClass\rquote \rquote  from the text field and type \lquote \lquote MyController\rquote \rquote .\par
+\par
+ Adding Outlets In The Inspector\par
+\par
+Adding outlets is very intuitive in the inspector.  Simply select the \lquote \lquote Outlets\rquote \rquote  tab in the tab view and click \lquote \lquote Add\rquote \rquote  to add more outlets, and \lquote \lquote Remove\rquote \rquote  to remove them.  For the sake of our example, add one outlet and name it \lquote \lquote value\rquote \rquote .\par
+\par
+ Adding Actions In the Inspector\par
+\par
+Very much like above only with the \lquote \lquote Actions\rquote \rquote  tab, add an action called button pressed.\par
+\par
+ Instantiating The Class\par
+ Instantiating\par
+\par
+In the Classes outline view select the new class you\rquote ve created, now called MyController and then go to the Gorm menu and select Classes, and then Instantiate.  The document window should shift from the classes view to the objects view.   Amoung the set of objects should be a new object called MyController.\par
+\par
+ Adding Controls from the Palette\par
+\par
+Go to the Gorm menu and select Tools, then Palettes.  This will bring the palette window to the front.  The second palette from the left is the \lquote \lquote ControlsPalette\rquote \rquote .  Select that one and find the button object (it should have the word \lquote \lquote Button\rquote \rquote  in it).  Drag that to the window and drop it anywhere you like.\par
+\par
+Repeat this operation with the text field.  It\rquote s the control with \lquote \lquote Text\rquote \rquote  in it.   We are now ready to start making connections between different objects in the document.\par
+\par
+ Making Connections\par
+ Connections\par
+\par
+The type of application we are creating is known as a \lquote \lquote NSApplication delegate\rquote \rquote  this means that the MyController object will be set as the delegate of NSApplication.\par
+\par
+To make this connection click on NSOwner and hold down the Control button, keep it pressed as you drag from the NSOwner object to the MyController object.  The inspectors window should change to the Connections inspector and should show two outlets \lquote \lquote delegate\rquote \rquote  and \lquote \lquote menu\rquote \rquote .   Select the \lquote \lquote delegate\rquote \rquote , at this point you should see a green S and a purple T on the NSOwner and MyController objects respectively, and press the \lquote \lquote Connect\rquote \rquote  button in the inspector.   In the \lquote \lquote Connections\rquote \rquote  section of the inspector you should see an entry which looks similar to \lquote \lquote delegate (MyController)\rquote \rquote  this indicates that the connection has been made.\par
+\par
+Now we need to make connections from the controller to the textfield and from the controller to the button.  Select the MyController object and Control-Drag (as before) from the object to the text field, this will make an outlet connection.   You should see the connections inspector again, this time select the \lquote \lquote value\rquote \rquote  outlet and hit Connect. \par
+\par
+Next, control-drag from the button to the controller, this will make an action connection.  The connections inspector should again appear.  This time you need to select the \lquote \lquote target\rquote \rquote  outlet, to get the list of actions.  The list should have only one entry, which is \lquote \lquote buttonPressed:\rquote \rquote  since this is the one we added earlier.  Press Connect.  You should see an entry like \lquote \lquote buttonPressed: (MyController\rquote \rquote  in the Connections section of the inspector.\par
+\par
+It is also possible to make this connection to NSFirst, but to keep things simple, make it directly to the object.   If you make the connection to buttonPressed: on NSFirst the functionality of the application will be unchanged, but the invocation will take the path described above in the section which describes \lquote \lquote The Responder Chain\rquote \rquote .\par
+\par
+ Saving the gorm file\par
+ Saving\par
+\par
+At this point you must save the .gorm file.  Go to the Gorm menu and click Documents and then select \lquote \lquote Save\rquote \rquote .  If the document was opened from a pre-existing .gorm, it will save to that same file name.   If it is an UNTITLED .gorm file a file dialog will appear and you will need to select the directory where you want to store the .gorm file and type the name of the .gorm file.  \par
+\par
+ Generating .h and .m files from the class.\par
+\par
+This is different than saving, some people have gotten this confused with the idea of Gorm generating the code for the gui.  Gorm does nothing of the sort (grin).  \par
+\par
+Go to the Classes section in the Document window and select the MyController class yet again.  Now go to the Gorm menu and select Classes and the select \lquote \lquote Create Class Files\rquote \rquote .  This will bring up a file panel and it allow you to select the directory in which to put the files.   It will first create the MyController.m file and then the MyController.h file.  Simply select the directory in which your app will reside and hit okay for both.  You can change the names, but the default ones, which are based on the class name, should be sufficient.  When you look at the .m for this class, you should see the \{buttonPressed:\} method with the commecnt \{/* insert your code here */\} in it.  Delete this comment and add \{[value setStringValue: @@\lquote \lquote Hello\rquote \rquote ];\}.   The class should look like this after you\rquote re done:\par
+\par
+\par
+\par
+/* All Rights reserved */\par
+\par
+\par
+\par
+#include <AppKit/AppKit.h>\par
+\par
+#include "MyController.h"\par
+\par
+@@implementation MyController\par
+\par
+\par
+- (void) buttonPressed: (id)sender\par
+\par
+@\{\par
+\par
+    [value setStringValue: @@\rquote \rquote Hello\rquote \rquote ];\par
+\par
+@\}\par
+\par
+@\par
+\par
+\par
+\par
+You recall, we connected the textfield to the \lquote \lquote value\rquote \rquote  variable.  The call above causes the method setStringValue to be invoked on the textfield you added to the window.  \par
+\par
+Also, note that the name of the method is \lquote \lquote buttonPressed:\rquote \rquote .  This is the action which is bound to the button.  When it is pressed the text in the textfield should change to \lquote \lquote Hello\rquote \rquote .\par
+\par
+You now need to build the application either by copying in a GNUmakefile and making the appropriate changes or by using ProjectCenter\rquote s build capability, depending on if you use it or not.\par
+\par
+This app is available as \lquote \lquote SimpleApp\rquote \rquote  in the Examples directory under the Documentation directory distributed with Gorm.   Hopefully this has helped to demonstrate, albeit on a small scale, the capabilities of Gorm.  In later chapters we will cover more advanced application architectures and topics.\par
+\par
+ Another Simple Application\par
+\par
+This chapter will describe an application, very much like the previous one, but using a slightly different structure.  This application builds on the previous application and uses WinController as the NSOwner of the app instead of making it the delegate of NSApplication.\par
+\par
+ Adding Menu Items\par
+\par
+Select the first palette in the palette window, this should be the MenusPalette.   The palette will have a bunch of pre-made menu items on it that you can add.  We want to keep this simple, so grab the one called \lquote \lquote Item\rquote \rquote  and drag it over to the menu in main menu nib (the menu on the screen, not the one in the objects view).  As you have this object over the menu, the copy/paste mouse cursor should appear (it looks something like one box over another box at a 45 degree angle).   Where you drop the menu determines it\rquote s position in the menu.  You can always drag it to a new position after you\rquote ve placed it by simply selecting and dragging up or down.  Once you\rquote ve placed the menu item, double click on the title and change it to \lquote \lquote Open\rquote \rquote \par
+\par
+You can also change the name in the NSMenuItem attributes inspector.  Now you must add openWindow: to MyController and make the connection from the \lquote \lquote Open\rquote \rquote  menu item to NSFirst.   In the connections inspector, find the \lquote \lquote openWindow:\rquote \rquote  action.   You could simply make the connection directly, but this is an exaple to show you that this connection will work as well.   Whichever object has First Responder status will be tested to see if it responds to this method.\par
+\par
+The implementation for openWindow: in MyController should simply be:\par
+\par
+- (void) openWindow: (id) sender\par
+\par
+@\{\par
+\par
+    winController = [[WinController alloc] init];\par
+\par
+@\}\par
+\par
+Also add the winController attribute and an include to allow WinController to be referenced in the MyController.m file.\par
+\par
+ Making a Controller-based .gorm file\par
+\par
+Create a new .gorm file as described in the previous section using the \lquote \lquote New Module\rquote \rquote  menu item.  Under \lquote \lquote New Module\rquote \rquote  select \lquote \lquote New Empty\rquote \rquote .  This should produce a .gorm file with only NSOwner and NSFirst.   From the WindowsPalette (which should be the second palette in the palette window) drag a window to the location where you want it to appear on the screen.   In the window add a button called \lquote \lquote Close\rquote \rquote .\par
+\par
+Go through the same steps you went through previously to create MyController, except for adding the outlets/actions, but this time with the name WinController.   Add an outlet called window and an action called \lquote \lquote closeWindow:\rquote \rquote .   \par
+\par
+ Setting the NSOwner\par
+Now, instead of instantiating the class go back to the objects view and select the NSOwner object.   After that select the \lquote \lquote Custom Class\rquote \rquote  inspector.   Look for the entry for WinController and select it.   You now must connect the \lquote \lquote window\rquote \rquote  outlet to the Window you added previously.\par
+\par
+ Connecting to a Window\par
+Switch back to the objects view, then Control-Drag not to the window on the screen, but to the window\rquote s representation in the objects view.  In the connection inspector select the window outlet and click Ok.\par
+\par
+Save the .gorm as using the name Controller.gorm in the project directory. \par
+\par
+Generate the Controller.h and Controller.h files as described in the previous section.\par
+\par
+ Add the init method to WinController\par
+\par
+Add an implementation of the action \lquote \lquote closeWindow:\rquote \rquote  to WinController and also an init which loads the gorm/nib file and declares itself as the owner.  Here\rquote s how:\par
+\par
+/* All Rights reserved */\par
+\par
+#include <AppKit/AppKit.h>\par
+\par
+#include "WinController.h"\par
+\par
+@@implementation WinController\par
+\par
+- (id) init\par
+\par
+@\{\par
+\par
+  if((self = [super init]) != nil)\par
+\par
+    @\{\par
+\par
+        if([NSBundle loadNibNamed: @@"Controller" owner: self] == NO)\par
+\par
+        @\{\par
+\par
+                NSLog(@@"Problem loading interface");\par
+\par
+                return nil;\par
+\par
+        @\}\par
+\par
+        [window makeKeyAndOrderFront: self];\par
+\par
+    @\}\par
+\par
+  return self;\par
+\par
+@\}\par
+\par
+- (void) closeWindow: (id) sender\par
+@\{\par
+\par
+  [window close];\par
+\par
+@\}\par
+\par
+- (void) dealloc\par
+@\{\par
+  [super dealloc];\par
+  RELEASE(window);\par
+@\}\par
+\par
+@ \par
+\par
+The Controller gorm will be loaded and the connections will be made to the current instance, i.e. window will point to the window object instantianted in the .gorm file and all actions declared in the .gorm file which are attached to the object NSOwner will be resolved on self.\par
+\par
+ Running the App\par
+\par
+Type the command \{open Controller.app\} on the command line in the project directory.   Once the application has started it should look very much like the first application.  Select the \lquote \lquote Open\rquote \rquote  button from the Menu and you should see the second window pop up, now choose close, this will call the method \lquote \lquote closeWindow:\rquote \rquote  which should cause the window to disappear.\par
+\par
+\par
+ Advanced Topics\par
+\par
+This section will cover some topics which won\rquote t be of general interest to most users.   The details in this section pertain to the internal workings of Gorm.\par
+\par
+ Gorm file format\par
+\par
+The current Gorm file format is basically just a set of objects, encoded one after another in a continuous stream with some markers indicating when a new class starts or which class is encoded. \par
+\par
+ The Name Table\par
+\par
+ Name Table\par
+Each object in the .gorm file has a name assigned to it by the application.  This allows Gorm to refer to the objects by a name once they are loaded rather than an address.  Each name is associated with it\rquote s object in a dictionary which preserves the overall structure of the GUI which has been created.   \par
+\par
+ The Custom Class Table\par
+\par
+This is only used when the user has associated a custom class with an existing instance in the gorm file.  If the user has, for instance, added an NSWindow to the gorm, he/she can use the custom class inspector to select a subclass of NSWindow to change to. \par
+\par
+ Connections Array\par
+\par
+This array is used to form the connections after the .gorm file is loaded.  The method \{[... establishConnection]\} is never called on either NSNibControlConnector or NSNibOutletConnector objects while in Gorm.   This prevents the connections from having any effect while they are being edited in Gorm itself.   Once they are loaded, the establishConnection method is called and the connections are made.\par
+\par
+ Custom Class Encoding\par
+ Custom Class Encoding\par
+\par
+Custom objects are an interesting challenge in Gorm.  By definition, custom classes are not known to Gorm, unless they are in a palette (covered elsewhere).   For classes which are not in a palette instances of these classes in Gorm are encoding in one of three ways:\par
+\par
+*  A Proxy - This is a standin object which takes the place of the custom object.   This is usually used when the superclass of the object is a non-graphical object, such as a controller.  The init message is called on this object when it\rquote s unarchived.\par
+* A Custom View - This is a standin view object similar to the one descrribed above, but it is a subclass of NSView.  When this is used the initWithFrame: message is called on the view instance which is created (based on what view subclass the user selects)\par
+* A Template - Probably the most interesting of the three.  This is a standin class which uses an existing instance created in Gorm to build a custom subclass from.   For instance when a window subclass is created, call it MyWindow, a template class called GSWindowTemplate is used to hold the NSWindow created in Gorm as well as the name of the subclass to be created when the class is unarchived outside of Gorm as well as some additional information.   When the classes are unarchived in the running app, the designated initializer for that class will be invoked, except in the case of NSControl subclasses.  See the Apple documentation for more information.\par
+ itemize\par
+\par
+All custom instances have awakeFromNib invoked on them when they are unarchived from the .gorm file.   This allows the user to do whatever additional setup that needs to be done, such as setting attribute.   Classes which are \lquote \lquote known\rquote \rquote  are, of course, directly encoded into the .gorm file.\par
+\par
+ Restrictions On Your Custom Subclasses\par
+\par
+The restrictions here are the same as those in Apple\rquote s InterfaceBuilder.   In general, you cannot have additional information which is expected to be decoded in an initWithCoder: method from a custom class which uses one of the methods in the previous section.   This is because, by definition, Gorm doesn\rquote t know anything about these classes and allowing you to use them in Gorm in this way is a convenience to make it simpler for the developer.  Gorm therefore, must use one of the proxies to encode the class since it cannot encode the class directly.\par
+\par
+How can you get your classes into Gorm, you say?   I\rquote m pleased that you asked me that question.  The best way to make your class known to Gorm so that you don\rquote t need to worry about the above restriction is to add a palette which contains your class.  In this way, because you\rquote re literally linking the class into Gorm, you\rquote re making the class and it\rquote s structure known to Gorm so that it can encode the class directly.   With the new palette loaded you can load and save classes containing real instances, not proxies, of your class encoded directly in the .gorm file.   How to create a palette is discussed at length in the following section.\par
+\par
+ Palettes\par
+ Palettes\par
+ Inspectors\par
+ Editors\par
+\par
+ Graphical Objects In A Palette\par
+You are, by now, familiar with the built in palettes which are provided with Gorm.  Palettes are a powerful feature which allows the developer to add his/her own objects to Gorm.  It is possible for a developer to write custom inspectors, editors and palettes for use with Gorm.   A good example of a custom palette is palettetest in the dev-apps/test in the GNUstep distribution.  Assuming you don\rquote t have that, however, I will explain precisely what you need to do in order to create a simple palette.   The entire process is very short and suprisingly simple.   First open Gorm and selection Gorm->Document->New Module->New Palette.   This will create a palette sized window.   Once that\rquote s done go to the classes view in the main document window and find \lquote \lquote IBPalette\rquote \rquote  in the class list.  Create a subclass of that, the name can be whatever you want.  For the purposes of our example we\rquote ll call it MyPalette.  Drag a custom view to the window and choose the class you would like to add to the palette from one of your custom classes.\par
+\par
+Once you\rquote ve done this, generate the code for the classes (discussed in previous chapters).   In the code, you\rquote ll add a method called \lquote \lquote -(void) finishInstantiate\rquote \rquote  leave it empty for now.   In the makefile for the palette make sure that the library or framework the view comes from is linked with the palette.   Now build the palette.\par
+\par
+After the palette is built you\rquote re ready to load it into Gorm.  Go to the preferences panel and go to \lquote \lquote Palettes\rquote \rquote .  This should bring up a table view.  Click on add.   You should see a open dialog open.  Select the palette bundle with this.   If the palette is successfully loaded, you should see the name appear in the list.   One thing to note here.   Once a palette is loaded, it can\rquote t be unloaded until you close and restart Gorm.   This is because by loading the palette bundle, the code in the bundle is being linked into Gorm.   This can\rquote t be undone, once it\rquote s done.\par
+\par
+Now, you should see the palette in the set of palettes in the palette window.  Simply scroll over to it and select it\rquote s icon.   When you do this, you should see the view that you set up using the custom view displayed as an actual instance.  Note that we used one of the techniques listed above, it is possible to use any of the three for any object you add to your palette.     You can now drag the view from the palette to a new window. \par
+\par
+ Non Graphical Objects In A Palette\par
+You may recall the creation of a method called \lquote \lquote -(void) finishInstantiate\rquote \rquote  in the previous section.  This section will make full use of that method.  Re-open the palette you created before, but this time add an image view to the window.   Then add to the image view, the icon you want to represent the non-graphical object.   Here you\rquote ll need to add an ivar to the MyPalette class in both Gorm and in your source code called, imageView.  Once you\rquote ve done this make the connection between the image view and it\rquote s ivar.\par
+\par
+Assuming that the class is called \lquote \lquote NonUIObject\rquote \rquote , in finish instantiate, you\rquote ll need to add the following line of code:\par
+\par
+  id obj = [NonUIObject new];\par
+\par
+  [self associateObject: obj\par
+\tab type: IBObjectPboardType\par
+\tab with: imageView];\par
+\par
+This code has the effect of associating the non-ui object with the ui object you just added to represent it.  When you drag and drop the element which prepresents the object to something, it will copy the object, not the ui element, to the destination.\par
+\par
+Congratulations, you now know how Palettes work. \par
+\par
+ Frequently Asked Questions\par
+ FAQ\par
+\par
+ Should I modify the data.classes of file in the .gorm package?\par
+\par
+My advice is never to do this, ever.  Some have said that \lquote \lquote they\rquote re plain text and I should be able to change them\rquote \rquote .   My response to this rather loosely pronounced and weak rationale is that if they are modified I cannot and will not guarantee that Gorm will be able to read them or will function correctly if it does.\par
+ Why does my application crash when I add additional attributes for encoding in encodeWithCoder: or initWithCoder: in my custom class?\par
+\par
+If you\rquote ve selected the custom class by clicking on an existing object and then selecting a subclass in the Custom Class Inspector in Gorm\rquote s inspector panel, then when the .gorm file is saved, Gorm must use what is called a template to take the place of the class so that when the .gorm is unarchived in the running application, the template can become the custom subclass you specified.  Gorm has no way of knowing about the additional attributes of your subclass, so when it\rquote s archived the template depends on the encodeWithCoder: of the existing class.  Also, when AppKit loads the .gorm file, the initWithCoder: on the subclass is called to allow the user to do any actions, except for additional encoding, which need to be done at that time.  This is particularly true when non-keyed coding is used, since, with keyed coding, it\rquote s possible to skip keys that are not present.  The application may not crash if keyed coding is used, but Gorm would still not know about the additional attributes and would not be able to persist them anyway.\par
+\par
+Please see information in previous chapters regarding palettes, if you would like to be able to add your classes to Gorm so that they don\rquote t need to be replaced by templates, or proxy objects.\par
+\par
+Why does Gorm give me a warning when I have bundles specified in GSAppKitUserBundles?\par
+\par
+Some bundles may use poseAs: to affect change in the existing behavior of some GNUstep classes.  The poseAs: method causes an issue which may cause Gorm to incorrectly encode the class name for the object which was replaced.   This makes the resulting .gorm file unusable when another user who is not using the same bundle attempts to load it.\par
+\par
+How can I avoid loading GSAppKitUserBundles in Gorm?\par
+\par
+You need to write to Gorm\rquote s defaults like this:\par
+\par
+defaults write Gorm GSAppKitUserBundles \rquote ()\rquote \par
+\par
+Doing this overrides the settings in NSGlobalDomain for Gorm and forces Gorm not to load any user bundles at all.  To eliminate this simply do:\par
+\par
+defaults delete Gorm GSAppKitUserBundles\par
+\par
+How can I change the font for a widget?\par
+\par
+This is a simple two step process.  Select the window the widget is in and then select the widget itself, then bring up the font panel by hitting Command-t (or by choosing the menu item).  By doing this you\rquote re making the window the main window and by selecting the widget, you\rquote re telling the editor for that object to accept changes.   Then you can select the font in the panel and hit \lquote \lquote Set\rquote \rquote .   For some objects, the font panel isn\rquote t effective because those objects can\rquote t have a font directly set.\par
+}
