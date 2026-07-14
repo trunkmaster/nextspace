@@ -102,6 +102,7 @@ This is all that is necessary to define the project.
 @menu
 * Debug Information::           
 * Profile Information::         
+* Memory Sanitisation::         
 * Library Types::               
 @end menu
 
@@ -123,7 +124,7 @@ not put into the binary files.
 make debug=no
 @end smallexample
 
-@node Profile Information, Library Types, Debug Information, Running Make
+@node Profile Information, Memory Sanitisation, Debug Information, Running Make
 @section Profile Information
 
 By default the Makefile Package does not tell the compiler to generate
@@ -135,6 +136,57 @@ put into the binary files.
 @smallexample
 make profile=yes
 @end smallexample
+
+@node Memory Sanitisation, Library Types, Profile Information, Running Make
+@section Memory Sanitisation
+
+Production code must not use memory sanitization tools, but during development
+and debugging these can be extremely useful, so the Makefile Package provides
+an option to tell the compiler to generate output for address and leak
+sanitization using https://github.com/google/sanitizers/wiki/addresssanitizer
+
+Unfortunately, AddressSanitizer/LeakSanitizer is not particularly portable and
+is available on a limited selection of hardware and operating systems, so
+turning it on in GNUstep-make may not actually work on your system.  It is
+however very good with modern GCC or Clang on the most popular platforms.
+
+The following command illustrates how to tell the Makefile Package to pass
+the appropriate flags to the compiler so that sanitization is put into the
+binary and so that the preprocessor can be used to change code behaviour when
+it is built for sanitization (-fsanitize=address and -DGNUSTEP_WITH_ASAN=1).
+
+@smallexample
+make asan=yes
+@end smallexample
+
+You can get the same effect by setting an environment variable as follows:
+@smallexample
+export GNUSTEP_WITH_ASAN=1
+@end smallexample
+
+When you build libraries, frameworks, or bundles with sanitization turned on,
+you must also use ASAN to build any apps or tools which use them.  This
+is because the library/framework/bundle will have dependencies on the leak
+sanitization shared library, and those dependencies must be fulfilled when
+the app/tool is linked.
+
+The basic effect of sanitization is that, in the event of an address error
+(when the code attempts to access memory it shouldn't), the app/tool is
+immediately terminated with details of the problem printed to stderr, and
+in the event of memory leaks (detected at app/tool exit) a report of the
+locations of the leaks is printed to stderr.
+
+Beware that an app/tool built with ASAN maps a huge amount of virtual memory
+to help it detect memory violations in the code, and while this virtual memory
+usage does not require real memory, it does mean that processes monitoring the
+memory usage of your app/tool will give completely meaningless results.
+
+Beware also, that an app/tool built with ASAN does use considerably more real
+memory than normal, and its usage of memory continually grows, because it is
+keeping records of what the app/tool does with memory in order to be able to
+perform leak analysis and reporting when the app/tool finishes.
+If you have many apps/tools under test concurrently and for a long time, your
+system may run out of memory.
 
 @node Library Types,  , Profile Information, Running Make
 @section Static, Shared, and Dynamic Link Libraries

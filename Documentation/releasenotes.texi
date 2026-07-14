@@ -4,6 +4,14 @@ The release notes include descriptions of API changes, behavior
 changes and other information that might help developers and users
 migrate to using a newer version of the make system.
 
+@section Version 2.9.3
+
+Addition of the 'asan=yes' option when GNUstep-make is invoked and support
+for the GNUSTEP_WITH_ASAN=1 environment setting to turn on address and leak
+sanitisation.
+
+Various minor fixes
+
 @section Version 2.9.2
 
 Changes to work around the removal of the javah tool after java version 8.

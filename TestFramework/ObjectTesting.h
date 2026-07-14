@@ -51,14 +51,22 @@
   PASS(obj0 != nil, "%s has working alloc", prefix); \
   PASS([obj0 isKindOfClass: theClass], \
     "%s alloc gives the correct class", prefix); \
+  DESTROY(obj0); \
+\
   obj0 = [[theClass alloc] init]; \
   PASS([obj0 isKindOfClass: theClass], "%s has working init", prefix); \
+  DESTROY(obj0); \
 \
   obj0 = [theClass new]; \
   PASS([obj0 isKindOfClass: theClass], "%s has working new", prefix); \
+  DESTROY(obj0); \
 \
   obj1 = [theClass allocWithZone: testZone]; \
   PASS([obj1 isKindOfClass: theClass],"%s has working allocWithZone",prefix); \
+  PASS([obj1 isKindOfClass: theClass], \
+    "%s allocWithZone: gives the correct class", prefix); \
+  DESTROY(obj1); \
+  NSRecycleZone(testZone); \
 }
 static void test_alloc(NSString *CN) __attribute__ ((unused));
 static void test_alloc(NSString *CN)
@@ -86,16 +94,18 @@ static void test_alloc(NSString *CN)
   PASS_EXCEPTION([obj0 description], NSInvalidArgumentException, \
     "raises NSInvalidArgumentException in description") \
 \
-  PASS_EXCEPTION(if([obj0 init]==nil)[NSException raise: NSInvalidArgumentException format: @""], \
+  PASS_EXCEPTION(if((obj0=[obj0 init])==nil)[NSException raise: NSInvalidArgumentException format: @""], \
     NSInvalidArgumentException, \
     "returns nil or raises NSInvalidArgumentException in init") \
 \
-  PASS_EXCEPTION(if([theClass new]==nil)[NSException raise: NSInvalidArgumentException format: @""], \
+  PASS_EXCEPTION(if((obj0=[theClass new])==nil)[NSException raise: NSInvalidArgumentException format: @""], \
     NSInvalidArgumentException, \
     "returns nil or raises NSInvalidArgumentException in new") \
 \
   obj1 = [theClass allocWithZone: testZone]; \
   PASS([obj1 isKindOfClass: theClass],"%s has working allocWithZone",prefix); \
+  DESTROY(obj1); \
+  NSRecycleZone(testZone); \
 }
 static void test_alloc_only(NSString *CN) __attribute__ ((unused));
 static void test_alloc_only(NSString *CN)
@@ -211,6 +221,7 @@ static void test_NSObject(NSString *CN, NSArray *OJS)
 	decoded = [NSUnarchiver unarchiveObjectWithData: data]; \
 	PASS(decoded != nil, "can be decoded"); \
         PASS_EQUAL(decoded, obj, "decoded object equals the original"); \
+	DESTROY(archiver); \
       END_SET(buf) \
     } \
 }
@@ -347,6 +358,7 @@ static void test_keyed_NSCoding(NSArray *OJS)
 	      "%s result of copy is not immutable", prefix); \
 	  } \
 \
+	DESTROY(theCopy); \
 	theCopy = [theObj copyWithZone: testZone]; \
 	PASS(theCopy != nil, "%s understands -copyWithZone", prefix); \
 	PASS([theCopy isKindOfClass: iClass], \
@@ -369,6 +381,7 @@ static void test_keyed_NSCoding(NSArray *OJS)
        if (theClass != iClass) \
 	 PASS(![theCopy isKindOfClass: theClass], \
 	   "%s result of copyWithZone: is not immutable", prefix); \
+	DESTROY(theCopy); \
       END_SET(buf) \
     } \
 }
@@ -447,6 +460,7 @@ static void test_NSCopying(
 	PASS(theCopy != theObj, \
 	  "%s not retained by mutable copy in the same zone", \
 	  [mClassName UTF8String]); \
+	DESTROY(theCopy); \
 \
 	theCopy = [theObj mutableCopyWithZone: testZone]; \
 	PASS(theCopy != nil, \
@@ -454,6 +468,7 @@ static void test_NSCopying(
 	PASS(theCopy != theObj, \
           "%s not retained by mutable copy in other zone", \
 	  [mClassName UTF8String]); \
+	DESTROY(theCopy); \
       END_SET(buf) \
     } \
 }
