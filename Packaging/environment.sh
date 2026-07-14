@@ -8,7 +8,7 @@ _PWD=`pwd`
 # Install-layout versions (.so links, Framework Versions/ dirs).
 # Sources are vendored in-tree; these are NOT download pins.
 #----------------------------------------
-libdispatch_version=5.9.2
+libdispatch_version=6.3.3
 libcorefoundation_version=5.9.2
 libcfnetwork_version=129.20
 
