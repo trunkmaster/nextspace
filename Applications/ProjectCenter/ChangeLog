@@ -1,0 +1,3271 @@
+2022-01-16 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectWindow.m
+	nil the delegates of the split-view, avoid a crash on close window.
+
+2022-01-13 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectInspector.m
+	Don't assign nil, it is useless, just destroy it: retaining nil is
+	useless.
+
+2022-01-12 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditor.h
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	Reduce scope of _extScrollView _intScrollView from ivar to local
+	variables, release after setting to content view and fix
+	double-release of _intScrollView.
+
+2021-11-30 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditorView.h
+	* Modules/Editors/ProjectCenter/PCEditorView.m
+	Use a timer also for line calculation and status update.
+
+2021-11-26 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	Do not send double computeNewParenthesisNesting: on key pressed.
+	Furthermore, use a timer so that in case of rapid re-computing
+	it gets invalidated before and only calculated at the last event.
+
+2021-10-19 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditorView.h
+	* Modules/Editors/ProjectCenter/PCEditorView.m
+	Remove insertText and handle keys through appropriate methods (inserTab, cancelOperation)
+
+2021-08-18 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	Turn off ligatures, both when setting up the editor as well as when
+	loading a file.
+
+2021-08-18 Riccardo Mottola <rm@gnu.org>
+
+	* PCInfoContronoller.m
+	Center info panel correctly the first time on load.
+
+2021-08-10 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Framework/PCEditorManager.m: Add method -gotoFile:atLine:
+	* Framework/PCProjectEditor.m: Add method openEditorForFilePath:windowed:
+	* Framework/PCProjectManager.m: Add method openFileAtPath:windowed:
+	* Headers/ProjectCenter/PCEditorManager.h
+	* Headers/ProjectCenter/PCProjectEditor.h
+	* Headers/ProjectCenter/PCProjectManager.h: Declarations for above methods.
+	* Modules/Debuggers/ProjectCenter/GDBWrapper.h
+	* Modules/Debuggers/ProjectCenter/GDBWrapper.m: Add code to pull
+	"thread-selected" dictionary when the debugger stops by using break/pause
+	or by using up or down.  Code to syncronize editor with where the debugger
+	has stopped.
+	* Modules/Debuggers/ProjectCenter/PCDebugger.h
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m: updateEditor method.  This
+	method makes use of the gotoFile:atLine: method to get the file and show it
+	in the code editor and go to the line where it has stopped.
+	* Modules/Editors/ProjectCenter/PCEditor.m: Update internal editor
+	* Modules/Editors/ProjectCenter/PCEditorView.m: minor bugfixes.
+
+2021-07-16 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/GDBWrapper.h
+	* Modules/Debuggers/ProjectCenter/GDBWrapper.m
+	Don't send keystrokes directly to gdb, but accumulate a line until return and send, allows to handle backspaces.
+
+2021-07-09 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectLauncher.m
+	If we already instantiated a Debugger, reuse it.
+
+2021-07-06 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.h
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	Change parsing of MI interface to a LAR parser and avoid issue
+	of recursive [] {} values in the previous parser.
+
+2021-06-22 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.h
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	Accessor methods for specific debugger information as wellas filename and line.
+
+2021-05-13 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Projects/Application/PCAppProject+Inspector.h
+	* Modules/Projects/Application/PCAppProject+Inspector.m
+	* Modules/Projects/Application/PCAppProject.m
+	* Modules/Projects/Application/Resources/Inspector.gorm
+	Fix HelpFile by saving the property in the app project and generating
+	the plist.
+
+2021-02-19 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditor.h
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	Keep track of the file modification date on each open/save,
+	compare it to the current file to detect external modifications.
+
+2021-02-12 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCFileManager.m
+	Open in project directory preferentially if no last open
+	dir (quick version, ignores file type).
+
+2021-02-06 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	Respect background selection preferences and infer text
+	as inverse.
+
+2021-02-04 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectManager.m
+	* PCAppController.m:
+	Cleanup a bit the setting of the active project and the key win.
+
+2021-02-03 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectInspector.m
+	Check for invalid filenames and in case, reset to the original
+	file name.
+
+2021-02-03 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCEditorManager.m:
+	Do not open an external editor if an in-window is requested.
+
+2020-09-08 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/SyntaxHighlighter.h
+	* Modules/Editors/ProjectCenter/SyntaxHighlighter.m
+	Add setters for fonts.
+
+	* Modules/Editors/ProjectCenter/PCEditorView.h
+	* Modules/Editors/ProjectCenter/PCEditorView.m
+	Separate font accessors in to class and instance methods.
+	Do not use preferences in class methods, since they are outside the
+	protocol.
+
+2020-09-08 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectLauncher.m
+	Access Preferences through its protocol, since the launcher is in the
+	Framework.
+
+2020-04-16 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditorView.m:(drawRect:)
+	Fix range to use characters and not glyphs, sicne highlighting is based on chars.
+
+2020-03-24 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectLauncher.m
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.h
+	* Modules/Debuggers/ProjectCenter/PCDebuggerViewDelegateProtocol.h
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.h
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m
+	* Modules/Editors/ProjectCenter/PCEditorView.m
+	Uniform  font defaults to use PCPreferenceController, fix Debugger to
+	actually make setFont work thorugh the view-delegate chain.
+
+2020-03-24 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Preferences/EditorFSC/PCEditorFSCPrefs.m
+	Fix loading of font from preferences.
+
+2019-12-29  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Framework/PCButton.m
+	* Framework/PCProjectBrowser.m
+	* Framework/PCProjectLauncherPanel.m
+	* Framework/PCProjectLoadedFilesPanel.m
+	* Framework/PCProjectManager.m
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m
+	* Modules/Editors/ProjectCenter/SyntaxHighlighter.m
+	* Modules/Projects/Library/PCLibProject.h
+	* Modules/Projects/Library/PCLibProject.m
+	Remove compiler warnings.
+	* .gitignore: Add file
+
+2019-05-25 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/SyntaxDefinition.h
+	* Modules/Editors/ProjectCenter/SyntaxDefinition.m
+	Uniform context type to NSUInteger.
+
+2019-05-22 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCButton.m
+	* Headers/ProjectCenter/PCButton.h
+	Remove custom ToolTip implementation now present in GUI.
+
+2018-06-19 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Projects/Framework/PCFrameworkProject.h
+	* Modules/Projects/Framework/PCFrameworkProject.m
+	Add some GSDoc makefile aids
+
+2017-08-16 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Projects/Application/PCAppProject.m
+	Fix for nil bundle identifier.
+
+2017-01-17 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectManager.m
+	* Modules/Projects/Application/PCAppProject.h
+	Fix wrong declaration and missing subtype option.
+
+2017-01-13 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectManager.m
+	* Headers/Protocols/ProjectType.h
+	* Modules/Projects/Aggregate/PCAggregateProject.h
+	* Modules/Projects/Aggregate/PCAggregateProject.m
+	* Modules/Projects/Application/PCAppProject.h
+	* Modules/Projects/Application/PCAppProject.m
+	* Modules/Projects/Bundle/PCBundleProject.h
+	* Modules/Projects/Bundle/PCBundleProject.m
+	* Modules/Projects/Framework/PCFrameworkProject.h
+	* Modules/Projects/Framework/PCFrameworkProject.m
+	* Modules/Projects/ResourceSet/PCResourceSetProject.h
+	* Modules/Projects/ResourceSet/PCResourceSetProject.m
+	* Modules/Projects/Tool/PCToolProject.h
+	* Modules/Projects/Tool/PCToolProject.m
+	Pass options to createProjectAt and use those to create Gorm/Renaissance subtypes, enable the former by default.
+
+2016-12-16 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m
+	Conditionally split on windows with CR-LF
+
+2016-11-28 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Parsers/ProjectCenter/PCParser.m
+	Fix off-by-one in length when checking the last character.
+
+2016-11-25 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.h
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m
+	skip and report empty lines as PCDBEmptyRecord
+
+2016-11-19 11:22-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	* Modules/Debuggers/ProjectCenter/PCDebuggerViewDelegateProtocol.h
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m: Added/implemented
+	debuggerSetup method.
+
+2016-11-18 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Projects/Application/PCAppProject+Inspector.h
+	* Modules/Projects/Application/PCAppProject+Inspector.m
+	* Modules/Projects/Application/Resources/Inspector.gorm
+	Connect add/remove buttons.
+
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m
+	Commands need new-line.
+
+2016-11-17 09:20-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m: Change flag to yes
+	in parseLine method to indicate debugger has started.
+
+2016-11-17 09:18-EST Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.h
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.h
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m: Added notification
+	to fix breakpoint loading.
+
+2016-09-29 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.h
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	* Modules/Debuggers/ProjectCenter/PCDebuggerViewDelegateProtocol.h
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m
+	Add skeleton to handle breakpoints, add breakpoint types.
+
+2016-06-06 11:47-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m: Add code to
+	make commands appear when the button is pressed.
+
+2016-05-22 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditorView.h
+	* Modules/Editors/ProjectCenter/PCEditorView.m
+	Comply to protocol.
+
+	* Modules/Editors/ProjectCenter/SyntaxHighlighter.h
+	* Modules/Editors/ProjectCenter/SyntaxHighlighter.m
+	Transition to NSInteger/NSUInteger
+
+2016-05-15 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	On windows kill with DebugBreakProcess() and not tskill. Available only on WinXP or higher.
+
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m
+	For GDB < v. 7 (on win), attempt to grab process id from Windows thread information.
+
+2016-05-05 15:43-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m: Minor changes.
+
+2016-05-05 13:13-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m: Partial parsing
+	of result records to yield correct status in debuggerView.
+
+2016-05-05 11:23-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m: Handle more
+	escaped sequences to futher clean up output.
+
+2016-05-03 19:40-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.h
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m: Add parsers
+	to handle output from various types of MI data.  Code to handle
+	each individual case is being written.
+
+2016-05-03 18:00-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m: Changes
+	to allow pid to be passed back to PCDebugger by calling
+	setSubProcessId once the pid is parsed from the mi output.
+
+2016-05-03 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.h
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	Refactor path to executablePath.
+
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m
+	Do not permit deletion beyond the new line or the gdb prompt.
+
+2016-03-23 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.h
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.h
+	* Modules/Debuggers/ProjectCenter/PipeDelegate.m
+	* Modules/Debuggers/ProjectCenter/PCDebuggerViewDelegateProtocol.h
+	Merge in from pipes branch: stdio/stdout over pipes handled in a separate delegate class.
+
+2016-03-23 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCBundleManager.m
+	* Framework/PCProjectLauncher.m
+	Merge from branch: check bundle loading and warn.
+
+2016-03-15 18:47-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Debuggers/ProjectCenter/PTYView.h
+	* Modules/Debuggers/ProjectCenter/PTYView.m:
+	Undo previous change.  Move Riccardo's change to
+	branch ptyview_with_pipes.
+
+2016-03-14 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/PTYView.h
+	* Modules/Debuggers/ProjectCenter/PTYView.m
+	Use stdio/stdout over pipes instead of a tty
+
+2016-03-08 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectLauncher.m
+	Update debug executable path search to run, make it work on windows.
+
+2015-11-09 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectInspector.m
+	Allocate a Mutable Array before assagning an Array to a MutableArray
+
+2015-11-05 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Projects/Application/PCAppProject+Inspector.h
+	* Modules/Projects/Application/PCAppProject+Inspector.m
+	* Headers/ProjectCenter/PCDefines.h
+	* Modules/Projects/Application/PCAppProject.h
+	* Modules/Projects/Application/PCAppProject.m
+	* Modules/Projects/Application/Resources/Inspector.gorm
+	CFBundleIdentifier support for Apps.
+
+2015-11-02 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditorView.m
+	Cleanups and NSInteger conversion.
+
+	* Modules/Editors/ProjectCenter/LineJumper.h
+	* Modules/Editors/ProjectCenter/LineJumper.m
+	declare missing method
+
+2015-06-16 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/GNUmakefile
+	* Framework/PCFileCreator.m
+	* Headers/ProjectCenter/PCFileCreator.h
+	* Framework/Resources/ocppclass.template
+	Enable project addition of obj-c++ classes.
+
+2015-06-13 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectEditor.m
+	Re-enable wrongly uncommented statement.
+
+	* Framework/PCEditorManager.m
+	If we have a directory, we check if it is a bundle that an app can open it and open it through NSWorkspace.
+
+2015-06-12 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	Enable parsing of obj-c++
+
+2015-06-12 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/Resources/Info.table
+	Enable Obj-C++ extension.
+
+	* Framework/PCEditorManager.m
+	Use the internal editor if it is available, even if no parser is available.
+
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	Handle missing image better.
+
+2015-04-07 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditorView.m
+	Use constants and not strings as keys.
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	Use console font for the view.
+
+2015-03-22 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Preferences/EditorFSC/PCEditorFSCPrefs.m
+	Use Preferences color methods.
+
+2015-03-22 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/Protocols/Preferences.h
+	* PCPrefController.m
+	Direct preferences method for setting and getting colors.
+
+2015-03-22 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Preferences/EditorFSC/PCEditorFSCPrefs.m
+	Convert CMYK to RGB before serializing.
+
+2015-03-22 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	Actually use the background color preference.
+
+2015-03-22 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/Protocols/Preferences.h
+	* Modules/Preferences/EditorFSC/PCEditorFSCPrefs.m
+	* PCPrefController.m
+	Move colorFromString from PCEditorFSCPrefs to PCPrefsController and make it thus generally available.
+
+2015-03-12 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Projects/Framework/PCFrameworkProject.m
+	Generate the PACKAGE_NAME for Frameworks.
+
+2015-03-11 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Preferences/EditorFSC/PCEditorFSCPrefs.m
+	Bug Fix: Set the font manager with the picked font, not always the same.
+
+2015-03-11 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Preferences/EditorFSC/PCEditorFSCPrefs.h
+	* Modules/Preferences/EditorFSC/PCEditorFSCPrefs.m
+	* Modules/Preferences/EditorFSC/Resources/EditorFSCPrefs.gorm
+	Provide Editor and Fixed font preferences, instead of plain and rich.
+
+	* Modules/Editors/ProjectCenter/PCEditorView.m
+	Use the preferences Editor font instead of the system one.
+
+2014-12-16 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProject.m
+	Initialize backup wrapper after wrapperPath since it depends on it!
+
+2014-12-16 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCMakefileFactory.m
+	Generate sections only if there are classes.
+
+2014-12-15 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCMakefileFactory.m
+	Create mm sections in makefiles for Objective-C++
+
+2014-12-08 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProject.m
+	Accept also Objective-C++ classes as Class files
+
+2014-11-20 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Parsers/ProjectCenter/PCParser.m
+	Force last action on parser if file lacks a new line at EOF.
+
+2014-11-20 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Parsers/ProjectCenter/ObjCCommentHandler.m
+	Fix parser to ignore comments inside strings.
+
+2014-10-07 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectManager.m
+	* PCAppController.m
+	Revert windows-specific hacks by German to make project-type choice work. They would crash when using PC without the WinUX theme.
+
+2014-09-08 German Arias <germanandre@gmx.es>
+
+	* Modules/Editors/ProjectCenter/Resources/LineJumper.gorm: Remove
+	modifier key for button.
+
+2014-09-02 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCAddFilesPanel.m
+	* Framework/PCProjectBuilder.m
+	Do not use GS internals but standard methods.
+
+2014-08-29 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/GNUmakefile
+	* Modules/Editors/ProjectCenter/LineJumper.h
+	* Modules/Editors/ProjectCenter/LineJumper.m
+	* Modules/Editors/ProjectCenter/PCEditorView.m
+	* Modules/Editors/ProjectCenter/Resources/LineJumper.gorm
+	Implement and add a simple go-to-line panel
+
+2014-08-25  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Modules/Editors/ProjectCenter/PCEditor.m (unhighlightCharacter:):
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	(highlightCharacterAt:inEditor:):
+	Fix condition order to prevent out of range array accesses, which
+	may lead to a segfault when unhighlighting two matching parentheses.
+
+	Fix by Markus <desterium@t-online.de>.
+
+2014-08-18 16:07-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Projects/Aggregate/Resources/Inspector.gorm
+	* Modules/Projects/Application/Resources/Inspector.gorm
+	* Modules/Projects/Application/Resources/Main.gorm
+	* Modules/Projects/Bundle/Resources/Inspector.gorm
+	* Modules/Projects/Framework/Resources/Inspector.gorm
+	* Modules/Projects/Library/Resources/Inspector.gorm
+	* Modules/Projects/ResourceSet/Resources/Inspector.gorm
+	* Modules/Projects/Tool/Resources/Inspector.gorm: Update all
+	gorm files to latest version.
+
+2014-08-04 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Editors/ProjectCenter/PCEditorView.m
+	Fix return value.
+
+2014-08-04 Riccardo Mottola <rm@gnu.org>
+
+	* English.lproj/ProjectCenter.gorm
+	* Headers/Protocols/CodeEditorView.h
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	* Modules/Editors/ProjectCenter/PCEditorView.h
+	* Modules/Editors/ProjectCenter/PCEditorView.m
+	Move GoToLine to the View akin to the NSTextView find panel and
+	declare it in the editor view protocol.
+
+2014-08-03 German Arias <germanandre@gmx.es>
+
+	* Modules/Editors/ProjectCenter/PCEditor.m: Don't use
+	PCAuxiliaryWindow. This avoid the use of FindPanel.
+
+2014-07-30 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCEditorManager.m
+	* Framework/PCProjectBuilder.m
+	* Headers/Protocols/CodeEditor.h
+	* Modules/Editors/ProjectCenter/PCEditor.h
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	Convert line numbers to NSUInteger / integerValue
+
+2014-05-06 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectBuilder.m
+	Enhance clang support.
+
+2014-05-03 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectBuilder.m
+	Recognize also egcc and clang as compilers.
+
+2014-05-03 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectBuilder.m
+	Add recognition of fatal errors.
+
+2014-04-08 German Arias <germanandre@gmx.es>
+
+	* Modules/Editors/ProjectCenter/PCEditorView.m (-insertText:): Add a
+	comment for last commit.
+
+2014-04-06 German Arias <germanandre@gmx.es>
+
+	* Headers/ProjectCenter/PCProjectLauncher.h: Add new variable
+	_isErrorRunning.
+	* Framework/PCProjectLauncher.m: Remove observer in -logStdOut: and
+	-logErrOut:. And wait until receive all data in -runDidTerminate:.
+
+2014-04-02 German Arias <germanandre@gmx.es>
+
+	* Framework/PCFileCreator.m (-replaceTagsInFileAtPath:withProject:):
+	Ensure UTF-8 when read and write a file	in Windows.
+	* Modules/Editors/ProjectCenter/PCEditorView.m (-insertText:): Ensure
+	UTF-8 when insert a text in Windows.
+
+2014-04-02 German Arias <germanandre@gmx.es>
+
+	* Framework/English.lproj/SaveModified.gorm: Use class PCAuxiliaryWindow
+	to not display menu.
+
+2014-04-02 German Arias <germanandre@gmx.es>
+
+	* Framework/PCFileCreator.m: Removed two last commits. There is
+	something wrong with these.
+
+2014-03-30 German Arias <germanandre@gmx.es>
+
+	* Framework/PCFileCreator.m: Fix last change to ensure all string in the
+	file is UTF-8, since GNU make can't handle UTF-16 (this change is for
+	Windows).
+
+2014-03-27 German Arias <germanandre@gmx.es>
+
+	* Framework/PCFileCreator.m: Be sure to use an UTF8 string for the user
+	name on Windows.
+
+2014-03-08 German Arias <germanandre@gmx.es>
+
+	* Framework/PCFileManager.m (-isTextFile:): Rewrite this method to work
+	on Windows.
+
+2014-03-07 German Arias <germanandre@gmx.es>
+
+	* Framework/PCProjectManager.m: Remove the extension returned by native
+	panel.
+
+2014-03-02 German Arias <germanandre@gmx.es>
+
+	* PCAppController.m: For Windows add a menu with all types of projects.
+	So the user can select directly the type of project he want.
+	* Headers/ProjectCenter/PCProjectManager.h:
+	* Framework/PCProjectManager.m: Add the neccesary changes to use the
+	selected type of project at main menu (on Windows).
+	* PCMenuController.m: Use the new method to make a new project.
+
+2014-01-17 German Arias <germanandre@gmx.es>
+
+	* English.lproj/ProjectCenter.gorm: Connect option "Line Number..."
+	to first responder (I was sure I did this before, but no).
+
+2014-01-13 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCFileManager.m
+	* Headers/ProjectCenter/PCFileManager.h
+	Convenience method to find executables, by Richard Frith-Macdonald
+
+	* Modules/Preferences/Build/PCBuildPrefs.m
+	* Modules/Preferences/Misc/PCMiscPrefs.m
+	Use the convenience method to determine better defaults for make and gdb.
+
+2013-12-17 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectLauncher.m
+	Check that the executable exists before running it.
+
+2013-10-20 German Arias <germanandre@gmx.es>
+
+	* English.lproj/Preferences.gorm:
+	* Modules/Preferences/Build/Resources/BuildPrefs.gorm:
+	* Modules/Preferences/EditorFSC/Resources/EditorFSCPrefs.gorm:
+	* Modules/Preferences/Saving/Resources/SavingPrefs.gorm:
+	* Modules/Preferences/Misc/Resources/MiscPrefs.gorm: Change the height
+	of the panel.
+
+2013-10-15 German Arias <germanandre@gmx.es>
+
+	* TextFinder.h:
+	* TextFinder.m: Deleted.
+	* GNUmakefile: Remove TextFinder.
+	* PCMenuController.m: Remove TextFinder. Now we use the standard
+	menu Find.
+
+2013-10-13 German Arias <germanandre@gmx.es>
+
+	* English.lproj/ProjectCenter.gorm: Use the standard menu Find and
+	connect option "Line Number..." to first responder.
+	* Modules/Editors/ProjectCenter/PCEditor.m: Use Find panel.
+	* Headers/PCMenuController.h:
+	* PCMenuController.m: Remove unnecessary methods.
+
+2013-10-06 German Arias <germanandre@gmx.es>
+
+	* Headers/PCPrefController.h:
+	* PCPrefController.m: Don't retain the user defaults. And don't call
+	synchronize every time, this are causing conflicts with defaults of the
+	PC windows, which stores its frames here.
+
+2013-09-24 German Arias <germanandre@gmx.es>
+
+	* PCAppController.m (-applicationDidFinishLaunching: and
+	-applicationShouldTerminate:) Code to handle the style
+	NSWindows95InterfaceStyle.
+	* Headers/ProjectCenter/PCAuxiliaryWindow.h:
+	* Framework/PCAuxiliaryWindow.m: Add this class for auxiliary windows.
+	This is windows that don't should add the in-window menu.
+	* Framework/English.lproj/BuilderPanel.gorm:
+	* Modules/Editors/ProjectCenter/PCEditor.m: Use the new class
+	PCAuxiliaryWindow.
+	* Framework/GNUmakefile: Add new class.
+
+2013-09-22 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Parsers/ProjectCenter/PCParser.m
+	Do not advance start and get startType if we are at the end anyway.
+
+	* Modules/Parsers/ProjectCenter/ObjCClassHandler.h
+	* Modules/Parsers/ProjectCenter/ObjCClassHandler.m
+	* Modules/Parsers/ProjectCenter/ObjCMethodHandler.h
+	* Modules/Parsers/ProjectCenter/ObjCMethodHandler.m
+	NSUInteger / NSInteger transitions for count/length variables.
+
+	* Modules/Projects/Application/PCAppProject.m
+	* Modules/Projects/Bundle/PCBundleProject.m
+	* Modules/Projects/Framework/PCFrameworkProject.m
+	* Modules/Projects/Library/PCLibProject.m
+	* Modules/Projects/ResourceSet/PCResourceSetProject.m
+	* Modules/Projects/Tool/PCToolProject.m
+	Transition to NSUInteger.
+
+2013-09-21 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Parsers/ProjectCenter/PCParser.h
+	* Modules/Parsers/ProjectCenter/PCParser.m
+	Transition count/length variables to NSUInteger
+
+2013-09-21 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Parsers/ProjectCenter/PCParser.m
+	Fix parser check for temrination, do not look past last char.
+
+	* PCAppController.m
+	If filename is not absolute, normalize it (happens when invoking with the filename as argument to the application, e.g. 'ProjectCenter myProject').
+
+2013-09-20 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCFileCreator.m
+	Do not launch replacing if copying was not successful, avoids hang of app.
+
+2013-09-17 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Projects/ResourceSet/PCResourceSetProject.m
+	Replace deprecated make variable.
+
+	* Framework/PCProjectBuilder.m
+	Fix int vs. float.
+
+2013-02-25: Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+	* Framework/PCFileNameIcon.m
+	* unsigned int -> NSDragOperation
+
+2013-02-10: Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+	* Framework/PCProjectInspector.m
+	* Modules/Editors/ProjectCenter/SyntaxDefinition.m
+	* Modules/Editors/ProjectCenter/SyntaxHighlighter.m
+	* Modules/Editors/ProjectCenter/TextPattern.m
+	* Modules/Preferences/EditorFSC/PCEditorFSCPrefs.m
+	  some more (unsigned) int -> NS(U)Integer transitions
+	  and some shutup of clang compiler warnings
+	* Framework/PCProjectBrowser.m
+	* Framework/PCSaveModified.m
+	* Framework/PCProjectLoadedFiles.m
+	* Framework/PCProjectBuilder.m
+	* Headers/ProjectCenter/PCProjectBrowser.h
+	* Headers/ProjectCenter/PCSaveModified.h
+	* Headers/ProjectCenter/PCProjectLoadedFiles.h
+	* Modules/Projects/Application/PCAppProject+Inspector.h
+	* Modules/Projects/Application/PCAppProject+Inspector.m
+	  some more (unsigned) int -> NS(U)Integer transitions
+	  not catched from clang, but found by libobjc2 in debug mode
+
+2013-02-09 Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
+	* Framework/PCFileCreator.m
+	* Framework/PCMakefileFactory.m
+	* Framework/PCProjectBuilder.m
+	* Framework/PCProjectLauncher.m
+	* Framework/PCProjectManager.m
+	* Framework/PCProject.m
+	* Modules/Projects/Application/PCAppProject.m
+	* Modules/Projects/Tool/PCToolProject.m
+	  shutup clang compiler warning about redunant literal
+	  string usage
+	* Modules/Preferences/Build/PCBuildPrefs.m
+	* Framework/PCButton.m
+	* Modules/Parsers/ProjectCenter/ObjCMethodHandler.m
+	  shutup some clang warnings
+	* Framework/PCProjectBrowser.m
+	  NSInteger conversions
+	* Modules/Debuggers/ProjectCenter/PTYView.m
+	  Include right headers for openpty on OpenBSD
+
+2012-11-22  German Arias <german@xelalug.org>
+
+	* Modules/Projects/Library/PCLibProject.m: Don't add the prefix "lib"
+	to LIBRARY_NAME, gnustep-make will add this prefix anyway. On the other
+	hand, the super class isn't able to add this prefix to
+	XXX_RESOURCE_FILES at GNUmakefile.
+
+2012-08-30 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/PTYView.m
+	Do not include stropts.h for most OS's anymore.
+
+2012-08-09 Riccardo Mottola <rm@gnu.org>
+
+	* English.lproj/ProjectCenter.gorm
+	* Framework/PCProjectManager.m
+	Recent Document menu support.
+
+2012-07-30  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Framework/PCProjectBuilder.m (-line:startsWithString:,
+	-parseErrorLine:):
+	* Modules/Editors/ProjectCenter/PCEditor.h:
+	* Modules/Editors/ProjectCenter/PCEditor.m (FindDelimiterInString,
+	-highlightCharacterAt:inEditor:): Fix for compilation on 64-bit
+	hosts.
+
+2012-07-09  Serg Stoyan  <stoyan255@ukr.net>
+
+	* Framework/PCProjectInspector.m: (-removeAuthor): Improve selection 
+	of author list items after item deletion. Inspired by bug #25571. 
+	Bug should be closed.
+
+2012-06-12 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCProjectWindow.m
+	Use centerScanRect to avoid strange problems with AA text in editor.
+
+	* Headers/PCAppController.h
+	* PCAppController.m
+	Update applicationShouldTerminate signature.
+
+2012-04-20 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/PTYView.m
+	NetBSD doesn't support streams either.
+
+2012-04-17 Riccardo Mottola <rm@gnu.org>
+
+	* Modules/Debuggers/ProjectCenter/PTYView.m
+	Fix imports and includes for FreeBSD
+
+2011-09-08 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCAddFilesPanel.m [-setFileTypes]:
+	use setAllowedFileTypes method instead of private method which was removed
+
+2011-04-28 Riccardo Mottola <rm@gnu.org>
+
+	* Framework/PCFileManager.m:
+	Correct cast according to ctypes caveats.
+
+2011-04-07 Riccardo Mottola <rm@gnu.org>
+
+	* Headers/ProjectCenter/PCDefines.h
+	Change ifdef to detect non-gnustep.
+
+	* Framework/PCProjectInspector.m
+	Warning fix.
+
+	* Modules/Preferences/Misc/PCMiscPrefs.m
+	Remove extra parentheses which confuse = and == warning.
+
+2011-04-06  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Modules/Parsers/ProjectCenter/PCParser.m [-parse]: Move the
+	selector and IMP definitions inside the method. Global IMP caching
+	is always wrong! And this broke compilation with llvm.
+
+2011-03-14  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* Modules/Projects/ResourceSet/PCResourceSetProject.m
+	([PCResourceSetProject -appendHead:]): Added FIXME.
+
+2011-01-24  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Modules/Editors/ProjectCenter/PCEditor.m (-revertFileToSaved):
+	Ask for confirmation before reverting.
+
+2011-01-24  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Modules/Editors/ProjectCenter/PCEditorView.m (-performIndentation):
+	Fix annoying bug where pressing the tab key would delete whole
+	empty lines. Also register insertions done by the tab key at the
+	undo manager.
+
+2011-01-06  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Modules/Projects/Application/PCAppProject+Inspector.m
+	(-setDocBasedApp:):
+	Fix bug where the document based app flag was reset after opening
+	the project inspector for the first time.
+
+2010-12-28  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Framework/PCProjectBuilder.m (-buildArguments): Add either
+	debug=yes or debug=no to the arguments since the debug variable no
+	longer has a clear default for quite some time.
+
+2010-12-22 German Arias <german@xelalug.org>
+	
+	* Headers/ProjectCenter/PCProject.h:
+	Added method -resourceDirForLanguage:. So we can call this
+	method to manage the languages.
+	* Headers/ProjectCenter/PCProjectInspector.h:
+	* Framework/PCProjectInspector.m:
+	* Framework/English.lproj/ProjectLanguages.gorm:
+	Added UI controls for languages at Inspector, and methods
+	-addLanguage: and -removeLanguage:.
+
+2010-12-18 German Arias <german@xelalug.org>
+	
+	* Headers/ProjectCenter/PCProjectInspector.h:
+	* Framework/PCProjectInspector.m:
+	* Framework/English.lproj/ProjectInspector.gorm:
+	Added "Project Languages" option on Inspector.
+
+2010-12-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Framework/PCProjectBuilder.m (-build:, -logStdOut:, -logErrOut:):
+	Fix race condition, which could lock PC after running a build
+	task.
+
+2010-12-04  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Framework/PCProjectManager.m (-newProject):
+	Improve Riccardo's previous patch. Don't ask for a new project
+	directory with an extension project or pcproj and do not
+	arbitrarily strip extensions from the project name.
+
+2010-12-04 German Arias <german@xelalug.org>
+	
+	* Modules/Projects/Application/PCAppProject.m: 
+	Reverted a previous change since the extension "project"
+	is not used anymore.
+
+2010-12-01 Riccardo Mottola
+
+	* Framework/PCProjectManager.m:
+	Create project in a path with the project name.
+
+	* Resources/Info-gnustep.plist,
+	* English.lproj/Info.gorm
+	Version bump.
+
+	* Framework/PCProjectBuilder.m:
+	Removed useless INSTDOMAIN variable during build phase.
+
+2010-11-28 Riccardo Mottola
+
+	* Framework/PCMakefileFactory.m
+	* Framework/PCProjectBuilder.m
+	* Framework/PCProjectInspector.m
+	* Framework/English.lproj/BuildAttributes.gorm
+	* Modules/Projects/Application/PCAppProject.m
+	* Modules/Projects/ResourceSet/PCResourceSetProject.m
+	* Modules/Projects/Bundle/PCBundleProject.m
+	* Modules/Projects/Tool/PCToolProject.m
+	* Headers/ProjectCenter/PCDefines.h
+	* Headers/ProjectCenter/PCProjectInspector.h:
+	Set, use and create makefiles using ain installation DOMAIN and not a directory.
+
+2010-11-24 German Arias <german@xelalug.org>
+	* Headers/ProjectCenter/PCProjectInspector.h:
+	* Framework/PCProjectInspector.m:
+	* Framework/English.lproj/ProjectInspector.gorm:
+	Removed "Project Languages" option on Inspector.
+
+2010-11-23 Riccardo Mottola
+
+	* Framework/PCFileManager.m:
+	Initialize isDir value.
+
+2010-11-22 German Arias <german@xelalug.org>
+	* Framework/GNUmakefile: Added ProjectLanguages.gorm
+	* Headers/ProjectCenter/PCProjectInspector.h:
+	* Framework/PCProjectInspector.m:
+	Added projectLanguagesView and the method create the
+	panel.
+	* Framework/English.lproj/ProjectInspector.gorm:
+	Added "ProjectLanguages" option.
+	* Framework/English.lproj/ProjectLanguages.gorm:
+	New "Project Languages" panel. At the moment this
+	is empty, I will add the content later.
+
+2010-11-21 German Arias <german@xelalug.org>
+	* Framework/PCProjectInspector.m: Set "project" and 
+	"projectDir" when the panel is loaded. And take the
+	languages to the popup from the PCUserLanguages key
+	instead of NSUserDefaults.
+
+2010-11-21 German Arias <german@xelalug.org>
+	* Framework/PCProject.m:
+	* Modules/Projects/Application/PCAppProject.m:
+	* Modules/Projects/Application/PCAggregateProject.m:
+	* Modules/Projects/Application/PCLibProject.m:
+	* Modules/Projects/Application/PCBundleProject.m:
+	* Modules/Projects/Application/PCFrameworkProject.m:
+	* Modules/Projects/Application/PCToolProject.m:
+	* Modules/Projects/Application/PCResourceSetProject.m:	
+	Set the key PCUserLanguages when the project is created not
+	when is loaded.
+
+2010-11-18 Riccardo Mottola
+
+	* Modules/Editors/ProjectCenter/PCEditor.m:
+	Init could return a different object, take it in account.
+	
+	* Framework/PCProjectEditor.m:
+	Remove useless instruction and assignment.
+
+	* Framework/PCProject.m:
+	Fix memory leak.
+
+	* Modules/Editors/ProjectCenter/PCEditor.m:
+	Initialize range to ensure it does not contain garbage.
+
+2010-11-16 German Arias <german@xelalug.org>
+	* Framework/PCFileManager.m: Allow open .project directories
+	to add files placed at project directory in AddFiles panel.
+
+2010-11-05 German Arias <german@xelalug.org>
+	* Modules/Projects/Application/PCAppProject.m: 
+	(-createProjectAt:) Delete the extension on the	project 
+	name to avoid file names like MyApp.project.plist
+	and an ugly name of the app (MyApp.project) at info panel.
+
+2010-08-10 Sergii Stoian <stoyan255@ukr.net>
+	* Framework/PCProjectBrowser.m:
+	(-nameOfSelectedCategory): Return 'nil' if name of subproject
+	selected. Add comments.
+	(-nameOfSelectedFile): Check if category is selected.
+	(-click:): check if category is selected.
+
+2010-07-31 Sergii Stoian <stoyan255@ukr.net>
+	* Framework/PCProject.m:
+	(-assignProjectDict:): Fix setting projectPath to project
+	dir (not to *.pcproj dir).
+	* Framework/PCFilemanager.m:
+	(-filesOfTypes:operation:multiple:title:accView:): Set allowed
+	file types to panel of types is not nil.
+	(-panel:isValidFilename): Use set allowed file types to panel.
+
+2010-07-30 Sergii Stoian <stoyan255@ukr.net>
+	* Framework/PCProject.m:
+	(-subprojectWithName:): Pass to openProjectAt: subproject dir.
+	openProjectat: can now handle this situation.
+	* Framework/PCProjectManager.m:
+	(-openProjectAt:): Implement handling of 'aPath' argument as 
+	project file and as project dir. Select *.pcproj if exists then
+	try to load PC.project.
+	(-openProject): Implement intelligent selection of project file
+	when selected *.pcproj, PC.project or project dir.
+	* Framework/PCFilemanager.m:
+	(-filesOfTypes:operation:multiple:title:accView:): Remove code
+	specific for opening projects (moved to PCProjectManager's 
+	openProject).
+	(-panel:isValidFilename): Fix handling project file detection.
+	(-filesWithExtension:atPath:includeDirs:): New method. Returns
+	list of files with specified extension. Also returns dirs if 
+	'includeDirs' set to YES.
+
+2010-07-28 Sergii Stoian <stoyan255@ukr.net>
+	* Framework/PCProject.m:
+	(close:): Fix closing of subprojects. Remove subproject from 
+	Projectmanager's list of loaded projects.
+	* Framework/PCLogController.m:
+	(-init): Change font size to systemFontSize.
+
+2010-07-24 Sergii Stoian <stoyan255@ukr.net>
+	* Headers/ProjectCenter/PCProjectBuilder.m:
+	* Framework/PCProjectBuilder.m:
+	(cleanupAfterMake:): Added new argument (NSString) to method
+	containing current status text. Before status text in project window
+	always stated "...terminated".
+
+2010-07-13 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Framework/PCProjectManager.m
+	Log conversion into PC log and not console. Remove unneded keys.
+
+2010-07-10 Riccardo Mottola
+
+	* Modules/Projects/Application/Resources/PC.project
+	* Modules/Projects/Library/Resources/PC.project
+	* Modules/Projects/Aggregate/Resources/PC.project
+	* Modules/Projects/Bundle/Resources/PC.project
+	* Modules/Projects/Framework/Resources/PC.project
+	* Modules/Projects/Tool/Resources/PC.project
+	Remove LAST_EDITING from project template. It is not needed for validation.
+
+2010-07-10 01:20-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Editors/ProjectCenter/PCEditor.m: in -save implemented
+	simple mechanism for propagating changes in classes to Gorm when
+	updating a header file.
+
+2010-07-08 Riccardo Mottola
+
+	* Framework/PCProject.m
+	* Framework/PCProjectManager.m
+	When opening a subproject pass the bundle name, or it gets concerted.
+
+2010-07-07 14:49-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m:
+	Fixed issue where if there is no pid it would attempt to stop
+	the current process.
+
+2010-06-24 Riccardo Mottola
+
+	* Headers/Protocols/CodeEditorView.h
+	Fixed warning.
+
+2010-06-22 Riccardo Mottola
+
+	* Modules/Editors/ProjectCenter/PCEditor.h
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	* Modules/Editors/ProjectCenter/PCEditor+Document.m
+	Clean up parenthesis highlighting.
+
+	* Modules/Editors/ProjectCenter/PCEditor.h
+	* Modules/Editors/ProjectCenter/PCEditor.m
+	Fix highlighting for standalone editors.
+
+	* Modules/Editors/ProjectCenter/PCEditor+Document.m
+	Deleted
+
+	* Framework/PCProjectWindow.m
+	Removed floorf() in favour of nothing or truncation.
+
+2010-06-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Framework/PCProject.m (-fileTypesForCategoryKey:): Add .dylib to
+	the list of known library extensions.
+
+2010-06-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Modules/Projects/Application/PCAppProject.m (-writeMakefile):
+	* Modules/Projects/Bundle/PCBundleProject.m (-writeMakefile):
+	* Modules/Projects/Framework/PCFrameworkProject.m (-writeMakefile):
+	* Modules/Projects/Library/PCLibProject.m (-writeMakefile):
+	* Modules/Projects/ResourceSet/PCResourceSetProject.m (-writeMakefile)
+	* Modules/Projects/Tool/PCToolProject.m (-writeMakefile):
+	Fix bug	where PC could include some localized resources in the
+	RESOURCE_FILES Makefile variable.
+
+2010-06-15  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Framework/PCProjectManager.m(-openProjectAt:makeActive:):
+	Prevent a crash when opening a subproject by not creating a new
+	project window for the subproject. This window is immediately
+	released again when the new project's super project is set anyway.
+
+	* Framework/PCProjectManager.m(-closeAllProjects): Fix bug where
+	PC would not quit after opening a subproject due to a bogus
+	enumerator loop.
+
+2010-06-07  Wolfgang Lux  <wolfgang.lux@gmail.com>
+
+	* Framework/PCProjectWindow.m (-dealloc):
+	* Modules/Editors/ProjectCenter/PCEditor.m (-dealloc):
+	Attempt to prevent crashes when a project is closed by ensuring
+	that project and editor windows are closed before their owners are
+	deallocated.
+
+2010-06-04 Riccardo Mottola <rmottola@users.sf.net>
+
+	* TextFinder.m:
+	check before replacing and allow undo (by Wolfgang Lux)
+
+2010-06-03 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Headers/Protocols/CodeEditorView.h:
+	Declare new view protocol
+
+	* Modules/Editors/ProjectCenter/PCEditorView.h
+	* Modules/Editors/ProjectCenter/PCEditorView.m:
+	Conform to CodeEditorView protocol and add accessor to the editor.
+
+	* Framework/PCProjectWindow.m:
+	Return the view's editor undo manager.
+
+	* Modules/Preferences/Misc/PCMiscPrefs.m:
+	declare strintg constants with @
+
+2010-06-01 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Modules\Editors\ProjectCenter\PCEditor.m,
+	* Modules\Editors\ProjectCenter\PCEditor.m:
+	keep an undoManager for the Editor and return that to the window
+
+2010-05-30 03:42-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Projects/Application/Resources/main.m: Same as below.
+
+2010-05-30 03:17-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Projects/Application/Resources/AppController.h
+	* Modules/Projects/Application/Resources/AppController.m
+	* Modules/Projects/Tool/Resources/main.m: Remove licensing
+	and copyright information from these since we don't want to 
+	assume that the user will be writing a GPLv3 program owned by the
+	FSF (while that would be nice) it's not correct to assume it.
+
+2010-05-30 01:54-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Framework/English.lproj/SaveModified.gorm: Correct issues with 
+	Gorm file.
+	* Framework/PCSaveModified.m: Use setTitle: instead of setStringValue:
+	to set the titles of the buttons.
+	
+2010-05-30 01:44-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Modules/Editors/ProjectCenter/PCEditor.m: Temporarily comment out
+	previous change util we find the proper fix as it was preventing 
+	files from being saved.
+
+2010-03-06 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Modules\Editors\ProjectCenter\PCEditor.m: setup undo on the editor
+	view
+
+2009-11-26 Richard frith-Macdonald <rfm@gnu.org>
+
+	* Modules/Projects/Application/Resources/AppController.m:
+	* Modules/Projects/Application/Resources/main.m:
+	* Modules/Projects/Application/Resources/AppController.h:
+	* Modules/Projects/Tool/Resources/main.m:
+	Update to conform to coding standards and to use GPL 3 as
+	default copyleft.
+
+2009-09-20 03:45-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Framework/PCMakefileFactory.m: Check if buildDir is nil before 
+	generating the BUILD_DIR directive in the make file.   Sometimes
+	this is coming up with (nil) on Windows which is causing the build
+	phase to fail.
+
+2009-09-19 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Images/Options.tiff:
+	Added new icon, drawn by me.
+	
+2009-09-18 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Framework/PCProjectLauncher.m
+	Use path component instead of hard-coded slash
+
+2009-09-17  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* Framework/PCMakefileFactory.m ([-createMakefileForProject:]): If
+	GNUSTEP_INSTALLATION_DOMAIN is not set, do not output it.  This is
+	what was already happening, but the code seemed to assume
+	otherwise.
+
+2009-09-17  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	Old patch from Markus Hitter <mah@jump-ing.de>, updated to the
+	current code:
+	* Framework/PCProjectManager.m ([-openProjectAt:makeActive:]): Pop
+	up a warning panel if the project path includes a whitespace.
+	([-newProject]): Same change.
+
+2009-09-15 Richard frith-Macdonald <rfm@gnu.org>
+
+	* Framework/PCMakefileFactory.m: generate makefiles with standard
+	preamble to determine GNUSTEP_MAKEFILES if possible, and warn if
+	not found.
+
+2009-09-15 Riccardo Mottola <rmottola@users.sf.net>
+	
+	* Headers/ProjectCenter/PCProject.h
+	* Framework/PCProject.m
+	Removed execToolName
+
+	* Framework/PCProjectLauncher.m
+	Launch executable directly without openapp/opentool and do not use
+	execToolName to determine the project type
+	
+2009-06-23 18:22-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Framework/PCProject.m
+	* Framework/PCProjectManager.m
+	* Headers/ProjectCenter/PCProjectManager.h
+	* PCAppController.m: Correct issues with project bundle loading.
+
+2009-05-19 17:13-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Resources/Info-gnustep.plist: Added PCProjectFileType to the
+	entry for pcproj to allow opening of bundles.
+
+2009-06-10 Riccardo Mottola
+	
+	* Framework/PCProject.m,
+	* Framework/PCProjectManager.m
+	* Framework/PCProjectWindow.m
+	* Headers/ProjectCenter/PCDefines.h
+	use PCDefine constant for PC_WINDOWS dictionary key
+
+2009-06-10 Riccardo Mottola
+	
+	* Framework/PCProject.m
+	save last editing in user file inside the wrapper and not 
+	main project file
+	
+2009-05-19 17:13-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Framework/PCEditorManager.m: Added code in -openEditorForFile:
+	editable:windowed: to open files which are not handled by any editor
+	using [NSWorkspace openFile:] as a fallback.
+
+2009-05-18 17:27-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Framework/PCProject.m: Add new project directory name.
+	* Framework/PCProjectManager.m: Fix issue reported with loading of
+	subprojects from an aggregate project.   Changed loadProjectAt: method
+	to handle both the current and old file locations.
+
+2009-04-27 17:09-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Framework/PCProjectManager.m: Remove logic requiring projectWindow
+	to be key in order to save file.   This was causing files in 
+	tear-off editors to not be saved.  This change is in the saveFile
+	method.
+
+2009-04-22 16:31-EDT Gregory John Casamento <greg.casamento@gmail.com>
+
+	* Framework/PCProject.m: Changes to make plist output in
+	human readable format.
+	* Resources/Info-gnustep.plist: Changes to read C++ files using
+	C editor.
+
+2009-04-15 Sergii Stoian <stoyan255@gmail.com>
+	
+	* Framework/PCProjectBuilder.m:
+	(-startBuild:), (-startClean:): Move _isBuilding and _isCleaning vars
+	before build: method call for correct determination in cleanupAfterMake
+	method.
+	(build:): Initialize build time vars before call to preBuildChecj 
+	method.
+	* Framework/PCProjectBuilderOptions.m: Do not notify when changing 
+	project properties (build options).
+
+2009-03-31 Riccardo Mottola <rmottola@users.sf.net>
+	
+	* PCSplitView: removed and replaced with standard NSSplitView in all 
+	instances
+	
+2009-03-28 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBuilder.m: 
+	(updateTargetField): Process args correctly when it has nil value.
+	(startBuild): Move initializing of currentBuildPath and 
+	currentBuildFile from here...
+	(build:):...to here. Rename pipes and handles vars to more appropriate
+	names. Initialize pipes with alloc, init.
+	(startClean): Use buildArguments as in startBuild method.
+	(stopMake:): It seems that [makeTask isRunning] works correctly -
+	use it. Remove comment.
+	(cleanupAfterMake): Use _isBuilding and _isCleaning vars to detect
+	running mode. Release currentBuildPath and currentBuildFile here.
+	(buildDidTerminate): Release pipes here.
+	(logData:error:): Initialize newLineRange.location before entering
+	cycle.
+	(logBuildString:newLine:): Cleanup.
+
+2009-03-27 03:00-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCProject.m: Implement openWrapperAtPath:
+	* Framework/PCProjectManager.m: Change method call to use
+	openWrapperAtPath:
+	* Headers/ProjectCenter/PCProject.h: Add wrapperPath ivar.
+	* Modules/Projects/Application/PCAppProject.m:
+	Change method to call super.
+	* Modules/Projects/Tool/PCToolProject.m: Change method to 
+	call super.
+
+2009-03-27 01:18-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/English.lproj/Builder.gorm: Update icons for stop and
+	options.
+	* Framework/PCProject.m: Added code to put files into packages when
+	saving.
+	* Headers/ProjectCenter/PCProject.h: Added ivar for file wrapper.
+
+2009-03-27 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Framework/PCProject.m: save windows placements to a separate 
+	file with the username as name
+
+2009-03-24 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBuilder.m: Add some comments
+	(parseCompilerLine:): Implemented gcc output for compiling and
+	linking. Set currentBuildFile var on file compilation.
+	(cleanupAfterMake),(build:),(parseBuildLine:),(buildDidTerminate):
+	Update status field of builder panel and project window
+
+2009-03-23 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBuilder.m: Change type of currentBuildPath var 
+	to NSMutableString.
+	(buildArguments): Always use messages=yes argument internally.
+	"Verbose ouput" option (Build Options panel) just toogle if build
+	shows as with make argument 'messages=yes' or not.
+	(line:startsWithString:): Implemented line start detection.
+	(parseMakeLine:): Inital implementation of parsing make tool
+	output.
+	(parseCompilerLine:): Add for future implementation.
+	(logBuildString:newLine:): Remove error: argument as it's not used.
+	Method outputs to build view.
+	(parseBuildLine:): Add implementation of entry point of build output
+	parsing.
+
+2009-03-22 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBuilderOptions.m:
+	(initWithProject:): Listen to PCProjectDictDidChangeNotification
+	notification.
+	(awakeFromNib): Move loading of project properties from here...
+	(loadProjectProperties): ...to here. This is a notification action.
+	* Framework/PCProjectInspector.m:
+	(searchOrderPopupDidChange:): Clean selection in list. Clean text
+	field.
+	(searchOrderClick:): Show value of selected item in text field.
+	(addSearchOrder:): Add check for entered value. More checking will be
+	added
+	in the future.
+	* Documentation/TODO: Rearrange some items. Update state.
+	* Framework/PCProjectBuilder.m: Some rearrangement of log methods.
+	Category 'Logging' is for general logging methods, 'BuildLogging'
+	for stantard output processing, 'ErrorLogging' for error output
+	processing.
+	(logBuildString:newLine:): New name of logString:error:newLine:.
+	Use new name across the file.
+
+2009-03-20 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProject.m:
+	(buildTargets): Return default build targets only if project file
+	doesn't contain list of them.
+	* Framework/PCProjectBuilder.m:
+	(prebuildCheck): Create build directory only if preference was set.
+	(build:): Set initial "=== started ===" string.
+	* Framework/PCProjectInspector.m:
+	(createBuildAttributes): Set target and action for table view.
+	(searchOrderPopupDidChange:): Add support for "Build Targets".
+	(setSearchOrderButtonsState): Enable "Remove" button only if item 
+	in list was selected.
+	(syncSearchOrder): Add support for "Build Targets".
+	* Documentation/TODO: Add some tasks and update status of others.
+	* Headers/ProjectCenter/PCDefines.h: Add key for build targets
+	support.
+
+2009-03-19 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectManager.m: 
+	(dealloc): Replace if() check with TEST_RELEASE.
+	(openFileAtPath:): Use class variable instead of method's local.
+	(saveFile): Call saveFile to project editor if project is active and
+	project window has key state. Call non-project editor manager
+	otherwise.
+	* PCPrefController.m:
+	(stringForKey:defaultValue:): Set value to non-existent key only if
+	defaultValue is not 'nil' ('nil' when called via stringForKey:
+	method).
+	(boolForKey:defaultValue:): Set value to non-existent key only if
+	defaultValue has positive value (has '-1' when called via boolForKey:
+	method).
+
+2009-03-17 02:14 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectManager.m:
+	(openProjectAt:): Setactive project to loaded after all initalization
+	completed.
+	* Framework/PCProject.m:
+	(saveProjectWindowsAndPanels): Save project windows and panels
+	according to preferences setting.
+	(close:): Remove unsused code.
+	* Framework/PCProjectBuilder.m: Cleanup.
+
+2009-03-15 02:14 Sergii Stoian <stoyan255@gmail.com>
+
+	* Headers/Protocols/Preferences.h: Add new methods.
+	* PCPrefController.m: Implemented set/get of preferences value
+	dependent. All values are stored in preferences as NSString values 
+	and converted upon request to specified type.
+	* Modules/Preferences/EditorFSC/PCEditorFSCPrefs.m: Use new methods of
+	PCPrefController. Implemented setting of editor fonts.
+	(setDefaults): Removed.
+
+	* Modules/Preferences/Build/PCBuildPrefs.m,
+	* Modules/Preferences/Misc/PCMiscPrefs.m,
+	* Modules/Preferences/Saving/PCSavingPrefs.m: Use new methods of
+	PCPrefController.
+	(setDefaults): Removed.
+
+	* Framework/PCProjectLoadedFiles.m,
+	* Framework/PCMakefileFactory.m,
+	* Framework/PCProject.m,
+	* Framework/PCProjectLauncherPanel.m,
+	* Framework/PCFileManager.m,
+	* Framework/PCProjectBrowser.m,
+	* Framework/PCProjectBuilder.m,
+	* Framework/PCEditorManager.m,
+	* Framework/PCProjectLoadedFilesPanel.m,
+	* Framework/PCProjectLauncher.m,
+	* Framework/PCProjectBuilderPanel.m,
+	* Framework/PCProjectWindow.m,
+	* PCAppController.m,
+	* Framework/PCProjectManager.m: Use new methods of PCPrefController.
+
+2009-03-05 02:43 Sergii Stoian <stoyan255@gmail.com>
+
+	* ChangeLog: Update.
+	* Modules/Preferences/Misc/PCMiscPrefs.h,
+	* Modules/Preferences/Misc/PCMiscPrefs.m,
+	* Modules/Preferences/Misc/Resources/MiscPrefs.gorm/data.classes,
+	* Modules/Preferences/Misc/Resources/MiscPrefs.gorm/objects.gorm:
+	Add new setting UseTearOffWindows.
+	* Framework/PCProjectWindow.m: Use new setting.
+	* Modules/Editors/ProjectCenter/PCEditor.m:
+	(dealloc): Add releasing _window.
+	* Documentation/TODO: Update.
+
+2009-03-05 01:01 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectManager.m:
+	(convertLegacyProject:atPath:): Correctly convert legacy application
+	project.
+	* Framework/PCEditorManager.m;
+	(openEditorForFile:editable:windowed:): Don't open lert panel if file
+	is not text file. Situation when editor for non text files called to 
+	be opened must be reviewd.
+
+2009-03-05 00:08 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBrowser.m: Stop using 'SeparateEditor'
+	prefernce. Remove use of preferences code.
+	(doubleClick:): Change support of external editor (add support for
+	.app editors).
+	* Framework/PCProjectWindow.m: Start implementing two-mode handling of
+	tear-off windows. New handling will support two modes: 1. all windows
+	are opened inside projet window and 2. Build, Launch/Debug, Loaded
+	Files (Project Find in future) are opened as tear-off windows. This
+	simplifiles the code and in my opinion more intuitive then current 
+	implementation.
+	* Modules/Editors/ProjectCenter/PCEditor.m:
+	(_createWindow): Change window attribute ReleasedWhenClosed to NO.
+	* PCPrefController.m: Add new parameter 'notify' to method setObject.
+	This parameter is usefull for situation when open and save panels 
+	saves its values. For example: when project are opened 'Open Project' 
+	panel save last	opened dir to PC prefernces and post notificaion 
+	about prefs changes. Newly created objects of projects may lead to 
+	PC segfault.
+	* Modules/Preferences/Build/PCBuildPrefs.m,
+	* Modules/Preferences/Interface/PCInterfacePrefs.m,
+	* Modules/Preferences/Saving/PCSavingPrefs.m,
+	* Modules/Preferences/Misc/PCMiscPrefs.m,
+	* Framework/PCFileManager: Use new preferences setObject method.
+
+2009-03-03 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Framework/PCProjectInspector.m: allow authors inside table 
+	to scroll during editing
+
+2009-03-02 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Framework/PCProject.m,
+	* Framework/PCProjectBuilder.m,
+	* Framework/PCProjectManager.m,
+	* Framework/PCFileCreator.m,
+	* Framework/PCEditorManager.m: Fix string constants
+
+2009-03-01 03:10  Sergii Stoian <stoyan255@gmail.com>
+
+	* Modules/Preferences/Interface/PCInterfacePrefs.h:
+	* Modules/Preferences/Interface/Resources/InterfacePrefs.gorm:
+	* Modules/Preferences/Interface/PCInterfacePrefs.m:
+	Move options "Remember windows and panels opened in project" and
+	"Display Log Panel at startup" from here...
+	* Modules/Preferences/Misc/PCMiscPrefs.h:
+	* Modules/Preferences/Misc/PCMiscPrefs.m:
+	* Modules/Preferences/Misc/Resources/MiscPrefs.gorm:
+	to here.
+
+2009-03-01 00:47  Sergii Stoian <stoyan255@gmail.com>
+
+	* Modules/Preferences/Build/PCBuildPrefs.h:
+	* Modules/Preferences/Build/PCBuildPrefs.m:
+	* Modules/Preferences/Build/Resources/BuildPrefs.gorm:
+	Move "Remove files in root build directory on quit" option
+	from here...
+	* Modules/Preferences/Misc/PCMiscPrefs.h:
+	* Modules/Preferences/Misc/PCMiscPrefs.m:
+	* Modules/Preferences/Misc/Resources/MiscPrefs.gorm:
+	to here.
+
+2009-03-01  Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectManager.m:
+	* Framework/PCProjectLoadedFiles.m:
+	* Framework/PCMakefileFactory.m:
+	* Framework/PCProject.m:
+	* Framework/PCFileManager.m:
+	* Framework/PCProjectBrowser.m:
+	* Framework/PCButton.m:
+	* Framework/PCProjectBuilder.m:
+	* Framework/PCEditorManager.m:
+	* Framework/PCLogController.m:
+	* Framework/PCProjectLauncher.m:
+	* Framework/PCProjectWindow.m:
+	* PCAppController.m:
+	* Modules/Preferences/Build/PCBuildPrefs.m:
+	* Modules/Preferences/Interface/PCInterfacePrefs.m:
+	* Headers/Protocols/Preferences.h:
+	* Headers/ProjectCenter/PCProject.h:
+	* Headers/ProjectCenter/PCProjectBrowser.h:
+	* Headers/ProjectCenter/PCProjectBuilder.h:
+	* Headers/ProjectCenter/PCEditorManager.h:
+	* Headers/PCPrefController.h:
+	* PCPrefController.m: Use new preferences system instead of
+	direct using of NSUserDefaults.
+
+2009-02-27  Sergii Stoian <stoyan255@gmail.com>
+
+	* Rewriting of preferences was finished. Now prefereces sections
+	are implemented as modules "Modules/Preferences/*".
+
+2009-02-25  Sergii Stoian <stoyan255@gmail.com>
+
+	* Rewriting of preferences was started.
+	
+2009-02-23  Sergii Stoian <stoyan255@gmail.com>
+
+	* Set all textfields attributes to 'scrollable'.
+	* Framework/PCProjectBuilderOptions.m: Set first reponder
+	after panel is ordereder (call to makeFirstResponder: in
+	awakeFromNib prevents textfield from draw its' border. 
+	GNUstep bug?).
+
+2009-02-22  Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCSaveModifiedFiles.m: Change to more generic
+	implementation. PCRunSaveModifiedFilesPanel() implemented.
+	* Framework/PCProjectBuilder.m:
+	(prebuildCheck): Use PCRunSaveModifiedFiles().
+
+2009-02-22  Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCSaveModifiedFiles.m:
+	* Framework/English.lproj/SaveModifiedFiles.gorm:
+	* Headers/ProjectCenter/PCSaveModifiedFiles.h:
+	Add initial implementation of "Save Modified Files" panel.
+	* Framework/PCProjectBuilder.m:
+	(prebuildCheck): Use PCSaveModifiedFiles.
+
+2009-02-19  Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBuilder.m:
+	(prebuildCheck): Swap button names.
+
+2009-02-17  Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBuilder.m: Cleanup.
+	* Framework/PCEditorManager.m:
+	(openEditorForFile:editable:windowed:): Add alert panel that
+	ordeder front when file to open doesn't exist. Remove commented
+	out call to [self orderFrontEditorForFile:filePath] (this method
+	should be called directly to PCEditorManager or PCProjectEditor
+	classes).
+	* Documentation/TODO: Added "Fix reported bugs" to list.
+
+2009-02-16  Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectManager.m:
+	(close): Implemented. Closes not only project but also non
+	project files editors.
+	* Framework/PCProject.m: Clean and alert panels in various situations.
+	* Framework/PCProjectEditor.m: Move closeAllEditors, saveEditedFiles:,
+	saveAllFiles and saveFileAs: methods to PCEditorManager.
+	(saveFileAs:): Use superclass method.
+	* Framework/PCEditorManager.m: Adopt moved methods.
+	(modifiedFiles): Implemented. Return array of file paths.
+	(hasModifiedFiles): Implemented for future use (e.g. prebuild check
+	in ProjectBuilder).
+	(reviewUnsaved:): Implemented. Go through modified files' editors
+	and close which results in opening of alert "Save?" panels.
+	* PCAppController.m: 
+	(applicationShouldTerminate:): Use PCProjectManager close method
+	instead of closeAllProjects.
+	* Modules/Editors/ProjectCenter/PCEditor.m:
+	(_createWindow): Set "edited" flag according to current state.
+	* Framework/PCProjectBuilder.m:
+	(prebuildCheck): Check if project has edited files.
+
+2009-02-15 14:14-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m: Detect when the
+	program has stopped or exited so that status can be displayed.
+
+2009-02-15  Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBrowser.m:
+	(click:): Do not call editor if subproject name selected.
+	(fileNameIconImage): Set "FileProject" icon if subproject name selected.
+	* Framework/PCProjectManager.m: Remove unused methods projectPath and
+	selectedFileName.
+	* Framework/PCFileManager.m: Add alert panels if operation ends with 
+	error.
+	* Framework/PCMakefileFactory.m: Add alert panels on error of creating
+	files.
+	* Framework/PCProjectBuilder.m: Review all situations when alert panels
+	should be opened. Panels text corrected according to OpenStep UIG.
+
+2009-02-14  Sergii Stoian <stoyan255@gmail.com>
+
+	* PCMenuController.m:
+	(showInfoPanel:): Use appController intead of [NSApp delegate].
+	* GNUmakefile: Change version to 0.5.1.
+	* Resources/Info-gnustep.plist: ditto.
+	* Framework/PCProjectManager.m:
+	(open): Move ordering front project window for here...
+	(openProjectAt:): to here.
+	* Framework/PCProjectBrowser.m:
+	(nameOfSelectedCategory): Edit comment text.
+	* Framework/PCLogController.m:
+	(showPanel): Call makeKeyAndOrderFront instead of orderFront.
+	* Headers/PCInfoController.[hm]:
+	(showInfoWindow:): Get version info from Info-gnustep.plist.
+	* PCPrefController.m:
+	(showPanel:): Call makeKeyAndOrderFront instead of orderFront.
+
+2009-02-14  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* Modules/GNUmakefile (SUBPROJECTS): Removed
+	Debuggers/ProjectCenter on MinGW since it doesn't compile there.
+
+2009-02-12 23:03-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m: Correct
+	mispelling of search string.
+
+2009-02-12 11:58-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCProjectManager.m: openProject to correct 
+	bug #25565.   There was an extra semi-colon after the if
+	statement in this method which was causing it to return
+	before bringing the project window to the front.
+
+2009-02-11 19:45-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCEditorManager.m: Switch to editor and line in the
+	-debuggerDidHitBreakpoint: method.
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m: Minor cleanup.
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m: Changes to
+	-[PCDebuggerView logString:newLine:] to detect state and change
+	it on debugger window.
+	* Modules/Debuggers/ProjectCenter/Resources/PCDebugger.gorm:
+	Left justify the status field.
+
+2009-02-11  Sergii Stoian <stoyan255@gmail.com>
+
+	* PCMenuController.m:
+	(subprojectNew): Use renamed [projectManager openNewSubprojectPanel]
+	method.
+	* Framework/PCProjectManager.m: Change all alert panel names 
+	according to operation performed. Edit messages text of alert 
+	panels. Cleanup.
+	(newSubproject): Rename to openNewSubprojectPanel which is 
+	more informative. (createSubproject): Change method definition 
+	to createSubproject:(id)sender and merge code with old 
+	createSubproject:(id)sender.  (controlTextDidChange:): Activate 
+	'Create' button only if subproject with entered name doesn't 
+	exist in project.
+	* Framework/PCProjectBrowser.m:
+	(nameOfSelectedCategory): Fix bug which prevent from removing 
+	subprojects.  Now selected category is checked against superproject 
+	category list. When subproject name selected, name of superproject's 
+	category is returned. As side effect ProjectBrowser tries to load 
+	editor for selected subproject's
+	name. Need to fix.
+	
+2009-02-10  Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectManager.m: Corrections in alert panel names.
+	  Make "Add Files" panel run in modal mode.
+	* Framework/PCProject.m: Corrections in alert panel names.
+	* Framework/PCFileCreator.[mh]: Partial rewrite. Check existance of
+	files wich will be added. Make panel run in modal mode. 
+	Add "Add Header File" option button.
+	* Documentation/TODO: Update.
+
+2009-02-08  Sergii Stoian <stoyan255@gmail.com>
+
+	* PCMenuController.m:
+	(validateMenuItem:): Enable "File" menu items for files opened
+	witout project. It fixes bug #25311 (now file saved).
+	* Framework/PCProjectManager.m:
+	(openFileAtPath:): Call to orderFrontEditorForFile: explicitly because
+	of last change in PCEditorManager.
+	* Framework/PCProjectBrowser.m:
+	doubleClick:): Do not open file in separate window with PCProjectEditor
+	not PCProjectManager.
+	* Framework/PCProjectEditor.m:
+	(openEditorForCategoryPath:windowed:): Cleanup.
+	* Framework/PCEditorManager.m:
+	(openEditorForFile:editable:windowed:): Remove call to
+	orderFrontEditorForFile:.
+	* Modules/Editors/ProjectCenter/PCEditor.m:
+	(_createWindow): Modify default size and position of window.
+	(openFileAtPath:editorManager:editable:): Remove creation of internal view.
+	Create it when first requested (editorView and componentView methods).
+	(windowDidBecomeKey:) No need to set first responder. It seems first
+	responder remembered by window correctly.
+	(windowDidResignKey:): Call resignFirstResponder: to notify others.
+	* Modules/Projects/Application/PCAppProject.m:
+	(dealloc): TODO added.
+	* Documentation/TODO: Mark "Finish FileNameIcon..." task as done.
+
+2009-02-06  Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProject.m:
+	(dealloc): Replace DEVELOPMENT with DEBUG
+	* Framework/PCProjectBrowser.m:
+	(fileNameIconPath): Implement new method.
+	* Framework/PCFileNameIcon.m:
+	(mouseDown:) Finish drag&drop implementation.
+	(init): Do not set image by default.
+	(dealloc): Replace DEVELOPMENT with DEBUG.
+	(setDelegate:): Use ASSIGN.
+	(updateIcon): Cleanup.
+	* Framework/English.lproj/ProjectInspector.gorm: Remove
+	'Hide on deactivate' attribute to panel. It allows drag&drop
+	operations for external applications (e.g. Workspace).
+	* Modules/Projects/Application/PCAppProject.*: Use PCFileNameIcon
+	in inspector to use drag&drop functionality. Cleanup.
+
+2009-01-27  Sergii Stoian <stoyan255@gmail.com>
+	
+	* Framework/GNUmakefile: Remove Preferences.gorm, 
+	Headers/PCPrefController.h, PCPrefController.m
+	* GNUmakefile: Add Preferences.gorm, Headers/PCPrefController.h,
+	PCPrefController.m
+	* Framework/PCProjectManager.m: Access PCPrefController via var
+	preController which is set by PCAppController.
+	* Framework/PCProjectLoadedFiles.m: Remove #import of
+	PCPrefController.h which is not used.
+	* Framework/PCProjectBuilder.m: Access PCPrefController via
+	PCProjectManager.
+	* Framework/PCProjectWindow.m: ditto.
+	* Framework/GNUmakefile.preamble: Remove -W from ADDITIONAL_OBJCFLAGS.
+	It removes useless warnings from GNUstep libraries.
+
+2009-01-17  Yavor Doganov  <yavor@gnu.org> 
+
+        * Framework/GNUmakefile:
+        (ProjectCenter_LIBRARIES_DEPEND_UPON): Define to `$(OBJC_LIBS)
+        $(FND_LIBS) $(GUI_LIBS)' to avoid unresolved symbols. Fixes
+	bug #23792.
+
+2009-01-17  Sergii Stoian <stoyan255@gmail.com>
+	
+	* Framework/GNUmakefile:
+	(ProjectCenter_HEADER_FILES): Include PCFileNameField.h and
+	PCFileNameIcon.h in  as referenced by PCProjectInspector.h.
+	Fixes bug #21619.
+	* Framework/PCProject.m: 
+	(fileTypesForCategoryKey:): add "nib" as recognizable interface 
+	file type.
+	* Modules/Projects/Application/Resources/AppController.m:
+	(awakeFromNib:): Remove setting menu title for better GORM
+	integration (Thanks to German Arias).
+
+2009-01-13 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Framework/English.lproj/ProjectDescription.gorm:
+	make the textfields scrollable
+
+2009-01-02 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Modules/Debuggers/ProjectCenter/PTYView.m: OpenBSD portability
+
+2009-01-01 19:40-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Debuggers/ProjectCenter/PTYView.[mh]: Changes to use
+	new openpty replacement code on systems which don't have
+	openpty, otherwise use the built-in version.
+
+2009-01-01 17:41-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Debuggers/ProjectCenter/Resources/Info.table: Add blank
+	to file extension so that tools can be debugged as well.
+
+2009-01-01 16:05-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Debuggers/ProjectCenter/Resources/PCDebugger.gorm:
+	Change the status bar size and set minimum window size.
+
+2009-01-01 13:08-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Debuggers/ProjectCenter/GNUmakefile
+	* Modules/Debuggers/ProjectCenter/PTYView.h
+	* Modules/Debuggers/ProjectCenter/PTYView.m: Change code to use
+	openpty(...).
+
+2008-12-31  Sergii Stoian <stoyan255@gmail.com>
+	
+	* Framework/PCFileNameIcon.m:
+	* Headers/ProjectCenter/PCFileNameIcon.h:
+	  Implementation of dragging functionality.
+
+	* Framework/PCProjectBrowser.m: Implement file icon delegate methods.
+	  Dragging files to category icon adds files to project.
+
+2008-12-30 Richard frith-Macdonald <rfm"gnu.org>
+
+	* PCMenuController.m:
+	* Framework/PCProjectManager.m:
+	* Framework/PCBundleManager.m:
+	* Framework/PCMakefileFactory.m:
+	* Framework/PCProject.m:
+	* Framework/PCProjectLauncherPanel.m:
+	* Framework/PCFileManager.m:
+	* Framework/PCButton.m:
+	* Framework/PCProjectBuilder.m:
+	* Framework/PCProjectLoadedFilesPanel.m:
+	* Framework/PCFileNameField.m:
+	* Framework/PCSplitView.m:
+	* Framework/PCProjectLauncher.m:
+	* Framework/PCAddFilesPanel.m:
+	* Framework/Resources/class.template:
+	* Framework/Resources/header.template:
+	* Framework/Resources/cfile.template:
+	* Framework/PCProjectBuilderPanel.m:
+	* Framework/PCFileCreator.m:
+	* PCAppController.m:
+	* PCFindController.m:
+	* ProjectCenter_main.m:
+	* Modules/Parsers/ProjectCenter/ObjCMethodHandler.h:
+	* Modules/Parsers/ProjectCenter/ObjCCommentHandler.h:
+	* Modules/Parsers/ProjectCenter/PCParser.h:
+	* Modules/Parsers/ProjectCenter/ObjCClassHandler.h:
+	* Modules/Parsers/ProjectCenter/ObjCMethodHandler.m:
+	* Modules/Parsers/ProjectCenter/ObjCCommentHandler.m:
+	* Modules/Parsers/ProjectCenter/CodeHandler.h:
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m:
+	* Modules/Debuggers/ProjectCenter/PTYView.m:
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.h:
+	* Modules/Debuggers/ProjectCenter/PCDebugger.h:
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m:
+	* Modules/Debuggers/ProjectCenter/PTYView.h:
+	* Modules/Projects/Application/PCAppProject.h:
+	* Modules/Projects/Application/PCAppProject+Inspector.h:
+	* Modules/Projects/Application/PCAppProject.m:
+	* Modules/Projects/Application/PCAppProject+Inspector.m:
+	* Modules/Projects/Application/Resources/AppController.m:
+	* Modules/Projects/Application/Resources/main.m:
+	* Modules/Projects/Application/Resources/AppController.h:
+	* Modules/Projects/ResourceSet/PCResourceSetProject.h:
+	* Modules/Projects/ResourceSet/PCResourceSetProject.m:
+	* Modules/Projects/Library/PCLibProject.h:
+	* Modules/Projects/Library/PCLibProject.m:
+	* Modules/Projects/Aggregate/PCAggregateProject.h:
+	* Modules/Projects/Aggregate/PCAggregateProject.m:
+	* Modules/Projects/Bundle/PCBundleProject.h:
+	* Modules/Projects/Bundle/PCBundleProject.m:
+	* Modules/Projects/Framework/PCFrameworkProject.m:
+	* Modules/Projects/Framework/PCFrameworkProject.h:
+	* Modules/Projects/Tool/PCToolProject.m:
+	* Modules/Projects/Tool/Resources/main.m:
+	* Modules/Projects/Tool/PCToolProject.h:
+	* Headers/PCMenuController.h:
+	* Headers/Protocols/CodeDebugger.h:
+	* Headers/Protocols/CodeEditor.h:
+	* Headers/Protocols/CodeParser.h:
+	* Headers/Protocols/ProjectType.h:
+	* Headers/ProjectCenter/PCProject.h:
+	* Headers/ProjectCenter/PCProjectLauncherPanel.h:
+	* Headers/ProjectCenter/PCProjectBrowser.h:
+	* Headers/ProjectCenter/PCFileManager.h:
+	* Headers/ProjectCenter/PCButton.h:
+	* Headers/ProjectCenter/PCProjectBuilder.h:
+	* Headers/ProjectCenter/PCDefines.h:
+	* Headers/ProjectCenter/PCProjectEditor.h:
+	* Headers/ProjectCenter/PCEditorManager.h:
+	* Headers/ProjectCenter/PCProjectLoadedFilesPanel.h:
+	* Headers/ProjectCenter/ProjectCenter.h:
+	* Headers/ProjectCenter/PCLogController.h:
+	* Headers/ProjectCenter/PCSplitView.h:
+	* Headers/ProjectCenter/PCProjectLauncher.h:
+	* Headers/ProjectCenter/PCAddFilesPanel.h:
+	* Headers/ProjectCenter/PCProjectBuilderPanel.h:
+	* Headers/ProjectCenter/PCProjectInspector.h:
+	* Headers/ProjectCenter/PCFileCreator.h:
+	* Headers/ProjectCenter/PCPrefController.h:
+	* Headers/ProjectCenter/PCProjectManager.h:
+	* Headers/ProjectCenter/PCProjectLoadedFiles.h:
+	* Headers/ProjectCenter/PCBundleManager.h:
+	* Headers/ProjectCenter/PCMakefileFactory.h:
+	* Headers/PCInfoController.h:
+	* Headers/PCAppController.h:
+	* PCInfoController.m:
+	Update to use #import rather than #include now that it is no longer
+	deprecated and is the officially preferred mechanism.
+
+2008-12-29 22:29-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Debuggers/ProjectCenter/Resources/continue_button.png:
+	Add image.
+
+2008-12-29 22:27-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Debuggers/ProjectCenter/GNUmakefile: Add continue icon.
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m: Add continue method.
+
+2008-12-29 20:23-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Documentation/TODO: Update progress.
+	* Modules/Debuggers/ProjectCenter/GNUmakefile: Add images
+	to makefile.
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m: Add up and down
+	methods to implement this behaviour.
+	* Modules/Debuggers/ProjectCenter/Resources/down_button.png
+	* Modules/Debuggers/ProjectCenter/Resources/up_button.png:
+	Images for the up/down buttons.
+
+2008-12-29 00:30-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCProjectLauncher.m: Remove local variable for debugger 
+	from method.  Also add it to the launcher dealloc method.
+	* Headers/ProjectCenter/PCProjectLauncher.h: Add an ivar for the 
+	debugger.
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m: Add dealloc to shut 
+	down
+	the debugger window when it's dealloc.
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m: Don't set status 
+	when terminated, since it causes a crash.
+
+2008-12-28 11:25-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m: Added code
+	to do the restart and pause actions in the debugger.
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.[hm]: Added
+	method subProcessId and an ivar and the logic to parse the
+	process id from debugger output.
+
+2008-12-28 02:23-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCEditorManager.m: Remove log.
+	* Modules/Debuggers/ProjectCenter/GNUmakefile: Added new images
+	to resource list.
+	* Modules/Debuggers/ProjectCenter/PCDebugger.[hm]: Added setStatus:
+	method to manage status field.
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m: Added code
+	to handle the toolbar.
+	* Modules/Debuggers/ProjectCenter/PTYView.[hm]: Added method called
+	"terminate" so that subclasses can override how the process is
+	terminated.
+	* Modules/Debuggers/ProjectCenter/Resources/PCDebugger.gorm: Added
+	status line.
+	* Modules/Debuggers/ProjectCenter/Resources/go_button.png
+	* Modules/Debuggers/ProjectCenter/Resources/next_button.png
+	* Modules/Debuggers/ProjectCenter/Resources/pause_button.png
+	* Modules/Debuggers/ProjectCenter/Resources/restart_button.png
+	* Modules/Debuggers/ProjectCenter/Resources/stepin_button.png
+	* Modules/Debuggers/ProjectCenter/Resources/stepout_button.png:
+	Images for debugger toolbar.
+
+2008-12-27 00:47-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCEditorManager.m: Changed code to use the filePath
+	that is passed in, since it is now fully qualified.
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m: Pass the "-f" (fullname)
+	flag to gdb.  This causes gdb to give a fully qualified pathname back.
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.[hm]: Code to 
+	extract the line and file information.
+	* Modules/Debuggers/ProjectCenter/PTYView.[hm]: New method
+	putString:.
+
+2008-12-26 13:01-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCEditorManager.m: Scroll to and select the line that
+	the debugger has stopped at.
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m: bring the debugger
+	window to the front when a breakpoint is detected.
+
+2008-12-26 02:25-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCEditorManager.m
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m: Changes to bring
+	up the file in which the debugger has stopped in.
+
+2008-12-25 23:46-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCProject.m
+	* Headers/ProjectCenter/PCProject.h: Added notification 
+	for hitting a breakpoint.
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m: Added code
+	to detect when a breakpoint is hit.
+
+2008-12-25 10:30-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Debuggers/ProjectCenter/GNUmakefile: Added PTYView.[hm]
+	* Modules/Debuggers/ProjectCenter/PCDebugger.[hm]: Simplified to 
+	call PCDebuggerView instance with the program to start.
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.[hm]: Refactored
+	into a subclass of PTYView.
+	* Modules/Debuggers/ProjectCenter/PTYView.[hm]: pty based terminal
+	view which allows us to read and write from a pseudo-terminal.
+	The code in the master/slave methods was inspired by an example
+	given in "UNIX Network Programming" by W. Richard Stevens and also
+	Nicola Vitacolonna.
+	* Modules/Debuggers/ProjectCenter/Resources/PCDebugger.gorm: Added
+	PTYView and made the PCDebuggerView a subclass of it.   Also made
+	the window release when closed so that the gdb process gets 
+	terminated.
+
+2008-12-22 21:51-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m: Write to
+	the filehandle via the stream in -[PCDebugger putChar:].
+
+2008-12-22 19:56-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Debuggers/ProjectCenter/PCDebugger.h
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m
+	* Modules/Debuggers/ProjectCenter/PCDebuggerView.m: Add code
+	to write to the file desicriptor.
+
+2008-12-22 18:36-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* English.lproj/ProjectCenter.gorm: Minor changes.
+	* Framework/PCEditorManager.m: Cleanup.
+	* Framework/PCProjectLauncher.m: Cleanup.
+	* GNUmakefile: New module.
+	* Headers/Protocols/CodeDebugger.h: New methods
+	* Modules/Debuggers/ProjectCenter/GNUmakefile: Added debugger
+	to resources.
+	* Modules/Debuggers/ProjectCenter/PCDebugger.h
+	* Modules/Debuggers/ProjectCenter/PCDebugger.m: Changes to talk to
+	debugger task
+	* Modules/Debuggers/ProjectCenter/Resources/PCDebugger.gorm: Debugger
+	gorm file.
+
+2008-12-23  Sergii Stoian <stoyan255@gmail.com>
+
+	* Documentatio/TODO: move unfinshed tasks from 0.5 to 0.6 release
+	
+2008-12-21  Sergii Stoian <stoyan255@gmail.com>
+
+	* Documentatio/TODO: update tasks for 0.6 release
+	
+2008-12-19  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* All GNUmakefiles: removed GNUSTEP_CORE_SOFTWARE=YES and
+	added PACKAGE_NAME=ProjectCenter.
+	* GNUmakefile: Export PACKAGE_NAME to reduce chances of a problem
+	if a GNUmakefile in a subdirectory is missing it.
+	
+2008-12-18  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* Framework/GNUmakefile.preamble (GMAKE): Take advantage of the
+	MAKE variable, which must already be set to the correct make else
+	we wouldn't be able to compile PC itself, when searching for a
+	working make.  (GMAKE, GDB): Use := to void spawning a subshell
+	every time one of these variables is read.
+
+2008-12-18  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* All GNUmakefiles: added GNUSTEP_CORE_SOFTWARE=YES at the
+	beginning.
+	* GNUmakefile: Export GNUSTEP_CORE_SOFTWARE to reduce chances of a
+	problem if a GNUmakefile in a subdirectory is missing it.
+	
+2008-12-17 Richard frith-Macdonald <rfm"gnu.org>
+
+	Where files are to be entered using NSOpenPanel and a 'set' button,
+	make the corresponding textfields which display the filename selectable
+	but not editable.
+
+2008-12-17 Richard frith-Macdonald <rfm"gnu.org>
+
+	Clean up document type keys in ...info.plist
+	Implement support for help document.
+
+2008-12-16 Richard frith-Macdonald <rfm"gnu.org>
+
+	Attempt to get NSRole set correctly in document type info.
+
+2008-12-09 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Framework/PCPrefController.m: corrected wrong outlet 
+	
+2008-12-07 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Headers/ProjectCenter/PCPrefController.h,
+	Framework/PCPrefController.m: handle setting path from Buttons 
+
+
+2008-11-27 22:06-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Modules/Projects/Application/Resources/AppController.m: Correct 
+	warning in application:openFile: in AppController.m in Application
+	project module.
+
+2008-11-27 12:01-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/GNUmakefile
+	* GNUmakefile: Correction for bug #24674.
+
+2008-11-27 01:29-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCProjectBrowser.m: Check return value of
+	[NSWorkspace getInfoForFile:application:type:].  Corrects crash when
+	no editor is available for a type.
+
+2008-10-25 20:48-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Version: 0.5
+
+2008-10-22 Riccardo Mottola <rmottola@users.sf.net>
+
+	* English.lproj/Info.gorm: correct bugtracker URL
+
+2008-10-22 Wolfgang Lux <wolfgang.lux@gmail.com>
+
+	* Framework/PCProjectBuilder.m: fix memory related crash
+	* Framework/PCProjectBuilder.m,
+	Modules/Projects/Application/PCAppProject.m,
+	Modules/Projects/Tool/PCToolProject.m: enhancements for relative install paths
+
+2008-10-18 18:18-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* ChangeLog: Moved to here top level of project.
+	* Documentation/ChangeLog: Removed from here...
+	* Modules/Editors/ProjectCenter/PCEditor.m: Corrected an issue in the
+	windowDidResignKey: method which was making the window the first
+	responder.  This was preventing Find from working properly.
+
+2008-02-20 Sergii Stoian <stoyan255@gmail.com>
+
+        * Framework/PCProjectBuilder.m: 
+	  (-parseErorLine:): Fixed type of saved row and column values.
+	  Cleanup.
+	* Framework/PCEditorManager.m: 
+	  (-openEditorForFile:editable:windowed:): Fixed another NSLog 
+	  parameter missing.
+
+2008-02-19 Sergii Stoian <stoyan255@gmail.com>
+
+        * PCMenuController.m: Start thinking about "Go to line:" popup.
+        * English.lproj/ProjectCenter.gorm: Added "Edit->Find->Line Number..."
+        menu item.
+        * Framework/PCProjectBrowser.m: (-nameOfSelectedFile:): Improve
+        category select detection.
+        (-pathToSelectedFile:): Use nameOfSelctedFile:. Cleanup.
+        (-nameOfSelctedCategory:): Return project name if subproject is
+        selected.
+        * Framework/PCProjectEditor.m:
+        (-openEditorForCategoryPath:windowed:): Use PCEditor's
+        fileStructureItemSelected if file structure component selected
+        in browser.
+        * Framework/PCProjectBuilder.m: Go to line number in editor
+        on error/warning click functionality implemented.
+        * Framework/PCProjectWindow.m: Cleanup.
+        * Framework/PCPrefController.m: Fix some compiler warnings.
+        * Modules/Parsers/ProjectCenter/ObjCMethodHandler.m:
+        * Modules/Parsers/ProjectCenter/ObjCClassHandler.m:
+        Fix bug #20855. Improve class names parsing: don't include spaces.
+        * Modules/Editors/ProjectCenter/PCEditorView.h: Remove unused
+        editorDocument variable.
+        * Modules/Editors/ProjectCenter/PCEditor.h:
+        * Modules/Editors/ProjectCenter/PCEditor.m: Make class independent
+        from ProjectCenter framework. Added variable _highlighSyntax. It sould
+        be set via preferences in the future.
+        (-_createEditorViewWithFrame:): Use _highlighSyntax variable.
+        (-_methodsForClass:): New method. Used to return to browser methods
+        only for selected class.
+        (-browserItemsForItem:): Use _methodsForClass method.
+        (-scrollToClassName:): Implemented. Now it's a almost identical copy
+        of scrollToMethodName:. TODO: think about code optimization.
+        * Modules/Editors/ProjectCenter/PCEditorView.m:
+        (-drawRect:): Call highilghter only if it's enabled.
+
+2008-02-13 22:10-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCMakefileFactory.m: Correction for bug#22311.  Added
+	project-type specific makefile generation.
+
+2008-02-10 23:53-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCEditorManager.m: Corrected problem with call to 
+	NSLog(..) which was causing a crash.
+
+2008-02-05 Sergii Stoian <stoyan255@gmail.com>
+
+	* PCMenuController.m: Start thinking about "Go to line:" popup.
+	* English.lproj/ProjectCenter.gorm: Added "Edit->Find->Line Number..."
+	menu item.
+	* Framework/PCProjectBrowser.m: (-nameOfSelectedFile:): Improve
+	category select detection.
+	(-pathToSelectedFile:): Use nameOfSelctedFile:. Cleanup.
+	(-nameOfSelctedCategory:): Return project name if subproject is
+	selected.
+	* Framework/PCProjectEditor.m: 
+	(-openEditorForCategoryPath:windowed:): Use PCEditor's
+	fileStructureItemSelected if file structure component selected
+	in browser.
+	* Framework/PCProjectBuilder.m: Go to line number in editor
+	on error/warning click functionality implemented.
+	* Framework/PCProjectWindow.m: Cleanup.
+	* Framework/PCPrefController.m: Fix some compiler warnings.
+	* Modules/Parsers/ProjectCenter/ObjCMethodHandler.m:
+	* Modules/Parsers/ProjectCenter/ObjCClassHandler.m:
+	Fix bug #20855. Improve class names parsing: don't include spaces.
+	* Modules/Editors/ProjectCenter/PCEditorView.h: Remove unused 
+	editorDocument variable.
+	* Modules/Editors/ProjectCenter/PCEditor.h:
+	* Modules/Editors/ProjectCenter/PCEditor.m: Make class independent
+	from ProjectCenter framework. Added variable _highlighSyntax. It sould
+	be set via preferences in the future.
+	(-_createEditorViewWithFrame:): Use _highlighSyntax variable.
+	(-_methodsForClass:): New method. Used to return to browser methods
+	only for selected class.
+	(-browserItemsForItem:): Use _methodsForClass method.
+	(-scrollToClassName:): Implemented. Now it's a almost identical copy
+	of scrollToMethodName:. TODO: think about code optimization.
+	* Modules/Editors/ProjectCenter/PCEditorView.m:
+	(-drawRect:): Call highilghter only if it's enabled.
+
+2008-02-13 22:10-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCMakefileFactory.m: Correction for bug#22311.  Added
+	project-type specific makefile generation.
+
+2008-02-10 23:53-EST Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Framework/PCEditorManager.m: Corrected problem with call to 
+	NSLog(..) which was causing a crash.
+
+2008-02-05 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectManager.[mh]: Cleaning up code that manages
+	non-project editors. Use PCEditorManager instead. Remove
+	PCFileManager's dalegate code(FileManagerDelegates category).
+	(-newFile): Call PCFileCreator's method newFileInProject:.
+	* Framework/PCFileManager.[mh]: Move code related to creation of
+	new file in project from here
+	* Framework/PCFileCreator.[mh]: to here.
+	(-createFile): Add additional check before adding file to 
+	project	(fixes bug #17493).
+	* Framework/English.lproj/NewFile.gorm: Set owner to PCFileCreator.
+
+2008-01-22 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCEditorManager.m: Added.
+	* Headers/ProjectCenter/PCEditormanager.h: Added.
+	* PCMenuController.m: (-fileSaveAs:): move code to 
+	PCProjectManager.m.
+	* Headers/ProjectCenter/PCEditorManager.h: New file.
+	* Framework/PCEditorManager.m: New file. Superclass for
+	PCProjectEditor.
+	* Framework/PCProjectManager.m: Use PCEditorManager.
+	Implement opening files outside of projects (fixes bug #15992).
+	* Framework/PCProjectLoadedFiles.m: Use PCEditorManager.
+	* Framework/PCProject.m: (-setProjectManager:): Use new
+	method of initializing PCProjectEditor.
+	* Framework/GNUmakefile: Add PCEditorManager.[hm].
+	* Framework/PCProjectBrowser.m: Made use of 
+	PCProjectEditor's editorForFile: method.
+	* Framework/PCProjectEditor.m: Remove initializing of extern
+	variables (moved into PCEditorManager). Use '_componentView'
+	var instead of 'componentView'. The same with _scrollView and
+	_project.
+	(-initWithProject:): renamed into init. Removed code duplicated
+	with superclass' code.
+	(-dealloc): Removed code duplicated with superclass' code.
+	(-editorForFile:key:): Removed. Code moved into superclass'
+	editorForFile: method.
+	(-openEditorForCategoryPath:windowed:): Code that determines
+	existance of file and if file is plain text move into
+	[super openEditorForFile:editable:windowed:]. Changed file
+	opening coditions. Made use of [<CodeEditor> fileStructureItemSelected]
+	method. Code that determines classes and methods in category path
+	was removed.
+	(openEditorForFile:categoryPath:editable:windowed:): Removed in favour
+	of superclass' method.
+	(activeEditor): Ditto.
+	(allEditors): Ditto.
+	(closeActiveEditor:): Ditto.
+	(closeEditorForFile:): Ditto.
+	(saveFile): Ditto.
+	(saveFileTo:): Ditto.
+	(revertFileToSaved): Ditto.
+	(editorDidResignActive:): Ditto.
+	(editorDidChangeFileName:): Ditto.
+	(closeAllEditors:): Cleanup.
+	(saveFileAs:): Made use of new -openEditorForFile:editable:windowed:
+	method.
+	* Framework/PCProjectWindow.m: Made usage of editorManager method
+	of <CodeEditor> protocol.
+	* Modules/Editors/ProjectCenter/PCEditorView.m: 
+	(becomeFirstResponder): Use new -becomeFirstResponder: method of
+	PCEditor class.
+	* Modules/Editors/ProjectCenter/PCEditor.h: Change name of var 
+	projectEditor to _editorManager. Add parameter (PCEditorView *)view
+	to becomeFistResponder and resignFirstResponder methods. Add some
+	comments.
+	* Modules/Editors/ProjectCenter/PCEditor.m: Rename method
+	-openFileAtPath:categoryPath:projectEditor:editable: to
+	-openFileAtPath:editorManager:editable. Rename -projectEditor method
+	to -editorManager. Change becomeFistResponder and resignFirstResponder 
+	methods' definitions.
+	(fileStructureItemSelected:): Add initial implementation of action 
+	code according to the type of selected item.
+	* Headers/Protocols/CodeEditor.h: Change definition of
+	-openFileAtPath:categoryPath:projectEditor:editable: mathod to
+	-openFileAtPath:editorManager:editable. Remove methods
+	scrollToClassName: and scrollToMethodName:. Rename projectEditor
+	method into editorManager.
+	* Headers/ProjectCenter/PCProjectEditor.h: Made PCProjectEditor
+	as subclass of PCEditorManager. Add prefix '_' to variables.
+	(-initWithProject:): renamed into init.
+	(setProject:): Added.
+	Removed methods and variables duplicated with superclass.
+	* Headers/ProjectCenter/PCProjectManager.h: Add editorManager var.
+	(-saveFileAs:): renamed to saveFileAs. 
+
+2008-01-17 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBrowser.m: (doubleClick:): open file with
+	external application only if NSWorkspace doesn't return
+	"ProjectCenter.app" appliction name.
+
+2008-01-16 Sergii Stoian <stoyan255@gmail.com>
+
+	* GNUmakefile: Remove FileRTF.tiff from resoures.
+	* Images/FileRTF.tiff: Removed.
+	* Images/FileM.tiff,
+	* Images/FileMH.tiff,
+	* Images/FileH.tiff,
+	* Images/FileHH.tiff,
+	* Images/FileC.tiff,
+	* Images/FileCH.tiff,
+	Moved to Modules/Editors/ProjectEditor/Resources.
+	* Images/FileProject.tiff: Added
+	* Modules/Editors/ProjectCenter/PCEditor.h: Added new variable 
+	_isEditable.
+	* Modules/Editors/ProjectCenter/PCEditor.m: 
+	(_createEditorViewWithFrame:): Set editable state for NSTextView here.
+	Add observer for changed text notification here.
+	* Resources/Info.plist: NSTypes was extended.
+
+2008-01-15 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCBundleManager.m: (objectForClassName:bundleType:protocol:)
+	Return nil if className is nil.
+
+2007-12-20  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* PCMakefileFactory.m ([-createPreambleForProject:]): Output the
+	-l flags in the ADDITIONAL_GUI_LIBS variable, not the
+	ADDITIONAL_LDFLAGS one.  This should fix linking applications on
+	Windows, but will not work well for linking non-GUI libraries.
+	ProjectCenter needs to be extended to allow specifying
+	ADDITIONAL_TOOL_LIBS and ADDITIONAL_OBJC_LIBS on the gui.
+
+2007-12-13  Nicola Pero  <nicola.pero@meta-innovation.com>
+
+	* GNUmakefile.preamble (ADDITIONAL_LIB_DIRS): Improved linking to
+	the ProjectCenter framework when it's not installed yet so that it
+	should work on non-flattened layouts.
+	* Modules/GNUmakefile.bundles (ADDITIONAL_LIB_DIRS): Same change.
+	(BUNDLE_INSTALL_DIR): Use GNUSTEP_APPS, not GNUSTEP_SYSTEM_ROOT.
+
+2007-09-27 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCBundleManager.m,
+	* Headers/ProjectCenter/PCBundleManager.h: Make massive cleaup.
+	some methods changed, some deleted, some added.
+	* Framework/PCProjectManager.m,
+	* Framework/PCProjectEditor.m: Make use of changed PCBundleManager.
+	* TextFinder.m:
+	(-enterSelection:): Add sanity check for text variable.
+	(-jumpToSelection:): Ditto.
+	* Modules/Parsers/ProjectCenter/Resources/Info.table: Fix value of
+	"Name" key.
+	* Headers/Protocols/CodeEditor.h: Remove declaration of 
+	openExternalEditor:withPath:projectEditor: method. It will be provided
+	by Custom.editor bundle (will be added soon).
+	* Headers/ProjectCenter/PCProjectEditor.h: Cleanup.
+
+2007-09-24 Sergii Stoian <stoyan255@gmail.com>
+
+	* English.lproj/FindPanel.gorm: Added Find panel.
+	* PCMenuController.m: Added Find panel support.
+	* TextFinder.[hm]: Added implementation of Find panel.
+
+2007-08-29 Sergii Stoian <stoyan255@gmail.com>
+
+	* Frameworks/PCFileManager.m:
+	(-filesForOpenOfType:multiple:title:accView:): Removed
+	(-fileForSaveOfType:title:accView:): Removed.
+	(-filesForAddOfTypes:): Removed.
+	(-filesOfTypes:operation:multiple:title:accView:): Implemented. 
+	Replaces removed methods.
+	(-_panelForOperation:title:accView:): New method. Returns panel
+	for specified operation type.
+	(-_saveLastDirectoryForPanel:): New method. Saves last opened
+	directory for operation type (panel).
+	(-panel:isValidFilename:): Validate directory as correct filename
+	if project is opening and directory has PC.project file.
+	* Headers/ProjectCenter/PCFileManager.h: Added new variable 'operation'
+	and declaraion of new mathods.
+	* Framework/PCProjectManager.m: Use new methods of PCFileManager.
+	* Framework/PCProjectWindow.m:
+	(-preferencesDidChange:): Show Builder and Launcher panels only
+	they are visible in project window (fixes bug #20858).
+	* Modules/Projects/Library/Resources/Version: Changed GCC version
+	to 2.95.3.
+	
+2007-08-23 Sergii Stoian <stoyan255@gmail.com>
+
+	* Modules/Editors/ProjectCenter/Resources/ObjC.syntax: Change color
+	of 'NO'.
+	* Modules/Projects/Library/Resources/Version: Change gcc version to
+	2.9.5.
+	
+2007-08-22 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBuilderOptions.m: Add missing file.
+	* Headers/ProjectCenter/PCProjectBuilderOptions.h: Add missing file.
+	* Framework/PCProject.m: 
+	(-rootCategories): Call subproject's method if subproject is active.
+	(-rootEntries): Ditto.
+	(-keyForCategory:): Ditto. Fix bug #20854.
+	(-categoryForKey:): Ditto.
+	(-keyForRootCategoryInCategoryPath:): Since keyForCategory: was made 
+	subproject's sensitive implement key searching here.
+		
+2007-08-21 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBuilderOptions.m: New file.
+	* Headers/ProjectCenter/PCProjectBuilderOptions.h: New file.
+	* ProjectBuilder options handling finished.
+	* Fixed compliance to GNUstep make v2.	
+	* Framework/PCFileNameIcon.m: Start implementing drag/drop.
+	* Images/ProjectCenter.tiff: Use ProjectManager's app icon.
+	* Modules/Projects/*/Resources/Info.table: change default targets.
+	* Headers/ProjectCenter/PCDefines.h: Clean up.
+	
+2007-07-19 Sergii Stoian <stoyan255@gmail.com>
+
+	* GNUmakefile.postamble: Cleanup old code.
+	* Headers/ProjectCenter/PCMakefileFacory.h:
+	* Framework/PCMakefileFacory.m: 
+	(-createMakefileFroProject:): change argument type from
+	NSSrting to PCProject. Set installation path PCInstallDir
+	value.
+	* Modules/Projects/*/PC*Project.m:
+	(-writeMakefile): Adopt createMakefileForProject argument type
+	changes.
+	
+2007-06-06 Sergii Stoian <stoyan255@gmail.com>
+
+	* GNUmakefile: Set GNUSTEP_INSTALLATION_DOMAIN to SYSTEM.
+	
+2007-06-05 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBuilder.m: Added parsing of gcc error output.
+
+2007-04-27  Nicola Pero <nicola.pero@meta-innovation.com>
+	
+	* PCProjectLauncher.m ([-debug:]): Fixed determining the path of
+	the executable to debug.  Try (in the order) xxx.debug/xxx,
+	xxx.app/xxx and obj/xxx.  Fixed path printed in error message when
+	gdb is not found.  (Originally from a patch by Friedrich
+	<frido@q-software-solutions.de>)
+
+2007-04-27  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* PCProject.m ([-execToolName]): Fixed typo where 'ExecuToolName'
+	had been typed instead of 'ExecToolName'.
+	* PCProjectLauncher.m ([-run:]): Add './' before the name when
+	we're using openapp, so that we use 'openapp ./Gorm.app' but
+	'opentool autogsdoc'.  This fixes running application/tool
+	projects.
+
+2007-03-06  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* GNUmakefile: Set GNUSTEP_MAKEFILES using gnustep-config if not yet set.
+	Do not set GNUSTEP_INSTALLATION_DOMAIN.
+	* PCBundleManager.m ([-loadBundlesWithExtension:]): Rewritten to
+	use the proper NSSearchPathForDirectoriesInDomains API so that it
+	works with all filesystem layouts.  Also, load bundles from all
+	ApplicationSupport/ProjectCenter locations, not just the System
+	one.
+	* Framework/PCPrefController.m (-setBundlePath:): Method removed.
+	* Headers/ProjectCenter/PCPrefController.h: Same change.
+
+	* PCFileManager.m ([-createDirectoriesIfNeededAtPath:]): Avoid
+	infinite loop that would be triggered the first time you tried to
+	build your project.
+
+2007-02-14  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* GNUmakefile.bundles (BUNDLE_INSTALL_DIR): Fixed definition basing
+	it on GNUSTEP_APPS.
+
+2007-02-14  Nicola Pero <nicola.pero@meta-innovation.com>
+	
+	* Modules/Projects/Application/PCAppProject.m: Do not set
+	GNUSTEP_INSTALLATION_DIR in the GNUmakefile.  This would not work
+	with the new filesystem support.  The GUI probably needs updating
+	to make users aware of this.
+	* Modules/Projects/Tool/PCToolProject.m: Same change.
+
+2007-01-20 Sergii Stoian <stoyan255@gmail.com>
+
+	* Modules/Editors/ProjectCenter/Resources/ObjC.syntax: Update.
+
+2007-01-15 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectManager.m: Remove code handling rootBuildPath var.
+	Remove rootBuildPath var.
+	* Headers/ProjectCenter/PCProjectManager.h: Ditto.
+	* Framework/PCFileManager.m: Add removeDirsIfEmpty:(BOOL) parameter to
+	remove* methods.
+	* Headers/ProjectCenter/PCFileManager.h: Ditto.
+	* Framework/PCProject.m: Pass removeDirsIfEmpty:(BOOL) parameter to 
+	PCFileManager remove* methods calls.
+	* PCAppController.m: Ditto.
+	* Modules/Projects/Application/PCAppProject.m: Ditto.
+	* Modules/Projects/Tool/PCToolProject.m: Ditto.
+	* Framework/PCProjectBuilder.m: Rename ivar currentProject into project.
+	Use it.
+	(prebuildCheck:): Create root build directory if not exist.
+	* Headers/ProjectCenter/PCProjectBuilder.h: Rename ivar currentProject 
+	into project.
+	* Documentation/TODO: Update.
+	* Documentation/ANNOUNCE: Ditto.
+	
+2007-01-15 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectManager.m: Fix problem with closing project.
+	* Framework/PCProjectr.m: Ditto.
+	* Framework/PCMakefileFactory.m: Support for root build directory added.
+	* Framework/PCProjectBuilder.m: Code cleanup.
+	* Framework/PCProjectEditor.m: Enable usage of parser. Start testing process.
+	* Framework/PCProjectWindows.m: Enable tooltips for buttons.
+	* Framework/PCPrefController.m: setRootBuildDir: fix.
+
+	* PCAppController.m: applicationWillTerminate: Remove file from build dir on
+	application quit. This code still needs review (also removed build dir because of
+	use PCFileManager's method).
+
+	* Modules/Editors/ProjectCenter/PCEditor.m: browserItemsForItem: Crashes if file
+	is not supported by parser. Fixed.
+	
+2007-01-12 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/PCProjectBuilder.m: Parsing of error output almost complete,
+	testing. Display number of warnings and errors in statud line after build
+	process finished.
+	* Framework/English.lproj/BuilderPanel.gorm: Change minimal size.
+	* Framework/English.lproj/ProjectWindow.gorm: Fix minimal size.
+		
+2007-01-09 Sergii Stoian <stoyan255@gmail.com>
+
+	* Framework/English.lproj/Builder.gorm: Added.
+	* Framework/English.lproj/BuilderPanel.gorm: Added.
+	* Framework/PCProjectBuilder.m: Use GORM file for interface.
+	Initial parsing for error logging view was added.
+	* Framework/PCProjectBuilderPanel.m: Use GORM file for interface.
+	
+2006-12-26 Sergii Stoian <stoyan255@gmail.com>
+
+	* Merge changes from UNSTABLE_0_5 into trunk.
+	
+	* Localizable resources for application and framework was 
+	defined (English.lproj).
+	
+	* Rename directory with ProjectCenter framework from Library to Framework.
+	
+	* Fix makefiles wrt to framework directory renaming.
+
+2006-11-20 Sergii Stoian <stoyan255@gmail.com>
+
+	* Rewritte bundle loading mechanizm. Bundle now loaded on demand.
+	
+	* Created Protocols directory.
+	
+	* PCEditor and friends moved to loadable bundle Modules/Editors/ProjectCenter.
+	
+	* PCLogController.[hm] and PCPrefController.[hm] was moved to Library.
+	
+	* Fixes for MingW environment (thanks to Adam Fedor).
+	
+	* Added attempt to find make and debugger utilities.
+
+2006-11-15  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* Modules/GNUmakefile.bundles (BUNDLE_INSTALL_DIR): Install the
+	bundles in GNUSTEP_INSTALLATION_DIR, not in GNUSTEP_SYSTEM_ROOT.
+	* Modules/ApplicationProject/PCAppProject.m ([PCAppProject
+	-appendHead:]): Do not hardcode GNUSTEP_INSTALLATION_DIR in
+	GNUmakefiles.  See comments in the file for an explanation of how
+	to improve PC's installation controls.
+	* Modules/RenaissanceProject/PCRenaissanceProject.m
+	([PCRenaissanceProject -appendHead:]): Same change.
+	* Modules/ToolProject/PCToolProject.m ([PCToolProject
+	-appendHead:]): Same change.
+	* Modules/BundleProject/Resources/PC.project (INSTALLDIR): Install
+	bundles by default in $(GNUSTEP_BUNDLES).	
+
+2006-10-21 15:41-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Resources/ProjectCenter.gorm: Corrected issue with dangling menu/
+	menu items in  the .gorm file.
+
+2006-10-09  Nicola Pero <nicola.pero@meta-innovation.com>
+
+	* GNUmakefile (GNUSTEP_INSTALLATION_DIR): Do not set
+	GNUSTEP_INSTALLATION_DIR.  It should never be set in GNUmakefiles.
+	* Library/GNUmakefile: Same change.
+	* Modules/GNUmakefile: Same change.
+	* ProjectCenter/Resources/GNUmakefile: Same change.
+
+2005-09-11 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCProject.m: (saveProjectWindowsAndPanels): save ProjectBrowser
+	frame.
+
+	* Library/PCProjectWindow.m: gormified.
+	(_initUI): Adopt to grom model. Make self as delegate for h_split.
+	(splitView:resizeSubviewsWithOldSize:) implemented h_split delegate method.
+	Used for restoring saved frame of ProjectBrowser. In general, used to 
+	restore subviews size of horisontal and verstical split views from last
+	session. "Remember project windows and panels in PC.project" task from
+	TODO file is considered fully comleted now. Will use this scheme for other 
+	split views in PC.
+
+	* Library/PCFileNameIcon.[hm]: new files. I'm not sure yet if it should
+	be separate class for file icons.
+
+2005-06-20 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCFileNameField.m: new file.
+	
+	* Library/PCProjectInspector.m: moved class PCFileNameField to separate
+	file.
+	
+	* Library/PCProjectWindow.m: 
+	(_initUI)fileIconTitle now is PCFileNameField instead of NSTextField.
+
+2005-06-11 Serg Stoyan <stoyan255@ukr.net>
+
+	* PCAppController.m:
+	(applicationWillTerminate:): Don't remove temorary directory. Needs 
+	more investigation since NSTemporaryDirectory() returns f.e.
+	/tmp/GNUstepSecure1000.
+	
+	* Library/PCProjectEditor.m:
+        (orderFrontEditorForFile:): Always show editor subview
+        (Fixed bug#11779). Incorporated from HEAD branch.
+
+2005-01-28 Serg Stoyan <stoyan255@ukr.net>
+
+	* Moduleas/ResourceSetProject: Added.
+
+2005-01-27 Serg Stoyan <stoyan255@ukr.net>
+
+	* Renaissance project type removed.
+
+2005-01-26 Serg Stoyan <stoyan255@ukr.net>
+
+	* Renaissance project type code and templates moved into Applicaton
+	project type.
+
+2005-01-25 Serg Stoyan <stoyan255@ukr.net>
+
+	* Move "Project Name", "Project Type" and "Language" fields into 
+	Project Inspector's "Project Attributes section"
+
+	* Library/PCProject.m: Add "Project Attributes" view. Modules' 
+	inspectors now subview of this view.
+
+2005-01-23 Serg Stoyan <stoyan255@ukr.net>
+
+	* Move appendLibraries: from project modules into PCMakefileFactory.m
+	
+	* Include into GNUmakefile only public headers for Framework and 
+	Library project types.
+	
+	* Project type bundles now have .project suffix.
+	
+	* Library/PCBundleLoader.[hm]:
+	(loadBundlesWithExtension:): Added and implemented.
+	(loadBundlesAtPath:withExtension:): ditto.
+	(loadBundleWithFullPath:): ditto.
+	(loadBundles): removed.
+	
+	* Library/PCProjectManager.m:
+	(loadProjectTypeBunldes): Call loadBundlesWithExtension:@"project".
+	
+	* Added Framework project type.
+	
+	* 0.5 branch started.
+
+2005-01-22 Serg Stoyan <stoyan255@ukr.net>
+
+	* Release 0.4.1
+	
+	* Modules/ApplicationProject/PCAppProject+Inspector.m: 
+	(addDocType:): Set all textfields to default values.
+	(removeDocType:): Call fillFieldsForRow: after row removing.
+
+2005-01-09 Gregory Jonh Casamento <greg_casamento@yahoo.com>
+
+	* Library/PCProjectBuilder.m: 
+	(build:): Exception handler added.
+
+2005-01-09 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCButton.m: 
+	(release): Added and implemented. Remove tooltips if object is
+	about to be dealloced.
+
+	* Library/PCProjectBuilder.m:
+	(stopBuild:): Eception handler added.
+
+2005-01-05 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/GNUstep.postamble: Make "ln -s" ProjectCenter to the 
+	../Library. It should make correct compiling on Windows.
+	
+	* Library/PCFileManager.m:
+	(defaultManager:): Don't autorelease returned object.
+
+2005-01-04 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCFilesManager.[hm]:
+	(createDirectoriesIfNeededAtPath:): Added and implemented.
+	(copyFile:toFile:): ditto.
+	(copyFile:intoDirectory:): ditto.
+
+	* Use above methods where it's appropriate.
+
+2005-01-03 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCAddFilesPanel.[hm]: New implementation. Derived from 
+	NSOpenPanel.
+
+	* Library/PCFileManager.m: Use PCAddFilesPanel instead of NSOpenPanel.
+
+	* Library/PCProject.m:
+	(projectFileFromFile:forKey:): Rewritten to correctly support 
+	subprojects' files and libraries.
+	(addFiles:forKey:notify:): Add path to PCSearchLibs when adding 
+	libraries.
+
+	* Library/PCProjectInspector.m: Observe project dictionary changes and
+	reread it. Accept entered value when textfields are losting focus.
+
+	* Library/PCProjectBrowser.m:
+	(doubleClick:): Don't try to open libraries.
+
+	* Modules/ApplicationProject/Resources/Main.gorm: Connect delegate to
+	AppController (bug #11478).
+
+	* Library/PCProjectEditor.m:
+	(editorForFile:categoryPath:windowed:): Call orderFrontEditorForFile:
+	to show already opened file (bug #11448).
+
+	* Library/PCEditor.m:
+	(_createEditorViewWithFrame:): Remove return of autoreleased ivar.
+
+	* Library/PCFileManager.m:
+	(filesForAddOfTypes:): Get list of categories from active project not 
+	from root active project.
+
+2004-12-24 Serg Stoyan <stoyan255@ukr.net>
+
+	* "Build Tool" setting from Project Inspector was moved to PC 
+	Preferences.
+
+	* Implemented support of document-based applications
+	
+	* Added "Document types" panel into Project Inspector
+
+	* Library/PCFileManager.m: Fix crashing while calling "Add Files" 
+	panel.
+
+2004-10-14 Serg Stoyan <stoyan255@ukr.net>
+
+	* Fixed interface (*.gorm) files wrt to latest GORM changes.
+
+2004-07-22 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCButton.m: Rewritten tooltips code. Almost ready for 
+	incorporation into NSView.
+
+	* Library/PCProjectBuilder.m: Use new tooltip code and remove old
+	style code.
+	* Library/PCProjectLauncher.m: ditto.
+	* Library/PCProjectWindow.m: ditto.
+	
+	*Images/ButtonTile.tiff: removed.
+
+2004-07-15 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCProject.m: 
+	(projectFileForFile:forKey:): Fix recognizing of subproject files.
+	
+	* Library/PCProjectManager.m: 
+	(addProjectFiles):ditto.
+	
+	* Update all GORM files with latest CVS GORM version.
+	
+	* Resources/Preferences.gorm: Fix Auto-Save slider.
+
+2004-07-14 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCButton.m: PCButtonCell removed.
+	(initWithFrame:): [self setCell:] removed. [_cell setGradientType:]
+	added.
+
+2004-07-04 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCProject.m:
+	(projectFileFromFile:forKey:): If adding files from subproject to
+	project add it with relative path to project's one.
+
+	* Modules/ApplicationProject/PCAppProject.m:
+	(writeMakefile): Do not add "Resources/" prefix if resource file
+	is part of subproject.
+	
+	* Modules/BundleProject/PCBundleProject.m: 
+	(writeMakefile): ditto.
+	
+	* Modules/LibraryProject/PCLibProject.m: 
+	(writeMakefile): ditto.
+	
+	* Modules/RenaissanceProject/PCRenaissanceProject.m: 
+	(writeMakefile): ditto.
+
+	* Modules/ToolProject/PCToolProject.m: 
+	(writeMakefile): ditto.
+
+2004-07-03 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCProjectManager.m:
+	(addProjectFiles:): Don't copy files that already in project 
+	directory structure. This allows adding of subproject's files to
+	project resources.
+
+	* Across the ProjectCenter: Comment out calls for PCLog*. This is
+	speedup PC.
+
+2004-06-22 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCFileManager.m:
+	(panel:shouldShowFilename:): Treat .gorm dirs not as dirs.
+	
+	* Library/PCProject.m:
+	(doesAcceptFile:forKey:): Check existance of file in
+	sourceFileKeys and resourceFileKeys.
+	
+	* Modules/*: Made cleanup in sourceFileKeys, resourceFileKeys and
+	otherKeys methods.
+
+2004-06-21 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCFileManager.m: 
+	(panel:shouldShowFilename:): Fix filtering out files already 
+	included in project. Optimized.
+
+	* GNUmakefile: Change VERSION var to 0.4.1pre.
+
+2004-06-20 Serg Stoyan <stoyan255@ukr.net>
+
+	* Release 0.4.0.
+	
+	* Library/PCProjectWindow.m: 
+	(activeProjectDidChange:): Take into account subprojects of 
+	subprojects.
+	(showProjectLaunch:): Remove attention panel if project is not
+	executable.
+	
+	* Library/PCProjectBrowser.m: (activeProjectDidChange:): ditto.
+	Take into account subprojects of subprojects.
+	
+	* Library/PCProjectLauncher.m:
+	(debug:): Check if project is executable and order attention panel
+	if not.
+
+	* Modules/ApplicationProject/Resources/Inspector.gorm:
+	Fix connection between "Add" button and addDocIcon: method.
+	
+	* Modules/ApplicationProject/PCAppProject.m: 
+	(appendApplication:): Removed.
+	(appndHead:): Move appendApplication's code here. Write into 
+	GNUmakefile <projectName>_STANDARD_INSTALL = no if install dir 
+	attribute was not set.
+	* Modules/BundleProject/PCBundleProject.m: 
+	(appendHead:): Write into GNUmakefile 
+	<projectName>_STANDARD_INSTALL = no if install dir attribute was 
+	not set.
+	* Modules/RenaissanceProject/PCRenaissanceProject.m: 
+	(appendApplication:): ditto.
+	* Modules/ToolProject/PCToolProject.m:
+	(appendHead:): ditto
+
+2004-06-19 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCProjectManager.m:
+	(convertLegacyProject:atPath:): Get files list from .pcproj file not
+	from directories.
+	
+	* Library/PCProject.m:
+	(renameFile:toFile): Handle the case when filename already exist.
+	Do not use removeFiles and addFiles methods, change projectDict
+	directly.
+	(setProjectDictObject:forKey:): Post notification with dictionary as
+	notification object. Dictionary consists of "Project" and "Attribute"
+	records. This is narrows actions to be taken on project dictionary
+	changes.
+	(assignProjectDict:): Set LANGUAGES to [NSUserDefaults userLanguages].
+	(setProjectDictObject:forKey:notify:): Renamed from 
+	setProjectDictObject:forKey:. Changed in various places accordinly.
+	(removeFiles:forKey:notify:): Renamed from removeFiles:forKey:.
+	(addFiles:forKey:notify:): Renamed from addFiles:forKey:.
+	
+	* Library/PCProjectBrowser.m:
+	(projectDictDidChange): Changed wrt last PCProject changes. Reload 
+	column only if "Attribute" is one of the tracked by Projectbrowser.
+	(reloadLastColumn): Renamed to reloadLastColumnAndNotify: and changed
+	accordinly to its name.
+	(reloadLastColumnAndSelectFile:): Added and implemented.
+	
+	* Library/PCProjectWindow.m:
+	(projectDictDidChange:): Changed wrt last PCProject changes.
+	
+	* Library/PCLoadedFiles.m:
+	(initWithProject:): Change NSLog with PCLogStatus.
+	
+	* Library/PCProjectInspector.m:
+	(activeProjectDidChange:): Set window title only if project change to 
+	other project not subproject.
+	
+	* Library/PCFileManager.m:
+	(filesForAdd): Fix setting panel attributes.
+	
+	* Modules/AggregateProject/PCAggregateProject.m: 
+	(appendHead:) Added generating of VERSION var.
+	* Modules/ApplicationProject/PCAppProject.m: 
+	(appendApplication:): ditto.
+	* Modules/BundleProject/PCBundleProject.m: 
+	(appendHead:): ditto.
+	* Modules/LibraryProject/PCLibProject.m: 
+	(appendHead:): ditto. Added support for public headers.
+	(renameFile:toFile:): Implemented. Handles the case with public 
+	headers.
+	* Modules/RenaissanceProject/PCRenaissanceProject.m: 
+	(appendApplication:): ditto.
+	* Modules/ToolProject/PCToolProject.m: 
+	(appendHead:): ditto
+	
+	* Modules/: Cleanup PC.project templates. Added PUBLIC_HEADERS and 
+	LANGUAGES.
+
+2004-06-15 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCProjectManager.m:
+	(convertLegacyProject:atPath:): added and implemented for conversion 
+	of old projects.
+	(closeProject:): check if panels visible before performing close.
+	
+	* Libarary/PCProject.m:
+	(fileTypesForCategoryKey:): moved implementation here from PC*Project
+	classes.
+	(dirForCategory:): ditto.
+	
+	* Library/PCProjectEditor.m:
+	(editorDidClose:): remove calling to setActiveEditor:. 
+	(editorDidResignActive:): check if editor belongs to current project.
+	(editorDidBecomeActive:): fix checking if editor belongs to current 
+	project.
+	
+	* Library/PCProjectBrowser.m:
+	(projectDictDidChange:): Fix detection of project changed.
+	
+	* Modules/ApplicationProject/*.[hm]:
+	* Modules/BundleProject/*.[hm]:
+	* Modules/LibraryProject/*.[hm]:
+	* Modules/RenaissanceProject/*.[hm]:
+	* Modules/ToolProject/*.[hm]:
+	Default location of non-localized resources changed to Resources 
+	subdir in project directory layout. No more Documentation and Images
+	subdirectories.
+	Removed PCProject overridings that are identical. Cleaned up.
+
+2004-06-14 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCFileManager.m:
+	(createFile): Removed extra ";" in newFiles declaration.
+	
+	* Modules/AggregateProject: Aggregate project type added.
+	
+	* Images/MultiFiles.tiff: added.
+
+2004-06-13 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCProjectBrowser.m:
+	(reloadLastColumn): Reload subprojects list only if subprojects
+	added/removed.
+
+2004-06-12 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCProjectManager.m:
+	* Library/PCProject.m:
+	* PCPrefController.m:
+	Fix bugs related to opening legacy projects.
+	
+	* Fixes made to compile with gcc 3.4
+	
+	* Resources/ProjectCenter.gorm:
+	Remove all unimplemented items.
+
+2004-06-11 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCProjectManager.m:
+	(loadProjectAt:): Fix loading "Gorm" poject.
+
+2004-06-09 Serg Stoyan <stoyan255@ukr.net>
+
+	* Library/PCProjectBrowser.[hm]:
+	(pathOfSelectedFile): renamed to pathToSelectedFile.
+	(nameOfSelectedCategory): implemented. Use it insetead PCProject's
+	-categoryForCategoryPath.
+	(pathToSelectedCategory): implemented.
+	(setPathForFile:category:): removed.
+	(reloadLastColumn): implemented.
+	
+	* Modules/ApplicationProject/PCAppProject.m:
+	 (renameFile:toFile:): remove calling of PCProjectBrowser's 
+	 setPathForFile:category.
+	 
+	* Modules/RenaissanceProject/ PCRenaissanceProject.m:
+	(renameFile:toFile:): ditto.
+	
+	* Library/PCLoadedFilesPanel.m:
+	* Library/PCBuildPanel.m:
+	* Library/PCLaunchPanel.m:
+	(activeProjectDidChange:): return if root project wasn't changed.
+	
+	* Library/PCProject.m:
+	(setProjectmanager:): don't set project components for subproject.
+
+
+2004-06-02 Serg Stoyan <stoyan255@ukr.net>
+
+        * Library/PCProjectManager (openProjectAt:): get project name from 
+	PC.project file instead of directory name. So project name and 
+	directory name may differ.
+
+	* Library/PCProjectLauncher.m (debug:): Debug application using 
+	full path instead of "~/Application".
+	
+	* PCMenuController.m: disable "Tear-Off Editor Size" fields editing
+	if Project Editor is not tear-off or Editor is not "ProjectCenter".
+	Check only first arg of Editor value.
+
+2004-06-01 Serg Stoyan <stoyan255@ukr.net>
+
+        * Finished on-the-fly applying "Tear-Off Panels" preferences.
+	
+	* Implemented remembering windows and panels visibility on project
+	opening.
+	
+	* Various PCProject fixes.
+	
+	* Remove PC.project.backup if preference "Keep Project Backup File"
+	is not set.
+
+2004-05-27 Serg Stoyan <stoyan255@ukr.net>
+
+        * Finished support of external editors.
+
+2004-05-10 Serg Stoyan <stoyan@on.com.ua>
+
+	* Preferences interface created using GORM.
+	* Resources/Prefernces.gorm: added.
+	* PCPrefController+UInterface.[hm]: removed.
+
+2004-05-08 Serg Stoyan <stoyan@on.com.ua>
+
+	* Start new ChangeLog. Old ChangeLog resides in 
+	  Documentation/ChangeLog-1 new in Documentation/ChangeLog.
+
+	* Summary of changes:
+	  - massive overall refactoring and cleanup. Directory layout
+	    of PC changed;
+	  - ProjectWindow: implemented toolbar(hide/show); menu entry
+	    implemented;
+	  - ProjectInspector: PC*Project's parts moved into PC*Projects;
+	    more or less finished;
+	  - ProjectBuilder: switch from NSThread to NSTask method of
+	    executing tasks; "Build", "Stop Build", "Clean" menu entries
+	    implemented;
+	  - ProjectLauncher: ditto; finished all related menu entries;
+	  - LoadedFiles: Fully implemented;
+	  - LogController: implemented; made use it;
+	  - initial subprojects support added;
+	  - more stability around the whole ProjectCenter;
+	  - GORMified parts of PC now is: PC main menu, ProjectInspector,
+	    "File->New in Project" panel, "Project-> New Subproject" 
+	    panel.
+	  - "File->Rename" implemented;
+	  - ProjectCenter library now framework.
+	    

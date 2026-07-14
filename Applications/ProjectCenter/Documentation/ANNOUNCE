@@ -1,0 +1,65 @@
+
+ANNOUNCE
+********
+
+This is version 0.5.0 of ProjectCenter.
+
+What is ProjectCenter?
+======================
+
+   ProjectCenter is GNUstep IDE(Intergated Development Environment) 
+   application.  It is a clone of the OPENSTEP ProjectBuilder application 
+   for GNUstep.
+
+   ProjectCenter is covered under the GNU General Public License. This means 
+   if you make changes to these programs, you cannot charge a fee, other than
+   distribution fees, for others to use the program. You should read the
+   Documentation/COPYING file for more information.
+
+Noteworthy changes in version `0.5.0'.
+======================================
+
+   * Added new project types "Framework" and "Resource Set".
+   
+   * Implemented on demand loading of bundles (project types, editor).
+   
+   * Impemented localization support for projects.
+   
+   * Some user interface ehnancements were made (save/restore geometry of 
+     subviews in project window splitview, drag and drop for icons).
+     
+   * Clicking on .m and .h file in project browser expands to file structure
+     (classes, methods).
+     
+   * Incorporated ProjectManager's editor with some modifications. Implemented
+     syntax color highlighting.
+   
+   * All windows and panels are now GORM files.
+   
+   * Fixes for MingW environment.
+   
+   * Support for separate build directory added.
+
+How can I get support for this software?
+========================================
+
+   You may wish to use the GNUstep discussion mailing list for general
+   questions and discussion.  Look at the GNUstep Web Pages for more
+   information regarding GNUstep resources <http://www.gnustep.org>
+
+Where can you get it?  How can you compile it?
+==============================================
+
+   You can download sources from ftp://ftp.gnustep.org/pub/gnustep/dev-apps/.
+
+Where do I send bug reports?
+============================
+
+   Bug reports can be sent to <bug-gnustep@gnu.org>.
+
+Obtaining GNU Software
+======================
+
+   Check out the GNU web site. (`http://www.gnu.org/')
+
+   Check out the GNUstep web site. (`http://www.gnustep.org/')

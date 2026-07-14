@@ -1,0 +1,8 @@
+{
+  Type = "Debugger";
+  Name = "ProjectCenter";
+  Description = "Default ProjectCenter code debugger";
+  PrincipalClassName = "PCDebugger";
+  FileTypes = (app,debug,"");
+  ProvidesBrowserItems = NO;
+}

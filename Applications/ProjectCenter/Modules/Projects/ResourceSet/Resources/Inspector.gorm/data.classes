@@ -1,0 +1,17 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:"
+	);
+	Super = NSObject;
+    };
+    PCToolProject = {
+	Actions = (
+	);
+	Outlets = (
+	    projectAttributesView
+	);
+	Super = NSObject;
+    };
+}

@@ -1,0 +1,6 @@
+{
+  Type = "Preferences";
+  Name = "Miscellaneous";
+  Description = "Miscellaneous ProjectCenter options.";
+  PrincipalClassName = "PCMiscPrefs";
+}

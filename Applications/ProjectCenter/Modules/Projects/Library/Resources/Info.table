@@ -1,0 +1,43 @@
+{
+  Type = "Project";
+  Name = "Library";
+  Description = "Project that handles GNUstep libraries.";
+  PrincipalClassName = "PCLibProject";
+  ExecToolName = "";
+  BuildTargets = ("all","install","uninstall","clean","distclean","dist");
+  CanHavePublicHeaders = YES;
+  BrowserRootEntries = {
+    CLASS_FILES = "Classes";
+    HEADER_FILES = "Headers";
+    OTHER_SOURCES = "Other Sources";
+    OTHER_RESOURCES = "Other Resources";
+    SUBPROJECTS = "Subprojects";
+    DOCU_FILES = "Documentation";
+    SUPPORTING_FILES = "Supporting Files";
+    LIBRARIES = "Libraries";
+    NON_PROJECT_FILES = "Non Project Files";
+  };
+  SourceFileKeys = (
+    "CLASS_FILES",
+    "HEADER_FILES",
+    "OTHER_SOURCES"
+  );
+  ResourceFileKeys = (
+    "OTHER_RESOURCES",
+    "DOCU_FILES"
+  );
+  OtherFileKeys = (
+    "SUBPROJECTS",
+    "SUPPORTING_FILES",
+    "LIBRARIES",
+    "NON_PROJECT_FILES"
+  );
+  AllowableSubprojectTypes = (
+    "Bundle",
+    "Tool"
+  );
+  LocalizableCategories = (
+    OTHER_RESOURCES,
+    DOCU_FILES
+  );
+}

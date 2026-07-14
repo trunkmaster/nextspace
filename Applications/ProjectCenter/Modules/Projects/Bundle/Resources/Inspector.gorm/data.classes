@@ -1,0 +1,23 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:",
+	    "setPrincipalClass:",
+	    "setBundleExtension:"
+	);
+	Super = NSObject;
+    };
+    PCBundleProject = {
+	Actions = (
+	    "setPrincipalClass:",
+	    "setBundleExtension:"
+	);
+	Outlets = (
+	    projectAttributesView,
+	    principalClassField,
+	    bundleExtensionField
+	);
+	Super = NSObject;
+    };
+}

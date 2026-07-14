@@ -1,0 +1,12 @@
+# This file is included in various Makefile's to get version information.
+# Compatible with Bourne shell syntax, so it can included there too.
+
+# The gcc version required to compile the library.
+GCC_VERSION=2.95.3
+
+# The version number of this release.
+MAJOR_VERSION=0
+MINOR_VERSION=0
+SUBMINOR_VERSION=1
+LIB_VERSION=${MAJOR_VERSION}.${MINOR_VERSION}.${SUBMINOR_VERSION}
+VERSION=${LIB_VERSION}

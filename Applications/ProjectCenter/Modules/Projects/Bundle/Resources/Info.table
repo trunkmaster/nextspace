@@ -1,0 +1,52 @@
+{
+  Type = "Project";
+  Name = "Bundle";
+  Description = "Project that handles GNUstep bundles.";
+  PrincipalClassName = "PCBundleProject";
+  ExecToolName = "";
+  BuildTargets = ("all","install","uninstall","clean","distclean","dist");
+  CanHavePublicHeaders = NO;
+  BrowserRootEntries = {
+    CLASS_FILES = "Classes";
+    HEADER_FILES = "Headers";
+    OTHER_SOURCES = "Other Sources";
+    INTERFACES = "Interfaces";
+    IMAGES = "Images";
+    OTHER_RESOURCES = "Other Resources";
+    SUBPROJECTS = "Subprojects";
+    DOCU_FILES = "Documentation";
+    SUPPORTING_FILES = "Supporting Files";
+    LIBRARIES = "Libraries";
+    NON_PROJECT_FILES = "Non Project Files";
+  };
+  SourceFileKeys = (
+    "CLASS_FILES",
+    "HEADER_FILES",
+    "OTHER_SOURCES"
+  );
+  ResourceFileKeys = (
+    "INTERFACES",
+    "IMAGES",
+    "OTHER_RESOURCES",
+    "DOCU_FILES"
+  );
+  OtherFileKeys = (
+    "SUBPROJECTS",
+    "SUPPORTING_FILES",
+    "LIBRARIES",
+    "NON_PROJECT_FILES"
+  );
+  AllowableSubprojectTypes = (
+    "Aggregate",
+    "Bundle",
+    "Library",
+    "Framework",
+    "Tool"
+  );
+  LocalizableCategories = (
+    INTERFACES,
+    IMAGES,
+    OTHER_RESOURCES,
+    DOCU_FILES
+  );
+}

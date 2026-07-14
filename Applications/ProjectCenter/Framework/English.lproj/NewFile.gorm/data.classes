@@ -1,0 +1,29 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "closeNewFilePanel:",
+	    "createFile:",
+	    "newFilePopupChanged:"
+	);
+	Super = NSObject;
+    };
+    PCFileCreator = {
+	Actions = (
+	    "closeNewFilePanel:",
+	    "createFile:",
+	    "newFilePopupChanged:"
+	);
+	Outlets = (
+	    newFilePanel,
+	    nfImage,
+	    nfTypePB,
+	    nfDescriptionTV,
+	    nfNameField,
+	    nfCancelButton,
+	    nfCreateButton,
+	    nfAddHeaderButton
+	);
+	Super = NSObject;
+    };
+}

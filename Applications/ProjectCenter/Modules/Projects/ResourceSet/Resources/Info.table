@@ -1,0 +1,32 @@
+{
+  Type = "Project";
+  Name = "Resource Set";
+  Description = "Project that handles GNUstep resources.";
+  PrincipalClassName = "PCResourceSetProject";
+  ExecToolName = "";
+  BuildTargets = ("all","install","uninstall","clean","distclean","dist");
+  CanHavePublicHeaders = NO;
+  BrowserRootEntries = {
+    OTHER_RESOURCES = "Other Resources";
+    SUPPORTING_FILES = "Supporting Files";
+    NON_PROJECT_FILES = "Non Project Files";
+  };
+  SourceFileKeys = ();
+  ResourceFileKeys = (
+    "OTHER_RESOURCES"
+  );
+  OtherFileKeys = (
+    "SUPPORTING_FILES",
+    "NON_PROJECT_FILES"
+  );
+  AllowableSubprojectTypes = (
+    "Application",
+    "Bundle",
+    "Library",
+    "Framework",
+    "Tool"
+  );
+  LocalizableCategories = (
+    OTHER_RESOURCES
+  );
+}

@@ -1,0 +1,73 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setBuildTool:"
+	);
+	Super = NSObject;
+    };
+    PCPrefController = {
+	Actions = (
+	    "popupChanged:",
+	    "setSuccessSound:",
+	    "setFailureSound:",
+	    "setPromptOnClean:",
+	    "setKeepBackup:",
+	    "setSaveOnQuit:",
+	    "setSavePeriod:",
+	    "setDisplayPanels:",
+	    "setPromptWhenQuit:",
+	    "setDebugger:",
+	    "setEditor:",
+	    "setTabBehaviour:",
+	    "setTabSpaces:",
+	    "setRootBuildDir:",
+	    "setDeleteCache:",
+	    "setFullPathInFilePanels:",
+	    "setRememberWindows:",
+	    "setEditorSize:",
+	    "setDisplayLog:",
+	    "setBuildTool:"
+	);
+	Outlets = (
+	    panel,
+	    popupButton,
+	    sectionsView,
+	    buildingView,
+	    successField,
+	    setSuccessButton,
+	    failureField,
+	    setFailureButton,
+	    promptOnClean,
+	    savingView,
+	    keyBindingsView,
+	    miscView,
+	    saveOnQuit,
+	    keepBackup,
+	    autosaveSlider,
+	    autosaveField,
+	    separateBuilder,
+	    separateLauncher,
+	    separateEditor,
+	    separateLoadedFiles,
+	    promptWhenQuit,
+	    debuggerField,
+	    editorField,
+	    interfaceView,
+	    deleteCache,
+	    fullPathInFilePanels,
+	    rememberWindows,
+	    tabMatrix,
+	    tabSpacesField,
+	    rootBuildDirField,
+	    rootBuildDirButton,
+	    editorColumnsField,
+	    editorLinesField,
+	    displayLog,
+	    buildToolField,
+	    debuggerButton,
+	    buildToolButton
+	);
+	Super = NSObject;
+    };
+}

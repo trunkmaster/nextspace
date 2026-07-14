@@ -1,0 +1,48 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setConsoleFixedFont:",
+	    "setEditorColor:",
+	    "setEditorSize:",
+	    "setEditorTextFont:"
+	);
+	Super = NSObject;
+    };
+    PCEditorFSCPrefs = {
+	Actions = (
+	    "setEditorTextFont:",
+	    "setConsoleFixedFont:",
+	    "setEditorSize:",
+	    "setEditorColor:"
+	);
+	Outlets = (
+	    prefs,
+	    editorFSCView,
+	    editorFontButton,
+	    editorFontField,
+	    consoleFixedFontButton,
+	    consoleFixedFontField,
+	    editorLinesField,
+	    editorColumnsField,
+	    foregroundColorWell,
+	    backgroundColorWell,
+	    selectionColorWell
+	);
+	Super = NSObject;
+    };
+    PCEditorFSCPrefsFontButton = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSButton;
+    };
+    PCEditorFSCPrefsView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSBox;
+    };
+}

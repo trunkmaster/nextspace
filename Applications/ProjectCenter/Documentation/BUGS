@@ -1,0 +1,73 @@
+KNOWN BUGS:
+~~~~~~~~~~
+- [bug #25571] exception on removing author in project inspector.
+  This happens to me with project-center-0.5.0.
+  in the Project Inspector -> Project Description, click the Add button to 
+  add an Author now the text input field is active, to add an author, as 
+  long as this is active, and then pressing remove button, to remove an 
+  author, then PC exits with the following exception:
+
+  NSRangeException: Index 1 is out of range 1 (in 'removeObjectAtIndex:')
+
+- [sr #106614] ProjectCenter, document type extensions.
+  In the project center project properties editor, if there are several
+  extensions separated bya space, they should be encoded as element arrays
+
+- [bug #25193] pc fails to load project from ImageViewer.pc.project.
+
+- [bug #22815] ProjectCenter won't open a new project .
+  [doesn't work for me]
+
+- [bug #22411] font types in ProjectCenter Editor.
+
+- [bug #22441] Usability: Project Center should have a separate project type 
+  for Renaissance based applications
+
+- [bug #22124] ProjectCenter doesn't support extra entries in Plist.
+
+- [bug #22008] Project Center should support more flexible directory 
+  configurations.
+
+- [bug #22026] ProjectCenter should split up project file.
+
+- [bug #11931] Build before launch on change.
+
+- [bug #20858] UI components (editor, builder, launcher).
+  The latest change fixes the initial problem but introduces a new one!
+
+  The new issue is that doesn't matter what I check or uncheck on the Interface
+  Preferences the only thing that is shown is the Editor in the SplitView.
+  It's reproducable every time, no matter what.  All you need to do is check
+  every option, so that only the browser will be shown, then uncheck random
+  options.
+
+  On another note, but still related, when the Editor is shown (after being
+  hidden by the preferences) it doesn't preserve it's previous size.
+
+RELEASE CRTITICAL UNKNOWN BUGS:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- ProjectBuilder's incorrectly parses output of gnustep-make (incorrect 
+  directories, incorrectly recognises initial point of error etc.).
+- Browser must be double checked for correct behaviour on browsing,
+  file removal, opening editor (currently is bad).
+- It seems that changing subproject's attributes doesn't change 'edited'
+  state of project window.
+- Removing files works bad (crashes, strange warnings, exceptions). Check it!
+  Maybe this happens only in subprojects... It may be connected to browser's
+  functionality.
+- PC tries to load internal editor for .gorm files. Fix it!!!
+- Setting localizable resources through inspector works bad. Double check it
+  and fix!!! Also check this functionality when multiple files selected.
+- Double check support for "Resource Set" project type as subproject of
+  existing projecttypes.
+- 
+
+WHISH LIST:
+~~~~~~~~~~
++ Open panel with list of modified files on project close and project build.
+- Think about browser initial responder status: now very uncomfortable 
+  to find some file in browser list when editor is open.
+- "Project Attributes" for Application should be reviewed after split of
+  "Application" to "Application" and "Renaissance" project types.
+- Add setting to preferences "Create template-based files on project creation". 
+  It should allow to switch off creation of .m, .h, .gorm files from templates.

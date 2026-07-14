@@ -1,0 +1,41 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:",
+	    "searchOrderPopupDidChange:",
+	    "setSearchOrder:",
+	    "removeSearchOrder:",
+	    "addSearchOrder:",
+	    "changeCommonProjectEntry:"
+	);
+	Super = NSObject;
+    };
+    PCProjectInspector = {
+	Actions = (
+	    "searchOrderPopupDidChange:",
+	    "setSearchOrder:",
+	    "removeSearchOrder:",
+	    "addSearchOrder:",
+	    "changeCommonProjectEntry:"
+	);
+	Outlets = (
+	    buildAttributesView,
+	    projectNameLabel,
+	    searchOrderPopup,
+	    searchOrderList,
+	    searchOrderTF,
+	    searchOrderSet,
+	    searchOrderRemove,
+	    searchOrderAdd,
+	    cppOptField,
+	    objcOptField,
+	    cOptField,
+	    ldOptField,
+	    searchOrderScroll,
+	    searchOrderColumn,
+	    installDomainPopup
+	);
+	Super = NSObject;
+    };
+}

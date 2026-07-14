@@ -1,0 +1,22 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "addLanguage:",
+	    "removeLanguage:"
+	);
+	Super = NSObject;
+    };
+    PCProjectInspector = {
+	Actions = (
+	    "addLanguage:",
+	    "removeLanguage:"
+	);
+	Outlets = (
+	    projectLanguagesView,
+	    languagesList,
+	    newLanguage
+	);
+	Super = NSObject;
+    };
+}

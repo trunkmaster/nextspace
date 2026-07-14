@@ -1,0 +1,22 @@
+
+ProjectCenter 
+=============
+
+This is ProjectCenter, the GNUstep IDE which is part of the GNUstep 
+project and is copyrighted by the Free Softare Foundation. ProjectCenter 
+is released under the GPL - see Documentation/COPYING for the details.
+    
+Further information can be found on the GNUstep site at www.gnustep.org
+on the ProjectCenter page 
+
+http://www.gnustep.org/experience/ProjectCenter.html
+
+For the installation instructions read the INSTALL file.
+For a list of upcoming and/or planned features read the TODO file. 
+For a list of changes in released versions read the ANNOUNCE file. 
+    
+The main author of ProjectCenter is Philippe C.D. Robert, current 
+maintainer is Serg Stoyan, but others have contributed a lot to the 
+current state of the project (see Documentatio/AUTHORS). Many of the
+icons have been created by Andrew Lindsay.
+

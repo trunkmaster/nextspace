@@ -1,0 +1,14 @@
+*.app
+*.debug
+*.profile
+*.plugin
+*.framework
+*.debugger
+*.editor
+*.parser
+*.preferences
+*.project
+*.swp
+derived_src
+obj
+*~

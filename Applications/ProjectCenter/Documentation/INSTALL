@@ -1,0 +1,18 @@
+Installation
+************
+
+This file documents the installation of the GNUstep ProjectCenter application.
+
+Installing `ProjectCenter'
+=========================
+
+ProjectCenter requires GNUstep core to be installed. Make sure that you have 
+the latest released version installed.
+
+Here is the quick way of building and installing ProjectCenter:
+
+    cd ProjectCenter;
+    make;
+    make install;
+
+By default ProjectCenter gets installed under GNUSTEP_SYSTEM_ROOT.

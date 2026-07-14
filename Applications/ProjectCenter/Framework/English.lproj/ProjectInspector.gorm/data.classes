@@ -1,0 +1,22 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:",
+	    "inspectorPopupDidChange:"
+	);
+	Super = NSObject;
+    };
+    PCProjectInspector = {
+	Actions = (
+	    "inspectorPopupDidChange:"
+	);
+	Outlets = (
+	    inspectorPanel,
+	    inspectorPopup,
+	    inspectorView,
+	    contentView
+	);
+	Super = NSObject;
+    };
+}

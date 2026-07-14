@@ -1,0 +1,39 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setUseTearOffWindows:",
+	    "setDebugger:",
+	    "setDisplayLog:",
+	    "setEditor:",
+	    "setFullPathInFilePanels:",
+	    "setPromptWhenQuit:",
+	    "setRememberWindows:"
+	);
+	Super = NSObject;
+    };
+    PCMiscPrefs = {
+	Actions = (
+	    "setEditor:",
+	    "setDebugger:",
+	    "setFullPathInFilePanels:",
+	    "setPromptWhenQuit:",
+	    "setDisplayLog:",
+	    "setRememberWindows:",
+	    "setUseTearOffWindows:"
+	);
+	Outlets = (
+	    debuggerButton,
+	    debuggerField,
+	    editorButton,
+	    editorField,
+	    fullPathInFilePanels,
+	    miscView,
+	    promptWhenQuit,
+	    displayLog,
+	    rememberWindows,
+	    useTearOffWindows
+	);
+	Super = NSObject;
+    };
+}
