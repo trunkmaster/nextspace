@@ -1,0 +1,24 @@
+
+    ProjectCenter Contributions
+    ===========================
+
+    Contributions are welcome! You can either send code diffs or new stuff to
+    be added to the maintainer of ProjectCenter (<probert@siggraph.org>) or
+    apply the change by yourself if you have write access to the CVS. If you
+    plane to apply changes by yourself please consider to following rules:
+
+    - Major features will first have to be approved, please contact the 
+      maintainer beforehand! This is because we want to keep the project
+      as much focused as possible and not because we do not trust you! 
+
+    - If a feature is approved for a particular version it can be commited
+      to the appropriate CVS branch, this might be HEAD or RELEASE_X_Y_Z.
+
+    - If a feature is not yet approved for a specific release it might go 
+      into the respective UNSTABLE_X_Y tree. Changes from this branch will
+      then later be merged into HEAD, if it makes sense.
+
+    Remember, these rules are made to enhance the quality of the project and
+    to be able to stick to our release plan! However if you think these
+    rules have some weaknesses please let us know, so that we can discuss it!
+

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE gsmarkup>
+
+<gsmarkup>
+  <objects>
+
+    <menu type="main">
+
+      <menu title="MyApplication" type="apple">
+        <menuItem title="About MyApplication" 
+		  action="orderFrontStandardAboutPanel:"/>
+        <menuSeparator/>
+        <menuItem title="Preferences..." action="runPreferencesPanel:"/>
+        <menu title="Services" type="services"/>
+        <menuSeparator/>
+        <menuItem title="Hide MyApplication" action="hide:" key="h"/>
+        <menuItem title="Hide Others" action="hideOtherApplications:"/>
+        <menuItem title="Show All" action="unhideAllApplications:"/>
+        <menuSeparator/>
+        <menuItem title="Quit MyApplication" action="terminate:" key="q"/>
+      </menu>
+      
+      <menu title="File">
+        <menuItem title="New" action="" key="n"/>
+	<menuItem title="Open..." action="" key="o"/>
+	<menu title="Open Recent" type="openRecent">
+	  <menuItem title="Clear menu" action=""/>
+	</menu>
+	<menuSeparator/>
+	<menuItem title="Close" action="performClose:" key="w"/>
+	<menuItem title="Save" action="" key="s"/>
+	<menuItem title="Save As..." action="" key="S"/>
+	<menuItem title="Revert" action=""/>
+	<menuSeparator/>
+	<menuItem title="Page Setup..." action="runPageLayout:" key="P"/>
+	<menuItem title="Print..." action="print:" key="p"/>
+      </menu>
+
+      <menu title="Edit">
+	<menuItem title="Undo" action="undo:" key="z"/>
+	<menuItem title="Redo" action="redo:" key="Z"/>
+	<menuSeparator/>
+	<menuItem title="Cut" action="cut:" key="x"/>
+	<menuItem title="Copy" action="copy:" key="c"/>
+	<menuItem title="Paste" action="paste:" key="v"/>
+	<menuItem title="Delete" action="delete:"/>
+        <menuItem title="Select All" action="selectAll:" key="a"/>
+      </menu>
+
+      <menu title="Window" type="windows">
+	<menuItem title="Close Window" action="performClose:" key="w"/>
+        <menuItem title="Minimize Window" action="performMiniaturize:"
+		  key="m"/>
+        <menuSeparator/>
+        <menuItem title="Bring All to Front" action="arrangeInFront:" key=""/>
+      </menu>
+      
+      <menu title="Help">
+	<menuItem title="MyApplication Help" action="showHelp:" key="?"/>
+      </menu>
+    </menu>
+  </objects>
+</gsmarkup>

@@ -1,0 +1,37 @@
+{
+    CLASS_FILES = ();
+    COMPILEROPTIONS = "";
+    CPPOPTIONS = "";
+    LINKEROPTIONS = "";
+    CREATION_DATE = "";
+    DOCU_FILES = ();
+    FRAMEWORKS = ();
+    HEADER_FILES = ();
+    IMAGES = ();
+    LANGUAGE = "English";
+    USER_LANGUAGES = ();
+    LIBRARIES = ("gnustep-base");
+    LOCALIZED_RESOURCES = ();
+    MAKEFILEDIR = "$(GNUSTEP_MAKEFILES)";
+    INSTALLDIR = "$(HOME)/GNUstep/Tools";
+    OBJC_COMPILEROPTIONS = "";
+    OTHER_RESOURCES = ("Version");
+    OTHER_SOURCES = ("main.m");
+    PROJECT_AUTHORS = ();
+    PROJECT_CREATOR = "";
+    PROJECT_DESCRIPTION = "No description available!";
+    PROJECT_GROUP = "No group available!";
+    PROJECT_SUMMARY = "No summary available!";
+    PROJECT_RELEASE = "0.1";
+    PROJECT_COPYRIGHT = "Copyright (C) 200x";
+    PROJECT_COPYRIGHT_DESC = "Released under ...";
+    PROJECT_MAINTAINER = "";
+    PROJECT_NAME = "";
+    PROJECT_TYPE = "Tool";
+    PROJECT_URL = "";
+    SEARCH_HEADER_DIRS = ();
+    SEARCH_LIB_DIRS = ();
+    SUBPROJECTS = ();
+    SUPPORTING_FILES = ("GNUmakefile.preamble", "GNUmakefile", "GNUmakefile.postamble");
+    TOOLICON = "";
+}

@@ -1,0 +1,26 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "setSavePeriod:",
+	    "setKeepBackup:",
+	    "setSaveOnQuit:"
+	);
+	Super = NSObject;
+    };
+    PCBuildPrefs = {
+	Actions = (
+	    "setSavePeriod:",
+	    "setKeepBackup:",
+	    "setSaveOnQuit:"
+	);
+	Outlets = (
+	    autosaveSlider,
+	    keepBackup,
+	    autosaveField,
+	    saveOnQuit,
+	    savingView
+	);
+	Super = NSObject;
+    };
+}

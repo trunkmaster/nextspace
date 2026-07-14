@@ -1,0 +1,2092 @@
+2003-08-25 Philippe C.D. Robert <probert@siggraph.org>
+
+	* Fixing "stop logging" fix: PCProjectBuilder.m
+
+2003-08-25 Serg Stoyan <stoyan@on.com.ua>
+
+	* PCProjectBuilder.[hm]: stop logging when building/cleaning.
+	Cleanups
+
+2003-08-09 Philippe C.D. Robert <probert@siggraph.org>
+
+        * Support for an external debugger: PCLib/PCDefines.h,
+          PCAppController.m, PCPrefController.m, PCPrefController+UInterface.m,
+          PCPrefController.h, PCLib/PCProjectDebugger.m
+
+2003-08-03 Philippe C.D. Robert <probert@siggraph.org>
+
+        * Fixed typo: PCLib/PCProject+ComponentHandling.m, PCMenuController.m
+
+2003-08-01 Philippe C.D. Robert <probert@siggraph.org>
+
+        * Removed -Werror: GNUMakefile.preamble, GNUMakefile.bundles
+        * Added -methodSignatureForSelector: PCAppController.[hm]
+
+2003-07-10 Philippe C.D. Robert <probert@siggraph.org>
+
+        * Updated the ANNOUNCE text 
+        * Added missing includes: PCLib/PCDataSource.m, PCLib/PCButton.m
+        * Added note in README about using ProjectCenter with Cocoa
+        * Disabled unused menu entries: ProjectCenter_main.m
+        * Some spelling corrections: PCMenuController.m
+
+2003-07-05 Philippe C.D. Robert <probert@siggraph.org>
+
+        * Uppercase key for interface category lookup: PCFileManager.m
+        * Adjusting UI elements: PCGormProject.m
+        * Adding proper header: PCLib/PCButton.h, PCLib/PCButton.m
+        * Code cleanup and corrected contact address: PCInfoController.m,
+          PCInfoController.h, PCLogController.m, PCLogController.h, 
+          PCAppController.h, PCAppController.m, PCFindController.h,
+          PCFindController.m, PCMenuController.h, PCMenuController.m,
+          PCPrefController.m, PCPrefController.h PCLib/PCBundleLoader.m,
+          PCLib/PCDataSource.h, PCLib/PCDataSource.m
+        * Extracting UI creation into category: PCPrefController+UInterface.h,
+          PCPrefController+UInterface.m, PCPrefController.m, PCPrefController.h,
+          PCLib/PCProjectDebugger+UInterface.h, PCLib/PCProjectDebugger.h,
+          PCLib/PCProjectDebugger+UInterface.m, PCLib/PCProjectDebugger.m
+        * Disabling unused menu entries using defines: ProjectCenter_main.m
+        * Added missing files to project: PCLib/PCButton.h, PCLib/PCButton.m
+        * Updated version for PCLib: PCLib/Version
+        * Changed menu title to ProjectCenter: ProjectCenter_main.m
+        * Adjusting UI elements and cleaned up code: PCRenaissanceProject.m
+2003-08-01 Philippe C.D. Robert <probert@siggraph.org>
+
+        * Removed -Werror: GNUMakefile.preamble, GNUMakefile.bundles
+        * Added -methodSignatureForSelector: PCAppController.[hm]
+        * Code cleanup: PCLib/PCFileManager.m, PCLib/PCProjectManager.m
+
+2003-07-10 Philippe C.D. Robert <probert@siggraph.org>
+
+        * Updated the ANNOUNCE text 
+        * Added missing includes: PCLib/PCDataSource.m, PCLib/PCButton.m
+        * Added note in README about using ProjectCenter with Cocoa
+        * Disabled unused menu entries: ProjectCenter_main.m
+        * Some spelling corrections: PCMenuController.m
+
+2003-07-05 Philippe C.D. Robert <probert@siggraph.org>
+
+        * Uppercase key for interface category lookup: PCFileManager.m
+        * Adjusting UI elements: PCGormProject.m
+        * Adding proper header: PCLib/PCButton.h, PCLib/PCButton.m
+        * Code cleanup and corrected contact address: PCInfoController.m,
+          PCInfoController.h, PCLogController.m, PCLogController.h, 
+          PCAppController.h, PCAppController.m, PCFindController.h,
+          PCFindController.m, PCMenuController.h, PCMenuController.m,
+          PCPrefController.m, PCPrefController.h PCLib/PCBundleLoader.m,
+          PCLib/PCDataSource.h, PCLib/PCDataSource.m
+        * Extracting UI creation into category: PCPrefController+UInterface.h,
+          PCPrefController+UInterface.m, PCPrefController.m, PCPrefController.h,
+          PCLib/PCProjectDebugger+UInterface.h, PCLib/PCProjectDebugger.h,
+          PCLib/PCProjectDebugger+UInterface.m, PCLib/PCProjectDebugger.m
+        * Disabling unused menu entries using defines: ProjectCenter_main.m
+        * Added missing files to project: PCLib/PCButton.h, PCLib/PCButton.m
+        * Updated version for PCLib: PCLib/Version
+        * Changed menu title to ProjectCenter: ProjectCenter_main.m
+        * Adjusting UI elements and cleaned up code: PCRenaissanceProject.m
+
+2003-07-04 Philippe C.D. Robert <probert@siggraph.org>
+
+        * Updated TODO, ANNOUNCE, README and INSTALL files
+        * PCProject+ComponentHandling.[hm]: Cleanup and fix
+        * PCProjectBuilder: Button state fix
+
+2003-07-04 Serg Stoyan <stoyan@hologr.com>
+
+	* PCAppController.m: Change REL_LIB_PC and ABS_LIB_PC to 	ApplicationSupport dir.
+	* PCInfoController.m:
+	(init): Load Info-gnustep.plist instead of Info-project.plist.
+	(showInfoWindow:): Set title of info window to "Info".
+	* PCPrefController.m:
+	(_initUI): Move releasing of controls here from -dealloc.
+	(popupChnaged:): Don't retain views.
+	
+	* PCAppProj/PCAppProject.m:
+	(updateValuesFromProjectDict): Change size of appicon frame to 48x48.
+	Check PCAppIcon field value is not equal to @"".
+	
+	* PCLib/PCButton.m
+	(PCButton dealloc): Release tooltip window.
+	(PCButtonCell dealloc): Added.
+
+	* PCLib/PCProject+UInterface.m:
+	(_initUI): Cleanup. fileIcon now NSImageView.
+	(setFileIcon:): Check for source of notification. Cleanup.
+	
+2003-07-02 Serg Stoyan <stoyan@hologr.com>
+
+	* PCAppProj/PCAppProj.m:
+	* PCBundleProj/PCBundleProj.m:
+	* PCGormProj/PCGormProj.m:
+	* PCLibProj/PCLibProj.m:
+	* PCRenaissanceProj/PCRenaissanceProj.m:
+	* PCToolProj/PCToolProj.m:
+	Set project type field to class description both in GNUstep and 
+	non-GNUstep environment. Fixes bug #3393.
+
+	* PCAppProj/PCAppProject.m:
+	(_initUI): Rearrangements of controls. Release control after adding 
+	to superview.
+
+	* PCLib/PCFileManager.m:
+	(showAddFileWindow): Handling of image, docs, models and non project
+	files added. Now images go into Images subdir, docs into Documentation,
+	.gorm files into $LANGUAGE.lproj subdir.
+	* PCLib/PCProject+UInterface.m:
+	(_initUI): Files' history list enabled back. Adjust size of history 
+	list. Added some fileds, controls rearranged in Project Inspector.
+	Release of box added after adding to split.
+	* PCLib/PCProject.h: Added definition of new Inspector fields.
+	* PCLib/PCProject.m:
+	(updateValuesFromProjectDict): Set project's language.
+	(dealloc): Extra releases removed.
+	* PCLib/PCProjectBuilder.m: Stability improved via cleanup in build
+	task handling.
+	(topButtonPressed:): Removed.
+	* PCLib/PCProjectManager+UInterface.m: ProjectInspector content view
+	resized. Changed title from "Inspector" to "Project Inspector".
+
+	* PCMenuController.m:
+	(validateMenuItem:): Return by default YES if no project loaded.
+
+	* PCAppProj/PCAppProject.m:
+	(dealloc): Release of appClassField and appImageField removed.
+
+2003-06-20 Serg Stoyan <stoyan@hologr.com>
+
+	* Images/ButtonTile.tiff: Added.
+	* GNUmakefile: Add Images/ButtonTile.tiff.
+	* ProjectCenterInfo.plist: Fixed order of authors.
+
+	* PCLib/GNUmakefile: Added PCButton.[hm].
+	* PCLib/PCButton.[hm]: Added and implemented.
+	* PCLib/PCBrowserController.h: PCBrowserDidSetPathNotification
+	delcaration added.
+	* PCLib/PCBrowserController.m:
+	(click:): Post PCBrowserDidSetPathNotification.
+	(doubleClick:): Idem. Return result instead of path.
+	* PCLib/PCProject+UInterface.m: Switch toolbar from matrix to number
+	of PCButtons. Added icon in top left corner that represents object
+	selected in browser.
+	(setFileIcon:): Added. Sets icon image according to the object
+	selected in browser.
+	* PCLib/PCProject.m:
+	(setProjectName:): Set label of icon to project name on loading.
+	* PCLib/PCProject.[mh]: Switch to using PCButtons.
+	(buildDidTerminate:): Check if notification object is build task
+	added.
+	* PCLib/PCProjectDebugger.[h]: Switch to using PCButtons.
+
+2003-05-30 Serg Stoyan <stoyan@hologr.com>
+
+	* PCLib/PCEditor.[hm]: Added becomeFirstResponder.
+	* PCLib/PCEditorController.[hm]: Rename setBrowser: to 
+	setBrowserPath:category:.
+	* PCLib/PCEditorController.m:
+	(activeEditor): Don't count on	[project isEditorActive].
+	* PCLib/PCEditorView.m:
+	(becomeFirstResponder): Call editor's becomeFirstResponder.
+
+2003-05-29 Serg Stoyan <stoyan@hologr.com>
+
+	* PCMenuController.m:
+	(projectRemoveFiles:): Call removeFilesPermanently.
+	(fileSaveAs:): Implemented.
+
+	* PCAppProj/PCAppProject.m:
+	(init): Initialize rootObjects and rootKeys arrays. Initialize
+	rootCategories dictionary with these arrays to preserve order of
+	categories in browser. "Non Project Files" category added.
+	(dealloc): Release rootObjects and rootKeys arrays.
+	(otherKeys): Added PCNonProject.
+	* PCBundleProj/PCBundleProject.m: Ditto.
+	* PCGormProj/PCGormProject.m: Ditto.
+	* PCLibProj/PCLibProject.m: Ditto.
+	* PCRenaissanceProj/PCRenaissanceProject.m: Ditto.
+	* PCToolProj/PCToolProject.m: Ditto.
+
+	* PCLib/PCBrowserController.[hm]: Rename method setPathForFile: to
+	setPathForFile:category:.
+	* PCLib/PCBrowserController.m:
+	(isEditableCategory:file:): PCOtherSources, PCOtherResources and
+	PCNonProject to editable categories.
+	(projectDictDidChange:): Set path to category if there is no file
+	editing.
+	* PCLib/PCEditor.[hm]: Added _category ivar. Every editor now holds
+	category of the file being edited. Added methods category and
+	setCategory:. Removed saveFileAs: method.
+	* PCLib/PCEditorController.[hm]: Added and implemented method
+	closeEditorForFile:.
+	* PCLib/PCEditorController.m:
+	(editorDidClose:): Call [PCBrowserController projectDictDidChange:]
+	instead of [self setBrowserPath:].
+	* PCLib/PCProject.h: Added PCNonProject contant. Added rootObjects,
+	rootKeys ivars. Removed categoryForFile: method. Renamed
+	removeSelectedFilePermanently: to removeSelectedFilesPermanently:.
+	* PCLib/PCProject.m:
+	(fileExtensionsForCategory:): Removed .m and .M extenstions from
+	PCOtherSources category.
+	(browserDidClickFile:category:): Setting category to editor added.
+	(removeFile:forKey:): Close editor when file removed.
+	(contentAtKeyPath:): Return rootKeys instead of all keys of 	rootCategories dictionary.
+	(removeFilesPermanently:): Call removeSelectedFilesPermanently:
+	(after renaming).
+
+2003-05-23 Serg Stoyan <stoyan@hologr.com>
+
+	* PCMenuController.h: Added fileOpenQuickly:, fileNewUntitled: 
+	methods.
+	* PCMenuController.m:
+	(projectSaveFiles:): Call [projectManager saveAllFiles].
+	(openFile:): Check existance of opening file and call
+	[PCEditorController openFileInEditor:] here.
+	(fileSaveTo:): Implemented.
+	(fileRevertToSaved:): Call [projectManager revertFileToSaved].
+	(fileOpenQuickly:): Added with alert panel.
+	(fileNewUntitled:): Ditto.
+	(validateMenuItem:): "File" menu items enabled for external editor 
+	window.
+
+	* ProjectCenter_main.m: (createMenu): Added actions to 
+	"Open Quickly..." and "New Untitled" menu items.
+
+	* PCLib/PCBrowserController.[hm]: setPathForFile: method added.
+	Removed browser:willDisplayCell:atRow:column: and 
+	browser:selectCellWithString:inColumn: methods.
+
+	* PCLib/PCBrowserController.m:
+	(click:): Don't load file into editor if multiple files selected.
+
+	* PCLib/PCEditor+UInterface.m:
+	(_initUI): Set delegate for window to self. Removed bezel border.
+	Set text container added. Cleanup.
+
+	* PCLib/PCEditor.[hm]: Added methods internalView, externalView, 
+	setPath:, isEdited, saveFileAs:, saveFileTo:, revertFileToSaved,
+	closeFile:, editorShouldClose, windowShouldClose:
+
+	* PCLib/PCEditor.m:
+	(setDelegate:): Set delegate for internal and external text views.
+	(revertFileToSaved): Set attributes to saved text before loading
+	into text view.
+
+	* PCLib/PCEditorController.[hm]: Added methods saveFileAs:,
+	saveFileTo:, closeFile:, revertFileToSaved, setBrowserPath:.
+
+	* PCLib/PCEditorController.m:
+	(openFileInEditor:): Set delegate to editor.
+	(closeAllEditors): Call PCEditor closeFile instead of 
+	editor's window performClose.
+	(editorDidClose): After closing editor, show next in list. Set
+	to / if no editors left.
+
+	* PCLib/PCEditorView.m: becomeFirstResponder method added.
+
+	* PCLib/PCProject.[hm]: categoryForFile:, projectEditor,
+	editorController methodd added. saveFile, saveAllFiles,
+	saveAllFilesIfNeeded, revertFile methods removed.
+
+	* PCLib/PCProjectDebugger.h: textAttributes ivar added.
+	logString:error: and logString:error:newLine: methods removed.
+	logString:newLine: added.
+
+	* PCLib/PCProjectDebugger.m: Cleanup. Error view removed.
+	
+	* PCLib/PCProjectEditor.m: Removed horizonal scroller.
+
+	* PCLib/PCProjectManager.[hm]: saveAllFiles, saveFileAs:,
+	saveFileTo:, revertFileToSaved, closeFile, activeProject,
+	projectPath, selectedFileName methods added.
+	
+2003-05-16 Serg Stoyan <stoyan@hologr.com>
+
+	* GNUmakefile: Remove PCAppController+MenuHandling.h and 
+	PCAppController+MenuHandling.m.
+	* GNUmakefile.bundles: Add -Wall -Werror options to 
+	ADDITIONAL_CFLAGS, ADDITIONAL_CPPFLAGS and ADDITIONAL_OBJCFLAGS.
+	* GNUmakefile.preamble: Ditto.
+	* PCAppController.h: infoController and menuController definitions
+	added.
+	* PCAppController.m: respondsToSelector:, forwardInvocation:, 
+	infoController, menuController methods added.
+	* PCMenuController.h: Rename all action methods in form like
+	openFile into fileOpen to avoid name conflict with PCLib/ objects's
+	methods.
+	* ProjectCenter_main.m: Ditto. Remove unused format_font ivar.
+	* PCMenuController.m: Ditto.
+	(projectSaveAs:): Added alert panel.
+	(projectRemoveFiles:): Ability to remove multiple files added.
+	(fileSaveAs:): Added alert panel.
+	(fileSaveTo:): Ditto.
+	(fileClose:): Ditto.
+	(validateMenuItem:): Fixes related to "File" menu items.
+	* PCPrefController.m:
+	(_initUI): Increase prefEmptyView height by 2 pixels.
+	
+	* PCLib/PCBrowserController.h: selectedFiles method added.
+	* PCLib/PCBrowserController.m:
+	(selectedFiles): Added. Returns array of selected filenames.
+	* PCLib/PCBundleLoader.m:
+	(loadBundlesAtPath:): Added parentheses around assignment used as 
+	truth value to avoid warning.
+	* PCLib/PCDataSource.m:
+	(init): Ditto.
+	* PCLib/PCEditorController.h: Added activeEditor method.
+	* PCLib/PCEditorController.m:
+	(activeEditor): Implemented. Returns current editor displayed in
+	project window.
+	(internalEditorForFile:): Added parentheses around assignment used 
+	as truth value to avoid warning.
+	(saveFile): Use activeEditor.
+	(revertFile): Ditto.
+	* PCLib/PCFileManager.m:
+	(showAddFileWindow): Initialize ivars to avoid warning. Added 
+	parentheses around assignment used as truth value to avoid warning.
+	* PCLib/PCProject.m:
+	(removeSelectedFilePermanently:): Initialize ivars to avoid warning.
+	Added ability to remove multiple files.
+	* PCLib/PCProjectBuilder.m:
+	(_createComponentView): Remove unused box and separateView ivars.
+	* PCLib/PCProjectDebugger.m
+	(_createComponentView): Remove unused split, scrollView1 and box
+	ivars. 
+	(run:): Initialize tn ivar.
+	* PCLib/ProjectDelegate.h: Added. Declare ProjectDelegate protocol.
+	* PCLib/PCProjectManager.h: Added ProjectDelegate protocol. delegate
+	conforms to ProjectDelegate protocol.
+	* PCLib/PCProjectManager.m
+	(saveProjectAs:): Removed alert panel.
+
+2003-05-11 Philippe C.D. Robert <probert@siggraph.org>
+
+	* PCFileManager.m:
+	  Directories can be chosen in case of interfaces.
+
+2003-05-08 Serg Stoyan <stoyan@hologr.com>
+
+	* PCMenuController.m:
+	(validateMenuItem:): Update to the current set of menu items.
+	* ProjectCenter_main.m:
+	(createMenu): Set saveFiles: action to "Save Files..." menu item.
+	* ProjectCenterInfo.plist: Update authors' e-mails.
+
+	* PCBaseFileTypes/PCBaseFileType.m:
+	(createFileOfType:type:project): Initializing newFile ivar before
+	creating file. Cleanup.
+	
+	* PCLib/PCFileManager+UInterface.m:
+	(_initUI): Set spacing between buttons to 8.
+	* PCLib/PCFileManager.m:
+	(showAddFileWindow): Reformatting.
+	* PCLib/PCProject.m:
+	(save): Removed calling to [self saveAllFiles].
+	* PCLib/PCProjectManager.m:
+	(saveProject): Removed saving all files.
+	(saveFiles): Call [activeProject saveAllFiles] added.
+	* PCLib/PCBrowserController.m:
+	(setBrowser:): Change setAllowsMultipleSelection to YES.
+	* PCLib/PCProject+UInterface.m:
+	(_initUI): Removed setting browser characteristics code.
+
+2003-05-07 Serg Stoyan <stoyan@hologr.com>
+
+	* ProjectCenter: Files moved to root directory.
+	* ProjectCenterInfo.plist: List of authors updated.
+	* GNUmakefile: Don't create ProjectCenter link to . dir.
+	* GNUmakefile.postamble: Add removing headers after uninstall.
+	* GNUmakefile.bundles: Added. This file is included by bundle's
+	GNUmakefile.
+	
+	* Removed all unused GNUmakefile.preamble, GNUmakefile.postamble, 
+	.pcproj and plist files.
+	* Add include ../GNUmakefile.bundles to all bundles' GNUmakefiles.
+	
+2003-05-06 Serg Stoyan <stoyan@hologr.com>
+
+	* PCAppProj/Templates: Created. AppController.h, AppController.m, 
+	PC.proj, main.m moved here. Added GNUmakefile.preamble and
+	GNUmakefile.postamble files.
+	* PCAppProj/Templates/PC.proj: Changed MAKEFILEDIR to 
+	$(GNUSTEP_MAKEFILES).
+	* PCAppProj/GNUmakefile: Changed resources' locations to new.
+	* PCAppProj/Info-project.plist: Removed.
+
+2003-05-05 Serg Stoyan <stoyan@hologr.com>
+
+	* GNUmakefile: Place ProjectCenter subproject after PCLib.
+	* pcproj_bundle.make: Added.
+
+	* PCAppProj/GNUmakefile: Added include pcproj_bundle.make.
+	* PCBaseFileTypes/GNUmakefile: Ditto.
+	* PCBundleProj/GNUmakefile: Ditto.
+	* PCGormProj/GNUmakefile: Ditto.
+	* PCLibProj/GNUmakefile: Ditto.
+	* PCRenaissanceProj/GNUmakefile: Ditto.
+	* PCToolProj/GNUmakefile: Ditto.
+
+	* PCLib/PCBundleLoader.h:
+	(loadBundlesAtPath:): Added.
+	* PCLib/PCBundleLoader.m:
+	(loadBundles): First load bundles from main bundle's resource
+	directory, then load third party bundles from directory 
+	Library/ApplicationSupport/ProjectCenter.
+	(loadBundlesAtPath:): Added. Loads bundles from specified directory.
+
+2003-05-02 Serg Stoyan <stoyan@on.com.ua>
+
+	* PCLib/PCProjectBuilder.h:
+	* PCLib/PCProjectBuilder.m:
+	Rename buildPanelCreate: to createBuildPanel. Add buildPanel method.
+	(_createBuildPanel): Add setHidesOnDeactivate: NO.
+	
+	* PCLib/PCProjectDebugger.h:
+	* PCLib/PCProjectDebugger.m:
+	Rename launchPanelCreate: to createLaunchPanel. Add launchPanel method.
+	(_createLaunchPanel): Add setHidesOnDeactivate:NO and 
+	setReleasedWhenClosed:NO.
+	
+	* PCLib/PCProject+ComponentHandling.m:
+	(showBuildView): Fix methods calling according to the above changes.  
+	(showRunView): Ditto.
+	
+	* PCLib/PCProject.m:
+	(windowWillClose:): Close build and debugger panels if any.
+	
+2003-05-01 Serg Stoyan <stoyan@on.com.ua>
+
+	* PCLib/PCProjectBuilder.h:
+	* PCLib/PCProjectBuilder.m:
+	Building was made a separate task.
+	
+	* PCLib/PCProjectManager.m:
+	(createProjectOfType:): Add pcproj filename before adding to 
+	loadedProjects array.
+
+	* ProjectCenter/Images/Stop.tiff: Added.
+	* ProjectCenter/GNUmakefile: Added Stop.tiff to resources.
+
+	* ProjectCenter/PCPrefController.m:
+	(showPrefWindow:): Set successField and failureField values from
+	defaults.
+	
+2003-04-28  Adam Fedor  <fedor@gnu.org>
+
+	* PCLib/PCMakefileFactory.m (-appendOtherSources): Changed from
+	appendCFiles.
+	(-appendHeaders:forTarget:, -appendClasses:forTarget:,
+	-appendOtherSources:forTarget): New.
+	(-appendHeaders:, -appendClasses:, -appendOtherSources:,
+	-appendLibraryHeaders:, appendLibraryClasses:, 
+	appendLibraryOtherSources:): Use them.
+	* PCLib/PCProject.m (-fileExtensionsForCategory): Add .m to 
+	PCOtherSources.
+	* PCAppProj/PCAppProject.m (-writeMakefile): Use appendOtherSources:
+	* PCBundleProj/PCBundleProject.m, PCGormProj/PCGormProject.m,
+	PCLibProj/PCLibProject.m, PCRenaissanceProj/PCRenaissanceProject.m,
+	PCToolProj/PCToolProject.m: Idem.
+
+2003-04-27  Adam Fedor  <fedor@gnu.org>
+
+	* PCAppProj/PCAppProj.pcproj, PCBaseFileTypes/PCBaseFileTypes.pcproj,
+	PCBundleProj/PCBundleProj.pcproj, PCGormProj/PCGormProj.pcproj,
+	PCLib/ProjectCenter.pcproj, PCLibProj/PCLibProj.pcproj,
+	PCRenaissanceProj/PCRenaissanceProj.pcproj, 
+	PCToolProj/PCToolProj.pcproj, ProjectCenter/ProjectCenter.pcproj:
+	Change $(GNUSTEP_SYSTEM_ROOT)/Makefiles to $(GNUSTEP_MAKEFILES)
+
+2003-04-23 Serg Stoyan <stoyan@hologr.com>
+
+	* PCLib/PCDefines.h: SeparateBuilder, SeparateLauncher,
+	SeparateEditor defines were added.
+
+	* PCLib/PCProject+ComponentHandling.m: Added ability to display
+	ProjectBuilder as separate panel or as view inside main project
+	window.
+	
+	* PCLib/PCProject+UInterface.m: Ditto.
+	
+	* PCLib/PCProjectBuilder.m: Ditto.
+
+	* PCLib/PCProjectBuilder.h: Ditto.
+	
+	* PCLib/PCProject.m:
+	(windowWillClose:): Removed calling showBuildView: hack.
+	
+	* PCLib/PCProjectManager.m:
+	(loadProjectAt:): Removed centering project window.
+	
+	* ProjectCenter/PCPrefController.h: separateBuilder separateLauncher,
+	id separateEditor defines added.
+
+	* ProjectCenter/PCPrefController.m: Added new section "Interface".
+	Moved "Use external Editor" and "Prompt when quitting" from
+	"Miscellaneous" section into "Interface" section. Cleanup.
+	
+	* ChangLogs in all subprojects moved to ChangeLog.old files.
+	All changes should go into this ChangeLog only.
+
+	* PCAppProj/PCAppProject.m: Added PCProject+UInterface.h include.
+	* PCBundleProj/PCBundleProject.m: Ditto.
+	* PCGormProj/PCGormProject.m: Ditto.
+	* PCLibProj/PCLibProject.m: Ditto.
+	* PCRenaissanceProj/PCRenaissanceProject.m: Ditto.
+	* PCToolProj/PCToolProject.m: Ditto.
+	
+2003-01-25  Daniel Luederwald <das_flip@gmx.de>
+
+	* GNUmakefile (SUBPROJECTS): New project PCRenaissanceProj
+
+2002-10-06 15:45  probert
+
+	* AUTHORS, PCLib/PCEditor.h, PCLib/PCEditor.m,
+	PCLib/PCEditorView.m, PCLib/PCProjectEditor.h,
+	PCLib/PCProjectEditor.m, ProjectCenter/ProjectCenterInfo.plist,
+	ProjectCenter/ProjectCenter_main.m: Updated the AUTHORS file and
+	applied David Ayers' patch.
+
+2002-08-10 16:24  probert
+
+	* AUTHORS: Added the AUTHORS file
+
+2002-08-10 14:10  probert
+
+	* PCLib/PCEditor.m: Applied patch sent in by O. Kornilov to avoid
+	exception when clicking on file name in browser
+
+2002-08-10 13:41  probert
+
+	* PCLib/PCEditorView+Highlighting.m: Removed call to super's
+	initialize
+
+2002-06-01 16:00  probert
+
+	* INSTALL, PCAppProj/ChangeLog, PCBaseFileTypes/ChangeLog,
+	PCBundleProj/ChangeLog, PCGormProj/ChangeLog, PCLib/ChangeLog,
+	PCLibProj/ChangeLog, PCToolProj/ChangeLog, ProjectCenter/ChangeLog:
+	Updated ChangeLogs
+
+2002-06-01 15:56  probert
+
+	* PCBaseFileTypes/GNUmakefile,
+	PCBaseFileTypes/PCBaseFileTypes.pcproj, PCBundleProj/GNUmakefile,
+	PCBundleProj/PCBundleProj.pcproj, PCGormProj/GNUmakefile,
+	PCGormProj/PCGormProj.pcproj, PCLibProj/GNUmakefile,
+	PCLibProj/PCLibProj.pcproj, PCToolProj/GNUmakefile,
+	PCToolProj/PCToolProj.pcproj: Installation into
+	GNUSPTE_INSTALLATION_DIR
+
+2002-06-01 15:55  probert
+
+	* PCLib/PCMakefileFactory.m: Code cleanup
+
+2002-06-01 15:54  probert
+
+	* ProjectCenter/: GNUmakefile, ProjectCenter.pcproj,
+	ProjectCenterInfo.plist: New version 0.3.0
+
+2002-06-01 15:53  probert
+
+	* PCAppProj/: GNUmakefile, PCAppProj.pcproj, PCAppProject.m: Fixed
+	a bug in the app makefile creation
+
+2002-06-01 15:46  probert
+
+	* PCLib/: GNUmakefile, PCBundleLoader.m, PCMakefileFactory.m,
+	ProjectCenter.pcproj: Fixed a bug in the lib makefile creation
+	part.
+
+2002-06-01 15:07  probert
+
+	* PCBundleProj/: PC.proj, PCBundleProject.m: The default
+	installation path prefix for bundles is now set to
+	$GNUSTEP_INSTALLATION_DIR
+
+2002-04-26 05:12  fedor
+
+	* PCAppProj/ChangeLog, PCAppProj/PCAppProject.m,
+	PCBundleProj/ChangeLog, PCBundleProj/PCBundleProject.m,
+	PCGormProj/ChangeLog, PCGormProj/PCGormProject.m, PCLib/ChangeLog,
+	PCLib/GNUmakefile, PCLib/PCBrowserController.m,
+	PCLib/PCHistoryController.m, PCLib/PCProject.m,
+	PCLib/PCProjectManager.m, PCLibProj/ChangeLog,
+	PCLibProj/PCLibProject.m, PCToolProj/ChangeLog,
+	PCToolProj/PCToolProject.m: removed bunches of duplicate calls,
+	retains and releases.
+
+2002-04-25 23:12  fedor
+
+	* PCLib/: ChangeLog, PCBrowserController.m, PCHistoryController.m:
+	Retain browser
+
+2002-03-25 20:37  probert
+
+	* NEWS, PCAppProj/ChangeLog, PCBaseFileTypes/ChangeLog,
+	PCBundleProj/ChangeLog, PCGormProj/ChangeLog, PCLib/ChangeLog,
+	PCLib/Version, PCLibProj/ChangeLog, PCToolProj/ChangeLog,
+	ProjectCenter/ChangeLog, ProjectCenter/ProjectCenterInfo.plist:
+	ChangeLog updates
+
+2002-03-04 11:19  CaS
+
+	* ChangeLog, ProjectCenter/PCMenuController.m: Tidy save panel a
+	bit.
+
+2002-03-03 16:31  probert
+
+	* PCLibProj/PCLibProject.m: Forgot to include the Version file -
+	fixed.
+
+2002-03-03 14:47  probert
+
+	* PCLib/: PCHistoryController.m, PCProject.m: Fixed mem leak in the
+	history controller.
+
+2002-03-03 14:45  probert
+
+	* ProjectCenter/ProjectCenter_main.m: Removed conflicting
+	keybindings ( font and find panel )
+
+2002-03-02 14:58  probert
+
+	* ProjectCenter/ProjectCenter_main.m: The font menu is back (
+	needed by the file editors )
+
+2002-03-02 14:58  probert
+
+	* PCLib/: PCEditor.m, PCEditorView.m: Editors should now use the
+	font panel.
+
+2002-03-02 14:15  probert
+
+	* PCLib/: PCEditor.h, PCEditor.m, PCEditorController.m: Using
+	saveFileIfNeeded instead of saveFile.
+
+2002-03-02 14:11  probert
+
+	* PCLib/: PCEditorController.h, PCEditorController.m, PCProject.m,
+	PCProjectManager.m: The timed safe mechanism now also saves all
+	project files, if needed.
+
+2002-03-01 16:32  probert
+
+	* PCToolProj/: GNUmakefile, PCToolMakefileFactory.h,
+	PCToolMakefileFactory.m, PCToolProj.pcproj, PCToolProject.m: This
+	project now uses the makefile factory too.
+
+2002-03-01 16:19  probert
+
+	* PCLib/: PCMakefileFactory.h, PCMakefileFactory.m: Added support
+	for tool projects.
+
+2002-03-01 16:06  probert
+
+	* PCLibProj/: GNUmakefile, PCLibMakefileFactory.h,
+	PCLibMakefileFactory.m, PCLibProj.pcproj, PCLibProject.m: This
+	project now uses the makefile factory too.
+
+2002-03-01 15:58  probert
+
+	* PCLib/: PCMakefileFactory.h, PCMakefileFactory.m: Support for
+	libraries added.
+
+2002-03-01 15:38  probert
+
+	* PCGormProj/: GNUmakefile, PCGormMakefileFactory.h,
+	PCGormMakefileFactory.m, PCGormProj.pcproj, PCGormProject.m: This
+	project now uses the makefile factory too.
+
+2002-03-01 15:22  probert
+
+	* PCBundleProj/PCBundleProj.m: Fix to avoid warning
+
+2002-03-01 15:18  probert
+
+	* PCLib/: PCMakefileFactory.h, PCMakefileFactory.m: Support for
+	bundles
+
+2002-03-01 15:18  probert
+
+	* PCBundleProj/: GNUmakefile, PCBundleMakefileFactory.h,
+	PCBundleMakefileFactory.m, PCBundleProj.pcproj, PCBundleProject.m:
+	The project now uses the shared makefile factory too.
+
+2002-03-01 14:30  probert
+
+	* PCAppProj/PCAppProject.m: Removed old include statements.
+
+2002-03-01 14:28  probert
+
+	* PCAppProj/: GNUmakefile, PCAppMakefileFactory.h,
+	PCAppMakefileFactory.m, PCAppProj.pcproj, PCAppProject.m: The
+	project now uses the makefile factory to create makefiles.
+
+2002-03-01 11:39  probert
+
+	* PCLib/: GNUmakefile, PCMakefileFactory.h, PCMakefileFactory.m,
+	ProjectCenter.h, ProjectCenter.pcproj: Began to clean up the
+	makefile creation code. Introduced a shared factory for that
+	purpose which implements basic stuff used by all projects.
+
+2002-02-22 19:48  probert
+
+	* PCLib/PCEditorController.m: Fixed a bug which caused PC to crash
+	when an external GS editor was used, thx to Richard for pointing me
+	to the right place!
+
+2002-02-21 22:26  probert
+
+	* PCLib/PCProjectManager.m: Removed annoying alert panel raised
+	upon saving all projects
+
+2002-02-21 22:17  probert
+
+	* PCLib/: GNUmakefile, PCBrowserController.m,
+	PCHistoryController.h, PCHistoryController.m, PCProject.h,
+	PCProject.m, ProjectCenter.h, ProjectCenter.pcproj: First attempt
+	of integrating a history browser for better file navigation.  There
+	are still bugs though...
+
+2002-02-21 13:50  probert
+
+	* PCLib/PCEditorController.m: When a GNUstep app is used as
+	external editor, NSWorkspace is used to open the file using the
+	repsective app.
+
+2002-02-21 13:25  probert
+
+	* ProjectCenter/PCAppController.m: Fixed a bug which prevented the
+	app to load a project when being told via application:openfile:
+
+2002-02-21 12:41  probert
+
+	* ProjectCenter/PCMenuController.m: The path for creating new
+	projects is now maintained by a separate defaults entry.
+
+2002-02-21 12:29  probert
+
+	* PCLib/PCProject.m: Removing a file causes the browser to be
+	updated
+
+2002-02-21 12:25  probert
+
+	* PCLib/: PCBrowserController.m, PCProject.m: If the project
+	changes the browser reloads the correct column.
+
+2002-02-21 11:45  probert
+
+	* PCLib/PCProject+ComponentHandling.h,
+	PCLib/PCProject+ComponentHandling.m, PCLib/PCProject.h,
+	PCLib/PCProject.m, ProjectCenter/PCAppController+MenuHandling.h,
+	ProjectCenter/PCAppController+MenuHandling.m,
+	ProjectCenter/PCMenuController.m,
+	ProjectCenter/ProjectCenter_main.m: All project components are now
+	accessible via menu entry. Furthermore it is also possible to
+	launch the selected target via menu entry.
+
+2002-02-21 11:15  probert
+
+	* PCLib/: PCEditorController.h, PCEditorController.m, PCProject.m:
+	Single click always invokes the internal editor now.
+
+2002-02-21 11:05  probert
+
+	* PCLib/: PCBrowserController.h, PCBrowserController.m,
+	PCProject.h, PCProject.m: Cleaned up the code which is called upon
+	seleting a file in the project browser. Now libraries etc. do not
+	show up in the internal editor anymore.
+
+2002-02-17 21:10  probert
+
+	* PCBaseFileTypes/ChangeLog, PCGormProj/ChangeLog, PCLib/ChangeLog,
+	ProjectCenter/ChangeLog: Updated the ChangeLog files
+
+2002-02-17 21:03  probert
+
+	* ProjectCenter/: PCPrefController.h, PCPrefController.m: Added a
+	new preference panel related to code editing. For now there is only
+	1 option available, the tab behaviour.
+
+2002-02-17 21:02  probert
+
+	* PCLib/PCDefines.h: Added the TabBehaviour define required by the
+	preferences
+
+2002-02-17 18:40  probert
+
+	* PCLib/: GNUmakefile, PCEditorView+Highlighting.h,
+	PCEditorView+Highlighting.m, PCEditorView.h, PCEditorView.m,
+	ProjectCenter.h, ProjectCenter.pcproj: Moved the (deprecated)
+	highlighting code into PCEditorView+Highlighting and implemented
+	tab (\t) capabilities.
+
+2002-02-17 14:14  probert
+
+	* PCLib/: PCEditor.m, PCEditorController.m, PCEditorView.m,
+	PCProject.m, PCProjectEditor.m, PCProjectManager.m: Fixed 2 bugs
+	which caused a severe crash.
+
+2002-02-16 22:21  probert
+
+	* PCGormProj/baseInterface.gorm: Enhanced the default menu entries
+	by adding standard submenu.
+
+2002-02-16 22:12  probert
+
+	* PCGormProj/: baseInterface.classes, baseInterface.gorm: Updated
+	the Gorm generated files using the latest Gorm CVS code.
+
+2002-02-16 21:46  probert
+
+	* PCLib/: PCBrowserController.m, PCFileManager.h, PCFileManager.m,
+	PCProject+ComponentHandling.m, PCProjectEditor.m: Enhanced the 'new
+	file window' by adding a description view.
+
+2002-02-16 21:43  probert
+
+	* PCBaseFileTypes/: GNUmakefile, PCBaseFileType.m,
+	PCBaseFileTypes.pcproj, nsviewclass.template,
+	nsviewheader.template: Added support for a NSView subclass
+	template. Also added a description to every file template.
+
+2002-02-12 22:44  probert
+
+	* PCLib/PCProject.m: Fixed the bug that when clicking on a source
+	file for the first time, the editor did not display the file's
+	content.
+
+2002-02-12 21:14  probert
+
+	* ProjectCenter/ProjectCenterInfo.plist: Updated copyright
+	message...
+
+2002-02-12 21:05  probert
+
+	* PCLib/: PCProjectBuilder.m, PCProjectDebugger.h,
+	PCProjectDebugger.m: Added a launch target popup which lets the
+	user choose between the default or the debug target.
+
+2002-02-11 23:19  probert
+
+	* PCLib/GNUmakefile, PCLib/PCEditor.h, PCLib/PCEditor.m,
+	PCLib/PCEditorController.m, PCLib/PCEditorView.h,
+	PCLib/PCEditorView.m, PCLib/PCFileManager.m,
+	PCLib/PCProject+ComponentHandling.h,
+	PCLib/PCProject+ComponentHandling.m, PCLib/PCProject.h,
+	PCLib/PCProject.m, PCLib/PCProjectBuilder.h,
+	PCLib/PCProjectBuilder.m, PCLib/PCProjectDebugger.h,
+	PCLib/PCProjectEditor.h, PCLib/PCProjectEditor.m,
+	PCLib/ProjectCenter.h, PCLib/ProjectCenter.pcproj,
+	PCLib/ProjectComponent.h,
+	ProjectCenter/PCAppController+MenuHandling.m: Began to work on
+	support for an integrated editor, thus much has been rewritten
+	related to editor handling. This is work in progress... Every
+	PCProject component now has to conform to the ProjectComponent
+	protocol.  Syntax highlighting is disabled for now, this will
+	undergo a major rewrite soon.  Furthermore I separated the
+	component handling stuff from the main class file and put it into
+	PCProject+ComponentHandling.
+
+2002-02-03 20:31  probert
+
+	* PCLib/: PCEditor.h, PCEditor.m, PCProject.m, PCTextFinder.m:
+	Optimised text edition reflection. Embedded editing will need more
+	changes in that respect, I fear...
+
+2002-02-03 17:31  probert
+
+	* ProjectCenter/: PCAppController+MenuHandling.h,
+	PCAppController+MenuHandling.m, PCAppController.m,
+	PCMenuController.m, ProjectCenter_main.m: Integrated the text
+	finder into the menu structure and cleaned up some parts of the
+	code related to menus.
+
+2002-02-03 17:30  probert
+
+	* PCLib/: GNUmakefile, PCEditor.m, PCTextFinder.h, PCTextFinder.m,
+	ProjectCenter.h, ProjectCenter.pcproj: Added a text finder to
+	ProjectCenter (based on Ali Ozer's code).
+
+2002-02-02 22:15  probert
+
+	* ProjectCenter/: PCAppController+MenuHandling.h,
+	PCAppController+MenuHandling.m, PCMenuController.h,
+	PCMenuController.m, ProjectCenter_main.m: Menus are now
+	enabled/disabled whenever they should...
+
+2002-02-02 22:13  probert
+
+	* PCLib/PCDefines.h: Defines belong into PCDefines.h now
+
+2002-02-02 22:12  probert
+
+	* PCLib/: GNUmakefile, PCBrowserController.h, PCBundleLoader.h,
+	PCEditor.h, PCEditor.m, PCEditorView.m, PCFileManager.h,
+	PCProject.h, PCProjectBuilder.h, PCProjectManager.h,
+	PCProjectManager.m, PCServer.h, PreferenceController.h,
+	ProjectBuilder.h, ProjectCenter.h, ProjectCenter.pcproj,
+	ProjectDebugger.h, ProjectEditor.h, Server.h: Cleaned up the header
+	files ( added ifndef/define statements ), splitted the
+	ProjectCenter.h header and some other cleanups. Editor now send
+	notifications whenever they become or resign key.
+
+2002-02-02 20:21  probert
+
+	* PCLib/PCBrowserController.m, PCLib/PCEditor.h, PCLib/PCEditor.m,
+	PCLib/PCEditorController.h, PCLib/PCEditorController.m,
+	PCLib/PCEditorView.h, PCLib/PCEditorView.m, PCLib/PCProject.h,
+	PCLib/PCProject.m, PCLib/PCProjectManager.m,
+	ProjectCenter/PCAppController.m: Kind of implemented saving and
+	reverting of common files. A long way to go, but for now it
+	works...
+
+2002-02-02 18:56  probert
+
+	* PCLib/: GNUmakefile, PCBrowserController.h,
+	PCBrowserController.m, PCBundleLoader.h, PCBundleLoader.m,
+	PCEditor.h, PCEditor.m, PCEditorController.h, PCEditorController.m,
+	PCEditorView.h, PCEditorView.m, PCProject.h, PCProject.m,
+	PCProjectManager.m, PCServer.h, PCServer.m, ProjectCenter.pcproj:
+	Rewriting the entire editor code. Hence introduced a
+	PCEditorController and cleaned up the PCServer class. Every project
+	now has a controller which controls all editors. Editors itself use
+	an editor view to display the files or external editors.
+
+2002-01-29 22:46  probert
+
+	* PCLib/: PCEditor.h, PCEditor.m, PCProjectManager.m: Fixed a bug
+	preventing reopening projects. Also added 2 methods which will be
+	used to make an editor embedded.
+
+2002-01-29 22:29  probert
+
+	* PCLib/: GNUmakefile, PCEditor.h, PCEditor.m, PCServer.h,
+	PCServer.m, ProjectCenter.pcproj: Cleaning up the internal editor
+	code. More to come...
+
+2002-01-27 14:55  probert
+
+	* PCLib/: GNUmakefile, PCProject.m, PCProjectDebugger.m,
+	PCSplitView.h, PCSplitView.m, ProjectCenter.pcproj: Using a
+	customised split view instead of a NSSplitView - more to come...
+
+2002-01-27 14:37  probert
+
+	* PCLib/PCProject.m: Minor UI enhancement: main button alignement
+	adjusted.
+
+2002-01-27 14:32  probert
+
+	* PCLib/: PCProject.m, PCProjectBuilder.h, PCProjectBuilder.m,
+	PCProjectDebugger.m: Removed unneeded buttons, added a title to the
+	remaining ones and introduced a splitview between the project
+	browser and component view. In the build view a popup button is now
+	used for build targets.
+
+2002-01-20 12:02  probert
+
+	* GNUmakefile: Cleanup of the toplevel makefile
+
+2002-01-19 12:54  nico
+
+	* ChangeLog, GNUmakefile: Minor change to make it compile again
+
+2002-01-07 16:36  probert
+
+	* PCGormProj/PC.proj, PCAppProj/PC.proj: Somehow
+	$(GNUSTEP_LOCAL_ROOT) is enough for the install path to be correct.
+
+2002-01-07 16:05  probert
+
+	* PCAppProj/ChangeLog, PCBaseFileTypes/ChangeLog,
+	PCBundleProj/ChangeLog, PCGormProj/ChangeLog, PCLib/ChangeLog,
+	PCLibProj/ChangeLog, PCToolProj/ChangeLog, ProjectCenter/ChangeLog:
+	Updated all ChangeLog files (using cvs2cl.pl)
+
+2002-01-07 16:01  probert
+
+	* PCAppProj/GNUmakefile, PCAppProj/PCAppProj.pcproj,
+	PCBaseFileTypes/GNUmakefile,
+	PCBaseFileTypes/PCBaseFileTypes.pcproj, PCBundleProj/GNUmakefile,
+	PCBundleProj/PCBundleProj.pcproj, PCGormProj/GNUmakefile,
+	PCGormProj/GNUmakefile.preamble, PCGormProj/PCGormProj.pcproj,
+	PCLibProj/GNUmakefile, PCLibProj/PCLibProj.pcproj,
+	PCToolProj/GNUmakefile, PCToolProj/PCToolProj.pcproj: Added
+	libProjectCenter to the bundle's library link settings.
+
+2002-01-07 11:00  probert
+
+	* Version, PCLib/GNUmakefile, PCLib/PCBrowserController.m,
+	PCLib/PCEditorView.m, PCLib/PCFileManager.m,
+	PCLib/ProjectCenter.pcproj, PCLib/Version: PCLib is now maintained
+	by ProjectCenter as well!
+
+2002-01-07 10:37  probert
+
+	* PCAppProj/PC.project, PCAppProj/PCAppProj.m,
+	PCAppProj/PCAppProj.pcproj, PCBaseFileTypes/PC.project,
+	PCBaseFileTypes/PCBaseFileTypes.pcproj, PCBundleProj/PC.project,
+	PCBundleProj/PCBundleProj.m, PCBundleProj/PCBundleProj.pcproj,
+	PCGormProj/PC.project, PCGormProj/PCGormProj.m,
+	PCGormProj/PCGormProj.pcproj, PCLib/PCProject.m,
+	PCLib/PCProjectManager.m, PCLibProj/PC.project,
+	PCLibProj/PCLibProj.m, PCLibProj/PCLibProj.pcproj,
+	PCToolProj/PC.project, PCToolProj/PCToolProj.m,
+	PCToolProj/PCToolProj.pcproj, ProjectCenter/PC.project,
+	ProjectCenter/PCMenuController.m,
+	ProjectCenter/ProjectCenter.pcproj,
+	ProjectCenter/ProjectCenterInfo.plist: ProjectCenter now stores the
+	project files under PROJECTNAME.pcproj to avoid name clashes.
+
+2002-01-07 05:40  fedor
+
+	* PCGormProj/: ChangeLog, GNUmakefile.preamble: Include
+	-lProjectCenter correctly
+
+2002-01-02 18:51  probert
+
+	* PCAppProj/PC.proj, PCAppProj/PC.project,
+	PCBaseFileTypes/PC.project, PCBundleProj/PC.proj,
+	PCBundleProj/PC.project, PCGormProj/PC.proj, PCGormProj/PC.project,
+	PCLibProj/PC.proj, PCLibProj/PC.project, PCToolProj/PC.proj,
+	PCToolProj/PC.project, ProjectCenter/PC.project: Changed the build
+	tool entry to /usr/bin/make in all project files and templates.
+
+2002-01-02 18:43  probert
+
+	* PCLib/: PCProject.m, PCProjectBuilder.m: The build tool can now
+	be customised. Make sure to enter a valid path in the inspector
+	field!
+
+2002-01-02 18:33  probert
+
+	* PCLib/GNUmakefile: The library now gets installed in the proper
+	directory as well.
+
+2002-01-02 17:37  probert
+
+	* PCGormProj/ChangeLog: Added the ChangeLog for the Gorm App
+	project
+
+2002-01-02 17:33  probert
+
+	* PCGormProj/PCGormMakefileFactory.m,
+	PCLibProj/PCLibMakefileFactory.m,
+	PCToolProj/PCToolMakefileFactory.m: Libraries, Gorm apps and tools
+	use the install path now, too.
+
+2002-01-02 17:05  probert
+
+	* PCAppProj/GNUmakefile, PCAppProj/PC.proj, PCAppProj/PC.project,
+	PCAppProj/PCAppMakefileFactory.m, PCAppProj/PCAppProject.m,
+	PCBaseFileTypes/GNUmakefile, PCBaseFileTypes/PC.project,
+	PCBundleProj/GNUmakefile, PCBundleProj/PC.proj,
+	PCBundleProj/PC.project, PCBundleProj/PCBundleMakefileFactory.m,
+	PCBundleProj/PCBundleProject.m, PCGormProj/GNUmakefile,
+	PCGormProj/PC.proj, PCGormProj/PC.project,
+	PCGormProj/PCGormProject.m, PCLib/PCProject.h, PCLib/PCProject.m,
+	PCLib/PCProjectBuilder.m, PCLib/PCProjectManager.m,
+	PCLibProj/GNUmakefile, PCLibProj/LibProject.gmodel,
+	PCLibProj/PC.proj, PCLibProj/PC.project, PCToolProj/GNUmakefile,
+	PCToolProj/PC.proj, PCToolProj/PC.project,
+	ProjectCenter/GNUmakefile, ProjectCenter/PC.project: The inspector
+	now handles the installation path and other settings. Furthermore
+	it does not save changes automatically but marks the project as
+	being edited.  Upon 'save' the project file and GNUmakefile are
+	being saved, not before! In addition the various PC* bundles are
+	now maintained by ProjectCenter itself.  The installation path for
+	ProjectCenter.app is corrected to the SYSTEM ROOT as well.
+
+2002-01-02 13:13  probert
+
+	* INSTALL, PCAppProj/AppController.h, PCAppProj/AppController.m,
+	PCAppProj/GNUmakefile, PCAppProj/PC.proj,
+	PCBaseFileTypes/GNUmakefile, PCBundleProj/GNUmakefile,
+	PCBundleProj/PC.proj, PCGormProj/GNUmakefile, PCGormProj/PC.proj,
+	PCLib/PCBundleLoader.m, PCLibProj/GNUmakefile, PCLibProj/PC.proj,
+	PCToolProj/GNUmakefile, PCToolProj/PC.proj,
+	ProjectCenter/PCAppController.m: All bundles and libProjectCenter
+	are now installed under GNUSTEP_SYSTEM_ROOT.  Also the PC.proj
+	templates have now a correct install path default value.
+
+2002-01-01 19:21  probert
+
+	* PCLib/PCProjectBuilder.m: Added a new button for the build target
+	'dist' in the builder panel
+
+2002-01-01 19:09  probert
+
+	* ProjectCenter/: GNUmakefile, PC.project, ProjectCenter_dist.tiff,
+	ProjectCenter_rpm.tiff: Added the icon for creating a tar.gz dist
+	and updated the project files using the latest CVS code.
+
+2002-01-01 18:27  probert
+
+	* Version, PCAppProj/PC.proj, PCAppProj/PCAppProject.h,
+	PCAppProj/PCAppProject.m, PCBundleProj/PC.proj,
+	PCBundleProj/PCBundleProject.h, PCBundleProj/PCBundleProject.m,
+	PCGormProj/PC.proj, PCGormProj/PCGormProject.h,
+	PCGormProj/PCGormProject.m, PCLib/PCProject.h, PCLib/PCProject.m,
+	PCLib/PCProjectBuilder.m, PCLib/PCProjectManager.m,
+	PCLibProj/PC.proj, PCLibProj/PCLibProject.h,
+	PCLibProj/PCLibProject.m, PCToolProj/PC.proj,
+	PCToolProj/PCToolProject.h, PCToolProj/PCToolProject.m,
+	ProjectCenter/ProjectCenterInfo.plist: ProjectCenter now validates
+	project dictionaries and updates them if requested.  I also added
+	new keys tp the PC.project files in order to be able to generate
+	valid *.spec.in files needed when building RPMs.
+
+2001-12-29 16:56  probert
+
+	* ANNOUNCE: Updated ANNOUNCE file
+
+2001-12-29 16:44  probert
+
+	* NEWS: Updated NEWS for 0.2.6
+
+2001-12-29 16:37  probert
+
+	* ChangeLog, Version, PCAppProj/ChangeLog,
+	PCBaseFileTypes/ChangeLog, PCBundleProj/ChangeLog, PCLib/ChangeLog,
+	PCLibProj/ChangeLog, PCToolProj/ChangeLog, ProjectCenter/ChangeLog,
+	ProjectCenter/ProjectCenterInfo.plist: Removed the toplevel
+	ChangeLog, updated the ChangeLogs in the subdirectories and raised
+	the version number to 0.2.6.
+
+2001-12-29 16:28  probert
+
+	* ProjectCenter/PCPrefController.h,
+	ProjectCenter/PCPrefController.m, PCLib/PCProjectManager.h,
+	PCLib/PCProjectManager.m: Automatic, periodic saving of all open
+	projectfiles is now supported.
+
+2001-12-29 15:41  probert
+
+	* PCLib/PCProject.m: Fixed some minor issues with file backup
+	handling
+
+2001-12-29 15:10  probert
+
+	* ProjectCenter/: PCAppController+MenuHandling.h,
+	PCAppController+MenuHandling.m, PCAppController.m,
+	PCMenuController.h, PCMenuController.m, PCPrefController.h,
+	PCPrefController.m, ProjectCenter_main.m: Implemented more
+	preference handling and cleaned up some ugly parts of the code.
+	Removed the loadedProjectsWindow feature, it just does not make any
+	sense.
+
+2001-12-29 15:09  probert
+
+	* PCLib/: PCProject.m, PCProjectManager.h, PCProjectManager.m,
+	ProjectCenter.h: Cleaned up the writeMakefile method and
+	implemented the save stuff the way it should be. Some additions for
+	proper preference handling have been made as well.
+
+2001-12-29 15:07  probert
+
+	* PCLibProj/PCLibProject.m: leaned up the writeMakefile method
+
+2001-12-29 15:06  probert
+
+	* PCAppProj/PCAppProj.m, PCAppProj/PCAppProject.m,
+	PCBundleProj/PCBundleProject.m, PCGormProj/PCGormProject.m,
+	PCToolProj/PCToolProject.m: Cleaned up the writeMakefile method
+
+2001-12-28 15:11  probert
+
+	* PCLib/PCProjectDebugger.m: Fixed a typo and altered matrix button
+	behaviour
+
+2001-12-28 15:11  probert
+
+	* ProjectCenter/: GNUmakefile, PC.project: Added the missing rpm
+	icon
+
+2001-12-28 14:46  probert
+
+	* PCBaseFileTypes/: cfile.template, cheader.template,
+	class.template, header.template, protocol.template: Updated the
+	header information for all created file types
+
+2001-09-25 17:46  fedor
+
+	* ChangeLog, PCGormProj/GNUmakefile.preamble: Include proper header
+	dirs
+
+2001-08-03 16:31  probert
+
+	* INSTALL, ProjectCenter/ProjectCenterInfo.plist: Minor changes
+
+2001-08-03 16:23  probert
+
+	* Version, PCAppProj/AppController.h, PCAppProj/AppController.m,
+	PCAppProj/PCAppMakefileFactory.h, PCAppProj/PCAppMakefileFactory.m,
+	PCAppProj/PCAppProj.h, PCAppProj/PCAppProj.m,
+	PCAppProj/PCAppProject.h, PCAppProj/PCAppProject.m,
+	PCBaseFileTypes/PCBaseFileType.h, PCBaseFileTypes/PCBaseFileType.m,
+	PCBundleProj/PCBundleMakefileFactory.h,
+	PCBundleProj/PCBundleMakefileFactory.m,
+	PCBundleProj/PCBundleProj.h, PCBundleProj/PCBundleProj.m,
+	PCBundleProj/PCBundleProject.h, PCBundleProj/PCBundleProject.m,
+	PCGormProj/PCGormMakefileFactory.h,
+	PCGormProj/PCGormMakefileFactory.m, PCGormProj/PCGormProj.h,
+	PCGormProj/PCGormProj.m, PCGormProj/PCGormProject.h,
+	PCGormProj/PCGormProject.m, PCLib/FileCreator.h,
+	PCLib/PCBrowserController.h, PCLib/PCBrowserController.m,
+	PCLib/PCBundleLoader.h, PCLib/PCBundleLoader.m,
+	PCLib/PCDataSource.h, PCLib/PCDataSource.m, PCLib/PCEditorView.h,
+	PCLib/PCEditorView.m, PCLib/PCFileManager.h, PCLib/PCFileManager.m,
+	PCLib/PCProject.h, PCLib/PCProject.m, PCLib/PCProjectBuilder.h,
+	PCLib/PCProjectBuilder.m, PCLib/PCProjectDebugger.h,
+	PCLib/PCProjectDebugger.m, PCLib/PCProjectManager.h,
+	PCLib/PCProjectManager.m, PCLib/PCServer.h, PCLib/PCServer.m,
+	PCLib/PreferenceController.h, PCLib/ProjectBuilder.h,
+	PCLib/ProjectCenter.h, PCLib/ProjectDebugger.h,
+	PCLib/ProjectEditor.h, PCLib/ProjectType.h, PCLib/Server.h,
+	PCLibProj/PCLibMakefileFactory.h, PCLibProj/PCLibMakefileFactory.m,
+	PCLibProj/PCLibProj.h, PCLibProj/PCLibProj.m,
+	PCLibProj/PCLibProject.h, PCLibProj/PCLibProject.m,
+	PCToolProj/PCToolMakefileFactory.h,
+	PCToolProj/PCToolMakefileFactory.m, PCToolProj/PCToolProj.h,
+	PCToolProj/PCToolProj.m, PCToolProj/PCToolProject.h,
+	PCToolProj/PCToolProject.m,
+	ProjectCenter/PCAppController+MenuHandling.h,
+	ProjectCenter/PCAppController+MenuHandling.m,
+	ProjectCenter/PCAppController.h, ProjectCenter/PCAppController.m,
+	ProjectCenter/PCFindController.h, ProjectCenter/PCFindController.m,
+	ProjectCenter/PCInfoController.h, ProjectCenter/PCInfoController.m,
+	ProjectCenter/PCLogController.h, ProjectCenter/PCLogController.m,
+	ProjectCenter/PCMenuController.h, ProjectCenter/PCMenuController.m,
+	ProjectCenter/PCPrefController.h, ProjectCenter/PCPrefController.m,
+	ProjectCenter/ProjectCenter_main.m: New version - now copyrighted
+	by the FSF
+
+2001-08-01 18:27  probert
+
+	* PCLib/PCEditorView.m: Better highlighting of keywords
+
+2001-08-01 18:27  probert
+
+	* PCBaseFileTypes/: PCBaseFileType.m, cheader.template,
+	header.template: Better templates for headers
+
+2001-08-01 15:12  probert
+
+	* PCBaseFileTypes/: PCBaseFileType.m, cheader.template,
+	header.template: optimised include behaviour
+
+2001-08-01 14:43  probert
+
+	* ProjectCenter/: ChangeLog, ProjectCenterInfo.plist: Some updated
+	information regarding the version
+
+2001-08-01 14:43  probert
+
+	* ChangeLog: Removed the toplevel ChangeLog file
+
+2001-08-01 14:35  probert
+
+	* GNUmakefile, GNUmakefile.postamble, GNUmakefile.preamble,
+	INSTALL, NEWS, README, PCAppProj/GNUmakefile,
+	PCAppProj/GNUmakefile.postamble, PCAppProj/GNUmakefile.preamble,
+	PCAppProj/PCAppMakefileFactory.m, PCBaseFileTypes/GNUmakefile,
+	PCBaseFileTypes/GNUmakefile.preamble, PCBundleProj/GNUmakefile,
+	PCBundleProj/GNUmakefile.postamble,
+	PCBundleProj/GNUmakefile.preamble,
+	PCBundleProj/PCBundleMakefileFactory.m, PCGormProj/GNUmakefile,
+	PCGormProj/GNUmakefile.postamble, PCGormProj/GNUmakefile.preamble,
+	PCGormProj/PCGormMakefileFactory.m, PCLib/GNUmakefile,
+	PCLib/GNUmakefile.postamble, PCLib/GNUmakefile.preamble,
+	PCLibProj/GNUmakefile, PCLibProj/GNUmakefile.postamble,
+	PCLibProj/GNUmakefile.preamble, PCLibProj/PCLibMakefileFactory.m,
+	PCLibProj/h.template, PCToolProj/GNUmakefile,
+	PCToolProj/GNUmakefile.postamble, PCToolProj/GNUmakefile.preamble,
+	PCToolProj/PCToolMakefileFactory.m, ProjectCenter/GNUmakefile,
+	ProjectCenter/GNUmakefile.postamble,
+	ProjectCenter/GNUmakefile.preamble: New copyright information and
+	minor template additions
+
+2001-07-15 13:41  probert
+
+	* ChangeLog: Added ChangeLog file
+
+2001-07-07 13:56  probert
+
+	* ProjectCenter/: PCAppController.m, ProjectCenterInfo.plist:
+	Default editor is now vi, new version number added
+
+2001-07-07 13:56  probert
+
+	* Version: New version 0.2.4
+
+2001-07-07 13:48  probert
+
+	* ProjectCenter/: GNUmakefile, ProjectCenter_main.m: Little GUI
+	modifications
+
+2001-07-07 13:48  probert
+
+	* PCLib/: PCProjectDebugger.m, PCServer.m: Little GUI
+	modifications, done by Pierre-Yves Rivaille
+
+2001-07-07 13:48  probert
+
+	* PCGormProj/: GNUmakefile, GNUmakefile.postamble,
+	GNUmakefile.preamble, Info-project.plist, Info.table, PC.proj,
+	PCGormMakefileFactory.h, PCGormMakefileFactory.m, PCGormProj.h,
+	PCGormProj.m, PCGormProject.h, PCGormProject.m,
+	baseInterface.classes, baseInterface.gorm, h.template, m.template,
+	main.m: Added the GormApplication project, done by Pierre-Yves
+	Rivaille
+
+2001-07-07 13:47  probert
+
+	* GNUmakefile: [no log message]
+
+2001-07-01 21:02  probert
+
+	* PCBaseFileTypes/GNUmakefile.preamble,
+	PCLib/GNUmakefile.postamble: Added makefile
+
+2001-07-01 21:01  probert
+
+	* PCAppProj/GNUmakefile, PCAppProj/GNUmakefile.preamble,
+	PCBaseFileTypes/GNUmakefile, PCBundleProj/GNUmakefile,
+	PCBundleProj/GNUmakefile.preamble, PCLib/GNUmakefile,
+	PCLib/GNUmakefile.preamble, PCLibProj/GNUmakefile,
+	PCLibProj/GNUmakefile.preamble, PCToolProj/GNUmakefile,
+	PCToolProj/GNUmakefile.preamble,
+	ProjectCenter/GNUmakefile.preamble: Applied patch from Adam Fedor
+
+2001-07-01 21:01  probert
+
+	* ANNOUNCE: Minor update
+
+2001-01-29 13:17  robert
+
+	* PCLib/: PCEditorView.m, PCProjectBuilder.m, PCServer.m: new
+	textview code required some changes
+
+2001-01-26 09:45  robert
+
+	* ProjectCenter/: GNUmakefile, Info-project.plist, PC.project,
+	ProjectCenterInfo.plist: updated the PC.project file and renamed
+	the plist file
+
+2001-01-20 11:48  robert
+
+	* PCAppProj/PCAppMakefileFactory.m: Fixed the ADDITIONAL_GUI_LIBS
+	line - this time it should be 100% OK
+
+2001-01-19 11:33  robert
+
+	* PCAppProj/PCAppMakefileFactory.m: using LDFLAGS instead of
+	ADDITIONAL_GUI_LIBS solves the linker problem
+
+2001-01-14 18:54  robert
+
+	* PCAppProj/ChangeLog, PCBaseFileTypes/ChangeLog,
+	PCBundleProj/ChangeLog, PCLib/ChangeLog, PCLibProj/ChangeLog,
+	PCToolProj/ChangeLog, ProjectCenter/ChangeLog: Updated the
+	ChangeLogs
+
+2001-01-14 18:01  robert
+
+	* PCLib/PB.project: removing old PB stuff
+
+2001-01-14 17:57  robert
+
+	* PCLib/: PCProjectBuilder.m, PCProjectDebugger.h,
+	PCProjectDebugger.m: Major improvements to the launch/debugger part
+
+2001-01-14 17:23  robert
+
+	* PCLib/: Makefile, Makefile.postamble, Makefile.preamble: removed
+	old PB stuff
+
+2001-01-14 17:20  robert
+
+	* Version: new version...
+
+2001-01-14 17:19  robert
+
+	* ProjectCenter/ProjectCenter_main.m: cleanup in main()
+
+2001-01-14 17:15  robert
+
+	* PCBaseFileTypes/: Makefile, Makefile.postamble,
+	Makefile.preamble, PB.project, PCBaseFileType.m: removed old PB
+	stuff and rearranged the file types
+
+2001-01-14 17:08  robert
+
+	* PCAppProj/PCAppProject.m, PCBundleProj/PCBundleProject.m,
+	PCLibProj/PCLibProject.m, PCToolProj/PCToolProject.m: Added the
+	supporting files category
+
+2001-01-14 16:53  robert
+
+	* PCLib/PCProject.m: Fixed some mem leaks
+
+2001-01-14 16:38  robert
+
+	* ProjectCenter/: PCPrefController.h, PCPrefController.m: UI
+	cleanup and optimisation
+
+2001-01-14 16:08  robert
+
+	* PCBundleProj/: PCBundleProject.h, PCBundleProject.m: the
+	principal class can now be set using the GUI
+
+2001-01-14 16:07  robert
+
+	* PCAppProj/: PCAppProject.h, PCAppProject.m: teh application class
+	can now be set - althoug still ignored by the makefile
+
+2001-01-13 21:46  robert
+
+	* PCBundleProj/PCBundleMakefileFactory.m, PCLib/PCFileManager.m,
+	PCLib/PCProject.m: fix in the bundle project related to the
+	principal class.
+
+2001-01-13 16:56  robert
+
+	* PCBundleProj/PCBundleMakefileFactory.m: the principal class
+	should now be set in any cases
+
+2001-01-11 20:21  robert
+
+	* PCLib/: PCProjectBuilder.m, PCProjectDebugger.m: some more
+	textview handling...sigh
+
+2001-01-11 19:42  robert
+
+	* PCLib/: PCProjectBuilder.m, PCProjectDebugger.h,
+	PCProjectDebugger.m: Added a primitive app/too launcher/debugger
+
+2001-01-10 16:19  robert
+
+	* Version, PCBundleProj/PCBundleMakefileFactory.m,
+	PCLib/PCProjectBuilder.h, PCLib/PCProjectBuilder.m,
+	ProjectCenter/GNUmakefile, ProjectCenter/ProjectCenter_rpm.tiff:
+	Initial support for RPM SPEC file creation
+
+2001-01-10 15:19  robert
+
+	* PCToolProj/PCToolMakefileFactory.m: inclusion of PACKAGE_NAME
+
+2001-01-10 15:18  robert
+
+	* PCAppProj/: Makefile, Makefile.postamble, Makefile.preamble,
+	PB.project, PCAppMakefileFactory.m: no PB support anymore,
+	inclusion of PACKAGE_NAME
+
+2001-01-10 15:17  robert
+
+	* PCLibProj/: Makefile, Makefile.postamble, Makefile.preamble,
+	PB.project: no PB support anymore
+
+2001-01-10 14:10  robert
+
+	* PCAppProj/main.m: applied the patch of nicola
+
+2001-01-10 13:56  robert
+
+	* PCAppProj/AppController.m: default is YES in
+	applicationShouldTerminate:
+
+2001-01-07 15:43  robert
+
+	* PCAppProj/PCAppProject.m, PCLib/PCProjectManager.h,
+	PCLib/PCProjectManager.m, ProjectCenter/Info-project.plist,
+	ProjectCenter/PCAppController+MenuHandling.m: some more minor fix
+	and cleanup work
+
+2001-01-07 15:11  robert
+
+	* PCLib/PCBrowserController.m: removed unneeded log
+
+2001-01-07 15:10  robert
+
+	* PCLib/PCProjectManager.m: logs only when in DEBUG
+
+2001-01-07 15:07  robert
+
+	* PCLib/PCBrowserController.m: opening files using the workspace
+	now works a little bit better...
+
+2001-01-07 14:44  robert
+
+	* PCLib/: PCServer.h, PCServer.m: reopening a file in the internal
+	editor now works w/o crashing
+
+2001-01-07 13:12  robert
+
+	* PCLib/: PCBrowserController.m, PCProject.m, PCProjectManager.m:
+	reopening projects is now possible - finally...
+
+2001-01-07 12:36  robert
+
+	* PCAppProj/PCAppProject.m: somehow the makefile was not being
+	written...?!
+
+2001-01-06 17:46  robert
+
+	* INSTALL: slight correction
+
+2001-01-06 17:44  robert
+
+	* PCAppProj/: PCAppProject.h, PCAppProject.m: AppIcons are now
+	set/cleaned correctly
+
+2001-01-06 17:26  robert
+
+	* PCLib/: PCProject.h, PCProject.m, PCServer.m: minor bugfix in the
+	editor textview and new method to copy files into proj
+
+2001-01-03 07:38  robert
+
+	* PCAppProj/: AppController.h, AppController.m: fixed a typo
+
+2000-11-10 19:27  robert
+
+	* PCAppProj/PCAppProject.h, PCAppProj/PCAppProject.m,
+	PCBundleProj/PCBundleProject.h, PCBundleProj/PCBundleProject.m,
+	PCLib/PCProject.h, PCLib/PCProject.m, PCLib/PCProjectManager.m,
+	PCLibProj/PCLibProject.h, PCLibProj/PCLibProject.m,
+	PCToolProj/PCToolProject.h, PCToolProj/PCToolProject.m,
+	ProjectCenter/PCPrefController.m: some daily work...
+
+2000-11-10 15:07  robert
+
+	* PCAppProj/ChangeLog, PCBaseFileTypes/ChangeLog,
+	PCBundleProj/ChangeLog, PCLibProj/ChangeLog, PCToolProj/ChangeLog:
+	changelog for 0.2
+
+2000-11-10 15:07  robert
+
+	* PCLib/ChangeLog, ProjectCenter/ChangeLog: changelog for 0.2.0
+
+2000-11-04 18:11  robert
+
+	* ProjectCenter/PCPrefController.m: some interface changes
+
+2000-11-04 17:48  robert
+
+	* ProjectCenter/: PCAppController.m, PCPrefController.m: the bundle
+	path is now depending on the GNUSTEP_LOCAL_ROOT env variable
+
+2000-11-04 17:47  robert
+
+	* PCLib/PCBundleLoader.m: the bundle path is now depending on the
+	env variable
+
+2000-11-04 14:22  robert
+
+	* PCBundleProj/: GNUmakefile, GNUmakefile.postamble,
+	GNUmakefile.preamble, Info.table, PC.proj,
+	PCBundleMakefileFactory.h, PCBundleMakefileFactory.m,
+	PCBundleProj.h, PCBundleProj.m, PCBundleProject.h,
+	PCBundleProject.m: the new bundle project type - probably not 100%
+	correct but working
+
+2000-11-04 14:21  robert
+
+	* GNUmakefile: Added the bundle project type
+
+2000-11-04 14:20  robert
+
+	* PCLib/: PCProject.h, PCProject.m: projects are by default not
+	executable
+
+2000-11-04 13:41  robert
+
+	* PCToolProj/: PCToolProject.h, PCToolProject.m: The project type
+	is executable
+
+2000-11-04 13:41  robert
+
+	* PCAppProj/: PCAppProj.m, PCAppProject.h, PCAppProject.m: we do
+	not use gmodels, and the project is executable
+
+2000-11-02 11:21  robert
+
+	* PCLib/: PCProject.m, PCProjectBuilder.m: 2 lines of information
+	when launching...
+
+2000-11-01 11:38  robert
+
+	* PCLib/: PCBrowserController.m, PCProject.m: removed logs
+
+2000-10-29 21:17  robert
+
+	* PCLib/: PCProjectDebugger.h, PCProjectDebugger.m: added the class
+	which will one day become a simple gdb frontend
+
+2000-10-29 21:15  robert
+
+	* PCLib/: GNUmakefile, PCBrowserController.m, PCProject.h,
+	PCProject.m, PCProjectBuilder.h, PCProjectBuilder.m,
+	ProjectCenter.h: new style interface - simpler but hopefully more
+	usable
+
+2000-10-29 13:16  robert
+
+	* ProjectCenter/Info-project.plist: some GWorkspace additions
+
+2000-10-29 13:01  robert
+
+	* ProjectCenter/Info-project.plist: 0.2 coming soon
+
+2000-10-29 13:00  robert
+
+	* ANNOUNCE, INSTALL, README, Version,
+	PCBaseFileTypes/protocol.template: updated textfiles and new
+	version coming soon...
+
+2000-10-29 13:00  robert
+
+	* PCLib/: PCBundleLoader.m, PCProject.m, PCProjectBuilder.h,
+	PCProjectBuilder.m, PCServer.h, PCServer.m: build logging now
+	works, as well as some enhancements when using the internal
+	'editor'
+
+2000-10-27 19:15  robert
+
+	* PCLib/: PCProject.h, PCProject.m: removed the 2 popups, which are
+	not needed on the top right side
+
+2000-10-26 11:12  robert
+
+	* PCLib/PCProject.m: more image files are allowed now
+
+2000-10-20 20:20  robert
+
+	* ProjectCenter/: Makefile, Makefile.postamble, Makefile.preamble,
+	PB.project: remove old PB support
+
+2000-10-20 20:18  robert
+
+	* ProjectCenter/PC.project: updated project file
+
+2000-10-20 20:13  robert
+
+	* PCLib/: PCProject.h, PCProjectBuilder.m: new build images in the
+	build panel
+
+2000-10-20 20:13  robert
+
+	* ProjectCenter/: GNUmakefile, ProjectCenter_clean.tiff,
+	ProjectCenter_debug.tiff, ProjectCenter_install.tiff,
+	ProjectCenter_make.tiff, ProjectCenter_profile.tiff: added build
+	images
+
+2000-10-20 17:18  robert
+
+	* PCBaseFileTypes/GNUmakefile, PCBaseFileTypes/PCBaseFileType.m,
+	PCBaseFileTypes/protocol.template, PCLib/PCEditorView.m,
+	PCLib/PCProject.m, ProjectCenter/PCAppController.m: Support for
+	protocols in file creation
+
+2000-10-20 16:49  robert
+
+	* PCAppProj/: PCAppMakefileFactory.m, PCAppProj.m, PCAppProject.h,
+	PCAppProject.m: some more UI
+
+2000-10-15 20:29  robert
+
+	* PCAppProj/PCAppProject.m, PCLibProj/PCLibProject.m,
+	PCToolProj/PCToolProject.m: some code improvements regarding the
+	inspector
+
+2000-10-15 20:24  robert
+
+	* PCLib/: PCBrowserController.m, PCProject.h, PCProject.m,
+	PCProjectBuilder.m, PCProjectManager.m: More UI enhancements - not
+	really functional yet
+
+2000-10-15 20:23  robert
+
+	* ProjectCenter/: PCAppController.h, PCAppController.m: modified
+	launching behaviour
+
+2000-10-15 14:36  robert
+
+	* PCAppProj/: AppController.h, AppController.m, main.m: fixed the
+	info panel issue
+
+2000-10-15 14:27  robert
+
+	* INSTALL, PCLib/PCBrowserController.m, PCLib/PCProject.m,
+	PCLib/PCProjectBuilder.h, PCLib/PCProjectBuilder.m,
+	PCLib/PCProjectManager.m: typo and note about GNUstep version added
+
+2000-10-15 14:25  robert
+
+	* PCAppProj/PCAppProj.m: Added the plist file to "Other Resources"
+
+2000-10-15 14:25  robert
+
+	* ProjectCenter/PCPrefController.m: UI improvement
+
+2000-10-11 15:15  robert
+
+	* PCToolProj/PCToolProject.m: daily work
+
+2000-10-11 09:35  robert
+
+	* PCAppProj/: AppController.h, AppController.m: removed old method
+
+2000-10-11 09:33  robert
+
+	* PCAppProj/: AppController.h, AppController.m, PCAppProj.m,
+	main.m: new info panel approach - uch simpler, thanks Nicola!
+
+2000-09-24 15:37  robert
+
+	* PCLibProj/PCLibProject.m: minor UI issue
+
+2000-09-23 17:45  robert
+
+	* PCLibProj/PCLibMakefileFactory.m: another issue...
+
+2000-09-23 16:24  robert
+
+	* PCLibProj/: PCLibMakefileFactory.m, PCLibProject.m: Fixed some
+	makefile issues
+
+2000-09-22 19:11  robert
+
+	* PCLib/: PCProject.h, PCProject.m: minor UI changes
+
+2000-09-22 12:33  robert
+
+	* PCLib/: PCBrowserController.m, PCProject.h, PCProject.m,
+	PCProjectBuilder.h, PCProjectBuilder.m: some UI modifications
+
+2000-09-22 11:24  robert
+
+	* PCToolProj/PCToolMakefileFactory.m: Fix in the makefile
+	generation section
+
+2000-09-21 09:36  robert
+
+	* PCLib/PCBundleLoader.m: bundle path issues
+
+2000-09-21 09:32  robert
+
+	* ProjectCenter/PCPrefController.m: bundle path issue now fixed,
+	hopefully...
+
+2000-09-21 09:17  robert
+
+	* INSTALL: better install file
+
+2000-09-21 09:07  robert
+
+	* PCLibProj/: PCLibMakefileFactory.m, PCLibProj.m: removed the
+	English.lproj stuff in libs
+
+2000-09-21 07:42  robert
+
+	* ProjectCenter/: PCAppController.m, PCPrefController.m: open file
+	now works, too
+
+2000-09-21 07:42  robert
+
+	* PCLib/: PCProjectManager.h, PCProjectManager.m: daily work
+
+2000-09-21 07:20  robert
+
+	* PCLib/PCFileManager.m: daily work
+
+2000-09-21 07:16  robert
+
+	* PCLib/PCEditorView.m: @end is now highlighted, too
+
+2000-09-20 17:53  robert
+
+	* Version: Version 0.1
+
+2000-09-20 17:50  robert
+
+	* ProjectCenter/ChangeLog, PCLib/ChangeLog, PCAppProj/ChangeLog,
+	PCLibProj/ChangeLog, PCBaseFileTypes/ChangeLog: Added a changelog
+
+2000-09-20 17:46  robert
+
+	* ProjectCenter/ProjectCenter_main.m: Added the font panel stuff
+
+2000-09-20 17:46  robert
+
+	* PCLib/: GNUmakefile, PCBrowserController.m, PCEditorView.h,
+	PCEditorView.m, PCProject.h, PCProject.m, PCServer.m,
+	ProjectCenter.h: Added a first editor with syntax highlighting
+
+2000-09-20 12:35  robert
+
+	* ProjectCenter/PCPrefController.m: some more work on the
+	preferences
+
+2000-09-20 11:59  robert
+
+	* PCLib/PCProjectBuilder.m: daily work
+
+2000-09-20 11:53  robert
+
+	* PCLib/: PCProject.m, PCProjectBuilder.m: minor UI changes
+	(scrollers in scrollviews)
+
+2000-09-20 10:50  robert
+
+	* PCAppProj/: AppController.h, AppController.m,
+	PCAppMakefileFactory.m, PCAppProj.m, main.m: enhanced the created
+	app to support GC and an info panel and more ...
+
+2000-09-19 17:39  robert
+
+	* PCLib/: PCProject.m, PCProjectBuilder.m: sizeToCells was missing
+	...
+
+2000-09-17 16:40  robert
+
+	* PCLib/PCProject.h, PCLib/PCProject.m, PCLib/PCProjectBuilder.m,
+	ProjectCenter/PCPrefController.h, ProjectCenter/PCPrefController.m:
+	Basic preferences handling
+
+2000-09-17 14:14  robert
+
+	* PCAppProj/: PCAppProject.h, PCAppProject.m: daily work
+
+2000-09-17 14:13  robert
+
+	* PCLibProj/PCLibMakefileFactory.m: makefile improvements
+
+2000-09-17 14:13  robert
+
+	* PCLib/: PCBrowserController.h, PCBrowserController.m,
+	PCFileManager.h, PCFileManager.m, PCProject.h, PCProject.m,
+	PCProjectBuilder.h, PCProjectBuilder.m, PCProjectManager.h,
+	PCProjectManager.m, PCServer.h, PCServer.m, ProjectCenter.h,
+	Server.h: Implemented a first 'editor', UI enhancements and other
+	nice things
+
+2000-09-17 14:12  robert
+
+	* ProjectCenter/: GNUmakefile, Info-project.plist,
+	PCAppController+MenuHandling.h, PCAppController+MenuHandling.m,
+	PCAppController.m, PCMenuController.m, ProjectCenter_main.m,
+	ProjectCentre_build.tiff, ProjectCentre_find.tiff,
+	ProjectCentre_prefs.tiff, ProjectCentre_settings.tiff,
+	ProjectCentre_uml.tiff: Updated some images, fixed some bugs and
+	enhanced the featurelist...
+
+2000-09-14 11:04  robert
+
+	* ProjectCenter/PCAppController.m: another minor flaw
+
+2000-09-14 10:54  robert
+
+	* PCAppProj/: AppController.h, AppController.m, AppProject.gmodel,
+	GNUmakefile, Main.gmodel, PC.proj, PCAppMakefileFactory.m, main.m:
+	apps now don't use gmodels anymore
+
+2000-09-14 10:28  robert
+
+	* ProjectCenter/PCAppController.m: fixed some bugs introduced by
+	removing the gmodel
+
+2000-09-13 12:45  robert
+
+	* PCBaseFileTypes/PCBaseFileType.m, ProjectCenter/GNUmakefile,
+	ProjectCenter/PCAppController+MenuHandling.h,
+	ProjectCenter/PCAppController+MenuHandling.m,
+	ProjectCenter/PCAppController.h, ProjectCenter/PCAppController.m,
+	ProjectCenter/PCMenuController.h, ProjectCenter/PCMenuController.m,
+	ProjectCenter/ProjectCenter_main.m,
+	ProjectCenter/English.lproj/ProjectCenter.gmodel: removed the
+	gmodels completely from ProjectCenter.app
+
+2000-09-03 22:10  robert
+
+	* Version, PCAppProj/GNUmakefile.preamble, PCLib/GNUmakefile,
+	PCToolProj/GNUmakefile.preamble: renamed libPC into
+	libProjectCenter
+
+2000-09-03 21:59  robert
+
+	* ProjectCenter/: GNUmakefile.preamble, PC.project,
+	PCAppController.m: minor stuff
+
+2000-09-03 21:15  robert
+
+	* ProjectCenter/PCAppController.m: New DO code
+
+2000-08-28 21:04  robert
+
+	* PCLib/: PCBrowserController.m, PCFileManager.h: The class and
+	header files are now being displayed
+
+2000-08-27 21:11  robert
+
+	* Version, ANNOUNCE, INSTALL, README, COPYING, GNUmakefile,
+	GNUmakefile.postamble, GNUmakefile.preamble,
+	PCAppProj/Makefile.preamble, PCAppProj/PB.project,
+	PCAppProj/PCAppProj.h, PCAppProj/Makefile, PCAppProj/h.template,
+	PCAppProj/m.template, PCAppProj/Info.table, PCAppProj/PCAppProj.m,
+	PCAppProj/Makefile.postamble, PCAppProj/PCAppProject.h,
+	PCAppProj/PCAppProject.m, PCAppProj/GNUmakefile.postamble,
+	PCAppProj/GNUmakefile.preamble, PCAppProj/PC.proj,
+	PCAppProj/main.m, PCAppProj/PCAppMakefileFactory.h,
+	PCAppProj/PCAppMakefileFactory.m, PCAppProj/AppProject.gmodel,
+	PCAppProj/GNUmakefile, PCAppProj/AppController.h,
+	PCAppProj/AppController.m, PCAppProj/Info-project.plist,
+	PCAppProj/Main.gmodel, PCBaseFileTypes/Makefile,
+	PCBaseFileTypes/Makefile.postamble,
+	PCBaseFileTypes/Makefile.preamble, PCBaseFileTypes/PB.project,
+	PCBaseFileTypes/PCBaseFileType.h, PCBaseFileTypes/PCBaseFileType.m,
+	PCBaseFileTypes/FileIcon_.m.tiff, PCBaseFileTypes/FileIcon_.h.tiff,
+	PCBaseFileTypes/FileIcon_.c.tiff, PCBaseFileTypes/GNUmakefile,
+	PCBaseFileTypes/cfile.template, PCBaseFileTypes/cheader.template,
+	PCBaseFileTypes/class.template, PCBaseFileTypes/header.template,
+	PCLib/Makefile.preamble, PCLib/PB.project, PCLib/h.template,
+	PCLib/m.template, PCLib/Makefile, PCLib/Makefile.postamble,
+	PCLib/ProjectEditor.h, PCLib/Server.h, PCLib/PCServer.h,
+	PCLib/PCServer.m, PCLib/ProjectCenter.h, PCLib/ProjectDebugger.h,
+	PCLib/ProjectType.h, PCLib/PCProjectManager.m,
+	PCLib/PCProjectManager.h, PCLib/PCBundleLoader.h,
+	PCLib/PCBundleLoader.m, PCLib/PreferenceController.h,
+	PCLib/ProjectBuilder.h, PCLib/PCBrowserController.h,
+	PCLib/PCDataSource.h, PCLib/PCDataSource.m, PCLib/PCProject.h,
+	PCLib/PCFileManager.h, PCLib/PCProject.m, PCLib/PCFileManager.m,
+	PCLib/FileCreator.h, PCLib/GNUmakefile, PCLib/GNUmakefile.preamble,
+	PCLib/PCBrowserController.m, PCLib/PCProjectBuilder.h,
+	PCLib/PCProjectBuilder.m, ProjectCenter/Makefile.preamble,
+	ProjectCenter/PB.project, ProjectCenter/h.template,
+	ProjectCenter/m.template, ProjectCenter/Makefile,
+	ProjectCenter/ProjectCenter_main.m,
+	ProjectCenter/Makefile.postamble, ProjectCenter/PCAppController.h,
+	ProjectCenter/PCAppController.m, ProjectCenter/PCPrefController.h,
+	ProjectCenter/PCPrefController.m, ProjectCenter/PCFindController.h,
+	ProjectCenter/PCFindController.m, ProjectCenter/PCInfoController.h,
+	ProjectCenter/PCInfoController.m, ProjectCenter/PCLogController.h,
+	ProjectCenter/PCLogController.m, ProjectCenter/PCMenuController.h,
+	ProjectCenter/ProjectCenter.tiff, ProjectCenter/PCMenuController.m,
+	ProjectCenter/GNUmakefile, ProjectCenter/GNUmakefile.postamble,
+	ProjectCenter/GNUmakefile.preamble, ProjectCenter/PC.project,
+	ProjectCenter/FileIcon_.m.tiff,
+	ProjectCenter/ProjectCentre_documentation.tiff,
+	ProjectCenter/ProjectCentre_cvs.tiff,
+	ProjectCenter/ProjectCentre_prefs.tiff,
+	ProjectCenter/ProjectCenter.app.tiff,
+	ProjectCenter/FileIcon_rtf.tiff,
+	ProjectCenter/ProjectCentre_files.tiff,
+	ProjectCenter/FileIcon_.c.tiff,
+	ProjectCenter/ProjectCentre_clean.tiff,
+	ProjectCenter/ProjectCentre_find.tiff,
+	ProjectCenter/FileIcon_.h.tiff, ProjectCenter/Info-project.plist,
+	ProjectCenter/ProjectCentre_add.tiff,
+	ProjectCenter/ProjectCentre_build.tiff,
+	ProjectCenter/ProjectCentre_run.tiff,
+	ProjectCenter/ProjectCentre_uml.tiff,
+	PCLibProj/PCLibMakefileFactory.h, PCLibProj/PCLibProj.h,
+	ProjectCenter/English.lproj/ProjectCenter.gmodel,
+	PCLibProj/GNUmakefile, PCLibProj/GNUmakefile.postamble,
+	PCLibProj/GNUmakefile.preamble, PCLibProj/Info.table,
+	PCLibProj/PCLibProj.m, PCLibProj/Makefile,
+	PCLibProj/Makefile.postamble, PCLibProj/Makefile.preamble,
+	PCLibProj/PB.project, PCLibProj/PC.proj,
+	PCLibProj/PCLibMakefileFactory.m, PCLibProj/PCLibProject.h,
+	PCLibProj/PCLibProject.m, PCLibProj/h.template,
+	PCLibProj/m.template, PCLibProj/LibProject.gmodel,
+	PCLibProj/Version, PCToolProj/PCToolProj.h,
+	PCToolProj/PCToolProj.m, PCToolProj/h.template,
+	PCToolProj/m.template, PCToolProj/Info.table,
+	PCToolProj/PCToolProject.m, PCToolProj/GNUmakefile.postamble,
+	PCToolProj/GNUmakefile.preamble, PCToolProj/PCToolProject.h,
+	PCToolProj/main.m, PCToolProj/PCToolMakefileFactory.m,
+	PCToolProj/GNUmakefile, PCToolProj/Info-project.plist,
+	PCToolProj/PC.proj, PCToolProj/PCToolMakefileFactory.h: Initial
+	revision
+
+2000-08-27 21:11  robert
+
+	* Version, ANNOUNCE, INSTALL, README, COPYING, GNUmakefile,
+	GNUmakefile.postamble, GNUmakefile.preamble,
+	PCAppProj/Makefile.preamble, PCAppProj/PB.project,
+	PCAppProj/PCAppProj.h, PCAppProj/Makefile, PCAppProj/h.template,
+	PCAppProj/m.template, PCAppProj/Info.table, PCAppProj/PCAppProj.m,
+	PCAppProj/Makefile.postamble, PCAppProj/PCAppProject.h,
+	PCAppProj/PCAppProject.m, PCAppProj/GNUmakefile.postamble,
+	PCAppProj/GNUmakefile.preamble, PCAppProj/PC.proj,
+	PCAppProj/main.m, PCAppProj/PCAppMakefileFactory.h,
+	PCAppProj/PCAppMakefileFactory.m, PCAppProj/AppProject.gmodel,
+	PCAppProj/GNUmakefile, PCAppProj/AppController.h,
+	PCAppProj/AppController.m, PCAppProj/Info-project.plist,
+	PCAppProj/Main.gmodel, PCBaseFileTypes/Makefile,
+	PCBaseFileTypes/Makefile.postamble,
+	PCBaseFileTypes/Makefile.preamble, PCBaseFileTypes/PB.project,
+	PCBaseFileTypes/PCBaseFileType.h, PCBaseFileTypes/PCBaseFileType.m,
+	PCBaseFileTypes/FileIcon_.m.tiff, PCBaseFileTypes/FileIcon_.h.tiff,
+	PCBaseFileTypes/FileIcon_.c.tiff, PCBaseFileTypes/GNUmakefile,
+	PCBaseFileTypes/cfile.template, PCBaseFileTypes/cheader.template,
+	PCBaseFileTypes/class.template, PCBaseFileTypes/header.template,
+	PCLib/Makefile.preamble, PCLib/PB.project, PCLib/h.template,
+	PCLib/m.template, PCLib/Makefile, PCLib/Makefile.postamble,
+	PCLib/ProjectEditor.h, PCLib/Server.h, PCLib/PCServer.h,
+	PCLib/PCServer.m, PCLib/ProjectCenter.h, PCLib/ProjectDebugger.h,
+	PCLib/ProjectType.h, PCLib/PCProjectManager.m,
+	PCLib/PCProjectManager.h, PCLib/PCBundleLoader.h,
+	PCLib/PCBundleLoader.m, PCLib/PreferenceController.h,
+	PCLib/ProjectBuilder.h, PCLib/PCBrowserController.h,
+	PCLib/PCDataSource.h, PCLib/PCDataSource.m, PCLib/PCProject.h,
+	PCLib/PCFileManager.h, PCLib/PCProject.m, PCLib/PCFileManager.m,
+	PCLib/FileCreator.h, PCLib/GNUmakefile, PCLib/GNUmakefile.preamble,
+	PCLib/PCBrowserController.m, PCLib/PCProjectBuilder.h,
+	PCLib/PCProjectBuilder.m, ProjectCenter/Makefile.preamble,
+	ProjectCenter/PB.project, ProjectCenter/h.template,
+	ProjectCenter/m.template, ProjectCenter/Makefile,
+	ProjectCenter/ProjectCenter_main.m,
+	ProjectCenter/Makefile.postamble, ProjectCenter/PCAppController.h,
+	ProjectCenter/PCAppController.m, ProjectCenter/PCPrefController.h,
+	ProjectCenter/PCPrefController.m, ProjectCenter/PCFindController.h,
+	ProjectCenter/PCFindController.m, ProjectCenter/PCInfoController.h,
+	ProjectCenter/PCInfoController.m, ProjectCenter/PCLogController.h,
+	ProjectCenter/PCLogController.m, ProjectCenter/PCMenuController.h,
+	ProjectCenter/ProjectCenter.tiff, ProjectCenter/PCMenuController.m,
+	ProjectCenter/GNUmakefile, ProjectCenter/GNUmakefile.postamble,
+	ProjectCenter/GNUmakefile.preamble, ProjectCenter/PC.project,
+	ProjectCenter/FileIcon_.m.tiff,
+	ProjectCenter/ProjectCentre_documentation.tiff,
+	ProjectCenter/ProjectCentre_cvs.tiff,
+	ProjectCenter/ProjectCentre_prefs.tiff,
+	ProjectCenter/ProjectCenter.app.tiff,
+	ProjectCenter/FileIcon_rtf.tiff,
+	ProjectCenter/ProjectCentre_files.tiff,
+	ProjectCenter/FileIcon_.c.tiff,
+	ProjectCenter/ProjectCentre_clean.tiff,
+	ProjectCenter/ProjectCentre_find.tiff,
+	ProjectCenter/FileIcon_.h.tiff, ProjectCenter/Info-project.plist,
+	ProjectCenter/ProjectCentre_add.tiff,
+	ProjectCenter/ProjectCentre_build.tiff,
+	ProjectCenter/ProjectCentre_run.tiff,
+	ProjectCenter/ProjectCentre_uml.tiff,
+	PCLibProj/PCLibMakefileFactory.h, PCLibProj/PCLibProj.h,
+	ProjectCenter/English.lproj/ProjectCenter.gmodel,
+	PCLibProj/GNUmakefile, PCLibProj/GNUmakefile.postamble,
+	PCLibProj/GNUmakefile.preamble, PCLibProj/Info.table,
+	PCLibProj/PCLibProj.m, PCLibProj/Makefile,
+	PCLibProj/Makefile.postamble, PCLibProj/Makefile.preamble,
+	PCLibProj/PB.project, PCLibProj/PC.proj,
+	PCLibProj/PCLibMakefileFactory.m, PCLibProj/PCLibProject.h,
+	PCLibProj/PCLibProject.m, PCLibProj/h.template,
+	PCLibProj/m.template, PCLibProj/LibProject.gmodel,
+	PCLibProj/Version, PCToolProj/PCToolProj.h,
+	PCToolProj/PCToolProj.m, PCToolProj/h.template,
+	PCToolProj/m.template, PCToolProj/Info.table,
+	PCToolProj/PCToolProject.m, PCToolProj/GNUmakefile.postamble,
+	PCToolProj/GNUmakefile.preamble, PCToolProj/PCToolProject.h,
+	PCToolProj/main.m, PCToolProj/PCToolMakefileFactory.m,
+	PCToolProj/GNUmakefile, PCToolProj/Info-project.plist,
+	PCToolProj/PC.proj, PCToolProj/PCToolMakefileFactory.h: Initial
+	import
+

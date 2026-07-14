@@ -1,0 +1,19 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "goToLine:"
+	);
+	Super = NSObject;
+    };
+    LineJumper = {
+	Actions = (
+	    "goToLine:"
+	);
+	Outlets = (
+	    lineField,
+	    goToButton
+	);
+	Super = NSObject;
+    };
+}

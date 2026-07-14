@@ -1,0 +1,64 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "showProjectInspector:",
+	    "showFindView:",
+	    "showProjectBuild:",
+	    "showProjectLaunch:",
+	    "showProjectLoadedFiles:"
+	);
+	Super = NSObject;
+    };
+    PCButton = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSButton;
+    };
+    PCFileNameField = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSTextField;
+    };
+    PCFileNameIcon = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSImageView;
+    };
+    PCProjectWindow = {
+	Actions = (
+	    "showProjectInspector:",
+	    "showFindView:",
+	    "showProjectBuild:",
+	    "showProjectLaunch:",
+	    "showProjectLoadedFiles:"
+	);
+	Outlets = (
+	    buildButton,
+	    fileIcon,
+	    fileIconTitle,
+	    findButton,
+	    h_split,
+	    inspectorButton,
+	    launchButton,
+	    loadedFilesButton,
+	    projectWindow,
+	    statusLine,
+	    toolbarView
+	);
+	Super = NSObject;
+    };
+    PCSplitView = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSSplitView;
+    };
+}

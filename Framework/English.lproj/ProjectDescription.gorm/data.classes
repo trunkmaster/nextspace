@@ -1,0 +1,37 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:",
+	    "addAuthor:",
+	    "removeAuthor:",
+	    "upAuthor:",
+	    "downAuthor:",
+	    "changeCommonProjectEntry:"
+	);
+	Super = NSObject;
+    };
+    PCProjectInspector = {
+	Actions = (
+	    "addAuthor:",
+	    "removeAuthor:",
+	    "upAuthor:",
+	    "downAuthor:",
+	    "changeCommonProjectEntry:"
+	);
+	Outlets = (
+	    descriptionField,
+	    releaseField,
+	    licenseField,
+	    licDescriptionField,
+	    urlField,
+	    authorsScroll,
+	    authorAdd,
+	    authorRemove,
+	    authorUp,
+	    authorDown,
+	    projectDescriptionView
+	);
+	Super = NSObject;
+    };
+}

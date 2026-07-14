@@ -1,0 +1,77 @@
+{
+  NOTE = "Automatically generated, do not edit!";
+  ApplicationName = "ProjectCenter";
+  ApplicationDescription = "GNUstep Integrated Development Environment";
+  ApplicationIcon = "ProjectCenter.tiff";
+  ApplicationRelease = "0.7.0";
+  FullVersionID = "HEAD";
+  Authors = (
+    "Philippe C.D. Robert",
+    "Serg Stoyan",
+    "David Ayers",
+    "Richard Frith-Macdonald",
+    "Nicola Pero",
+    "Pierre-Yves Rivaille",
+    "Adam Fedor",
+    "Gregory John Casamento",
+    "Riccardo Mottola");
+  NSIcon = "ProjectCenter.tiff";
+  NSExecutable = ProjectCenter;
+  CFBundleIdentifier = org.gnustep.ProjectCenter;
+  NSMainNibFile = ProjectCenter.gorm;
+  NSPrincipalClass = NSApplication;
+  NSRole = "Editor";
+  NSTypes = (
+    {
+      NSDocumentClass = PCProjectDocument;
+      NSHumanReadableName = "GNUstep project";
+      NSIcon = FileProject.tiff;
+      NSName = GSPCProjectFileType;
+      NSRole = Editor;
+      NSUnixExtensions = ( project );
+    },
+    {
+      NSDocumentClass = PCProjectDocument;
+      NSHumanReadableName = "GNUstep project";
+      NSIcon = FileProject.tiff;
+      NSName = GSPCProjectFileType;
+      NSRole = Editor;
+      NSUnixExtensions = ( pcproj );
+    },
+    {
+      NSDocumentClass = PCClassDocument;
+      NSHumanReadableName = "Objective C class file";
+      NSIcon = ProjectCenter.editor/Resources/FileM.tiff;
+      NSName = GSClassType;
+      NSRole = Editor;
+      NSUnixExtensions = ( m );
+    },
+    {
+      NSDocumentClass = PCClassDocument;
+      NSHumanReadableName = "Objective C++ class file";
+      NSIcon = ProjectCenter.editor/Resources/FileMM.tiff;
+      NSName = GSClassType;
+      NSRole = Editor;
+      NSUnixExtensions = ( mm );
+    },    
+    {
+      NSDocumentClass = PCHeaderDocument;
+      NSHumanReadableName = "C or Objective C header file";
+      NSIcon = ProjectCenter.editor/Resources/FileH.tiff;
+      NSName = GSPCHeaderType;
+      NSRole = Editor;
+      NSUnixExtensions = ( h );
+    },
+    {
+      NSDocumentClass = PCCDocument;
+      NSHumanReadableName = "C file";
+      NSIcon = ProjectCenter.editor/Resources/FileC.tiff;
+      NSName = GSPCCType;
+      NSRole = Editor;
+      NSUnixExtensions = ( c, C, cp, cpp, c++ );
+    }
+  );
+  URL = "See http://www.gnustep.org/";
+  Copyright = "Copyright (C) 1999 - 2023 Free Software Foundation";
+  CopyrightDescription = "Released under the GNU General Public License 3.0 or later";
+}

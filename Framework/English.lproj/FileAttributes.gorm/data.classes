@@ -1,0 +1,39 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "fileNameDidChange:",
+	    "setLocalizableResource:"
+	);
+	Super = NSObject;
+    };
+    PCFileNameField = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSTextField;
+    };
+    PCFileNameIcon = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSImageView;
+    };
+    PCProjectInspector = {
+	Actions = (
+	    "fileNameDidChange:",
+	    "setPublicHeader:",
+	    "setLocalizableResource:"
+	);
+	Outlets = (
+	    fileIconView,
+	    fileNameField,
+	    fileAttributesView,
+	    localizableButton,
+	    publicHeaderButton
+	);
+	Super = NSObject;
+    };
+}

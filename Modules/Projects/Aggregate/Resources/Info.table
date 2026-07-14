@@ -1,0 +1,26 @@
+{
+  Type = "Project";
+  Name = "Aggregate";
+  Description = "Project that contains subprojects.";
+  PrincipalClassName = "PCAggregateProject";
+  CanHavePublicHeaders = NO;
+  BuildTargets = ("all","install","uninstall","clean","distclean","dist");
+  BrowserRootEntries = {
+    SUBPROJECTS = "Subprojects";
+    SUPPORTING_FILES = "Supporting Files";
+    NON_PROJECT_FILES = "Non Project Files";
+  };
+  SourceFileKeys = (
+  );
+  OtherFileKeys = (
+    "SUPPORTING_FILES",
+    "NON_PROJECT_FILES"
+  );
+  AllowableSubprojectTypes = (
+    "Application",
+    "Bundle",
+    "Library",
+    "Framework",
+    "Tool"
+  );
+}

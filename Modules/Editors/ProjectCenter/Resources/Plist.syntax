@@ -1,0 +1,87 @@
+{
+  FileTypes = (
+    "plist",
+    "syntax"
+  );
+  Contexts = (
+    {
+      Keywords = (
+        {
+          Pattern = "\\{";
+          ForegroundColor = "0.6 0.45 0.75";
+          Bold = YES;
+        },
+        {
+          Pattern = "\\}";
+          ForegroundColor = "0.6 0.45 0.75";
+          Bold = YES;
+        },
+        {
+          Pattern = "(";
+          ForegroundColor = "0.6 0.45 0.75";
+          Bold = YES;
+        },
+        {
+          Pattern = ")";
+          ForegroundColor = "0.6 0.45 0.75";
+          Bold = YES;
+        },
+        {
+          Pattern = ",";
+          ForegroundColor = "0.6 0.6 0.8";
+          Bold = YES;
+        },
+        {
+          Pattern = "=";
+          ForegroundColor = "0.6 0.6 0.8";
+          Bold = YES;
+        },
+        {
+          Pattern = ";";
+          ForegroundColor = "0.8 0.8 0";
+          Bold = YES;
+        }
+      );
+    },
+
+    /* string */
+    {
+      Beginning = "\"";
+      Ending = "\"";
+      ContextSkips = (
+        "\\\\\\\\",
+        "\\\\\""
+      );
+      ForegroundColor = "0 0.7 0";
+      Keywords = (
+        {
+          Pattern = "\\\\\"";
+          ForegroundColor = "0 1 0";
+        },
+        {
+          Pattern = "\\\\\\\\";
+          ForegroundColor = "0 1 0";
+        }
+      );
+    },
+
+    /* preproc directive */
+    {
+      Beginning = "^#";
+      Ending = "\n";
+      ContextSkips = (
+        "\\\\\n"
+      );
+      ForegroundColor = "0.8 0 0";
+      Bold = YES;
+    },
+
+    /* multi-line comment */
+    {
+      Beginning = "/\\*";
+      Ending = "\\*/";
+      ForegroundColor = "0.4 0.4 0.4";
+      Italic = YES;
+    },
+  );
+}

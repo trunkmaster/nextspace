@@ -1,0 +1,28 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "orderFrontFontPanel:",
+	    "closeNewSubprojectPanel:",
+	    "createSubproject:"
+	);
+	Super = NSObject;
+    };
+    PCProjectManager = {
+	Actions = (
+	    "closeNewSubprojectPanel:",
+	    "createSubproject:"
+	);
+	Outlets = (
+	    nsPanel,
+	    nsImage,
+	    nsTitle,
+	    nsNameField,
+	    nsTypePB,
+	    nsCancelButton,
+	    nsCreateButton,
+	    projectNameField
+	);
+	Super = NSObject;
+    };
+}

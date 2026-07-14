@@ -1,0 +1,37 @@
+{
+    CLASS_FILES = ();
+    COMPILEROPTIONS = ""; 
+    CPPOPTIONS = "";
+    LINKEROPTIONS = ""; 
+    CREATION_DATE = ""; 
+    DOCU_FILES = (); 
+    FRAMEWORKS = (); 
+    HEADER_FILES = ();
+    HEADERS_INSTALL_DIR = "";
+    PUBLIC_HEADERS = ();
+    INTERFACES = (); 
+    IMAGES = (); 
+    LANGUAGE = "English"; 
+    LIBRARIES = ("gnustep-base","gnustep-gui"); 
+    MAKEFILEDIR = "$(GNUSTEP_MAKEFILES)"; 
+    INSTALLDIR = "$(HOME)/GNUstep/Library/Frameworks";
+    OBJC_COMPILEROPTIONS = "";
+    OTHER_RESOURCES = ();
+    OTHER_SOURCES = (); 
+    PROJECT_AUTHORS = ();
+    PROJECT_CREATOR = ""; 
+    PROJECT_DESCRIPTION = "No description avaliable!";
+    PROJECT_GROUP = "No group avaliable!";
+    PROJECT_SUMMARY = "No summary avaliable!";
+    PROJECT_RELEASE = "0.1";
+    PROJECT_COPYRIGHT = "Copyright (C) 200x";
+    PROJECT_COPYRIGHT_DESC = "Released under ...";
+    PROJECT_MAINTAINER = ""; 
+    PROJECT_NAME = ""; 
+    PROJECT_TYPE = "Framework";
+    PROJECT_URL = "";
+    SEARCH_HEADER_DIRS = ();
+    SEARCH_LIB_DIRS = ();
+    SUBPROJECTS = (); 
+    SUPPORTING_FILES = ("GNUmakefile.preamble", "GNUmakefile", "GNUmakefile.postamble");
+}

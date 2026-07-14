@@ -1,0 +1,56 @@
+#  GNUmakefile.preamble
+#
+#  Copyright (C) 2001-2005 Free Software Foundation, Inc.
+#
+#  This file is part of GNUstep
+#
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Library General Public
+#  License as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+#  Library General Public License for more details.
+#
+#  If you are interested in a warranty or support for this source code,
+#  contact Scott Christley at scottc@net-community.com
+#
+#  You should have received a copy of the GNU Library General Public
+#  License along with this library; see the file COPYING.LIB.
+#  If not, write to the Free Software Foundation,
+#  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+#
+# Flags dealing with compiling and linking
+#
+
+# Additional flags to pass to the preprocessor
+ADDITIONAL_CPPFLAGS +=
+
+# Additional flags to pass to the Objective-C compiler
+ADDITIONAL_OBJCFLAGS += -DDEVELOPMENT
+
+# Additional flags to pass to the C compiler
+ADDITIONAL_CFLAGS +=
+
+# Additional include directories the compiler should search
+ADDITIONAL_INCLUDE_DIRS += -I./ -I./Headers
+
+# Additional LDFLAGS to pass to the linker
+ADDITIONAL_LDFLAGS += 
+
+# Additional library directories the linker should search
+ADDITIONAL_LIB_DIRS += -L./Framework/ProjectCenter.framework/$(GNUSTEP_TARGET_LDIR)
+
+# Additional LDFLAGS to pass to the linker
+ADDITIONAL_GUI_LIBS += -lProjectCenter
+
+#
+# Flags dealing with installing and uninstalling
+#
+
+# Additional directories to be created during installation
+ADDITIONAL_INSTALL_DIRS +=
+

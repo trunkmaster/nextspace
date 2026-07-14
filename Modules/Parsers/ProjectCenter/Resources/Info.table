@@ -1,0 +1,8 @@
+{
+  Type = "Parser";
+  Name = "ProjectCenter";
+  Description = "Parser for C and ObjectiveC/ObjectiveC++ language";
+  PrincipalClassName = "PCParser";
+  FileTypes = (C,c,m,M,h,H,cc,CC,mm);
+  ProvidesBrowserItems = YES;
+}

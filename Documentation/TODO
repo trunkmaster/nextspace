@@ -1,0 +1,118 @@
+TODO
+****
+
+This is the GNUstep ProjectCenter TODO list.
+Feel free to propose changes to this list or make suggestions!
+
+ProjectCenter 0.4                                               Owner/Status
+-----------------                                               ------------
+
+- Review and cleanup of PC project bundles/templates            [done!]
+- Finish Project Inspector                                      [done!]
+- Inspector UI using Gorm                                       [done!]
+- File creation (File->New in project) cleanup and finishing    [done!]
+- Initial suprojects support                                    [done!]
+- Finish support of external editors                            [done!]
+- Preferences enhancements and UI using Gorm                    [done!]
+- Remember project windows and panels in PC.project             [done!]
+
+ProjectCenter 0.5
+-----------------
+
+- Create ProjectWindow GORM file                                [done!]
+- Add "Framework" project type                                  [done!]
+- Add "Resource Set" project type                               [done!]
+- Implement on demand loading of bundles                        [done!]
+- Localization support for projects                             [done!]
+- Finish save/restore size of split views in Project Window     [done!]
+--- Project Editor:
+  - Implement on demand loading (editor for file type)          [done!]
+  - Open some files read only (Supporting Files)                [done!]
+  - Implement code parser (get it from CodeEditor?)             [done!]
+  - Project Browser should show file structure.                 [done!]
+  - Click on Browser item should move cursor to line in file    [done!]
+--- Project Builder:
+  - Create panel and builder GORM files                         [done!]
+  - Implement root build directory handling                     [done!]
+  - Finish options handling                                     [done!]
+  - Parse gcc output                                            [95% done!]
+  - Display warnings,errors,options etc. as clickable list      [done!]
+- GNUstep make version 2.0 compliance                           [done!]
+- Save last used path separately for different file panels      [done!]
+
+ProjectCenter 0.6
+-----------------
+
+- Create new Info panel                                         [done!]
+- Implement support for integrated debugging                    [90% done]
+- change project type from file to bundle                       [done!] casamento/mottola
+- Finish FileNameIcon (draggable, files can be dragged to it)   [done!]
+- More options for file creation                                [done!]
+- Review all situations when dialogs must be popped up          [done!]
+- Check all textfields if 'scrollable' attribute set            [done!] 
+- Rewrite Preferences (3rd party sections etc.)                 [done!]
+--- Project Builder --------------------------------------------
+  - Review build, compiler, linker options setting 
+    (Build Options, Inspector)                                  [done!]
+  - Finish parsing build output (compiler errors/warnings, 
+    make errors, gnustep-make verbose mode)                     stoyan
+  - Finish interaction with Editor (errors, warnings)           stoyan
+  - Add support for running configurable(Build Options) 
+    command  before and after make                              stoyan
+--- Project Editor ---------------------------------------------
+  - review situations when editor is opened                     stoyan
+  - implement go to line                                        stoyan
+  - Implement interaction with Builder (errors, warnings)       stoyan
+  - Implement indentation                                       stoyan
+  - implement undo inside editor                                [done!] 
+  - Add and use basic editor preferences (fonts, colors, sizes) [50% done]
+--- Project Inspector ------------------------------------------
+  - Make sections as loadable bundles                           stoyan
+  - Finish functionality of all sections                        stoyan
+  - Review all sections for correct  behaviour                  stoyan
+- Split "Application" to "Application GORM" and 
+  "Application Renaissance" project types                       stoyan
+- Add "Palette" project type                                    ???
+- Add "Component" project type                                  ???
+- Process reported bugs                                         ???
+- Think about imlementing pending adding/removal of files       ???
+- New icons. Need volunteers!!!                                 ???
+
+ProjectCenter 0.7
+-----------------
+
+- Finish suppor of integrated debugging                         ???
+- Add support for browsing 'Library' category entries           ???
+- Add support for non-project files                             ???
+- Implement symbols indexing. This feature touches Browser
+  (class and method list) and Editor (autocompletion)           ???
+- Editor: implement autocompletion                              ???
+- An initial project wide find feature                          ???
+- Better integration with other tools (GORM). DevKit?           ???
+
+ProjectCenter 0.8
+-----------------
+
+- Implement code folding in Editor                              ???
+- Direct code documentation (using autogsdoc)                   ???
+- Think about adopting existing directory tree (more flexible
+  directory configurations) [bug #22008]                        ???
+
+ProjectCenter 0.9
+-----------------
+
+- ProjectCenter localization                                    ???
+- Initial user documentation                                    ???
+- Implement Plist editor for editing project files[bug #22124]  ???
+- An initial class browser/documentation feature                ???
+
+ProjectCenter 1.0
+-----------------
+
+Version 1.0 is aimed at stabilising and optimising existing 
+features. There will not be any new features since 0.9.
+
+After 1.0
+---------
+- CVS/SVN integration                                           ???
+

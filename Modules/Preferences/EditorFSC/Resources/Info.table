@@ -1,0 +1,6 @@
+﻿{
+  Type = "Preferences";
+  Name = "Editor: Fonts, Sizes & Colors";
+  Description = "Common editor's preferences.";
+  PrincipalClassName = "PCEditorFSCPrefs";
+}

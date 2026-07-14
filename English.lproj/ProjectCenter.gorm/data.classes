@@ -1,0 +1,70 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "findEnterSelection:",
+	    "findJumpToSelection:",
+	    "findNext:",
+	    "findPrevious:",
+	    "findShowPanel:",
+	    "performGoToLinePanelAction:"
+	);
+	Super = NSObject;
+    };
+    PCAppController = {
+	Actions = (
+	);
+	Outlets = (
+	    menuController
+	);
+	Super = NSObject;
+    };
+    PCMenuController = {
+	Actions = (
+	    "showInfoPanel:",
+	    "showPrefWindow:",
+	    "projectOpen:",
+	    "projectNew:",
+	    "projectSave:",
+	    "projectAddFiles:",
+	    "projectSaveFiles:",
+	    "projectRemoveFiles:",
+	    "subprojectNew:",
+	    "subprojectAdd:",
+	    "fileOpen:",
+	    "fileNew:",
+	    "fileSave:",
+	    "fileSaveAs:",
+	    "fileSaveTo:",
+	    "fileRevertToSaved:",
+	    "fileClose:",
+	    "fileOpenQuickly:",
+	    "fileRename:",
+	    "fileNewUntitled:",
+	    "showInspector:",
+	    "showBuildPanel:",
+	    "showLoadedFilesPanel:",
+	    "runTarget:",
+	    "executeBuild:",
+	    "stopBuild:",
+	    "startClean:",
+	    "showLaunchPanel:",
+	    "debugTarget:",
+	    "toggleToolbar:",
+	    "loadedFilesSortByTime:",
+	    "loadedFilesSortByName:",
+	    "loadedFilesNextFile:",
+	    "loadedFilesPreviousFile:",
+	    "showLogPanel:",
+	    "findEnterSelection:",
+	    "findNext:",
+	    "findPrevious:",
+	    "findShowPanel:",
+	    "findJumpToSelection:",
+	    "goToLine:"
+	);
+	Outlets = (
+	);
+	Super = NSObject;
+    };
+}

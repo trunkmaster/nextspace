@@ -1,0 +1,12 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    PCLogController = {
+	Actions = (
+	);
+	Outlets = (
+	    panel,
+	    textView
+	);
+	Super = NSObject;
+    };
+}

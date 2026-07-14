@@ -1,0 +1,34 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "findNext:",
+	    "findNextAndOrderFindPanelOut:",
+	    "findPrevious:",
+	    "ignoreCase:",
+	    "replace:",
+	    "replaceAll:",
+	    "replaceAndFind:"
+	);
+	Super = NSObject;
+    };
+    TextFinder = {
+	Actions = (
+	    "findNext:",
+	    "findNextAndOrderFindPanelOut:",
+	    "findPrevious:",
+	    "replace:",
+	    "replaceAll:",
+	    "replaceAndFind:"
+	);
+	Outlets = (
+	    findNextButton,
+	    findTextField,
+	    ignoreCaseButton,
+	    replaceAllScopeMatrix,
+	    replaceTextField,
+	    statusField
+	);
+	Super = NSObject;
+    };
+}

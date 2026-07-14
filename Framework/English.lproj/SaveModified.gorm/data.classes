@@ -1,0 +1,29 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "buttonClicked:"
+	);
+	Super = NSObject;
+    };
+    PCAuxiliaryWindow = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSWindow;
+    };
+    SaveModifiedFilesDelegate = {
+	Actions = (
+	    "buttonClicked:"
+	);
+	Outlets = (
+	    alternateButton,
+	    defaultButton,
+	    panel,
+	    otherButton,
+	    filesList
+	);
+	Super = NSObject;
+    };
+}

@@ -1,0 +1,95 @@
+{
+    "## Comment" = "Do NOT change this file, Gorm maintains it";
+    FirstResponder = {
+	Actions = (
+	    "addDocType:",
+	    "clearAppIcon:",
+	    "clearFile:",
+	    "clearHelpFile:",
+	    "clearMainNib:",
+	    "docFieldSet:",
+	    "setHelpFile:",
+	    "removeDocType:",
+	    "setAppClass:",
+	    "setAppType:",
+	    "setBundleIdentifier:",
+	    "setDocBasedApp:",
+	    "setDocIcon:",
+	    "setFile:",
+	    "showDocTypesPanel:"
+	);
+	Super = NSObject;
+    };
+    PCAppProject = {
+	Actions = (
+	    "clearAppIcon:",
+	    "clearHelpFile:",
+	    "clearMainNib:",
+	    "setAppClass:",
+	    "setAppType:",
+	    "setBundleIdentifier:",
+	    "setDocBasedApp:",
+	    "showDocTypesPanel:",
+	    "addDocType:",
+	    "removeDocType:",
+	    "setHelpFile:"
+	);
+	Outlets = (
+	    projectAttributesView,
+	    appTypeField,
+	    appClassField,
+	    appImageField,
+	    helpFileField,
+	    mainNIBField,
+	    bundleIdentifierField,
+	    helpText,
+	    iconView,
+	    docTypesButton,
+	    docTypesPanel,
+	    addDocTypeButton,
+	    removeDocTypeButton,
+	    docBasedAppButton,
+	    docTypesScroll,
+	    docTypeLabel,
+	    docTypeField,
+	    docNameLabel,
+	    docNameField,
+	    docIconLabel,
+	    docIconField,
+	    docExtensionsLabel,
+	    docExtensionsField,
+	    docRoleLabel,
+	    docRoleField,
+	    docClassLabel,
+	    docClassField,
+	    classColumn,
+	    extensionsColumn,
+	    nameColumn,
+	    roleColumn,
+	    typeColumn,
+	    docTypesList
+	);
+	Super = PCProject;
+    };
+    PCAppTextField = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSTextField;
+    };
+    PCFileNameIcon = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSImageView;
+    };
+    PCProject = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSObject;
+    };
+}

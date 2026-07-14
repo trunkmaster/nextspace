@@ -1,0 +1,70 @@
+                       +- PCProjectInspector
+                       |
+                       +- PCLoadedFilesPanel
+                       |
+                       +- PCBuildPanel
+                       |
+                       +- PCLaunchPanel
+                       |
+                       +- [SI]PCFindPanel
+PCAppController-\      |
+|                ----- PCProjectManager
+PCMenuController/      |   ||
+                       |   PCProject <PCAppProject, PCBundleProject>
+                       |   |
+                       |   +- PCProjectWindow
+                       |   |
+                       |   +- PCProjectBrowser
+                       |   |
+                       |   +- PCProjectLoadedFiles
+                       |   |
+                       |   +- PCProjectBuilder
+                       |   |
+                       |   +- PCProjectLauncher
+                       |   |
+                       |   +- [SI]PCProjectFinder
+                       |   |
+                       |   +- PCProjectEditor
+                       |      ||
+                       |      PCEditor
+                       |      |
+                       |      +- PCEditorView 
+                       |
+                       PCTextFinder
+                       |
+                       PCFileManager
+                       |
+                       +- PCFileCreator
+
+------------------------------
+Other (controls, tools, etc.):
+------------------------------
+PCButton
+PCSplitView
+PCOutputView (Should be implemented. Used by e.g. Project Builder)
+PCBundleLoader (Used in ProjectCenter application)
+PCMakefileFactory (Used in PC*Project bundles)
+PCServer (don't used)
+
+----------
+THOUGHTS:
+----------
+- implement PCProjectFinder and PCFindPanel GUI;
+
+- "Edit" menu should be completely provided by Editor part;
+- "Add Files" panel should provide selection of type and "Choose Folders"
+  and "Add Class", "Add Header" and so on checkbox;
+- "New File in Project..." panel should provide "Create Header", 
+  "Create Class" and so on checkbox.
+- Add "Installable" or something to "Bundle" project type project attributes.
+  
+Localization:
+~~~~~~~~~~~~~
+- On project creation, all resources go to Resources subdir and placed into
+  GNUmakefile as *_RESOURCE_FILES; [done!]
+- If some file from [PC*Proj localizableKeys] categories selected as 
+  "Localizable Resource", that file removed from *_RESOURCE_FILES and placed
+  into *_LOCALIZED_RESOURCE_FILES (for directories: Resources->Language.lproj);
+- in PC.project add USER_LANGUAGES=(); [done!]
+- in PC.project add LOCALIZED_RESOURCES=(); [done!]
+
