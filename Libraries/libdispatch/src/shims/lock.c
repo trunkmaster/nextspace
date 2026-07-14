@@ -54,6 +54,31 @@ _dispatch_thread_switch(dispatch_lock value, dispatch_lock_options_t flags,
 	SwitchToThread();
 }
 #endif
+#elif defined(__FreeBSD__)
+#if !HAVE_UL_UNFAIR_LOCK
+DISPATCH_ALWAYS_INLINE
+static inline void
+_dispatch_thread_switch(dispatch_lock value, dispatch_lock_options_t flags,
+		uint32_t timeout)
+{
+  (void)value;
+  (void)flags;
+  (void)timeout;
+  sched_yield();
+}
+#endif // HAVE_UL_UNFAIR_LOCK
+#elif defined(__unix__)
+#if !HAVE_UL_UNFAIR_LOCK && !HAVE_FUTEX_PI
+DISPATCH_ALWAYS_INLINE
+static inline void
+_dispatch_thread_switch(dispatch_lock value, dispatch_lock_options_t flags,
+  uint32_t timeout)
+{
+	(void)value;
+	(void)flags;
+	(void)timeout;
+}
+#endif
 #endif
 
 #pragma mark - semaphores
@@ -206,10 +231,10 @@ _dispatch_sema4_timedwait(_dispatch_sema4_t *sema, dispatch_time_t timeout)
 	struct timespec _timeout;
 	int ret;
 
+	uint64_t nsec = _dispatch_time_nanoseconds_since_epoch(timeout);
+	_timeout.tv_sec = (__typeof__(_timeout.tv_sec))(nsec / NSEC_PER_SEC);
+	_timeout.tv_nsec = (__typeof__(_timeout.tv_nsec))(nsec % NSEC_PER_SEC);
 	do {
-		uint64_t nsec = _dispatch_time_nanoseconds_since_epoch(timeout);
-		_timeout.tv_sec = (__typeof__(_timeout.tv_sec))(nsec / NSEC_PER_SEC);
-		_timeout.tv_nsec = (__typeof__(_timeout.tv_nsec))(nsec % NSEC_PER_SEC);
 		ret = sem_timedwait(sema, &_timeout);
 	} while (unlikely(ret == -1 && errno == EINTR));
 
@@ -395,8 +420,10 @@ _dispatch_unfair_lock_wake(uint32_t *uaddr, uint32_t flags)
 #include <sys/time.h>
 #ifdef __ANDROID__
 #include <sys/syscall.h>
-#else
+#elif __linux__
 #include <syscall.h>
+#else
+#include <sys/futex.h>
 #endif /* __ANDROID__ */
 
 DISPATCH_ALWAYS_INLINE
@@ -405,7 +432,12 @@ _dispatch_futex(uint32_t *uaddr, int op, uint32_t val,
 		const struct timespec *timeout, uint32_t *uaddr2, uint32_t val3,
 		int opflags)
 {
+#if __linux__
 	return (int)syscall(SYS_futex, uaddr, op | opflags, val, timeout, uaddr2, val3);
+#else
+	(void)val3;
+	return futex(uaddr, op | opflags, (int)val, timeout, uaddr2);
+#endif
 }
 
 // returns 0, ETIMEDOUT, EFAULT, EINTR, EWOULDBLOCK
@@ -455,6 +487,7 @@ _dispatch_futex_wake(uint32_t *uaddr, int wake, int opflags)
 	DISPATCH_INTERNAL_CRASH(errno, "_dlock_wake() failed");
 }
 
+#if HAVE_FUTEX_PI
 static void
 _dispatch_futex_lock_pi(uint32_t *uaddr, struct timespec *timeout, int detect,
 	      int opflags)
@@ -472,6 +505,7 @@ _dispatch_futex_unlock_pi(uint32_t *uaddr, int opflags)
 	if (rc == 0) return;
 	DISPATCH_CLIENT_CRASH(errno, "futex_unlock_pi() failed");
 }
+#endif
 
 #endif
 #pragma mark - wait for address
@@ -516,6 +550,16 @@ _dispatch_wait_on_address(uint32_t volatile *_address, uint32_t value,
 			? INFINITE : ((nsecs + 1000000) / 1000000);
 	if (dwMilliseconds == 0) return ETIMEDOUT;
 	return WaitOnAddress(address, &value, sizeof(value), dwMilliseconds) == TRUE;
+#elif defined(__FreeBSD__)
+	(void)flags;
+	if (nsecs != DISPATCH_TIME_FOREVER) {
+		struct timespec ts = {
+			.tv_sec = (__typeof__(ts.tv_sec))(nsecs / NSEC_PER_SEC),
+			.tv_nsec = (__typeof__(ts.tv_nsec))(nsecs % NSEC_PER_SEC),
+		};
+		return _umtx_op((void*)address, UMTX_OP_WAIT_UINT, value, (void*)(uintptr_t)sizeof(struct timespec), (void*)&ts);
+	}
+	return _umtx_op((void*)address, UMTX_OP_WAIT_UINT, value, 0, 0);
 #else
 #error _dispatch_wait_on_address unimplemented for this platform
 #endif
@@ -530,6 +574,8 @@ _dispatch_wake_by_address(uint32_t volatile *address)
 	_dispatch_futex_wake((uint32_t *)address, INT_MAX, FUTEX_PRIVATE_FLAG);
 #elif defined(_WIN32)
 	WakeByAddressAll((uint32_t *)address);
+#elif defined(__FreeBSD__)
+	_umtx_op((void*)address, UMTX_OP_WAKE, INT_MAX, 0, 0);
 #else
 	(void)address;
 #endif
@@ -606,7 +652,7 @@ _dispatch_unfair_lock_lock_slow(dispatch_unfair_lock_t dul,
 		}
 	}
 }
-#elif HAVE_FUTEX
+#elif HAVE_FUTEX_PI
 void
 _dispatch_unfair_lock_lock_slow(dispatch_unfair_lock_t dul,
 		dispatch_lock_options_t flags)
@@ -643,7 +689,7 @@ _dispatch_unfair_lock_unlock_slow(dispatch_unfair_lock_t dul, dispatch_lock cur)
 	if (_dispatch_lock_has_waiters(cur)) {
 		_dispatch_unfair_lock_wake(&dul->dul_lock, 0);
 	}
-#elif HAVE_FUTEX
+#elif HAVE_FUTEX_PI
 	// futex_unlock_pi() handles both OWNER_DIED which we abuse & WAITERS
 	_dispatch_futex_unlock_pi(&dul->dul_lock, FUTEX_PRIVATE_FLAG);
 #else
@@ -689,7 +735,7 @@ _dispatch_once_wait(dispatch_once_gate_t dgo)
 		_dispatch_futex_wait(lock, (dispatch_lock)new_v, NULL,
 				FUTEX_PRIVATE_FLAG);
 #else
-		_dispatch_thread_switch(new_v, 0, timeout++);
+		_dispatch_thread_switch((dispatch_lock)new_v, 0, timeout++);
 #endif
 		(void)timeout;
 	}

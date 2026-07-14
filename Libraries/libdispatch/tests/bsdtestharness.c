@@ -20,6 +20,7 @@
 
 #include <dispatch/dispatch.h>
 #include <assert.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
@@ -144,7 +145,7 @@ main(int argc, char *argv[])
 	//fprintf(stderr, "pid = %d\n", pid);
 	assert(pid > 0);
 
-#if defined(__linux__)
+#if defined(__unix__)
 	int status;
 	struct rusage usage;
 	struct timeval tv_stop, tv_wall;
@@ -159,9 +160,9 @@ main(int argc, char *argv[])
 
 	assert(res2 != -1);
 	test_long("Process exited", (WIFEXITED(status) && WEXITSTATUS(status) && WEXITSTATUS(status) != 0xff) || WIFSIGNALED(status), 0);
-	printf("[PERF]\twall time: %ld.%06ld\n", tv_wall.tv_sec, tv_wall.tv_usec);
-	printf("[PERF]\tuser time: %ld.%06ld\n", usage.ru_utime.tv_sec, usage.ru_utime.tv_usec);
-	printf("[PERF]\tsystem time: %ld.%06ld\n", usage.ru_stime.tv_sec, usage.ru_stime.tv_usec);
+	printf("[PERF]\twall time: %" PRIdMAX ".%06" PRIdMAX "\n", (intmax_t)tv_wall.tv_sec, (intmax_t)tv_wall.tv_usec);
+	printf("[PERF]\tuser time: %" PRIdMAX ".%06" PRIdMAX"\n", (intmax_t)usage.ru_utime.tv_sec, (intmax_t)usage.ru_utime.tv_usec);
+	printf("[PERF]\tsystem time: %" PRIdMAX ".%06" PRIdMAX "\n", (intmax_t)usage.ru_stime.tv_sec, (intmax_t)usage.ru_stime.tv_usec);
 	printf("[PERF]\tmax resident set size: %ld\n", usage.ru_maxrss);
 	printf("[PERF]\tpage faults: %ld\n", usage.ru_majflt);
 	printf("[PERF]\tswaps: %ld\n", usage.ru_nswap);
@@ -211,7 +212,7 @@ main(int argc, char *argv[])
 #else
 	dispatch_queue_t main_q = dispatch_get_main_queue();
 
-	dispatch_source_t tmp_ds = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC, pid, DISPATCH_PROC_EXIT, main_q);
+	dispatch_source_t tmp_ds = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC, (uintptr_t)pid, DISPATCH_PROC_EXIT, main_q);
 	assert(tmp_ds);
 	dispatch_source_set_event_handler(tmp_ds, ^{
 		int status;

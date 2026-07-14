@@ -124,8 +124,20 @@ extension DispatchSource {
 		public static let exit = ProcessEvent(rawValue: 0x80000000)
 		public static let fork = ProcessEvent(rawValue: 0x40000000)
 		public static let exec = ProcessEvent(rawValue: 0x20000000)
+
+#if canImport(Darwin)
 		public static let signal = ProcessEvent(rawValue: 0x08000000)
+#endif
+#if os(FreeBSD) || os(OpenBSD)
+		public static let track = ProcessEvent(rawValue: 0x00000001)
+#endif
+
+#if canImport(Darwin)
 		public static let all: ProcessEvent = [.exit, .fork, .exec, .signal]
+#endif
+#if os(FreeBSD) || os(OpenBSD)
+		public static let all: ProcessEvent = [.exit, .fork, .exec, .track]
+#endif
 	}
 #endif
 
@@ -224,7 +236,7 @@ extension DispatchSource {
 		return DispatchSource(source: source) as DispatchSourceUserDataReplace
 	}
 
-#if !os(Linux) && !os(Android) && !os(Windows)
+#if !os(Linux) && !os(Android) && !os(Windows) && !os(OpenBSD) && !os(FreeBSD)
 	public class func makeFileSystemObjectSource(fileDescriptor: Int32, eventMask: FileSystemEvent, queue: DispatchQueue? = nil) -> DispatchSourceFileSystemObject {
 		let source = dispatch_source_create(_swift_dispatch_source_type_VNODE(), UInt(fileDescriptor), eventMask.rawValue, queue?.__wrapped)
 		return DispatchSource(source: source) as DispatchSourceFileSystemObject
@@ -293,7 +305,7 @@ extension DispatchSourceMemoryPressure {
 #if !os(Linux) && !os(Android) && !os(Windows)
 extension DispatchSourceProcess {
 	public var handle: pid_t {
-		return pid_t(dispatch_source_get_handle(self as! DispatchSource))
+		return pid_t(CDispatch.dispatch_source_get_handle((self as! DispatchSource).__wrapped))
 	}
 
 	public var data: DispatchSource.ProcessEvent {
@@ -646,7 +658,7 @@ extension DispatchSourceTimer {
 	}
 }
 
-#if !os(Linux) && !os(Android) && !os(Windows)
+#if !os(Linux) && !os(Android) && !os(Windows) && !os(OpenBSD)
 extension DispatchSourceFileSystemObject {
 	public var handle: Int32 {
 		return Int32(dispatch_source_get_handle((self as! DispatchSource).__wrapped))

@@ -150,7 +150,7 @@ test_read(void)
 		test_stop();
 	}
 #else
-	// investigate what the impact of lack of file cache disabling has 
+	// investigate what the impact of lack of file cache disabling has
 	// for this test
 #endif
 	size_t size = (size_t)dispatch_test_fd_lseek(fd, 0, SEEK_END);
