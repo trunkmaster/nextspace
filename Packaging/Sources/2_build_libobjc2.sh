@@ -5,41 +5,23 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-install_packages ${BUILD_TOOLS}
+install_packages ${BUILD_TOOLS} ${RUNTIME_DEPS}
 
 #----------------------------------------
-# Download
+# Sources (vendored; tsl-robin-map comes from the robin-map package)
 #----------------------------------------
-OBJC_PKG_NAME=libobjc2-${libobjc2_version}
-ROBIN_MAP_VERSION=1.2.1
-ROBIN_MAP_PKG_NAME=v${ROBIN_MAP_VERSION}.tar.gz
-
-if [ ! -d ${BUILD_ROOT}/libobjc2-${libobjc2_version} ]; then
-	curl -L https://github.com/gnustep/libobjc2/archive/v${libobjc2_version}.tar.gz -o ${BUILD_ROOT}/libobjc2-${libobjc2_version}.tar.gz
-	curl -L https://github.com/Tessil/robin-map/archive/${ROBIN_MAP_PKG_NAME} -o ${BUILD_ROOT}/libobjc2_robin-map.tar.gz
-
-	cd ${BUILD_ROOT}
-	tar zxf libobjc2-${libobjc2_version}.tar.gz
-	tar zxf libobjc2_robin-map.tar.gz
-fi
+OBJC_PKG_NAME=libobjc2
+${RM_CMD} -rf ${BUILD_ROOT}/${OBJC_PKG_NAME}
+cp -R ${PROJECT_DIR}/Libraries/libobjc2 ${BUILD_ROOT}/${OBJC_PKG_NAME}
 
 #----------------------------------------
 # Build
 #----------------------------------------
-# build robin-map
-${CMAKE_CMD} \
-	-DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
-	-B${BUILD_ROOT}/robin-map-${ROBIN_MAP_VERSION} \
-	-S${BUILD_ROOT}/robin-map-${ROBIN_MAP_VERSION}
-${CMAKE_CMD} --build ${BUILD_ROOT}/robin-map-${ROBIN_MAP_VERSION}
-# build libobjc2
 cd ${BUILD_ROOT}/${OBJC_PKG_NAME} || exit 1
-rm -rf .build 2>/dev/null
 mkdir -p .build
 cd ./.build
 
 $CMAKE_CMD .. \
-	-Dtsl-robin-map_DIR=${BUILD_ROOT}/robin-map-${ROBIN_MAP_VERSION} \
 	-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 	-DCMAKE_C_COMPILER=${C_COMPILER} \
 	-DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
@@ -48,7 +30,7 @@ $CMAKE_CMD .. \
 	-DCMAKE_LIBRARY_PATH=/usr/NextSpace/lib \
 	-DCMAKE_INSTALL_LIBDIR=lib \
 	-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
-	-DCMAKE_MODULE_LINKER_FLAGS="-fuse-ld=/usr/bin/ld.gold -Wl,-rpath,/usr/NextSpace/lib" \
+	-DCMAKE_MODULE_LINKER_FLAGS="-Wl,-rpath,/usr/NextSpace/lib" \
 	-DCMAKE_SKIP_RPATH=ON \
 	-DTESTS=OFF \
 	-DCMAKE_BUILD_TYPE=Release \

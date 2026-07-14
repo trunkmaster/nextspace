@@ -9,31 +9,20 @@ ${ECHO} ">>> Installing packages for CoreFoundation library build"
 install_packages ${RUNTIME_DEPS}
 
 #----------------------------------------
-# Download
+# Sources (vendored)
 #----------------------------------------
-CF_PKG_NAME=apple-corefoundation-${libcorefoundation_version}
-CFNET_PKG_NAME=apple-cfnetwork
+CF_PKG_NAME=libcorefoundation
+CFNET_PKG_NAME=libcfnetwork
 
-if [ ! -d ${BUILD_ROOT}/${CF_PKG_NAME} ]; then
-    git clone --depth 1 https://github.com/trunkmaster/apple-corefoundation ${BUILD_ROOT}/${CF_PKG_NAME}
-fi
-if [ ! -d ${BUILD_ROOT}/${CFNET_PKG_NAME} ]; then
-    git clone --depth 1 https://github.com/trunkmaster/apple-cfnetwork ${BUILD_ROOT}/${CFNET_PKG_NAME}
-fi
+${RM_CMD} -rf ${BUILD_ROOT}/${CF_PKG_NAME} ${BUILD_ROOT}/${CFNET_PKG_NAME}
+cp -R ${PROJECT_DIR}/Libraries/libcorefoundation ${BUILD_ROOT}/${CF_PKG_NAME}
+cp -R ${PROJECT_DIR}/Libraries/libcfnetwork ${BUILD_ROOT}/${CFNET_PKG_NAME}
 
 #----------------------------------------
 # Build
 #----------------------------------------
 # CoreFoundation
 cd ${BUILD_ROOT}/${CF_PKG_NAME} || exit 1
-# The NextSpace addition _NS_pthread_setname_np calls _CFThreadSetName,
-# which lives in the DEPLOYMENT_RUNTIME_SWIFT-only tail of CFPlatform.c.
-# With CF_DEPLOYMENT_SWIFT=NO that symbol is compiled out and Arch's bfd
-# linker (unlike upstream's gold) refuses to link apps against the library.
-# On Linux the wrapper is just pthread_setname_np - call it directly.
-grep -q "ArchSTEP: swift-runtime-only" Base.subproj/CFPlatform.c || \
-sed -i 's|_CFThreadSetName(GetCurrentThread(), name);|pthread_setname_np(pthread_self(), name); // ArchSTEP: swift-runtime-only wrapper avoided|' Base.subproj/CFPlatform.c
-sed -i 's|_CFThreadSetName(pthread_self(),|pthread_setname_np(pthread_self(),|' Stream.subproj/CFStream.c
 ${RM_CMD} -rf .build
 mkdir -p .build
 cd .build

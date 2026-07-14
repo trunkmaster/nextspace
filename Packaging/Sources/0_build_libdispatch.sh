@@ -9,25 +9,16 @@ ${ECHO} ">>> Installing packages for Grand Central Dispatch build"
 install_packages ${BUILD_TOOLS} ${RUNTIME_DEPS}
 
 #----------------------------------------
-# Download
+# Sources (vendored)
 #----------------------------------------
-GIT_PKG_NAME=swift-corelibs-libdispatch-swift-${libdispatch_version}-RELEASE
-
-if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
-	curl -L https://github.com/apple/swift-corelibs-libdispatch/archive/swift-${libdispatch_version}-RELEASE.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
-	cd ${BUILD_ROOT}
-	tar zxf ${GIT_PKG_NAME}.tar.gz
-	cd ..
-fi
+GIT_PKG_NAME=libdispatch
+${RM_CMD} -rf ${BUILD_ROOT}/${GIT_PKG_NAME}
+cp -R ${PROJECT_DIR}/Libraries/libdispatch ${BUILD_ROOT}/${GIT_PKG_NAME}
 
 #----------------------------------------
 # Build
 #----------------------------------------
 cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
-# Upstream cmake hardcodes -Werror after our flags; pinned 2023 sources
-# hit warnings that current clang promotes. Strip it - warnings stay in
-# the log.
-sed -i '/-Werror/d' cmake/modules/DispatchCompilerWarnings.cmake
 ${RM_CMD} -rf _build
 mkdir -p _build
 cd _build

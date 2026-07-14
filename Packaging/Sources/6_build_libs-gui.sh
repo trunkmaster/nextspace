@@ -10,23 +10,12 @@
 install_packages ${GNUSTEP_GUI_DEPS}
 
 #----------------------------------------
-# Download
+# Sources (vendored; NEXTSPACE patches are commits on the tree)
 #----------------------------------------
-GIT_PKG_NAME=libs-gui-gui-${gnustep_gui_version}
+GIT_PKG_NAME=gnustep-gui
 SOURCES_DIR=${PROJECT_DIR}/Libraries/gnustep
-
-if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
-	curl -L https://github.com/gnustep/libs-gui/archive/gui-${gnustep_gui_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
-	cd ${BUILD_ROOT}
-	tar zxf ${GIT_PKG_NAME}.tar.gz || exit 1
-	# Patches
-	cd ${BUILD_ROOT}/${GIT_PKG_NAME}
-	patch -p1 < ${SOURCES_DIR}/libs-gui_NSApplication.patch
-	patch -p1 < ${SOURCES_DIR}/libs-gui_NSPopUpButton.patch
-	patch -p1 < ${SOURCES_DIR}/libs-gui_GSThemeDrawing.patch
-#	cd Images
-#	tar zxf ${SOURCES_DIR}/gnustep-gui-images.tar.gz
-fi
+${RM_CMD} -rf ${BUILD_ROOT}/${GIT_PKG_NAME}
+cp -R ${PROJECT_DIR}/Libraries/gnustep/gui ${BUILD_ROOT}/${GIT_PKG_NAME}
 
 #----------------------------------------
 # Build

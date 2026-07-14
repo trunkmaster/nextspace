@@ -11,16 +11,11 @@ ${ECHO} ">>> Installing packages for GNUstep Base (Foundation) build"
 install_packages ${GNUSTEP_BASE_DEPS}
 
 #----------------------------------------
-# Download
+# Sources (vendored)
 #----------------------------------------
-GIT_PKG_NAME=libs-base-base-${gnustep_base_version}
-
-if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
-	curl -L https://github.com/gnustep/libs-base/archive/base-${gnustep_base_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
-	cd ${BUILD_ROOT}
-	tar zxf ${GIT_PKG_NAME}.tar.gz || exit 1
-	cd ..
-fi
+GIT_PKG_NAME=gnustep-base
+${RM_CMD} -rf ${BUILD_ROOT}/${GIT_PKG_NAME}
+cp -R ${PROJECT_DIR}/Libraries/gnustep/base ${BUILD_ROOT}/${GIT_PKG_NAME}
 
 #----------------------------------------
 # Build
