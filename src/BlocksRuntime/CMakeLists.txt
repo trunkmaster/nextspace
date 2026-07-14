@@ -2,13 +2,16 @@
 add_library(BlocksRuntime
   data.c
   runtime.c)
-if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+if(WIN32)
   target_sources(BlocksRuntime PRIVATE
     BlocksRuntime.def)
 
   if(NOT BUILD_SHARED_LIBS)
-    target_compile_definitions(BlocksRuntime PRIVATE
+    target_compile_definitions(BlocksRuntime PUBLIC
       BlocksRuntime_STATIC)
+    target_compile_options(BlocksRuntime PUBLIC
+      "$<$<COMPILE_LANGUAGE:C,CXX>:SHELL:$<$<BOOL:${MSVC}>:-Xclang >-static-libclosure>"
+      $<$<COMPILE_LANGUAGE:Swift>:SHELL:-Xcc -static-libclosure>)
   endif()
 endif()
 
@@ -19,8 +22,9 @@ if(HAVE_OBJC AND CMAKE_DL_LIBS)
     ${CMAKE_DL_LIBS})
 endif()
 
-set_target_properties(BlocksRuntime PROPERTIES
-  POSITION_INDEPENDENT_CODE TRUE)
+if(LINKER_SUPPORTS_BUILD_ID)
+  target_link_options(BlocksRuntime PRIVATE "LINKER:--build-id=sha1")
+endif()
 
 add_library(BlocksRuntime::BlocksRuntime ALIAS BlocksRuntime)
 

@@ -19,6 +19,9 @@ public final class DispatchSpecificKey<T> {
 	public init() {}
 }
 
+extension DispatchSpecificKey : Sendable where T : Sendable {
+}
+
 internal class _DispatchSpecificValue<T> {
 	internal let value: T
 	internal init(value: T) { self.value = value }
@@ -240,7 +243,6 @@ extension DispatchQueue {
 	///
 	/// - parameter group: the dispatch group to associate with the submitted
 	/// work item. If this is `nil`, the work item is not associated with a group.
-	/// - parameter flags: flags that control the execution environment of the
 	/// - parameter qos: the QoS at which the work item should be executed.
 	///     Defaults to `DispatchQoS.unspecified`.
 	/// - parameter flags: flags that control the execution environment of the
@@ -254,7 +256,7 @@ extension DispatchQueue {
 		group: DispatchGroup? = nil,
 		qos: DispatchQoS = .unspecified,
 		flags: DispatchWorkItemFlags = [],
-		execute work: @escaping @convention(block) () -> Void)
+		execute work: @escaping @Sendable @convention(block) () -> Void)
 	{
 		if group == nil && qos == .unspecified {
 			// Fast-path route for the most common API usage
@@ -388,7 +390,7 @@ extension DispatchQueue {
 		deadline: DispatchTime,
 		qos: DispatchQoS = .unspecified,
 		flags: DispatchWorkItemFlags = [],
-		execute work: @escaping @convention(block) () -> Void)
+		execute work: @escaping @Sendable @convention(block) () -> Void)
 	{
 		if #available(macOS 10.10, iOS 8.0, *), qos != .unspecified || !flags.isEmpty {
 			let item = DispatchWorkItem(qos: qos, flags: flags, block: work)
@@ -419,7 +421,7 @@ extension DispatchQueue {
 		wallDeadline: DispatchWallTime,
 		qos: DispatchQoS = .unspecified,
 		flags: DispatchWorkItemFlags = [],
-		execute work: @escaping @convention(block) () -> Void)
+		execute work: @escaping @Sendable @convention(block) () -> Void)
 	{
 		if #available(macOS 10.10, iOS 8.0, *), qos != .unspecified || !flags.isEmpty {
 			let item = DispatchWorkItem(qos: qos, flags: flags, block: work)

@@ -11,13 +11,6 @@
 //===----------------------------------------------------------------------===//
 
 #include <dispatch/dispatch.h>
-#include <stdio.h>
-
-#if defined(__ELF__) || defined(__MACH__) || defined(__WASM__)
-#define DISPATCH_RUNTIME_STDLIB_INTERFACE __attribute__((__visibility__("default")))
-#else
-#define DISPATCH_RUNTIME_STDLIB_INTERFACE __declspec(dllexport)
-#endif
 
 #if USE_OBJC
 @protocol OS_dispatch_source;
@@ -34,11 +27,9 @@
 @protocol OS_dispatch_source_vnode;
 @protocol OS_dispatch_source_write;
 
-// #include <dispatch/private.h>
-__attribute__((constructor))
+__attribute__((__constructor__))
 static void _dispatch_overlay_constructor() {
-  Class source = objc_lookUpClass("OS_dispatch_source");
-  if (source) {
+  if (Class source = objc_lookUpClass("OS_dispatch_source")) {
     class_addProtocol(source, @protocol(OS_dispatch_source));
     class_addProtocol(source, @protocol(OS_dispatch_source_mach_send));
     class_addProtocol(source, @protocol(OS_dispatch_source_mach_recv));
@@ -54,42 +45,4 @@ static void _dispatch_overlay_constructor() {
     class_addProtocol(source, @protocol(OS_dispatch_source_write));
   }
 }
-
 #endif /* USE_OBJC */
-
-#if !USE_OBJC
-DISPATCH_RUNTIME_STDLIB_INTERFACE
-extern "C" void * objc_retainAutoreleasedReturnValue(void *obj);
-#endif
-
-#if !USE_OBJC
-
-// For CF functions with 'Get' semantics, the compiler currently assumes that
-// the result is autoreleased and must be retained. It does so on all platforms
-// by emitting a call to objc_retainAutoreleasedReturnValue. On Darwin, this is
-// implemented by the ObjC runtime. On non-ObjC platforms, there is no runtime,
-// and therefore we have to stub it out here ourselves. The compiler will
-// eventually call swift_release to balance the retain below. This is a
-// workaround until the compiler no longer emits this callout on non-ObjC
-// platforms.
-extern "C"
-#if defined(_WIN32)
-__declspec(dllimport)
-#endif
-void swift_retain(void *);
-
-DISPATCH_RUNTIME_STDLIB_INTERFACE
-extern "C" void * objc_retainAutoreleasedReturnValue(void *obj) {
-    if (obj) {
-        swift_retain(obj);
-        return obj;
-    }
-    else return NULL;
-}
-
-#if defined(_WIN32)
-extern "C" void *(*__imp_objc_retainAutoreleasedReturnValue)(void *) =
-    &objc_retainAutoreleasedReturnValue;
-#endif
-
-#endif // !USE_OBJC
