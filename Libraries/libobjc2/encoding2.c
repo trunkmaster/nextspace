@@ -333,7 +333,7 @@ static const char *alignof_type(const char *type, size_t *align)
 		case '[':
 		{
 			const char *t = type;
-			parse_array(&t, (type_parser)alignof_type, &align);
+			parse_array(&t, (type_parser)alignof_type, align);
 			return t;
 		}
 		case 'b':
@@ -416,6 +416,13 @@ const char *method_getTypeEncoding(Method method)
 {
 	if (NULL == method) { return NULL; }
 	return sel_getType_np(method->selector);
+}
+
+OBJC_PUBLIC
+SEL method_getTypedSelector_np(Method method)
+{
+	if (NULL == method) { return NULL; }
+	return method->selector;
 }
 
 OBJC_PUBLIC

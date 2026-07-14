@@ -1,11 +1,11 @@
 libcxxrt_freebsd_task:
   matrix:
   - freebsd_instance:
-     image_family: freebsd-13-2
+     image_family: freebsd-13-5
   - freebsd_instance:
      image_family: freebsd-15-0-snap
   - freebsd_instance:
-     image_family: freebsd-14-0
+     image_family: freebsd-14-2
 
   install_script: pkg install -y cmake ninja git
 
@@ -31,7 +31,7 @@ libcxxrt_freebsd_task:
 
 libcxxrt_master_task:
   freebsd_instance:
-    image_family: freebsd-14-0
+    image_family: freebsd-14-2
   install_script: pkg install -y cmake ninja git
 
   clone_script: |

@@ -19,16 +19,6 @@
 PRIVATE mutex_t runtime_mutex;
 LEGACY void *__objc_runtime_mutex = &runtime_mutex;
 
-void init_alias_table(void);
-void init_arc(void);
-void init_class_tables(void);
-void init_dispatch_tables(void);
-void init_gc(void);
-void init_protocol_table(void);
-void init_selector_tables(void);
-void init_trampolines(void);
-void objc_send_load_message(Class class);
-
 void log_selector_memory_usage(void);
 
 static void log_memory_stats(void)
@@ -45,20 +35,11 @@ __attribute__((weak)) void (*dispatch_end_thread_4GC)(void);
 __attribute__((weak)) void *(*_dispatch_begin_NSAutoReleasePool)(void);
 __attribute__((weak)) void (*_dispatch_end_NSAutoReleasePool)(void *);
 
-__attribute__((used))
-static void link_protos(void)
-{
-	link_protocol_classes();
-}
-
 static void init_runtime(void)
 {
 	static BOOL first_run = YES;
 	if (first_run)
 	{
-#if ENABLE_GC
-		init_gc();
-#endif
 		// Create the main runtime lock.  This is not safe in theory, but in
 		// practice the first time that this function is called will be in the
 		// loader, from the main thread.  Future loaders may run concurrently,
@@ -76,8 +57,10 @@ static void init_runtime(void)
 		init_protocol_table();
 		init_class_tables();
 		init_alias_table();
+		init_early_blocks();
 		init_arc();
 		init_trampolines();
+		init_builtin_classes();
 		first_run = NO;
 		if (getenv("LIBOBJC_MEMORY_PROFILE"))
 		{
@@ -251,21 +234,22 @@ OBJC_PUBLIC void __objc_load(struct objc_init *init)
 		assert(p);
 		*proto = p;
 	}
+	int classesLoaded = 0;
 	for (Class *cls = init->cls_begin ; cls < init->cls_end ; cls++)
 	{
 		if (*cls == NULL)
 		{
 			continue;
 		}
-		// As a special case, allow using legacy ABI code with a new runtime.
-		if (isFirstLoad && (strcmp((*cls)->name, "Protocol") == 0))
-		{
-			CurrentABI = UnknownABI;
-		}
 #ifdef DEBUG_LOADING
 		fprintf(stderr, "Loading class %s\n", (*cls)->name);
 #endif
 		objc_load_class(*cls);
+	}
+	if (isFirstLoad && (classesLoaded == 0))
+	{
+		// As a special case, allow using legacy ABI code with a new runtime.
+		CurrentABI = UnknownABI;
 	}
 #if 0
 	// We currently don't do anything with these pointers.  They exist to

@@ -302,7 +302,7 @@ static BOOL testPropertyForProperty_alt(objc_property_t p,
 	attrsList = property_copyAttributeList(p, NULL);
 	OPT_ASSERT(0 != attrsList);
 	objc_property_attribute_t *ra;
-	for (attrsCount = 0, ra = attrsList; (ra->name != NULL) && (attrsCount < size); attrsCount++, ra++) {}
+	for (attrsCount = 0, ra = attrsList; (attrsCount < size) && (ra->name != NULL) ; attrsCount++, ra++) {}
     OPT_ASSERT(attrsCount == size);
 	free(attrsList);
     for (unsigned int index=0; index<size; index++) {

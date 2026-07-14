@@ -7,6 +7,7 @@
 #include "objc/encoding.h"
 #include "legacy.h"
 #include "properties.h"
+#include "protocol.h"
 #include "class.h"
 #include "loader.h"
 
@@ -411,14 +412,13 @@ upgrade_protocol_method_list_gcc(struct objc_protocol_method_description_list_gc
 PRIVATE struct objc_protocol *objc_upgrade_protocol_gcc(struct objc_protocol_gcc *p)
 {
 	// If the protocol has already been upgraded, the don't try to upgrade it twice.
-	if (p->isa == objc_getClass("ProtocolGCC"))
+	if (p->isa == (id)&_OBJC_CLASS_ProtocolGCC)
 	{
 		return objc_getProtocol(p->name);
 	}
-	p->isa = objc_getClass("ProtocolGCC");
+	p->isa = (id)&_OBJC_CLASS_ProtocolGCC;
 	Protocol *proto =
-		(Protocol*)class_createInstance((Class)objc_getClass("Protocol"),
-				sizeof(struct objc_protocol) - sizeof(id));
+		(Protocol*)class_createInstance(&_OBJC_CLASS_Protocol, 0);
 	proto->name = p->name;
 	// Aliasing of this between the new and old structures means that when this
 	// returns these will all be updated.
@@ -432,13 +432,12 @@ PRIVATE struct objc_protocol *objc_upgrade_protocol_gcc(struct objc_protocol_gcc
 PRIVATE struct objc_protocol *objc_upgrade_protocol_gsv1(struct objc_protocol_gsv1 *p)
 {
 	// If the protocol has already been upgraded, the don't try to upgrade it twice.
-	if (p->isa == objc_getClass("ProtocolGSv1"))
+	if (p->isa == (id)&_OBJC_CLASS_ProtocolGSv1)
 	{
 		return objc_getProtocol(p->name);
 	}
 	Protocol *n =
-		(Protocol*)class_createInstance((Class)objc_getClass("Protocol"),
-				sizeof(struct objc_protocol) - sizeof(id));
+		(Protocol*)class_createInstance(&_OBJC_CLASS_Protocol, 0);
 	n->instance_methods = upgrade_protocol_method_list_gcc(p->instance_methods);
 	// Aliasing of this between the new and old structures means that when this
 	// returns these will all be updated.
@@ -447,14 +446,14 @@ PRIVATE struct objc_protocol *objc_upgrade_protocol_gsv1(struct objc_protocol_gs
 	n->class_methods = upgrade_protocol_method_list_gcc(p->class_methods);
 	n->properties = upgradePropertyList(p->properties);
 	n->optional_properties = upgradePropertyList(p->optional_properties);
-	n->isa = objc_getClass("Protocol");
+	n->isa = (id)&_OBJC_CLASS_Protocol;
 	// We do in-place upgrading of these, because they might be referenced
 	// directly
 	p->instance_methods = (struct objc_protocol_method_description_list_gcc*)n->instance_methods;
 	p->class_methods = (struct objc_protocol_method_description_list_gcc*)n->class_methods;
 	p->properties = (struct objc_property_list_gsv1*)n->properties;
 	p->optional_properties = (struct objc_property_list_gsv1*)n->optional_properties;
-	p->isa = objc_getClass("ProtocolGSv1");
+	p->isa = (id)&_OBJC_CLASS_ProtocolGSv1;
 	assert(p->isa);
 	return n;
 }

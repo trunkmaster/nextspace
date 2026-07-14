@@ -18,14 +18,24 @@ id target;
 @end
 
 @interface ForwardingTarget : Test
+{
+  int y;
+}
 @end
 
 BOOL forwardingTargetCalled;
 
 @implementation ForwardingTarget
+- (id)init
+{
+	y = 42;
+	return self;
+}
+
 - (void)foo: (int)x
 {
 	assert(x == 42);
+	assert(x == y);
 	forwardingTargetCalled = YES;
 }
 @end
@@ -58,7 +68,7 @@ int main(void)
 {
 	objc_proxy_lookup = proxy_lookup;
 	__objc_msg_forward2 = forward;
-	target = [ForwardingTarget new];
+	target = [[ForwardingTarget new] init];
 	id proxy = [Forward new];
 	[proxy foo: 42];
 	[proxy dealloc];

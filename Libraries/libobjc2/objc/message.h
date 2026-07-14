@@ -55,6 +55,36 @@ id objc_msgSend_stret(id self, SEL _cmd, ...);
 #else
 void objc_msgSend_stret(id self, SEL _cmd, ...);
 #endif
+
+/**
+ * Standard message sending function.  This function must be cast to the
+ * correct types for the function before use.  The first argument is the
+ * receiver and the second the selector.
+ *
+ * Note that this function is only available on Windows ARM64. For a more
+ * portable solution to sending arbitrary messages, consider using
+ * objc_msg_lookup_sender() and then calling the returned IMP directly.
+ *
+ * This version of the function is used on Windows ARM64 for all messages
+ * that return a non-trivial data types (e.g C++ classes or structures with
+ * user-defined constructors) that is not returned in registers.
+ * Be aware that calling conventions differ between operating systems even
+ * within the same architecture, so take great care if using this function for
+ * small (two integer) structures.
+ *
+ * Why does objc_msgSend_stret2 exist?
+ * In AAPCS, an SRet is passed in x8, not x0 like a normal pointer parameter.
+ * On Windows, this is only the case for POD (plain old data) types. Non trivial
+ * types with constructors and destructors are passed in x0 on sret.
+ */
+OBJC_PUBLIC
+#if defined(_WIN32) && defined(__ARM_ARCH_ISA_A64)
+#   ifdef __cplusplus
+id objc_msgSend_stret2(id self, SEL _cmd, ...);
+#   else
+void objc_msgSend_stret2(id self, SEL _cmd, ...);
+#   endif
+#endif
 /**
  * Standard message sending function.  This function must be cast to the
  * correct types for the function before use.  The first argument is the

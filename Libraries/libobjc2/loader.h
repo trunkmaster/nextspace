@@ -64,4 +64,63 @@ void objc_init_statics(struct objc_static_instance_list *statics);
  */
 void objc_init_buffered_statics(void);
 
+/**
+ * Initialise built-in classes (Object and Protocol).  This must be called
+ * after `init_class_tables`.
+ */
+void init_builtin_classes(void);
+
+/**
+ * Initialise the aliases table.
+ */
+void init_alias_table(void);
+
+/**
+ * Initialise the automatic reference counting system.
+ */
+void init_arc(void);
+
+/**
+ * Initialise the class tables.
+ */
+void init_class_tables(void);
+
+/**
+ * Initialise the dispatch table machinery.
+ */
+void init_dispatch_tables(void);
+
+/**
+ * Initialise the protocol tables.
+ */
+void init_protocol_table(void);
+
+/**
+ * Initialise the selector tables.
+ */
+void init_selector_tables(void);
+
+/**
+ * Initialise the trampolines for using blocks as methods.
+ */
+void init_trampolines(void);
+
+/**
+ * Send +load messages to a class if required.
+ */
+void objc_send_load_message(Class cls);
+
+/**
+ * Resolve a class (populate its superclass and sibling class links).  Returns
+ * YES if the class can be resolved, NO otherwise.  Classes cannot be resolved
+ * unless their superclasses have all been resolved.
+ */
+BOOL objc_resolve_class(Class cls);
+
+/**
+ * Initialise the block classes.
+ */
+void init_early_blocks(void);
+
+
 #endif //__OBJC_LOADER_H_INCLUDED

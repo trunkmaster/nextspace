@@ -341,6 +341,12 @@ id objc_getAssociatedObject(id object, const void *key)
 	struct reference *r = findReference(list, key);
 	if (NULL != r)
 	{
+		// Check if the policy is OBJC_ASSOCIATION_{RETAIN, COPY} or OBJC_ASSOCIATION_{RETAIN, COPY}_NONATOMIC (LSB set)
+		// Apple's objc4 retains and autoreleases the object under these policies
+		if (r->policy & OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+		{
+			objc_retainAutorelease(r->object);
+		}
 		return r->object;
 	}
 	if (class_isMetaClass(object->isa))
@@ -364,6 +370,10 @@ id objc_getAssociatedObject(id object, const void *key)
 				struct reference *r = findReference(list, key);
 				if (NULL != r)
 				{
+					if (r->policy & OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+					{
+						objc_retainAutorelease(r->object);
+					}
 					return r->object;
 				}
 			}

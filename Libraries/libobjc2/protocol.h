@@ -187,22 +187,11 @@ struct objc_protocol_gsv1
 	struct objc_property_list_gsv1      *optional_properties;
 };
 
-#ifdef __OBJC__
-@interface Object { id isa; } @end
-/**
- * Definition of the Protocol type.  Protocols are objects, but are rarely used
- * as such.
- */
-@interface Protocol : Object
-@end
-
-@interface ProtocolGCC : Protocol
-@end
-
-@interface ProtocolGSv1 : Protocol
-@end
-
-#endif
+OBJC_PUBLIC extern struct objc_class _OBJC_CLASS_Object;
+OBJC_PUBLIC extern struct objc_class _OBJC_CLASS_Protocol;
+OBJC_PUBLIC extern struct objc_class _OBJC_CLASS___IncompleteProtocol;
+OBJC_PUBLIC extern struct objc_class _OBJC_CLASS_ProtocolGCC;
+OBJC_PUBLIC extern struct objc_class _OBJC_CLASS_ProtocolGSv1;
 
 /**
  * List of protocols.  Attached to a class or a category by the compiler and to

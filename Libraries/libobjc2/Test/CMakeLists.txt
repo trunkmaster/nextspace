@@ -64,6 +64,12 @@ if (WIN32)
 			set(ENABLE_ALL_OBJC_ARC_TESTS On)
 		endif()
 	endif()
+
+	if (CMAKE_SYSTEM_PROCESSOR STREQUAL ARM64)
+		list(APPEND TESTS
+			objc_msgSend_WoA64.mm
+		)
+	endif()
 else ()
 	# Don't run the tests that are specific to Itanium-style exceptions on
 	# Windows.
@@ -92,14 +98,14 @@ remove_definitions(-D__OBJC_RUNTIME_INTERNAL__=1)
 
 add_library(test_runtime_legacy OBJECT Test.m)
 set_target_properties(test_runtime_legacy PROPERTIES
-	INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}"
+	INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR};${PROJECT_BINARY_DIR}/objc/"
 	COMPILE_FLAGS "-Xclang -fblocks -fobjc-runtime=gnustep-1.7"
 	LINKER_LANGUAGE C
 )
 
 add_library(test_runtime OBJECT Test.m)
 set_target_properties(test_runtime PROPERTIES
-	INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}"
+	INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR};${PROJECT_BINARY_DIR}/objc/"
 	COMPILE_FLAGS "-Xclang -fblocks -fobjc-runtime=gnustep-2.0"
 	LINKER_LANGUAGE C
 )
@@ -117,7 +123,7 @@ function(addtest_flags TEST_NAME FLAGS TEST_SOURCE)
 	add_test(${TEST_NAME} ${TEST_NAME})
 	set(ARC "")
 	set_target_properties(${TEST_NAME} PROPERTIES
-		INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}"
+		INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR};${PROJECT_BINARY_DIR}/objc/"
 		COMPILE_FLAGS "-Xclang -fblocks -Xclang -fobjc-exceptions ${FLAGS}"
 		LINK_FLAGS ${INCREMENTAL}
 		LINKER_LANGUAGE C

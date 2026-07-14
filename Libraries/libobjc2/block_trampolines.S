@@ -161,7 +161,13 @@
 // AArch64 (ARM64) trampoline
 ////////////////////////////////////////////////////////////////////////////////
 .macro trampoline arg0, arg1
-	adr x17, #-4096
+	adr x17, #-0x1000
+	mov \arg1, \arg0
+	ldp \arg0, x17, [x17]
+	br x17
+.endm
+.macro trampoline_16 arg0, arg1
+	adr x17, #-0x4000
 	mov \arg1, \arg0
 	ldp \arg0, x17, [x17]
 	br x17
@@ -215,6 +221,7 @@
 #endif
 
 
+// Trampoline for 4 KiB page size
 .globl CDECL(__objc_block_trampoline)
 CDECL(__objc_block_trampoline):
 	trampoline ARG0, ARG1
@@ -226,6 +233,19 @@ CDECL(__objc_block_trampoline_sret):
 .globl CDECL(__objc_block_trampoline_end_sret)
 CDECL(__objc_block_trampoline_end_sret):
 
+// Trampoline for 16 KiB page sizes
+#if defined(__ARM_ARCH_ISA_A64)
+.globl CDECL(__objc_block_trampoline_16)
+CDECL(__objc_block_trampoline_16):
+	trampoline_16 ARG0, ARG1
+.globl CDECL(__objc_block_trampoline_end_16)
+CDECL(__objc_block_trampoline_end_16):
+.globl CDECL(__objc_block_trampoline_sret_16)
+CDECL(__objc_block_trampoline_sret_16):
+	trampoline_16 SARG0, SARG1
+.globl CDECL(__objc_block_trampoline_end_sret_16)
+CDECL(__objc_block_trampoline_end_sret_16):
+#endif
 
 #ifdef __ELF__
 .section .note.GNU-stack,"",%progbits
