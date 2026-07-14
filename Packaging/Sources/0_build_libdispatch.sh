@@ -24,16 +24,23 @@ fi
 # Build
 #----------------------------------------
 cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
-rm -rf _build 2>/dev/null
+# Upstream cmake hardcodes -Werror after our flags; pinned 2023 sources
+# hit warnings that current clang promotes. Strip it - warnings stay in
+# the log.
+sed -i '/-Werror/d' cmake/modules/DispatchCompilerWarnings.cmake
+${RM_CMD} -rf _build
 mkdir -p _build
 cd _build
 
-C_FLAGS="-Wno-error=unused-but-set-variable"
+# Pinned 5.9.2 sources predate current clang's stricter -Werror defaults
+# (cast-function-type-mismatch, sign-conversion, ...) - don't hold 2023
+# code to them; warnings stay visible in the log.
+C_FLAGS="-Wno-error"
 $CMAKE_CMD .. \
 	-DCMAKE_C_COMPILER=${C_COMPILER} \
 	-DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
-	-DCMAKE_C_FLAGS=${C_FLAGS} \
-	-DCMAKE_CXX_FLAGS=${C_FLAGS} \
+	-DCMAKE_C_FLAGS="${C_FLAGS}" \
+	-DCMAKE_CXX_FLAGS="${C_FLAGS}" \
 	-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
 	-DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
 	-DCMAKE_INSTALL_MANDIR=/usr/NextSpace/Documentation/man \
@@ -46,13 +53,12 @@ $CMAKE_CMD .. \
 #	-DCMAKE_LINKER=/usr/bin/ld.gold \
 
 $MAKE_CMD clean
-$MAKE_CMD
+$MAKE_CMD || exit 1
 
 #----------------------------------------
 # Install
 #----------------------------------------
-#sudo $MAKE_CMD install
-$INSTALL_CMD
+$INSTALL_CMD || exit 1
 
 #----------------------------------------
 # Postinstall

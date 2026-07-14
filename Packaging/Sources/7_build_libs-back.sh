@@ -6,7 +6,7 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-install_packages ${BACK_ART_DEPS}
+install_packages ${BACK_DEPS}
 
 #----------------------------------------
 # Download
@@ -25,17 +25,8 @@ cp -R ${SOURCES_DIR}/back ${BUILD_ROOT}
 . /Developer/Makefiles/GNUstep.sh
 cd ${BUILD_DIR}
 
-# ART
-$MAKE_CMD clean || exit 1
-./configure \
-	--enable-graphics=art \
-	--with-name=art \
-	|| exit 1
-
-$MAKE_CMD || exit 1
-$INSTALL_CMD fonts=no || exit 1
-
-# Cairo
+# Cairo only: GSBackend defaults to cairo, and libart-lgpl no longer
+# exists in the Arch repos (dead upstream). The art backend is gone.
 $MAKE_CMD clean || exit 1
 ./configure \
 	--enable-graphics=cairo \

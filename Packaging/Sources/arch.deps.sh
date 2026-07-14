@@ -7,6 +7,7 @@ BUILD_TOOLS="
     cmake
     make
     patch
+    pkgconf
     git
     curl
 "
@@ -50,9 +51,9 @@ GNUSTEP_GUI_DEPS="
     libao
     libsndfile
 "
-#--- gnustep-back (art backend)
-BACK_ART_DEPS="
-    libart-lgpl
+#--- gnustep-back (cairo backend; libart-lgpl is gone from the repos)
+BACK_DEPS="
+    cairo
     freetype2
     libxcursor
     libxfixes

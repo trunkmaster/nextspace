@@ -26,7 +26,15 @@ fi
 #----------------------------------------
 # CoreFoundation
 cd ${BUILD_ROOT}/${CF_PKG_NAME} || exit 1
-rm -rf .build 2>/dev/null
+# The NextSpace addition _NS_pthread_setname_np calls _CFThreadSetName,
+# which lives in the DEPLOYMENT_RUNTIME_SWIFT-only tail of CFPlatform.c.
+# With CF_DEPLOYMENT_SWIFT=NO that symbol is compiled out and Arch's bfd
+# linker (unlike upstream's gold) refuses to link apps against the library.
+# On Linux the wrapper is just pthread_setname_np - call it directly.
+grep -q "ArchSTEP: swift-runtime-only" Base.subproj/CFPlatform.c || \
+sed -i 's|_CFThreadSetName(GetCurrentThread(), name);|pthread_setname_np(pthread_self(), name); // ArchSTEP: swift-runtime-only wrapper avoided|' Base.subproj/CFPlatform.c
+sed -i 's|_CFThreadSetName(pthread_self(),|pthread_setname_np(pthread_self(),|' Stream.subproj/CFStream.c
+${RM_CMD} -rf .build
 mkdir -p .build
 cd .build
 C_FLAGS="-I/usr/NextSpace/include -Wno-switch -Wno-enum-conversion"
@@ -49,7 +57,7 @@ $MAKE_CMD || exit 1
 # CFNetwork
 if [ -n  "$libcfnetwork_version" ]; then
 	cd ${BUILD_ROOT}/${CFNET_PKG_NAME} || exit 1
-	rm -rf .build 2>/dev/null
+	${RM_CMD} -rf .build
 	mkdir -p .build
 	cd .build
 	CFN_CFLAGS="-F../../${CF_PKG_NAME}/.build -I/usr/NextSpace/include"

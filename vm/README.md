@@ -4,7 +4,8 @@ QEMU/KVM harness for testing ArchSTEP on a disposable, always-current Arch
 Linux guest (official cloud image + cloud-init). Images and keys live under
 `vm/images/` and `vm/keys/` — both gitignored.
 
-Host requirements: `qemu-desktop`, `xorriso`, `rsync` (all in the official repos).
+Host requirements: `qemu-desktop`, `xorriso`, `rsync`, `openbsd-netcat`
+(all in the official repos; `socat` optional for the serial console).
 
 ## Workflow
 

@@ -29,7 +29,10 @@ cd ${BUILD_ROOT}/${GIT_PKG_NAME} || exit 1
 if [ -d obj ]; then
 	$MAKE_CMD clean
 fi
-./configure || exit 1
+# clang >= 16 promotes several classic C warnings to errors by default;
+# the pinned 1.31.1 configure tests and sources predate that.
+BASE_CFLAGS="-Wno-error=incompatible-pointer-types -Wno-error=int-conversion -Wno-error=implicit-function-declaration -Wno-error=implicit-int"
+CFLAGS="${BASE_CFLAGS}" OBJCFLAGS="${BASE_CFLAGS}" ./configure || exit 1
 $MAKE_CMD || exit 1
 
 #----------------------------------------
