@@ -709,7 +709,9 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
   }
 
   if ([self authenticateUser:user] == YES) {
-    [window shrinkPanel:xPanelWindow onDisplay:xDisplay];
+    // No shrink animation on success: the desktop appearing is the signal,
+    // and hundreds of synchronous X roundtrips read as lag. The failure
+    // shake stays - that one communicates. (ArchSTEP)
     [self setWindowVisible:NO];
     isWindowActive = NO;
     [self openSessionForUser:user];
