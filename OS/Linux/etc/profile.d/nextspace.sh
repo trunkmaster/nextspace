@@ -15,14 +15,25 @@ export INFOPATH="$HOME/Library/Documentation/info:/Library/Documentation/info:/u
 # Localization
 #
 # Initialize time zone to system time zone, but only if not yet set.
-if [ -x /Library/bin/defaults ];then
-    defaults read NSGlobalDomain "Local Time Zone" 2>&1 > /dev/null
-    if [ $? -ne 0 ]; then
-        echo "Updating 'Local Time Zone' preference..."
-        TZ=`/usr/bin/env -i stat --printf "%N\n" /etc/localtime |sed "s,.*-> '.*/zoneinfo/\([^']*\)',\1,"`
-        defaults write NSGlobalDomain "Local Time Zone" $TZ
+if [ -x /Library/bin/defaults ]; then
+    if ! defaults read NSGlobalDomain "Local Time Zone" >/dev/null 2>&1; then
+        ns_timezone=
+        if [ -r /var/db/zoneinfo ]; then
+            ns_timezone=$(head -n 1 /var/db/zoneinfo)
+        else
+            ns_timezone=$(readlink /etc/localtime 2>/dev/null || :)
+            case "$ns_timezone" in
+                */zoneinfo/*) ns_timezone=${ns_timezone#*/zoneinfo/} ;;
+                *) ns_timezone= ;;
+            esac
+        fi
+        if [ -n "$ns_timezone" ] && [ -f "/usr/share/zoneinfo/$ns_timezone" ]; then
+            printf "Updating Local Time Zone preference...\n"
+            defaults write NSGlobalDomain "Local Time Zone" "\"$ns_timezone\""
+        fi
     fi
 fi
+
 export LC_CTYPE=$LANG
 ### NSString encoding should be determined from system locale
 #export GNUSTEP_STRING_ENCODING="NSUTF8StringEncoding"
