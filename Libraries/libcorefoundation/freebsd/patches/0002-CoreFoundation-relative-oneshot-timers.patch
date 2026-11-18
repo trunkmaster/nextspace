@@ -1,0 +1,23 @@
+--- a/CoreFoundation/RunLoop.subproj/CFRunLoop.c
++++ b/CoreFoundation/RunLoop.subproj/CFRunLoop.c
+@@ -953,12 +953,17 @@
+ }
+ 
+ static kern_return_t mk_timer_arm(__CFPort timer, uint64_t expire_time) {
++    /* CF deadlines use CLOCK_UPTIME nanoseconds; NOTE_ABSTIME uses a
++     * different epoch. Arm a relative one-shot and consume it on delivery. */
++    uint64_t now = mach_absolute_time();
++    uint64_t delay = expire_time > now ? expire_time - now : 1;
++    if (delay > INT64_MAX) delay = INT64_MAX;
+     struct kevent kev = {
+         .ident = 0,
+         .filter = EVFILT_TIMER,
+-        .flags = EV_ADD,
+-        .fflags = NOTE_NSECONDS | NOTE_ABSTIME,
+-        .data = (int64_t)expire_time,
++        .flags = EV_ADD | EV_ONESHOT,
++        .fflags = NOTE_NSECONDS,
++        .data = (int64_t)delay,
+     };
+     int r = kevent(timer, &kev, 1, NULL, 0, NULL);
+     // The returned value is ignored.

@@ -64,3 +64,34 @@ mapping, resizing and keyboard-focus checks afterward.
 
 The current FreeBSD Packaging build uses `/usr/local/NextSpace`, with
 GNUstep local-domain libraries under `/Library/Libraries`.
+
+## Deadline timers and idle CPU
+
+FreeBSD kqueue NOTE_ABSTIME uses a different epoch from the CLOCK_UPTIME
+nanoseconds returned by this build of mach_absolute_time. Passing a CF deadline
+directly makes it immediately expired. In addition, an absolute timer registered
+without EV_ONESHOT remains readable after delivery. Once the last CF timer has
+fired, its port can therefore spin a whole core despite having no timers left.
+
+The supplemental 0002 patch converts the uptime deadline to a relative
+nanosecond delay (minimum one nanosecond, capped at INT64_MAX) and registers
+EV_ADD | EV_ONESHOT without NOTE_ABSTIME. Future repeating CF timers continue to
+rearm explicitly. Linux and other platforms are unchanged.
+
+On the live host the expired timer produced 1,273,251 identical events in three
+seconds. The standalone timer test produced 64 repeated deliveries with the old
+flags versus one with EV_ONESHOT. The CF regression exercises one one-shot and
+three repeating callbacks, then keeps the loop alive to check for idle spin:
+147,300 wakeups and 0.249801 CPU seconds before; five wakeups and 0.000702 CPU
+seconds after, over a quarter-second run.
+
+Build tests with the installed development headers and libraries:
+
+    clang tests/absolute-timer.c -o /tmp/absolute-timer
+    /tmp/absolute-timer
+    clang -fblocks -F/usr/local/NextSpace/Frameworks -I/usr/local/NextSpace/include \
+        tests/timer-idle.c -L/usr/local/NextSpace/lib -lCoreFoundation -ldispatch \
+        -lpthread -lm -o /tmp/timer-idle
+    env LD_LIBRARY_PATH=/usr/local/NextSpace/lib:/Library/Libraries /tmp/timer-idle
+
+Run the commands above from Libraries/libcorefoundation/freebsd.

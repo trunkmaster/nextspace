@@ -81,6 +81,7 @@ if [ ${OS_ID} = "freebsd" ]; then
 	git -c user.name=nextspace -c user.email=nextspace@localhost commit -qm 'ports CoreFoundation base'
 	git apply --reject -p1 ${TM_PATCHES}/*.patch || true
 	git apply -p1 ${CF_PATCH_DIR}/0001-CoreFoundation_RunLoop.subproj_CFFileDescriptor.h.patch || exit 1
+	git apply -p1 ${CF_PATCH_DIR}/0002-CoreFoundation-relative-oneshot-timers.patch || exit 1
 
 	# Assemble the source tree the Build section below compiles.
 	rm -rf ${BUILD_ROOT}/${CF_PKG_NAME}
