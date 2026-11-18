@@ -19,7 +19,7 @@
 // Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 //
 
-#include <values.h>
+#include <limits.h>
 #import "NXTNumericField.h"
 
 @implementation NXTNumericField (Private)
@@ -27,8 +27,8 @@
 - (void)_setup
 {
   [self setAlignment:NSRightTextAlignment];
-  minimumValue = MININT;
-  maximumValue = MAXINT;
+  minimumValue = INT_MIN;
+  maximumValue = INT_MAX;
 
   formatter = [[NSNumberFormatter alloc] init];
   // [formatter setNumberStyle:NSNumberFormatterDecimalStyle];

@@ -188,8 +188,8 @@ static NSPanel *fontPanel = nil;
 
   [domain release];
   [image release];
-  [defaultValues dealloc];
-  [fontCategories dealloc];
+  [defaultValues release];
+  [fontCategories release];
 
   // if (view) {
   //   [normalExampleString release];
@@ -207,6 +207,7 @@ static NSPanel *fontPanel = nil;
 
   defaults = [NSUserDefaults standardUserDefaults];
   domain = [[defaults persistentDomainForName:NSGlobalDomain] mutableCopy];
+  if (!domain) domain = [NSMutableDictionary new];
 
   bundle = [NSBundle bundleForClass:[self class]];
   imagePath = [bundle pathForResource:@"FontPreferences" ofType:@"tiff"];

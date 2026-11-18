@@ -55,7 +55,7 @@
 - (void)awakeFromNib
 {
   NSDictionary *cvdisplayRects;
-  NSCalendarDate *nowDate = [NSCalendarDate now];
+  NSCalendarDate *nowDate = [NSCalendarDate calendarDate];
 
   [view retain];
   [window release];
