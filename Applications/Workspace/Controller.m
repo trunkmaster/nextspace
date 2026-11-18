@@ -41,6 +41,7 @@
 
 #include "CoreFoundationBridge.h"
 #import "Workspace+WM.h"
+#include "WM/event.h"
 
 #import "Application.h"
 #import "Controller+NSWorkspace.h"
@@ -563,6 +564,9 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
     args[argc] = NULL;
     execvp(argv[0], args);
     exit(111);
+  }
+  if (pid > 0) {
+    wRegisterChildProcess(pid);
   }
   while (argc > 0) {
     wfree(argv[--argc]);

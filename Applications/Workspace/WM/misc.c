@@ -820,6 +820,7 @@ void wExecuteShellCommand(WScreen *scr, const char *command)
   } else {
     _tuple *data = wmalloc(sizeof(_tuple));
 
+    wRegisterChildProcess(pid);
     data->scr = scr;
     data->command = wstrdup(command);
 
@@ -872,6 +873,7 @@ Bool wRelaunchWindow(WWindow *wwin)
   } else {
     _tuple *data = wmalloc(sizeof(_tuple));
 
+    wRegisterChildProcess(pid);
     data->scr = wwin->screen;
     data->command = wtokenjoin(argv, argc);
 

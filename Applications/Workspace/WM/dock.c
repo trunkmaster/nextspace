@@ -2875,6 +2875,7 @@ static pid_t _dockExecCommand(WAppIcon *btn, const char *command, WSavedState *s
   wtokenfree(argv, argc);
 
   if (pid > 0) {
+    wRegisterChildProcess(pid);
     if (!state) {
       state = wmalloc(sizeof(WSavedState));
       state->hidden = -1;
