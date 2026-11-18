@@ -49,6 +49,13 @@
 
 #include "wevent.h"
 
+#ifdef __FreeBSD__
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/select.h>
+#include <unistd.h>
+#endif
+
 
 /* table to map event types to event masks */
 static const unsigned long eventMasks[] = {

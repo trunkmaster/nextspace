@@ -1504,6 +1504,14 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
 // static NSTimer  *soundTimer = nil;
 - (void)ringBell
 {
+#ifdef __FreeBSD__
+  /* Audio is not yet supported on FreeBSD: SoundKit is a PulseAudio client and
+   * the sound stack differs substantially from Linux. Rather than attempt a
+   * sound-server connection from the WM event path, no-op the bell here until
+   * SoundKit works on FreeBSD. bellSound stays nil, so -dealloc cleanup is a
+   * safe no-op as well. */
+  return;
+#else
   if (bellSound == nil) {
     OSEDefaults *defs = [OSEDefaults globalUserDefaults];
     NSString *bellPath = [defs objectForKey:@"NXSystemBeep"];
@@ -1516,6 +1524,7 @@ static NSString *WMComputerShouldGoDownNotification = @"WMComputerShouldGoDownNo
   }
 
   [bellSound play];
+#endif
 }
 
 @end

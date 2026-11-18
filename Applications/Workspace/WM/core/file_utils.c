@@ -43,7 +43,7 @@
 #define PATH_MAX 1024
 #endif
 
-#ifdef HAVE_SECURE_GETENV
+#if defined(HAVE_SECURE_GETENV) && !defined(__FreeBSD__)
 #include <stdlib.h>
 #endif
 
@@ -56,7 +56,7 @@ static char *_homeDirectory()
   if (home)
     return home;
 
-#ifdef HAVE_SECURE_GETENV
+#if defined(HAVE_SECURE_GETENV) && !defined(__FreeBSD__)
   tmp = secure_getenv("HOME");
 #else
   tmp = getenv("HOME");
