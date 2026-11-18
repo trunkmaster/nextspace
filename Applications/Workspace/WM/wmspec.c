@@ -1387,7 +1387,9 @@ static Bool _getAttributesForWindowType(Atom type, WWindowAttributes *window_att
     window_attrs->omnipresent = 1;
     window_attrs->skip_window_list = 1;
     window_attrs->skip_switchpanel = 1;
-    window_attrs->dont_move_off = 1;
+    // Allow menus, specifically sub-menus e.g. "Services |>" to float right of
+    // their parent
+    window_attrs->dont_move_off = (type == net_wm_window_type_toolbar) ? 1 : 0;
     window_attrs->no_appicon = 1;
   } else if (type == net_wm_window_type_dropdown_menu || type == net_wm_window_type_popup_menu ||
              type == net_wm_window_type_combo) {

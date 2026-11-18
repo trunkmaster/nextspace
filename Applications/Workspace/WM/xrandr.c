@@ -54,9 +54,11 @@ void wInitXrandr(WScreen *scr)
     WMLogInfo("[xrandr.c] Use XRandR %i.%i, event base:%i, error base:%i\n", major_version,
               minor_version, info->event_base, info->error_base);
     wUpdateXrandrInfo(scr);
-  } else {
+	} else {
+    WMLogInfo("[xrandr.c] Use of XRRQueryExtension failed. This merits investigation.\n");
+	}
+#else
     WMLogInfo("[xrandr.c] no XRandR extension available.\n");
-  }
 #endif
 }
 
