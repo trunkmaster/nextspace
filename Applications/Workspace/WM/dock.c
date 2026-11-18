@@ -1989,8 +1989,7 @@ void wDockReattachIcon(WDock *dock, WAppIcon *icon, int x, int y)
   icon->yindex = y;
   icon->xindex = x;
 
-  icon->x_pos = dock->x_pos + x * ICON_SIZE;
-  icon->y_pos = dock->y_pos + y * ICON_SIZE;
+  wAppIconMove(icon, dock->x_pos + x * ICON_SIZE, dock->y_pos + y * ICON_SIZE);
 
   CFNotificationCenterPostNotification(dock->screen_ptr->notificationCenter,
                                        WMDidChangeDockContentNotification, dock, NULL, TRUE);
@@ -2732,9 +2731,7 @@ static void moveDock(WDock *dock, int new_x, int new_y)
   for (i = 0; i < dock->max_icons; i++) {
     btn = dock->icon_array[i];
     if (btn) {
-      btn->x_pos = new_x + btn->xindex * ICON_SIZE;
-      btn->y_pos = new_y + btn->yindex * ICON_SIZE;
-      XMoveWindow(dpy, btn->icon->core->window, btn->x_pos, btn->y_pos);
+      wAppIconMove(btn, new_x + btn->xindex * ICON_SIZE, new_y + btn->yindex * ICON_SIZE);
     }
   }
 }
