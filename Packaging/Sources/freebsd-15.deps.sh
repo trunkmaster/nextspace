@@ -38,9 +38,10 @@ GNUSTEP_BASE_DEPS="
 
 GNUSTEP_GUI_DEPS="libsndfile"
 
-# back-art
+# ART and Cairo backends
 BACK_ART_DEPS="
   libart_lgpl
+  cairo
   libXfixes
   libXcursor
   libXrandr
