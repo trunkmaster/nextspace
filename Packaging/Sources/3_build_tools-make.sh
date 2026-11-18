@@ -31,7 +31,10 @@ fi
 # Build
 #----------------------------------------
 cd ${BUILD_ROOT}/${GIT_PKG_NAME}
-$MAKE_CMD clean
+# A fresh release archive has no generated Makefile until configure runs.
+if [ -f config.status ]; then
+	$MAKE_CMD clean || exit 1
+fi
 #export RUNTIME_VERSION="gnustep-1.8"
 export PKG_CONFIG_PATH="/usr/NextSpace/lib/pkgconfig"
 export CC=clang

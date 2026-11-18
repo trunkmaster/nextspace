@@ -29,7 +29,9 @@ cp -R ${SOURCES_DIR}/back ${BUILD_ROOT}
 cd ${BUILD_DIR}
 
 # ART
-$MAKE_CMD clean || exit 1
+if [ -f config.status ]; then
+	$MAKE_CMD clean || exit 1
+fi
 ./configure \
 	--enable-graphics=art \
 	--with-name=art \
