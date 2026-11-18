@@ -50,7 +50,7 @@ typedef struct _NXGammaValue NXGammaValue;
   NXGammaValue gammaValue;
   CGFloat gammaBrightness;
 
-  NSMutableDictionary *properties;
+  NSMutableDictionary *displayProperties;
 
   BOOL isMain;
   // BOOL			isActive;

@@ -7,32 +7,21 @@
 ADDITIONAL_CPPFLAGS +=
 
 ### Additional flags to pass to Objective C compiler
-ADDITIONAL_OBJCFLAGS += -W -Wall -Wno-import -Wno-unused \
-	-Wno-unused-parameter -pipe
+ADDITIONAL_OBJCFLAGS += -W -Wall -Wno-import -Wno-unused -Wno-unused-parameter -pipe
 
 ### Additional flags to pass to C compiler
 ADDITIONAL_CFLAGS +=
+# ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+#   ADDITIONAL_CFLAGS += -DFREEBSD
+# endif
 
 ### Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS += -I./derived_src
 
-# ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
-#   ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags hal`
-# endif
+ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags libpulse`
 
-ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-  ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags libpulse`
-endif
-
-### Additional flags to pass to the linker
-# ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
-#   ADDITIONAL_LDFLAGS += `pkg-config --libs hal`
-# endif
-
-ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-  ADDITIONAL_LDFLAGS += `pkg-config --libs libpulse`
-  ADDITIONAL_LDFLAGS += -ldispatch
-endif
+ADDITIONAL_LDFLAGS += `pkg-config --libs libpulse`
+ADDITIONAL_LDFLAGS += -ldispatch
 
 ### Additional library directories the linker should search
 ADDITIONAL_LIB_DIRS += 
