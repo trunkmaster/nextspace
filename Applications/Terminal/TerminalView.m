@@ -43,6 +43,9 @@
 
 #import "TerminalWindow.h"
 #import "TerminalView.h"
+#ifdef USE_GHOSTTY_VT
+#import "TerminalParser_Ghostty.h"
+#endif
 
 #pragma mark - Definitions
 
@@ -796,7 +799,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   }
 
   //------------------- CURSOR ----------------------------------------------------
-  if (shouldDrawCursor) {
+  if (shouldDrawCursor && terminalCursorVisible) {
     float x, y;
     [cursorColor set];
 
@@ -850,6 +853,14 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 // ---
 // --- Text manipulation
 // ---
+- (void)ts_setCursorVisible:(BOOL)visible
+{
+  if (terminalCursorVisible != visible) {
+    terminalCursorVisible = visible;
+    [self setNeedsDisplay:YES];
+  }
+}
+
 - (screen_char_t)ts_getCharAtX:(int)x Y:(int)y
 {
   NSDebugLLog(@"ts", @"getCharAt: %i:%i", x, y);
@@ -1828,8 +1839,10 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       break;
     }
 
+    BOOL batch = [terminalParser respondsToSelector:@selector(processData:length:)];
+    if (batch) [terminalParser processData:(const unsigned char *)buf length:size];
     for (i = 0; i < size; i++) {
-      [terminalParser processByte:buf[i]];
+      if (!batch) [terminalParser processByte:buf[i]];
       // Line Feed, Vertical Tabulation, Form Feed, Carriage Return
       if (isActivityMonitorEnabled &&
           (buf[i] == 10 || buf[i] == 11 || buf[i] == 12 || buf[i] == 13)) {
@@ -2021,7 +2034,12 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       fprintf(stderr, "Unable do set directory: %s\n", cdirectory);
     }
 
-    putenv("TERM=linux");
+#ifdef USE_GHOSTTY_VT
+    if (usesGhosttyParser)
+      putenv("TERM=xterm");
+    else
+#endif
+      putenv("TERM=linux");
     putenv("TERM_PROGRAM=GNUstep_Terminal");
 
     // fprintf(stderr, "Child process terminal: %s\n", ttyname(0));
@@ -2363,9 +2381,22 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   max_sb_depth = [defaults scrollBackLines];
   [self resizeScrollbackBuffer:YES];
 
-  terminalParser = [[TerminalParser_Linux alloc] initWithTerminalScreen:self
+  terminalCursorVisible = YES;
+  Class parserClass = [TerminalParser_Linux class];
+#ifdef USE_GHOSTTY_VT
+  if (![[[NSUserDefaults standardUserDefaults] stringForKey:@"TerminalParserBackend"]
+          isEqualToString:@"linux"])
+    parserClass = [TerminalParser_Ghostty class];
+#endif
+  terminalParser = [[parserClass alloc] initWithTerminalScreen:self
                                                                   width:screen_width
                                                                  height:screen_height];
+  if (!terminalParser)
+    terminalParser = [[TerminalParser_Linux alloc] initWithTerminalScreen:self
+        width:screen_width height:screen_height];
+#ifdef USE_GHOSTTY_VT
+  usesGhosttyParser = [terminalParser isKindOfClass:[TerminalParser_Ghostty class]];
+#endif
   master_fd = -1;
 
   [self registerForDraggedTypes:@[ NSFilenamesPboardType, NSStringPboardType ]];

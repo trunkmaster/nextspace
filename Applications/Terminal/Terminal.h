@@ -57,6 +57,8 @@ complete. (TODO check this) */
 - (id)preferences;
 - (BOOL)useMultiCellGlyphs;
 - (int)relativeWidthOfCharacter:(unichar)ch;
+@optional
+- (void)ts_setCursorVisible:(BOOL)visible;
 
 @end
 
@@ -71,6 +73,11 @@ complete. (TODO check this) */
 - (void)setCharset:(NSString *)charsetName;
 - (void)setDoubleEscape:(BOOL)doubleEscape;
 - (void)setAlternateAsMeta:(BOOL)altAsMeta;
+
+@optional
+// Batch PTY input so stateful backends snapshot once per read, not per byte.
+- (void)processData:(const unsigned char *)bytes length:(NSUInteger)length;
+
 
 @end
 

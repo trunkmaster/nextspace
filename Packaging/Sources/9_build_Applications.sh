@@ -53,6 +53,11 @@ git_remote_archive https://github.com/gnustep/apps-projectcenter ${PC_BUILD_DIR}
 #----------------------------------------
 # Build
 #----------------------------------------
+if [ "${OS_ID}" = "freebsd" ]; then
+    sh "${SOURCES_DIR}/Libraries/libghostty-vt/freebsd/build.sh" \
+        "${BUILD_ROOT}/ghostty-vt" "${NEXTSPACE_PREFIX}" || exit 1
+fi
+
 . /Developer/Makefiles/GNUstep.sh
 
 cd ${APP_BUILD_DIR}

@@ -1,4 +1,5 @@
 BUILD_TOOLS="
+    zig015
     git
     cmake
     gmake
@@ -67,3 +68,6 @@ APPLICATIONS_DEPS="
   xf86-input-keyboard
   xf86-input-evdev
 "
+
+# Terminal Unicode fallback font coverage.
+APPLICATIONS_DEPS="${APPLICATIONS_DEPS} fontconfig freetype2 harfbuzz noto-emoji noto-sans-jp noto-sans-kr noto-sans-sc"

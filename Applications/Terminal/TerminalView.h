@@ -94,6 +94,8 @@ struct selection_range {
   int screen_height;  // window height in lines
 
   int cursor_x, cursor_y;
+  BOOL terminalCursorVisible;
+  BOOL usesGhosttyParser;
   int current_x, current_y;
 
   int draw_all; /* 0=only lazy, 1=don't know, do all, 2=do all */

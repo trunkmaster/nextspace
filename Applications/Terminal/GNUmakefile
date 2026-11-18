@@ -72,5 +72,14 @@ ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
 Terminal_LDFLAGS += -liconv
 endif
 
+# The Packaging build installs the pinned VT library before applications.
+# Other platforms may explicitly enable it after installing that dependency.
+USE_GHOSTTY_VT ?= $(if $(findstring freebsd,$(GNUSTEP_TARGET_OS)),yes,no)
+ifeq ($(USE_GHOSTTY_VT),yes)
+Terminal_OBJC_FILES += TerminalParser_Ghostty.m
+ADDITIONAL_OBJCFLAGS += -DUSE_GHOSTTY_VT=1
+Terminal_LDFLAGS += -lghostty-vt
+endif
+
 include $(GNUSTEP_MAKEFILES)/aggregate.make
 include $(GNUSTEP_MAKEFILES)/application.make
