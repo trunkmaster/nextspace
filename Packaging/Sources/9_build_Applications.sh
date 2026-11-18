@@ -13,6 +13,9 @@ if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -y ${APPS_BUILD_DEPS}
 	sudo apt-get install -y ${APPS_RUN_DEPS}
+elif [ ${OS_ID} = "freebsd" ]; then
+	${ECHO} "FreeBSD: calling 'pkg install'..."
+	sudo pkg install --yes --quiet ${APPLICATIONS_DEPS}
 else
 	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-applications.spec
@@ -77,7 +80,7 @@ sudo ldconfig
 #----------------------------------------
 # Post install
 #----------------------------------------
-if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
+if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ] && [ ${OS_ID} != "freebsd" ]; then
 	# Login
 	systemctl --quiet is-active loginwindow.service
 	if [ $? -eq 0 ];then
@@ -91,7 +94,7 @@ if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 				print_H2 "A session manager is already running: we must stop it now."
 				sudo systemctl stop display-manager.service
 			else
-				print_H1 "You're in graphical session.\nTo enable Login panel you need to execute the following commands in console:\n  $ sudo systemctl stop display-manager.service\n  $ sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service"
+				print_H1 "You're in graphical session.\nTo enable Login panel you need to execute the following commands in console:\n  $ sudo systemctl stop display-manager.service\n  $ sudo systemctl enable ${NEXTSPACE_PREFIX}/lib/systemd/loginwindow.service"
 			fi
 		else
 			systemctl --quiet is-enabled display-manager.service
@@ -100,7 +103,7 @@ if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 				sudo systemctl disable display-manager.service
 			fi
 			${ECHO} "Setting up Login window service..."
-			sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service
+			sudo systemctl enable ${NEXTSPACE_PREFIX}/lib/systemd/loginwindow.service
 			sudo systemctl set-default graphical.target
 		fi
 	fi

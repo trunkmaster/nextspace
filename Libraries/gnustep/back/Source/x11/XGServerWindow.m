@@ -1549,6 +1549,27 @@ Bool _get_next_prop_new_event(Display *display, XEvent *event, char *arg) {
       BOOL ok = YES;
       XEvent ev;
 
+#ifdef __FreeBSD__
+      // FreeBSD: X11/WM offset detection times out (30+ seconds).
+      // Pre-populate with hardcoded WindowMaker offsets and skip detection.
+      if (generic.wm & XGWM_WINDOWMAKER) {
+        NSLog(@"FreeBSD: Using hardcoded WindowMaker offsets (skipping slow detection)");
+        for (i = 1; i < 16; i++) {
+          generic.offsets[i].l = generic.offsets[i].r = generic.offsets[i].t = generic.offsets[i].b = 1.0;
+          if (NSResizableWindowMask & i) {
+            generic.offsets[i].b = 9.0;
+          }
+          if ((i & NSTitledWindowMask) || (i & NSClosableWindowMask) ||
+              (i & NSMiniaturizableWindowMask)) {
+            generic.offsets[i].t = 25.0;
+          }
+          generic.offsets[i].known = YES;
+        }
+        // Skip the detection loop and property storage
+        goto skip_detection;
+      }
+#endif
+
       if (generic.wm & XGWM_WINDOWMAKER) {
         // Inform WindowMaker to ignore focus events
         ev.xclient.type = ClientMessage;
@@ -1591,6 +1612,9 @@ Bool _get_next_prop_new_event(Display *display, XEvent *event, char *arg) {
                         generic._GNUSTEP_FRAME_OFFSETS_ATOM, XA_CARDINAL, 16,
                         PropModeReplace, (unsigned char *)off, 60);
       }
+#ifdef __FreeBSD__
+skip_detection:
+#endif
     } else {
       /* Got offsets from the root window.
        * Let's copy them into our local table.

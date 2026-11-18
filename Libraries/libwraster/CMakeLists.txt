@@ -34,6 +34,12 @@ endif()
 
 check_include_files("stdnoreturn.h" HAVE_STDNORETURN)
 
+# Set the FreeBSD dependency paths before probing JPEG as well as other formats.
+if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+  string(APPEND CMAKE_C_FLAGS " -I/usr/local/include")
+  string(APPEND CMAKE_EXE_LINKER_FLAGS " -L/usr/local/lib")
+endif()
+
 check_include_files("stdio.h;jpeglib.h" USE_JPEG)
 
 # find_package(GraphicsMagick COMPONENTS MagickWand)
