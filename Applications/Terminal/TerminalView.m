@@ -25,7 +25,12 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
+#ifdef __FreeBSD__
+#include <sys/ioctl.h>
+#include <libutil.h>
+#else
 #include <pty.h>
+#endif
 #include <sys/wait.h>
 
 #import <AppKit/AppKit.h>
