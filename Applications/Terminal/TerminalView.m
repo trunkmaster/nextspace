@@ -20,18 +20,22 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <termios.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#ifdef __FreeBSD__
+#include <sys/wait.h>
+
+#if defined(__FreeBSD__)
+#include <sys/types.h>
 #include <sys/ioctl.h>
+#include <termios.h>
 #include <libutil.h>
+#include <pcap.h>
 #else
+#include <termios.h>
 #include <pty.h>
 #endif
-#include <sys/wait.h>
 
 #import <AppKit/AppKit.h>
 #import <GNUstepBase/Unicode.h>

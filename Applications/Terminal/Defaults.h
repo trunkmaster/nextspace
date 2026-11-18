@@ -263,3 +263,13 @@ typedef enum { OnStartDoNothing = 1, OnStartOpenFile = 2, OnStartCreateShell = 3
 - (BOOL)hideOnAutolaunch;
 - (void)setHideOnAutolaunch:(BOOL)yn;
 @end
+
+extern NSString *PreserveReadlineWordMovementKey;
+extern NSString *SwallowSuperKeyKey;
+extern NSString *SuperKeyKeycode;
+
+@interface Defaults (Keyboard)
+- (BOOL)swallowSuperKey;
+- (BOOL)preserveReadlineWordMovement;
+- (unsigned short)superKeyKeycode;
+@end
