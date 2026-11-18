@@ -33,6 +33,8 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
 
+#include <stdlib.h>
+
 #include "FTFontEnumerator.h"
 #include "FTFaceInfo.h"
 
@@ -380,6 +382,34 @@ static void load_font_configuration(void)
     }
     [families_seen unionSet:families_pending];
     [families_pending removeAllObjects];
+  }
+
+  /* Family-name lookups (e.g. Helvetica) should resolve to an upright face
+   * nearest normal weight. Preserve actual PostScript-name registrations. */
+  NSEnumerator *familyEnumerator = [fcfg_allFontFamilies keyEnumerator];
+  NSString *familyName;
+  while ((familyName = [familyEnumerator nextObject])) {
+    if ([fcfg_all_fonts objectForKey:familyName] != nil)
+      continue;
+
+    NSArray *familyFaces = [fcfg_allFontFamilies objectForKey:familyName];
+    NSString *defaultFontName = nil;
+    BOOL bestIsItalic = YES;
+    int bestDistance = 0;
+    for (NSArray *face in familyFaces) {
+      unsigned int traits = [[face objectAtIndex:3] unsignedIntValue];
+      BOOL isItalic = (traits & NSItalicFontMask) != 0;
+      int distance = abs([[face objectAtIndex:2] intValue] - 5);
+      if (defaultFontName == nil || (!isItalic && bestIsItalic) ||
+          (isItalic == bestIsItalic && distance < bestDistance)) {
+        defaultFontName = [face objectAtIndex:0];
+        bestIsItalic = isItalic;
+        bestDistance = distance;
+      }
+    }
+    FTFaceInfo *defaultFace = defaultFontName ? [fcfg_all_fonts objectForKey:defaultFontName] : nil;
+    if (defaultFace != nil)
+      [fcfg_all_fonts setObject:defaultFace forKey:familyName];
   }
 
   NSDebugLLog(@"ftfont", @"got %lu fonts in %lu families", [fcfg_allFontNames count],
