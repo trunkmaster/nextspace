@@ -1,0 +1,92 @@
+--- Source/NSRunLoop.m.orig	2026-11-13 11:31:23.549722000 -0500
++++ Source/NSRunLoop.m	2026-11-13 11:50:24.114258000 -0500
+@@ -400,7 +400,49 @@
+  * may go away in later releases (in which case we will use another library)
+  */
+ #pragma clang diagnostic ignored "-Wimplicit-function-declaration"
++
++#if defined(__FreeBSD__)
++#  include <sys/types.h>
++#  include <sys/event.h>
++#  include <sys/time.h>
++#  include <unistd.h>
++#  include <errno.h>
++#  include <stdint.h>
++/* On FreeBSD the main-queue wakeup handle depends on which libdispatch is
++ * loaded.  The swift-corelibs build hands back a kqueue holding one
++ * EVFILT_USER knote (readable until kevent()ed); a pipe-based build may hand
++ * back a packed (rfd<<32|wfd) pair.  Use the private header declaration
++ * when available; older public-only headers need the widest return type. */
++#ifndef DISPATCH_CF_SPI_VERSION
++extern uint64_t _dispatch_get_main_queue_handle_4CF(void);
++#endif
++
++/* fstat(2) reports a kqueue as S_IFIFO, so a pipe and a kqueue cannot be
++ * told apart that way; kevent(2) on anything but a kqueue fails (EINVAL). */
++static BOOL
++GSFreeBSDIsKqueue(int fd)
++{
++  struct kevent		ev;
++  struct timespec	ts = { 0, 0 };
+ 
++  return (kevent(fd, NULL, 0, &ev, 1, &ts) == -1) ? NO : YES;
++}
++
++static int
++GSFreeBSDMainQueueReadFD(void)
++{
++  uint64_t	h = _dispatch_get_main_queue_handle_4CF();
++  int		hi = (int)(h >> 32);
++  int		lo = (int)(h & 0xffffffffULL);
++
++  if (hi > 0 && hi != lo && GSFreeBSDIsKqueue(hi) == NO)
++    {
++      return hi;	/* packed (rfd<<32|wfd) pipe handle: poll the read end */
++    }
++  return lo;		/* kqueue (or a plain single descriptor) */
++}
++#endif
++
+ @interface GSMainQueueDrainer : NSObject <RunLoopEvents>
+ + (void*) mainQueueFileDescriptor;
+ @end
+@@ -411,7 +453,11 @@
+ #if HAVE_DISPATCH_GET_MAIN_QUEUE_HANDLE_NP
+   return (void*)(uintptr_t)dispatch_get_main_queue_handle_np();
+ #elif HAVE__DISPATCH_GET_MAIN_QUEUE_HANDLE_4CF
++#if defined(__FreeBSD__)
++  return (void*)(intptr_t)GSFreeBSDMainQueueReadFD();
++#else
+   return (void*)(uintptr_t)_dispatch_get_main_queue_handle_4CF();
++#endif
+ #else
+ #error libdispatch missing main queue handle function
+ #endif
+@@ -430,6 +476,27 @@
+   int fd = (int)(intptr_t)data;
+   int n = eventfd_read(fd, &value);
+   (void) n;
++#endif
++#if defined(__FreeBSD__)
++  {
++    int			fd = (int)(intptr_t)data;
++    struct kevent	ev;
++    struct timespec	ts = { 0, 0 };
++    int			r;
++
++    /* Consume the wakeup, as the Linux branch does with eventfd_read():
++     * receive the EVFILT_USER event (EV_CLEAR resets it) when the handle
++     * is a kqueue, otherwise drain the pipe. */
++    while ((r = kevent(fd, NULL, 0, &ev, 1, &ts)) > 0)
++      ;
++    if (r == -1)
++      {
++	char	buf[64];
++
++	while (read(fd, buf, sizeof(buf)) > 0)
++	  ;
++      }
++  }
+ #endif
+   _dispatch_main_queue_callback_4CF(NULL);
+ #else
