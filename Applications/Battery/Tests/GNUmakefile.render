@@ -1,0 +1,6 @@
+MAKEFILE_NAME = GNUmakefile.render
+include $(GNUSTEP_MAKEFILES)/common.make
+TOOL_NAME = battery-render-test
+battery-render-test_OBJC_FILES = render-test.m ../BatteryView.m
+ADDITIONAL_TOOL_LIBS += -lgnustep-gui
+include $(GNUSTEP_MAKEFILES)/tool.make
