@@ -23,37 +23,14 @@ static void titleChanged(GhosttyTerminal terminal, void *userdata)
 
 static void bell(GhosttyTerminal terminal, void *userdata) { NSBeep(); }
 
-// The retained back-art renderer has a 16-color cell format. Quantize extended
-// colors here rather than misinterpreting their indices as the default color.
-static unsigned char colorIndex(GhosttyStyleColor color, BOOL foregroundColor)
+// Preserve the effective Ghostty palette instead of quantizing to legacy slots.
+static uint32_t fullColor(GhosttyStyleColor color, const GhosttyColorRgb *palette,
+                          uint32_t defaultColor)
 {
-  if (color.tag == GHOSTTY_STYLE_COLOR_NONE) return 15;
-  if (color.tag == GHOSTTY_STYLE_COLOR_PALETTE && color.value.palette < 16)
-    return color.value.palette;
-  unsigned r, g, b;
-  if (color.tag == GHOSTTY_STYLE_COLOR_RGB) {
-    r = color.value.rgb.r; g = color.value.rgb.g; b = color.value.rgb.b;
-  } else {
-    unsigned index = color.value.palette;
-    if (index >= 232) r = g = b = 8 + 10 * (index - 232);
-    else {
-      static const unsigned levels[] = {0, 95, 135, 175, 215, 255};
-      index -= 16;
-      r = levels[index / 36]; g = levels[(index / 6) % 6]; b = levels[index % 6];
-    }
-  }
-  static const unsigned rgb[16][3] = {
-    {0,0,0},{170,0,0},{0,170,0},{170,85,0},{0,0,170},{170,0,170},{0,170,170},{170,170,170},
-    {85,85,85},{255,85,85},{85,255,85},{255,255,85},{85,85,255},{255,85,255},{85,255,255},{255,255,255}
-  };
-  unsigned best = 0, distance = UINT_MAX;
-  // Slot 15 denotes the user's default foreground/background in TerminalView.
-  for (unsigned i = 0; i < 15; i++) {
-    int dr = (int)r - rgb[i][0], dg = (int)g - rgb[i][1], db = (int)b - rgb[i][2];
-    unsigned d = dr*dr + dg*dg + db*db;
-    if (d < distance) { best = i; distance = d; }
-  }
-  return best;
+  if (color.tag == GHOSTTY_STYLE_COLOR_NONE) return defaultColor;
+  GhosttyColorRgb rgb = color.tag == GHOSTTY_STYLE_COLOR_RGB
+      ? color.value.rgb : palette[color.value.palette];
+  return TerminalRGB(rgb.r, rgb.g, rgb.b);
 }
 
 @implementation TerminalParser_Ghostty
@@ -67,6 +44,8 @@ static unsigned char colorIndex(GhosttyStyleColor color, BOOL foregroundColor)
     [self release];
     return nil;
   }
+  // Modern terminal widths: keep ZWJ emoji, modifiers and flags in one cluster.
+  ghostty_terminal_mode_set(terminal, GHOSTTY_MODE_GRAPHEME_CLUSTER, true);
   ghostty_terminal_set(terminal, GHOSTTY_TERMINAL_OPT_USERDATA, ts);
   ghostty_terminal_set(terminal, GHOSTTY_TERMINAL_OPT_WRITE_PTY, writePty);
   ghostty_terminal_set(terminal, GHOSTTY_TERMINAL_OPT_TITLE_CHANGED, titleChanged);
@@ -96,23 +75,57 @@ static unsigned char colorIndex(GhosttyStyleColor color, BOOL foregroundColor)
   ghostty_cell_get(cell, GHOSTTY_CELL_DATA_CODEPOINT, &codepoint);
   ghostty_cell_get(cell, GHOSTTY_CELL_DATA_WIDE, &wide);
   if (wide == GHOSTTY_CELL_WIDE_SPACER_TAIL) result.ch = MULTI_CELL_GLYPH;
-  else if (codepoint) result.ch = codepoint <= 0xffff ? codepoint : 0xfffd;
+  else if (codepoint) result.ch = codepoint;
+  GhosttyCellContentTag content;
+  ghostty_cell_get(cell, GHOSTTY_CELL_DATA_CONTENT_TAG, &content);
+  if (content == GHOSTTY_CELL_CONTENT_CODEPOINT_GRAPHEME &&
+      [(id)ts respondsToSelector:@selector(ts_internGrapheme:)]) {
+    uint32_t local[16]; size_t needed = 0;
+    GhosttyResult status = ghostty_grid_ref_graphemes(&ref, local, 16, &needed);
+    NSMutableData *storage = nil;
+    const uint32_t *scalars = local;
+    if (status == GHOSTTY_OUT_OF_SPACE) {
+      storage = [NSMutableData dataWithLength:needed * sizeof(uint32_t)];
+      status = ghostty_grid_ref_graphemes(&ref, [storage mutableBytes], needed, &needed);
+      scalars = [storage bytes];
+    }
+    if (status == GHOSTTY_SUCCESS && needed > 1) {
+      NSMutableString *text = [NSMutableString string];
+      for (size_t i = 0; i < needed; i++) [text appendString:TerminalStringForScalar(scalars[i])];
+      result.grapheme = [ts ts_internGrapheme:text];
+    }
+  }
   GhosttyStyle style = GHOSTTY_INIT_SIZED(GhosttyStyle);
   ghostty_grid_ref_style(&ref, &style);
-  result.color = colorIndex(style.fg_color, YES) | (colorIndex(style.bg_color, NO) << 4);
+  result.foregroundColor = fullColor(style.fg_color, colorPalette, defaultForeground);
+  result.backgroundColor = fullColor(style.bg_color, colorPalette, defaultBackground);
   result.attr = (style.bold ? 2 : style.faint ? 0 : 1) |
       (style.underline ? 4 : 0) | (style.inverse ? 8 : 0) | (style.blink ? 16 : 0);
-  if (style.invisible) result.ch = ' ';
+  if (style.invisible) result.attr |= 0x20;
   return result;
+}
+
+- (void)refreshColors
+{
+  ghostty_terminal_get(terminal, GHOSTTY_TERMINAL_DATA_COLOR_PALETTE, colorPalette);
+  GhosttyColorRgb fg, bg;
+  // No configured default yields GHOSTTY_NO_VALUE, not an RGB output.
+  defaultForeground = ghostty_terminal_get(terminal,
+      GHOSTTY_TERMINAL_DATA_COLOR_FOREGROUND, &fg) == GHOSTTY_SUCCESS
+      ? TerminalRGB(fg.r, fg.g, fg.b) : TERMINAL_COLOR_DEFAULT;
+  defaultBackground = ghostty_terminal_get(terminal,
+      GHOSTTY_TERMINAL_DATA_COLOR_BACKGROUND, &bg) == GHOSTTY_SUCCESS
+      ? TerminalRGB(bg.r, bg.g, bg.b) : TERMINAL_COLOR_DEFAULT;
 }
 
 - (void)refreshScreen
 {
+  [self refreshColors];
   for (int row = 0; row < height; row++) {
     for (int column = 0; column < width; column++) {
       screen_char_t cell = [self cellAtX:column row:row space:GHOSTTY_POINT_TAG_ACTIVE];
       screen_char_t old = [ts ts_getCharAtX:column Y:row];
-      if (old.ch != cell.ch || old.color != cell.color || (old.attr & 0x3f) != cell.attr)
+      if (!TerminalCellAppearanceEqual(old, cell))
         [ts ts_putChar:cell count:1 atX:column Y:row];
     }
   }
@@ -135,6 +148,7 @@ static unsigned char colorIndex(GhosttyStyleColor color, BOOL foregroundColor)
   GhosttyPoint point = {.tag = GHOSTTY_POINT_TAG_ACTIVE, .value.coordinate = {0, 0}};
   ghostty_terminal_grid_ref_track(terminal, point, &topRef);
   ghostty_terminal_vt_write(terminal, bytes, length);
+  [self refreshColors];
   ghostty_terminal_get(terminal, GHOSTTY_TERMINAL_DATA_ACTIVE_SCREEN, &after);
   // Save rows that crossed into history, including output that scrolled more
   // than one screen in this PTY read. A tracked top row survives history pruning.
@@ -157,6 +171,9 @@ static unsigned char colorIndex(GhosttyStyleColor color, BOOL foregroundColor)
 
 - (void)setCharset:(NSString *)charsetName
 {
+  // The legacy setter does not close handles when replacing one non-Latin-1 codec with another.
+  if (iconv_state) { iconv_close(iconv_state); iconv_state = NULL; }
+  if (iconv_input_state) { iconv_close(iconv_input_state); iconv_input_state = NULL; }
   [super setCharset:charsetName];
   if (outputToUTF8 && outputToUTF8 != (iconv_t)-1) iconv_close(outputToUTF8);
   outputToUTF8 = NULL;
@@ -204,6 +221,28 @@ static unsigned char colorIndex(GhosttyStyleColor color, BOOL foregroundColor)
   if (ghostty_terminal_resize(terminal, w, h, 0, 0) != GHOSTTY_SUCCESS) return;
   width = w; height = h;
   [self refreshScreen];
+}
+
+- (void)sendString:(NSString *)text
+{
+  text = [text stringByReplacingOccurrencesOfString:@"\n" withString:@"\r"];
+  if (!iconv_input_state) {
+    NSData *bytes = [text dataUsingEncoding:NSISOLatin1StringEncoding allowLossyConversion:NO];
+    if (!bytes) { NSBeep(); return; }
+    [ts ts_sendCString:[bytes bytes] length:(int)[bytes length]];
+    return;
+  }
+  // iconv's UCS-4 input is big-endian, as in the legacy htonl path, but
+  // NSString conversion combines surrogate pairs instead of sending halves.
+  NSData *data = [text dataUsingEncoding:NSUTF32BigEndianStringEncoding];
+  char *input = (char *)[data bytes]; size_t remaining = [data length];
+  while (remaining) {
+    char buffer[4096], *output = buffer; size_t available = sizeof(buffer);
+    size_t status = iconv(iconv_input_state, &input, &remaining, &output, &available);
+    int error = errno;
+    [ts ts_sendCString:buffer length:(int)(sizeof(buffer) - available)];
+    if (status == (size_t)-1 && error != E2BIG) { NSBeep(); break; }
+  }
 }
 
 - (void)handleKeyEvent:(NSEvent *)event

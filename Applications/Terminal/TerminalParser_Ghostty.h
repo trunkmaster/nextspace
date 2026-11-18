@@ -11,6 +11,8 @@
   GhosttyKeyEncoder keyEncoder;
   iconv_t outputToUTF8;
   NSMutableData *outputPending;
+  GhosttyColorRgb colorPalette[256];
+  uint32_t defaultForeground, defaultBackground;
 }
 - (void)processData:(const unsigned char *)bytes length:(NSUInteger)length;
 @end
