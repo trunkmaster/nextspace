@@ -373,6 +373,10 @@
   unichar c = [[theEvent characters] characterAtIndex:0];
 
   switch (c) {
+    case 13:  // Return/Enter key
+    case 3:   // Enter key (numpad)
+      [self runCommand:self];
+      break;
     case NSDownArrowFunctionKey:
       // NSDebugLLog(@"Launcher", @"WMCommandField key: Down");
       completionIndex++;

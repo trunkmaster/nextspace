@@ -22,10 +22,13 @@ SUBPROJECTS = \
 	Modules/Keyboard \
 	Modules/Mouse \
 	Modules/Services \
-	Modules/Expert
-#	Modules/Menu \
-#	Modules/Password \
-#	Modules/Power
+	Modules/Expert \
+	Modules/Menu \
+	Modules/Password \
+	Modules/Power
+ifeq (,$(findstring freebsd,$(GNUSTEP_TARGET_OS)))
+SUBPROJECTS += Modules/Sound
+endif
 
 #
 # Resource files
@@ -40,6 +43,9 @@ $(APP_NAME)_RESOURCE_FILES = \
 	Modules/Mouse/Mouse.preferences \
 	Modules/Services/Services.preferences \
 	Modules/Expert/Expert.preferences
+ifeq (,$(findstring freebsd,$(GNUSTEP_TARGET_OS)))
+$(APP_NAME)_RESOURCE_FILES += Modules/Sound/Sound.preferences
+endif
 #	Modules/Menu/Menu.preferences \
 #	Modules/Password/Password.preferences \
 #	Modules/Power/Power.preferences
@@ -79,11 +85,6 @@ Preferences_main.m
 #
 # Makefiles
 #
-ifeq (,$(findstring freebsd,$(GNUSTEP_TARGET_OS)))
-SUBPROJECTS += Modules/Sound
-$(APP_NAME)_RESOURCE_FILES += Modules/Sound/Sound.preferences
-endif
-
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/aggregate.make
 include $(GNUSTEP_MAKEFILES)/application.make

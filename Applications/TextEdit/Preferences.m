@@ -200,6 +200,7 @@ static BOOL changingRTFFont = NO;
 - (void)changeRichTextFont:(id)sender
 {
   changingRTFFont = YES;
+  [[NSFontManager sharedFontManager] setDelegate:self];
   [[richTextFontNameField window] makeFirstResponder:[richTextFontNameField window]];
   [[NSFontManager sharedFontManager] setSelectedFont:[curValues objectForKey:RichTextFont] isMultiple:NO];
   [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
@@ -208,6 +209,7 @@ static BOOL changingRTFFont = NO;
 - (void)changePlainTextFont:(id)sender
 {
   changingRTFFont = NO;
+  [[NSFontManager sharedFontManager] setDelegate:self];
   [[richTextFontNameField window] makeFirstResponder:[richTextFontNameField window]];
   [[NSFontManager sharedFontManager] setSelectedFont:[curValues objectForKey:PlainTextFont] isMultiple:NO];
   [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
@@ -225,6 +227,8 @@ static BOOL changingRTFFont = NO;
     showFontInField ([displayedValues objectForKey: PlainTextFont], plainTextFontNameField);
   }
   [self commitDisplayedValues];
+
+	[[NSFontPanel sharedFontPanel] orderOut:self];
 }
 
 /**** Commit/revert etc ****/

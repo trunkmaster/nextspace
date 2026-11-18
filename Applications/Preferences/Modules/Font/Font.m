@@ -336,6 +336,10 @@ static NSPanel *fontPanel = nil;
                          size:[self _getFloatDefault:fontSizeKey]];
 
   fontManager = [NSFontManager sharedFontManager];
+  // NSFontManager sends its action through the responder chain, not its
+  // delegate.  A text view can consume changeFont: before our panel delegate
+  // sees it, so use a Preferences-specific action for this panel.
+  [fontManager setAction:@selector(applyPreferencesFont:)];
   [fontManager setSelectedFont:font isMultiple:NO];
   if (!fontPanel) {
     fontPanel = [fontManager fontPanel:YES];
@@ -389,7 +393,7 @@ static NSPanel *fontPanel = nil;
 
 // --- Class methods
 
-- (void)changeFont:(id)sender
+- (void)applyPreferencesFont:(id)sender
 {
   NSString *fontName, *fontKey;
   CGFloat fontSize;

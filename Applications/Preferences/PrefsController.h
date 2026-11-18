@@ -38,6 +38,7 @@
 
   id			currentModule;
   NSMutableDictionary	*prefsViews;
+  NSMutableDictionary *viewScales;
   NSMutableDictionary   *loadedBundles;
 }
 
