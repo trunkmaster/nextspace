@@ -3829,6 +3829,7 @@ static void iconMouseDown(WObjDescriptor *desc, XEvent *event)
       }
     } else {
       Bool hasMoved = wHandleAppIconMove(aicon, event);
+      if (!hasMoved && wAppIconSendWidgetAction(aicon, event)) return;
       if (wPreferences.single_click && !hasMoved) {
         iconDblClick(desc, event);
       }

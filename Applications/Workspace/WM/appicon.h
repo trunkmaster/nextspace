@@ -73,6 +73,7 @@ typedef struct WAppIcon {
 
 WAppIcon *wAppIconCreateForDock(WScreen *scr, const char *command, const char *wm_instance,
                                 const char *wm_class, int tile);
+Bool wAppIconSendWidgetAction(WAppIcon *aicon, XEvent *event);
 Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event);
 
 void wAppIconDestroy(WAppIcon *aicon);
