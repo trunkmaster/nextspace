@@ -11,7 +11,8 @@ SUBPROJECTS = \
 	TextEdit \
 	TimeMon \
 	Review \
-	OpenUp
+	OpenUp \
+	Sleep
 
 # apm-backed dock monitor is available on FreeBSD.
 ifneq (,$(findstring freebsd,$(GNUSTEP_TARGET_OS)))
