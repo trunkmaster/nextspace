@@ -232,6 +232,7 @@ extern struct WPreferences {
 WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges);
 void wDefaultsReadStaticPreferences(CFMutableDictionaryRef dict);
 void wDefaultsReadPreferences(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNotify);
+void wDefaultsRefreshDesktopKeys(WScreen *scr);
 void wDefaultsUpdateDomainsIfNeeded(void *arg);
 
 #ifdef HAVE_INOTIFY

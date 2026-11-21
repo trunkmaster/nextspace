@@ -443,8 +443,10 @@ void DispatchEvent(XEvent *event)
       break;
 
     case MappingNotify:
-      if (event->xmapping.request == MappingKeyboard || event->xmapping.request == MappingModifier)
+      if (event->xmapping.request == MappingKeyboard || event->xmapping.request == MappingModifier) {
         XRefreshKeyboardMapping(&event->xmapping);
+        wDefaultsRefreshDesktopKeys(wDefaultScreen());
+      }
       break;
 
     case FocusIn:
@@ -1446,20 +1448,27 @@ static void _handleKeyPress(XEvent *event)
   //   wWindowUpdateButtonImages(wwin);
   // }
 
-  /* Pass key press to application menu of non-GNUstep applications.
-     If application menu has such shortcut function returns `True` */
-  if (wApplicationMenuHandleKeyPress(wwin, event) == True) {
-    return;
-  }
-
-  for (i = 0; i < WKBD_LAST; i++) {
-    if (wKeyBindings[i].keycode == 0) {
-      continue;
-    }
-    if ((event->xkey.keycode == wKeyBindings[i].keycode) &&
-        (wKeyBindings[i].modifier == modifiers)) {
+  /* Reserve configured desktop chords before application menus.  Other WM
+   * actions retain the existing application-menu priority. */
+  for (i = WKBD_NEXT_DESKTOP; i <= WKBD_DESKTOP_10; i++) {
+    if (wKeyBindings[i].keycode && event->xkey.keycode == wKeyBindings[i].keycode &&
+        wKeyBindings[i].modifier == modifiers) {
       command = i;
       break;
+    }
+  }
+  if (command < 0) {
+    if (wApplicationMenuHandleKeyPress(wwin, event) == True)
+      return;
+    for (i = 0; i < WKBD_LAST; i++) {
+      if (wKeyBindings[i].keycode == 0) {
+        continue;
+      }
+      if ((event->xkey.keycode == wKeyBindings[i].keycode) &&
+          (wKeyBindings[i].modifier == modifiers)) {
+        command = i;
+        break;
+      }
     }
   }
 

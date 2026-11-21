@@ -209,6 +209,9 @@ int WMHandleEvent(XEvent *event)
 
   if (event->type == MappingNotify) {
     XRefreshKeyboardMapping(&event->xmapping);
+    /* The WM also needs to rebuild passive grabs for the new keycodes. */
+    if (extraEventHandler)
+      (extraEventHandler) (event);
     return True;
   }
 
