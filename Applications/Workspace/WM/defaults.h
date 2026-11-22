@@ -232,6 +232,7 @@ extern struct WPreferences {
 WDDomain *wDefaultsInitDomain(const char *domain_name, Bool shouldTrackChanges);
 void wDefaultsReadStaticPreferences(CFMutableDictionaryRef dict);
 void wDefaultsReadPreferences(WScreen *scr, CFMutableDictionaryRef new_dict, Bool shouldNotify);
+void wDefaultsRefreshDesktopKeys(WScreen *scr);
 void wDefaultsUpdateDomainsIfNeeded(void *arg);
 
 #ifdef HAVE_INOTIFY
@@ -239,11 +240,19 @@ void wDefaultsShouldTrackChanges(WDDomain *domain, Bool shouldTrack);
 #endif
 
 /* Default images path */
+#ifdef __FreeBSD__
+#define DEF_IMAGE_PATHS \
+  "(\"~/Library/Images/\",                              \
+    \"/Library/Images/\",                               \
+    \"/usr/local/NextSpace/Images/\",                   \
+    \"/usr/local/NextSpace/Apps/Workspace.app/Resources/\")"
+#else
 #define DEF_IMAGE_PATHS \
   "(\"~/Library/Images/\",                              \
     \"/Library/Images/\",                               \
     \"/usr/NextSpace/Images/\",                         \
     \"/usr/NextSpace/Apps/Workspace.app/Resources/\")"
+#endif
 /* default fonts */
 #define DEF_TITLE_FONT "\"Helvetica:bold:pixelsize=12\""
 #define DEF_MENU_TITLE_FONT "\"Helvetica:bold:pixelsize=12\""

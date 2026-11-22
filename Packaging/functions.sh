@@ -83,7 +83,7 @@ run_rpmbuild()
 install_rpm()
 {
     rpm -q $1 2>&1 > /dev/null
-    if [ $? -eq 1 ]; then 
+    if [ $? -eq 1 ]; then
         INST_CMD=install
     else
         INST_CMD=reinstall
@@ -94,52 +94,47 @@ install_rpm()
 # Bold
 print_H1()
 {
-    echo -e -n "\e[1m"
-    echo "================================================================================"
-    echo -e -n "\e[1m"
-    echo -e "$1"
-    echo -e -n "\e[1m"
-    echo "================================================================================"
-    echo -e -n "\e[0m"
+    printf '\033[1m================================================================================\n'
+    printf '\033[1m%s\n' "$1"
+    printf '\033[1m================================================================================\n'
+    printf '\033[0m'
 }
 
 # Brown
 print_H2()
 {
-    echo -e -n "\e[33m"
-    echo -e "$1"
-    echo -e -n "\e[0m"
+    printf '\033[33m%s\n\033[0m' "$1"
 }
 
 # Green
 print_OK()
 {
-    echo -e -n "\e[32m"
-    echo "================================================================================"
-    echo -e -n "\e[32m"
-    echo -e "$1"
-    echo -e -n "\e[32m"
-    echo "================================================================================"
-    echo -e -n "\e[0m"
+    printf "\033[32m"
+    printf "================================================================================\n"
+    printf "\033[32m"
+    printf '\033[1m%s\n' "$1"
+    printf "\033[32m"
+    printf "================================================================================\n"
+    printf "\033[0m"
 }
 
 # Red
 print_ERR()
 {
-    echo -e -n "\e[31m"
-    echo "================================================================================"
-    echo -e -n "\e[31m"
-    echo -e "$1"
-    echo -e -n "\e[31m"
-    echo "================================================================================"
-    echo -e -n "\e[0m"
+    printf "\033[31m"
+    printf "================================================================================\n"
+    printf "\033[31m"
+    printf '\033[1m%s\n' "$1"
+    printf "\033[31m"
+    printf "================================================================================\n"
+    printf "\033[0m"
 }
 
-prepare_redhat_environment() 
+prepare_redhat_environment()
 {
     print_H1 " Prepare build environment"
     print_H2 "===== Install RPM build tools..."
-    
+
     rpm -q rpm-build 2>&1 > /dev/null
     if [ $? -eq 1 ]; then BUILD_TOOLS+=" rpm-build"; fi
     rpm -q rpmdevtools 2>&1 > /dev/null
@@ -149,7 +144,7 @@ prepare_redhat_environment()
     rpm -q patch 2>&1 > /dev/null
     if [ $? -eq 1 ]; then BUILD_TOOLS+=" patch"; fi
 
-    if [ -f /etc/os-release ]; then 
+    if [ -f /etc/os-release ]; then
 	    if [ "${OS_ID}" = "rhel" ] && [ "${OS_VERSION}" = "9" ];then
             sudo dnf -y install epel-release
             sudo dnf config-manager --set-enabled crb
@@ -163,10 +158,20 @@ prepare_redhat_environment()
             fi
         fi
     fi
-    
+
     if [ "${BUILD_TOOLS}" != "" ]; then
         sudo dnf -y install ${BUILD_TOOLS}
     fi
+}
+
+prepare_freebsd_environment()
+{
+    pkg info --quiet sudo
+	if [ $? = 1 ];then
+		print_ERR "There's no 'sudo' package installed. Please run 'pkg install sudo' command as root."
+		exit 1
+	fi
+    sudo pkg install --yes --quiet ${BUILD_TOOLS}
 }
 
 error_exit() {

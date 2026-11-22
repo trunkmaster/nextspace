@@ -31,7 +31,7 @@ endif
 
 before-all::
 	@ echo "Preparing WM..."
-	@ cd $(WM_DIR)/cmake; ${CMAKE} . -DCMAKE_C_COMPILER=clang
+	@ cd $(WM_DIR)/cmake; ${CMAKE} . -DCMAKE_C_COMPILER=${CC:-clang}
 
 after-all::
 	@ echo " Copying Viewers bundles into the app wrapper ..."
@@ -41,6 +41,8 @@ after-all::
 	@ echo " Copying Tools into the app wrapper..."
 	@ cp "Tools/FileMover/$(SHARED)/FileMover.tool" $(APP_WRAPPER)/Resources
 	@ cp "Tools/Sizer/$(SHARED)/Sizer.tool" $(APP_WRAPPER)/Resources
+	@ echo " Copying NX standard images from DesktopKit..."
+	@ find $(GNUSTEP_FRAMEWORKS)/DesktopKit.framework/Versions/Current/Resources/Images/ -name 'NX*.tiff' -exec cp '{}' $(APP_WRAPPER)/Resources/ ';' 2>/dev/null || true
 
 after-clean::
 	@ rm -rf $(WM_DIR)/cmake/CMakeFiles

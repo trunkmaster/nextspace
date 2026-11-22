@@ -1,0 +1,6 @@
+{
+  ApplicationDescription = "FreeBSD battery dock monitor";
+  ApplicationRelease = "0.1";
+  NSExecutable = Battery;
+  NSPrincipalClass = NSApplication;
+}

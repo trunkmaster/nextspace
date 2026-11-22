@@ -27,6 +27,7 @@
 #import <pwd.h>
 #import <grp.h>
 #import <sys/types.h>
+#import <sys/stat.h>
 #import <sys/wait.h>
 
 #import <fcntl.h>
@@ -103,22 +104,39 @@
   setenv("LC_CTYPE", "en_US.UTF-8", 1);
   setenv("DISPLAY", ":0", 1);
 
+#ifdef __FreeBSD__
+#define NS_SESSION_PREFIX "/usr/local/NextSpace"
+#else
+#define NS_SESSION_PREFIX "/usr/NextSpace"
+#endif
+#ifndef __FreeBSD__
   setenv("XDG_RUNTIME_DIR", [[NSString stringWithFormat:@"/run/user/%i", user->pw_uid] cString], 1);
+#else
+  /* Reuse the private directory established above; never export a
+   * Linux runtime path that does not exist on FreeBSD. */
+  NSString *runtime = [NSString stringWithFormat:@"/tmp/GNUstepSecure%u", user->pw_uid];
+  struct stat st;
+  if (lstat([runtime fileSystemRepresentation], &st) != 0 || !S_ISDIR(st.st_mode) ||
+      st.st_uid != user->pw_uid || (st.st_mode & 0777) != 0700) {
+    NSLog(@"Unsafe or unavailable session runtime directory: %@", runtime);
+    return NO;
+  }
+  setenv("XDG_RUNTIME_DIR", [runtime fileSystemRepresentation], 1);
+#endif
   setenv(
       "PATH",
       [[NSString
-          stringWithFormat:@"/usr/NextSpace/bin:/Library/bin:/usr/NextSpace/sbin:/Library/sbin:%s",
-                           getenv("PATH")] cString],
+          stringWithFormat:@"%s/bin:/Library/bin:%s/sbin:/Library/sbin:%s",
+                           NS_SESSION_PREFIX, NS_SESSION_PREFIX, getenv("PATH")] cString],
       1);
   setenv("LD_LIBRARY_PATH",
          [[NSString stringWithFormat:@"%s/Library/Libraries", user->pw_dir] cString], 1);
   setenv("GNUSTEP_PATHLIST",
-         [[NSString stringWithFormat:@"%s:/:/usr/NextSpace:/Network", user->pw_dir] cString], 1);
+         [[NSString stringWithFormat:@"%s:/:%s:/Network", user->pw_dir, NS_SESSION_PREFIX] cString], 1);
 
   setenv("INFOPATH",
-         [[NSString stringWithFormat:@"%s/Library/Documentation/info:/Library/Documentation/info:/"
-                                     @"usr/NextSpace/Documentation/info",
-                                     user->pw_dir] cString],
+         [[NSString stringWithFormat:@"%s/Library/Documentation/info:/Library/Documentation/info:%s/Documentation/info",
+                                     user->pw_dir, NS_SESSION_PREFIX] cString],
          1);
   // setenv("FREETYPE_PROPERTIES", "truetype:interpreter-version=35", 1);
 
@@ -126,7 +144,7 @@
   setenv("GNUSTEP_MAKEFILES", "/Developer/Makefiles", 1);
 
   // For CoreFoundation dynamic loading of CFNetwork
-  setenv("CFNETWORK_LIBRARY_PATH", "/usr/NextSpace/lib/libCFNetwork.so", 1);
+  setenv("CFNETWORK_LIBRARY_PATH", NS_SESSION_PREFIX "/lib/libCFNetwork.so", 1);
 
   // [self _setupSessionLog];
   setenv("NS_LOGFILE", [_sessionLog cString], 1);

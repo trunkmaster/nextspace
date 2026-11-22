@@ -23,6 +23,10 @@
 #include "wuserdefaults.h"
 #include <sys/param.h>
 
+#if defined(__FreeBSD__)
+#include <sys/param.h>
+#endif
+
 // ---[ Location ] --------------------------------------------------------------------------------
 
 // /Users/$USER/Library

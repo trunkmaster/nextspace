@@ -25,6 +25,7 @@
 #include "WM.h"
 
 #include <X11/Xlib.h>
+#include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/shape.h>
 #include <stdlib.h>
@@ -391,6 +392,15 @@ static void drawCorner(WIcon *icon)
 
 void wAppIconMove(WAppIcon *aicon, int x, int y)
 {
+  /* Recycler occupies the usable bottom edge, including the remainder
+   * below the last whole Dock tile. Apply this on every move so clicks,
+   * reattachment and display changes cannot snap it back to the grid. */
+  if (aicon->wm_instance && aicon->wm_class &&
+      strcmp(aicon->wm_instance, "Recycler") == 0 && strcmp(aicon->wm_class, "GNUstep") == 0) {
+    WScreen *scr = aicon->icon->core->screen_ptr;
+    WArea area = wGetUsableAreaForHead(scr, scr->xrandr_info.primary_head, NULL, False);
+    y = area.y2 - wPreferences.icon_size;
+  }
   XMoveWindow(dpy, aicon->icon->core->window, x, y);
   aicon->x_pos = x;
   aicon->y_pos = y;
@@ -586,9 +596,43 @@ void appIconMouseDown(WObjDescriptor *desc, XEvent *event)
   }
 
   hasMoved = wHandleAppIconMove(aicon, event);
+  if (!hasMoved && wAppIconSendWidgetAction(aicon, event)) return;
   if (wPreferences.single_click && !hasMoved && aicon->dock != NULL) {
     iconDblClick(desc, event);
   }
+}
+
+/* Explicit widget actions work even when an idle app has no focusable window.
+ * Ordinary apps retain the configured launch gesture. Call after drag detection. */
+Bool wAppIconSendWidgetAction(WAppIcon *aicon, XEvent *event)
+{
+  Atom actual_type;
+  int format;
+  unsigned long count, remaining;
+  unsigned char *data = NULL;
+  Window target = None;
+  XEvent action;
+  if (!aicon->icon || !aicon->icon->icon_win || event->xbutton.button != Button1)
+    return False;
+  if (XGetWindowProperty(dpy, aicon->icon->icon_win,
+                         XInternAtom(dpy, "_NEXTSPACE_DOCK_ACTION_WINDOW", False),
+                         0, 1, False, XA_WINDOW, &actual_type, &format,
+                         &count, &remaining, &data) == Success) {
+    if (actual_type == XA_WINDOW && format == 32 && count == 1 && !remaining && data)
+      target = *(unsigned long *)data;
+  }
+  if (data) XFree(data);
+  if (target == None) return False;
+  memset(&action, 0, sizeof(action));
+  action.xclient.type = ClientMessage;
+  action.xclient.display = dpy;
+  action.xclient.window = target;
+  action.xclient.message_type = XInternAtom(dpy, "_NEXTSPACE_DOCK_ACTION", False);
+  action.xclient.format = 32;
+  action.xclient.data.l[0] = event->xbutton.time;
+  XSendEvent(dpy, target, False, NoEventMask, &action);
+  XFlush(dpy);
+  return True;
 }
 
 Bool wHandleAppIconMove(WAppIcon *aicon, XEvent *event)

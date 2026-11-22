@@ -175,12 +175,12 @@ static id sharedFindObject = nil;
         options |= NSCaseInsensitiveSearch;
       }
       range = [textContents findString:[self findString]
-                         selectedRange:[tView selectedRange]
+                         selectedRange:[tView selectedTextRange]
                                options:options
                                   wrap:YES];
       if (range.length) {
-        [tView setSelectedRange:range];
-        [tView scrollRangeToVisible:range];
+        [tView setSelectedTextRange:range];
+        [tView scrollTextRangeToVisible:range];
         lastFindWasSuccessful = YES;
       }
     }

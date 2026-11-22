@@ -29,7 +29,7 @@
 
 #include <unistd.h>
 
-#include "WMdefs.h"
+#include "WM.h"
 #include "osdep.h"
 
 /*

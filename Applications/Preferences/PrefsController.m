@@ -24,6 +24,9 @@
 #import <Foundation/NSObjCRuntime.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSValue.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSDistributedNotificationCenter.h>
+#include <math.h>
 
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSNibLoading.h>
@@ -36,12 +39,48 @@
 
 #import "PrefsController.h"
 
+// Gorm resources contain fixed geometry and tiny explicit fonts. Grow the
+// layout as well as the text; merely changing NSFont leaves clipped controls.
+static void SizePreferencesView(NSView *view, CGFloat scale, NSFont *font)
+{
+  NSRect frame = [view frame];
+  BOOL autoresizes = [view autoresizesSubviews];
+  [view setAutoresizesSubviews:NO];
+  frame.origin.x *= scale;
+  frame.origin.y *= scale;
+  frame.size.width *= scale;
+  frame.size.height *= scale;
+  [view setFrame:frame];
+
+  if ([view isKindOfClass:[NSScrollView class]]) {
+    NSScrollView *scroll = (NSScrollView *)view;
+    NSView *document = [scroll documentView];
+    if ([document isKindOfClass:[NSMatrix class]]) {
+      NSMatrix *matrix = (NSMatrix *)document;
+      CGFloat height = ceil([font ascender] - [font descender]) + 6;
+      for (NSCell *cell in [matrix cells]) [cell setFont:font];
+      [matrix setCellSize:NSMakeSize([scroll contentSize].width, height)];
+      [matrix sizeToCells];
+      [scroll setLineScroll:height];
+    }
+  } else {
+    if ([view isKindOfClass:[NSControl class]]) [(NSControl *)view setFont:font];
+    if ([view isKindOfClass:[NSBox class]]) [(NSBox *)view setTitleFont:font];
+    for (NSView *child in [view subviews]) SizePreferencesView(child, scale, font);
+  }
+  [view setAutoresizesSubviews:autoresizes];
+}
+
 @implementation PrefsController
 
 - (id)init
 {
   self = [super init];
   prefsViews = [[NSMutableDictionary alloc] init];
+  viewScales = [NSMutableDictionary new];
+  [[NSDistributedNotificationCenter defaultCenter] addObserver:self
+      selector:@selector(fontPreferencesDidChange:)
+      name:@"NXTSystemFontPreferencesDidChangeNotification" object:nil];
   return self;
 }
 
@@ -84,7 +123,9 @@
 {
   NSLog(@"PrefsController: dealloc");
 
+  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
   [prefsViews release];
+  [viewScales release];
   [window close];
   [window release];
 
@@ -104,6 +145,11 @@
 //
 // Button matrix
 //
+- (void)fontPreferencesDidChange:(NSNotification *)notification
+{
+  [self buttonClicked:iconList];
+}
+
 - (void)buttonClicked:(id)sender
 {
   NSString        *buttonCaption = [[sender selectedCell] title];
@@ -117,6 +163,43 @@
   buttonRect = [sender cellFrameAtRow:0 column:[sender selectedColumn]];
   [iconList scrollRectToVisible:buttonRect];
   
+  NSSize old = [[prefsViewBox contentView] frame].size;
+  {
+    CGFloat points = [[NSUserDefaults standardUserDefaults] floatForKey:@"NSFontSize"];
+    if (points <= 0) points = 12;
+    CGFloat scale = MAX(1.0, points / 9.0);
+    NSValue *key = [NSValue valueWithPointer:view];
+    CGFloat previous = [[viewScales objectForKey:key] doubleValue];
+    if (previous <= 0) previous = 1;
+    NSFont *font = [NSFont fontWithName:[[NSUserDefaults standardUserDefaults]
+        stringForKey:@"NSFont"] size:points];
+    if (!font) font = [NSFont systemFontOfSize:points];
+    SizePreferencesView(view, scale / previous, font);
+    [viewScales setObject:[NSNumber numberWithDouble:scale] forKey:key];
+  }
+
+  // The box constrains its content view to its own size. Resize the window
+  // first, preserving its top edge, then install the module at its natural size.
+  NSSize wanted = [view frame].size;
+  CGFloat dx = wanted.width - old.width;
+  CGFloat dy = wanted.height - old.height;
+  NSRect frame = [window frame];
+  frame.origin.y -= dy;
+  frame.size.width += dx;
+  frame.size.height += dy;
+  frame = [window constrainFrameRect:frame toScreen:[window screen]];
+  NSRect boxFrame = [prefsViewBox frame];
+  NSRect iconsFrame = [iconScrollView frame];
+  boxFrame.size.width += dx;
+  boxFrame.size.height += dy;
+  iconsFrame.origin.y += dy;
+  iconsFrame.size.width += dx;
+  BOOL autoresizes = [[window contentView] autoresizesSubviews];
+  [[window contentView] setAutoresizesSubviews:NO];
+  [window setFrame:frame display:NO];
+  [prefsViewBox setFrame:boxFrame];
+  [iconScrollView setFrame:iconsFrame];
+  [[window contentView] setAutoresizesSubviews:autoresizes];
   [prefsViewBox setContentView:view];
   [view setNeedsDisplay:YES];
   [window setTitle:buttonCaption];

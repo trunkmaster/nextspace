@@ -1,0 +1,2 @@
+@interface TerminalApplication : NSApplication
+@end

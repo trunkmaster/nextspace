@@ -26,6 +26,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#ifdef __FreeBSD__
+#include <fcntl.h>    // for open(), O_RDONLY, O_WRONLY, etc.
+#include <unistd.h>   // for close(), read(), write()
+#endif
+
 // --- Copy
 
 void CleanUpAfterCopy(NSString *destDir, NSArray *files)

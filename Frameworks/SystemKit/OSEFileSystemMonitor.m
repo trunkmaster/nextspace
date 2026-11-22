@@ -64,7 +64,7 @@ NSString *OSEFileSystemChangedAtPath = @"OSEFileSystemChangedAtPath";
   monitorThreadStopped = YES;
   monitorThreadPaused = NO;
   monitorThreadShouldStart = NO;
- 
+
   NSDebugLLog(@"OSEFileSystemMonitor",
               @"OSEFileSystemMonitor: detaching file system monitor thread...");
   [NSThread detachNewThreadSelector:@selector(connectWithPorts:)
@@ -317,9 +317,8 @@ NSString *OSEFileSystemChangedAtPath = @"OSEFileSystemChangedAtPath";
   self = [super init];
 
   // Made OS-sepecific to allow initialization of OS-specific subsystem
-  NSDebugLLog(@"OSEFileSystemMonitor",
-              @"OSEFileSystemMonitorThread: initWithConnection: "
-              "No OS-specific code found!");
+  NSDebugLLog(@"OSEFileSystemMonitor", @"OSEFileSystemMonitorThread: initWithConnection: "
+                                        "No OS-specific code found!");
 
   return self;
 }

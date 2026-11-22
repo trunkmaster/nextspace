@@ -217,6 +217,12 @@ static NSMutableArray *fileList = nil;
     // TODO: on disable Recycler icon should be removed from screen.
   }
 
+  // Position the WM icon before AppKit adopts the X window and records
+  // its frame. wAppIconMove keeps Recycler anchored below the Dock grid.
+  wAppIconMove(_dockIcon, dock->x_pos,
+               dock->y_pos + _dockIcon->yindex * wPreferences.icon_size);
+  XSync(dpy, False);
+
   _appIcon = [[RecyclerIcon alloc] initWithWindowRef:&_dockIcon->icon->core->window recycler:self];
   [_appIcon setLevel:NSDockWindowLevel];
 

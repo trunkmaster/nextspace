@@ -22,42 +22,18 @@
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSPanel.h>
 #import <AppKit/NSView.h>
+#import <AppKit/NSWindow.h>
 
 #import "Defaults.h"
 #import "TerminalServices.h"
 #import "TerminalView.h"
 #import "TerminalWindow.h"
-
-@interface Terminal : NSObject
-
-@end
+#import "Terminal.h"
+#import "TerminalApplication.h"
 
 /* TODO */
 #import <AppKit/NSWindow.h>
 #import <AppKit/NSEvent.h>
-
-@interface NSWindow (avoid_warnings)
-- (void)sendEvent:(NSEvent *)e;
-@end
-
-@interface TerminalApplication : NSApplication
-@end
-
-@implementation TerminalApplication
-
-- (void)sendEvent:(NSEvent *)e
-{
-  if ([e type] == NSKeyDown && [e modifierFlags] & NSCommandKeyMask &&
-      [[Defaults shared] alternateAsMeta]) {
-    NSDebugLLog(@"key", @"intercepting key equivalent");
-    [[e window] sendEvent:e];
-    return;
-  }
-
-  [super sendEvent:e];
-}
-
-@end
 
 int main(int argc, const char **argv)
 {

@@ -894,3 +894,44 @@ NSString *HideOnAutolaunchKey = @"HideOnAutolaunch";
   [self setBool:yn forKey:HideOnAutolaunchKey];
 }
 @end
+//----------------------------------------------------------------------------
+// Keyboard
+// TODO: Not expressed in menu, yet
+//---
+// ---
+// Keyboard / Readline
+NSString *PreserveReadlineWordMovementKey = @"PreserveReadlineWordMovement";
+NSString *SwallowSuperKeyKey = @"SwallowSuperKey";
+NSString *SuperKeyKeycode = @"SuperKeyKeycode";
+// ---
+
+@implementation Defaults (Keyboard)
+
+- (BOOL)preserveReadlineWordMovement
+{
+  if ([self objectForKey:PreserveReadlineWordMovementKey] == nil) {
+    return NO; // default
+  }
+  return [self boolForKey:PreserveReadlineWordMovementKey];
+}
+
+- (BOOL)swallowSuperKey
+{
+  if ([self objectForKey:SwallowSuperKeyKey] == nil) {
+    return NO; // default
+  }
+  return [self boolForKey:SwallowSuperKeyKey];
+}
+
+- (unsigned short)superKeyKeycode
+{
+    NSNumber *val = [self objectForKey:SuperKeyKeycode];
+    if (val == nil) {
+        return 133; // default
+    }
+    return (unsigned short)[val unsignedIntegerValue];
+}
+
+
+@end
+

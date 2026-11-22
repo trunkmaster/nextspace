@@ -33,6 +33,10 @@
 
 // Global - set in WM/event.c - WMRunLoop()
 CFRunLoopRef wm_runloop = NULL;
+// Set to 1 by WMRunLoop_V0() (WM/event.c) once its warm-up event loop is pumping
+// X events. main() waits on this before starting WMRunLoop_V1(), so the two WM
+// run loops never race the X connection (see the barrier in main()).
+extern volatile int wm_v0_started;
 
 //-----------------------------------------------------------------------------
 // Workspace X Window related utility functions
@@ -126,6 +130,14 @@ int WSApplicationMain(int argc, const char **argv)
 
 int main(int argc, const char **argv)
 {
+  /* Xlib requires thread support before the first Xlib call. The backend's
+   * later XInitThreads() is too late for display probes and WM connections
+   * opened here before the concurrent WM/AppKit loops start. */
+  if (!XInitThreads()) {
+    fprintf(stderr, "[Workspace] Cannot initialize Xlib thread support.\n");
+    return 1;
+  }
+
   OSEDefaults *defs;
 
   if (_isWindowServerReady() == NO) {
@@ -133,6 +145,12 @@ int main(int argc, const char **argv)
             getenv("DISPLAY"));
     exit(1);
   }
+
+  /* The window server is effectively probed twice in quick succession at cold
+   * start (here, then again when _isWindowManagerRunning opens the display).
+   * Those two checks can land within too narrow a time window and misreport,
+   * aborting startup; a brief pause between them settles the race. */
+  usleep(100000);
 
   if (_isWindowManagerRunning() == YES) {
     fprintf(stderr, "[Workspace] Error: other window manager already running. Quitting...\n");
@@ -153,6 +171,12 @@ int main(int argc, const char **argv)
     // DISPATCH_QUEUE_CONCURRENT is mandatory for CFRunLoop run.
     dispatch_queue_t window_manager_q = dispatch_queue_create("ns.workspace.wm",
                                                               DISPATCH_QUEUE_CONCURRENT);
+
+    /* Make Foundation install its SIGCHLD handler now, before wStartUp()
+     * installs WM's, so WM's handler is layered on top of it and chains to
+     * it (see _buryChild in WM/startup.c). Otherwise the order depends on
+     * whether SystemKit happened to launch an NSTask (gdnc) earlier. */
+    [NSTask class];
 
     //--- Initialize Window Manager
     fprintf(stderr, "=== Initializing Window Manager ===\n");
@@ -184,8 +208,17 @@ int main(int argc, const char **argv)
     dispatch_async(window_manager_q, ^{
       WMRunLoop_V0();
     });
+
+    // V0 must be pumping X events before V1 installs its CFRunLoop source on
+    // the same connection. Otherwise both loops race the X fd and V1's run
+    // loop never blocks (source0 reports handled every pass), pegging a core.
+    while (!wm_v0_started) {
+      usleep(10000);
+    }
+
     dispatch_async(window_manager_q, ^{
-      WMRunLoop_V1();
+        //	CFRunLoopRun();
+        WMRunLoop_V1();
     });
   }
 

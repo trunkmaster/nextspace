@@ -595,31 +595,31 @@ WDefaultEntry optionList[] = {
     {"GroupPrevKey", "\"Command+Shift+Tab\"", (void *)WKBD_PREV_APP, NULL, getKeybind, setKeyGrab,
      NULL, NULL},
     /* Workspaces */
-    {"NextWorkspaceKey", "\"Control+Right\"", (void *)WKBD_NEXT_DESKTOP, NULL, getKeybind,
+    {"NextWorkspaceKey", "\"Control+Alt+Right\"", (void *)WKBD_NEXT_DESKTOP, NULL, getKeybind,
      setKeyGrab, NULL, NULL},
-    {"PrevWorkspaceKey", "\"Control+Left\"", (void *)WKBD_PREV_DESKTOP, NULL, getKeybind,
+    {"PrevWorkspaceKey", "\"Control+Alt+Left\"", (void *)WKBD_PREV_DESKTOP, NULL, getKeybind,
      setKeyGrab, NULL, NULL},
     {"LastWorkspaceKey", "None", (void *)WKBD_LAST_DESKTOP, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
-    {"Desktop1Key", "\"Control+1\"", (void *)WKBD_DESKTOP_1, NULL, getKeybind, setKeyGrab, NULL,
+    {"Desktop1Key", "\"Control+Alt+1\"", (void *)WKBD_DESKTOP_1, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
-    {"Desktop2Key", "\"Control+2\"", (void *)WKBD_DESKTOP_2, NULL, getKeybind, setKeyGrab, NULL,
+    {"Desktop2Key", "\"Control+Alt+2\"", (void *)WKBD_DESKTOP_2, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
-    {"Desktop3Key", "\"Control+3\"", (void *)WKBD_DESKTOP_3, NULL, getKeybind, setKeyGrab, NULL,
+    {"Desktop3Key", "\"Control+Alt+3\"", (void *)WKBD_DESKTOP_3, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
-    {"Desktop4Key", "\"Control+4\"", (void *)WKBD_DESKTOP_4, NULL, getKeybind, setKeyGrab, NULL,
+    {"Desktop4Key", "\"Control+Alt+4\"", (void *)WKBD_DESKTOP_4, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
-    {"Desktop5Key", "\"Control+5\"", (void *)WKBD_DESKTOP_5, NULL, getKeybind, setKeyGrab, NULL,
+    {"Desktop5Key", "\"Control+Alt+5\"", (void *)WKBD_DESKTOP_5, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
-    {"Desktop6Key", "\"Control+6\"", (void *)WKBD_DESKTOP_6, NULL, getKeybind, setKeyGrab, NULL,
+    {"Desktop6Key", "\"Control+Alt+6\"", (void *)WKBD_DESKTOP_6, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
-    {"Desktop7Key", "\"Control+7\"", (void *)WKBD_DESKTOP_7, NULL, getKeybind, setKeyGrab, NULL,
+    {"Desktop7Key", "\"Control+Alt+7\"", (void *)WKBD_DESKTOP_7, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
-    {"Desktop8Key", "\"Control+8\"", (void *)WKBD_DESKTOP_8, NULL, getKeybind, setKeyGrab, NULL,
+    {"Desktop8Key", "\"Control+Alt+8\"", (void *)WKBD_DESKTOP_8, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
-    {"Desktop9Key", "\"Control+9\"", (void *)WKBD_DESKTOP_9, NULL, getKeybind, setKeyGrab, NULL,
+    {"Desktop9Key", "\"Control+Alt+9\"", (void *)WKBD_DESKTOP_9, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
-    {"Desktop10Key", "\"Control+0\"", (void *)WKBD_DESKTOP_10, NULL, getKeybind, setKeyGrab, NULL,
+    {"Desktop10Key", "\"Control+Alt+0\"", (void *)WKBD_DESKTOP_10, NULL, getKeybind, setKeyGrab, NULL,
      NULL},
 
     {"WindowRelaunchKey", "None", (void *)WKBD_RELAUNCH, NULL, getKeybind, setKeyGrab, NULL, NULL},
@@ -2992,6 +2992,27 @@ static int setMenuTextBack(WScreen *scr, WDefaultEntry *entry, void *tdata, void
   return REFRESH_MENU_TEXTURE;
 }
 
+/* Desktop shortcuts are global, including when no client has focus.  Match
+ * the ignored lock combinations used for frame grabs; release only our exact
+ * previous shortcut so reconfiguration leaves unrelated grabs intact. */
+static unsigned int desktopGrabLocks[WKBD_LAST];
+
+static void setDesktopRootGrab(WScreen *scr, WShortKey *key, unsigned int ignored, Bool grab)
+{
+  unsigned int locks;
+  if (!key->keycode)
+    return;
+  for (locks = 0; locks <= 0xff; locks++) {
+    if (locks & ~ignored)
+      continue;
+    if (grab)
+      XGrabKey(dpy, key->keycode, key->modifier | locks, scr->root_win,
+               False, GrabModeAsync, GrabModeAsync);
+    else
+      XUngrabKey(dpy, key->keycode, key->modifier | locks, scr->root_win);
+  }
+}
+
 static int setKeyGrab(WScreen *scr, WDefaultEntry *entry, void *tdata, void *extra_data)
 {
   WShortKey *shortcut = tdata;
@@ -3001,6 +3022,11 @@ static int setKeyGrab(WScreen *scr, WDefaultEntry *entry, void *tdata, void *ext
   /* Parameter not used, but tell the compiler that it is ok */
   (void) entry;
 
+  if (widx >= WKBD_NEXT_DESKTOP && widx <= WKBD_DESKTOP_10) {
+    setDesktopRootGrab(scr, &wKeyBindings[widx], desktopGrabLocks[widx], False);
+    desktopGrabLocks[widx] = (~w_global.shortcut.modifiers_mask) & 0xff;
+    setDesktopRootGrab(scr, shortcut, desktopGrabLocks[widx], True);
+  }
   wKeyBindings[widx] = *shortcut;
 
   wwin = scr->focused_window;
@@ -3015,6 +3041,32 @@ static int setKeyGrab(WScreen *scr, WDefaultEntry *entry, void *tdata, void *ext
   }
 
   return 0;
+}
+
+
+/* Preferences can apply the user's XKB layout after WM startup.  Keycodes
+ * must be resolved again even though the stored shortcut strings are equal. */
+void wDefaultsRefreshDesktopKeys(WScreen *scr)
+{
+  unsigned int i;
+  void *shortcut;
+  CFDictionaryRef dict;
+  if (!scr || !w_global.domain.wm_preferences)
+    return;
+  dict = w_global.domain.wm_preferences->dictionary;
+  for (i = 0; i < wlengthof(optionList); i++) {
+    WDefaultEntry *entry = &optionList[i];
+    long command = (long) entry->extra_data;
+    CFTypeRef value;
+    if (entry->update != setKeyGrab || command < WKBD_NEXT_DESKTOP ||
+        command > WKBD_DESKTOP_10)
+      continue;
+    value = dict ? CFDictionaryGetValue(dict, entry->plkey) : NULL;
+    if (!value)
+      value = entry->plvalue;
+    if (getKeybind(scr, entry, value, entry->addr, &shortcut))
+      setKeyGrab(scr, entry, shortcut, entry->extra_data);
+  }
 }
 
 static int setIconPosition(WScreen *scr, WDefaultEntry *entry, void *bar, void *foo)

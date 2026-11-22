@@ -9,6 +9,9 @@
 if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
 	${ECHO} ">>> Installing packages for GNUstep GUI Backend build"
 	sudo apt-get install -y ${BACK_ART_DEPS}
+elif [ ${OS_ID} = "freebsd" ]; then
+	${ECHO} "FreeBSD: calling 'pkg install'..."
+	sudo pkg install --yes --quiet ${BACK_ART_DEPS}
 fi
 
 #----------------------------------------
@@ -29,7 +32,9 @@ cp -R ${SOURCES_DIR}/back ${BUILD_ROOT}
 cd ${BUILD_DIR}
 
 # ART
-$MAKE_CMD clean || exit 1
+if [ -f config.status ]; then
+	$MAKE_CMD clean || exit 1
+fi
 ./configure \
 	--enable-graphics=art \
 	--with-name=art \

@@ -197,9 +197,8 @@ static void moveDock(WDock *dock, int new_x, int new_y)
   for (i = 0; i < dock->max_icons; i++) {
     btn = dock->icon_array[i];
     if (btn) {
-      btn->x_pos = new_x + btn->xindex * wPreferences.icon_size;
-      btn->y_pos = new_y + btn->yindex * wPreferences.icon_size;
-      XMoveWindow(dpy, btn->icon->core->window, btn->x_pos, btn->y_pos);
+      wAppIconMove(btn, new_x + btn->xindex * wPreferences.icon_size,
+                   new_y + btn->yindex * wPreferences.icon_size);
     }
   }
 }

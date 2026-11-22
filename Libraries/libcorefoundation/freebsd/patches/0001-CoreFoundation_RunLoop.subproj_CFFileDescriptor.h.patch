@@ -1,0 +1,13 @@
+diff --git a/CoreFoundation/RunLoop.subproj/CFFileDescriptor.h b/CoreFoundation/RunLoop.subproj/CFFileDescriptor.h
+index a97dfed..2deb957 100644
+--- a/CoreFoundation/RunLoop.subproj/CFFileDescriptor.h
++++ b/CoreFoundation/RunLoop.subproj/CFFileDescriptor.h
+@@ -7,7 +7,7 @@
+ 
+ #include <CoreFoundation/CFRunLoop.h>
+ 
+-#if TARGET_OS_OSX || TARGET_OS_LINUX
++#if TARGET_OS_OSX || TARGET_OS_LINUX || TARGET_OS_BSD
+ 
+ CF_EXTERN_C_BEGIN
+ 

@@ -7,7 +7,7 @@ NS_PATH="/usr/NextSpace/bin:/Library/bin:/usr/NextSpace/sbin:/Library/sbin"
 export PATH=$NS_PATH:$PATH
 export MANPATH=:/Library/Documentation/man:/usr/NextSpace/Documentation/man
 # Only user home lib dir here. Others in /etc/ld.so.conf.d/nextspace.conf
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/Library/Libraries"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/Library/Libraries:/Library/Libraries:/usr/NextSpace/lib"
 export GNUSTEP_PATHLIST="$HOME:/:/usr/NextSpace:/Network"
 export INFOPATH="$HOME/Library/Documentation/info:/Library/Documentation/info:/usr/NextSpace/Documentation/info"
 
@@ -15,14 +15,25 @@ export INFOPATH="$HOME/Library/Documentation/info:/Library/Documentation/info:/u
 # Localization
 #
 # Initialize time zone to system time zone, but only if not yet set.
-if [ -x /Library/bin/defaults ];then
-    defaults read NSGlobalDomain "Local Time Zone" 2>&1 > /dev/null
-    if [ $? -ne 0 ]; then
-        echo "Updating 'Local Time Zone' preference..."
-        TZ=`/usr/bin/env -i stat --printf "%N\n" /etc/localtime |sed "s,.*-> '.*/zoneinfo/\([^']*\)',\1,"`
-        defaults write NSGlobalDomain "Local Time Zone" $TZ
+if [ -x /Library/bin/defaults ]; then
+    if ! defaults read NSGlobalDomain "Local Time Zone" >/dev/null 2>&1; then
+        ns_timezone=
+        if [ -r /var/db/zoneinfo ]; then
+            ns_timezone=$(head -n 1 /var/db/zoneinfo)
+        else
+            ns_timezone=$(readlink /etc/localtime 2>/dev/null || :)
+            case "$ns_timezone" in
+                */zoneinfo/*) ns_timezone=${ns_timezone#*/zoneinfo/} ;;
+                *) ns_timezone= ;;
+            esac
+        fi
+        if [ -n "$ns_timezone" ] && [ -f "/usr/share/zoneinfo/$ns_timezone" ]; then
+            printf "Updating Local Time Zone preference...\n"
+            defaults write NSGlobalDomain "Local Time Zone" "\"$ns_timezone\""
+        fi
     fi
 fi
+
 export LC_CTYPE=$LANG
 ### NSString encoding should be determined from system locale
 #export GNUSTEP_STRING_ENCODING="NSUTF8StringEncoding"

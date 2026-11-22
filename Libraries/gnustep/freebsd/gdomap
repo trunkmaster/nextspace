@@ -1,0 +1,56 @@
+#!/bin/sh
+
+# Script for activating the GNUstep distributed objects name server
+# See gdomap(8)
+
+# PROVIDE: gdomap
+# REQUIRE: DAEMON
+# KEYWORD: shutdown
+#
+
+. /etc/rc.subr
+
+name="gdomap"
+rcvar=${name}_enable
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+
+GNUSTEP_CONFIG_BINARY="@GNUSTEP_CONFIG_BINARY@"
+
+GNUSTEP_MAKEFILES="@GNUSTEP_MAKEFILES@"
+PIDFILE="/var/run/${name}.pid"
+
+
+if ! [ -d "$GNUSTEP_MAKEFILES" ] || ! [ -f "${GNUSTEP_MAKEFILES}/GNUstep.sh" ]; then
+  printf "Unable to find expected GNUSTEP_MAKEFILES directory: %s with file GNUstep.sh\n" $GNUSTEP_MAKEFILES >&2
+  exit 1
+elif ! [ -f $GNUSTEP_CONFIG_BINARY ]; then
+  printf "Unable to find expected gnustep-config program, was assumed to be in %s with file GNUstep.sh\n" $GNUSTEP_CONFIG_BINARY >&2
+else
+  # Get useful variables
+  . "$GNUSTEP_MAKEFILES/GNUstep.sh"
+  # ...And the FSL variables.
+  GDOMAP_BIN="$(${GNUSTEP_CONFIG_BINARY} --variable=GNUSTEP_SYSTEM_TOOLS)/${name}"
+fi
+
+gdomap_start()
+{
+  printf "Starting GNUStep ${name} daemon: %s at %s" name $GDOMAP_BIN
+  $GDOMAP_BIN -I $PIDFILE && printf "...started.\n"
+}
+
+gdomap_stop()
+{
+  PID=$(cat $PIDFILE)
+  printf "Stopping GNUStep ${name} daemon: %s at %s with PID:%s..." name $GDOMAP_BIN $PID
+  pkill -F $PIDFILE ${name}
+  if [ "$?"=0 ]; then
+    printf "...stopped\n"
+    rm $PIDFILE
+  else
+    echo "Unable to stop ${PID}. Please address manually." >&2
+  fi
+}
+
+load_rc_config $name
+run_rc_command "$1"

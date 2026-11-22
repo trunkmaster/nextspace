@@ -1106,10 +1106,16 @@ int wScreenBringInside(WScreen *scr, int *x, int *y, int width, int height)
   else if (*x >= sx2 - 10)
     *x = sx2 - tol_w - 1, moved = 1;
 
+  // If we're off screen horizontally, move back to the screen's origin x
+  if (*x < 0) *x = sx1;
+
   if (*y < sy1 - height + 10)
     *y = sy1 - tol_h, moved = 1;
   else if (*y >= sy2 - 10)
     *y = sy2 - tol_h - 1, moved = 1;
+
+  // If we're off screen vertically..origin y.
+  if (*y < 0) *y = sy1;
 
   return moved;
 }

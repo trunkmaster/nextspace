@@ -37,7 +37,7 @@
 - (instancetype)initWithFrame:(NSRect)frameRect
 {
   [super initWithFrame:frameRect];
-  [self setDate:[NSCalendarDate now]];
+  [self setDate:[NSCalendarDate calendarDate]];
   NSLog(@"First weekday: %lu", [[NSCalendar currentCalendar] firstWeekday]);
   return self;
 }

@@ -30,8 +30,10 @@
 #include <errno.h>
 #include <signal.h>
 #include <sys/wait.h>
-#ifdef __FreeBSD__
+
+#if defined (__FreeBSD__)
 #include <sys/signal.h>
+#include <fcntl.h>
 #endif
 
 #include <X11/Xlib.h>
@@ -70,6 +72,7 @@
 #include "properties.h"
 #include "wmspec.h"
 #include "event.h"
+#include "child_events.h"
 #include "switchmenu.h"
 #ifdef USE_DOCK_XDND
 #include "xdnd.h"
@@ -229,7 +232,8 @@ static RETSIGTYPE _handleExitSig(int sig)
   }
 
   sigprocmask(SIG_UNBLOCK, &sigs, NULL);
-  DispatchEvent(NULL); /* Dispatch events imediately. */
+  /* Wake normal WM context; never run exit callbacks from a signal handler. */
+  wChildEventsWakeUp();
 }
 
 /* Dummy signal handler */
@@ -258,31 +262,39 @@ static RETSIGTYPE _handleSig(int sig)
   /* wAbort(0); */
 }
 
-static RETSIGTYPE _childExitHandler(int foo)
+/* SIGCHLD.
+ *
+ * Workspace embeds WM in a GNUstep application. Foundation's NSTask installs
+ * its own SIGCHLD handler (it sets a flag the NSRunLoop polls, then reaps
+ * NSTask children by pid). A process has one handler per signal, and
+ * +[NSTask initialize] runs before wStartUp(), so this handler replaces
+ * Foundation's. Window Maker's original loop here, waitpid(-1), therefore
+ * swallowed NSTask children's exit statuses and -[NSTask waitUntilExit]
+ * never returned (first-start hang in make_services).
+ *
+ * Now: reap only the children WM forked (wRegisterChildProcess), then chain
+ * to the handler that was installed before ours so Foundation still sees
+ * every SIGCHLD. The owned-child collector uses lock-free slots and a
+ * nonblocking pipe; callbacks run later on the WM run loop.
+ */
+static struct sigaction wmChildAction;       /* ours */
+static struct sigaction previousChildAction; /* installed before wStartUp (Foundation) */
+
+static void _buryChild(int sig, siginfo_t *info, void *context)
 {
-  pid_t pid;
-  int status;
   int save_errno = errno;
-  sigset_t sigs;
 
-  sigfillset(&sigs);
-  /* Block signals so that wNotifyProcessExit() doesn't get fux0red */
-  sigprocmask(SIG_BLOCK, &sigs, NULL);
+  wReapChildProcesses();
 
-  /* If 2 or more kids exit in a small time window, before this handler gets
-   * the chance to get invoked, the SIGCHLD signals will be merged and only
-   * one SIGCHLD signal will be sent to us. We use a while loop to get all
-   * exited child status because we can't count on the number of SIGCHLD
-   * signals to know exactly how many kids have exited. -Dan
-   */
-  // CFLog(kCFLogLevelError, CFSTR("%s: error #%i -- saved_errno %i"), __func__, errno, save_errno);
-
-  while ((pid = waitpid(-1, &status, WNOHANG)) > 0 || (pid < 0 && errno == EINTR)) {
-    // CFLog(kCFLogLevelError, CFSTR("%s: PID == %i exit status == %i"), __func__, pid, WEXITSTATUS(status));
-    wNotifyProcessExit(pid, status);
+  if (previousChildAction.sa_handler != SIG_DFL && previousChildAction.sa_handler != SIG_IGN) {
+    if (previousChildAction.sa_flags & SA_SIGINFO)
+      previousChildAction.sa_sigaction(sig, info, context);
+    else
+      previousChildAction.sa_handler(sig);
+    /* gnustep-base's handler re-installs itself with signal(), which would
+     * drop ours; put ours back on top. sigaction() is async-signal-safe. */
+    sigaction(SIGCHLD, &wmChildAction, NULL);
   }
-
-  sigprocmask(SIG_UNBLOCK, &sigs, NULL);
 
   errno = save_errno;
 }
@@ -319,10 +331,18 @@ static void _setupSignalHandling(void)
   sig_action.sa_flags = SA_RESTART;
   sigaction(SIGPIPE, &sig_action, NULL);
 
-  /* handle dead children */
-  sig_action.sa_handler = _childExitHandler;
-  sig_action.sa_flags = SA_NOCLDSTOP | SA_RESTART;
-  sigaction(SIGCHLD, &sig_action, NULL);
+  if (wChildEventsInit() < 0) {
+    WMLogCritical("cannot initialize child-exit wakeup pipe");
+    exit(1);
+  }
+
+  /* handle dead children: WM's own only, then chain to Foundation's handler
+   * (see _buryChild). Remember what was installed before us. */
+  memset(&wmChildAction, 0, sizeof(wmChildAction));
+  wmChildAction.sa_sigaction = _buryChild;
+  sigfillset(&wmChildAction.sa_mask);
+  wmChildAction.sa_flags = SA_NOCLDSTOP | SA_RESTART | SA_SIGINFO;
+  sigaction(SIGCHLD, &wmChildAction, &previousChildAction);
 
   /* Now we unblock all signals, that may have been blocked by the parent
    * who exec()-ed us. This can happen for example if Window Maker crashes

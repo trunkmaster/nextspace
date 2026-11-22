@@ -201,7 +201,13 @@ NSString *OSEKeyboardNumLockState = @"KeyboardNumLockState";
   XkbRF_RulesPtr 	rules;
   XkbDescPtr		xkb;
 
+
+#ifdef __FreeBSD__
+  rules = XkbRF_Load("/usr/local/share/X11/xkb/rules/evdev", "C", True, True);
+#elif __Linux__
   rules = XkbRF_Load("/usr/share/X11/xkb/rules/evdev", "C", True, True);
+#endif
+
   if (rules != NULL) {
     XkbRF_GetComponents(rules, xkb_vars, &rnames);
     xkb = XkbGetKeyboardByName(dpy, XkbUseCoreKbd, &rnames,

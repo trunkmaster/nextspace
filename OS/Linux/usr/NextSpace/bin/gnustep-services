@@ -14,17 +14,33 @@ case "$1" in
 
 start)
 	printf "Starting GNUstep services:"
+    if [ "$UID" = "0" ];then
+        # In FreeBSD jails use the configured message ports: an inherited
+        # host IP would make gdomap compete with the host's port 538.
+        if [ "$(uname -s)" != "FreeBSD" ] || [ "$(sysctl -n security.jail.jailed)" != "1" ]; then
+            gdomap -p -a "$NS_SYSTEM/etc/gdomap.interfaces" &
+            printf " Distributed Objects"
+        fi
+        gdnc --daemon -GSPublic YES &
+        printf ", Distributed Notification Center"
+    else
+	    gpbs --daemon &
+	    printf ", Pasteboard"
+    fi
 	gdnc --daemon &
-	printf " Notification Center"
-	gpbs --daemon &
-	printf ", Pasteboard"
+	printf ", Notification Center"
 	printf ".\n"
-	;;  
+	;;
 stop)
 	printf "Stopping GNUstep services:"
-	pkill -U $USER -9 gpbs
-	printf " Pasteboard"
-	pkill -U $USER -9 gdnc
+    if [ "$UID" = "0" ];then
+        pkill -9 gdomap
+        printf " Distributed Objects"
+    else
+	    pkill -9 -U $USER gpbs
+	    printf ", Pasteboard"
+    fi
+	pkill -9 -U $USER gdnc
 	printf ", Notification Center"
 	printf ".\n"
 	;;
@@ -43,7 +59,7 @@ status)
             fi
             printf "\n"
 
-            DNC_PID=`ps auxw | grep $USER | grep gdnc | grep -v grep | grep GSPublic | awk '{print $2}'` 
+            DNC_PID=`ps auxw | grep $USER | grep gdnc | grep -v grep | grep GSPublic | awk '{print $2}'`
             printf " Distributed Notification Center      "
             if [ "$DNC_PID" != "" ]; then
 	        printf " running       $DNC_PID"
@@ -53,7 +69,7 @@ status)
             printf "\n"
         fi
 
-        NC_PID=`ps auxw | grep $USER | grep gdnc | grep -v grep | grep -v GSPublic | awk '{print $2}'` 
+        NC_PID=`ps auxw | grep $USER | grep gdnc | grep -v grep | grep -v GSPublic | awk '{print $2}'`
 	printf " Notification Center                  "
         if [ "$NC_PID" != "" ]; then
 	    printf " running       $NC_PID"

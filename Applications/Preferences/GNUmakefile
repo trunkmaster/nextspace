@@ -21,12 +21,14 @@ SUBPROJECTS = \
 	Modules/Screen \
 	Modules/Keyboard \
 	Modules/Mouse \
-	Modules/Sound \
 	Modules/Services \
-	Modules/Expert
-#	Modules/Menu \
-#	Modules/Password \
-#	Modules/Power
+	Modules/Expert \
+	Modules/Menu \
+	Modules/Password \
+	Modules/Power
+ifeq (,$(findstring freebsd,$(GNUSTEP_TARGET_OS)))
+SUBPROJECTS += Modules/Sound
+endif
 
 #
 # Resource files
@@ -39,9 +41,11 @@ $(APP_NAME)_RESOURCE_FILES = \
 	Modules/Screen/Screen.preferences \
 	Modules/Keyboard/Keyboard.preferences \
 	Modules/Mouse/Mouse.preferences \
-	Modules/Sound/Sound.preferences \
 	Modules/Services/Services.preferences \
 	Modules/Expert/Expert.preferences
+ifeq (,$(findstring freebsd,$(GNUSTEP_TARGET_OS)))
+$(APP_NAME)_RESOURCE_FILES += Modules/Sound/Sound.preferences
+endif
 #	Modules/Menu/Menu.preferences \
 #	Modules/Password/Password.preferences \
 #	Modules/Power/Power.preferences
@@ -62,7 +66,7 @@ $(APP_NAME)_LOCALIZED_RESOURCE_FILES = \
 #
 # Header files
 #
-$(APP_NAME)_HEADER_FILES = Prefernces.h
+$(APP_NAME)_HEADER_FILES = Preferences.h
 $(APP_NAME)_HEADER_FILES_INSTALL_DIR = $(GNUSTEP_SYSTEM_HEADERS)/apps
 
 #

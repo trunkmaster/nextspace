@@ -87,7 +87,8 @@ if (HAVE_MATH_H)
   endif()
 endif()
 
-set(CMAKE_REQUIRED_LIBRARIES "-lX11")
+set(CMAKE_C_FLAGS "-I/usr/local/include")
+set(CMAKE_EXE_LINKER_FLAGS "-L/usr/local/lib -lX11")
 check_symbol_exists(XConvertCase "X11/Xutil.h" HAVE_XCONVERTCASE)
 check_symbol_exists(XInternAtoms "X11/Xlib.h" HAVE_XINTERNATOMS)
 

@@ -18,7 +18,7 @@ $(FRAMEWORK_NAME)_DEPLOY_WITH_CURRENT_VERSION = yes
 # endif
 
 # Linux
-ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
+#ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
   $(FRAMEWORK_NAME)_OBJC_FILES += \
 	PACard.m \
 	PASink.m \
@@ -40,7 +40,7 @@ ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
 	SNDVirtualStream.m \
 	\
 	NXTSound.m
-endif
+#endif
 
 $(FRAMEWORK_NAME)_HEADER_FILES = \
 	SoundKit.h \

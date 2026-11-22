@@ -36,6 +36,8 @@ struct selection_range {
   int location, length;
 };
 
+@class TerminalGlyphRenderer;
+
 @interface TerminalView : NSView
 {
   Defaults *defaults;
@@ -51,6 +53,11 @@ struct selection_range {
 
   NSObject<TerminalParser> *terminalParser;
 
+  TerminalGlyphRenderer *glyphRenderer;
+  NSMutableDictionary *graphemeTexts;
+  NSMutableDictionary *graphemeHandles;
+  uint32_t nextGrapheme;
+  NSMutableData *textCellMap;
   NSFont *font;
   NSFont *boldFont;
   int font_encoding;
@@ -94,6 +101,8 @@ struct selection_range {
   int screen_height;  // window height in lines
 
   int cursor_x, cursor_y;
+  BOOL terminalCursorVisible;
+  BOOL usesGhosttyParser;
   int current_x, current_y;
 
   int draw_all; /* 0=only lazy, 1=don't know, do all, 2=do all */
@@ -158,6 +167,9 @@ struct selection_range {
 - (void)setSelectedRange:(NSRange)range;
 - (void)scrollRangeToVisible:(NSRange)range;
 - (NSString *)stringRepresentation;
+- (NSRange)selectedTextRange;
+- (void)setSelectedTextRange:(NSRange)range;
+- (void)scrollTextRangeToVisible:(NSRange)range;
 
 - (void)setIgnoreResize:(BOOL)ignore;
 - (void)setBorderX:(float)x Y:(float)y;

@@ -31,6 +31,7 @@
 #include <strings.h>
 #include <time.h>
 #include <errno.h>
+#include <sys/wait.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -77,6 +78,7 @@
 #include "shutdown.h"
 #include "misc.h"
 #include "event.h"
+#include "child_events.h"
 #include "winmenu.h"
 #include "switchmenu.h"
 #include "iconyard.h"
@@ -140,6 +142,12 @@ typedef struct ExitHandler {
 
 static CFMutableArrayRef appExitHandlers = NULL;
 
+void wRegisterChildProcess(pid_t pid)
+{
+  if (!wChildEventsRegister(pid))
+    WMLogWarning("unable to track child pid %d", (int)pid);
+}
+
 WMagicNumber wAddExitHandler(pid_t pid, WExitHandler *callback, void *cdata)
 {
   AppExitHandler *handler = NULL;
@@ -192,6 +200,7 @@ static void _deleteExitHandler(WMagicNumber id)
 
 void wNotifyProcessExit(pid_t pid, int status)
 {
+  wWindowDeleteSavedStatesForPID(pid);
   AppExitHandler *tmp;
 
   // CFLog(kCFLogLevelInfo, CFSTR("%s: PID == %i, exit status == %i"), __func__, pid,
@@ -203,7 +212,7 @@ void wNotifyProcessExit(pid_t pid, int status)
   for (int i = CFArrayGetCount(appExitHandlers) - 1; i >= 0; i--) {
     tmp = (AppExitHandler *)CFArrayGetValueAtIndex(appExitHandlers, i);
     if (tmp && tmp->pid == pid) {
-      (*tmp->callback)(tmp->pid, WEXITSTATUS(status), tmp->client_data);
+      (*tmp->callback)(tmp->pid, (WIFEXITED(status) ? WEXITSTATUS(status) : 128 + WTERMSIG(status)), tmp->client_data);
       _deleteExitHandler(tmp);
     }
   }
@@ -221,7 +230,7 @@ static void _handleApplicationProcess(void)
   for (int i = CFArrayGetCount(appExitHandlers) - 1; i >= 0; i--) {
     tmp = (AppExitHandler *)CFArrayGetValueAtIndex(appExitHandlers, i);
     // CFLog(kCFLogLevelInfo, CFSTR("%s: check if process %i exists."), __func__, tmp->pid);
-    if (tmp && (kill(tmp->pid, 0) != 0)) {
+    if (tmp && (kill(tmp->pid, 0) != 0) && errno == ESRCH) {
       (*tmp->callback)(tmp->pid, 0, tmp->client_data);
       _deleteExitHandler(tmp);
     }
@@ -229,6 +238,13 @@ static void _handleApplicationProcess(void)
 }
 
 #pragma mark - Run loop
+
+static void _runLoopHandleChildren(CFFileDescriptorRef fd, CFOptionFlags types, void *info)
+{
+  /* Process queued child exits and exit/reload flags in normal WM context. */
+  DispatchEvent(NULL);
+  CFFileDescriptorEnableCallBacks(fd, kCFFileDescriptorReadCallBack);
+}
 
 static void _runLoopHandleEvent(CFFileDescriptorRef fdref, CFOptionFlags callBackTypes, void *info)
 {
@@ -243,11 +259,23 @@ static void _runLoopHandleEvent(CFFileDescriptorRef fdref, CFOptionFlags callBac
   CFFileDescriptorEnableCallBacks(fdref, kCFFileDescriptorReadCallBack);
 }
 
+/* Defined in Workspace_main.m. WMRunLoop_V0 is a *warm-up* event loop: it pumps
+ * X events until WMRunLoop_V1 installs the CoreFoundation run loop and publishes
+ * it via `wm_runloop`. main() blocks on `wm_v0_started` so it does not launch V1
+ * until V0 is already draining the X connection. Starting both loops at once
+ * races the single X file descriptor and makes V1's CFRunLoop spin (its
+ * CFFileDescriptor source reports "handled" every pass and the loop never
+ * blocks). */
+volatile int wm_v0_started = 0;
+
 void WMRunLoop_V0()
 {
   XEvent event;
 
   WMLogError("WMRunLoop_V0: handling events while run loop is warming up.");
+  /* Signal the main thread that V0 is now pumping X events. */
+  wm_v0_started = 1;
+  /* Exit as soon as V1 has published its CFRunLoop; V0 is only the warm-up. */
   while (wm_runloop == NULL) {
     WMNextEvent(dpy, &event);
     WMHandleEvent(&event);
@@ -271,18 +299,31 @@ void WMRunLoop_V1()
   CFRunLoopRef run_loop = CFRunLoopGetCurrent();
   CFFileDescriptorRef xfd;
   CFRunLoopSourceRef xfd_source;
+  CFFileDescriptorRef childfd = NULL;
+  CFRunLoopSourceRef child_source = NULL;
 
   WMLogError("WMRunLoop_V1: Entering WM runloop with X connection: %i", ConnectionNumber(dpy));
 
   // X connection file descriptor
-  xfd = CFFileDescriptorCreate(kCFAllocatorDefault, ConnectionNumber(dpy), true,
+  xfd = CFFileDescriptorCreate(kCFAllocatorDefault, ConnectionNumber(dpy), false,
                                _runLoopHandleEvent, NULL);
-  CFFileDescriptorEnableCallBacks(xfd, kCFFileDescriptorReadCallBack);
-
   xfd_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, xfd, 0);
   CFRunLoopAddSource(run_loop, xfd_source, kCFRunLoopDefaultMode);
-  CFRelease(xfd_source);
-  CFRelease(xfd);
+  /* A readable X socket can dispatch immediately. Schedule the source first:
+   * the FreeBSD CF descriptor handler signals source0 and wakes its run loop. */
+  CFFileDescriptorEnableCallBacks(xfd, kCFFileDescriptorReadCallBack);
+  int child_read_fd = wChildEventsInit();
+  if (child_read_fd >= 0) {
+    childfd = CFFileDescriptorCreate(kCFAllocatorDefault, child_read_fd, false,
+                                    _runLoopHandleChildren, NULL);
+    if (childfd) {
+      child_source = CFFileDescriptorCreateRunLoopSource(kCFAllocatorDefault, childfd, 0);
+      if (child_source) {
+        CFRunLoopAddSource(run_loop, child_source, kCFRunLoopDefaultMode);
+        CFFileDescriptorEnableCallBacks(childfd, kCFFileDescriptorReadCallBack);
+      }
+    }
+  }
 
   WMLogError("WMRunLoop_V1: Going into CFRunLoop...");
 
@@ -293,6 +334,17 @@ void WMRunLoop_V1()
   /* Do not call CFFileDescriptorInvalidate(xfd)!
      This FD is a connection of Workspace application to X server. */
 
+  if (child_source) {
+    CFRunLoopRemoveSource(run_loop, child_source, kCFRunLoopDefaultMode);
+    CFRelease(child_source);
+  }
+  if (childfd) {
+    CFFileDescriptorInvalidate(childfd);
+    CFRelease(childfd);
+  }
+  CFFileDescriptorInvalidate(xfd); /* borrowed descriptor: never closes X connection */
+  CFRelease(xfd_source);
+  CFRelease(xfd);
   WMLogError("V1: CFRunLoop finished.");
 }
 
@@ -300,6 +352,7 @@ void WMRunLoop_V1()
 
 void DispatchEvent(XEvent *event)
 {
+  wChildEventsDrain(wNotifyProcessExit);
   if (appExitHandlers)
     _handleApplicationProcess();
 
@@ -390,8 +443,10 @@ void DispatchEvent(XEvent *event)
       break;
 
     case MappingNotify:
-      if (event->xmapping.request == MappingKeyboard || event->xmapping.request == MappingModifier)
+      if (event->xmapping.request == MappingKeyboard || event->xmapping.request == MappingModifier) {
         XRefreshKeyboardMapping(&event->xmapping);
+        wDefaultsRefreshDesktopKeys(wDefaultScreen());
+      }
       break;
 
     case FocusIn:
@@ -1393,20 +1448,27 @@ static void _handleKeyPress(XEvent *event)
   //   wWindowUpdateButtonImages(wwin);
   // }
 
-  /* Pass key press to application menu of non-GNUstep applications.
-     If application menu has such shortcut function returns `True` */
-  if (wApplicationMenuHandleKeyPress(wwin, event) == True) {
-    return;
-  }
-
-  for (i = 0; i < WKBD_LAST; i++) {
-    if (wKeyBindings[i].keycode == 0) {
-      continue;
-    }
-    if ((event->xkey.keycode == wKeyBindings[i].keycode) &&
-        (wKeyBindings[i].modifier == modifiers)) {
+  /* Reserve configured desktop chords before application menus.  Other WM
+   * actions retain the existing application-menu priority. */
+  for (i = WKBD_NEXT_DESKTOP; i <= WKBD_DESKTOP_10; i++) {
+    if (wKeyBindings[i].keycode && event->xkey.keycode == wKeyBindings[i].keycode &&
+        wKeyBindings[i].modifier == modifiers) {
       command = i;
       break;
+    }
+  }
+  if (command < 0) {
+    if (wApplicationMenuHandleKeyPress(wwin, event) == True)
+      return;
+    for (i = 0; i < WKBD_LAST; i++) {
+      if (wKeyBindings[i].keycode == 0) {
+        continue;
+      }
+      if ((event->xkey.keycode == wKeyBindings[i].keycode) &&
+          (wKeyBindings[i].modifier == modifiers)) {
+        command = i;
+        break;
+      }
     }
   }
 

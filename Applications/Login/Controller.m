@@ -459,7 +459,9 @@ int ConversationFunction(int num_msg, const struct pam_message **msg, struct pam
   pam_putenv(PAM_handle, "XDG_SESSION_CLASS=user");
   pam_putenv(PAM_handle, "XDG_SESSION_DESKTOP=NextSpace"); // optional
   pam_putenv(PAM_handle, "XDG_SEAT=seat0");
+#ifdef PAM_XDISPLAY
   pam_set_item(PAM_handle, PAM_XDISPLAY, ":0");
+#endif
 
   NS_DURING
   {

@@ -44,7 +44,12 @@ void ProcessPendingEvents(void);
 
 Bool wEventIsDoubleClick(WScreen *scr, XEvent *event);
 
-/* called from the signal handler */
+/* Normal WM event-loop context only; status is the raw waitpid status. */
 void wNotifyProcessExit(pid_t pid, int status);
+
+/* Children forked by WM itself. Register right after fork() in the parent;
+ * the SIGCHLD handler reaps only these pids (see event.c for why). */
+void wRegisterChildProcess(pid_t pid);
+void wReapChildProcesses(void);
 
 #endif /* __WORKSPACE_WM_EVENT__ */

@@ -1,0 +1,10 @@
+--- swift-corelibs-libdispatch/tests/CMakeLists.txt.orig	2023-06-15 00:55:45 UTC
++++ swift-corelibs-libdispatch/tests/CMakeLists.txt
+@@ -47,6 +47,7 @@ add_executable(bsdtestharness
+ 
+ add_executable(bsdtestharness
+                bsdtestharness.c)
++target_compile_options(bsdtestharness PRIVATE -fblocks)
+ target_include_directories(bsdtestharness
+                            PRIVATE
+                              ${CMAKE_CURRENT_BINARY_DIR}

@@ -1,0 +1,63 @@
+--- Source/NSTask.m.orig
++++ Source/NSTask.m
+@@ -1511,8 +1511,20 @@
+ 	{
+ 	  NSTask	*t;
+ 
++#if defined(__FreeBSD__)
++          /* Serialize reaping with fork-to-activeTasks registration.
++           * Otherwise a fast child can be reaped before its NSTask is
++           * visible, permanently losing its exit status. */
++          [tasksLock lock];
++#endif
+ 	  errno = 0;
+ 	  result = waitpid(-1, &status, WNOHANG);
++#if defined(__FreeBSD__)
++          if (result <= 0)
++            {
++              [tasksLock unlock];
++            }
++#endif
+ 	  if (result < 0)
+ 	    {
+ #if	defined(WAITDEBUG)
+@@ -1529,7 +1541,9 @@
+ 	    }
+ 	  else if (result > 0)
+ 	    {
++#if !defined(__FreeBSD__)
+ 	      [tasksLock lock];
++#endif
+ 	      t = (NSTask*)NSMapGet(activeTasks, (void*)(intptr_t)result);
+ 	      IF_NO_ARC([[t retain] autorelease];)
+ 	      [tasksLock unlock];
+@@ -1682,9 +1696,19 @@
+    * there is a guarantee that vfork() is safe, but when in doubt we must
+    * assume the standard POSIX behavior.
+    */
++#if defined(__FreeBSD__)
++  /* The child only execs/exits and never touches tasksLock. Keep the
++   * parent's registration atomic with GSPrivateCheckTasks' waitpid. */
++  [tasksLock lock];
++#endif
+   pid = fork();
+   if (pid < 0)
+     {
++#if defined(__FreeBSD__)
++      int savedErrno = errno;
++      [tasksLock unlock];
++      errno = savedErrno;
++#endif
+       if (error)
+ 	{
+ 	  *error = [NSError _last];
+@@ -1816,6 +1840,9 @@
+       [tasksLock lock];
+       NSMapInsert(activeTasks, (void*)(intptr_t)_taskId, (void*)self);
+       [tasksLock unlock];
++#if defined(__FreeBSD__)
++      [tasksLock unlock]; /* release the fork-to-registration lock */
++#endif
+ 
+       /*
+        *	Close the ends of any pipes used by the child.

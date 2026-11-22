@@ -5,15 +5,17 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-${ECHO} ">>> Installing ${OS_ID} packages for GNUstep Make build"
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
-	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
-	sudo apt-get install -y ${GNUSTEP_MAKE_DEPS} || exit 1
-else
-	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
-	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-core.spec
-	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v libobjc2 | grep -v "libdispatch-devel" | awk -c '{print $1}'`
-	sudo yum -y install ${DEPS} || exit 1
+if [ ${OS_ID} != "freebsd" ]; then
+	${ECHO} ">>> Installing ${OS_ID} packages for GNUstep Make build"
+	if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+		${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
+		sudo apt-get install -y ${GNUSTEP_MAKE_DEPS} || exit 1
+	else
+		${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
+		SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-core.spec
+		DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v libobjc2 | grep -v "libdispatch-devel" | awk -c '{print $1}'`
+		sudo yum -y install ${DEPS} || exit 1
+	fi
 fi
 
 #----------------------------------------
@@ -31,15 +33,26 @@ fi
 # Build
 #----------------------------------------
 cd ${BUILD_ROOT}/${GIT_PKG_NAME}
-$MAKE_CMD clean
+# A fresh release archive has no generated Makefile until configure runs.
+if [ -f config.status ]; then
+	$MAKE_CMD clean || exit 1
+fi
 #export RUNTIME_VERSION="gnustep-1.8"
-export PKG_CONFIG_PATH="/usr/NextSpace/lib/pkgconfig"
+export PKG_CONFIG_PATH="${NEXTSPACE_PREFIX}/lib/pkgconfig"
 export CC=clang
 export CXX=clang++
-export CFLAGS="-F/usr/NextSpace/Frameworks"
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"/usr/NextSpace/lib"
+export CFLAGS="-F${NEXTSPACE_PREFIX}/Frameworks -I/usr/local/include"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"${NEXTSPACE_PREFIX}/lib"
 
-cp ${PROJECT_DIR}/Libraries/gnustep/nextspace.fsl ${BUILD_ROOT}/tools-make-make-${gnustep_make_version}/FilesystemLayouts/nextspace
+FSL_DEST=${BUILD_ROOT}/tools-make-make-${gnustep_make_version}/FilesystemLayouts/nextspace
+if [ ${OS_ID} = "freebsd" ]; then
+	# The .fsl SYSTEM paths are hardcoded to ${NEXTSPACE_PREFIX}; rewrite them to
+	# the FreeBSD prefix in the copy used for this build. The source file is
+	# left untouched for other platforms.
+	sed "s|/usr/NextSpace|${NEXTSPACE_PREFIX}|g" ${PROJECT_DIR}/Libraries/gnustep/nextspace.fsl > ${FSL_DEST}
+else
+	cp ${PROJECT_DIR}/Libraries/gnustep/nextspace.fsl ${FSL_DEST}
+fi
 ./configure \
 	--prefix=/ \
 	--with-config-file=/Library/Preferences/GNUstep.conf \

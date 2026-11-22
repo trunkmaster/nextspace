@@ -38,6 +38,7 @@ $(APP_NAME)_C_FILES += \
 	$(WM_DIR)/defaults.c \
 	$(WM_DIR)/dock.c \
 	$(WM_DIR)/event.c \
+	$(WM_DIR)/child_events.c \
 	$(WM_DIR)/framewin.c \
 	$(WM_DIR)/geomview.c \
 	$(WM_DIR)/icon.c \

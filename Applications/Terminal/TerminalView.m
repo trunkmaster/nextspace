@@ -25,8 +25,18 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <pty.h>
 #include <sys/wait.h>
+
+#if defined(__FreeBSD__)
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <termios.h>
+#include <libutil.h>
+#include <pcap.h>
+#else
+#include <termio.h>
+#include <pty.h>
+#endif
 
 #import <AppKit/AppKit.h>
 #import <GNUstepBase/Unicode.h>
@@ -34,6 +44,16 @@
 
 #import "TerminalWindow.h"
 #import "TerminalView.h"
+#import "TerminalGlyphRenderer.h"
+#import "TerminalColors.h"
+#ifdef USE_GHOSTTY_VT
+#import "TerminalParser_Ghostty.h"
+#endif
+
+@interface TerminalView (UnicodeText)
+- (NSString *)textForCell:(screen_char_t)cell;
+- (NSRange)cellRangeForTextRange:(NSRange)range;
+@end
 
 #pragma mark - Definitions
 
@@ -352,6 +372,20 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   DPSsethsbcolor(gc, h, s, b);
 }
 
+static uint32_t rgbFromHSB(CGFloat hue, CGFloat saturation, CGFloat brightness)
+{
+  NSColor *rgb = [[NSColor colorWithCalibratedHue:hue saturation:saturation
+      brightness:brightness alpha:1] colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+  return TerminalRGB(lround([rgb redComponent] * 255), lround([rgb greenComponent] * 255),
+                     lround([rgb blueComponent] * 255));
+}
+
+static void setRGB(NSGraphicsContext *context, uint32_t rgb)
+{
+  DPSsetrgbcolor(context, ((rgb >> 16) & 255) / 255.0,
+      ((rgb >> 8) & 255) / 255.0, (rgb & 255) / 255.0);
+}
+
 - (void)updateColors:(Defaults *)prefs
 {
   NSColor *winBG, *winSel, *winText, *winBlink, *winBold, *invBG, *invFG;
@@ -408,12 +442,19 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 - (void)drawRect:(NSRect)r
 {
   int ix, iy;
-  char buf[8];
   NSGraphicsContext *cur = GSCurrentContext();
   int x0, y0, x1, y1;
   NSFont *f, *current_font = nil;
+  TerminalColorDefaults fullColorDefaults = {
+    .fg = rgbFromHSB(TEXT_NORM_H, TEXT_NORM_S, TEXT_NORM_B),
+    .bg = rgbFromHSB(WIN_BG_H, WIN_BG_S, WIN_BG_B),
+    .selection = rgbFromHSB(WIN_SEL_H, WIN_SEL_S, WIN_SEL_B),
+    .bold = rgbFromHSB(TEXT_BOLD_H, TEXT_BOLD_S, TEXT_BOLD_B),
+    .blink = rgbFromHSB(TEXT_BLINK_H, TEXT_BLINK_S, TEXT_BLINK_B),
+    .inverseForeground = rgbFromHSB(INV_FG_H, INV_FG_S, INV_FG_B),
+    .inverseBackground = rgbFromHSB(INV_BG_H, INV_BG_S, INV_BG_B)
+  };
 
-  int encoding;
 
   NSDebugLLog(@"draw", @"drawRect: (%g %g)+(%g %g) %i\n", r.origin.x, r.origin.y, r.size.width,
               r.size.height, draw_all);
@@ -462,6 +503,8 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   x1 = ceil((r.origin.x + r.size.width) / fx);
   if (x0 < 0)
     x0 = 0;
+  // Damage to the trailing half must redraw the leading wide glyph too.
+  if (x0 > 0) x0--;
   if (x1 >= screen_width)
     x1 = screen_width;
 
@@ -485,6 +528,8 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
     /* setting the color is slow, so we try to avoid it */
     unsigned char last_color, color, last_attr;
+    uint32_t last_full_background = 0;
+    BOOL last_was_full = NO;
 
 #define R(scr_x, scr_y, fx, fy) DPSrectfill(cur, scr_x, scr_y, fx, fy)
 
@@ -530,7 +575,18 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
         scr_x = ix * fx + border_x;
 
-        if (ch->attr & 0x8) {  //------------------------------------ BG INVERSE
+        if (TerminalCellUsesFullColors(*ch)) {
+          uint32_t backgroundRGB = TerminalResolveColors(*ch, fullColorDefaults).bg;
+          if (!last_was_full || backgroundRGB != last_full_background) {
+            if (start_x != -1) {
+              R(start_x, scr_y, scr_x - start_x, fy);
+              start_x = scr_x;
+            }
+            setRGB(cur, backgroundRGB);
+            last_full_background = backgroundRGB;
+          }
+          last_color = last_attr = 255; // invalidate the legacy color cache
+        } else if (ch->attr & 0x8) {  //------------------------------------ BG INVERSE
           color = ch->color & 0x0f;
           if (ch->attr & 0x40) {
             color ^= 0xf0;
@@ -604,6 +660,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
           }
         }
 
+        last_was_full = TerminalCellUsesFullColors(*ch);
         if (start_x == -1) {
           start_x = scr_x;
         }
@@ -641,8 +698,11 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
         //--- FOREGROUND
         /* ~1700 cycles/change */
-        if ((ch->attr & 0x02) || (ch->ch != 0 && ch->ch != 32)) {
-          if (ch->attr & 0x8) {  //-------------------------------- FG INVERSE
+        if ((ch->attr & 0x06) || (ch->ch != 0 && ch->ch != 32)) {
+          if (TerminalCellUsesFullColors(*ch)) {
+            setRGB(cur, TerminalResolveColors(*ch, fullColorDefaults).fg);
+            last_color = last_attr = 255;
+          } else if (ch->attr & 0x8) {  //-------------------------------- FG INVERSE
             color = ch->color & 0xf0;
             if (ch->attr & 0x40) {
               color ^= 0x0f;
@@ -708,17 +768,32 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
         }
 
         //--- FONTS & ENCODING
-        if (ch->ch != 0 && ch->ch != 32 && ch->ch != MULTI_CELL_GLYPH) {
+        if (!(ch->attr & 0x20) && ch->ch != 0 && ch->ch != 32 && ch->ch != MULTI_CELL_GLYPH) {
           total_draw++;
           if ((ch->attr & 3) == 2) {
-            encoding = boldFont_encoding;
             f = boldFont;
-            if ((ch->color & 0x0f) == 15) {
+            if (!TerminalCellUsesFullColors(*ch) && (ch->color & 0x0f) == 15) {
               DPSsethsbcolor(cur, TEXT_BOLD_H, TEXT_BOLD_S, TEXT_BOLD_B);
             }
           } else {
-            encoding = font_encoding;
             f = font;
+          }
+          if (ch->grapheme || ch->ch > 0xffff ||
+              (ch->ch >= 0x80 && ![[f coveredCharacterSet] characterIsMember:ch->ch])) {
+            if (!glyphRenderer) glyphRenderer = [TerminalGlyphRenderer new];
+            CGFloat red, green, blue;
+            DPScurrentrgbcolor(cur, &red, &green, &blue);
+            NSUInteger columns = (ix + 1 < screen_width && ch[1].ch == MULTI_CELL_GLYPH) ? 2 : 1;
+            NSString *text = [self textForCell:*ch];
+            NSImage *image = [glyphRenderer imageForString:text font:f
+                cellSize:NSMakeSize(fx, fy) baseline:fy0 columns:columns
+                color:[NSColor colorWithCalibratedRed:red green:green blue:blue alpha:1]];
+            if (image) {
+              [image drawInRect:NSMakeRect(scr_x, scr_y, fx * columns, fy)
+                  fromRect:NSZeroRect operation:NSCompositeSourceOver fraction:1];
+              if (ch->attr & 0x4) DPSrectfill(cur, scr_x, scr_y, fx * columns, 1);
+              continue;
+            }
           }
           if (f != current_font) {
             /* ~190 cycles/change */
@@ -726,42 +801,8 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
             current_font = f;
           }
 
-          /* we short-circuit utf8 for performance with back-art */
-          /* TODO: short-circuit latin1 too? */
-          if (encoding == NSUTF8StringEncoding) {
-            unichar uch = ch->ch;
-            if (uch >= 0x800) {
-              buf[2] = (uch & 0x3f) | 0x80;
-              uch >>= 6;
-              buf[1] = (uch & 0x3f) | 0x80;
-              uch >>= 6;
-              buf[0] = (uch & 0x0f) | 0xe0;
-              buf[3] = 0;
-            } else if (uch >= 0x80) {
-              buf[1] = (uch & 0x3f) | 0x80;
-              uch >>= 6;
-              buf[0] = (uch & 0x1f) | 0xc0;
-              buf[2] = 0;
-            } else {
-              buf[0] = uch;
-              buf[1] = 0;
-            }
-          } else {
-            unichar uch = ch->ch;
-            if (uch <= 0x80) {
-              buf[0] = uch;
-              buf[1] = 0;
-            } else {
-              unsigned char *pbuf = (unsigned char *)buf;
-              unsigned int dlen = sizeof(buf) - 1;
-              GSFromUnicode(&pbuf, &dlen, &uch, 1, encoding, NULL, GSUniTerminate);
-            }
-          }
-          /* ~580 cycles */
           DPSmoveto(cur, scr_x + fx0, scr_y + fy0);
-          /* baseline here for mc-case 0.65 */
-          /* ~3800 cycles */
-          DPSshow(cur, buf);
+          DPSshow(cur, [[self textForCell:*ch] UTF8String]);
 
           /* ~95 cycles to ARTGState -DPSshow:... */
           /* ~343 cycles to isEmpty */
@@ -779,7 +820,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
         }
 
         //--- UNDERLINE
-        if (ch->attr & 0x4) {
+        if ((ch->attr & 0x4) && !(ch->attr & 0x20)) {
           DPSrectfill(cur, scr_x, scr_y, fx, 1);
         }
       }
@@ -787,7 +828,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   }
 
   //------------------- CURSOR ----------------------------------------------------
-  if (shouldDrawCursor) {
+  if (shouldDrawCursor && terminalCursorVisible) {
     float x, y;
     [cursorColor set];
 
@@ -841,6 +882,53 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 // ---
 // --- Text manipulation
 // ---
+- (void)ts_setCursorVisible:(BOOL)visible
+{
+  if (terminalCursorVisible != visible) {
+    terminalCursorVisible = visible;
+    [self setNeedsDisplay:YES];
+  }
+}
+
+- (NSString *)textForCell:(screen_char_t)cell
+{
+  if (cell.ch == MULTI_CELL_GLYPH) return @"";
+  if (cell.grapheme) {
+    NSString *text = [graphemeTexts objectForKey:[NSNumber numberWithUnsignedInt:cell.grapheme]];
+    if (text) return text;
+  }
+  return TerminalStringForScalar(cell.ch ? cell.ch : ' ');
+}
+
+- (uint32_t)ts_internGrapheme:(NSString *)text
+{
+  if (!graphemeTexts) {
+    graphemeTexts = [NSMutableDictionary new];
+    graphemeHandles = [NSMutableDictionary new];
+  }
+  NSNumber *existing = [graphemeHandles objectForKey:text];
+  if (existing) return [existing unsignedIntValue];
+  NSUInteger limit = MAX(4096, (curr_sb_depth + screen_height) * screen_width * 2);
+  if ([graphemeTexts count] >= limit) {
+    NSMutableSet *live = [NSMutableSet set];
+    for (int i = -curr_sb_depth * screen_width; i < screen_height * screen_width; i++) {
+      screen_char_t cell = i < 0 ? scrollback[alloc_sb_depth * screen_width + i] : screen[i];
+      if (cell.grapheme) [live addObject:[NSNumber numberWithUnsignedInt:cell.grapheme]];
+    }
+    for (NSNumber *key in [[[graphemeTexts allKeys] copy] autorelease]) {
+      if (![live containsObject:key]) {
+        [graphemeHandles removeObjectForKey:[graphemeTexts objectForKey:key]];
+        [graphemeTexts removeObjectForKey:key];
+      }
+    }
+  }
+  if (nextGrapheme == UINT32_MAX) [NSException raise:NSInternalInconsistencyException format:@"Terminal grapheme handle exhausted"];
+  NSNumber *handle = [NSNumber numberWithUnsignedInt:++nextGrapheme];
+  [graphemeTexts setObject:[[text copy] autorelease] forKey:handle];
+  [graphemeHandles setObject:handle forKey:text];
+  return nextGrapheme;
+}
+
 - (screen_char_t)ts_getCharAtX:(int)x Y:(int)y
 {
   NSDebugLLog(@"ts", @"getCharAt: %i:%i", x, y);
@@ -866,6 +954,10 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
     x = 0;
   }
   s = &SCREEN(x, y);
+  if (!usesGhosttyParser) {
+    ch.grapheme = 0;
+    ch.foregroundColor = ch.backgroundColor = 0;
+  }
   ch.attr |= 0x80;
   for (i = 0; i < c; i++) {
     *s++ = ch;
@@ -889,6 +981,10 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
     ofs = 0;
   }
   s = &SCREEN(ofs, 0);
+  if (!usesGhosttyParser) {
+    ch.grapheme = 0;
+    ch.foregroundColor = ch.backgroundColor = 0;
+  }
   ch.attr |= 0x80;
   for (i = 0; i < c; i++) {
     *s++ = ch;
@@ -1029,6 +1125,16 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
     */
   }
   memmove(d, s, (bottom - top - rows) * screen_width * sizeof(screen_char_t));
+  if (usesGhosttyParser) {
+    // Ghostty restores a final grid after transferring history rows. The
+    // legacy pixel-copy scroll would move pixels that no longer correspond
+    // to these intermediate cells, leaving stale text after full-screen apps.
+    pending_scroll = 0;
+    draw_all = 2;
+    ADD_DIRTY(0, 0, screen_width, screen_height);
+    [self setNeedsDisplay:YES];
+    return;
+  }
   if (!curr_sb_position) {
     if (top == 0 && bottom == screen_height) {
       pending_scroll -= rows;
@@ -1287,81 +1393,25 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
 - (NSString *)_selectionAsString
 {
-  int ofs = alloc_sb_depth * screen_width;
-  NSMutableString *mstr;
-  NSString *tmp;
-  unichar buf[32];
-  unichar ch;
-  int len, ws_len;
-  int i, j;
-
-  if (selection.length == 0)
-    return nil;
-
-  mstr = [[NSMutableString alloc] init];
-  j = selection.location + selection.length;
-  len = 0;
-  for (i = selection.location; i < j; i++) {
-    ws_len = 0;
-    while (1) {
-      if (i < 0)
-        ch = scrollback[ofs + i].ch;
-      else
-        ch = screen[i].ch;
-
-      if (ch != ' ' && ch != 0 && ch != MULTI_CELL_GLYPH)
-        break;
-
-      ws_len++;
-      i++;
-
-      if (i % screen_width == 0) {
-        if (i > j) {
-          ws_len = 0; /* make sure we break out of the outer loop */
-          break;
-        }
-        if (len) {
-          tmp = [[NSString alloc] initWithCharacters:buf length:len];
-          [mstr appendString:tmp];
-          DESTROY(tmp);
-          len = 0;
-        }
-        [mstr appendString:@"\n"];
-        ws_len = 0;
-        continue;
-      }
+  if (!selection.length) return nil;
+  int first = MAX(selection.location, -curr_sb_depth * screen_width);
+  int end = MIN(selection.location + selection.length, screen_width * screen_height);
+  NSMutableString *result = [NSMutableString string];
+  NSMutableString *line = [NSMutableString string];
+  for (int i = first; i < end; i++) {
+    screen_char_t cell = i < 0 ? scrollback[alloc_sb_depth * screen_width + i] : screen[i];
+    if (cell.ch != MULTI_CELL_GLYPH) {
+      [line appendString:[self textForCell:cell]];
     }
-
-    i -= ws_len;
-
-    for (; i < j && ws_len; i++, ws_len--) {
-      buf[len++] = ' ';
-      if (len == 32) {
-        tmp = [[NSString alloc] initWithCharacters:buf length:32];
-        [mstr appendString:tmp];
-        DESTROY(tmp);
-        len = 0;
-      }
-    }
-    if (i >= j)
-      break;
-
-    buf[len++] = ch;
-    if (len == 32) {
-      tmp = [[NSString alloc] initWithCharacters:buf length:32];
-      [mstr appendString:tmp];
-      DESTROY(tmp);
-      len = 0;
+    if ((i + 1) % screen_width == 0 || i + 1 == end) {
+      NSUInteger length = [line length];
+      while (length && [line characterAtIndex:length - 1] == ' ') length--;
+      [result appendString:[line substringToIndex:length]];
+      if (i + 1 < end) [result appendString:@"\n"];
+      [line setString:@""];
     }
   }
-
-  if (len) {
-    tmp = [[NSString alloc] initWithCharacters:buf length:len];
-    [mstr appendString:tmp];
-    DESTROY(tmp);
-  }
-
-  return AUTORELEASE(mstr);
+  return result;
 }
 
 - (void)_setSelection:(struct selection_range)s
@@ -1374,6 +1424,16 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
   }
   if (s.location + s.length > screen_width * screen_height) {
     s.length = screen_width * screen_height - s.location;
+  }
+
+  if (s.length > 0) {
+    int end = s.location + s.length;
+    screen_char_t first = s.location < 0 ? scrollback[alloc_sb_depth * screen_width + s.location] : screen[s.location];
+    if (first.ch == MULTI_CELL_GLYPH && s.location % screen_width != 0) { s.location--; s.length++; }
+    if (end < screen_width * screen_height && end % screen_width != 0) {
+      screen_char_t last = end < 0 ? scrollback[alloc_sb_depth * screen_width + end] : screen[end];
+      if (last.ch == MULTI_CELL_GLYPH) s.length++;
+    }
   }
 
   if (!s.length && !selection.length)
@@ -1589,7 +1649,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
 
   if (g == 2) { /* select words */
     int ofs = alloc_sb_depth * screen_width;
-    unichar ch, ch2;
+    uint32_t ch, ch2;
     NSCharacterSet *cs;
     int i, j;
 
@@ -1608,11 +1668,11 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       [mcs formUnionWithCharacterSet:cs];
       cs = mcs;
     }
-    if (![cs characterIsMember:ch])
+    if (![cs longCharacterIsMember:ch])
       cs = [NSCharacterSet punctuationCharacterSet];
-    if (![cs characterIsMember:ch])
+    if (![cs longCharacterIsMember:ch])
       cs = [NSCharacterSet whitespaceCharacterSet];
-    if (![cs characterIsMember:ch]) {
+    if (![cs longCharacterIsMember:ch]) {
       s.location = pos;
       s.length = 1;
       return s;
@@ -1629,7 +1689,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       if (ch2 == 0)
         ch2 = ' ';
 
-      if (![cs characterIsMember:ch2])
+      if (![cs longCharacterIsMember:ch2])
         break;
     }
     s.location = i + 1;
@@ -1644,7 +1704,7 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       if (ch2 == 0)
         ch2 = ' ';
 
-      if (![cs characterIsMember:ch2])
+      if (![cs longCharacterIsMember:ch2])
         break;
     }
     s.length = i - s.location;
@@ -1819,8 +1879,10 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       break;
     }
 
+    BOOL batch = [terminalParser respondsToSelector:@selector(processData:length:)];
+    if (batch) [terminalParser processData:(const unsigned char *)buf length:size];
     for (i = 0; i < size; i++) {
-      [terminalParser processByte:buf[i]];
+      if (!batch) [terminalParser processByte:buf[i]];
       // Line Feed, Vertical Tabulation, Form Feed, Carriage Return
       if (isActivityMonitorEnabled &&
           (buf[i] == 10 || buf[i] == 11 || buf[i] == 12 || buf[i] == 13)) {
@@ -2012,7 +2074,16 @@ static void set_foreground(NSGraphicsContext *gc, unsigned char color, unsigned 
       fprintf(stderr, "Unable do set directory: %s\n", cdirectory);
     }
 
-    putenv("TERM=linux");
+#ifdef USE_GHOSTTY_VT
+    if (usesGhosttyParser) {
+      putenv("TERM=xterm-256color");
+      putenv("COLORTERM=truecolor");
+    } else
+#endif
+    {
+      putenv("TERM=linux");
+      unsetenv("COLORTERM");
+    }
     putenv("TERM_PROGRAM=GNUstep_Terminal");
 
     // fprintf(stderr, "Child process terminal: %s\n", ttyname(0));
@@ -2221,8 +2292,8 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   // Check `lines` value for limits
   if (lines < alloc_sb_depth) {
     new_sb_depth = lines;
-  } else if ((lines * screen_width) >= SCROLLBACK_MAX) {
-    new_sb_depth = SCROLLBACK_MAX / screen_width;
+  } else if ((int64_t)lines * screen_width >= SCROLLBACK_MAX / sizeof(screen_char_t)) {
+    new_sb_depth = (SCROLLBACK_MAX / sizeof(screen_char_t)) / screen_width;
   } else {
     new_sb_depth = alloc_sb_depth + (screen_height * SCROLLBACK_CHANGE_STEP);
   }
@@ -2247,7 +2318,7 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
     screen_char_t *used_sb_copy = malloc(used_sb_size);
 
     // Save scrollback contents
-    memcpy(used_sb_copy, &scrollback[used_sb_start], used_sb_size);
+    memcpy(used_sb_copy, (unsigned char *)scrollback + used_sb_start, used_sb_size);
 
     // fprintf(stderr, "==========================================> used_sb_copy: \n");
     // for (int i = 0; i < (curr_sb_depth * screen_width); i++) {
@@ -2354,9 +2425,22 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   max_sb_depth = [defaults scrollBackLines];
   [self resizeScrollbackBuffer:YES];
 
-  terminalParser = [[TerminalParser_Linux alloc] initWithTerminalScreen:self
+  terminalCursorVisible = YES;
+  Class parserClass = [TerminalParser_Linux class];
+#ifdef USE_GHOSTTY_VT
+  if (![[[NSUserDefaults standardUserDefaults] stringForKey:@"TerminalParserBackend"]
+          isEqualToString:@"linux"])
+    parserClass = [TerminalParser_Ghostty class];
+#endif
+  terminalParser = [[parserClass alloc] initWithTerminalScreen:self
                                                                   width:screen_width
                                                                  height:screen_height];
+  if (!terminalParser)
+    terminalParser = [[TerminalParser_Linux alloc] initWithTerminalScreen:self
+        width:screen_width height:screen_height];
+#ifdef USE_GHOSTTY_VT
+  usesGhosttyParser = [terminalParser isKindOfClass:[TerminalParser_Ghostty class]];
+#endif
   master_fd = -1;
 
   [self registerForDraggedTypes:@[ NSFilenamesPboardType, NSStringPboardType ]];
@@ -2394,6 +2478,10 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
   [self closeProgram];
 
   DESTROY(terminalParser);
+  DESTROY(glyphRenderer);
+  DESTROY(graphemeTexts);
+  DESTROY(graphemeHandles);
+  DESTROY(textCellMap);
 
   [scroller setTarget:nil];
   DESTROY(scroller);
@@ -2620,53 +2708,55 @@ static int handled_mask = (NSDragOperationCopy | NSDragOperationPrivate | NSDrag
 // - (NSString *)stringForRange:(struct selection_range)range
 - (NSString *)stringRepresentation
 {
-  int ofs = alloc_sb_depth * screen_width;
-  NSMutableString *mstr = [[NSMutableString alloc] init];
-  NSString *tmp;
-  unichar buf[32];
-  unichar ch;
-  int start_index, end_index;
-  int len;
-
-  if (curr_sb_depth > 0) {
-    start_index = -(curr_sb_depth * screen_width);
-  } else {
-    start_index = 0;
+  NSMutableString *text = [NSMutableString string];
+  if (!textCellMap) textCellMap = [NSMutableData new];
+  [textCellMap setLength:0];
+  int start = -curr_sb_depth * screen_width;
+  for (int i = start; i < screen_width * screen_height; i++) {
+    screen_char_t cell = i < 0 ? scrollback[alloc_sb_depth * screen_width + i] : screen[i];
+    NSString *cluster = [self textForCell:cell];
+    NSInteger index = i - start;
+    for (NSUInteger unit = 0; unit < [cluster length]; unit++) [textCellMap appendBytes:&index length:sizeof(index)];
+    [text appendString:cluster];
   }
-  end_index = screen_width * screen_height;
-  // j = abs(curr_sb_depth * sx) + range.length;
-  // range.length = scrollbuffer size + visible area size in terms of chars
-  len = 0;
-  for (int i = start_index; i < end_index; i++) {
-    if (i < 0) {
-      ch = scrollback[ofs + i].ch;
-    } else {
-      ch = screen[i].ch;
-    }
-    if (i >= end_index) {
-      break;
-    }
-
-    buf[len++] = ch;
-
-    if (len == 32) {
-      tmp = [[NSString alloc] initWithCharacters:buf length:32];
-      [mstr appendString:tmp];
-      DESTROY(tmp);
-      len = 0;
-    }
-  }
-
-  if (len) {
-    tmp = [[NSString alloc] initWithCharacters:buf length:len];
-    [mstr appendString:tmp];
-    DESTROY(tmp);
-  }
-
-  NSLog(@"TerminalView stringRepresentation length: %lu", [mstr length]);
-
-  return mstr;
+  NSInteger sentinel = (curr_sb_depth + screen_height) * screen_width;
+  [textCellMap appendBytes:&sentinel length:sizeof(sentinel)];
+  return text;
 }
+
+- (NSRange)selectedTextRange
+{
+  [self stringRepresentation];
+  const NSInteger *map = [textCellMap bytes];
+  NSUInteger count = [textCellMap length] / sizeof(*map) - 1;
+  NSInteger first = selection.location + curr_sb_depth * screen_width;
+  NSInteger end = first + selection.length;
+  NSUInteger startUnit = 0, endUnit;
+  while (startUnit < count && map[startUnit] < first) startUnit++;
+  endUnit = startUnit;
+  while (endUnit < count && map[endUnit] < end) endUnit++;
+  return NSMakeRange(startUnit, endUnit - startUnit);
+}
+
+- (NSRange)cellRangeForTextRange:(NSRange)range
+{
+  [self stringRepresentation];
+  const NSInteger *map = [textCellMap bytes];
+  NSUInteger count = [textCellMap length] / sizeof(*map) - 1;
+  if (range.location > count) return NSMakeRange(0,0);
+  NSUInteger end = range.length > count - range.location ? count : NSMaxRange(range);
+  NSInteger first = map[range.location];
+  NSInteger last = end > range.location ? map[end - 1] + 1 : first;
+  int relative = last - curr_sb_depth * screen_width;
+  if (relative < screen_width * screen_height && relative >= -curr_sb_depth * screen_width && relative % screen_width != 0) {
+    screen_char_t cell = relative < 0 ? scrollback[alloc_sb_depth * screen_width + relative] : screen[relative];
+    if (cell.ch == MULTI_CELL_GLYPH) last++;
+  }
+  return NSMakeRange(first,last-first);
+}
+
+- (void)setSelectedTextRange:(NSRange)range { [self setSelectedRange:[self cellRangeForTextRange:range]]; }
+- (void)scrollTextRangeToVisible:(NSRange)range { [self scrollRangeToVisible:[self cellRangeForTextRange:range]]; }
 
 - (NSRange)selectedRange
 {

@@ -90,6 +90,7 @@
 #include "appicon.h"
 #include "dock.h"
 #include "misc.h"
+#include "event.h"
 
 static CFTypeRef sApplications = CFSTR("Applications");
 static CFTypeRef sCommand = CFSTR("Command");
@@ -353,6 +354,8 @@ static pid_t execCommand(WScreen *scr, char *command)
     execvp(argv[0], args);
     exit(111);
   }
+  if (pid > 0)
+    wRegisterChildProcess(pid);
   while (argc > 0)
     wfree(argv[--argc]);
   wfree(argv);

@@ -188,7 +188,10 @@ static NSString *_rootPath = @"/";
     [folderPathIconDict setObject:@"NXFolder" forKey:sysDir];
   }
 
-  [folderPathIconDict setObject:@"NXHomeDirectory" forKey:NSHomeDirectory()];
+  NSString *homeDir = NSHomeDirectory();
+  if (homeDir != nil) {
+    [folderPathIconDict setObject:@"NXHomeDirectory" forKey:homeDir];
+  }
   [folderPathIconDict setObject:@"NXRoot" forKey:_rootPath];
   folderIconCache = [[NSMutableDictionary alloc] init];
 
@@ -656,9 +659,17 @@ static NSLock *raceLock = nil;
 
           iconImage = [folderIconCache objectForKey:iconName];
           if (iconImage == nil) {
+            // Try standard image first, then fall back to imageNamed which searches more paths
             iconImage = [NSImage _standardImageWithName:iconName];
+            if (iconImage == nil) {
+              iconImage = [NSImage imageNamed:iconName];
+            }
             /* the dictionary retains the image */
-            [folderIconCache setObject:iconImage forKey:iconName];
+            if (iconImage != nil) {
+              [folderIconCache setObject:iconImage forKey:iconName];
+            } else {
+              NSDebugLLog(@"NSWorkspace", @"Failed to load image for icon name: %@ (path: %@)", iconName, fullPath);
+            }
           }
           image = iconImage;
         } else {

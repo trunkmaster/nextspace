@@ -16,7 +16,7 @@ $(FRAMEWORK_NAME)_OBJC_FILES = $(wildcard *.m)
 # OS specific code
 # FreeBSD
 ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
-  $(FRAMEWORK_NAME)_OBJC_FILES += $(wildcard FreeBSD/*.m)
+ $(FRAMEWORK_NAME)_OBJC_FILES += $(wildcard FreeBSD/*.m)
 endif
 
 # Linux

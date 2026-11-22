@@ -1,0 +1,6 @@
+{
+  ApplicationDescription = "Sleep countdown dock widget";
+  ApplicationRelease = "0.1";
+  NSExecutable = Sleep;
+  NSPrincipalClass = NSApplication;
+}

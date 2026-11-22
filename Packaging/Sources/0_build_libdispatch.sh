@@ -2,11 +2,18 @@
 
 . ../environment.sh
 
+if [ "${OS_ID}" = "freebsd" ]; then
+    sh "${PROJECT_DIR}/Libraries/libdispatch/freebsd/build.sh" "${BUILD_ROOT}" "${PROJECT_DIR}" "${DEST_DIR}" "${NEXTSPACE_PREFIX}" || exit 1
+    exit 0
+fi
+
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
 ${ECHO} ">>> Installing ${OS_ID} packages for Grand Central Dispatch build"
-if [ "${OS_ID}" = "debian" ] || [ "${OS_ID}" = "ubuntu" ]; then
+if [ "${OS_ID}" = "freebsd" ]; then
+	${ECHO} "FreeBSD: build dependencies already installed via pkg."
+elif [ "${OS_ID}" = "debian" ] || [ "${OS_ID}" = "ubuntu" ]; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
 	sudo apt-get install -q -y ${BUILD_TOOLS} ${RUNTIME_DEPS} || exit 1
 else
@@ -47,9 +54,9 @@ $CMAKE_CMD .. \
 	-DCMAKE_CXX_COMPILER=${CXX_COMPILER} \
 	-DCMAKE_C_FLAGS=${C_FLAGS} \
 	-DCMAKE_CXX_FLAGS=${C_FLAGS} \
-	-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
-	-DCMAKE_INSTALL_LIBDIR=/usr/NextSpace/lib \
-	-DCMAKE_INSTALL_MANDIR=/usr/NextSpace/Documentation/man \
+	-DCMAKE_INSTALL_PREFIX=${NEXTSPACE_PREFIX} \
+	-DCMAKE_INSTALL_LIBDIR=${NEXTSPACE_PREFIX}/lib \
+	-DCMAKE_INSTALL_MANDIR=${NEXTSPACE_PREFIX}/Documentation/man \
 	-DINSTALL_PRIVATE_HEADERS=YES \
 	-DBUILD_TESTING=OFF \
 	\
@@ -70,10 +77,10 @@ $INSTALL_CMD
 #----------------------------------------
 # Postinstall
 #----------------------------------------
-$RM_CMD $DEST_DIR/usr/NextSpace/include/Block_private.h
+$RM_CMD $DEST_DIR${NEXTSPACE_PREFIX}/include/Block_private.h
 SHORT_VER=`echo ${libdispatch_version} | awk -F. '{print $1}'`
 
-cd ${DEST_DIR}/usr/NextSpace/lib
+cd ${DEST_DIR}${NEXTSPACE_PREFIX}/lib
 
 $ECHO "-- Creating link for libBlocksRuntime.so.${libdispatch_version}"
 $MV_CMD libBlocksRuntime.so libBlocksRuntime.so.${libdispatch_version}

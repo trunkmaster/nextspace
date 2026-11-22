@@ -12,7 +12,7 @@
 ADDITIONAL_OBJCFLAGS += -W -Wall -Wno-import -Wno-unused -Wno-unused-parameter -pipe
 
 ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
-  ADDITIONAL_OBJCFLAGS += -DFREEBSD -DWITH_HAL `pkg-config --cflags-only-other hal`
+  ADDITIONAL_OBJCFLAGS += -DFREEBSD
 endif
 
 ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
@@ -26,29 +26,26 @@ endif
 ADDITIONAL_CFLAGS +=
 
 ### Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS += -I../ -Iderived_src
+ADDITIONAL_INCLUDE_DIRS += -I../ -Iderived_src `pkg-config --cflags dbus-1`
 
-ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
-  ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags hal`
-endif
+# ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+#   ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags dbus-1`
+# endif
 
-ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-#  ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags udisks2 dbus-1 upower-glib`
-#  ADDITIONAL_INCLUDE_DIRS += -I/usr/include/gio-unix-2.0
-  ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags dbus-1`
-endif
+# ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
+#   ADDITIONAL_INCLUDE_DIRS += `pkg-config --cflags dbus-1`
+# endif
 
 ### Additional flags to pass to the linker
-ADDITIONAL_LDFLAGS += -lXrandr -lxkbfile -lXcursor
-ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
-  ADDITIONAL_LDFLAGS += `pkg-config --libs hal`
-endif
+ADDITIONAL_LDFLAGS += -lXrandr -lxkbfile -lXcursor `pkg-config --libs dbus-1` -ldispatch -lCoreFoundation
+# ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+#   ADDITIONAL_LDFLAGS += `pkg-config --libs dbus-1`
+# endif
 
-ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
-#  ADDITIONAL_LDFLAGS += `pkg-config --libs udisks2 dbus-1 upower-glib`
-  ADDITIONAL_LDFLAGS += `pkg-config --libs dbus-1`
-  ADDITIONAL_LDFLAGS += -ldispatch -lCoreFoundation
-endif
+# ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)), gnu)
+#   ADDITIONAL_LDFLAGS += `pkg-config --libs dbus-1`
+#   ADDITIONAL_LDFLAGS += -ldispatch -lCoreFoundation
+# endif
 
 ### Additional library directories the linker should search
 ADDITIONAL_LIB_DIRS += 

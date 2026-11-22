@@ -11,7 +11,13 @@ SUBPROJECTS = \
 	TextEdit \
 	TimeMon \
 	Review \
-	OpenUp
+	OpenUp \
+	Sleep
+
+# apm-backed dock monitor is available on FreeBSD.
+ifneq (,$(findstring freebsd,$(GNUSTEP_TARGET_OS)))
+SUBPROJECTS += Battery
+endif
 
 -include GNUmakefile.preamble
 include $(GNUSTEP_MAKEFILES)/aggregate.make

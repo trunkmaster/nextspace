@@ -14,11 +14,13 @@ PACKAGE_NAME = Terminal
 VERSION = 0.98
 Terminal_APPLICATION_ICON = Terminal.tiff
 Terminal_MAIN_MODEL_FILE = Terminal.gorm
+Terminal_PRINCIPAL_CLASS = TerminalApplication
 
 SUBPROJECTS = Preferences
 
 Terminal_OBJC_FILES = \
 	main.m \
+	TerminalApplication.m \
 	Controller.m \
 	\
 	Defaults.m\
@@ -31,6 +33,7 @@ Terminal_OBJC_FILES = \
 	TerminalWindow.m \
 	TerminalView.m \
 	TerminalParser_Linux.m \
+	TerminalGlyphRenderer.m \
 	\
 	InfoPanel.m\
 	\
@@ -65,7 +68,21 @@ ADDITIONAL_OBJCFLAGS += -Wall -D$(subst -,_,$(GNUSTEP_HOST_OS)) -Wno-pointer-sig
 #	-Wmissing-prototypes -Wmissing-declarations \
 #	-Wnested-externs -Wno-unused-parameter
 
-Terminal_LDFLAGS = -lutil -lDesktopKit -lSystemKit -lX11 -ldispatch
+ADDITIONAL_OBJCFLAGS += $(shell pkg-config --cflags freetype2 fontconfig harfbuzz)
+
+Terminal_LDFLAGS = -lfreetype -lfontconfig -lharfbuzz -lutil -lDesktopKit -lSystemKit -lX11 -ldispatch
+ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+Terminal_LDFLAGS += -liconv
+endif
+
+# The Packaging build installs the pinned VT library before applications.
+# Other platforms may explicitly enable it after installing that dependency.
+USE_GHOSTTY_VT ?= $(if $(findstring freebsd,$(GNUSTEP_TARGET_OS)),yes,no)
+ifeq ($(USE_GHOSTTY_VT),yes)
+Terminal_OBJC_FILES += TerminalParser_Ghostty.m
+ADDITIONAL_OBJCFLAGS += -DUSE_GHOSTTY_VT=1
+Terminal_LDFLAGS += -lghostty-vt
+endif
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make
 include $(GNUSTEP_MAKEFILES)/application.make
