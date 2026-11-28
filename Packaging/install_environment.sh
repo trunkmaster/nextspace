@@ -1,6 +1,7 @@
 #!/bin/sh
 
-ECHO="/bin/echo -e"
+ECHO="printf %b\n"
+ECHO_N="printf %b"
 MKDIR_CMD="sudo mkdir -p"
 RM_CMD="sudo rm"
 LN_CMD="sudo ln -sf"
@@ -9,24 +10,29 @@ CP_CMD="sudo cp -R"
 
 RELEASE=0.95
 
-#===============================================================================
+#=========================================================================
 # SELinux setup
-#===============================================================================
+#=========================================================================
 setup_selinux()
 {
-    $ECHO -e -n "\e[1m"
-    $ECHO "==============================================================================="
+    if ! command -v getenforce >/dev/null 2>&1; then
+        $ECHO "SELinux tools were not found; skipping SELinux configuration."
+        return
+    fi
+
+    $ECHO_N "\033[1m"
+    $ECHO "========================================================================="
     $ECHO "SELinux configuration"
-    $ECHO "==============================================================================="
-    $ECHO -e -n "\e[0m"
+    $ECHO "========================================================================="
+    $ECHO_N "\033[0m"
     SELINUX_MODE=$(getenforce)
 
-    $ECHO -e -n "\e[1m"
+    $ECHO_N "\033[1m"
     $ECHO "Current SELinux mode is ${SELINUX_MODE}"
-    $ECHO -e -n "\e[0m"
-    $ECHO -e -n "\e[33m"
-    $ECHO -n "Do you want to change your SELinux configuration? [y/N]: "
-    $ECHO -e -n "\e[0m"
+    $ECHO_N "\033[0m"
+    $ECHO_N "\033[33m"
+        $ECHO_N "Do you want to change your SELinux configuration? [y/N]: "
+    $ECHO_N "\033[0m"
     read YN
 
     if [ "$YN" = "y" ]; then
@@ -50,11 +56,11 @@ setup_selinux()
         $ECHO "Filesystem with undergo automatic relabelling upon reboot for \"Permissive\" "
         $ECHO "and \"Enforcing\" policies".
         $ECHO
-        $ECHO -e -n "\e[1m"
-        $ECHO -n "SELinux mode [default: 1]: "
-        $ECHO -e -n "\e[0m"
+        $ECHO_N "\033[1m"
+        $ECHO_N "SELinux mode [default: 1]: "
+        $ECHO_N "\033[0m"
         read SEL
-        $ECHO -n "Setting SELinux default mode to "
+        $ECHO_N "Setting SELinux default mode to "
         if [ "$SEL" = 2 ]; then
             $ECHO Enforcing...
             sudo sed -i -e ' s/SELINUX=.*/SELINUX=enforcing/' /etc/selinux/config
@@ -74,42 +80,54 @@ setup_selinux()
 
 setup_hosts()
 {
-    $ECHO -n "Checking /etc/hosts..."
+        $ECHO_N "Checking /etc/hosts..."
     HOSTNAME="`hostname -s`"
     grep "$HOSTNAME" /etc/hosts 2>&1 > /dev/null
     if [ $? -eq 1 ];then
-        if [ $HOSTNAME != `hostname` ];then
+        if [ "$HOSTNAME" != "`hostname`" ];then
             HOSTNAME="$HOSTNAME `hostname`"
         fi
-        $ECHO -e -n "\e[33m"
+        $ECHO_N "\033[33m"
         $ECHO "configuring needed"
-        $ECHO -e -n "\e[0m"
+        $ECHO_N "\033[0m"
         $ECHO "Configuring hostname ($HOSTNAME)..."
-        sed -i 's/localhost4.localdomain4/localhost4.localdomain4 '"$HOSTNAME"'/g' /etc/hosts
+        if grep "localhost4.localdomain4" /etc/hosts >/dev/null 2>&1; then
+            sudo sed -i 's/localhost4.localdomain4/localhost4.localdomain4 '"$HOSTNAME"'/g' /etc/hosts
+        else
+            echo "127.0.1.1 $HOSTNAME" | sudo tee -a /etc/hosts >/dev/null
+        fi
     else
-        $ECHO -e -n "\e[32m"
+        $ECHO_N "\033[32m"
         $ECHO "good"
-        $ECHO -e -n "\e[0m"
+        $ECHO_N "\033[0m"
     fi
 }
 
 add_user()
 {
-    $ECHO -e -n "\e[33m"
-    $ECHO -n "Do you want to add user? [y/N]: "
-    $ECHO -e -n "\e[0m"
+    $ECHO_N "\033[33m"
+        $ECHO_N "Do you want to add user? [y/N]: "
+    $ECHO_N "\033[0m"
     read YN
     if [ "$YN" = "y" ]; then
-        $ECHO -n "Please enter username: "
+        $ECHO_N "Please enter username: "
         read USERNAME
         $ECHO "Adding username $USERNAME"
-        sudo adduser -b /Users -s /bin/zsh -G audio,wheel $USERNAME
+        EXTRA_GROUPS="audio"
+        if getent group wheel >/dev/null 2>&1; then
+            EXTRA_GROUPS="${EXTRA_GROUPS},wheel"
+        elif getent group sudo >/dev/null 2>&1; then
+            EXTRA_GROUPS="${EXTRA_GROUPS},sudo"
+        fi
+        sudo useradd -m -b /Users -s /bin/zsh -G "$EXTRA_GROUPS" "$USERNAME"
         $ECHO "Setting up password..."
-        sudo passwd $USERNAME
-        $ECHO "Updating SELinux file contexts..."
-        ## Needed to update the filesystem contexts that depend on HOME_DIR, and wrongly assume /home
-        sudo semodule -e ns-core  2>&1 > /dev/null
-        sudo restorecon -R /Users 2>&1 > /dev/null
+        sudo passwd "$USERNAME"
+        if command -v semodule >/dev/null 2>&1 && command -v restorecon >/dev/null 2>&1; then
+            $ECHO "Updating SELinux file contexts..."
+            ## Needed to update the filesystem contexts that depend on HOME_DIR, and wrongly assume /home
+            sudo semodule -e ns-core  2>&1 > /dev/null
+            sudo restorecon -R /Users 2>&1 > /dev/null
+        fi
     else
         HAS_AUDIO=`groups | grep audio`
         if [ "$HAS_AUDIO" = "" ]; then
@@ -136,33 +154,45 @@ setup_loginwindow()
         return
     fi
 
-    $ECHO "==============================================================================="
+    $ECHO "========================================================================="
     $ECHO "Configuring graphical login panel..."
-    $ECHO "==============================================================================="
-    $ECHO "You already have configured graphical login manager:"
-    $ECHO "    $DESC - $DM_UNIT"
+    $ECHO "========================================================================="
+    if [ -n "$DM_UNIT_FILE" ]; then
+        $ECHO "You already have configured graphical login manager:"
+        $ECHO "    $DESC - $DM_UNIT"
+        PROMPT="Replace it with NEXTSPACE login panel? [y/N]: "
+    else
+        $ECHO "No graphical login manager symlink was found."
+        PROMPT="Enable NEXTSPACE login panel? [y/N]: "
+    fi
 
-    $ECHO -n "Replace it with NEXTSPACE login panel? [y/N]: "
+        $ECHO_N "$PROMPT"
     read YN
     if [ "$YN" = "y" ]; then
-        sudo systemctl disable $DM_UNIT_FILE
+        if [ -n "$DM_UNIT_FILE" ]; then
+            sudo systemctl disable "$DM_UNIT_FILE"
+        fi
         sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service
         IS_CONFIGURED=1
     else
         $ECHO "Your answer is 'No'. Got it."
         $ECHO "You may later enable NEXTSPACE login panel with commands:"
-        $ECHO "    $ sudo systemctl disable $DM_UNIT_FILE"
+        if [ -n "$DM_UNIT_FILE" ]; then
+            $ECHO "    $ sudo systemctl disable $DM_UNIT_FILE"
+        fi
         $ECHO "    $ sudo systemctl enable /usr/NextSpace/lib/systemd/loginwindow.service"
     fi
     $ECHO "To return to your current setup after that use the following commands:"
     $ECHO "    $ sudo systemctl disable loginwindow.service"
-    $ECHO "    $ sudo systemctl enable $DM_UNIT"
+    if [ -n "$DM_UNIT" ]; then
+        $ECHO "    $ sudo systemctl enable $DM_UNIT"
+    fi
 
     if [ $IS_CONFIGURED = 1 ]; then
         # Default boot target
-        $ECHO -e -n "\e[33m"
-        $ECHO -n "Start graphical login panel on system boot? [y/N]: "
-        $ECHO -e -n "\e[0m"
+        $ECHO_N "\033[33m"
+        $ECHO_N "Start graphical login panel on system boot? [y/N]: "
+        $ECHO_N "\033[0m"
         read YN
         if [ "$YN" = "y" ]; then
             sudo systemctl set-default graphical.target
@@ -174,9 +204,9 @@ setup_loginwindow()
 
     if [ $IS_CONFIGURED = 1 ]; then
         # Start it now
-        $ECHO -e -n "\e[33m"
-        $ECHO -n "Do you want to start graphical login panel now? [y/N]: "
-        $ECHO -e -n "\e[0m"
+        $ECHO_N "\033[33m"
+        $ECHO_N "Do you want to start graphical login panel now? [y/N]: "
+        $ECHO_N "\033[0m"
         read YN
         if [ "$YN" = "y" ]; then
             sudo systemctl start loginwindow

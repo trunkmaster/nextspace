@@ -9,17 +9,15 @@ _PWD=`pwd`
 # Install package dependecies
 #----------------------------------------
 ${ECHO} ">>> Installing ${OS_ID} packages for NextSpace applications build"
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+if is_debian_like; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
-	sudo apt-get install -y ${APPS_BUILD_DEPS}
-	sudo apt-get install -y ${APPS_RUN_DEPS}
+	install_apt_packages ${APPS_BUILD_DEPS}
+	install_apt_packages ${APPS_RUN_DEPS}
 else
-	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
+	${ECHO} "RedHat-based Linux distribution: calling 'sudo ${RPM_PACKAGE_MANAGER} -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-applications.spec
-	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "nextspace" | grep -v "corefoundation" | awk -c '{print $1}'`
-	sudo yum -y install ${DEPS} || exit 1
-	DEPS=`rpmspec -q --requires ${SPEC_FILE} | grep -v corefoundation | grep -v nextspace`
-	sudo yum -y install ${DEPS} || exit 1
+	install_rpm_spec_buildrequires "${SPEC_FILE}" "nextspace" "corefoundation"
+	install_rpm_spec_requires "${SPEC_FILE}" "corefoundation" "nextspace"
 fi
 
 #----------------------------------------
@@ -30,21 +28,14 @@ APP_BUILD_DIR=${BUILD_ROOT}/Applications
 GORM_BUILD_DIR=${BUILD_ROOT}/gorm-${gorm_version}
 PC_BUILD_DIR=${BUILD_ROOT}/projectcenter-${projectcenter_version}
 
-if [ -d ${APP_BUILD_DIR} ]; then
-	sudo rm -rf ${APP_BUILD_DIR}
-fi
-cp -R ${SOURCES_DIR}/Applications ${BUILD_ROOT}
+copy_clean_build_tree "${SOURCES_DIR}/Applications" "${APP_BUILD_DIR}"
 
 # GORM
-if [ -d ${GORM_BUILD_DIR} ]; then
-	sudo rm -rf ${GORM_BUILD_DIR}
-fi
+rm -rf "${GORM_BUILD_DIR}" 2>/dev/null
 git_remote_archive https://github.com/gnustep/apps-gorm ${GORM_BUILD_DIR} gorm-${gorm_version}
 
 # ProjectCenter
-if [ -d ${PC_BUILD_DIR} ]; then
-	sudo rm -rf ${PC_BUILD_DIR}
-fi
+rm -rf "${PC_BUILD_DIR}" 2>/dev/null
 git_remote_archive https://github.com/gnustep/apps-projectcenter ${PC_BUILD_DIR} projectcenter-${projectcenter_version}
 
 #----------------------------------------
@@ -57,27 +48,27 @@ export CC=${C_COMPILER}
 export CMAKE=${CMAKE_CMD}
 $MAKE_CMD clean
 $MAKE_CMD || exit 1
-$INSTALL_CMD || exit
+run_install || exit
 
 export GNUSTEP_INSTALLATION_DOMAIN=NETWORK
 cd ${GORM_BUILD_DIR}
 tar zxf ${SOURCES_DIR}/Libraries/gnustep/gorm-images.tar.gz
 patch -p1 < ${SOURCES_DIR}/Libraries/gnustep/gorm.patch
 $MAKE_CMD
-$INSTALL_CMD || exit
+run_install || exit
 
 cd ${PC_BUILD_DIR}
 tar zxf ${SOURCES_DIR}/Libraries/gnustep/projectcenter-images.tar.gz
 patch -p1 < ${SOURCES_DIR}/Libraries/gnustep/pc.patch
 $MAKE_CMD
-$INSTALL_CMD || exit
+run_install || exit
 
-sudo ldconfig
+refresh_ldconfig
 
 #----------------------------------------
 # Post install
 #----------------------------------------
-if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
+if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ] && [ "$CI" != "true" ]; then
 	# Login
 	systemctl --quiet is-active loginwindow.service
 	if [ $? -eq 0 ];then
@@ -109,7 +100,7 @@ if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
 	if [ -f /etc/selinux/config ]; then
 		SELINUX_STATE=`grep "^SELINUX=.*" /etc/selinux/config | awk -F= '{print $2}'`
 		if [ "${SELINUX_STATE}" != "disabled" ]; then
-			${ECHO} -n "SELinux enabled - dissabling it..."
+			${ECHO_N} "SELinux enabled - dissabling it..."
 			sudo sed -i -e ' s/SELINUX=.*/SELINUX=disabled/' /etc/selinux/config
 			${ECHO} "done"
 			${ECHO} "Please reboot to apply changes."

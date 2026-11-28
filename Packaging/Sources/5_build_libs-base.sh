@@ -8,14 +8,13 @@
 # Install package dependecies
 #----------------------------------------
 ${ECHO} ">>> Installing ${OS_ID} packages for GNUstep Base (Foundation) build"
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+if is_debian_like; then
 	${ECHO} "Debian-based Linux distribution: calling 'apt-get install'."
-	sudo apt-get install -y ${GNUSTEP_BASE_DEPS} || exit 1
+	install_apt_packages ${GNUSTEP_BASE_DEPS}
 else
-	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
+	${ECHO} "RedHat-based Linux distribution: calling 'sudo ${RPM_PACKAGE_MANAGER} -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/nextspace-gnustep.spec
-	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v libobjc2 | awk -c '{print $1}'`
-	sudo yum -y install ${DEPS} || exit 1
+	install_rpm_spec_buildrequires "${SPEC_FILE}" "libobjc2"
 fi
 
 #----------------------------------------
@@ -24,10 +23,10 @@ fi
 GIT_PKG_NAME=libs-base-base-${gnustep_base_version}
 
 if [ ! -d ${BUILD_ROOT}/${GIT_PKG_NAME} ]; then
-	curl -L https://github.com/gnustep/libs-base/archive/base-${gnustep_base_version}.tar.gz -o ${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz
-	cd ${BUILD_ROOT}
-	tar zxf ${GIT_PKG_NAME}.tar.gz || exit 1
-	cd ..
+	download_tarball_once \
+		"https://github.com/gnustep/libs-base/archive/base-${gnustep_base_version}.tar.gz" \
+		"${BUILD_ROOT}/${GIT_PKG_NAME}.tar.gz" \
+		"${BUILD_ROOT}/${GIT_PKG_NAME}"
 fi
 
 #----------------------------------------
@@ -43,7 +42,7 @@ $MAKE_CMD || exit 1
 #----------------------------------------
 # Install
 #----------------------------------------
-$INSTALL_CMD
+run_install
 cd ${_PWD}
 
 #----------------------------------------
@@ -58,11 +57,10 @@ $CP_CMD ${SOURCES_DIR}/gdomap.service $DEST_DIR/usr/NextSpace/lib/systemd
 $CP_CMD ${SOURCES_DIR}/gdnc.service $DEST_DIR/usr/NextSpace/lib/systemd
 $CP_CMD ${SOURCES_DIR}/gdnc-local.service $DEST_DIR/usr/NextSpace/lib/systemd
 
-if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ]; then
-	sudo ldconfig
-	sudo systemctl daemon-reload
-	systemctl status gdomap || sudo systemctl enable /usr/NextSpace/lib/systemd/gdomap.service;
-	systemctl status gdnc || sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc.service;
-	sudo systemctl enable /usr/NextSpace/lib/systemd/gdnc-local.service;
-	sudo systemctl start gdomap gdnc
+if [ "$DEST_DIR" = "" ] && [ "$GITHUB_ACTIONS" != "true" ] && [ "$CI" != "true" ]; then
+	refresh_ldconfig
+	reload_systemd_if_live
+	enable_service_once gdomap /usr/NextSpace/lib/systemd/gdomap.service
+	enable_service_once gdnc /usr/NextSpace/lib/systemd/gdnc.service
+	enable_service_once gdnc-local /usr/NextSpace/lib/systemd/gdnc-local.service
 fi

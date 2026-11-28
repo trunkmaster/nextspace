@@ -5,12 +5,11 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-if [ ${OS_ID} != "debian" ] && [ ${OS_ID} != "ubuntu" ]; then
+if is_rpm_like; then
 	${ECHO} ">>> Installing ${OS_ID} packages for ObjC 2.0 runtime build"
-	${ECHO} "RedHat-based Linux distribution: calling 'yum -y install'."
+	${ECHO} "RedHat-based Linux distribution: calling 'sudo ${RPM_PACKAGE_MANAGER} -y install'."
 	SPEC_FILE=${PROJECT_DIR}/Packaging/RedHat/SPECS/libobjc2.spec
-	DEPS=`rpmspec -q --buildrequires ${SPEC_FILE} | grep -v "libdispatch-devel" | awk -c '{print $1}'`
-	sudo yum -y install ${DEPS} || exit 1
+	install_rpm_spec_buildrequires "${SPEC_FILE}" "libdispatch-devel"
 fi
 
 #----------------------------------------
@@ -24,7 +23,7 @@ if [ ! -d ${BUILD_ROOT}/libobjc2-${libobjc2_version} ]; then
 	curl -L https://github.com/gnustep/libobjc2/archive/v${libobjc2_version}.tar.gz -o ${BUILD_ROOT}/libobjc2-${libobjc2_version}.tar.gz
 	curl -L https://github.com/Tessil/robin-map/archive/${ROBIN_MAP_PKG_NAME} -o ${BUILD_ROOT}/libobjc2_robin-map.tar.gz
 
-	cd ${BUILD_ROOT}
+	cd "${BUILD_ROOT}" || exit 1
 	tar zxf libobjc2-${libobjc2_version}.tar.gz
 	tar zxf libobjc2_robin-map.tar.gz
 fi
@@ -54,7 +53,7 @@ $CMAKE_CMD .. \
 	-DCMAKE_LIBRARY_PATH=/usr/NextSpace/lib \
 	-DCMAKE_INSTALL_LIBDIR=lib \
 	-DCMAKE_INSTALL_PREFIX=/usr/NextSpace \
-	-DCMAKE_MODULE_LINKER_FLAGS="-fuse-ld=/usr/bin/ld.gold -Wl,-rpath,/usr/NextSpace/lib" \
+	-DCMAKE_MODULE_LINKER_FLAGS="${LD_GOLD_FLAG} -Wl,-rpath,/usr/NextSpace/lib" \
 	-DCMAKE_SKIP_RPATH=ON \
 	-DTESTS=OFF \
 	-DCMAKE_BUILD_TYPE=Release \
@@ -70,12 +69,10 @@ $MAKE_CMD
 if [ -f $DEST_DIR/usr/NextSpace/include/Block.h ]; then
 	$MV_CMD $DEST_DIR/usr/NextSpace/include/Block.h $DEST_DIR/usr/NextSpace/include/Block-libdispatch.h
 fi
-$INSTALL_CMD || exit 1
+run_install || exit 1
 if [ -f $DEST_DIR/usr/NextSpace/include/Block-libdispatch.h ]; then
 	$MV_CMD $DEST_DIR/usr/NextSpace/include/Block.h $DEST_DIR/usr/NextSpace/include/Block-libobjc.h
 	$MV_CMD $DEST_DIR/usr/NextSpace/include/Block-libdispatch.h $DEST_DIR/usr/NextSpace/include/Block.h
 fi
 
-if [ "$DEST_DIR" = "" ]; then
-	sudo ldconfig
-fi
+refresh_ldconfig

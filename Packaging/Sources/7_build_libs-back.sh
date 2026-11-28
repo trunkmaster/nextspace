@@ -6,9 +6,9 @@
 #----------------------------------------
 # Install package dependecies
 #----------------------------------------
-if [ ${OS_ID} = "debian" ] || [ ${OS_ID} = "ubuntu" ]; then
+if is_debian_like; then
 	${ECHO} ">>> Installing packages for GNUstep GUI Backend build"
-	sudo apt-get install -y ${BACK_ART_DEPS}
+	install_apt_packages ${BACK_ART_DEPS}
 fi
 
 #----------------------------------------
@@ -17,10 +17,7 @@ fi
 SOURCES_DIR=${PROJECT_DIR}/Libraries/gnustep
 BUILD_DIR=${BUILD_ROOT}/back
 
-if [ -d ${BUILD_DIR} ]; then
-	rm -rf ${BUILD_DIR}
-fi
-cp -R ${SOURCES_DIR}/back ${BUILD_ROOT}
+copy_clean_build_tree "${SOURCES_DIR}/back" "${BUILD_DIR}"
 
 #----------------------------------------
 # Build and install
@@ -31,25 +28,25 @@ cd ${BUILD_DIR}
 # ART
 $MAKE_CMD clean || exit 1
 ./configure \
+	--enable-server=x11 \
 	--enable-graphics=art \
 	--with-name=art \
 	|| exit 1
 
 $MAKE_CMD || exit 1
-$INSTALL_CMD fonts=no || exit 1
+run_install fonts=no || exit 1
 
 # Cairo
 $MAKE_CMD clean || exit 1
 ./configure \
+	--enable-server=x11 \
 	--enable-graphics=cairo \
 	--with-name=cairo \
 	|| exit 1
 $MAKE_CMD || exit 1
-$INSTALL_CMD fonts=no || exit 1
+run_install fonts=no || exit 1
 
 #----------------------------------------
 # Post install
 #----------------------------------------
-if [ "$DEST_DIR" = "" ]; then
-	sudo ldconfig
-fi
+refresh_ldconfig
